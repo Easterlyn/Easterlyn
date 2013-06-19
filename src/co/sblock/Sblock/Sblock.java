@@ -1,9 +1,5 @@
 package co.sblock.Sblock;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,26 +11,13 @@ public class Sblock extends JavaPlugin {
 		return instance;
 	}
 
-	Connection database;
 
 	@Override
 	public void onEnable() {
 		instance = this;
 		saveDefaultConfig();
 		
-		try {
-			Class.forName("org.postgresql.Driver");
-			database = DriverManager.getConnection(getConfig()
-					.getString("host") + ":" + getConfig().getString("port"),
-					getConfig().getString("username"),
-					getConfig().getString("password"));
-		} catch (ClassNotFoundException e) {
-			// if we can't connect to the database, we're pretty much done here.
-			getPluginLoader().disablePlugin(this);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if (!DatabaseManager.getDatabaseManager().enable()) return;
 		/* 
 		 * Ok, so here.. This being the framework behind all the
 		 * sub-plugin (module, whatever) handlers..
@@ -53,7 +36,7 @@ public class Sblock extends JavaPlugin {
 	public void onDisable() {
 		instance = null;
 		try {
-			database.close();
+			DatabaseManager.getDatabaseManager().disable();
 			/* 
 			 * For each and every module:
 			 * public void disable() {
@@ -66,9 +49,7 @@ public class Sblock extends JavaPlugin {
 		} catch (NullPointerException npe) {
 			// Caused by the ClassNotFoundException above;
 			// Connection and modules would not be initialized
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		HandlerList.unregisterAll(this);
 	}
 }
