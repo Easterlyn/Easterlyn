@@ -111,7 +111,7 @@ public class SblockPlayer {
 	/**
 	 * Sets the <code>Player</code>'s dreamstate
 	 * 
-	 * @param <code>true</code> if the <code>Player</code> is in dreamstate
+	 * @return <code>true</code> if the <code>Player</code> is in dreamstate
 	 */
 	public boolean getSleeping() {
 		return this.sleeping;
@@ -164,8 +164,8 @@ public class SblockPlayer {
 	/**
 	 * Sets the tower number generated for the <code>Player</code>
 	 * 
-	 * @param the
-	 *            number of the tower the player will "dream" to
+	 * @param tower
+	 *            the number of the tower the player will "dream" to
 	 */
 	public void setTower(short tower) {
 		this.tower = tower;
@@ -174,7 +174,8 @@ public class SblockPlayer {
 	/**
 	 * Sets the <code>Player</code>'s dreamstate
 	 * 
-	 * @param <code>true</code> if the <code>Player</code> is in dreamstate
+	 * @param sleeping
+	 *            <code>true</code> if the <code>Player</code> is in dreamstate
 	 */
 	public void setSleeping(boolean sleeping) {
 		this.sleeping = sleeping;
