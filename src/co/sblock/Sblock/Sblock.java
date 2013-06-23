@@ -16,8 +16,9 @@ public class Sblock extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		saveDefaultConfig();
+		new TestModule().enable();
+		//if (!DatabaseManager.getDatabaseManager().enable()) return;
 		
-		if (!DatabaseManager.getDatabaseManager().enable()) return;
 		/* 
 		 * Ok, so here.. This being the framework behind all the
 		 * sub-plugin (module, whatever) handlers..
@@ -30,6 +31,7 @@ public class Sblock extends JavaPlugin {
 		 * getServer().getPluginManager().registerEvents(moduleListener, Sblock.getInstance());
 		 * }
 		 */
+		
 	}
 
 	@Override

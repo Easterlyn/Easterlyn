@@ -22,20 +22,20 @@ public class DatabaseManager {
 	private Connection database;
 
 	public boolean enable() {
-		Sblock s = Sblock.getInstance();
+		Sblock plugin = Sblock.getInstance();
 		try {
 			Class.forName("org.postgresql.Driver");
-			database = DriverManager.getConnection(s.getConfig()
-					.getString("host") + ":" + s.getConfig().getString("port"),
-					s.getConfig().getString("username"),
-					s.getConfig().getString("password"));
+			database = DriverManager.getConnection(plugin.getConfig()
+					.getString("host") + ":" + plugin.getConfig().getString("port"),
+					plugin.getConfig().getString("username"),
+					plugin.getConfig().getString("password"));
 		} catch (ClassNotFoundException e) {
 			// if we can't connect to the database, we're pretty much done here.
-			s.getPluginLoader().disablePlugin(s);
+			plugin.getLogger().severe("The database driver was not found. Plugin functionality will be limited.");
 			return false;
 		} catch (SQLException e) {
+			plugin.getLogger().severe("An error occurred while connecting to the database. Plugin functionality will be limited.");
 			e.printStackTrace();
-			s.getPluginLoader().disablePlugin(s);
 			return false;
 		}
 		return true;
