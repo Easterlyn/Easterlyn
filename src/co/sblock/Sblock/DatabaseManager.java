@@ -25,8 +25,10 @@ public class DatabaseManager {
 		Sblock plugin = Sblock.getInstance();
 		try {
 			Class.forName("org.postgresql.Driver");
-			database = DriverManager.getConnection(plugin.getConfig()
-					.getString("host") + ":" + plugin.getConfig().getString("port"),
+			database = DriverManager.getConnection("jdbc:postgresql://" +
+					plugin.getConfig().getString("host") + ":" +
+							plugin.getConfig().getString("port") + "/" +
+							plugin.getConfig().getString("database"),
 					plugin.getConfig().getString("username"),
 					plugin.getConfig().getString("password"));
 		} catch (ClassNotFoundException e) {

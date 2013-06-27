@@ -53,7 +53,7 @@ public enum Region {
 			}
 			return r;
 		} catch (IllegalStateException e) {
-			//Player is in an invalid world
+			// Player is in an invalid world
 			return Region.EARTH;
 		}
 	}

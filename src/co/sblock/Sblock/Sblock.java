@@ -11,27 +11,26 @@ public class Sblock extends JavaPlugin {
 		return instance;
 	}
 
-
 	@Override
 	public void onEnable() {
 		instance = this;
 		saveDefaultConfig();
 		new TestModule().enable();
-		//if (!DatabaseManager.getDatabaseManager().enable()) return;
-		
-		/* 
-		 * Ok, so here.. This being the framework behind all the
-		 * sub-plugin (module, whatever) handlers..
+		// if (!DatabaseManager.getDatabaseManager().enable()) return;
+
+		/*
+		 * Ok, so here.. This being the framework behind all the sub-plugin
+		 * (module, whatever) handlers..
 		 * 
-		 * Each module main class needs an enable() and disable() that will 
+		 * Each module main class needs an enable() and disable() that will
 		 * register and unregister its own commands and event handler(s)
 		 * 
 		 * public void enable() {
 		 * getCommand("moduleCommand").setExecutor(moduleCommandExecutor);
-		 * getServer().getPluginManager().registerEvents(moduleListener, Sblock.getInstance());
-		 * }
+		 * getServer().getPluginManager().registerEvents(moduleListener,
+		 * Sblock.getInstance()); }
 		 */
-		
+
 	}
 
 	@Override
@@ -39,19 +38,16 @@ public class Sblock extends JavaPlugin {
 		instance = null;
 		try {
 			DatabaseManager.getDatabaseManager().disable();
-			/* 
-			 * For each and every module:
-			 * public void disable() {
+			/*
+			 * For each and every module: public void disable() {
 			 * getCommand("moduleCommand").setExecutor(null);
-			 * HandlerList.unregisterAll(this);
-			 * }
-			 * module.disable();
-			 * module = null;
+			 * HandlerList.unregisterAll(this); } module.disable(); module =
+			 * null;
 			 */
 		} catch (NullPointerException npe) {
-			// Caused by the ClassNotFoundException above;
-			// Connection and modules would not be initialized
+			// Caused by any load failures; modules may not be initialized.
 		}
+		// Just in case we missed something (somehow)
 		HandlerList.unregisterAll(this);
 	}
 }
