@@ -1,6 +1,7 @@
 package co.sblock.Sblock.Chat;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.entity.Player;
 
@@ -11,31 +12,40 @@ public class User {
 	private Player pthis;
 	private Channel current;
 	private boolean isMute;
+	private boolean isOnline;
 	
-	private static ArrayList<User> userList = new ArrayList<User>();
-	
-	public User (Player p)	{
+	private static Map<String, User> userList = new HashMap<String, User>();
+		
+	public User(Player p)	{
 		this.pthis = p;
 		//this.current = somehow based on current region
 		this.isMute = false;
-		userList.add(this);
+		userList.put(pthis.getName(), this);
 		//Channel?.joinChannelFirstTime(Region);
 	}
 	
-	public static void addPlayer (Player p)	{
+	public static void addPlayer (Player p)	{ //Used for first-time logins
 		//if player is new (check PlayerData table), call constructor
-		//else load data from db
 		
 		//if (pg.SELECT*FROMPlayerDataWHEREplayerName=p)		
 		//then we're all cool
 		//else new User(p);
-		
-		
 	}
-	public static void removePlayer (Player p)	{
-		
+	public static User getUser (String name)	{
+		return userList.get(name);
 	}
-	public static void getUser (Player p)	{
+	public String getUserName(String s)	{
+		return this.pthis.getName();
+	}
+	public static void login(Player p)	{
+		userList.get(p.getName()).isOnline = true;
+	}
+	public static void logout (Player p)	{
+		userList.get(p.getName()).isOnline = false;
+	}
+	
+	
+	public void sendMessageFromChannel (String s, Channel c)	{
 		
 	}
 

@@ -14,9 +14,10 @@ public class SblockChatListener implements Listener {
 		//Theoretically, the channel db knows all players listening, even those who are offline.
 		//So as long as the channel has a list of players, the User doesn't need to know what channels it's listening to.
 		
-		//user.addplayer
-		
+		//if new player
 		User.addPlayer(event.getPlayer());
+		//else
+		User.login(event.getPlayer());
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
@@ -28,7 +29,7 @@ public class SblockChatListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerQuit (PlayerQuitEvent event)	{
-		//user.removeplayer
+		User.logout(event.getPlayer());
 	}
 	
 }
