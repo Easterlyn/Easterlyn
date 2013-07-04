@@ -1,9 +1,12 @@
 package co.sblock.Sblock.Chat;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.Sblock.Chat.Channel.Channel;
 
@@ -14,7 +17,10 @@ public class User {
 	private boolean isMute;
 	private boolean isOnline;
 	
-	private static Map<String, User> userList = new HashMap<String, User>();
+	private Set<Channel> listening = new HashSet<Channel>();	//TODO: figure out how the hell to save this between runs
+		//do I even want/need this?
+	
+	private static Map<String, User> userList = new HashMap<String, User>(); //TODO: same for this. halp
 		
 	public User(Player p)	{
 		this.pthis = p;
@@ -25,11 +31,7 @@ public class User {
 	}
 	
 	public static void addPlayer (Player p)	{ //Used for first-time logins
-		//if player is new (check PlayerData table), call constructor
-		
-		//if (pg.SELECT*FROMPlayerDataWHEREplayerName=p)		
-		//then we're all cool
-		//else new User(p);
+		new User(p);
 	}
 	public static User getUser (String name)	{
 		return userList.get(name);
@@ -44,8 +46,17 @@ public class User {
 		userList.get(p.getName()).isOnline = false;
 	}
 	
-	
 	public void sendMessageFromChannel (String s, Channel c)	{
+		
+	}
+	public void chat (AsyncPlayerChatEvent event)	{	//receives message from SblockChatListener
+		
+	}
+	public String getName()	{
+		return this.pthis.getName();
+	}
+	public String getDisplayName()	{	//colors for final display message are applied to $name here
+		return null;
 		
 	}
 
