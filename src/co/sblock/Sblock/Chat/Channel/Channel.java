@@ -6,7 +6,6 @@ import co.sblock.Sblock.Chat.User;
 
 public interface Channel {
 	public String getName();
-	public String getPrefix(User sender);
 	public String getJoinChatMessage(User sender);
 	public String getLeaveChatMessage(User sender);
 	public AccessLevel getSAcess();

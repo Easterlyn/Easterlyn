@@ -22,9 +22,10 @@ public class SblockChatListener implements Listener {
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onPlayerChat (AsyncPlayerChatEvent event)	{
-		//if user exists
-		//cancel event
-		//user.chatevent
+		if(User.getUser(event.getPlayer().getName()) != null)	{
+			event.setCancelled(true);
+			User.getUser(event.getPlayer().getName()).chat(event);
+		}
 	}
 	
 	@EventHandler
