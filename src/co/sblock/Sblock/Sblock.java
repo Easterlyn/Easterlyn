@@ -15,8 +15,12 @@ public class Sblock extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		saveDefaultConfig();
-		new TestModule().enable();
-		// if (!DatabaseManager.getDatabaseManager().enable()) return;
+		if (DatabaseManager.getDatabaseManager().enable())
+			this.getLogger().info("Connected");
+		else
+			this.getLogger().info("Unable to connect");
+		
+		
 
 		/*
 		 * Ok, so here.. This being the framework behind all the sub-plugin

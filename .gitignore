@@ -1,3 +1,12 @@
+#############
+## Sblock Additions
+#############
+
+testenv/
+# We don't want passwords to end up public, so keep config.yml out
+*config.yml
+.jardesc
+
 #################
 ## Eclipse
 #################
@@ -165,3 +174,4 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
