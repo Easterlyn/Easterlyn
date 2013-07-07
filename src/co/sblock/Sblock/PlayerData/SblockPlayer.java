@@ -1,5 +1,7 @@
 package co.sblock.Sblock.PlayerData;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
@@ -8,176 +10,201 @@ import org.bukkit.entity.Player;
  * 
  * @author Jikoo
  * @author Dublek
+ * @author FireNG
  */
 public class SblockPlayer {
 
-	/** The <code>Player</code> */
-	private Player player;
+    /** The <code>Player</code> */
+    private String playerName;
 
-	/** The <code>Player</code>'s chosen class */
-	private String classType;
+    /** The <code>Player</code>'s chosen class */
+    private PlayerClass classType;
 
-	/** The <code>Player</code>'s chosen aspect */
-	private String aspect;
+    /** The <code>Player</code>'s chosen aspect */
+    private PlayerAspect aspect;
 
-	/** The <code>Player</code>'s chosen Medium planet. */
-	private String mPlanet;
+    /** The <code>Player</code>'s chosen Medium planet. */
+    private MediumPlanet mPlanet;
 
-	/** The <code>Player</code>'s chosen dream planet. */
-	private String dPlanet;
+    /** The <code>Player</code>'s chosen dream planet. */
+    private DreamPlanet dPlanet;
 
-	/** The <code>Player</code>'s tower number */
-	private short tower;
+    /** The <code>Player</code>'s tower number */
+    private int tower;
 
-	/** <code>true</code> if the player is in dreamstate */
-	private boolean sleeping;
+    /** <code>true</code> if the player is in dreamstate */
+    private boolean sleeping;
 
-	/**
-	 * Instantiates a new SblockPlayer.
-	 * 
-	 * @param p
-	 *            the <code>Player</code> to load data for
-	 */
-	public SblockPlayer(Player p) {
-		this.player = p;
-		/*
-		 * pg will be our PostgreSQL function collection
-		 * 
-		 * String[] playerData = pg.loadPlayerData(p.getName()); //load
-		 * classpect + planets this.setClassType(playerData[0]);
-		 * this.setAspect(playerData[1]); this.setMPlanet(playerData[2]);
-		 * this.setDPlanet(playerData[3]); try {
-		 * this.setTower(Short.parseShort(playerData[4])); } catch
-		 * (NumberFormatException e) { //This error shouldn't be able to happen
-		 * but.. just in case! this.setTower(pg.loadPlayerTower(p.getName()); }
-		 * this.setSleeping(pg.loadPlayerDreamstate(p.getName()));
-		 */
-	}
+    private Location previousLocation;
 
-	/**
-	 * Gets the <code>Player</code>.
-	 * 
-	 * @return the <code>Player</code>
-	 */
-	public Player getPlayer() {
-		return this.player;
-	}
+    /**
+     * Creates a SblockPlayer object for a player new to the server (Or whose
+     * database record couldn't be found), instantiating the player with default
+     * values.
+     * 
+     * @param p
+     *            the <code>Player</code> to load data for
+     */
+    SblockPlayer(String playerName) {
+	this(playerName, PlayerClass.UNKNOWN, PlayerAspect.UNKNOWN,
+		MediumPlanet.UNKNOWN, DreamPlanet.UNKNOWN, -1, false, null);
+    }
 
-	/**
-	 * Gets the <code>Player</code>'s chosen class
-	 * 
-	 * @return the class type, <code>null</code> if unchosen
-	 */
-	public String getClassType() {
-		return this.classType;
-	}
+    SblockPlayer(String playerName, PlayerClass pClass, PlayerAspect aspect,
+	    MediumPlanet mPlanet, DreamPlanet dPlanet, int towerNum,
+	    boolean isAsleep, Location prevLocation) {
+	this.playerName = playerName;
+	this.classType = pClass;
+	this.aspect = aspect;
+	this.mPlanet = mPlanet;
+	this.dPlanet = dPlanet;
+	this.tower = towerNum;
+	this.sleeping = isAsleep;
+	this.previousLocation = prevLocation;
+    }
 
-	/**
-	 * Gets the <code>Player</code>'s chosen aspect
-	 * 
-	 * @return the aspect, <code>null</code> if unchosen
-	 */
-	public String getAspect() {
-		return this.aspect;
-	}
+    /**
+     * Gets the <code>Player</code>.
+     * 
+     * @return the <code>Player</code>
+     */
+    public Player getPlayer() {
+	return Bukkit.getPlayerExact(playerName);
+    }
 
-	/**
-	 * Gets the <code>Player</code>'s chosen Medium planet.
-	 * 
-	 * @return the <code>Player</code>'s Medium planet
-	 */
-	public String getMPlanet() {
-		return this.mPlanet;
-	}
+    /**
+     * Gets the <code>Player</code>'s chosen class
+     * 
+     * @return the class type, <code>null</code> if unchosen
+     */
+    public PlayerClass getClassType() {
+	return this.classType;
+    }
 
-	/**
-	 * Gets the <code>Player</code>'s chosen dream planet.
-	 * 
-	 * @return the <code>Player</code>'s dream planet
-	 */
-	public String getDPlanet() {
-		return this.dPlanet;
-	}
+    /**
+     * Gets the <code>Player</code>'s chosen aspect
+     * 
+     * @return the aspect, <code>null</code> if unchosen
+     */
+    public PlayerAspect getAspect() {
+	return this.aspect;
+    }
 
-	/**
-	 * Gets the tower number generated for the <code>Player</code>
-	 * 
-	 * @return the number of the tower the player will "dream" to
-	 */
-	public short getTower() {
-		return this.tower;
-	}
+    /**
+     * Gets the <code>Player</code>'s chosen Medium planet.
+     * 
+     * @return the <code>Player</code>'s Medium planet
+     */
+    public MediumPlanet getMPlanet() {
+	return this.mPlanet;
+    }
 
-	/**
-	 * Sets the <code>Player</code>'s dreamstate
-	 * 
-	 * @return <code>true</code> if the <code>Player</code> is in dreamstate
-	 */
-	public boolean getSleeping() {
-		return this.sleeping;
-	}
+    /**
+     * Gets the <code>Player</code>'s chosen dream planet.
+     * 
+     * @return the <code>Player</code>'s dream planet
+     */
+    public DreamPlanet getDPlanet() {
+	return this.dPlanet;
+    }
 
-	public Region getPlayerRegion() {
-		return Region.getLocationRegion(player.getLocation());
-	}
+    /**
+     * Gets the tower number generated for the <code>Player</code>
+     * 
+     * @return the number of the tower the player will "dream" to
+     */
+    public int getTower() {
+	return this.tower;
+    }
 
-	/**
-	 * Sets the class type.
-	 * 
-	 * @param className
-	 *            the new class type
-	 */
-	public void setClassType(String className) {
-		this.classType = className;
-	}
+    /**
+     * Gets the <code>Player</code>'s dreamstate
+     * 
+     * @return <code>true</code> if the <code>Player</code> is in dreamstate
+     */
+    public boolean isSleeping() {
+	return this.sleeping;
+    }
 
-	/**
-	 * Sets the aspect.
-	 * 
-	 * @param aspect
-	 *            the new aspect
-	 */
-	public void setAspect(String aspect) {
-		this.aspect = aspect;
-	}
+    public Region getPlayerRegion() {
+	return Region.getLocationRegion(this.getPlayer().getLocation());
+    }
 
-	/**
-	 * Sets the Medium planet.
-	 * 
-	 * @param mPlanet
-	 *            the new Medium planet
-	 */
-	public void setMPlanet(String mPlanet) {
-		this.mPlanet = mPlanet;
-	}
+    /**
+     * Sets the class type.
+     * 
+     * @param pclass
+     *            the new class type
+     */
+    public void setPlayerClass(PlayerClass pclass) {
+	this.classType = pclass;
+    }
 
-	/**
-	 * Sets the dream planet.
-	 * 
-	 * @param dPlanet
-	 *            the new dream planet
-	 */
-	public void setDPlanet(String dPlanet) {
-		this.dPlanet = dPlanet;
-	}
+    /**
+     * Sets the aspect.
+     * 
+     * @param aspect
+     *            the new aspect
+     */
+    public void setAspect(PlayerAspect aspect) {
+	this.aspect = aspect;
+    }
 
-	/**
-	 * Sets the tower number generated for the <code>Player</code>
-	 * 
-	 * @param tower
-	 *            the number of the tower the player will "dream" to
-	 */
-	public void setTower(short tower) {
-		this.tower = tower;
-	}
+    /**
+     * Sets the Medium planet.
+     * 
+     * @param mPlanet
+     *            the new Medium planet
+     */
+    public void setMediumPlanet(MediumPlanet mPlanet) {
+	this.mPlanet = mPlanet;
+    }
 
-	/**
-	 * Sets the <code>Player</code>'s dreamstate
-	 * 
-	 * @param sleeping
-	 *            <code>true</code> if the <code>Player</code> is in dreamstate
-	 */
-	public void setSleeping(boolean sleeping) {
-		this.sleeping = sleeping;
-	}
+    /**
+     * Sets the dream planet.
+     * 
+     * @param dPlanet
+     *            the new dream planet
+     */
+    public void setDreamPlanet(DreamPlanet dPlanet) {
+	this.dPlanet = dPlanet;
+    }
+
+    /**
+     * Sets the tower number generated for the <code>Player</code>
+     * 
+     * @param tower
+     *            the number of the tower the player will "dream" to
+     */
+    public void setTower(int tower) {
+	this.tower = tower;
+    }
+
+    /**
+     * Sets the <code>Player</code>'s dreamstate
+     * 
+     * @param sleeping
+     *            <code>true</code> if the <code>Player</code> is in dreamstate
+     */
+    public void setIsSleeping(boolean sleeping) {
+	this.sleeping = sleeping;
+    }
+
+    /**
+     * Sets the player's location from the last world that they visited.
+     * 
+     * @param location
+     *            The player's previous location
+     */
+    public void setPreviousLocation(Location location) {
+	this.previousLocation = location;
+
+    }
+
+    /**
+     * @return the previousLocation
+     */
+    public Location getPreviousLocation() {
+        return previousLocation;
+    }
 }

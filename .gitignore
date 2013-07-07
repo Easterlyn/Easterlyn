@@ -4,8 +4,8 @@
 
 testenv/
 # We don't want passwords to end up public, so keep config.yml out
-*config.yml
-.jardesc
+config.yml
+*.jardesc
 
 #################
 ## Eclipse

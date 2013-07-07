@@ -3,7 +3,6 @@
  */
 package co.sblock.Sblock;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -24,8 +23,14 @@ public abstract class Module {
 	private Set<Listener> listeners = new HashSet<Listener>();
 	private Set<String> executors = new HashSet<String>();
 
+	/**
+	 * Called when the module is enabled.
+	 */
 	protected abstract void onEnable();
-
+	
+	/**
+	 * Called when the module is disabled before handlers are unassigned. 
+	 */
 	protected abstract void onDisable();
 
 	protected final void registerEvents(Listener... listeners) {
@@ -50,20 +55,18 @@ public abstract class Module {
 					Sblock.getInstance().getCommand(commandName).setExecutor(newExecutor);
 					this.executors.add(commandName);
 				} catch (NullPointerException e) {
-					this.getLogger().warning("The command " + commandName +
-							"is not defined in the plugin.yml file, and will not work until defined.");
+					this.getLogger().warning("The command " + commandName + "is not defined in the plugin.yml file, and will not work until defined.");
 				}
                 catch (InstantiationException e)
                 {
-	                // TODO Auto-generated catch block
 	                e.printStackTrace();
+	                this.getLogger().severe("Command handler " + clazz.getSimpleName() + " in module " + this.getClass().getSimpleName() + " is invalid.");
                 }
                 catch (IllegalAccessException e)
                 {
-	                // TODO Auto-generated catch block
 	                e.printStackTrace();
                 }
-				//this.getLogger().severe("Command handler " + clazz.getSimpleName() + " in module " + this.getClass().getSimpleName() + " is invalid.");
+				
 			}
 		}
 	}
@@ -71,34 +74,34 @@ public abstract class Module {
 	/**
 	 * Enables the module.
 	 */
-	public final void enable() {
+	public final Module enable() {
 		try {
 			this.onEnable();
 		} catch (Exception e) {
 			throw new RuntimeException("Unhandled exception in module " + this.getClass().getSimpleName() + ". Plugin failed to load.", e);
 		}
 		this.getLogger().info("Loaded module " + this.getClass().getSimpleName());
+		return this;
 	}
 
 	/**
 	 * Disables the module.
 	 */
-	public final void disable() {
+	public final Module disable() {
 
 		try {
+			this.onDisable();
 			for (String entry : this.executors) {
 				Sblock.getInstance().getCommand(entry).setExecutor(null);
 			}
 			for (Listener listener : listeners) {
 				HandlerList.unregisterAll(listener);
 			}
-			this.onDisable();
 		} catch (Exception e) {
 			throw new RuntimeException("Unhandled exception in module " + this.getClass().getSimpleName() + ". Plugin failed to properly disable.", e);
 		}
 		this.getLogger().info("Disabled module " + this.getClass().getSimpleName());
-		
-
+		return this;
 	}
 
 	/**

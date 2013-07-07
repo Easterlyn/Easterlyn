@@ -1,11 +1,18 @@
 package co.sblock.Sblock;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import co.sblock.Sblock.PlayerData.PlayerDataModule;
 
 public class Sblock extends JavaPlugin {
 
 	private static Sblock instance;
+	
+	private Set<Module> modules;
 
 	public static Sblock getInstance() {
 		return instance;
@@ -14,13 +21,14 @@ public class Sblock extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		this.modules = new HashSet<Module>();
 		saveDefaultConfig();
 		if (DatabaseManager.getDatabaseManager().enable())
 			this.getLogger().info("Connected");
 		else
 			this.getLogger().info("Unable to connect");
 		
-		
+		modules.add(new PlayerDataModule().enable());
 
 		/*
 		 * Ok, so here.. This being the framework behind all the sub-plugin
@@ -42,15 +50,11 @@ public class Sblock extends JavaPlugin {
 		instance = null;
 		try {
 			DatabaseManager.getDatabaseManager().disable();
-			/*
-			 * For each and every module: public void disable() {
-			 * getCommand("moduleCommand").setExecutor(null);
-			 * HandlerList.unregisterAll(this); } module.disable(); module =
-			 * null;
-			 */
 		} catch (NullPointerException npe) {
 			// Caused by any load failures; modules may not be initialized.
 		}
+		for(Module module : this.modules)
+		    module.disable();
 		// Just in case we missed something (somehow)
 		HandlerList.unregisterAll(this);
 	}
