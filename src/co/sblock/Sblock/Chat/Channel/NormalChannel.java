@@ -241,7 +241,7 @@ public class NormalChannel implements Channel	{
 			u.sendMessageFromChannel(s, this);
 		}
 		//Logger.getLogger("Minecraft").info(ChatColor.stripColor(this.getPrefix(sender) + s));
-		//fix the above log message with the new output sequence
+		//TODO fix the above log message with the new output sequence
 	}
 
 }
