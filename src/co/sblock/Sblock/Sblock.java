@@ -94,8 +94,7 @@ public class Sblock extends JavaPlugin {
                 System.arraycopy(args, 0, params, 1, params.length - 1);
             } else
                 // Not the right amount of arguments, GTFO
-                {sender.sendMessage("Input arguments: " + args.length + ", parameters: " + params.length); //DEBUG
-                return false;}
+                return false;
             try {
                 return (Boolean) handlerMethod.invoke(this.listenerInstances.get(handlerMethod.getDeclaringClass()), params);
             } catch (IllegalAccessException e) {
