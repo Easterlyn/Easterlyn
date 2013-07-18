@@ -54,6 +54,15 @@ public class PlayerManager {
     }
 
     /**
+     * @param name The player to look up
+     * @return The SblockPlayer object associated with the given player, or null if no player with the given name is currently online.
+     */
+    public SblockPlayer getPlayer(String name) {
+	
+        return players.get(name);
+    }
+
+    /**
      * Converts the given string into a Bukkit Location object
      * @param string The string to convert
      * @return The Location object represented by this string, or null if the input string is null

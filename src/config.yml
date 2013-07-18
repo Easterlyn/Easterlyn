@@ -1,5 +1,0 @@
-database: DatabaseNameHere
-username: DatabaseUsernameHere
-password: DatabasePasswordHere
-host: 127.0.0.1
-port: 65535

@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
@@ -21,7 +20,6 @@ import org.bukkit.event.Listener;
  */
 public abstract class Module {
 	private Set<Listener> listeners = new HashSet<Listener>();
-	private Set<String> executors = new HashSet<String>();
 
 	/**
 	 * Called when the module is enabled.
@@ -47,28 +45,7 @@ public abstract class Module {
 	 *            Listener class to register.
 	 */
 	protected final void registerCommands(CommandListener listener) {
-		for (Class<?> clazz : listener.getClass().getDeclaredClasses()) {
-			if (CommandExecutor.class.isAssignableFrom(clazz) && clazz.getAnnotation(CommandHandler.class) != null) {
-				String commandName = clazz.getAnnotation(CommandHandler.class).name();
-				try {
-					CommandExecutor newExecutor = (CommandExecutor) clazz.newInstance();
-					Sblock.getInstance().getCommand(commandName).setExecutor(newExecutor);
-					this.executors.add(commandName);
-				} catch (NullPointerException e) {
-					this.getLogger().warning("The command " + commandName + "is not defined in the plugin.yml file, and will not work until defined.");
-				}
-                catch (InstantiationException e)
-                {
-	                e.printStackTrace();
-	                this.getLogger().severe("Command handler " + clazz.getSimpleName() + " in module " + this.getClass().getSimpleName() + " is invalid.");
-                }
-                catch (IllegalAccessException e)
-                {
-	                e.printStackTrace();
-                }
-				
-			}
-		}
+	    Sblock.getInstance().registerCommands(listener);
 	}
 
 	/**
@@ -91,9 +68,6 @@ public abstract class Module {
 
 		try {
 			this.onDisable();
-			for (String entry : this.executors) {
-				Sblock.getInstance().getCommand(entry).setExecutor(null);
-			}
 			for (Listener listener : listeners) {
 				HandlerList.unregisterAll(listener);
 			}

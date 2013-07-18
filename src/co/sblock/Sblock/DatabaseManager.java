@@ -60,14 +60,12 @@ public class DatabaseManager {
 	try {
             statement = database.prepareStatement(LOAD_PLAYER);
             statement.setString(1, playerName);
-            Sblock.getInstance().getLogger().info("Statement executed: " + statement);
             ResultSet results = statement.executeQuery();
             if(results.next())
             {
         	Map<String, Object> returnMap = new HashMap<String, Object>();
         	for(int i = 1; i < results.getMetaData().getColumnCount() + 1; i++)
-        	{
-        	    Sblock.getInstance().getLogger().info(results.getMetaData().getColumnName(i));
+        	{   
         	    returnMap.put(results.getMetaData().getColumnName(i), results.getObject(i));
         	}
         	statement.close();

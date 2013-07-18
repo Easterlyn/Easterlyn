@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/craftbukkit-1.5.2-R1.0.jar">
+	<classpathentry exported="true" kind="lib" path="postgresql-9.2-1002.jdbc4.jar"/>
+	<classpathentry kind="lib" path="bukkit-1.6.1-R0.1-20130703.062218-3.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://jd.bukkit.org/rb/apidocs/"/>
+			<attribute name="javadoc_location" value="http://jd.bukkit.org/dev/apidocs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Bukkit"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

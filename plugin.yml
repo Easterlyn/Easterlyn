@@ -7,5 +7,11 @@ authors: [Dublek, Jikoo, FireNG]
 description: Sblock's sexy mainframe
 commands:
  test:
-permissions:
-# Permissions go here...
+  usage: Uh-oh!
+  permissions:
+#  Permissions go here...
+ test2:
+  usage: Uh-oh!
+  permissions: 
+ test3:
+  usage: Uh-oh!

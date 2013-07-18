@@ -1,7 +1,0 @@
-name: SblockPlayers
-
-main: co.sblock.SblockPlayers.SblockPlayers
-version: 2.0.0
-author: Sblock Co.
-authors: [Dublek, Jikoo, FireNG]
-description: Sblock's sexy mainframe
