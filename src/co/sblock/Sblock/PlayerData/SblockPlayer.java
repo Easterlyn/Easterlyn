@@ -1,5 +1,7 @@
 package co.sblock.Sblock.PlayerData;
 
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,25 +20,32 @@ public class SblockPlayer {
     private String playerName;
 
     /** The <code>Player</code>'s chosen class */
-    private PlayerClass classType;
+    private PlayerClass classType = PlayerClass.UNKNOWN;
 
     /** The <code>Player</code>'s chosen aspect */
-    private PlayerAspect aspect;
+    private PlayerAspect aspect = PlayerAspect.UNKNOWN;
 
     /** The <code>Player</code>'s chosen Medium planet. */
-    private MediumPlanet mPlanet;
+    private MediumPlanet mPlanet = MediumPlanet.UNKNOWN;
 
     /** The <code>Player</code>'s chosen dream planet. */
-    private DreamPlanet dPlanet;
+    private DreamPlanet dPlanet = DreamPlanet.UNKNOWN;
 
     /** The <code>Player</code>'s tower number */
-    private int tower;
+    private int tower = -1;
 
     /** <code>true</code> if the player is in dreamstate */
-    private boolean sleeping;
+    private boolean sleeping = false;
 
     private Location previousLocation;
 
+    private SblockPlayer() {
+        
+    }
+    
+    private SblockPlayer(String name) {
+        this.playerName = name;
+    }
     /**
      * Creates a SblockPlayer object for a player new to the server (Or whose
      * database record couldn't be found), instantiating the player with default
@@ -45,22 +54,23 @@ public class SblockPlayer {
      * @param p
      *            the <code>Player</code> to load data for
      */
-    SblockPlayer(String playerName) {
-	this(playerName, PlayerClass.UNKNOWN, PlayerAspect.UNKNOWN,
-		MediumPlanet.UNKNOWN, DreamPlanet.UNKNOWN, -1, false, null);
+    static SblockPlayer createNewPlayer(Player newPlayer) {
+        
+        return new SblockPlayer(newPlayer.getName());
     }
 
-    SblockPlayer(String playerName, PlayerClass pClass, PlayerAspect aspect,
-	    MediumPlanet mPlanet, DreamPlanet dPlanet, int towerNum,
-	    boolean isAsleep, Location prevLocation) {
-	this.playerName = playerName;
-	this.classType = pClass;
-	this.aspect = aspect;
-	this.mPlanet = mPlanet;
-	this.dPlanet = dPlanet;
-	this.tower = towerNum;
-	this.sleeping = isAsleep;
-	this.previousLocation = prevLocation;
+    
+    static SblockPlayer createExistingPlayer(Map<String, Object> playerdata) {
+        SblockPlayer player = new SblockPlayer();
+        player.playerName = (String)playerdata.get("playerName");
+        player.classType = PlayerClass.valueOf((String) playerdata.get("class"));
+        player.aspect = PlayerAspect.valueOf((String) playerdata.get("aspect"));
+        player.dPlanet = DreamPlanet.valueOf((String) playerdata.get("dPlanet"));
+        player.mPlanet = MediumPlanet.valueOf((String) playerdata.get("mPlanet"));
+        player.tower = (Integer) playerdata.get("towerNum");
+        player.sleeping = (Boolean) playerdata.get("sleepState");
+        player.previousLocation = PlayerManager.parseLocation((String) playerdata.get("previousLoc"));
+        return player;
     }
 
     /**

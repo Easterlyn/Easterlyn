@@ -11,6 +11,7 @@ import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.Sblock.PlayerData.PlayerDataModule;
@@ -45,11 +46,10 @@ public class Sblock extends JavaPlugin {
         /*
          * Ok, so here.. This being the framework behind all the sub-plugin (module, whatever) handlers..
          * 
-         * Each module main class needs an enable() and disable() that will register and unregister its own commands and event
-         * handler(s)
+         * Each module main class needs an enable() and disable() that will register and unregister its own commands and event handler(s)
          * 
-         * public void enable() { getCommand("moduleCommand").setExecutor(moduleCommandExecutor);
-         * getServer().getPluginManager().registerEvents(moduleListener, Sblock.getInstance()); }
+         * public void enable() { getCommand("moduleCommand").setExecutor(moduleCommandExecutor); getServer().getPluginManager().registerEvents(moduleListener,
+         * Sblock.getInstance()); }
          */
 
     }
@@ -71,7 +71,7 @@ public class Sblock extends JavaPlugin {
             if (this.commandHandlers.containsKey(method))
                 throw new Error("Duplicate handlers for command " + method + " found in " + this.commandHandlers.get(method.getName()).getDeclaringClass().getName() + " and "
                         + method.getDeclaringClass().getName());
-            if (method.getAnnotation(SblockCommand.class) != null)
+            if (method.getAnnotation(SblockCommand.class) != null && method.getParameterTypes().length > 0 && CommandSender.class.isAssignableFrom(method.getParameterTypes()[0]))
                 this.commandHandlers.put(method.getName(), method);
         }
         this.listenerInstances.put(listener.getClass(), listener);
@@ -86,7 +86,11 @@ public class Sblock extends JavaPlugin {
         } else {
             Method handlerMethod = this.commandHandlers.get(label);
             Object[] params = new Object[handlerMethod.getParameterTypes().length];
-            params[0] = sender.getName();
+            if (sender instanceof ConsoleCommandSender && !handlerMethod.getAnnotation(SblockCommand.class).consoleFriendly()) {
+                sender.sendMessage("You must be a player to use this command.");
+                return true;
+            }
+                params[0] = sender;
             if (handlerMethod.getAnnotation(SblockCommand.class).mergeLast() && params.length - 1 <= args.length) {
                 System.arraycopy(args, 0, params, 1, params.length - 2);
                 params[params.length - 1] = Joiner.on(" ").join(Arrays.copyOfRange(args, params.length - 2, args.length));
@@ -102,7 +106,6 @@ public class Sblock extends JavaPlugin {
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             }
-
         }
         return false;
     }

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock;
 
 import java.util.HashSet;

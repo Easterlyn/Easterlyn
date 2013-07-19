@@ -34,15 +34,11 @@ public class PlayerManager {
 	if(result != null)
 	{
 
-	    PlayerClass pclass = PlayerClass.valueOf((String) result.get("class"));
-	    PlayerAspect aspect = PlayerAspect.valueOf((String) result.get("aspect"));
-	    DreamPlanet dplanet = DreamPlanet.valueOf((String) result.get("dPlanet"));
-	    MediumPlanet mplanet = MediumPlanet.valueOf((String) result.get("mPlanet"));
-	    players.put(player.getName(), new SblockPlayer(player.getName(), pclass, aspect, mplanet, dplanet, ((Integer) result.get("towerNum")).intValue(), (Boolean) result.get("sleepState"), parseLocation((String) result.get("previousLoc"))));
+	    players.put(player.getName(), SblockPlayer.createExistingPlayer(result));
 	}
 	else
 	    //New player...
-	    players.put(player.getName(), new SblockPlayer(player.getName()));
+	    players.put(player.getName(), SblockPlayer.createNewPlayer(player));
     }
     
     /**

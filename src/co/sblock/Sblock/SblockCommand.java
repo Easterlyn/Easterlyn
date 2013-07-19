@@ -14,7 +14,7 @@ import java.lang.annotation.*;
  * must be a public method that returns a <code>boolean</code> indicating that the command 
  * is well-formed and can be run. (<code>false</code> will cause the usage message to be displayed to the player.)
  * The method must be named after the command that it handles and tagged with this annotation. The first parameter
- * is the name of the player issuing the command, and the remaining parameters must
+ * is the CommandSender object for who is issuing the command, and the remaining parameters must
  * be strings, one for each argument in the command.<p>
  * 
  * 
@@ -22,14 +22,14 @@ import java.lang.annotation.*;
  * should still be placed there.<p>
  * 
  *  An example method for executing a ban command in this format: /ban (player) (message)<p>
- *  <code>
- *  //in a class implementing CommandListener<br>
- *  &#64;SblockCommand(mergeLast = true)<br>
- *  public boolean ban(String executor, String message)<br>
- *  {<br>
- *  	//Ban code goes here...<br>
+ *  <pre>
+ *  //in a class implementing CommandListener
+ *  &#64;SblockCommand(mergeLast = true)
+ *  public boolean ban(String executor, String message)
+ *  {
+ *  	//Ban code goes here...
  *  }
- *  </code>
+ *  </pre>
  * 
  * @author FireNG
  * 
@@ -46,4 +46,13 @@ public @interface SblockCommand {
      * allowing commands to contain multi-word messages.
      */
     public boolean mergeLast() default false;
+    
+    /**
+     * (Optional, defaults to false)<p>
+     * 
+     * Indicates that this command may accept input from the console. If the console executes this command, <code>null</code>
+     * will be passed to the player parameter.
+     * @return
+     */
+    public boolean consoleFriendly() default false;
 }
