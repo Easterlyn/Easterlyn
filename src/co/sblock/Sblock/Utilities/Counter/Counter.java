@@ -27,7 +27,8 @@ public class Counter extends JavaPlugin {
 		Player pTarget;
 		int duration;
 		if (cmd.getName().equalsIgnoreCase("counter")) {
-			if ((sender instanceof Player && sender.hasPermission("counter.set"))
+			if ((sender instanceof Player && sender
+					.hasPermission("counter.set"))
 					|| !(sender instanceof Player)) {
 				if (args.length == 2) {
 					pTarget = getServer().getPlayer(args[0]);
@@ -43,7 +44,8 @@ public class Counter extends JavaPlugin {
 	public void startCounter(Player p, int tStart) {
 		playerLevel = p.getLevel();
 		p.setLevel(tStart);
-		task = new CounterClock(this, p, playerLevel, false).runTaskLater(this, 20);
+		task = new CounterClock(this, p, playerLevel, false)
+		.runTaskLater(this, 20);
 	}
 
 }

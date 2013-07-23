@@ -3,6 +3,12 @@ package co.sblock.Sblock.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
+/**
+ * Class that keeps track of players currently logged on to the game
+ * 
+ * @author Jikoo, Dublek
+ * 
+ */
 public enum Region {
 	EARTH, INNERCIRCLE, OUTERCIRCLE, FURTHESTRING, MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF;
 

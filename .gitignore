@@ -6,15 +6,15 @@ testenv/
 # We don't want passwords to end up public, so keep config.yml out
 config.yml
 *.jardesc
+#.gitignore
+*.stackdump
 
 #################
 ## Eclipse
 #################
 
-#.gitignore
-*.stackdump
 *.pydevproject
-#.project
+.project
 .metadata
 bin/
 tmp/

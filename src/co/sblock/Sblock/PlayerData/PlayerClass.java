@@ -5,11 +5,11 @@ package co.sblock.Sblock.PlayerData;
 
 /**
  * Represents each character class.
+ * 
  * @author FireNG
- *
+ * 
  */
-public enum PlayerClass
-{
+public enum PlayerClass {
 	UNKNOWN("Noob"),
 	BARD("Bard"),
 	HEIR("Heir"),
@@ -23,21 +23,18 @@ public enum PlayerClass
 	SYLPH("Sylph"),
 	THEIF("Theif"),
 	WITCH("Witch");
-	
+
 	private String displayName;
-	
-	private PlayerClass(String displayName)
-	{
+
+	private PlayerClass(String displayName) {
 		this.displayName = displayName;
 	}
-	
+
 	/**
 	 * @return the displayed name of this player class.
 	 */
-	public String getDisplayName()
-	{
+	public String getDisplayName() {
 		return displayName;
 	}
-	
-	
+
 }

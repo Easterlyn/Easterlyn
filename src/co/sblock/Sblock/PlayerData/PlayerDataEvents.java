@@ -7,18 +7,18 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * @author FireNG
- *
+ * 
  */
 public class PlayerDataEvents implements Listener {
-    
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-	PlayerManager.getPlayerManager().addPlayer(event.getPlayer());
-    }
-    
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-	PlayerManager.getPlayerManager().removePlayer(event.getPlayer());
-    }
+
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		PlayerManager.getPlayerManager().addPlayer(event.getPlayer());
+	}
+
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		PlayerManager.getPlayerManager().removePlayer(event.getPlayer());
+	}
 
 }

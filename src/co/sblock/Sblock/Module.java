@@ -22,15 +22,16 @@ public abstract class Module {
 	 * Called when the module is enabled.
 	 */
 	protected abstract void onEnable();
-	
+
 	/**
-	 * Called when the module is disabled before handlers are unassigned. 
+	 * Called when the module is disabled before handlers are unassigned.
 	 */
 	protected abstract void onDisable();
 
 	protected final void registerEvents(Listener... listeners) {
 		for (Listener listener : listeners) {
-			Bukkit.getPluginManager().registerEvents(listener, Sblock.getInstance());
+			Bukkit.getPluginManager().registerEvents(listener,
+					Sblock.getInstance());
 			this.listeners.add(listener);
 		}
 	}
@@ -42,7 +43,7 @@ public abstract class Module {
 	 *            Listener class to register.
 	 */
 	protected final void registerCommands(CommandListener listener) {
-	    Sblock.getInstance().registerCommands(listener);
+		Sblock.getInstance().registerCommands(listener);
 	}
 
 	/**
@@ -52,9 +53,12 @@ public abstract class Module {
 		try {
 			this.onEnable();
 		} catch (Exception e) {
-			throw new RuntimeException("Unhandled exception in module " + this.getClass().getSimpleName() + ". Plugin failed to load.", e);
+			throw new RuntimeException("Unhandled exception in module "
+					+ this.getClass().getSimpleName()
+					+ ". Plugin failed to load.", e);
 		}
-		this.getLogger().info("Loaded module " + this.getClass().getSimpleName());
+		this.getLogger().info(
+				"Loaded module " + this.getClass().getSimpleName());
 		return this;
 	}
 
@@ -69,9 +73,12 @@ public abstract class Module {
 				HandlerList.unregisterAll(listener);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("Unhandled exception in module " + this.getClass().getSimpleName() + ". Plugin failed to properly disable.", e);
+			throw new RuntimeException("Unhandled exception in module "
+					+ this.getClass().getSimpleName()
+					+ ". Plugin failed to properly disable.", e);
 		}
-		this.getLogger().info("Disabled module " + this.getClass().getSimpleName());
+		this.getLogger().info(
+				"Disabled module " + this.getClass().getSimpleName());
 		return this;
 	}
 

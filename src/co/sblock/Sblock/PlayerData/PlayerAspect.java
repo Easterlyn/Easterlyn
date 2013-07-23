@@ -5,11 +5,11 @@ package co.sblock.Sblock.PlayerData;
 
 /**
  * Represents each character aspect
+ * 
  * @author FireNG
- *
+ * 
  */
-public enum PlayerAspect
-{
+public enum PlayerAspect {
 	UNKNOWN("Bluh"),
 	BLOOD("Blood"),
 	BREATH("Breath"),
@@ -23,19 +23,17 @@ public enum PlayerAspect
 	SPACE("Space"),
 	TIME("Time"),
 	VOID("Void");
-	
+
 	private String displayName;
-	
-	private PlayerAspect(String displayName)
-	{
+
+	private PlayerAspect(String displayName) {
 		this.displayName = displayName;
 	}
-	
+
 	/**
 	 * @return The display name of this aspect.
 	 */
-	public String getDisplayName()
-	{
+	public String getDisplayName() {
 		return displayName;
 	}
 }
