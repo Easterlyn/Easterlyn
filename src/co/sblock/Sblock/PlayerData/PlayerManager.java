@@ -7,12 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.DatabaseManager;
-
 /**
  * Class that keeps track of players currently logged on to the game
  * 
- * @author FireNG
+ * @author FireNG, Jikoo
  * 
  */
 public class PlayerManager {
@@ -33,15 +31,7 @@ public class PlayerManager {
 	 *            The player that has logged on
 	 */
 	public void addPlayer(Player player) {
-		Map<String, Object> result = DatabaseManager.getDatabaseManager()
-				.loadPlayer(player.getName());
-		if (result != null) {
-
-			players.put(player.getName(),
-					SblockPlayer.createExistingPlayer(result));
-		} else
-			// New player...
-			players.put(player.getName(), SblockPlayer.createNewPlayer(player));
+		players.put(player.getName(), new SblockPlayer(player.getName()));
 	}
 
 	/**

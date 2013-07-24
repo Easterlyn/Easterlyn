@@ -9,3 +9,4 @@ commands:
  profile:
   usage: /<command> <username>
   description: "[Sburb] Show's a player's Sburb profile"
+  

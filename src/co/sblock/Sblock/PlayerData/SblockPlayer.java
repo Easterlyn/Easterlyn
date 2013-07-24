@@ -1,10 +1,10 @@
 package co.sblock.Sblock.PlayerData;
 
-import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import co.sblock.Sblock.DatabaseManager;
 
 /**
  * <code>SblockPlayer</code> is the class for storing all <code>Player</code>
@@ -32,49 +32,22 @@ public class SblockPlayer {
 	private DreamPlanet dPlanet = DreamPlanet.UNKNOWN;
 
 	/** The <code>Player</code>'s tower number */
-	private int tower = -1;
+	private short tower = -1;
 
 	/** <code>true</code> if the player is in dreamstate */
 	private boolean sleeping = false;
 
 	private Location previousLocation;
 
-	private SblockPlayer() {
-
-	}
-
-	private SblockPlayer(String name) {
-		this.playerName = name;
-	}
-
 	/**
-	 * Creates a SblockPlayer object for a player new to the server (Or whose
-	 * database record couldn't be found), instantiating the player with default
-	 * values.
+	 * Creates a SblockPlayer object for a player.
 	 * 
 	 * @param p
 	 *            the <code>Player</code> to load data for
 	 */
-	static SblockPlayer createNewPlayer(Player newPlayer) {
-
-		return new SblockPlayer(newPlayer.getName());
-	}
-
-	static SblockPlayer createExistingPlayer(Map<String, Object> playerdata) {
-		SblockPlayer player = new SblockPlayer();
-		player.playerName = (String) playerdata.get("playerName");
-		player.classType = PlayerClass
-				.valueOf((String) playerdata.get("class"));
-		player.aspect = PlayerAspect.valueOf((String) playerdata.get("aspect"));
-		player.dPlanet = DreamPlanet
-				.valueOf((String) playerdata.get("dPlanet"));
-		player.mPlanet = MediumPlanet.valueOf((String) playerdata
-				.get("mPlanet"));
-		player.tower = (Integer) playerdata.get("towerNum");
-		player.sleeping = (Boolean) playerdata.get("sleepState");
-		player.previousLocation = PlayerManager
-				.parseLocation((String) playerdata.get("previousLoc"));
-		return player;
+	public SblockPlayer(String playerName) {
+		this.playerName = playerName;
+		DatabaseManager.getDatabaseManager().loadPlayerData(this);
 	}
 
 	/**
@@ -84,6 +57,15 @@ public class SblockPlayer {
 	 */
 	public Player getPlayer() {
 		return Bukkit.getPlayerExact(playerName);
+	}
+
+	/**
+	 * Gets the name of the <code>Player</code>.
+	 * 
+	 * @return the <code>Player</code>
+	 */
+	public String getPlayerName() {
+		return this.playerName;
 	}
 
 	/**
@@ -127,7 +109,7 @@ public class SblockPlayer {
 	 * 
 	 * @return the number of the tower the player will "dream" to
 	 */
-	public int getTower() {
+	public short getTower() {
 		return this.tower;
 	}
 
@@ -150,8 +132,8 @@ public class SblockPlayer {
 	 * @param pclass
 	 *            the new class type
 	 */
-	public void setPlayerClass(PlayerClass pclass) {
-		this.classType = pclass;
+	public void setPlayerClass(String pclass) {
+		this.classType = PlayerClass.valueOf(pclass);
 	}
 
 	/**
@@ -160,8 +142,8 @@ public class SblockPlayer {
 	 * @param aspect
 	 *            the new aspect
 	 */
-	public void setAspect(PlayerAspect aspect) {
-		this.aspect = aspect;
+	public void setAspect(String aspect) {
+		this.aspect = PlayerAspect.valueOf(aspect);
 	}
 
 	/**
@@ -170,8 +152,8 @@ public class SblockPlayer {
 	 * @param mPlanet
 	 *            the new Medium planet
 	 */
-	public void setMediumPlanet(MediumPlanet mPlanet) {
-		this.mPlanet = mPlanet;
+	public void setMediumPlanet(String mPlanet) {
+		this.mPlanet = MediumPlanet.valueOf(mPlanet);
 	}
 
 	/**
@@ -180,8 +162,8 @@ public class SblockPlayer {
 	 * @param dPlanet
 	 *            the new dream planet
 	 */
-	public void setDreamPlanet(DreamPlanet dPlanet) {
-		this.dPlanet = dPlanet;
+	public void setDreamPlanet(String dPlanet) {
+		this.dPlanet = DreamPlanet.valueOf(dPlanet);
 	}
 
 	/**
@@ -190,7 +172,7 @@ public class SblockPlayer {
 	 * @param tower
 	 *            the number of the tower the player will "dream" to
 	 */
-	public void setTower(int tower) {
+	public void setTower(short tower) {
 		this.tower = tower;
 	}
 

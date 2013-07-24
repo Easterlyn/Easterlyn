@@ -4,7 +4,7 @@
 
 testenv/
 # We don't want passwords to end up public, so keep config.yml out
-config.yml
+# Too annoying. The config.yml will only be modified after it's written.
 *.jardesc
 #.gitignore
 *.stackdump
