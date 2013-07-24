@@ -1,6 +1,6 @@
 Required .jars
 --------------
-* [CraftBukkit 1.6.1 R0.1](http://dl.bukkit.org/latest-dev/craftbukkit-dev.jar)
-* [PostgreSQL JDBC](http://jdbc.postgresql.org/download.html)
+* [CraftBukkit](http://dl.bukkit.org/latest-dev/craftbukkit-dev.jar)
+* [MySQL JDBC](http://dev.mysql.com/downloads/connector/j/)
 
 [](/peanutbutterpinkiepie)
