@@ -117,12 +117,12 @@ public class DatabaseManager {
 				user.setDreamPlanet(rs.getString("dplanet"));
 				user.setTower(rs.getShort("tower"));
 				user.setIsSleeping(rs.getBoolean("sleepstate"));
-//				user.setCurrent(rs.getString("currentChannel").getName()); // TODO currentChannel
+//				user.setCurrent(ChannelManager.getInstance().getChannel(rs.getString("currentChannel")));
 //				user.setMute(rs.getBoolean("isMute"));
 //				user.setNick(rs.getString("nickname"));
 //				for (Entry e : rs.getArray("channels")) { // TODO Keiko, may need to be a List, not Set. Not sure.
 //					if (e instanceof String) {
-//						user.addListening(ChannelManager.getChannel((String) e));
+//						user.addListening(ChannelManager.getInstance().getChannel((String) e));
 //					}
 //				}
 //				// IP should not be set here. Update-only, for offline IPban.
