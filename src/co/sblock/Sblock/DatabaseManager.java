@@ -64,13 +64,20 @@ public class DatabaseManager {
 		connection = null;
 	}
 
-	public void firstPlayerDataSave(SblockPlayer user) {
+	public void savePlayerData(SblockPlayer user) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"INSERT INTO PlayerData(playerName, class, aspect, mplanet, " +
 					"dplanet, towernum, sleepstate, currentChannel, isMute, " +
 					"nickname, channels, ip, LastLogin, timePlayed) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+					"ON DUPLICATE KEY UPDATE " +
+					"class=VALUES(class), aspect=VALUES(aspect), " +
+					"mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), " +
+					"towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), " +
+					"currentChannel=VALUES(currentChannel), isMute=VALUES(isMute), " +
+					"nickname=VALUES(nickname), channels=VALUES(channels), " +
+					"ip=VALUES(ip), LastLogin=VALUES(LastLogin), timePlayed=VALUES(timePlayed)");
 			
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
@@ -79,7 +86,7 @@ public class DatabaseManager {
 			pst.setString(5, user.getDPlanet().getDisplayName());
 			pst.setShort(6, user.getTower());
 			pst.setBoolean(7, user.isSleeping());
-//			pst.setString(8, user.getCurrent().getName()); // TODO currentChannel
+//			pst.setString(8, user.getCurrent().getName());
 //			pst.setString(9, user.isMute());
 //			pst.setString(10, user.getNick());
 //			pst.setArray(11, user.getListening()); // TODO Keiko, may need to be a List, not Set. Not sure.
@@ -88,25 +95,19 @@ public class DatabaseManager {
 //			pst.setString(14, null); // TODO timePlayed
 			
 			pst.executeUpdate();
+			pst.close();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void updatePlayerData(SblockPlayer user) {
-		// TODO just copy the meat from firstPlayerDataSave
-		// AFTER finalization >.> majority may change
-	}
-
 	public void loadPlayerData(SblockPlayer user) {
-		// TODO find out exact order from Keiko
-		// Correction: Get Keiko to fill in all actual MySQL names
-		// and datatypes, can't seem to find the last puush of it.
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"SELECT * FROM PlayerData WHERE name=?");
 			
-			pst.setString(1, user.getPlayer().getName());
+			pst.setString(1, user.getPlayerName());
 			
 			ResultSet rs = pst.executeQuery();
 			
@@ -129,6 +130,8 @@ public class DatabaseManager {
 //				// TODO lastLogin     Keiko, from String, but need methods.
 //				// TODO timePlayed
 				
+				pst.close();
+				
 			} catch (Exception e) {
 				// User may not be defined in the database
 				plugin.getLogger().warning("Player "
@@ -145,37 +148,61 @@ public class DatabaseManager {
 		
 	}
 
-	public void firstChannelDataSave(/* Keiko, channel object goes in here. */) {
+	public void saveChannelData(/* Channel c */) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"INSERT INTO ChatChannels(name, alias, channelType, listenAccess, " +
-					"sendAccess, owner, modList, banList, listening, approvedList) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"sendAccess, owner, modList, banList, listening, approvedList, jMsg, lMsg) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
+					"ON DUPLICATE KEY UPDATE "); // finish this later, my poor hands ;-; tablets suck.
 			
-			pst.setString(1, null); // TODO name
-			pst.setString(2, null); // TODO alias
-			pst.setString(3, null); // TODO channelType
-			pst.setString(4, null); // TODO listenAccess
-			pst.setString(5, null); // TODO sendAccess
-			pst.setString(6, null); // TODO owner
-			pst.setArray(7, null); // TODO modList
-			pst.setArray(8, null); // TODO banList
-			pst.setArray(9, null); // TODO listening
-			pst.setArray(10, null); // TODO apprivedList
+//			pst.setString(1, c.getName());
+//			pst.setString(2, c.getAlias);
+//			pst.setString(3, c.getType().name());
+//			pst.setString(4, c.getLAccessLevel().name());
+//			pst.setString(5, c.getSAccessLevel().name());
+//			pst.setString(6, c.getOwner());
+//			pst.setArray(7, c.getModList());
+//			pst.setArray(8, null); // TODO banList
+//			pst.setArray(9, null); // TODO listening
+//			pst.setArray(10, c.getApprovedList());
+//			pst.setString(11, c.getJoinChatMessage());
+//			pst.setString(12, c.getLeaveChatMessage());
 			
 			pst.executeUpdate();
+			pst.close();
+			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	public void updateChannelData(/* Channel ch */) {
-		
-	}
 
-	public void loadChannelData() {
-		
+	public void loadChannelData(String cName) {
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(
+					"SELECT * FROM ChatChannels WHERE name=?");
+			
+			pst.setString(1, cName);
+			
+			ResultSet rs = pst.executeQuery();
+			
+//			// cbf right now, wrists ar killing me.
+//			// Tablets are NOT ergonomic for coding.
+//			
+//			
+//			
+//			
+//			
+//			
+//			
+//			
+			
+			pst.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void deleteChannel() {
