@@ -144,8 +144,13 @@ public class DatabaseManager {
 		}
 	}
 
-	public void deletePlayer() {
+	public void deletePlayer(SblockPlayer user) {
+		PreparedStatement pst = connection.prepareStatement(
+				"DELETE FROM PlayerData WHERE name = ?");
+		pst.setString(1, user.getPlayerName());
 		
+		pst.executeUpdate();
+		pst.close();
 	}
 
 	public void saveChannelData(/* Channel c */) {
@@ -154,7 +159,12 @@ public class DatabaseManager {
 					"INSERT INTO ChatChannels(name, alias, channelType, listenAccess, " +
 					"sendAccess, owner, modList, banList, listening, approvedList, jMsg, lMsg) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
-					"ON DUPLICATE KEY UPDATE "); // finish this later, my poor hands ;-; tablets suck.
+					"ON DUPLICATE KEY UPDATE alias=VALUES(alias), " +
+					"channelType=VALUES(channelType), listenAccess=VALUES(listenAccess), " + 
+					"sendAccess=VALUES(sendAccess), owner=VALUES(owner), " +
+					"modList=VALUES(modList), banList=VALUES(banList), " +
+					"listening=VALUES(listening), approvedList=VALUES(approvedList), " +
+					"jMsg=VALUES(jMsg), lMsg=VALUES(lMsg)");
 			
 //			pst.setString(1, c.getName());
 //			pst.setString(2, c.getAlias);
@@ -187,16 +197,48 @@ public class DatabaseManager {
 			
 			ResultSet rs = pst.executeQuery();
 			
-//			// cbf right now, wrists ar killing me.
-//			// Tablets are NOT ergonomic for coding.
+//			ChannelManager.getInstance().createNewChannel(cName,
+//					AccessLevel.valueOf(rs.getString(sendAccess)),
+//					AccessLevel.valueOf(rs.getString(listenAccess)),
+//					rs.getString(owner)/*, ChannelType.valueOf(rs.getString(channelType))*/);
+//			Channel c = ChannelManager.getInstance().getChannel(cName);
+//			c.setAlias(rs.getString(alias));
+//			for (Entry e : rs.getArray(modList) {
+//				if (e instanceof String) {
+//					c.addMod(UserManager.getInstance().getUser(e),
+//							UserManager.getInstance().getUser(owner)); // TODO Keiko, an easier method? loadMod
+//			}
+//			for (Entry e : rs.getArray(banList) {
+//				if (e instanceof String) {
+//					c.banUser(UserManager.getInstance().getUser(e),
+//							UserManager.getInstance().getUser(owner)); // TODO Keiko, an easier method? loadBan
+//					//c.loadBan((String) e);
+//			}
+//			for (Entry e : rs.getArray(approvedList) {
+//				if (e instanceof String) {
+//					c.approveUser(UserManager.getInstance().getUser(e),
+//							UserManager.getInstance().getUser(owner)); // TODO Keiko, an easier method?
+//			}
+//			//c.setJoinChatMessage(rs.getString(jMsg)); // TODO need method
+//			//c.setLeaveChatMessage(rs.getString(lMsg)); // TODO need method
+//			for (Entry e : rs.getArray(listening) {
+//				if (e instanceof String) {
+//					User u = UserManager.getInstance().getUser(e);
+//					if (u != null && u.getPlayer().isOnline()) {
+//						c.userJoin(u);
+//					}
+//				}
+//			}
 //			
-//			
-//			
-//			
-//			
-//			
-//			
-//			
+//			// That should be all. Required changes:
+//			// - Merge UserManager and SblockPlayerManager in the future
+//			// - UserManager.getInstance()
+//			// - Channel.loadBan(String)(no reason, no banning player)
+//			// - Channel.loadMod(String/User) (no modding player)
+//			// - Channel.setJoinChatMessage(String)
+//			// - Channel.setLeaveChatMessage(String)
+//			// - Channel.getBanList()
+//			// - Channel.getListeningList()
 			
 			pst.close();
 			
@@ -205,8 +247,13 @@ public class DatabaseManager {
 		}
 	}
 
-	public void deleteChannel() {
-		
+	public void deleteChannel(/* Channel c */) {
+//		PreparedStatement pst = connection.prepareStatement(
+//				"DELETE FROM ChatChannels WHERE name = ?");
+//		pst.setString(1, c.getName());
+//		
+//		pst.executeUpdate();
+//		pst.close();
 	}
 
 	public ResultSet makeCustomCall(String MySQLStatement, boolean resultExpected) {
