@@ -1,33 +1,57 @@
-/**
- * 
- */
 package co.sblock.Sblock.PlayerData;
 
 /**
- * Represents each planet in the Medium
+ * Represents each planet in the Medium.
  * 
  * @author FireNG
- * 
+ * @author Jikoo
  */
 public enum MediumPlanet {
-	UNKNOWN("Unknown", "Land of Fail and Downvotes"),
-	LOFAF("LOFAF", "Land of Frost and Frogs"),
-	LOHAC("LOHAC", "Land of Heat and Clockwork"),
-	LOLAR("LOLAR", "Land of Light and Rain"),
-	LOWAS("LOWAS", "Land of Wind and Shade");
 
-	private String shortName, longName;
+	UNKNOWN, LOFAF, LOHAC, LOLAR, LOWAS;
 
-	private MediumPlanet(String shortName, String longName) {
-		this.shortName = shortName;
-		this.longName = longName;
-	}
-
+	/**
+	 * Gets the short name of a planet.
+	 *
+	 * @return the short name
+	 */
 	public String getShortName() {
-		return shortName;
+		return this.name();
 	}
 
+	/**
+	 * Gets the long name of a planet.
+	 *
+	 * @return the long name
+	 */
 	public String getLongName() {
-		return longName;
+		switch (this) {
+		case LOFAF:
+			return "Land of Frost and Frogs";
+		case LOHAC:
+			return "Land of Heat and Clockwork";
+		case LOLAR:
+			return "Land of Light and Rain";
+		case LOWAS:
+			return "Land of Wind and Shade";
+		case UNKNOWN:
+			return "Land of Fail and Downvotes";
+		default:
+			return "Land of Fail and Downvotes";
+		}
+	}
+
+	/**
+	 * Gets the planet.
+	 *
+	 * @param name the name of a planet
+	 * @return the MediumPlanet
+	 */
+	public static MediumPlanet getPlanet(String name) {
+		try {
+			return MediumPlanet.valueOf(name.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return MediumPlanet.UNKNOWN;
+		}
 	}
 }

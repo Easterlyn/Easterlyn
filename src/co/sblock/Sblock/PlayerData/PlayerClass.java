@@ -1,40 +1,34 @@
-/**
- * 
- */
 package co.sblock.Sblock.PlayerData;
 
 /**
  * Represents each character class.
  * 
  * @author FireNG
- * 
+ * @author Jikoo
  */
 public enum PlayerClass {
-	UNKNOWN("Noob"),
-	BARD("Bard"),
-	HEIR("Heir"),
-	KNIGHT("Knight"),
-	MAGE("Mage"),
-	MAID("Maid"),
-	PAGE("Page"),
-	PRINCE("Prince"),
-	ROGUE("Rogue"),
-	SEER("Seer"),
-	SYLPH("Sylph"),
-	THEIF("Theif"),
-	WITCH("Witch");
+	UNKNOWN, BARD, HEIR, KNIGHT, MAGE, MAID, PAGE, PRINCE, ROGUE, SEER, SYLPH, THEIF, WITCH;
 
-	private String displayName;
-
-	private PlayerClass(String displayName) {
-		this.displayName = displayName;
+	/**
+	 * Gets the display name of the PlayerClass.
+	 * 
+	 * @return The display name of this PlayerClass.
+	 */
+	public String getDisplayName() {
+		return this.name().charAt(0) + this.name().substring(1).toLowerCase();
 	}
 
 	/**
-	 * @return the displayed name of this player class.
+	 * Gets the class.
+	 * 
+	 * @param name the name of a PlayerClass
+	 * @return the PlayerClass
 	 */
-	public String getDisplayName() {
-		return displayName;
+	public static PlayerClass getClass(String name) {
+		try {
+			return PlayerClass.valueOf(name.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return PlayerClass.UNKNOWN;
+		}
 	}
-
 }
