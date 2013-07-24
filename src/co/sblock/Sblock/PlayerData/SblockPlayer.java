@@ -133,7 +133,7 @@ public class SblockPlayer {
 	 *            the new class type
 	 */
 	public void setPlayerClass(String pclass) {
-		this.classType = PlayerClass.valueOf(pclass);
+		this.classType = PlayerClass.getClass(pclass);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class SblockPlayer {
 	 *            the new aspect
 	 */
 	public void setAspect(String aspect) {
-		this.aspect = PlayerAspect.valueOf(aspect);
+		this.aspect = PlayerAspect.getAspect(aspect);
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class SblockPlayer {
 	 *            the new Medium planet
 	 */
 	public void setMediumPlanet(String mPlanet) {
-		this.mPlanet = MediumPlanet.valueOf(mPlanet);
+		this.mPlanet = MediumPlanet.getPlanet(mPlanet);
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class SblockPlayer {
 	 *            the new dream planet
 	 */
 	public void setDreamPlanet(String dPlanet) {
-		this.dPlanet = DreamPlanet.valueOf(dPlanet);
+		this.dPlanet = DreamPlanet.getPlanet(dPlanet);
 	}
 
 	/**
