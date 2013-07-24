@@ -145,12 +145,16 @@ public class DatabaseManager {
 	}
 
 	public void deletePlayer(SblockPlayer user) {
-		PreparedStatement pst = connection.prepareStatement(
-				"DELETE FROM PlayerData WHERE name = ?");
-		pst.setString(1, user.getPlayerName());
-		
-		pst.executeUpdate();
-		pst.close();
+		try {
+			PreparedStatement pst = connection.prepareStatement(
+					"DELETE FROM PlayerData WHERE name = ?");
+			pst.setString(1, user.getPlayerName());
+			
+			pst.executeUpdate();
+			pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void saveChannelData(/* Channel c */) {
@@ -248,12 +252,16 @@ public class DatabaseManager {
 	}
 
 	public void deleteChannel(/* Channel c */) {
-//		PreparedStatement pst = connection.prepareStatement(
-//				"DELETE FROM ChatChannels WHERE name = ?");
-//		pst.setString(1, c.getName());
-//		
-//		pst.executeUpdate();
-//		pst.close();
+//		try {
+//			PreparedStatement pst = connection.prepareStatement(
+//					"DELETE FROM ChatChannels WHERE name = ?");
+//			pst.setString(1, c.getName());
+//			
+//			pst.executeUpdate();
+//			pst.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public ResultSet makeCustomCall(String MySQLStatement, boolean resultExpected) {
