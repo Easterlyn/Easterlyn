@@ -67,17 +67,17 @@ public class DatabaseManager {
 	public void saveUserData(SblockUser user) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
-					"INSERT INTO PlayerData(playerName, class, aspect, mplanet, " +
-					"dplanet, towernum, sleepstate, currentChannel, isMute, " +
-					"nickname, channels, ip, LastLogin, timePlayed) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+					"INSERT INTO PlayerData(playerName, class, aspect, " +
+					"mplanet, dplanet, towernum, sleepstate, currentChannel, " +
+					"isMute, nickname, ip, LastLogin, timePlayed) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
 					"ON DUPLICATE KEY UPDATE " +
 					"class=VALUES(class), aspect=VALUES(aspect), " +
 					"mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), " +
 					"towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), " +
 					"currentChannel=VALUES(currentChannel), isMute=VALUES(isMute), " +
-					"nickname=VALUES(nickname), channels=VALUES(channels), " +
-					"ip=VALUES(ip), LastLogin=VALUES(LastLogin), timePlayed=VALUES(timePlayed)");
+					"nickname=VALUES(nickname), ip=VALUES(ip), " +
+					"LastLogin=VALUES(LastLogin), timePlayed=VALUES(timePlayed)");
 			
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
@@ -89,13 +89,28 @@ public class DatabaseManager {
 //			pst.setString(8, user.getCurrent().getName());
 //			pst.setString(9, user.isMute());
 //			pst.setString(10, user.getNick());
-//			pst.setArray(11, user.getListening()); // TODO Keiko, may need to be a List, not Set. Not sure.
-//			pst.setString(12, user.getUserIP());
-//			pst.setString(13, null); // TODO lastLogin     Keiko, to String, but need methods.
-//			pst.setString(14, null); // TODO timePlayed
+//			pst.setString(11, user.getUserIP());
+//			pst.setDate(12, null); // TODO lastLogin
+//			pst.setTimestamp(13, null); // TODO timePlayed - I think you'd said Timestamp..
 			
 			pst.executeUpdate();
 			pst.close();
+			
+			
+//			// Eurgh. Cannot remember all StringBuilder methods off the top of my head. Lazy way it is!
+//			// TODO cleanup channels left. Ugh, more database calls ;-;
+//			// 	The only thing I can think of is looping twice with an additional database query,
+//			// 		which kinda reeeeally sucks. Remember to do more complex figuring when you've
+//			// 		had more than 3 hours of sleep, Adam.
+//			String statement = "INSERT INTO " + user.getPlayerName() + "_Listening (ChannelName) VALUES ";
+//			for (Channel c : user.getListening()) {
+//				statement += "(" + c.getName() + "), ";
+//			}
+//			
+//			pst = connection.prepareStatement(statement.substring(0, statement.length() - 2));
+//			
+//			pst.executeUpdate()
+//			pst.close();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -121,21 +136,32 @@ public class DatabaseManager {
 //				user.setCurrent(ChannelManager.getInstance().getChannel(rs.getString("currentChannel")));
 //				user.setMute(rs.getBoolean("isMute"));
 //				user.setNick(rs.getString("nickname"));
-//				for (Entry e : rs.getArray("channels")) { // TODO Keiko, may need to be a List, not Set. Not sure.
+//				for (Entry e : rs.getArray("channels")) { // TODO NOPE NOPE NOPE ARGH.
 //					if (e instanceof String) {
 //						user.addListening(ChannelManager.getInstance().getChannel((String) e));
 //					}
 //				}
 //				// IP should not be set here. Update-only, for offline IPban.
-//				// TODO lastLogin     Keiko, from String, but need methods.
+//				// TODO lastLogin
 //				// TODO timePlayed
 				
 				pst.close();
 				
+				
+//				// How bad practice is it to do this instead of making a new PreparedStatement? :V
+//				pst = connection.prepareStatement("SELECT * FROM " + user.getPlayerName() + "_Listening");
+//				rs = pst.executeQuery();
+//				
+//				while (rs.next()) {
+//					user.addListening(rs.getString("ChannelName"));
+//				}
+//				
+//				pst.close();
+				
 			} catch (Exception e) {
 				// User may not be defined in the database
 				plugin.getLogger().warning("Player "
-						+ user.getPlayer().getName() +
+						+ user.getPlayerName() +
 						" does not have an entry in the database. Or something.");
 			}
 			
@@ -204,7 +230,7 @@ public class DatabaseManager {
 //					rs.getString(owner)/*, ChannelType.valueOf(rs.getString(channelType))*/);
 //			Channel c = ChannelManager.getInstance().getChannel(cName);
 //			c.setAlias(rs.getString(alias));
-//			for (Entry e : rs.getArray(modList) {
+//			for (Entry e : rs.getArray(modList) { // STILL NOPE. GOSH.
 //				if (e instanceof String) {
 //					c.addMod(UserManager.getInstance().getUser(e),
 //							UserManager.getInstance().getUser(owner)); // TODO Keiko, an easier method? loadMod
