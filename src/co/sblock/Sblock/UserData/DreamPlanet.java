@@ -1,4 +1,4 @@
-package co.sblock.Sblock.PlayerData;
+package co.sblock.Sblock.UserData;
 
 /**
  * Represents a dream planet.

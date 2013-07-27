@@ -1,4 +1,4 @@
-package co.sblock.Sblock.PlayerData;
+package co.sblock.Sblock.UserData;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -10,7 +10,7 @@ import org.bukkit.Location;
  * 
  */
 public enum Region {
-	EARTH, INNERCIRCLE, OUTERCIRCLE, FURTHESTRING, MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF;
+	EARTH, INNERCIRCLE, OUTERCIRCLE, FURTHESTRING, MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF, UNKNOWN;
 
 	public String getRegionName() {
 		return this.name().toLowerCase();
@@ -37,6 +37,8 @@ public enum Region {
 			return ChatColor.DARK_BLUE;
 		case OUTERCIRCLE:
 			return ChatColor.DARK_PURPLE;
+		case UNKNOWN:
+			return ChatColor.BLACK;
 		default:
 			return ChatColor.RESET;
 		}
@@ -60,7 +62,7 @@ public enum Region {
 			return r;
 		} catch (IllegalStateException e) {
 			// Player is in an invalid world
-			return Region.EARTH;
+			return Region.UNKNOWN;
 		}
 	}
 }

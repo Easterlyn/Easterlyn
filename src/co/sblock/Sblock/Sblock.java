@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import co.sblock.Sblock.PlayerData.PlayerDataModule;
+import co.sblock.Sblock.UserData.UserDataModule;
 
 import com.google.common.base.Joiner;
 
@@ -41,7 +41,7 @@ public class Sblock extends JavaPlugin {
 			this.getLogger().info("Connected");
 		else
 			this.getLogger().info("Unable to connect");
-		modules.add(new PlayerDataModule().enable());
+		modules.add(new UserDataModule().enable());
 
 		/*
 		 * Ok, so here.. This being the framework behind all the sub-plugin

@@ -1,4 +1,4 @@
-package co.sblock.Sblock.PlayerData;
+package co.sblock.Sblock.UserData;
 
 import co.sblock.Sblock.Module;
 
@@ -9,7 +9,7 @@ import co.sblock.Sblock.Module;
  * @author FireNG
  * 
  */
-public class PlayerDataModule extends Module {
+public class UserDataModule extends Module {
 
 	/*
 	 * (non-Javadoc)
@@ -19,9 +19,9 @@ public class PlayerDataModule extends Module {
 	@Override
 	protected void onEnable() {
 		// Initialize the player manager
-		PlayerManager.getPlayerManager();
-		this.registerCommands(new PlayerDataCommands());
-		this.registerEvents(new PlayerDataEvents());
+		UserManager.getUserManager();
+		this.registerCommands(new UserDataCommands());
+		this.registerEvents(new UserDataEvents());
 
 	}
 

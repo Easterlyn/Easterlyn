@@ -1,4 +1,4 @@
-package co.sblock.Sblock.PlayerData;
+package co.sblock.Sblock.UserData;
 
 /**
  * Represents each character aspect.
@@ -6,7 +6,7 @@ package co.sblock.Sblock.PlayerData;
  * @author FireNG
  * @author Jikoo
  */
-public enum PlayerAspect {
+public enum UserAspect {
 	UNKNOWN, BLOOD, BREATH, DOOM, HEART, HOPE, LIFE, LIGHT, MIND, RAGE, SPACE, TIME, VOID;
 
 	/**
@@ -24,11 +24,11 @@ public enum PlayerAspect {
 	 * @param name the name of an aspect
 	 * @return the PlayerAspect
 	 */
-	public static PlayerAspect getAspect(String name) {
+	public static UserAspect getAspect(String name) {
 		try {
-			return PlayerAspect.valueOf(name.toUpperCase());
+			return UserAspect.valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return PlayerAspect.UNKNOWN;
+			return UserAspect.UNKNOWN;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package co.sblock.Sblock.PlayerData;
+package co.sblock.Sblock.UserData;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,16 +9,16 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * @author FireNG
  * 
  */
-public class PlayerDataEvents implements Listener {
+public class UserDataEvents implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		PlayerManager.getPlayerManager().addPlayer(event.getPlayer());
+		UserManager.getUserManager().addUser(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		PlayerManager.getPlayerManager().removePlayer(event.getPlayer());
+		UserManager.getUserManager().removeUser(event.getPlayer());
 	}
 
 }

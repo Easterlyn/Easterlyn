@@ -1,4 +1,4 @@
-package co.sblock.Sblock.PlayerData;
+package co.sblock.Sblock.UserData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,46 +13,46 @@ import org.bukkit.entity.Player;
  * @author FireNG, Jikoo
  * 
  */
-public class PlayerManager {
+public class UserManager {
 
-	private static PlayerManager manager;
+	private static UserManager manager;
 
-	private Map<String, SblockPlayer> players;
+	private Map<String, SblockUser> users;
 
-	PlayerManager() {
+	UserManager() {
 		manager = this;
-		this.players = new HashMap<String, SblockPlayer>();
+		this.users = new HashMap<String, SblockUser>();
 	}
 
 	/**
-	 * Adds a player that has logged on to the players list
+	 * Adds a player that has logged on to the users list
 	 * 
 	 * @param player
 	 *            The player that has logged on
 	 */
-	public void addPlayer(Player player) {
-		players.put(player.getName(), new SblockPlayer(player.getName()));
+	public void addUser(Player player) {
+		users.put(player.getName(), new SblockUser(player.getName()));
 	}
 
 	/**
-	 * Removes a player from the players list that has left the server
+	 * Removes a player from the users list that has left the server
 	 * 
 	 * @param player
 	 *            The player to remove
 	 */
-	public void removePlayer(Player player) {
-		players.remove(player.getName());
+	public void removeUser(Player player) {
+		users.remove(player.getName());
 	}
 
 	/**
 	 * @param name
 	 *            The player to look up
-	 * @return The SblockPlayer object associated with the given player, or null
+	 * @return The SblockUser object associated with the given player, or null
 	 *         if no player with the given name is currently online.
 	 */
-	public SblockPlayer getPlayer(String name) {
+	public SblockUser getUser(String name) {
 
-		return players.get(name);
+		return users.get(name);
 	}
 
 	/**
@@ -97,9 +97,9 @@ public class PlayerManager {
 				+ loc.getBlockY() + "," + loc.getBlockZ();
 	}
 
-	public static PlayerManager getPlayerManager() {
+	public static UserManager getUserManager() {
 		if (manager == null)
-			manager = new PlayerManager();
+			manager = new UserManager();
 		return manager;
 	}
 

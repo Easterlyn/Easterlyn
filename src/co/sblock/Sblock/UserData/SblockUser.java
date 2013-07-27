@@ -1,4 +1,4 @@
-package co.sblock.Sblock.PlayerData;
+package co.sblock.Sblock.UserData;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -7,23 +7,23 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.DatabaseManager;
 
 /**
- * <code>SblockPlayer</code> is the class for storing all <code>Player</code>
+ * <code>SblockUser</code> is the class for storing all <code>Player</code>
  * data.
  * 
  * @author Jikoo
  * @author Dublek
  * @author FireNG
  */
-public class SblockPlayer {
+public class SblockUser {
 
 	/** The <code>Player</code> */
 	private String playerName;
 
 	/** The <code>Player</code>'s chosen class */
-	private PlayerClass classType = PlayerClass.UNKNOWN;
+	private UserClass classType = UserClass.UNKNOWN;
 
 	/** The <code>Player</code>'s chosen aspect */
-	private PlayerAspect aspect = PlayerAspect.UNKNOWN;
+	private UserAspect aspect = UserAspect.UNKNOWN;
 
 	/** The <code>Player</code>'s chosen Medium planet. */
 	private MediumPlanet mPlanet = MediumPlanet.UNKNOWN;
@@ -40,14 +40,14 @@ public class SblockPlayer {
 	private Location previousLocation;
 
 	/**
-	 * Creates a SblockPlayer object for a player.
+	 * Creates a SblockUser object for a player.
 	 * 
 	 * @param p
 	 *            the <code>Player</code> to load data for
 	 */
-	public SblockPlayer(String playerName) {
+	public SblockUser(String playerName) {
 		this.playerName = playerName;
-		DatabaseManager.getDatabaseManager().loadPlayerData(this);
+		DatabaseManager.getDatabaseManager().loadUserData(this);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class SblockPlayer {
 	 * 
 	 * @return the class type, <code>null</code> if unchosen
 	 */
-	public PlayerClass getClassType() {
+	public UserClass getClassType() {
 		return this.classType;
 	}
 
@@ -82,7 +82,7 @@ public class SblockPlayer {
 	 * 
 	 * @return the aspect, <code>null</code> if unchosen
 	 */
-	public PlayerAspect getAspect() {
+	public UserAspect getAspect() {
 		return this.aspect;
 	}
 
@@ -129,11 +129,11 @@ public class SblockPlayer {
 	/**
 	 * Sets the class type.
 	 * 
-	 * @param pclass
+	 * @param uclass
 	 *            the new class type
 	 */
-	public void setPlayerClass(String pclass) {
-		this.classType = PlayerClass.getClass(pclass);
+	public void setPlayerClass(String uclass) {
+		this.classType = UserClass.getClass(uclass);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class SblockPlayer {
 	 *            the new aspect
 	 */
 	public void setAspect(String aspect) {
-		this.aspect = PlayerAspect.getAspect(aspect);
+		this.aspect = UserAspect.getAspect(aspect);
 	}
 
 	/**

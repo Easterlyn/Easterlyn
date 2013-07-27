@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import co.sblock.Sblock.PlayerData.SblockPlayer;
+import co.sblock.Sblock.UserData.SblockUser;
 
 /**
  * Collection of all database-related functions
@@ -64,7 +64,7 @@ public class DatabaseManager {
 		connection = null;
 	}
 
-	public void savePlayerData(SblockPlayer user) {
+	public void saveUserData(SblockUser user) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"INSERT INTO PlayerData(playerName, class, aspect, mplanet, " +
@@ -102,7 +102,7 @@ public class DatabaseManager {
 		}
 	}
 
-	public void loadPlayerData(SblockPlayer user) {
+	public void loadUserData(SblockUser user) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"SELECT * FROM PlayerData WHERE name=?");
@@ -144,7 +144,7 @@ public class DatabaseManager {
 		}
 	}
 
-	public void deletePlayer(SblockPlayer user) {
+	public void deleteUser(SblockUser user) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"DELETE FROM PlayerData WHERE name = ?");
@@ -161,14 +161,13 @@ public class DatabaseManager {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"INSERT INTO ChatChannels(name, alias, channelType, listenAccess, " +
-					"sendAccess, owner, modList, banList, listening, approvedList, jMsg, lMsg) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
+					"sendAccess, owner, modList, banList, listening, approvedList) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
 					"ON DUPLICATE KEY UPDATE alias=VALUES(alias), " +
 					"channelType=VALUES(channelType), listenAccess=VALUES(listenAccess), " + 
 					"sendAccess=VALUES(sendAccess), owner=VALUES(owner), " +
 					"modList=VALUES(modList), banList=VALUES(banList), " +
-					"listening=VALUES(listening), approvedList=VALUES(approvedList), " +
-					"jMsg=VALUES(jMsg), lMsg=VALUES(lMsg)");
+					"listening=VALUES(listening), approvedList=VALUES(approvedList), ");
 			
 //			pst.setString(1, c.getName());
 //			pst.setString(2, c.getAlias);
@@ -180,8 +179,6 @@ public class DatabaseManager {
 //			pst.setArray(8, null); // TODO banList
 //			pst.setArray(9, null); // TODO listening
 //			pst.setArray(10, c.getApprovedList());
-//			pst.setString(11, c.getJoinChatMessage());
-//			pst.setString(12, c.getLeaveChatMessage());
 			
 			pst.executeUpdate();
 			pst.close();
@@ -223,8 +220,6 @@ public class DatabaseManager {
 //					c.approveUser(UserManager.getInstance().getUser(e),
 //							UserManager.getInstance().getUser(owner)); // TODO Keiko, an easier method?
 //			}
-//			//c.setJoinChatMessage(rs.getString(jMsg)); // TODO need method
-//			//c.setLeaveChatMessage(rs.getString(lMsg)); // TODO need method
 //			for (Entry e : rs.getArray(listening) {
 //				if (e instanceof String) {
 //					User u = UserManager.getInstance().getUser(e);
@@ -239,8 +234,6 @@ public class DatabaseManager {
 //			// - UserManager.getInstance()
 //			// - Channel.loadBan(String)(no reason, no banning player)
 //			// - Channel.loadMod(String/User) (no modding player)
-//			// - Channel.setJoinChatMessage(String)
-//			// - Channel.setLeaveChatMessage(String)
 //			// - Channel.getBanList()
 //			// - Channel.getListeningList()
 			
@@ -268,9 +261,12 @@ public class DatabaseManager {
 		try {
 			PreparedStatement pst = connection.prepareStatement(MySQLStatement);
 			if (resultExpected) {
-				return pst.executeQuery();
+				ResultSet rs = pst.executeQuery();
+				pst.close();
+				return rs; // TODO find out if stream needs to be open for this
 			} else {
 				pst.executeUpdate();
+				pst.close();
 				return null;
 			}
 		} catch (SQLException e) {
