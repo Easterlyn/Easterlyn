@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import co.sblock.Sblock.Chat.TestChat;
+import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
@@ -126,12 +126,12 @@ public class DatabaseManager {
 				user.setDreamPlanet(rs.getString("dplanet"));
 				user.setTower(rs.getShort("tower"));
 				user.setIsSleeping(rs.getBoolean("sleepstate"));
-				user.setCurrent(TestChat.getInstance().getChannelManager().getChannel(rs.getString("currentChannel")));
+				user.setCurrent(ChatModule.getInstance().getChannelManager().getChannel(rs.getString("currentChannel")));
 				user.setMute(rs.getBoolean("isMute"));
 				user.setNick(rs.getString("nickname"));
 				String[] channels = rs.getString("channels").split(",");
 				for (int i = 0; i < channels.length; i++) {
-					user.addListening(TestChat.getInstance().getChannelManager().getChannel(channels[i]));
+					user.addListening(ChatModule.getInstance().getChannelManager().getChannel(channels[i]));
 				}
 				// IP should not be set here. Update-only, for offline IPban.
 				// TODO lastLogin
@@ -215,14 +215,14 @@ public class DatabaseManager {
 			
 			ResultSet rs = pst.executeQuery();
 			
-			ChannelManager cm = TestChat.getInstance().getChannelManager();
+			ChannelManager cm = ChatModule.getInstance().getChannelManager();
 			
 			while (rs.next()) {
 				cm.createNewChannel(rs.getString("name"),
 						AccessLevel.valueOf(rs.getString("sendAccess")),
 						AccessLevel.valueOf(rs.getString("listenAccess")),
 						rs.getString("owner")/*, ChannelType.valueOf(rs.getString(channelType))*/);
-				Channel c = TestChat.getInstance().getChannelManager().getChannel(rs.getString("name"));
+				Channel c = ChatModule.getInstance().getChannelManager().getChannel(rs.getString("name"));
 //				c.setAlias(rs.getString("alias"));
 				String[] modList = rs.getString("modList").split(",");
 				for (int i = 0; i < modList.length; i++) {

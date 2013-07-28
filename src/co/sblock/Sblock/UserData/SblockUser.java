@@ -15,7 +15,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.ColorDef;
-import co.sblock.Sblock.Chat.TestChat;
+import co.sblock.Sblock.Chat.ChatModule;
 
 /**
  * <code>SblockUser</code> is the class for storing all <code>Player</code>
@@ -64,10 +64,12 @@ public class SblockUser {
 	private String globalNick;
 
 	/** The last time the <code>Player</code> logged out */
+	@SuppressWarnings("unused")
 	private Timestamp lastLogin;
 	// TODO do we need this? if(!getPlayer().isOnline()) getOfflinePlayer().getLastPlayed()
 
 	/** The total time the <code>Player</code> has spent logged in */
+	@SuppressWarnings("unused") // TODO
 	private Time timePlayed;
 
 	/** The <code>Player</code>'s IP address */
@@ -304,7 +306,7 @@ public class SblockUser {
 		this.current = c.getName();
 	}
 	public Channel getCurrent()	{
-		return TestChat.getInstance().getChannelManager().getChannel(current);
+		return ChatModule.getInstance().getChannelManager().getChannel(current);
 	}
 
 	public boolean addListening(Channel c)
@@ -361,13 +363,13 @@ public class SblockUser {
 		SblockUser sender = UserManager.getUserManager().getUser(event.getPlayer().getName());
 		String fullmsg = event.getMessage();
 		String outputmessage = fullmsg;
-		Channel sendto = TestChat.getInstance().getChannelManager().getChannel(sender.current);
+		Channel sendto = ChatModule.getInstance().getChannelManager().getChannel(sender.current);
 		
 		if(fullmsg.indexOf("@") == 0)	{	//Check for alternate channel destination
 			int space = fullmsg.indexOf(" ");
 			String newChannel = fullmsg.substring(1, space);
-			if(TestChat.getInstance().getChannelManager().isValidChannel(newChannel))	{
-				sendto = TestChat.getInstance().getChannelManager().getChannel(newChannel);
+			if(ChatModule.getInstance().getChannelManager().isValidChannel(newChannel))	{
+				sendto = ChatModule.getInstance().getChannelManager().getChannel(newChannel);
 				outputmessage = fullmsg.substring(space + 1); 
 			}
 		}

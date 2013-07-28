@@ -14,7 +14,7 @@ import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
-public class TestChatListener implements Listener	{
+public class ChatModuleListener implements Listener	{
 	@EventHandler
 	public void onPlayerJoin (PlayerJoinEvent event)	{
 		//Theoretically, each channel db knows all players listening, even those who are offline.
@@ -58,7 +58,7 @@ public class TestChatListener implements Listener	{
 		}
 		else	{
 			for(String s : u.getListening())	{
-				TestChat.getInstance().getChannelManager().getChannel(s).userLeave(u);
+				ChatModule.getInstance().getChannelManager().getChannel(s).userLeave(u);
 			}
 		}
 	}

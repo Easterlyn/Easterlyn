@@ -3,38 +3,38 @@ package co.sblock.Sblock.Chat;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
+import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
-public class TestChat extends JavaPlugin {
+public class ChatModule extends Module {
 
-	private static TestChat instance;
+	private static ChatModule instance;
 	private ChannelManager cm = new ChannelManager();
-	private TestChatListener listener = new TestChatListener();
+	private ChatModuleListener listener = new ChatModuleListener();
 
 	@Override
-	public void onEnable() {
+	protected void onEnable() {
 		instance = this;
-		this.getServer().getPluginManager().registerEvents(listener, this);
+		this.registerEvents(listener);
 		// cm.loadAllChannels();
 		this.cm.createDefaultChannel();
 
-		for (Player p : this.getServer().getOnlinePlayers()) {
+		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			UserManager.getUserManager().addUser(p);
 		}
 	}
 
 	@Override
-	public void onDisable() {
+	protected void onDisable() {
 		// cm.saveAllChannels();
 	}
 
@@ -51,7 +51,7 @@ public class TestChat extends JavaPlugin {
 					output = output + s + " ";
 				}
 				Logger.getLogger("Minecraft").info("[o] " + output);
-				for(Player p: this.getServer().getOnlinePlayers())	{
+				for(Player p : Bukkit.getServer().getOnlinePlayers())	{
 					p.sendMessage(ChatColor.BOLD + "[o] " + output);
 				}				
 				return true;
@@ -59,10 +59,10 @@ public class TestChat extends JavaPlugin {
 		}
 		if(cmd.getName().equalsIgnoreCase("sban"))	{	//superban
 			if(isConsole || sender.isOp())	{
-				Player victim = this.getServer().getPlayer(args[0]);
+				Player victim = Bukkit.getServer().getPlayer(args[0]);
 				String ip = victim.getAddress().getAddress().getHostAddress();
 				//normal ban goes here
-				this.getServer().banIP(ip);
+				Bukkit.getServer().banIP(ip);
 				//Also need banreason
 				//also broadcast to all players
 				//Also send to Logger
@@ -71,7 +71,7 @@ public class TestChat extends JavaPlugin {
 		}
 		if(cmd.getName().equalsIgnoreCase("whois"))	{		//Master PlayerData output
 			if(isConsole || isMod)	{
-				Player subject = this.getServer().getPlayer(args[0]);
+				Player subject = Bukkit.getServer().getPlayer(args[0]);
 				SblockUser u = UserManager.getUserManager().getUser(subject.getName());
 				u.toString();
 				return true;
@@ -260,7 +260,7 @@ public class TestChat extends JavaPlugin {
 				}
 				if(args[0].equalsIgnoreCase("global"))	{
 					if(isMod || sender.isOp())	{
-						SblockUser victim = UserManager.getUserManager().getUser(this.getServer().getPlayer(args[2]).getName());
+						SblockUser victim = UserManager.getUserManager().getUser(Bukkit.getServer().getPlayer(args[2]).getName());
 						if(args[1].equalsIgnoreCase("mute"))	{
 							victim.setMute(true);
 							return true;
@@ -324,7 +324,7 @@ public class TestChat extends JavaPlugin {
 		return cm;
 	}
 
-	public static TestChat getInstance() {
+	public static ChatModule getInstance() {
 		return instance;
 	}
 }
