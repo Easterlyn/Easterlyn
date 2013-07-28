@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock.DatabaseManager;
+
 /**
  * Class that keeps track of players currently logged on to the game
  * 
@@ -41,6 +43,8 @@ public class UserManager {
 	 *            The player to remove
 	 */
 	public void removeUser(Player player) {
+		DatabaseManager.getDatabaseManager()
+				.saveUserData(getUser(player.getName()));
 		users.remove(player.getName());
 	}
 

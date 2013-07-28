@@ -25,17 +25,13 @@ public class ChatModule extends Module {
 	protected void onEnable() {
 		instance = this;
 		this.registerEvents(listener);
-		// cm.loadAllChannels();
+		cm.loadAllChannels();
 		this.cm.createDefaultChannel();
-
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			UserManager.getUserManager().addUser(p);
-		}
 	}
 
 	@Override
 	protected void onDisable() {
-		// cm.saveAllChannels();
+		cm.saveAllChannels();
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd,
@@ -242,7 +238,9 @@ public class ChatModule extends Module {
 						if (args[1].equalsIgnoreCase("getlisteners")) {
 							String listenerList = ChatColor.YELLOW
 									+ "Channel members: ";
-							for (SblockUser u : c.getListening()) {
+							for (String s : c.getListening()) {
+								SblockUser u = UserManager
+										.getUserManager().getUser(s);
 								if (u.getCurrent().equals(c)) {
 									listenerList += ChatColor.GREEN
 											+ u.getPlayerName() + " ";

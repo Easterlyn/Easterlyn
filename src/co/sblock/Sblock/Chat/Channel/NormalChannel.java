@@ -9,7 +9,9 @@ import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 
 import co.sblock.Sblock.DatabaseManager;
+import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.UserManager;
 
 public class NormalChannel implements Channel {
 
@@ -25,7 +27,7 @@ public class NormalChannel implements Channel {
 	protected List<String> muteList = new ArrayList<String>();
 	protected List<String> banList = new ArrayList<String>();
 
-	protected List<SblockUser> listening = new ArrayList<SblockUser>();
+	protected List<String> listening = new ArrayList<String>();
 
 	public NormalChannel(String name, AccessLevel sendingAccess,
 			AccessLevel listeningAccess, String creator) {
@@ -67,7 +69,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public List<SblockUser> getListening() {
+	public List<String> getListening() {
 		return this.listening;
 	}
 
@@ -106,7 +108,7 @@ public class NormalChannel implements Channel {
 		switch (listenAccess) {
 		case PUBLIC: {
 			if (!banList.contains(sender.getPlayerName())) {
-				this.listening.add(sender);
+				this.listening.add(sender.getPlayerName());
 				this.sendToAll(sender, joinMsg);
 				return true;
 			} else {
@@ -117,7 +119,7 @@ public class NormalChannel implements Channel {
 		}
 		case PRIVATE: {
 			if (approvedList.contains(sender.getPlayerName())) {
-				this.listening.add(sender);
+				this.listening.add(sender.getPlayerName());
 				this.sendToAll(sender, joinMsg);
 				return true;
 			} else {
@@ -352,14 +354,19 @@ public class NormalChannel implements Channel {
 
 	@Override
 	public void disband(SblockUser sender) {
-		// TODO Auto-generated method stub
-		// Prolly copy Ben's code here again
+		this.sendToAll(sender, ChatColor.GOLD + this.name + ChatColor.RED
+				+ " has been disbanded! These are indeed dark times...");
+		for (String s : this.listening) {
+			UserManager.getUserManager().getUser(s).removeListening(this);
+			this.listening.remove(s);
+		}
+		ChatModule.getInstance().getChannelManager().dropChannel(this.name);
 	}
 
 	@Override
 	public void sendToAll(SblockUser sender, String s) {
-		for (SblockUser u : this.listening) {
-			u.sendMessageFromChannel(s, this);
+		for (String name : this.listening) {
+			UserManager.getUserManager().getUser(name).sendMessageFromChannel(s, this);
 		}
 		Logger.getLogger("Minecraft").info(ChatColor.stripColor(s));
 	}

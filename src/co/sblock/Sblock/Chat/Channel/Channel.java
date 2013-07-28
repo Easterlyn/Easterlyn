@@ -10,7 +10,7 @@ public interface Channel {
 	public String getLeaveChatMessage(SblockUser sender);
 	public AccessLevel getSAcess();
 	public AccessLevel getLAcess();
-	public List<SblockUser> getListening();
+	public List<String> getListening();
 	public ChannelType getType();
 	
 	public void setAlias(String name, SblockUser sender);

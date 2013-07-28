@@ -41,8 +41,9 @@ public class ChannelManager {
 		ChannelManager.getChannelList().put("#", c);
 	}
 
-	public void dropChannel(String channelname) {
-		ChannelManager.getChannelList().remove(channelname);
+	public void dropChannel(String channelName) {
+		ChannelManager.getChannelList().remove(channelName);
+		DatabaseManager.getDatabaseManager().deleteChannel(channelName);
 	}
 
 	public static Map<String, Channel> getChannelList() {
