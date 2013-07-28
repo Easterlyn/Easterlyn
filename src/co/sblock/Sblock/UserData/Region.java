@@ -3,6 +3,8 @@ package co.sblock.Sblock.UserData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
+import co.sblock.Sblock.Chat.ColorDef;
+
 /**
  * Class that keeps track of players currently logged on to the game
  * 
@@ -23,24 +25,23 @@ public enum Region {
 	public static ChatColor getRegionColor(Region r) {
 		switch (r) {
 		case EARTH:
-			return ChatColor.DARK_GREEN;
+			return ColorDef.WORLD_EARTH;
 		case FURTHESTRING:
-			return ChatColor.DARK_GRAY;
+			return ColorDef.WORLD_FURTHESTRING;
 		case INNERCIRCLE:
-			return ChatColor.GOLD;
+			return ColorDef.WORLD_INNERCIRCLE;
 		case LOFAF:
 		case LOHAC:
 		case LOLAR:
 		case LOWAS:
 		case MEDIUM:
-			// TODO need colors for these suckers :D
-			return ChatColor.DARK_BLUE;
+			return ColorDef.WORLD_MEDIUM;
 		case OUTERCIRCLE:
-			return ChatColor.DARK_PURPLE;
+			return ColorDef.WORLD_OUTERCIRCLE;
 		case UNKNOWN:
-			return ChatColor.BLACK;
+			return ColorDef.DEFAULT;
 		default:
-			return ChatColor.RESET;
+			return ColorDef.DEFAULT;
 		}
 	}
 

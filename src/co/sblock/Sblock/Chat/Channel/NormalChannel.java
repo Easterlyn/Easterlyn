@@ -8,9 +8,10 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 
+import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.UserData.SblockUser;
 
-public class NormalChannel implements Channel	{
+public class NormalChannel implements Channel {
 
 	protected String name;
 	protected String alias;
@@ -18,26 +19,25 @@ public class NormalChannel implements Channel	{
 	protected AccessLevel listenAccess;
 	protected AccessLevel sendAccess;
 	protected String owner;
-	
+
 	protected List<String> approvedList = new ArrayList<String>();
 	protected List<String> modList = new ArrayList<String>();
 	protected List<String> muteList = new ArrayList<String>();
-	protected List<String> banList = new ArrayList<String>();	
+	protected List<String> banList = new ArrayList<String>();
 
 	protected List<SblockUser> listening = new ArrayList<SblockUser>();
-	
-	public NormalChannel(String name, AccessLevel sendingAccess, AccessLevel listeningAccess, String creator)	{
+
+	public NormalChannel(String name, AccessLevel sendingAccess,
+			AccessLevel listeningAccess, String creator) {
 		this.name = name;
 		this.alias = null;
 		this.sendAccess = sendingAccess;
 		this.listenAccess = listeningAccess;
 		this.owner = creator;
 		this.modList.add(creator);
-		
-		//also, INSERT INTO all this stuff into the main ChatChannels table in the db
-		//also CREATE TABLE channelname and add owner as first record. This table for all listeners
+		DatabaseManager.getDatabaseManager().saveChannelData(this);
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.name;
@@ -46,13 +46,14 @@ public class NormalChannel implements Channel	{
 	@Override
 	public String getJoinChatMessage(SblockUser sender) {
 		String time24h = new SimpleDateFormat("HH:mm").format(new Date());
-		return ChatColor.DARK_GREEN + sender.getPlayerName() + ChatColor.YELLOW + " began pestering " + ChatColor.GOLD 
-				+ this.name + ChatColor.YELLOW + " at " + time24h;
+		return ChatColor.DARK_GREEN + sender.getPlayerName() + ChatColor.YELLOW
+				+ " began pestering " + ChatColor.GOLD + this.name
+				+ ChatColor.YELLOW + " at " + time24h;
 	}
 
 	@Override
 	public String getLeaveChatMessage(SblockUser sender) {
-		 return this.getJoinChatMessage(sender).replaceAll("began", "ceased");
+		return this.getJoinChatMessage(sender).replaceAll("began", "ceased");
 	}
 
 	@Override
@@ -77,92 +78,93 @@ public class NormalChannel implements Channel	{
 
 	@Override
 	public void setAlias(String name, SblockUser sender) {
-		if(this.modList.contains(sender.getPlayerName()))	{
+		if (this.modList.contains(sender.getPlayerName())) {
 			this.alias = name;
+		} else {
+			sender.sendMessage(ChatColor.RED
+					+ "You do not have permission to change the alias of channel "
+					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
 		}
-		else	{
-			sender.sendMessage(ChatColor.RED + "You do not have permission to change the alias of channel " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		
+
 	}
 
 	@Override
 	public void removeAlias(SblockUser sender) {
-		if(this.modList.contains(sender.getPlayerName()))	{
+		if (this.modList.contains(sender.getPlayerName())) {
 			this.alias = null;
+		} else {
+			sender.sendMessage(ChatColor.RED
+					+ "You do not have permission to remove the alias of channel "
+					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
 		}
-		else	{
-			sender.sendMessage(ChatColor.RED + "You do not have permission to remove the alias of channel " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		
+
 	}
 
 	@Override
 	public boolean userJoin(SblockUser sender) {
-			String joinMsg = this.getJoinChatMessage(sender);
-			switch (listenAccess)
-			{
-			case PUBLIC:
-			{
-				if (!banList.contains(sender.getPlayerName()))	{
-					this.listening.add(sender);
-					this.sendToAll(sender, joinMsg);
-					return true;
-				}
-				else
-				{
-					sender.sendMessage(ChatColor.RED + "You are banned from " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-					return false;
-				}
-			}
-			case PRIVATE:
-			{
-				if (approvedList.contains(sender.getPlayerName()))	{
-					this.listening.add(sender);
-					this.sendToAll(sender, joinMsg);
-					return true;
-				}
-				else
-				{
-					sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED + " is a " + ChatColor.BOLD + "private" + ChatColor.RESET + " channel!");
-					return false;
-				}
-			}
-			default:
-			{
+		String joinMsg = this.getJoinChatMessage(sender);
+		switch (listenAccess) {
+		case PUBLIC: {
+			if (!banList.contains(sender.getPlayerName())) {
+				this.listening.add(sender);
+				this.sendToAll(sender, joinMsg);
+				return true;
+			} else {
+				sender.sendMessage(ChatColor.RED + "You are banned from "
+						+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
 				return false;
 			}
+		}
+		case PRIVATE: {
+			if (approvedList.contains(sender.getPlayerName())) {
+				this.listening.add(sender);
+				this.sendToAll(sender, joinMsg);
+				return true;
+			} else {
+				sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
+						+ " is a " + ChatColor.BOLD + "private"
+						+ ChatColor.RESET + " channel!");
+				return false;
 			}
+		}
+		default: {
+			return false;
+		}
+		}
 	}
 
 	@Override
 	public void userLeave(SblockUser sender) {
 		this.sendToAll(sender, this.getLeaveChatMessage(sender));
-		this.listening.remove(sender);		
+		this.listening.remove(sender);
 	}
 
 	@Override
 	public void setNick(String nick, SblockUser sender) {
-		sender.sendMessage(ChatColor.RED + "This channel does not support nicknames!");		
+		sender.sendMessage(ChatColor.RED
+				+ "This channel does not support nicknames!");
 	}
 
 	@Override
 	public void removeNick(SblockUser sender) {
-		sender.sendMessage(ChatColor.RED + "This channel does not support nicknames!");		
+		sender.sendMessage(ChatColor.RED
+				+ "This channel does not support nicknames!");
 	}
 
 	@Override
 	public void setOwner(String newO, SblockUser sender) {
-		if(sender.equals(this.owner))	{
+		if (sender.equals(this.owner)) {
 			this.owner = newO;
-		}		
+		}
 	}
+
 	@Override
-	public String getOwner()	{
+	public String getOwner() {
 		return this.owner;
 	}
+
 	@Override
-	public boolean isOwner(SblockUser user)	{
+	public boolean isOwner(SblockUser user) {
 		return user.getPlayerName().equalsIgnoreCase(owner);
 	}
 
@@ -173,37 +175,49 @@ public class NormalChannel implements Channel	{
 
 	@Override
 	public void addMod(SblockUser user, SblockUser sender) {
-		//SburbChat code. Handle with care
-		
-		if (modList.contains(sender.getPlayerName()) && !modList.contains(user.getPlayerName()))	{	
+		// SburbChat code. Handle with care
+
+		if (modList.contains(sender.getPlayerName())
+				&& !modList.contains(user.getPlayerName())) {
 			this.modList.add(user.getPlayerName());
-			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName() + " is now a mod in " + ChatColor.GOLD + this.name + ChatColor.YELLOW + "!");
-			user.sendMessage(ChatColor.GREEN + "You are now a mod in " + ChatColor.GOLD + this.name + ChatColor.GREEN + "!");
+			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName()
+					+ " is now a mod in " + ChatColor.GOLD + this.name
+					+ ChatColor.YELLOW + "!");
+			user.sendMessage(ChatColor.GREEN + "You are now a mod in "
+					+ ChatColor.GOLD + this.name + ChatColor.GREEN + "!");
+		} else if (!sender.getPlayerName().equals(owner)) {
+			sender.sendMessage(ChatColor.RED
+					+ "You do not have permission to mod people in "
+					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+		} else {
+			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName()
+					+ ChatColor.RED + " is already a mod in " + ChatColor.GOLD
+					+ this.name + ChatColor.RED + "!");
 		}
-		else if (!sender.getPlayerName().equals(owner))	{
-			sender.sendMessage(ChatColor.RED + "You do not have permission to mod people in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		else	{
-			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED + " is already a mod in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		
+
 	}
 
 	@Override
 	public void removeMod(SblockUser user, SblockUser sender) {
-		//SburbChat code. Handle with care
-		
-		 if (modList.contains(sender.getPlayerName()) && this.modList.contains(user.getPlayerName()))	{
+		// SburbChat code. Handle with care
+
+		if (modList.contains(sender.getPlayerName())
+				&& this.modList.contains(user.getPlayerName())) {
 			this.modList.remove(user.getPlayerName());
-			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName() + " is no longer a mod in " + ChatColor.GOLD + this.name + ChatColor.YELLOW + "!");
-			user.sendMessage(ChatColor.RED + "You are no longer a mod in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
+			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName()
+					+ " is no longer a mod in " + ChatColor.GOLD + this.name
+					+ ChatColor.YELLOW + "!");
+			user.sendMessage(ChatColor.RED + "You are no longer a mod in "
+					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+		} else if (!sender.getPlayerName().equals(this.owner)) {
+			sender.sendMessage(ChatColor.RED
+					+ "You do not have permission to demod people in "
+					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+		} else {
+			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName()
+					+ ChatColor.RED + " is not a mod in " + ChatColor.GOLD
+					+ this.name + ChatColor.RED + "!");
 		}
-		else if (!sender.getPlayerName().equals(this.owner))	{
-			sender.sendMessage(ChatColor.RED + "You do not have permission to demod people in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		else	{
-			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED + " is not a mod in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}		 		 
 	}
 
 	@Override
@@ -213,7 +227,9 @@ public class NormalChannel implements Channel	{
 
 	@Override
 	public boolean isMod(SblockUser user) {
-		if(modList.contains(user.getPlayerName()) || user.getPlayer().hasPermission("group.denizen") || user.getPlayer().hasPermission("group.horrorterror"))	{
+		if (modList.contains(user.getPlayerName())
+				|| user.getPlayer().hasPermission("group.denizen")
+				|| user.getPlayer().hasPermission("group.horrorterror")) {
 			return true;
 		}
 		return false;
@@ -221,21 +237,28 @@ public class NormalChannel implements Channel	{
 
 	@Override
 	public void kickUser(SblockUser user, SblockUser sender) {
-		//SburbChat code. Handle with care
-		if (modList.contains(sender.getPlayerName()) && listening.contains(user))	{
+		// SburbChat code. Handle with care
+		if (modList.contains(sender.getPlayerName())
+				&& listening.contains(user)) {
 			this.listening.remove(user);
-			user.sendMessage(ChatColor.YELLOW + "You have been kicked from " + ChatColor.GOLD + this.getName() + ChatColor.YELLOW + "!");
+			user.sendMessage(ChatColor.YELLOW + "You have been kicked from "
+					+ ChatColor.GOLD + this.getName() + ChatColor.YELLOW + "!");
 			user.removeListening(this);
-			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName() + " has been kicked from " + ChatColor.GOLD + this.getName() + ChatColor.YELLOW + "!");
+			this.sendToAll(
+					sender,
+					ChatColor.YELLOW + user.getPlayerName()
+							+ " has been kicked from " + ChatColor.GOLD
+							+ this.getName() + ChatColor.YELLOW + "!");
+		} else if (!modList.contains(sender.getPlayerName())) {
+			sender.sendMessage(ChatColor.RED
+					+ "You do not have permission to kick people in "
+					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+		} else {
+			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName()
+					+ ChatColor.RED + " is not chatting in " + ChatColor.GOLD
+					+ this.name + ChatColor.RED + "!");
 		}
-		else if (!modList.contains(sender.getPlayerName()))	{
-			sender.sendMessage(ChatColor.RED + "You do not have permission to kick people in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		else	{
-			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED + " is not chatting in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		 
-		
+
 	}
 
 	@Override
@@ -245,46 +268,64 @@ public class NormalChannel implements Channel	{
 
 	@Override
 	public void banUser(SblockUser user, SblockUser sender) {
-		if(this.isMod(sender) && !banList.contains(user.getPlayerName()))	{
-			if(modList.contains(user))	{
+		if (this.isMod(sender) && !banList.contains(user.getPlayerName())) {
+			if (modList.contains(user)) {
 				modList.remove(user);
 			}
-			if(listening.contains(user))	{
+			if (listening.contains(user)) {
 				this.listening.remove(user);
 				user.removeListening(this);
 			}
 			this.banList.add(user.getPlayerName());
-			user.sendMessage(ChatColor.RED + "You have been " + ChatColor.BOLD + "banned" + ChatColor.RESET + " from " + ChatColor.GOLD + this.getName() + ChatColor.RED + "!");
-			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED + " has been " + ChatColor.BOLD + "banned" + ChatColor.RESET + " from " + ChatColor.GOLD + this.getName() + ChatColor.RED + "!");
-		}
-		else if(!sender.getPlayerName().equalsIgnoreCase(owner))	{
-			sender.sendMessage(ChatColor.RED + "You do not have permission to ban people in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		else	{
-			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED + " is already banned in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
+			user.sendMessage(ChatColor.RED + "You have been " + ChatColor.BOLD
+					+ "banned" + ChatColor.RESET + " from " + ChatColor.GOLD
+					+ this.getName() + ChatColor.RED + "!");
+			this.sendToAll(sender,
+					ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED
+							+ " has been " + ChatColor.BOLD + "banned"
+							+ ChatColor.RESET + " from " + ChatColor.GOLD
+							+ this.getName() + ChatColor.RED + "!");
+		} else if (!sender.getPlayerName().equalsIgnoreCase(owner)) {
+			sender.sendMessage(ChatColor.RED
+					+ "You do not have permission to ban people in "
+					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+		} else {
+			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName()
+					+ ChatColor.RED + " is already banned in " + ChatColor.GOLD
+					+ this.name + ChatColor.RED + "!");
 		}
 	}
 
 	@Override
 	public void unbanUser(SblockUser user, SblockUser sender) {
-		if(sender.getPlayerName().equalsIgnoreCase(this.owner) && banList.contains(user.getPlayerName()))	{
+		if (sender.getPlayerName().equalsIgnoreCase(this.owner)
+				&& banList.contains(user.getPlayerName())) {
 			this.banList.remove(user.getPlayerName());
-			user.sendMessage(ChatColor.RED + "You have been " + ChatColor.BOLD + "unbanned" + ChatColor.RESET + " from " + ChatColor.GOLD + this.getName() + ChatColor.RED + "!");
-			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED + " has been " + ChatColor.BOLD + "unbanned" + ChatColor.RESET + " from " + ChatColor.GOLD + this.getName() + ChatColor.RED + "!");
+			user.sendMessage(ChatColor.RED + "You have been " + ChatColor.BOLD
+					+ "unbanned" + ChatColor.RESET + " from " + ChatColor.GOLD
+					+ this.getName() + ChatColor.RED + "!");
+			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName()
+					+ ChatColor.RED + " has been " + ChatColor.BOLD
+					+ "unbanned" + ChatColor.RESET + " from " + ChatColor.GOLD
+					+ this.getName() + ChatColor.RED + "!");
+		} else if (!sender.getPlayerName().equalsIgnoreCase(owner)) {
+			sender.sendMessage(ChatColor.RED
+					+ "You do not have permission to unban people in "
+					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+		} else {
+			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName()
+					+ ChatColor.RED + " is not banned in " + ChatColor.GOLD
+					+ this.name + ChatColor.RED + "!");
 		}
-		else if(!sender.getPlayerName().equalsIgnoreCase(owner))	{
-			sender.sendMessage(ChatColor.RED + "You do not have permission to unban people in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-		else	{
-			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED + " is not banned in " + ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}		
 	}
+
 	@Override
-	public List<String>	getBanList()	{
+	public List<String> getBanList() {
 		return banList;
 	}
+
 	@Override
-	public boolean isBanned(SblockUser user)	{
+	public boolean isBanned(SblockUser user) {
 		return banList.contains(user.getPlayerName());
 	}
 
@@ -295,26 +336,29 @@ public class NormalChannel implements Channel	{
 
 	@Override
 	public void approveUser(SblockUser user, SblockUser sender) {
-		sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED + " is a public channel!");
+		sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
+				+ " is a public channel!");
 	}
 
 	@Override
 	public void deapproveUser(SblockUser user, SblockUser sender) {
-		sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED + " is a public channel!");
+		sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
+				+ " is a public channel!");
 	}
-	public List<String> getApprovedUsers()	{
+
+	public List<String> getApprovedUsers() {
 		return approvedList;
 	}
 
 	@Override
 	public void disband(SblockUser sender) {
 		// TODO Auto-generated method stub
-		//Prolly copy Ben's code here again		
+		// Prolly copy Ben's code here again
 	}
+
 	@Override
 	public void sendToAll(SblockUser sender, String s) {
-		for (SblockUser u : this.listening)
-		{
+		for (SblockUser u : this.listening) {
 			u.sendMessageFromChannel(s, this);
 		}
 		Logger.getLogger("Minecraft").info(ChatColor.stripColor(s));
