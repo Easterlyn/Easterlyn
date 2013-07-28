@@ -69,14 +69,14 @@ public class DatabaseManager {
 			PreparedStatement pst = connection.prepareStatement(
 					"INSERT INTO PlayerData(playerName, class, aspect, " +
 					"mplanet, dplanet, towernum, sleepstate, currentChannel, " +
-					"isMute, nickname, ip, LastLogin, timePlayed) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+					"isMute, nickname, channels, ip, LastLogin, timePlayed) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
 					"ON DUPLICATE KEY UPDATE " +
 					"class=VALUES(class), aspect=VALUES(aspect), " +
 					"mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), " +
 					"towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), " +
 					"currentChannel=VALUES(currentChannel), isMute=VALUES(isMute), " +
-					"nickname=VALUES(nickname), ip=VALUES(ip), " +
+					"nickname=VALUES(nickname), channels=VALUES(channels), ip=VALUES(ip), " +
 					"LastLogin=VALUES(LastLogin), timePlayed=VALUES(timePlayed)");
 			
 			pst.setString(1, user.getPlayerName());
@@ -89,28 +89,17 @@ public class DatabaseManager {
 //			pst.setString(8, user.getCurrent().getName());
 //			pst.setString(9, user.isMute());
 //			pst.setString(10, user.getNick());
-//			pst.setString(11, user.getUserIP());
-//			pst.setDate(12, null); // TODO lastLogin
-//			pst.setTimestamp(13, null); // TODO timePlayed - I think you'd said Timestamp..
+//			StringBuilder sb = new StringBuilder();
+//			for (Channel c : user.getListening()) {
+//				sb.append(c.getName() + ",");
+//			}
+//			pst.setString(11, sb.substring(0, sb.length() - 1));
+//			pst.setString(12, user.getUserIP());
+//			pst.setTimestamp(13, null); // TODO lastLogin
+//			pst.setTime(14, null);
 			
 			pst.executeUpdate();
 			pst.close();
-			
-			
-//			// Eurgh. Cannot remember all StringBuilder methods off the top of my head. Lazy way it is!
-//			// TODO cleanup channels left. Ugh, more database calls ;-;
-//			// 	The only thing I can think of is looping twice with an additional database query,
-//			// 		which kinda reeeeally sucks. Remember to do more complex figuring when you've
-//			// 		had more than 3 hours of sleep, Adam.
-//			String statement = "INSERT INTO " + user.getPlayerName() + "_Listening (ChannelName) VALUES ";
-//			for (Channel c : user.getListening()) {
-//				statement += "(" + c.getName() + "), ";
-//			}
-//			
-//			pst = connection.prepareStatement(statement.substring(0, statement.length() - 2));
-//			
-//			pst.executeUpdate()
-//			pst.close();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -136,10 +125,9 @@ public class DatabaseManager {
 //				user.setCurrent(ChannelManager.getInstance().getChannel(rs.getString("currentChannel")));
 //				user.setMute(rs.getBoolean("isMute"));
 //				user.setNick(rs.getString("nickname"));
-//				for (Entry e : rs.getArray("channels")) { // TODO NOPE NOPE NOPE ARGH.
-//					if (e instanceof String) {
-//						user.addListening(ChannelManager.getInstance().getChannel((String) e));
-//					}
+//				String[] channels = rs.getString("channels").split(",");
+//				for (int i = 0; i < channels.length; i++) {
+//					user.addListening(channels[i]);
 //				}
 //				// IP should not be set here. Update-only, for offline IPban.
 //				// TODO lastLogin
@@ -147,16 +135,6 @@ public class DatabaseManager {
 				
 				pst.close();
 				
-				
-//				// How bad practice is it to do this instead of making a new PreparedStatement? :V
-//				pst = connection.prepareStatement("SELECT * FROM " + user.getPlayerName() + "_Listening");
-//				rs = pst.executeQuery();
-//				
-//				while (rs.next()) {
-//					user.addListening(rs.getString("ChannelName"));
-//				}
-//				
-//				pst.close();
 				
 			} catch (Exception e) {
 				// User may not be defined in the database
@@ -187,13 +165,13 @@ public class DatabaseManager {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"INSERT INTO ChatChannels(name, alias, channelType, listenAccess, " +
-					"sendAccess, owner, modList, banList, listening, approvedList) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
+					"sendAccess, owner, modList, banList, approvedList) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)" +
 					"ON DUPLICATE KEY UPDATE alias=VALUES(alias), " +
 					"channelType=VALUES(channelType), listenAccess=VALUES(listenAccess), " + 
 					"sendAccess=VALUES(sendAccess), owner=VALUES(owner), " +
 					"modList=VALUES(modList), banList=VALUES(banList), " +
-					"listening=VALUES(listening), approvedList=VALUES(approvedList), ");
+					"approvedList=VALUES(approvedList), ");
 			
 //			pst.setString(1, c.getName());
 //			pst.setString(2, c.getAlias);
@@ -201,10 +179,21 @@ public class DatabaseManager {
 //			pst.setString(4, c.getLAccessLevel().name());
 //			pst.setString(5, c.getSAccessLevel().name());
 //			pst.setString(6, c.getOwner());
-//			pst.setArray(7, c.getModList());
-//			pst.setArray(8, null); // TODO banList
-//			pst.setArray(9, null); // TODO listening
-//			pst.setArray(10, c.getApprovedList());
+//			StringBuilder sb = new StringBuilder();
+//			for (String s : c.getModList()) {
+//				sb.append(s + ",");
+//			}
+//			pst.setString(7, sb.substring(0, sb.length() - 1));
+//			sb = new StringBuilder();
+//			for (String s : c.getBanList()) {
+//				sb.append(s + ",");
+//			}
+//			pst.setString(8, sb.substring(0, sb.length() - 1));
+//			sb = new StringBuilder();
+//			for (String s : c.getApprovedList()) {
+//				sb.append(s + ",");
+//			}
+//			pst.setString(9, sb.substring(0, sb.length() - 1));
 			
 			pst.executeUpdate();
 			pst.close();
@@ -214,54 +203,34 @@ public class DatabaseManager {
 		}
 	}
 
-	public void loadChannelData(String cName) {
+	public void loadAllChannelData(String cName) {
 		PreparedStatement pst;
 		try {
 			pst = connection.prepareStatement(
-					"SELECT * FROM ChatChannels WHERE name=?");
+					"SELECT * FROM ChatChannels");
 			
-			pst.setString(1, cName);
-			
-			ResultSet rs = pst.executeQuery();
-			
-//			ChannelManager.getInstance().createNewChannel(cName,
-//					AccessLevel.valueOf(rs.getString(sendAccess)),
-//					AccessLevel.valueOf(rs.getString(listenAccess)),
-//					rs.getString(owner)/*, ChannelType.valueOf(rs.getString(channelType))*/);
-//			Channel c = ChannelManager.getInstance().getChannel(cName);
-//			c.setAlias(rs.getString(alias));
-//			for (Entry e : rs.getArray(modList) { // STILL NOPE. GOSH.
-//				if (e instanceof String) {
-//					c.addMod(UserManager.getInstance().getUser(e),
-//							UserManager.getInstance().getUser(owner)); // TODO Keiko, an easier method? loadMod
-//			}
-//			for (Entry e : rs.getArray(banList) {
-//				if (e instanceof String) {
-//					c.banUser(UserManager.getInstance().getUser(e),
-//							UserManager.getInstance().getUser(owner)); // TODO Keiko, an easier method? loadBan
-//					//c.loadBan((String) e);
-//			}
-//			for (Entry e : rs.getArray(approvedList) {
-//				if (e instanceof String) {
-//					c.approveUser(UserManager.getInstance().getUser(e),
-//							UserManager.getInstance().getUser(owner)); // TODO Keiko, an easier method?
-//			}
-//			for (Entry e : rs.getArray(listening) {
-//				if (e instanceof String) {
-//					User u = UserManager.getInstance().getUser(e);
-//					if (u != null && u.getPlayer().isOnline()) {
-//						c.userJoin(u);
-//					}
+//			ResultSet rs = pst.executeQuery();
+//			
+//			while (rs.next()) {
+//				ChannelManager.getInstance().createNewChannel(cName,
+//						AccessLevel.valueOf(rs.getString(sendAccess)),
+//						AccessLevel.valueOf(rs.getString(listenAccess)),
+//						rs.getString(owner)/*, ChannelType.valueOf(rs.getString(channelType))*/);
+//				Channel c = ChannelManager.getInstance().getChannel(cName);
+//				c.setAlias(rs.getString(alias));
+//				String[] modList = rs.getString("modList").split(",");
+//				for (int i = 0; i < modList.length; i++) {
+//					c.loadMod(modList[i]); // TODO
+//				}
+//				String[] banList = rs.getString("banList").split(",");
+//				for (int i = 0; i < banList.length; i++) {
+//					c.loadBan(banList[i]); // TODO
+//				}
+//				String[] approvedList = rs.getString("approvedList").split(",");
+//				for (int i = 0; i < approvedList.length; i++) {
+//					c.loadApproval(approvedList[i]); //TODO
 //				}
 //			}
-//			
-//			// That should be all. Required changes:
-//			// - Merge UserManager and SblockPlayerManager in the future
-//			// - UserManager.getInstance()
-//			// - Channel.loadBan(String)(no reason, no banning player)
-//			// - Channel.loadMod(String/User) (no modding player)
-//			// - Channel.getBanList()
-//			// - Channel.getListeningList()
 			
 			pst.close();
 			
