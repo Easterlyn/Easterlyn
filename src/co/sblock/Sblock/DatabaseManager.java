@@ -6,6 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import co.sblock.Sblock.Chat.TestChat;
+import co.sblock.Sblock.Chat.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.UserData.SblockUser;
 
 /**
@@ -86,17 +90,17 @@ public class DatabaseManager {
 			pst.setString(5, user.getDPlanet().getDisplayName());
 			pst.setShort(6, user.getTower());
 			pst.setBoolean(7, user.isSleeping());
-//			pst.setString(8, user.getCurrent().getName());
-//			pst.setBoolean(9, user.isMute());
-//			pst.setString(10, user.getNick());
-//			StringBuilder sb = new StringBuilder();
-//			for (String s : user.getListening()) {
-//				sb.append(s + ",");
-//			}
-//			pst.setString(11, sb.substring(0, sb.length() - 1));
-//			pst.setString(12, user.getUserIP());
-//			pst.setTimestamp(13, null); // TODO lastLogin
-//			pst.setTime(14, null);
+			pst.setString(8, user.getCurrent().getName());
+			pst.setBoolean(9, user.isMute());
+			pst.setString(10, user.getNick());
+			StringBuilder sb = new StringBuilder();
+			for (String s : user.getListening()) {
+				sb.append(s + ",");
+			}
+			pst.setString(11, sb.substring(0, sb.length() - 1));
+			pst.setString(12, user.getUserIP());
+			pst.setTimestamp(13, null); // TODO lastLogin
+			pst.setTime(14, null);
 			
 			pst.executeUpdate();
 			pst.close();
@@ -122,13 +126,13 @@ public class DatabaseManager {
 				user.setDreamPlanet(rs.getString("dplanet"));
 				user.setTower(rs.getShort("tower"));
 				user.setIsSleeping(rs.getBoolean("sleepstate"));
-//				user.setCurrent(TestChat.getInstance().getChannelManager().getChannel(rs.getString("currentChannel")));
-//				user.setMute(rs.getBoolean("isMute"));
-//				user.setNick(rs.getString("nickname"));
-//				String[] channels = rs.getString("channels").split(",");
-//				for (int i = 0; i < channels.length; i++) {
-//					user.addListening(TestChat.getInstance().getChannelManager().getChannel(channels[i]));
-//				}
+				user.setCurrent(TestChat.getInstance().getChannelManager().getChannel(rs.getString("currentChannel")));
+				user.setMute(rs.getBoolean("isMute"));
+				user.setNick(rs.getString("nickname"));
+				String[] channels = rs.getString("channels").split(",");
+				for (int i = 0; i < channels.length; i++) {
+					user.addListening(TestChat.getInstance().getChannelManager().getChannel(channels[i]));
+				}
 				// IP should not be set here. Update-only, for offline IPban.
 				// TODO lastLogin
 				// TODO timePlayed
@@ -161,7 +165,7 @@ public class DatabaseManager {
 		}
 	}
 
-	public void saveChannelData(/* Channel c */) {
+	public void saveChannelData(Channel c) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
 					"INSERT INTO ChatChannels(name, alias, channelType, listenAccess, " +
@@ -173,27 +177,27 @@ public class DatabaseManager {
 					"modList=VALUES(modList), banList=VALUES(banList), " +
 					"approvedList=VALUES(approvedList), ");
 			
-//			pst.setString(1, c.getName());
-////			pst.setString(2, c.getAlias);
-//			pst.setString(3, c.getType().name());
-////			pst.setString(4, c.getLAccessLevel().name()); // TODO
-////			pst.setString(5, c.getSAccessLevel().name()); // TODO
-//			pst.setString(6, c.getOwner());
-//			StringBuilder sb = new StringBuilder();
-//			for (String s : c.getModList()) {
-//				sb.append(s + ",");
-//			}
-//			pst.setString(7, sb.substring(0, sb.length() - 1));
-//			sb = new StringBuilder();
-//			for (String s : c.getBanList()) {
-//				sb.append(s + ",");
-//			}
-//			pst.setString(8, sb.substring(0, sb.length() - 1));
-//			sb = new StringBuilder();
-//			for (String s : c.getApprovedUsers()) {
-//				sb.append(s + ",");
-//			}
-//			pst.setString(9, sb.substring(0, sb.length() - 1));
+			pst.setString(1, c.getName());
+//			pst.setString(2, c.getAlias);
+			pst.setString(3, c.getType().name());
+//			pst.setString(4, c.getLAccessLevel().name()); // TODO
+//			pst.setString(5, c.getSAccessLevel().name()); // TODO
+			pst.setString(6, c.getOwner());
+			StringBuilder sb = new StringBuilder();
+			for (String s : c.getModList()) {
+				sb.append(s + ",");
+			}
+			pst.setString(7, sb.substring(0, sb.length() - 1));
+			sb = new StringBuilder();
+			for (String s : c.getBanList()) {
+				sb.append(s + ",");
+			}
+			pst.setString(8, sb.substring(0, sb.length() - 1));
+			sb = new StringBuilder();
+			for (String s : c.getApprovedUsers()) {
+				sb.append(s + ",");
+			}
+			pst.setString(9, sb.substring(0, sb.length() - 1));
 			
 			pst.executeUpdate();
 			pst.close();
@@ -209,30 +213,30 @@ public class DatabaseManager {
 			pst = connection.prepareStatement(
 					"SELECT * FROM ChatChannels");
 			
-//			ResultSet rs = pst.executeQuery();
-//			
-//			ChannelManager cm = TestChat.getInstance().getChannelManager();
-//			
-//			while (rs.next()) {
-//				cm.createNewChannel(rs.getString("name"),
-//						AccessLevel.valueOf(rs.getString("sendAccess")),
-//						AccessLevel.valueOf(rs.getString("listenAccess")),
-//						rs.getString("owner")/*, ChannelType.valueOf(rs.getString(channelType))*/);
-//				Channel c = TestChat.getInstance().getChannelManager().getChannel(rs.getString("name"));
-////				c.setAlias(rs.getString("alias"));
-//				String[] modList = rs.getString("modList").split(",");
-//				for (int i = 0; i < modList.length; i++) {
-//					c.loadMod(modList[i]); // TODO
-//				}
-//				String[] banList = rs.getString("banList").split(",");
-//				for (int i = 0; i < banList.length; i++) {
-//					c.loadBan(banList[i]); // TODO
-//				}
-//				String[] approvedList = rs.getString("approvedList").split(",");
-//				for (int i = 0; i < approvedList.length; i++) {
-//					c.loadApproval(approvedList[i]); //TODO
-//				}
-//			}
+			ResultSet rs = pst.executeQuery();
+			
+			ChannelManager cm = TestChat.getInstance().getChannelManager();
+			
+			while (rs.next()) {
+				cm.createNewChannel(rs.getString("name"),
+						AccessLevel.valueOf(rs.getString("sendAccess")),
+						AccessLevel.valueOf(rs.getString("listenAccess")),
+						rs.getString("owner")/*, ChannelType.valueOf(rs.getString(channelType))*/);
+				Channel c = TestChat.getInstance().getChannelManager().getChannel(rs.getString("name"));
+//				c.setAlias(rs.getString("alias"));
+				String[] modList = rs.getString("modList").split(",");
+				for (int i = 0; i < modList.length; i++) {
+					c.loadMod(modList[i]); // TODO
+				}
+				String[] banList = rs.getString("banList").split(",");
+				for (int i = 0; i < banList.length; i++) {
+					c.loadBan(banList[i]); // TODO
+				}
+				String[] approvedList = rs.getString("approvedList").split(",");
+				for (int i = 0; i < approvedList.length; i++) {
+					c.loadApproval(approvedList[i]); //TODO
+				}
+			}
 			
 			pst.close();
 			
