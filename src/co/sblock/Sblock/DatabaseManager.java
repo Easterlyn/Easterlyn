@@ -87,11 +87,11 @@ public class DatabaseManager {
 			pst.setShort(6, user.getTower());
 			pst.setBoolean(7, user.isSleeping());
 //			pst.setString(8, user.getCurrent().getName());
-//			pst.setString(9, user.isMute());
+//			pst.setBoolean(9, user.isMute());
 //			pst.setString(10, user.getNick());
 //			StringBuilder sb = new StringBuilder();
-//			for (Channel c : user.getListening()) {
-//				sb.append(c.getName() + ",");
+//			for (String s : user.getListening()) {
+//				sb.append(s + ",");
 //			}
 //			pst.setString(11, sb.substring(0, sb.length() - 1));
 //			pst.setString(12, user.getUserIP());
@@ -122,16 +122,16 @@ public class DatabaseManager {
 				user.setDreamPlanet(rs.getString("dplanet"));
 				user.setTower(rs.getShort("tower"));
 				user.setIsSleeping(rs.getBoolean("sleepstate"));
-//				user.setCurrent(ChannelManager.getInstance().getChannel(rs.getString("currentChannel")));
+//				user.setCurrent(TestChat.getInstance().getChannelManager().getChannel(rs.getString("currentChannel")));
 //				user.setMute(rs.getBoolean("isMute"));
 //				user.setNick(rs.getString("nickname"));
 //				String[] channels = rs.getString("channels").split(",");
 //				for (int i = 0; i < channels.length; i++) {
-//					user.addListening(channels[i]);
+//					user.addListening(TestChat.getInstance().getChannelManager().getChannel(channels[i]));
 //				}
-//				// IP should not be set here. Update-only, for offline IPban.
-//				// TODO lastLogin
-//				// TODO timePlayed
+				// IP should not be set here. Update-only, for offline IPban.
+				// TODO lastLogin
+				// TODO timePlayed
 				
 				pst.close();
 				
@@ -174,10 +174,10 @@ public class DatabaseManager {
 					"approvedList=VALUES(approvedList), ");
 			
 //			pst.setString(1, c.getName());
-//			pst.setString(2, c.getAlias);
+////			pst.setString(2, c.getAlias);
 //			pst.setString(3, c.getType().name());
-//			pst.setString(4, c.getLAccessLevel().name());
-//			pst.setString(5, c.getSAccessLevel().name());
+////			pst.setString(4, c.getLAccessLevel().name()); // TODO
+////			pst.setString(5, c.getSAccessLevel().name()); // TODO
 //			pst.setString(6, c.getOwner());
 //			StringBuilder sb = new StringBuilder();
 //			for (String s : c.getModList()) {
@@ -190,7 +190,7 @@ public class DatabaseManager {
 //			}
 //			pst.setString(8, sb.substring(0, sb.length() - 1));
 //			sb = new StringBuilder();
-//			for (String s : c.getApprovedList()) {
+//			for (String s : c.getApprovedUsers()) {
 //				sb.append(s + ",");
 //			}
 //			pst.setString(9, sb.substring(0, sb.length() - 1));
@@ -203,7 +203,7 @@ public class DatabaseManager {
 		}
 	}
 
-	public void loadAllChannelData(String cName) {
+	public void loadAllChannelData() {
 		PreparedStatement pst;
 		try {
 			pst = connection.prepareStatement(
@@ -211,13 +211,15 @@ public class DatabaseManager {
 			
 //			ResultSet rs = pst.executeQuery();
 //			
+//			ChannelManager cm = TestChat.getInstance().getChannelManager();
+//			
 //			while (rs.next()) {
-//				ChannelManager.getInstance().createNewChannel(cName,
-//						AccessLevel.valueOf(rs.getString(sendAccess)),
-//						AccessLevel.valueOf(rs.getString(listenAccess)),
-//						rs.getString(owner)/*, ChannelType.valueOf(rs.getString(channelType))*/);
-//				Channel c = ChannelManager.getInstance().getChannel(cName);
-//				c.setAlias(rs.getString(alias));
+//				cm.createNewChannel(rs.getString("name"),
+//						AccessLevel.valueOf(rs.getString("sendAccess")),
+//						AccessLevel.valueOf(rs.getString("listenAccess")),
+//						rs.getString("owner")/*, ChannelType.valueOf(rs.getString(channelType))*/);
+//				Channel c = TestChat.getInstance().getChannelManager().getChannel(rs.getString("name"));
+////				c.setAlias(rs.getString("alias"));
 //				String[] modList = rs.getString("modList").split(",");
 //				for (int i = 0; i < modList.length; i++) {
 //					c.loadMod(modList[i]); // TODO
@@ -239,17 +241,17 @@ public class DatabaseManager {
 		}
 	}
 
-	public void deleteChannel(/* Channel c */) {
-//		try {
-//			PreparedStatement pst = connection.prepareStatement(
-//					"DELETE FROM ChatChannels WHERE name = ?");
-//			pst.setString(1, c.getName());
-//			
-//			pst.executeUpdate();
-//			pst.close();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
+	public void deleteChannel(String channelName) {
+		try {
+			PreparedStatement pst = connection.prepareStatement(
+					"DELETE FROM ChatChannels WHERE name = ?");
+			pst.setString(1, channelName);
+			
+			pst.executeUpdate();
+			pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public ResultSet makeCustomCall(String MySQLStatement, boolean resultExpected) {
@@ -269,5 +271,4 @@ public class DatabaseManager {
 			return null;
 		}
 	}
-
 }
