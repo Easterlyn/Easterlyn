@@ -21,6 +21,7 @@ public interface Channel {
 	
 	public void setNick(String nick, SblockUser sender);
 	public void removeNick(SblockUser sender);
+	public RPNick getNick(SblockUser sender);
 	
 	public void setOwner(String name, SblockUser sender);
 	public String getOwner();

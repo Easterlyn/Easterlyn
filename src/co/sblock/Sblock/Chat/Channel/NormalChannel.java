@@ -87,7 +87,6 @@ public class NormalChannel implements Channel {
 					+ "You do not have permission to change the alias of channel "
 					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
 		}
-
 	}
 
 	@Override
@@ -151,6 +150,10 @@ public class NormalChannel implements Channel {
 	public void removeNick(SblockUser sender) {
 		sender.sendMessage(ChatColor.RED
 				+ "This channel does not support nicknames!");
+	}
+
+	public RPNick getNick(SblockUser sender) {
+		return RPNick.CUSTOM.customize(sender.getPlayerName(), null);
 	}
 
 	@Override
