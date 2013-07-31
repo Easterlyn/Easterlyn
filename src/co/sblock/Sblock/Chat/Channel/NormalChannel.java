@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
@@ -18,8 +19,7 @@ public class NormalChannel implements Channel {
 	protected String name;
 	protected String alias;
 	protected ChannelType type = ChannelType.NORMAL;
-	protected AccessLevel listenAccess;
-	protected AccessLevel sendAccess;
+	protected AccessLevel access;
 	protected String owner;
 
 	protected List<String> approvedList = new ArrayList<String>();
@@ -29,12 +29,10 @@ public class NormalChannel implements Channel {
 
 	protected List<String> listening = new ArrayList<String>();
 
-	public NormalChannel(String name, AccessLevel sendingAccess,
-			AccessLevel listeningAccess, String creator) {
+	public NormalChannel(String name, AccessLevel a, String creator) {
 		this.name = name;
 		this.alias = null;
-		this.sendAccess = sendingAccess;
-		this.listenAccess = listeningAccess;
+		this.access = a;
 		this.owner = creator;
 		this.modList.add(creator);
 		DatabaseManager.getDatabaseManager().saveChannelData(this);
@@ -59,13 +57,8 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public AccessLevel getSAcess() {
-		return this.sendAccess;
-	}
-
-	@Override
-	public AccessLevel getLAcess() {
-		return this.listenAccess;
+	public AccessLevel getAccess() {
+		return this.access;
 	}
 
 	@Override
@@ -104,11 +97,11 @@ public class NormalChannel implements Channel {
 	@Override
 	public boolean userJoin(SblockUser sender) {
 		String joinMsg = this.getJoinChatMessage(sender);
-		switch (listenAccess) {
+		switch (access) {
 		case PUBLIC: {
 			if (!banList.contains(sender.getPlayerName())) {
 				this.listening.add(sender.getPlayerName());
-				this.sendToAll(sender, joinMsg);
+				this.sendToAll(sender, ChatMsgs.onChannelJoin(sender, this));
 				return true;
 			} else {
 				sender.sendMessage(ChatColor.RED + "You are banned from "
@@ -152,8 +145,9 @@ public class NormalChannel implements Channel {
 				+ "This channel does not support nicknames!");
 	}
 
-	public RPNick getNick(SblockUser sender) {
-		return RPNick.CUSTOM.customize(sender.getPlayerName(), null);
+	public CanonNicks getNick(SblockUser sender) {
+		//TODO Nononononononono. there are no nicks in a normal channel, why is this here?
+		return CanonNicks.CUSTOM.customize(sender.getPlayerName(), null);
 	}
 
 	@Override
@@ -228,6 +222,13 @@ public class NormalChannel implements Channel {
 	@Override
 	public List<String> getModList() {
 		return this.modList;
+	}
+	@Override
+	public boolean isChannelMod(SblockUser user)	{
+		if(modList.contains(user.getPlayerName()))	{
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -337,22 +338,39 @@ public class NormalChannel implements Channel {
 	@Override
 	public void loadApproval(String user) {
 		// Public channel; do nothing.
+		//^False, Normal does not imply public
 	}
 
 	@Override
 	public void approveUser(SblockUser user, SblockUser sender) {
-		sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
-				+ " is a public channel!");
+		if(this.getAccess().equals(AccessLevel.PUBLIC))	{
+			sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
+					+ " is a public channel!");
+			return;
+		}
+		else	{
+			approvedList.add(user.getPlayerName());
+		}
 	}
 
 	@Override
 	public void deapproveUser(SblockUser user, SblockUser sender) {
-		sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
-				+ " is a public channel!");
+		if(this.getAccess().equals(AccessLevel.PUBLIC))	{
+			sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
+					+ " is a public channel!");
+			return;
+		}
+		else	{
+			approvedList.remove(user.getPlayerName());
+		}
 	}
 
 	public List<String> getApprovedUsers() {
 		return approvedList;
+	}
+	@Override
+	public boolean isApproved(SblockUser user)	{
+		return approvedList.contains(user.getPlayerName());
 	}
 
 	@Override

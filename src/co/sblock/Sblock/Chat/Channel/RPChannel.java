@@ -3,7 +3,11 @@ package co.sblock.Sblock.Chat.Channel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 
@@ -19,10 +23,9 @@ import co.sblock.Sblock.UserData.SblockUser;
 public class RPChannel implements Channel {
 
 	protected String name;
-	protected HashBiMap<String, RPNick> alias;
+	protected HashMap<String, CanonNicks> nickList;
 	protected ChannelType type = ChannelType.NORMAL;
-	protected AccessLevel listenAccess;
-	protected AccessLevel sendAccess;
+	protected AccessLevel access;
 	protected String owner;
 
 	protected List<String> approvedList = new ArrayList<String>();
@@ -32,12 +35,10 @@ public class RPChannel implements Channel {
 
 	protected List<String> listening = new ArrayList<String>();
 
-	public RPChannel(String name, AccessLevel sendingAccess,
-			AccessLevel listeningAccess, String creator) {
+	public RPChannel(String name, AccessLevel a, String creator) {
 		this.name = name;
-		this.alias = HashBiMap.create();
-		this.sendAccess = sendingAccess;
-		this.listenAccess = listeningAccess;
+		this.nickList = new HashMap<String, CanonNicks>();
+		this.access = a;
 		this.owner = creator;
 		this.modList.add(creator);
 		DatabaseManager.getDatabaseManager().saveChannelData(this);
@@ -57,7 +58,7 @@ public class RPChannel implements Channel {
 	@Override
 	public String getJoinChatMessage(SblockUser sender) {
 		StringBuilder joinMessage = new StringBuilder();
-		RPNick nick = getNick(sender);
+		CanonNicks nick = getNick(sender);
 		joinMessage.append(nick.getName() + ChatColor.YELLOW + " began ");
 		joinMessage.append(nick.getPester() + " ");
 		joinMessage.append(ChatColor.GOLD + this.getName());
@@ -76,20 +77,6 @@ public class RPChannel implements Channel {
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#getSAcess()
 	 */
-	@Override
-	public AccessLevel getSAcess() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat.Channel.Channel#getLAcess()
-	 */
-	@Override
-	public AccessLevel getLAcess() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#getListening()
@@ -167,7 +154,7 @@ public class RPChannel implements Channel {
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#getNick(co.sblock.Sblock.UserData.SblockUser)
 	 */
 	@Override
-	public RPNick getNick(SblockUser sender) {
+	public CanonNicks getNick(SblockUser sender) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -348,6 +335,24 @@ public class RPChannel implements Channel {
 	 */
 	@Override
 	public boolean isOwner(SblockUser user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public AccessLevel getAccess() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isChannelMod(SblockUser user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isApproved(SblockUser user) {
 		// TODO Auto-generated method stub
 		return false;
 	}

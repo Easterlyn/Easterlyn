@@ -8,8 +8,7 @@ public interface Channel {
 	public String getName();
 	public String getJoinChatMessage(SblockUser sender);
 	public String getLeaveChatMessage(SblockUser sender);
-	public AccessLevel getSAcess();
-	public AccessLevel getLAcess();
+	public AccessLevel getAccess();
 	public List<String> getListening();
 	public ChannelType getType();
 	
@@ -21,7 +20,7 @@ public interface Channel {
 	
 	public void setNick(String nick, SblockUser sender);
 	public void removeNick(SblockUser sender);
-	public RPNick getNick(SblockUser sender);
+	public CanonNicks getNick(SblockUser sender);
 	
 	public void setOwner(String name, SblockUser sender);
 	public String getOwner();
@@ -44,6 +43,8 @@ public interface Channel {
 	public void disband(SblockUser sender);
 	
 	public void sendToAll(SblockUser sender, String message);
-	List<String> getBanList();
-	boolean isOwner(SblockUser user);
+	public List<String> getBanList();
+	public boolean isOwner(SblockUser user);
+	public boolean isChannelMod(SblockUser user);
+	public boolean isApproved(SblockUser user);
 }

@@ -7,7 +7,7 @@ package co.sblock.Sblock.Chat.Channel;
  * @author Jikoo
  *
  */
-public enum RPNick {
+public enum CanonNicks {
 	JOHN("John", "ectoBiologist", "1", "pestering"),
 	ROSE("Rose", "tentacleTherapist", "d", "pestering"),
 	DAVE("Dave", "turntechGodhead", "4", "pestering"),
@@ -65,7 +65,7 @@ public enum RPNick {
 	private String pester;
 
 
-	private RPNick(String name, String chumHandle, String colorCode, String pester) {
+	private CanonNicks(String name, String chumHandle, String colorCode, String pester) {
 		this.name = name;
 		this.chumHandle = chumHandle;
 		this.color = SECTION_SIGN + colorCode;
@@ -190,7 +190,7 @@ public enum RPNick {
 		return s;
 	}
 
-	private String applyQuirk(String s, RPNick n) {
+	private String applyQuirk(String s, CanonNicks n) {
 		// This is for quirks that make use of multiple existing quirks.
 		// Mostly will be used for combo sprites.
 		return n.applyQuirk(s);
@@ -211,7 +211,7 @@ public enum RPNick {
 		return this.color;
 	}
 
-	public RPNick customize(String name, String chumHandle) {
+	public CanonNicks customize(String name, String chumHandle) {
 		this.name = name;
 		this.chumHandle = chumHandle;
 		return this;

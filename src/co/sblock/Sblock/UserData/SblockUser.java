@@ -13,7 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.Sblock.DatabaseManager;
+import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
 
@@ -68,6 +70,7 @@ public class SblockUser {
 	private Timestamp lastLogin;
 	// TODO do we need this? if(!getPlayer().isOnline())
 	// getOfflinePlayer().getLastPlayed()
+	//If that's a function of native OfflinePlayer, then cool. Use that, just make sure it gets saved in the db and is accessible easily here
 
 	/** The total time the <code>Player</code> has spent logged in */
 	@SuppressWarnings("unused")
@@ -288,11 +291,9 @@ public class SblockUser {
 
 	public void setMute(boolean b) {
 		if (b) {
-			this.sendMessage(ChatColor.RED
-					+ "You have been muted in all channels.");
+			this.sendMessage(ChatMsgs.onUserMute(this));
 		} else {
-			this.sendMessage(ChatColor.GREEN
-					+ "You have been unmuted in all channels.");
+			this.sendMessage(ChatMsgs.onUserUnmute(this));
 		}
 	}
 
@@ -301,12 +302,16 @@ public class SblockUser {
 	}
 
 	public void setCurrent(Channel c) {
-		if (c.isBanned(this)) {
-			this.getPlayer().sendMessage(
-					ChatColor.RED + "You are banned in channel "
-							+ ChatColor.GOLD + c.getName() + ChatColor.RED
-							+ "!");
+		if (c.isBanned(this)) {	//First make sure User may join channel
+			this.getPlayer().sendMessage(ChatMsgs.isBanned(this, c));
 			return;
+		}
+		else if(c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this))	{
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(this, c));
+			return;
+		}
+		if(!this.isListening(c))	{
+			this.addListening(c);
 		}
 		this.current = c.getName();
 	}
@@ -317,20 +322,18 @@ public class SblockUser {
 
 	public boolean addListening(Channel c) {
 		if (c == null) {
+			//TODO add an error message here
 			return false;
 		}
 		if (c.isBanned(this)) {
-			this.getPlayer().sendMessage(
-					ChatColor.RED + "You are banned in channel "
-							+ ChatColor.GOLD + c.getName() + ChatColor.RED
-							+ "!");
+			this.getPlayer().sendMessage(ChatMsgs.isBanned(this, c));
 			return false;
 		}
 		if (!this.listening.contains(c)) {
 			if (c.userJoin(this)) {
 				this.listening.add(c.getName());
-				this.sendMessage(ChatColor.GREEN + "Now listening to channel "
-						+ ChatColor.GOLD + c.getName() + ChatColor.GREEN + ".");
+				//this.sendMessage(ChatColor.GREEN + "Now listening to channel " + ChatColor.GOLD + c.getName() + ChatColor.GREEN + ".");
+				//Extra spam for the player to read. All in favor of removing it say aye
 				return true;
 			}
 		} else {
@@ -360,6 +363,9 @@ public class SblockUser {
 	public List<String> getListening() {
 		return listening;
 	}
+	public boolean isListening(Channel c)	{
+		return listening.contains(c);
+	}
 
 	// -----------------------------------------------------------------------------------------------------------------------
 
@@ -378,27 +384,34 @@ public class SblockUser {
 		Channel sendto = ChatModule.getInstance().getChannelManager()
 				.getChannel(sender.current);
 
-		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel
-											// destination
+		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel destination
 			int space = fullmsg.indexOf(" ");
 			String newChannel = fullmsg.substring(1, space);
-			if (ChatModule.getInstance().getChannelManager()
-					.isValidChannel(newChannel)) {
-				sendto = ChatModule.getInstance().getChannelManager()
-						.getChannel(newChannel);
-				outputmessage = fullmsg.substring(space + 1);
+			if (ChatModule.getInstance().getChannelManager().isValidChannel(newChannel)) {
+				sendto = ChatModule.getInstance().getChannelManager().getChannel(newChannel);
+				if(sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender))	{
+					//User not approved in channel
+					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sender, sendto));
+					return;
+				}
+				else	{	//should reach this point for publicchannel and approved users
+					outputmessage = fullmsg.substring(space + 1);
+				}
+			}
+			else	{
+				//invalidChannel
+				sender.sendMessage(ChatMsgs.errorInvalidChannel(sendto));
+				return;
 			}
 		}
 		if (sender.globalMute) {
-			sender.getPlayer().sendMessage(
-					ChatColor.RED + "You are muted in channel "
-							+ ChatColor.GOLD + sendto.getName() + ChatColor.RED
-							+ "!");
+			sender.sendMessage(ChatMsgs.isMute(sender));
 			return;
 		}
-		switch (sendto.getSAcess()) {
-		case PUBLIC:
-			break;
+		//TODO see belowright
+	/*		switch (sendto.getAccess()) {									//This part should no longer be necessary
+			case PUBLIC:													//If they don't have access, they should be blocked 
+			break;															//by this.setCurrent()
 		case PRIVATE:
 			if (sendto.getApprovedUsers().contains(sender.playerName)) {
 				break;
@@ -406,6 +419,7 @@ public class SblockUser {
 				return;
 			}
 		}
+		*/
 		// Logger.getLogger("Minecraft").info(sender.getName() + " " +
 		// sendto.getName() + " " + outputmessage);
 		this.formatMessage(sender, sendto, outputmessage);
@@ -424,6 +438,8 @@ public class SblockUser {
 		// check for thirdperson # modifier and reformat appropriately
 		// finally, channel.sendtochannel
 
+		String channelF = "";
+		String nameF = "";
 		String output = "";
 		// colorformatting
 
@@ -431,13 +447,13 @@ public class SblockUser {
 		isThirdPerson = (s.indexOf("#") == 0) ? true : false;
 
 		if (!isThirdPerson) {
-			output = output + this.getOutputChannelF(sender, c);
+			channelF = this.getOutputChannelF(sender, c);
 		}
 		if (isThirdPerson) {
 			s = s.substring(1);
 		}
-		output = output + this.getOutputNameF(sender, isThirdPerson);
-		output = output + s;
+		nameF = this.getOutputNameF(sender, isThirdPerson);
+		output = channelF + nameF + s;
 		sender.getPlayer().sendMessage(output);
 		// This bypass will remain as long as the stupid
 		// thing can't tell what it's listening to
@@ -461,9 +477,9 @@ public class SblockUser {
 		String out = "";
 
 		ChatColor color = ColorDef.CHATRANK_MEMBER;
-		if (channel.getOwner().equalsIgnoreCase(sender.getPlayerName())) {
+		if (channel.isOwner(sender))	{
 			color = ColorDef.CHATRANK_OWNER;
-		} else if (channel.getModList().contains(sender.getPlayerName())) {
+		} else if (channel.isChannelMod(sender)) {
 			color = ColorDef.CHATRANK_MOD;
 		}
 		out = ChatColor.WHITE + "[" + color + channel.getName()
@@ -506,10 +522,11 @@ public class SblockUser {
 	}
 
 	public void sendMessage(String string) {
-		// Not sure if I even need this...
+		this.getPlayer().sendMessage(string);
 	}
 
 	public String toString() { // For /whois usage mainly
+		//TODO Someone tell Dub to get off his lazy ass
 		String s = "";
 		return s;
 	}
