@@ -15,6 +15,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
@@ -452,7 +453,7 @@ public class SblockUser {
 		if (isThirdPerson) {
 			s = s.substring(1);
 		}
-		nameF = this.getOutputNameF(sender, isThirdPerson);
+		nameF = this.getOutputNameF(sender, isThirdPerson, c);
 		output = channelF + nameF + s;
 		sender.getPlayer().sendMessage(output);
 		// This bypass will remain as long as the stupid
@@ -488,7 +489,7 @@ public class SblockUser {
 		return out;
 	}
 
-	public String getOutputNameF(SblockUser sender, boolean isThirdPerson) {
+	public String getOutputNameF(SblockUser sender, boolean isThirdPerson, Channel c) {
 		// colors for <$name> applied here
 		// SburbChat code. Handle with care
 		String out = "";
@@ -496,6 +497,14 @@ public class SblockUser {
 		String outputName = sender.playerName;
 		if (!(sender.globalNick.equals(sender.playerName))) {
 			outputName = sender.globalNick;
+		}
+		else if(c.getType().equals(ChannelType.NICK))	{
+			//nick not required in NickChannel
+		}
+		else if(c.getType().equals(ChannelType.RP))	{
+			//CanonNick required in RPChannel
+			//if getNickFromUser.equals something in CanonNicks
+			//use that name
 		}
 
 		ChatColor colorP = ColorDef.RANK_HERO;

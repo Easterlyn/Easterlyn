@@ -17,7 +17,6 @@ import co.sblock.Sblock.UserData.UserManager;
 public class NormalChannel implements Channel {
 
 	protected String name;
-	protected String alias;
 	protected ChannelType type = ChannelType.NORMAL;
 	protected AccessLevel access;
 	protected String owner;
@@ -31,7 +30,6 @@ public class NormalChannel implements Channel {
 
 	public NormalChannel(String name, AccessLevel a, String creator) {
 		this.name = name;
-		this.alias = null;
 		this.access = a;
 		this.owner = creator;
 		this.modList.add(creator);
@@ -69,29 +67,6 @@ public class NormalChannel implements Channel {
 	@Override
 	public ChannelType getType() {
 		return ChannelType.NORMAL;
-	}
-
-	@Override
-	public void setAlias(String name, SblockUser sender) {
-		if (this.modList.contains(sender.getPlayerName())) {
-			this.alias = name;
-		} else {
-			sender.sendMessage(ChatColor.RED
-					+ "You do not have permission to change the alias of channel "
-					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-	}
-
-	@Override
-	public void removeAlias(SblockUser sender) {
-		if (this.modList.contains(sender.getPlayerName())) {
-			this.alias = null;
-		} else {
-			sender.sendMessage(ChatColor.RED
-					+ "You do not have permission to remove the alias of channel "
-					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
-		}
-
 	}
 
 	@Override

@@ -99,20 +99,6 @@ public class RPChannel implements Channel {
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#setAlias(java.lang.String, co.sblock.Sblock.UserData.SblockUser)
 	 */
-	@Override
-	public void setAlias(String name, SblockUser sender) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat.Channel.Channel#removeAlias(co.sblock.Sblock.UserData.SblockUser)
-	 */
-	@Override
-	public void removeAlias(SblockUser sender) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#userJoin(co.sblock.Sblock.UserData.SblockUser)

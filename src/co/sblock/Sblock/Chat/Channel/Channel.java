@@ -12,9 +12,6 @@ public interface Channel {
 	public List<String> getListening();
 	public ChannelType getType();
 	
-	public void setAlias(String name, SblockUser sender);
-	public void removeAlias(SblockUser sender);
-	
 	public boolean userJoin(SblockUser sender);
 	public void userLeave(SblockUser sender);
 	
