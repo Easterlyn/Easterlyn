@@ -36,6 +36,7 @@ public class ChatMsgs {
 	}
 	
 	public static String onUserKick(SblockUser u, Channel c)	{
+		
 		return null;
 	}
 	public static String onUserBan(SblockUser u, Channel c)	{
