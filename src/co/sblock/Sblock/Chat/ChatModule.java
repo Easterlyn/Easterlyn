@@ -12,6 +12,7 @@ import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
@@ -158,10 +159,10 @@ public class ChatModule extends Module {
 						if (user.getListening().contains(c)) {
 							next = ChatColor.YELLOW + c.getName() + " ";
 							clist += next;
-						} else if (c.getSAcess().equals(AccessLevel.PUBLIC)) {
+						} else if (c.getAccess().equals(AccessLevel.PUBLIC)) {
 							next = ChatColor.GREEN + c.getName() + " ";
 							clist += next;
-						} else if (c.getSAcess().equals(AccessLevel.PRIVATE)) {
+						} else if (c.getAccess().equals(AccessLevel.PRIVATE)) {
 							next = ChatColor.RED + c.getName() + " ";
 							clist += next;
 						}
@@ -178,7 +179,7 @@ public class ChatModule extends Module {
 					}
 					this.getChannelManager().createNewChannel(args[1],
 							AccessLevel.valueOf(args[2]),
-							AccessLevel.valueOf(args[3]), user.getPlayerName());
+							user.getPlayerName(), ChannelType.valueOf(args[3])); // TODO better method
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("whois")) {
@@ -225,14 +226,6 @@ public class ChatModule extends Module {
 							c.banUser(
 									UserManager.getUserManager().getUser(
 											args[2]), user);
-							return true;
-						}
-						if (args[1].equalsIgnoreCase("setalias")) {
-							c.setAlias(args[2], user);
-							return true;
-						}
-						if (args[1].equalsIgnoreCase("rmalias")) {
-							c.removeAlias(user);
 							return true;
 						}
 						if (args[1].equalsIgnoreCase("getlisteners")) {

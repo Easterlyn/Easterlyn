@@ -26,7 +26,7 @@ public class ChannelManager {
 		DatabaseManager.getDatabaseManager().saveChannelData(c);
 	}
 
-	public void createNewChannel(String name, AccessLevel access, String creator) {
+	public void createNewChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
 		Channel c = new NormalChannel(name, access, creator);
 		ChannelManager.getChannelList().put(name, c);
 		Logger.getLogger("Minecraft").info("Channel" + c.getName() + "created: " + access + " " + creator);
@@ -72,5 +72,13 @@ public class ChannelManager {
 
 	public boolean isValidChannel(String channelname) {
 		return channelList.containsValue(channelname);
+	}
+
+	/**
+	 * 
+	 */
+	public void createDefaultChannel() {
+		// TODO Auto-generated method stub KEIKO :D
+		
 	}
 }

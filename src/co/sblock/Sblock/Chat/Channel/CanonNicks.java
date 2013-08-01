@@ -204,11 +204,8 @@ public enum CanonNicks {
 		return this.color + this.name;
 	}
 
-	/**
-	 * @return
-	 */
-	private String getColor() {
-		return this.color;
+	public String getHandle() {
+		return this.color + this.chumHandle;
 	}
 
 	public CanonNicks customize(String name, String chumHandle) {

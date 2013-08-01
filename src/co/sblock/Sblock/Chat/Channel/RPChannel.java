@@ -3,12 +3,7 @@ package co.sblock.Sblock.Chat.Channel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.bukkit.ChatColor;
 
 import com.google.common.collect.HashBiMap;
@@ -23,8 +18,8 @@ import co.sblock.Sblock.UserData.SblockUser;
 public class RPChannel implements Channel {
 
 	protected String name;
-	protected HashMap<String, CanonNicks> nickList;
-	protected ChannelType type = ChannelType.NORMAL;
+	protected HashBiMap<String, CanonNicks> nickList;
+	protected ChannelType type = ChannelType.RP;
 	protected AccessLevel access;
 	protected String owner;
 
@@ -37,7 +32,7 @@ public class RPChannel implements Channel {
 
 	public RPChannel(String name, AccessLevel a, String creator) {
 		this.name = name;
-		this.nickList = new HashMap<String, CanonNicks>();
+		this.nickList = HashBiMap.create();
 		this.access = a;
 		this.owner = creator;
 		this.modList.add(creator);
@@ -75,16 +70,11 @@ public class RPChannel implements Channel {
 	}
 
 	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat.Channel.Channel#getSAcess()
-	 */
-
-	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#getListening()
 	 */
 	@Override
 	public List<String> getListening() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.listening;
 	}
 
 	/* (non-Javadoc)
@@ -92,21 +82,42 @@ public class RPChannel implements Channel {
 	 */
 	@Override
 	public ChannelType getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.type;
 	}
-
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat.Channel.Channel#setAlias(java.lang.String, co.sblock.Sblock.UserData.SblockUser)
-	 */
 
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#userJoin(co.sblock.Sblock.UserData.SblockUser)
 	 */
 	@Override
 	public boolean userJoin(SblockUser sender) {
-		// TODO Auto-generated method stub
-		return false;
+		switch (access) {
+		case PUBLIC: {
+			if (!banList.contains(sender.getPlayerName())) {
+				this.listening.add(sender.getPlayerName());
+				this.sendToAll(sender, this.getJoinChatMessage(sender));
+				return true;
+			} else {
+				sender.sendMessage(ChatColor.RED + "You are banned from "
+						+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+				return false;
+			}
+		}
+		case PRIVATE: {
+			if (approvedList.contains(sender.getPlayerName())) {
+				this.listening.add(sender.getPlayerName());
+				this.sendToAll(sender, this.getJoinChatMessage(sender));
+				return true;
+			} else {
+				sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
+						+ " is a " + ChatColor.BOLD + "private"
+						+ ChatColor.RESET + " channel!");
+				return false;
+			}
+		}
+		default: {
+			return false;
+		}
+		}
 	}
 
 	/* (non-Javadoc)

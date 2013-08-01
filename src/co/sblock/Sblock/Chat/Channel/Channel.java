@@ -24,7 +24,7 @@ public interface Channel {
 	public void loadMod(String user);
 	public void addMod(SblockUser user, SblockUser sender);
 	public void removeMod(SblockUser user, SblockUser sender);
-	public List<String>	getModList();
+	public List<String> getModList();
 	public boolean isMod(SblockUser user);
 	
 	public void kickUser(SblockUser user, SblockUser sender);

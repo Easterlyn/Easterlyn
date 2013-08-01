@@ -1,7 +1,6 @@
 package co.sblock.Sblock.Chat;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 public class ColorDef {
 	

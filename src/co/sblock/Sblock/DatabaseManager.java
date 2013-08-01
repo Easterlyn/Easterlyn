@@ -5,11 +5,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
 
 /**
@@ -99,8 +101,8 @@ public class DatabaseManager {
 			}
 			pst.setString(11, sb.substring(0, sb.length() - 1));
 			pst.setString(12, user.getUserIP());
-			pst.setTimestamp(13, null); // TODO lastLogin
-			pst.setTime(14, null);
+			pst.setTimestamp(13, new Timestamp(user.getOfflinePlayer().getLastPlayed()));
+			pst.setTime(14, null); // TODO timePlayed
 			
 			pst.executeUpdate();
 			pst.close();
@@ -133,8 +135,6 @@ public class DatabaseManager {
 				for (int i = 0; i < channels.length; i++) {
 					user.addListening(ChatModule.getInstance().getChannelManager().getChannel(channels[i]));
 				}
-				// IP should not be set here. Update-only, for offline IPban.
-				// TODO lastLogin
 				// TODO timePlayed
 				
 				pst.close();
@@ -168,36 +168,34 @@ public class DatabaseManager {
 	public void saveChannelData(Channel c) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(
-					"INSERT INTO ChatChannels(name, alias, channelType, listenAccess, " +
-					"sendAccess, owner, modList, banList, approvedList) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)" +
-					"ON DUPLICATE KEY UPDATE alias=VALUES(alias), " +
-					"channelType=VALUES(channelType), listenAccess=VALUES(listenAccess), " + 
-					"sendAccess=VALUES(sendAccess), owner=VALUES(owner), " +
-					"modList=VALUES(modList), banList=VALUES(banList), " +
+					"INSERT INTO ChatChannels(name, channelType, " +
+					"access, owner, modList, banList, approvedList) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?)" +
+					"ON DUPLICATE KEY UPDATE " +
+					"channelType=VALUES(channelType), access=VALUES(access), " + 
+					"owner=VALUES(owner), modList=VALUES(modList), " +
+					"banList=VALUES(banList), " +
 					"approvedList=VALUES(approvedList), ");
 			
 			pst.setString(1, c.getName());
-//			pst.setString(2, c.getAlias);
-			pst.setString(3, c.getType().name());
-//			pst.setString(4, c.getLAccessLevel().name()); // TODO
-//			pst.setString(5, c.getSAccessLevel().name()); // TODO
-			pst.setString(6, c.getOwner());
+			pst.setString(2, c.getType().name());
+			pst.setString(3, c.getAccess().name());
+			pst.setString(4, c.getOwner());
 			StringBuilder sb = new StringBuilder();
 			for (String s : c.getModList()) {
 				sb.append(s + ",");
 			}
-			pst.setString(7, sb.substring(0, sb.length() - 1));
+			pst.setString(5, sb.substring(0, sb.length() - 1));
 			sb = new StringBuilder();
 			for (String s : c.getBanList()) {
 				sb.append(s + ",");
 			}
-			pst.setString(8, sb.substring(0, sb.length() - 1));
+			pst.setString(6, sb.substring(0, sb.length() - 1));
 			sb = new StringBuilder();
 			for (String s : c.getApprovedUsers()) {
 				sb.append(s + ",");
 			}
-			pst.setString(9, sb.substring(0, sb.length() - 1));
+			pst.setString(7, sb.substring(0, sb.length() - 1));
 			
 			pst.executeUpdate();
 			pst.close();
@@ -219,22 +217,20 @@ public class DatabaseManager {
 			
 			while (rs.next()) {
 				cm.createNewChannel(rs.getString("name"),
-						AccessLevel.valueOf(rs.getString("sendAccess")),
-						AccessLevel.valueOf(rs.getString("listenAccess")),
-						rs.getString("owner")/*, ChannelType.valueOf(rs.getString(channelType))*/);
+						AccessLevel.valueOf(rs.getString("access")),
+						rs.getString("owner"), ChannelType.valueOf(rs.getString("channelType")));
 				Channel c = ChatModule.getInstance().getChannelManager().getChannel(rs.getString("name"));
-//				c.setAlias(rs.getString("alias"));
 				String[] modList = rs.getString("modList").split(",");
 				for (int i = 0; i < modList.length; i++) {
-					c.loadMod(modList[i]); // TODO
+					c.loadMod(modList[i]);
 				}
 				String[] banList = rs.getString("banList").split(",");
 				for (int i = 0; i < banList.length; i++) {
-					c.loadBan(banList[i]); // TODO
+					c.loadBan(banList[i]);
 				}
 				String[] approvedList = rs.getString("approvedList").split(",");
 				for (int i = 0; i < approvedList.length; i++) {
-					c.loadApproval(approvedList[i]); //TODO
+					c.loadApproval(approvedList[i]);
 				}
 			}
 			
