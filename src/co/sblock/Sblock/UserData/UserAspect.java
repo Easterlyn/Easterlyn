@@ -7,7 +7,7 @@ package co.sblock.Sblock.UserData;
  * @author Jikoo
  */
 public enum UserAspect {
-	UNKNOWN, BLOOD, BREATH, DOOM, HEART, HOPE, LIFE, LIGHT, MIND, RAGE, SPACE, TIME, VOID;
+	NONE, BLOOD, BREATH, DOOM, HEART, HOPE, LIFE, LIGHT, MIND, RAGE, SPACE, TIME, VOID;
 
 	/**
 	 * Gets the display name of the aspect.
@@ -28,7 +28,7 @@ public enum UserAspect {
 		try {
 			return UserAspect.valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return UserAspect.UNKNOWN;
+			return UserAspect.NONE;
 		}
 	}
 }

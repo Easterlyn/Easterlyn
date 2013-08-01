@@ -7,7 +7,7 @@ package co.sblock.Sblock.UserData;
  * @author Jikoo
  */
 public enum UserClass {
-	UNKNOWN, BARD, HEIR, KNIGHT, MAGE, MAID, PAGE, PRINCE, ROGUE, SEER, SYLPH, THEIF, WITCH;
+	NONE, BARD, HEIR, KNIGHT, MAGE, MAID, PAGE, PRINCE, ROGUE, SEER, SYLPH, THEIF, WITCH;
 
 	/**
 	 * Gets the display name of the UserClass.
@@ -28,7 +28,7 @@ public enum UserClass {
 		try {
 			return UserClass.valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return UserClass.UNKNOWN;
+			return UserClass.NONE;
 		}
 	}
 }

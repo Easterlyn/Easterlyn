@@ -34,16 +34,16 @@ public class SblockUser {
 	private String playerName;
 
 	/** The <code>Player</code>'s chosen class */
-	private UserClass classType = UserClass.UNKNOWN;
+	private UserClass classType = UserClass.NONE;
 
 	/** The <code>Player</code>'s chosen aspect */
-	private UserAspect aspect = UserAspect.UNKNOWN;
+	private UserAspect aspect = UserAspect.NONE;
 
 	/** The <code>Player</code>'s chosen Medium planet. */
-	private MediumPlanet mPlanet = MediumPlanet.UNKNOWN;
+	private MediumPlanet mPlanet = MediumPlanet.NONE;
 
 	/** The <code>Player</code>'s chosen dream planet. */
-	private DreamPlanet dPlanet = DreamPlanet.UNKNOWN;
+	private DreamPlanet dPlanet = DreamPlanet.NONE;
 
 	/** The <code>Player</code>'s tower number */
 	private short tower = -1;

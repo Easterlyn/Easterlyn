@@ -8,7 +8,7 @@ package co.sblock.Sblock.UserData;
  */
 public enum DreamPlanet {
 
-	UNKNOWN, PROSPIT, DERSE;
+	NONE, PROSPIT, DERSE;
 
 	/**
 	 * Gets the display name.
@@ -29,7 +29,7 @@ public enum DreamPlanet {
 		try {
 			return DreamPlanet.valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return DreamPlanet.UNKNOWN;
+			return DreamPlanet.NONE;
 		}
 	}
 }

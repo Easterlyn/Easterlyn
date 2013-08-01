@@ -8,7 +8,7 @@ package co.sblock.Sblock.UserData;
  */
 public enum MediumPlanet {
 
-	UNKNOWN, LOFAF, LOHAC, LOLAR, LOWAS;
+	NONE, LOFAF, LOHAC, LOLAR, LOWAS;
 
 	/**
 	 * Gets the short name of a planet.
@@ -34,7 +34,7 @@ public enum MediumPlanet {
 			return "Land of Light and Rain";
 		case LOWAS:
 			return "Land of Wind and Shade";
-		case UNKNOWN:
+		case NONE:
 			return "Land of Fail and Downvotes";
 		default:
 			return "Land of Fail and Downvotes";
@@ -51,7 +51,7 @@ public enum MediumPlanet {
 		try {
 			return MediumPlanet.valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return MediumPlanet.UNKNOWN;
+			return MediumPlanet.NONE;
 		}
 	}
 }

@@ -75,15 +75,15 @@ public class DatabaseManager {
 			PreparedStatement pst = connection.prepareStatement(
 					"INSERT INTO PlayerData(playerName, class, aspect, " +
 					"mplanet, dplanet, towernum, sleepstate, currentChannel, " +
-					"isMute, nickname, channels, ip, LastLogin, timePlayed) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+					"isMute, nickname, channels, ip, timePlayed) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
 					"ON DUPLICATE KEY UPDATE " +
 					"class=VALUES(class), aspect=VALUES(aspect), " +
 					"mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), " +
 					"towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), " +
 					"currentChannel=VALUES(currentChannel), isMute=VALUES(isMute), " +
-					"nickname=VALUES(nickname), channels=VALUES(channels), ip=VALUES(ip), " +
-					"LastLogin=VALUES(LastLogin), timePlayed=VALUES(timePlayed)");
+					"nickname=VALUES(nickname), channels=VALUES(channels), " +
+					"ip=VALUES(ip), timePlayed=VALUES(timePlayed)");
 			
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
@@ -101,8 +101,7 @@ public class DatabaseManager {
 			}
 			pst.setString(11, sb.substring(0, sb.length() - 1));
 			pst.setString(12, user.getUserIP());
-			pst.setTimestamp(13, new Timestamp(user.getOfflinePlayer().getLastPlayed()));
-			pst.setTime(14, null); // TODO timePlayed
+			pst.setTime(13, null); // TODO timePlayed
 			
 			pst.executeUpdate();
 			pst.close();
