@@ -6,6 +6,9 @@ author: Sblock Co.
 authors: [Dublek, Jikoo, FireNG]
 description: Sblock's sexy mainframe
 commands:
+ sc:
+  usage: /sc <action> <additional arguments>
+  description: SburbChat's main command
  profile:
   usage: /<command> <username>
   description: "[Sburb] Show's a player's Sburb profile"
