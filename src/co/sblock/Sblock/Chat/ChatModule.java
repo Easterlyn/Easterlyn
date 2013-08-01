@@ -27,7 +27,7 @@ public class ChatModule extends Module {
 		instance = this;
 		this.registerEvents(listener);
 		cm.loadAllChannels();
-		this.cm.createDefaultChannel();
+		this.cm.createDefaultSet();
 	}
 
 	@Override

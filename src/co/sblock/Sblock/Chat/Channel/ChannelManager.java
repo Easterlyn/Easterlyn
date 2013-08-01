@@ -73,12 +73,4 @@ public class ChannelManager {
 	public boolean isValidChannel(String channelname) {
 		return channelList.containsValue(channelname);
 	}
-
-	/**
-	 * 
-	 */
-	public void createDefaultChannel() {
-		// TODO Auto-generated method stub KEIKO :D
-		
-	}
 }
