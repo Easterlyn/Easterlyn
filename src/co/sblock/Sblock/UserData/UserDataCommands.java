@@ -26,19 +26,13 @@ public class UserDataCommands implements CommandListener {
 		if (user == null)
 			sender.sendMessage(ChatColor.YELLOW + "User not found.");
 		else {
-			String message = PROFILE_COLOR
-					+ "-----------------------------------------\n"
-					+ ChatColor.YELLOW + playerToLookup + ": "
-					+ user.getClassType().getDisplayName() + " of "
-					+ user.getAspect().getDisplayName() + "\n"
-					+ PROFILE_COLOR
-					+ "-----------------------------------------\n"
-					+ "Dream planet: " + ChatColor.YELLOW
-					+ user.getDPlanet().getDisplayName() + "\n"
-					+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW
-					+ user.getDPlanet().getDisplayName() + "\n"
-					+ PROFILE_COLOR + "Echeladder rank: " + ChatColor.YELLOW
-					+ "Coming soon!\n";
+			String message = 
+					PROFILE_COLOR + "-----------------------------------------\n"
+			   + ChatColor.YELLOW + playerToLookup + ": " + user.getClassType().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
+			   + PROFILE_COLOR    + "-----------------------------------------\n"
+								  + "Dream planet: " + ChatColor.YELLOW + user.getDPlanet().getDisplayName() + "\n"
+			   + PROFILE_COLOR    + "Medium planet: " + ChatColor.YELLOW + user.getDPlanet().getDisplayName() + "\n"
+			   + PROFILE_COLOR    + "Echeladder rank: " + ChatColor.YELLOW + "Coming soon!";
 			sender.sendMessage(message);
 		}
 		return true;

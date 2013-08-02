@@ -25,8 +25,9 @@ import co.sblock.Sblock.UserData.UserManager;
  */
 public class ChatModuleCommandListener implements CommandListener {
 	
-	public boolean sban(CommandSender sender, String target, String reason) {
-		if (!(sender instanceof Player) || sender.isOp()) {
+	@SblockCommand(mergeLast = true)
+	public boolean sban(Player sender, String target, String reason) {
+		if (sender.isOp()) {
 			Player victim = Bukkit.getServer().getPlayer(target);
 			String ip = victim.getAddress().getAddress().getHostAddress();
 			Bukkit.getPlayerExact(target).kickPlayer(reason);
@@ -38,8 +39,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			}
 			return true;
 		} else {
-			sender.sendMessage(ChatColor.BLACK
-					+ "There are mysteries into which it behooves one not to delve too deeply...");
+			sender.sendMessage(ChatColor.BLACK + "You cannot ban an OP. Please contact the server owner.");
 			return true;
 		}
 	}

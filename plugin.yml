@@ -8,12 +8,15 @@ description: Sblock's sexy mainframe
 commands:
  sc:
   usage: /sc <action> <additional arguments>
-  description: SburbChat's main command
+  description: "[Sburb] SburbChat's main command"
+ sban:
+  usage: /<command> <target> <reason>
+  description: "[Sburb] Ban a player and their IP address."
  profile:
   usage: /<command> <username>
   description: "[Sburb] Show's a player's Sburb profile"
  setplayer:
-  usage: /<command> <playername> [class|aspect|land|dream] <value>
+  usage: /<command> <playername> <class|aspect|land|dream> <value>
   description: "[Sburb] Change's a player's information."
  newplayer:
   usage: /<command> <playername> <class> <aspect> <medium planet> <dream planet>

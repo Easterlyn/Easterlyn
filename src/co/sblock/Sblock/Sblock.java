@@ -59,24 +59,17 @@ public class Sblock extends JavaPlugin {
 	public void registerCommands(CommandListener listener) {
 		for (Method method : listener.getClass().getMethods()) {
 			if (this.commandHandlers.containsKey(method))
-				throw new Error("Duplicate handlers for command "
-						+ method
-						+ " found in "
-						+ this.commandHandlers.get(method.getName())
-								.getDeclaringClass().getName() + " and "
-						+ method.getDeclaringClass().getName());
+				throw new Error("Duplicate handlers for command " + method + " found in " + this.commandHandlers.get(method.getName()).getDeclaringClass().getName() + " and " + method.getDeclaringClass().getName());
 			if (method.getAnnotation(SblockCommand.class) != null
 					&& method.getParameterTypes().length > 0
-					&& CommandSender.class.isAssignableFrom(method
-							.getParameterTypes()[0]))
+					&& CommandSender.class.isAssignableFrom(method.getParameterTypes()[0]))
 				this.commandHandlers.put(method.getName(), method);
 		}
 		this.listenerInstances.put(listener.getClass(), listener);
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!this.commandHandlers.containsKey(label)) {
 			this.getLogger().warning(
 					"Command /" + label + " has no associated handler.");
