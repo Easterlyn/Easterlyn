@@ -43,4 +43,27 @@ public class UserDataCommands implements CommandListener {
 		}
 		return true;
 	}
+	
+	@SblockCommand(consoleFriendly = true)
+	public boolean setplayer(CommandSender sender, String playerToModify, String type, String value)
+	{
+		SblockUser user = UserManager.getUserManager().getUser(playerToModify);
+		if(type.equalsIgnoreCase("class"))
+			user.setPlayerClass(value);
+		else if(type.equalsIgnoreCase("aspect"))
+			user.setAspect(value);
+		else if(type.equalsIgnoreCase("land"))
+			user.setMediumPlanet(value);
+		else if(type.equalsIgnoreCase("dream"))
+			user.setDreamPlanet(value);
+		else
+			return false;
+		return true;
+	}
+	
+	@SblockCommand(consoleFriendly = true)
+	public boolean newplayer(CommandSender sender, String playerClass, String aspect, String medPlanet, String dreamPlanet)
+	{
+		return false; //TODO Implement
+	}
 }

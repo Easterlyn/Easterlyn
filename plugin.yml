@@ -12,4 +12,10 @@ commands:
  profile:
   usage: /<command> <username>
   description: "[Sburb] Show's a player's Sburb profile"
+ setplayer:
+  usage: /<command> <playername> [class|aspect|land|dream] <value>
+  description: "[Sburb] Change's a player's information."
+ newplayer:
+  usage: /<command> <playername> <class> <aspect> <medium planet> <dream planet>
+  description: "[Sburb] Sets up a new player with the given options."
   
