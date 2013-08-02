@@ -1,5 +1,6 @@
 package co.sblock.Sblock.UserData;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +58,10 @@ public class UserManager {
 	public SblockUser getUser(String name) {
 
 		return users.get(name);
+	}
+
+	public Collection<SblockUser> getUserlist() {
+		return this.users.values();
 	}
 
 	/**

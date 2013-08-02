@@ -1,6 +1,5 @@
 package co.sblock.Sblock.Chat;
 
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -9,12 +8,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import co.sblock.Sblock.Module;
-import co.sblock.Sblock.Chat.Channel.AccessLevel;
-import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
-import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 public class ChatModule extends Module {
 
@@ -22,14 +19,17 @@ public class ChatModule extends Module {
 	private ChannelManager cm = new ChannelManager();
 	private ChatModuleListener listener = new ChatModuleListener();
 	private ChatModuleCommandListener clistener = new ChatModuleCommandListener();
+	private Sblogger log = new Sblogger("SblockChat");
 
 	@Override
 	protected void onEnable() {
+		this.log.info("Enabling Chat.");
 		instance = this;
 		this.registerEvents(listener);
 		this.registerCommands(clistener);
 		cm.loadAllChannels();
 		this.cm.createDefaultSet();
+		this.log.info("Chat enabled.");
 	}
 
 	@Override
@@ -57,18 +57,6 @@ public class ChatModule extends Module {
 				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 					p.sendMessage(ChatColor.BOLD + "[o] " + output);
 				}
-				return true;
-			}
-		}
-		if (cmd.getName().equalsIgnoreCase("sban")) { // superban
-			if (isConsole || sender.isOp()) {
-				Player victim = Bukkit.getServer().getPlayer(args[0]);
-				String ip = victim.getAddress().getAddress().getHostAddress();
-				// normal ban goes here
-				Bukkit.getServer().banIP(ip);
-				// Also need banreason
-				// also broadcast to all players
-				// Also send to Logger
 				return true;
 			}
 		}

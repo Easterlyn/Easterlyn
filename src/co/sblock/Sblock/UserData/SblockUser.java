@@ -17,6 +17,7 @@ import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.ChatMsgs;
+import co.sblock.Sblock.Chat.ChatStorage;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
 
@@ -90,6 +91,7 @@ public class SblockUser {
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
 		DatabaseManager.getDatabaseManager().loadUserData(this);
+		this.globalNick = new ChatStorage().getGlobalNick(playerName);
 	}
 
 	/**

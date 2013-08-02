@@ -24,6 +24,26 @@ import co.sblock.Sblock.UserData.UserManager;
  * @author Jikoo
  */
 public class ChatModuleCommandListener implements CommandListener {
+	
+	public boolean sban(CommandSender sender, String target, String reason) {
+		if (!(sender instanceof Player) || sender.isOp()) {
+			Player victim = Bukkit.getServer().getPlayer(target);
+			String ip = victim.getAddress().getAddress().getHostAddress();
+			Bukkit.getPlayerExact(target).kickPlayer(reason);
+			Bukkit.getPlayerExact(target).setBanned(true);
+			Bukkit.banIP(ip);
+			for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+				u.sendMessage(ChatColor.DARK_RED + victim.getName() +
+						"has been superbanned for " + reason);
+			}
+			return true;
+		} else {
+			sender.sendMessage(ChatColor.BLACK
+					+ "There are mysteries into which it behooves one not to delve too deeply...");
+			return true;
+		}
+	}
+	
 	@SuppressWarnings("unused")
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
 	public boolean sc(CommandSender sender, String action, String arguments) {

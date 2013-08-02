@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.UserData.UserDataModule;
 
 import com.google.common.base.Joiner;
@@ -37,25 +38,10 @@ public class Sblock extends JavaPlugin {
 		this.commandHandlers = new HashMap<String, Method>();
 		this.listenerInstances = new HashMap<Class<? extends CommandListener>, CommandListener>();
 		saveDefaultConfig();
-		if (DatabaseManager.getDatabaseManager().enable())
-			this.getLogger().info("Connected");
-		else
-			this.getLogger().info("Unable to connect");
+		DatabaseManager.getDatabaseManager().enable();
+		
 		modules.add(new UserDataModule().enable());
-
-		/*
-		 * Ok, so here.. This being the framework behind all the sub-plugin
-		 * (module, whatever) handlers..
-		 * 
-		 * Each module main class needs an enable() and disable() that will
-		 * register and unregister its own commands and event handler(s)
-		 * 
-		 * public void enable() {
-		 * getCommand("moduleCommand").setExecutor(moduleCommandExecutor);
-		 * getServer().getPluginManager().registerEvents(moduleListener,
-		 * Sblock.getInstance()); }
-		 */
-
+		modules.add(new ChatModule().enable());
 	}
 
 	@Override
