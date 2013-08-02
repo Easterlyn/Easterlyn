@@ -91,7 +91,9 @@ public class SblockUser {
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
 		DatabaseManager.getDatabaseManager().loadUserData(this);
-		this.globalNick = new ChatStorage().getGlobalNick(playerName);
+		ChatStorage cs = new ChatStorage();
+		this.globalNick = cs.getGlobalNick(playerName);
+		this.globalMute = cs.getGlobalMute(playerName);
 	}
 
 	/**

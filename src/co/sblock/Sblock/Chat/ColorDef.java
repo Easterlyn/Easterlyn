@@ -23,7 +23,7 @@ public class ColorDef {
 	public static final ChatColor WORLD_MEDIUM = ChatColor.GRAY; 
 	public static final ChatColor WORLD_FURTHESTRING = ChatColor.BLACK;
 	
-    private static final String RAINBOW[] = { "DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE" };
+	public static final String RAINBOW[] = { "DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE" };
 
     //TODO This is the /color list command from ColorMe. Goal is to refactor it so it works here.
 /*    

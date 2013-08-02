@@ -40,6 +40,13 @@ public class ChatStorage {
 		}
 	}
 
+	public String getBan(String user) {
+		Set<String> allBans = storage.getConfigurationSection("bans").getKeys(false);
+		if (allBans.contains(user)) {
+			return storage.getString("bans." + user);
+		} else return null;
+	}
+
 	public void removeBan(String user) {
 		storage.set("bans." + user, null);
 		try {
@@ -50,21 +57,21 @@ public class ChatStorage {
 		}
 	}
 
-	public String getGlobalNick(String user) {
-		Set<String> allBans = storage.getConfigurationSection("nicks").getKeys(false);
-		if (allBans.contains(user)) {
-			return storage.getString("nicks." + user);
-		} else return null;
-	}
-
-	public void setGlobalNick(String user, String reason) {
-		storage.set("nicks." + user, reason);
+	public void setGlobalNick(String user, String nick) {
+		storage.set("nicks." + user, nick);
 		try {
 			storage.save(storageFile);
 		} catch (IOException e) {
 			new Sblogger("SblockChat").warning("Could not update nicks; " +
 					user + " will have no (or, if changed, prior) nick on restart.");
 		}
+	}
+
+	public String getGlobalNick(String user) {
+		Set<String> allNicks = storage.getConfigurationSection("nicks").getKeys(false);
+		if (allNicks.contains(user)) {
+			return storage.getString("nicks." + user);
+		} else return user;
 	}
 
 	public void removeGlobalNick(String user) {
@@ -77,10 +84,30 @@ public class ChatStorage {
 		}
 	}
 
-	public String getBan(String user) {
-		Set<String> allBans = storage.getConfigurationSection("bans").getKeys(false);
-		if (allBans.contains(user)) {
-			return storage.getString("bans." + user);
-		} else return null;
+	public void setGlobalMute(String user) {
+		storage.set("mutes." + user, true);
+		try {
+			storage.save(storageFile);
+		} catch (IOException e) {
+			new Sblogger("SblockChat").warning("Could not update mutes; " +
+					user + " will be unmuted on restart.");
+		}
+	}
+
+	public boolean getGlobalMute(String user) {
+		Set<String> allMutes = storage.getConfigurationSection("mutes").getKeys(false);
+		if (allMutes.contains(user)) {
+			return storage.getBoolean("mutes." + user);
+		} else return false;
+	}
+
+	public void removeGlobalMute(String user) {
+		storage.set("mutes." + user, null);
+		try {
+			storage.save(storageFile);
+		} catch (IOException e) {
+			new Sblogger("SblockChat").warning("Could not update mutes; " +
+					user + "'s mute will recur on restart.");
+		}
 	}
 }

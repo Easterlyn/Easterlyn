@@ -70,12 +70,18 @@ public class DatabaseManager {
 
 	public void saveUserData(SblockUser user) {
 		try {
-			PreparedStatement pst = connection.prepareStatement("INSERT INTO PlayerData(playerName, class, aspect, " + "mplanet, dplanet, towernum, sleepstate, currentChannel, "
-					+ "isMute, channels, ip, timePlayed) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
-					+ "class=VALUES(class), aspect=VALUES(aspect), " + "mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), "
-					+ "towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), " + "currentChannel=VALUES(currentChannel), "
-					+ "isMute=VALUES(isMute), channels=VALUES(channels), " + "ip=VALUES(ip), timePlayed=VALUES(timePlayed)");
-
+			PreparedStatement pst = connection.prepareStatement(
+					"INSERT INTO PlayerData(playerName, class, " +
+					"aspect, mplanet, dplanet, towernum, sleepstate," +
+					" currentChannel, channels, ip, timePlayed) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+					"ON DUPLICATE KEY UPDATE " +
+					"class=VALUES(class), aspect=VALUES(aspect), " +
+					"mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), " +
+					"towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), " +
+					"currentChannel=VALUES(currentChannel), " +
+					"channels=VALUES(channels), ip=VALUES(ip), " +
+					"timePlayed=VALUES(timePlayed)");
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
@@ -84,15 +90,14 @@ public class DatabaseManager {
 			pst.setShort(6, user.getTower());
 			pst.setBoolean(7, user.isSleeping());
 			pst.setString(8, user.getCurrent().getName());
-			pst.setBoolean(9, user.isMute());
 			StringBuilder sb = new StringBuilder();
 			for (String s : user.getListening()) {
 				sb.append(s + ",");
 			}
-			pst.setString(10, sb.substring(0, sb.length() - 1));
-			pst.setString(11, user.getUserIP());
-			pst.setTime(12, null); // TODO timePlayed
-
+			pst.setString(9, sb.substring(0, sb.length() - 1));
+			pst.setString(10, user.getUserIP());
+			pst.setTime(11, null); // TODO timePlayed
+			
 			pst.executeUpdate();
 			pst.close();
 
@@ -117,7 +122,6 @@ public class DatabaseManager {
 				user.setTower(rs.getShort("tower"));
 				user.setIsSleeping(rs.getBoolean("sleepstate"));
 				user.setCurrent(ChatModule.getInstance().getChannelManager().getChannel(rs.getString("currentChannel")));
-				user.setMute(rs.getBoolean("isMute"));
 				String[] channels = rs.getString("channels").split(",");
 				for (int i = 0; i < channels.length; i++) {
 					user.addListening(ChatModule.getInstance().getChannelManager().getChannel(channels[i]));

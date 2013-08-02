@@ -49,7 +49,7 @@ public class ChannelManager {
 		
 		Logger.getLogger("Minecraft").info("Default channels created");
 		for(Channel c : defaults)	{
-			ChannelManager.getChannelList().put("#", c);
+			ChannelManager.getChannelList().put(c.getName(), c);
 		}
 	}
 

@@ -8,9 +8,11 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_6_R2.command.ColouredConsoleSender;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.CommandListener;
+import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.SblockCommand;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
@@ -18,39 +20,121 @@ import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
  * @author Dublek
  * @author Jikoo
  */
 public class ChatModuleCommandListener implements CommandListener {
-	
-	@SblockCommand(mergeLast = true)
-	public boolean sban(Player sender, String target, String reason) {
-		if (sender.isOp()) {
-			Player victim = Bukkit.getServer().getPlayer(target);
-			String ip = victim.getAddress().getAddress().getHostAddress();
-			Bukkit.getPlayerExact(target).kickPlayer(reason);
-			Bukkit.getPlayerExact(target).setBanned(true);
-			Bukkit.banIP(ip);
-			for (SblockUser u : UserManager.getUserManager().getUserlist()) {
-				u.sendMessage(ChatColor.DARK_RED + victim.getName() +
-						"has been superbanned for " + reason);
+
+	@SblockCommand(consoleFriendly = true, mergeLast = true)
+	public boolean lel(CommandSender sender, String text) {
+		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
+			String lelOut = new String();
+			for (int i = 0; i < text.length(); i++) {
+				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
+					if (i >= text.length())
+						break;
+					lelOut = lelOut + ChatColor.valueOf(ColorDef.RAINBOW[j]) + text.charAt(i);
+					i++;
+				}
 			}
+			//new Sblogger("LE").info(lelOut);
+			ColouredConsoleSender.getInstance().sendMessage(lelOut);
+			for(Player p: Bukkit.getServer().getOnlinePlayers()) {
+				p.sendMessage(ChatColor.MAGIC + lelOut);
+			}
+		} else {
+			sender.sendMessage(ChatColor.BLACK + "lul.");
+		}
+		return true;
+	}
+
+	@SblockCommand(consoleFriendly = true, mergeLast = true)
+	public boolean le(CommandSender sender, String text) {
+		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
+			String leOut = new String();
+			for (int i = 0; i < text.length(); i++) {
+				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
+					if (i >= text.length())
+						break;
+					leOut = leOut + ChatColor.valueOf(ColorDef.RAINBOW[j]) + text.charAt(i);
+					i++;
+				}
+			}
+			new Sblogger("LE").info(leOut);
+			//ColouredConsoleSender.getInstance().sendMessage(leOut);
+			for(Player p: Bukkit.getServer().getOnlinePlayers()) {
+				p.sendMessage(leOut);
+			}
+		} else {
+			sender.sendMessage(ChatColor.BLACK + "Aren't you fancy.");
+		}
+		return true;
+	}
+	
+
+	@SblockCommand(consoleFriendly = true)
+	public boolean whois(CommandSender sender, String target) {
+		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
+			SblockUser u = UserManager.getUserManager().getUser(target);
+			u.toString();
 			return true;
 		} else {
-			sender.sendMessage(ChatColor.BLACK + "You cannot ban an OP. Please contact the server owner.");
+			sender.sendMessage(ChatColor.BLACK +
+					"There are mysteries into which it behooves one not to delve too deeply...");
 			return true;
 		}
 	}
 	
+	@SblockCommand(consoleFriendly = true, mergeLast = true)
+	public boolean o(CommandSender sender, String text) {
+		if (!(sender instanceof Player) ||
+				sender.hasPermission("groups.horrorterror") || sender.isOp()) {
+			new Sblogger("o").info(text);
+			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+				p.sendMessage(ChatColor.BOLD + "[o] " + text);
+			}
+			return true;
+		} else {
+			sender.sendMessage(ChatColor.BOLD + "[o] "
+					+"You try to be the white text guy, but fail to be the white text guy."
+					+ "No one can be the white text guy except for the white text guy.");
+			return true;
+		}
+	}
+
+	@SblockCommand(consoleFriendly = true, mergeLast = true)
+	public boolean sban(CommandSender sender, String target, String reason) {
+		if (!(sender instanceof Player) || sender.isOp()) {
+			SblockUser victim = UserManager.getUserManager().getUser(target);
+			victim.getPlayer().kickPlayer(reason);
+			victim.getPlayer().setBanned(true);
+			Bukkit.banIP(victim.getUserIP());
+			DatabaseManager.getDatabaseManager().deleteUser(victim);
+			Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
+			for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName() +
+						"has been superbanned for " + reason);
+			}
+			ChatStorage cs = new ChatStorage();
+			cs.setBan(target, reason);
+			cs.removeGlobalMute(target);
+			return true;
+		} else {
+			sender.sendMessage(ChatColor.BLACK +
+					"There are mysteries into which it behooves one not to delve too deeply...");
+			return true;
+		}
+	}
+
 	@SuppressWarnings("unused")
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
 	public boolean sc(CommandSender sender, String action, String arguments) {
 		boolean isConsole = !(sender instanceof Player);
 		boolean isHelper = !isConsole && sender.hasPermission("group.helper");
 		boolean isMod = !isConsole && sender.hasPermission("group.denizen");
-		boolean isAdmin = !isConsole && sender.hasPermission("group.horrorterror");
 		if (isConsole) { // TODO console-friendly stuff
 			sender.sendMessage(ChatColor.DARK_RED + "No commands programmed yet! :D");
 		} else { // ingame commands
@@ -66,8 +150,8 @@ public class ChatModuleCommandListener implements CommandListener {
 					return true;
 				}
 				try {
-					user.setCurrent(ChatModule.getInstance().getChannelManager().getChannel(
-							args[0]));
+					user.setCurrent(ChatModule.getInstance().getChannelManager()
+							.getChannel(args[0]));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
 							+ ChatColor.GOLD + args[0] + ChatColor.RED
@@ -147,11 +231,6 @@ public class ChatModuleCommandListener implements CommandListener {
 						user.getPlayerName(), ChannelType.valueOf(args[2])); // TODO better method
 				return true;
 			}
-			if (action.equalsIgnoreCase("whois")) {
-				sender.sendMessage(ChatColor.YELLOW
-						+ "Command coming soon!");
-				return true;
-			}
 			if (action.equalsIgnoreCase("channel")) { // ChannelOwner/Mod
 														// commands
 				Channel c = user.getCurrent();
@@ -176,8 +255,8 @@ public class ChatModuleCommandListener implements CommandListener {
 							sender.sendMessage(helpOwner);
 							return true;
 						} else {
-							sender.sendMessage(ChatColor.BLACK
-									+ "There are mysteries into which it behooves one not to delve too deeply...");
+							sender.sendMessage(ChatColor.BLACK +
+									"There are mysteries into which it behooves one not to delve too deeply...");
 							return true;
 						}
 					}
@@ -239,8 +318,8 @@ public class ChatModuleCommandListener implements CommandListener {
 							return true;
 						}
 					} else {
-						sender.sendMessage(ChatColor.BLACK
-								+ "There are mysteries into which it behooves one not to delve too deeply...");
+						sender.sendMessage(ChatColor.BLACK +
+								"There are mysteries into which it behooves one not to delve too deeply...");
 						return true;
 					}
 				}
@@ -248,23 +327,25 @@ public class ChatModuleCommandListener implements CommandListener {
 			if (action.equalsIgnoreCase("global")) {
 				if (isMod || sender.isOp()) {
 					SblockUser victim = UserManager.getUserManager()
-							.getUser(
-									Bukkit.getServer().getPlayer(args[1])
-											.getName());
+							.getUser(args[1]);
 					if (args[0].equalsIgnoreCase("mute")) {
 						victim.setMute(true);
+						new ChatStorage().setGlobalMute(args[1]);
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("unmute")) {
 						victim.setMute(false);
+						new ChatStorage().removeGlobalMute(args[1]);
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("setnick")) {
 						victim.setNick(args[2]);
+						new ChatStorage().setGlobalNick(args[1], args[2]);
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("rmnick")) {
 						victim.setNick(victim.getPlayerName());
+						new ChatStorage().removeGlobalNick(args[1]);
 						return true;
 					}
 				}

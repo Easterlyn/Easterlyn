@@ -6,6 +6,15 @@ author: Sblock Co.
 authors: [Dublek, Jikoo, FireNG]
 description: Sblock's sexy mainframe
 commands:
+ whois:
+  usage: /whois <target>
+  description: Garner information
+ scban:
+  usage: /scban <target>
+  description: NO ONE ESCAPES THE RED MILES.
+ o:
+  usage: /o <text>
+  description: '> Be Doc Scratch.'
  sc:
   usage: /sc <action> <additional arguments>
   description: "[Sburb] SburbChat's main command"

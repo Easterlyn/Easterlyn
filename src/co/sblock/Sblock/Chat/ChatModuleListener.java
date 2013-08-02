@@ -17,6 +17,11 @@ import co.sblock.Sblock.UserData.UserManager;
 public class ChatModuleListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (event.getPlayer().isBanned()) { // TODO nonfunctional, but need sleep. PlayerPreLogin
+			event.setJoinMessage(null);
+			event.getPlayer().kickPlayer(
+					new ChatStorage().getBan(event.getPlayer().getName()));
+		}
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
 		if (u == null) {
 			UserManager.getUserManager().addUser(event.getPlayer());
@@ -24,9 +29,9 @@ public class ChatModuleListener implements Listener {
 			Channel c = ChannelManager.getChannelList().get("#");
 			u.setCurrent(c);
 			c.userJoin(u);
-			// for(Channel ch : u.getListening()) {
-			// ch.userJoin(u);
-			// }
+			for (String s : u.getListening()) {
+				ChannelManager.getChannelList().get(s).userJoin(u);
+			}
 		}
 	}
 
