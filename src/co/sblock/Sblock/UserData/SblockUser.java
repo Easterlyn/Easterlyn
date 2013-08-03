@@ -410,7 +410,7 @@ public class SblockUser {
 			}
 		}
 		if (sender.globalMute) {
-			sender.sendMessage(ChatMsgs.isMute(sender));
+			sender.sendMessage(ChatMsgs.isMute(sender, sendto));
 			return;
 		}
 		//TODO see belowright

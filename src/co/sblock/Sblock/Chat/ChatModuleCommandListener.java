@@ -36,14 +36,14 @@ public class ChatModuleCommandListener implements CommandListener {
 				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
 					if (i >= text.length())
 						break;
-					lelOut = lelOut + ChatColor.valueOf(ColorDef.RAINBOW[j]) + text.charAt(i);
+					lelOut = lelOut + ChatColor.valueOf(ColorDef.RAINBOW[j]) + ChatColor.MAGIC + text.charAt(i);
 					i++;
 				}
 			}
 			//new Sblogger("LE").info(lelOut);
 			ColouredConsoleSender.getInstance().sendMessage(lelOut);
 			for(Player p: Bukkit.getServer().getOnlinePlayers()) {
-				p.sendMessage(ChatColor.MAGIC + lelOut);
+				p.sendMessage(lelOut);
 			}
 		} else {
 			sender.sendMessage(ChatColor.BLACK + "lul.");
@@ -87,7 +87,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			return true;
 		}
 	}
-	
+
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
 	public boolean o(CommandSender sender, String text) {
 		if (!(sender instanceof Player) ||
@@ -129,7 +129,6 @@ public class ChatModuleCommandListener implements CommandListener {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
 	public boolean sc(CommandSender sender, String action, String arguments) {
 		boolean isConsole = !(sender instanceof Player);
@@ -139,12 +138,12 @@ public class ChatModuleCommandListener implements CommandListener {
 			sender.sendMessage(ChatColor.DARK_RED + "No commands programmed yet! :D");
 		} else { // ingame commands
 			SblockUser user = UserManager.getUserManager().getUser(sender.getName());
-			String[] args = arguments.split(" ");
 			if (action == null) {
 				return false;
 			}
+			String[] args = arguments != null ? arguments.split(" ") : null;
 			if (action.equalsIgnoreCase("c")) { // setChannel
-				if (arguments == null) {
+				if (args == null) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Set current channel:\n\t/sc c <$channelname>");
 					return true;
@@ -160,7 +159,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				return true;
 			}
 			if (action.equalsIgnoreCase("l")) { // addListening
-				if (arguments == null) {
+				if (args == null) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Listen to a channel:\n\t/sc l <$channelname>");
 					return true;
@@ -176,7 +175,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				return true;
 			}
 			if (action.equalsIgnoreCase("leave")) { // removeListening
-				if (arguments == null) {
+				if (args == null) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Stop listening to a channel:\n\t/sc leave <$channelname>");
 					return true;
@@ -220,7 +219,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				return true;
 			}
 			if (action.equalsIgnoreCase("new")) { // newChannel
-				if (args.length != 3) {
+				if (args == null || args.length != 3) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Create a new channel:\n\t/sc new <$channelname> <$sAccess> <$lAccess>\n\t"
 							+ "sendAccess and listenAccess must be either PUBLIC or PRIVATE");
@@ -247,7 +246,7 @@ public class ChatModuleCommandListener implements CommandListener {
 						+ "\t/sc channel <ban/unban> <$user>\t(Un)bans a user from the channel\n"
 						+ "\t/sc disband\tDisband coming soon!";
 				if (c.isMod(user) || isHelper) {
-					if (arguments == null) {
+					if (args == null) {
 						if (c.isMod(user) || isHelper) {
 							sender.sendMessage(helpMod);
 							return true;
@@ -255,24 +254,12 @@ public class ChatModuleCommandListener implements CommandListener {
 							sender.sendMessage(helpOwner);
 							return true;
 						} else {
-							sender.sendMessage(ChatColor.BLACK +
-									"There are mysteries into which it behooves one not to delve too deeply...");
+							sender.sendMessage(ChatColor.MAGIC +
+									"Congratulations, you have done the impossible by reading this!");
 							return true;
 						}
 					}
-					if (args[0].equalsIgnoreCase("kick")) {
-						c.kickUser(
-								UserManager.getUserManager().getUser(
-										args[1]), user);
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("ban")) {
-						c.banUser(
-								UserManager.getUserManager().getUser(
-										args[1]), user);
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("getlisteners")) {
+					if (args.length >= 1 && args[0].equalsIgnoreCase("getlisteners")) {
 						String listenerList = ChatColor.YELLOW
 								+ "Channel members: ";
 						for (String s : c.getListening()) {
@@ -289,8 +276,22 @@ public class ChatModuleCommandListener implements CommandListener {
 						sender.sendMessage(listenerList);
 						return true;
 					}
+					if (args.length >= 2) {
+						if (args[0].equalsIgnoreCase("kick")) {
+							c.kickUser(
+									UserManager.getUserManager().getUser(
+											args[1]), user);
+							return true;
+						}
+						if (args[0].equalsIgnoreCase("ban")) {
+							c.banUser(
+									UserManager.getUserManager().getUser(
+											args[1]), user);
+							return true;
+						}
+					}
 					if (c.isOwner(user) || isMod) {
-						if (args[0].equalsIgnoreCase("mod")) {
+						if (args.length >= 3 && args[0].equalsIgnoreCase("mod")) {
 							if (args[1].equalsIgnoreCase("add")) {
 								c.addMod(UserManager.getUserManager()
 										.getUser(args[2]), user);
@@ -304,7 +305,7 @@ public class ChatModuleCommandListener implements CommandListener {
 								return true;
 							}
 						}
-						if (args[0].equalsIgnoreCase("unban")) {
+						if (args.length >= 2 && args[0].equalsIgnoreCase("unban")) {
 							ChatModule.getInstance().getChannelManager()
 									.getChannel(c.getName())
 									.unbanUser(
@@ -312,7 +313,7 @@ public class ChatModuleCommandListener implements CommandListener {
 													.getUser(args[1]), user);
 							return true;
 						}
-						if (args[0].equalsIgnoreCase("disband")) {
+						if (args.length >= 1 && args[0].equalsIgnoreCase("disband")) {
 							sender.sendMessage(ChatColor.YELLOW
 									+ "Command coming soon!"); // TODO
 							return true;
@@ -328,25 +329,27 @@ public class ChatModuleCommandListener implements CommandListener {
 				if (isMod || sender.isOp()) {
 					SblockUser victim = UserManager.getUserManager()
 							.getUser(args[1]);
-					if (args[0].equalsIgnoreCase("mute")) {
-						victim.setMute(true);
-						new ChatStorage().setGlobalMute(args[1]);
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("unmute")) {
-						victim.setMute(false);
-						new ChatStorage().removeGlobalMute(args[1]);
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("setnick")) {
+					if (args.length == 1 && args[0].equalsIgnoreCase("setnick")) {
 						victim.setNick(args[2]);
 						new ChatStorage().setGlobalNick(args[1], args[2]);
 						return true;
 					}
-					if (args[0].equalsIgnoreCase("rmnick")) {
-						victim.setNick(victim.getPlayerName());
-						new ChatStorage().removeGlobalNick(args[1]);
-						return true;
+					if (args.length >= 2) {
+						if (args[0].equalsIgnoreCase("mute")) {
+							victim.setMute(true);
+							new ChatStorage().setGlobalMute(args[1]);
+							return true;
+						}
+						if (args[0].equalsIgnoreCase("unmute")) {
+							victim.setMute(false);
+							new ChatStorage().removeGlobalMute(args[1]);
+							return true;
+						}
+						if (args[0].equalsIgnoreCase("rmnick")) {
+							victim.setNick(victim.getPlayerName());
+							new ChatStorage().removeGlobalNick(args[1]);
+							return true;
+						}
 					}
 				}
 			}

@@ -38,18 +38,18 @@ public enum CanonNicks {
 	JANE("Jane", "gutsyGumshoe", "b", "pestering"),
 	CROCKERJANE("Jane", "gutsyGumshoe", "b", "pestering"),
 
-	DAMARA("Damara", "", "4", "trolling"),
-	RUFIOH("Rufioh", "", "6", "trolling"),
-	MITUNA("Mituna", "", "e", "trolling"),
-	KANKRI("Kankri", "", "8", "trolling"),
-	MEULIN("Meulin", "", "2", "trolling"),
-	PORRIM("Porrim", "", "3", "trolling"),
-	LATULA("Latula", "", "3", "trolling"),
-	ARENEA("Aranea", "", "9", "trolling"),
-	HORUSS("Horuss", "", "1", "trolling"),
-	KURLOZ("Kurloz", "", "5", "trolling"),
-	CRONUS("Cronus", "", "5", "trolling"),
-	MEENAH("Meenah", "", "5", "trolling"),
+	DAMARA("Damara", null, "4", "trolling"),
+	RUFIOH("Rufioh", null, "6", "trolling"),
+	MITUNA("Mituna", null, "e", "trolling"),
+	KANKRI("Kankri", null, "8", "trolling"),
+	MEULIN("Meulin", null, "2", "trolling"),
+	PORRIM("Porrim", null, "2", "trolling"),
+	LATULA("Latula", null, "3", "trolling"),
+	ARENEA("Aranea", null, "9", "trolling"),
+	HORUSS("Horuss", null, "1", "trolling"),
+	KURLOZ("Kurloz", null, "5", "trolling"),
+	CRONUS("Cronus", null, "5", "trolling"),
+	MEENAH("Meenah", null, "5", "trolling"),
 
 	CALLIOPE("Calliope", "uranianUmbra", "7", "cheering"),
 	CALIBORN("Caliborn", "undyingUmbrage", "8", "jeering"),
@@ -185,7 +185,6 @@ public enum CanonNicks {
 			break;
 		default:
 			break;
-		
 		}
 		return s;
 	}
@@ -212,5 +211,17 @@ public enum CanonNicks {
 		this.name = name;
 		this.chumHandle = chumHandle;
 		return this;
+	}
+
+
+	/**
+	 * @param string
+	 * @return
+	 */
+	public static CanonNicks getNick(String nick) {
+		// TODO Auto-generated method stub
+		// if valid nick, return nick
+		// else
+		return CanonNicks.CUSTOM.customize(nick, null);
 	}
 }

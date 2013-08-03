@@ -1,8 +1,6 @@
 package co.sblock.Sblock.Chat.Channel;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -17,7 +15,6 @@ import co.sblock.Sblock.UserData.UserManager;
 public class NormalChannel implements Channel {
 
 	protected String name;
-	protected ChannelType type = ChannelType.NORMAL;
 	protected AccessLevel access;
 	protected String owner;
 
@@ -42,19 +39,6 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public String getJoinChatMessage(SblockUser sender) {
-		String time24h = new SimpleDateFormat("HH:mm").format(new Date());
-		return ChatColor.DARK_GREEN + sender.getPlayerName() + ChatColor.YELLOW
-				+ " began pestering " + ChatColor.GOLD + this.name
-				+ ChatColor.YELLOW + " at " + time24h;
-	}
-
-	@Override
-	public String getLeaveChatMessage(SblockUser sender) {
-		return this.getJoinChatMessage(sender).replaceAll("began", "ceased");
-	}
-
-	@Override
 	public AccessLevel getAccess() {
 		return this.access;
 	}
@@ -71,7 +55,6 @@ public class NormalChannel implements Channel {
 
 	@Override
 	public boolean userJoin(SblockUser sender) {
-		String joinMsg = this.getJoinChatMessage(sender);
 		switch (access) {
 		case PUBLIC: {
 			if (!banList.contains(sender.getPlayerName())) {
@@ -79,20 +62,17 @@ public class NormalChannel implements Channel {
 				this.sendToAll(sender, ChatMsgs.onChannelJoin(sender, this));
 				return true;
 			} else {
-				sender.sendMessage(ChatColor.RED + "You are banned from "
-						+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+				sender.sendMessage(ChatMsgs.isBanned(sender, this));
 				return false;
 			}
 		}
 		case PRIVATE: {
 			if (approvedList.contains(sender.getPlayerName())) {
 				this.listening.add(sender.getPlayerName());
-				this.sendToAll(sender, joinMsg);
+				this.sendToAll(sender, ChatMsgs.onChannelJoin(sender, this));
 				return true;
 			} else {
-				sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
-						+ " is a " + ChatColor.BOLD + "private"
-						+ ChatColor.RESET + " channel!");
+				sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sender, this));
 				return false;
 			}
 		}
@@ -104,25 +84,22 @@ public class NormalChannel implements Channel {
 
 	@Override
 	public void userLeave(SblockUser sender) {
-		this.sendToAll(sender, this.getLeaveChatMessage(sender));
+		this.sendToAll(sender, ChatMsgs.onChannelLeave(sender, this));
 		this.listening.remove(sender);
 	}
 
 	@Override
 	public void setNick(String nick, SblockUser sender) {
-		sender.sendMessage(ChatColor.RED
-				+ "This channel does not support nicknames!");
+		sender.sendMessage(ChatMsgs.unsupportedOperation(sender, this));
 	}
 
 	@Override
 	public void removeNick(SblockUser sender) {
-		sender.sendMessage(ChatColor.RED
-				+ "This channel does not support nicknames!");
+		sender.sendMessage(ChatMsgs.unsupportedOperation(sender, this));
 	}
 
 	public CanonNicks getNick(SblockUser sender) {
-		//TODO Nononononononono. there are no nicks in a normal channel, why is this here?
-		return CanonNicks.CUSTOM.customize(sender.getPlayerName(), null);
+		return CanonNicks.CUSTOM.customize(sender.getNick(), null);
 	}
 
 	@Override
@@ -259,8 +236,8 @@ public class NormalChannel implements Channel {
 			}
 			this.banList.add(user.getPlayerName());
 			user.sendMessage(ChatColor.RED + "You have been " + ChatColor.BOLD
-					+ "banned" + ChatColor.RESET + " from " + ChatColor.GOLD
-					+ this.getName() + ChatColor.RED + "!");
+					+ "banned" + ChatColor.RESET + ChatColor.RED + " from "
+					+ ChatColor.GOLD + this.getName() + ChatColor.RED + "!");
 			this.sendToAll(sender,
 					ChatColor.YELLOW + user.getPlayerName() + ChatColor.RED
 							+ " has been " + ChatColor.BOLD + "banned"

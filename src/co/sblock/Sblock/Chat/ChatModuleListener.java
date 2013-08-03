@@ -7,6 +7,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import co.sblock.Sblock.Chat.Channel.Channel;
@@ -15,13 +17,16 @@ import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
 public class ChatModuleListener implements Listener {
+
+	@EventHandler
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		if (event.getResult() == Result.KICK_BANNED) {
+			event.setKickMessage(new ChatStorage().getBan(event.getPlayer().getName()));
+		}
+	}
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (event.getPlayer().isBanned()) { // TODO nonfunctional, but need sleep. PlayerPreLogin
-			event.setJoinMessage(null);
-			event.getPlayer().kickPlayer(
-					new ChatStorage().getBan(event.getPlayer().getName()));
-		}
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
 		if (u == null) {
 			UserManager.getUserManager().addUser(event.getPlayer());
