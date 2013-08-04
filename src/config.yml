@@ -1,0 +1,5 @@
+database: sblockdata
+username: sblock
+password: 'benjamin zarfles'
+host: 127.0.0.1
+port: 3306
