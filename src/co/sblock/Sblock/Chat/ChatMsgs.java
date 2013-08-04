@@ -93,6 +93,11 @@ public class ChatMsgs {
 				+ ChatColor.RED + " does not exist!";
 	}
 
+	public static String errorInvalidType(String s) {
+		return ChatColor.RED + s + " is not a valid channel type!"
+				+"\nValid types: Normal, CanonRP, RP, Nick, Temp.";
+	}
+
 	public static String unsupportedOperation(SblockUser u, Channel c) {
 		return ChatColor.RED + "Channel " + ChatColor.GOLD + c.getName()
 				+ ChatColor.RED + " does not support that operation.";

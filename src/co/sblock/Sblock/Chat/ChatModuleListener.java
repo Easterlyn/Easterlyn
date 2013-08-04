@@ -45,7 +45,6 @@ public class ChatModuleListener implements Listener {
 		Logger.getLogger("Minecraft").info("onPlayerChat");
 		if (SblockUser.getUser(event.getPlayer().getName()) != null) {
 			event.setCancelled(true);
-			Logger.getLogger("Minecraft").info("event cancelled");
 			if (event.getMessage().indexOf("/") == 0) {
 				event.getPlayer().performCommand(
 						event.getMessage().substring(1));

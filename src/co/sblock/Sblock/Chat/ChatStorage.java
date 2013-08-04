@@ -35,7 +35,7 @@ public class ChatStorage {
 		try {
 			storage.save(storageFile);
 		} catch (IOException e) {
-			new Sblogger("SblockChat").warning("Could not update bans; " + user
+			Sblogger.warning("SblockChat", "Could not update bans; " + user
 					+ " will have no (or, if changed, prior) ban reason on restart.");
 		}
 	}
@@ -52,7 +52,7 @@ public class ChatStorage {
 		try {
 			storage.save(storageFile);
 		} catch (IOException e) {
-			new Sblogger("SblockChat").warning("Could not update bans; " +
+			Sblogger.warning("SblockChat", "Could not update bans; " +
 					user + "'s ban reason is still filed.");
 		}
 	}
@@ -62,7 +62,7 @@ public class ChatStorage {
 		try {
 			storage.save(storageFile);
 		} catch (IOException e) {
-			new Sblogger("SblockChat").warning("Could not update nicks; " +
+			Sblogger.warning("SblockChat", "Could not update nicks; " +
 					user + " will have no (or, if changed, prior) nick on restart.");
 		}
 	}
@@ -79,7 +79,7 @@ public class ChatStorage {
 		try {
 			storage.save(storageFile);
 		} catch (IOException e) {
-			new Sblogger("SblockChat").warning("Could not update nicks; " +
+			Sblogger.warning("SblockChat", "Could not update nicks; " +
 					user + "'s nick is still filed.");
 		}
 	}
@@ -89,7 +89,7 @@ public class ChatStorage {
 		try {
 			storage.save(storageFile);
 		} catch (IOException e) {
-			new Sblogger("SblockChat").warning("Could not update mutes; " +
+			Sblogger.warning("SblockChat", "Could not update mutes; " +
 					user + " will be unmuted on restart.");
 		}
 	}
@@ -106,7 +106,7 @@ public class ChatStorage {
 		try {
 			storage.save(storageFile);
 		} catch (IOException e) {
-			new Sblogger("SblockChat").warning("Could not update mutes; " +
+			Sblogger.warning("SblockChat", "Could not update mutes; " +
 					user + "'s mute will recur on restart.");
 		}
 	}

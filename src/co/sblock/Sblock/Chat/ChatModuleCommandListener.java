@@ -8,7 +8,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_6_R2.command.ColouredConsoleSender;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.CommandListener;
@@ -36,12 +35,12 @@ public class ChatModuleCommandListener implements CommandListener {
 				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
 					if (i >= text.length())
 						break;
-					lelOut = lelOut + ChatColor.valueOf(ColorDef.RAINBOW[j]) + ChatColor.MAGIC + text.charAt(i);
+					lelOut = lelOut + ChatColor.valueOf(ColorDef.RAINBOW[j])
+							+ ChatColor.MAGIC + text.charAt(i);
 					i++;
 				}
 			}
-			//new Sblogger("LE").info(lelOut);
-			ColouredConsoleSender.getInstance().sendMessage(lelOut);
+			Sblogger.info("LEL", lelOut);
 			for(Player p: Bukkit.getServer().getOnlinePlayers()) {
 				p.sendMessage(lelOut);
 			}
@@ -63,8 +62,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					i++;
 				}
 			}
-			new Sblogger("LE").info(leOut);
-			//ColouredConsoleSender.getInstance().sendMessage(leOut);
+			Sblogger.info("LE", leOut);
 			for(Player p: Bukkit.getServer().getOnlinePlayers()) {
 				p.sendMessage(leOut);
 			}
@@ -92,7 +90,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean o(CommandSender sender, String text) {
 		if (!(sender instanceof Player) ||
 				sender.hasPermission("groups.horrorterror") || sender.isOp()) {
-			new Sblogger("o").info(text);
+			Sblogger.info("o", text);
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 				p.sendMessage(ChatColor.BOLD + "[o] " + text);
 			}
@@ -225,13 +223,16 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ "sendAccess and listenAccess must be either PUBLIC or PRIVATE");
 					return true;
 				}
-				ChatModule.getInstance().getChannelManager().createNewChannel(args[0],
-						AccessLevel.valueOf(args[1]),
-						user.getPlayerName(), ChannelType.valueOf(args[2])); // TODO better method
-				return true;
+				if (ChannelType.getType(args[2]) == null) {
+					user.sendMessage(ChatMsgs.errorInvalidType(args[2]));
+				} else {
+					ChatModule.getInstance().getChannelManager().createNewChannel(args[0],
+							AccessLevel.valueOf(args[1]),
+							user.getPlayerName(), ChannelType.getType(args[2])); // TODO better method
+					return true;
+				}
 			}
-			if (action.equalsIgnoreCase("channel")) { // ChannelOwner/Mod
-														// commands
+			if (action.equalsIgnoreCase("channel")) { // ChannelOwner/Mod commands
 				Channel c = user.getCurrent();
 				String helpMod = ChatColor.YELLOW
 						+ "Channel Mod commands:\n"

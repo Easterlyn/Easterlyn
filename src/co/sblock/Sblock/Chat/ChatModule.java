@@ -10,17 +10,17 @@ public class ChatModule extends Module {
 	private ChannelManager cm = new ChannelManager();
 	private ChatModuleListener listener = new ChatModuleListener();
 	private ChatModuleCommandListener clistener = new ChatModuleCommandListener();
-	private Sblogger log = new Sblogger("SblockChat");
+	private static Sblogger log = new Sblogger("SblockChat");
 
 	@Override
 	protected void onEnable() {
-		this.log.info("Enabling Chat.");
+		slog().info("Enabling Chat.");
 		instance = this;
 		this.registerEvents(listener);
 		this.registerCommands(clistener);
 		cm.loadAllChannels();
 		this.cm.createDefaultSet();
-		this.log.info("Chat enabled.");
+		slog().info("Chat enabled.");
 	}
 
 	@Override
@@ -34,5 +34,9 @@ public class ChatModule extends Module {
 
 	public static ChatModule getInstance() {
 		return instance;
+	}
+
+	public static Sblogger slog() {
+		return log;
 	}
 }

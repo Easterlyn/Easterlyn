@@ -1,4 +1,4 @@
-name: SBlock
+name: Sblock
 
 main: co.sblock.Sblock.Sblock
 version: 2.0.0-DEV
@@ -6,6 +6,12 @@ author: Sblock Co.
 authors: [Dublek, Jikoo, FireNG]
 description: Sblock's sexy mainframe
 commands:
+ le:
+  usage: /le <text>
+  description: Well, this is a fascinating tale-- OH GOD THERE'S NO TIME, HE'S ALREADY HERE.
+ lel:
+  usage: /lel <text>
+  description: /le, now with 250% more brainhurtiness
  whois:
   usage: /whois <target>
   description: Garner information

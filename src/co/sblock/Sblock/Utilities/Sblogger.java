@@ -29,4 +29,16 @@ public class Sblogger {
 	public void severe(String msg) {
 		Bukkit.getLogger().severe("[" + logName + "] " + msg);
 	}
+
+	public static void info(String logName, String msg) {
+		Bukkit.getLogger().info("[" + logName + "] " + msg);
+	}
+
+	public static void warning(String logName, String msg) {
+		Bukkit.getLogger().warning("[" + logName + "] " + msg);
+	}
+
+	public static void severe(String logName, String msg) {
+		Bukkit.getLogger().severe("[" + logName + "] " + msg);
+	}
 }

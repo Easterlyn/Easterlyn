@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import co.sblock.Sblock.DatabaseManager;
+import co.sblock.Sblock.Chat.ChatModule;
 
 public class ChannelManager {
 
@@ -18,7 +19,9 @@ public class ChannelManager {
 
 	public void saveAllChannels() {
 		for (Channel c : channelList.values()) {
-			DatabaseManager.getDatabaseManager().saveChannelData(c);
+			if (!c.getType().equals(ChannelType.TEMP)
+					&& !c.getType().equals(ChannelType.REGION))
+				DatabaseManager.getDatabaseManager().saveChannelData(c);
 		}
 	}
 
@@ -29,15 +32,15 @@ public class ChannelManager {
 	public void createNewChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
 		Channel c = new NormalChannel(name, access, creator);
 		ChannelManager.getChannelList().put(name, c);
-		Logger.getLogger("Minecraft").info("Channel" + c.getName() + "created: " + access + " " + creator);
+		ChatModule.slog().info("Channel" + c.getName() + "created: " + access + " " + creator);
 	}
 
 	public void createDefaultSet() {
 		List<Channel> defaults = new ArrayList<Channel>();
 		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, "Dublek"));
-/*		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#earth", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new RegionChannel("#Earth", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#InnerCircle", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#OuterCircle", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#FurthestRing", AccessLevel.PUBLIC, "Dublek"));
@@ -45,7 +48,7 @@ public class ChannelManager {
 		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, "Dublek"));
-		*/
+		
 		
 		Logger.getLogger("Minecraft").info("Default channels created");
 		for(Channel c : defaults)	{

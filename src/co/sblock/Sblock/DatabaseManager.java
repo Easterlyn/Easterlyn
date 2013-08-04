@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
@@ -12,17 +13,19 @@ import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
  * Collection of all database-related functions
  * 
- * @author Jikoo
+ * @author Jikoo, FireNG
  * 
  */
 public class DatabaseManager {
 
 	private static DatabaseManager dbm;
 	private Sblock plugin;
+	private ArrayList<String> defaultChannels;
 
 	public static DatabaseManager getDatabaseManager() {
 		if (dbm == null)
@@ -39,22 +42,36 @@ public class DatabaseManager {
 	public boolean enable() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("jdbc:mysql://" + plugin.getConfig().getString("host") + ":" + plugin.getConfig().getString("port") + "/"
-					+ plugin.getConfig().getString("database"));
-			System.out.println(plugin.getConfig().getString("username"));
-			System.out.println(plugin.getConfig().getString("password"));
-			connection = DriverManager.getConnection("jdbc:mysql://" + plugin.getConfig().getString("host") + ":" + plugin.getConfig().getString("port") + "/"
-					+ plugin.getConfig().getString("database"), plugin.getConfig().getString("username"), plugin.getConfig().getString("password"));
-			plugin.getLogger().info("Database connection established.");
+			connection = DriverManager.getConnection("jdbc:mysql://"
+					+ plugin.getConfig().getString("host") + ":"
+					+ plugin.getConfig().getString("port") + "/"
+					+ plugin.getConfig().getString("database"), plugin
+					.getConfig().getString("username"), plugin.getConfig()
+					.getString("password"));
+			Sblogger.info("Database", "Connection established.");
 		} catch (ClassNotFoundException e) {
-			// if we can't connect to the database, we're pretty much done here.
-			plugin.getLogger().severe("The database driver was not found. Plugin functionality will be limited.");
+			Sblogger.severe("Database", "The database driver was not found."
+							+ " Plugin functionality will be limited.");
 			return false;
 		} catch (SQLException e) {
-			plugin.getLogger().severe("An error occurred while connecting to the database. Plugin functionality will be limited.");
+			Sblogger.severe("Database", "An error occurred while connecting to"
+					+ " the database. Plugin functionality will be limited.");
 			e.printStackTrace();
 			return false;
 		}
+		defaultChannels = new ArrayList<String>();
+		defaultChannels.add("#");
+		defaultChannels.add("#rp");
+		defaultChannels.add("#rp2");
+		defaultChannels.add("#Earth");
+		defaultChannels.add("#InnerCircle");
+		defaultChannels.add("#OuterCircle");
+		defaultChannels.add("#FurthestRing");
+		defaultChannels.add("#LOWAS");
+		defaultChannels.add("#LOLAR");
+		defaultChannels.add("#LOHAC");
+		defaultChannels.add("#LOFAF");
+
 		return true;
 	}
 
@@ -66,22 +83,23 @@ public class DatabaseManager {
 		}
 		dbm = null;
 		connection = null;
+		defaultChannels = null;
 	}
 
 	public void saveUserData(SblockUser user) {
 		try {
-			PreparedStatement pst = connection.prepareStatement(
-					"INSERT INTO PlayerData(playerName, class, " +
-					"aspect, mplanet, dplanet, towernum, sleepstate," +
-					" currentChannel, channels, ip, timePlayed) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-					"ON DUPLICATE KEY UPDATE " +
-					"class=VALUES(class), aspect=VALUES(aspect), " +
-					"mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), " +
-					"towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), " +
-					"currentChannel=VALUES(currentChannel), " +
-					"channels=VALUES(channels), ip=VALUES(ip), " +
-					"timePlayed=VALUES(timePlayed)");
+			PreparedStatement pst = connection
+					.prepareStatement("INSERT INTO PlayerData(playerName, class, "
+							+ "aspect, mplanet, dplanet, towernum, sleepstate,"
+							+ " currentChannel, channels, ip, timePlayed) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+							+ "ON DUPLICATE KEY UPDATE "
+							+ "class=VALUES(class), aspect=VALUES(aspect), "
+							+ "mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), "
+							+ "towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), "
+							+ "currentChannel=VALUES(currentChannel), "
+							+ "channels=VALUES(channels), ip=VALUES(ip), "
+							+ "timePlayed=VALUES(timePlayed)");
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
@@ -97,7 +115,7 @@ public class DatabaseManager {
 			pst.setString(9, sb.substring(0, sb.length() - 1));
 			pst.setString(10, user.getUserIP());
 			pst.setTime(11, null); // TODO timePlayed
-			
+
 			pst.executeUpdate();
 			pst.close();
 
@@ -108,7 +126,8 @@ public class DatabaseManager {
 
 	public void loadUserData(SblockUser user) {
 		try {
-			PreparedStatement pst = connection.prepareStatement("SELECT * FROM PlayerData WHERE name=?");
+			PreparedStatement pst = connection
+					.prepareStatement("SELECT * FROM PlayerData WHERE name=?");
 
 			pst.setString(1, user.getPlayerName());
 
@@ -121,10 +140,12 @@ public class DatabaseManager {
 				user.setDreamPlanet(rs.getString("dplanet"));
 				user.setTower(rs.getShort("tower"));
 				user.setIsSleeping(rs.getBoolean("sleepstate"));
-				user.setCurrent(ChatModule.getInstance().getChannelManager().getChannel(rs.getString("currentChannel")));
+				user.setCurrent(ChatModule.getInstance().getChannelManager()
+						.getChannel(rs.getString("currentChannel")));
 				String[] channels = rs.getString("channels").split(",");
 				for (int i = 0; i < channels.length; i++) {
-					user.addListening(ChatModule.getInstance().getChannelManager().getChannel(channels[i]));
+					user.addListening(ChatModule.getInstance()
+							.getChannelManager().getChannel(channels[i]));
 				}
 				// TODO timePlayed
 
@@ -132,7 +153,9 @@ public class DatabaseManager {
 
 			} catch (Exception e) {
 				// User may not be defined in the database
-				plugin.getLogger().warning("Player " + user.getPlayerName() + " does not have an entry in the database. Or something.");
+				Sblogger.warning("Database", "Player "
+						+ user.getPlayerName()
+						+ " does not have an entry in the database. Or something.");
 			}
 
 		} catch (SQLException e) {
@@ -142,7 +165,8 @@ public class DatabaseManager {
 
 	public void deleteUser(SblockUser user) {
 		try {
-			PreparedStatement pst = connection.prepareStatement("DELETE FROM PlayerData WHERE name = ?");
+			PreparedStatement pst = connection
+					.prepareStatement("DELETE FROM PlayerData WHERE name = ?");
 			pst.setString(1, user.getPlayerName());
 
 			pst.executeUpdate();
@@ -153,10 +177,19 @@ public class DatabaseManager {
 	}
 
 	public void saveChannelData(Channel c) {
+		if (defaultChannels.contains(c.getName())) {
+			return;
+		}
 		try {
-			PreparedStatement pst = connection.prepareStatement("INSERT INTO ChatChannels(name, channelType, " + "access, owner, modList, banList, approvedList) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?)" + "ON DUPLICATE KEY UPDATE " + "channelType=VALUES(channelType), access=VALUES(access), "
-					+ "owner=VALUES(owner), modList=VALUES(modList), " + "banList=VALUES(banList), " + "approvedList=VALUES(approvedList), ");
+			PreparedStatement pst = connection.prepareStatement(
+					"INSERT INTO ChatChannels(name, channelType, "
+							+ "access, owner, modList, banList, approvedList) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?)"
+							+ "ON DUPLICATE KEY UPDATE "
+							+ "channelType=VALUES(channelType), access=VALUES(access), "
+							+ "owner=VALUES(owner), modList=VALUES(modList), "
+							+ "banList=VALUES(banList), "
+							+ "approvedList=VALUES(approvedList), ");
 
 			pst.setString(1, c.getName());
 			pst.setString(2, c.getType().name());
@@ -166,17 +199,23 @@ public class DatabaseManager {
 			for (String s : c.getModList()) {
 				sb.append(s + ",");
 			}
-			pst.setString(5, sb.substring(0, sb.length() - 1));
+			if (sb.length() > 0) {
+				pst.setString(5, sb.substring(0, sb.length() - 1));
+			}
 			sb = new StringBuilder();
 			for (String s : c.getBanList()) {
 				sb.append(s + ",");
 			}
-			pst.setString(6, sb.substring(0, sb.length() - 1));
+			if (sb.length() > 0) {
+				pst.setString(6, sb.substring(0, sb.length() - 1));
+			}
 			sb = new StringBuilder();
 			for (String s : c.getApprovedUsers()) {
 				sb.append(s + ",");
 			}
-			pst.setString(7, sb.substring(0, sb.length() - 1));
+			if (sb.length() > 0) {
+				pst.setString(7, sb.substring(0, sb.length() - 1));
+			}
 
 			pst.executeUpdate();
 			pst.close();
@@ -196,8 +235,12 @@ public class DatabaseManager {
 			ChannelManager cm = ChatModule.getInstance().getChannelManager();
 
 			while (rs.next()) {
-				cm.createNewChannel(rs.getString("name"), AccessLevel.valueOf(rs.getString("access")), rs.getString("owner"), ChannelType.valueOf(rs.getString("channelType")));
-				Channel c = ChatModule.getInstance().getChannelManager().getChannel(rs.getString("name"));
+				cm.createNewChannel(rs.getString("name"),
+						AccessLevel.valueOf(rs.getString("access")),
+						rs.getString("owner"),
+						ChannelType.valueOf(rs.getString("channelType")));
+				Channel c = ChatModule.getInstance().getChannelManager()
+						.getChannel(rs.getString("name"));
 				String[] modList = rs.getString("modList").split(",");
 				for (int i = 0; i < modList.length; i++) {
 					c.loadMod(modList[i]);
@@ -227,7 +270,8 @@ public class DatabaseManager {
 	public void deleteChannel(String channelName) {
 		PreparedStatement pst = null;
 		try {
-			pst = connection.prepareStatement("DELETE FROM ChatChannels WHERE name = ?");
+			pst = connection.prepareStatement(
+					"DELETE FROM ChatChannels WHERE name = ?");
 			pst.setString(1, channelName);
 
 			pst.executeUpdate();
@@ -245,7 +289,8 @@ public class DatabaseManager {
 		}
 	}
 
-	public ResultSet makeCustomCall(String MySQLStatement, boolean resultExpected) {
+	public ResultSet makeCustomCall(String MySQLStatement,
+			boolean resultExpected) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(MySQLStatement);
 			if (resultExpected) {

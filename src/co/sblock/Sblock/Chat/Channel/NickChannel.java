@@ -20,6 +20,10 @@ public class NickChannel extends NormalChannel {
 	}
 
 	public void setNick(SblockUser sender, String nick) {
+		if (getUserFromNick(nick) != null) {
+			sender.sendMessage(ChatColor.RED + "The nick " + ChatColor.BLUE
+					+ nick + ChatColor.RED + " is already in use!");
+		}
 		this.nickList.put(sender.getPlayerName(), nick);
 		sender.sendMessage(ChatColor.YELLOW + "Your nick has been set to \""
 				+ ChatColor.BLUE + nick + "\" in "
