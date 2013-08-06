@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -459,7 +460,7 @@ public class SblockUser {
 		}
 		nameF = this.getOutputNameF(sender, isThirdPerson, c);
 		output = channelF + nameF + s;
-		sender.getPlayer().sendMessage(output);
+		//sender.getPlayer().sendMessage(output);
 		// This bypass will remain as long as the stupid
 		// thing can't tell what it's listening to
 
@@ -471,7 +472,15 @@ public class SblockUser {
 		// final output, sends message to user
 		// alert for if its player's name is applied here i.e. {!}
 		// then just send it and be done!
-		this.getPlayer().sendMessage(s);
+		if (ChatColor.stripColor(s).toLowerCase().indexOf(this.getPlayerName().toLowerCase()) > 3)	{
+			String output = "";
+			output = s.substring(0, s.indexOf("]")) + ChatColor.BLUE + "{!} " + ChatColor.WHITE + s.substring(s.indexOf("<"));
+			this.getPlayer().sendMessage(output);
+			this.getPlayer().playEffect(this.getPlayer().getLocation(), Effect.BOW_FIRE, 0);
+		}
+		else	{
+			this.getPlayer().sendMessage(s);
+		}
 	}
 
 	// Here begins output formatting. Abandon all hope ye who enter

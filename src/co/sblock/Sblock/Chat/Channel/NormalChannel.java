@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_6_R2.command.ColouredConsoleSender;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.ChatModule;
@@ -341,7 +343,8 @@ public class NormalChannel implements Channel {
 		for (String name : this.listening) {
 			UserManager.getUserManager().getUser(name).sendMessageFromChannel(s, this);
 		}
-		Logger.getLogger("Minecraft").info(ChatColor.stripColor(s));
+		ColouredConsoleSender.getInstance().sendMessage(s);
+		//Logger.getLogger("Minecraft").info(ChatColor.stripColor(s));
 	}
 
 }
