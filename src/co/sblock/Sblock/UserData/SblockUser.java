@@ -472,15 +472,17 @@ public class SblockUser {
 		// final output, sends message to user
 		// alert for if its player's name is applied here i.e. {!}
 		// then just send it and be done!
-		if (ChatColor.stripColor(s).toLowerCase().indexOf(this.getPlayerName().toLowerCase()) > 3)	{
+/*		if (ChatColor.stripColor(s).toLowerCase().indexOf(this.getPlayerName().toLowerCase()) > s.indexOf(">"))	{
 			String output = "";
-			output = s.substring(0, s.indexOf("]")) + ChatColor.BLUE + "{!} " + ChatColor.WHITE + s.substring(s.indexOf("<"));
+			output = s.substring(0, s.indexOf("]") + 1) + ChatColor.BLUE + "{!}" + s.substring(s.indexOf("<"), s.indexOf(">") + 1)
+					+ ChatColor.WHITE + s.substring(s.indexOf(">" + 1));
 			this.getPlayer().sendMessage(output);
 			this.getPlayer().playEffect(this.getPlayer().getLocation(), Effect.BOW_FIRE, 0);
 		}
 		else	{
 			this.getPlayer().sendMessage(s);
-		}
+		}*/
+		this.getPlayer().sendMessage(s);
 	}
 
 	// Here begins output formatting. Abandon all hope ye who enter
