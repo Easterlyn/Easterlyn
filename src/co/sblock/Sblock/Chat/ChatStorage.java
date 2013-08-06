@@ -68,10 +68,13 @@ public class ChatStorage {
 	}
 
 	public String getGlobalNick(String user) {
-		Set<String> allNicks = storage.getConfigurationSection("nicks").getKeys(false);
+/*		Set<String> allNicks = storage.getConfigurationSection("nicks").getKeys(false);
 		if (allNicks.contains(user)) {
 			return storage.getString("nicks." + user);
 		} else return user;
+		*/
+		return user;
+		//TODO Adam fix this shit
 	}
 
 	public void removeGlobalNick(String user) {
@@ -95,10 +98,12 @@ public class ChatStorage {
 	}
 
 	public boolean getGlobalMute(String user) {
-		Set<String> allMutes = storage.getConfigurationSection("mutes").getKeys(false);
+/*		Set<String> allMutes = storage.getConfigurationSection("mutes").getKeys(false);
 		if (allMutes.contains(user)) {
 			return storage.getBoolean("mutes." + user);
 		} else return false;
+		*/
+		return false;
 	}
 
 	public void removeGlobalMute(String user) {
