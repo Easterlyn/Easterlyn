@@ -90,7 +90,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean o(CommandSender sender, String text) {
 		if (!(sender instanceof Player) ||
 				sender.hasPermission("groups.horrorterror") || sender.isOp()) {
-			Sblogger.info("o", text);
+			Sblogger.infoNoLogName(ChatColor.WHITE + "[o]" + text);
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 				p.sendMessage(ChatColor.BOLD + "[o] " + text);
 			}
@@ -128,7 +128,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	}
 
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
-	public boolean sc(CommandSender sender, String action, String arguments) {
+	public boolean sc(CommandSender sender, String arguments) {
 		boolean isConsole = !(sender instanceof Player);
 		boolean isHelper = !isConsole && sender.hasPermission("group.helper");
 		boolean isMod = !isConsole && sender.hasPermission("group.denizen");
@@ -136,59 +136,62 @@ public class ChatModuleCommandListener implements CommandListener {
 			sender.sendMessage(ChatColor.DARK_RED + "No commands programmed yet! :D");
 		} else { // ingame commands
 			SblockUser user = UserManager.getUserManager().getUser(sender.getName());
-			if (action == null) {
+			if (arguments == null) {
 				return false;
 			}
-			String[] args = arguments != null ? arguments.split(" ") : null;
-			if (action.equalsIgnoreCase("c")) { // setChannel
-				if (args == null) {
+			String[] args = arguments.split(" ");
+			if (args.length < 1) {
+				return false;
+			}
+			if (args[0].equalsIgnoreCase("c")) { // setChannel
+				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Set current channel:\n\t/sc c <$channelname>");
 					return true;
 				}
 				try {
 					user.setCurrent(ChatModule.getInstance().getChannelManager()
-							.getChannel(args[0]));
+							.getChannel(args[1]));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
-							+ ChatColor.GOLD + args[0] + ChatColor.RED
+							+ ChatColor.GOLD + args[1] + ChatColor.RED
 							+ " does not exist!");
 				}
 				return true;
 			}
-			if (action.equalsIgnoreCase("l")) { // addListening
-				if (args == null) {
+			if (args[0].equalsIgnoreCase("l")) { // addListening
+				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Listen to a channel:\n\t/sc l <$channelname>");
 					return true;
 				}
 				try {
 					user.addListening(ChatModule.getInstance()
-							.getChannelManager().getChannel(args[0]));
+							.getChannelManager().getChannel(args[1]));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
-							+ ChatColor.GOLD + args[0] + ChatColor.RED
+							+ ChatColor.GOLD + args[1] + ChatColor.RED
 							+ " does not exist!");
 				}
 				return true;
 			}
-			if (action.equalsIgnoreCase("leave")) { // removeListening
-				if (args == null) {
+			if (args[0].equalsIgnoreCase("leave")) { // removeListening
+				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Stop listening to a channel:\n\t/sc leave <$channelname>");
 					return true;
 				}
 				try {
 					user.removeListening(ChatModule.getInstance()
-							.getChannelManager().getChannel(args[0]));
+							.getChannelManager().getChannel(args[1]));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
-							+ ChatColor.GOLD + args[0] + ChatColor.RED
+							+ ChatColor.GOLD + args[1] + ChatColor.RED
 							+ " does not exist!");
 				}
 				return true;
 			}
-			if (action.equalsIgnoreCase("list")) { // listListening
+			if (args[0].equalsIgnoreCase("list")) { // listListening
 				String clist = ChatColor.YELLOW + "Currently pestering: ";
 				for (String s : user.getListening()) {
 					clist += s + " ";
@@ -196,7 +199,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				sender.sendMessage(clist);
 				return true;
 			}
-			if (action.equalsIgnoreCase("listall")) { // listAll
+			if (args[0].equalsIgnoreCase("listall")) { // listAll
 				String clist = ChatColor.YELLOW + "All channels: ";
 				Map<String, Channel> channels = ChannelManager
 						.getChannelList();
@@ -216,23 +219,23 @@ public class ChatModuleCommandListener implements CommandListener {
 				sender.sendMessage(clist);
 				return true;
 			}
-			if (action.equalsIgnoreCase("new")) { // newChannel
-				if (args == null || args.length != 3) {
+			if (args[0].equalsIgnoreCase("new")) { // newChannel
+				if (args.length != 4) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Create a new channel:\n\t/sc new <$channelname> <$sAccess> <$lAccess>\n\t"
 							+ "sendAccess and listenAccess must be either PUBLIC or PRIVATE");
 					return true;
 				}
-				if (ChannelType.getType(args[2]) == null) {
-					user.sendMessage(ChatMsgs.errorInvalidType(args[2]));
+				if (ChannelType.getType(args[3]) == null) {
+					user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
 				} else {
-					ChatModule.getInstance().getChannelManager().createNewChannel(args[0],
-							AccessLevel.valueOf(args[1]),
-							user.getPlayerName(), ChannelType.getType(args[2])); // TODO better method
+					ChatModule.getInstance().getChannelManager().createNewChannel(args[1],
+							AccessLevel.valueOf(args[2]),
+							user.getPlayerName(), ChannelType.getType(args[3])); // TODO better method
 					return true;
 				}
 			}
-			if (action.equalsIgnoreCase("channel")) { // ChannelOwner/Mod commands
+			if (args[0].equalsIgnoreCase("channel")) { // ChannelOwner/Mod commands
 				Channel c = user.getCurrent();
 				String helpMod = ChatColor.YELLOW
 						+ "Channel Mod commands:\n"
@@ -247,7 +250,7 @@ public class ChatModuleCommandListener implements CommandListener {
 						+ "\t/sc channel <ban/unban> <$user>\t(Un)bans a user from the channel\n"
 						+ "\t/sc disband\tDisband coming soon!";
 				if (c.isMod(user) || isHelper) {
-					if (args == null) {
+					if (args.length == 1) {
 						if (c.isMod(user) || isHelper) {
 							sender.sendMessage(helpMod);
 							return true;
@@ -260,7 +263,7 @@ public class ChatModuleCommandListener implements CommandListener {
 							return true;
 						}
 					}
-					if (args.length >= 1 && args[0].equalsIgnoreCase("getlisteners")) {
+					if (args.length >= 2 && args[1].equalsIgnoreCase("getlisteners")) {
 						String listenerList = ChatColor.YELLOW
 								+ "Channel members: ";
 						for (String s : c.getListening()) {
@@ -277,44 +280,44 @@ public class ChatModuleCommandListener implements CommandListener {
 						sender.sendMessage(listenerList);
 						return true;
 					}
-					if (args.length >= 2) {
-						if (args[0].equalsIgnoreCase("kick")) {
+					if (args.length >= 3) {
+						if (args[1].equalsIgnoreCase("kick")) {
 							c.kickUser(
 									UserManager.getUserManager().getUser(
-											args[1]), user);
+											args[2]), user);
 							return true;
 						}
-						if (args[0].equalsIgnoreCase("ban")) {
+						if (args[1].equalsIgnoreCase("ban")) {
 							c.banUser(
 									UserManager.getUserManager().getUser(
-											args[1]), user);
+											args[2]), user);
 							return true;
 						}
 					}
 					if (c.isOwner(user) || isMod) {
-						if (args.length >= 3 && args[0].equalsIgnoreCase("mod")) {
-							if (args[1].equalsIgnoreCase("add")) {
+						if (args.length >= 4 && args[1].equalsIgnoreCase("mod")) {
+							if (args[2].equalsIgnoreCase("add")) {
 								c.addMod(UserManager.getUserManager()
-										.getUser(args[2]), user);
+										.getUser(args[3]), user);
 								return true;
-							} else if (args[1].equalsIgnoreCase("remove")) {
+							} else if (args[2].equalsIgnoreCase("remove")) {
 								c.removeMod(UserManager.getUserManager()
-										.getUser(args[2]), user);
+										.getUser(args[3]), user);
 								return true;
 							} else {
 								sender.sendMessage(helpOwner);
 								return true;
 							}
 						}
-						if (args.length >= 2 && args[0].equalsIgnoreCase("unban")) {
+						if (args.length >= 3 && args[1].equalsIgnoreCase("unban")) {
 							ChatModule.getInstance().getChannelManager()
 									.getChannel(c.getName())
 									.unbanUser(
 											UserManager.getUserManager()
-													.getUser(args[1]), user);
+													.getUser(args[2]), user);
 							return true;
 						}
-						if (args.length >= 1 && args[0].equalsIgnoreCase("disband")) {
+						if (args.length >= 2 && args[0].equalsIgnoreCase("disband")) {
 							sender.sendMessage(ChatColor.YELLOW
 									+ "Command coming soon!"); // TODO
 							return true;
@@ -326,29 +329,32 @@ public class ChatModuleCommandListener implements CommandListener {
 					}
 				}
 			}
-			if (action.equalsIgnoreCase("global")) {
+			if (args[0].equalsIgnoreCase("global")) {
 				if (isMod || sender.isOp()) {
+					if (args.length < 3) {
+						return false; // TODO error message
+					}
 					SblockUser victim = UserManager.getUserManager()
-							.getUser(args[1]);
-					if (args.length == 1 && args[0].equalsIgnoreCase("setnick")) {
-						victim.setNick(args[2]);
-						new ChatStorage().setGlobalNick(args[1], args[2]);
+							.getUser(args[2]);
+					if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
+						victim.setNick(args[3]);
+						new ChatStorage().setGlobalNick(args[2], args[3]);
 						return true;
 					}
 					if (args.length >= 2) {
-						if (args[0].equalsIgnoreCase("mute")) {
+						if (args[1].equalsIgnoreCase("mute")) {
 							victim.setMute(true);
-							new ChatStorage().setGlobalMute(args[1]);
+							new ChatStorage().setGlobalMute(args[2]);
 							return true;
 						}
-						if (args[0].equalsIgnoreCase("unmute")) {
+						if (args[1].equalsIgnoreCase("unmute")) {
 							victim.setMute(false);
-							new ChatStorage().removeGlobalMute(args[1]);
+							new ChatStorage().removeGlobalMute(args[2]);
 							return true;
 						}
-						if (args[0].equalsIgnoreCase("rmnick")) {
+						if (args[1].equalsIgnoreCase("rmnick")) {
 							victim.setNick(victim.getPlayerName());
-							new ChatStorage().removeGlobalNick(args[1]);
+							new ChatStorage().removeGlobalNick(args[2]);
 							return true;
 						}
 					}

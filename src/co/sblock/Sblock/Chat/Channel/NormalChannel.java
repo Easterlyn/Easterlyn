@@ -2,17 +2,14 @@ package co.sblock.Sblock.Chat.Channel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_6_R2.command.ColouredConsoleSender;
-
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 public class NormalChannel implements Channel {
 
@@ -343,8 +340,7 @@ public class NormalChannel implements Channel {
 		for (String name : this.listening) {
 			UserManager.getUserManager().getUser(name).sendMessageFromChannel(s, this);
 		}
-		ColouredConsoleSender.getInstance().sendMessage(s);
-		//Logger.getLogger("Minecraft").info(ChatColor.stripColor(s));
+		Sblogger.infoNoLogName(s);
 	}
 
 }

@@ -142,10 +142,12 @@ public class DatabaseManager {
 				user.setIsSleeping(rs.getBoolean("sleepstate"));
 				user.setCurrent(ChatModule.getInstance().getChannelManager()
 						.getChannel(rs.getString("currentChannel")));
-				String[] channels = rs.getString("channels").split(",");
-				for (int i = 0; i < channels.length; i++) {
-					user.addListening(ChatModule.getInstance()
-							.getChannelManager().getChannel(channels[i]));
+				if (rs.getString("channels") != null) {
+					String[] channels = rs.getString("channels").split(",");
+					for (int i = 0; i < channels.length; i++) {
+						user.addListening(ChatModule.getInstance()
+								.getChannelManager().getChannel(channels[i]));
+					}
 				}
 				// TODO timePlayed
 

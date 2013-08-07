@@ -19,7 +19,7 @@ public class Sblogger {
 	}
 
 	public void info(String msg) {
-		Bukkit.getLogger().info("[" + logName + "] " + msg);
+		Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg);
 	}
 
 	public void warning(String msg) {
@@ -30,8 +30,12 @@ public class Sblogger {
 		Bukkit.getLogger().severe("[" + logName + "] " + msg);
 	}
 
+	public static void infoNoLogName(String msg) {
+		Bukkit.getConsoleSender().sendMessage(msg);
+	}
+
 	public static void info(String logName, String msg) {
-		Bukkit.getLogger().info("[" + logName + "] " + msg);
+		Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg);
 	}
 
 	public static void warning(String logName, String msg) {
