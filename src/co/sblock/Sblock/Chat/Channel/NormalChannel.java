@@ -1,7 +1,7 @@
 package co.sblock.Sblock.Chat.Channel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import co.sblock.Sblock.DatabaseManager;
@@ -17,12 +17,12 @@ public class NormalChannel implements Channel {
 	protected AccessLevel access;
 	protected String owner;
 
-	protected List<String> approvedList = new ArrayList<String>();
-	protected List<String> modList = new ArrayList<String>();
-	protected List<String> muteList = new ArrayList<String>();
-	protected List<String> banList = new ArrayList<String>();
+	protected Set<String> approvedList = new HashSet<String>();
+	protected Set<String> modList = new HashSet<String>();
+	protected Set<String> muteList = new HashSet<String>();
+	protected Set<String> banList = new HashSet<String>();
 
-	protected List<String> listening = new ArrayList<String>();
+	protected Set<String> listening = new HashSet<String>();
 
 	public NormalChannel(String name, AccessLevel a, String creator) {
 		this.name = name;
@@ -43,7 +43,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public List<String> getListening() {
+	public Set<String> getListening() {
 		return this.listening;
 	}
 
@@ -171,7 +171,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public List<String> getModList() {
+	public Set<String> getModList() {
 		return this.modList;
 	}
 	@Override
@@ -277,7 +277,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public List<String> getBanList() {
+	public Set<String> getBanList() {
 		return banList;
 	}
 
@@ -316,7 +316,7 @@ public class NormalChannel implements Channel {
 		}
 	}
 
-	public List<String> getApprovedUsers() {
+	public Set<String> getApprovedUsers() {
 		return approvedList;
 	}
 	@Override
