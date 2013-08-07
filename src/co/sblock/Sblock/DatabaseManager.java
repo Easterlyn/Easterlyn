@@ -89,7 +89,7 @@ public class DatabaseManager {
 	public void saveUserData(SblockUser user) {
 		try {
 			PreparedStatement pst = connection
-					.prepareStatement("INSERT INTO PlayerData(playerName, class, "
+					.prepareStatement("INSERT INTO PlayerData(name, class, "
 							+ "aspect, mplanet, dplanet, towernum, sleepstate,"
 							+ " currentChannel, channels, ip, timePlayed) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "

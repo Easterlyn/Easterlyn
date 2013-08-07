@@ -2,7 +2,6 @@ package co.sblock.Sblock.Chat;
 
 import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -50,8 +49,6 @@ public class ChatModuleListener implements Listener {
 				event.getPlayer().performCommand(
 						event.getMessage().substring(1));
 			} else {
-				event.setMessage(ChatColor.translateAlternateColorCodes(
-						'\u0026', event.getMessage()));
 				SblockUser.getUser(event.getPlayer().getName()).chat(event);
 			}
 		}

@@ -37,7 +37,7 @@ public interface Channel {
 	
 	public void disband(SblockUser sender);
 	
-	public void sendToAll(SblockUser sender, String message);
+	public void sendToAll(SblockUser sender, String message, String type);
 	public Set<String> getBanList();
 	public boolean isOwner(SblockUser user);
 	public boolean isChannelMod(SblockUser user);

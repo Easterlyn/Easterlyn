@@ -464,23 +464,40 @@ public class SblockUser {
 		// This bypass will remain as long as the stupid
 		// thing can't tell what it's listening to
 
-		c.sendToAll(sender, output);
+		if (c.isChannelMod(sender)) {
+			output = ChatColor.translateAlternateColorCodes('\u0026', output);
+		}
+
+		if (isThirdPerson) {
+			c.sendToAll(sender, output, "me");
+		} else {
+			c.sendToAll(sender, output, "chat");
+		}
 
 	}
 
-	public void sendMessageFromChannel(String s, Channel c) {
+	public void sendMessageFromChannel(String s, Channel c, String type) {
 		// final output, sends message to user
 		// alert for if its player's name is applied here i.e. {!}
 		// then just send it and be done!
-		if (ChatColor.stripColor(s).toLowerCase().indexOf(this.getPlayerName().toLowerCase()) > s.indexOf(">"))	{
-			String output = "";
-			output = s.substring(0, s.indexOf("]") + 1) + ChatColor.BLUE + "{!}" + s.substring(s.indexOf("<"), s.indexOf(">") + 1)
-					+ ChatColor.WHITE + s.substring(s.indexOf(">" + 1));
-			this.getPlayer().sendMessage(output);
-			this.getPlayer().playEffect(this.getPlayer().getLocation(), Effect.BOW_FIRE, 0);
-		}
-		else	{
+		switch (type) {
+		case "chat":
+			if (ChatColor.stripColor(s).toLowerCase().indexOf(this.getPlayerName().toLowerCase()) > s.indexOf(">"))	{
+				String output = "";
+				output = s.substring(0, s.indexOf("]") + 1) + ChatColor.BLUE + "{!}" + s.substring(s.indexOf("<"), s.indexOf(">") + 1)
+						+ ChatColor.WHITE + s.substring(s.indexOf(">" + 1));
+				this.getPlayer().sendMessage(output);
+				this.getPlayer().playEffect(this.getPlayer().getLocation(), Effect.BOW_FIRE, 0);
+			}
+			else	{
+				this.getPlayer().sendMessage(s);
+			}
+			break;
+		case "me":
+		case "channel":
+		default:
 			this.getPlayer().sendMessage(s);
+			break;
 		}
 		//this.getPlayer().sendMessage(s);
 	}
