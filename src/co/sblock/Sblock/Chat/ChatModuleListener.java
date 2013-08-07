@@ -25,17 +25,22 @@ public class ChatModuleListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
 		if (u == null) {
 			UserManager.getUserManager().addUser(event.getPlayer());
-		} else {
-			Channel c = ChannelManager.getChannelList().get("#");
-			u.setCurrent(c);
+			u = SblockUser.getUser(event.getPlayer().getName());
+		}
+		Channel c = ChannelManager.getChannelList().get("#");
+		if (!c.getListening().contains(u.getPlayerName())) {
 			c.userJoin(u);
-			for (String s : u.getListening()) {
-				ChannelManager.getChannelList().get(s).userJoin(u);
+		}
+		u.setCurrent(c);
+		for (String s : u.getListening()) {
+			c = ChannelManager.getChannelList().get(s);
+			if (!c.getListening().contains(u.getPlayerName())) {
+				c.userJoin(u);
 			}
 		}
 	}
@@ -54,16 +59,15 @@ public class ChatModuleListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
 		if (u == null) {
-			UserManager.getUserManager().addUser(event.getPlayer());
-		} else {
-			for (String s : u.getListening()) {
-				ChatModule.getInstance().getChannelManager().getChannel(s)
-						.userLeave(u);
-			}
+			return; // We don't want to make another db call just to announce quit.
+		}
+		for (String s : u.getListening()) {
+			ChatModule.getInstance().getChannelManager().getChannel(s)
+					.userLeave(u);
 		}
 	}
 

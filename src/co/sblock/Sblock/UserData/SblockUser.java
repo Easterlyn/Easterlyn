@@ -2,8 +2,8 @@ package co.sblock.Sblock.UserData;
 
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -57,10 +57,10 @@ public class SblockUser {
 	private Location previousLocation;
 
 	/** The <code>Player</code>'s current focused channel */
-	private String current;
+	private String current = "#";
 
 	/** The channels the <code>Player</code> is listening to */
-	private List<String> listening = new ArrayList<String>();
+	private Set<String> listening = new HashSet<String>();
 
 	/** <code>true</code> if the <code>Player</code> is muted */
 	private boolean globalMute;
@@ -92,6 +92,9 @@ public class SblockUser {
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
 		DatabaseManager.getDatabaseManager().loadUserData(this);
+		if (listening.size() == 0) {
+			listening.add("#");
+		}
 		ChatStorage cs = new ChatStorage();
 		this.globalNick = cs.getGlobalNick(playerName);
 		this.globalMute = cs.getGlobalMute(playerName);
@@ -336,7 +339,7 @@ public class SblockUser {
 			return false;
 		}
 		if (!this.listening.contains(c)) {
-			if (c.userJoin(this)) {
+			if (c.getListening().contains(this.playerName) || c.userJoin(this)) {
 				this.listening.add(c.getName());
 				//this.sendMessage(ChatColor.GREEN + "Now listening to channel " + ChatColor.GOLD + c.getName() + ChatColor.GREEN + ".");
 				//Extra spam for the player to read. All in favor of removing it say aye
@@ -366,7 +369,7 @@ public class SblockUser {
 		}
 	}
 
-	public List<String> getListening() {
+	public Set<String> getListening() {
 		return listening;
 	}
 	public boolean isListening(Channel c)	{
