@@ -97,8 +97,8 @@ public class NormalChannel implements Channel {
 		sender.sendMessage(ChatMsgs.unsupportedOperation(sender, this));
 	}
 
-	public CanonNicks getNick(SblockUser sender) {
-		return CanonNicks.CUSTOM.customize(sender.getNick(), null);
+	public Nick getNick(SblockUser sender) {
+		return new Nick(sender.getNick());
 	}
 
 	@Override
@@ -339,8 +339,18 @@ public class NormalChannel implements Channel {
 
 	@Override
 	public void sendToAll(SblockUser sender, String s, String type) {
+		// TODO temporary fix for onPlayerQuit not firing in correct order
+		Set<String> failures = new HashSet<String>();
 		for (String name : this.listening) {
-			UserManager.getUserManager().getUser(name).sendMessageFromChannel(s, this, type);
+			SblockUser u = UserManager.getUserManager().getUser(name);
+			if (u != null) {
+				u.sendMessageFromChannel(s, this, type);
+			} else {
+				failures.add(name);
+			}
+		}
+		for (String failure : failures) {
+			this.listening.remove(failure);
 		}
 		Sblogger.infoNoLogName(s);
 	}

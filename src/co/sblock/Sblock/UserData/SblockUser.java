@@ -96,7 +96,8 @@ public class SblockUser {
 			listening.add("#");
 		}
 		ChatStorage cs = new ChatStorage();
-		this.globalNick = cs.getGlobalNick(playerName);
+		this.globalNick = cs.getGlobalNick(playerName) != null ?
+				cs.getGlobalNick(playerName) : playerName;
 		this.globalMute = cs.getGlobalMute(playerName);
 	}
 

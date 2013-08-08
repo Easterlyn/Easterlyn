@@ -11,10 +11,10 @@ import co.sblock.Sblock.UserData.SblockUser;
 public class ChatMsgs {
 
 	public static String onChannelJoin(SblockUser u, Channel c) {
-		return ChatColor.DARK_GREEN + c.getNick(u).getName()
-				+ ChatColor.YELLOW + " began " + c.getNick(u).getPester()
-				+ ChatColor.GOLD + c.getName() + ChatColor.YELLOW +
-				" at " + new SimpleDateFormat("HH:mm").format(new Date());
+		return c.getNick(u).getName() + ChatColor.YELLOW + " began "
+				+ c.getNick(u).getPester() + " " + ChatColor.GOLD
+				+ c.getName() + ChatColor.YELLOW + " at "
+				+ new SimpleDateFormat("HH:mm").format(new Date());
 	}
 
 	public static String onChannelLeave(SblockUser u, Channel c) {

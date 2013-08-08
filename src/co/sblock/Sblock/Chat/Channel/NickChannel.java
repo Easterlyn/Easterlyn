@@ -37,12 +37,10 @@ public class NickChannel extends NormalChannel {
 				ChatColor.GOLD + this.getName());
 	}
 
-	public CanonNicks getNick(SblockUser user) {
-		return CanonNicks.CUSTOM.customize(getNickFromUser(user), null);
-	}
-
-	public String getNickFromUser(SblockUser user)	{
-		return nickList.get(user.getPlayerName());
+	@Override
+	public Nick getNick(SblockUser user) {
+		return new Nick(this.nickList.get(user.getPlayerName()) != null ?
+				this.nickList.get(user.getPlayerName()) : user.getNick());
 	}
 
 	public String getUserFromNick(String n)	{

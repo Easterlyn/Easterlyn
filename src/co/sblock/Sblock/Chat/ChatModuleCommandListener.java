@@ -107,8 +107,6 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean sban(CommandSender sender, String target, String reason) {
 		if (!(sender instanceof Player) || sender.isOp()) {
 			SblockUser victim = UserManager.getUserManager().getUser(target);
-			victim.getPlayer().kickPlayer(reason);
-			victim.getPlayer().setBanned(true);
 			Bukkit.banIP(victim.getUserIP());
 			DatabaseManager.getDatabaseManager().deleteUser(victim);
 			Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
@@ -116,6 +114,8 @@ public class ChatModuleCommandListener implements CommandListener {
 				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName() +
 						"has been superbanned for " + reason);
 			}
+			victim.getPlayer().setBanned(true);
+			victim.getPlayer().kickPlayer(reason);
 			ChatStorage cs = new ChatStorage();
 			cs.setBan(target, reason);
 			cs.removeGlobalMute(target);

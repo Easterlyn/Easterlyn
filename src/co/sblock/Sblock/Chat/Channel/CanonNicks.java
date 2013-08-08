@@ -3,6 +3,8 @@
  */
 package co.sblock.Sblock.Chat.Channel;
 
+import org.bukkit.ChatColor;
+
 /**
  * @author Jikoo
  *
@@ -52,23 +54,19 @@ public enum CanonNicks {
 	MEENAH("Meenah", null, "5", "trolling"),
 
 	CALLIOPE("Calliope", "uranianUmbra", "7", "cheering"),
-	CALIBORN("Caliborn", "undyingUmbrage", "8", "jeering"),
-
-	CUSTOM("Report seeing this please!", "Report seeing this please!", "2", "pestering");
+	CALIBORN("Caliborn", "undyingUmbrage", "8", "jeering");
 
 
-	private final char SECTION_SIGN = '\u00A7';
-	
 	private String name;
 	private String chumHandle;
-	private String color;
+	private ChatColor color;
 	private String pester;
 
 
 	private CanonNicks(String name, String chumHandle, String colorCode, String pester) {
 		this.name = name;
 		this.chumHandle = chumHandle;
-		this.color = SECTION_SIGN + colorCode;
+		this.color = ChatColor.getByChar(colorCode);
 		this.pester = pester;
 	}
 	// This is fabricated based Dad's header: http://www.mspaintadventures.com/?s=6&p=002167
@@ -119,8 +117,6 @@ public enum CanonNicks {
 		case CALLIOPE:
 			break;
 		case CRONUS:
-			break;
-		case CUSTOM:
 			break;
 		case DAMARA:
 			break;
@@ -207,12 +203,6 @@ public enum CanonNicks {
 		return this.color + this.chumHandle;
 	}
 
-	public CanonNicks customize(String name, String chumHandle) {
-		this.name = name;
-		this.chumHandle = chumHandle;
-		return this;
-	}
-
 
 	/**
 	 * @param string
@@ -222,6 +212,6 @@ public enum CanonNicks {
 		// TODO Auto-generated method stub
 		// if valid nick, return nick
 		// else
-		return CanonNicks.CUSTOM.customize(nick, null);
+		return null;
 	}
 }

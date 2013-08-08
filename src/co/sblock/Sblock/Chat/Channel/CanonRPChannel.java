@@ -27,7 +27,7 @@ public class CanonRPChannel extends RPChannel {
 
 	@Override
 	public void setNick(String nick, SblockUser sender) {
-		if (CanonNicks.getNick(nick).name().equals(CanonNicks.CUSTOM.name())) {
+		if (!Nick.isCanon(nick)) {
 			sender.sendMessage(ChatColor.BLUE + nick + ChatColor.RED +
 					" is not a valid roleplaying nick!");
 		} else {

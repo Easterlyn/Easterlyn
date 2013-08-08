@@ -14,13 +14,13 @@ public class ChatModule extends Module {
 
 	@Override
 	protected void onEnable() {
-		slog().info("Enabling Chat.");
+		slog().info("Enabling SblockChat");
 		instance = this;
 		this.registerEvents(listener);
 		this.registerCommands(clistener);
 		cm.loadAllChannels();
 		this.cm.createDefaultSet();
-		slog().info("Chat enabled.");
+		slog().info("SblockChat enabled");
 	}
 
 	@Override

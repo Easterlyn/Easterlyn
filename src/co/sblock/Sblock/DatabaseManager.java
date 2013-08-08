@@ -40,6 +40,7 @@ public class DatabaseManager {
 	private Connection connection;
 
 	public boolean enable() {
+		Sblogger.info("SblockDatabase", "Connecting to database");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"
@@ -182,8 +183,9 @@ public class DatabaseManager {
 		if (defaultChannels.contains(c.getName())) {
 			return;
 		}
+		PreparedStatement pst = null;
 		try {
-			PreparedStatement pst = connection.prepareStatement(
+			pst = connection.prepareStatement(
 					"INSERT INTO ChatChannels(name, channelType, "
 							+ "access, owner, modList, banList, approvedList) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?)"
@@ -191,7 +193,7 @@ public class DatabaseManager {
 							+ "channelType=VALUES(channelType), access=VALUES(access), "
 							+ "owner=VALUES(owner), modList=VALUES(modList), "
 							+ "banList=VALUES(banList), "
-							+ "approvedList=VALUES(approvedList), ");
+							+ "approvedList=VALUES(approvedList)");
 
 			pst.setString(1, c.getName());
 			pst.setString(2, c.getType().name());
@@ -220,10 +222,17 @@ public class DatabaseManager {
 			}
 
 			pst.executeUpdate();
-			pst.close();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 

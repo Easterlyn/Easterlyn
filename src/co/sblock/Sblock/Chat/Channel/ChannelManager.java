@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 public class ChannelManager {
 
@@ -50,7 +49,7 @@ public class ChannelManager {
 		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, "Dublek"));
 		
 		
-		Logger.getLogger("Minecraft").info("Default channels created");
+		Sblogger.info("SblockChat", "Default channels created");
 		for(Channel c : defaults)	{
 			ChannelManager.getChannelList().put(c.getName(), c);
 		}

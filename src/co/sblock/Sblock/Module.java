@@ -53,12 +53,10 @@ public abstract class Module {
 		try {
 			this.onEnable();
 		} catch (Exception e) {
-			throw new RuntimeException("Unhandled exception in module "
+			throw new RuntimeException("[SblockSuite] Unhandled exception in module "
 					+ this.getClass().getSimpleName()
 					+ ". Plugin failed to load.", e);
 		}
-		this.getLogger().info(
-				"Loaded module " + this.getClass().getSimpleName());
 		return this;
 	}
 
