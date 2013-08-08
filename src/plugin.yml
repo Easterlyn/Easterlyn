@@ -22,7 +22,7 @@ commands:
   usage: /o <text>
   description: '> Be Doc Scratch.'
  sc:
-  usage: /sc <action> <additional arguments>
+  usage: /sc ? for help
   description: "[Sburb] SburbChat's main command"
  sban:
   usage: /<command> <target> <reason>

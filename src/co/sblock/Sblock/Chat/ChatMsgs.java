@@ -102,4 +102,9 @@ public class ChatMsgs {
 		return ChatColor.RED + "Channel " + ChatColor.GOLD + c.getName()
 				+ ChatColor.RED + " does not support that operation.";
 	}
+
+	public static String errorInvalidAccess(String s) {
+		return ChatColor.RED + s + " is not a valid access level!" +
+				"\nValid levels: Public, Private";
+	}
 }

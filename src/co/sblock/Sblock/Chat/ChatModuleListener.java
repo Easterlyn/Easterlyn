@@ -1,7 +1,5 @@
 package co.sblock.Sblock.Chat;
 
-import java.util.logging.Logger;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,12 +34,13 @@ public class ChatModuleListener implements Listener {
 		if (!c.getListening().contains(u.getPlayerName())) {
 			c.userJoin(u);
 		}
-		u.setCurrent(c);
+		if (!u.getCurrent().equals(c)) {
+			u.setCurrent(c);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		Logger.getLogger("Minecraft").info("onPlayerChat");
 		if (SblockUser.getUser(event.getPlayer().getName()) != null) {
 			event.setCancelled(true);
 			if (event.getMessage().indexOf("/") == 0) {

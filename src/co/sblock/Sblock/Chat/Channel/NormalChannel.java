@@ -3,7 +3,10 @@ package co.sblock.Sblock.Chat.Channel;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.ChatMsgs;
@@ -30,6 +33,11 @@ public class NormalChannel implements Channel {
 		this.owner = creator;
 		this.modList.add(creator);
 		DatabaseManager.getDatabaseManager().saveChannelData(this);
+		if (this.access.equals(AccessLevel.PRIVATE)) {
+			for (String s : modList) {
+				approvedList.add(s);
+			}
+		}
 	}
 
 	@Override
@@ -124,23 +132,34 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void addMod(SblockUser user, SblockUser sender) {
+	public void addMod(String username, SblockUser sender) {
 		// SburbChat code. Handle with care
 
+		if(!Bukkit.getOfflinePlayer(username).hasPlayedBefore()) {
+			sender.sendMessage(ChatColor.YELLOW + username
+					+ ChatColor.RED + " does not exist! Get them to log in once.");
+		}
 		if (modList.contains(sender.getPlayerName())
-				&& !modList.contains(user.getPlayerName())) {
-			this.modList.add(user.getPlayerName());
-			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName()
+				&& !modList.contains(username)) {
+			this.modList.add(username);
+			if (this.access.equals(AccessLevel.PRIVATE)) {
+				this.approvedList.add(username);
+			}
+			this.sendToAll(sender, ChatColor.YELLOW + username
 					+ " is now a mod in " + ChatColor.GOLD + this.name
 					+ ChatColor.YELLOW + "!", "channel");
-			user.sendMessage(ChatColor.GREEN + "You are now a mod in "
-					+ ChatColor.GOLD + this.name + ChatColor.GREEN + "!");
+			Player targetUser = Bukkit.getPlayerExact(username);
+			if (targetUser != null) {
+				targetUser.sendMessage(ChatColor.GREEN
+					+ "You are now a mod in " + ChatColor.GOLD
+					+ this.name + ChatColor.GREEN + "!");
+			}
 		} else if (!sender.getPlayerName().equals(owner)) {
 			sender.sendMessage(ChatColor.RED
 					+ "You do not have permission to mod people in "
 					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
 		} else {
-			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName()
+			sender.sendMessage(ChatColor.YELLOW + username
 					+ ChatColor.RED + " is already a mod in " + ChatColor.GOLD
 					+ this.name + ChatColor.RED + "!");
 		}
@@ -148,23 +167,26 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void removeMod(SblockUser user, SblockUser sender) {
+	public void removeMod(String target, SblockUser sender) {
 		// SburbChat code. Handle with care
 
 		if (modList.contains(sender.getPlayerName())
-				&& this.modList.contains(user.getPlayerName())) {
-			this.modList.remove(user.getPlayerName());
-			this.sendToAll(sender, ChatColor.YELLOW + user.getPlayerName()
+				&& this.modList.contains(target)) {
+			this.modList.remove(target);
+			this.sendToAll(sender, ChatColor.YELLOW + target
 					+ " is no longer a mod in " + ChatColor.GOLD + this.name
 					+ ChatColor.YELLOW + "!", "channel");
-			user.sendMessage(ChatColor.RED + "You are no longer a mod in "
-					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+			Player targetUser = Bukkit.getPlayerExact(target);
+			if (targetUser != null) {
+				targetUser.sendMessage(ChatColor.RED + "You are no longer a mod in "
+						+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+			}
 		} else if (!sender.getPlayerName().equals(this.owner)) {
 			sender.sendMessage(ChatColor.RED
 					+ "You do not have permission to demod people in "
 					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
 		} else {
-			sender.sendMessage(ChatColor.YELLOW + user.getPlayerName()
+			sender.sendMessage(ChatColor.YELLOW + target
 					+ ChatColor.RED + " is not a mod in " + ChatColor.GOLD
 					+ this.name + ChatColor.RED + "!");
 		}

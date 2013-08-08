@@ -28,6 +28,9 @@ public class ChatStorage {
 		// I see no reason for needless error handling here, messages will appear
 		// on later failures.
 		storage = YamlConfiguration.loadConfiguration(storageFile);
+		if (!storage.contains("bans")) {
+			storage.set("bans.benzurf", "Insert witty statement here. Bitch.");
+		}
 	}
 
 	public void setBan(String user, String reason) {
@@ -42,7 +45,7 @@ public class ChatStorage {
 
 	public String getBan(String user) {
 		Set<String> allBans = storage.getConfigurationSection("bans").getKeys(false);
-		if (allBans.contains(user)) {
+		if (allBans != null && allBans.contains(user)) {
 			return storage.getString("bans." + user);
 		} else return null;
 	}
@@ -54,65 +57,6 @@ public class ChatStorage {
 		} catch (IOException e) {
 			Sblogger.warning("SblockChat", "Could not update bans; " +
 					user + "'s ban reason is still filed.");
-		}
-	}
-
-	public void setGlobalNick(String user, String nick) {
-		storage.set("nicks." + user, nick);
-		try {
-			storage.save(storageFile);
-		} catch (IOException e) {
-			Sblogger.warning("SblockChat", "Could not update nicks; " +
-					user + " will have no (or, if changed, prior) nick on restart.");
-		}
-	}
-
-	public String getGlobalNick(String user) {
-/*		Set<String> allNicks = storage.getConfigurationSection("nicks").getKeys(false);
-		if (allNicks.contains(user)) {
-			return storage.getString("nicks." + user);
-		} else return user;
-		*/
-		return user;
-		//TODO Adam fix this shit
-	}
-
-	public void removeGlobalNick(String user) {
-		storage.set("nicks." + user, null);
-		try {
-			storage.save(storageFile);
-		} catch (IOException e) {
-			Sblogger.warning("SblockChat", "Could not update nicks; " +
-					user + "'s nick is still filed.");
-		}
-	}
-
-	public void setGlobalMute(String user) {
-		storage.set("mutes." + user, true);
-		try {
-			storage.save(storageFile);
-		} catch (IOException e) {
-			Sblogger.warning("SblockChat", "Could not update mutes; " +
-					user + " will be unmuted on restart.");
-		}
-	}
-
-	public boolean getGlobalMute(String user) {
-/*		Set<String> allMutes = storage.getConfigurationSection("mutes").getKeys(false);
-		if (allMutes.contains(user)) {
-			return storage.getBoolean("mutes." + user);
-		} else return false;
-		*/
-		return false;
-	}
-
-	public void removeGlobalMute(String user) {
-		storage.set("mutes." + user, null);
-		try {
-			storage.save(storageFile);
-		} catch (IOException e) {
-			Sblogger.warning("SblockChat", "Could not update mutes; " +
-					user + "'s mute will recur on restart.");
 		}
 	}
 }

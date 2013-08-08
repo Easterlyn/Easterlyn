@@ -47,13 +47,14 @@ public class Sblock extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		instance = null;
+		for (Module module : this.modules) {
+			module.disable();
+		}
 		try {
 			DatabaseManager.getDatabaseManager().disable();
 		} catch (NullPointerException npe) {
 			// Caused by any load failures; modules may not be initialized.
 		}
-		for (Module module : this.modules)
-			module.disable();
 	}
 
 	public void registerCommands(CommandListener listener) {

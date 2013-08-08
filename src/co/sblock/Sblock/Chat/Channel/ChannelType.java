@@ -12,6 +12,8 @@ public enum ChannelType {
 			return ChannelType.valueOf(s);
 		} catch (IllegalStateException e) {
 			return null;
+		} catch (IllegalArgumentException e) {
+			return null;
 		}
 	}
 }

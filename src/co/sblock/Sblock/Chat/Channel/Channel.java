@@ -20,8 +20,8 @@ public interface Channel {
 	public void setOwner(String name, SblockUser sender);
 	public String getOwner();
 	public void loadMod(String user);
-	public void addMod(SblockUser user, SblockUser sender);
-	public void removeMod(SblockUser user, SblockUser sender);
+	public void addMod(String username, SblockUser sender);
+	public void removeMod(String target, SblockUser sender);
 	public Set<String> getModList();
 	public boolean isMod(SblockUser user);
 	

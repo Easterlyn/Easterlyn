@@ -40,7 +40,7 @@ public class DatabaseManager {
 	private Connection connection;
 
 	public boolean enable() {
-		Sblogger.info("SblockDatabase", "Connecting to database");
+		Sblogger.info("SblockDatabase", "Connecting to database.");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"
@@ -60,19 +60,10 @@ public class DatabaseManager {
 			e.printStackTrace();
 			return false;
 		}
-		defaultChannels = new ArrayList<String>();
-		defaultChannels.add("#");
-		defaultChannels.add("#rp");
-		defaultChannels.add("#rp2");
-		defaultChannels.add("#Earth");
-		defaultChannels.add("#InnerCircle");
-		defaultChannels.add("#OuterCircle");
-		defaultChannels.add("#FurthestRing");
-		defaultChannels.add("#LOWAS");
-		defaultChannels.add("#LOLAR");
-		defaultChannels.add("#LOHAC");
-		defaultChannels.add("#LOFAF");
 
+		this.establishDefaultChannels();
+
+		Sblogger.info("SblockDatabase", "Database enabled");
 		return true;
 	}
 
@@ -85,6 +76,21 @@ public class DatabaseManager {
 		dbm = null;
 		connection = null;
 		defaultChannels = null;
+	}
+
+	private void establishDefaultChannels() {
+		defaultChannels = new ArrayList<String>();
+		defaultChannels.add("#");
+		defaultChannels.add("#rp");
+		defaultChannels.add("#rp2");
+		defaultChannels.add("#Earth");
+		defaultChannels.add("#InnerCircle");
+		defaultChannels.add("#OuterCircle");
+		defaultChannels.add("#FurthestRing");
+		defaultChannels.add("#LOWAS");
+		defaultChannels.add("#LOLAR");
+		defaultChannels.add("#LOHAC");
+		defaultChannels.add("#LOFAF");
 	}
 
 	public void saveUserData(SblockUser user) {
@@ -145,7 +151,9 @@ public class DatabaseManager {
 					user.setDreamPlanet(rs.getString("dPlanet"));
 					user.setTower(rs.getShort("towerNum"));
 					user.setIsSleeping(rs.getBoolean("sleepState"));
-					user.setMute(rs.getBoolean("isMute"));
+					if(rs.getBoolean("isMute")) {
+						user.setMute(true);
+					}
 					user.setNick(rs.getString("nickname") != null ?
 							rs.getString("nickname") : user.getNick());
 					if (rs.getString("channels") != null) {
@@ -153,12 +161,16 @@ public class DatabaseManager {
 						for (int i = 0; i < channels.length; i++) {
 							Channel c = ChatModule.getInstance()
 									.getChannelManager().getChannel(channels[i]);
-							if (c != null)
+							if (c != null) {
 								user.addListening(c);
+							}
 						}
 					}
-					user.setCurrent(ChatModule.getInstance().getChannelManager()
-							.getChannel(rs.getString("currentChannel")));
+					Channel c = ChatModule.getInstance().getChannelManager()
+							.getChannel(rs.getString("currentChannel"));
+					if (c != null) {
+						user.setCurrent(c);
+					}
 					// TODO timePlayed
 				} else {
 					Sblogger.warning("SblockDatabase", "Player "
@@ -191,7 +203,7 @@ public class DatabaseManager {
 	}
 
 	public void saveChannelData(Channel c) {
-		if (defaultChannels.contains(c.getName())) {
+		if ( defaultChannels.contains(c.getName())) {
 			return;
 		}
 		PreparedStatement pst = null;
@@ -216,6 +228,8 @@ public class DatabaseManager {
 			}
 			if (sb.length() > 0) {
 				pst.setString(5, sb.substring(0, sb.length() - 1));
+			} else {
+				pst.setString(5, null);
 			}
 			sb = new StringBuilder();
 			for (String s : c.getBanList()) {
@@ -223,6 +237,8 @@ public class DatabaseManager {
 			}
 			if (sb.length() > 0) {
 				pst.setString(6, sb.substring(0, sb.length() - 1));
+			} else {
+				pst.setString(6, null);
 			}
 			sb = new StringBuilder();
 			for (String s : c.getApprovedUsers()) {
@@ -230,6 +246,8 @@ public class DatabaseManager {
 			}
 			if (sb.length() > 0) {
 				pst.setString(7, sb.substring(0, sb.length() - 1));
+			} else {
+				pst.setString(7, null);
 			}
 
 			pst.executeUpdate();
@@ -263,17 +281,26 @@ public class DatabaseManager {
 						ChannelType.valueOf(rs.getString("channelType")));
 				Channel c = ChatModule.getInstance().getChannelManager()
 						.getChannel(rs.getString("name"));
-				String[] modList = rs.getString("modList").split(",");
-				for (int i = 0; i < modList.length; i++) {
-					c.loadMod(modList[i]);
+				String list = rs.getString("modList");
+				if (list != null) {
+					String[] modList = list.split(",");
+					for (int i = 0; i < modList.length; i++) {
+						c.loadMod(modList[i]);
+					}
 				}
-				String[] banList = rs.getString("banList").split(",");
-				for (int i = 0; i < banList.length; i++) {
-					c.loadBan(banList[i]);
+				list = rs.getString("banList");
+				if (list != null) {
+					String[] banList = list.split(",");
+					for (int i = 0; i < banList.length; i++) {
+						c.loadBan(banList[i]);
+					}
 				}
-				String[] approvedList = rs.getString("approvedList").split(",");
-				for (int i = 0; i < approvedList.length; i++) {
-					c.loadApproval(approvedList[i]);
+				list = rs.getString("approvedList");
+				if (list != null) {
+					String[] approvedList = list.split(",");
+					for (int i = 0; i < approvedList.length; i++) {
+						c.loadApproval(approvedList[i]);
+					}
 				}
 			}
 		} catch (SQLException e) {

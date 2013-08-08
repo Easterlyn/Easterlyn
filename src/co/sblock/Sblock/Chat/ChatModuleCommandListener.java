@@ -89,7 +89,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
 	public boolean o(CommandSender sender, String text) {
 		if (!(sender instanceof Player) ||
-				sender.hasPermission("groups.horrorterror") || sender.isOp()) {
+				sender.hasPermission("group.horrorterror") || sender.isOp()) {
 			Sblogger.infoNoLogName(ChatColor.WHITE + "[o] " + text);
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 				p.sendMessage(ChatColor.BOLD + "[o] " + text);
@@ -116,9 +116,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			}
 			victim.getPlayer().setBanned(true);
 			victim.getPlayer().kickPlayer(reason);
-			ChatStorage cs = new ChatStorage();
-			cs.setBan(target, reason);
-			cs.removeGlobalMute(target);
+			new ChatStorage().setBan(target, reason);
 			return true;
 		} else {
 			sender.sendMessage(ChatColor.BLACK +
@@ -158,8 +156,7 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ " does not exist!");
 				}
 				return true;
-			}
-			if (args[0].equalsIgnoreCase("l")) { // addListening
+			} else if (args[0].equalsIgnoreCase("l")) { // addListening
 				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Listen to a channel:\n\t/sc l <$channelname>");
@@ -174,8 +171,7 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ " does not exist!");
 				}
 				return true;
-			}
-			if (args[0].equalsIgnoreCase("leave")) { // removeListening
+			} else if (args[0].equalsIgnoreCase("leave")) { // removeListening
 				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Stop listening to a channel:\n\t/sc leave <$channelname>");
@@ -190,16 +186,14 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ " does not exist!");
 				}
 				return true;
-			}
-			if (args[0].equalsIgnoreCase("list")) { // listListening
+			} else if (args[0].equalsIgnoreCase("list")) { // listListening
 				String clist = ChatColor.YELLOW + "Currently pestering: ";
 				for (String s : user.getListening()) {
 					clist += s + " ";
 				}
 				sender.sendMessage(clist);
 				return true;
-			}
-			if (args[0].equalsIgnoreCase("listall")) { // listAll
+			} else if (args[0].equalsIgnoreCase("listall")) { // listAll
 				String clist = ChatColor.YELLOW + "All channels: ";
 				Map<String, Channel> channels = ChannelManager
 						.getChannelList();
@@ -218,8 +212,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				}
 				sender.sendMessage(clist);
 				return true;
-			}
-			if (args[0].equalsIgnoreCase("new")) { // newChannel
+			} else if (args[0].equalsIgnoreCase("new")) { // newChannel
 				if (args.length != 4) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Create a new channel:\n\t/sc new <$channelname> <$sAccess> <$lAccess>\n\t"
@@ -228,40 +221,19 @@ public class ChatModuleCommandListener implements CommandListener {
 				}
 				if (ChannelType.getType(args[3]) == null) {
 					user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
+				} else if (AccessLevel.getAccess(args[2]) == null) {
+					user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
 				} else {
 					ChatModule.getInstance().getChannelManager().createNewChannel(args[1],
-							AccessLevel.valueOf(args[2]),
-							user.getPlayerName(), ChannelType.getType(args[3])); // TODO better method
+							AccessLevel.getAccess(args[2]),
+							user.getPlayerName(), ChannelType.getType(args[3]));
 					return true;
 				}
-			}
-			if (args[0].equalsIgnoreCase("channel")) { // ChannelOwner/Mod commands
+			} else if (args[0].equalsIgnoreCase("channel")) { // ChannelOwner/Mod commands
 				Channel c = user.getCurrent();
-				String helpMod = ChatColor.YELLOW
-						+ "Channel Mod commands:\n"
-						+ "\t/sc channel kick <$user>\tKick a user from the channel\n"
-						+ "\t/sc channel ban <$user>\tBan a user from the channel\n"
-						+ "\t/sc channel setalias <$alias>\tSet an alias for the channel\n"
-						+ "\t/sc channel rmalias\tRemove the channel alias\n"
-						+ "\t/sc channel getListeners\tList all users currently listening to this channel";
-				String helpOwner = ChatColor.YELLOW
-						+ "Channel Owner commands:\n"
-						+ "\t/sc channel mod <add/remove> <$user>\tAdd or remove a channelMod\n"
-						+ "\t/sc channel <ban/unban> <$user>\t(Un)bans a user from the channel\n"
-						+ "\t/sc disband\tDisband coming soon!";
 				if (c.isMod(user) || isHelper) {
 					if (args.length == 1) {
-						if (c.isMod(user) || isHelper) {
-							sender.sendMessage(helpMod);
-							return true;
-						} else if (c.isOwner(user) || isMod) {
-							sender.sendMessage(helpOwner);
-							return true;
-						} else {
-							sender.sendMessage(ChatColor.MAGIC +
-									"Congratulations, you have done the impossible by reading this!");
-							return true;
-						}
+						this.sendChannelHelp(user, c);
 					}
 					if (args.length >= 2 && args[1].equalsIgnoreCase("getlisteners")) {
 						String listenerList = ChatColor.YELLOW
@@ -296,16 +268,15 @@ public class ChatModuleCommandListener implements CommandListener {
 					}
 					if (c.isOwner(user) || isMod) {
 						if (args.length >= 4 && args[1].equalsIgnoreCase("mod")) {
+							// TODO offline user support, important
 							if (args[2].equalsIgnoreCase("add")) {
-								c.addMod(UserManager.getUserManager()
-										.getUser(args[3]), user);
+								c.addMod(args[3], user);
 								return true;
 							} else if (args[2].equalsIgnoreCase("remove")) {
-								c.removeMod(UserManager.getUserManager()
-										.getUser(args[3]), user);
+								c.removeMod(args[3], user);
 								return true;
 							} else {
-								sender.sendMessage(helpOwner);
+								this.sendChannelHelp(user, c);
 								return true;
 							}
 						}
@@ -328,8 +299,7 @@ public class ChatModuleCommandListener implements CommandListener {
 						return true;
 					}
 				}
-			}
-			if (args[0].equalsIgnoreCase("global")) {
+			} else if (args[0].equalsIgnoreCase("global")) {
 				if (isMod || sender.isOp()) {
 					if (args.length < 3) {
 						return false; // TODO error message
@@ -338,27 +308,25 @@ public class ChatModuleCommandListener implements CommandListener {
 							.getUser(args[2]);
 					if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
 						victim.setNick(args[3]);
-						new ChatStorage().setGlobalNick(args[2], args[3]);
 						return true;
 					}
 					if (args.length >= 2) {
 						if (args[1].equalsIgnoreCase("mute")) {
 							victim.setMute(true);
-							new ChatStorage().setGlobalMute(args[2]);
 							return true;
 						}
 						if (args[1].equalsIgnoreCase("unmute")) {
 							victim.setMute(false);
-							new ChatStorage().removeGlobalMute(args[2]);
 							return true;
 						}
 						if (args[1].equalsIgnoreCase("rmnick")) {
 							victim.setNick(victim.getPlayerName());
-							new ChatStorage().removeGlobalNick(args[2]);
 							return true;
 						}
 					}
 				}
+			} else {
+				this.sendDefaultHelp(sender);
 			}
 
 			// Global powers
@@ -392,5 +360,53 @@ public class ChatModuleCommandListener implements CommandListener {
 		
 		
 		return true;
+	}
+
+	// TODO -> ChatMsgs
+	private void sendDefaultHelp(CommandSender sender) {
+		sender.sendMessage(ChatColor.YELLOW + "/sc subcommands:\n"
+				+ ChatColor.GREEN + "c <channel>: "
+				+ ChatColor.YELLOW + "Talking will send messages to <channel>.\n"
+				+ ChatColor.GREEN + "l <channel>: "
+				+ ChatColor.YELLOW + "Listen to <channel>.\n"
+				+ ChatColor.GREEN + "leave <channel>: "
+				+ ChatColor.YELLOW + "Stop listening to <channel>.\n"
+				+ ChatColor.GREEN + "list: "
+				+ ChatColor.YELLOW + "List all channels you are listening to.\n"
+				+ ChatColor.GREEN + "listall: "
+				+ ChatColor.YELLOW + "List all channels.\n"
+				+ ChatColor.GREEN + "new <name> <access> <type>: "
+				+ ChatColor.YELLOW + "Create a new channel.\n"
+				+ ChatColor.GREEN + "channel: "
+				+ ChatColor.YELLOW + "Channel moderation commands.");
+	}
+	
+	private void sendChannelHelp(SblockUser user, Channel c) {
+		String helpMod = ChatColor.YELLOW
+				+ "Channel Mod commands:\n"
+				+ ChatColor.GREEN + "channel kick <$user>: "
+				+ ChatColor.YELLOW + "Kick a user from the channel\n"
+				+ ChatColor.GREEN + "channel ban <$user>: "
+				+ ChatColor.YELLOW + "Ban a user from the channel\n"
+				+ ChatColor.GREEN + "channel setalias <$alias>: "
+				+ ChatColor.YELLOW + "Set an alias for the channel\n"
+				+ ChatColor.GREEN + "channel rmalias: "
+				+ ChatColor.YELLOW + "Remove the channel alias\n"
+				+ ChatColor.GREEN + "channel getListeners: "
+				+ ChatColor.YELLOW + "List all users currently listening to this channel";
+		String helpOwner = ChatColor.YELLOW
+				+ "Channel Owner commands:\n"
+				+ ChatColor.GREEN + "/sc channel mod <add/remove> <$user>: "
+				+ ChatColor.YELLOW + "Add or remove a channel mod\n"
+				+ ChatColor.GREEN + "/sc channel <ban/unban> <$user>"
+				+ ChatColor.YELLOW + "(Un)bans a user from the channel\n"
+				+ ChatColor.GREEN + "/sc disband"
+				+ ChatColor.YELLOW + "Disband coming soon!";
+		if (c.isMod(user) || user.getPlayer().hasPermission("group.helper")) {
+			user.sendMessage(helpMod);
+			if (c.isOwner(user) || user.getPlayer().hasPermission("group.denizen")) {
+				user.sendMessage(helpOwner);
+			}
+		}
 	}
 }
