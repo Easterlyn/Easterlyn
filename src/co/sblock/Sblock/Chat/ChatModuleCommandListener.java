@@ -90,7 +90,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean o(CommandSender sender, String text) {
 		if (!(sender instanceof Player) ||
 				sender.hasPermission("groups.horrorterror") || sender.isOp()) {
-			Sblogger.infoNoLogName(ChatColor.WHITE + "[o]" + text);
+			Sblogger.infoNoLogName(ChatColor.WHITE + "[o] " + text);
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 				p.sendMessage(ChatColor.BOLD + "[o] " + text);
 			}

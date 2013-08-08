@@ -91,13 +91,12 @@ public class SblockUser {
 	 */
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
+		this.globalNick = playerName;
 		DatabaseManager.getDatabaseManager().loadUserData(this);
 		if (listening.size() == 0) {
 			listening.add("#");
 		}
 		ChatStorage cs = new ChatStorage();
-		this.globalNick = cs.getGlobalNick(playerName) != null ?
-				cs.getGlobalNick(playerName) : playerName;
 		this.globalMute = cs.getGlobalMute(playerName);
 	}
 

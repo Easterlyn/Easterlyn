@@ -69,6 +69,7 @@ public class ChatModuleListener implements Listener {
 			ChatModule.getInstance().getChannelManager().getChannel(s)
 					.userLeave(u);
 		}
+		UserManager.getUserManager().removeUser(event.getPlayer());
 	}
 
 	/*

@@ -49,7 +49,7 @@ public class DatabaseManager {
 					+ plugin.getConfig().getString("database"), plugin
 					.getConfig().getString("username"), plugin.getConfig()
 					.getString("password"));
-			Sblogger.info("Database", "Connection established.");
+			Sblogger.info("SblockDatabase", "Connection established.");
 		} catch (ClassNotFoundException e) {
 			Sblogger.severe("Database", "The database driver was not found."
 							+ " Plugin functionality will be limited.");
@@ -90,15 +90,16 @@ public class DatabaseManager {
 	public void saveUserData(SblockUser user) {
 		try {
 			PreparedStatement pst = connection
-					.prepareStatement("INSERT INTO PlayerData(name, class, "
-							+ "aspect, mplanet, dplanet, towernum, sleepstate,"
-							+ " currentChannel, channels, ip, timePlayed) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+					.prepareStatement("INSERT INTO PlayerData(name, class, aspect, "
+							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, "
+							+ "isMute, nickname, channels, ip, timePlayed) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 							+ "ON DUPLICATE KEY UPDATE "
 							+ "class=VALUES(class), aspect=VALUES(aspect), "
-							+ "mplanet=VALUES(mplanet), dplanet=VALUES(dplanet), "
-							+ "towernum=VALUES(towernum), sleepstate=VALUES(sleepstate), "
+							+ "mPlanet=VALUES(mPlanet), dPlanet=VALUES(dPlanet), "
+							+ "towerNum=VALUES(towerNum), sleepState=VALUES(sleepState), "
 							+ "currentChannel=VALUES(currentChannel), "
+							+ "isMute=VALUES(isMute), nickname=VALUES(nickname), "
 							+ "channels=VALUES(channels), ip=VALUES(ip), "
 							+ "timePlayed=VALUES(timePlayed)");
 			pst.setString(1, user.getPlayerName());
@@ -109,13 +110,15 @@ public class DatabaseManager {
 			pst.setShort(6, user.getTower());
 			pst.setBoolean(7, user.isSleeping());
 			pst.setString(8, user.getCurrent().getName());
+			pst.setBoolean(9, user.isMute());
+			pst.setString(10, user.getNick());
 			StringBuilder sb = new StringBuilder();
 			for (String s : user.getListening()) {
 				sb.append(s + ",");
 			}
-			pst.setString(9, sb.substring(0, sb.length() - 1));
-			pst.setString(10, user.getUserIP());
-			pst.setTime(11, null); // TODO timePlayed
+			pst.setString(11, sb.substring(0, sb.length() - 1));
+			pst.setString(12, user.getUserIP());
+			pst.setTime(13, null); // TODO timePlayed
 
 			pst.executeUpdate();
 			pst.close();
@@ -135,30 +138,36 @@ public class DatabaseManager {
 			ResultSet rs = pst.executeQuery();
 
 			try {
-				user.setAspect(rs.getString("aspect"));
-				user.setPlayerClass(rs.getString("class"));
-				user.setMediumPlanet(rs.getString("mplanet"));
-				user.setDreamPlanet(rs.getString("dplanet"));
-				user.setTower(rs.getShort("tower"));
-				user.setIsSleeping(rs.getBoolean("sleepstate"));
-				user.setCurrent(ChatModule.getInstance().getChannelManager()
-						.getChannel(rs.getString("currentChannel")));
-				if (rs.getString("channels") != null) {
-					String[] channels = rs.getString("channels").split(",");
-					for (int i = 0; i < channels.length; i++) {
-						user.addListening(ChatModule.getInstance()
-								.getChannelManager().getChannel(channels[i]));
+				if (rs.next()) {
+					user.setAspect(rs.getString("aspect"));
+					user.setPlayerClass(rs.getString("class"));
+					user.setMediumPlanet(rs.getString("mPlanet"));
+					user.setDreamPlanet(rs.getString("dPlanet"));
+					user.setTower(rs.getShort("towerNum"));
+					user.setIsSleeping(rs.getBoolean("sleepState"));
+					user.setMute(rs.getBoolean("isMute"));
+					user.setNick(rs.getString("nickname") != null ?
+							rs.getString("nickname") : user.getNick());
+					user.setCurrent(ChatModule.getInstance().getChannelManager()
+							.getChannel(rs.getString("currentChannel")));
+					if (rs.getString("channels") != null) {
+						String[] channels = rs.getString("channels").split(",");
+						for (int i = 0; i < channels.length; i++) {
+							user.addListening(ChatModule.getInstance()
+									.getChannelManager().getChannel(channels[i]));
+						}
 					}
+					// TODO timePlayed
+				} else {
+					Sblogger.warning("SblockDatabase", "Player "
+							+ user.getPlayerName()
+							+ " does not have an entry in the database.");
 				}
-				// TODO timePlayed
 
 				pst.close();
 
 			} catch (Exception e) {
-				// User may not be defined in the database
-				Sblogger.warning("Database", "Player "
-						+ user.getPlayerName()
-						+ " does not have an entry in the database. Or something.");
+				e.printStackTrace();
 			}
 
 		} catch (SQLException e) {

@@ -2,6 +2,7 @@ package co.sblock.Sblock.UserData;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
@@ -41,14 +42,20 @@ public class UserDataCommands implements CommandListener {
 	@SblockCommand(consoleFriendly = true)
 	public boolean setplayer(CommandSender sender, String playerToModify, String type, String value)
 	{
+		if (sender instanceof Player && !sender.hasPermission("groups.horrorterror")) {
+			sender.sendMessage(ChatColor.BLACK +
+					"Such changes are not undertaken so easily by mere mortals.");
+			return true;
+		}
 		SblockUser user = UserManager.getUserManager().getUser(playerToModify);
-		if(type.equalsIgnoreCase("class"))
+		type = type.toLowerCase();
+		if(type.equals("class"))
 			user.setPlayerClass(value);
-		else if(type.equalsIgnoreCase("aspect"))
+		else if(type.equals("aspect"))
 			user.setAspect(value);
-		else if(type.equalsIgnoreCase("land"))
+		else if(type.replaceAll("m(edium_?)?planet", "land").equals("land"))
 			user.setMediumPlanet(value);
-		else if(type.equalsIgnoreCase("dream"))
+		else if(type.replaceAll("d(ream_?)?planet", "dream").equals("dream"))
 			user.setDreamPlanet(value);
 		else
 			return false;
