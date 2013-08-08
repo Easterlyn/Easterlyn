@@ -37,12 +37,6 @@ public class ChatModuleListener implements Listener {
 			c.userJoin(u);
 		}
 		u.setCurrent(c);
-		for (String s : u.getListening()) {
-			c = ChannelManager.getChannelList().get(s);
-			if (!c.getListening().contains(u.getPlayerName())) {
-				c.userJoin(u);
-			}
-		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

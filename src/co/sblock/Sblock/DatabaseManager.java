@@ -148,15 +148,17 @@ public class DatabaseManager {
 					user.setMute(rs.getBoolean("isMute"));
 					user.setNick(rs.getString("nickname") != null ?
 							rs.getString("nickname") : user.getNick());
-					user.setCurrent(ChatModule.getInstance().getChannelManager()
-							.getChannel(rs.getString("currentChannel")));
 					if (rs.getString("channels") != null) {
 						String[] channels = rs.getString("channels").split(",");
 						for (int i = 0; i < channels.length; i++) {
-							user.addListening(ChatModule.getInstance()
-									.getChannelManager().getChannel(channels[i]));
+							Channel c = ChatModule.getInstance()
+									.getChannelManager().getChannel(channels[i]);
+							if (c != null)
+								user.addListening(c);
 						}
 					}
+					user.setCurrent(ChatModule.getInstance().getChannelManager()
+							.getChannel(rs.getString("currentChannel")));
 					// TODO timePlayed
 				} else {
 					Sblogger.warning("SblockDatabase", "Player "

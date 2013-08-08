@@ -16,9 +16,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.ChatMsgs;
-import co.sblock.Sblock.Chat.ChatStorage;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
 
@@ -94,10 +94,10 @@ public class SblockUser {
 		this.globalNick = playerName;
 		DatabaseManager.getDatabaseManager().loadUserData(this);
 		if (listening.size() == 0) {
-			listening.add("#");
+			this.addListening(ChatModule.getInstance()
+					.getChannelManager().getChannel("#"));
 		}
-		ChatStorage cs = new ChatStorage();
-		this.globalMute = cs.getGlobalMute(playerName);
+		this.setUserIP();
 	}
 
 	/**
