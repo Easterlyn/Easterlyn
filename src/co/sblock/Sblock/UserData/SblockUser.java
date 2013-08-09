@@ -1,7 +1,6 @@
 package co.sblock.Sblock.UserData;
 
 import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -67,16 +66,9 @@ public class SblockUser {
 	/** The <code>Player</code>'s global nickname */
 	private String globalNick;
 
-	/** The last time the <code>Player</code> logged out */
-	@SuppressWarnings("unused")
-	private Timestamp lastLogin;
-	// TODO do we need this? if(!getPlayer().isOnline())
-	// getOfflinePlayer().getLastPlayed()
-	//If that's a function of native OfflinePlayer, then cool. Use that, just make sure it gets saved in the db and is accessible easily here
-
 	/** The total time the <code>Player</code> has spent logged in */
 	@SuppressWarnings("unused")
-	// TODO
+	// TODO Keiko pls
 	private Time timePlayed;
 
 	/** The <code>Player</code>'s IP address */
@@ -93,8 +85,8 @@ public class SblockUser {
 		this.globalNick = playerName;
 		DatabaseManager.getDatabaseManager().loadUserData(this);
 		if (listening.size() == 0) {
-			this.addListening(ChatModule.getInstance()
-					.getChannelManager().getChannel("#"));
+			this.addListening(ChatModule.getInstance().getChannelManager()
+					.getChannel("#"));
 		}
 		this.setUserIP();
 	}
@@ -310,15 +302,15 @@ public class SblockUser {
 	}
 
 	public void setCurrent(Channel c) {
-		if (c.isBanned(this)) {	//First make sure User may join channel
+		if (c.isBanned(this)) { // First make sure User may join channel
 			this.getPlayer().sendMessage(ChatMsgs.isBanned(this, c));
 			return;
-		}
-		else if(c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this))	{
+		} else if (c.getAccess().equals(AccessLevel.PRIVATE)
+				&& !c.isApproved(this)) {
 			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(this, c));
 			return;
 		}
-		if(!this.isListening(c))	{
+		if (!this.isListening(c)) {
 			this.addListening(c);
 		}
 		this.current = c.getName();
@@ -330,7 +322,7 @@ public class SblockUser {
 
 	public boolean addListening(Channel c) {
 		if (c == null) {
-			//TODO add an error message here
+			// TODO add an error message here
 			return false;
 		}
 		if (c.isBanned(this)) {
@@ -340,8 +332,6 @@ public class SblockUser {
 		if (!this.listening.contains(c)) {
 			if (c.getListening().contains(this.playerName) || c.userJoin(this)) {
 				this.listening.add(c.getName());
-				//this.sendMessage(ChatColor.GREEN + "Now listening to channel " + ChatColor.GOLD + c.getName() + ChatColor.GREEN + ".");
-				//Extra spam for the player to read. All in favor of removing it say aye
 				return true;
 			}
 		} else {
@@ -356,11 +346,13 @@ public class SblockUser {
 			if (!this.current.equals(c)) {
 				c.userLeave(this);
 				this.listening.remove(c);
-				this.sendMessage(ChatColor.GREEN + "No longer listening to channel "
-				+ ChatColor.GOLD + c.getName() + ChatColor.GREEN + ".");
+				this.sendMessage(ChatColor.GREEN
+						+ "No longer listening to channel " + ChatColor.GOLD
+						+ c.getName() + ChatColor.GREEN + ".");
 			} else {
-				this.sendMessage(ChatColor.RED + "Cannot leave your current channel "
-						+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!");
+				this.sendMessage(ChatColor.RED
+						+ "Cannot leave your current channel " + ChatColor.GOLD
+						+ c.getName() + ChatColor.RED + "!");
 			}
 		} else {
 			this.sendMessage(ChatColor.RED + "Not listening to channel "
@@ -371,7 +363,8 @@ public class SblockUser {
 	public Set<String> getListening() {
 		return listening;
 	}
-	public boolean isListening(Channel c)	{
+
+	public boolean isListening(Channel c) {
 		return listening.contains(c);
 	}
 
@@ -382,7 +375,8 @@ public class SblockUser {
 		// determine channel. if message doesn't begin with @$channelname, then
 		// this.current confirm destination channel
 
-		// confirm user has perm to send to channel (channel.cansend()) and also muteness
+		// confirm user has perm to send to channel (channel.cansend()) and also
+		// muteness
 		// output of channel, string
 
 		SblockUser sender = UserManager.getUserManager().getUser(
@@ -392,23 +386,27 @@ public class SblockUser {
 		Channel sendto = ChatModule.getInstance().getChannelManager()
 				.getChannel(sender.current);
 
-		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel destination
+		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel
+											// destination
 			int space = fullmsg.indexOf(" ");
 			String newChannel = fullmsg.substring(1, space + 1);
 			sender.sendMessage(newChannel);
-			if (ChatModule.getInstance().getChannelManager().isValidChannel(newChannel)) {
-				sendto = ChatModule.getInstance().getChannelManager().getChannel(newChannel);
-				if(sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender))	{
-					//User not approved in channel
-					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sender, sendto));
+			if (ChatModule.getInstance().getChannelManager()
+					.isValidChannel(newChannel)) {
+				sendto = ChatModule.getInstance().getChannelManager()
+						.getChannel(newChannel);
+				if (sendto.getAccess().equals(AccessLevel.PRIVATE)
+						&& !sendto.isApproved(sender)) {
+					// User not approved in channel
+					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(
+							sender, sendto));
 					return;
-				}
-				else	{	//should reach this point for publicchannel and approved users
+				} else { // should reach this point for publicchannel and
+							// approved users
 					outputmessage = fullmsg.substring(space + 1);
 				}
-			}
-			else	{
-				//invalidChannel
+			} else {
+				// invalidChannel
 				sender.sendMessage(ChatMsgs.errorInvalidChannel(sendto));
 				return;
 			}
@@ -417,18 +415,14 @@ public class SblockUser {
 			sender.sendMessage(ChatMsgs.isMute(sender, sendto));
 			return;
 		}
-		//TODO see belowright
-	/*		switch (sendto.getAccess()) {									//This part should no longer be necessary
-			case PUBLIC:													//If they don't have access, they should be blocked 
-			break;															//by this.setCurrent()
-		case PRIVATE:
-			if (sendto.getApprovedUsers().contains(sender.playerName)) {
-				break;
-			} else {
-				return;
-			}
-		}
-		*/
+		// TODO see belowright
+		/*
+		 * switch (sendto.getAccess()) { //This part should no longer be
+		 * necessary case PUBLIC: //If they don't have access, they should be
+		 * blocked break; //by this.setCurrent() case PRIVATE: if
+		 * (sendto.getApprovedUsers().contains(sender.playerName)) { break; }
+		 * else { return; } }
+		 */
 		// Logger.getLogger("Minecraft").info(sender.getName() + " " +
 		// sendto.getName() + " " + outputmessage);
 		this.formatMessage(sender, sendto, outputmessage);
@@ -440,7 +434,8 @@ public class SblockUser {
 		// perhaps call getOutputChannelF and getOutputNameF?
 		// though I should def include a ColorDefinitons class -- DONE
 
-		// check for a global nick, prolly only occurs if admin is being tricksty
+		// check for a global nick, prolly only occurs if admin is being
+		// tricksty
 
 		// next add or strip colors in message. based on perm
 		// this part may change as I start working on other channeltypes
@@ -463,7 +458,7 @@ public class SblockUser {
 		}
 		nameF = this.getOutputNameF(sender, isThirdPerson, c);
 		output = channelF + nameF + s;
-		//sender.getPlayer().sendMessage(output);
+		// sender.getPlayer().sendMessage(output);
 		// This bypass will remain as long as the stupid
 		// thing can't tell what it's listening to
 
@@ -485,14 +480,18 @@ public class SblockUser {
 		// then just send it and be done!
 		switch (type) {
 		case "chat":
-			if (ChatColor.stripColor(s).toLowerCase().indexOf(this.getPlayerName().toLowerCase()) > s.indexOf(">"))	{
+			if (ChatColor.stripColor(s).toLowerCase()
+					.indexOf(this.getPlayerName().toLowerCase()) > s
+					.indexOf(">")) {
 				String output = "";
-				output = s.substring(0, s.indexOf("]") + 1) + ChatColor.BLUE + "{!}" + s.substring(s.indexOf("<"), s.indexOf(">") + 1)
+				output = s.substring(0, s.indexOf("]") + 1) + ChatColor.BLUE
+						+ "{!}"
+						+ s.substring(s.indexOf("<"), s.indexOf(">") + 1)
 						+ ChatColor.WHITE + s.substring(s.indexOf(">" + 1));
 				this.getPlayer().sendMessage(output);
-				this.getPlayer().playEffect(this.getPlayer().getLocation(), Effect.BOW_FIRE, 0);
-			}
-			else	{
+				this.getPlayer().playEffect(this.getPlayer().getLocation(),
+						Effect.BOW_FIRE, 0);
+			} else {
 				this.getPlayer().sendMessage(s);
 			}
 			break;
@@ -502,7 +501,7 @@ public class SblockUser {
 			this.getPlayer().sendMessage(s);
 			break;
 		}
-		//this.getPlayer().sendMessage(s);
+		// this.getPlayer().sendMessage(s);
 	}
 
 	// Here begins output formatting. Abandon all hope ye who enter
@@ -513,7 +512,7 @@ public class SblockUser {
 		String out = "";
 
 		ChatColor color = ColorDef.CHATRANK_MEMBER;
-		if (channel.isOwner(sender))	{
+		if (channel.isOwner(sender)) {
 			color = ColorDef.CHATRANK_OWNER;
 		} else if (channel.isChannelMod(sender)) {
 			color = ColorDef.CHATRANK_MOD;
@@ -524,7 +523,8 @@ public class SblockUser {
 		return out;
 	}
 
-	public String getOutputNameF(SblockUser sender, boolean isThirdPerson, Channel c) {
+	public String getOutputNameF(SblockUser sender, boolean isThirdPerson,
+			Channel c) {
 		// colors for <$name> applied here
 		// SburbChat code. Handle with care
 		String out = "";
@@ -532,14 +532,12 @@ public class SblockUser {
 		String outputName = sender.playerName;
 		if (!(sender.globalNick.equals(sender.playerName))) {
 			outputName = sender.globalNick;
-		}
-		else if(c.getType().equals(ChannelType.NICK))	{
-			//nick not required in NickChannel
-		}
-		else if(c.getType().equals(ChannelType.RP))	{
-			//CanonNick required in RPChannel
-			//if getNickFromUser.equals something in CanonNicks
-			//use that name
+		} else if (c.getType().equals(ChannelType.NICK)) {
+			// nick not required in NickChannel
+		} else if (c.getType().equals(ChannelType.RP)) {
+			// CanonNick required in RPChannel
+			// if getNickFromUser.equals something in CanonNicks
+			// use that name
 		}
 
 		ChatColor colorP = ColorDef.RANK_HERO;
@@ -570,7 +568,7 @@ public class SblockUser {
 	}
 
 	public String toString() { // For /whois usage mainly
-		//TODO Someone tell Dub to get off his lazy ass
+		// TODO Someone tell Dub to get off his lazy ass
 		String s = "";
 		return s;
 	}

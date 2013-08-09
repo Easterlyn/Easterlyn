@@ -104,7 +104,12 @@ public class ChatMsgs {
 	}
 
 	public static String errorInvalidAccess(String s) {
-		return ChatColor.RED + s + " is not a valid access level!" +
-				"\nValid levels: Public, Private";
+		return ChatColor.GOLD + s + ChatColor.RED +
+				" is not a valid access level!\nValid levels: Public, Private";
+	}
+
+	public static String errorAlreadyInChannel(String s) {
+		return ChatColor.RED + "You are already listening to "
+				+ ChatColor.GOLD + s;
 	}
 }

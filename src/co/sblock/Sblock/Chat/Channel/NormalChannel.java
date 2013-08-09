@@ -33,11 +33,6 @@ public class NormalChannel implements Channel {
 		this.owner = creator;
 		this.modList.add(creator);
 		DatabaseManager.getDatabaseManager().saveChannelData(this);
-		if (this.access.equals(AccessLevel.PRIVATE)) {
-			for (String s : modList) {
-				approvedList.add(s);
-			}
-		}
 	}
 
 	@Override
@@ -65,16 +60,20 @@ public class NormalChannel implements Channel {
 		switch (access) {
 		case PUBLIC: {
 			if (!banList.contains(sender.getPlayerName())) {
-				this.listening.add(sender.getPlayerName());
-				this.sendToAll(sender, ChatMsgs.onChannelJoin(sender, this), "channel");
-				return true;
+				if (!this.listening.contains(sender.getPlayerName())) {
+					this.listening.add(sender.getPlayerName());
+					this.sendToAll(sender, ChatMsgs.onChannelJoin(sender, this), "channel");
+					return true;
+				} else {
+					sender.sendMessage(ChatMsgs.errorAlreadyInChannel(this.name));
+				}
 			} else {
 				sender.sendMessage(ChatMsgs.isBanned(sender, this));
 				return false;
 			}
 		}
 		case PRIVATE: {
-			if (approvedList.contains(sender.getPlayerName())) {
+			if (this.isApproved(sender)) {
 				this.listening.add(sender.getPlayerName());
 				this.sendToAll(sender, ChatMsgs.onChannelJoin(sender, this), "channel");
 				return true;
@@ -142,9 +141,6 @@ public class NormalChannel implements Channel {
 		if (modList.contains(sender.getPlayerName())
 				&& !modList.contains(username)) {
 			this.modList.add(username);
-			if (this.access.equals(AccessLevel.PRIVATE)) {
-				this.approvedList.add(username);
-			}
 			this.sendToAll(sender, ChatColor.YELLOW + username
 					+ " is now a mod in " + ChatColor.GOLD + this.name
 					+ ChatColor.YELLOW + "!", "channel");
@@ -345,7 +341,7 @@ public class NormalChannel implements Channel {
 	}
 	@Override
 	public boolean isApproved(SblockUser user)	{
-		return approvedList.contains(user.getPlayerName());
+		return approvedList.contains(user.getPlayerName()) || isChannelMod(user);
 	}
 
 	@Override

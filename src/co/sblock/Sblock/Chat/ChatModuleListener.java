@@ -32,7 +32,7 @@ public class ChatModuleListener implements Listener {
 		}
 		Channel c = ChannelManager.getChannelList().get("#");
 		if (!c.getListening().contains(u.getPlayerName())) {
-			c.userJoin(u);
+			u.addListening(c);
 		}
 		if (!u.getCurrent().equals(c)) {
 			u.setCurrent(c);
