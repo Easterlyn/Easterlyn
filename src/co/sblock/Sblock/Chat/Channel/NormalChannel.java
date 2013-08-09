@@ -66,6 +66,7 @@ public class NormalChannel implements Channel {
 					return true;
 				} else {
 					sender.sendMessage(ChatMsgs.errorAlreadyInChannel(this.name));
+					return false;
 				}
 			} else {
 				sender.sendMessage(ChatMsgs.isBanned(sender, this));

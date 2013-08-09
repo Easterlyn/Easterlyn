@@ -1,5 +1,6 @@
 package co.sblock.Sblock.Chat;
 
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,10 +34,11 @@ public class ChatModuleListener implements Listener {
 		Channel c = ChannelManager.getChannelList().get("#");
 		if (!c.getListening().contains(u.getPlayerName())) {
 			u.addListening(c);
-		}
-		if (!u.getCurrent().equals(c)) {
 			u.setCurrent(c);
 		}
+/*		if (!u.getCurrent().equals(c)) {
+			u.setCurrent(c);
+		}*/
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -49,6 +51,9 @@ public class ChatModuleListener implements Listener {
 			} else {
 				SblockUser.getUser(event.getPlayer().getName()).chat(event);
 			}
+		}
+		else	{
+			event.getPlayer().sendMessage(ChatColor.RED + "You are not in the SblockUser Database! Seek help immediately!");
 		}
 	}
 

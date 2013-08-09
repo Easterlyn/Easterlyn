@@ -334,7 +334,8 @@ public class SblockUser {
 				this.listening.add(c.getName());
 				return true;
 			}
-		} else {
+		}
+		else {
 			this.sendMessage(ChatColor.RED + "Already listening to channel "
 					+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!");
 		}
