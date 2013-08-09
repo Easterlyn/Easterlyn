@@ -394,7 +394,8 @@ public class SblockUser {
 
 		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel destination
 			int space = fullmsg.indexOf(" ");
-			String newChannel = fullmsg.substring(1, space);
+			String newChannel = fullmsg.substring(1, space + 1);
+			sender.sendMessage(newChannel);
 			if (ChatModule.getInstance().getChannelManager().isValidChannel(newChannel)) {
 				sendto = ChatModule.getInstance().getChannelManager().getChannel(newChannel);
 				if(sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender))	{

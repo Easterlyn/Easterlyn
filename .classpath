@@ -3,5 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Bukkit"/>
+	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/spigot.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/guava-14.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
