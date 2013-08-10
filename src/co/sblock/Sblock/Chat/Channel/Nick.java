@@ -32,7 +32,7 @@ public class Nick {
 	}
 
 	public ChatColor getColor() {
-		return canon ? nick.getColor() : ChatColor.DARK_GREEN;
+		return canon ? nick.getColor() : null;
 	}
 
 	public String getPester() {

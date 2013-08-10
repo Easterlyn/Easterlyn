@@ -188,4 +188,9 @@ public class ChatMsgs {
 		return ChatColor.RED + "You are not listening to channel "
 				+ ChatColor.GOLD + s;
 	}
+
+	public static String errorNickRequired(String name) {
+		return ChatColor.GOLD + name + ChatColor.RED +
+				" is a roleplaying channel. You must have a nickname to talk!";
+	}
 }
