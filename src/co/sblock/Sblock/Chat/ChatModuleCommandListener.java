@@ -178,8 +178,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					return true;
 				}
 				try {
-					user.removeListening(ChatModule.getInstance()
-							.getChannelManager().getChannel(args[1]));
+					user.removeListening(args[1]);
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
 							+ ChatColor.GOLD + args[1] + ChatColor.RED
@@ -199,7 +198,7 @@ public class ChatModuleCommandListener implements CommandListener {
 						.getChannelList();
 				for (Channel c : channels.values()) {
 					String next;
-					if (user.getListening().contains(c)) {
+					if (user.isListening(c)) {
 						next = ChatColor.YELLOW + c.getName() + " ";
 						clist += next;
 					} else if (c.getAccess().equals(AccessLevel.PUBLIC)) {
@@ -260,9 +259,7 @@ public class ChatModuleCommandListener implements CommandListener {
 							return true;
 						}
 						if (args[1].equalsIgnoreCase("ban")) {
-							c.banUser(
-									UserManager.getUserManager().getUser(
-											args[2]), user);
+							c.banUser(args[2], user);
 							return true;
 						}
 					}
@@ -283,9 +280,7 @@ public class ChatModuleCommandListener implements CommandListener {
 						if (args.length >= 3 && args[1].equalsIgnoreCase("unban")) {
 							ChatModule.getInstance().getChannelManager()
 									.getChannel(c.getName())
-									.unbanUser(
-											UserManager.getUserManager()
-													.getUser(args[2]), user);
+									.unbanUser(args[2], user);
 							return true;
 						}
 						if (args.length >= 2 && args[0].equalsIgnoreCase("disband")) {

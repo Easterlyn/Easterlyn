@@ -196,7 +196,11 @@ public enum CanonNicks {
 	}
 
 	public String getName() {
-		return this.color + this.name;
+		return this.name;
+	}
+
+	public ChatColor getColor() {
+		return this.color;
 	}
 
 	public String getHandle() {

@@ -159,18 +159,10 @@ public class DatabaseManager {
 					if (rs.getString("channels") != null) {
 						String[] channels = rs.getString("channels").split(",");
 						for (int i = 0; i < channels.length; i++) {
-							Channel c = ChatModule.getInstance()
-									.getChannelManager().getChannel(channels[i]);
-							if (c != null) {
-								user.addListening(c);
-							}
+							user.syncJoinChannel(channels[i]);
 						}
 					}
-					Channel c = ChatModule.getInstance().getChannelManager()
-							.getChannel(rs.getString("currentChannel"));
-					if (c != null) {
-						user.setCurrent(c);
-					}
+					user.syncSetCurrentChannel(rs.getString("currentChannel"));
 					// TODO timePlayed
 				} else {
 					Sblogger.warning("SblockDatabase", "Player "

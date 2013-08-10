@@ -39,8 +39,8 @@ public class NickChannel extends NormalChannel {
 
 	@Override
 	public Nick getNick(SblockUser user) {
-		return new Nick(this.nickList.get(user.getPlayerName()) != null ?
-				this.nickList.get(user.getPlayerName()) : user.getNick());
+		return this.nickList.get(user.getPlayerName()) != null ?
+				new Nick(this.nickList.get(user.getPlayerName())) : new Nick(user.getNick());
 	}
 
 	public String getUserFromNick(String n)	{

@@ -28,7 +28,11 @@ public class Nick {
 	}
 
 	public String getName() {
-		return canon ? nick.getName() : ChatColor.DARK_GREEN + name;
+		return canon ? nick.getName() : name;
+	}
+
+	public ChatColor getColor() {
+		return canon ? nick.getColor() : ChatColor.DARK_GREEN;
 	}
 
 	public String getPester() {
@@ -45,5 +49,9 @@ public class Nick {
 
 	public static boolean isCanon(String nick) {
 		return CanonNicks.getNick(nick) != null;
+	}
+
+	public String toString() {
+		return this.name;
 	}
 }

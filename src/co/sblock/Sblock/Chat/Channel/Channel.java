@@ -10,8 +10,8 @@ public interface Channel {
 	public Set<String> getListening();
 	public ChannelType getType();
 	
-	public boolean userJoin(SblockUser sender);
-	public void userLeave(SblockUser sender);
+	public void addListening(String user);
+	public void removeListening(String user);
 	
 	public void setNick(String nick, SblockUser sender);
 	public void removeNick(SblockUser sender);
@@ -27,8 +27,8 @@ public interface Channel {
 	
 	public void kickUser(SblockUser user, SblockUser sender);
 	public void loadBan(String user);
-	public void banUser(SblockUser user, SblockUser sender);
-	public void unbanUser(SblockUser user, SblockUser sender);
+	public void banUser(String username, SblockUser sender);
+	public void unbanUser(String username, SblockUser sender);
 	public boolean isBanned(SblockUser user);
 	public void loadApproval(String user);
 	public void approveUser(SblockUser user, SblockUser sender);

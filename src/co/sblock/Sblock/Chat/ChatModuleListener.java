@@ -10,8 +10,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
@@ -31,14 +29,7 @@ public class ChatModuleListener implements Listener {
 			UserManager.getUserManager().addUser(event.getPlayer());
 			u = SblockUser.getUser(event.getPlayer().getName());
 		}
-		Channel c = ChannelManager.getChannelList().get("#");
-		if (!c.getListening().contains(u.getPlayerName())) {
-			u.addListening(c);
-			u.setCurrent(c);
-		}
-/*		if (!u.getCurrent().equals(c)) {
-			u.setCurrent(c);
-		}*/
+		//u.syncSetCurrentChannel("#");
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -64,8 +55,7 @@ public class ChatModuleListener implements Listener {
 			return; // We don't want to make another db call just to announce quit.
 		}
 		for (String s : u.getListening()) {
-			ChatModule.getInstance().getChannelManager().getChannel(s)
-					.userLeave(u);
+			u.removeListeningQuit(s);
 		}
 		UserManager.getUserManager().removeUser(event.getPlayer());
 	}

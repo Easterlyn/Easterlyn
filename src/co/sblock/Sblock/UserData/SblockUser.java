@@ -13,9 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.Sblock.DatabaseManager;
+import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
@@ -55,7 +56,7 @@ public class SblockUser {
 	private Location previousLocation;
 
 	/** The <code>Player</code>'s current focused channel */
-	private String current = "#";
+	private String current;
 
 	/** The channels the <code>Player</code> is listening to */
 	private Set<String> listening = new HashSet<String>();
@@ -84,9 +85,8 @@ public class SblockUser {
 		this.playerName = playerName;
 		this.globalNick = playerName;
 		DatabaseManager.getDatabaseManager().loadUserData(this);
-		if (listening.size() == 0) {
-			this.addListening(ChatModule.getInstance().getChannelManager()
-					.getChannel("#"));
+		if (this.current == null || listening.size() == 0) {
+			this.syncSetCurrentChannel("#");
 		}
 		this.setUserIP();
 	}
@@ -302,11 +302,15 @@ public class SblockUser {
 	}
 
 	public void setCurrent(Channel c) {
-		if (c.isBanned(this)) { // First make sure User may join channel
+		if (c == null) {
+			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
+			return;
+		}
+		if (c.isBanned(this)) {
 			this.getPlayer().sendMessage(ChatMsgs.isBanned(this, c));
 			return;
-		} else if (c.getAccess().equals(AccessLevel.PRIVATE)
-				&& !c.isApproved(this)) {
+		}
+		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
 			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(this, c));
 			return;
 		}
@@ -322,42 +326,62 @@ public class SblockUser {
 
 	public boolean addListening(Channel c) {
 		if (c == null) {
-			// TODO add an error message here
+			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
 			return false;
 		}
 		if (c.isBanned(this)) {
 			this.getPlayer().sendMessage(ChatMsgs.isBanned(this, c));
 			return false;
 		}
-		if (!this.listening.contains(c)) {
-			if (c.getListening().contains(this.playerName) || c.userJoin(this)) {
-				this.listening.add(c.getName());
-				return true;
-			}
+		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(this, c));
+			return false;
 		}
-		else {
-			this.sendMessage(ChatColor.RED + "Already listening to channel "
-					+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!");
+		if (!this.isListening(c)) {
+			this.listening.add(c.getName());
 		}
-		return false;
+		if (!c.getListening().contains(this.playerName)) {
+			c.addListening(this.getPlayerName());
+			System.out.println("DEBUG: c.addListening(this.getPlayerName());");
+			c.sendToAll(this, ChatMsgs.onChannelJoin(this, c), "channel");
+			return true;
+		} else {
+			this.sendMessage(ChatMsgs.errorAlreadyInChannel(c.getName()));
+			return false;
+		}
 	}
 
-	public void removeListening(Channel c) {
-		if (this.listening.contains(c)) {
-			if (!this.current.equals(c)) {
-				c.userLeave(this);
+	public void removeListening(String cName) {
+		if (this.listening.contains(cName)) {
+			if (!this.current.equals(cName)) {
+				Channel c = ChatModule.getInstance().getChannelManager()
+						.getChannel(cName);
+				if (c != null) {
+					c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
+							"channel");
+					c.removeListening(this.getPlayerName());
+				}
 				this.listening.remove(c);
-				this.sendMessage(ChatColor.GREEN
-						+ "No longer listening to channel " + ChatColor.GOLD
-						+ c.getName() + ChatColor.GREEN + ".");
 			} else {
-				this.sendMessage(ChatColor.RED
-						+ "Cannot leave your current channel " + ChatColor.GOLD
-						+ c.getName() + ChatColor.RED + "!");
+				this.sendMessage(ChatMsgs.errorCannotLeaveCurrent(cName));
 			}
 		} else {
-			this.sendMessage(ChatColor.RED + "Not listening to channel "
-					+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!");
+			this.sendMessage(ChatMsgs.errorNotListening(cName));
+		}
+	}
+
+	/**
+	 * Tell channel player is leaving on quit
+	 * 
+	 * @param cName
+	 *            the name of the channel
+	 */
+	public void removeListeningQuit(String cName) {
+		Channel c = ChatModule.getInstance().getChannelManager()
+				.getChannel(cName);
+		if (c != null) {
+			c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), "channel");
+			c.removeListening(this.getPlayerName());
 		}
 	}
 
@@ -366,7 +390,7 @@ public class SblockUser {
 	}
 
 	public boolean isListening(Channel c) {
-		return listening.contains(c);
+		return listening.contains(c.getName());
 	}
 
 	// -----------------------------------------------------------------------------------------------------------------------
@@ -390,8 +414,8 @@ public class SblockUser {
 		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel
 											// destination
 			int space = fullmsg.indexOf(" ");
-			String newChannel = fullmsg.substring(1, space + 1);
-			sender.sendMessage(newChannel);
+			String newChannel = fullmsg.substring(1, space);
+			sender.sendMessage("\"" + newChannel + "\"");
 			if (ChatModule.getInstance().getChannelManager()
 					.isValidChannel(newChannel)) {
 				sendto = ChatModule.getInstance().getChannelManager()
@@ -408,7 +432,7 @@ public class SblockUser {
 				}
 			} else {
 				// invalidChannel
-				sender.sendMessage(ChatMsgs.errorInvalidChannel(sendto));
+				sender.sendMessage(ChatMsgs.errorInvalidChannel(newChannel));
 				return;
 			}
 		}
@@ -416,16 +440,6 @@ public class SblockUser {
 			sender.sendMessage(ChatMsgs.isMute(sender, sendto));
 			return;
 		}
-		// TODO see belowright
-		/*
-		 * switch (sendto.getAccess()) { //This part should no longer be
-		 * necessary case PUBLIC: //If they don't have access, they should be
-		 * blocked break; //by this.setCurrent() case PRIVATE: if
-		 * (sendto.getApprovedUsers().contains(sender.playerName)) { break; }
-		 * else { return; } }
-		 */
-		// Logger.getLogger("Minecraft").info(sender.getName() + " " +
-		// sendto.getName() + " " + outputmessage);
 		this.formatMessage(sender, sendto, outputmessage);
 	}
 
@@ -530,15 +544,9 @@ public class SblockUser {
 		// SburbChat code. Handle with care
 		String out = "";
 
-		String outputName = sender.playerName;
-		if (!(sender.globalNick.equals(sender.playerName))) {
-			outputName = sender.globalNick;
-		} else if (c.getType().equals(ChannelType.NICK)) {
-			// nick not required in NickChannel
-		} else if (c.getType().equals(ChannelType.RP)) {
-			// CanonNick required in RPChannel
-			// if getNickFromUser.equals something in CanonNicks
-			// use that name
+		String outputName = c.getNick(this).getName();
+		if (c instanceof RPChannel) {
+			outputName = c.getNick(this).getColor() + outputName;
 		}
 
 		ChatColor colorP = ColorDef.RANK_HERO;
@@ -557,9 +565,9 @@ public class SblockUser {
 
 		colorW = Region.getRegionColor(getPlayerRegion());
 
-		out = (isThirdPerson ? "> " : colorW + "<") + colorP + outputName
+		out = (isThirdPerson ? ">" : colorW + "<") + colorP + outputName
 				+ ChatColor.WHITE
-				+ (isThirdPerson ? ": " : colorW + "> " + ChatColor.WHITE);
+				+ (isThirdPerson ? " " : colorW + "> " + ChatColor.WHITE);
 		// sender.getPlayer().sendMessage(out);
 		return out;
 	}
@@ -576,5 +584,57 @@ public class SblockUser {
 
 	public static SblockUser getUser(String userName) {
 		return UserManager.getUserManager().getUser(userName);
+	}
+
+	public static boolean isValidUser(String name) {
+		return Bukkit.getOfflinePlayer(name).hasPlayedBefore();
+	}
+
+	public void syncJoinChannel(String channelName) {
+		// TODO cancellable on disable
+		Bukkit.getScheduler()
+				.scheduleSyncDelayedTask(Sblock.getInstance(),
+						new ChannelJoinSynchronizer(this, channelName));
+	}
+
+	public class ChannelJoinSynchronizer implements Runnable {
+		private String channelName;
+		private SblockUser user;
+		public ChannelJoinSynchronizer(SblockUser user, String channelName) {
+			this.user = user;
+			this.channelName = channelName;
+		}
+		@Override
+		public void run() {
+			Channel c = ChatModule.getInstance()
+					.getChannelManager().getChannel(channelName);
+			if (c != null && !user.isListening(c)) {
+				user.addListening(c);
+			}
+		}
+	}
+
+	public void syncSetCurrentChannel(String channelName) {
+		// TODO cancellable on disable
+		Bukkit.getScheduler()
+				.scheduleSyncDelayedTask(Sblock.getInstance(),
+						new ChannelSetCurrentSynchronizer(this, channelName));
+	}
+
+	public class ChannelSetCurrentSynchronizer implements Runnable {
+		private String channelName;
+		private SblockUser user;
+		public ChannelSetCurrentSynchronizer(SblockUser user, String channelName) {
+			this.user = user;
+			this.channelName = channelName;
+		}
+		@Override
+		public void run() {
+			Channel c = ChatModule.getInstance()
+					.getChannelManager().getChannel(channelName);
+			if (c != null && !user.isListening(c)) {
+				user.setCurrent(c);
+			}
+		}
 	}
 }
