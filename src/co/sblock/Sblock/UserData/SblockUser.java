@@ -36,19 +36,19 @@ public class SblockUser {
 	private String playerName;
 
 	/** The <code>Player</code>'s chosen class */
-	private UserClass classType = UserClass.NONE;
+	private UserClass classType = UserClass.HEIR;
 
 	/** The <code>Player</code>'s chosen aspect */
-	private UserAspect aspect = UserAspect.NONE;
+	private UserAspect aspect = UserAspect.BREATH;
 
 	/** The <code>Player</code>'s chosen Medium planet. */
-	private MediumPlanet mPlanet = MediumPlanet.NONE;
+	private MediumPlanet mPlanet = MediumPlanet.LOWAS;
 
 	/** The <code>Player</code>'s chosen dream planet. */
-	private DreamPlanet dPlanet = DreamPlanet.NONE;
+	private DreamPlanet dPlanet = DreamPlanet.PROSPIT;
 
 	/** The <code>Player</code>'s tower number */
-	private short tower = -1;
+	private short tower = (short)(8 * Math.random());
 
 	/** <code>true</code> if the <code>Player</code> is in dreamstate */
 	private boolean sleeping = false;
@@ -404,27 +404,20 @@ public class SblockUser {
 		// muteness
 		// output of channel, string
 
-		SblockUser sender = UserManager.getUserManager().getUser(
-				event.getPlayer().getName());
+		SblockUser sender = UserManager.getUserManager().getUser(event.getPlayer().getName());
 		String fullmsg = event.getMessage();
 		String outputmessage = fullmsg;
-		Channel sendto = ChatModule.getInstance().getChannelManager()
-				.getChannel(sender.current);
+		Channel sendto = ChatModule.getInstance().getChannelManager().getChannel(sender.current);
 
-		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel
-											// destination
+		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel destination
 			int space = fullmsg.indexOf(" ");
 			String newChannel = fullmsg.substring(1, space);
 			sender.sendMessage("\"" + newChannel + "\"");
-			if (ChatModule.getInstance().getChannelManager()
-					.isValidChannel(newChannel)) {
-				sendto = ChatModule.getInstance().getChannelManager()
-						.getChannel(newChannel);
-				if (sendto.getAccess().equals(AccessLevel.PRIVATE)
-						&& !sendto.isApproved(sender)) {
+			if (ChatModule.getInstance().getChannelManager().isValidChannel(newChannel)) {
+				sendto = ChatModule.getInstance().getChannelManager().getChannel(newChannel);
+				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender)) {
 					// User not approved in channel
-					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(
-							sender, sendto));
+					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sender, sendto));
 					return;
 				} else { // should reach this point for publicchannel and
 							// approved users
