@@ -134,7 +134,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				u.sendMessage(ChatColor.GREEN + victim.getName() +
 						" has been unbanned");
 			}
-			victim.getPlayer().setBanned(false);
+			victim.setBanned(false);
 			new ChatStorage().removeBan(target);
 			return true;
 		} else {

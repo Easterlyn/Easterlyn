@@ -27,6 +27,9 @@ commands:
  sban:
   usage: /<command> <target> <reason>
   description: "[Sburb] Ban a player and their IP address."
+ unsban:
+  usage: /<command> <target>
+  description: "[Sburb] Undo the effects of sban."
  profile:
   usage: /<command> <username>
   description: "[Sburb] Show's a player's Sburb profile"
