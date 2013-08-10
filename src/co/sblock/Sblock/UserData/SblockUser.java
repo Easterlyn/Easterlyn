@@ -16,6 +16,7 @@ import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
@@ -342,7 +343,6 @@ public class SblockUser {
 		}
 		if (!c.getListening().contains(this.playerName)) {
 			c.addListening(this.getPlayerName());
-			System.out.println("DEBUG: c.addListening(this.getPlayerName());");
 			c.sendToAll(this, ChatMsgs.onChannelJoin(this, c), "channel");
 			return true;
 		} else {
@@ -632,7 +632,7 @@ public class SblockUser {
 		public void run() {
 			Channel c = ChatModule.getInstance()
 					.getChannelManager().getChannel(channelName);
-			if (c != null && !user.isListening(c)) {
+			if (c != null) {
 				user.setCurrent(c);
 			}
 		}
