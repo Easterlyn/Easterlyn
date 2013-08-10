@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -112,11 +113,29 @@ public class ChatModuleCommandListener implements CommandListener {
 			Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
 			for (SblockUser u : UserManager.getUserManager().getUserlist()) {
 				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName() +
-						"has been superbanned for " + reason);
+						" has been superbanned for " + reason);
 			}
 			victim.getPlayer().setBanned(true);
 			victim.getPlayer().kickPlayer(reason);
 			new ChatStorage().setBan(target, reason);
+			return true;
+		} else {
+			sender.sendMessage(ChatColor.BLACK +
+					"There are mysteries into which it behooves one not to delve too deeply...");
+			return true;
+		}
+	}
+	@SblockCommand(consoleFriendly = true, mergeLast = true)
+	public boolean unsban(CommandSender sender, String target) {
+		if (!(sender instanceof Player) || sender.isOp()) {
+			OfflinePlayer victim = Bukkit.getOfflinePlayer(target);
+			//TODO how do we unban their ip?
+			for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+				u.sendMessage(ChatColor.GREEN + victim.getName() +
+						" has been unbanned");
+			}
+			victim.getPlayer().setBanned(false);
+			new ChatStorage().removeBan(target);
 			return true;
 		} else {
 			sender.sendMessage(ChatColor.BLACK +
