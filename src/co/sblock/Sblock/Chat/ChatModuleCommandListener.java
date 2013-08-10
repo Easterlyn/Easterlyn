@@ -234,7 +234,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					if (args.length == 1) {
 						this.sendChannelHelp(user, c);
 					}
-					if (args.length >= 2 && args[1].equalsIgnoreCase("getlisteners")) {
+					else if (args.length >= 2 && args[1].equalsIgnoreCase("getlisteners")) {
 						String listenerList = ChatColor.YELLOW
 								+ "Channel members: ";
 						for (String s : c.getListening()) {
@@ -251,14 +251,14 @@ public class ChatModuleCommandListener implements CommandListener {
 						sender.sendMessage(listenerList);
 						return true;
 					}
-					if (args.length >= 3) {
+					else if (args.length >= 3) {
 						if (args[1].equalsIgnoreCase("kick")) {
 							c.kickUser(
 									UserManager.getUserManager().getUser(
 											args[2]), user);
 							return true;
 						}
-						if (args[1].equalsIgnoreCase("ban")) {
+						else if (args[1].equalsIgnoreCase("ban")) {
 							c.banUser(args[2], user);
 							return true;
 						}
@@ -277,13 +277,13 @@ public class ChatModuleCommandListener implements CommandListener {
 								return true;
 							}
 						}
-						if (args.length >= 3 && args[1].equalsIgnoreCase("unban")) {
+						else if (args.length >= 3 && args[1].equalsIgnoreCase("unban")) {
 							ChatModule.getInstance().getChannelManager()
 									.getChannel(c.getName())
 									.unbanUser(args[2], user);
 							return true;
 						}
-						if (args.length >= 2 && args[0].equalsIgnoreCase("disband")) {
+						else if (args.length >= 2 && args[0].equalsIgnoreCase("disband")) {
 							sender.sendMessage(ChatColor.YELLOW
 									+ "Command coming soon!"); // TODO
 							return true;
@@ -296,8 +296,9 @@ public class ChatModuleCommandListener implements CommandListener {
 				}
 			} else if (args[0].equalsIgnoreCase("global")) {
 				if (isMod || sender.isOp()) {
-					if (args.length < 3) {
-						return false; // TODO error message
+					if (args.length == 1) {
+						this.sendModHelp(user);
+						return true; // TODO error message
 					}
 					SblockUser victim = UserManager.getUserManager()
 							.getUser(args[2]);
@@ -305,16 +306,16 @@ public class ChatModuleCommandListener implements CommandListener {
 						victim.setNick(args[3]);
 						return true;
 					}
-					if (args.length >= 2) {
+					else if (args.length >= 2) {
 						if (args[1].equalsIgnoreCase("mute")) {
 							victim.setMute(true);
 							return true;
 						}
-						if (args[1].equalsIgnoreCase("unmute")) {
+						else if (args[1].equalsIgnoreCase("unmute")) {
 							victim.setMute(false);
 							return true;
 						}
-						if (args[1].equalsIgnoreCase("rmnick")) {
+						else if (args[1].equalsIgnoreCase("rmnick")) {
 							victim.setNick(victim.getPlayerName());
 							return true;
 						}
@@ -379,29 +380,42 @@ public class ChatModuleCommandListener implements CommandListener {
 	private void sendChannelHelp(SblockUser user, Channel c) {
 		String helpMod = ChatColor.YELLOW
 				+ "Channel Mod commands:\n"
-				+ ChatColor.GREEN + "channel kick <$user>: "
-				+ ChatColor.YELLOW + "Kick a user from the channel\n"
-				+ ChatColor.GREEN + "channel ban <$user>: "
-				+ ChatColor.YELLOW + "Ban a user from the channel\n"
-				+ ChatColor.GREEN + "channel setalias <$alias>: "
-				+ ChatColor.YELLOW + "Set an alias for the channel\n"
-				+ ChatColor.GREEN + "channel rmalias: "
-				+ ChatColor.YELLOW + "Remove the channel alias\n"
-				+ ChatColor.GREEN + "channel getListeners: "
-				+ ChatColor.YELLOW + "List all users currently listening to this channel";
+				+ ChatColor.GREEN + "channel kick <$user>"
+				+ ChatColor.YELLOW + ": Kick a user from the channel\n"
+				+ ChatColor.GREEN + "channel ban <$user>"
+				+ ChatColor.YELLOW + ": Ban a user from the channel\n"
+				+ ChatColor.GREEN + "channel setalias <$alias>"
+				+ ChatColor.YELLOW + ": Set an alias for the channel\n"
+				+ ChatColor.GREEN + "channel rmalias"
+				+ ChatColor.YELLOW + ": Remove the channel alias\n"
+				+ ChatColor.GREEN + "channel getListeners"
+				+ ChatColor.YELLOW + ": List all users currently listening to this channel";
 		String helpOwner = ChatColor.YELLOW
 				+ "Channel Owner commands:\n"
-				+ ChatColor.GREEN + "/sc channel mod <add/remove> <$user>: "
-				+ ChatColor.YELLOW + "Add or remove a channel mod\n"
-				+ ChatColor.GREEN + "/sc channel <ban/unban> <$user>"
-				+ ChatColor.YELLOW + "(Un)bans a user from the channel\n"
-				+ ChatColor.GREEN + "/sc disband"
-				+ ChatColor.YELLOW + "Disband coming soon!";
+				+ ChatColor.GREEN + "channel mod <add/remove> <$user>"
+				+ ChatColor.YELLOW + ": Add or remove a channel mod\n"
+				+ ChatColor.GREEN + "channel <ban/unban> <$user>"
+				+ ChatColor.YELLOW + ": (Un)bans a user from the channel\n"
+				+ ChatColor.GREEN + "disband"
+				+ ChatColor.YELLOW + ": Disband coming soon!";
 		if (c.isMod(user) || user.getPlayer().hasPermission("group.helper")) {
 			user.sendMessage(helpMod);
 			if (c.isOwner(user) || user.getPlayer().hasPermission("group.denizen")) {
 				user.sendMessage(helpOwner);
 			}
 		}
+	}
+	private void sendModHelp(SblockUser user)	{
+		String helpGlobal = ChatColor.YELLOW
+				+ "Mod Global Commands:\n"
+				+ ChatColor.GREEN + "global mute <$user>"
+				+ ChatColor.YELLOW + ": Mute a user in all channels\n"
+				+ ChatColor.GREEN + "global unmute <$user>"
+				+ ChatColor.YELLOW + ": Unmute a user in all channels\n"
+				+ ChatColor.GREEN + "global setnick <$user> <nick>"
+				+ ChatColor.YELLOW + ": Set a global nick for a player (Mostly for teh lulz)\n"
+				+ ChatColor.GREEN + "global rmnick <$user>"
+				+ ChatColor.YELLOW + ": Remove a global nick from a player";
+			user.sendMessage(helpGlobal);
 	}
 }
