@@ -12,6 +12,7 @@ import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Sblogger;
 import co.sblock.Sblock.Utilities.TowerData;
@@ -150,7 +151,10 @@ public class DatabaseManager {
 					user.setPlayerClass(rs.getString("class"));
 					user.setMediumPlanet(rs.getString("mPlanet"));
 					user.setDreamPlanet(rs.getString("dPlanet"));
-					user.setTower(rs.getShort("towerNum"));
+					short tower = rs.getShort("towerNum");
+					if (tower != -1) {
+						user.setTower(tower);
+					}
 					user.setIsSleeping(rs.getBoolean("sleepState"));
 					if(rs.getBoolean("isMute")) {
 						user.setMute(true);
@@ -361,7 +365,7 @@ public class DatabaseManager {
 			ResultSet rs = pst.executeQuery();
 
 			while (rs.next()) {
-				// TODO finish when time
+				EventModule.getEventModule().getTowerData().add(rs.getString("towerID"), rs.getString("location"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -385,12 +389,23 @@ public class DatabaseManager {
 		try {
 			for (byte i = 0; i < 8; i++) {
 				pst = connection.prepareStatement(
-						"INSERT INTO TowerData(name, x, y, z) "
-								+ "VALUES (?, ?, ?, ?)"
+						"INSERT INTO TowerData(towerID, location) "
+								+ "VALUES (?, ?)"
 								+ "ON DUPLICATE KEY UPDATE "
-								+ "x=VALUES(x), y=VALUES(y), z=VALUES(z)");
+								+ "locationString=VALUES(locationString)");
 	
-					// TODO finish when time
+				pst.setString(1, "Derse" + i);
+				pst.setString(2, towers.getLocString("Derse", i));
+	
+				pst.executeUpdate();
+				pst = connection.prepareStatement(
+						"INSERT INTO TowerData(name, locationString) "
+								+ "VALUES (?, ?)"
+								+ "ON DUPLICATE KEY UPDATE "
+								+ "locationString=VALUES(locationString)");
+	
+					pst.setString(1, "Prospit" + i);
+					pst.setString(2, towers.getLocString("Prospit", i));
 	
 				pst.executeUpdate();
 			}

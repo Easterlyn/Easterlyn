@@ -52,7 +52,7 @@ public class TowerData {
 	public Location getLocation(byte number, DreamPlanet dPlanet, byte enterZeroHere) {
 		if (enterZeroHere != 0) {
 			if (enterZeroHere > 8) {
-				return null;
+				return Bukkit.getWorld(dPlanet.getDisplayName()).getSpawnLocation();
 			} else {
 				number = (byte) (enterZeroHere - 1);
 				enterZeroHere++;

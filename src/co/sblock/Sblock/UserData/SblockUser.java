@@ -77,6 +77,7 @@ public class SblockUser {
 	/** The <code>Player</code>'s IP address */
 	private String userIP;
 
+	/** Map of task ID's. Key = channel name, value = task ID. */
 	private Map<String, Integer> tasks = new HashMap<String, Integer>();
 
 	/**

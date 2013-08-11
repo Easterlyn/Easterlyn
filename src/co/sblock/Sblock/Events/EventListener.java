@@ -25,10 +25,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.material.Bed;
 import com.bergerkiller.bukkit.common.events.PacketReceiveEvent;
 import com.bergerkiller.bukkit.common.events.PacketSendEvent;
+import com.bergerkiller.bukkit.common.protocol.PacketFields;
 import com.bergerkiller.bukkit.common.protocol.PacketListener;
 import com.bergerkiller.bukkit.common.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+
+import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatStorage;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
@@ -61,7 +64,7 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
 		if (u == null) {
@@ -93,6 +96,9 @@ public class EventListener implements Listener, PacketListener {
 		if (u == null) {
 			return; // We don't want to make another db call just to announce quit.
 		}
+		if (tasks.containsKey(u.getPlayerName())) {
+			Bukkit.getScheduler().cancelTask(tasks.remove(u.getPlayerName()));
+		}
 		for (String s : u.getListening()) {
 			u.removeListeningQuit(s);
 		}
@@ -112,8 +118,8 @@ public class EventListener implements Listener, PacketListener {
 					head = b.getRelative(bed.getFacing().getOppositeFace()).getLocation();
 					// getFace does not seem to work in most cases - TODO test and fix
 				}
+				fakeSleepDream(event.getPlayer(), head);
 				event.setCancelled(true);
-				
 			}
 		}
 	}
@@ -154,8 +160,7 @@ public class EventListener implements Listener, PacketListener {
 			e.printStackTrace();
 		}
 
-		// TODO schedule teleport + revert player time @100L
-		// add cancel all incomplete tasks
+		scheduleSleepTeleport(p);
 	}
 
 	/* (non-Javadoc)
@@ -164,20 +169,49 @@ public class EventListener implements Listener, PacketListener {
 	@Override
 	public void onPacketReceive(PacketReceiveEvent event) {
 		if (event.getType().equals(PacketType.ENTITY_ACTION)) {
-			event.setCancelled(true);
-			if (tasks.containsKey(event.getPlayer())) {
-				Bukkit.getScheduler().cancelTask(tasks.get(event.getPlayer().getName()));
+			if(event.getPacket().read(PacketFields.ENTITY_ACTION.animation) == 3) {
+				event.setCancelled(true);
+				if (tasks.containsKey(event.getPlayer())) {
+					Bukkit.getScheduler().cancelTask(tasks.get(event.getPlayer().getName()));
+					event.getPlayer().resetPlayerTime();
+				}
 			}
 		}
 	}
 
 	/* (non-Javadoc)
 	 * @see com.bergerkiller.bukkit.common.protocol.PacketListener#onPacketSend(com.bergerkiller.bukkit.common.events.PacketSendEvent)
+	 * @see <a href="http://wiki.vg/Protocol#Entity_Action_.280x13.29">Minecraft packet protocol</a>
 	 */
 	@Override
 	public void onPacketSend(PacketSendEvent event) {
 		// Using ProtocolLib to send packets, not BKCommonLib
 	}
 
-	
+	private void scheduleSleepTeleport(Player p) {
+		tasks.put(p.getName(), Bukkit.getScheduler()
+				.scheduleSyncDelayedTask(Sblock.getInstance(),
+						new SleepTeleport(p), 100L));
+	}
+
+		private class SleepTeleport implements Runnable {
+
+		private Player p;
+
+		public SleepTeleport(Player p) {
+			this.p = p;
+		}
+
+		@Override
+		public void run() {
+			SblockUser user = SblockUser.getUser(p.getName());
+			if (p != null && user != null) {
+				p.teleport(EventModule.getEventModule().getTowerData()
+						.getLocation((byte) user.getTower(),
+								user.getDPlanet(), (byte) 0));
+				p.resetPlayerTime();
+			}
+			tasks.remove(p.getName());
+		}
+	}
 }
