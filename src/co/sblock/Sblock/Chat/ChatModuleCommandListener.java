@@ -167,7 +167,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					return true;
 				}
 				try {
-					user.setCurrent(ChatModule.getInstance().getChannelManager()
+					user.setCurrent(ChatModule.getChatModule().getChannelManager()
 							.getChannel(args[1]));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
@@ -182,7 +182,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					return true;
 				}
 				try {
-					user.addListening(ChatModule.getInstance()
+					user.addListening(ChatModule.getChatModule()
 							.getChannelManager().getChannel(args[1]));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
@@ -242,7 +242,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				} else if (AccessLevel.getAccess(args[2]) == null) {
 					user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
 				} else {
-					ChatModule.getInstance().getChannelManager().createNewChannel(args[1],
+					ChatModule.getChatModule().getChannelManager().createNewChannel(args[1],
 							AccessLevel.getAccess(args[2]),
 							user.getPlayerName(), ChannelType.getType(args[3]));
 					return true;
@@ -297,7 +297,7 @@ public class ChatModuleCommandListener implements CommandListener {
 							}
 						}
 						else if (args.length >= 3 && args[1].equalsIgnoreCase("unban")) {
-							ChatModule.getInstance().getChannelManager()
+							ChatModule.getChatModule().getChannelManager()
 									.getChannel(c.getName())
 									.unbanUser(args[2], user);
 							return true;

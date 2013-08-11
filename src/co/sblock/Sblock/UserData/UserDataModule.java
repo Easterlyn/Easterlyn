@@ -26,7 +26,6 @@ public class UserDataModule extends Module {
 		// Initialize the player manager
 		UserManager.getUserManager();
 		this.registerCommands(new UserDataCommands());
-		this.registerEvents(new UserDataEvents());
 
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			UserManager.getUserManager().addUser(p);

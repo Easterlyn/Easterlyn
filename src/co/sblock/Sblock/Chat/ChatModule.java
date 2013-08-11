@@ -8,7 +8,6 @@ public class ChatModule extends Module {
 
 	private static ChatModule instance;
 	private ChannelManager cm = new ChannelManager();
-	private ChatModuleListener listener = new ChatModuleListener();
 	private ChatModuleCommandListener clistener = new ChatModuleCommandListener();
 	private static Sblogger log = new Sblogger("SblockChat");
 
@@ -16,7 +15,6 @@ public class ChatModule extends Module {
 	protected void onEnable() {
 		slog().info("Enabling SblockChat");
 		instance = this;
-		this.registerEvents(listener);
 		this.registerCommands(clistener);
 		cm.loadAllChannels();
 		this.cm.createDefaultSet();
@@ -26,13 +24,14 @@ public class ChatModule extends Module {
 	@Override
 	protected void onDisable() {
 		cm.saveAllChannels();
+		instance = null;
 	}
 
 	public ChannelManager getChannelManager() {
 		return cm;
 	}
 
-	public static ChatModule getInstance() {
+	public static ChatModule getChatModule() {
 		return instance;
 	}
 

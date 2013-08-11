@@ -44,8 +44,12 @@ public class UserManager {
 	 *            The player to remove
 	 */
 	public void removeUser(Player player) {
-		DatabaseManager.getDatabaseManager()
-				.saveUserData(getUser(player.getName()));
+		SblockUser user = this.getUser(player.getName());
+		if (user != null) {
+			user.stopPendingTasks();
+			DatabaseManager.getDatabaseManager()
+					.saveUserData(user);
+		}
 		users.remove(player.getName());
 	}
 

@@ -1,7 +1,9 @@
 package co.sblock.Sblock.UserData;
 
 import java.sql.Time;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -74,6 +76,8 @@ public class SblockUser {
 
 	/** The <code>Player</code>'s IP address */
 	private String userIP;
+
+	private Map<String, Integer> tasks = new HashMap<String, Integer>();
 
 	/**
 	 * Creates a SblockUser object for a player.
@@ -321,7 +325,7 @@ public class SblockUser {
 	}
 
 	public Channel getCurrent() {
-		return ChatModule.getInstance().getChannelManager().getChannel(current);
+		return ChatModule.getChatModule().getChannelManager().getChannel(current);
 	}
 
 	public boolean addListening(Channel c) {
@@ -353,7 +357,7 @@ public class SblockUser {
 	public void removeListening(String cName) {
 		if (this.listening.contains(cName)) {
 			if (!this.current.equals(cName)) {
-				Channel c = ChatModule.getInstance().getChannelManager()
+				Channel c = ChatModule.getChatModule().getChannelManager()
 						.getChannel(cName);
 				if (c != null) {
 					c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
@@ -376,7 +380,7 @@ public class SblockUser {
 	 *            the name of the channel
 	 */
 	public void removeListeningQuit(String cName) {
-		Channel c = ChatModule.getInstance().getChannelManager()
+		Channel c = ChatModule.getChatModule().getChannelManager()
 				.getChannel(cName);
 		if (c != null) {
 			c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), "channel");
@@ -406,14 +410,14 @@ public class SblockUser {
 		SblockUser sender = UserManager.getUserManager().getUser(event.getPlayer().getName());
 		String fullmsg = event.getMessage();
 		String outputmessage = fullmsg;
-		Channel sendto = ChatModule.getInstance().getChannelManager().getChannel(sender.current);
+		Channel sendto = ChatModule.getChatModule().getChannelManager().getChannel(sender.current);
 
 		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel destination
 			int space = fullmsg.indexOf(" ");
 			String newChannel = fullmsg.substring(1, space);
 			sender.sendMessage("\"" + newChannel + "\"");
-			if (ChatModule.getInstance().getChannelManager().isValidChannel(newChannel)) {
-				sendto = ChatModule.getInstance().getChannelManager().getChannel(newChannel);
+			if (ChatModule.getChatModule().getChannelManager().isValidChannel(newChannel)) {
+				sendto = ChatModule.getChatModule().getChannelManager().getChannel(newChannel);
 				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender)) {
 					// User not approved in channel
 					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sender, sendto));
@@ -582,11 +586,16 @@ public class SblockUser {
 		return Bukkit.getOfflinePlayer(name).hasPlayedBefore();
 	}
 
+	public void stopPendingTasks() {
+		for (int task : tasks.values()) {
+			Bukkit.getScheduler().cancelTask(task);
+		}
+	}
+
 	public void syncJoinChannel(String channelName) {
-		// TODO cancellable on disable
-		Bukkit.getScheduler()
+		tasks.put(channelName, Bukkit.getScheduler()
 				.scheduleSyncDelayedTask(Sblock.getInstance(),
-						new ChannelJoinSynchronizer(this, channelName));
+						new ChannelJoinSynchronizer(this, channelName)));
 	}
 
 	public class ChannelJoinSynchronizer implements Runnable {
@@ -598,19 +607,19 @@ public class SblockUser {
 		}
 		@Override
 		public void run() {
-			Channel c = ChatModule.getInstance()
+			Channel c = ChatModule.getChatModule()
 					.getChannelManager().getChannel(channelName);
 			if (c != null && !user.isListening(c)) {
 				user.addListening(c);
 			}
+			tasks.remove(channelName);
 		}
 	}
 
 	public void syncSetCurrentChannel(String channelName) {
-		// TODO cancellable on disable
-		Bukkit.getScheduler()
+		tasks.put(channelName, Bukkit.getScheduler()
 				.scheduleSyncDelayedTask(Sblock.getInstance(),
-						new ChannelSetCurrentSynchronizer(this, channelName));
+						new ChannelSetCurrentSynchronizer(this, channelName)));
 	}
 
 	public class ChannelSetCurrentSynchronizer implements Runnable {
@@ -622,11 +631,12 @@ public class SblockUser {
 		}
 		@Override
 		public void run() {
-			Channel c = ChatModule.getInstance()
+			Channel c = ChatModule.getChatModule()
 					.getChannelManager().getChannel(channelName);
 			if (c != null) {
 				user.setCurrent(c);
 			}
+			tasks.remove(channelName);
 		}
 	}
 }

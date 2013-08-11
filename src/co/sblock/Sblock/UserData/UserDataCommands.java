@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
+import co.sblock.Sblock.Events.EventModule;
 
 /**
  * Class for holding commands associated with this module.
@@ -62,9 +63,23 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 	
-	@SblockCommand(consoleFriendly = true)
-	public boolean newplayer(CommandSender sender, String playerClass, String aspect, String medPlanet, String dreamPlanet)
+	@SblockCommand(consoleFriendly = false)
+	public boolean settower(CommandSender sender, String number)
 	{
-		return false; //TODO Implement
+		switch (DreamPlanet.getPlanet(((Player)sender).getWorld().getName())) {
+		case DERSE:
+		case PROSPIT:
+			try {
+				EventModule.getEventModule().getTowerData()
+						.add(((Player)sender).getLocation(), Byte.valueOf(number));
+			} catch (NumberFormatException e) {
+				sender.sendMessage(ChatColor.RED + number + " is not a valid number! Remember, 0-7.");
+			}
+			return true;
+		case NONE:
+		default:
+			sender.sendMessage(ChatColor.RED + "Invalid dream world, get thee hence!");
+			return false;
+		}
 	}
 }

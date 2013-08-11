@@ -289,7 +289,7 @@ public class NormalChannel implements Channel {
 		for (String s : this.listening) {
 			UserManager.getUserManager().getUser(s).removeListening(this.getName());
 		}
-		ChatModule.getInstance().getChannelManager().dropChannel(this.name);
+		ChatModule.getChatModule().getChannelManager().dropChannel(this.name);
 	}
 
 	@Override

@@ -8,13 +8,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.UserData.UserDataModule;
 
 import com.google.common.base.Joiner;
@@ -42,6 +45,7 @@ public class Sblock extends JavaPlugin {
 		
 		modules.add(new UserDataModule().enable());
 		modules.add(new ChatModule().enable());
+		modules.add(new EventModule().enable());
 	}
 
 	@Override
@@ -50,10 +54,12 @@ public class Sblock extends JavaPlugin {
 		for (Module module : this.modules) {
 			module.disable();
 		}
+		this.unregisterAllCommands();
+		HandlerList.unregisterAll(this);
 		try {
 			DatabaseManager.getDatabaseManager().disable();
 		} catch (NullPointerException npe) {
-			// Caused by any load failures; modules may not be initialized.
+			// thrown if DatabaseManager fails to enable properly
 		}
 	}
 
@@ -67,6 +73,12 @@ public class Sblock extends JavaPlugin {
 				this.commandHandlers.put(method.getName(), method);
 		}
 		this.listenerInstances.put(listener.getClass(), listener);
+	}
+
+	public void unregisterAllCommands() {
+		for (Method m : this.commandHandlers.values()) {
+			Bukkit.getPluginCommand(m.getName()).setExecutor(null);
+		}
 	}
 
 	@Override

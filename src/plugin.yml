@@ -5,6 +5,8 @@ version: 2.0.0-DEV
 author: Sblock Co.
 authors: [Dublek, Jikoo, FireNG]
 description: Sblock's sexy mainframe
+depend: [ProtocolLib, BKCommonLib]
+
 commands:
  le:
   usage: /le <text>
@@ -23,20 +25,20 @@ commands:
   description: '> Be Doc Scratch.'
  sc:
   usage: /sc ? for help
-  description: "[Sburb] SburbChat's main command"
+  description: "SburbChat's main command"
  sban:
   usage: /<command> <target> <reason>
-  description: "[Sburb] Ban a player and their IP address."
+  description: "Ban a player and their IP address."
  unsban:
   usage: /<command> <target>
-  description: "[Sburb] Undo the effects of sban."
+  description: "Undo the effects of sban."
  profile:
   usage: /<command> <username>
-  description: "[Sburb] Show's a player's Sburb profile"
+  description: "Shows a player's Sburb profile"
  setplayer:
   usage: /<command> <playername> <class|aspect|land|dream> <value>
-  description: "[Sburb] Change's a player's information."
- newplayer:
-  usage: /<command> <playername> <class> <aspect> <medium planet> <dream planet>
-  description: "[Sburb] Sets up a new player with the given options."
+  description: "Changes a player's information."
+ settower:
+  usage: /settower <number>
+  description: "Set tower teleport location to current for tower <number>"
   

@@ -14,6 +14,7 @@ import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.TowerData;
 
 /**
  * Collection of all database-related functions
@@ -264,14 +265,14 @@ public class DatabaseManager {
 
 			ResultSet rs = pst.executeQuery();
 
-			ChannelManager cm = ChatModule.getInstance().getChannelManager();
+			ChannelManager cm = ChatModule.getChatModule().getChannelManager();
 
 			while (rs.next()) {
 				cm.createNewChannel(rs.getString("name"),
 						AccessLevel.valueOf(rs.getString("access")),
 						rs.getString("owner"),
 						ChannelType.valueOf(rs.getString("channelType")));
-				Channel c = ChatModule.getInstance().getChannelManager()
+				Channel c = ChatModule.getChatModule().getChannelManager()
 						.getChannel(rs.getString("name"));
 				String list = rs.getString("modList");
 				if (list != null) {
@@ -346,6 +347,64 @@ public class DatabaseManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void loadTowerData() {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement("SELECT * FROM TowerData");
+
+			ResultSet rs = pst.executeQuery();
+
+			while (rs.next()) {
+				// TODO finish when time
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+
+	/**
+	 * @param towers
+	 */
+	public void saveTowerData(TowerData towers) {
+		PreparedStatement pst = null;
+		try {
+			for (byte i = 0; i < 8; i++) {
+				pst = connection.prepareStatement(
+						"INSERT INTO TowerData(name, x, y, z) "
+								+ "VALUES (?, ?, ?, ?)"
+								+ "ON DUPLICATE KEY UPDATE "
+								+ "x=VALUES(x), y=VALUES(y), z=VALUES(z)");
+	
+					// TODO finish when time
+	
+				pst.executeUpdate();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 }

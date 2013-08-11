@@ -75,4 +75,8 @@ public class ChannelManager {
 	public boolean isValidChannel(String channelname) {
 		return channelList.containsKey(channelname);
 	}
+
+	public static ChannelManager getChannelManager() {
+		return ChatModule.getChatModule().getChannelManager();
+	}
 }
