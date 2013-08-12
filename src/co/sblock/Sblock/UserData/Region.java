@@ -19,7 +19,11 @@ public enum Region {
 	}
 
 	public static Region uValueOf(String s) {
-		return (Region.valueOf(s.toUpperCase()));
+		try {
+			return (Region.valueOf(s.toUpperCase()));
+		} catch (IllegalArgumentException e) {
+			return Region.UNKNOWN;
+		}
 	}
 
 	public static ChatColor getRegionColor(Region r) {

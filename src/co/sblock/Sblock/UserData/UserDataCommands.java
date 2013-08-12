@@ -66,6 +66,11 @@ public class UserDataCommands implements CommandListener {
 	@SblockCommand(consoleFriendly = false)
 	public boolean settower(CommandSender sender, String number)
 	{
+		if (sender instanceof Player && !sender.hasPermission("groups.horrorterror")) {
+			sender.sendMessage(ChatColor.BLACK +
+					"Such changes are not undertaken so easily by mere mortals.");
+			return true;
+		}
 		switch (Region.uValueOf(((Player)sender).getWorld().getName())) {
 		case INNERCIRCLE:
 		case OUTERCIRCLE:

@@ -154,7 +154,9 @@ public class DatabaseManager {
 					user.setDreamPlanet(rs.getString("dPlanet"));
 					short tower = rs.getShort("towerNum");
 					if (tower != -1) {
-						user.setTower(tower);
+						user.setTower((byte) tower);
+					} else {
+						
 					}
 					user.setIsSleeping(rs.getBoolean("sleepState"));
 					if(rs.getBoolean("isMute")) {

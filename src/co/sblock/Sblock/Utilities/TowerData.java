@@ -26,13 +26,14 @@ public class TowerData {
 		prospit = new HashMap<Byte, Location>();
 	}
 
-	public void add(String planet, String location) { // TODO fix
+	public void add(String planet, String location) {
+		Sblogger.info("SblockTowers", "Adding location " + planet + " at " + location);
 		String[] coords = location.split(",");
 		Location l = new Location(
 				Bukkit.getWorld(planet.substring(0, planet.length() - 2)),
-				Double.parseDouble(coords[0]),
-				Double.parseDouble(coords[1]),
-				Double.parseDouble(coords[2]));
+				Integer.parseInt(coords[0]),
+				Integer.parseInt(coords[1]),
+				Integer.parseInt(coords[2]));
 		if (planet.contains("Derse")) {
 			derse.put(Byte.valueOf(planet.substring(5)), l);
 		} else  if (planet.contains("Prospit")){

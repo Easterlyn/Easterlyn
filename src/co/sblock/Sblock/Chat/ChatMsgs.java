@@ -36,9 +36,8 @@ public class ChatMsgs {
 		return ChatColor.GREEN + "You have been unmuted in all channels.";
 	}
 
-	public static String isMute(SblockUser u, Channel c) {
-		return ChatColor.RED + "You are muted in channel " + ChatColor.GOLD
-				+ c.getName() + ChatColor.RED + "!";
+	public static String isMute() {
+		return ChatColor.RED + "You are muted!";
 	}
 
 	public static String onUserKick(Channel c) {

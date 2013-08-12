@@ -33,6 +33,7 @@ import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatStorage;
+import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
@@ -80,8 +81,15 @@ public class EventListener implements Listener, PacketListener {
 		if (SblockUser.getUser(event.getPlayer().getName()) != null) {
 			event.setCancelled(true);
 			if (event.getMessage().indexOf("/") == 0) {
-				event.getPlayer().performCommand(
-						event.getMessage().substring(1));
+				if (!event.getPlayer().hasPermission("group.horrorterror")
+						&& (event.getMessage().startsWith("/pl") ||
+								event.getMessage().startsWith("/plugins"))) {
+					event.getPlayer().sendMessage(ChatColor.BOLD +
+							"[o] Pay no attention to the man behind the curtain.");
+				} else {
+					event.getPlayer().performCommand(
+							event.getMessage().substring(1));
+				}
 			} else {
 				SblockUser.getUser(event.getPlayer().getName()).chat(event);
 			}
@@ -173,6 +181,24 @@ public class EventListener implements Listener, PacketListener {
 		scheduleSleepTeleport(p);
 	}
 
+	private void fakeWakeUp(Player p) {
+		p.resetPlayerTime();
+
+		Packet13EntityAction packet1 =  new Packet13EntityAction();
+		packet1.setEntityID(p.getEntityId());
+		packet1.setActionId((byte) 3);
+		Packet12Animation packet2 = new Packet12Animation();
+		packet2.setEntityID(p.getEntityId());
+		packet2.setAnimation((byte) 3);
+
+		try {
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet1.getHandle());
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet2.getHandle());
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see com.bergerkiller.bukkit.common.protocol.PacketListener#onPacketReceive(com.bergerkiller.bukkit.common.events.PacketReceiveEvent)
 	 */
@@ -183,7 +209,7 @@ public class EventListener implements Listener, PacketListener {
 				event.setCancelled(true);
 				if (tasks.containsKey(event.getPlayer())) {
 					Bukkit.getScheduler().cancelTask(tasks.get(event.getPlayer().getName()));
-					event.getPlayer().resetPlayerTime();
+					this.fakeWakeUp(event.getPlayer());
 				}
 			}
 		}
@@ -225,19 +251,27 @@ public class EventListener implements Listener, PacketListener {
 //				case LOWAS:
 					p.setBedSpawnLocation(p.getLocation());
 					user.setPreviousLocation(p.getLocation());
-					p.teleport(EventModule.getEventModule().getTowerData()
-							.getLocation((byte) user.getTower(),
-									user.getDPlanet(), (byte) 0));
-					p.resetPlayerTime();
+					if (!user.getDPlanet().equals(DreamPlanet.NONE)) {
+						Location l = EventModule.getEventModule().getTowerData()
+								.getLocation(user.getTower(),
+										user.getDPlanet(), (byte) 0);
+						System.out.println("[DEBUG] sleeping to " + l.getBlockX()
+								+ ", " + l.getBlockY() + ", " + l.getBlockZ());
+						if (l != null) {
+							p.teleport(l);
+						}
+					}
 					break;
 				case FURTHESTRING:
 				case INNERCIRCLE:
 					p.teleport(user.getPreviousLocation());
-					p.resetPlayerTime();
 					break;
 				default:
 					break;
 				}
+
+				fakeWakeUp(p);
+
 			}
 			tasks.remove(p.getName());
 		}

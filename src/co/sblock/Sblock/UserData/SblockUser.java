@@ -50,7 +50,7 @@ public class SblockUser {
 	private DreamPlanet dPlanet = DreamPlanet.PROSPIT;
 
 	/** The <code>Player</code>'s tower number */
-	private short tower = (short)(8 * Math.random());
+	private byte tower = (byte)(8 * Math.random());
 
 	/** <code>true</code> if the <code>Player</code> is in dreamstate */
 	private boolean sleeping = false;
@@ -167,7 +167,7 @@ public class SblockUser {
 	 * 
 	 * @return the number of the tower the player will "dream" to
 	 */
-	public short getTower() {
+	public byte getTower() {
 		return this.tower;
 	}
 
@@ -230,7 +230,7 @@ public class SblockUser {
 	 * @param tower
 	 *            the number of the tower the player will "dream" to
 	 */
-	public void setTower(short tower) {
+	public void setTower(byte tower) {
 		this.tower = tower;
 	}
 
@@ -347,6 +347,7 @@ public class SblockUser {
 	}
 
 	public void setMute(boolean b) {
+		this.globalMute = b;
 		if (b) {
 			this.sendMessage(ChatMsgs.onUserMute(this));
 		} else {
@@ -465,6 +466,11 @@ public class SblockUser {
 		String outputmessage = fullmsg;
 		Channel sendto = ChatModule.getChatModule().getChannelManager().getChannel(sender.current);
 
+		if (sender.isMute()) {
+			sender.sendMessage(ChatMsgs.isMute());
+			return;
+		}
+
 		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel destination
 			int space = fullmsg.indexOf(" ");
 			String newChannel = fullmsg.substring(1, space);
@@ -484,10 +490,6 @@ public class SblockUser {
 				sender.sendMessage(ChatMsgs.errorInvalidChannel(newChannel));
 				return;
 			}
-		}
-		if (sender.globalMute) {
-			sender.sendMessage(ChatMsgs.isMute(sender, sendto));
-			return;
 		}
 		this.formatMessage(sender, sendto, outputmessage);
 	}
@@ -616,7 +618,7 @@ public class SblockUser {
 
 		out = (isThirdPerson ? ">" : colorW + "<") + colorP + outputName
 				+ ChatColor.WHITE
-				+ (isThirdPerson ? " " : colorW + "> " + ChatColor.WHITE);
+				+ (isThirdPerson ? "" : colorW + "> " + ChatColor.WHITE);
 		// sender.getPlayer().sendMessage(out);
 		return out;
 	}
