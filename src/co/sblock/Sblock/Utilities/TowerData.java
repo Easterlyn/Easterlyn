@@ -24,10 +24,9 @@ public class TowerData {
 	public TowerData() {
 		derse = new HashMap<Byte, Location>();
 		prospit = new HashMap<Byte, Location>();
-		this.load();
 	}
 
-	public void add(String planet, String location) {
+	public void add(String planet, String location) { // TODO fix
 		String[] coords = location.split(",");
 		Location l = new Location(
 				Bukkit.getWorld(planet.substring(0, planet.length() - 2)),
@@ -92,7 +91,7 @@ public class TowerData {
 		}
 	}
 
-	private void load() {
+	public void load() {
 		DatabaseManager.getDatabaseManager().loadTowerData();
 	}
 

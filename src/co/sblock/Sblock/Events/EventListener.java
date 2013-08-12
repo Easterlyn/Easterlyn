@@ -33,6 +33,7 @@ import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatStorage;
+import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
@@ -206,6 +207,31 @@ public class EventListener implements Listener, PacketListener {
 		public void run() {
 			SblockUser user = SblockUser.getUser(p.getName());
 			if (p != null && user != null) {
+				switch (Region.getLocationRegion(p.getLocation())) { // TODO finish
+				case EARTH:
+					break;
+				case FURTHESTRING:
+					break;
+				case INNERCIRCLE:
+					break;
+				case LOFAF:
+					break;
+				case LOHAC:
+					break;
+				case LOLAR:
+					break;
+				case LOWAS:
+					break;
+				case MEDIUM:
+					break;
+				case OUTERCIRCLE:
+					break;
+				case UNKNOWN:
+					break;
+				default:
+					break;
+				
+				}
 				p.teleport(EventModule.getEventModule().getTowerData()
 						.getLocation((byte) user.getTower(),
 								user.getDPlanet(), (byte) 0));

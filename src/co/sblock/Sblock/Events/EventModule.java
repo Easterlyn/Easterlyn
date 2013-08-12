@@ -22,6 +22,7 @@ public class EventModule extends Module {
 	protected void onEnable() {
 		instance = this;
 		towers = new TowerData();
+		towers.load();
 		EventListener listener = new EventListener();
 		this.registerEvents(listener);
 		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.ENTITY_ACTION);

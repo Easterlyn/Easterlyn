@@ -360,12 +360,16 @@ public class DatabaseManager {
 	public void loadTowerData() {
 		PreparedStatement pst = null;
 		try {
-			pst = connection.prepareStatement("SELECT * FROM TowerData");
+			pst = connection.prepareStatement("SELECT * FROM TowerLocs");
 
 			ResultSet rs = pst.executeQuery();
 
 			while (rs.next()) {
-				EventModule.getEventModule().getTowerData().add(rs.getString("towerID"), rs.getString("location"));
+				String towerID = rs.getString("towerID");
+				String location = rs.getString("location");
+				if (towerID != null && location != null) {
+					EventModule.getEventModule().getTowerData().add(towerID, location);
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -389,7 +393,7 @@ public class DatabaseManager {
 		try {
 			for (byte i = 0; i < 8; i++) {
 				pst = connection.prepareStatement(
-						"INSERT INTO TowerData(towerID, location) "
+						"INSERT INTO TowerLocs(towerID, location) "
 								+ "VALUES (?, ?)"
 								+ "ON DUPLICATE KEY UPDATE "
 								+ "locationString=VALUES(locationString)");
