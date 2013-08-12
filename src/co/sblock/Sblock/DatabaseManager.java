@@ -396,17 +396,17 @@ public class DatabaseManager {
 						"INSERT INTO TowerLocs(towerID, location) "
 								+ "VALUES (?, ?)"
 								+ "ON DUPLICATE KEY UPDATE "
-								+ "locationString=VALUES(locationString)");
+								+ "location=VALUES(location)");
 	
 				pst.setString(1, "Derse" + i);
 				pst.setString(2, towers.getLocString("Derse", i));
 	
 				pst.executeUpdate();
 				pst = connection.prepareStatement(
-						"INSERT INTO TowerData(name, locationString) "
+						"INSERT INTO TowerLocs(towerID, location) "
 								+ "VALUES (?, ?)"
 								+ "ON DUPLICATE KEY UPDATE "
-								+ "locationString=VALUES(locationString)");
+								+ "location=VALUES(location)");
 	
 					pst.setString(1, "Prospit" + i);
 					pst.setString(2, towers.getLocString("Prospit", i));

@@ -66,9 +66,9 @@ public class UserDataCommands implements CommandListener {
 	@SblockCommand(consoleFriendly = false)
 	public boolean settower(CommandSender sender, String number)
 	{
-		switch (DreamPlanet.getPlanet(((Player)sender).getWorld().getName())) {
-		case DERSE:
-		case PROSPIT:
+		switch (Region.uValueOf(((Player)sender).getWorld().getName())) {
+		case INNERCIRCLE:
+		case OUTERCIRCLE:
 			try {
 				EventModule.getEventModule().getTowerData()
 						.add(((Player)sender).getLocation(), Byte.valueOf(number));
@@ -76,7 +76,6 @@ public class UserDataCommands implements CommandListener {
 				sender.sendMessage(ChatColor.RED + number + " is not a valid number! Remember, 0-7.");
 			}
 			return true;
-		case NONE:
 		default:
 			sender.sendMessage(ChatColor.RED + "Invalid dream world, get thee hence!");
 			return false;

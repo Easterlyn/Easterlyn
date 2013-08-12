@@ -39,6 +39,6 @@ commands:
   usage: /<command> <playername> <class|aspect|land|dream> <value>
   description: "Changes a player's information."
  settower:
-  usage: /settower <number>
+  usage: /settower <p/d> <number>
   description: "Set tower teleport location to current for tower <number>"
   

@@ -41,9 +41,9 @@ public class TowerData {
 	}
 
 	public void add(Location l, byte number) {
-		if (l.getWorld().getName().equals("Derse")) {
+		if (l.getWorld().getName().equals("OuterCircle")) {
 			derse.put(number, l);
-		} else if (l.getWorld().getName().equals("Prospit")) {
+		} else if (l.getWorld().getName().equals("InnerCircle")) {
 			prospit.put(number, l);
 		}
 	}

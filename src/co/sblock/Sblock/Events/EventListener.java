@@ -110,8 +110,8 @@ public class EventListener implements Listener, PacketListener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (!event.isCancelled() && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			Block b = event.getClickedBlock();
-			if (event.hasBlock() && b.getType().equals(Material.BED_BLOCK)) {
-				Bed bed = (Bed) b.getState();
+			if (b.getType().equals(Material.BED_BLOCK)) {
+				Bed bed = (Bed) b.getState().getData();
 				Location head;
 				if (bed.isHeadOfBed()) {
 					head = b.getLocation();
@@ -119,8 +119,17 @@ public class EventListener implements Listener, PacketListener {
 					head = b.getRelative(bed.getFacing().getOppositeFace()).getLocation();
 					// getFace does not seem to work in most cases - TODO test and fix
 				}
-				fakeSleepDream(event.getPlayer(), head);
-				event.setCancelled(true);
+				switch (Region.uValueOf(head.getWorld().getName())) {
+				case EARTH:
+				//case MEDIUM: // In time, my precious.
+				case INNERCIRCLE:
+				case OUTERCIRCLE:
+					fakeSleepDream(event.getPlayer(), head);
+					event.setCancelled(true);
+					return;
+				default:
+					return;
+				}
 			}
 		}
 	}
@@ -209,33 +218,26 @@ public class EventListener implements Listener, PacketListener {
 			if (p != null && user != null) {
 				switch (Region.getLocationRegion(p.getLocation())) { // TODO finish
 				case EARTH:
+//				case MEDIUM: // Someday, my pretties.
+//				case LOFAF:
+//				case LOHAC:
+//				case LOLAR:
+//				case LOWAS:
+					p.setBedSpawnLocation(p.getLocation());
+					user.setPreviousLocation(p.getLocation());
+					p.teleport(EventModule.getEventModule().getTowerData()
+							.getLocation((byte) user.getTower(),
+									user.getDPlanet(), (byte) 0));
+					p.resetPlayerTime();
 					break;
 				case FURTHESTRING:
-					break;
 				case INNERCIRCLE:
-					break;
-				case LOFAF:
-					break;
-				case LOHAC:
-					break;
-				case LOLAR:
-					break;
-				case LOWAS:
-					break;
-				case MEDIUM:
-					break;
-				case OUTERCIRCLE:
-					break;
-				case UNKNOWN:
+					p.teleport(user.getPreviousLocation());
+					p.resetPlayerTime();
 					break;
 				default:
 					break;
-				
 				}
-				p.teleport(EventModule.getEventModule().getTowerData()
-						.getLocation((byte) user.getTower(),
-								user.getDPlanet(), (byte) 0));
-				p.resetPlayerTime();
 			}
 			tasks.remove(p.getName());
 		}
