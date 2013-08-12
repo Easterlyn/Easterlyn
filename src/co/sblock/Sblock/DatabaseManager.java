@@ -126,7 +126,8 @@ public class DatabaseManager {
 			}
 			pst.setString(11, sb.substring(0, sb.length() - 1));
 			pst.setString(12, user.getUserIP());
-			pst.setTime(13, null); // TODO timePlayed
+			user.updateTimePlayed();
+			pst.setString(13, user.getTimePlayed());
 
 			pst.executeUpdate();
 			pst.close();
@@ -168,7 +169,7 @@ public class DatabaseManager {
 						}
 					}
 					user.syncSetCurrentChannel(rs.getString("currentChannel"));
-					// TODO timePlayed
+					user.setTimePlayed(rs.getString("timePlayed"));
 				} else {
 					Sblogger.warning("SblockDatabase", "Player "
 							+ user.getPlayerName()

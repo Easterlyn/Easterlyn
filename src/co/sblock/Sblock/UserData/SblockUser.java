@@ -1,10 +1,11 @@
 package co.sblock.Sblock.UserData;
 
-import java.sql.Time;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -70,9 +71,10 @@ public class SblockUser {
 	private String globalNick;
 
 	/** The total time the <code>Player</code> has spent logged in */
-	@SuppressWarnings("unused")
-	// TODO Keiko pls
-	private Time timePlayed;
+	private long timePlayed = 0L;
+
+	/** The <code>Player</code>'s last login */
+	private Date login;
 
 	/** The <code>Player</code>'s IP address */
 	private String userIP;
@@ -89,6 +91,7 @@ public class SblockUser {
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
 		this.globalNick = playerName;
+		login = new Date();
 		DatabaseManager.getDatabaseManager().loadUserData(this);
 		if (this.current == null || listening.size() == 0) {
 			this.syncSetCurrentChannel("#");
@@ -257,6 +260,55 @@ public class SblockUser {
 	 */
 	public Location getPreviousLocation() {
 		return previousLocation;
+	}
+
+	/**
+	 * @return
+	 */
+	public void setTimePlayed(String s) {
+		if (s != null) {
+			String[] nums = s.split(":");
+			for (int i = 0; i < nums.length; i++) {
+				switch (i) {
+				case 1:
+					this.timePlayed += Long.valueOf(nums[nums.length-i]);
+					break;
+				case 2:
+					this.timePlayed += Long.valueOf(nums[nums.length-i]) * 1000L;
+					break;
+				case 3:
+					this.timePlayed += Long.valueOf(nums[nums.length-i]) * 60000L;
+					break;
+				case 4:
+					this.timePlayed += Long.valueOf(nums[nums.length-i]) * 3600000L;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public String getTimePlayed() {
+		long hrs = TimeUnit.MILLISECONDS.toHours(this.timePlayed);
+		long mins = TimeUnit.MILLISECONDS.toMinutes(timePlayed) -
+				TimeUnit.HOURS.toMinutes(hrs);
+		long secs = TimeUnit.MILLISECONDS.toSeconds(timePlayed) -
+				TimeUnit.HOURS.toSeconds(hrs) - TimeUnit.MINUTES.toSeconds(mins);
+		long millis = this.timePlayed - TimeUnit.HOURS.toMillis(hrs) -
+				TimeUnit.MINUTES.toMillis(mins) - TimeUnit.SECONDS.toMillis(secs);
+		return String.format("%02d:%02d:%02d:%03d", hrs, mins, secs, millis);
+	}
+
+	/**
+	 * 
+	 */
+	public void updateTimePlayed() {
+		this.timePlayed = this.timePlayed + new Date().getTime()
+				- this.login.getTime();
 	}
 
 	/*
