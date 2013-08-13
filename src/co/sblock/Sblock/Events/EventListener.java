@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.material.Bed;
 import com.bergerkiller.bukkit.common.events.PacketReceiveEvent;
 import com.bergerkiller.bukkit.common.events.PacketSendEvent;
@@ -31,6 +32,7 @@ import com.bergerkiller.bukkit.common.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
+import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatStorage;
 import co.sblock.Sblock.UserData.DreamPlanet;
@@ -45,6 +47,13 @@ import co.sblock.Sblock.UserData.UserManager;
 public class EventListener implements Listener, PacketListener {
 
 	private Map<String, Integer> tasks = new HashMap<String, Integer>();
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onServerListPing(ServerListPingEvent event) {
+		event.setMotd(event.getMotd().replaceAll("Player",
+				DatabaseManager.getDatabaseManager()
+				.getUserFromIP(event.getAddress().getHostAddress())));
+	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
@@ -124,7 +133,7 @@ public class EventListener implements Listener, PacketListener {
 				if (bed.isHeadOfBed()) {
 					head = b.getLocation();
 				} else {
-					head = b.getRelative(bed.getFacing().getOppositeFace()).getLocation();
+					head = b.getRelative(bed.getFacing()).getLocation();
 					// getFace does not seem to work in most cases - TODO test and fix
 				}
 				switch (Region.uValueOf(head.getWorld().getName())) {
@@ -162,38 +171,31 @@ public class EventListener implements Listener, PacketListener {
 	
 
 	private void fakeSleepDream(Player p, Location bed) {
-		p.setPlayerTime(20000, true);
-		
 		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-		
+
 		Packet11UseBed packet = new Packet11UseBed();
 		packet.setEntityId(p.getEntityId());
 		packet.setX(bed.getBlockX());
 		packet.setY((byte) bed.getBlockY());
 		packet.setZ(bed.getBlockZ());
-		
+
 		try {
 			pm.sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-
 		scheduleSleepTeleport(p);
 	}
 
 	private void fakeWakeUp(Player p) {
 		p.resetPlayerTime();
 
-		Packet13EntityAction packet1 =  new Packet13EntityAction();
-		packet1.setEntityID(p.getEntityId());
-		packet1.setActionId((byte) 3);
-		Packet12Animation packet2 = new Packet12Animation();
-		packet2.setEntityID(p.getEntityId());
-		packet2.setAnimation((byte) 3);
+		Packet12Animation packet = new Packet12Animation();
+		packet.setEntityID(p.getEntityId());
+		packet.setAnimation((byte) 3);
 
 		try {
-			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet1.getHandle());
-			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet2.getHandle());
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
@@ -206,10 +208,11 @@ public class EventListener implements Listener, PacketListener {
 	public void onPacketReceive(PacketReceiveEvent event) {
 		if (event.getType().equals(PacketType.ENTITY_ACTION)) {
 			if(event.getPacket().read(PacketFields.ENTITY_ACTION.animation) == 3) {
-				event.setCancelled(true);
-				if (tasks.containsKey(event.getPlayer())) {
-					Bukkit.getScheduler().cancelTask(tasks.get(event.getPlayer().getName()));
-					this.fakeWakeUp(event.getPlayer());
+				Player p = event.getPlayer();
+				if (tasks.containsKey(p.getName())) {
+					event.setCancelled(true);
+					Bukkit.getScheduler().cancelTask(tasks.remove(p.getName()));
+					this.fakeWakeUp(p);
 				}
 			}
 		}
@@ -230,7 +233,7 @@ public class EventListener implements Listener, PacketListener {
 						new SleepTeleport(p), 100L));
 	}
 
-		private class SleepTeleport implements Runnable {
+	private class SleepTeleport implements Runnable {
 
 		private Player p;
 
@@ -242,24 +245,19 @@ public class EventListener implements Listener, PacketListener {
 		public void run() {
 			SblockUser user = SblockUser.getUser(p.getName());
 			if (p != null && user != null) {
-				switch (Region.getLocationRegion(p.getLocation())) { // TODO finish
+				Location l = p.getLocation();
+				switch (Region.getLocationRegion(l)) { // TODO finish
 				case EARTH:
 //				case MEDIUM: // Someday, my pretties.
 //				case LOFAF:
 //				case LOHAC:
 //				case LOLAR:
 //				case LOWAS:
-					p.setBedSpawnLocation(p.getLocation());
-					user.setPreviousLocation(p.getLocation());
 					if (!user.getDPlanet().equals(DreamPlanet.NONE)) {
-						Location l = EventModule.getEventModule().getTowerData()
+						p.teleport(EventModule.getEventModule().getTowerData()
 								.getLocation(user.getTower(),
-										user.getDPlanet(), (byte) 0);
-						System.out.println("[DEBUG] sleeping to " + l.getBlockX()
-								+ ", " + l.getBlockY() + ", " + l.getBlockZ());
-						if (l != null) {
-							p.teleport(l);
-						}
+										user.getDPlanet(), (byte) 0));
+						user.setPreviousLocation(l);
 					}
 					break;
 				case FURTHESTRING:

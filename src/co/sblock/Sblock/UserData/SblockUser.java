@@ -256,10 +256,32 @@ public class SblockUser {
 	}
 
 	/**
+	 * @param string
+	 */
+	public void setPreviousLocationFromString(String string) {
+		String[] loc = string.split(",");
+		this.previousLocation = new Location(
+				Bukkit.getWorld(loc[0]),
+				Integer.parseInt(loc[1]),
+				Integer.parseInt(loc[2]),
+				Integer.parseInt(loc[3]));
+	}
+
+	/**
 	 * @return the previousLocation
 	 */
 	public Location getPreviousLocation() {
 		return previousLocation;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getPreviousLocationString() {
+		return previousLocation.getWorld() + ","
+				+ previousLocation.getBlockX() + ","
+				+ previousLocation.getBlockY() + ","
+				+ previousLocation.getBlockZ();
 	}
 
 	/**

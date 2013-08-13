@@ -100,8 +100,8 @@ public class DatabaseManager {
 			PreparedStatement pst = connection
 					.prepareStatement("INSERT INTO PlayerData(name, class, aspect, "
 							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, "
-							+ "isMute, nickname, channels, ip, timePlayed) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+							+ "isMute, nickname, channels, ip, timePlayed, previousLocation) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 							+ "ON DUPLICATE KEY UPDATE "
 							+ "class=VALUES(class), aspect=VALUES(aspect), "
 							+ "mPlanet=VALUES(mPlanet), dPlanet=VALUES(dPlanet), "
@@ -109,7 +109,8 @@ public class DatabaseManager {
 							+ "currentChannel=VALUES(currentChannel), "
 							+ "isMute=VALUES(isMute), nickname=VALUES(nickname), "
 							+ "channels=VALUES(channels), ip=VALUES(ip), "
-							+ "timePlayed=VALUES(timePlayed)");
+							+ "timePlayed=VALUES(timePlayed), "
+							+ "previousLocation=VALUES(previousLocation)");
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
@@ -128,6 +129,7 @@ public class DatabaseManager {
 			pst.setString(12, user.getUserIP());
 			user.updateTimePlayed();
 			pst.setString(13, user.getTimePlayed());
+			pst.setString(14, user.getPreviousLocationString());
 
 			pst.executeUpdate();
 			pst.close();
@@ -169,6 +171,9 @@ public class DatabaseManager {
 						for (int i = 0; i < channels.length; i++) {
 							user.syncJoinChannel(channels[i]);
 						}
+					}
+					if (rs.getString("previousLocation") != null) {
+						user.setPreviousLocationFromString(rs.getString("previousLocation"));
 					}
 					user.syncSetCurrentChannel(rs.getString("currentChannel"));
 					user.setTimePlayed(rs.getString("timePlayed"));
@@ -427,6 +432,37 @@ public class DatabaseManager {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	public String getUserFromIP(String hostAddress) {
+		PreparedStatement pst = null;
+		String name = "Player";
+		try {
+			pst = connection.prepareStatement("SELECT * FROM PlayerData WHERE ip=?");
+
+			pst.setString(1, hostAddress);
+
+			ResultSet rs = pst.executeQuery();
+
+			if (rs.next()) {
+				name = rs.getString("name");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		if (name != null) {
+			return name;
+		} else {
+			return "Player";
 		}
 	}
 }

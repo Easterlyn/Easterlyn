@@ -32,7 +32,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean lel(CommandSender sender, String text) {
 		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
 			String lelOut = new String();
-			for (int i = 0; i < text.length(); i++) {
+			for (int i = 0; i < text.length();) {
 				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
 					if (i >= text.length())
 						break;
@@ -55,7 +55,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean le(CommandSender sender, String text) {
 		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
 			String leOut = new String();
-			for (int i = 0; i < text.length(); i++) {
+			for (int i = 0; i < text.length();) {
 				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
 					if (i >= text.length())
 						break;

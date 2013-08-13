@@ -58,7 +58,9 @@ public class UserDataCommands implements CommandListener {
 			user.setMediumPlanet(value);
 		else if(type.replaceAll("d(ream_?)?planet", "dream").equals("dream"))
 			user.setDreamPlanet(value);
-		else
+		else if (type.equals("setprev")) {
+			user.setPreviousLocation(user.getPlayer().getLocation());
+		} else
 			return false;
 		return true;
 	}

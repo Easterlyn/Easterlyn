@@ -27,10 +27,10 @@ public class TowerData {
 	}
 
 	public void add(String planet, String location) {
-		Sblogger.info("SblockTowers", "Adding location " + planet + " at " + location);
 		String[] coords = location.split(",");
 		Location l = new Location(
-				Bukkit.getWorld(planet.substring(0, planet.length() - 2)),
+				Bukkit.getWorld(planet.contains("Derse") ?
+						"OuterCircle" : "InnerCircle"),
 				Integer.parseInt(coords[0]),
 				Integer.parseInt(coords[1]),
 				Integer.parseInt(coords[2]));
