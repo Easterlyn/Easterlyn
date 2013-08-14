@@ -17,15 +17,19 @@ public class EventModule extends Module {
 
 	private static EventModule instance;
 	private TowerData towers;
+	private EventListener listener;
 
 	@Override
 	protected void onEnable() {
 		instance = this;
 		towers = new TowerData();
 		towers.load();
-		EventListener listener = new EventListener();
+		listener = new EventListener();
 		this.registerEvents(listener);
 		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.ENTITY_ACTION);
+		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.MOB_SPAWN);
+		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.DESTROY_ENTITY);
+		this.registerCommands(new PacketCommands());
 	}
 
 	@Override
@@ -37,6 +41,10 @@ public class EventModule extends Module {
 
 	public TowerData getTowerData() {
 		return towers;
+	}
+
+	public EventListener getListener() {
+		return this.listener;
 	}
 
 	public static EventModule getEventModule() {

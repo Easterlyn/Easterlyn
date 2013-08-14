@@ -3,7 +3,11 @@
  */
 package co.sblock.Sblock.Utilities;
 
+//import java.lang.reflect.Constructor;
+//import java.lang.reflect.InvocationTargetException;
+
 import org.bukkit.Bukkit;
+//import org.bukkit.command.CommandSender;
 
 /**
  * A small utility to make logging more easy on a per-module basis.
@@ -36,6 +40,17 @@ public class Sblogger {
 
 	public static void info(String logName, String msg) {
 		Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg);
+//		try {
+//			Class<? extends CommandSender> clazz = Class.forName("net.minecraft.server."
+//					+ Bukkit.getVersion() + ".command.ColouredConsoleSender").asSubclass(CommandSender.class);
+//			CommandSender suckItBukkit = clazz.getDeclaredConstructor().newInstance();
+//			suckItBukkit.sendMessage("[" + logName + "] " + msg);
+//			
+//		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg);
+//		}
 	}
 
 	public static void warning(String logName, String msg) {

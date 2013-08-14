@@ -31,9 +31,9 @@ public class TowerData {
 		Location l = new Location(
 				Bukkit.getWorld(planet.contains("Derse") ?
 						"OuterCircle" : "InnerCircle"),
-				Integer.parseInt(coords[0]),
-				Integer.parseInt(coords[1]),
-				Integer.parseInt(coords[2]));
+				Double.parseDouble(coords[0]) + .5,
+				Double.parseDouble(coords[1]),
+				Double.parseDouble(coords[2]) + .5);
 		if (planet.contains("Derse")) {
 			derse.put(Byte.valueOf(planet.substring(5)), l);
 		} else  if (planet.contains("Prospit")){
@@ -52,7 +52,7 @@ public class TowerData {
 	public Location getLocation(byte number, DreamPlanet dPlanet, byte enterZeroHere) {
 		if (enterZeroHere != 0) {
 			if (enterZeroHere > 8) {
-				return Bukkit.getWorld(dPlanet.getDisplayName()).getSpawnLocation();
+				return Bukkit.getWorld(dPlanet.getWorldName()).getSpawnLocation();
 			} else {
 				number = (byte) (enterZeroHere - 1);
 				enterZeroHere++;

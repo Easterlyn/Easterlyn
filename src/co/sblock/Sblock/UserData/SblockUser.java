@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -242,16 +243,22 @@ public class SblockUser {
 	 */
 	public void setIsSleeping(boolean sleeping) {
 		this.sleeping = sleeping;
+		this.getPlayer().setAllowFlight(sleeping);
 	}
 
 	/**
 	 * Sets the player's location from the last world that they visited.
 	 * 
-	 * @param location
+	 * @param l
 	 *            The player's previous location
 	 */
-	public void setPreviousLocation(Location location) {
-		this.previousLocation = location;
+	public void setPreviousLocation(Location l) {
+		l.setX(l.getBlockX() + .5);
+		l.setY(l.getBlockY());
+		l.setZ(l.getBlockZ() + .5);
+		l.setYaw(l.getYaw() - l.getYaw() % 64);
+		l.setPitch(0);
+		this.previousLocation = l;
 
 	}
 
@@ -260,11 +267,15 @@ public class SblockUser {
 	 */
 	public void setPreviousLocationFromString(String string) {
 		String[] loc = string.split(",");
-		this.previousLocation = new Location(
-				Bukkit.getWorld(loc[0]),
-				Integer.parseInt(loc[1]),
-				Integer.parseInt(loc[2]),
-				Integer.parseInt(loc[3]));
+		World w = Bukkit.getWorld(loc[0]);
+		if (w != null) {
+			this.previousLocation = new Location(w,
+					Double.parseDouble(loc[1]) + .5,
+					Double.parseDouble(loc[2]) + .5, // no dreaming though halfslab floors
+					Double.parseDouble(loc[3]) + .5);
+		} else {
+			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+		}
 	}
 
 	/**
@@ -278,7 +289,7 @@ public class SblockUser {
 	 * @return
 	 */
 	public String getPreviousLocationString() {
-		return previousLocation.getWorld() + ","
+		return previousLocation.getWorld().getName() + ","
 				+ previousLocation.getBlockX() + ","
 				+ previousLocation.getBlockY() + ","
 				+ previousLocation.getBlockZ();
@@ -331,6 +342,14 @@ public class SblockUser {
 	public void updateTimePlayed() {
 		this.timePlayed = this.timePlayed + new Date().getTime()
 				- this.login.getTime();
+	}
+
+	/**
+	 * TODO TODO
+	 * @return isGodTier
+	 */
+	public boolean isGodTier() {
+		return false;
 	}
 
 	/*

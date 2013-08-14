@@ -8,7 +8,13 @@ package co.sblock.Sblock.UserData;
  */
 public enum DreamPlanet {
 
-	NONE, PROSPIT, DERSE;
+	NONE("Earth"), PROSPIT("InnerCircle"), DERSE("OuterCircle");
+
+	private String worldName;
+
+	DreamPlanet(String worldName) {
+		this.worldName = worldName;
+	}
 
 	/**
 	 * Gets the display name.
@@ -17,6 +23,15 @@ public enum DreamPlanet {
 	 */
 	public String getDisplayName() {
 		return this.name().charAt(0) + this.name().substring(1).toLowerCase();
+	}
+
+	/**
+	 * Gets the name of the world.
+	 *
+	 * @return the world name
+	 */
+	public String getWorldName() {
+		return this.worldName;
 	}
 
 	/**

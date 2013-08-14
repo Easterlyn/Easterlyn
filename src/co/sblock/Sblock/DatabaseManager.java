@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
+
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
@@ -129,7 +131,12 @@ public class DatabaseManager {
 			pst.setString(12, user.getUserIP());
 			user.updateTimePlayed();
 			pst.setString(13, user.getTimePlayed());
-			pst.setString(14, user.getPreviousLocationString());
+			try {
+				pst.setString(14, user.getPreviousLocationString());
+			} catch (NullPointerException e) {
+				user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
+				pst.setString(14, user.getPreviousLocationString());
+			}
 
 			pst.executeUpdate();
 			pst.close();
@@ -174,6 +181,8 @@ public class DatabaseManager {
 					}
 					if (rs.getString("previousLocation") != null) {
 						user.setPreviousLocationFromString(rs.getString("previousLocation"));
+					} else {
+						user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 					}
 					user.syncSetCurrentChannel(rs.getString("currentChannel"));
 					user.setTimePlayed(rs.getString("timePlayed"));

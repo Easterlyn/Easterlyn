@@ -5,13 +5,17 @@ package co.sblock.Sblock.Events;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +26,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.material.Bed;
 import com.bergerkiller.bukkit.common.events.PacketReceiveEvent;
@@ -35,6 +41,7 @@ import com.comphenix.protocol.ProtocolManager;
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatStorage;
+import co.sblock.Sblock.Events.Packet26EntityStatus.Status;
 import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -47,6 +54,8 @@ import co.sblock.Sblock.UserData.UserManager;
 public class EventListener implements Listener, PacketListener {
 
 	private Map<String, Integer> tasks = new HashMap<String, Integer>();
+	private Set<String> teleports = new HashSet<String>();
+	private Set<Integer> dragons = new HashSet<Integer>();
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onServerListPing(ServerListPingEvent event) {
@@ -124,10 +133,35 @@ public class EventListener implements Listener, PacketListener {
 	}
 
 	@EventHandler
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if (event.getCause().equals(TeleportCause.END_PORTAL)) {
+			if (Math.abs(event.getTo().getBlockX()) - Bukkit.getSpawnRadius() < 0) {
+				if (Math.abs(event.getTo().getBlockZ() - Bukkit.getSpawnRadius()) < 0) {
+					event.setCancelled(true);
+				}
+			}
+		}
+		Player p = event.getPlayer();
+		if (!event.getFrom().getWorld().equals(event.getTo().getWorld())) {
+			SblockUser u = SblockUser.getUser(p.getName());
+			if (!u.isGodTier() && u.isSleeping()) {
+				u.setIsSleeping(event.getTo().getWorld().getName().contains("Circle"));
+				if (teleports.remove(p.getName())) {
+					u.setPreviousLocation(event.getFrom());
+				}
+			}
+		}
+	}
+
+	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (!event.isCancelled() && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			Block b = event.getClickedBlock();
 			if (b.getType().equals(Material.BED_BLOCK)) {
+				if (SblockUser.getUser(event.getPlayer().getName()).isGodTier()) {
+					// TODO? Godtiers probably have alternate transport to dPlanet
+					return;
+				}
 				Bed bed = (Bed) b.getState().getData();
 				Location head;
 				if (bed.isHeadOfBed()) {
@@ -224,7 +258,28 @@ public class EventListener implements Listener, PacketListener {
 	 */
 	@Override
 	public void onPacketSend(PacketSendEvent event) {
-		// Using ProtocolLib to send packets, not BKCommonLib
+		if (event.getPacket().getType().equals(PacketType.MOB_SPAWN)) {
+			if (dragons.contains(event.getPacket().read(PacketFields.MOB_SPAWN.entityId))) {
+				event.getPacket().write(PacketFields.MOB_SPAWN.entityType, 63);
+			}
+		}
+		if (event.getPacket().getType().equals(PacketType.DESTROY_ENTITY)) {
+			for (int uuid : event.getPacket().read(PacketFields.DESTROY_ENTITY.entityIds)) {
+				if (dragons.remove(uuid)) {
+					event.setCancelled(true);
+
+					Packet26EntityStatus packet = new Packet26EntityStatus();
+					packet.setEntityId(uuid);
+					packet.setEntityStatus(Status.ENTITY_DEAD);
+
+					try {
+						ProtocolLibrary.getProtocolManager().sendServerPacket(event.getPlayer(), packet.getHandle());
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 	private void scheduleSleepTeleport(Player p) {
@@ -245,23 +300,29 @@ public class EventListener implements Listener, PacketListener {
 		public void run() {
 			SblockUser user = SblockUser.getUser(p.getName());
 			if (p != null && user != null) {
-				Location l = p.getLocation();
-				switch (Region.getLocationRegion(l)) { // TODO finish
+				switch (Region.getLocationRegion(p.getLocation())) {
 				case EARTH:
 //				case MEDIUM: // Someday, my pretties.
 //				case LOFAF:
 //				case LOHAC:
 //				case LOLAR:
 //				case LOWAS:
-					if (!user.getDPlanet().equals(DreamPlanet.NONE)) {
+					if (user.getDPlanet().equals(DreamPlanet.NONE)) {
+						break;
+					} else {
+						teleports.add(p.getName());
+						if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
 						p.teleport(EventModule.getEventModule().getTowerData()
 								.getLocation(user.getTower(),
 										user.getDPlanet(), (byte) 0));
-						user.setPreviousLocation(l);
+						} else {
+							p.teleport(user.getPreviousLocation());
+						}
 					}
 					break;
 				case FURTHESTRING:
 				case INNERCIRCLE:
+					teleports.add(p.getName());
 					p.teleport(user.getPreviousLocation());
 					break;
 				default:
@@ -273,5 +334,11 @@ public class EventListener implements Listener, PacketListener {
 			}
 			tasks.remove(p.getName());
 		}
+	}
+
+	public void dragon(Location l) {
+		Entity e = l.getWorld().spawnEntity(l, EntityType.SQUID);
+		dragons.add(e.getEntityId());
+		e.remove();
 	}
 }

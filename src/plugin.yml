@@ -41,4 +41,6 @@ commands:
  settower:
   usage: /settower <number>
   description: "Set tower teleport location to current for tower <number>"
-  
+ dragon:
+  usage: /dragon
+  description: death by awesome
