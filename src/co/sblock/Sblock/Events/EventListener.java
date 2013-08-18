@@ -40,7 +40,6 @@ import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Chat.ChatStorage;
 import co.sblock.Sblock.Events.Packet26EntityStatus.Status;
 import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
@@ -73,7 +72,9 @@ public class EventListener implements Listener, PacketListener {
 			return;
 		case KICK_BANNED:
 		case KICK_OTHER:
-			String reason = new ChatStorage().getBan(event.getPlayer().getName());
+			String reason = DatabaseManager.getDatabaseManager().getBanReason(
+					event.getPlayer().getName(),
+					event.getAddress().getHostAddress());
 			System.out.println("[DEBUG] Changing disconnect to " + reason);
 			if (reason != null) {
 				event.setKickMessage(reason);
@@ -261,6 +262,7 @@ public class EventListener implements Listener, PacketListener {
 		if (event.getPacket().getType().equals(PacketType.MOB_SPAWN)) {
 			if (dragons.contains(event.getPacket().read(PacketFields.MOB_SPAWN.entityId))) {
 				event.getPacket().write(PacketFields.MOB_SPAWN.entityType, 63);
+				System.out.println("Dragon faked!");
 			}
 		}
 		if (event.getPacket().getType().equals(PacketType.DESTROY_ENTITY)) {

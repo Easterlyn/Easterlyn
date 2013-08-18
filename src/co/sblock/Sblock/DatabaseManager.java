@@ -1,6 +1,7 @@
 package co.sblock.Sblock;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -419,6 +420,9 @@ public class DatabaseManager {
 				pst.setString(2, towers.getLocString("Derse", i));
 	
 				pst.executeUpdate();
+
+				pst.close();
+
 				pst = connection.prepareStatement(
 						"INSERT INTO TowerLocs(towerID, location) "
 								+ "VALUES (?, ?)"
@@ -472,6 +476,114 @@ public class DatabaseManager {
 			return name;
 		} else {
 			return "Player";
+		}
+	}
+
+	public String getBanReason(String name, String ip) {
+		PreparedStatement pst = null;
+		String ban = null;
+		try {
+			pst = connection.prepareStatement(
+					"SELECT * FROM BannedPlayers WHERE name=? OR ip =?");
+
+			pst.setString(1, name);
+
+			ResultSet rs = pst.executeQuery();
+
+			while (rs.next()) {
+				ban = rs.getString("reason");
+				if (name.equals(rs.getString("name"))) {
+					break;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return ban;
+	}
+
+	public void addBan(SblockUser target, String reason) {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement(
+					"INSERT INTO BannedPlayers(name, ip, banDate, reason");
+
+			pst.setString(1, target.getPlayerName());
+			pst.setString(2, target.getUserIP());
+			pst.setDate(3, new Date(new java.util.Date().getTime()));
+			pst.setString(4, reason);
+
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void removeBan(String target) {
+		PreparedStatement pst = null;
+
+		try {
+			pst = connection.prepareStatement(
+					"SELECT * FROM BannedPlayers WHERE name=? OR ip =?");
+
+			pst.setString(1, target);
+			pst.setString(2, target);
+
+			ResultSet rs = pst.executeQuery();
+
+			while (rs.next()) {
+				try {
+					Bukkit.unbanIP(rs.getString("ip"));
+				} catch (NullPointerException e) {
+					// IP not saved properly or something
+				}
+				try {
+					Bukkit.getOfflinePlayer(rs.getString("name")).setBanned(false);
+				} catch (NullPointerException e) {
+					// Name not saved properly or something
+				}
+			}
+
+			pst.close();
+
+			pst = connection.prepareStatement(
+					"DELETE * FROM BannedPlayers WHERE name=? OR ip=?");
+
+			pst.setString(1, target);
+			pst.setString(2, target);
+
+			pst.executeUpdate();
+
+		} catch (SQLException e) {
+			Sblogger.severe("SblockDatabase", "Error removing ban for " + target
+					+ "! Please unban and unIPban manually. Also, make mySQL call:"
+					+ "\nDELETE * FROM BannedPlayers WHERE name="
+					+ target +" OR ip=" + target + ";");
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 }

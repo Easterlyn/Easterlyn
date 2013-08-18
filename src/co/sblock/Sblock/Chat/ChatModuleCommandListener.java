@@ -115,9 +115,9 @@ public class ChatModuleCommandListener implements CommandListener {
 				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName() +
 						" has been superbanned for " + reason);
 			}
+			DatabaseManager.getDatabaseManager().addBan(victim, reason);
 			victim.getPlayer().setBanned(true);
 			victim.getPlayer().kickPlayer(reason);
-			new ChatStorage().setBan(target, reason);
 			return true;
 		} else {
 			sender.sendMessage(ChatColor.BLACK +
@@ -128,14 +128,16 @@ public class ChatModuleCommandListener implements CommandListener {
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
 	public boolean unsban(CommandSender sender, String target) {
 		if (!(sender instanceof Player) || sender.isOp()) {
-			OfflinePlayer victim = Bukkit.getOfflinePlayer(target);
-			//TODO how do we unban their ip?
-			for (SblockUser u : UserManager.getUserManager().getUserlist()) {
-				u.sendMessage(ChatColor.GREEN + victim.getName() +
-						" has been unbanned");
+			if (Bukkit.getOfflinePlayer(target).hasPlayedBefore()) {
+				for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+					u.sendMessage(ChatColor.GREEN + target +
+							" has been unbanned.");
+				}
+			} else {
+				sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: "
+						+ target + " has not played before or is an IP.");
 			}
-			victim.setBanned(false);
-			new ChatStorage().removeBan(target);
+			DatabaseManager.getDatabaseManager().removeBan(target);
 			return true;
 		} else {
 			sender.sendMessage(ChatColor.BLACK +
