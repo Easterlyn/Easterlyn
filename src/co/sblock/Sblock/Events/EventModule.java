@@ -3,8 +3,12 @@
  */
 package co.sblock.Sblock.Events;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+
 import com.bergerkiller.bukkit.common.protocol.PacketType;
 import com.bergerkiller.bukkit.common.utils.PacketUtil;
+
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Utilities.TowerData;
@@ -25,7 +29,9 @@ public class EventModule extends Module {
 		towers = new TowerData();
 		towers.load();
 		listener = new EventListener();
-		this.registerEvents(listener);
+		// While Fire's code is cool, it doesn't seem to be registering our event priority.
+		// TODO fix. For now, this workaround.
+		Bukkit.getPluginManager().registerEvents(listener, Sblock.getInstance());
 		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.ENTITY_ACTION);
 		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.MOB_SPAWN);
 		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.DESTROY_ENTITY);
@@ -34,6 +40,7 @@ public class EventModule extends Module {
 
 	@Override
 	protected void onDisable() {
+		HandlerList.unregisterAll(listener);
 		towers.save(towers);
 		towers = null;
 		instance = null;

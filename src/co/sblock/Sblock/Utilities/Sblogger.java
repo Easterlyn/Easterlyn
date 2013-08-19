@@ -42,7 +42,8 @@ public class Sblogger {
 		Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg);
 //		try {
 //			Class<? extends CommandSender> clazz = Class.forName("net.minecraft.server."
-//					+ Bukkit.getVersion() + ".command.ColouredConsoleSender").asSubclass(CommandSender.class);
+//					+ Bukkit.getVersion().replaceAll(".*([0-9]\\.[0-9]\\.[0-9]-R[0-9]\\.[0-9]).*", "$1")
+//					+ ".command.ColouredConsoleSender").asSubclass(CommandSender.class);
 //			CommandSender suckItBukkit = clazz.getDeclaredConstructor().newInstance();
 //			suckItBukkit.sendMessage("[" + logName + "] " + msg);
 //			

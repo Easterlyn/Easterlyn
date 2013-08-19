@@ -24,4 +24,9 @@ public class PacketCommands implements CommandListener {
 		return true;
 	}
 
+	@SblockCommand
+	public boolean quit(CommandSender sender) {
+		EventModule.getEventModule().getListener().forceCloseClient((Player) sender);
+		return false;
+	}
 }

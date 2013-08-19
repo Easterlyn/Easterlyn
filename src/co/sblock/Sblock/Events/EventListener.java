@@ -14,7 +14,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,8 +27,10 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.material.Bed;
+
 import com.bergerkiller.bukkit.common.events.PacketReceiveEvent;
 import com.bergerkiller.bukkit.common.events.PacketSendEvent;
 import com.bergerkiller.bukkit.common.protocol.PacketFields;
@@ -52,9 +53,19 @@ import co.sblock.Sblock.UserData.UserManager;
  */
 public class EventListener implements Listener, PacketListener {
 
-	private Map<String, Integer> tasks = new HashMap<String, Integer>();
-	private Set<String> teleports = new HashSet<String>();
-	private Set<Integer> dragons = new HashSet<Integer>();
+	private Map<String, Integer> tasks;
+	private Set<String> teleports;
+	private short fake_UUID;
+	private Set<String> specialCommands;
+
+	public EventListener() {
+		tasks = new HashMap<String, Integer>();
+		teleports = new HashSet<String>();
+		fake_UUID = 25000;
+		specialCommands = new HashSet<String>();
+		specialCommands.add("pl");
+		specialCommands.add("plugins");
+	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onServerListPing(ServerListPingEvent event) {
@@ -75,8 +86,8 @@ public class EventListener implements Listener, PacketListener {
 			String reason = DatabaseManager.getDatabaseManager().getBanReason(
 					event.getPlayer().getName(),
 					event.getAddress().getHostAddress());
-			System.out.println("[DEBUG] Changing disconnect to " + reason);
 			if (reason != null) {
+				System.out.println("[DEBUG] Changing disconnect to " + reason);
 				event.setKickMessage(reason);
 			}
 			return;
@@ -96,19 +107,23 @@ public class EventListener implements Listener, PacketListener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerPreprocessCommand(PlayerCommandPreprocessEvent event) {
+		if (specialCommands.contains(parseCdName(event.getMessage()))) {
+			if (!event.getPlayer().hasPermission("group.denizen")) {
+				event.getPlayer().sendMessage(ChatColor.BOLD +
+						"[o] Pay no attention to the man behind the curtain.");
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (SblockUser.getUser(event.getPlayer().getName()) != null) {
 			event.setCancelled(true);
-			if (event.getMessage().indexOf("/") == 0) {
-				if (!event.getPlayer().hasPermission("group.horrorterror")
-						&& (event.getMessage().startsWith("/pl") ||
-								event.getMessage().startsWith("/plugins"))) {
-					event.getPlayer().sendMessage(ChatColor.BOLD +
-							"[o] Pay no attention to the man behind the curtain.");
-				} else {
-					event.getPlayer().performCommand(
-							event.getMessage().substring(1));
-				}
+			if (event.getMessage().startsWith("/")) {
+				event.getPlayer().performCommand(
+						event.getMessage().substring(1));
 			} else {
 				SblockUser.getUser(event.getPlayer().getName()).chat(event);
 			}
@@ -145,7 +160,7 @@ public class EventListener implements Listener, PacketListener {
 		Player p = event.getPlayer();
 		if (!event.getFrom().getWorld().equals(event.getTo().getWorld())) {
 			SblockUser u = SblockUser.getUser(p.getName());
-			if (!u.isGodTier() && u.isSleeping()) {
+			if (!u.isGodTier()) {
 				u.setIsSleeping(event.getTo().getWorld().getName().contains("Circle"));
 				if (teleports.remove(p.getName())) {
 					u.setPreviousLocation(event.getFrom());
@@ -223,8 +238,6 @@ public class EventListener implements Listener, PacketListener {
 	}
 
 	private void fakeWakeUp(Player p) {
-		p.resetPlayerTime();
-
 		Packet12Animation packet = new Packet12Animation();
 		packet.setEntityID(p.getEntityId());
 		packet.setAnimation((byte) 3);
@@ -242,7 +255,7 @@ public class EventListener implements Listener, PacketListener {
 	@Override
 	public void onPacketReceive(PacketReceiveEvent event) {
 		if (event.getType().equals(PacketType.ENTITY_ACTION)) {
-			if(event.getPacket().read(PacketFields.ENTITY_ACTION.animation) == 3) {
+			if (event.getPacket().read(PacketFields.ENTITY_ACTION.animation) == 3) {
 				Player p = event.getPlayer();
 				if (tasks.containsKey(p.getName())) {
 					event.setCancelled(true);
@@ -259,29 +272,7 @@ public class EventListener implements Listener, PacketListener {
 	 */
 	@Override
 	public void onPacketSend(PacketSendEvent event) {
-		if (event.getPacket().getType().equals(PacketType.MOB_SPAWN)) {
-			if (dragons.contains(event.getPacket().read(PacketFields.MOB_SPAWN.entityId))) {
-				event.getPacket().write(PacketFields.MOB_SPAWN.entityType, 63);
-				System.out.println("Dragon faked!");
-			}
-		}
-		if (event.getPacket().getType().equals(PacketType.DESTROY_ENTITY)) {
-			for (int uuid : event.getPacket().read(PacketFields.DESTROY_ENTITY.entityIds)) {
-				if (dragons.remove(uuid)) {
-					event.setCancelled(true);
-
-					Packet26EntityStatus packet = new Packet26EntityStatus();
-					packet.setEntityId(uuid);
-					packet.setEntityStatus(Status.ENTITY_DEAD);
-
-					try {
-						ProtocolLibrary.getProtocolManager().sendServerPacket(event.getPlayer(), packet.getHandle());
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
+		
 	}
 
 	private void scheduleSleepTeleport(Player p) {
@@ -314,9 +305,9 @@ public class EventListener implements Listener, PacketListener {
 					} else {
 						teleports.add(p.getName());
 						if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
-						p.teleport(EventModule.getEventModule().getTowerData()
-								.getLocation(user.getTower(),
-										user.getDPlanet(), (byte) 0));
+							p.teleport(EventModule.getEventModule().getTowerData()
+									.getLocation(user.getTower(),
+											user.getDPlanet(), (byte) 0));
 						} else {
 							p.teleport(user.getPreviousLocation());
 						}
@@ -338,9 +329,73 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
+	private String parseCdName(String s) {
+		if (s.startsWith("/")) {
+			s = s.replaceFirst("/", "");
+		}
+		return s.length() < 1 ? s : s.substring(
+				1, (s.indexOf(" ") != -1 ? s.indexOf(" ") : s.length() - 1));
+	}
+
+	public void forceCloseClient(Player p) {
+		Location l = p.getLocation();
+		Packet18SpawnMob spawn = new Packet18SpawnMob();
+		spawn.setEntityID(fake_UUID);
+		spawn.setType(EntityType.ENDER_DRAGON);
+		spawn.setX(l.getX());
+		spawn.setY(l.getY());
+		spawn.setZ(l.getZ());
+		spawn.setPitch(l.getPitch());
+		spawn.setYaw(l.getYaw());
+		spawn.setHeadYaw(l.getYaw());
+		spawn.setVelocityX(0);
+		spawn.setVelocityY(0);
+		spawn.setVelocityZ(0);
+
+		Packet26EntityStatus packet = new Packet26EntityStatus();
+		packet.setEntityId(fake_UUID);
+		packet.setEntityStatus(Status.ENTITY_DEAD);
+
+		fake_UUID++;
+
+		try {
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, spawn.getHandle());
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void dragon(Location l) {
-		Entity e = l.getWorld().spawnEntity(l, EntityType.SQUID);
-		dragons.add(e.getEntityId());
-		e.remove();
+		Packet18SpawnMob spawn = new Packet18SpawnMob();
+		spawn.setEntityID(fake_UUID);
+		spawn.setType(EntityType.ENDER_DRAGON);
+		spawn.setX(l.getX());
+		spawn.setY(l.getY());
+		spawn.setZ(l.getZ());
+		spawn.setPitch(l.getPitch());
+		spawn.setYaw(l.getYaw());
+		spawn.setHeadYaw(l.getYaw());
+		spawn.setVelocityX(0);
+		spawn.setVelocityY(0);
+		spawn.setVelocityZ(0);
+
+		Packet26EntityStatus packet = new Packet26EntityStatus();
+		packet.setEntityId(fake_UUID);
+		packet.setEntityStatus(Status.ENTITY_DEAD);
+
+		fake_UUID++;
+
+		try {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (p.getWorld().equals(l.getWorld()) && p.getLocation().distanceSquared(l) <= 2304) {
+					// 2304 = 48^2. Spigot by default does not render mobs beyond this point.
+					ProtocolLibrary.getProtocolManager().sendServerPacket(p, spawn.getHandle());
+					ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+				}
+			}
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 }

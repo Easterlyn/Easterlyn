@@ -487,6 +487,7 @@ public class DatabaseManager {
 					"SELECT * FROM BannedPlayers WHERE name=? OR ip =?");
 
 			pst.setString(1, name);
+			pst.setString(2, ip);
 
 			ResultSet rs = pst.executeQuery();
 
@@ -514,7 +515,10 @@ public class DatabaseManager {
 		PreparedStatement pst = null;
 		try {
 			pst = connection.prepareStatement(
-					"INSERT INTO BannedPlayers(name, ip, banDate, reason");
+					"INSERT INTO BannedPlayers(name, ip, banDate, reason) "
+					+ "VALUES(?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
+					+ "name=VALUES(name), ip=VALUES(ip), "
+					+ "banDate=VALUES(banDate), reason=VALUES(reason)");
 
 			pst.setString(1, target.getPlayerName());
 			pst.setString(2, target.getUserIP());
@@ -563,7 +567,7 @@ public class DatabaseManager {
 			pst.close();
 
 			pst = connection.prepareStatement(
-					"DELETE * FROM BannedPlayers WHERE name=? OR ip=?");
+					"DELETE FROM BannedPlayers WHERE name=? OR ip=?");
 
 			pst.setString(1, target);
 			pst.setString(2, target);

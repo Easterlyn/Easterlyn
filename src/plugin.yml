@@ -23,6 +23,9 @@ commands:
  o:
   usage: /o <text>
   description: '> Be Doc Scratch.'
+ quit:
+  usage: /quit <optional text>
+  description: '> Player: Exit'
  sc:
   usage: /sc ? for help
   description: "SburbChat's main command"
