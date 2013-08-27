@@ -20,6 +20,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -42,6 +44,7 @@ import com.comphenix.protocol.ProtocolManager;
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Events.Packet26EntityStatus.Status;
+import co.sblock.Sblock.Machines.InventoryEventHandler;
 import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -87,7 +90,6 @@ public class EventListener implements Listener, PacketListener {
 					event.getPlayer().getName(),
 					event.getAddress().getHostAddress());
 			if (reason != null) {
-				System.out.println("[DEBUG] Changing disconnect to " + reason);
 				event.setKickMessage(reason);
 			}
 			return;
@@ -104,6 +106,16 @@ public class EventListener implements Listener, PacketListener {
 			u = SblockUser.getUser(event.getPlayer().getName());
 		}
 		//u.syncSetCurrentChannel("#");
+	}
+
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event) {
+		event.setCancelled(new InventoryEventHandler().onInventoryClick(event));
+	}
+
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		new InventoryEventHandler().onInventoryClose(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

@@ -46,11 +46,29 @@ public class UserManager {
 	public void removeUser(Player player) {
 		SblockUser user = this.getUser(player.getName());
 		if (user != null) {
+			player.closeInventory();
 			user.stopPendingTasks();
 			DatabaseManager.getDatabaseManager()
 					.saveUserData(user);
 		}
 		users.remove(player.getName());
+	}
+
+	/**
+	 * Removes a player from the users list that has left the server
+	 * 
+	 * @param player
+	 *            The player to remove
+	 */
+	public void removeUser(String player) {
+		SblockUser user = this.getUser(player);
+		if (user != null) {
+			user.getPlayer().closeInventory();
+			user.stopPendingTasks();
+			DatabaseManager.getDatabaseManager()
+					.saveUserData(user);
+		}
+		users.remove(player);
 	}
 
 	/**
