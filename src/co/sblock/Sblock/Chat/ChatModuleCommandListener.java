@@ -75,9 +75,18 @@ public class ChatModuleCommandListener implements CommandListener {
 
 	@SblockCommand(consoleFriendly = true)
 	public boolean whois(CommandSender sender, String target) {
+		if (target == null)	{
+			sender.sendMessage("/whois <player>\n" +
+					"<name>, <class> of <aspect>\n" +
+					"<mPlanet>, <dPlanet>, <towerNum>, <sleepState>\n" +
+					"<isMute>, <currentChannel>, <listeningChannels>\n" +
+					"<ip>, <previousLocation>\n" +
+					"<timePlayed>, <lastLogin>");
+			return true;
+		}
 		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
 			SblockUser u = UserManager.getUserManager().getUser(target);
-			u.toString();
+			sender.sendMessage(u.toString());
 			return true;
 		} else {
 			sender.sendMessage(ChatColor.BLACK +
@@ -132,6 +141,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					u.sendMessage(ChatColor.GREEN + target +
 							" has been unbanned.");
 				}
+				Sblogger.info("Sban", target + " has been unbanned!");
 			} else {
 				sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: "
 						+ target + " has not played before or is an IP.");
@@ -170,6 +180,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				try {
 					user.setCurrent(ChatModule.getChatModule().getChannelManager()
 							.getChannel(args[1]));
+					sender.sendMessage(ChatMsgs.onChannelJoin(user, user.getCurrent()));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
 							+ ChatColor.GOLD + args[1] + ChatColor.RED
@@ -185,6 +196,8 @@ public class ChatModuleCommandListener implements CommandListener {
 				try {
 					user.addListening(ChatModule.getChatModule()
 							.getChannelManager().getChannel(args[1]));
+					sender.sendMessage(ChatMsgs.onChannelJoin(user, ChatModule.getChatModule().
+							getChannelManager().getChannel(args[1])));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
 							+ ChatColor.GOLD + args[1] + ChatColor.RED
@@ -199,6 +212,8 @@ public class ChatModuleCommandListener implements CommandListener {
 				}
 				try {
 					user.removeListening(args[1]);
+					sender.sendMessage(ChatMsgs.onChannelLeave(user, ChatModule.getChatModule()
+							.getChannelManager().getChannel(args[1])));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel "
 							+ ChatColor.GOLD + args[1] + ChatColor.RED
@@ -324,18 +339,38 @@ public class ChatModuleCommandListener implements CommandListener {
 							.getUser(args[2]);
 					if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
 						victim.setNick(args[3]);
+						for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+							u.sendMessage(ChatColor.GREEN + victim.getPlayerName() + ChatColor.YELLOW + 
+									" shall henceforth be know as: " + ChatColor.GREEN + args[3]);
+						}
+						Sblogger.infoNoLogName(ChatColor.GREEN + victim.getPlayerName() + ChatColor.YELLOW + 
+								" shall henceforth be know as: " + ChatColor.GREEN + args[3]);
 						return true;
 					}
 					else if (args.length >= 2) {
 						if (args[1].equalsIgnoreCase("mute")) {
 							victim.setMute(true);
+							for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+								u.sendMessage(ChatColor.RED + victim.getPlayerName() + " has been muted");
+							}
+							Sblogger.infoNoLogName(ChatColor.RED + victim.getPlayerName() + " has been muted");
 							return true;
 						}
 						else if (args[1].equalsIgnoreCase("unmute")) {
 							victim.setMute(false);
+							for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+								u.sendMessage(ChatColor.GREEN + victim.getPlayerName() + " has been unmuted");
+							}
+							Sblogger.infoNoLogName(ChatColor.RED + victim.getPlayerName() + " has been muted");
 							return true;
 						}
 						else if (args[1].equalsIgnoreCase("rmnick")) {
+							for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+								u.sendMessage(ChatColor.GREEN + victim.getPlayerName() + ChatColor.YELLOW + 
+										" shall no longer be know as: " + ChatColor.GREEN + victim.getNick());
+							}
+							Sblogger.infoNoLogName(ChatColor.GREEN + victim.getPlayerName() + ChatColor.YELLOW + 
+									" shall no longer be know as: " + ChatColor.GREEN + victim.getNick());
 							victim.setNick(victim.getPlayerName());
 							return true;
 						}

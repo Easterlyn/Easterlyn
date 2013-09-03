@@ -670,7 +670,17 @@ public class SblockUser {
 
 	public String toString() { // For /whois usage mainly
 		// TODO Someone tell Dub to get off his lazy ass
-		String s = "";
+		ChatColor sys = ChatColor.DARK_AQUA;
+		ChatColor txt = ChatColor.YELLOW;
+		String div = sys + ", " + txt;
+		
+		String s = sys + "-----------------------------------------\n" + 
+				txt + this.playerName + div + this.getClassType() + " of " + this.getAspect() + "\n" + 
+				this.getMPlanet() + div + this.getDPlanet() + div + this.getTower() + div + this.isSleeping() + "\n" + 
+				this.isMute() + div + this.getCurrent().getName() + div + this.getListening().toString() + "\n" +
+				this.getUserIP() + div + this.getPreviousLocationString() + "\n" +
+				this.getTimePlayed() + div + this.getPlayer().getLastPlayed() + "\n" +
+				sys + "-----------------------------------------";
 		return s;
 	}
 
