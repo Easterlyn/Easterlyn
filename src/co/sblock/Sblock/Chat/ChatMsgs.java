@@ -192,4 +192,8 @@ public class ChatMsgs {
 		return ChatColor.GOLD + name + ChatColor.RED +
 				" is a roleplaying channel. You must have a nickname to talk!";
 	}
+	
+	public static String errorRegionChannel()	{
+		return ChatColor.RED + "You cannot do this operation in a Region channel!";
+	}
 }

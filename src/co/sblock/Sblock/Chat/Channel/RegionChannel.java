@@ -1,5 +1,13 @@
 package co.sblock.Sblock.Chat.Channel;
 
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import co.sblock.Sblock.Chat.ChatMsgs;
+import co.sblock.Sblock.UserData.SblockUser;
+
 public class RegionChannel extends NormalChannel {
 
 	/**
@@ -11,7 +19,18 @@ public class RegionChannel extends NormalChannel {
 		super(name, a, creator);
 	}
 
-	// TODO This may just end up being a couple NormalChannels
-	// We could have something that ticks every player every xtime
-	// (similar to effects) instead of using onPlayerMove like we used to.
+	@Override
+	public void kickUser(SblockUser user, SblockUser sender) {
+		sender.sendMessage(ChatMsgs.errorRegionChannel());
+	}
+	
+	@Override
+	public void banUser(String username, SblockUser sender) {
+		sender.sendMessage(ChatMsgs.errorRegionChannel());
+	}
+
+	@Override
+	public void unbanUser(String username, SblockUser sender) {
+		sender.sendMessage(ChatMsgs.errorRegionChannel());
+	}
 }
