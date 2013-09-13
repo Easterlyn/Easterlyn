@@ -13,9 +13,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-public final class MeteorMod extends JavaPlugin implements Listener {
+import co.sblock.Sblock.Module;
+import co.sblock.Sblock.Sblock;
+
+public final class MeteorMod extends Module implements Listener {
 	private Player p;
-	private Plugin plugin = this;
+	private static MeteorMod instance;
 	private BukkitTask task;
 	
 	private ArrayList<Meteorite> meteorites = new ArrayList<Meteorite>();
@@ -24,7 +27,7 @@ public final class MeteorMod extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onEnable()	{
-		getServer().getPluginManager().registerEvents(this, this);
+		Sblock.getInstance().getServer().getPluginManager().registerEvents(this, Sblock.getInstance());
 		//startReckoning(20*20);
 	}
 	
@@ -70,7 +73,7 @@ public final class MeteorMod extends JavaPlugin implements Listener {
 						material = s.substring(2);
 					}
 				}
-				meteorites.add(new Meteorite(this, pTarget, target, material, radius, countdown, blockDamage));
+				meteorites.add(new Meteorite(instance, pTarget, target, material, radius, countdown, blockDamage));
 				return true;
 			}
 		}
@@ -81,28 +84,28 @@ public final class MeteorMod extends JavaPlugin implements Listener {
 				return true;
 			}
 		}
-		if (cmd.getName().equalsIgnoreCase("startreckoning"))	{
+/*		if (cmd.getName().equalsIgnoreCase("startreckoning"))	{
 			startReckoning(20*300);
 			return true;
 		}
 		if (cmd.getName().equalsIgnoreCase("stopreckoning"))	{
 			stopReckoning();
 			return true;
-		}
+		}*/
 		return false;
 	}
 	
-	public void startReckoning(long rLong)	{
+/*	public void startReckoning(long rLong)	{
 		task = new scheduledReckoning().runTaskTimer(this, 20*300, rLong);
 		  }
 	
 	public void stopReckoning()	{
 		task.cancel();
 	}
+*/
 
 
-
-	public class scheduledReckoning	extends BukkitRunnable	{
+/*	public class scheduledReckoning	extends BukkitRunnable	{
 		@Override
 		public void run() {
 			if (getServer().getOnlinePlayers().length >= 1) {
@@ -122,5 +125,5 @@ public final class MeteorMod extends JavaPlugin implements Listener {
 						radius, countdown, blockDamage));
 			}
 		}
-	}
+	}*/
 }

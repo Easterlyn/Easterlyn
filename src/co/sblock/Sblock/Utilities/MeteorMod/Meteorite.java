@@ -13,9 +13,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.plugin.Plugin;
 
+import co.sblock.Sblock.Sblock;
+
 public class Meteorite implements Listener	{
 	
-	private Plugin plugin;
+	private MeteorMod module;
 	private int countdown;
 	private int radius;
 	private final int DEFAULT_RADIUS = 3;
@@ -30,17 +32,17 @@ public class Meteorite implements Listener	{
 	private ArrayList<UUID> blockID = new ArrayList<UUID>();
 	private int initialLevel;
 	
-	public Meteorite(Plugin pl, Player pT, int c)	{
+	public Meteorite(MeteorMod pl, Player pT, int c)	{
 		pTarget = pT;
 		countdown = c;
-		plugin = pl;
+		module = pl;
 		target = pTarget.getLocation();
 		defaultMeteorite();
-		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+		Bukkit.getPluginManager().registerEvents(this, Sblock.getInstance());
 		//see wall o' text below
 		dropMeteorite();
 	}
-	public Meteorite(Plugin pl, Player pT, Location xyz, String m, int r, int c, boolean explode)	{
+	public Meteorite(MeteorMod instance, Player pT, Location xyz, String m, int r, int c, boolean explode)	{
 		if (pT != null)	{
 			pTarget = pT;
 		}
@@ -58,8 +60,8 @@ public class Meteorite implements Listener	{
 			countdown = c;
 		}
 		explosionBlockDamage = explode;
-		plugin = pl;
-		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+		module = instance;
+		Bukkit.getPluginManager().registerEvents(this, Sblock.getInstance());
 		//Ok, I know this is pretty much the most awful practice ever, but I need the list of meteorites in case
 		//the UUID list doesn't end up fully empty for some reason - it would suck to have like 43824578245 meteors
 		//checking events. This is why I suggested exploding all UUIDs on contact of 1. Would look less cool, yes,
@@ -118,8 +120,8 @@ public class Meteorite implements Listener	{
 					a.getBlock().setType(Material.AIR);
 					blockID.add(skyTarget.getWorld().spawnFallingBlock(a, mat, (byte) 0).getUniqueId());
 				}			
-				plugin.getLogger().info("Meteorificationalizing " + target.getBlockX() + ", " + target.getBlockZ());
-			} else plugin.getLogger().info("What kind of a sphere did you just generate? Also, how?");
+				Bukkit.getLogger().info("Meteorificationalizing " + target.getBlockX() + ", " + target.getBlockZ());
+			} else Bukkit.getLogger().info("What kind of a sphere did you just generate? Also, how?");
 		}
 	}
 	
@@ -164,7 +166,7 @@ public class Meteorite implements Listener	{
 	
 
 	public void doCounterTick() {
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new scheduledCounter(), 20);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new scheduledCounter(), 20);
 	}
 	public class scheduledCounter implements Runnable	{
 
@@ -177,7 +179,7 @@ public class Meteorite implements Listener	{
 	}
 	
 	public void doHandlerUnregister() {
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new handlerUnregister(this));
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new handlerUnregister(this));
 	}
 	public class handlerUnregister implements Runnable {
 		Meteorite m;
