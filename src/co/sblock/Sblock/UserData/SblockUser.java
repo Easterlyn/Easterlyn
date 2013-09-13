@@ -20,6 +20,7 @@ import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
@@ -82,6 +83,10 @@ public class SblockUser {
 
 	/** Map of task ID's. Key = channel name, value = task ID. */
 	private Map<String, Integer> tasks = new HashMap<String, Integer>();
+	
+	//Keeps track of current region for RegionChannel purposes
+	//Screw yer Javadocs Adam
+	private Region currentRegion;
 
 	/**
 	 * Creates a SblockUser object for a player.
@@ -490,6 +495,21 @@ public class SblockUser {
 	public boolean isListening(Channel c) {
 		return listening.contains(c.getName());
 	}
+	public Region getCurrentRegion()	{
+		return currentRegion;
+	}
+	public void setCurrentRegion()	{
+		Location l = this.getPlayer().getLocation();
+		currentRegion = Region.getLocationRegion(l);
+	}
+	public void updateCurrentRegion(Region newR)	{
+		if(current.equalsIgnoreCase("#" + currentRegion.getRegionName()))	{
+			current = "#" + newR.getRegionName();
+		}
+		this.removeListening("#" + currentRegion.getRegionName());
+		this.addListening(ChannelManager.getChannelManager().getChannel("#" + newR.getRegionName()));
+		currentRegion = newR;
+	}
 
 	// -----------------------------------------------------------------------------------------------------------------------
 
@@ -669,7 +689,7 @@ public class SblockUser {
 	}
 
 	public String toString() { // For /whois usage mainly
-		// TODO Someone tell Dub to get off his lazy ass
+		// TODONE Someone tell Dub to get off his lazy ass
 		ChatColor sys = ChatColor.DARK_AQUA;
 		ChatColor txt = ChatColor.YELLOW;
 		String div = sys + ", " + txt;

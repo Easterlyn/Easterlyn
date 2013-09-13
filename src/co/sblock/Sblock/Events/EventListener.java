@@ -21,9 +21,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -41,6 +43,7 @@ import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Events.Packet26EntityStatus.Status;
 import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
@@ -103,6 +106,9 @@ public class EventListener implements Listener, PacketListener {
 			UserManager.getUserManager().addUser(event.getPlayer());
 			u = SblockUser.getUser(event.getPlayer().getName());
 		}
+		//RegionChannel handling
+		u.setCurrentRegion();
+		ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion()).addListening(u.getPlayerName());
 		//u.syncSetCurrentChannel("#");
 	}
 
@@ -131,6 +137,25 @@ public class EventListener implements Listener, PacketListener {
 		else	{
 			event.getPlayer().sendMessage(ChatColor.RED + "You are not in the SblockUser Database! Seek help immediately!");
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event)	{
+		SblockUser u = UserManager.getUserManager().getUser(event.getPlayer().getName());
+		u.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
+	}
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event)	{
+		if(!event.getPlayer().getWorld().getName().equalsIgnoreCase("Medium"))	{
+			return;
+		}
+		SblockUser u = UserManager.getUserManager().getUser(event.getPlayer().getName());
+		Region oldR = u.getCurrentRegion();
+		Region newR = Region.getLocationRegion(u.getPlayer().getLocation());
+		if(oldR.equals(newR))	{
+			return;
+		}
+		u.updateCurrentRegion(newR);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
