@@ -25,7 +25,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -107,7 +106,7 @@ public class EventListener implements Listener, PacketListener {
 			u = SblockUser.getUser(event.getPlayer().getName());
 		}
 		//RegionChannel handling
-		u.setCurrentRegion();
+		u.setCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
 		ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion()).addListening(u.getPlayerName());
 		//u.syncSetCurrentChannel("#");
 	}
@@ -138,24 +137,28 @@ public class EventListener implements Listener, PacketListener {
 			event.getPlayer().sendMessage(ChatColor.RED + "You are not in the SblockUser Database! Seek help immediately!");
 		}
 	}
-	
+
 	@EventHandler
-	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event)	{
+	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
 		SblockUser u = UserManager.getUserManager().getUser(event.getPlayer().getName());
 		u.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
 	}
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event)	{
-		if(!event.getPlayer().getWorld().getName().equalsIgnoreCase("Medium"))	{
-			return;
+
+	public int initiateRegionChecks() {
+		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
+	}
+
+	public class RegionCheck implements Runnable {
+		@Override
+		public void run() {
+			for (Player p : Bukkit.getWorld("Medium").getPlayers()) {
+				SblockUser u = SblockUser.getUser(p.getName());
+				Region r = Region.getLocationRegion(p.getLocation());
+				if (!u.getCurrentRegion().equals(r)) {
+					u.updateCurrentRegion(r);
+				}
+			}
 		}
-		SblockUser u = UserManager.getUserManager().getUser(event.getPlayer().getName());
-		Region oldR = u.getCurrentRegion();
-		Region newR = Region.getLocationRegion(u.getPlayer().getLocation());
-		if(oldR.equals(newR))	{
-			return;
-		}
-		u.updateCurrentRegion(newR);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)

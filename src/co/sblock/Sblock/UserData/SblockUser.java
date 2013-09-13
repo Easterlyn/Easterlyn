@@ -84,8 +84,7 @@ public class SblockUser {
 	/** Map of task ID's. Key = channel name, value = task ID. */
 	private Map<String, Integer> tasks = new HashMap<String, Integer>();
 	
-	//Keeps track of current region for RegionChannel purposes
-	//Screw yer Javadocs Adam
+	/** Keeps track of current region for RegionChannel purposes */
 	private Region currentRegion;
 
 	/**
@@ -495,15 +494,14 @@ public class SblockUser {
 	public boolean isListening(Channel c) {
 		return listening.contains(c.getName());
 	}
-	public Region getCurrentRegion()	{
+	public Region getCurrentRegion() {
 		return currentRegion;
 	}
-	public void setCurrentRegion()	{
-		Location l = this.getPlayer().getLocation();
-		currentRegion = Region.getLocationRegion(l);
+	public void setCurrentRegion(Region r) {
+		currentRegion = r;
 	}
-	public void updateCurrentRegion(Region newR)	{
-		if(current.equalsIgnoreCase("#" + currentRegion.getRegionName()))	{
+	public void updateCurrentRegion(Region newR) {
+		if(current.equalsIgnoreCase("#" + currentRegion.getRegionName())) {
 			current = "#" + newR.getRegionName();
 		}
 		this.removeListening("#" + currentRegion.getRegionName());

@@ -22,6 +22,7 @@ public class EventModule extends Module {
 	private static EventModule instance;
 	private TowerData towers;
 	private EventListener listener;
+	private int regionTask;
 
 	@Override
 	protected void onEnable() {
@@ -36,10 +37,12 @@ public class EventModule extends Module {
 		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.MOB_SPAWN);
 		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.DESTROY_ENTITY);
 		this.registerCommands(new PacketCommands());
+		regionTask = listener.initiateRegionChecks();
 	}
 
 	@Override
 	protected void onDisable() {
+		Bukkit.getScheduler().cancelTask(regionTask);
 		HandlerList.unregisterAll(listener);
 		towers.save(towers);
 		towers = null;
