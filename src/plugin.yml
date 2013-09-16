@@ -47,3 +47,9 @@ commands:
  dragon:
   usage: /dragon
   description: death by awesome
+ meteormod:
+  usage: /meteormod <p:player> <r:radius> <e:explode> <c:countdown> <m:material>
+  description: Summon a meteor with ALL the parameters
+ meteor:
+  usage: /meteor
+  description: Drop a meteor on the crosshairs

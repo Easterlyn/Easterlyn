@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.UserData.UserDataModule;
+import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
 
 import com.google.common.base.Joiner;
 
@@ -46,6 +47,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new UserDataModule().enable());
 		modules.add(new ChatModule().enable());
 		modules.add(new EventModule().enable());
+		modules.add(new MeteorMod().enable());
 	}
 
 	@Override

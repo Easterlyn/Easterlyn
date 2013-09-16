@@ -42,6 +42,7 @@ import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Events.Packet26EntityStatus.Status;
 import co.sblock.Sblock.UserData.DreamPlanet;
@@ -107,7 +108,9 @@ public class EventListener implements Listener, PacketListener {
 		}
 		//RegionChannel handling
 		u.setCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
-		ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion()).addListening(u.getPlayerName());
+		Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
+		regionC.addListening(u.getPlayerName());
+		u.addListening(regionC);
 		//u.syncSetCurrentChannel("#");
 	}
 
@@ -151,12 +154,15 @@ public class EventListener implements Listener, PacketListener {
 	public class RegionCheck implements Runnable {
 		@Override
 		public void run() {
-			for (Player p : Bukkit.getWorld("Medium").getPlayers()) {
-				SblockUser u = SblockUser.getUser(p.getName());
-				Region r = Region.getLocationRegion(p.getLocation());
-				if (!u.getCurrentRegion().equals(r)) {
-					u.updateCurrentRegion(r);
+			try {
+				for (Player p : Bukkit.getWorld("Medium").getPlayers()) {
+					SblockUser u = SblockUser.getUser(p.getName());
+					Region r = Region.getLocationRegion(p.getLocation());
+					if (!u.getCurrentRegion().equals(r)) {
+						u.updateCurrentRegion(r);
+					}
 				}
+			} catch (NullPointerException e) {
 			}
 		}
 	}
@@ -170,6 +176,8 @@ public class EventListener implements Listener, PacketListener {
 		if (tasks.containsKey(u.getPlayerName())) {
 			Bukkit.getScheduler().cancelTask(tasks.remove(u.getPlayerName()));
 		}
+		Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
+		u.removeListening(regionC.getName());
 		for (String s : u.getListening()) {
 			u.removeListeningQuit(s);
 		}

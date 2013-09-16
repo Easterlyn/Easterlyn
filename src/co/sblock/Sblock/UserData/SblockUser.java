@@ -501,11 +501,13 @@ public class SblockUser {
 		currentRegion = r;
 	}
 	public void updateCurrentRegion(Region newR) {
-		if(current.equalsIgnoreCase("#" + currentRegion.getRegionName())) {
-			current = "#" + newR.getRegionName();
+		Channel oldC = ChannelManager.getChannelManager().getChannel("#" + this.getCurrentRegion().toString());
+		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
+		if(current.equalsIgnoreCase(oldC.getName())) {
+			current = newC.getName();
 		}
-		this.removeListening("#" + currentRegion.getRegionName());
-		this.addListening(ChannelManager.getChannelManager().getChannel("#" + newR.getRegionName()));
+		this.removeListening(oldC.getName());
+		this.addListening(ChannelManager.getChannelManager().getChannel("#" + newR.toString()));
 		currentRegion = newR;
 	}
 
@@ -696,7 +698,8 @@ public class SblockUser {
 				txt + this.playerName + div + this.getClassType() + " of " + this.getAspect() + "\n" + 
 				this.getMPlanet() + div + this.getDPlanet() + div + this.getTower() + div + this.isSleeping() + "\n" + 
 				this.isMute() + div + this.getCurrent().getName() + div + this.getListening().toString() + "\n" +
-				this.getUserIP() + div + this.getPreviousLocationString() + "\n" +
+				this.getCurrentRegion().toString() + div + this.getPreviousLocationString() + "\n" +
+				this.getUserIP() + "\n" +
 				this.getTimePlayed() + div + this.getPlayer().getLastPlayed() + "\n" +
 				sys + "-----------------------------------------";
 		return s;

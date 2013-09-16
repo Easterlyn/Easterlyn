@@ -56,7 +56,7 @@ public class MeteorCommandListener implements CommandListener {
 		return false;
 	}
 	
-	@SblockCommand(consoleFriendly = false, mergeLast = true)
+	@SblockCommand(consoleFriendly = false)
 	public boolean meteor(CommandSender sender)	{
 		Player p = (Player) sender;
 		Player pTarget = null;

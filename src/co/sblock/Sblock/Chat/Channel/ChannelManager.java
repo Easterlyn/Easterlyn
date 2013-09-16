@@ -39,10 +39,10 @@ public class ChannelManager {
 		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, "Dublek"));
 //		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#Earth", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#InnerCircle", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#OuterCircle", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#FurthestRing", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new RegionChannel("#EARTH", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, "Dublek"));
 /*		defaults.add(new RegionChannel("#LOWAS", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, "Dublek"));
