@@ -178,18 +178,19 @@ public class EventListener implements Listener, PacketListener {
 
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if (event.getCause().equals(TeleportCause.END_PORTAL)) {
-			if (Math.abs(event.getTo().getBlockX()) - Bukkit.getSpawnRadius() < 0) {
-				if (Math.abs(event.getTo().getBlockZ() - Bukkit.getSpawnRadius()) < 0) {
-					event.setCancelled(true);
-				}
-			}
-		}
+//		if (event.getCause().equals(TeleportCause.END_PORTAL)) {
+//			if (Math.abs(event.getTo().getBlockX()) - Bukkit.getSpawnRadius() < 0) {
+//				if (Math.abs(event.getTo().getBlockZ() - Bukkit.getSpawnRadius()) < 0) {
+//					event.setCancelled(true);
+//				}
+//			}
+//		}
 		Player p = event.getPlayer();
 		if (!event.getFrom().getWorld().equals(event.getTo().getWorld())) {
 			SblockUser u = SblockUser.getUser(p.getName());
 			if (!u.isGodTier()) {
 				u.setIsSleeping(event.getTo().getWorld().getName().contains("Circle"));
+				Sblogger.info("DEBUG", "Teleport occurring: Leaving " + event.getFrom().getWorld().getName() + " at " + event.getFrom().getX() + ", " + event.getFrom().getZ() + ". Arriving in " + event.getTo().getWorld().getName() + " at " + event.getTo().getX() + ", " + event.getTo().getZ() + ".");
 				if (teleports.remove(p.getName())) {
 					u.setPreviousLocation(event.getFrom());
 				}
@@ -321,6 +322,8 @@ public class EventListener implements Listener, PacketListener {
 		public void run() {
 			SblockUser user = SblockUser.getUser(p.getName());
 			if (p != null && user != null) {
+				Location l = p.getLocation();
+				Sblogger.info("DEBUG", "Sleep teleport initiating at " + l.getX() + ", " + l.getY() + ", " + l.getZ());
 				switch (Region.getLocationRegion(p.getLocation())) {
 				case EARTH:
 //				case MEDIUM: // Someday, my pretties.
@@ -329,10 +332,13 @@ public class EventListener implements Listener, PacketListener {
 //				case LOLAR:
 //				case LOWAS:
 					if (user.getDPlanet().equals(DreamPlanet.NONE)) {
+						Sblogger.info("DEBUG", "User does not have a dream planet defined!")
 						break;
 					} else {
+						Sblogger.info("DEBUG", "User data:\nDream Planet: " + user.getDPlanet().getDisplayName() + "\nCurrent world: " + p.getWorld().getName() + "\nPrevious location world: " + user.getPreviousLocation().getWorld().getName());
 						teleports.add(p.getName());
 						if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
+							Sblogger.info("DEBUG", "User's previous location is in current world.")
 							p.teleport(EventModule.getEventModule().getTowerData()
 									.getLocation(user.getTower(),
 											user.getDPlanet(), (byte) 0));
@@ -343,6 +349,7 @@ public class EventListener implements Listener, PacketListener {
 					break;
 				case FURTHESTRING:
 				case INNERCIRCLE:
+					Sblogger.info("DEBUG", "User data:\nDream Planet: " + user.getDPlanet().getDisplayName() + "\nCurrent world: " + p.getWorld().getName() + "\nPrevious location world: " + user.getPreviousLocation().getWorld().getName());
 					teleports.add(p.getName());
 					p.teleport(user.getPreviousLocation());
 					break;
