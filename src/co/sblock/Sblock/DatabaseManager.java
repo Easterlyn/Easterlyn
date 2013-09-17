@@ -88,10 +88,10 @@ public class DatabaseManager {
 		defaultChannels.add("#");
 		defaultChannels.add("#rp");
 		defaultChannels.add("#rp2");
-		defaultChannels.add("#Earth");
-		defaultChannels.add("#InnerCircle");
-		defaultChannels.add("#OuterCircle");
-		defaultChannels.add("#FurthestRing");
+		defaultChannels.add("#EARTH");
+		defaultChannels.add("#INNERCIRCLE");
+		defaultChannels.add("#OUTERCICLE");
+		defaultChannels.add("#FURTHESTRING");
 		defaultChannels.add("#LOWAS");
 		defaultChannels.add("#LOLAR");
 		defaultChannels.add("#LOHAC");
