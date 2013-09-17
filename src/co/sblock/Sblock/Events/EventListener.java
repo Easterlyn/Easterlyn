@@ -49,6 +49,7 @@ import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
  * @author Jikoo
@@ -340,13 +341,13 @@ public class EventListener implements Listener, PacketListener {
 //				case LOLAR:
 //				case LOWAS:
 					if (user.getDPlanet().equals(DreamPlanet.NONE)) {
-						Sblogger.info("DEBUG", "User does not have a dream planet defined!")
+						Sblogger.info("DEBUG", "User does not have a dream planet defined!");
 						break;
 					} else {
 						Sblogger.info("DEBUG", "User data:\nDream Planet: " + user.getDPlanet().getDisplayName() + "\nCurrent world: " + p.getWorld().getName() + "\nPrevious location world: " + user.getPreviousLocation().getWorld().getName());
 						teleports.add(p.getName());
 						if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
-							Sblogger.info("DEBUG", "User's previous location is in current world.")
+							Sblogger.info("DEBUG", "User's previous location is in current world.");
 							p.teleport(EventModule.getEventModule().getTowerData()
 									.getLocation(user.getTower(),
 											user.getDPlanet(), (byte) 0));
