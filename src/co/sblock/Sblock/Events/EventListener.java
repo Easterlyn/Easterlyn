@@ -107,9 +107,7 @@ public class EventListener implements Listener, PacketListener {
 		}
 		//RegionChannel handling
 		u.setCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
-		Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
-		regionC.addListening(u.getPlayerName());
-		u.addListening(regionC);
+		u.syncJoinChannel("#" + u.getCurrentRegion().toString());
 		//u.syncSetCurrentChannel("#");
 	}
 

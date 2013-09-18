@@ -503,7 +503,7 @@ public class SblockUser {
 	public void updateCurrentRegion(Region newR) {
 		Channel oldC = ChannelManager.getChannelManager().getChannel("#" + this.getCurrentRegion().toString());
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if(current.equalsIgnoreCase(oldC.getName())) {
+		if (current.equals(oldC.getName())) {
 			current = newC.getName();
 		}
 		this.removeListening(oldC.getName());
