@@ -52,6 +52,7 @@ public class ChannelManager {
 		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, "Dublek"));*/
 
 		for (Channel c : defaults) {
+			ChannelManager.getChannelList().put(c.getName(), c);
 			this.addUnsavableChannel(c.getName());
 		}
 

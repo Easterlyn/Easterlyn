@@ -429,7 +429,6 @@ public class SblockUser {
 
 	public boolean addListening(Channel c) {
 		if (c == null) {
-			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
 			return false;
 		}
 		if (c.isBanned(this)) {
