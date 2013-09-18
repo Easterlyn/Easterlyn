@@ -31,7 +31,7 @@ public class ChannelManager {
 	public void createNewChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
 		Channel c = new NormalChannel(name, access, creator);
 		ChannelManager.getChannelList().put(name, c);
-		ChatModule.slog().info("Channel" + c.getName() + "created: " + access + " " + creator);
+		ChatModule.slog().info("Channel " + c.getName() + " created: " + access + " " + creator);
 	}
 
 	public void createDefaultSet() {

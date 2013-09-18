@@ -454,15 +454,17 @@ public class SblockUser {
 	}
 
 	public void removeListening(String cName) {
-		if (this.listening.contains(cName)) {
-			Channel c = ChatModule.getChatModule().getChannelManager()
-					.getChannel(cName);
-			if (c != null) {
+		Channel c = ChatModule.getChatModule().getChannelManager()
+				.getChannel(cName);
+		if (c == null) {
+			this.sendMessage(ChatMsgs.errorInvalidChannel(cName));
+			this.listening.remove(cName);
+			return;
+		}
+		if (this.listening.remove(c)) {
 				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
 						"channel");
 				c.removeListening(this.getPlayerName());
-			}
-			this.listening.remove(c);
 			if (cName.equals(current)) {
 				current = null;
 			}
