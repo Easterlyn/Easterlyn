@@ -178,9 +178,9 @@ public class ChatMsgs {
 				+ ChatColor.GOLD + s;
 	}
 
-	public static String errorCannotLeaveCurrent(String s) {
-		return ChatColor.RED + "Cannot leave your current channel "
-				+ ChatColor.GOLD + s + ChatColor.RED + "!";
+	public static String errorNoCurrent() {
+		return ChatColor.RED + "You must have set a current channel to chat! Use "
+				+ ChatColor.GREEN + "/sc c <channel>";
 	}
 
 	public static String errorNotListening(String s) {
@@ -192,8 +192,62 @@ public class ChatMsgs {
 		return ChatColor.GOLD + name + ChatColor.RED +
 				" is a roleplaying channel. You must have a nickname to talk!";
 	}
-	
+
 	public static String errorRegionChannel()	{
 		return ChatColor.RED + "You cannot do this operation in a Region channel!";
+	}
+
+	public static String helpGlobalMod() {
+		return ChatColor.YELLOW + "Mod Global Commands:\n"
+				+ ChatColor.GREEN + "global mute <$user>"
+				+ ChatColor.YELLOW + ": Mute a user in all channels\n"
+				+ ChatColor.GREEN + "global unmute <$user>"
+				+ ChatColor.YELLOW + ": Unmute a user in all channels\n"
+				+ ChatColor.GREEN + "global setnick <$user> <nick>"
+				+ ChatColor.YELLOW + ": Set a global nick for a player (Mostly for teh lulz)\n"
+				+ ChatColor.GREEN + "global rmnick <$user>"
+				+ ChatColor.YELLOW + ": Remove a global nick from a player";
+	}
+
+	public static String helpChannelOwner() {
+		return ChatColor.YELLOW + "Channel Owner commands:\n"
+				+ ChatColor.GREEN + "channel mod <add/remove> <$user>"
+				+ ChatColor.YELLOW + ": Add or remove a channel mod\n"
+				+ ChatColor.GREEN + "channel <ban/unban> <$user>"
+				+ ChatColor.YELLOW + ": (Un)bans a user from the channel\n"
+				+ ChatColor.GREEN + "disband"
+				+ ChatColor.YELLOW + ": Disband coming soon!";
+	}
+
+	public static String helpChannelMod() {
+		return ChatColor.YELLOW + "Channel Mod commands:\n"
+				+ ChatColor.GREEN + "channel kick <$user>"
+				+ ChatColor.YELLOW + ": Kick a user from the channel\n"
+				+ ChatColor.GREEN + "channel ban <$user>"
+				+ ChatColor.YELLOW + ": Ban a user from the channel\n"
+				+ ChatColor.GREEN + "channel setalias <$alias>"
+				+ ChatColor.YELLOW + ": Set an alias for the channel\n"
+				+ ChatColor.GREEN + "channel rmalias"
+				+ ChatColor.YELLOW + ": Remove the channel alias\n"
+				+ ChatColor.GREEN + "channel getListeners"
+				+ ChatColor.YELLOW + ": List all users currently listening to this channel";
+	}
+
+	public static String helpDefault() {
+		return ChatColor.YELLOW + "/sc subcommands:\n"
+				+ ChatColor.GREEN + "c <channel>: "
+				+ ChatColor.YELLOW + "Talking will send messages to <channel>.\n"
+				+ ChatColor.GREEN + "l <channel>: "
+				+ ChatColor.YELLOW + "Listen to <channel>.\n"
+				+ ChatColor.GREEN + "leave <channel>: "
+				+ ChatColor.YELLOW + "Stop listening to <channel>.\n"
+				+ ChatColor.GREEN + "list: "
+				+ ChatColor.YELLOW + "List all channels you are listening to.\n"
+				+ ChatColor.GREEN + "listall: "
+				+ ChatColor.YELLOW + "List all channels.\n"
+				+ ChatColor.GREEN + "new <name> <access> <type>: "
+				+ ChatColor.YELLOW + "Create a new channel.\n"
+				+ ChatColor.GREEN + "channel: "
+				+ ChatColor.YELLOW + "Channel moderation commands.";
 	}
 }

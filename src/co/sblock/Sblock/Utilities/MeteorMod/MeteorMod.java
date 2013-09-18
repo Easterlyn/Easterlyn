@@ -2,23 +2,13 @@ package co.sblock.Sblock.Utilities.MeteorMod;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
 
 public class MeteorMod extends Module implements Listener {
 	private static MeteorMod instance;
-	private BukkitTask task;
+	//private BukkitTask task;
 	private MeteorCommandListener mcl = new MeteorCommandListener();
 
 	

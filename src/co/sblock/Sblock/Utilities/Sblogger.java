@@ -54,11 +54,49 @@ public class Sblogger {
 //		}
 	}
 
+	public static void warningNoLogName(String msg) {
+		Bukkit.getLogger().warning(msg);
+	}
+
 	public static void warning(String logName, String msg) {
 		Bukkit.getLogger().warning("[" + logName + "] " + msg);
 	}
 
+	public static void severeNoLogName(String msg) {
+		Bukkit.getLogger().severe(msg);
+	}
+
 	public static void severe(String logName, String msg) {
 		Bukkit.getLogger().severe("[" + logName + "] " + msg);
+	}
+
+	public static void err(Exception e) {
+		StringBuilder trace = new StringBuilder(e.toString());
+		for (StackTraceElement ste : e.getStackTrace()) {
+			trace.append("\n\tat " + ste.toString());
+		}
+		if (e.getCause() != null) {
+			trace.append("\nCaused by: " + e.getCause().toString());
+			for (StackTraceElement ste : e.getCause().getStackTrace()) {
+				trace.append("\n\tat " + ste.toString());
+			}
+		}
+		warningNoLogName("Error report:\n" + trace.toString());
+		warningNoLogName("End of error report.");
+	}
+
+	public static void criticalErr(Exception e) {
+		StringBuilder trace = new StringBuilder(e.toString());
+		for (StackTraceElement ste : e.getStackTrace()) {
+			trace.append("\n\tat " + ste.toString());
+		}
+		if (e.getCause() != null) {
+			trace.append("\nCaused by: " + e.getCause().toString());
+			for (StackTraceElement ste : e.getCause().getStackTrace()) {
+				trace.append("\n\tat " + ste.toString());
+			}
+		}
+		severeNoLogName("Error report:\n" + trace);
+		severeNoLogName("End of error report.");
 	}
 }

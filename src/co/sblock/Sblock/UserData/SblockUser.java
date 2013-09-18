@@ -455,17 +455,16 @@ public class SblockUser {
 
 	public void removeListening(String cName) {
 		if (this.listening.contains(cName)) {
-			if (!this.current.equals(cName)) {
-				Channel c = ChatModule.getChatModule().getChannelManager()
-						.getChannel(cName);
-				if (c != null) {
-					c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
-							"channel");
-					c.removeListening(this.getPlayerName());
-				}
-				this.listening.remove(c);
-			} else {
-				this.sendMessage(ChatMsgs.errorCannotLeaveCurrent(cName));
+			Channel c = ChatModule.getChatModule().getChannelManager()
+					.getChannel(cName);
+			if (c != null) {
+				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
+						"channel");
+				c.removeListening(this.getPlayerName());
+			}
+			this.listening.remove(c);
+			if (cName.equals(current)) {
+				current = null;
 			}
 		} else {
 			this.sendMessage(ChatMsgs.errorNotListening(cName));
@@ -551,6 +550,9 @@ public class SblockUser {
 				sender.sendMessage(ChatMsgs.errorInvalidChannel(newChannel));
 				return;
 			}
+		} else if (current == null) {
+			sender.sendMessage(ChatMsgs.errorNoCurrent());
+			return;
 		}
 		this.formatMessage(sender, sendto, outputmessage);
 	}

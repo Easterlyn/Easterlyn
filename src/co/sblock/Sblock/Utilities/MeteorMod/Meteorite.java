@@ -11,13 +11,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.plugin.Plugin;
-
 import co.sblock.Sblock.Sblock;
 
 public class Meteorite implements Listener	{
 	
-	private MeteorMod module;
+	//private MeteorMod module;
 	private int countdown;
 	private int radius;
 	private final int DEFAULT_RADIUS = 3;
@@ -35,7 +33,7 @@ public class Meteorite implements Listener	{
 	public Meteorite(MeteorMod pl, Player pT, int c)	{
 		pTarget = pT;
 		countdown = c;
-		module = pl;
+		//module = pl;
 		target = pTarget.getLocation();
 		defaultMeteorite();
 		Bukkit.getPluginManager().registerEvents(this, Sblock.getInstance());
@@ -60,7 +58,7 @@ public class Meteorite implements Listener	{
 			countdown = c;
 		}
 		explosionBlockDamage = explode;
-		module = instance;
+		//module = instance;
 		Bukkit.getPluginManager().registerEvents(this, Sblock.getInstance());
 		//Ok, I know this is pretty much the most awful practice ever, but I need the list of meteorites in case
 		//the UUID list doesn't end up fully empty for some reason - it would suck to have like 43824578245 meteors
