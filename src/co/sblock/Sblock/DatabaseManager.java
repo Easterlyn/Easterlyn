@@ -6,8 +6,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Chat.ChatModule;
@@ -30,7 +28,6 @@ public class DatabaseManager {
 
 	private static DatabaseManager dbm;
 	private Sblock plugin;
-	private ArrayList<String> defaultChannels;
 
 	public static DatabaseManager getDatabaseManager() {
 		if (dbm == null)
@@ -66,8 +63,6 @@ public class DatabaseManager {
 			return false;
 		}
 
-		this.establishDefaultChannels();
-
 		Sblogger.info("SblockDatabase", "Database enabled");
 		return true;
 	}
@@ -80,23 +75,8 @@ public class DatabaseManager {
 		}
 		dbm = null;
 		connection = null;
-		defaultChannels = null;
 	}
 
-	private void establishDefaultChannels() {
-		defaultChannels = new ArrayList<String>();
-		defaultChannels.add("#");
-		defaultChannels.add("#rp");
-		defaultChannels.add("#rp2");
-		defaultChannels.add("#EARTH");
-		defaultChannels.add("#INNERCIRCLE");
-		defaultChannels.add("#OUTERCICLE");
-		defaultChannels.add("#FURTHESTRING");
-		defaultChannels.add("#LOWAS");
-		defaultChannels.add("#LOLAR");
-		defaultChannels.add("#LOHAC");
-		defaultChannels.add("#LOFAF");
-	}
 
 	public void saveUserData(SblockUser user) {
 		try {
@@ -218,9 +198,6 @@ public class DatabaseManager {
 	}
 
 	public void saveChannelData(Channel c) {
-		if ( defaultChannels.contains(c.getName())) {
-			return;
-		}
 		PreparedStatement pst = null;
 		try {
 			pst = connection.prepareStatement(

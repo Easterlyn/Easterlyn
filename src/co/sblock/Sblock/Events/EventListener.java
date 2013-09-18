@@ -90,7 +90,6 @@ public class EventListener implements Listener, PacketListener {
 					event.getPlayer().getName(),
 					event.getAddress().getHostAddress());
 			if (reason != null) {
-				Sblogger.info("DEBUG", "Changing disconnect to " + reason);
 				event.setKickMessage(reason);
 			}
 			return;
@@ -427,11 +426,35 @@ public class EventListener implements Listener, PacketListener {
 				if (p.getWorld().equals(l.getWorld()) && p.getLocation().distanceSquared(l) <= 2304) {
 					// 2304 = 48^2. Spigot by default does not render mobs beyond this point.
 					ProtocolLibrary.getProtocolManager().sendServerPacket(p, spawn.getHandle());
-					ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+					// Ideally this will fix what I suspect is the issue - the packet is
+					// probably sent too soon, or something of the sort.
+					// TODO task tracking
+					this.schedulePacket(p, packet);
 				}
 			}
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
+		}
+	}
+
+	private void schedulePacket(Player p, AbstractPacket packet) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new SyncPacket(p, packet));
+	}
+
+	private class SyncPacket implements Runnable {
+		private Player p;
+		private AbstractPacket packet;
+		SyncPacket(Player p, AbstractPacket packet) {
+			this.p = p;
+			this.packet = packet;
+		}
+		@Override
+		public void run() {
+			try {
+				ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+			} catch (InvocationTargetException e) {
+				Sblogger.err(e);
+			}
 		}
 	}
 }

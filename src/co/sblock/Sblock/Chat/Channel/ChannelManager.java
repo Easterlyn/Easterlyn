@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -12,14 +13,16 @@ public class ChannelManager {
 
 	private static Map<String, Channel> channelList = new HashMap<String, Channel>();
 
+	private List<String> noSave = new ArrayList<String>();
+
 	public void loadAllChannels() {
 		DatabaseManager.getDatabaseManager().loadAllChannelData();
 	}
 
 	public void saveAllChannels() {
 		for (Channel c : channelList.values()) {
-			if (!c.getType().equals(ChannelType.TEMP)
-					&& !c.getType().equals(ChannelType.REGION))
+			if (!(noSave.contains(c.getName()) || c instanceof RegionChannel
+					|| c instanceof TempChannel))
 				DatabaseManager.getDatabaseManager().saveChannelData(c);
 		}
 	}
@@ -47,12 +50,16 @@ public class ChannelManager {
 		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, "Dublek"));*/
-		
-		
-		Sblogger.info("SblockChat", "Default channels created");
-		for(Channel c : defaults)	{
-			ChannelManager.getChannelList().put(c.getName(), c);
+
+		for (Channel c : defaults) {
+			this.addUnsavableChannel(c.getName());
 		}
+
+		Sblogger.info("SblockChat", "Default channels created");
+	}
+
+	private void addUnsavableChannel(String s) {
+		noSave.add(s);
 	}
 
 	public void dropChannel(String channelName) {

@@ -444,7 +444,7 @@ public class SblockUser {
 			this.listening.add(c.getName());
 		}
 		if (!c.getListening().contains(this.playerName)) {
-			c.addListening(this.getPlayerName());
+			c.addListening(this.playerName);
 			c.sendToAll(this, ChatMsgs.onChannelJoin(this, c), "channel");
 			return true;
 		} else {
