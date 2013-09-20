@@ -58,3 +58,6 @@ commands:
  meteor:
   usage: /meteor
   description: Drop a meteor on the crosshairs
+ se:
+  description: Root of all SburbEffects commands
+  usage: /se <getlore/setlore/clearlore/applyeffects/verbose> <lore>
