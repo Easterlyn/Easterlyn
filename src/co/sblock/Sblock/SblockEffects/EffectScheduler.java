@@ -16,7 +16,7 @@ public class EffectScheduler extends BukkitRunnable {
 	public void run() {
 	//	plugin.getLogger().info("Effect Tick");
 		for(Player p : Bukkit.getServer().getOnlinePlayers())	{
-			eM.applyEffects(eM.scan(p), p);
+			eM.applyPassiveEffects(eM.scan(p), p);
 			
 		}		
 	}

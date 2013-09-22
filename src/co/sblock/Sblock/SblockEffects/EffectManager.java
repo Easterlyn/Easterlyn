@@ -74,17 +74,34 @@ public class EffectManager {
 		return lore;
 	}
 	
-	public void applyActiveEffects(ArrayList<String> effects, Player p){
+	public void applyActiveRightClickEffects(ArrayList<String> effects, Player p){
 		ActiveEffect aE;
 		for(String lore : effects)	{
 			if(ActiveEffect.isValidEffect(lore))	{
 				try {
 					aE = ActiveEffect.valueOf(lore);
-					aE.getEffect(p);
+					aE.getRightClickEffect(p);
 				} catch (IllegalArgumentException e) {
 					for(ActiveEffect act : ActiveEffect.values())	{
 						if(act.getLoreText().equalsIgnoreCase(lore))	{
-							act.getEffect(p);
+							act.getRightClickEffect(p);
+						}
+					}
+				}	
+			}			
+		}
+	}
+	public void applyActiveDamageEffects(ArrayList<String> effects, Player p, Player target){
+		ActiveEffect aE;
+		for(String lore : effects)	{
+			if(ActiveEffect.isValidEffect(lore))	{
+				try {
+					aE = ActiveEffect.valueOf(lore);
+					aE.getDamageEffect(p, target);
+				} catch (IllegalArgumentException e) {
+					for(ActiveEffect act : ActiveEffect.values())	{
+						if(act.getLoreText().equalsIgnoreCase(lore))	{
+							act.getDamageEffect(p, target);
 						}
 					}
 				}	
@@ -92,7 +109,7 @@ public class EffectManager {
 		}
 	}
 	
-	public void applyEffects(ArrayList<String> effects, Player p)	{
+	public void applyPassiveEffects(ArrayList<String> effects, Player p)	{
 		PassiveEffect pE;
 		for(String lore : effects)	{
 			if(PassiveEffect.isValidEffect(lore))	{

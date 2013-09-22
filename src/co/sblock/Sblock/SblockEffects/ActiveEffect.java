@@ -1,8 +1,11 @@
 package co.sblock.Sblock.SblockEffects;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public enum ActiveEffect {
 	
@@ -10,7 +13,6 @@ public enum ActiveEffect {
 	BACKPACK("Backpack"), 	//mobile enderchest access
 	HATGIVER("Hatgiver"),	//Pop-o-matic Vrillyhoo effect: random /hat from inventory item
 	STRENGTH("STRONG");		//Extra damage applied by item
-	
 	
 	private String loreText;
 	private ActiveEffect(String s)	{
@@ -35,7 +37,7 @@ public enum ActiveEffect {
 		return true;
 	}
 	
-	public void getEffect(Player p)	{
+	public void getRightClickEffect(Player p)	{
 		switch (this)	{
 		case PSHOOOOT:
 			Location target = p.getTargetBlock(null, 128).getLocation();
@@ -45,13 +47,28 @@ public enum ActiveEffect {
 			Inventory ec = p.getEnderChest();
 			p.openInventory(ec);
 			break;
-		case HATGIVER:
-			
-			break;
 		case STRENGTH:
 			break;
 		default:
 			break;		
+		}
+	}
+	public void getDamageEffect(Player p, Player target)	{
+		switch (this)	{
+		case HATGIVER:
+			PlayerInventory inv = target.getInventory();
+			ItemStack oldHat = inv.getHelmet();
+			ItemStack[] hatOptions = inv.getContents();
+			ItemStack newHat = hatOptions[(int)Math.random() * inv.getSize()];
+			 while(newHat.getType().equals(Material.AIR) || newHat != null)	{
+				 newHat = hatOptions[(int)Math.random() * inv.getSize()];
+			}
+			inv.setHelmet(newHat);
+			inv.addItem(oldHat);
+			target.sendMessage("RIDICULOUS HAT");
+			break;
+		default:
+			break;
 		}
 	}
 /*Fireworks Sword

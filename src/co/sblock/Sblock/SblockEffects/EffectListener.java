@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -22,16 +23,25 @@ public class EffectListener implements Listener	{
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event)	{
 		Player p = event.getPlayer();
-		  eM.applyEffects(eM.scan(p), p);
+		  eM.applyPassiveEffects(eM.scan(p), p);
 	}	
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent event)	{
 		Player p = event.getPlayer();
-		eM.applyEffects(eM.scan(p), p);
+		eM.applyPassiveEffects(eM.scan(p), p);
 	}
 	@EventHandler
 	public void onPlayerRightClick(PlayerInteractEvent event)	{
 		Player p = event.getPlayer();
-		eM.applyActiveEffects(eM.activeScan(p), p);
+		eM.applyActiveRightClickEffects(eM.activeScan(p), p);
+	}
+	@EventHandler
+	public void onPlayerDamagePlayer(EntityDamageByEntityEvent event)	{
+		if(event.getEntity() instanceof Player && event.getDamager() instanceof Player)	{
+			Player p = (Player) event.getDamager();
+			Player target = (Player) event.getEntity();
+			eM.applyActiveDamageEffects(eM.activeScan(p), p, target);
+
+		}
 	}
 }

@@ -49,7 +49,7 @@ public class EffectsCommandListener implements CommandListener	{
 					//getLogger().info(target + "'s lore is " + playerLore);
 					p.sendMessage(target.getName() + playerLore);
 					//getLogger().info("Begin Application");
-					EffectsModule.getInstance().getEffectManager().applyEffects(playerLore, target);
+					EffectsModule.getInstance().getEffectManager().applyPassiveEffects(playerLore, target);
 					return true;
 				}
 				else if(args[0].equalsIgnoreCase("verbose"))	{

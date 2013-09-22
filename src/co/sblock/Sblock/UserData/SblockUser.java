@@ -460,7 +460,7 @@ public class SblockUser {
 			this.listening.remove(cName);
 			return;
 		}
-		if (this.listening.remove(c)) {
+		if (this.listening.remove(cName)) {
 				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
 						"channel");
 				c.removeListening(this.getPlayerName());
