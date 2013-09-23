@@ -18,6 +18,6 @@ public class EffectScheduler extends BukkitRunnable {
 		for(Player p : Bukkit.getServer().getOnlinePlayers())	{
 			eM.applyPassiveEffects(eM.scan(p), p);
 			
-		}		
+		}
 	}
 }

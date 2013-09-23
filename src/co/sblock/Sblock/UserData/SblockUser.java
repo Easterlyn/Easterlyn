@@ -25,6 +25,9 @@ import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.MachineType;
+import co.sblock.Sblock.SblockEffects.EffectsModule;
 
 /**
  * <code>SblockUser</code> is the class for storing all <code>Player</code>
@@ -359,6 +362,19 @@ public class SblockUser {
 	/*
 	 * CHAT & RELATED START
 	 */
+
+	public boolean hasComputerAccess() {
+		if (EffectsModule.getInstance().getEffectManager().hasSpecificLore(this.getPlayer(), "Computer")) {
+			return true;
+		}
+		for (Location l : MachineModule.getInstance().getManager().getMachines(MachineType.COMPUTER)) {
+			// distanceSquared <= maximumDistance^2. In this case, maximumDistance = 10.
+			if (this.getPlayer().getLocation().distanceSquared(l) <= 100) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * @return the <code>Player</code>'s global nickname
