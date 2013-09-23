@@ -22,7 +22,7 @@ public enum Region {
 		try {
 			return (Region.valueOf(s.toUpperCase()));
 		} catch (IllegalArgumentException e) {
-			return Region.UNKNOWN;
+			return Region.EARTH;
 		}
 	}
 
