@@ -32,18 +32,29 @@ commands:
  sban:
   usage: /<command> <target> <reason>
   description: "Ban a player and their IP address."
+  permission: group.horrorterror
  unsban:
   usage: /<command> <target>
   description: "Undo the effects of sban."
+  permission: group.horrorterror
  profile:
   usage: /<command> <username>
   description: "Shows a player's Sburb profile"
  setplayer:
   usage: /<command> <playername> <class|aspect|land|dream> <value>
   description: "Changes a player's information."
+  permission: group.horrorterror
  settower:
   usage: /settower <number>
   description: "Set tower teleport location to current for tower <number>"
+  permission: group.horrorterror
  dragon:
   usage: /dragon
   description: death by awesome
+  permission: group.horrorterror
+ meteormod:
+  usage: /meteormod <p:player> <r:radius> <e:explode> <c:countdown> <m:material>
+  description: Summon a meteor with ALL the parameters
+ meteor:
+  usage: /meteor
+  description: Drop a meteor on the crosshairs

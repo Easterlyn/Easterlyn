@@ -20,6 +20,7 @@ import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
@@ -82,6 +83,9 @@ public class SblockUser {
 
 	/** Map of task ID's. Key = channel name, value = task ID. */
 	private Map<String, Integer> tasks = new HashMap<String, Integer>();
+	
+	/** Keeps track of current region for RegionChannel purposes */
+	private Region currentRegion;
 
 	/**
 	 * Creates a SblockUser object for a player.
@@ -425,7 +429,6 @@ public class SblockUser {
 
 	public boolean addListening(Channel c) {
 		if (c == null) {
-			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
 			return false;
 		}
 		if (c.isBanned(this)) {
@@ -440,7 +443,7 @@ public class SblockUser {
 			this.listening.add(c.getName());
 		}
 		if (!c.getListening().contains(this.playerName)) {
-			c.addListening(this.getPlayerName());
+			c.addListening(this.playerName);
 			c.sendToAll(this, ChatMsgs.onChannelJoin(this, c), "channel");
 			return true;
 		} else {
@@ -450,18 +453,19 @@ public class SblockUser {
 	}
 
 	public void removeListening(String cName) {
-		if (this.listening.contains(cName)) {
-			if (!this.current.equals(cName)) {
-				Channel c = ChatModule.getChatModule().getChannelManager()
-						.getChannel(cName);
-				if (c != null) {
-					c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
-							"channel");
-					c.removeListening(this.getPlayerName());
-				}
-				this.listening.remove(c);
-			} else {
-				this.sendMessage(ChatMsgs.errorCannotLeaveCurrent(cName));
+		Channel c = ChatModule.getChatModule().getChannelManager()
+				.getChannel(cName);
+		if (c == null) {
+			this.sendMessage(ChatMsgs.errorInvalidChannel(cName));
+			this.listening.remove(cName);
+			return;
+		}
+		if (this.listening.remove(cName)) {
+				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
+						"channel");
+				c.removeListening(this.getPlayerName());
+			if (cName.equals(current)) {
+				current = null;
 			}
 		} else {
 			this.sendMessage(ChatMsgs.errorNotListening(cName));
@@ -489,6 +493,22 @@ public class SblockUser {
 
 	public boolean isListening(Channel c) {
 		return listening.contains(c.getName());
+	}
+	public Region getCurrentRegion() {
+		return currentRegion;
+	}
+	public void setCurrentRegion(Region r) {
+		currentRegion = r;
+	}
+	public void updateCurrentRegion(Region newR) {
+		Channel oldC = ChannelManager.getChannelManager().getChannel("#" + this.getCurrentRegion().toString());
+		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
+		if (current.equals(oldC.getName())) {
+			current = newC.getName();
+		}
+		this.removeListening(oldC.getName());
+		this.addListening(ChannelManager.getChannelManager().getChannel("#" + newR.toString()));
+		currentRegion = newR;
 	}
 
 	// -----------------------------------------------------------------------------------------------------------------------
@@ -531,6 +551,9 @@ public class SblockUser {
 				sender.sendMessage(ChatMsgs.errorInvalidChannel(newChannel));
 				return;
 			}
+		} else if (current == null) {
+			sender.sendMessage(ChatMsgs.errorNoCurrent());
+			return;
 		}
 		this.formatMessage(sender, sendto, outputmessage);
 	}
@@ -669,8 +692,19 @@ public class SblockUser {
 	}
 
 	public String toString() { // For /whois usage mainly
-		// TODO Someone tell Dub to get off his lazy ass
-		String s = "";
+		// TODONE Someone tell Dub to get off his lazy ass
+		ChatColor sys = ChatColor.DARK_AQUA;
+		ChatColor txt = ChatColor.YELLOW;
+		String div = sys + ", " + txt;
+		
+		String s = sys + "-----------------------------------------\n" + 
+				txt + this.playerName + div + this.getClassType() + " of " + this.getAspect() + "\n" + 
+				this.getMPlanet() + div + this.getDPlanet() + div + this.getTower() + div + this.isSleeping() + "\n" + 
+				this.isMute() + div + this.getCurrent().getName() + div + this.getListening().toString() + "\n" +
+				this.getCurrentRegion().toString() + div + this.getPreviousLocationString() + "\n" +
+				this.getUserIP() + "\n" +
+				this.getTimePlayed() + div + this.getPlayer().getLastPlayed() + "\n" +
+				sys + "-----------------------------------------";
 		return s;
 	}
 
@@ -705,7 +739,7 @@ public class SblockUser {
 		public void run() {
 			Channel c = ChatModule.getChatModule()
 					.getChannelManager().getChannel(channelName);
-			if (c != null && !user.isListening(c)) {
+			if (c != null && !user.isListening(c) && user.getPlayer().isOnline()) {
 				user.addListening(c);
 			}
 			tasks.remove(channelName);
@@ -729,7 +763,7 @@ public class SblockUser {
 		public void run() {
 			Channel c = ChatModule.getChatModule()
 					.getChannelManager().getChannel(channelName);
-			if (c != null) {
+			if (c != null && user.getPlayer().isOnline()) {
 				user.setCurrent(c);
 			}
 			tasks.remove(channelName);

@@ -22,7 +22,7 @@ public enum Region {
 		try {
 			return (Region.valueOf(s.toUpperCase()));
 		} catch (IllegalArgumentException e) {
-			return Region.UNKNOWN;
+			return Region.EARTH;
 		}
 	}
 
@@ -67,7 +67,8 @@ public enum Region {
 			return r;
 		} catch (IllegalStateException e) {
 			// Player is in an invalid world
-			return Region.UNKNOWN;
+			// For the sake of region channels, default to earth.
+			return Region.EARTH;
 		}
 	}
 }

@@ -20,16 +20,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.material.Bed;
 
@@ -43,12 +40,14 @@ import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Events.Packet26EntityStatus.Status;
-import co.sblock.Sblock.Machines.InventoryEventHandler;
 import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
  * @author Jikoo
@@ -59,15 +58,11 @@ public class EventListener implements Listener, PacketListener {
 	private Map<String, Integer> tasks;
 	private Set<String> teleports;
 	private short fake_UUID;
-	private Set<String> specialCommands;
 
 	public EventListener() {
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
 		fake_UUID = 25000;
-		specialCommands = new HashSet<String>();
-		specialCommands.add("pl");
-		specialCommands.add("plugins");
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -105,29 +100,12 @@ public class EventListener implements Listener, PacketListener {
 			UserManager.getUserManager().addUser(event.getPlayer());
 			u = SblockUser.getUser(event.getPlayer().getName());
 		}
+		//RegionChannel handling
+		u.setCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
+		u.syncJoinChannel("#" + u.getCurrentRegion().toString());
 		//u.syncSetCurrentChannel("#");
 	}
 
-	@EventHandler
-	public void onInventoryClick(InventoryClickEvent event) {
-		event.setCancelled(new InventoryEventHandler().onInventoryClick(event));
-	}
-
-	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent event) {
-		new InventoryEventHandler().onInventoryClose(event);
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerPreprocessCommand(PlayerCommandPreprocessEvent event) {
-		if (specialCommands.contains(parseCdName(event.getMessage()))) {
-			if (!event.getPlayer().hasPermission("group.denizen")) {
-				event.getPlayer().sendMessage(ChatColor.BOLD +
-						"[o] Pay no attention to the man behind the curtain.");
-				event.setCancelled(true);
-			}
-		}
-	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -145,6 +123,32 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
+	@EventHandler
+	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
+		SblockUser u = UserManager.getUserManager().getUser(event.getPlayer().getName());
+		u.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
+	}
+
+	public int initiateRegionChecks() {
+		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
+	}
+
+	public class RegionCheck implements Runnable {
+		@Override
+		public void run() {
+			try {
+				for (Player p : Bukkit.getWorld("Medium").getPlayers()) {
+					SblockUser u = SblockUser.getUser(p.getName());
+					Region r = Region.getLocationRegion(p.getLocation());
+					if (u.getPlayer().isOnline() && !u.getCurrentRegion().equals(r)) {
+						u.updateCurrentRegion(r);
+					}
+				}
+			} catch (NullPointerException e) {
+			}
+		}
+	}
+
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
@@ -154,6 +158,8 @@ public class EventListener implements Listener, PacketListener {
 		if (tasks.containsKey(u.getPlayerName())) {
 			Bukkit.getScheduler().cancelTask(tasks.remove(u.getPlayerName()));
 		}
+		Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
+		u.removeListening(regionC.getName());
 		for (String s : u.getListening()) {
 			u.removeListeningQuit(s);
 		}
@@ -162,13 +168,13 @@ public class EventListener implements Listener, PacketListener {
 
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if (event.getCause().equals(TeleportCause.END_PORTAL)) {
-			if (Math.abs(event.getTo().getBlockX()) - Bukkit.getSpawnRadius() < 0) {
-				if (Math.abs(event.getTo().getBlockZ() - Bukkit.getSpawnRadius()) < 0) {
-					event.setCancelled(true);
-				}
-			}
-		}
+//		if (event.getCause().equals(TeleportCause.END_PORTAL)) {
+//			if (Math.abs(event.getTo().getBlockX()) - Bukkit.getSpawnRadius() < 0) {
+//				if (Math.abs(event.getTo().getBlockZ() - Bukkit.getSpawnRadius()) < 0) {
+//					event.setCancelled(true);
+//				}
+//			}
+//		}
 		Player p = event.getPlayer();
 		if (!event.getFrom().getWorld().equals(event.getTo().getWorld())) {
 			SblockUser u = SblockUser.getUser(p.getName());
@@ -325,7 +331,7 @@ public class EventListener implements Listener, PacketListener {
 						}
 					}
 					break;
-				case FURTHESTRING:
+				case OUTERCIRCLE:
 				case INNERCIRCLE:
 					teleports.add(p.getName());
 					p.teleport(user.getPreviousLocation());
@@ -339,14 +345,6 @@ public class EventListener implements Listener, PacketListener {
 			}
 			tasks.remove(p.getName());
 		}
-	}
-
-	private String parseCdName(String s) {
-		if (s.startsWith("/")) {
-			s = s.replaceFirst("/", "");
-		}
-		return s.length() < 1 ? s : s.substring(
-				1, (s.indexOf(" ") != -1 ? s.indexOf(" ") : s.length() - 1));
 	}
 
 	public void forceCloseClient(Player p) {
@@ -403,11 +401,35 @@ public class EventListener implements Listener, PacketListener {
 				if (p.getWorld().equals(l.getWorld()) && p.getLocation().distanceSquared(l) <= 2304) {
 					// 2304 = 48^2. Spigot by default does not render mobs beyond this point.
 					ProtocolLibrary.getProtocolManager().sendServerPacket(p, spawn.getHandle());
-					ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+					// Ideally this will fix what I suspect is the issue - the packet is
+					// probably sent too soon, or something of the sort.
+					// TODO task tracking
+					this.schedulePacket(p, packet);
 				}
 			}
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
+		}
+	}
+
+	private void schedulePacket(Player p, AbstractPacket packet) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new SyncPacket(p, packet));
+	}
+
+	private class SyncPacket implements Runnable {
+		private Player p;
+		private AbstractPacket packet;
+		SyncPacket(Player p, AbstractPacket packet) {
+			this.p = p;
+			this.packet = packet;
+		}
+		@Override
+		public void run() {
+			try {
+				ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+			} catch (InvocationTargetException e) {
+				Sblogger.err(e);
+			}
 		}
 	}
 }

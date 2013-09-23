@@ -185,6 +185,7 @@ public enum CanonNicks {
 		return s;
 	}
 
+	@SuppressWarnings("unused")
 	private String applyQuirk(String s, CanonNicks n) {
 		// This is for quirks that make use of multiple existing quirks.
 		// Mostly will be used for combo sprites.
