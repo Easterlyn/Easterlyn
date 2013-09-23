@@ -739,7 +739,7 @@ public class SblockUser {
 		public void run() {
 			Channel c = ChatModule.getChatModule()
 					.getChannelManager().getChannel(channelName);
-			if (c != null && !user.isListening(c)) {
+			if (c != null && !user.isListening(c) && user.getPlayer().isOnline()) {
 				user.addListening(c);
 			}
 			tasks.remove(channelName);
@@ -763,7 +763,7 @@ public class SblockUser {
 		public void run() {
 			Channel c = ChatModule.getChatModule()
 					.getChannelManager().getChannel(channelName);
-			if (c != null) {
+			if (c != null && user.getPlayer().isOnline()) {
 				user.setCurrent(c);
 			}
 			tasks.remove(channelName);
