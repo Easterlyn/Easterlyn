@@ -207,8 +207,8 @@ public class ChatModuleCommandListener implements CommandListener {
 				}
 				try {
 					user.removeListening(args[1]);
-					sender.sendMessage(ChatMsgs.onChannelLeave(user, ChatModule.getChatModule()
-							.getChannelManager().getChannel(args[1])));
+					//sender.sendMessage(ChatMsgs.onChannelLeave(user, ChatModule.getChatModule()
+					//		.getChannelManager().getChannel(args[1])));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel " + ChatColor.GOLD + args[1]
 							+ ChatColor.RED + " does not exist!");
