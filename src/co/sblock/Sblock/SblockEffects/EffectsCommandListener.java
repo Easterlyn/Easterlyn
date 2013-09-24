@@ -3,6 +3,7 @@ package co.sblock.Sblock.SblockEffects;
 import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -55,6 +56,12 @@ public class EffectsCommandListener implements CommandListener	{
 				else if(args[0].equalsIgnoreCase("verbose"))	{
 					EffectsModule.verbose = EffectsModule.verbose?false:true;
 					p.sendMessage("Verbose mode = " + EffectsModule.verbose);
+					return true;
+				}
+				else if(args[0].equalsIgnoreCase("list"))	{
+					sender.sendMessage(ChatColor.GREEN + "Active Effects:\n" +
+							ActiveEffect.values().toString() + "\nPassive Effects:\n" + 
+							PassiveEffect.values().toString());
 					return true;
 				}
 			}	

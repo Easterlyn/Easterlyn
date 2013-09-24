@@ -56,7 +56,7 @@ public enum ActiveEffect {
 	public void getDamageEffect(Player p, Player target)	{
 		switch (this)	{
 		case HATGIVER:
-			PlayerInventory inv = target.getInventory();
+/*			PlayerInventory inv = target.getInventory();
 			ItemStack oldHat = inv.getHelmet();
 			ItemStack[] hatOptions = inv.getContents();
 			ItemStack newHat = hatOptions[(int)Math.random() * inv.getSize()];
@@ -65,7 +65,7 @@ public enum ActiveEffect {
 			}
 			inv.setHelmet(newHat);
 			inv.addItem(oldHat);
-			target.sendMessage("RIDICULOUS HAT");
+			target.sendMessage("RIDICULOUS HAT");*/
 			break;
 		default:
 			break;
