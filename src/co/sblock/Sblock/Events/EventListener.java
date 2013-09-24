@@ -27,7 +27,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.material.Bed;
 
@@ -59,15 +58,11 @@ public class EventListener implements Listener, PacketListener {
 	private Map<String, Integer> tasks;
 	private Set<String> teleports;
 	private short fake_UUID;
-	private Set<String> specialCommands;
 
 	public EventListener() {
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
 		fake_UUID = 25000;
-		specialCommands = new HashSet<String>();
-		specialCommands.add("pl");
-		specialCommands.add("plugins");
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -111,16 +106,6 @@ public class EventListener implements Listener, PacketListener {
 		//u.syncSetCurrentChannel("#");
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerPreprocessCommand(PlayerCommandPreprocessEvent event) {
-		if (specialCommands.contains(parseCdName(event.getMessage()))) {
-			if (!event.getPlayer().hasPermission("group.denizen")) {
-				event.getPlayer().sendMessage(ChatColor.BOLD +
-						"[o] Pay no attention to the man behind the curtain.");
-				event.setCancelled(true);
-			}
-		}
-	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -360,14 +345,6 @@ public class EventListener implements Listener, PacketListener {
 			}
 			tasks.remove(p.getName());
 		}
-	}
-
-	private String parseCdName(String s) {
-		if (s.startsWith("/")) {
-			s = s.replaceFirst("/", "");
-		}
-		return s.length() < 1 ? s : s.substring(
-				1, (s.indexOf(" ") != -1 ? s.indexOf(" ") : s.length() - 1));
 	}
 
 	public void forceCloseClient(Player p) {
