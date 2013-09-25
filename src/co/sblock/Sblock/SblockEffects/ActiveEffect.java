@@ -1,7 +1,8 @@
 package co.sblock.Sblock.SblockEffects;
 
+import java.util.ArrayList;
+
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -56,16 +57,18 @@ public enum ActiveEffect {
 	public void getDamageEffect(Player p, Player target)	{
 		switch (this)	{
 		case HATGIVER:
-/*			PlayerInventory inv = target.getInventory();
+			PlayerInventory inv = target.getInventory();
 			ItemStack oldHat = inv.getHelmet();
-			ItemStack[] hatOptions = inv.getContents();
-			ItemStack newHat = hatOptions[(int)Math.random() * inv.getSize()];
-			 while(newHat.getType().equals(Material.AIR) || newHat != null)	{
-				 newHat = hatOptions[(int)Math.random() * inv.getSize()];
+			ArrayList<ItemStack> hatOptions = new ArrayList<ItemStack>();
+			for(ItemStack iS : inv.getContents())	{
+				if(iS != null)	{
+					hatOptions.add(iS);
+				}
 			}
+			ItemStack newHat = hatOptions.get((int)Math.random() * hatOptions.size());
 			inv.setHelmet(newHat);
 			inv.addItem(oldHat);
-			target.sendMessage("RIDICULOUS HAT");*/
+			target.sendMessage("RIDICULOUS HAT");
 			break;
 		default:
 			break;
