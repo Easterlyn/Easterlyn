@@ -7,13 +7,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.Vector;
 
 public enum ActiveEffect {
 	
-	PSHOOOOT("PSHOOOOT"),	//teleport to crosshairs, may require cooldown
+	PSHOOOOT("PSHOOOOT"),	//Vector chucking
 	BACKPACK("Backpack"), 	//mobile enderchest access
 	HATGIVER("Hatgiver"),	//Pop-o-matic Vrillyhoo effect: random /hat from inventory item
-	STRENGTH("STRONG");		//Extra damage applied by item
+	STRENGTH("STRONG"),		//Extra damage applied by item
+	BLINK("Blink");			//teleport to crosshairs, may require cooldown
 	
 	private String loreText;
 	private ActiveEffect(String s)	{
@@ -40,7 +42,7 @@ public enum ActiveEffect {
 	
 	public void getRightClickEffect(Player p)	{
 		switch (this)	{
-		case PSHOOOOT:
+		case BLINK:
 			Location target = p.getTargetBlock(null, 128).getLocation();
 			p.teleport(target);
 			break;
@@ -49,6 +51,10 @@ public enum ActiveEffect {
 			p.openInventory(ec);
 			break;
 		case STRENGTH:
+			break;
+		case PSHOOOOT:
+			Vector v = p.getLocation().getDirection();
+			p.setVelocity(v.multiply(3));
 			break;
 		default:
 			break;		

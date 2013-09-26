@@ -37,11 +37,11 @@ public enum PassiveEffect {
 		switch (this)	{
 		
 		case JUMP:
-			potEffect = new PotionEffect(PotionEffectType.JUMP, 1180, 19);
+			potEffect = new PotionEffect(PotionEffectType.JUMP, 1180, 5);
 			p.addPotionEffect(potEffect, true);
 			break;
 		case SPEED:
-			potEffect = new PotionEffect(PotionEffectType.SPEED, 1180, 1);
+			potEffect = new PotionEffect(PotionEffectType.SPEED, 1180, 3);
 			p.addPotionEffect(potEffect, true);
 			break;
 		default:
