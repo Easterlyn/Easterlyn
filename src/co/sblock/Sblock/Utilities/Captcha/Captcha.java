@@ -16,10 +16,13 @@ import co.sblock.Sblock.Sblock;
 public class Captcha extends Module	{
 	
 	private CaptchaCommandListener clistener = new CaptchaCommandListener();
+	private CaptchaEventListener cEL = new CaptchaEventListener();
+	
 	@Override
 	protected void onEnable() {
 		this.captchaCardRecipe();
 		this.registerCommands(clistener);
+		this.registerEvents(cEL);
 	}
 
 	@Override
