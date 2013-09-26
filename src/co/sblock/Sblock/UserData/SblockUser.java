@@ -248,6 +248,7 @@ public class SblockUser {
 	public void setIsSleeping(boolean sleeping) {
 		this.sleeping = sleeping;
 		this.getPlayer().setAllowFlight(sleeping);
+		this.getPlayer().setFlying(sleeping);
 	}
 
 	/**
