@@ -27,7 +27,7 @@ public class CaptchaCommandListener implements CommandListener	{
 			Player p = (Player) sender;
 			ItemStack item = p.getItemInHand();
 			if(item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("captchacard"))	{
-				p.getInventory().remove(item);
+				p.getInventory().clear(p.getInventory().getHeldItemSlot());
 				p.getInventory().addItem(Captcha.captchaToItem(item));
 			}			
 			return true;
