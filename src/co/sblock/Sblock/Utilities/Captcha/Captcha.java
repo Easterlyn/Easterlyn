@@ -2,7 +2,7 @@ package co.sblock.Sblock.Utilities.Captcha;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -12,13 +12,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Utilities.Sblogger;
 
 public class Captcha extends Module	{
 	
 	private CaptchaCommandListener clistener = new CaptchaCommandListener();
-	private static char div = '\u007c';
-
 	@Override
 	protected void onEnable() {
 		this.captchaCardRecipe();
@@ -30,73 +27,75 @@ public class Captcha extends Module	{
 		
 	}
 	
-	public static ItemStack itemToCaptcha(ItemStack item)	{
+	public static ItemStack itemToCaptcha(ItemStack item) {
 		ItemStack card = blankCaptchaCard();
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta iM = item.getItemMeta();
-		String name = "";
-		if(iM.hasDisplayName())	{
+		String name;
+		if (iM.hasDisplayName())	{
 			name = iM.getDisplayName();
-		} else	{
+		} else {
 			name = item.getType().toString();
 		}
-		int id = item.getTypeId();
-		//MaterialData data = item.getData();	//Do I need this? How do I get data values?
-		short dur = item.getDurability();
-		int stack = item.getAmount();
-		Map<Enchantment, Integer> ench = item.getEnchantments();
-		List<String> lore;
-		if(iM.hasLore())	{
-			lore = iM.getLore();
-		} else	{
-			lore = new ArrayList<String>();
-		}
-		String captcha = name + div + id + div + dur + div + stack + div + ench + div + lore;
 		ArrayList<String> cardLore = new ArrayList<String>();
-		cardLore.add(captcha);
+		cardLore.add(name);
+		cardLore.add(String.valueOf(item.getTypeId()));
+		cardLore.add(String.valueOf(item.getDurability()));
+		cardLore.add(String.valueOf(item.getAmount()));
+		// Enchantments
+		StringBuilder enchants = new StringBuilder();
+		if (iM.hasEnchants()) {
+			for (Entry<Enchantment, Integer> e : iM.getEnchants().entrySet()) {
+				enchants.append(":").append(e.getKey().getId()).append(";").append(e.getValue());
+			}
+		}
+		if (enchants.length() > 0) {
+			cardLore.add(enchants.toString());
+		}
+		// Lore
+		if (iM.hasLore()) {
+			for (String s : iM.getLore()) {
+				cardLore.add(">" + s);
+			}
+		}
 		cardMeta.setDisplayName("Captchacard");
 		cardMeta.setLore(cardLore);
 		card.setItemMeta(cardMeta);
-		//Name(Default or custom)
-		//id:data
-		//durability
-		//Stack size
-		//Enchantments
-		//Other lore
-		return card;		
+		return card;
 	}
 	
-	public static ItemStack captchaToItem(ItemStack card)	{
-		List<String> cardLore = card.getItemMeta().getLore();
-		String temp = cardLore.get(0);
-		Sblogger.info("DEBUG", temp);
-		String[] captchaCode = temp.split("\\|");
-		StringBuilder print = new StringBuilder();
-		for(String s : captchaCode)	{
-				print.append(s).append(" ");
+	public static ItemStack captchaToItem(ItemStack card) {
+		List<String> lore = card.getItemMeta().getLore();
+		// Item: ID, quantity, data (damage)
+		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf(lore.get(1))),
+				Integer.valueOf(lore.get(3)), Short.valueOf(lore.get(2)));
+
+		ItemMeta im = is.getItemMeta();
+		if (!lore.get(0).equals(is.getType().toString())) {
+			im.setDisplayName(lore.get(0));
+		} else {
+			im.setDisplayName(null);
 		}
-		Sblogger.info("DEBUG", print.toString());
-		ItemStack item = new ItemStack(Material.getMaterial(Integer.parseInt(captchaCode[1])));
-		ItemMeta iM = card.getItemMeta();
-		if(!captchaCode[0].equalsIgnoreCase(item.getType().toString()))	{
-			iM.setDisplayName(captchaCode[0]);
+		List<String> itemLore = new ArrayList<String>();
+		for (String s : lore) {
+			if (s.startsWith(":")) {
+				// Enchantments line format
+				String[] enchs = s.substring(1).split(":");
+				for (String s1 : enchs) {
+					String[] ench = s1.split(";");
+					im.addEnchant(Enchantment.getById(Integer.parseInt(ench[0])),
+							Integer.parseInt(ench[1]), true);
+				}
+			} else if (s.startsWith(">")) {
+				// Lore lines format
+				itemLore.add(s.substring(1));
+			}
 		}
-		else	{
-			iM.setDisplayName(null);
+		if (!itemLore.isEmpty()) {
+			im.setLore(itemLore);
 		}
-		item.setDurability(Short.parseShort(captchaCode[2]));
-		item.setAmount(Integer.parseInt(captchaCode[3]));
-		//item.addEnchantments()									//Figure out how to convert ench back into a map
-		//Map<Enchantment, Integer> ench = item.getEnchantments();
-/*		List<String> lore;
-		iM.setLore(lore)
-		String div = "|";
-		String captcha = name + div + id + div + dur + div + stack + div + ench + div + lore;
-		ArrayList<String> cardLore = new ArrayList<String>();*/
-		//cardLore.add(captcha);
-		iM.setLore(null);	//temp
-		item.setItemMeta(iM);
-		return item;
+		is.setItemMeta(im);
+		return is;
 	}
 	
 	private static ItemStack blankCaptchaCard()	{
