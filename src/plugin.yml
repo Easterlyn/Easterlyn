@@ -61,3 +61,9 @@ commands:
  se:
   description: Root of all SburbEffects commands
   usage: /se <getlore/setlore/clearlore/applyeffects/verbose> <lore>
+ captcha:
+  description: Captchalogues item in hand
+  usage: /captcha
+ uncaptcha:
+  description: Uncaptchas a card
+  usage: /uncaptcha

@@ -20,6 +20,7 @@ import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 import co.sblock.Sblock.UserData.UserDataModule;
+import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
 
 import com.google.common.base.Joiner;
@@ -50,6 +51,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new EventModule().enable());
 		modules.add(new MeteorMod().enable());
 		modules.add(new EffectsModule().enable());
+		modules.add(new Captcha().enable());
 	}
 
 	@Override
