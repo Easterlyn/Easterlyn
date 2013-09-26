@@ -10,6 +10,7 @@ public class EffectsModule extends Module	{
 	private static EffectsModule instance;
 	private EffectListener eL;
 	private EffectManager eM;
+	@SuppressWarnings("unused")
 	private BukkitTask task;
 	protected static boolean verbose = false;
 	private EffectsCommandListener eCL = new EffectsCommandListener();
