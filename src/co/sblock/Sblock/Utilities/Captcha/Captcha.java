@@ -3,7 +3,6 @@ package co.sblock.Sblock.Utilities.Captcha;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -13,10 +12,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 public class Captcha extends Module	{
 	
 	private CaptchaCommandListener clistener = new CaptchaCommandListener();
+	private static char div = '\u007c';
 
 	@Override
 	protected void onEnable() {
@@ -50,7 +51,6 @@ public class Captcha extends Module	{
 		} else	{
 			lore = new ArrayList<String>();
 		}
-		String div = "|";
 		String captcha = name + div + id + div + dur + div + stack + div + ench + div + lore;
 		ArrayList<String> cardLore = new ArrayList<String>();
 		cardLore.add(captcha);
@@ -69,13 +69,20 @@ public class Captcha extends Module	{
 	public static ItemStack captchaToItem(ItemStack card)	{
 		List<String> cardLore = card.getItemMeta().getLore();
 		String temp = cardLore.get(0);
-		String[] captchaCode = temp.split("|");
-		Logger.getLogger("Minecraft").info(captchaCode.toString());
-		ItemStack item = new ItemStack(Material.PAPER);
-		item.setTypeId(Integer.parseInt(captchaCode[1]));
+		Sblogger.info("DEBUG", temp);
+		String[] captchaCode = temp.split("\\|");
+		StringBuilder print = new StringBuilder();
+		for(String s : captchaCode)	{
+				print.append(s).append(" ");
+		}
+		Sblogger.info("DEBUG", print.toString());
+		ItemStack item = new ItemStack(Material.getMaterial(Integer.parseInt(captchaCode[1])));
 		ItemMeta iM = card.getItemMeta();
 		if(!captchaCode[0].equalsIgnoreCase(item.getType().toString()))	{
 			iM.setDisplayName(captchaCode[0]);
+		}
+		else	{
+			iM.setDisplayName(null);
 		}
 		item.setDurability(Short.parseShort(captchaCode[2]));
 		item.setAmount(Integer.parseInt(captchaCode[3]));
@@ -87,6 +94,7 @@ public class Captcha extends Module	{
 		String captcha = name + div + id + div + dur + div + stack + div + ench + div + lore;
 		ArrayList<String> cardLore = new ArrayList<String>();*/
 		//cardLore.add(captcha);
+		iM.setLore(null);	//temp
 		item.setItemMeta(iM);
 		return item;
 	}
