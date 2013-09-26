@@ -3,6 +3,7 @@ package co.sblock.Sblock.Utilities.Captcha;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -68,7 +69,8 @@ public class Captcha extends Module	{
 	public static ItemStack captchaToItem(ItemStack card)	{
 		List<String> cardLore = card.getItemMeta().getLore();
 		String temp = cardLore.get(0);
-		String[] captchaCode = temp.split("|");		
+		String[] captchaCode = temp.split("|");
+		Logger.getLogger("Minecraft").info(captchaCode.toString());
 		ItemStack item = new ItemStack(Material.PAPER);
 		item.setTypeId(Integer.parseInt(captchaCode[1]));
 		ItemMeta iM = card.getItemMeta();
