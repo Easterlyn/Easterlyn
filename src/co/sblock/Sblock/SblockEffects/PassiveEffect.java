@@ -6,6 +6,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public enum PassiveEffect {
 	
+	PSHOOOES("PSHOOOES"),
 	JUMP("Boing"),
 	SPEED("Speed"),
 	FLOWERS("Flowers");
@@ -37,11 +38,11 @@ public enum PassiveEffect {
 		switch (this)	{
 		
 		case JUMP:
-			potEffect = new PotionEffect(PotionEffectType.JUMP, 1180, 19);
+			potEffect = new PotionEffect(PotionEffectType.JUMP, 1180, 5);
 			p.addPotionEffect(potEffect, true);
 			break;
 		case SPEED:
-			potEffect = new PotionEffect(PotionEffectType.SPEED, 1180, 1);
+			potEffect = new PotionEffect(PotionEffectType.SPEED, 1180, 3);
 			p.addPotionEffect(potEffect, true);
 			break;
 		default:
@@ -75,5 +76,6 @@ Saladturtle’s Blessing: Guaranteed chicken spawn from thrown eggs
 Johnny Appleseed: 25% chance to get apples from oak leaves. apples restore a little more hunger.
 Fred flintstone: always get flint from gravel. Flint and Steel is not damaged when used.
 Ninja: Nametag can't be seen through walls, even when not crouching.
+HeartStone: either short crappy regen every effect tick or just add 1/2 heart (1 hp)
  */
 }

@@ -251,6 +251,7 @@ public class SblockUser {
 	public void setIsSleeping(boolean sleeping) {
 		this.sleeping = sleeping;
 		this.getPlayer().setAllowFlight(sleeping);
+		this.getPlayer().setFlying(sleeping);
 	}
 
 	/**
@@ -364,7 +365,7 @@ public class SblockUser {
 	 */
 
 	public boolean hasComputerAccess() {
-		if (EffectsModule.getInstance().getEffectManager().hasSpecificLore(this.getPlayer(), "Computer")) {
+		if (EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains("Computer")) {
 			return true;
 		}
 		for (Location l : MachineModule.getInstance().getManager().getMachines(MachineType.COMPUTER)) {

@@ -1,18 +1,21 @@
 package co.sblock.Sblock.SblockEffects;
 
+import java.util.ArrayList;
+
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.Vector;
 
 public enum ActiveEffect {
 	
-	PSHOOOOT("PSHOOOOT"),	//teleport to crosshairs, may require cooldown
+	PSHOOOOT("PSHOOOOT"),	//Vector chucking
 	BACKPACK("Backpack"), 	//mobile enderchest access
 	HATGIVER("Hatgiver"),	//Pop-o-matic Vrillyhoo effect: random /hat from inventory item
-	STRENGTH("STRONG");		//Extra damage applied by item
+	STRENGTH("STRONG"),		//Extra damage applied by item
+	BLINK("Blink");			//teleport to crosshairs, may require cooldown
 	
 	private String loreText;
 	private ActiveEffect(String s)	{
@@ -39,7 +42,7 @@ public enum ActiveEffect {
 	
 	public void getRightClickEffect(Player p)	{
 		switch (this)	{
-		case PSHOOOOT:
+		case BLINK:
 			Location target = p.getTargetBlock(null, 128).getLocation();
 			p.teleport(target);
 			break;
@@ -48,6 +51,10 @@ public enum ActiveEffect {
 			p.openInventory(ec);
 			break;
 		case STRENGTH:
+			break;
+		case PSHOOOOT:
+			Vector v = p.getLocation().getDirection();
+			p.setVelocity(v.multiply(3));
 			break;
 		default:
 			break;		
@@ -58,11 +65,13 @@ public enum ActiveEffect {
 		case HATGIVER:
 			PlayerInventory inv = target.getInventory();
 			ItemStack oldHat = inv.getHelmet();
-			ItemStack[] hatOptions = inv.getContents();
-			ItemStack newHat = hatOptions[(int)Math.random() * inv.getSize()];
-			 while(newHat.getType().equals(Material.AIR) || newHat != null)	{
-				 newHat = hatOptions[(int)Math.random() * inv.getSize()];
+			ArrayList<ItemStack> hatOptions = new ArrayList<ItemStack>();
+			for(ItemStack iS : inv.getContents())	{
+				if(iS != null)	{
+					hatOptions.add(iS);
+				}
 			}
+			ItemStack newHat = hatOptions.get((int)Math.random() * hatOptions.size());
 			inv.setHelmet(newHat);
 			inv.addItem(oldHat);
 			target.sendMessage("RIDICULOUS HAT");

@@ -334,7 +334,11 @@ public class EventListener implements Listener, PacketListener {
 				case OUTERCIRCLE:
 				case INNERCIRCLE:
 					teleports.add(p.getName());
-					p.teleport(user.getPreviousLocation());
+					if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
+						p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
+					} else {
+						p.teleport(user.getPreviousLocation());
+					}
 					break;
 				default:
 					break;

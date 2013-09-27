@@ -5,26 +5,16 @@ import java.util.ArrayList;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import co.sblock.Sblock.Utilities.Sblogger;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import co.sblock.Sblock.Sblock;
 
 public class EffectManager {
 
-	public boolean hasSpecificLore(Player p, String lore) {
-		for (ItemStack is : p.getInventory().getContents()) {
-			if (is != null && is.hasItemMeta() && is.getItemMeta().hasLore()) {
-				if (is.getItemMeta().getLore().contains(lore)) {
-					return true;
-				}
-			}
-		}
-		for (ItemStack is : p.getInventory().getArmorContents()) {
-			if (is != null && is.hasItemMeta() && is.getItemMeta().hasLore()) {
-				if (is.getItemMeta().getLore().contains(lore)) {
-					return true;
-				}
-			}
-		}
-		return false;
+	private final JavaPlugin plugin;
+	
+	public EffectManager() {
+		plugin = Sblock.getInstance();
 	}
 
 	public ArrayList<String> scan(Player p)	{
@@ -59,7 +49,7 @@ public class EffectManager {
 			}
 		}
 		if(EffectsModule.verbose && playerLore.size() > 0){
-			Sblogger.info("Effects", p.getName() + playerLore);
+			plugin.getLogger().info(p.getName() + playerLore);
 		}
 		return playerLore;
 	}
