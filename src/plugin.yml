@@ -67,3 +67,6 @@ commands:
  uncaptcha:
   description: Uncaptchas a card
   usage: /uncaptcha
+ punchcard:
+  description: Punches cards
+  usage: /punchcard

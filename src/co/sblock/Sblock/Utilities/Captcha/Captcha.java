@@ -118,5 +118,33 @@ public class Captcha extends Module	{
 		recipe.setIngredient('A', Material.PAPER);
 		Sblock.getInstance().getServer().addRecipe(recipe);
 	}
-
+	
+	public static boolean isBlankCard(ItemStack is)	{
+		if(is.getType().equals(Material.PAPER)
+				&& is.hasItemMeta()
+				&& is.getItemMeta().getDisplayName().equalsIgnoreCase("Captchacard")
+				&& is.getItemMeta().hasLore()
+				&& is.getItemMeta().getLore().contains("Blank"))	{
+			return true;
+		}
+		return false;
+	}
+	public static boolean isCaptchaCard(ItemStack is)	{
+		if(is.getType().equals(Material.PAPER)
+				&& is.hasItemMeta()
+				&& is.getItemMeta().getDisplayName().equalsIgnoreCase("Captchacard")
+				&& is.getItemMeta().hasLore()
+				&& !is.getItemMeta().getLore().contains("Blank"))	{
+			return true;
+		}
+		return false;
+	}
+	public static boolean isPunchCard(ItemStack is)	{
+		if(is.getType().equals(Material.PAPER)
+				&& is.hasItemMeta()
+				&& is.getItemMeta().getDisplayName().equalsIgnoreCase("Punchcard"))	{
+			return true;
+		}
+		return false;
+	}
 }

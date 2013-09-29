@@ -12,13 +12,114 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 
 public class CaptchaEventListener implements Listener	{
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void captcha(InventoryClickEvent e) {
+	public void onInventoryClick(InventoryClickEvent e) {
+		if(e.getWhoClicked().getOpenInventory().getTopInventory().getName().equalsIgnoreCase("Captchadex"))	{
+			InventoryAction ia = e.getAction();
+			switch(ia)	{
+			case PICKUP_ALL:
+				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
+					//e.setCursor(Captchadex.itemToCard(e.getCurrentItem()));
+					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
+					//((Player) e.getWhoClicked()).updateInventory();
+				}
+				break;
+			case PICKUP_HALF:
+				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
+					//e.setCursor(Captchadex.itemToCard(e.getCurrentItem()));
+					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
+					//((Player) e.getWhoClicked()).updateInventory();
+				}
+				break;
+			case PICKUP_ONE:
+				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
+					//e.setCursor(Captchadex.itemToCard(e.getCurrentItem()));
+					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
+					//((Player) e.getWhoClicked()).updateInventory();
+				}
+				break;
+			case PICKUP_SOME:
+				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
+					//e.setCursor(Captchadex.itemToCard(e.getCurrentItem()));
+					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
+					//((Player) e.getWhoClicked()).updateInventory();
+				}
+				break;
+			case PLACE_ALL:
+				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
+					if(Captcha.isPunchCard(e.getCursor())){
+						ItemStack cursor = e.getCursor().clone();
+						ItemStack[] contents = e.getClickedInventory().getContents();
+						e.setCursor(null);
+						Player p = (Player) e.getWhoClicked();
+						Inventory i = Captchadex.createCaptchadex(p);
+						p.closeInventory();
+						i.setContents(contents);
+						i.addItem(Captchadex.punchCardToItem(cursor));
+						p.openInventory(i);
+						//p.setItemOnCursor(null);
+						p.updateInventory();
+					}
+					else	{
+						e.setResult(Result.DENY);
+					}
+				}
+				break;
+			case PLACE_ONE:
+				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
+					if(Captcha.isPunchCard(e.getCursor())){
+						ItemStack cursor = e.getCursor().clone();
+						ItemStack[] contents = e.getClickedInventory().getContents();
+						e.setCursor(null);
+						Player p = (Player) e.getWhoClicked();
+						Inventory i = Captchadex.createCaptchadex(p);
+						p.closeInventory();
+						i.setContents(contents);
+						i.addItem(Captchadex.punchCardToItem(cursor));
+						p.openInventory(i);
+						//p.setItemOnCursor(null);
+						//p.updateInventory();
+					}
+					else	{
+						e.setResult(Result.DENY);
+					}
+				}
+				break;
+			case PLACE_SOME:
+				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
+					if(Captcha.isPunchCard(e.getCursor())){
+						ItemStack cursor = e.getCursor().clone();
+						ItemStack[] contents = e.getClickedInventory().getContents();
+						e.setCursor(null);
+						Player p = (Player) e.getWhoClicked();
+						Inventory i = Captchadex.createCaptchadex(p);
+						p.closeInventory();
+						i.setContents(contents);
+						i.addItem(Captchadex.punchCardToItem(cursor));
+						p.openInventory(i);
+						//p.setItemOnCursor(null);
+						//p.updateInventory();
+					}
+					else	{
+						e.setResult(Result.DENY);
+					}
+				}
+				break;
+			case SWAP_WITH_CURSOR:
+				break;			
+			default:
+				break;
+			}
+		}
+		
+		
 		if (e.isCancelled() || e.getClickedInventory() == null
 				|| !(e.getClickedInventory().getType() == InventoryType.PLAYER)
 				|| !(e.getAction() == InventoryAction.SWAP_WITH_CURSOR)
@@ -68,7 +169,7 @@ public class CaptchaEventListener implements Listener	{
 	}
 	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void uncaptcha(PlayerInteractEvent e) {
+	public void onPlayerInteract(PlayerInteractEvent e) {
 		if (e.isCancelled() &&
 				(e.getAction() != Action.LEFT_CLICK_AIR
 				&& e.getAction() != Action.RIGHT_CLICK_AIR) ?
@@ -82,6 +183,17 @@ public class CaptchaEventListener implements Listener	{
 			return;
 		}
 		ItemStack is = e.getPlayer().getItemInHand();
+		if (is.getType().equals(Material.WRITTEN_BOOK) 
+				&& is.hasItemMeta()
+				&& is.getItemMeta() instanceof BookMeta)	{
+			BookMeta bm = (BookMeta) is.getItemMeta();
+			if (bm.getTitle().equalsIgnoreCase("Captchadex")
+					&& bm.getAuthor().equalsIgnoreCase(e.getPlayer().getName()))	{
+				e.getPlayer().closeInventory();
+				e.getPlayer().openInventory(Captchadex.createCaptchadex(e.getPlayer()));
+				return;
+			}
+		}
 		if (is == null || !(is.getType() == Material.PAPER)
 				|| !is.hasItemMeta()
 				|| !is.getItemMeta().hasDisplayName()
