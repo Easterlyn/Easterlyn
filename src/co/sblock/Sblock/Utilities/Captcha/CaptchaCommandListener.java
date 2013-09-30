@@ -52,4 +52,9 @@ public class CaptchaCommandListener implements CommandListener	{
 		return false;
 	}
 
+	@SblockCommand(consoleFriendly = false)
+	public boolean captchadex(CommandSender sender)	{
+		((Player) sender).getInventory().addItem(Captchadex.createCaptchadexBook((Player) sender));
+		return true;
+	}
 }

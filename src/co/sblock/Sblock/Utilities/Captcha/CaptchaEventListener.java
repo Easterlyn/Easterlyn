@@ -194,7 +194,7 @@ public class CaptchaEventListener implements Listener	{
 			if (bm.getTitle().equalsIgnoreCase("Captchadex")
 					&& bm.getAuthor().equalsIgnoreCase(e.getPlayer().getName()))	{
 				e.getPlayer().closeInventory();
-				e.getPlayer().openInventory(Captchadex.createCaptchadexInventory(e.getPlayer()));
+				e.getPlayer().openInventory(Captchadex.loadCaptchadex(is));
 				return;
 			}
 		}

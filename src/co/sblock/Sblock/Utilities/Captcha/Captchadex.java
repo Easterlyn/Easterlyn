@@ -1,5 +1,6 @@
 package co.sblock.Sblock.Utilities.Captcha;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -18,7 +19,7 @@ public class Captchadex {
 		BookMeta bm = (BookMeta) book.getItemMeta();
 		bm.setTitle("Captchadex");
 		bm.setAuthor(p.getName());
-		bm.setPage(1, "\n\n\n\n\nThis page intentionally         left blank");
+		bm.addPage("\n\n\n\n\nThis page intentionally         left blank");
 		book.setItemMeta(bm);
 		return book;
 	}
@@ -42,7 +43,8 @@ public class Captchadex {
 	public static ItemStack saveCaptchadex(Inventory i, ItemStack book) {
 		BookMeta bm = (BookMeta) book.getItemMeta();
 		ItemStack[] contents = i.getContents();
-		bm.setPage(1, "\n\n\n\n\nThis page intentionally         left blank");
+		bm.setPages(new ArrayList<String>());
+		bm.addPage("\n\n\n\n\nThis page intentionally         left blank");
 		for (int slot = 0; slot < contents.length; slot++) {
 			ItemStack is = contents[slot];
 			if (is != null) {
@@ -52,7 +54,7 @@ public class Captchadex {
 				for (String s : lore) {
 					save.append(s).append("\n");
 				}
-				bm.setPage(slot + 2, save.toString());
+				bm.addPage(save.toString());
 			}
 		}
 		book.setItemMeta(bm);

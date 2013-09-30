@@ -70,3 +70,7 @@ commands:
  punchcard:
   description: Punches cards
   usage: /punchcard
+ captchadex:
+  description: GIVE.
+  usage: /captchadex
+  permission: group.horrorterror
