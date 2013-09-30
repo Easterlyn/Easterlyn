@@ -2,11 +2,15 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/craftbukkit-1.5.2-R1.0.jar">
+	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/spigot.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://jd.bukkit.org/rb/apidocs/"/>
+			<attribute name="javadoc_location" value="http://jd.bukkit.org/beta/apidocs/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/mysql-connector-java-5.1.25/mysql-connector-java-5.1.25-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/guava-14.0.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Bukkit"/>
+	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/ProtocolLib-2.7.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Keiko/Code/Libraries/BKCommonLib-1.54.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

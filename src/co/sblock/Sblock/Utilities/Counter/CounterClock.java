@@ -24,9 +24,11 @@ public class CounterClock extends BukkitRunnable {
 	public void run() {
 		if (player.getLevel() >= 1 && cleanup == false) {
 			player.setLevel(player.getLevel() - 1);
-			task = new CounterClock(plugin, player, pLevel, false).runTaskLater(plugin, 20);
+			task = new CounterClock(plugin, player, pLevel, false)
+					.runTaskLater(plugin, 20);
 		} else if (player.getLevel() == 0 && cleanup == false) {
-			task = new CounterClock(plugin, player, pLevel, true).runTaskLater(plugin, 100);
+			task = new CounterClock(plugin, player, pLevel, true)
+					.runTaskLater(plugin, 100);
 		} else if (cleanup == true) {
 			player.setLevel(pLevel);
 		}

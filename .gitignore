@@ -1,11 +1,20 @@
+#############
+## Sblock Additions
+#############
+
+testenv/
+# We don't want passwords to end up public, so keep config.yml out
+# Too annoying. The config.yml will only be modified after it's written.
+*.jardesc
+#.gitignore
+*.stackdump
+
 #################
 ## Eclipse
 #################
 
-#.gitignore
-*.stackdump
 *.pydevproject
-#.project
+.project
 .metadata
 bin/
 tmp/
@@ -165,3 +174,5 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+/bin

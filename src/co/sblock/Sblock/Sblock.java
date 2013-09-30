@@ -1,11 +1,37 @@
 package co.sblock.Sblock;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.SblockEffects.EffectsModule;
+import co.sblock.Sblock.UserData.UserDataModule;
+import co.sblock.Sblock.Utilities.Captcha.Captcha;
+import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
+
+import com.google.common.base.Joiner;
 
 public class Sblock extends JavaPlugin {
 
 	private static Sblock instance;
+
+	private Set<Module> modules;
+	private Map<String, Method> commandHandlers;
+	private Map<Class<? extends CommandListener>, CommandListener> listenerInstances;
 
 	public static Sblock getInstance() {
 		return instance;
@@ -14,40 +40,91 @@ public class Sblock extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		this.modules = new HashSet<Module>();
+		this.commandHandlers = new HashMap<String, Method>();
+		this.listenerInstances = new HashMap<Class<? extends CommandListener>, CommandListener>();
 		saveDefaultConfig();
-		new TestModule().enable();
-		// if (!DatabaseManager.getDatabaseManager().enable()) return;
-
-		/*
-		 * Ok, so here.. This being the framework behind all the sub-plugin
-		 * (module, whatever) handlers..
-		 * 
-		 * Each module main class needs an enable() and disable() that will
-		 * register and unregister its own commands and event handler(s)
-		 * 
-		 * public void enable() {
-		 * getCommand("moduleCommand").setExecutor(moduleCommandExecutor);
-		 * getServer().getPluginManager().registerEvents(moduleListener,
-		 * Sblock.getInstance()); }
-		 */
-
+		DatabaseManager.getDatabaseManager().enable();
+		
+		modules.add(new UserDataModule().enable());
+		modules.add(new ChatModule().enable());
+		modules.add(new EventModule().enable());
+		modules.add(new MeteorMod().enable());
+		modules.add(new EffectsModule().enable());
+		modules.add(new Captcha().enable());
 	}
 
 	@Override
 	public void onDisable() {
 		instance = null;
+		for (Module module : this.modules) {
+			module.disable();
+		}
+		this.unregisterAllCommands();
+		HandlerList.unregisterAll(this);
 		try {
 			DatabaseManager.getDatabaseManager().disable();
-			/*
-			 * For each and every module: public void disable() {
-			 * getCommand("moduleCommand").setExecutor(null);
-			 * HandlerList.unregisterAll(this); } module.disable(); module =
-			 * null;
-			 */
 		} catch (NullPointerException npe) {
-			// Caused by any load failures; modules may not be initialized.
+			// thrown if DatabaseManager fails to enable properly
 		}
-		// Just in case we missed something (somehow)
-		HandlerList.unregisterAll(this);
+	}
+
+	public void registerCommands(CommandListener listener) {
+		for (Method method : listener.getClass().getMethods()) {
+			if (this.commandHandlers.containsKey(method))
+				throw new Error("Duplicate handlers for command " + method + " found in " + this.commandHandlers.get(method.getName()).getDeclaringClass().getName() + " and " + method.getDeclaringClass().getName());
+			if (method.getAnnotation(SblockCommand.class) != null
+					&& method.getParameterTypes().length > 0
+					&& CommandSender.class.isAssignableFrom(method.getParameterTypes()[0]))
+				this.commandHandlers.put(method.getName(), method);
+		}
+		this.listenerInstances.put(listener.getClass(), listener);
+	}
+
+	public void unregisterAllCommands() {
+		for (Method m : this.commandHandlers.values()) {
+			Bukkit.getPluginCommand(m.getName()).setExecutor(null);
+		}
+	}
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (!this.commandHandlers.containsKey(label)) {
+			this.getLogger().warning(
+					"Command /" + label + " has no associated handler.");
+			sender.sendMessage(ChatColor.RED
+					+ "An internal error has occurred. Please notify a member of staff of this issue as soon as possible.");
+			return true;
+		} else {
+			Method handlerMethod = this.commandHandlers.get(label);
+			Object[] params = new Object[handlerMethod.getParameterTypes().length];
+			if (sender instanceof ConsoleCommandSender
+					&& !handlerMethod.getAnnotation(SblockCommand.class)
+							.consoleFriendly()) {
+				sender.sendMessage("You must be a player to use this command.");
+				return true;
+			}
+			params[0] = sender;
+			if (handlerMethod.getAnnotation(SblockCommand.class).mergeLast()
+					&& params.length - 1 <= args.length) {
+				System.arraycopy(args, 0, params, 1, params.length - 2);
+				params[params.length - 1] = Joiner.on(" ")
+						.join(Arrays.copyOfRange(args, params.length - 2,
+								args.length));
+			} else if (params.length - 1 == args.length) {
+				System.arraycopy(args, 0, params, 1, params.length - 1);
+			} else
+				// Not the right amount of arguments, GTFO
+				return false;
+			try {
+				return (Boolean) handlerMethod.invoke(this.listenerInstances
+						.get(handlerMethod.getDeclaringClass()), params);
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 }

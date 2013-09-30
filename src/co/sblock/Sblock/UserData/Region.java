@@ -1,38 +1,51 @@
-package co.sblock.Sblock.PlayerData;
+package co.sblock.Sblock.UserData;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
+import co.sblock.Sblock.Chat.ColorDef;
+
+/**
+ * Class that keeps track of players currently logged on to the game
+ * 
+ * @author Jikoo, Dublek
+ * 
+ */
 public enum Region {
-	EARTH, INNERCIRCLE, OUTERCIRCLE, FURTHESTRING, MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF;
+	EARTH, INNERCIRCLE, OUTERCIRCLE, FURTHESTRING, MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF, UNKNOWN;
 
 	public String getRegionName() {
 		return this.name().toLowerCase();
 	}
 
 	public static Region uValueOf(String s) {
-		return (Region.valueOf(s.toUpperCase()));
+		try {
+			return (Region.valueOf(s.toUpperCase()));
+		} catch (IllegalArgumentException e) {
+			return Region.EARTH;
+		}
 	}
 
 	public static ChatColor getRegionColor(Region r) {
-		switch (r) {
+		switch (r) { // TODO fix
 		case EARTH:
-			return ChatColor.DARK_GREEN;
+			return ColorDef.WORLD_EARTH;
 		case FURTHESTRING:
-			return ChatColor.DARK_GRAY;
+			return ColorDef.WORLD_FURTHESTRING;
 		case INNERCIRCLE:
-			return ChatColor.GOLD;
+			return ColorDef.WORLD_INNERCIRCLE;
 		case LOFAF:
 		case LOHAC:
 		case LOLAR:
 		case LOWAS:
 		case MEDIUM:
-			// TODO need colors for these suckers :D
-			return ChatColor.DARK_BLUE;
+			return ColorDef.WORLD_MEDIUM;
 		case OUTERCIRCLE:
-			return ChatColor.DARK_PURPLE;
+			return ColorDef.WORLD_OUTERCIRCLE;
+		case UNKNOWN:
+			return ColorDef.DEFAULT;
 		default:
-			return ChatColor.RESET;
+			return ColorDef.DEFAULT;
 		}
 	}
 
@@ -54,6 +67,7 @@ public enum Region {
 			return r;
 		} catch (IllegalStateException e) {
 			// Player is in an invalid world
+			// For the sake of region channels, default to earth.
 			return Region.EARTH;
 		}
 	}
