@@ -1,7 +1,10 @@
 package co.sblock.Sblock.Utilities.Captcha;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -10,17 +13,41 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class Captchadex	{
 	
-	@SuppressWarnings("unused")
-	private HumanEntity player;
-	@SuppressWarnings("unused")
-	private BookMeta bm;
-	
-	public Captchadex(HumanEntity p, BookMeta bm)	{
-		player = p;
-		this.bm = bm;
+	public static ItemStack createCaptchadexBook(Player p)	{
+		ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+		BookMeta bm = (BookMeta) book.getItemMeta();
+		bm.setTitle("Captchadex");
+		bm.setAuthor(p.getName());
+		bm.setPage(1, "\n\n\n\n\nThis page intentionally         left blank");
+		book.setItemMeta(bm);
+		return book;
+	}
+	public static Inventory loadCaptchadex(ItemStack book)	{
+		BookMeta bm = (BookMeta) book.getItemMeta();
+		Player p = Bukkit.getPlayer(bm.getAuthor());
+		Inventory i = createCaptchadexInventory(p);
+		//TODO Adam feel free to fill in the rest
+		return i;
+	}
+	public static ItemStack saveCaptchadex(Inventory i, ItemStack book)	{
+		BookMeta bm = (BookMeta) book.getItemMeta();
+		ItemStack[] contents = i.getContents();
+		bm.setPage(1, "\n\n\n\n\nThis page intentionally         left blank");
+		for(int slot = 0; slot < contents.length; slot++)	{
+			ItemStack is = contents[slot];
+			ItemStack captcha = Captcha.itemToCaptcha(is);
+			StringBuilder save = new StringBuilder();
+			List<String> lore = captcha.getItemMeta().getLore();
+			for(String s : lore)	{
+				save.append(s).append("\n");
+			}
+			bm.setPage(slot + 2, save.toString());
+		}
+		book.setItemMeta(bm);
+		return book;
 	}
 	
-	public static Inventory createCaptchadex(InventoryHolder ih)	{
+	public static Inventory createCaptchadexInventory(InventoryHolder ih)	{
 		return Bukkit.getServer().createInventory(ih, 27, "Captchadex");
 	}
 

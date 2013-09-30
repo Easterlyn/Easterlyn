@@ -59,7 +59,7 @@ public class CaptchaEventListener implements Listener	{
 						ItemStack[] contents = e.getClickedInventory().getContents();
 						e.setCursor(null);
 						Player p = (Player) e.getWhoClicked();
-						Inventory i = Captchadex.createCaptchadex(p);
+						Inventory i = Captchadex.createCaptchadexInventory(p);
 						p.closeInventory();
 						i.setContents(contents);
 						i.addItem(Captchadex.punchCardToItem(cursor));
@@ -79,7 +79,7 @@ public class CaptchaEventListener implements Listener	{
 						ItemStack[] contents = e.getClickedInventory().getContents();
 						e.setCursor(null);
 						Player p = (Player) e.getWhoClicked();
-						Inventory i = Captchadex.createCaptchadex(p);
+						Inventory i = Captchadex.createCaptchadexInventory(p);
 						p.closeInventory();
 						i.setContents(contents);
 						i.addItem(Captchadex.punchCardToItem(cursor));
@@ -99,7 +99,7 @@ public class CaptchaEventListener implements Listener	{
 						ItemStack[] contents = e.getClickedInventory().getContents();
 						e.setCursor(null);
 						Player p = (Player) e.getWhoClicked();
-						Inventory i = Captchadex.createCaptchadex(p);
+						Inventory i = Captchadex.createCaptchadexInventory(p);
 						p.closeInventory();
 						i.setContents(contents);
 						i.addItem(Captchadex.punchCardToItem(cursor));
@@ -190,7 +190,7 @@ public class CaptchaEventListener implements Listener	{
 			if (bm.getTitle().equalsIgnoreCase("Captchadex")
 					&& bm.getAuthor().equalsIgnoreCase(e.getPlayer().getName()))	{
 				e.getPlayer().closeInventory();
-				e.getPlayer().openInventory(Captchadex.createCaptchadex(e.getPlayer()));
+				e.getPlayer().openInventory(Captchadex.createCaptchadexInventory(e.getPlayer()));
 				return;
 			}
 		}
