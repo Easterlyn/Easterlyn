@@ -24,40 +24,44 @@ public class CaptchaEventListener implements Listener	{
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		if(e.getWhoClicked().getOpenInventory().getTopInventory().getName().equals("Captchadex"))	{
-			InventoryAction ia = e.getAction();
-			switch(ia)	{
+		if (e.isCancelled() || e.getClickedInventory() == null
+				|| !(e.getWhoClicked() instanceof Player)
+				|| e.getResult() == Result.DENY) {
+			return;
+		}
+		if (e.getClickedInventory().getTitle().equals("Captchadex")
+				|| ((Player) e.getWhoClicked()).getOpenInventory().getTitle().equals("Captchadex")) {
+			switch(e.getAction()) {
 			case PICKUP_ALL:
-				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
-					//e.setCursor(Captchadex.itemToCard(e.getCurrentItem()));
+				if (e.getClickedInventory().getName().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
-					//((Player) e.getWhoClicked()).updateInventory();
 				}
 				break;
 			case PICKUP_HALF:
-				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
-					//e.setCursor(Captchadex.itemToCard(e.getCurrentItem()));
+				if (e.getClickedInventory().getName().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
-					//((Player) e.getWhoClicked()).updateInventory();
 				}
 				break;
 			case PICKUP_ONE:
-				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
-					//e.setCursor(Captchadex.itemToCard(e.getCurrentItem()));
+				if (e.getClickedInventory().getName().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
-					//((Player) e.getWhoClicked()).updateInventory();
 				}
 				break;
 			case PICKUP_SOME:
-				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
-					//e.setCursor(Captchadex.itemToCard(e.getCurrentItem()));
+				if (e.getClickedInventory().getName().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
-					//((Player) e.getWhoClicked()).updateInventory();
+				}
+				break;
+			case MOVE_TO_OTHER_INVENTORY:
+				if (e.getClickedInventory().getName().equals("Captchadex")) {
+					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
+				} else {
+					e.setResult(Result.DENY);
 				}
 				break;
 			case PLACE_ALL:
-				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
-					if(Captcha.isPunchCard(e.getCursor())){
+				if(e.getClickedInventory().getName().equals("Captchadex"))	{
+					if (Captcha.isSinglePunchCard(e.getCursor())) {
 						ItemStack cursor = e.getCursor().clone();
 						ItemStack[] contents = e.getClickedInventory().getContents();
 						e.setCursor(null);
@@ -69,15 +73,14 @@ public class CaptchaEventListener implements Listener	{
 						p.openInventory(i);
 						//p.setItemOnCursor(null);
 						p.updateInventory();
-					}
-					else	{
+					} else {
 						e.setResult(Result.DENY);
 					}
 				}
 				break;
 			case PLACE_ONE:
-				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
-					if(Captcha.isPunchCard(e.getCursor())){
+				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex")) {
+					if (Captcha.isPunchCard(e.getCursor())) {
 						ItemStack cursor = e.getCursor().clone();
 						ItemStack[] contents = e.getClickedInventory().getContents();
 						e.setCursor(null);
@@ -89,15 +92,14 @@ public class CaptchaEventListener implements Listener	{
 						p.openInventory(i);
 						//p.setItemOnCursor(null);
 						//p.updateInventory();
-					}
-					else	{
+					} else {
 						e.setResult(Result.DENY);
 					}
 				}
 				break;
 			case PLACE_SOME:
-				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex"))	{
-					if(Captcha.isPunchCard(e.getCursor())){
+				if (e.getClickedInventory().getName().equalsIgnoreCase("Captchadex")) {
+					if (Captcha.isPunchCard(e.getCursor())) {
 						ItemStack cursor = e.getCursor().clone();
 						ItemStack[] contents = e.getClickedInventory().getContents();
 						e.setCursor(null);
@@ -109,24 +111,22 @@ public class CaptchaEventListener implements Listener	{
 						p.openInventory(i);
 						//p.setItemOnCursor(null);
 						//p.updateInventory();
-					}
-					else	{
+					} else {
 						e.setResult(Result.DENY);
 					}
 				}
 				break;
-			case SWAP_WITH_CURSOR:
-				break;			
 			default:
-				break;
+				if (e.getClickedInventory().getTitle().equals("Captchadex")) {
+					e.setResult(Result.DENY);
+				}
 			}
 		}
 		
 		
-		if (e.isCancelled() || e.getClickedInventory() == null
-				|| !(e.getClickedInventory().getType() == InventoryType.PLAYER)
-				|| !(e.getAction() == InventoryAction.SWAP_WITH_CURSOR)
-				|| !(e.getWhoClicked() instanceof Player)) {
+		
+		if (!(e.getClickedInventory().getType() == InventoryType.PLAYER)
+				|| !(e.getAction() == InventoryAction.SWAP_WITH_CURSOR)) {
 			return;
 		}
 		ItemStack is = e.getCurrentItem();
@@ -170,6 +170,7 @@ public class CaptchaEventListener implements Listener	{
 		}
 		p.updateInventory();
 	}
+
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e) {
@@ -181,7 +182,7 @@ public class CaptchaEventListener implements Listener	{
 			return;
 		}
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.hasBlock()
-				&& hasRightClickFunction(e.getClickedBlock())) {
+				&& hasRightClickFunction(e.getClickedBlock()) && !e.getPlayer().isSneaking()) {
 			// Other inventory opening.
 			return;
 		}
@@ -244,13 +245,14 @@ public class CaptchaEventListener implements Listener	{
 		case BOOKSHELF:
 			// Awww yiss BookShelf <3
 			return Bukkit.getPluginManager().isPluginEnabled("BookShelf");
+		case CAULDRON:
+			// Forgot that only my plugin would cause cancellation of right clicking cauldron :V
+			return Bukkit.getPluginManager().isPluginEnabled("BookSuite");
 		case ANVIL:
 		case BEACON:
 		case BED_BLOCK:
 		case BREWING_STAND:
 		case BURNING_FURNACE:
-		case CAKE_BLOCK:
-		case CAULDRON_ITEM:
 		case CHEST:
 		case COMMAND:
 		case DAYLIGHT_DETECTOR:
@@ -262,19 +264,14 @@ public class CaptchaEventListener implements Listener	{
 		case ENCHANTMENT_TABLE:
 		case ENDER_CHEST:
 		case FENCE_GATE:
-		case FLOWER_POT:
-		case GLOWING_REDSTONE_ORE:
 		case HOPPER:
 		case ITEM_FRAME:
-		case JUKEBOX:
 		case LEVER:
 		case LOCKED_CHEST:
 		case NOTE_BLOCK:
 		case REDSTONE_COMPARATOR:
 		case REDSTONE_COMPARATOR_OFF:
 		case REDSTONE_COMPARATOR_ON:
-		case REDSTONE_ORE:
-		case STONE:
 		case STONE_BUTTON:
 		case TRAPPED_CHEST:
 		case TRAP_DOOR:

@@ -180,4 +180,14 @@ public class Captcha extends Module	{
 		}
 		return false;
 	}
+
+	public static boolean isSinglePunchCard(ItemStack is) {
+		if(is.getType().equals(Material.PAPER)
+				&& is.hasItemMeta()
+				&& is.getItemMeta().getDisplayName().equalsIgnoreCase("Punchcard")
+				&& is.getAmount() == 1) {
+			return true;
+		}
+		return false;
+	}
 }
