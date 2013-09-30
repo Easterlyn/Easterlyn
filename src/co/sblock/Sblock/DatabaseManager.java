@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Chat.ChatModule;
@@ -14,6 +15,7 @@ import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Sblogger;
 import co.sblock.Sblock.Utilities.TowerData;
@@ -316,7 +318,53 @@ public class DatabaseManager {
 			pst.setString(1, channelName);
 
 			pst.executeUpdate();
-			pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void saveMachine(Machine m) {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement(
+					"INSERT INTO Machines(location, type, data) "
+							+ "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE "
+							+ "type=VALUES(type), data=VALUES(data)");
+
+			pst.setString(1, m.getLocationString());
+			pst.setString(2, m.getType().getAbbreviation());
+			pst.setString(3, m.getData());
+
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			Sblogger.err(e);
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void deleteMachine(Machine m) {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement(
+					"DELETE FROM Machines WHERE location = ?");
+			pst.setString(1, m.getLocationString());
+
+			pst.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

@@ -19,6 +19,7 @@ public enum Icon {
 	SBURBALPHACLIENT(Material.RECORD_4, "Sburb Alpha Client"),
 	SBURBALPHASERVER(Material.RECORD_3, "Sburb Alpha Server"),
 	SGRUB(Material.RECORD_6, "Sgrub");
+	// GRISTTORRENT ahaaaano.
 
 	private Material m;
 	private String name;

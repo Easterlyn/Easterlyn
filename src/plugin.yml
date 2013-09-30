@@ -58,6 +58,10 @@ commands:
  meteor:
   usage: /meteor
   description: Drop a meteor on the crosshairs
+ sm:
+  description: Machines galore!
+  usage: /sm <machine abbreviaton or name>
+  permission: group.horrorterror
  se:
   description: Root of all SburbEffects commands
   usage: /se <getlore/setlore/clearlore/applyeffects/verbose> <lore>

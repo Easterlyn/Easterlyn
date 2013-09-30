@@ -18,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 import co.sblock.Sblock.UserData.UserDataModule;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
@@ -52,6 +53,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new MeteorMod().enable());
 		modules.add(new EffectsModule().enable());
 		modules.add(new Captcha().enable());
+		modules.add(new MachineModule().enable());
 	}
 
 	@Override

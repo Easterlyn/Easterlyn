@@ -26,7 +26,7 @@ import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Machines.MachineModule;
-import co.sblock.Sblock.Machines.MachineType;
+import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 
 /**

@@ -3,11 +3,9 @@
  */
 package co.sblock.Sblock.Machines;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
 import co.sblock.Sblock.Module;
-import co.sblock.Sblock.Sblock;
 
 /**
  * @author Jikoo
@@ -28,7 +26,8 @@ public class MachineModule extends Module {
 		instance = this;
 		invHandler = new InventoryEventHandler();
 		manager = new MachineManager();
-		Bukkit.getPluginManager().registerEvents(invHandler, Sblock.getInstance());
+		this.registerEvents(invHandler, new MachineEvents());
+		this.registerCommands(new MachineCommand());
 	}
 
 	/* (non-Javadoc)
