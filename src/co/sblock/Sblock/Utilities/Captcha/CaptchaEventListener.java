@@ -1,6 +1,7 @@
 package co.sblock.Sblock.Utilities.Captcha;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -10,7 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -21,7 +24,7 @@ public class CaptchaEventListener implements Listener	{
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		if(e.getWhoClicked().getOpenInventory().getTopInventory().getName().equalsIgnoreCase("Captchadex"))	{
+		if(e.getWhoClicked().getOpenInventory().getTopInventory().getName().equals("Captchadex"))	{
 			InventoryAction ia = e.getAction();
 			switch(ia)	{
 			case PICKUP_ALL:
@@ -216,6 +219,24 @@ public class CaptchaEventListener implements Listener	{
 			e.getPlayer().setItemInHand(captcha);
 		}
 		e.getPlayer().updateInventory();
+	}
+
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent e) {
+		if(e.getInventory().getName().equals("Captchadex")) {
+			Captchadex.saveCaptchadex(e.getInventory(), e.getPlayer().getItemInHand());
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onBookEdit(PlayerEditBookEvent e) {
+		if (e.isSigning() && e.getNewBookMeta().hasTitle() && e.getNewBookMeta().getTitle().equals("Captchadex")) {
+			BookMeta bm = e.getNewBookMeta().clone();
+			bm.setTitle(ChatColor.DARK_RED + "I am bad at cheating.");
+			e.setNewBookMeta(bm);
+			Bukkit.getServer().broadcastMessage(ChatColor.RED + e.getPlayer().getName()
+					+ " just tried to title a book Captchadex. Please take a moment to laugh at them.");
+		}
 	}
 
 	private boolean hasRightClickFunction(Block b) {

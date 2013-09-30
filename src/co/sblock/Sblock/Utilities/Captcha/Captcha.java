@@ -68,7 +68,7 @@ public class Captcha extends Module	{
 	}
 	
 	public static ItemStack captchaToItem(ItemStack card) {
-		List<String> lore = card.getItemMeta().getLore();
+		ArrayList<String> lore = (ArrayList<String>) card.getItemMeta().getLore();
 		// Item: ID, quantity, data (damage)
 		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf(lore.get(1))),
 				Integer.valueOf(lore.get(3)), Short.valueOf(lore.get(2)));
@@ -76,11 +76,44 @@ public class Captcha extends Module	{
 		ItemMeta im = is.getItemMeta();
 		if (!lore.get(0).equals(is.getType().toString())) {
 			im.setDisplayName(lore.get(0));
+			lore.set(0, "This way custom display names can't cause errors with lore/enchants");
 		} else {
 			im.setDisplayName(null);
 		}
 		List<String> itemLore = new ArrayList<String>();
 		for (String s : lore) {
+			if (s.startsWith(":")) {
+				// Enchantments line format
+				String[] enchs = s.substring(1).split(":");
+				for (String s1 : enchs) {
+					String[] ench = s1.split(";");
+					im.addEnchant(Enchantment.getById(Integer.parseInt(ench[0])),
+							Integer.parseInt(ench[1]), true);
+				}
+			} else if (s.startsWith(">")) {
+				// Lore lines format
+				itemLore.add(s.substring(1));
+			}
+		}
+		if (!itemLore.isEmpty()) {
+			im.setLore(itemLore);
+		}
+		is.setItemMeta(im);
+		return is;
+	}
+
+	public static ItemStack getCaptchaItem(String[] data) {
+		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
+				Integer.valueOf(data[3]), Short.valueOf(data[2]));
+		ItemMeta im = is.getItemMeta();
+		if (!data[0].equals(is.getType().toString())) {
+			im.setDisplayName(data[0]);
+			data[0] = "This way custom display names can't cause errors with lore/enchants";
+		} else {
+			im.setDisplayName(null);
+		}
+		List<String> itemLore = new ArrayList<String>();
+		for (String s : data) {
 			if (s.startsWith(":")) {
 				// Enchantments line format
 				String[] enchs = s.substring(1).split(":");

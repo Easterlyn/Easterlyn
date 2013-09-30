@@ -11,9 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class Captchadex	{
-	
-	public static ItemStack createCaptchadexBook(Player p)	{
+public class Captchadex {
+
+	public static ItemStack createCaptchadexBook(Player p) {
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta bm = (BookMeta) book.getItemMeta();
 		bm.setTitle("Captchadex");
@@ -22,47 +22,61 @@ public class Captchadex	{
 		book.setItemMeta(bm);
 		return book;
 	}
-	public static Inventory loadCaptchadex(ItemStack book)	{
+
+	public static Inventory loadCaptchadex(ItemStack book) {
 		BookMeta bm = (BookMeta) book.getItemMeta();
 		Player p = Bukkit.getPlayer(bm.getAuthor());
 		Inventory i = createCaptchadexInventory(p);
-		//TODO Adam feel free to fill in the rest
+		if (bm.getPageCount() > 1) {
+			for (int i1 = 2; i1 <= bm.getPageCount(); i1++) {
+				String[] data = bm.getPage(i1).split("\n");
+				if (data.length > 1) {
+					// Page not a null ItemStack
+					i.setItem(i1 - 2, Captcha.getCaptchaItem(data));
+				}
+			}
+		}
 		return i;
 	}
-	public static ItemStack saveCaptchadex(Inventory i, ItemStack book)	{
+
+	public static ItemStack saveCaptchadex(Inventory i, ItemStack book) {
 		BookMeta bm = (BookMeta) book.getItemMeta();
 		ItemStack[] contents = i.getContents();
 		bm.setPage(1, "\n\n\n\n\nThis page intentionally         left blank");
-		for(int slot = 0; slot < contents.length; slot++)	{
+		for (int slot = 0; slot < contents.length; slot++) {
 			ItemStack is = contents[slot];
-			ItemStack captcha = Captcha.itemToCaptcha(is);
-			StringBuilder save = new StringBuilder();
-			List<String> lore = captcha.getItemMeta().getLore();
-			for(String s : lore)	{
-				save.append(s).append("\n");
+			if (is != null) {
+				ItemStack captcha = Captcha.itemToCaptcha(is);
+				StringBuilder save = new StringBuilder();
+				List<String> lore = captcha.getItemMeta().getLore();
+				for (String s : lore) {
+					save.append(s).append("\n");
+				}
+				bm.setPage(slot + 2, save.toString());
 			}
-			bm.setPage(slot + 2, save.toString());
 		}
 		book.setItemMeta(bm);
 		return book;
 	}
-	
-	public static Inventory createCaptchadexInventory(InventoryHolder ih)	{
+
+	public static Inventory createCaptchadexInventory(InventoryHolder ih) {
 		return Bukkit.getServer().createInventory(ih, 27, "Captchadex");
 	}
 
-	public static ItemStack punchCardToItem(ItemStack is)	{
+	public static ItemStack punchCardToItem(ItemStack is) {
 		ItemStack pc = Captcha.captchaToItem(is);
 		return pc;
 	}
-	public static ItemStack itemToCard(ItemStack is)	{
+
+	public static ItemStack itemToCard(ItemStack is) {
 		ItemStack pc = Captcha.itemToCaptcha(is);
 		ItemMeta im = pc.getItemMeta();
 		im.setDisplayName("Punchcard");
 		pc.setItemMeta(im);
 		return pc;
 	}
-	public static ItemStack punchCard(ItemStack is)	{
+
+	public static ItemStack punchCard(ItemStack is) {
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName("Punchcard");
 		is.setItemMeta(im);
