@@ -20,7 +20,7 @@ import co.sblock.Sblock.Utilities.Sblogger;
 public enum MachineType {
 
 	ALCHEMITER("alc"), APPEARIFIER("app"), COMPUTER("cpu"), CRUXTRUDER("crx"), INTELLIBEAM_LASERSTATION("il"),
-	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"), SENDIFICATOR("snd"), TOTEM_LATHE("tl");
+	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"), SENDIFICATOR("snd"), TOTEM_LATHE("tl"), ANY("NO.");
 
 	String type;
 
@@ -70,6 +70,10 @@ public enum MachineType {
 			im.setDisplayName(ChatColor.WHITE + "Perfectly generic object");
 			is.setItemMeta(im);
 			break;
+		case ANY:
+			@SuppressWarnings("static-access")
+			MachineType[] types = this.values();
+			return types[(int) Math.random() * types.length].getUniqueDrop();
 		default:
 			is = new ItemStack(Material.BEDROCK);
 			im = is.getItemMeta();

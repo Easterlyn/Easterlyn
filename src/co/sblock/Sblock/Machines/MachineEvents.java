@@ -33,8 +33,8 @@ public class MachineEvents implements Listener {
 			ItemStack is = mt.getUniqueDrop();
 			is.setAmount(event.getItemInHand().getAmount());
 			if (is.equals(event.getItemInHand())) {
-				event.getItemInHand().setAmount(event.getItemInHand().getAmount() - 1);
-				event.setCancelled(m.addMachine(event.getBlock().getLocation(), mt, mt.getData(event)).assemble());
+				m.addMachine(event.getBlock().getLocation(), mt, mt.getData(event)).assemble(event);
+				break;
 			}
 		}
 	}

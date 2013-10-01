@@ -9,8 +9,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
-
-import co.sblock.Sblock.Machines.MachineModule;
+import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
  * @author Jikoo
@@ -18,10 +17,8 @@ import co.sblock.Sblock.Machines.MachineModule;
  */
 public class PGOMachine extends Machine {
 
-	private String data;
 	public PGOMachine(Location l, String data) {
-		super(l);
-		this.data = data;
+		super(l, data);
 	}
 
 	public List<Location> getLocations() {
@@ -32,28 +29,22 @@ public class PGOMachine extends Machine {
 		return MachineType.PERFECTLY_GENERIC_OBJECT;
 	}
 
-	public String getData() {
-		return data;
-	}
-
-	public boolean onBreak(BlockBreakEvent event) {
-		MachineModule.getInstance().getManager().removeMachineListing(getKey());
-		getKey().getBlock().setType(Material.AIR);
-		getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
-		return true;
-	}
-
-	public boolean assemble() {
-		String[] typeID = data.split(":");
-		Material placedOn = Material.getMaterial(Integer.valueOf(typeID[0]));
-		// TODO fix
+	public void assemble(BlockPlaceEvent event) {
+		Material placedOn = event.getBlockAgainst().getType();
 		if (isValid(placedOn)) {
-			getKey().getBlock().setTypeIdAndData(placedOn.getId(), Byte.valueOf(typeID[1]), false);
+			event.getBlockPlaced().setTypeIdAndData(placedOn.getId(), event.getBlockAgainst().getData(), false);
 		} else {
-			getKey().getBlock().setType(Material.DIRT);
+			event.getBlockPlaced().setType(Material.DIRT);
 		}
-		return true;
 		// Future features: Make wall signs etc. valid and copy text
+	}
+
+	/* (non-Javadoc)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockPlaceEvent)
+	 */
+	@Override
+	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
+		return true;
 	}
 
 	private boolean isValid(Material type) {
