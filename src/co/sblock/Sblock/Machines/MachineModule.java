@@ -37,6 +37,7 @@ public class MachineModule extends Module {
 	 */
 	@Override
 	protected void onDisable() {
+		manager.saveToDb();
 		HandlerList.unregisterAll(invHandler);
 		instance = null;
 		invHandler = null;
