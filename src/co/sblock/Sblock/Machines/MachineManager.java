@@ -17,6 +17,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.DatabaseManager;
+import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Machines.Type.PGOMachine;
@@ -43,7 +44,7 @@ public class MachineManager {
 		case APPEARIFIER:
 			break;
 		case COMPUTER:
-			break;
+			machine = new Computer(l, data);
 		case CRUXTRUDER:
 			break;
 		case INTELLIBEAM_LASERSTATION:

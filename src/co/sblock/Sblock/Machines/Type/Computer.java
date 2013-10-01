@@ -22,14 +22,13 @@ public class Computer extends Machine {
 	 * @param data
 	 * name of the player who placed the computer
 	 */
-	Computer(Location l, String data) {
+	public Computer(Location l, String data) {
 		super(l, data);
 	}
 
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble()
 	 */
-	@Override
 	public void assemble(BlockPlaceEvent event) {
 		// Machine is single block, nothing to do!
 	}
@@ -37,7 +36,6 @@ public class Computer extends Machine {
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockBreakEvent)
 	 */
-	@Override
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return event.getPlayer().getName().equals(getData());
 	}
@@ -45,7 +43,6 @@ public class Computer extends Machine {
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Machines.Type.Machine#getLocations()
 	 */
-	@Override
 	public List<Location> getLocations() {
 		return new ArrayList<Location>();
 	}
@@ -53,7 +50,6 @@ public class Computer extends Machine {
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Machines.Type.Machine#getType()
 	 */
-	@Override
 	public MachineType getType() {
 		return MachineType.COMPUTER;
 	}

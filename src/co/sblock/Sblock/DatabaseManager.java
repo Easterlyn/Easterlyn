@@ -15,6 +15,8 @@ import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Machines.MachineManager;
+import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -365,6 +367,30 @@ public class DatabaseManager {
 			pst.setString(1, m.getLocationString());
 
 			pst.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void loadAllMachines() {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement("SELECT * FROM Machines");
+
+			ResultSet rs = pst.executeQuery();
+			MachineManager mm = MachineModule.getInstance().getManager();
+
+			while (rs.next()) {
+				mm.loadMachine(rs.getString("location"), rs.getString("type"), rs.getString("data"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

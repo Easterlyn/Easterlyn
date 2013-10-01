@@ -42,7 +42,6 @@ public class PGOMachine extends Machine {
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockPlaceEvent)
 	 */
-	@Override
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return true;
 	}
@@ -53,7 +52,6 @@ public class PGOMachine extends Machine {
 		case BOOKSHELF:
 		case BRICK:
 		case BRICK_STAIRS:
-		case BURNING_FURNACE:
 		case CACTUS:
 		case CAKE_BLOCK:
 		case CAULDRON:
@@ -72,7 +70,6 @@ public class PGOMachine extends Machine {
 		case ENDER_STONE:
 		case FENCE:
 		case FENCE_GATE:
-		case FURNACE:
 		case GLASS:
 		case GLOWING_REDSTONE_ORE:
 		case GLOWSTONE:
@@ -109,8 +106,6 @@ public class PGOMachine extends Machine {
 		case QUARTZ_ORE:
 		case QUARTZ_STAIRS:
 		case REDSTONE_BLOCK:
-		case REDSTONE_LAMP_OFF:
-		case REDSTONE_LAMP_ON:
 		case REDSTONE_ORE:
 		case SAND:
 		case SANDSTONE:
@@ -127,7 +122,6 @@ public class PGOMachine extends Machine {
 		case THIN_GLASS:
 		case TNT:
 		case TRIPWIRE:
-		case WALL_SIGN:
 		case WEB:
 		case WOOD:
 		case WOOD_DOUBLE_STEP:

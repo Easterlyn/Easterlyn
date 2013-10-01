@@ -5,6 +5,7 @@ package co.sblock.Sblock.Machines;
 
 import org.bukkit.event.HandlerList;
 
+import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Module;
 
 /**
@@ -28,6 +29,7 @@ public class MachineModule extends Module {
 		manager = new MachineManager();
 		this.registerEvents(invHandler, new MachineEvents());
 		this.registerCommands(new MachineCommand());
+		DatabaseManager.getDatabaseManager().loadAllMachines();
 	}
 
 	/* (non-Javadoc)
