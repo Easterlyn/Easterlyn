@@ -174,6 +174,10 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ "Set current channel:\n\t/sc c <$channelname>");
 					return true;
 				}
+				if(ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION))	{
+					sender.sendMessage(ChatColor.RED + "You cannot join a region channel!");
+					return true;
+				}
 				try {
 					user.setCurrent(ChatModule.getChatModule().getChannelManager()
 							.getChannel(args[1]));
@@ -187,6 +191,10 @@ public class ChatModuleCommandListener implements CommandListener {
 				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Listen to a channel:\n\t/sc l <$channelname>");
+					return true;
+				}
+				if(ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION))	{
+					sender.sendMessage(ChatColor.RED + "You cannot listen to a region channel!");
 					return true;
 				}
 				try {
@@ -203,6 +211,10 @@ public class ChatModuleCommandListener implements CommandListener {
 				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
 							+ "Stop listening to a channel:\n\t/sc leave <$channelname>");
+					return true;
+				}
+				if(ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION))	{
+					sender.sendMessage(ChatColor.RED + "You cannot leave a region channel!");
 					return true;
 				}
 				try {

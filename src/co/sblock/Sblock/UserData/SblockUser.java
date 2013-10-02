@@ -25,6 +25,8 @@ import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.SblockEffects.EffectsModule;
+import co.sblock.Sblock.SblockEffects.PassiveEffect;
 
 /**
  * <code>SblockUser</code> is the class for storing all <code>Player</code>
@@ -86,6 +88,9 @@ public class SblockUser {
 	
 	/** Keeps track of current region for RegionChannel purposes */
 	private Region currentRegion;
+	
+	/** Is the Player within range of a Computer? */
+	private boolean computerAccess;
 
 	/**
 	 * Creates a SblockUser object for a player.
@@ -510,6 +515,19 @@ public class SblockUser {
 		this.addListening(ChannelManager.getChannelManager().getChannel("#" + newR.toString()));
 		currentRegion = newR;
 	}
+	public boolean getComputerAccess()	{
+		return computerAccess;
+	}
+	public void setComputerAccess()	{
+		if(EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains(PassiveEffect.COMPUTER
+				/* || distance to Player's Computer Machine <= 10*/))	{
+			computerAccess = true;
+		}
+		else	{
+			computerAccess = false;
+		}
+	}
+	
 
 	// -----------------------------------------------------------------------------------------------------------------------
 

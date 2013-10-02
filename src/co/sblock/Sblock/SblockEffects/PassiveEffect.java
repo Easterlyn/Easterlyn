@@ -6,6 +6,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public enum PassiveEffect {
 	
+	COMPUTER("Computer"),
 	JUMP("Boing"),
 	SPEED("Speed"),
 	FLOWERS("Flowers");
