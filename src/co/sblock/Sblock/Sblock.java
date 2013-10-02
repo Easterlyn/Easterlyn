@@ -51,7 +51,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new EventModule().enable());
 		modules.add(new MeteorMod().enable());
 		modules.add(new EffectsModule().enable());
-		modules.add(new Captcha().enable());
+//		modules.add(new Captcha().enable());
 	}
 
 	@Override

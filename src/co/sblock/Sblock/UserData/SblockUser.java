@@ -617,7 +617,7 @@ public class SblockUser {
 				output = s.substring(0, s.indexOf("]") + 1) + ChatColor.BLUE
 						+ "{!}"
 						+ s.substring(s.indexOf("<"), s.indexOf(">") + 1)
-						+ ChatColor.WHITE + s.substring(s.indexOf(">" + 1));
+						+ ChatColor.WHITE + s.substring(s.indexOf(">") + 1);
 				this.getPlayer().sendMessage(output);
 				this.getPlayer().playEffect(this.getPlayer().getLocation(),
 						Effect.BOW_FIRE, 0);
