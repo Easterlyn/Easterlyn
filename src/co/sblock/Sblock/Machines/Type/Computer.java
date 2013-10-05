@@ -85,6 +85,6 @@ public class Computer extends Machine implements InventoryHolder {
 		for (int i1 : u.getPrograms()) {
 			i.addItem(Icon.getIcon(i1).getIcon());
 		}
-		return null;
+		return i;
 	}
 }
