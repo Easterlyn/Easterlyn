@@ -90,6 +90,9 @@ public class SblockUser {
 	/** Keeps track of current region for RegionChannel purposes */
 	private Region currentRegion;
 
+	/**  */
+	private Set<Integer> programs = new HashSet<Integer>();
+
 	/**
 	 * Creates a SblockUser object for a player.
 	 * 
@@ -360,6 +363,51 @@ public class SblockUser {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @return the programs installed
+	 */
+	public Set<Integer> getPrograms() {
+		return this.programs;
+	}
+
+	/**
+	 * 
+	 * @param i
+	 *            the program number to add
+	 */
+	public void addProgram(int i) {
+		this.programs.add(i);
+	}
+
+	/**
+	 * Method used by DB to restore programs on login
+	 * 
+	 * @param s
+	 *            the string containing programs previously installed
+	 */
+	public void setPrograms(String s) {
+		if (s == null || s.isEmpty()) {
+			return;
+		}
+		for (String s1 : s.split(",")) {
+			addProgram(Integer.valueOf(s1));
+		}
+	}
+
+	/**
+	 * Method used by DB to store programs on logout
+	 * 
+	 * @return representation of the contents of programs
+	 */
+	public String getProgramString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i : getPrograms()) {
+			sb.append(i).append(",");
+		}
+		return sb.substring(0, sb.length() - 1);
+	}
+
 	/*
 	 * CHAT & RELATED START
 	 */
@@ -559,8 +607,8 @@ public class SblockUser {
 					// User not approved in channel
 					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sender, sendto));
 					return;
-				} else { // should reach this point for publicchannel and
-							// approved users
+				} else {
+					// should reach this point for publicchannel and approved users
 					outputmessage = fullmsg.substring(space + 1);
 				}
 			} else {

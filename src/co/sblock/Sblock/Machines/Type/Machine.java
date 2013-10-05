@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockGrowEvent;
@@ -16,6 +17,9 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import co.sblock.Sblock.Machines.MachineModule;
 
@@ -79,6 +83,16 @@ public abstract class Machine {
 		return true;
 	}
 	public boolean handleSpread(BlockSpreadEvent event) {
+		return true;
+	}
+	public boolean handleInteract(PlayerInteractEvent event) {
+		return true;
+	}
+	public boolean handleHopper(InventoryMoveItemEvent event) {
+		return true;
+	}
+	public boolean handleClick(InventoryClickEvent event) {
+		event.setResult(Result.DENY);
 		return true;
 	}
 }

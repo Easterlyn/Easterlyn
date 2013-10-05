@@ -19,8 +19,8 @@ import co.sblock.Sblock.Machines.MachineManager;
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.Utilities.Sblogger;
-import co.sblock.Sblock.Utilities.TowerData;
 
 /**
  * Collection of all database-related functions
@@ -87,8 +87,8 @@ public class DatabaseManager {
 			PreparedStatement pst = connection
 					.prepareStatement("INSERT INTO PlayerData(name, class, aspect, "
 							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, "
-							+ "isMute, nickname, channels, ip, timePlayed, previousLocation) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+							+ "isMute, nickname, channels, ip, timePlayed, previousLocation, programs) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 							+ "ON DUPLICATE KEY UPDATE "
 							+ "class=VALUES(class), aspect=VALUES(aspect), "
 							+ "mPlanet=VALUES(mPlanet), dPlanet=VALUES(dPlanet), "
@@ -97,7 +97,8 @@ public class DatabaseManager {
 							+ "isMute=VALUES(isMute), nickname=VALUES(nickname), "
 							+ "channels=VALUES(channels), ip=VALUES(ip), "
 							+ "timePlayed=VALUES(timePlayed), "
-							+ "previousLocation=VALUES(previousLocation)");
+							+ "previousLocation=VALUES(previousLocation), "
+							+ "programs=VALUES(programs)");
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
@@ -116,6 +117,7 @@ public class DatabaseManager {
 			pst.setString(12, user.getUserIP());
 			user.updateTimePlayed();
 			pst.setString(13, user.getTimePlayed());
+			pst.setString(14, user.getProgramString());
 			try {
 				pst.setString(14, user.getPreviousLocationString());
 			} catch (NullPointerException e) {
@@ -171,6 +173,7 @@ public class DatabaseManager {
 					}
 					user.syncSetCurrentChannel(rs.getString("currentChannel"));
 					user.setTimePlayed(rs.getString("timePlayed"));
+					user.setPrograms(rs.getString("programs"));
 				} else {
 					Sblogger.warning("SblockDatabase", "Player "
 							+ user.getPlayerName()
