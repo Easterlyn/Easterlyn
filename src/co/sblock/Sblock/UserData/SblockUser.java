@@ -427,6 +427,9 @@ public class SblockUser {
 		for (int i : getPrograms()) {
 			sb.append(i).append(",");
 		}
+		if (sb.length() == 0) {
+			return null;
+		}
 		return sb.substring(0, sb.length() - 1);
 	}
 

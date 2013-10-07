@@ -117,14 +117,14 @@ public class DatabaseManager {
 			pst.setString(12, user.getUserIP());
 			user.updateTimePlayed();
 			pst.setString(13, user.getTimePlayed());
-			pst.setString(14, user.getProgramString());
-			pst.setByte(15, user.getUHCMode());
 			try {
 				pst.setString(14, user.getPreviousLocationString());
 			} catch (NullPointerException e) {
 				user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				pst.setString(14, user.getPreviousLocationString());
 			}
+			pst.setString(15, user.getProgramString());
+			pst.setByte(16, user.getUHCMode());
 
 			pst.executeUpdate();
 			pst.close();
