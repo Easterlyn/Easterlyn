@@ -30,6 +30,7 @@ public class Captcha extends Module	{
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static ItemStack itemToCaptcha(ItemStack item) {
 		ItemStack card = blankCaptchaCard();
 		ItemMeta cardMeta = card.getItemMeta();
@@ -67,6 +68,7 @@ public class Captcha extends Module	{
 		return card;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static ItemStack captchaToItem(ItemStack card) {
 		ArrayList<String> lore = (ArrayList<String>) card.getItemMeta().getLore();
 		// Item: ID, quantity, data (damage)
@@ -102,6 +104,7 @@ public class Captcha extends Module	{
 		return is;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static ItemStack getCaptchaItem(String[] data) {
 		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
 				Integer.valueOf(data[3]), Short.valueOf(data[2]));

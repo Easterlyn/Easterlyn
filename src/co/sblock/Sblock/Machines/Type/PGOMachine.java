@@ -29,6 +29,7 @@ public class PGOMachine extends Machine {
 		return MachineType.PERFECTLY_GENERIC_OBJECT;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void assemble(BlockPlaceEvent event) {
 		Material placedOn = event.getBlockAgainst().getType();
 		if (isValid(placedOn)) {

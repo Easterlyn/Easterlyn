@@ -12,6 +12,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -24,46 +25,49 @@ public class CaptchaEventListener implements Listener	{
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		if (e.isCancelled() || e.getClickedInventory() == null
+		if (e.isCancelled() || e.getInventory() == null
 				|| !(e.getWhoClicked() instanceof Player)
 				|| e.getResult() == Result.DENY) {
 			return;
 		}
-		if (e.getClickedInventory().getTitle().equals("Captchadex")
+		// TODO verify that this returns the correct inventory
+		Inventory clickedInv = e.getView().getTopInventory().getSize() < e.getRawSlot()
+				? e.getInventory() : ((Player) e.getWhoClicked()).getInventory();
+		if (e.getInventory().getTitle().equals("Captchadex")
 				|| ((Player) e.getWhoClicked()).getOpenInventory().getTitle().equals("Captchadex")) {
-			switch(e.getAction()) {
+			switch (e.getAction()) {
 			case PICKUP_ALL:
-				if (e.getClickedInventory().getName().equals("Captchadex")) {
+				if (clickedInv.getTitle().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
 				}
 				break;
 			case PICKUP_HALF:
-				if (e.getClickedInventory().getName().equals("Captchadex")) {
+				if (clickedInv.getTitle().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
 				}
 				break;
 			case PICKUP_ONE:
-				if (e.getClickedInventory().getName().equals("Captchadex")) {
+				if (clickedInv.getTitle().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
 				}
 				break;
 			case PICKUP_SOME:
-				if (e.getClickedInventory().getName().equals("Captchadex")) {
+				if (clickedInv.getTitle().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
 				}
 				break;
 			case MOVE_TO_OTHER_INVENTORY:
-				if (e.getClickedInventory().getName().equals("Captchadex")) {
+				if (clickedInv.getTitle().equals("Captchadex")) {
 					e.setCurrentItem(Captchadex.itemToCard(e.getCurrentItem()));
 				} else {
 					e.setResult(Result.DENY);
 				}
 				break;
 			case PLACE_ALL:
-				if(e.getClickedInventory().getName().equals("Captchadex"))	{
+				if(clickedInv.getTitle().equals("Captchadex"))	{
 					if (Captcha.isSinglePunchCard(e.getCursor())) {
 						ItemStack cursor = e.getCursor().clone();
-						ItemStack[] contents = e.getClickedInventory().getContents();
+						ItemStack[] contents = clickedInv.getContents();
 						e.setCursor(null);
 						Player p = (Player) e.getWhoClicked();
 						Inventory i = Captchadex.createCaptchadexInventory(p);
@@ -79,10 +83,10 @@ public class CaptchaEventListener implements Listener	{
 				}
 				break;
 			case PLACE_ONE:
-				if(e.getClickedInventory().getName().equalsIgnoreCase("Captchadex")) {
+				if(clickedInv.getTitle().equalsIgnoreCase("Captchadex")) {
 					if (Captcha.isPunchCard(e.getCursor())) {
 						ItemStack cursor = e.getCursor().clone();
-						ItemStack[] contents = e.getClickedInventory().getContents();
+						ItemStack[] contents = clickedInv.getContents();
 						e.setCursor(null);
 						Player p = (Player) e.getWhoClicked();
 						Inventory i = Captchadex.createCaptchadexInventory(p);
@@ -98,10 +102,10 @@ public class CaptchaEventListener implements Listener	{
 				}
 				break;
 			case PLACE_SOME:
-				if (e.getClickedInventory().getName().equalsIgnoreCase("Captchadex")) {
+				if (clickedInv.getTitle().equalsIgnoreCase("Captchadex")) {
 					if (Captcha.isPunchCard(e.getCursor())) {
 						ItemStack cursor = e.getCursor().clone();
-						ItemStack[] contents = e.getClickedInventory().getContents();
+						ItemStack[] contents = clickedInv.getContents();
 						e.setCursor(null);
 						Player p = (Player) e.getWhoClicked();
 						Inventory i = Captchadex.createCaptchadexInventory(p);
@@ -117,15 +121,14 @@ public class CaptchaEventListener implements Listener	{
 				}
 				break;
 			default:
-				if (e.getClickedInventory().getTitle().equals("Captchadex")) {
+				if (clickedInv.getTitle().equals("Captchadex")) {
 					e.setResult(Result.DENY);
 				}
 			}
 		}
-		
-		
-		
-		if (!(e.getClickedInventory().getType() == InventoryType.PLAYER)
+
+
+		if (!(clickedInv.getType() == InventoryType.PLAYER)
 				|| !(e.getAction() == InventoryAction.SWAP_WITH_CURSOR)) {
 			return;
 		}
@@ -166,9 +169,28 @@ public class CaptchaEventListener implements Listener	{
 						.setVelocity(p.getLocation().getDirection().multiply(0.4));
 			}
 		} else {
-			e.getClickedInventory().setItem(e.getSlot(), captcha);
+			clickedInv.setItem(e.getSlot(), captcha);
 		}
 		p.updateInventory();
+	}
+
+	@EventHandler
+	public void onItemDragDrop(InventoryDragEvent e) {
+		if (e.isCancelled() || e.getInventory() == null
+				|| !(e.getWhoClicked() instanceof Player)
+				|| e.getResult() == Result.DENY) {
+			return;
+		}
+		if (!e.getView().getTopInventory().getTitle().equals("Captchadex")) {
+			return;
+		}
+		// TODO verify that this returns the correct inventory
+		for (int i : e.getRawSlots()) {
+			if (e.getView().getTopInventory().getSize() < i) {
+				e.setResult(Result.DENY);
+				break;
+			}
+		}
 	}
 
 	@SuppressWarnings("deprecation")

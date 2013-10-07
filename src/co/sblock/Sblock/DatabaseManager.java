@@ -86,9 +86,9 @@ public class DatabaseManager {
 		try {
 			PreparedStatement pst = connection
 					.prepareStatement("INSERT INTO PlayerData(name, class, aspect, "
-							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, "
-							+ "isMute, nickname, channels, ip, timePlayed, previousLocation, programs) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, isMute, "
+							+ "nickname, channels, ip, timePlayed, previousLocation, programs, uhc) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 							+ "ON DUPLICATE KEY UPDATE "
 							+ "class=VALUES(class), aspect=VALUES(aspect), "
 							+ "mPlanet=VALUES(mPlanet), dPlanet=VALUES(dPlanet), "
@@ -98,7 +98,7 @@ public class DatabaseManager {
 							+ "channels=VALUES(channels), ip=VALUES(ip), "
 							+ "timePlayed=VALUES(timePlayed), "
 							+ "previousLocation=VALUES(previousLocation), "
-							+ "programs=VALUES(programs)");
+							+ "programs=VALUES(programs), uhc=VALUES(uhc)");
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
@@ -118,6 +118,7 @@ public class DatabaseManager {
 			user.updateTimePlayed();
 			pst.setString(13, user.getTimePlayed());
 			pst.setString(14, user.getProgramString());
+			pst.setByte(15, user.getUHCMode());
 			try {
 				pst.setString(14, user.getPreviousLocationString());
 			} catch (NullPointerException e) {
@@ -174,6 +175,7 @@ public class DatabaseManager {
 					user.syncSetCurrentChannel(rs.getString("currentChannel"));
 					user.setTimePlayed(rs.getString("timePlayed"));
 					user.setPrograms(rs.getString("programs"));
+					user.setUHCMode(rs.getByte("uhc"));
 				} else {
 					Sblogger.warning("SblockDatabase", "Player "
 							+ user.getPlayerName()

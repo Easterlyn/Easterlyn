@@ -46,6 +46,7 @@ public enum MachineType {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public String getData(BlockPlaceEvent e) {
 		if (this != MachineType.PERFECTLY_GENERIC_OBJECT) {
 			return e.getPlayer().getName();

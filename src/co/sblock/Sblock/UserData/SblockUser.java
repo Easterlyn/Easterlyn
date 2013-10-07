@@ -90,8 +90,11 @@ public class SblockUser {
 	/** Keeps track of current region for RegionChannel purposes */
 	private Region currentRegion;
 
-	/**  */
+	/** Programs installed to the player's computer */
 	private Set<Integer> programs = new HashSet<Integer>();
+
+	/** UHC modes: negative = off; 1 = standard UHC; 2 = pre-1.8b food healing */
+	private byte uhc = 1;
 
 	/**
 	 * Creates a SblockUser object for a player.
@@ -361,6 +364,25 @@ public class SblockUser {
 	 */
 	public boolean isGodTier() {
 		return false;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public byte getUHCMode() {
+		return uhc;
+	}
+
+	/**
+	 * 
+	 * @param b
+	 */
+	public void setUHCMode(Byte b) {
+		// DB returns 0 if null
+		if (b != 0) {
+			uhc = b;
+		}
 	}
 
 	/**
@@ -669,6 +691,7 @@ public class SblockUser {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void sendMessageFromChannel(String s, Channel c, String type) {
 		// final output, sends message to user
 		// alert for if its player's name is applied here i.e. {!}
