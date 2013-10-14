@@ -5,6 +5,7 @@ package co.sblock.Sblock.Machines;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Module;
+import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
  * @author Jikoo
@@ -21,10 +22,13 @@ public class MachineModule extends Module {
 	 */
 	@Override
 	protected void onEnable() {
+		Sblogger.info("SburbMachines", "Enabling Machines");
 		instance = this;
 		manager = new MachineManager();
 		this.registerCommands(new MachineCommand());
+		this.registerEvents(new MachineEvents());
 		DatabaseManager.getDatabaseManager().loadAllMachines();
+		Sblogger.info("SburbMachines", "Machines enabled");
 	}
 
 	/* (non-Javadoc)
