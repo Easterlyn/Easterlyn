@@ -25,6 +25,9 @@ import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.Type.MachineType;
+import co.sblock.Sblock.SblockEffects.EffectsModule;
 
 /**
  * <code>SblockUser</code> is the class for storing all <code>Player</code>
@@ -86,6 +89,12 @@ public class SblockUser {
 	
 	/** Keeps track of current region for RegionChannel purposes */
 	private Region currentRegion;
+
+	/** Programs installed to the player's computer */
+	private Set<Integer> programs = new HashSet<Integer>();
+
+	/** UHC modes: negative = off; 1 = standard UHC; 2 = pre-1.8b food healing */
+	private byte uhc = 1;
 
 	/**
 	 * Creates a SblockUser object for a player.
@@ -248,6 +257,7 @@ public class SblockUser {
 	public void setIsSleeping(boolean sleeping) {
 		this.sleeping = sleeping;
 		this.getPlayer().setAllowFlight(sleeping);
+		this.getPlayer().setFlying(sleeping);
 	}
 
 	/**
@@ -356,9 +366,89 @@ public class SblockUser {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public byte getUHCMode() {
+		return uhc;
+	}
+
+	/**
+	 * 
+	 * @param b
+	 */
+	public void setUHCMode(Byte b) {
+		// DB returns 0 if null
+		if (b != 0) {
+			uhc = b;
+		}
+	}
+
+	/**
+	 * 
+	 * @return the programs installed
+	 */
+	public Set<Integer> getPrograms() {
+		return this.programs;
+	}
+
+	/**
+	 * 
+	 * @param i
+	 *            the program number to add
+	 */
+	public void addProgram(int i) {
+		this.programs.add(i);
+	}
+
+	/**
+	 * Method used by DB to restore programs on login
+	 * 
+	 * @param s
+	 *            the string containing programs previously installed
+	 */
+	public void setPrograms(String s) {
+		if (s == null || s.isEmpty()) {
+			return;
+		}
+		for (String s1 : s.split(",")) {
+			addProgram(Integer.valueOf(s1));
+		}
+	}
+
+	/**
+	 * Method used by DB to store programs on logout
+	 * 
+	 * @return representation of the contents of programs
+	 */
+	public String getProgramString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i : getPrograms()) {
+			sb.append(i).append(",");
+		}
+		if (sb.length() == 0) {
+			return null;
+		}
+		return sb.substring(0, sb.length() - 1);
+	}
+
 	/*
 	 * CHAT & RELATED START
 	 */
+
+	public boolean hasComputerAccess() {
+		if (EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains("Computer")) {
+			return true;
+		}
+		for (Location l : MachineModule.getInstance().getManager().getMachines(MachineType.COMPUTER)) {
+			// distanceSquared <= maximumDistance^2. In this case, maximumDistance = 10.
+			if (this.getPlayer().getLocation().distanceSquared(l) <= 100) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * @return the <code>Player</code>'s global nickname
@@ -542,8 +632,8 @@ public class SblockUser {
 					// User not approved in channel
 					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sender, sendto));
 					return;
-				} else { // should reach this point for publicchannel and
-							// approved users
+				} else {
+					// should reach this point for publicchannel and approved users
 					outputmessage = fullmsg.substring(space + 1);
 				}
 			} else {
@@ -604,6 +694,7 @@ public class SblockUser {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void sendMessageFromChannel(String s, Channel c, String type) {
 		// final output, sends message to user
 		// alert for if its player's name is applied here i.e. {!}

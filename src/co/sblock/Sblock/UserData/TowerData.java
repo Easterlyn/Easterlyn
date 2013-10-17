@@ -1,7 +1,7 @@
 /**
  * 
  */
-package co.sblock.Sblock.Utilities;
+package co.sblock.Sblock.UserData;
 
 import java.util.HashMap;
 import java.util.Map;

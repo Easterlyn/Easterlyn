@@ -20,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -48,6 +49,7 @@ import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
  * @author Jikoo
@@ -140,7 +142,7 @@ public class EventListener implements Listener, PacketListener {
 				for (Player p : Bukkit.getWorld("Medium").getPlayers()) {
 					SblockUser u = SblockUser.getUser(p.getName());
 					Region r = Region.getLocationRegion(p.getLocation());
-					if (!u.getCurrentRegion().equals(r)) {
+					if (u.getPlayer().isOnline() && !u.getCurrentRegion().equals(r)) {
 						u.updateCurrentRegion(r);
 					}
 				}
@@ -151,6 +153,7 @@ public class EventListener implements Listener, PacketListener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		InventoryManager.restoreInventory(event.getPlayer());
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
 		if (u == null) {
 			return; // We don't want to make another db call just to announce quit.
@@ -164,6 +167,13 @@ public class EventListener implements Listener, PacketListener {
 			u.removeListeningQuit(s);
 		}
 		UserManager.getUserManager().removeUser(event.getPlayer());
+	}
+
+	@EventHandler
+	public void onSignPlace(SignChangeEvent event) {
+		for (int i = 0; i < 4; i++) {
+			event.setLine(i, ChatColor.translateAlternateColorCodes('\u0026', event.getLine(i)));
+		}
 	}
 
 	@EventHandler
@@ -334,7 +344,11 @@ public class EventListener implements Listener, PacketListener {
 				case OUTERCIRCLE:
 				case INNERCIRCLE:
 					teleports.add(p.getName());
-					p.teleport(user.getPreviousLocation());
+					if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
+						p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
+					} else {
+						p.teleport(user.getPreviousLocation());
+					}
 					break;
 				default:
 					break;

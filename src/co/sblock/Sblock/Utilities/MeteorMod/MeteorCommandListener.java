@@ -13,6 +13,7 @@ import co.sblock.Sblock.SblockCommand;
 public class MeteorCommandListener implements CommandListener {
 	private ArrayList<Meteorite> meteorites = MeteorMod.getMeteorites();
 
+	@SuppressWarnings("deprecation")
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
 	public boolean meteormod(CommandSender sender, String arg){
 		String[] args = arg.split(" ");
@@ -56,6 +57,7 @@ public class MeteorCommandListener implements CommandListener {
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@SblockCommand(consoleFriendly = false)
 	public boolean meteor(CommandSender sender)	{
 		Player p = (Player) sender;
