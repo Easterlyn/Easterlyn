@@ -78,3 +78,6 @@ commands:
   description: GIVE.
   usage: /captchadex
   permission: group.horrorterror
+ counter:
+  description: Starts a new XP Counter
+  usage: /counter <target> <duration>
