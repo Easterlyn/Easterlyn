@@ -13,9 +13,10 @@ public interface Channel {
 	public void addListening(String user);
 	public void removeListening(String user);
 	
-	public void setNick(String nick, SblockUser sender);
+	public void setNick(SblockUser sender, String nick);
 	public void removeNick(SblockUser sender);
-	public Nick getNick(SblockUser sender);
+	public String getNick(SblockUser sender);
+	public boolean hasNick(SblockUser sender);
 	
 	public void setOwner(String name, SblockUser sender);
 	public String getOwner();

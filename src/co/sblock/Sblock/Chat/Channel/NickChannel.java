@@ -1,14 +1,52 @@
 package co.sblock.Sblock.Chat.Channel;
 
-import org.bukkit.ChatColor;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.google.common.collect.HashBiMap;
-
+import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.UserManager;
 
 public class NickChannel extends NormalChannel {
+
+	private Map<SblockUser, String> nickList = new HashMap<SblockUser, String>();
 	
-	protected HashBiMap<String, String> nickList;
+	public NickChannel(String name, AccessLevel a, String creator) {
+		super(name, a, creator);
+	}
+	
+	@Override
+	public ChannelType getType()	{
+		return ChannelType.NICK;
+	}
+	
+	@Override
+	public void setNick(SblockUser sender, String nick) {
+		nickList.put(sender, nick);
+		for(String user : this.getListening()){
+			UserManager.getUserManager().getUser(user).sendMessage(ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this));
+		}
+	}
+
+	@Override
+	public void removeNick(SblockUser sender) {
+		for(String user : this.getListening()){
+			UserManager.getUserManager().getUser(user).sendMessage(
+					ChatMsgs.onUserRmNick(sender.getPlayerName(), nickList.get(sender), this));
+		}
+		nickList.remove(sender);
+	}
+	
+	@Override
+	public String getNick(SblockUser sender) {
+		return nickList.get(sender);
+	}
+	
+	@Override
+	public boolean hasNick(SblockUser sender)	{
+		return nickList.containsKey(sender);
+	}
+/*	protected HashBiMap<String, String> nickList;
 
 	public NickChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
@@ -45,5 +83,5 @@ public class NickChannel extends NormalChannel {
 
 	public String getUserFromNick(String n)	{
 		return nickList.inverse().get(n);
-	}
+	}*/
 }

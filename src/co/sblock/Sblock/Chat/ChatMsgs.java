@@ -5,16 +5,27 @@ import java.util.Date;
 
 import org.bukkit.ChatColor;
 
+import co.sblock.Sblock.Chat.Channel.CanonNicks;
 import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.Nick;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
 
 public class ChatMsgs {
 
 	public static String onChannelJoin(SblockUser u, Channel c) {
-		Nick n = c.getNick(u);
-		return n.getColor() + n.getName() + ChatColor.YELLOW + " began "
-				+ c.getNick(u).getPester() + " " + ChatColor.GOLD
+		String name = u.getNick();
+		String message = "pestering";
+		ChatColor nameC = ChatColor.GREEN;
+		if(c.hasNick(u))	{
+			name = c.getNick(u);			
+			if(c.getType().equals(ChannelType.RP))	{
+				nameC = CanonNicks.getNick(name).getColor();
+				message = CanonNicks.getNick(name).getPester();
+				name = CanonNicks.getNick(name).getHandle();
+			}
+		}
+		return nameC + name + ChatColor.YELLOW + " began "
+				+ message + " " + ChatColor.GOLD
 				+ c.getName() + ChatColor.YELLOW + " at "
 				+ new SimpleDateFormat("HH:mm").format(new Date());
 	}
@@ -126,6 +137,16 @@ public class ChatMsgs {
 	public static String onUserModAlready(String user, Channel c) {
 		return ChatColor.YELLOW + user + ChatColor.RED + " is already a mod in "
 				+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!";
+	}
+	
+	public static String onUserSetNick(String user, String nick, Channel c)	{
+		return ChatColor.GOLD + user + ChatColor.BLUE + " is now known as "
+				+ ChatColor.GOLD + nick + " in " + c.getName();
+	}
+	
+	public static String onUserRmNick(String user, String nick, Channel c)	{
+		return ChatColor.GOLD + user + ChatColor.BLUE + " is no longer known as "
+				+ ChatColor.GOLD + nick + " in " + c.getName();
 	}
 
 	public static String onUserRmMod(SblockUser u, Channel c) {

@@ -214,9 +214,9 @@ public enum CanonNicks {
 	 * @return
 	 */
 	public static CanonNicks getNick(String nick) {
-		// TODO Auto-generated method stub
-		// if valid nick, return nick
-		// else
+		if(CanonNicks.valueOf(nick) != null)	{
+			return CanonNicks.valueOf(nick);
+		}
 		return null;
 	}
 }

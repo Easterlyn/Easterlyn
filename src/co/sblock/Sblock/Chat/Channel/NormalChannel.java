@@ -67,7 +67,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void setNick(String nick, SblockUser sender) {
+	public void setNick(SblockUser sender, String nick) {
 		sender.sendMessage(ChatMsgs.unsupportedOperation(sender, this));
 	}
 
@@ -76,8 +76,13 @@ public class NormalChannel implements Channel {
 		sender.sendMessage(ChatMsgs.unsupportedOperation(sender, this));
 	}
 
-	public Nick getNick(SblockUser sender) {
-		return new Nick(sender.getNick());
+	public String getNick(SblockUser sender) {
+		return ChatMsgs.unsupportedOperation(sender, this);
+	}
+	
+	@Override
+	public boolean hasNick(SblockUser sender)	{
+		return false;
 	}
 
 	@Override

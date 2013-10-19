@@ -1,6 +1,8 @@
 package co.sblock.Sblock.Chat.Channel;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
@@ -16,6 +18,8 @@ import co.sblock.Sblock.Utilities.Sblogger;
  */
 public class RPChannel extends NickChannel {
 
+	private Map<SblockUser, String> nickList = new HashMap<SblockUser, String>();
+
 	public RPChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
 	}
@@ -26,15 +30,25 @@ public class RPChannel extends NickChannel {
 	}
 
 	@Override
-	public void setNick(String nick, SblockUser sender) {
-		if (!Nick.isCanon(nick)) {
+	public void setNick(SblockUser sender, String nick) {		
+		if (CanonNicks.getNick(nick) == null) {
 			sender.sendMessage(ChatColor.BLUE + nick + ChatColor.RED +
 					" is not a valid roleplaying nick!");
-		} else {
-			this.nickList.put(nick, sender.getPlayerName());
-			sender.sendMessage(ChatColor.YELLOW + "Your nick has been set to \""
-					+ ChatColor.BLUE + nick + "\" in "
-					+ ChatColor.GOLD + this.getName());
+			return;
+		} 
+		for(String n : nickList.values())	{
+			if (n.equalsIgnoreCase(nick))	{
+				sender.sendMessage(ChatColor.BLUE + nick + ChatColor.RED + " is already in use!");
+				return;
+			}
+		}		
+		nickList.put(sender, nick);
+		sender.sendMessage(ChatColor.YELLOW + "Your nick has been set to \""
+				+ ChatColor.BLUE + nick + "\" in "
+				+ ChatColor.GOLD + this.getName());
+		
+		for(String user : this.getListening()){
+			UserManager.getUserManager().getUser(user).sendMessage(ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this));
 		}
 	}
 

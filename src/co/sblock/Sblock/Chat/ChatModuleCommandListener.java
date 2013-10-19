@@ -254,8 +254,8 @@ public class ChatModuleCommandListener implements CommandListener {
 			} else if (args[0].equalsIgnoreCase("new")) { // newChannel
 				if (args.length != 4) {
 					sender.sendMessage(ChatColor.YELLOW
-							+ "Create a new channel:\n\t/sc new <$channelname> <$sAccess> <$lAccess>\n\t"
-							+ "sendAccess and listenAccess must be either PUBLIC or PRIVATE");
+							+ "Create a new channel:\n/sc new <$channelname> <$access> <$type>\n"
+							+ "access must be either PUBLIC or PRIVATE");
 					return true;
 				}
 				if (ChannelType.getType(args[3]) == null) {
@@ -270,6 +270,21 @@ public class ChatModuleCommandListener implements CommandListener {
 									user.getPlayerName(), ChannelType.getType(args[3]));
 					return true;
 				}
+			} else if(args[0].equalsIgnoreCase("nick"))	{
+				if(args.length == 1 || args.length > 3)	{
+					sender.sendMessage(ChatColor.YELLOW + "/sc nick <set/remove> <nick>");
+					return true;
+				}
+				else if(args[1].equalsIgnoreCase("set") && args.length == 3)	{
+					Channel c = user.getCurrent();
+					c.setNick(user, args[2]);
+					return true;
+				}
+				else if(args[1].equalsIgnoreCase("remove"))	{
+					Channel c = user.getCurrent();
+					c.removeNick(user);
+					return true;
+				}				
 			} else if (args[0].equalsIgnoreCase("channel")) {
 				// ChannelOwner/Mod commands
 				Channel c = user.getCurrent();
@@ -314,7 +329,7 @@ public class ChatModuleCommandListener implements CommandListener {
 									.unbanUser(args[2], user);
 							return true;
 						} else if (args.length >= 2 && args[0].equalsIgnoreCase("disband")) {
-							sender.sendMessage(ChatColor.YELLOW + "Command coming soon!"); // TODO
+							c.disband(user);
 							return true;
 						}
 					} else {

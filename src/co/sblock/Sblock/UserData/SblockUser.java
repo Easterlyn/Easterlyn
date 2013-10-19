@@ -19,6 +19,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.Channel.CanonNicks;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
@@ -676,12 +677,10 @@ public class SblockUser {
 		// colors for <$name> applied here
 		// SburbChat code. Handle with care
 		String out = "";
-
-		String outputName = c.getNick(this).getName();
-		if (c instanceof RPChannel) {
-			outputName = c.getNick(this).getColor() + outputName;
+		String outputName = sender.getPlayerName();
+		if(c.hasNick(sender))	{
+			outputName = c.getNick(sender);
 		}
-
 		ChatColor colorP = ColorDef.RANK_HERO;
 		ChatColor colorW = ColorDef.DEFAULT;
 
@@ -696,6 +695,15 @@ public class SblockUser {
 		else if (sender.getPlayer().hasPermission("group.donator"))
 			colorP = ColorDef.RANK_DONATOR;
 
+		if (c instanceof RPChannel) {
+			if(c.hasNick(sender))	{
+				outputName = c.getNick(sender);
+				colorP = CanonNicks.valueOf(outputName).getColor();
+			}
+			else	{
+				sender.sendMessage(ChatMsgs.errorNickRequired(c.getName()));
+			}
+		}
 		colorW = Region.getRegionColor(getPlayerRegion());
 
 		out = (isThirdPerson ? ">" : colorW + "<") + colorP + outputName
