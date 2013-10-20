@@ -22,6 +22,7 @@ import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 import co.sblock.Sblock.UserData.UserDataModule;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
+import co.sblock.Sblock.Utilities.Counter.CounterModule;
 import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
 
 import com.google.common.base.Joiner;
@@ -54,6 +55,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new EffectsModule().enable());
 //		modules.add(new Captcha().enable());
 //		modules.add(new MachineModule().enable());
+		modules.add(new CounterModule().enable());
 	}
 
 	@Override

@@ -17,13 +17,17 @@ public class CounterClock extends BukkitRunnable {
 	@Override
 	public void run() {
 		for(Counter c : CounterModule.counterMap.values())	{
+			
 			if(c.getCurrent() > 0){
+				c.getPlayer().sendMessage("Tick " + c.getCurrent() + c.getCooldown());
 				c.tick();
 			}
 			else if(c.getCurrent() == 0 && c.getCooldown() > 0)	{
+				c.getPlayer().sendMessage("Cooldown Tick");
 				c.tickCooldown();
 			}
 			else if(c.getCurrent() == 0 && c.getCooldown() == 0)	{
+				c.getPlayer().sendMessage("Fin");
 				c.stopCounter();
 				deletionSet.add(c.getPlayer());
 			}
