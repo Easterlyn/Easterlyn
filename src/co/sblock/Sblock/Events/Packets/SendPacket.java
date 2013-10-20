@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.Events.AbstractPacket;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 import com.comphenix.protocol.ProtocolLibrary;
