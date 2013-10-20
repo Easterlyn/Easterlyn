@@ -7,8 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class CounterClock extends BukkitRunnable {
-
-	private Set<Player> deletionSet = new HashSet<Player>();
 	
 	public CounterClock() {
 		
@@ -16,18 +14,15 @@ public class CounterClock extends BukkitRunnable {
 
 	@Override
 	public void run() {
+		Set<Player> deletionSet = new HashSet<Player>();
 		for(Counter c : CounterModule.counterMap.values())	{
-			
 			if(c.getCurrent() > 0){
-				c.getPlayer().sendMessage("Tick " + c.getCurrent() + c.getCooldown());
 				c.tick();
 			}
 			else if(c.getCurrent() == 0 && c.getCooldown() > 0)	{
-				c.getPlayer().sendMessage("Cooldown Tick");
 				c.tickCooldown();
 			}
 			else if(c.getCurrent() == 0 && c.getCooldown() == 0)	{
-				c.getPlayer().sendMessage("Fin");
 				c.stopCounter();
 				deletionSet.add(c.getPlayer());
 			}

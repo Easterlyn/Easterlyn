@@ -2,8 +2,6 @@ package co.sblock.Sblock.Utilities.Counter;
 
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.Utilities.Sblogger;
-
 public class Counter {
 
 	private Player p;
@@ -19,7 +17,7 @@ public class Counter {
 		current = length;
 		playerXP = p.getLevel();
 		xp = p.getExp();
-		cooldown = 2;
+		cooldown = 1;
 		startCounter();
 	}	
 	public Player getPlayer()	{
@@ -36,8 +34,6 @@ public class Counter {
 	}
 
 	public void startCounter()	{
-		Sblogger.info("Counter", "Counter started for " + p.getName() + " with duration " + current);
-		Sblogger.info("Counter", "Player had " + p.getLevel() + " levels");
 		p.sendMessage(current + " " + cooldown);
 		p.setLevel(0);
 		p.setExp(1);
@@ -52,7 +48,6 @@ public class Counter {
 		cooldown -= 1;
 	}
 	public void stopCounter()	{
-		Sblogger.info("Counter", "" + playerXP);
 		p.setLevel(playerXP);
 		p.setExp(xp);
 	}
