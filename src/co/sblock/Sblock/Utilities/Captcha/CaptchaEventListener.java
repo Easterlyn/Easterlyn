@@ -20,8 +20,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+/**
+ * @author Jikoo, Dublek
+ */
 public class CaptchaEventListener implements Listener	{
 
+	/**
+	 * The event handler for <code>Captcha</code>-related
+	 * <code>InventoryClickEvents</code>.
+	 * 
+	 * @param e
+	 *            the <code>InventoryClickEvent</code>
+	 */
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
@@ -127,7 +137,6 @@ public class CaptchaEventListener implements Listener	{
 			}
 		}
 
-
 		if (!(clickedInv.getType() == InventoryType.PLAYER)
 				|| !(e.getAction() == InventoryAction.SWAP_WITH_CURSOR)) {
 			return;
@@ -174,6 +183,12 @@ public class CaptchaEventListener implements Listener	{
 		p.updateInventory();
 	}
 
+	/**
+	 * The event handler for Captcha-related <code>InventoryDragEvent</code>s.
+	 * 
+	 * @param e
+	 *            the <code>InventoryDragEvent</code>
+	 */
 	@EventHandler
 	public void onItemDragDrop(InventoryDragEvent e) {
 		if (e.isCancelled() || e.getInventory() == null
@@ -193,6 +208,13 @@ public class CaptchaEventListener implements Listener	{
 		}
 	}
 
+	/**
+	 * The event handler for Captcha-related <code>PlayerInteractEvents</code>
+	 * (Uncaptcha-ing).
+	 * 
+	 * @param e
+	 *            the <code>PlayerInteractEvent</code>
+	 */
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e) {
@@ -244,6 +266,13 @@ public class CaptchaEventListener implements Listener	{
 		e.getPlayer().updateInventory();
 	}
 
+	/**
+	 * The event handler for saving Captchadex <code>Inventory</code> to a
+	 * <code>BookMeta</code> when closed.
+	 * 
+	 * @param e
+	 *            the <code>InventoryCloseEvent</code>
+	 */
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
 		if(e.getInventory().getName().equals("Captchadex")) {
@@ -251,6 +280,13 @@ public class CaptchaEventListener implements Listener	{
 		}
 	}
 
+	/**
+	 * The event handler for preventing <code>Player</code>s from manually
+	 * creating their own Captchadexes.
+	 * 
+	 * @param e
+	 *            the <code>PlayerEditBookEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBookEdit(PlayerEditBookEvent e) {
 		if (e.isSigning() && e.getNewBookMeta().hasTitle() && e.getNewBookMeta().getTitle().equals("Captchadex")) {
@@ -262,6 +298,11 @@ public class CaptchaEventListener implements Listener	{
 		}
 	}
 
+	/**
+	 * Check if a <code>Block</code> has a right click action that would take priority over opening a book.
+	 * @param b the <code>Block</code> to check
+	 * @return <code>true</code> if right clicking the block will not cause a book to open.
+	 */
 	private boolean hasRightClickFunction(Block b) {
 		switch (b.getType()) {
 		case BOOKSHELF:

@@ -15,7 +15,7 @@
  * 02111-1307 USA
  */
 
-package co.sblock.Sblock.Events;
+package co.sblock.Sblock.Events.Packets;
 
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -48,7 +48,7 @@ public class Packet11UseBed extends AbstractPacket {
 	 * Set player ID.
 	 * 
 	 * @param value
-	 *            - new value.
+	 *            new value.
 	 */
 	public void setEntityId(int value) {
 		handle.getIntegers().write(0, value);
@@ -58,7 +58,7 @@ public class Packet11UseBed extends AbstractPacket {
 	 * Retrieve the player's entity object.
 	 * 
 	 * @param world
-	 *            - the word the player has joined.
+	 *            the world the player has joined.
 	 * @return The player's entity.
 	 */
 	public Entity getEntity(World world) {
@@ -69,7 +69,7 @@ public class Packet11UseBed extends AbstractPacket {
 	 * Retrieve the player's entity object.
 	 * 
 	 * @param event
-	 *            - the packet event.
+	 *            the packet event.
 	 * @return The player's entity.
 	 */
 	public Entity getEntity(PacketEvent event) {
@@ -89,7 +89,7 @@ public class Packet11UseBed extends AbstractPacket {
 	 * Set bed headboard X as block coordinate.
 	 * 
 	 * @param value
-	 *            - new value.
+	 *            new value.
 	 */
 	public void setX(int value) {
 		handle.getIntegers().write(1, value);
@@ -108,7 +108,7 @@ public class Packet11UseBed extends AbstractPacket {
 	 * Set bed headboard Y as block coordinate.
 	 * 
 	 * @param value
-	 *            - new value.
+	 *            new value.
 	 */
 	public void setY(byte value) {
 		handle.getIntegers().write(2, (int) value);
@@ -127,7 +127,7 @@ public class Packet11UseBed extends AbstractPacket {
 	 * Set bed headboard Z as block coordinate.
 	 * 
 	 * @param value
-	 *            - new value.
+	 *            new value.
 	 */
 	public void setZ(int value) {
 		handle.getIntegers().write(3, value);

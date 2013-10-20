@@ -10,25 +10,42 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  * @author Jikoo
- *
  */
 public class PGOMachine extends Machine {
 
+	/**
+	 * Constructor for PGOMachine.
+	 * @param l Location
+	 * @param data String
+	 */
 	public PGOMachine(Location l, String data) {
 		super(l, data);
 	}
 
+	/**
+	 * Method getLocations.
+	 * @return List<Location>
+	 */
 	public List<Location> getLocations() {
 		return new ArrayList<Location>();
 	}
 
+	/**
+	 * Method getType.
+	 * @return MachineType
+	 */
 	public MachineType getType() {
 		return MachineType.PERFECTLY_GENERIC_OBJECT;
 	}
 
+	/**
+	 * Method assemble.
+	 * @param event BlockPlaceEvent
+	 */
 	@SuppressWarnings("deprecation")
 	public void assemble(BlockPlaceEvent event) {
 		Material placedOn = event.getBlockAgainst().getType();
@@ -43,10 +60,27 @@ public class PGOMachine extends Machine {
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockPlaceEvent)
 	 */
+	/**
+	 * Method meetsAdditionalBreakConditions.
+	 * @param event BlockBreakEvent
+	 * @return boolean
+	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return true;
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
+	 */
+	public boolean handleInteract(PlayerInteractEvent event) {
+		return true;
+	}
+
+	/**
+	 * Method isValid.
+	 * @param type Material
+	 * @return boolean
+	 */
 	private boolean isValid(Material type) {
 		switch (type) {
 		case BIRCH_WOOD_STAIRS:
