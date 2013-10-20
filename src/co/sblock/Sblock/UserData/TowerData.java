@@ -1,7 +1,7 @@
 /**
  * 
  */
-package co.sblock.Sblock.Utilities;
+package co.sblock.Sblock.UserData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,22 +10,34 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import co.sblock.Sblock.DatabaseManager;
-import co.sblock.Sblock.UserData.DreamPlanet;
 
 /**
  * @author Jikoo
- *
  */
 public class TowerData {
 
+	/** <code>Map</code> of Derse tower <code>Locations</code>. */
 	private Map<Byte, Location> derse;
+	/** <code>Map</code> of Prospit tower <code>Locations</code>. */
 	private Map<Byte, Location> prospit;
 
+	/**
+	 * Constructor for <code>TowerData</code>.
+	 */
 	public TowerData() {
 		derse = new HashMap<Byte, Location>();
 		prospit = new HashMap<Byte, Location>();
 	}
 
+	/**
+	 * Add a tower <code>Location</code> from a <code>String</code>.
+	 * 
+	 * @param planet
+	 *            the name of the <code>DreamPlanet</code>
+	 * @param location
+	 *            the <code>String</code> representation of a
+	 *            <code>Location</code> and tower number
+	 */
 	public void add(String planet, String location) {
 		String[] coords = location.split(",");
 		Location l = new Location(
@@ -41,6 +53,14 @@ public class TowerData {
 		}
 	}
 
+	/**
+	 * Add a tower <code>Location</code> from a <code>String</code>.
+	 * 
+	 * @param l
+	 *            the <code>Location</code> to add
+	 * @param number
+	 *            the tower number to set
+	 */
 	public void add(Location l, byte number) {
 		if (l.getWorld().getName().equals("OuterCircle")) {
 			derse.put(number, l);
@@ -49,7 +69,19 @@ public class TowerData {
 		}
 	}
 
+	/**
+	 * Gets the <code>Location</code> of a specific tower.
+	 * 
+	 * @param number
+	 *            the tower number to check
+	 * @param dPlanet
+	 *            the <code>DreamPlanet</code> of the tower
+	 * @param enterZeroHere
+	 *            0
+	 * @return Location the <code>Location</code> of the tower
+	 */
 	public Location getLocation(byte number, DreamPlanet dPlanet, byte enterZeroHere) {
+		// TODO Adam fix your hellishly awful code
 		if (enterZeroHere != 0) {
 			if (enterZeroHere > 8) {
 				return Bukkit.getWorld(dPlanet.getWorldName()).getSpawnLocation();
@@ -78,6 +110,16 @@ public class TowerData {
 		}
 	}
 
+	/**
+	 * Gets a <code>String</code> representation of a tower
+	 * <code>Location</code> by planet and number.
+	 * 
+	 * @param world
+	 *            the name of the planet
+	 * @param key
+	 *            the tower number
+	 * @return a <code>String</code> representation of a <code>Location</code>.
+	 */
 	public String getLocString(String world, byte key) {
 		Location l;
 		if (world.equals("Prospit")) {
@@ -92,11 +134,17 @@ public class TowerData {
 		}
 	}
 
+	/**
+	 * Load all tower data from the database.
+	 */
 	public void load() {
 		DatabaseManager.getDatabaseManager().loadTowerData();
 	}
 
-	public void save(TowerData towers) {
-		DatabaseManager.getDatabaseManager().saveTowerData(towers);
+	/**
+	 * Save all tower data to the database.
+	 */
+	public void save() {
+		DatabaseManager.getDatabaseManager().saveTowerData(this);
 	}
 }

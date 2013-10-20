@@ -15,12 +15,21 @@ import co.sblock.Sblock.Events.EventModule;
  * {@link co.sblock.Sblock.SblockCommand}
  * 
  * @author FireNG
- * 
  */
 public class UserDataCommands implements CommandListener {
 
+	/** The standard profile color. */
 	public static final ChatColor PROFILE_COLOR = ChatColor.DARK_AQUA;
 
+	/**
+	 * Gets the profile of a <code>SblockUser</code>.
+	 * 
+	 * @param sender
+	 *            the <code>CommandSender</code>
+	 * @param playerToLookup
+	 *            the <code>SblockUser</code> to look up
+	 * @return <code>true</code> if command was used correctly
+	 */
 	@SblockCommand(consoleFriendly = true)
 	public boolean profile(CommandSender sender, String playerToLookup) {
 		SblockUser user = UserManager.getUserManager().getUser(
@@ -40,6 +49,19 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 	
+	/**
+	 * Set <code>SblockUser</code> data.
+	 * 
+	 * @param sender
+	 *            the <code>CommandSender</code>
+	 * @param playerToModify
+	 *            the name of the <code>SblockUser</code> to modify
+	 * @param type
+	 *            the type of modification
+	 * @param value
+	 *            the value to set
+	 * @return <code>true</code> if command was used correctly
+	 */
 	@SblockCommand(consoleFriendly = true)
 	public boolean setplayer(CommandSender sender, String playerToModify, String type, String value)
 	{
@@ -65,6 +87,16 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 	
+	/**
+	 * Set specified tower <code>Location</code> to <code>CommandSender</code>'s
+	 * current <code>Location</code>.
+	 * 
+	 * @param sender
+	 *            the <code>CommandSender</code>
+	 * @param number
+	 *            the tower number to set
+	 * @return <code>true</code> if command was used correctly
+	 */
 	@SblockCommand(consoleFriendly = false)
 	public boolean settower(CommandSender sender, String number)
 	{

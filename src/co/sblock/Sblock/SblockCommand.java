@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock;
 
 import java.lang.annotation.*;
@@ -39,7 +36,6 @@ import java.lang.annotation.*;
  * </pre>
  * 
  * @author FireNG
- * 
  */
 @Documented
 @Retention(value = RetentionPolicy.RUNTIME)

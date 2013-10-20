@@ -11,12 +11,11 @@ import co.sblock.Sblock.Utilities.Sblogger;
  * to access that data, as well as interfacing with the database.
  * 
  * @author FireNG, Dublek
- * 
  */
 public class UserDataModule extends Module {
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Method onEnable.
 	 * 
 	 * @see co.sblock.Sblock.Module#onEnable()
 	 */
@@ -35,15 +34,13 @@ public class UserDataModule extends Module {
 
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Method onDisable.
 	 * 
 	 * @see co.sblock.Sblock.Module#onDisable()
 	 */
 	@Override
 	protected void onDisable() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

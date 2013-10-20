@@ -1,51 +1,55 @@
 package co.sblock.Sblock.Utilities.Counter;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
-public class Counter extends JavaPlugin {
+public class Counter {
 
-	@SuppressWarnings("unused")
-	private BukkitTask task;
-	private int playerLevel;
+	private Player p;
+	private int playerXP;
+	private float xp;
+	private int duration;
+	private int current;
+	private int cooldown;
 
-	@Override
-	public void onEnable() {
-
+	public Counter(Player player, int length)	{
+		p = player;
+		duration = length;
+		current = length;
+		playerXP = p.getLevel();
+		xp = p.getExp();
+		cooldown = 1;
+		startCounter();
+	}	
+	public Player getPlayer()	{
+		return p;
+	}
+	public int getPlayerXP()	{
+		return playerXP;
+	}
+	public int getCurrent()	{
+		return current;
+	}
+	public int getCooldown()	{
+		return cooldown;
 	}
 
-	@Override
-	public void onDisable() {
-		// task.cancel();
+	public void startCounter()	{
+		p.sendMessage(current + " " + cooldown);
+		p.setLevel(0);
+		p.setExp(1);
+		p.setLevel(current);
 	}
-
-	public boolean onCommand(CommandSender sender, Command cmd, String label,
-			String[] args) {
-		Player pTarget;
-		int duration;
-		if (cmd.getName().equalsIgnoreCase("counter")) {
-			if ((sender instanceof Player && sender
-					.hasPermission("counter.set"))
-					|| !(sender instanceof Player)) {
-				if (args.length == 2) {
-					pTarget = getServer().getPlayer(args[0]);
-					duration = Integer.parseInt(args[1]);
-					this.startCounter(pTarget, duration);
-					return true;
-				}
-			}
-		}
-		return false;
+	public void tick()	{
+		current -= 1;
+		p.setLevel(current);
+		p.setExp((float) current / duration);
 	}
-
-	public void startCounter(Player p, int tStart) {
-		playerLevel = p.getLevel();
-		p.setLevel(tStart);
-		task = new CounterClock(this, p, playerLevel, false)
-		.runTaskLater(this, 20);
+	public void tickCooldown()	{
+		cooldown -= 1;
+	}
+	public void stopCounter()	{
+		p.setLevel(playerXP);
+		p.setExp(xp);
 	}
 
 }

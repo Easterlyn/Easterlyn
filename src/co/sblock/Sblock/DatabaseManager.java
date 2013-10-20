@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Chat.ChatModule;
@@ -14,33 +15,53 @@ import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Machines.MachineManager;
+import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.Utilities.Sblogger;
-import co.sblock.Sblock.Utilities.TowerData;
 
 /**
  * Collection of all database-related functions
  * 
  * @author Jikoo, FireNG
- * 
  */
 public class DatabaseManager {
 
+	/** The <code>DatabaseManager</code> instance. */
 	private static DatabaseManager dbm;
+
+	/** The <code>Sblock</code> instance. */
 	private Sblock plugin;
 
+	/**
+	 * Method for obtaining <code>DatabaseManager</code> instance.
+	 * 
+	 * @return the <code>DatabaseManager</code> instance
+	 */
 	public static DatabaseManager getDatabaseManager() {
 		if (dbm == null)
 			dbm = new DatabaseManager();
 		return dbm;
 	}
 
+	/**
+	 * Constructor for <code>DatabaseManager</code>.
+	 */
 	public DatabaseManager() {
 		plugin = Sblock.getInstance();
 	}
 
+	/** The SQL <code>Connection</code> used by the <code>DatabaseManager</code>. */
 	private Connection connection;
 
+	/**
+	 * Establish connection to database and create <code>DatabaseManager</code>
+	 * instance.
+	 * 
+	 * @return true if enabled successfully
+	 */
 	public boolean enable() {
 		Sblogger.info("SblockDatabase", "Connecting to database.");
 		try {
@@ -67,6 +88,9 @@ public class DatabaseManager {
 		return true;
 	}
 
+	/**
+	 * Close <code>Connection</code> and set instance to null.
+	 */
 	public void disable() {
 		try {
 			connection.close();
@@ -78,13 +102,19 @@ public class DatabaseManager {
 	}
 
 
+	/**
+	 * Save the data stored for a <code>SblockUser</code> user.
+	 * 
+	 * @param user
+	 *            the <code>SblockUser</code> to save data for
+	 */
 	public void saveUserData(SblockUser user) {
+		PreparedStatement pst = null;
 		try {
-			PreparedStatement pst = connection
-					.prepareStatement("INSERT INTO PlayerData(name, class, aspect, "
-							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, "
-							+ "isMute, nickname, channels, ip, timePlayed, previousLocation) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+			pst = connection.prepareStatement("INSERT INTO PlayerData(name, class, aspect, "
+							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, isMute, "
+							+ "nickname, channels, ip, timePlayed, previousLocation, programs, uhc) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 							+ "ON DUPLICATE KEY UPDATE "
 							+ "class=VALUES(class), aspect=VALUES(aspect), "
 							+ "mPlanet=VALUES(mPlanet), dPlanet=VALUES(dPlanet), "
@@ -93,7 +123,8 @@ public class DatabaseManager {
 							+ "isMute=VALUES(isMute), nickname=VALUES(nickname), "
 							+ "channels=VALUES(channels), ip=VALUES(ip), "
 							+ "timePlayed=VALUES(timePlayed), "
-							+ "previousLocation=VALUES(previousLocation)");
+							+ "previousLocation=VALUES(previousLocation), "
+							+ "programs=VALUES(programs), uhc=VALUES(uhc)");
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
@@ -118,96 +149,124 @@ public class DatabaseManager {
 				user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				pst.setString(14, user.getPreviousLocationString());
 			}
+			pst.setString(15, user.getProgramString());
+			pst.setByte(16, user.getUHCMode());
 
 			pst.executeUpdate();
-			pst.close();
-
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					Sblogger.err(e);
+				}
+			}
 		}
 	}
 
+	/**
+	 * Load userdata into a <code>SblockUser</code>.
+	 * 
+	 * @param user
+	 *            the <code>SblockUser</code> to load data for
+	 */
 	public void loadUserData(SblockUser user) {
+		PreparedStatement pst = null;
 		try {
-			PreparedStatement pst = connection
-					.prepareStatement("SELECT * FROM PlayerData WHERE name=?");
+			pst = connection.prepareStatement("SELECT * FROM PlayerData WHERE name=?");
 
 			pst.setString(1, user.getPlayerName());
 
 			ResultSet rs = pst.executeQuery();
 
-			try {
-				if (rs.next()) {
-					user.setAspect(rs.getString("aspect"));
-					user.setPlayerClass(rs.getString("class"));
-					user.setMediumPlanet(rs.getString("mPlanet"));
-					user.setDreamPlanet(rs.getString("dPlanet"));
-					short tower = rs.getShort("towerNum");
-					if (tower != -1) {
-						user.setTower((byte) tower);
-					} else {
-						
-					}
-					user.setIsSleeping(rs.getBoolean("sleepState"));
-					if(rs.getBoolean("isMute")) {
-						user.setMute(true);
-					}
-					user.setNick(rs.getString("nickname") != null ?
-							rs.getString("nickname") : user.getNick());
-					if (rs.getString("channels") != null) {
-						String[] channels = rs.getString("channels").split(",");
-						for (int i = 0; i < channels.length; i++) {
-							user.syncJoinChannel(channels[i]);
-						}
-					}
-					if (rs.getString("previousLocation") != null) {
-						user.setPreviousLocationFromString(rs.getString("previousLocation"));
-					} else {
-						user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
-					}
-					user.syncSetCurrentChannel(rs.getString("currentChannel"));
-					user.setTimePlayed(rs.getString("timePlayed"));
-				} else {
-					Sblogger.warning("SblockDatabase", "Player "
-							+ user.getPlayerName()
-							+ " does not have an entry in the database.");
+			if (rs.next()) {
+				user.setAspect(rs.getString("aspect"));
+				user.setPlayerClass(rs.getString("class"));
+				user.setMediumPlanet(rs.getString("mPlanet"));
+				user.setDreamPlanet(rs.getString("dPlanet"));
+				short tower = rs.getShort("towerNum");
+				if (tower != -1) {
+					user.setTower((byte) tower);
 				}
-
-				pst.close();
-
-			} catch (Exception e) {
-				e.printStackTrace();
+				user.setIsSleeping(rs.getBoolean("sleepState"));
+				if (rs.getBoolean("isMute")) {
+					user.setMute(true);
+				}
+				user.setNick(rs.getString("nickname") != null ? rs.getString("nickname") : user.getNick());
+				if (rs.getString("channels") != null) {
+					String[] channels = rs.getString("channels").split(",");
+					for (int i = 0; i < channels.length; i++) {
+						user.syncJoinChannel(channels[i]);
+					}
+				}
+				if (rs.getString("previousLocation") != null) {
+					user.setPreviousLocationFromString(rs.getString("previousLocation"));
+				} else {
+					user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
+				}
+				user.syncSetCurrentChannel(rs.getString("currentChannel"));
+				user.setTimePlayed(rs.getString("timePlayed"));
+				user.setPrograms(rs.getString("programs"));
+				user.setUHCMode(rs.getByte("uhc"));
+			} else {
+				Sblogger.info("SblockDatabase", user.getPlayerName() + " is new to the server!");
 			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			Sblogger.criticalErr(e);
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					Sblogger.err(e);
+				}
+			}
 		}
 	}
 
+	/**
+	 * Delete specified <code>SblockUser</code>'s data from database.
+	 * 
+	 * @param user
+	 *            the <code>SblockUser</code> to delete data of
+	 */
 	public void deleteUser(SblockUser user) {
+		PreparedStatement pst = null;
 		try {
-			PreparedStatement pst = connection
-					.prepareStatement("DELETE FROM PlayerData WHERE name = ?");
+			pst = connection.prepareStatement("DELETE FROM PlayerData WHERE name = ?");
 			pst.setString(1, user.getPlayerName());
 
 			pst.executeUpdate();
-			pst.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					Sblogger.err(e);
+				}
+			}
 		}
 	}
 
+	/**
+	 * Save <code>Channel</code> data to database.
+	 * 
+	 * @param c
+	 *            the <code>Channel</code> to save data for
+	 */
 	public void saveChannelData(Channel c) {
 		PreparedStatement pst = null;
 		try {
 			pst = connection.prepareStatement(
-					"INSERT INTO ChatChannels(name, channelType, "
-							+ "access, owner, modList, banList, approvedList) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?)"
-							+ "ON DUPLICATE KEY UPDATE "
-							+ "channelType=VALUES(channelType), access=VALUES(access), "
-							+ "owner=VALUES(owner), modList=VALUES(modList), "
-							+ "banList=VALUES(banList), "
+					"INSERT INTO ChatChannels(name, channelType, access, owner, modList, "
+							+ "banList, approvedList) VALUES (?, ?, ?, ?, ?, ?, ?) "
+							+ "ON DUPLICATE KEY UPDATE channelType=VALUES(channelType), "
+							+ "access=VALUES(access),owner=VALUES(owner),  "
+							+ "modList=VALUES(modList), banList=VALUES(banList), "
 							+ "approvedList=VALUES(approvedList)");
 
 			pst.setString(1, c.getName());
@@ -243,20 +302,22 @@ public class DatabaseManager {
 			}
 
 			pst.executeUpdate();
-
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Creates and loads all <code>Channel</code>s from saved data.
+	 */
 	public void loadAllChannelData() {
 		PreparedStatement pst = null;
 		try {
@@ -268,8 +329,7 @@ public class DatabaseManager {
 
 			while (rs.next()) {
 				cm.createNewChannel(rs.getString("name"),
-						AccessLevel.valueOf(rs.getString("access")),
-						rs.getString("owner"),
+						AccessLevel.valueOf(rs.getString("access")), rs.getString("owner"),
 						ChannelType.valueOf(rs.getString("channelType")));
 				Channel c = ChatModule.getChatModule().getChannelManager()
 						.getChannel(rs.getString("name"));
@@ -296,27 +356,31 @@ public class DatabaseManager {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Delete a <code>Channel</code> by name.
+	 * 
+	 * @param channelName
+	 *            the name of the <code>Channel</code> to delete
+	 */
 	public void deleteChannel(String channelName) {
 		PreparedStatement pst = null;
 		try {
-			pst = connection.prepareStatement(
-					"DELETE FROM ChatChannels WHERE name = ?");
+			pst = connection.prepareStatement("DELETE FROM ChatChannels WHERE name = ?");
 			pst.setString(1, channelName);
 
 			pst.executeUpdate();
-			pst.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -324,14 +388,108 @@ public class DatabaseManager {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}
 	}
 
-	public ResultSet makeCustomCall(String MySQLStatement,
-			boolean resultExpected) {
+	/**
+	 * Save <code>Machine</code> data to database.
+	 * 
+	 * @param m
+	 *            the <code>Machine</code> to save data for
+	 */
+	public void saveMachine(Machine m) {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement(
+					"INSERT INTO Machines(location, type, data) "
+							+ "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE "
+							+ "type=VALUES(type), data=VALUES(data)");
+
+			pst.setString(1, m.getLocationString());
+			pst.setString(2, m.getType().getAbbreviation());
+			pst.setString(3, m.getData());
+
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			Sblogger.err(e);
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					Sblogger.err(e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Delete a specified <code>Machine</code>'s data from database.
+	 * 
+	 * @param m
+	 *            the <code>Machine</code> to delete data of
+	 */
+	public void deleteMachine(Machine m) {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement(
+					"DELETE FROM Machines WHERE location = ?");
+			pst.setString(1, m.getLocationString());
+
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					Sblogger.err(e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Creates and loads all <code>Machine</code>s from saved data.
+	 */
+	public void loadAllMachines() {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement("SELECT * FROM Machines");
+
+			ResultSet rs = pst.executeQuery();
+			MachineManager mm = MachineModule.getInstance().getManager();
+
+			while (rs.next()) {
+				mm.loadMachine(rs.getString("location"), rs.getString("type"), rs.getString("data"));
+			}
+		} catch (SQLException e) {
+			Sblogger.err(e);
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					Sblogger.err(e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @deprecated Make a custom call to the database. For testing purposes
+	 *             only! Make a new method for new features.
+	 * @param MySQLStatement
+	 *            the call to make
+	 * @param resultExpected
+	 *            true if a <code>ResultSet</code> is expected
+	 * @return the <code>ResultSet</code> generated, if any.
+	 */
+	public ResultSet makeCustomCall(String MySQLStatement, boolean resultExpected) {
 		try {
 			PreparedStatement pst = connection.prepareStatement(MySQLStatement);
 			if (resultExpected) {
@@ -344,13 +502,13 @@ public class DatabaseManager {
 				return null;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 			return null;
 		}
 	}
 
 	/**
-	 * 
+	 * Fills out <code>TowerData</code> from saved data.
 	 */
 	public void loadTowerData() {
 		PreparedStatement pst = null;
@@ -367,13 +525,13 @@ public class DatabaseManager {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}
@@ -381,7 +539,8 @@ public class DatabaseManager {
 	}
 
 	/**
-	 * @param towers
+	 * Save all <code>TowerData</code>.
+	 * @param towers the <code>TowerData</code> to save
 	 */
 	public void saveTowerData(TowerData towers) {
 		PreparedStatement pst = null;
@@ -410,21 +569,29 @@ public class DatabaseManager {
 					pst.setString(2, towers.getLocString("Prospit", i));
 	
 				pst.executeUpdate();
+				pst.close();
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Get a <code>SblockUser</code>'s name by the IP they last connected with.
+	 * 
+	 * @param hostAddress
+	 *            the IP to look up
+	 * @return the name of the <code>SblockUser</code>, "Player" if invalid
+	 */
 	public String getUserFromIP(String hostAddress) {
 		PreparedStatement pst = null;
 		String name = "Player";
@@ -439,13 +606,13 @@ public class DatabaseManager {
 				name = rs.getString("name");
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}
@@ -456,6 +623,15 @@ public class DatabaseManager {
 		}
 	}
 
+	/**
+	 * Get the reason a <code>SblockUser</code> was banned.
+	 * 
+	 * @param name
+	 *            the name of the banned <code>SblockUser</code>
+	 * @param ip
+	 *            the IP of the banned <code>SblockUser</code>
+	 * @return the ban reason
+	 */
 	public String getBanReason(String name, String ip) {
 		PreparedStatement pst = null;
 		String ban = null;
@@ -475,19 +651,27 @@ public class DatabaseManager {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}
 		return ban;
 	}
 
+	/**
+	 * Add a ban and reason to a <code>SblockUser</code>.
+	 * 
+	 * @param target
+	 *            the <code>SblockUser</code> to add a ban for
+	 * @param reason
+	 *            the reason the <code>SblockUser</code> was banned
+	 */
 	public void addBan(SblockUser target, String reason) {
 		PreparedStatement pst = null;
 		try {
@@ -504,18 +688,24 @@ public class DatabaseManager {
 
 			pst.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Remove a ban by name or IP.
+	 * 
+	 * @param target
+	 *            the name or IP to unban
+	 */
 	public void removeBan(String target) {
 		PreparedStatement pst = null;
 
@@ -532,12 +722,12 @@ public class DatabaseManager {
 				try {
 					Bukkit.unbanIP(rs.getString("ip"));
 				} catch (NullPointerException e) {
-					// IP not saved properly or something
+					// IP not saved
 				}
 				try {
 					Bukkit.getOfflinePlayer(rs.getString("name")).setBanned(false);
 				} catch (NullPointerException e) {
-					// Name not saved properly or something
+					// Name not saved
 				}
 			}
 
@@ -553,16 +743,16 @@ public class DatabaseManager {
 
 		} catch (SQLException e) {
 			Sblogger.severe("SblockDatabase", "Error removing ban for " + target
-					+ "! Please unban and unIPban manually. Also, make mySQL call:"
+					+ "! Please unban and unIPban manually. MySQL call:"
 					+ "\nDELETE * FROM BannedPlayers WHERE name="
 					+ target +" OR ip=" + target + ";");
-			e.printStackTrace();
+			Sblogger.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Sblogger.err(e);
 				}
 			}
 		}

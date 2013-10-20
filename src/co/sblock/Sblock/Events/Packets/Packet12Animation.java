@@ -15,7 +15,7 @@
  * 02package co.sblock.Sblock.Events;111-1307 USA
  */
 
-package co.sblock.Sblock.Events;
+package co.sblock.Sblock.Events.Packets;
 
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -50,8 +50,8 @@ public class Packet12Animation extends AbstractPacket {
 		/**
 		 * Retrieve an instance of the Animation enum.
 		 * 
-		 * @return Animation enum.
-		 */
+		
+		 * @return Animation enum. */
 		public static Animations getInstance() {
 			return INSTANCE;
 		}
@@ -79,7 +79,7 @@ public class Packet12Animation extends AbstractPacket {
 	 * Set the player ID.
 	 * 
 	 * @param value
-	 *            - new value.
+	 *            new value.
 	 */
 	public void setEntityID(int value) {
 		handle.getIntegers().write(0, value);
@@ -89,7 +89,7 @@ public class Packet12Animation extends AbstractPacket {
 	 * Retrieve the player's entity object.
 	 * 
 	 * @param world
-	 *            - the word the player has joined.
+	 *            the world the player has joined.
 	 * @return The player's entity.
 	 */
 	public Entity getEntity(World world) {
@@ -100,7 +100,7 @@ public class Packet12Animation extends AbstractPacket {
 	 * Retrieve the player's entity object.
 	 * 
 	 * @param event
-	 *            - the packet event.
+	 *            the packet event.
 	 * @return The player's entity.
 	 */
 	public Entity getEntity(PacketEvent event) {
@@ -120,7 +120,7 @@ public class Packet12Animation extends AbstractPacket {
 	 * Set animation ID.
 	 * 
 	 * @param value
-	 *            - new value.
+	 *            new value.
 	 */
 	public void setAnimation(byte value) {
 		handle.getIntegers().write(1, (int) value);
