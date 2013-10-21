@@ -129,7 +129,7 @@ public class ChatMsgs {
 	}
 
 	public static String onUserModFail(Channel c) {
-		return ChatColor.RED + "You do not have permission to mod people in "
+		return ChatColor.RED + "You do not have permission to (de)mod people in "
 				+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!";
 	}
 

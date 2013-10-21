@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Chat2.Channel;
+ package co.sblock.Sblock.Chat2.Channel;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +30,6 @@ public abstract class Channel {
 	protected Set<String> modList = new HashSet<String>();
 	protected Set<String> muteList = new HashSet<String>();
 	protected Set<String> banList = new HashSet<String>();
-
 	protected Set<String> listening = new HashSet<String>();
 	
 	
@@ -57,11 +56,21 @@ public abstract class Channel {
 	public ChannelType getType() {
 		return null;
 	}
-
+	/**
+	 * ONLY CALL FROM CHATUSER
+	 * 
+	 * @param user
+	 *            the name to add to listening.
+	 */
 	public void addListening(String user) {
 		this.listening.add(user);
 	}
-
+	/**
+	 * ONLY CALL FROM CHATUSER
+	 * 
+	 * @param user
+	 *            the name to remove from listening.
+	 */
 	public void removeListening(String user) {
 		this.listening.remove(user);
 	}
@@ -123,12 +132,10 @@ public abstract class Channel {
 			this.sendToAll(sender, ChatMsgs.onUserRmModAnnounce(target, this), "channel");
 			Player targetUser = Bukkit.getPlayerExact(target);
 			if (targetUser != null) {
-				targetUser.sendMessage(ChatMsgs.onUserRmMod(target, this));
+				targetUser.sendMessage(ChatMsgs.onUserRmMod(target, this)); 
 			}
 		} else if (!sender.getPlayerName().equals(this.owner)) {
-			sender.sendMessage(ChatColor.RED
-					+ "You do not have permission to demod people in "
-					+ ChatColor.GOLD + this.name + ChatColor.RED + "!");
+			sender.sendMessage(ChatMsgs.onUserModFail(this));
 		} else {
 			sender.sendMessage(ChatColor.YELLOW + target + ChatColor.RED
 					+ " is not a mod in " + ChatColor.GOLD + this.name
@@ -141,8 +148,7 @@ public abstract class Channel {
 	}
 
 	public boolean isChannelMod(ChatUser user) {
-		if (modList.contains(user.getPlayerName())
-				|| isMod(user)) {
+		if (modList.contains(user.getPlayerName()) || isMod(user)) {
 			return true;
 		}
 		return false;
@@ -169,14 +175,18 @@ public abstract class Channel {
 		}
 
 	}
-
+	/**
+	 * Method used by database to load a ban silently.
+	 * 
+	 * @param user
+	 *            the name to add as a ban
+	 */
 	public void loadBan(String user) {
 		this.banList.add(user);
 	}
 
 	public void banUser(String username, ChatUser sender) {
-		if (this.isChannelMod(sender)
-				&& !banList.contains(username)) {
+		if (this.isChannelMod(sender) && this.isBanned(ChatUser.getUser(username))) {
 			if (modList.contains(username)) {
 				modList.remove(username);
 			}
@@ -188,8 +198,7 @@ public abstract class Channel {
 				}
 			}
 			this.banList.add(username);
-			this.sendToAll(sender, ChatMsgs.onUserBanAnnounce(username, this),
-					"channel");
+			this.sendToAll(sender, ChatMsgs.onUserBanAnnounce(username, this), "channel");
 		} else if (!this.isChannelMod(sender)) {
 			sender.sendMessage(ChatMsgs.onUserBanFail(this));
 		} else {
@@ -197,17 +206,14 @@ public abstract class Channel {
 		}
 	}
 
-	
 	public void unbanUser(String username, ChatUser sender) {
-		if (sender.getPlayerName().equalsIgnoreCase(this.owner)
-				&& banList.contains(username)) {
+		if (sender.getPlayerName().equalsIgnoreCase(this.owner)	&& banList.contains(username)) {
 			this.banList.remove(username);
 			Player user = Bukkit.getPlayerExact(username);
 			if (user != null) {
 				user.sendMessage(ChatMsgs.onUserUnban(this));
 			}
-			this.sendToAll(sender, ChatMsgs.onUserUnbanAnnounce(username, this),
-					"channel");
+			this.sendToAll(sender, ChatMsgs.onUserUnbanAnnounce(username, this), "channel");
 		} else if (!sender.getPlayerName().equalsIgnoreCase(owner)) {
 			sender.sendMessage(ChatMsgs.onUserUnbanFail(this));
 		} else {
@@ -252,8 +258,7 @@ public abstract class Channel {
 	}
 
 	public boolean isApproved(ChatUser user) {
-		return approvedList.contains(user.getPlayerName())
-				|| isChannelMod(user);
+		return approvedList.contains(user.getPlayerName()) || isChannelMod(user);
 	}
 
 	public void disband(ChatUser sender) {

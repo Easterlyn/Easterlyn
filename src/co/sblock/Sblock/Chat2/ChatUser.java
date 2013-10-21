@@ -233,16 +233,14 @@ public class ChatUser {
 	 *            the name of the <code>Channel</code> to remove
 	 */
 	public void removeListening(String cName) {
-		Channel c = ChatModule.getChatModule().getChannelManager()
-				.getChannel(cName);
+		Channel c = ChatModule.getChatModule().getChannelManager().getChannel(cName);
 		if (c == null) {
 			this.sendMessage(ChatMsgs.errorInvalidChannel(cName));
 			this.listening.remove(cName);
 			return;
 		}
 		if (this.listening.remove(cName)) {
-				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c),
-						"channel");
+				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), "channel");
 				c.removeListening(this.getPlayerName());
 			if (cName.equals(current)) {
 				current = null;
