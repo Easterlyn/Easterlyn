@@ -3,7 +3,7 @@ package co.sblock.Sblock.Chat.Channel;
 import java.util.HashMap;
 import java.util.Map;
 
-import co.sblock.Sblock.Chat.ChatMsgs;
+import co.sblock.Sblock.Chat2.ChatMsgs;
 import co.sblock.Sblock.Chat2.ChatUser;
 import co.sblock.Sblock.Chat2.ChatUserManager;
 

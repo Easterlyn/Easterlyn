@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 
-import co.sblock.Sblock.Chat.ChatMsgs;
+import co.sblock.Sblock.Chat2.ChatMsgs;
 import co.sblock.Sblock.Chat2.ChatUser;
 import co.sblock.Sblock.Chat2.ChatUserManager;
 import co.sblock.Sblock.Utilities.Sblogger;

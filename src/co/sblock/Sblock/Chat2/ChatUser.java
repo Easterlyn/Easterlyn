@@ -740,5 +740,4 @@ public class ChatUser {
 			tasks.remove(channelName);
 		}
 	}
-
 }

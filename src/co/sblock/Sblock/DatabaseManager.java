@@ -10,8 +10,8 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Chat.ChatModule;
-import co.sblock.Sblock.Chat.ChatUser;
-import co.sblock.Sblock.Chat.ChatUserManager;
+import co.sblock.Sblock.Chat2.ChatUser;
+import co.sblock.Sblock.Chat2.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;

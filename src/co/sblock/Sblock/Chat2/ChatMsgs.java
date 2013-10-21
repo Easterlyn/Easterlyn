@@ -8,17 +8,16 @@ import org.bukkit.ChatColor;
 import co.sblock.Sblock.Chat.Channel.CanonNicks;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
-import co.sblock.Sblock.UserData.SblockUser;
 
 public class ChatMsgs {
 
-	public static String onChannelJoin(SblockUser u, Channel c) {
+	public static String onChannelJoin(ChatUser u, Channel c) {
 		String name = u.getNick();
 		String message = "pestering";
 		ChatColor nameC = ChatColor.GREEN;
-		if(c.hasNick(u))	{
+		if (c.hasNick(u)) {
 			name = c.getNick(u);			
-			if(c.getType().equals(ChannelType.RP))	{
+			if (c.getType().equals(ChannelType.RP))	{
 				nameC = CanonNicks.getNick(name).getColor();
 				message = CanonNicks.getNick(name).getPester();
 				name = CanonNicks.getNick(name).getHandle();
@@ -30,7 +29,7 @@ public class ChatMsgs {
 				+ new SimpleDateFormat("HH:mm").format(new Date());
 	}
 
-	public static String onChannelLeave(SblockUser u, Channel c) {
+	public static String onChannelLeave(ChatUser u, Channel c) {
 		return ChatMsgs.onChannelJoin(u, c).replaceAll("began", "ceased");
 	}
 
@@ -39,11 +38,11 @@ public class ChatMsgs {
 				+ " has been disbanded! These are indeed dark times...";
 	}
 
-	public static String onUserMute(SblockUser u) {
+	public static String onUserMute() {
 		return ChatColor.RED + "You have been muted in all channels.";
 	}
 
-	public static String onUserUnmute(SblockUser u) {
+	public static String onUserUnmute() {
 		return ChatColor.GREEN + "You have been unmuted in all channels.";
 	}
 
@@ -56,7 +55,7 @@ public class ChatMsgs {
 				+ ChatColor.GOLD + c.getName() + ChatColor.YELLOW + "!";
 	}
 
-	public static String onUserKickAnnounce(SblockUser u, Channel c) {
+	public static String onUserKickAnnounce(ChatUser u, Channel c) {
 		return ChatColor.YELLOW + u.getPlayerName() + " has been kicked from "
 				+ ChatColor.GOLD + c.getName() + ChatColor.YELLOW + "!";
 	}
@@ -66,7 +65,7 @@ public class ChatMsgs {
 				+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!";
 	}
 
-	public static String onUserKickedAlready(SblockUser u, Channel c) {
+	public static String onUserKickedAlready(ChatUser u, Channel c) {
 		return ChatColor.YELLOW + u.getPlayerName() + ChatColor.RED +
 				" is not chatting in " + ChatColor.GOLD + c.getName() +
 				ChatColor.RED + "!";
@@ -149,20 +148,20 @@ public class ChatMsgs {
 				+ ChatColor.GOLD + nick + " in " + c.getName();
 	}
 
-	public static String onUserRmMod(SblockUser u, Channel c) {
+	public static String onUserRmMod(ChatUser u, Channel c) {
 		return null;
 	}
 
-	public static String onUserRmModAnnounce(SblockUser u, Channel c) {
+	public static String onUserRmModAnnounce(ChatUser u, Channel c) {
 		return null;
 	}
 
-	public static String isBanned(SblockUser u, Channel c) {
+	public static String isBanned(Channel c) {
 		return ChatColor.RED + "You are banned in channel " + ChatColor.GOLD
 				+ c.getName() + ChatColor.RED + "!";
 	}
 
-	public static String onUserDeniedPrivateAccess(SblockUser u, Channel c) {
+	public static String onUserDeniedPrivateAccess(Channel c) {
 		return ChatColor.GOLD + c.getName() + ChatColor.RED
 				+ " is a private channel!\n" + ChatColor.YELLOW
 				+ "Request access with the command " + ChatColor.BLUE
@@ -179,7 +178,7 @@ public class ChatMsgs {
 				+"\nValid types: Normal, CanonRP, RP, Nick, Temp.";
 	}
 
-	public static String unsupportedOperation(SblockUser u, Channel c) {
+	public static String unsupportedOperation(Channel c) {
 		return ChatColor.RED + "Channel " + ChatColor.GOLD + c.getName()
 				+ ChatColor.RED + " does not support that operation.";
 	}
