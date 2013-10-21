@@ -12,11 +12,15 @@ public class ChatUserManager {
 	private  Map<String, ChatUser> users = new HashMap<String, ChatUser>();
 	private static ChatUserManager instance;
 
-	public ChatUserManager() {
-		instance = this;
-	}
+	private ChatUserManager(){}
 
+	/**
+	 * Singleton
+	 */
 	public static ChatUserManager getUserManager() {
+		if (instance == null) {
+			instance = new ChatUserManager();
+		}
 		return instance;
 	}
 

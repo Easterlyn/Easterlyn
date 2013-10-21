@@ -5,9 +5,9 @@ import java.util.Date;
 
 import org.bukkit.ChatColor;
 
-import co.sblock.Sblock.Chat.Channel.CanonNicks;
-import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Chat2.Channel.CanonNicks;
+import co.sblock.Sblock.Chat2.Channel.Channel;
+import co.sblock.Sblock.Chat2.Channel.ChannelType;
 
 public class ChatMsgs {
 
@@ -148,11 +148,11 @@ public class ChatMsgs {
 				+ ChatColor.GOLD + nick + " in " + c.getName();
 	}
 
-	public static String onUserRmMod(ChatUser u, Channel c) {
+	public static String onUserRmMod(String u, Channel c) {
 		return null;
 	}
 
-	public static String onUserRmModAnnounce(ChatUser u, Channel c) {
+	public static String onUserRmModAnnounce(String target, Channel c) {
 		return null;
 	}
 

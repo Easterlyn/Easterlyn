@@ -1,7 +1,7 @@
 package co.sblock.Sblock.Chat2;
 
 import co.sblock.Sblock.Module;
-import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Chat2.Channel.ChannelManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -11,7 +11,6 @@ public class ChatModule extends Module {
 	private static ChatModule instance;
 	private ChannelManager cm = new ChannelManager();
 	private ChatModuleCommandListener clistener = new ChatModuleCommandListener();
-	private ChatUserManager uM = new ChatUserManager();
 	private static Sblogger log = new Sblogger("SblockChat");
 
 	@Override
@@ -37,10 +36,6 @@ public class ChatModule extends Module {
 		return cm;
 	}
 
-	public ChatUserManager getChatUserManager()	{
-		return uM;
-	}
-	
 	public static ChatModule getChatModule() {
 		return instance;
 	}

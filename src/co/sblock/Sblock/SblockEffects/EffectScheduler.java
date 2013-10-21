@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import co.sblock.Sblock.Chat.ChatUser;
-import co.sblock.Sblock.Chat.ChatUserManager;
-import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Chat2.ChatUser;
+import co.sblock.Sblock.Chat2.ChatUserManager;
+import co.sblock.Sblock.Chat2.Channel.ChannelManager;
 
 public class EffectScheduler extends BukkitRunnable {
 	

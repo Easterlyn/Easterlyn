@@ -9,13 +9,13 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 
-import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat2.ChatModule;
 import co.sblock.Sblock.Chat2.ChatUser;
 import co.sblock.Sblock.Chat2.ChatUserManager;
-import co.sblock.Sblock.Chat.Channel.AccessLevel;
-import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.ChannelManager;
-import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Chat2.Channel.AccessLevel;
+import co.sblock.Sblock.Chat2.Channel.Channel;
+import co.sblock.Sblock.Chat2.Channel.ChannelManager;
+import co.sblock.Sblock.Chat2.Channel.ChannelType;
 import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.Machines.MachineManager;
 import co.sblock.Sblock.Machines.MachineModule;

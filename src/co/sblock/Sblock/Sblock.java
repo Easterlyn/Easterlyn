@@ -16,7 +16,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat2.ChatModule;
 import co.sblock.Sblock.Events.EventModule;
 //import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.SblockEffects.EffectsModule;

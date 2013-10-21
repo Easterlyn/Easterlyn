@@ -3,7 +3,7 @@ package co.sblock.Sblock.UserData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
-import co.sblock.Sblock.Chat.ColorDef;
+import co.sblock.Sblock.Chat2.ColorDef;
 
 /**
  * Class that keeps track of players currently logged on to the game

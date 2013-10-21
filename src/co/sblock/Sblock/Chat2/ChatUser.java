@@ -13,11 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Chat.Channel.AccessLevel;
-import co.sblock.Sblock.Chat.Channel.CanonNicks;
-import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.ChannelManager;
-import co.sblock.Sblock.Chat.Channel.RPChannel;
+import co.sblock.Sblock.Chat2.Channel.AccessLevel;
+import co.sblock.Sblock.Chat2.Channel.CanonNicks;
+import co.sblock.Sblock.Chat2.Channel.Channel;
+import co.sblock.Sblock.Chat2.Channel.ChannelManager;
+import co.sblock.Sblock.Chat2.Channel.RPChannel;
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
@@ -26,6 +26,12 @@ import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
+/**
+ * <code>ChatUser</code> is the class for storing all chat-related
+ * <code>Player</code> data.
+ * 
+ * @author Jikoo, Dublek
+ */
 public class ChatUser {
 
 	/** The <code>Player</code> */

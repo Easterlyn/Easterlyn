@@ -8,13 +8,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.DatabaseManager;
-import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat2.ChatModule;
 import co.sblock.Sblock.Chat2.ChatMsgs;
 import co.sblock.Sblock.Chat2.ChatUser;
 import co.sblock.Sblock.Chat2.ChatUserManager;
+import co.sblock.Sblock.Chat2.Channel.Channel;
+import co.sblock.Sblock.Chat2.Channel.AccessLevel;
+import co.sblock.Sblock.Chat2.Channel.ChannelType;
 import co.sblock.Sblock.Utilities.Sblogger;
 
-public class NormalChannel implements Channel {
+public class NormalChannel extends Channel {
 
 	protected String name;
 	protected AccessLevel access;
@@ -28,6 +31,7 @@ public class NormalChannel implements Channel {
 	protected Set<String> listening = new HashSet<String>();
 
 	public NormalChannel(String name, AccessLevel a, String creator) {
+		super(name, a, creator);
 		this.name = name;
 		this.access = a;
 		this.owner = creator;
@@ -85,7 +89,6 @@ public class NormalChannel implements Channel {
 		return false;
 	}
 
-	@Override
 	public void setOwner(String newO, ChatUser sender) {
 		if (sender.equals(this.owner)) {
 			this.owner = newO;
@@ -107,7 +110,6 @@ public class NormalChannel implements Channel {
 		this.modList.add(user);
 	}
 
-	@Override
 	public void addMod(String username, ChatUser sender) {
 		if (!ChatUser.isValidUser(username)) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(username));
@@ -129,7 +131,6 @@ public class NormalChannel implements Channel {
 
 	}
 
-	@Override
 	public void removeMod(String target, ChatUser sender) {
 		// SburbChat code. Handle with care
 

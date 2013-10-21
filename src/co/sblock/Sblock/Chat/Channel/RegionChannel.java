@@ -2,6 +2,7 @@ package co.sblock.Sblock.Chat.Channel;
 
 import co.sblock.Sblock.Chat2.ChatMsgs;
 import co.sblock.Sblock.Chat2.ChatUser;
+import co.sblock.Sblock.Chat2.Channel.AccessLevel;
 
 public class RegionChannel extends NormalChannel {
 

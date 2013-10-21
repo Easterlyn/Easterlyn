@@ -6,8 +6,11 @@ import java.util.Map;
 import co.sblock.Sblock.Chat2.ChatMsgs;
 import co.sblock.Sblock.Chat2.ChatUser;
 import co.sblock.Sblock.Chat2.ChatUserManager;
+import co.sblock.Sblock.Chat2.Channel.Channel;
+import co.sblock.Sblock.Chat2.Channel.AccessLevel;
+import co.sblock.Sblock.Chat2.Channel.ChannelType;
 
-public class NickChannel extends NormalChannel {
+public class NickChannel extends Channel {
 
 	private Map<ChatUser, String> nickList = new HashMap<ChatUser, String>();
 	
@@ -15,12 +18,10 @@ public class NickChannel extends NormalChannel {
 		super(name, a, creator);
 	}
 	
-	@Override
 	public ChannelType getType()	{
 		return ChannelType.NICK;
 	}
 	
-	@Override
 	public void setNick(ChatUser sender, String nick) {
 		nickList.put(sender, nick);
 		for(String user : this.getListening()){
@@ -28,7 +29,6 @@ public class NickChannel extends NormalChannel {
 		}
 	}
 
-	@Override
 	public void removeNick(ChatUser sender) {
 		for(String user : this.getListening()){
 			ChatUserManager.getUserManager().getUser(user).sendMessage(
@@ -37,7 +37,6 @@ public class NickChannel extends NormalChannel {
 		nickList.remove(sender);
 	}
 	
-	@Override
 	public String getNick(ChatUser sender) {
 		return nickList.get(sender);
 	}
