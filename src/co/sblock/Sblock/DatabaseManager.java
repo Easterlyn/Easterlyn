@@ -182,6 +182,8 @@ public class DatabaseManager {
 	public ChatUser loadUserData(String name) {
 		PreparedStatement pst = null;
 		ChatUser cUser = null;
+		SblockUser sUser = UserManager.getUserManager().addUser(name);
+		cUser = ChatUserManager.getUserManager().addUser(name);
 		try {
 			pst = connection.prepareStatement("SELECT * FROM PlayerData WHERE name=?");
 
@@ -189,8 +191,6 @@ public class DatabaseManager {
 
 			ResultSet rs = pst.executeQuery();
 
-			SblockUser sUser = UserManager.getUserManager().addUser(name);
-			cUser = ChatUserManager.getUserManager().addUser(name);
 			if (rs.next()) {
 				sUser.setAspect(rs.getString("aspect"));
 				sUser.setPlayerClass(rs.getString("class"));

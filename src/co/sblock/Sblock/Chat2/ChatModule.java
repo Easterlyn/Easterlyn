@@ -11,6 +11,7 @@ public class ChatModule extends Module {
 	private static ChatModule instance;
 	private ChannelManager cm = new ChannelManager();
 	private ChatModuleCommandListener clistener = new ChatModuleCommandListener();
+	private ChatUserManager uM = new ChatUserManager();
 	private static Sblogger log = new Sblogger("SblockChat");
 
 	@Override
@@ -36,6 +37,10 @@ public class ChatModule extends Module {
 		return cm;
 	}
 
+	public ChatUserManager getChatUserManager()	{
+		return uM;
+	}
+	
 	public static ChatModule getChatModule() {
 		return instance;
 	}
