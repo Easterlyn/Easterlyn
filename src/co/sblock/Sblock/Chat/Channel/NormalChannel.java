@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.ChatMsgs;
-import co.sblock.Sblock.UserData.SblockUser;
-import co.sblock.Sblock.UserData.UserManager;
+import co.sblock.Sblock.Chat.ChatUser;
+import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 public class NormalChannel implements Channel {
@@ -67,26 +67,26 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void setNick(SblockUser sender, String nick) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(sender, this));
+	public void setNick(ChatUser sender, String nick) {
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));
 	}
 
 	@Override
-	public void removeNick(SblockUser sender) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(sender, this));
+	public void removeNick(ChatUser sender) {
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));
 	}
 
-	public String getNick(SblockUser sender) {
-		return ChatMsgs.unsupportedOperation(sender, this);
+	public String getNick(ChatUser sender) {
+		return ChatMsgs.unsupportedOperation(this);
 	}
 	
 	@Override
-	public boolean hasNick(SblockUser sender)	{
+	public boolean hasNick(ChatUser sender)	{
 		return false;
 	}
 
 	@Override
-	public void setOwner(String newO, SblockUser sender) {
+	public void setOwner(String newO, ChatUser sender) {
 		if (sender.equals(this.owner)) {
 			this.owner = newO;
 		}
@@ -98,7 +98,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public boolean isOwner(SblockUser user) {
+	public boolean isOwner(ChatUser user) {
 		return user.getPlayerName().equalsIgnoreCase(owner);
 	}
 
@@ -108,8 +108,8 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void addMod(String username, SblockUser sender) {
-		if (!SblockUser.isValidUser(username)) {
+	public void addMod(String username, ChatUser sender) {
+		if (!ChatUser.isValidUser(username)) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(username));
 			return;
 		}
@@ -130,7 +130,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void removeMod(String target, SblockUser sender) {
+	public void removeMod(String target, ChatUser sender) {
 		// SburbChat code. Handle with care
 
 		if (modList.contains(sender.getPlayerName())
@@ -162,7 +162,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public boolean isChannelMod(SblockUser user) {
+	public boolean isChannelMod(ChatUser user) {
 		if (modList.contains(user.getPlayerName())
 				|| user.getPlayer().hasPermission("group.denizen")
 				|| user.getPlayer().hasPermission("group.horrorterror")) {
@@ -172,7 +172,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public boolean isMod(SblockUser user) {
+	public boolean isMod(ChatUser user) {
 		if (user.getPlayer().hasPermission("group.denizen")
 				|| user.getPlayer().hasPermission("group.horrorterror")) {
 			return true;
@@ -181,7 +181,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void kickUser(SblockUser user, SblockUser sender) {
+	public void kickUser(ChatUser user, ChatUser sender) {
 		if (this.isChannelMod(sender) && listening.contains(user.getPlayerName())) {
 			this.listening.remove(user);
 			user.sendMessage(ChatMsgs.onUserKick(this));
@@ -201,14 +201,14 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void banUser(String username, SblockUser sender) {
+	public void banUser(String username, ChatUser sender) {
 		if (this.isChannelMod(sender)
 				&& !banList.contains(username)) {
 			if (modList.contains(username)) {
 				modList.remove(username);
 			}
 			if (listening.contains(username)) {
-				SblockUser user = SblockUser.getUser(username);
+				ChatUser user = ChatUser.getUser(username);
 				if (user != null) {
 					user.removeListening(this.getName());
 					user.sendMessage(ChatMsgs.onUserBan(this));
@@ -225,7 +225,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void unbanUser(String username, SblockUser sender) {
+	public void unbanUser(String username, ChatUser sender) {
 		if (sender.getPlayerName().equalsIgnoreCase(this.owner)
 				&& banList.contains(username)) {
 			this.banList.remove(username);
@@ -248,7 +248,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public boolean isBanned(SblockUser user) {
+	public boolean isBanned(ChatUser user) {
 		return banList.contains(user.getPlayerName());
 	}
 
@@ -258,7 +258,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void approveUser(SblockUser user, SblockUser sender) {
+	public void approveUser(ChatUser user, ChatUser sender) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
 					+ " is a public channel!");
@@ -269,7 +269,7 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public void deapproveUser(SblockUser user, SblockUser sender) {
+	public void deapproveUser(ChatUser user, ChatUser sender) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(ChatColor.GOLD + this.name + ChatColor.RED
 					+ " is a public channel!");
@@ -284,25 +284,25 @@ public class NormalChannel implements Channel {
 	}
 
 	@Override
-	public boolean isApproved(SblockUser user) {
+	public boolean isApproved(ChatUser user) {
 		return approvedList.contains(user.getPlayerName())
 				|| isChannelMod(user);
 	}
 
 	@Override
-	public void disband(SblockUser sender) {
+	public void disband(ChatUser sender) {
 		this.sendToAll(sender, ChatMsgs.onChannelDisband(this.getName()), "channel");
 		for (String s : this.listening) {
-			UserManager.getUserManager().getUser(s).removeListening(this.getName());
+			ChatUserManager.getUserManager().getUser(s).removeListening(this.getName());
 		}
 		ChatModule.getChatModule().getChannelManager().dropChannel(this.name);
 	}
 
 	@Override
-	public void sendToAll(SblockUser sender, String s, String type) {
+	public void sendToAll(ChatUser sender, String s, String type) {
 		Set<String> failures = new HashSet<String>();
 		for (String name : this.listening) {
-			SblockUser u = UserManager.getUserManager().getUser(name);
+			ChatUser u = ChatUserManager.getUserManager().getUser(name);
 			if (u != null) {
 				u.sendMessageFromChannel(s, this, type);
 			} else {

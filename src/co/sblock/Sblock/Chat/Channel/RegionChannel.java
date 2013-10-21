@@ -1,7 +1,7 @@
 package co.sblock.Sblock.Chat.Channel;
 
 import co.sblock.Sblock.Chat.ChatMsgs;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.Chat.ChatUser;
 
 public class RegionChannel extends NormalChannel {
 
@@ -15,17 +15,17 @@ public class RegionChannel extends NormalChannel {
 	}
 
 	@Override
-	public void kickUser(SblockUser user, SblockUser sender) {
+	public void kickUser(ChatUser user, ChatUser sender) {
 		sender.sendMessage(ChatMsgs.errorRegionChannel());
 	}
 	
 	@Override
-	public void banUser(String username, SblockUser sender) {
+	public void banUser(String username, ChatUser sender) {
 		sender.sendMessage(ChatMsgs.errorRegionChannel());
 	}
 
 	@Override
-	public void unbanUser(String username, SblockUser sender) {
+	public void unbanUser(String username, ChatUser sender) {
 		sender.sendMessage(ChatMsgs.errorRegionChannel());
 	}
 }

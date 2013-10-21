@@ -38,6 +38,8 @@ import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Chat.ChatUser;
+import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Events.Packets.AbstractPacket;
@@ -49,7 +51,6 @@ import co.sblock.Sblock.Events.Packets.SleepTeleport;
 import co.sblock.Sblock.Events.Packets.SendPacket;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
-import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
@@ -129,11 +130,8 @@ public class EventListener implements Listener, PacketListener {
 	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
-		if (u == null) {
-			UserManager.getUserManager().addUser(event.getPlayer());
-			u = SblockUser.getUser(event.getPlayer().getName());
-		}
+		ChatUser u = DatabaseManager.getDatabaseManager().loadUserData(event.getPlayer().getName());
+		
 		//RegionChannel handling
 		u.setCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
 		u.syncJoinChannel("#" + u.getCurrentRegion().toString());
@@ -155,7 +153,7 @@ public class EventListener implements Listener, PacketListener {
 				event.getPlayer().performCommand(
 						event.getMessage().substring(1));
 			} else {
-				SblockUser.getUser(event.getPlayer().getName()).chat(event);
+				ChatUserManager.getUserManager().getUser(event.getPlayer().getName()).chat(event);
 			}
 		}
 		else	{
@@ -171,8 +169,8 @@ public class EventListener implements Listener, PacketListener {
 	 */
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
-		SblockUser u = UserManager.getUserManager().getUser(event.getPlayer().getName());
-		u.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
+		ChatUserManager.getUserManager().getUser(event.getPlayer().getName())
+				.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
 	}
 
 	/**
@@ -184,7 +182,7 @@ public class EventListener implements Listener, PacketListener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		InventoryManager.restoreInventory(event.getPlayer());
-		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
+		ChatUser u = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
 		if (u == null) {
 			return; // We don't want to make another db call just to announce quit.
 		}
@@ -196,7 +194,7 @@ public class EventListener implements Listener, PacketListener {
 		for (String s : u.getListening()) {
 			u.removeListeningQuit(s);
 		}
-		UserManager.getUserManager().removeUser(event.getPlayer());
+		DatabaseManager.getDatabaseManager().saveUserData(event.getPlayer().getName());
 	}
 
 	/**
