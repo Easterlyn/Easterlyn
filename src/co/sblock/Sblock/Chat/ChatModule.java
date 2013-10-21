@@ -2,6 +2,8 @@ package co.sblock.Sblock.Chat;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 public class ChatModule extends Module {
@@ -24,6 +26,9 @@ public class ChatModule extends Module {
 	@Override
 	protected void onDisable() {
 		cm.saveAllChannels();
+		for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+			UserManager.getUserManager().removeUser(u.getPlayerName());
+		}
 		instance = null;
 	}
 

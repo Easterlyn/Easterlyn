@@ -43,6 +43,7 @@ public enum ActiveEffect {
 	public void getRightClickEffect(Player p)	{
 		switch (this)	{
 		case BLINK:
+			@SuppressWarnings("deprecation")
 			Location target = p.getTargetBlock(null, 128).getLocation();
 			p.teleport(target);
 			break;

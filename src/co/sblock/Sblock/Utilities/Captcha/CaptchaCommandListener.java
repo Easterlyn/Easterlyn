@@ -1,5 +1,6 @@
 package co.sblock.Sblock.Utilities.Captcha;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,12 +28,33 @@ public class CaptchaCommandListener implements CommandListener	{
 			Player p = (Player) sender;
 			ItemStack item = p.getItemInHand();
 			if(item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("captchacard"))	{
-				p.getInventory().remove(item);
+				p.getInventory().clear(p.getInventory().getHeldItemSlot());
 				p.getInventory().addItem(Captcha.captchaToItem(item));
 			}			
 			return true;
 		}
 		return false;
 	}
+	
+	@SblockCommand(consoleFriendly = false)
+	public boolean punchcard(CommandSender sender)	{
+		if(sender.isOp())	{
+			Player p = (Player) sender;
+			ItemStack item = p.getItemInHand();
+			if(Captcha.isCaptchaCard(item))	{
+				p.getInventory().clear(p.getInventory().getHeldItemSlot());
+				p.getInventory().addItem(Captchadex.punchCard(item));
+				return true;
+			}
+			sender.sendMessage(ChatColor.RED + "Item is not a captchacard!");
+			return true;
+		}
+		return false;
+	}
 
+	@SblockCommand(consoleFriendly = false)
+	public boolean captchadex(CommandSender sender)	{
+		((Player) sender).getInventory().addItem(Captchadex.createCaptchadexBook((Player) sender));
+		return true;
+	}
 }

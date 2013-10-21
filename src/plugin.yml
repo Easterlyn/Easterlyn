@@ -58,6 +58,10 @@ commands:
  meteor:
   usage: /meteor
   description: Drop a meteor on the crosshairs
+ sm:
+  description: Machines galore!
+  usage: /sm <machine abbreviaton or name>
+  permission: group.horrorterror
  se:
   description: Root of all SburbEffects commands
   usage: /se <getlore/setlore/clearlore/applyeffects/verbose> <lore>
@@ -67,3 +71,13 @@ commands:
  uncaptcha:
   description: Uncaptchas a card
   usage: /uncaptcha
+ punchcard:
+  description: Punches cards
+  usage: /punchcard
+ captchadex:
+  description: GIVE.
+  usage: /captchadex
+  permission: group.horrorterror
+ counter:
+  description: Starts a new XP Counter
+  usage: /counter <target> <duration>

@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Chat.ChatModule;
@@ -14,9 +15,12 @@ import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Machines.MachineManager;
+import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.Utilities.Sblogger;
-import co.sblock.Sblock.Utilities.TowerData;
 
 /**
  * Collection of all database-related functions
@@ -82,9 +86,9 @@ public class DatabaseManager {
 		try {
 			PreparedStatement pst = connection
 					.prepareStatement("INSERT INTO PlayerData(name, class, aspect, "
-							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, "
-							+ "isMute, nickname, channels, ip, timePlayed, previousLocation) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, isMute, "
+							+ "nickname, channels, ip, timePlayed, previousLocation, programs, uhc) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 							+ "ON DUPLICATE KEY UPDATE "
 							+ "class=VALUES(class), aspect=VALUES(aspect), "
 							+ "mPlanet=VALUES(mPlanet), dPlanet=VALUES(dPlanet), "
@@ -93,7 +97,8 @@ public class DatabaseManager {
 							+ "isMute=VALUES(isMute), nickname=VALUES(nickname), "
 							+ "channels=VALUES(channels), ip=VALUES(ip), "
 							+ "timePlayed=VALUES(timePlayed), "
-							+ "previousLocation=VALUES(previousLocation)");
+							+ "previousLocation=VALUES(previousLocation), "
+							+ "programs=VALUES(programs), uhc=VALUES(uhc)");
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getClassType().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
@@ -118,6 +123,8 @@ public class DatabaseManager {
 				user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				pst.setString(14, user.getPreviousLocationString());
 			}
+			pst.setString(15, user.getProgramString());
+			pst.setByte(16, user.getUHCMode());
 
 			pst.executeUpdate();
 			pst.close();
@@ -167,6 +174,8 @@ public class DatabaseManager {
 					}
 					user.syncSetCurrentChannel(rs.getString("currentChannel"));
 					user.setTimePlayed(rs.getString("timePlayed"));
+					user.setPrograms(rs.getString("programs"));
+					user.setUHCMode(rs.getByte("uhc"));
 				} else {
 					Sblogger.warning("SblockDatabase", "Player "
 							+ user.getPlayerName()
@@ -316,7 +325,77 @@ public class DatabaseManager {
 			pst.setString(1, channelName);
 
 			pst.executeUpdate();
-			pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void saveMachine(Machine m) {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement(
+					"INSERT INTO Machines(location, type, data) "
+							+ "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE "
+							+ "type=VALUES(type), data=VALUES(data)");
+
+			pst.setString(1, m.getLocationString());
+			pst.setString(2, m.getType().getAbbreviation());
+			pst.setString(3, m.getData());
+
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			Sblogger.err(e);
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void deleteMachine(Machine m) {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement(
+					"DELETE FROM Machines WHERE location = ?");
+			pst.setString(1, m.getLocationString());
+
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void loadAllMachines() {
+		PreparedStatement pst = null;
+		try {
+			pst = connection.prepareStatement("SELECT * FROM Machines");
+
+			ResultSet rs = pst.executeQuery();
+			MachineManager mm = MachineModule.getInstance().getManager();
+
+			while (rs.next()) {
+				mm.loadMachine(rs.getString("location"), rs.getString("type"), rs.getString("data"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
