@@ -82,7 +82,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			return true;
 		}
 		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
-			SblockUser u = UserManager.getUserManager().getUser(target);
+			ChatUser u = ChatUserManager.getUserManager().getUser(target);
 			sender.sendMessage(u.toString());
 			return true;
 		} else {
@@ -116,7 +116,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			Bukkit.banIP(victim.getUserIP());
 			DatabaseManager.getDatabaseManager().deleteUser(victim);
 			Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
-			for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+			for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName()
 						+ " has been superbanned for " + reason);
 			}
@@ -135,7 +135,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean unsban(CommandSender sender, String target) {
 		if (!(sender instanceof Player) || sender.isOp()) {
 			if (Bukkit.getOfflinePlayer(target).hasPlayedBefore()) {
-				for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+				for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 					u.sendMessage(ChatColor.GREEN + target + " has been unbanned.");
 				}
 				Sblogger.info("Sban", target + " has been unbanned!");
@@ -160,7 +160,7 @@ public class ChatModuleCommandListener implements CommandListener {
 		if (isConsole) { // TODO console-friendly stuff
 			sender.sendMessage(ChatColor.DARK_RED + "No commands programmed yet! :D");
 		} else { // ingame commands
-			SblockUser user = UserManager.getUserManager().getUser(sender.getName());
+			ChatUser user = ChatUserManager.getUserManager().getUser(sender.getName());
 			if (arguments == null) {
 				return false;
 			}
@@ -294,7 +294,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					} else if (args.length >= 2 && args[1].equalsIgnoreCase("getlisteners")) {
 						String listenerList = ChatColor.YELLOW + "Channel members: ";
 						for (String s : c.getListening()) {
-							SblockUser u = UserManager.getUserManager().getUser(s);
+							ChatUser u = ChatUserManager.getUserManager().getUser(s);
 							if (u.getCurrent().equals(c)) {
 								listenerList += ChatColor.GREEN + u.getPlayerName() + " ";
 							} else {
@@ -305,7 +305,7 @@ public class ChatModuleCommandListener implements CommandListener {
 						return true;
 					} else if (args.length >= 3) {
 						if (args[1].equalsIgnoreCase("kick")) {
-							c.kickUser(UserManager.getUserManager().getUser(args[2]), user);
+							c.kickUser(ChatUserManager.getUserManager().getUser(args[2]), user);
 							return true;
 						} else if (args[1].equalsIgnoreCase("ban")) {
 							c.banUser(args[2], user);
@@ -344,10 +344,10 @@ public class ChatModuleCommandListener implements CommandListener {
 						this.sendModHelp(user);
 						return true;
 					}
-					SblockUser victim = UserManager.getUserManager().getUser(args[2]);
+					ChatUser victim = ChatUserManager.getUserManager().getUser(args[2]);
 					if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
 						victim.setNick(args[3]);
-						for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+						for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 							u.sendMessage(ChatColor.GREEN + victim.getPlayerName()
 									+ ChatColor.YELLOW + " shall henceforth be know as: "
 									+ ChatColor.GREEN + args[3]);
@@ -359,7 +359,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					} else if (args.length >= 2) {
 						if (args[1].equalsIgnoreCase("mute")) {
 							victim.setMute(true);
-							for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+							for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 								u.sendMessage(ChatColor.RED + victim.getPlayerName()
 										+ " has been muted");
 							}
@@ -368,7 +368,7 @@ public class ChatModuleCommandListener implements CommandListener {
 							return true;
 						} else if (args[1].equalsIgnoreCase("unmute")) {
 							victim.setMute(false);
-							for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+							for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 								u.sendMessage(ChatColor.GREEN + victim.getPlayerName()
 										+ " has been unmuted");
 							}
@@ -376,7 +376,7 @@ public class ChatModuleCommandListener implements CommandListener {
 									+ " has been muted");
 							return true;
 						} else if (args[1].equalsIgnoreCase("rmnick")) {
-							for (SblockUser u : UserManager.getUserManager().getUserlist()) {
+							for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 								u.sendMessage(ChatColor.GREEN + victim.getPlayerName()
 										+ ChatColor.YELLOW + " shall no longer be know as: "
 										+ ChatColor.GREEN + victim.getNick());
@@ -429,7 +429,7 @@ public class ChatModuleCommandListener implements CommandListener {
 		sender.sendMessage(ChatMsgs.helpDefault());
 	}
 
-	private void sendChannelHelp(SblockUser user, Channel c) {
+	private void sendChannelHelp(ChatUser user, Channel c) {
 		if (c.isMod(user) || user.getPlayer().hasPermission("group.helper")) {
 			user.sendMessage(ChatMsgs.helpChannelMod());
 			if (c.isOwner(user) || user.getPlayer().hasPermission("group.denizen")) {
@@ -438,7 +438,7 @@ public class ChatModuleCommandListener implements CommandListener {
 		}
 	}
 
-	private void sendModHelp(SblockUser user) {
+	private void sendModHelp(ChatUser user) {
 		user.sendMessage(ChatMsgs.helpGlobalMod());
 	}
 }

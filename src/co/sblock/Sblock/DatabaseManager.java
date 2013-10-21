@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.ChatUser;
+import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
@@ -20,6 +22,7 @@ import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.TowerData;
+import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
@@ -108,9 +111,11 @@ public class DatabaseManager {
 	 * @param user
 	 *            the <code>SblockUser</code> to save data for
 	 */
-	public void saveUserData(SblockUser user) {
+	public void saveUserData(String name) {
 		PreparedStatement pst = null;
 		try {
+			ChatUser cUser = ChatUserManager.getUserManager().removeUser(name);
+			SblockUser sUser = UserManager.getUserManager().removeUser(name);
 			pst = connection.prepareStatement("INSERT INTO PlayerData(name, class, aspect, "
 							+ "mPlanet, dPlanet, towerNum, sleepState, currentChannel, isMute, "
 							+ "nickname, channels, ip, timePlayed, previousLocation, programs, uhc) "
@@ -125,34 +130,36 @@ public class DatabaseManager {
 							+ "timePlayed=VALUES(timePlayed), "
 							+ "previousLocation=VALUES(previousLocation), "
 							+ "programs=VALUES(programs), uhc=VALUES(uhc)");
-			pst.setString(1, user.getPlayerName());
-			pst.setString(2, user.getClassType().getDisplayName());
-			pst.setString(3, user.getAspect().getDisplayName());
-			pst.setString(4, user.getMPlanet().getShortName());
-			pst.setString(5, user.getDPlanet().getDisplayName());
-			pst.setShort(6, user.getTower());
-			pst.setBoolean(7, user.isSleeping());
-			pst.setString(8, user.getCurrent().getName());
-			pst.setBoolean(9, user.isMute());
-			pst.setString(10, user.getNick());
+			pst.setString(1, name);
+			pst.setString(2, sUser.getClassType().getDisplayName());
+			pst.setString(3, sUser.getAspect().getDisplayName());
+			pst.setString(4, sUser.getMPlanet().getShortName());
+			pst.setString(5, sUser.getDPlanet().getDisplayName());
+			pst.setShort(6, sUser.getTower());
+			pst.setBoolean(7, sUser.isSleeping());
+			pst.setString(8, cUser.getCurrent().getName());
+			pst.setBoolean(9, cUser.isMute());
+			pst.setString(10, cUser.getNick());
 			StringBuilder sb = new StringBuilder();
-			for (String s : user.getListening()) {
+			for (String s : cUser.getListening()) {
 				sb.append(s + ",");
 			}
 			pst.setString(11, sb.substring(0, sb.length() - 1));
-			pst.setString(12, user.getUserIP());
-			user.updateTimePlayed();
-			pst.setString(13, user.getTimePlayed());
+			pst.setString(12, sUser.getUserIP());
+			sUser.updateTimePlayed();
+			pst.setString(13, sUser.getTimePlayed());
 			try {
-				pst.setString(14, user.getPreviousLocationString());
+				pst.setString(14, sUser.getPreviousLocationString());
 			} catch (NullPointerException e) {
-				user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
-				pst.setString(14, user.getPreviousLocationString());
+				sUser.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
+				pst.setString(14, sUser.getPreviousLocationString());
 			}
-			pst.setString(15, user.getProgramString());
-			pst.setByte(16, user.getUHCMode());
+			pst.setString(15, sUser.getProgramString());
+			pst.setByte(16, sUser.getUHCMode());
 
 			pst.executeUpdate();
+
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -172,46 +179,49 @@ public class DatabaseManager {
 	 * @param user
 	 *            the <code>SblockUser</code> to load data for
 	 */
-	public void loadUserData(SblockUser user) {
+	public ChatUser loadUserData(String name) {
 		PreparedStatement pst = null;
+		ChatUser cUser = null;
 		try {
 			pst = connection.prepareStatement("SELECT * FROM PlayerData WHERE name=?");
 
-			pst.setString(1, user.getPlayerName());
+			pst.setString(1, name);
 
 			ResultSet rs = pst.executeQuery();
 
+			SblockUser sUser = UserManager.getUserManager().addUser(name);
+			cUser = ChatUserManager.getUserManager().addUser(name);
 			if (rs.next()) {
-				user.setAspect(rs.getString("aspect"));
-				user.setPlayerClass(rs.getString("class"));
-				user.setMediumPlanet(rs.getString("mPlanet"));
-				user.setDreamPlanet(rs.getString("dPlanet"));
+				sUser.setAspect(rs.getString("aspect"));
+				sUser.setPlayerClass(rs.getString("class"));
+				sUser.setMediumPlanet(rs.getString("mPlanet"));
+				sUser.setDreamPlanet(rs.getString("dPlanet"));
 				short tower = rs.getShort("towerNum");
 				if (tower != -1) {
-					user.setTower((byte) tower);
+					sUser.setTower((byte) tower);
 				}
-				user.setIsSleeping(rs.getBoolean("sleepState"));
+				sUser.setIsSleeping(rs.getBoolean("sleepState"));
 				if (rs.getBoolean("isMute")) {
-					user.setMute(true);
+					cUser.setMute(true);
 				}
-				user.setNick(rs.getString("nickname") != null ? rs.getString("nickname") : user.getNick());
+				cUser.setNick(rs.getString("nickname") != null ? rs.getString("nickname") : cUser.getNick());
 				if (rs.getString("channels") != null) {
 					String[] channels = rs.getString("channels").split(",");
 					for (int i = 0; i < channels.length; i++) {
-						user.syncJoinChannel(channels[i]);
+						cUser.syncJoinChannel(channels[i]);
 					}
 				}
 				if (rs.getString("previousLocation") != null) {
-					user.setPreviousLocationFromString(rs.getString("previousLocation"));
+					sUser.setPreviousLocationFromString(rs.getString("previousLocation"));
 				} else {
-					user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
+					sUser.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				}
-				user.syncSetCurrentChannel(rs.getString("currentChannel"));
-				user.setTimePlayed(rs.getString("timePlayed"));
-				user.setPrograms(rs.getString("programs"));
-				user.setUHCMode(rs.getByte("uhc"));
+				cUser.syncSetCurrentChannel(rs.getString("currentChannel"));
+				sUser.setTimePlayed(rs.getString("timePlayed"));
+				sUser.setPrograms(rs.getString("programs"));
+				sUser.setUHCMode(rs.getByte("uhc"));
 			} else {
-				Sblogger.info("SblockDatabase", user.getPlayerName() + " is new to the server!");
+				Sblogger.info("SblockDatabase", sUser.getPlayerName() + " is new to the server!");
 			}
 		} catch (Exception e) {
 			Sblogger.criticalErr(e);
@@ -224,6 +234,7 @@ public class DatabaseManager {
 				}
 			}
 		}
+		return cUser;
 	}
 
 	/**

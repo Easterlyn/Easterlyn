@@ -6,8 +6,6 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.DatabaseManager;
-
 /**
  * Class that keeps track of players currently logged on to the game
  * 
@@ -38,8 +36,10 @@ public class UserManager {
 	 * @param player
 	 *            The <code>Player</code> that has logged on
 	 */
-	public void addUser(Player player) {
-		users.put(player.getName(), new SblockUser(player.getName()));
+	public SblockUser addUser(String name) {
+		SblockUser u = new SblockUser(name);
+		users.put(name, u);
+		return u;
 	}
 
 	/**
@@ -47,15 +47,10 @@ public class UserManager {
 	 * 
 	 * @param player
 	 *            The <code>Player</code> to remove
+	 * @return 
 	 */
-	public void removeUser(Player player) {
-		SblockUser user = this.getUser(player.getName());
-		if (user != null) {
-			player.closeInventory();
-			user.stopPendingTasks();
-			DatabaseManager.getDatabaseManager().saveUserData(user);
-		}
-		users.remove(player.getName());
+	public SblockUser removeUser(Player player) {
+		return users.remove(player.getName());
 	}
 
 	/**
@@ -63,15 +58,10 @@ public class UserManager {
 	 * 
 	 * @param player
 	 *            The <code>Player</code> to remove
+	 * @return 
 	 */
-	public void removeUser(String player) {
-		SblockUser user = this.getUser(player);
-		if (user != null) {
-			user.getPlayer().closeInventory();
-			user.stopPendingTasks();
-			DatabaseManager.getDatabaseManager().saveUserData(user);
-		}
-		users.remove(player);
+	public SblockUser removeUser(String player) {
+		return users.remove(player);
 	}
 
 	/**
