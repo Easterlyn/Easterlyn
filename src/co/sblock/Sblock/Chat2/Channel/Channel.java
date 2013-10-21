@@ -8,10 +8,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.DatabaseManager;
-import co.sblock.Sblock.Chat.ChatModule;
-import co.sblock.Sblock.Chat.ChatMsgs;
-import co.sblock.Sblock.Chat.Channel.AccessLevel;
-import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Chat2.ChatModule;
+import co.sblock.Sblock.Chat2.ChatMsgs;
+import co.sblock.Sblock.Chat2.Channel.AccessLevel;
+import co.sblock.Sblock.Chat2.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -110,10 +110,9 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(username));
 			return;
 		}
-		if (this.isChannelMod(sender) && !modList.contains(username)) {
+		if (this.isChannelMod(sender) && !this.isChannelMod(username)) {
 			this.modList.add(username);
-			this.sendToAll(sender,
-					ChatMsgs.onUserModAnnounce(username, this), "channel");
+			this.sendToAll(sender, ChatMsgs.onUserModAnnounce(username, this), "channel");
 			Player targetUser = Bukkit.getPlayerExact(username);
 			if (targetUser != null) {
 				targetUser.sendMessage(ChatMsgs.onUserMod(this));
@@ -123,24 +122,15 @@ public abstract class Channel {
 		} else {
 			sender.sendMessage(ChatMsgs.onUserModAlready(username, this));
 		}
-
 	}
 
-	
-	public void removeMod(String target, SblockUser sender) {
-		// SburbChat code. Handle with care
-
-		if (modList.contains(sender.getPlayerName())
-				&& this.modList.contains(target)) {
+	public void removeMod(SblockUser sender, String target) {
+		if (this.isChannelMod(sender) && this.isChannelMod(target)) {
 			this.modList.remove(target);
-			this.sendToAll(sender, ChatColor.YELLOW + target
-					+ " is no longer a mod in " + ChatColor.GOLD + this.name
-					+ ChatColor.YELLOW + "!", "channel");
+			this.sendToAll(sender, ChatMsgs.onUserUnModAnnounce(target, this), "channel");
 			Player targetUser = Bukkit.getPlayerExact(target);
 			if (targetUser != null) {
-				targetUser.sendMessage(ChatColor.RED
-						+ "You are no longer a mod in " + ChatColor.GOLD
-						+ this.name + ChatColor.RED + "!");
+				targetUser.sendMessage(ChatMsgs.onUserUnMod(this));
 			}
 		} else if (!sender.getPlayerName().equals(this.owner)) {
 			sender.sendMessage(ChatColor.RED
@@ -153,21 +143,17 @@ public abstract class Channel {
 		}
 	}
 
-	
 	public Set<String> getModList() {
 		return this.modList;
 	}
 
-	
 	public boolean isChannelMod(SblockUser user) {
 		if (modList.contains(user.getPlayerName())
-				|| user.getPlayer().hasPermission("group.denizen")
-				|| user.getPlayer().hasPermission("group.horrorterror")) {
+				|| isMod(user)) {
 			return true;
 		}
 		return false;
 	}
-
 	
 	public boolean isMod(SblockUser user) {
 		if (user.getPlayer().hasPermission("group.denizen")

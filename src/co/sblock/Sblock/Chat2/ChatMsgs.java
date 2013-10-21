@@ -5,9 +5,9 @@ import java.util.Date;
 
 import org.bukkit.ChatColor;
 
-import co.sblock.Sblock.Chat.Channel.CanonNicks;
-import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Chat2.Channel.CanonNicks;
+import co.sblock.Sblock.Chat2.Channel.Channel;
+import co.sblock.Sblock.Chat2.Channel.ChannelType;
 import co.sblock.Sblock.UserData.SblockUser;
 
 public class ChatMsgs {
@@ -137,6 +137,16 @@ public class ChatMsgs {
 	public static String onUserModAlready(String user, Channel c) {
 		return ChatColor.YELLOW + user + ChatColor.RED + " is already a mod in "
 				+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!";
+	}
+	
+	public static String onUserUnMod(Channel c) {
+		return ChatColor.RED + "You are no longer a mod in " 
+				+ ChatColor.GOLD + c.getName() + ChatColor.RED + "!";
+	}
+
+	public static String onUserUnModAnnounce(String user, Channel c) {
+		return ChatColor.YELLOW + user + " is no longer a mod in " 
+				+ ChatColor.GOLD + c.getName() + ChatColor.YELLOW + "!";
 	}
 	
 	public static String onUserSetNick(String user, String nick, Channel c)	{
