@@ -26,21 +26,10 @@ import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
-=======
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.MachineType;
-import co.sblock.Sblock.SblockEffects.EffectsModule;
->>>>>>> origin/master
-=======
-import co.sblock.Sblock.Machines.MachineModule;
-import co.sblock.Sblock.Machines.Type.MachineType;
-import co.sblock.Sblock.SblockEffects.EffectsModule;
-import co.sblock.Sblock.SblockEffects.PassiveEffect;
->>>>>>> af9a82e8f5e11204e6e311fd5c85c26d8c8a4024
 
 /**
  * <code>SblockUser</code> is the class for storing all <code>Player</code>
