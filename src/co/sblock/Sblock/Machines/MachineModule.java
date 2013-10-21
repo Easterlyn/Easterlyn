@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock.Machines;
 
 import co.sblock.Sblock.DatabaseManager;
@@ -9,15 +6,16 @@ import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
  * @author Jikoo
- *
  */
 public class MachineModule extends Module {
 
+	/** The <code>MachineModule</code> instance. */
 	private static MachineModule instance;
 
+	/** The <code>MachineManager</code>. */
 	private MachineManager manager;
 
-	/* (non-Javadoc)
+	/**
 	 * @see co.sblock.Sblock.Module#onEnable()
 	 */
 	@Override
@@ -31,7 +29,7 @@ public class MachineModule extends Module {
 		Sblogger.info("SburbMachines", "Machines enabled");
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see co.sblock.Sblock.Module#onDisable()
 	 */
 	@Override
@@ -41,10 +39,20 @@ public class MachineModule extends Module {
 		manager = null;
 	}
 
+	/**
+	 * Gets the <code>MachineManager</code>.
+	 * 
+	 * @return the <code>MachineManager</code>
+	 */
 	public MachineManager getManager() {
 		return this.manager;
 	}
 
+	/**
+	 * Gets the current instance of MachineModule.
+	 * 
+	 * @return the <code>MachineModule</code>
+	 */
 	public static MachineModule getInstance() {
 		return instance;
 	}

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock.Machines;
 
 import org.bukkit.entity.Player;
@@ -30,12 +27,18 @@ import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
  * @author Jikoo
- *
  */
 public class MachineEvents implements Listener {
 
+	/** THe MachineManager instance. */
 	private MachineManager m = MachineModule.getInstance().getManager();
 
+	/**
+	 * Event handler for <code>Machine</code> construction.
+	 * 
+	 * @param event
+	 *            the <code>BlockPlaceEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void build(BlockPlaceEvent event) {
 		for (MachineType mt : MachineType.values()) {
@@ -48,6 +51,12 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * The event handler for <code>Machine</code> deconstruction.
+	 * 
+	 * @param event
+	 *            the <code>BlockBreakEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleBreak(BlockBreakEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
@@ -56,6 +65,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>BlockGrowEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleGrow(BlockGrowEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
@@ -64,6 +80,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>BlockFadeEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleFade(BlockFadeEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
@@ -72,6 +95,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>BlockIgniteEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleIgnite(BlockIgniteEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
@@ -80,6 +110,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>BlockPhysicsEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handlePhysics(BlockPhysicsEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
@@ -88,6 +125,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>BlockPistonExtendEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handlePush(BlockPistonExtendEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
@@ -96,6 +140,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>BlockPistonRetractEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handlePull(BlockPistonRetractEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
@@ -104,6 +155,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>BlockSpreadEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleSpread(BlockSpreadEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
@@ -112,6 +170,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>PlayerInteractEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 	public void handleInteract(PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !(event.hasBlock())) {
@@ -123,6 +188,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>InventoryMoveItemEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleHopper(InventoryMoveItemEvent event) {
 		InventoryHolder ih = event.getDestination().getHolder();
@@ -135,6 +207,13 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>InventoryClickEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleClick(InventoryClickEvent event) {
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
@@ -147,9 +226,15 @@ public class MachineEvents implements Listener {
 		}
 	}
 
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>InventoryCloseEvent</code>
+	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClose(InventoryCloseEvent event) {
 		InventoryManager.restoreInventory((Player) event.getPlayer());
 	}
-	// TODO redstone etc.
 }

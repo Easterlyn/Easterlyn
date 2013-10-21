@@ -7,10 +7,15 @@ import org.bukkit.potion.PotionEffectType;
 public enum PassiveEffect {
 	
 <<<<<<< HEAD
-	COMPUTER("Computer"),
+<<<<<<< HEAD
 =======
+>>>>>>> af9a82e8f5e11204e6e311fd5c85c26d8c8a4024
+	COMPUTER("Computer"),
 	PSHOOOES("PSHOOOES"),
+<<<<<<< HEAD
 >>>>>>> origin/master
+=======
+>>>>>>> af9a82e8f5e11204e6e311fd5c85c26d8c8a4024
 	JUMP("Boing"),
 	SPEED("Speed"),
 	FLOWERS("Flowers");

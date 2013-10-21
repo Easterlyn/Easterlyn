@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock.Events;
 
 import java.lang.reflect.InvocationTargetException;
@@ -43,8 +40,13 @@ import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
-import co.sblock.Sblock.Events.Packet26EntityStatus.Status;
-import co.sblock.Sblock.UserData.DreamPlanet;
+import co.sblock.Sblock.Events.Packets.AbstractPacket;
+import co.sblock.Sblock.Events.Packets.Packet11UseBed;
+import co.sblock.Sblock.Events.Packets.Packet12Animation;
+import co.sblock.Sblock.Events.Packets.Packet18SpawnMob;
+import co.sblock.Sblock.Events.Packets.Packet26EntityStatus;
+import co.sblock.Sblock.Events.Packets.SleepTeleport;
+import co.sblock.Sblock.Events.Packets.SendPacket;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
@@ -53,12 +55,17 @@ import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
  * @author Jikoo
- *
  */
 public class EventListener implements Listener, PacketListener {
 
-	private Map<String, Integer> tasks;
-	private Set<String> teleports;
+	/** A <code>Map</code> of all scheduled tasks by ID. */
+	public Map<String, Integer> tasks;
+	/**
+	 * A <code>Set</code> of the names of all <code>Player</code>s queuing to
+	 * sleep teleport.
+	 */
+	public Set<String> teleports;
+	/** The fake UUID used for mob spawn faking. */
 	private short fake_UUID;
 
 	public EventListener() {
@@ -67,13 +74,32 @@ public class EventListener implements Listener, PacketListener {
 		fake_UUID = 25000;
 	}
 
+	/**
+	 * The event handler for <code>ServerListPingEvent</code>s.
+	 * <p>
+	 * If the IP pinging has played before, customize MOTD with their name.
+	 * 
+	 * @param event the <code>ServerListPingEvent</code>
+	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onServerListPing(ServerListPingEvent event) {
-		event.setMotd(event.getMotd().replaceAll("Player",
-				DatabaseManager.getDatabaseManager()
-				.getUserFromIP(event.getAddress().getHostAddress())));
+		String MOTD;
+		if (EventModule.getEventModule().getStatus().hasMOTDChange()) {
+			MOTD = EventModule.getEventModule().getStatus().getMOTDChange();
+		} else {
+			MOTD = event.getMotd().replaceAll("Player",
+					DatabaseManager.getDatabaseManager()
+					.getUserFromIP(event.getAddress().getHostAddress()));
+		}
+		event.setMotd(MOTD);
 	}
 
+	/**
+	 * The event handler for <code>PlayerLoginEvent</code>s.
+	 * 
+	 * @param event
+	 *            the <code>PlayerLoginEvent</code>
+	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		switch (event.getResult()) {
@@ -95,6 +121,12 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
+	/**
+	 * The event handler for <code>PlayerJoinEvent</code>s.
+	 * 
+	 * @param event
+	 *            the <code>PlayerJoinEvent</code>
+	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
@@ -109,11 +141,17 @@ public class EventListener implements Listener, PacketListener {
 	}
 
 
+	/**
+	 * The event handler for <code>AsyncPlayerChatEvent</code>s.
+	 * 
+	 * @param event
+	 *            the <code>AsyncPlayerChatEvent</code>
+	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (SblockUser.getUser(event.getPlayer().getName()) != null) {
 			event.setCancelled(true);
-			if (event.getMessage().startsWith("/")) {
+			if (event.getMessage().charAt(0) == '\u002F') {
 				event.getPlayer().performCommand(
 						event.getMessage().substring(1));
 			} else {
@@ -125,32 +163,24 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
+	/**
+	 * The event handler for <code>PlayerChangedWorldEvent</code>s.
+	 * 
+	 * @param event
+	 *            the <code>PlayerChangedWorldEvent</code>
+	 */
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
 		SblockUser u = UserManager.getUserManager().getUser(event.getPlayer().getName());
 		u.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
 	}
 
-	public int initiateRegionChecks() {
-		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
-	}
-
-	public class RegionCheck implements Runnable {
-		@Override
-		public void run() {
-			try {
-				for (Player p : Bukkit.getWorld("Medium").getPlayers()) {
-					SblockUser u = SblockUser.getUser(p.getName());
-					Region r = Region.getLocationRegion(p.getLocation());
-					if (u.getPlayer().isOnline() && !u.getCurrentRegion().equals(r)) {
-						u.updateCurrentRegion(r);
-					}
-				}
-			} catch (NullPointerException e) {
-			}
-		}
-	}
-
+	/**
+	 * The event handler for <code>PlayerQuitEvent</code>s.
+	 * 
+	 * @param event
+	 *            the <code>PlayerQuitEvent</code>
+	 */
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		InventoryManager.restoreInventory(event.getPlayer());
@@ -169,6 +199,13 @@ public class EventListener implements Listener, PacketListener {
 		UserManager.getUserManager().removeUser(event.getPlayer());
 	}
 
+	/**
+	 * The event handler for <code>SignChangeEvent</code>s.
+	 * <p>
+	 * Allows signs to be colored using &codes.
+	 * 
+	 * @param event the <code>SignChangeEvent</code>
+	 */
 	@EventHandler
 	public void onSignPlace(SignChangeEvent event) {
 		for (int i = 0; i < 4; i++) {
@@ -176,27 +213,30 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
+	/**
+	 * The event handler for <code>PlayerTeleportEvent</code>s.
+	 * 
+	 * @param event
+	 *            the <code>PlayerTeleportEvent</code>
+	 */
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-//		if (event.getCause().equals(TeleportCause.END_PORTAL)) {
-//			if (Math.abs(event.getTo().getBlockX()) - Bukkit.getSpawnRadius() < 0) {
-//				if (Math.abs(event.getTo().getBlockZ() - Bukkit.getSpawnRadius()) < 0) {
-//					event.setCancelled(true);
-//				}
-//			}
-//		}
 		Player p = event.getPlayer();
-		if (!event.getFrom().getWorld().equals(event.getTo().getWorld())) {
+		if (!event.getFrom().getWorld().equals(event.getTo().getWorld()) && teleports.remove(p.getName())) {
 			SblockUser u = SblockUser.getUser(p.getName());
 			if (!u.isGodTier()) {
 				u.setIsSleeping(event.getTo().getWorld().getName().contains("Circle"));
-				if (teleports.remove(p.getName())) {
-					u.setPreviousLocation(event.getFrom());
-				}
+				u.setPreviousLocation(event.getFrom());
 			}
 		}
 	}
 
+	/**
+	 * The event handler for <code>PlayerInteractEvent</code>s.
+	 * 
+	 * @param event
+	 *            the <code>PlayerInteractEvent</code>
+	 */
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (!event.isCancelled() && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
@@ -229,25 +269,15 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
-	/*
-	 * @EventHandler public void onPlayerTagEvent(PlayerReceiveNameTagEvent
-	 * event) { Player p = event.getNamedPlayer();
+	/**
+	 * Sends a <code>Player</code> a fake packet for starting sleeping and
+	 * schedules them to be teleported to their <code>DreamPlanet</code>.
 	 * 
-	 * if (p.hasPermission("group.horrorterror")) {
-	 * event.setTag(ColorDef.RANK_ADMIN + p.getName()); } else if
-	 * (p.hasPermission("group.denizen")) { event.setTag(ColorDef.RANK_MOD +
-	 * p.getName()); } else if (p.hasPermission("group.helper")) {
-	 * event.setTag(ColorDef.RANK_HELPER + p.getName()); } else if
-	 * (p.hasPermission("group.godtier")) { event.setTag(ColorDef.RANK_GODTIER +
-	 * p.getName()); } else if (p.hasPermission("group.donator")) {
-	 * event.setTag(ColorDef.RANK_DONATOR + p.getName()); } else if
-	 * (p.hasPermission("group.hero")) { event.setTag(ColorDef.RANK_HERO +
-	 * p.getName()); }
-	 * 
-	 * }
+	 * @param p
+	 *            the <code>Player</code>
+	 * @param bed
+	 *            the <code>Location</code> of the bed to sleep in
 	 */
-	
-
 	private void fakeSleepDream(Player p, Location bed) {
 		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
 
@@ -265,7 +295,25 @@ public class EventListener implements Listener, PacketListener {
 		scheduleSleepTeleport(p);
 	}
 
-	private void fakeWakeUp(Player p) {
+	/**
+	 * Schedules a <code>SleepTeleport</code> for a <code>Player</code>.
+	 * 
+	 * @param p
+	 *            the <code>Player</code>
+	 */
+	private void scheduleSleepTeleport(Player p) {
+		tasks.put(p.getName(),
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
+						new SleepTeleport(p), 100L));
+	}
+
+	/**
+	 * Sends a <code>Player</code> a fake packet for waking up.
+	 * 
+	 * @param p
+	 *            the <code>Player</code>
+	 */
+	public void fakeWakeUp(Player p) {
 		Packet12Animation packet = new Packet12Animation();
 		packet.setEntityID(p.getEntityId());
 		packet.setAnimation((byte) 3);
@@ -277,8 +325,31 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bergerkiller.bukkit.common.protocol.PacketListener#onPacketReceive(com.bergerkiller.bukkit.common.events.PacketReceiveEvent)
+	/*
+	 * @EventHandler public void onPlayerTagEvent(PlayerReceiveNameTagEvent
+	 * event) { Player p = event.getNamedPlayer();
+	 * 
+	 * if (p.hasPermission("group.horrorterror")) {
+	 * event.setTag(ColorDef.RANK_ADMIN + p.getName()); } else if
+	 * (p.hasPermission("group.denizen")) { event.setTag(ColorDef.RANK_MOD +
+	 * p.getName()); } else if (p.hasPermission("group.helper")) {
+	 * event.setTag(ColorDef.RANK_HELPER + p.getName()); } else if
+	 * (p.hasPermission("group.godtier")) { event.setTag(ColorDef.RANK_GODTIER +
+	 * p.getName()); } else if (p.hasPermission("group.donator")) {
+	 * event.setTag(ColorDef.RANK_DONATOR + p.getName()); } else if
+	 * (p.hasPermission("group.hero")) { event.setTag(ColorDef.RANK_HERO +
+	 * p.getName()); }
+	 * 
+	 * }
+	 */
+
+	/**
+	 * The event handler for packets received from clients.
+	 * 
+	 * @param event
+	 *            the <code>PacketReceiveEvent</code>
+	 * @see com.bergerkiller.bukkit.common.protocol.PacketListener#onPacketReceive(PacketReceiveEvent)
+	 * @see <a href="http://wiki.vg/Protocol#Entity_Action_.280x13.29">Minecraft packet protocol</a>
 	 */
 	@Override
 	public void onPacketReceive(PacketReceiveEvent event) {
@@ -294,73 +365,26 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bergerkiller.bukkit.common.protocol.PacketListener#onPacketSend(com.bergerkiller.bukkit.common.events.PacketSendEvent)
-	 * @see <a href="http://wiki.vg/Protocol#Entity_Action_.280x13.29">Minecraft packet protocol</a>
+	/**
+	 * The event handler for packets sent to clients.
+	 * 
+	 * @param event
+	 *            the <code>PacketSendEvent</code>
+	 * @see com.bergerkiller.bukkit.common.protocol.PacketListener#onPacketSend(PacketSendEvent)
+	 * @see <a href="http://wiki.vg/Protocol#Entity_Action_.280x13.29">Minecraft
+	 *      packet protocol</a>
 	 */
 	@Override
 	public void onPacketSend(PacketSendEvent event) {
 		
 	}
 
-	private void scheduleSleepTeleport(Player p) {
-		tasks.put(p.getName(), Bukkit.getScheduler()
-				.scheduleSyncDelayedTask(Sblock.getInstance(),
-						new SleepTeleport(p), 100L));
-	}
-
-	private class SleepTeleport implements Runnable {
-
-		private Player p;
-
-		public SleepTeleport(Player p) {
-			this.p = p;
-		}
-
-		@Override
-		public void run() {
-			SblockUser user = SblockUser.getUser(p.getName());
-			if (p != null && user != null) {
-				switch (Region.getLocationRegion(p.getLocation())) {
-				case EARTH:
-//				case MEDIUM: // Someday, my pretties.
-//				case LOFAF:
-//				case LOHAC:
-//				case LOLAR:
-//				case LOWAS:
-					if (user.getDPlanet().equals(DreamPlanet.NONE)) {
-						break;
-					} else {
-						teleports.add(p.getName());
-						if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
-							p.teleport(EventModule.getEventModule().getTowerData()
-									.getLocation(user.getTower(),
-											user.getDPlanet(), (byte) 0));
-						} else {
-							p.teleport(user.getPreviousLocation());
-						}
-					}
-					break;
-				case OUTERCIRCLE:
-				case INNERCIRCLE:
-					teleports.add(p.getName());
-					if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
-						p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
-					} else {
-						p.teleport(user.getPreviousLocation());
-					}
-					break;
-				default:
-					break;
-				}
-
-				fakeWakeUp(p);
-
-			}
-			tasks.remove(p.getName());
-		}
-	}
-
+	/**
+	 * Forcibly close game client by sending bad packets.
+	 * 
+	 * @param p
+	 *            the <code>Player</code> whose client should be crashed.
+	 */
 	public void forceCloseClient(Player p) {
 		Location l = p.getLocation();
 		Packet18SpawnMob spawn = new Packet18SpawnMob();
@@ -378,7 +402,7 @@ public class EventListener implements Listener, PacketListener {
 
 		Packet26EntityStatus packet = new Packet26EntityStatus();
 		packet.setEntityId(fake_UUID);
-		packet.setEntityStatus(Status.ENTITY_DEAD);
+		packet.setEntityStatus(Packet26EntityStatus.Status.ENTITY_DEAD);
 
 		fake_UUID++;
 
@@ -390,6 +414,13 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
+	/**
+	 * Fake spawn and kill an EnderDragon at specified <code>Location</code>
+	 * using packets.
+	 * 
+	 * @param l
+	 *            the <code>Location</code>
+	 */
 	public void dragon(Location l) {
 		Packet18SpawnMob spawn = new Packet18SpawnMob();
 		spawn.setEntityID(fake_UUID);
@@ -406,7 +437,7 @@ public class EventListener implements Listener, PacketListener {
 
 		Packet26EntityStatus packet = new Packet26EntityStatus();
 		packet.setEntityId(fake_UUID);
-		packet.setEntityStatus(Status.ENTITY_DEAD);
+		packet.setEntityStatus(Packet26EntityStatus.Status.ENTITY_DEAD);
 
 		fake_UUID++;
 
@@ -426,24 +457,15 @@ public class EventListener implements Listener, PacketListener {
 		}
 	}
 
+	/**
+	 * Schedule sending a packet to a <code>Player</code>.
+	 * 
+	 * @param p
+	 *            the <code>Player</code> to send a packet to
+	 * @param packet
+	 *            the <code>AbstractPacket</code> to send
+	 */
 	private void schedulePacket(Player p, AbstractPacket packet) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new SyncPacket(p, packet));
-	}
-
-	private class SyncPacket implements Runnable {
-		private Player p;
-		private AbstractPacket packet;
-		SyncPacket(Player p, AbstractPacket packet) {
-			this.p = p;
-			this.packet = packet;
-		}
-		@Override
-		public void run() {
-			try {
-				ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
-			} catch (InvocationTargetException e) {
-				Sblogger.err(e);
-			}
-		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new SendPacket(p, packet));
 	}
 }

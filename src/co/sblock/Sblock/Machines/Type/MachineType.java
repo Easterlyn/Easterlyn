@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock.Machines.Type;
 
 import java.util.ArrayList;
@@ -11,41 +8,62 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import co.sblock.Sblock.Utilities.Sblogger;
-
 /**
  * @author Jikoo
- *
  */
 public enum MachineType {
 
-	ALCHEMITER("alc"), APPEARIFIER("app"), COMPUTER("cpu"), CRUXTRUDER("crx"), INTELLIBEAM_LASERSTATION("il"),
-	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"), SENDIFICATOR("snd"), TOTEM_LATHE("tl"), ANY("NO.");
+	ALCHEMITER("alc"), APPEARIFIER("app"), COMPUTER("cpu"),
+	CRUXTRUDER("crx"), INTELLIBEAM_LASERSTATION("il"),
+	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"),
+	SENDIFICATOR("snd"), TOTEM_LATHE("tl"), ANY("NO.");
 
+	/** The shortened name of the <code>MachineType</code>. */
 	String type;
 
+	/**
+	 * Constructor for MachineType.
+	 * 
+	 * @param s
+	 *            the shortened name
+	 */
 	private MachineType(String s) {
 		type = s;
 	}
 
+	/**
+	 * Gets a shorter name for the <code>MachineType</code>.
+	 * 
+	 * @return the shortened name for the <code>MachineType</code>
+	 */
 	public String getAbbreviation() {
 		return type;
 	}
 
+	/**
+	 * Gets a MachineType by abbreviation or full name.
+	 * 
+	 * @param type
+	 *            the <code>String</code> to match
+	 * @return the <code>MachineType</code> or <code>null</code> if invalid
+	 */
 	public static MachineType getType(String type) {
 		for (MachineType m : MachineType.values()) {
-			if (m.getAbbreviation().equals(type)) {
+			if (m.getAbbreviation().equals(type) || m.name().equals(type.toUpperCase())) {
 				return m;
 			}
 		}
-		try {
-			return MachineType.valueOf(type);
-		} catch (IllegalArgumentException e) {
-			Sblogger.warning("Machines", "Invalid machine type " + type);
-			return null;
-		}
+		return null;
 	}
 
+	/**
+	 * Gets <code>Machine</code> data based on type from a
+	 * <code>BlockPlaceEvent</code>.
+	 * 
+	 * @param e
+	 *            the <code>BlockPlaceEvent</code>
+	 * @return the <code>Machine</code> data
+	 */
 	@SuppressWarnings("deprecation")
 	public String getData(BlockPlaceEvent e) {
 		if (this != MachineType.PERFECTLY_GENERIC_OBJECT) {
@@ -54,6 +72,12 @@ public enum MachineType {
 		return e.getBlockAgainst().getTypeId() + ":" + e.getBlockAgainst().getData();
 	}
 
+	/**
+	 * Gets the <code>ItemStack</code> that represents this
+	 * <code>MachineType</code>.
+	 * 
+	 * @return the <code>ItemStack</code>
+	 */
 	public ItemStack getUniqueDrop() {
 		ItemStack is = null;
 		ItemMeta im;

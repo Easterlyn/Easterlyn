@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.DatabaseManager;
@@ -14,120 +12,96 @@ import co.sblock.Sblock.DatabaseManager;
  * Class that keeps track of players currently logged on to the game
  * 
  * @author FireNG, Jikoo
- * 
  */
 public class UserManager {
 
+	/** The <code>UserManager</code> instance. */
 	private static UserManager manager;
 
+	/**
+	 * The <code>Map</code> of <code>Player</code> names and relevant
+	 * <code>SblockUsers</code> currently online.
+	 */
 	private Map<String, SblockUser> users;
 
+	/**
+	 * Constructor for UserManager.
+	 */
 	UserManager() {
 		manager = this;
 		this.users = new HashMap<String, SblockUser>();
 	}
 
 	/**
-	 * Adds a player that has logged on to the users list
+	 * Adds a <code>Player</code> that has logged on to the users list
 	 * 
 	 * @param player
-	 *            The player that has logged on
+	 *            The <code>Player</code> that has logged on
 	 */
 	public void addUser(Player player) {
 		users.put(player.getName(), new SblockUser(player.getName()));
 	}
 
 	/**
-	 * Removes a player from the users list that has left the server
+	 * Removes a <code>Player</code> from the users list.
 	 * 
 	 * @param player
-	 *            The player to remove
+	 *            The <code>Player</code> to remove
 	 */
 	public void removeUser(Player player) {
 		SblockUser user = this.getUser(player.getName());
 		if (user != null) {
 			player.closeInventory();
 			user.stopPendingTasks();
-			DatabaseManager.getDatabaseManager()
-					.saveUserData(user);
+			DatabaseManager.getDatabaseManager().saveUserData(user);
 		}
 		users.remove(player.getName());
 	}
 
 	/**
-	 * Removes a player from the users list that has left the server
+	 * Removes a <code>Player</code> from the users list.
 	 * 
 	 * @param player
-	 *            The player to remove
+	 *            The <code>Player</code> to remove
 	 */
 	public void removeUser(String player) {
 		SblockUser user = this.getUser(player);
 		if (user != null) {
 			user.getPlayer().closeInventory();
 			user.stopPendingTasks();
-			DatabaseManager.getDatabaseManager()
-					.saveUserData(user);
+			DatabaseManager.getDatabaseManager().saveUserData(user);
 		}
 		users.remove(player);
 	}
 
 	/**
+	 * Gets a <code>SblockUser</code>by <code>Player</code> name.
+	 * 
 	 * @param name
-	 *            The player to look up
-	 * @return The SblockUser object associated with the given player, or null
-	 *         if no player with the given name is currently online.
+	 *            The name of the <code>Player</code> to look up
+	 * 
+	 * @return The <code>SblockUser</code> associated with the given
+	 *         <code>Player</code>, or <code>null</code> if no
+	 *         <code>Player</code> with the given name is currently online.
 	 */
 	public SblockUser getUser(String name) {
-
 		return users.get(name);
 	}
 
+	/**
+	 * Gets a <code>Collection</code> of <code>SblockUsers</code> currently online.
+	 * 
+	 * @return the <code>SblockUsers</code> currently online
+	 */
 	public Collection<SblockUser> getUserlist() {
 		return this.users.values();
 	}
 
 	/**
-	 * Converts the given string into a Bukkit Location object
+	 * Gets the <code>UserManager</code> instance.
 	 * 
-	 * @param string
-	 *            The string to convert
-	 * @return The Location object represented by this string, or null if the
-	 *         input string is null
-	 * @throws IllegalArgumentException
-	 *             if the given string is not valid
+	 * @return the <code>UserManager</code> instance
 	 */
-	public static Location parseLocation(String loc) {
-		if (loc == null)
-			return null;
-		try {
-			String[] parts = loc.split(",");
-			return new Location(Bukkit.getWorld(parts[0]),
-					Integer.parseInt(parts[1]), Integer.parseInt(parts[2]),
-					Integer.parseInt(parts[3]));
-		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException(
-					"String is not in correct format.", e);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new IllegalArgumentException(
-					"String is not in correct format.", e);
-		}
-	}
-
-	/**
-	 * Converts the given Bukkit Location object to a string for storing in the
-	 * database.
-	 * 
-	 * @param loc
-	 *            The Location object to convert
-	 * @return a String representation of the object
-	 */
-	public static String locationToString(Location loc) {
-		if (loc == null)
-			return null;
-		return loc.getWorld().getName() + "," + loc.getBlockX() + ","
-				+ loc.getBlockY() + "," + loc.getBlockZ();
-	}
-
 	public static UserManager getUserManager() {
 		if (manager == null)
 			manager = new UserManager();

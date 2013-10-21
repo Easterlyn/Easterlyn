@@ -3,16 +3,16 @@ package co.sblock.Sblock.UserData;
 /**
  * Represents each planet in the Medium.
  * 
- * @author FireNG
- * @author Jikoo
+ * @author FireNG, Jikoo
  */
 public enum MediumPlanet {
 
 	NONE, LOFAF, LOHAC, LOLAR, LOWAS;
 
 	/**
-	 * Gets the short name of a planet.
-	 *
+	 * Gets the short name of a <code>MediumPlanet</code>.
+	 * 
+	 * 
 	 * @return the short name
 	 */
 	public String getShortName() {
@@ -20,8 +20,9 @@ public enum MediumPlanet {
 	}
 
 	/**
-	 * Gets the long name of a planet.
-	 *
+	 * Gets the long name of a <code>MediumPlanet</code>.
+	 * 
+	 * 
 	 * @return the long name
 	 */
 	public String getLongName() {
@@ -42,10 +43,12 @@ public enum MediumPlanet {
 	}
 
 	/**
-	 * Gets the planet.
-	 *
-	 * @param name the name of a planet
-	 * @return the MediumPlanet
+	 * Gets the <code>MediumPlanet</code>.
+	 * 
+	 * @param name
+	 *            the name of a <code>MediumPlanet</code>
+	 * 
+	 * @return the <code>MediumPlanet</code>
 	 */
 	public static MediumPlanet getPlanet(String name) {
 		try {

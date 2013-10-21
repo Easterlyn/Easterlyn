@@ -15,7 +15,7 @@
  * 02111-1307 USA
  */
 
-package co.sblock.Sblock.Events;
+package co.sblock.Sblock.Events.Packets;
 
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -79,7 +79,7 @@ public class Packet26EntityStatus extends AbstractPacket {
 	 * Retrieve the entity.
 	 * 
 	 * @param world
-	 *            - the current world of the entity.
+	 *            the current world of the entity.
 	 * @return The entity.
 	 */
 	public Entity getEntity(World world) {
@@ -90,7 +90,7 @@ public class Packet26EntityStatus extends AbstractPacket {
 	 * Retrieve the entity.
 	 * 
 	 * @param event
-	 *            - the packet event.
+	 *            the packet event.
 	 * @return The entity.
 	 */
 	public Entity getEntity(PacketEvent event) {
@@ -101,7 +101,7 @@ public class Packet26EntityStatus extends AbstractPacket {
 	 * Set the entity ID.
 	 * 
 	 * @param value
-	 *            - new value.
+	 *            new value.
 	 */
 	public void setEntityId(int value) {
 		handle.getIntegers().write(0, value);
@@ -120,7 +120,7 @@ public class Packet26EntityStatus extends AbstractPacket {
 	 * Set the entity status. See {@link Status}.
 	 * 
 	 * @param value
-	 *            - new value.
+	 *            new value.
 	 */
 	public void setEntityStatus(int value) {
 		handle.getBytes().write(0, (byte) value);

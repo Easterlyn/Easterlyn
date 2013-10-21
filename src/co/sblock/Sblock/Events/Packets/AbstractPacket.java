@@ -15,20 +15,21 @@
  * 02111-1307 USA
  */
 
-package co.sblock.Sblock.Events;
+package co.sblock.Sblock.Events.Packets;
 
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.events.PacketContainer;
 
 public abstract class AbstractPacket {
-	// The packet we will be modifying
+	/** The packet to modify. */
 	protected PacketContainer handle;
 
 	/**
 	 * Constructs a new strongly typed wrapper for the given packet.
 	 * 
 	 * @param handle
-	 *            - handle to the raw packet data.
+	 *            handle to the raw packet data.
+	 * @param packetID int
 	 */
 	protected AbstractPacket(PacketContainer handle, int packetID) {
 		// Make sure we're given a valid packet

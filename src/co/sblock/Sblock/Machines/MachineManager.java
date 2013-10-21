@@ -1,12 +1,8 @@
-/**
- * 
- */
 package co.sblock.Sblock.Machines;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -24,11 +20,18 @@ import co.sblock.Sblock.Machines.Type.PGOMachine;
 
 /**
  * @author Jikoo
- *
  */
 public class MachineManager {
 
+	/**
+	 * A <code>Map</code> of <code>Machine</code> key <code>Locations</code> to
+	 * corresponding <code>Machine</code>.
+	 */
 	private Map<Location, Machine> machineKeys;
+	/**
+	 * A Map of <code>Machine</code> <code>Block</code> <code>Location</code>s
+	 * to the corresponding key <code>Location</code>.
+	 */
 	private Map<Location, Location> machineBlocks;
 
 	public MachineManager() {
@@ -36,6 +39,17 @@ public class MachineManager {
 		this.machineBlocks = new HashMap<Location, Location>();
 	}
 
+	/**
+	 * Adds a <code>Machine</code> with the given parameters.
+	 * 
+	 * @param l
+	 *            the <code>Location</code> of the key
+	 * @param m
+	 *            the <code>MachineType</code>
+	 * @param data
+	 *            the additional <code>Machine</code> data
+	 * @return the <code>Machine</code> created
+	 */
 	public Machine addMachine(Location l, MachineType m, String data) {
 		Machine machine = null;
 		switch (m) {
@@ -67,6 +81,18 @@ public class MachineManager {
 		return machine;
 	}
 
+	/**
+	 * Load a machine from the database.
+	 * <p>
+	 * This method has no error handling. Don't screw up.
+	 * 
+	 * @param location
+	 *            the <code>Location</code> <code>String</code>
+	 * @param machineType
+	 *            the <code>MachineType</code> <code>String</code>
+	 * @param data
+	 *            the additional <code>Machine</code> data
+	 */
 	public void loadMachine(String location, String machineType, String data) {
 		String[] l = location.split(",");
 		addMachine(new Location(Bukkit.getWorld(l[0]), Integer.parseInt(l[1]),
@@ -74,14 +100,37 @@ public class MachineManager {
 		
 	}
 
+	/**
+	 * Checks a <code>Location</code> to see if there is a <code>Machine</code>
+	 * there.
+	 * 
+	 * @param l
+	 *            the <code>Location</code> to check
+	 * @return true if the <code>Location</code> is a <code>Machine</code>
+	 */
 	public boolean isMachine(Location l) {
 		return machineKeys.containsKey(l) || machineBlocks.containsKey(l);
 	}
 
+	/**
+	 * Checks a <code>Block</code> to see if it is part of a
+	 * <code>Machine</code>.
+	 * 
+	 * @param b
+	 *            the <code>Block</code> to check
+	 * @return true if the <code>Block</code> is a <code>Machine</code>
+	 */
 	public boolean isMachine(Block b) {
 		return machineKeys.containsKey(b.getLocation()) || machineBlocks.containsKey(b.getLocation());
 	}
 
+	/**
+	 * Gets a <code>Machine</code> from a <code>Block</code>.
+	 * 
+	 * @param b
+	 *            the <code>Block</code>
+	 * @return the <code>Machine</code>
+	 */
 	public Machine getMachineByBlock(Block b) {
 		Machine m = machineKeys.get(b.getLocation());
 		if (m == null) {
@@ -90,6 +139,13 @@ public class MachineManager {
 		return m;
 	}
 
+	/**
+	 * Gets a <code>Machine</code> from a <code>Location</code>.
+	 * 
+	 * @param l
+	 *            the <code>Location</code>
+	 * @return the <code>Machine</code>
+	 */
 	public Machine getMachineByLocation(Location l) {
 		Machine m = machineKeys.get(l);
 		if (m == null) {
@@ -98,20 +154,43 @@ public class MachineManager {
 		return m;
 	}
 
+	/**
+	 * Gets a <code>Set</code> of all <code>Machine</code> key
+	 * <code>Locations</code>.
+	 * 
+	 * @return the <code>Set<Location></code>
+	 */
 	public Set<Location> getMachines() {
 		return machineKeys.keySet();
 	}
 
-	public List<Location> getMachines(MachineType m) {
-		List<Location> list = new ArrayList<Location>();
+	/**
+	 * Gets a <code>Set</code> of all <code>Machine</code> key
+	 * <code>Locations</code> by <code>MachineType</code>.
+	 * 
+	 * @param m
+	 *            the <code>MachineType</code>
+	 * @return the <code>Set<Location></code>
+	 */
+	public Set<Location> getMachines(MachineType m) {
+		Set<Location> set = new HashSet<Location>();
 		for (Entry<Location, Machine> e : machineKeys.entrySet()) {
 			if (e.getValue().getType().equals(m)) {
-				list.add(e.getKey());
+				set.add(e.getKey());
 			}
 		}
-		return list;
+		return set;
 	}
 
+	/**
+	 * Remove the specified <code>Machine</code> listing.
+	 * <p>
+	 * Be aware - this does not modify the <code>World</code>. All
+	 * <code>Block</code>s will remain.
+	 * 
+	 * @param l
+	 *            the key <code>Location</code>
+	 */
 	public void removeMachineListing(Location l) {
 		if (machineKeys.containsKey(l)) {
 			// TODO asynchronous
@@ -128,12 +207,25 @@ public class MachineManager {
 		}
 	}
 
+	/**
+	 * Save all stored <code>Machine</code>s to the database.
+	 */
 	public void saveToDb() {
 		for (Location l : machineKeys.keySet()) {
 			DatabaseManager.getDatabaseManager().saveMachine(machineKeys.get(l));
 		}
 	}
 
+	/**
+	 * Check if a <code>Player</code> is within the specified radius of their
+	 * <code>Computer</code>.
+	 * 
+	 * @param p
+	 *            the <code>Player</code>
+	 * @param distance
+	 *            the radius to search
+	 * @return true if the <code>Player</code> is within the radius
+	 */
 	public boolean isByComputer(Player p, int distance) {
 		for (Machine m : this.getMachinesInProximity(p.getLocation(), distance, MachineType.COMPUTER, true)) {
 			if (m.getData().equals(p.getName())) {
@@ -144,15 +236,20 @@ public class MachineManager {
 	}
 
 	/**
-	 * Returns a set of machines within a specified radius.
+	 * Returns a <code>Set</code> of <code>Machine</code>s within a specified
+	 * radius. If no <code>Machine</code>s match the specified conditions, an
+	 * empty <code>Set</code> is returned.
 	 * 
 	 * @param current
-	 *            the current location (presumably of a player)
+	 *            the current <code>Location</code> (presumably of a
+	 *            <code>Player</code>)
 	 * @param searchDistance
 	 *            the radius from current that is acceptable
-	 * @param m
-	 *            the MachineType to search for (MachineType.ANY for any)
 	 * @param keyRequired
+	 *            <code>true</code> if the key <code>Location</code> must be
+	 *            within the radius. Less intensive search.
+	 * @param mt
+	 *            the <code>MachineType</code> to search for
 	 * @return all machines of the correct type within the specified radius
 	 */
 	public Set<Machine> getMachinesInProximity(Location current, int searchDistance,

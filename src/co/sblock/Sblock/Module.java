@@ -13,55 +13,63 @@ import org.bukkit.event.Listener;
  * plugin to be managed separately.
  * 
  * @author FireNG
- * 
  */
 public abstract class Module {
+	/** The <code>Set</code> of <code>Listener</code>s registered by this <code>Module</code>. */
 	private Set<Listener> listeners = new HashSet<Listener>();
 
 	/**
-	 * Called when the module is enabled.
+	 * Called when the <code>Module</code> is enabled.
 	 */
 	protected abstract void onEnable();
 
 	/**
-	 * Called when the module is disabled before handlers are unassigned.
+	 * Called when the <code>Module</code> is disabled before handlers are unassigned.
 	 */
 	protected abstract void onDisable();
 
+	/**
+	 * Register events for one or more <code>Listener</code>s.
+	 * 
+	 * @param listeners
+	 *            <code>Listener[]</code>
+	 */
 	protected final void registerEvents(Listener... listeners) {
 		for (Listener listener : listeners) {
-			Bukkit.getPluginManager().registerEvents(listener,
-					Sblock.getInstance());
+			Bukkit.getPluginManager().registerEvents(listener, Sblock.getInstance());
 			this.listeners.add(listener);
 		}
 	}
 
 	/**
-	 * Registers all of the commands handled in the given CommandListener class.
+	 * Registers all of the <code>Command</code>s handled in the given <code>CommandListener</code>.
 	 * 
 	 * @param listener
-	 *            Listener class to register.
+	 *            <code>Listener</code> to register.
 	 */
 	protected final void registerCommands(CommandListener listener) {
 		Sblock.getInstance().registerCommands(listener);
 	}
 
 	/**
-	 * Enables the module.
+	 * Enables the <code>Module</code>.
+	 * 
+	 * @return the <code>Module</code> enabled
 	 */
 	public final Module enable() {
 		try {
 			this.onEnable();
 		} catch (Exception e) {
 			throw new RuntimeException("[SblockSuite] Unhandled exception in module "
-					+ this.getClass().getSimpleName()
-					+ ". Plugin failed to load.", e);
+					+ this.getClass().getSimpleName() + ". Plugin failed to load.", e);
 		}
 		return this;
 	}
 
 	/**
-	 * Disables the module.
+	 * Disables the <code>Module</code>.
+	 * 
+	 * @return the <code>Module</code> disabled
 	 */
 	public final Module disable() {
 
@@ -72,17 +80,16 @@ public abstract class Module {
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Unhandled exception in module "
-					+ this.getClass().getSimpleName()
-					+ ". Plugin failed to properly disable.", e);
+					+ this.getClass().getSimpleName() + ". Plugin failed to properly disable.", e);
 		}
-		this.getLogger().info(
-				"Disabled module " + this.getClass().getSimpleName());
+		this.getLogger().info("Disabled module " + this.getClass().getSimpleName());
 		return this;
 	}
 
 	/**
-	 * @return a Logger object that the plugin may use, whose name is the same
-	 *         as this module's class name.
+	 * 
+	 * @return a <code>Logger</code> that the plugin may use whose name is the same
+	 *         as this <code>Module</code>'s class name.
 	 */
 	public final Logger getLogger() {
 		return Logger.getLogger(this.getClass().getSimpleName());

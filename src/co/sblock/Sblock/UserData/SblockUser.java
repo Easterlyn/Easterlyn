@@ -27,6 +27,7 @@ import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.ChatModule;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
 =======
@@ -34,14 +35,18 @@ import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 >>>>>>> origin/master
+=======
+import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.Type.MachineType;
+import co.sblock.Sblock.SblockEffects.EffectsModule;
+import co.sblock.Sblock.SblockEffects.PassiveEffect;
+>>>>>>> af9a82e8f5e11204e6e311fd5c85c26d8c8a4024
 
 /**
  * <code>SblockUser</code> is the class for storing all <code>Player</code>
  * data.
  * 
- * @author Jikoo
- * @author Dublek
- * @author FireNG
+ * @author Jikoo, Dublek, FireNG
  */
 public class SblockUser {
 
@@ -69,7 +74,7 @@ public class SblockUser {
 	/** The <code>Player</code>'s location prior to sleeping to swap worlds */
 	private Location previousLocation;
 
-	/** The <code>Player</code>'s current focused channel */
+	/** The name of the <code>Player</code>'s current focused <code>Channel</code> */
 	private String current;
 
 	/** The channels the <code>Player</code> is listening to */
@@ -90,10 +95,10 @@ public class SblockUser {
 	/** The <code>Player</code>'s IP address */
 	private String userIP;
 
-	/** Map of task ID's. Key = channel name, value = task ID. */
+	/** Map of task ID's. Key = <code>Channel</code> name, value = task ID. */
 	private Map<String, Integer> tasks = new HashMap<String, Integer>();
 	
-	/** Keeps track of current region for RegionChannel purposes */
+	/** Keeps track of current <code>Region</code> for <code>RegionChannel</code> purposes */
 	private Region currentRegion;
 	
 	/** Is the Player within range of a Computer? */
@@ -106,10 +111,10 @@ public class SblockUser {
 	private byte uhc = 1;
 
 	/**
-	 * Creates a SblockUser object for a player.
+	 * Creates a <code>SblockUser</code> object for a <code>Player</code>.
 	 * 
-	 * @param p
-	 *            the <code>Player</code> to load data for
+	 * @param playerName
+	 *            the name of the <code>Player</code> to create a <code>SblockUser</code> for
 	 */
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
@@ -150,43 +155,45 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s chosen class
+	 * Gets the <code>Player</code>'s chosen <code>UserClass</code>.
 	 * 
-	 * @return the class type, <code>null</code> if unchosen
+	 * @return the <code>UserClass</code>, <code>null</code> if unchosen
 	 */
 	public UserClass getClassType() {
 		return this.classType;
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s chosen aspect
+	 * Gets the <code>Player</code>'s chosen <code>UserAspect</code>.
 	 * 
-	 * @return the aspect, <code>null</code> if unchosen
+	 * @return the <code>UserAspect</code>, <code>null</code> if unchosen
 	 */
 	public UserAspect getAspect() {
 		return this.aspect;
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s chosen Medium planet.
+	 * Gets the <code>Player</code>'s chosen <code>MediumPlanet</code>.
 	 * 
-	 * @return the <code>Player</code>'s Medium planet
+	 * @return the <code>Player</code>'s <code>MediumPlanet</code>
 	 */
 	public MediumPlanet getMPlanet() {
 		return this.mPlanet;
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s chosen dream planet.
+	 * Gets the <code>Player</code>'s chosen <code>DreamPlanet</code>.
 	 * 
-	 * @return the <code>Player</code>'s dream planet
+	
+	 * @return the <code>Player</code>'s <code>DreamPlanet</code>
 	 */
 	public DreamPlanet getDPlanet() {
 		return this.dPlanet;
 	}
 
 	/**
-	 * Gets the tower number generated for the <code>Player</code>
+	 * Gets the tower number generated for the <code>Player</code>.
+	 * 
 	 * 
 	 * @return the number of the tower the player will "dream" to
 	 */
@@ -195,7 +202,8 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s dreamstate
+	 * Gets the <code>Player</code>'s dreamstate.
+	 * 
 	 * 
 	 * @return <code>true</code> if the <code>Player</code> is in dreamstate
 	 */
@@ -203,62 +211,66 @@ public class SblockUser {
 		return this.sleeping;
 	}
 
+	/**
+	 * Gets the <code>Player</code>'s current <code>Region</code>
+	 * @return the <code>Region</code> that the <code>Player</code> is in
+	 */
 	public Region getPlayerRegion() {
 		return Region.getLocationRegion(this.getPlayer().getLocation());
 	}
 
 	/**
-	 * Sets the UserClass type.
+	 * Sets the <code>Player</code>'s <code>UserClass</code>.
 	 * 
 	 * @param uclass
-	 *            the new UserClass type
+	 *            the new <code>UserClass</code>
 	 */
 	public void setPlayerClass(String uclass) {
 		this.classType = UserClass.getClass(uclass);
 	}
 
 	/**
-	 * Sets the UserAspect.
+	 * Sets the <code>Player</code>'s <code>UserAspect</code>.
 	 * 
 	 * @param aspect
-	 *            the new UserAspect
+	 *            the new <code>UserAspect</code>
 	 */
 	public void setAspect(String aspect) {
 		this.aspect = UserAspect.getAspect(aspect);
 	}
 
 	/**
-	 * Sets the MediumPlanet.
+	 * Sets the <code>Player</code>'s <code>MediumPlanet</code>.
 	 * 
 	 * @param mPlanet
-	 *            the new MediumPlanet
+	 *            the new <code>MediumPlanet</code>
 	 */
 	public void setMediumPlanet(String mPlanet) {
 		this.mPlanet = MediumPlanet.getPlanet(mPlanet);
 	}
 
 	/**
-	 * Sets the DreamPlanet.
+	 * Sets the <code>Player</code>'s <code>DreamPlanet</code>.
 	 * 
 	 * @param dPlanet
-	 *            the new DreamPlanet
+	 *            the new <code>DreamPlanet</code>
 	 */
 	public void setDreamPlanet(String dPlanet) {
 		this.dPlanet = DreamPlanet.getPlanet(dPlanet);
 	}
 
 	/**
-	 * Sets the tower number generated for the <code>Player</code>
+	 * Sets the tower number generated for the <code>Player</code>.
 	 * 
 	 * @param tower
-	 *            the number of the tower the player will "dream" to
+	 *            the number of the tower the <code>Player</code> will "dream" to
 	 */
 	public void setTower(byte tower) {
 		this.tower = tower;
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s dreamstate
+	 * Sets the <code>Player</code>'s dreamstate.
 	 * 
 	 * @param sleeping
 	 *            <code>true</code> if the <code>Player</code> is in dreamstate
@@ -270,10 +282,11 @@ public class SblockUser {
 	}
 
 	/**
-	 * Sets the player's location from the last world that they visited.
+	 * Sets the <code>Player</code>'s <code>Location</code> from the last
+	 * <code>World</code> that they visited.
 	 * 
 	 * @param l
-	 *            The player's previous location
+	 *            The <code>Player</code>'s previous <code>Location</code>
 	 */
 	public void setPreviousLocation(Location l) {
 		l.setX(l.getBlockX() + .5);
@@ -286,6 +299,9 @@ public class SblockUser {
 	}
 
 	/**
+	 * Sets the <code>Player</code>'s previous <code>Location</code> from a
+	 * <code>String</code>. Only for use in <code>DatabaseManager</code>.
+	 * 
 	 * @param string
 	 */
 	public void setPreviousLocationFromString(String string) {
@@ -302,6 +318,9 @@ public class SblockUser {
 	}
 
 	/**
+	 * Gets the <code>Location</code> of the <code>Player</code> prior to sleep
+	 * teleportation.
+	 * 
 	 * @return the previousLocation
 	 */
 	public Location getPreviousLocation() {
@@ -309,7 +328,10 @@ public class SblockUser {
 	}
 
 	/**
-	 * @return
+	 * The <code>String</code> representation of the <code>Player</code>'s
+	 * <code>Location</code> prior to last sleep teleport.
+	 * 
+	 * @return String
 	 */
 	public String getPreviousLocationString() {
 		return previousLocation.getWorld().getName() + ","
@@ -319,7 +341,11 @@ public class SblockUser {
 	}
 
 	/**
-	 * @return
+	 * Sets the <code>Player</code>'s total time ingame from a
+	 * <code>String</code>. For use in <code>DatabaseManager</code> only.
+	 * 
+	 * @param s
+	 *            String
 	 */
 	public void setTimePlayed(String s) {
 		if (s != null) {
@@ -346,7 +372,10 @@ public class SblockUser {
 	}
 
 	/**
-	 * @return
+	 * The <code>String</code> representation of the <code>Player</code>'s total
+	 * time ingame.
+	 * 
+	 * @return the <code>Player</code>'s time ingame
 	 */
 	public String getTimePlayed() {
 		long hrs = TimeUnit.MILLISECONDS.toHours(this.timePlayed);
@@ -360,7 +389,8 @@ public class SblockUser {
 	}
 
 	/**
-	 * 
+	 * Updates the <code>Player</code>'s total time ingame. For use on logout
+	 * only!
 	 */
 	public void updateTimePlayed() {
 		this.timePlayed = this.timePlayed + new Date().getTime()
@@ -369,6 +399,7 @@ public class SblockUser {
 
 	/**
 	 * TODO TODO
+	 * 
 	 * @return isGodTier
 	 */
 	public boolean isGodTier() {
@@ -376,16 +407,23 @@ public class SblockUser {
 	}
 
 	/**
+	 * Returns the <code>Player</code>'s UHC mode.
+	 * <p>
+	 * UHC modes: negative = off; 1 = standard UHC; 2 = pre-1.8b food healing
 	 * 
-	 * @return
+	 * @return the <code>Player</code>'s UHC mode
 	 */
 	public byte getUHCMode() {
 		return uhc;
 	}
 
 	/**
+	 * Sets the <code>Player</code>'s UHC mode.
+	 * <p>
+	 * UHC modes: negative = off; 1 = standard UHC; 2 = pre-1.8b food healing
 	 * 
 	 * @param b
+	 *            the UHC mode to set
 	 */
 	public void setUHCMode(Byte b) {
 		// DB returns 0 if null
@@ -395,6 +433,8 @@ public class SblockUser {
 	}
 
 	/**
+	 * Gets a <code>Set</code> of all <code>Computer</code> programs accessible
+	 * by the <code>Player</code>.
 	 * 
 	 * @return the programs installed
 	 */
@@ -403,16 +443,19 @@ public class SblockUser {
 	}
 
 	/**
+	 * Add an <code>Entry</code> to the <code>Set</code> of programs accessible
+	 * by the <code>Player</code> at their <code>Computer</code>.
 	 * 
 	 * @param i
-	 *            the program number to add
+	 *            the number of the program to add
 	 */
 	public void addProgram(int i) {
 		this.programs.add(i);
 	}
 
 	/**
-	 * Method used by DB to restore programs on login
+	 * Restore the <code>Player</code>'s installed programs from a
+	 * <code>String</code>. For use in <code>DatabaseManager</code> only.
 	 * 
 	 * @param s
 	 *            the string containing programs previously installed
@@ -427,14 +470,16 @@ public class SblockUser {
 	}
 
 	/**
-	 * Method used by DB to store programs on logout
+	 * Gets a <code>String</code> representation of the <code>Player</code>'s
+	 * installed programs.
+	 * 
 	 * 
 	 * @return representation of the contents of programs
 	 */
 	public String getProgramString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i : getPrograms()) {
-			sb.append(i).append(",");
+			sb.append(i).append('\u002C');
 		}
 		if (sb.length() == 0) {
 			return null;
@@ -446,6 +491,13 @@ public class SblockUser {
 	 * CHAT & RELATED START
 	 */
 
+	/**
+	 * Check to see if the <code>Player</code> is within range of a
+	 * <code>Computer</code>.
+	 * 
+	 * @return <code>true</code> if the <code>Player</code> is within 10 meters
+	 *         of a <code>Computer</code>.
+	 */
 	public boolean hasComputerAccess() {
 		if (EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains("Computer")) {
 			return true;
@@ -460,6 +512,8 @@ public class SblockUser {
 	}
 
 	/**
+	 * Gets the <code>Player</code>'s global nickname.
+	 * 
 	 * @return the <code>Player</code>'s global nickname
 	 */
 	public String getNick() {
@@ -467,6 +521,8 @@ public class SblockUser {
 	}
 
 	/**
+	 * Sets the Player's nickname.
+	 * 
 	 * @param newNick
 	 *            the new nickname for the <code>Player</code>
 	 */
@@ -475,14 +531,18 @@ public class SblockUser {
 	}
 
 	/**
-	 * @return the User's IP
+	 * Gets a <code>String</code> representation of the <code>Player</code>'s
+	 * IP.
+	 * 
+	 * @return the <code>Player</code>'s IP
 	 */
 	public String getUserIP() {
 		return userIP;
 	}
 
 	/**
-	 * Sets the User's IP if the player is online
+	 * Sets the <code>SblockUser</code>'s IP if the <code>Player</code> is
+	 * online.
 	 */
 	public void setUserIP() {
 		if (this.getPlayer().isOnline())
@@ -490,6 +550,13 @@ public class SblockUser {
 					.getHostAddress();
 	}
 
+	/**
+	 * Sets the <code>Player</code>'s chat mute status and sends corresponding
+	 * message.
+	 * 
+	 * @param b
+	 *            <code>true</code> if the <code>Player</code> is being muted
+	 */
 	public void setMute(boolean b) {
 		this.globalMute = b;
 		if (b) {
@@ -499,10 +566,21 @@ public class SblockUser {
 		}
 	}
 
+	/**
+	 * Gets the <code>Player</code>'s mute status.
+	 * 
+	 * @return <code>true</code> if the <code>Player</code> is muted
+	 */
 	public boolean isMute() {
 		return globalMute;
 	}
 
+	/**
+	 * Sets the <code>Player</code>'s current <code>Channel</code>.
+	 * 
+	 * @param c
+	 *            the <code>Channel</code> to set as current
+	 */
 	public void setCurrent(Channel c) {
 		if (c == null) {
 			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
@@ -522,10 +600,24 @@ public class SblockUser {
 		this.current = c.getName();
 	}
 
+	/**
+	 * Gets the <code>Channel</code> the <code>Player</code> is currently
+	 * sending messages to.
+	 * 
+	 * @return <code>Channel</code>
+	 */
 	public Channel getCurrent() {
 		return ChatModule.getChatModule().getChannelManager().getChannel(current);
 	}
 
+	/**
+	 * Adds a <code>Channel</code> to the <code>Player</code>'s current
+	 * <code>List</code> of <code>Channel</code>s listened to.
+	 * 
+	 * @param c
+	 *            the <code>Channel</code> to add
+	 * @return true if the <code>Channel</code> was added
+	 */
 	public boolean addListening(Channel c) {
 		if (c == null) {
 			return false;
@@ -551,6 +643,13 @@ public class SblockUser {
 		}
 	}
 
+	/**
+	 * Remove a <code>Channel</code> from the <code>Player</code>'s listening
+	 * <code>List</code>.
+	 * 
+	 * @param cName
+	 *            the name of the <code>Channel</code> to remove
+	 */
 	public void removeListening(String cName) {
 		Channel c = ChatModule.getChatModule().getChannelManager()
 				.getChannel(cName);
@@ -572,10 +671,10 @@ public class SblockUser {
 	}
 
 	/**
-	 * Tell channel player is leaving on quit
+	 * Tells a <code>Channel</code> the <code>Player</code> is leaving on quit.
 	 * 
 	 * @param cName
-	 *            the name of the channel
+	 *            the name of the <code>Channel</code> to inform
 	 */
 	public void removeListeningQuit(String cName) {
 		Channel c = ChatModule.getChatModule().getChannelManager()
@@ -586,19 +685,56 @@ public class SblockUser {
 		}
 	}
 
+	/**
+	 * Gets the <code>Set</code> of names of <code>Channel</code>s that the
+	 * <code>Player</code> is listening to.
+	 * 
+	 * @return a <code>Set<String></code> of <code>Channel</code> names.
+	 */
 	public Set<String> getListening() {
 		return listening;
 	}
 
+	/**
+	 * Check if the <code>Player</code> is listening to a specific
+	 * <code>Channel</code>.
+	 * 
+	 * @param c
+	 *            the <code>Channel</code> to check for
+	 * @return <code>true</code> if the <code>Player</code> is listening to c
+	 */
 	public boolean isListening(Channel c) {
 		return listening.contains(c.getName());
 	}
+
+	/**
+	 * Gets the <code>Player</code>'s current <code>Region</code>.
+	 * 
+	 * @return the <code>Region</code> the <code>Player</code> is in.
+	 */
 	public Region getCurrentRegion() {
 		return currentRegion;
 	}
+
+	/**
+	 * Set the <code>Player</code>'s current <code>Region</code> to the
+	 * specified <code>Region</code>. Only for use on login.
+	 * 
+	 * @see #updateCurrentRegion
+	 * 
+	 * @param r
+	 *            the <code>Region</code> to set
+	 */
 	public void setCurrentRegion(Region r) {
 		currentRegion = r;
 	}
+
+	/**
+	 * Update current <code>Region</code> and change <code>RegionChannel</code>.
+	 * 
+	 * @param newR
+	 *            the <code>Region</code> being transitioned into
+	 */
 	public void updateCurrentRegion(Region newR) {
 		Channel oldC = ChannelManager.getChannelManager().getChannel("#" + this.getCurrentRegion().toString());
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
@@ -625,6 +761,12 @@ public class SblockUser {
 
 	// -----------------------------------------------------------------------------------------------------------------------
 
+	/**
+	 * Method for handling all <code>Player</code> chat.
+	 * 
+	 * @param event
+	 *            the relevant <code>AsyncPlayerChatEvent</code>
+	 */
 	public void chat(AsyncPlayerChatEvent event) {
 		// receives message from SblockChatListener
 		// determine channel. if message doesn't begin with @$channelname, then
@@ -670,6 +812,16 @@ public class SblockUser {
 		this.formatMessage(sender, sendto, outputmessage);
 	}
 
+	/**
+	 * Format a chat message for sending to a <code>Channel</code>.
+	 * 
+	 * @param sender
+	 *            the <code>SblockUser</code> speaking
+	 * @param c
+	 *            the <code>Channel</code> to send the message to
+	 * @param s
+	 *            the message to send
+	 */
 	public void formatMessage(SblockUser sender, Channel c, String s) {
 		// remember, [$channel]<$player> $message
 
@@ -716,6 +868,16 @@ public class SblockUser {
 
 	}
 
+	/**
+	 * Send a message from a <code>Channel</code> to this <code>Player</code>.
+	 * 
+	 * @param s
+	 *            the message to send
+	 * @param c
+	 *            the <code>Channel</code> to send to.
+	 * @param type
+	 *            the type of chat for handling purposes
+	 */
 	@SuppressWarnings("deprecation")
 	public void sendMessageFromChannel(String s, Channel c, String type) {
 		// final output, sends message to user
@@ -749,6 +911,15 @@ public class SblockUser {
 
 	// Here begins output formatting. Abandon all hope ye who enter
 
+	/**
+	 * Gets chat prefixing based on conditions.
+	 * 
+	 * @param sender
+	 *            the <code>SblockUser</code> sending the message
+	 * @param channel
+	 *            the <code>Channel</code> receiving the message
+	 * @return the prefix for specified conditions
+	 */
 	public String getOutputChannelF(SblockUser sender, Channel channel) {
 		// colors for [$channel] applied here
 		// SburbChat code. Handle with care
@@ -766,6 +937,17 @@ public class SblockUser {
 		return out;
 	}
 
+	/**
+	 * Gets chat prefixing based on conditions.
+	 * 
+	 * @param sender
+	 *            the <code>SblockUser</code> sending the message
+	 * @param isThirdPerson
+	 *            whether or not to provide a third person prefix
+	 * @param channel
+	 *            the <code>Channel</code> receiving the message
+	 * @return the prefix for specified conditions
+	 */
 	public String getOutputNameF(SblockUser sender, boolean isThirdPerson,
 			Channel c) {
 		// colors for <$name> applied here
@@ -807,12 +989,25 @@ public class SblockUser {
 		return out;
 	}
 
+	/**
+	 * Sends a message to the <code>Player</code>.
+	 * 
+	 * @param string
+	 *            the message to send
+	 */
 	public void sendMessage(String string) {
 		this.getPlayer().sendMessage(string);
 	}
 
-	public String toString() { // For /whois usage mainly
-		// TODONE Someone tell Dub to get off his lazy ass
+	/**
+	 * Important <code>SblockUser</code> data formatted to be easily readable
+	 * when printed.
+	 * 
+	 * @return a representation of the most important data stored by this
+	 *         <code>SblockUser</code>
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
 		ChatColor sys = ChatColor.DARK_AQUA;
 		ChatColor txt = ChatColor.YELLOW;
 		String div = sys + ", " + txt;
@@ -828,33 +1023,83 @@ public class SblockUser {
 		return s;
 	}
 
+	/**
+	 * Gets a <code>SblockUser</code> by <code>Player</code> name.
+	 * 
+	 * @param userName
+	 *            the name to match
+	 * @return the <code>SblockUser</code> specified or <code>null</code> if
+	 *         invalid.
+	 */
 	public static SblockUser getUser(String userName) {
 		return UserManager.getUserManager().getUser(userName);
 	}
 
+	/**
+	 * Check to see if a <code>Player</code> by the specified name has played
+	 * before.
+	 * 
+	 * @param name
+	 *            the name to check
+	 * @return <code>true</code> if a <code>Player</code> by the specified name
+	 *         has logged into the server
+	 */
 	public static boolean isValidUser(String name) {
 		return Bukkit.getOfflinePlayer(name).hasPlayedBefore();
 	}
 
+	/**
+	 * Stop all pending tasks for this <code>SblockUser</code>.
+	 */
 	public void stopPendingTasks() {
 		for (int task : tasks.values()) {
 			Bukkit.getScheduler().cancelTask(task);
 		}
 	}
 
+	/**
+	 * Join a <code>Channel</code> synchronously. <code>BukkitTask</code> ID is
+	 * added to task list for cleanup. For use on login - instantly causing a
+	 * join results in failure for unknown reasons.
+	 * 
+	 * @param channelName
+	 *            the name of the <code>Channel</code> to join
+	 */
 	public void syncJoinChannel(String channelName) {
 		tasks.put(channelName, Bukkit.getScheduler()
 				.scheduleSyncDelayedTask(Sblock.getInstance(),
 						new ChannelJoinSynchronizer(this, channelName)));
 	}
 
+	/**
+	 * A small <code>Runnable</code> used to enter a <code>Channel</code>
+	 * synchronously.
+	 */
 	public class ChannelJoinSynchronizer implements Runnable {
+		/** The name of the <code>Channel</code> to join */
 		private String channelName;
+		/** The <code>SblockUser</code> who is joining */
 		private SblockUser user;
+
+		/**
+		 * Constructor for <code>ChannelJoinSynchronizer</code>.
+		 * 
+		 * @param user
+		 *            the <code>SblockUser</code> joining a <code>Channel</code>
+		 * @param channelName
+		 *            the name of the <code>Channel</code> to join
+		 */
 		public ChannelJoinSynchronizer(SblockUser user, String channelName) {
 			this.user = user;
 			this.channelName = channelName;
 		}
+
+		/**
+		 * Join the <code>Channel</code> and clean up entry from
+		 * <code>BukkitTask</code> list.
+		 * 
+		 * @see java.lang.Runnable#run()
+		 */
 		@Override
 		public void run() {
 			Channel c = ChatModule.getChatModule()
@@ -866,19 +1111,48 @@ public class SblockUser {
 		}
 	}
 
+	/**
+	 * Set a <code>Channel</code> to current synchronously.
+	 * <code>BukkitTask</code> ID is added to task list for cleanup. For use on
+	 * login - instantly causing a join results in failure for unknown reasons.
+	 * 
+	 * @param channelName
+	 *            the name of the <code>Channel</code> to join
+	 */
 	public void syncSetCurrentChannel(String channelName) {
 		tasks.put(channelName, Bukkit.getScheduler()
 				.scheduleSyncDelayedTask(Sblock.getInstance(),
 						new ChannelSetCurrentSynchronizer(this, channelName)));
 	}
 
+	/**
+	 * A small <code>Runnable</code> used to set the current
+	 * <code>Channel</code> synchronously.
+	 */
 	public class ChannelSetCurrentSynchronizer implements Runnable {
+		/** The name of the <code>Channel</code> to join */
 		private String channelName;
+		/** The <code>SblockUser</code> who is joining */
 		private SblockUser user;
+
+		/**
+		 * Constructor for <code>ChannelSetCurrentSynchronizer</code>.
+		 * 
+		 * @param user
+		 *            the <code>SblockUser</code> joining a <code>Channel</code>
+		 * @param channelName
+		 *            the name of the <code>Channel</code> to join
+		 */
 		public ChannelSetCurrentSynchronizer(SblockUser user, String channelName) {
 			this.user = user;
 			this.channelName = channelName;
 		}
+
+		/**
+		 * Set current and clean up entry from <code>BukkitTask</code> list.
+		 * 
+		 * @see java.lang.Runnable#run()
+		 */
 		@Override
 		public void run() {
 			Channel c = ChatModule.getChatModule()
