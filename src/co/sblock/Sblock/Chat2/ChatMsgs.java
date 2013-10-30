@@ -12,7 +12,7 @@ import co.sblock.Sblock.Chat2.Channel.ChannelType;
 public class ChatMsgs {
 
 	public static String onChannelJoin(ChatUser u, Channel c) {
-		String name = u.getNick();
+		String name = u.getGlobalNick();
 		String message = "pestering";
 		ChatColor nameC = ChatColor.GREEN;
 		if (c.hasNick(u)) {
@@ -211,6 +211,14 @@ public class ChatMsgs {
 	public static String errorNickRequired(String name) {
 		return ChatColor.GOLD + name + ChatColor.RED +
 				" is a roleplaying channel. You must have a nickname to talk!";
+	}
+	public static String errorInvalidCanonNick(String nick)	{
+		return ChatColor.GOLD + nick + ChatColor.RED + 
+				" is not a canon nickname!";
+	}
+	public static String errorCanonNickInUse(String nick)	{
+		return ChatColor.GOLD + nick + ChatColor.YELLOW + 
+				" is already in use!";
 	}
 
 	public static String errorRegionChannel()	{

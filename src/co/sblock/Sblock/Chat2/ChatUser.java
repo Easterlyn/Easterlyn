@@ -118,7 +118,7 @@ public class ChatUser {
 	 * 
 	 * @return the <code>Player</code>'s global nickname
 	 */
-	public String getNick() {
+	public String getGlobalNick() {
 		return this.getPlayer().getDisplayName();
 	}
 
@@ -128,7 +128,7 @@ public class ChatUser {
 	 * @param newNick
 	 *            the new nickname for the <code>Player</code>
 	 */
-	public void setNick(String newNick) {
+	public void setGlobalNick(String newNick) {
 		this.getPlayer().setDisplayName(newNick);
 	}
 
@@ -326,11 +326,15 @@ public class ChatUser {
 		currentRegion = newR;
 	}
 	public boolean getComputerAccess()	{
+		if(!ChatModule.getComputerRequired()){		//Overrides the computer limitation for pre-Entry shenanigans
+			return true;
+		}
 		return computerAccess;
 	}
 	public void setComputerAccess()	{
 		if(EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains(PassiveEffect.COMPUTER
 				/* || distance to Player's Computer Machine <= 10*/))	{
+			//TODO Adam fill in the above
 			computerAccess = true;
 		}
 		else	{
@@ -369,7 +373,7 @@ public class ChatUser {
 		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel destination
 			int space = fullmsg.indexOf(" ");
 			String newChannel = fullmsg.substring(1, space);
-			sender.sendMessage("\"" + newChannel + "\"");
+			//sender.sendMessage("\"" + newChannel + "\"");
 			if (ChatModule.getChatModule().getChannelManager().isValidChannel(newChannel)) {
 				sendto = ChatModule.getChatModule().getChannelManager().getChannel(newChannel);
 				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender)) {
@@ -421,8 +425,7 @@ public class ChatUser {
 		String output = "";
 		// colorformatting
 
-		boolean isThirdPerson = false;
-		isThirdPerson = (s.indexOf("#") == 0) ? true : false;
+		boolean isThirdPerson = (s.indexOf("#") == 0) ? true : false;
 
 		if (!isThirdPerson) {
 			channelF = this.getOutputChannelF(sender, c);
@@ -502,7 +505,6 @@ public class ChatUser {
 	 */
 	public String getOutputChannelF(ChatUser sender, Channel channel) {
 		// colors for [$channel] applied here
-		// SburbChat code. Handle with care
 		String out = "";
 
 		ChatColor color = ColorDef.CHATRANK_MEMBER;
@@ -528,15 +530,21 @@ public class ChatUser {
 	 *            the <code>Channel</code> receiving the message
 	 * @return the prefix for specified conditions
 	 */
-	public String getOutputNameF(ChatUser sender, boolean isThirdPerson,
-			Channel c) {
+	public String getOutputNameF(ChatUser sender, boolean isThirdPerson, Channel c) {
 		// colors for <$name> applied here
-		// SburbChat code. Handle with care
 		String out = "";
-		String outputName = sender.getPlayerName();
-		if(c.hasNick(sender))	{
-			outputName = c.getNick(sender);
-		}
+		String outputName = sender.getGlobalNick();
+		  switch (c.getType()) {
+		  case RP:
+		  case NICK:
+		   if (c.hasNick(sender)) {
+		    outputName = c.getNick(sender);
+		    break;
+		   }
+		  default:
+		   break;
+		  }		
+		
 		ChatColor colorP = ColorDef.RANK_HERO;
 		ChatColor colorW = ColorDef.DEFAULT;
 
@@ -553,7 +561,6 @@ public class ChatUser {
 
 		if (c instanceof RPChannel) {
 			if(c.hasNick(sender))	{
-				outputName = c.getNick(sender);
 				colorP = CanonNicks.valueOf(outputName).getColor();
 			}
 			else	{
@@ -562,9 +569,9 @@ public class ChatUser {
 		}
 		colorW = Region.getRegionColor(getPlayerRegion());
 
-		out = (isThirdPerson ? ">" : colorW + "<") + colorP + outputName
+		out = (isThirdPerson ? ChatColor.BLUE + "> " : colorW + "<") + colorP + outputName
 				+ ChatColor.WHITE
-				+ (isThirdPerson ? "" : colorW + "> " + ChatColor.WHITE);
+				+ (isThirdPerson ? ChatColor.BLUE + ": " : colorW + "> ") + ChatColor.WHITE;
 		// sender.getPlayer().sendMessage(out);
 		return out;
 	}

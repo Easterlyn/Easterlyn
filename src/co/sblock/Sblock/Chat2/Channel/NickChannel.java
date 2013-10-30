@@ -1,8 +1,19 @@
 package co.sblock.Sblock.Chat2.Channel;
 
-import co.sblock.Sblock.Chat2.ChatUser;
+import java.util.HashMap;
+import java.util.Map;
 
+import co.sblock.Sblock.Chat2.ChatMsgs;
+import co.sblock.Sblock.Chat2.ChatUser;
+import co.sblock.Sblock.Chat2.ChatUserManager;
+/**
+ * Defines nick channel behavior
+ * 
+ * @author Dublek
+ */
 public class NickChannel extends Channel {
+
+	protected Map<ChatUser, String> nickList = new HashMap<ChatUser, String>();
 
 	/**
 	 * @param name
@@ -11,16 +22,24 @@ public class NickChannel extends Channel {
 	 */
 	public NickChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
-		// TODO Auto-generated constructor stub
 	}
-
+	@Override
+	public ChannelType getType() {
+		return ChannelType.NICK;
+	}
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat2.Channel.Channel#setNick(co.sblock.Sblock.Chat2.ChatUser, java.lang.String)
 	 */
 	@Override
 	public void setNick(ChatUser sender, String nick) {
-		// TODO Auto-generated method stub
-		
+		if (nickList.containsKey(sender))	{
+			nickList.remove(sender);
+		}
+		nickList.put(sender, nick);
+		for(String s : this.getListening())	{
+			ChatUserManager.getUserManager().getUser(s).
+			sendMessageFromChannel(ChatMsgs.onUserSetNick(s, nick, this), this, "channel");
+		}
 	}
 
 	/* (non-Javadoc)
@@ -28,8 +47,9 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public void removeNick(ChatUser sender) {
-		// TODO Auto-generated method stub
-		
+		if (nickList.containsKey(sender))	{
+			nickList.remove(sender);
+		}		
 	}
 
 	/* (non-Javadoc)
@@ -37,8 +57,7 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public String getNick(ChatUser sender) {
-		// TODO Auto-generated method stub
-		return null;
+		return nickList.get(sender);
 	}
 
 	/* (non-Javadoc)
@@ -46,8 +65,22 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public boolean hasNick(ChatUser sender) {
-		// TODO Auto-generated method stub
-		return false;
+		return nickList.containsKey(sender);
 	}
-
+	@Override
+	public ChatUser getNickOwner(String nick)	{
+		ChatUser owner = null;
+		if(nickList.containsValue(nick))	{
+			for(ChatUser u : nickList.keySet())	{
+				if(nickList.get(u).equalsIgnoreCase(nick))	{
+					owner = u;
+				}
+			}
+		}
+		return owner;
+	}
+	
+	public Map<ChatUser, String> getNickList()	{
+		return nickList;
+	}
 }

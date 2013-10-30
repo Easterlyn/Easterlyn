@@ -1,9 +1,14 @@
 package co.sblock.Sblock.Chat2.Channel;
 
+import co.sblock.Sblock.Chat2.ChatMsgs;
 import co.sblock.Sblock.Chat2.ChatUser;
-
+/**
+ * Defines normal channel behavior
+ * 
+ * @author Dublek
+ */
 public class NormalChannel extends Channel {
-
+	
 	/**
 	 * @param name
 	 * @param a
@@ -11,16 +16,18 @@ public class NormalChannel extends Channel {
 	 */
 	public NormalChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
-		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public ChannelType getType() {
+		return ChannelType.NORMAL;
+	}
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat2.Channel.Channel#setNick(co.sblock.Sblock.Chat2.ChatUser, java.lang.String)
 	 */
 	@Override
 	public void setNick(ChatUser sender, String nick) {
-		// TODO Auto-generated method stub
-		
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));
 	}
 
 	/* (non-Javadoc)
@@ -28,8 +35,7 @@ public class NormalChannel extends Channel {
 	 */
 	@Override
 	public void removeNick(ChatUser sender) {
-		// TODO Auto-generated method stub
-		
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));		
 	}
 
 	/* (non-Javadoc)
@@ -37,7 +43,7 @@ public class NormalChannel extends Channel {
 	 */
 	@Override
 	public String getNick(ChatUser sender) {
-		// TODO Auto-generated method stub
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));
 		return null;
 	}
 
@@ -46,8 +52,10 @@ public class NormalChannel extends Channel {
 	 */
 	@Override
 	public boolean hasNick(ChatUser sender) {
-		// TODO Auto-generated method stub
 		return false;
 	}
-
+	@Override
+	public ChatUser getNickOwner(String nick)	{
+		return null;
+	}
 }

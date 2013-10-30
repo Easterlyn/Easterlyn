@@ -12,7 +12,6 @@ import co.sblock.Sblock.Chat2.Channel.Channel;
 import co.sblock.Sblock.Chat2.Channel.ChannelType;
 import co.sblock.Sblock.Chat2.Channel.NormalChannel;
 import co.sblock.Sblock.Chat2.Channel.RegionChannel;
-import co.sblock.Sblock.Chat2.Channel.TempChannel;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 public class ChannelManager {
@@ -28,7 +27,7 @@ public class ChannelManager {
 	public void saveAllChannels() {
 		for (Channel c : channelList.values()) {
 			if (!(noSave.contains(c.getName()) || c instanceof RegionChannel
-					|| c instanceof TempChannel))
+				/*	|| c instanceof TempChannel*/))
 				DatabaseManager.getDatabaseManager().saveChannelData(c);
 		}
 	}
@@ -46,6 +45,7 @@ public class ChannelManager {
 	public void createDefaultSet() {
 		List<Channel> defaults = new ArrayList<Channel>();
 		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new NormalChannel("#help", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, "Dublek"));
 //		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#EARTH", AccessLevel.PUBLIC, "Dublek"));

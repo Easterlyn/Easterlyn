@@ -1,9 +1,14 @@
 package co.sblock.Sblock.Chat2.Channel;
 
+import co.sblock.Sblock.Chat2.ChatMsgs;
 import co.sblock.Sblock.Chat2.ChatUser;
-
-public class RPChannel extends Channel {
-
+/**
+ * Defines nick channel behavior
+ * 
+ * @author Dublek
+ */
+public class RPChannel extends NickChannel {
+	
 	/**
 	 * @param name
 	 * @param a
@@ -11,43 +16,25 @@ public class RPChannel extends Channel {
 	 */
 	public RPChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
-		// TODO Auto-generated constructor stub
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat2.Channel.Channel#setNick(co.sblock.Sblock.Chat2.ChatUser, java.lang.String)
-	 */
+	@Override
+	public ChannelType getType() {
+		return ChannelType.RP;
+	}
+
 	@Override
 	public void setNick(ChatUser sender, String nick) {
-		// TODO Auto-generated method stub
-		
+		CanonNicks name = CanonNicks.getNick(nick);
+		if(name == null)	{
+			sender.sendMessage(ChatMsgs.errorInvalidCanonNick(nick));
+			return;
+		}
+		else if(this.getNickOwner(nick) == null)	{
+			super.setNick(sender, nick);
+		}
+		else	{
+			sender.sendMessage(ChatMsgs.errorCanonNickInUse(nick));
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat2.Channel.Channel#removeNick(co.sblock.Sblock.Chat2.ChatUser)
-	 */
-	@Override
-	public void removeNick(ChatUser sender) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat2.Channel.Channel#getNick(co.sblock.Sblock.Chat2.ChatUser)
-	 */
-	@Override
-	public String getNick(ChatUser sender) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat2.Channel.Channel#hasNick(co.sblock.Sblock.Chat2.ChatUser)
-	 */
-	@Override
-	public boolean hasNick(ChatUser sender) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

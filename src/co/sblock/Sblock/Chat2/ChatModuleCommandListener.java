@@ -343,7 +343,7 @@ public class ChatModuleCommandListener implements CommandListener {
 					}
 					ChatUser victim = ChatUserManager.getUserManager().getUser(args[2]);
 					if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
-						victim.setNick(args[3]);
+						victim.setGlobalNick(args[3]);
 						for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 							u.sendMessage(ChatColor.GREEN + victim.getPlayerName()
 									+ ChatColor.YELLOW + " shall henceforth be know as: "
@@ -376,12 +376,12 @@ public class ChatModuleCommandListener implements CommandListener {
 							for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 								u.sendMessage(ChatColor.GREEN + victim.getPlayerName()
 										+ ChatColor.YELLOW + " shall no longer be know as: "
-										+ ChatColor.GREEN + victim.getNick());
+										+ ChatColor.GREEN + victim.getGlobalNick());
 							}
 							Sblogger.infoNoLogName(ChatColor.GREEN + victim.getPlayerName()
 									+ ChatColor.YELLOW + " shall no longer be know as: "
-									+ ChatColor.GREEN + victim.getNick());
-							victim.setNick(victim.getPlayerName());
+									+ ChatColor.GREEN + victim.getGlobalNick());
+							victim.setGlobalNick(victim.getPlayerName());
 							return true;
 						}
 					}

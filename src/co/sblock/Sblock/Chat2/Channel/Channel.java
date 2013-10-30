@@ -53,9 +53,7 @@ public abstract class Channel {
 		return this.listening;
 	}
 
-	public ChannelType getType() {
-		return null;
-	}
+	public abstract ChannelType getType();
 	/**
 	 * ONLY CALL FROM CHATUSER
 	 * 
@@ -83,6 +81,8 @@ public abstract class Channel {
 
 	public abstract boolean hasNick(ChatUser sender);
 
+	public abstract ChatUser getNickOwner(String nick);
+	
 	public void setOwner(ChatUser sender, String newO) {
 		if (sender.equals(this.owner)) {
 			this.owner = newO;

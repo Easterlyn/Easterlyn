@@ -1,5 +1,6 @@
 package co.sblock.Sblock.Chat2.Channel;
 
+import co.sblock.Sblock.Chat2.ChatMsgs;
 import co.sblock.Sblock.Chat2.ChatUser;
 
 public class RegionChannel extends Channel {
@@ -11,16 +12,18 @@ public class RegionChannel extends Channel {
 	 */
 	public RegionChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
-		// TODO Auto-generated constructor stub
 	}
-
+	
+	@Override
+	public ChannelType getType() {
+		return ChannelType.REGION;
+	}
 	/* (non-Javadoc)
 	 * @see co.sblock.Sblock.Chat2.Channel.Channel#setNick(co.sblock.Sblock.Chat2.ChatUser, java.lang.String)
 	 */
 	@Override
 	public void setNick(ChatUser sender, String nick) {
-		// TODO Auto-generated method stub
-		
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));		
 	}
 
 	/* (non-Javadoc)
@@ -28,8 +31,7 @@ public class RegionChannel extends Channel {
 	 */
 	@Override
 	public void removeNick(ChatUser sender) {
-		// TODO Auto-generated method stub
-		
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));		
 	}
 
 	/* (non-Javadoc)
@@ -37,7 +39,7 @@ public class RegionChannel extends Channel {
 	 */
 	@Override
 	public String getNick(ChatUser sender) {
-		// TODO Auto-generated method stub
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));
 		return null;
 	}
 
@@ -46,8 +48,12 @@ public class RegionChannel extends Channel {
 	 */
 	@Override
 	public boolean hasNick(ChatUser sender) {
-		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public ChatUser getNickOwner(String nick) {
+		return null;
 	}
 
 }

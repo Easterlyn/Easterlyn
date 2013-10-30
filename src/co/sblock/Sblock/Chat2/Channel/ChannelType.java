@@ -2,7 +2,7 @@ package co.sblock.Sblock.Chat2.Channel;
 
 public enum ChannelType {
 
-	NORMAL, REGION, RP, NICK, TEMP;
+	NORMAL, REGION, RP, NICK;
 	
 	public static ChannelType getType(String s) {
 		s = s.replaceAll("\\W", "").toUpperCase();

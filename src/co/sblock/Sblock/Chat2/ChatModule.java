@@ -12,6 +12,7 @@ public class ChatModule extends Module {
 	private ChannelManager cm = new ChannelManager();
 	private ChatModuleCommandListener clistener = new ChatModuleCommandListener();
 	private static Sblogger log = new Sblogger("SblockChat");
+	private static boolean computersRequired = false;	//Hardcoded override, will be set to true come Entry
 
 	@Override
 	protected void onEnable() {
@@ -42,5 +43,9 @@ public class ChatModule extends Module {
 
 	public static Sblogger slog() {
 		return log;
+	}
+	
+	public static boolean getComputerRequired()	{
+		return computersRequired;
 	}
 }
