@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Chat2.Channel;
+package co.sblock.Sblock.Chat.Channel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import co.sblock.Sblock.DatabaseManager;
-import co.sblock.Sblock.Chat2.ChatModule;
-import co.sblock.Sblock.Chat2.Channel.AccessLevel;
-import co.sblock.Sblock.Chat2.Channel.Channel;
-import co.sblock.Sblock.Chat2.Channel.ChannelType;
-import co.sblock.Sblock.Chat2.Channel.NormalChannel;
-import co.sblock.Sblock.Chat2.Channel.RegionChannel;
+import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Chat.Channel.NormalChannel;
+import co.sblock.Sblock.Chat.Channel.RegionChannel;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 public class ChannelManager {

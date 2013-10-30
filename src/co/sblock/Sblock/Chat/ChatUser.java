@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Chat2;
+package co.sblock.Sblock.Chat;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,11 +13,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Chat2.Channel.AccessLevel;
-import co.sblock.Sblock.Chat2.Channel.CanonNicks;
-import co.sblock.Sblock.Chat2.Channel.Channel;
-import co.sblock.Sblock.Chat2.Channel.ChannelManager;
-import co.sblock.Sblock.Chat2.Channel.RPChannel;
+import co.sblock.Sblock.Chat.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.Channel.CanonNicks;
+import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
@@ -393,6 +394,12 @@ public class ChatUser {
 			sender.sendMessage(ChatMsgs.errorNoCurrent());
 			return;
 		}
+		
+		if(sendto instanceof RPChannel)	{
+			if(!sendto.hasNick(sender))	{
+				return;
+			}
+		}
 		this.formatMessage(sender, sendto, outputmessage);
 	}
 
@@ -434,21 +441,20 @@ public class ChatUser {
 			s = s.substring(1);
 		}
 		nameF = this.getOutputNameF(sender, isThirdPerson, c);
-		output = channelF + nameF + s;
-		// sender.getPlayer().sendMessage(output);
-		// This bypass will remain as long as the stupid
-		// thing can't tell what it's listening to
-
-		if (c.isChannelMod(sender)) {
-			output = ChatColor.translateAlternateColorCodes('\u0026', output);
+		
+		if(c.getType().equals(ChannelType.RP))	{	//apply quirk to s
+			s = CanonNicks.getNick(c.getNick(sender)).applyQuirk(s);
 		}
-
+		else if (c.isChannelMod(sender)) {
+			s = ChatColor.translateAlternateColorCodes('\u0026', s);
+		}
+		output = channelF + nameF + s;
+		
 		if (isThirdPerson) {
 			c.sendToAll(sender, output, "me");
 		} else {
 			c.sendToAll(sender, output, "chat");
 		}
-
 	}
 
 	/**

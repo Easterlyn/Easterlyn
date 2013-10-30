@@ -1,10 +1,9 @@
 package co.sblock.Sblock.Chat.Channel;
 
-import co.sblock.Sblock.Chat2.ChatMsgs;
-import co.sblock.Sblock.Chat2.ChatUser;
-import co.sblock.Sblock.Chat2.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.ChatMsgs;
+import co.sblock.Sblock.Chat.ChatUser;
 
-public class RegionChannel extends NormalChannel {
+public class RegionChannel extends Channel {
 
 	/**
 	 * @param name
@@ -14,19 +13,47 @@ public class RegionChannel extends NormalChannel {
 	public RegionChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
 	}
-
-	@Override
-	public void kickUser(ChatUser user, ChatUser sender) {
-		sender.sendMessage(ChatMsgs.errorRegionChannel());
-	}
 	
 	@Override
-	public void banUser(String username, ChatUser sender) {
-		sender.sendMessage(ChatMsgs.errorRegionChannel());
+	public ChannelType getType() {
+		return ChannelType.REGION;
+	}
+	/* (non-Javadoc)
+	 * @see co.sblock.Sblock.Chat2.Channel.Channel#setNick(co.sblock.Sblock.Chat2.ChatUser, java.lang.String)
+	 */
+	@Override
+	public void setNick(ChatUser sender, String nick) {
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));		
+	}
+
+	/* (non-Javadoc)
+	 * @see co.sblock.Sblock.Chat2.Channel.Channel#removeNick(co.sblock.Sblock.Chat2.ChatUser)
+	 */
+	@Override
+	public void removeNick(ChatUser sender) {
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));		
+	}
+
+	/* (non-Javadoc)
+	 * @see co.sblock.Sblock.Chat2.Channel.Channel#getNick(co.sblock.Sblock.Chat2.ChatUser)
+	 */
+	@Override
+	public String getNick(ChatUser sender) {
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this));
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see co.sblock.Sblock.Chat2.Channel.Channel#hasNick(co.sblock.Sblock.Chat2.ChatUser)
+	 */
+	@Override
+	public boolean hasNick(ChatUser sender) {
+		return false;
 	}
 
 	@Override
-	public void unbanUser(String username, ChatUser sender) {
-		sender.sendMessage(ChatMsgs.errorRegionChannel());
+	public ChatUser getNickOwner(String nick) {
+		return null;
 	}
+
 }

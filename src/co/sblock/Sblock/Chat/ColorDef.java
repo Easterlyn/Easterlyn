@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Chat2;
+package co.sblock.Sblock.Chat;
 
 import org.bukkit.ChatColor;
 

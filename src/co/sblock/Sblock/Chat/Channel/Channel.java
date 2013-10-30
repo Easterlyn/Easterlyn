@@ -1,4 +1,4 @@
- package co.sblock.Sblock.Chat2.Channel;
+ package co.sblock.Sblock.Chat.Channel;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,12 +8,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.DatabaseManager;
-import co.sblock.Sblock.Chat2.ChatModule;
-import co.sblock.Sblock.Chat2.ChatMsgs;
-import co.sblock.Sblock.Chat2.ChatUser;
-import co.sblock.Sblock.Chat2.ChatUserManager;
-import co.sblock.Sblock.Chat2.Channel.AccessLevel;
-import co.sblock.Sblock.Chat2.Channel.ChannelType;
+import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.ChatMsgs;
+import co.sblock.Sblock.Chat.ChatUser;
+import co.sblock.Sblock.Chat.ChatUserManager;
+import co.sblock.Sblock.Chat.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Utilities.Sblogger;
 /**
  * Defines default channel behavior

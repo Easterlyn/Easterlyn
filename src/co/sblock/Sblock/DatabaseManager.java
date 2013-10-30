@@ -9,13 +9,13 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 
-import co.sblock.Sblock.Chat2.ChatModule;
-import co.sblock.Sblock.Chat2.ChatUser;
-import co.sblock.Sblock.Chat2.ChatUserManager;
-import co.sblock.Sblock.Chat2.Channel.AccessLevel;
-import co.sblock.Sblock.Chat2.Channel.Channel;
-import co.sblock.Sblock.Chat2.Channel.ChannelManager;
-import co.sblock.Sblock.Chat2.Channel.ChannelType;
+import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.ChatUser;
+import co.sblock.Sblock.Chat.ChatUserManager;
+import co.sblock.Sblock.Chat.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.Machines.MachineManager;
 import co.sblock.Sblock.Machines.MachineModule;
@@ -139,7 +139,7 @@ public class DatabaseManager {
 			pst.setBoolean(7, sUser.isSleeping());
 			pst.setString(8, cUser.getCurrent().getName());
 			pst.setBoolean(9, cUser.isMute());
-			pst.setString(10, cUser.getNick());
+			pst.setString(10, cUser.getGlobalNick());
 			StringBuilder sb = new StringBuilder();
 			for (String s : cUser.getListening()) {
 				sb.append(s + ",");
@@ -204,7 +204,7 @@ public class DatabaseManager {
 				if (rs.getBoolean("isMute")) {
 					cUser.setMute(true);
 				}
-				cUser.setNick(rs.getString("nickname") != null ? rs.getString("nickname") : cUser.getNick());
+				cUser.setGlobalNick(rs.getString("nickname") != null ? rs.getString("nickname") : cUser.getGlobalNick());
 				if (rs.getString("channels") != null) {
 					String[] channels = rs.getString("channels").split(",");
 					for (int i = 0; i < channels.length; i++) {

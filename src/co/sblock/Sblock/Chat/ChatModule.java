@@ -1,7 +1,7 @@
-package co.sblock.Sblock.Chat2;
+package co.sblock.Sblock.Chat;
 
 import co.sblock.Sblock.Module;
-import co.sblock.Sblock.Chat2.Channel.ChannelManager;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;

@@ -3,8 +3,8 @@ package co.sblock.Sblock.Events.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.Chat2.ChatUser;
-import co.sblock.Sblock.Chat2.ChatUserManager;
+import co.sblock.Sblock.Chat.ChatUser;
+import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.UserData.Region;
 
 /**

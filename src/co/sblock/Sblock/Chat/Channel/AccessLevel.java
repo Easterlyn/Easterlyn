@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Chat2.Channel;
+package co.sblock.Sblock.Chat.Channel;
 
 public enum AccessLevel {
 	PUBLIC, PRIVATE;

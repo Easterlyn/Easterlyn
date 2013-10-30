@@ -38,10 +38,10 @@ import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Chat2.ChatUser;
-import co.sblock.Sblock.Chat2.ChatUserManager;
-import co.sblock.Sblock.Chat2.Channel.Channel;
-import co.sblock.Sblock.Chat2.Channel.ChannelManager;
+import co.sblock.Sblock.Chat.ChatUser;
+import co.sblock.Sblock.Chat.ChatUserManager;
+import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Events.Packets.AbstractPacket;
 import co.sblock.Sblock.Events.Packets.Packet11UseBed;
 import co.sblock.Sblock.Events.Packets.Packet12Animation;

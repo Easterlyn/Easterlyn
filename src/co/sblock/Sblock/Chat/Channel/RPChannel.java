@@ -1,27 +1,19 @@
 package co.sblock.Sblock.Chat.Channel;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.ChatColor;
-
-import co.sblock.Sblock.Chat2.ChatMsgs;
-import co.sblock.Sblock.Chat2.ChatUser;
-import co.sblock.Sblock.Chat2.ChatUserManager;
-import co.sblock.Sblock.Chat2.Channel.AccessLevel;
-import co.sblock.Sblock.Chat2.Channel.ChannelType;
-import co.sblock.Sblock.Utilities.Sblogger;
-
+import co.sblock.Sblock.Chat.ChatMsgs;
+import co.sblock.Sblock.Chat.ChatUser;
 /**
- * @author Jikoo
- *
+ * Defines nick channel behavior
+ * 
+ * @author Dublek
  */
 public class RPChannel extends NickChannel {
-
-	private Map<ChatUser, String> nickList = new HashMap<ChatUser, String>();
-
+	
+	/**
+	 * @param name
+	 * @param a
+	 * @param creator
+	 */
 	public RPChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
 	}
@@ -32,46 +24,17 @@ public class RPChannel extends NickChannel {
 	}
 
 	@Override
-	public void setNick(ChatUser sender, String nick) {		
-		if (CanonNicks.getNick(nick) == null) {
-			sender.sendMessage(ChatColor.BLUE + nick + ChatColor.RED +
-					" is not a valid roleplaying nick!");
-			return;
-		} 
-		for(String n : nickList.values())	{
-			if (n.equalsIgnoreCase(nick))	{
-				sender.sendMessage(ChatColor.BLUE + nick + ChatColor.RED + " is already in use!");
-				return;
-			}
-		}		
-		nickList.put(sender, nick);
-		sender.sendMessage(ChatColor.YELLOW + "Your nick has been set to \""
-				+ ChatColor.BLUE + nick + "\" in "
-				+ ChatColor.GOLD + this.getName());
-		
-		for(String user : this.getListening()){
-			ChatUserManager.getUserManager().getUser(user).sendMessage(ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this));
-		}
-	}
-
-	@Override
-	public void sendToAll(ChatUser sender, String s, String type) {
-		if (this.getNick(sender) == null) {
-			sender.sendMessage(ChatMsgs.errorNickRequired(this.getName()));
+	public void setNick(ChatUser sender, String nick) {
+		CanonNicks name = CanonNicks.getNick(nick);
+		if(name == null)	{
+			sender.sendMessage(ChatMsgs.errorInvalidCanonNick(nick));
 			return;
 		}
-		Set<String> failures = new HashSet<String>();
-		for (String name : this.listening) {
-			ChatUser u = ChatUserManager.getUserManager().getUser(name);
-			if (u != null) {
-				u.sendMessageFromChannel(s, this, type);
-			} else {
-				failures.add(name);
-			}
+		else if(this.getNickOwner(nick) == null)	{
+			super.setNick(sender, nick);
 		}
-		for (String failure : failures) {
-			this.listening.remove(failure);
+		else	{
+			sender.sendMessage(ChatMsgs.errorCanonNickInUse(nick));
 		}
-		Sblogger.infoNoLogName(s);
 	}
 }

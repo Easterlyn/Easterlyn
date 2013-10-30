@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Chat2;
+package co.sblock.Sblock.Chat;
 
 import java.util.Map;
 
@@ -10,10 +10,12 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.SblockCommand;
-import co.sblock.Sblock.Chat2.Channel.AccessLevel;
-import co.sblock.Sblock.Chat2.Channel.Channel;
-import co.sblock.Sblock.Chat2.Channel.ChannelManager;
-import co.sblock.Sblock.Chat2.Channel.ChannelType;
+import co.sblock.Sblock.Chat.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Chat.Channel.NickChannel;
+import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -154,6 +156,7 @@ public class ChatModuleCommandListener implements CommandListener {
 		boolean isConsole = !(sender instanceof Player);
 		boolean isHelper = !isConsole && sender.hasPermission("group.helper");
 		boolean isMod = !isConsole && sender.hasPermission("group.denizen");
+		ChatColor cmd = ChatColor.AQUA;
 		if (isConsole) { // TODO console-friendly stuff
 			sender.sendMessage(ChatColor.DARK_RED + "No commands programmed yet! :D");
 		} else { // ingame commands
@@ -165,10 +168,10 @@ public class ChatModuleCommandListener implements CommandListener {
 			if (args.length < 1) {
 				return false;
 			}
+			
 			if (args[0].equalsIgnoreCase("c")) { // setChannel
 				if (args.length == 1) {
-					sender.sendMessage(ChatColor.YELLOW
-							+ "Set current channel:\n\t/sc c <$channelname>");
+					sender.sendMessage(ChatColor.YELLOW	+ "Set current channel:\n" + cmd + "/sc c <$channelname>");
 					return true;
 				}
 				if(ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION))	{
@@ -184,10 +187,11 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ ChatColor.RED + " does not exist!");
 				}
 				return true;
+				
 			} else if (args[0].equalsIgnoreCase("l")) { // addListening
 				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
-							+ "Listen to a channel:\n\t/sc l <$channelname>");
+							+ "Listen to a channel:\n" + cmd + "/sc l <$channelname>");
 					return true;
 				}
 				if(ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION))	{
@@ -204,10 +208,11 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ ChatColor.RED + " does not exist!");
 				}
 				return true;
+				
 			} else if (args[0].equalsIgnoreCase("leave")) { // removeListening
 				if (args.length == 1) {
 					sender.sendMessage(ChatColor.YELLOW
-							+ "Stop listening to a channel:\n\t/sc leave <$channelname>");
+							+ "Stop listening to a channel:\n" + cmd + "/sc leave <$channelname>");
 					return true;
 				}
 				if(ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION))	{
@@ -223,6 +228,7 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ ChatColor.RED + " does not exist!");
 				}
 				return true;
+				
 			} else if (args[0].equalsIgnoreCase("list")) { // listListening
 				String clist = ChatColor.YELLOW + "Currently pestering: ";
 				for (String s : user.getListening()) {
@@ -230,6 +236,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				}
 				sender.sendMessage(clist);
 				return true;
+				
 			} else if (args[0].equalsIgnoreCase("listall")) { // listAll
 				String clist = ChatColor.YELLOW + "All channels: ";
 				Map<String, Channel> channels = ChannelManager.getChannelList();
@@ -248,14 +255,16 @@ public class ChatModuleCommandListener implements CommandListener {
 				}
 				sender.sendMessage(clist);
 				return true;
+				
 			} else if (args[0].equalsIgnoreCase("new")) { // newChannel
 				if (args.length != 4) {
 					sender.sendMessage(ChatColor.YELLOW
-							+ "Create a new channel:\n/sc new <$channelname> <$access> <$type>\n"
-							+ "access must be either PUBLIC or PRIVATE");
+							+ "Create a new channel:\n" + cmd + "/sc new <$channelname> <$access> <$type>\n"
+							+ ChatColor.YELLOW + "Access must be either PUBLIC or PRIVATE\n"
+							+ "Type must be NORMAL, NICK, or RP");
 					return true;
 				}
-				if (ChannelType.getType(args[3]) == null) {
+				if (ChannelType.getType(args[3]) == null || ChannelType.getType(args[3]).equals(ChannelType.REGION)) {
 					user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
 				} else if (AccessLevel.getAccess(args[2]) == null) {
 					user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
@@ -265,29 +274,38 @@ public class ChatModuleCommandListener implements CommandListener {
 							.getChannelManager()
 							.createNewChannel(args[1], AccessLevel.getAccess(args[2]),
 									user.getPlayerName(), ChannelType.getType(args[3]));
-					return true;
 				}
+				return true;
+				
 			} else if(args[0].equalsIgnoreCase("nick"))	{
+				Channel c = user.getCurrent();
 				if(args.length == 1 || args.length > 3)	{
-					sender.sendMessage(ChatColor.YELLOW + "/sc nick <set/remove> <nick>");
+					sender.sendMessage(ChatColor.YELLOW + "Set your nick in a Nick or RP Channel\n" + cmd + "/sc nick <set/remove> <nick>");
 					return true;
 				}
-				else if(args[1].equalsIgnoreCase("set") && args.length == 3)	{
-					Channel c = user.getCurrent();
-					c.setNick(user, args[2]);
+				else if(c instanceof NickChannel || c instanceof RPChannel)	{				
+					if(args[1].equalsIgnoreCase("set") && args.length == 3)	{
+						c.setNick(user, args[2]);
+						return true;
+					}
+					else if(args[1].equalsIgnoreCase("remove"))	{
+						c.removeNick(user);
+						return true;
+					}		
+				}
+				else	{
+					sender.sendMessage(ChatColor.YELLOW + "This channel does not support nicks!");
 					return true;
 				}
-				else if(args[1].equalsIgnoreCase("remove"))	{
-					Channel c = user.getCurrent();
-					c.removeNick(user);
-					return true;
-				}				
+				
 			} else if (args[0].equalsIgnoreCase("channel")) {
 				// ChannelOwner/Mod commands
 				Channel c = user.getCurrent();
 				if (c.isMod(user) || isHelper) {
 					if (args.length == 1) {
 						this.sendChannelHelp(user, c);
+						return true;
+						
 					} else if (args.length >= 2 && args[1].equalsIgnoreCase("getlisteners")) {
 						String listenerList = ChatColor.YELLOW + "Channel members: ";
 						for (String s : c.getListening()) {
@@ -300,31 +318,38 @@ public class ChatModuleCommandListener implements CommandListener {
 						}
 						sender.sendMessage(listenerList);
 						return true;
+						
 					} else if (args.length >= 3) {
 						if (args[1].equalsIgnoreCase("kick")) {
 							c.kickUser(ChatUserManager.getUserManager().getUser(args[2]), user);
 							return true;
+							
 						} else if (args[1].equalsIgnoreCase("ban")) {
 							c.banUser(args[2], user);
 							return true;
 						}
 					}
+					
 					if (c.isOwner(user) || isMod) {
 						if (args.length >= 4 && args[1].equalsIgnoreCase("mod")) {
 							if (args[2].equalsIgnoreCase("add")) {
 								c.addMod(user, args[3]);
 								return true;
+								
 							} else if (args[2].equalsIgnoreCase("remove")) {
 								c.removeMod(user, args[3]);
 								return true;
+								
 							} else {
 								this.sendChannelHelp(user, c);
 								return true;
 							}
+							
 						} else if (args.length >= 3 && args[1].equalsIgnoreCase("unban")) {
 							ChatModule.getChatModule().getChannelManager().getChannel(c.getName())
 									.unbanUser(args[2], user);
 							return true;
+							
 						} else if (args.length >= 2 && args[0].equalsIgnoreCase("disband")) {
 							c.disband(user);
 							return true;
