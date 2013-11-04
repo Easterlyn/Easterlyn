@@ -37,7 +37,21 @@ public class ChannelManager {
 	}
 
 	public void createNewChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
-		Channel c = new NormalChannel(name, access, creator);
+		Channel c = null;
+		switch (channelType)	{
+		case RP:
+			c = new RPChannel(name, access, creator);
+			break;
+		case NICK:
+			c = new NickChannel(name, access, creator);
+			break;
+		case REGION:
+			c = new RegionChannel(name, access, creator);
+			break;
+		default:
+			c = new NormalChannel(name, access, creator);
+			break;
+		}
 		ChannelManager.getChannelList().put(name, c);
 		ChatModule.slog().info("Channel " + c.getName() + " created: " + access + " " + creator);
 	}

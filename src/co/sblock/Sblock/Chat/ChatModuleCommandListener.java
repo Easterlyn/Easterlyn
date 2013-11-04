@@ -181,7 +181,6 @@ public class ChatModuleCommandListener implements CommandListener {
 				try {
 					user.setCurrent(ChatModule.getChatModule().getChannelManager()
 							.getChannel(args[1]));
-					sender.sendMessage(ChatMsgs.onChannelJoin(user, user.getCurrent()));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel " + ChatColor.GOLD + args[1]
 							+ ChatColor.RED + " does not exist!");
@@ -201,8 +200,6 @@ public class ChatModuleCommandListener implements CommandListener {
 				try {
 					user.addListening(ChatModule.getChatModule().getChannelManager()
 							.getChannel(args[1]));
-					sender.sendMessage(ChatMsgs.onChannelJoin(user, ChatModule.getChatModule()
-							.getChannelManager().getChannel(args[1])));
 				} catch (NullPointerException e) {
 					sender.sendMessage(ChatColor.RED + "Channel " + ChatColor.GOLD + args[1]
 							+ ChatColor.RED + " does not exist!");
@@ -264,16 +261,16 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ "Type must be NORMAL, NICK, or RP");
 					return true;
 				}
-				if (ChannelType.getType(args[3]) == null || ChannelType.getType(args[3]).equals(ChannelType.REGION)) {
+				if (ChannelType.getType(args[3]) == null || ChannelType.getType(args[3]) == ChannelType.REGION) {
 					user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
 				} else if (AccessLevel.getAccess(args[2]) == null) {
 					user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
 				} else {
-					ChatModule
-							.getChatModule()
-							.getChannelManager()
+					ChatModule.getChatModule().getChannelManager()
 							.createNewChannel(args[1], AccessLevel.getAccess(args[2]),
 									user.getPlayerName(), ChannelType.getType(args[3]));
+					Channel c = ChatModule.getChatModule().getChannelManager().getChannel(args[1]);
+					user.sendMessage(ChatMsgs.onChannelCreation(c));
 				}
 				return true;
 				
@@ -301,6 +298,10 @@ public class ChatModuleCommandListener implements CommandListener {
 			} else if (args[0].equalsIgnoreCase("channel")) {
 				// ChannelOwner/Mod commands
 				Channel c = user.getCurrent();
+				if(args[1].equalsIgnoreCase("info"))	{
+					sender.sendMessage(c.toString());
+					return true;
+				}
 				if (c.isMod(user) || isHelper) {
 					if (args.length == 1) {
 						this.sendChannelHelp(user, c);
@@ -350,7 +351,7 @@ public class ChatModuleCommandListener implements CommandListener {
 									.unbanUser(args[2], user);
 							return true;
 							
-						} else if (args.length >= 2 && args[0].equalsIgnoreCase("disband")) {
+						} else if (args.length >= 2 && args[1].equalsIgnoreCase("disband")) {
 							c.disband(user);
 							return true;
 						}

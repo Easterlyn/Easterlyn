@@ -284,5 +284,12 @@ public abstract class Channel {
 		}
 		Sblogger.infoNoLogName(s);
 	}
+	
+	public String toString()	{
+		return ChatColor.GOLD + this.getName() + ChatColor.GREEN
+				+ " is a " + ChatColor.GOLD + this.getAccess() + ChatColor.GREEN
+				+ " channel with type " + ChatColor.GOLD + this.getType() + "\n"
+				+ ChatColor.GREEN + "The owner is " + ChatColor.GOLD + this.getOwner();
+	}
 
 }
