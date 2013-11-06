@@ -41,13 +41,13 @@ public class SblockUser {
 	private boolean sleeping = false;
 
 	/** The <code>Player</code>'s location prior to sleeping to swap worlds */
-	private Location previousLocation;
+	private Location previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
 
 	/** The total time the <code>Player</code> has spent logged in */
 	private long timePlayed = 0L;
 
 	/** The <code>Player</code>'s last login */
-	private Date login;
+	private Date login = new Date();
 
 	/** The <code>Player</code>'s IP address */
 	private String userIP;
@@ -66,7 +66,6 @@ public class SblockUser {
 	 */
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
-		login = new Date();
 		this.setUserIP();
 	}
 
@@ -332,7 +331,7 @@ public class SblockUser {
 	}
 
 	/**
-	 * TODO TODO
+	 * future feature
 	 * 
 	 * @return isGodTier
 	 */

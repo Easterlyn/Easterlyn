@@ -47,7 +47,7 @@ public enum Region {
 	 * @return the relevant <code>ChatColor</code>
 	 */
 	public static ChatColor getRegionColor(Region r) {
-		switch (r) { // TODO fix
+		switch (r) {
 		case EARTH:
 			return ColorDef.WORLD_EARTH;
 		case FURTHESTRING:

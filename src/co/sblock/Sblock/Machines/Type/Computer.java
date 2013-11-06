@@ -86,7 +86,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	public boolean handleInteract(PlayerInteractEvent event) {
-		// TODO
+		// Adam
 		return true;
 	}
 }

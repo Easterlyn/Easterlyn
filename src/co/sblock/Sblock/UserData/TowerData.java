@@ -81,7 +81,7 @@ public class TowerData {
 	 * @return Location the <code>Location</code> of the tower
 	 */
 	public Location getLocation(byte number, DreamPlanet dPlanet, byte enterZeroHere) {
-		// TODO Adam fix your hellishly awful code
+		// Adam fix your hellishly awful code
 		if (enterZeroHere != 0) {
 			if (enterZeroHere > 8) {
 				return Bukkit.getWorld(dPlanet.getWorldName()).getSpawnLocation();

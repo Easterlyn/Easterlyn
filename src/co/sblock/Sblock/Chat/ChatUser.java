@@ -335,7 +335,7 @@ public class ChatUser {
 	public void setComputerAccess()	{
 		if(EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains(PassiveEffect.COMPUTER
 				/* || distance to Player's Computer Machine <= 10*/))	{
-			//TODO Adam fill in the above
+			// Adam fill in the above
 			computerAccess = true;
 		}
 		else	{
@@ -430,9 +430,8 @@ public class ChatUser {
 		String channelF = "";
 		String nameF = "";
 		String output = "";
-		// colorformatting
 
-		boolean isThirdPerson = (s.indexOf("#") == 0) ? true : false;
+		boolean isThirdPerson = (s.charAt(0) == '\u0023') ? true : false;
 
 		if (!isThirdPerson) {
 			channelF = this.getOutputChannelF(sender, c);
@@ -442,14 +441,15 @@ public class ChatUser {
 		}
 		nameF = this.getOutputNameF(sender, isThirdPerson, c);
 		
-		if(c.getType().equals(ChannelType.RP))	{	//apply quirk to s
+		if(c.getType().equals(ChannelType.RP)) {
+			//apply quirk to s
 			s = CanonNicks.getNick(c.getNick(sender)).applyQuirk(s);
 		}
 		else if (c.isChannelMod(sender)) {
+			// color formatting
 			s = ChatColor.translateAlternateColorCodes('\u0026', s);
 		}
 		output = channelF + nameF + s;
-		
 		if (isThirdPerson) {
 			c.sendToAll(sender, output, "me");
 		} else {

@@ -193,7 +193,6 @@ public class MachineManager {
 	 */
 	public void removeMachineListing(Location l) {
 		if (machineKeys.containsKey(l)) {
-			// TODO asynchronous
 			DatabaseManager.getDatabaseManager().deleteMachine(machineKeys.remove(l));
 			ArrayList<Location> stagedRemoval = new ArrayList<Location>();
 			for (Entry<Location, Location> e : machineBlocks.entrySet()) {

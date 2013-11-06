@@ -212,13 +212,19 @@ public class ChatMsgs {
 		return ChatColor.GOLD + name + ChatColor.RED +
 				" is a roleplaying channel. You must have a nickname to talk!";
 	}
+
 	public static String errorInvalidCanonNick(String nick)	{
 		return ChatColor.GOLD + nick + ChatColor.RED + 
 				" is not a canon nickname!";
 	}
+
 	public static String errorCanonNickInUse(String nick)	{
-		return ChatColor.GOLD + nick + ChatColor.YELLOW + 
+		return ChatColor.GOLD + nick + ChatColor.RED + 
 				" is already in use!";
+	}
+
+	public static String errorChannelNameTooLong() {
+		return ChatColor.RED + "Channel names may not exceed 16 characters in length!";
 	}
 
 	public static String errorRegionChannel()	{

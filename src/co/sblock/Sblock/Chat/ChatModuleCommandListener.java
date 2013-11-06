@@ -95,7 +95,7 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean o(CommandSender sender, String text) {
 		if (!(sender instanceof Player) || sender.hasPermission("group.horrorterror")
 				|| sender.isOp()) {
-			Sblogger.infoNoLogName(ChatColor.WHITE + "[o] " + text);
+			Sblogger.info("o", text);
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 				p.sendMessage(ChatColor.BOLD + "[o] " + text);
 			}
@@ -113,7 +113,7 @@ public class ChatModuleCommandListener implements CommandListener {
 		if (!(sender instanceof Player) || sender.isOp()) {
 			SblockUser victim = UserManager.getUserManager().getUser(target);
 			Bukkit.banIP(victim.getUserIP());
-			DatabaseManager.getDatabaseManager().deleteUser(victim);
+			DatabaseManager.getDatabaseManager().deleteUser(victim.getPlayerName());
 			Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
 			for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName()
@@ -264,7 +264,9 @@ public class ChatModuleCommandListener implements CommandListener {
 							+ "Type must be NORMAL, NICK, or RP");
 					return true;
 				}
-				if (ChannelType.getType(args[3]) == null || ChannelType.getType(args[3]).equals(ChannelType.REGION)) {
+				if (args[1].length() > 16) {
+					sender.sendMessage(ChatMsgs.errorChannelNameTooLong());
+				} else if (ChannelType.getType(args[3]) == null || ChannelType.getType(args[3]).equals(ChannelType.REGION)) {
 					user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
 				} else if (AccessLevel.getAccess(args[2]) == null) {
 					user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));

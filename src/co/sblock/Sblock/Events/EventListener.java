@@ -241,7 +241,7 @@ public class EventListener implements Listener, PacketListener {
 			Block b = event.getClickedBlock();
 			if (b.getType().equals(Material.BED_BLOCK)) {
 				if (SblockUser.getUser(event.getPlayer().getName()).isGodTier()) {
-					// TODO? Godtiers probably have alternate transport to dPlanet
+					// future feature
 					return;
 				}
 				Bed bed = (Bed) b.getState().getData();
@@ -250,7 +250,7 @@ public class EventListener implements Listener, PacketListener {
 					head = b.getLocation();
 				} else {
 					head = b.getRelative(bed.getFacing()).getLocation();
-					// getFace does not seem to work in most cases - TODO test and fix
+					// getFace does not seem to work in most cases - Adam test and fix
 				}
 				switch (Region.uValueOf(head.getWorld().getName())) {
 				case EARTH:
@@ -446,7 +446,7 @@ public class EventListener implements Listener, PacketListener {
 					ProtocolLibrary.getProtocolManager().sendServerPacket(p, spawn.getHandle());
 					// Ideally this will fix what I suspect is the issue - the packet is
 					// probably sent too soon, or something of the sort.
-					// TODO task tracking
+					// Adam task tracking
 					this.schedulePacket(p, packet);
 				}
 			}

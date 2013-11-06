@@ -82,7 +82,7 @@ public enum Icon {
 	 *            the <code>Player</code> involved
 	 */
 	public void execute(Player p) {
-		// TODO computer fancy functions
+		// Adam computer fancy functions
 		p.sendMessage(this.name() + ".~ATH EXECUTING.");
 	}
 }
