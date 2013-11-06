@@ -181,6 +181,7 @@ public class ChatUser {
 			this.addListening(c);
 		}
 		this.current = c.getName();
+		this.sendMessage(ChatMsgs.onChannelJoin(this, this.getCurrent()));
 	}
 
 	/**
@@ -217,8 +218,8 @@ public class ChatUser {
 			this.listening.add(c.getName());
 		}
 		if (!c.getListening().contains(this.playerName)) {
-			c.addListening(this.playerName);
 			c.sendToAll(this, ChatMsgs.onChannelJoin(this, c), "channel");
+			c.addListening(this.playerName);
 			return true;
 		} else {
 			this.sendMessage(ChatMsgs.errorAlreadyInChannel(c.getName()));
@@ -397,6 +398,7 @@ public class ChatUser {
 		
 		if(sendto instanceof RPChannel)	{
 			if(!sendto.hasNick(sender))	{
+				sender.sendMessage(ChatMsgs.errorNickRequired(sendto.getName()));
 				return;
 			}
 		}

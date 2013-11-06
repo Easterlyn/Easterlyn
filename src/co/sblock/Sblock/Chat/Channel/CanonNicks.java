@@ -214,6 +214,7 @@ public enum CanonNicks {
 	 * @return
 	 */
 	public static CanonNicks getNick(String nick) {
+		nick = nick.toUpperCase();
 		if(CanonNicks.valueOf(nick) != null)	{
 			return CanonNicks.valueOf(nick);
 		}

@@ -33,6 +33,12 @@ public class ChatMsgs {
 		return ChatMsgs.onChannelJoin(u, c).replaceAll("began", "ceased");
 	}
 
+	public static String onChannelCreation(Channel c)	{
+		return ChatColor.GOLD + c.getName() + ChatColor.GREEN
+				+ " has been created with access " + ChatColor.GOLD + c.getAccess() + ChatColor.GREEN
+				+ " and type " + ChatColor.GOLD + c.getType();
+	}
+	
 	public static String onChannelDisband(String c) {
 		return ChatColor.GOLD + c + ChatColor.RED
 				+ " has been disbanded! These are indeed dark times...";
@@ -268,7 +274,8 @@ public class ChatMsgs {
 	}
 
 	public static String helpDefault() {
-		return ChatColor.YELLOW + "/sc subcommands:\n"
+		return ChatColor.AQUA + "/sc "
+				+ ChatColor.YELLOW + "subcommands:\n"
 				+ ChatColor.AQUA + "c <channel>: "
 				+ ChatColor.YELLOW + "Talking will send messages to <channel>.\n"
 				+ ChatColor.AQUA + "l <channel>: "
