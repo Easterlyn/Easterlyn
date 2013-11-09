@@ -36,12 +36,12 @@ import com.bergerkiller.bukkit.common.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
-import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Events.Packets.AbstractPacket;
 import co.sblock.Sblock.Events.Packets.Packet11UseBed;
 import co.sblock.Sblock.Events.Packets.Packet12Animation;
@@ -89,7 +89,7 @@ public class EventListener implements Listener, PacketListener {
 			MOTD = EventModule.getEventModule().getStatus().getMOTDChange();
 		} else {
 			MOTD = event.getMotd().replaceAll("Player",
-					DatabaseManager.getDatabaseManager()
+					DBManager.getDBM()
 					.getUserFromIP(event.getAddress().getHostAddress()));
 		}
 		event.setMotd(MOTD);
@@ -110,7 +110,7 @@ public class EventListener implements Listener, PacketListener {
 			return;
 		case KICK_BANNED:
 		case KICK_OTHER:
-			String reason = DatabaseManager.getDatabaseManager().getBanReason(
+			String reason = DBManager.getDBM().getBanReason(
 					event.getPlayer().getName(),
 					event.getAddress().getHostAddress());
 			if (reason != null) {
@@ -130,7 +130,7 @@ public class EventListener implements Listener, PacketListener {
 	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		ChatUser u = DatabaseManager.getDatabaseManager().loadUserData(event.getPlayer().getName());
+		ChatUser u = DBManager.getDBM().loadUserData(event.getPlayer().getName());
 		
 		//RegionChannel handling
 		u.setCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
@@ -194,7 +194,7 @@ public class EventListener implements Listener, PacketListener {
 		for (String s : u.getListening()) {
 			u.removeListeningQuit(s);
 		}
-		DatabaseManager.getDatabaseManager().saveUserData(event.getPlayer().getName());
+		DBManager.getDBM().saveUserData(event.getPlayer().getName());
 	}
 
 	/**

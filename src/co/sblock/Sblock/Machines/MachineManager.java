@@ -12,7 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.DatabaseManager;
+import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
@@ -193,7 +193,7 @@ public class MachineManager {
 	 */
 	public void removeMachineListing(Location l) {
 		if (machineKeys.containsKey(l)) {
-			DatabaseManager.getDatabaseManager().deleteMachine(machineKeys.remove(l));
+			DBManager.getDBM().deleteMachine(machineKeys.remove(l));
 			ArrayList<Location> stagedRemoval = new ArrayList<Location>();
 			for (Entry<Location, Location> e : machineBlocks.entrySet()) {
 				if (e.getValue().equals(l)) {
@@ -211,7 +211,7 @@ public class MachineManager {
 	 */
 	public void saveToDb() {
 		for (Location l : machineKeys.keySet()) {
-			DatabaseManager.getDatabaseManager().saveMachine(machineKeys.get(l));
+			DBManager.getDBM().saveMachine(machineKeys.get(l));
 		}
 	}
 

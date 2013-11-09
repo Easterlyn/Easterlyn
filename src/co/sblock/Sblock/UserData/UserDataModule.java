@@ -3,8 +3,8 @@ package co.sblock.Sblock.UserData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Module;
+import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
@@ -28,7 +28,7 @@ public class UserDataModule extends Module {
 		this.registerCommands(new UserDataCommands());
 
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			DatabaseManager.getDatabaseManager().loadUserData(p.getName());
+			DBManager.getDBM().loadUserData(p.getName());
 		}
 
 		Sblogger.info("SblockUserData", "UserData Module enabled");

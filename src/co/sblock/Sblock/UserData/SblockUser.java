@@ -311,23 +311,15 @@ public class SblockUser {
 	 * @return the <code>Player</code>'s time ingame
 	 */
 	public String getTimePlayed() {
-		long hrs = TimeUnit.MILLISECONDS.toHours(this.timePlayed);
-		long mins = TimeUnit.MILLISECONDS.toMinutes(timePlayed) -
+		long current = this.timePlayed + new Date().getTime() - this.login.getTime();
+		long hrs = TimeUnit.MILLISECONDS.toHours(current);
+		long mins = TimeUnit.MILLISECONDS.toMinutes(current) -
 				TimeUnit.HOURS.toMinutes(hrs);
-		long secs = TimeUnit.MILLISECONDS.toSeconds(timePlayed) -
+		long secs = TimeUnit.MILLISECONDS.toSeconds(current) -
 				TimeUnit.HOURS.toSeconds(hrs) - TimeUnit.MINUTES.toSeconds(mins);
-		long millis = this.timePlayed - TimeUnit.HOURS.toMillis(hrs) -
+		long millis = current - TimeUnit.HOURS.toMillis(hrs) -
 				TimeUnit.MINUTES.toMillis(mins) - TimeUnit.SECONDS.toMillis(secs);
 		return String.format("%02d:%02d:%02d:%03d", hrs, mins, secs, millis);
-	}
-
-	/**
-	 * Updates the <code>Player</code>'s total time ingame. For use on logout
-	 * only!
-	 */
-	public void updateTimePlayed() {
-		this.timePlayed = this.timePlayed + new Date().getTime()
-				- this.login.getTime();
 	}
 
 	/**

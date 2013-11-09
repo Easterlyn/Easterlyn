@@ -7,13 +7,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Utilities.Sblogger;
 /**
  * Defines default channel behavior
@@ -38,7 +38,7 @@ public abstract class Channel {
 		this.access = a;
 		this.owner = creator;
 		this.modList.add(creator);
-		DatabaseManager.getDatabaseManager().saveChannelData(this);
+		DBManager.getDBM().saveChannelData(this);
 	}
 
 	public String getName() {

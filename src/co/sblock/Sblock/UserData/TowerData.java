@@ -9,7 +9,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import co.sblock.Sblock.DatabaseManager;
+import co.sblock.Sblock.Database.DBManager;
 
 /**
  * @author Jikoo
@@ -138,13 +138,13 @@ public class TowerData {
 	 * Load all tower data from the database.
 	 */
 	public void load() {
-		DatabaseManager.getDatabaseManager().loadTowerData();
+		DBManager.getDBM().loadTowerData();
 	}
 
 	/**
 	 * Save all tower data to the database.
 	 */
 	public void save() {
-		DatabaseManager.getDatabaseManager().saveTowerData(this);
+		DBManager.getDBM().saveTowerData(this);
 	}
 }

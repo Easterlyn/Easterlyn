@@ -1,7 +1,6 @@
 package co.sblock.Sblock.Events;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
 
 import com.bergerkiller.bukkit.common.protocol.PacketType;
@@ -13,6 +12,7 @@ import co.sblock.Sblock.Events.Region.RegionCheck;
 import co.sblock.Sblock.Events.Session.SessionCheck;
 import co.sblock.Sblock.Events.Session.Status;
 import co.sblock.Sblock.UserData.TowerData;
+import co.sblock.Sblock.Utilities.LilHal;
 
 /**
  * @author Jikoo
@@ -93,7 +93,7 @@ public class EventModule extends Module {
 			announcement = status.getAnnouncement();
 		}
 		if (announcement != null) {
-			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + announcement);
+			LilHal.tellAll(announcement);
 		}
 		this.status = status;
 	}

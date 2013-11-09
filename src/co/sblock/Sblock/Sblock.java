@@ -17,6 +17,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Events.EventModule;
 //import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
@@ -69,7 +70,7 @@ public class Sblock extends JavaPlugin {
 		this.commandHandlers = new HashMap<String, Method>();
 		this.listenerInstances = new HashMap<Class<? extends CommandListener>, CommandListener>();
 		saveDefaultConfig();
-		DatabaseManager.getDatabaseManager().enable();
+		DBManager.getDBM().enable();
 		
 		modules.add(new UserDataModule().enable());
 		modules.add(new ChatModule().enable());
@@ -92,11 +93,7 @@ public class Sblock extends JavaPlugin {
 		}
 		this.unregisterAllCommands();
 		HandlerList.unregisterAll(this);
-		try {
-			DatabaseManager.getDatabaseManager().disable();
-		} catch (NullPointerException npe) {
-			// thrown if DatabaseManager fails to enable properly
-		}
+		DBManager.getDBM().disable();
 	}
 
 	/**

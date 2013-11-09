@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.CommandListener;
-import co.sblock.Sblock.DatabaseManager;
 import co.sblock.Sblock.SblockCommand;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
@@ -16,6 +15,7 @@ import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.Channel.NickChannel;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
+import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -113,13 +113,13 @@ public class ChatModuleCommandListener implements CommandListener {
 		if (!(sender instanceof Player) || sender.isOp()) {
 			SblockUser victim = UserManager.getUserManager().getUser(target);
 			Bukkit.banIP(victim.getUserIP());
-			DatabaseManager.getDatabaseManager().deleteUser(victim.getPlayerName());
+			DBManager.getDBM().deleteUser(victim.getPlayerName());
 			Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
 			for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName()
 						+ " has been superbanned for " + reason);
 			}
-			DatabaseManager.getDatabaseManager().addBan(victim, reason);
+			DBManager.getDBM().addBan(victim, reason);
 			victim.getPlayer().setBanned(true);
 			victim.getPlayer().kickPlayer(reason);
 			return true;
@@ -142,7 +142,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target
 						+ " has not played before or is an IP.");
 			}
-			DatabaseManager.getDatabaseManager().removeBan(target);
+			DBManager.getDBM().removeBan(target);
 			return true;
 		} else {
 			sender.sendMessage(ChatColor.BLACK
