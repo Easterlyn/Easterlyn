@@ -11,8 +11,6 @@ import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
-import co.sblock.Sblock.Chat.Channel.AccessLevel;
-import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Utilities.Sblogger;
 /**

@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import co.sblock.Sblock.Chat.ChatModule;
-import co.sblock.Sblock.Chat.Channel.AccessLevel;
-import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.ChannelType;
-import co.sblock.Sblock.Chat.Channel.NormalChannel;
-import co.sblock.Sblock.Chat.Channel.RegionChannel;
 import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Utilities.Sblogger;
 
