@@ -12,8 +12,7 @@ import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
- * A collection of all the Runnables used to fetch from and modify the
- * ChatChannels table.
+ * A small helper class containing all methods that access the ChatChannels table.
  * <p>
  * The ChatChannels table is created by the following call:
  * CREATE TABLE ChatChannels (name varchar(16) UNIQUE KEY, channelType varchar(6),

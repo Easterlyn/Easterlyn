@@ -11,8 +11,7 @@ import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
- * A collection of all the Runnables used to fetch from and modify the
- * BannedPlayers table.
+ * A small helper class containing all methods that access the BannedPlayers table.
  * <p>
  * The BannedPlayers table is created by the following call:
  * CREATE TABLE BannedPlayers (name varchar(16) UNIQUE KEY,
@@ -44,8 +43,7 @@ public class BannedPlayers {
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Sblogger.err(e);
 		}
 	}
 

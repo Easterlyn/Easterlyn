@@ -2,7 +2,6 @@ package co.sblock.Sblock.Database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -10,7 +9,6 @@ import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.TowerData;
@@ -23,7 +21,6 @@ import co.sblock.Sblock.Utilities.Sblogger;
  * @author Jikoo, FireNG
  */
 public class DBManager {
-
 	/** The <code>DatabaseManager</code> instance. */
 	private static DBManager dbm;
 
@@ -65,7 +62,7 @@ public class DBManager {
 		} catch (SQLException e) {
 			Sblogger.severe("Database", "An error occurred while connecting to"
 					+ " the database. Plugin functionality will be limited.");
-			e.printStackTrace();
+			Sblogger.criticalErr(e);
 			return false;
 		}
 
@@ -80,7 +77,7 @@ public class DBManager {
 		try {
 			connection.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		}
 		dbm = null;
 		connection = null;
@@ -199,30 +196,7 @@ public class DBManager {
 	 * Fills out <code>TowerData</code> from saved data.
 	 */
 	public void loadTowerData() {
-		PreparedStatement pst = null;
-		try {
-			pst = connection.prepareStatement("SELECT * FROM TowerLocs");
-
-			ResultSet rs = pst.executeQuery();
-
-			while (rs.next()) {
-				String towerID = rs.getString("towerID");
-				String location = rs.getString("location");
-				if (towerID != null && location != null) {
-					EventModule.getEventModule().getTowerData().add(towerID, location);
-				}
-			}
-		} catch (SQLException e) {
-			Sblogger.err(e);
-		} finally {
-			if (pst != null) {
-				try {
-					pst.close();
-				} catch (SQLException e) {
-					Sblogger.err(e);
-				}
-			}
-		}
+		TowerLocs.loadTowerData();
 	}
 
 	/**
@@ -230,46 +204,7 @@ public class DBManager {
 	 * @param towers the <code>TowerData</code> to save
 	 */
 	public void saveTowerData(TowerData towers) {
-		PreparedStatement pst = null;
-		try {
-			// Adam redo this utter heap of shitty code
-			for (byte i = 0; i < 8; i++) {
-				pst = connection.prepareStatement(
-						"INSERT INTO TowerLocs(towerID, location) "
-								+ "VALUES (?, ?)"
-								+ "ON DUPLICATE KEY UPDATE "
-								+ "location=VALUES(location)");
-
-				pst.setString(1, "Derse" + i);
-				pst.setString(2, towers.getLocString("Derse", i));
-
-				pst.executeUpdate();
-
-				pst.close();
-
-				pst = connection.prepareStatement(
-						"INSERT INTO TowerLocs(towerID, location) "
-								+ "VALUES (?, ?)"
-								+ "ON DUPLICATE KEY UPDATE "
-								+ "location=VALUES(location)");
-
-					pst.setString(1, "Prospit" + i);
-					pst.setString(2, towers.getLocString("Prospit", i));
-
-				pst.executeUpdate();
-				pst.close();
-			}
-		} catch (SQLException e) {
-			Sblogger.err(e);
-		} finally {
-			if (pst != null) {
-				try {
-					pst.close();
-				} catch (SQLException e) {
-					Sblogger.err(e);
-				}
-			}
-		}
+		TowerLocs.saveTowerData(towers);
 	}
 
 	/**
@@ -280,34 +215,7 @@ public class DBManager {
 	 * @return the name of the <code>SblockUser</code>, "Player" if invalid
 	 */
 	public String getUserFromIP(String hostAddress) {
-		PreparedStatement pst = null;
-		String name = "Player";
-		try {
-			pst = connection.prepareStatement("SELECT * FROM PlayerData WHERE ip=?");
-
-			pst.setString(1, hostAddress);
-
-			ResultSet rs = pst.executeQuery();
-
-			if (rs.next()) {
-				name = rs.getString("name");
-			}
-		} catch (SQLException e) {
-			Sblogger.err(e);
-		} finally {
-			if (pst != null) {
-				try {
-					pst.close();
-				} catch (SQLException e) {
-					Sblogger.err(e);
-				}
-			}
-		}
-		if (name != null) {
-			return name;
-		} else {
-			return "Player";
-		}
+		return PlayerData.getUserFromIP(hostAddress);
 	}
 
 	/**

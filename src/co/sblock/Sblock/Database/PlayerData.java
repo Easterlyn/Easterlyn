@@ -14,8 +14,7 @@ import co.sblock.Sblock.Utilities.Sblogger;
 import co.sblock.Sblock.Utilities.LilHal;
 
 /**
- * A collection of all the Runnables used to fetch from and modify the
- * PlayerData table.
+ * A small helper class containing all methods that access the PlayerData table.
  * <p>
  * The PlayerData table is created by the following call:
  * 
@@ -156,6 +155,44 @@ public class PlayerData {
 			} catch (SQLException e) {
 				Sblogger.err(e);
 			}
+		}
+	}
+
+	/**
+	 * Get a <code>SblockUser</code>'s name by the IP they last connected with.
+	 * 
+	 * @param hostAddress
+	 *            the IP to look up
+	 * @return the name of the <code>SblockUser</code>, "Player" if invalid
+	 */
+	protected static String getUserFromIP(String hostAddress) {
+		PreparedStatement pst = null;
+		String name = "Player";
+		try {
+			pst = DBManager.getDBM().connection().prepareStatement("SELECT * FROM PlayerData WHERE ip=?");
+
+			pst.setString(1, hostAddress);
+
+			ResultSet rs = pst.executeQuery();
+
+			if (rs.next()) {
+				name = rs.getString("name");
+			}
+		} catch (SQLException e) {
+			Sblogger.err(e);
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					Sblogger.err(e);
+				}
+			}
+		}
+		if (name != null) {
+			return name;
+		} else {
+			return "Player";
 		}
 	}
 }

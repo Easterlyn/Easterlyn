@@ -46,8 +46,7 @@ public class SleepTeleport implements Runnable {
 					EventModule.getEventModule().getListener().teleports.add(p.getName());
 					if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
 						p.teleport(EventModule.getEventModule().getTowerData()
-								.getLocation(user.getTower(),
-										user.getDPlanet(), (byte) 0));
+								.getLocation(user.getTower(), user.getDPlanet()));
 					} else {
 						p.teleport(user.getPreviousLocation());
 					}

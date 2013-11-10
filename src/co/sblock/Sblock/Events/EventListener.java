@@ -288,7 +288,7 @@ public class EventListener implements Listener, PacketListener {
 		try {
 			pm.sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		}
 		scheduleSleepTeleport(p);
 	}
@@ -319,7 +319,7 @@ public class EventListener implements Listener, PacketListener {
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		}
 	}
 
@@ -408,7 +408,7 @@ public class EventListener implements Listener, PacketListener {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, spawn.getHandle());
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		}
 	}
 

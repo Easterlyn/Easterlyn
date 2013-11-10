@@ -22,6 +22,7 @@ import co.sblock.Sblock.Events.EventModule;
 //import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 import co.sblock.Sblock.UserData.UserDataModule;
+import co.sblock.Sblock.Utilities.Sblogger;
 //import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Counter.CounterModule;
 import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
@@ -163,10 +164,8 @@ public class Sblock extends JavaPlugin {
 			try {
 				return (Boolean) handlerMethod.invoke(this.listenerInstances
 						.get(handlerMethod.getDeclaringClass()), params);
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				Sblogger.err(e);
 			}
 		}
 		return false;

@@ -327,19 +327,20 @@ public class ChatUser {
 		this.addListening(ChannelManager.getChannelManager().getChannel("#" + newR.toString()));
 		currentRegion = newR;
 	}
-	public boolean getComputerAccess()	{
-		if(!ChatModule.getComputerRequired()){		//Overrides the computer limitation for pre-Entry shenanigans
+
+	public boolean getComputerAccess() {
+		if (!ChatModule.getComputerRequired()) {
+			// Overrides the computer limitation for pre-Entry shenanigans
 			return true;
 		}
 		return computerAccess;
 	}
-	public void setComputerAccess()	{
-		if(EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains(PassiveEffect.COMPUTER
-				/* || distance to Player's Computer Machine <= 10*/))	{
-			// Adam fill in the above
+
+	public void setComputerAccess() {
+		if (EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains(PassiveEffect.COMPUTER)
+				|| MachineModule.getInstance().getManager().isByComputer(getPlayer(), 10)) {
 			computerAccess = true;
-		}
-		else	{
+		} else {
 			computerAccess = false;
 		}
 	}

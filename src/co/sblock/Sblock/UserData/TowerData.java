@@ -76,22 +76,9 @@ public class TowerData {
 	 *            the tower number to check
 	 * @param dPlanet
 	 *            the <code>DreamPlanet</code> of the tower
-	 * @param enterZeroHere
-	 *            0
-	 * @return Location the <code>Location</code> of the tower
+	 * @return <code>Location</code> the <code>Location</code> of the tower
 	 */
-	public Location getLocation(byte number, DreamPlanet dPlanet, byte enterZeroHere) {
-		// Adam fix your hellishly awful code
-		if (enterZeroHere != 0) {
-			if (enterZeroHere > 8) {
-				return Bukkit.getWorld(dPlanet.getWorldName()).getSpawnLocation();
-			} else {
-				number = (byte) (enterZeroHere - 1);
-				enterZeroHere++;
-			}
-		} else {
-			enterZeroHere = 1;
-		}
+	public Location getLocation(byte number, DreamPlanet dPlanet) {
 		Location l;
 		switch (dPlanet) {
 		case DERSE:
@@ -106,7 +93,33 @@ public class TowerData {
 		if (l != null) {
 			return l;
 		} else {
-			return this.getLocation(number, dPlanet, enterZeroHere);
+			return findValidLocation(dPlanet);
+		}
+	}
+
+	/**
+	 * @param dPlanet
+	 * the <code>DreamPlanet</code> of the tower
+	 * @return Location a valid location in the <code>DreamPlanet</code>'s <code>World</code>
+	 */
+	private Location findValidLocation(DreamPlanet dPlanet) {
+		switch(dPlanet) {
+		case DERSE:
+			for (Location l : derse.values()) {
+				if (l != null) {
+					return l;
+				}
+			}
+			return Bukkit.getWorld("OuterCircle").getSpawnLocation();
+		case PROSPIT:
+			for (Location l : prospit.values()) {
+				if (l != null) {
+					return l;
+				}
+			}
+			return Bukkit.getWorld("InnerCircle").getSpawnLocation();
+		default:
+			return Bukkit.getWorld("Earth").getSpawnLocation();
 		}
 	}
 

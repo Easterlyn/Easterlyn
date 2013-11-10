@@ -10,6 +10,9 @@ import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
+ * A small helper class containing all methods that access the Machines table.
+ * <p>
+ * The Machines table is created by the following call:
  * CREATE TABLE Machines (location varchar(34) UNIQUE KEY, type varchar(3), data varchar(16));
  * 
  * @author Jikoo
@@ -60,7 +63,7 @@ public class Machines {
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Sblogger.err(e);
 		}
 	}
 
