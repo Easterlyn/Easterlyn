@@ -1,19 +1,14 @@
 package co.sblock.Sblock.Events.Session;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
- * Checks and updates <code>Status</code> from
- * <a href="http://craftstats.com/mcstatus">craftstats</a>.
+ * Checks and updates <code>Status</code> from Minecraft's servers.
  * 
  * @author Jikoo
  */
@@ -23,37 +18,45 @@ public class SessionCheck implements Runnable {
 	 */
 	@Override
 	public void run() {
-		String s = null;
+		boolean session = false;
+		boolean login = false;
+		int response = -1;
+
+		// Session check
 		try {
-			URLConnection uc = new URL("http://craftstats.com/mcstatus").openConnection();
-			uc.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Linux x86_64; rv:2.6.32) Gecko/20100101 Firefox/25.0");
-			BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-			s = in.readLine();
-		} catch (IOException | NumberFormatException e) {
-			Sblogger.err(e);
-			return;
+			HttpURLConnection uc = (HttpURLConnection) new URL("http://session.minecraft.net").openConnection();
+
+			response = uc.getResponseCode();
+		} catch (IOException e) {
+			response = 503;
+		}
+		if (response == 503) {
+			session = true;
+			response = -1;
 		}
 
-		int login = 0;
-		int session = 0;
+		// Login check
 		try {
-			login = Integer.valueOf(s.replaceAll(".*\"login\":\"(\\d).*", "$1"));
-			session = Integer.valueOf(s.replaceAll(".*\"session\":\"(\\d).*", "$1"));
-		} catch (NumberFormatException e) {
-			Sblogger.warning("Session Check", "Fix regex: \"" + s + "\"");
-			return;
+			HttpURLConnection uc = (HttpURLConnection) new URL("https://login.minecraft.net").openConnection();
+
+			response = uc.getResponseCode();
+		} catch (IOException e) {
+			response = 503;
+		}
+		if (response == 503) {
+			login = true;
 		}
 
 		Status status = Status.NEITHER;
-		if (login == 0) {
-			if (session != 0) {
-				status = Status.SESSION;
-			}
-		} else {
-			if (session != 0) {
+		if (login) {
+			if (session) {
 				status = Status.BOTH;
 			} else {
 				status = Status.LOGIN;
+			}
+		} else {
+			if (session) {
+				status = Status.SESSION;
 			}
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new StatusSync(status));

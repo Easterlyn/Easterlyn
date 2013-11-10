@@ -99,4 +99,44 @@ public class BannedPlayers {
 			Sblogger.err(e);
 		}
 	}
+
+	/**
+	 * Get the reason a <code>SblockUser</code> was banned.
+	 * 
+	 * @param name
+	 *            the name of the banned <code>SblockUser</code>
+	 * @param ip
+	 *            the IP of the banned <code>SblockUser</code>
+	 * @return the ban reason
+	 */
+	protected static String getBanReason(String name, String ip) {
+		PreparedStatement pst = null;
+		String ban = null;
+		try {
+			pst = DBManager.getDBM().connection().prepareStatement(Call.BAN_LOAD.toString());
+
+			pst.setString(1, name);
+			pst.setString(2, ip);
+
+			ResultSet rs = pst.executeQuery();
+
+			while (rs.next()) {
+				ban = rs.getString("reason");
+				if (name.equals(rs.getString("name"))) {
+					break;
+				}
+			}
+		} catch (SQLException e) {
+			Sblogger.err(e);
+		} finally {
+			if (pst != null) {
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					Sblogger.err(e);
+				}
+			}
+		}
+		return ban;
+	}
 }

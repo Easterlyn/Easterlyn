@@ -320,35 +320,7 @@ public class DBManager {
 	 * @return the ban reason
 	 */
 	public String getBanReason(String name, String ip) {
-		PreparedStatement pst = null;
-		String ban = null;
-		try {
-			pst = connection.prepareStatement(
-					"SELECT * FROM BannedPlayers WHERE name=? OR ip =?");
-
-			pst.setString(1, name);
-			pst.setString(2, ip);
-
-			ResultSet rs = pst.executeQuery();
-
-			while (rs.next()) {
-				ban = rs.getString("reason");
-				if (name.equals(rs.getString("name"))) {
-					break;
-				}
-			}
-		} catch (SQLException e) {
-			Sblogger.err(e);
-		} finally {
-			if (pst != null) {
-				try {
-					pst.close();
-				} catch (SQLException e) {
-					Sblogger.err(e);
-				}
-			}
-		}
-		return ban;
+		return BannedPlayers.getBanReason(name, ip);
 	}
 
 	/**
