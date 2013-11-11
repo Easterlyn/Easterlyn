@@ -40,9 +40,8 @@ public class CaptchaEventListener implements Listener	{
 				|| e.getResult() == Result.DENY) {
 			return;
 		}
-		// TODO verify that this returns the correct inventory
-		Inventory clickedInv = e.getView().getTopInventory().getSize() < e.getRawSlot()
-				? e.getInventory() : ((Player) e.getWhoClicked()).getInventory();
+		Inventory clickedInv =  e.getView().getTopInventory().getSize() < e.getRawSlot()
+				? ((Player) e.getWhoClicked()).getInventory() : e.getView().getTopInventory();
 		if (e.getInventory().getTitle().equals("Captchadex")
 				|| ((Player) e.getWhoClicked()).getOpenInventory().getTitle().equals("Captchadex")) {
 			switch (e.getAction()) {
@@ -199,7 +198,6 @@ public class CaptchaEventListener implements Listener	{
 		if (!e.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			return;
 		}
-		// TODO verify that this returns the correct inventory
 		for (int i : e.getRawSlots()) {
 			if (e.getView().getTopInventory().getSize() < i) {
 				e.setResult(Result.DENY);
