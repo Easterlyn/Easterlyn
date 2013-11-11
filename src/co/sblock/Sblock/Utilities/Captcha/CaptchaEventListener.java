@@ -199,7 +199,7 @@ public class CaptchaEventListener implements Listener	{
 			return;
 		}
 		for (int i : e.getRawSlots()) {
-			if (e.getView().getTopInventory().getSize() < i) {
+			if (e.getView().getTopInventory().getSize() > i) {
 				e.setResult(Result.DENY);
 				break;
 			}
