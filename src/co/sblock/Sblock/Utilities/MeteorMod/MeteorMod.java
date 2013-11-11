@@ -19,7 +19,7 @@ public class MeteorMod extends Module implements Listener {
 	/** The <code>List</code> of active <code>Meteorite</code>s. */
 	private static ArrayList<Meteorite> meteorites = new ArrayList<Meteorite>();
 
-	// TODO Move commands into Fire's command handler
+	// keiko Move commands into Fire's command handler
 	/**
 	 * @see Module#onEnable()
 	 */

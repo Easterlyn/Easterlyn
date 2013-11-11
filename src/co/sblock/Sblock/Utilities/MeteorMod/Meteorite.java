@@ -158,7 +158,7 @@ public class Meteorite implements Listener {
 	 */
 	@EventHandler
 	public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
-		// TODO should this use EntityFormBlockEvent instead?
+		// keiko should this use EntityFormBlockEvent instead?
 		// Logger.getLogger("Minecraft").info("Meteor in position! (EntityChangeBlockEvent)");
 		try {
 			for (UUID u : blockID) {

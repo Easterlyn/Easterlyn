@@ -157,7 +157,7 @@ public class ChatModuleCommandListener implements CommandListener {
 		boolean isHelper = !isConsole && sender.hasPermission("group.helper");
 		boolean isMod = !isConsole && sender.hasPermission("group.denizen");
 		ChatColor cmd = ChatColor.AQUA;
-		if (isConsole) { // TODO console-friendly stuff
+		if (isConsole) { // future console-friendly stuff
 			sender.sendMessage(ChatColor.DARK_RED + "No commands programmed yet! :D");
 		} else { // ingame commands
 			ChatUser user = ChatUserManager.getUserManager().getUser(sender.getName());
