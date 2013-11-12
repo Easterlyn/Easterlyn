@@ -7,7 +7,16 @@ import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Utilities.Sblogger;
 
 public class EffectsModule extends Module {
-	
+	/*
+	 * Keiko TODO:
+	 * low:
+	 * + stacking effects (potentially also for godtier)
+	 * + 
+	 * godtier:
+	 * + reduce tick time
+	 * + 
+	 * 
+	 */
 	private static EffectsModule instance;
 	private EffectListener eL;
 	private EffectManager eM;
