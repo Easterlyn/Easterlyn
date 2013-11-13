@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -14,6 +15,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
+import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.Type.Programs.Icon;
 import co.sblock.Sblock.UserData.SblockUser;
 
 /**
@@ -32,7 +35,11 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble()
 	 */
 	public void assemble(BlockPlaceEvent event) {
-		// Machine is single block, nothing to do!
+		if (MachineModule.getInstance().getManager().hasComputer(event.getPlayer())) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer!");
+			event.getPlayer().setItemInHand(null);
+		}
 	}
 
 	/**

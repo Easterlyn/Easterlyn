@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Machines.Type;
+package co.sblock.Sblock.Machines.Type.Programs;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,10 +11,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 public enum Icon {
 
 	PESTERCHUM(Material.GOLD_RECORD, "Pesterchum", 1),
-	SBURBBETACLIENT(Material.RECORD_5, "Sburb Beta Client", 5),
+//	SBURBBETACLIENT(Material.RECORD_5, "Sburb Beta Client", 5),
 	SBURBBETASERVER(Material.GREEN_RECORD, "Sburb Beta Server", 2),
-	SBURBALPHACLIENT(Material.RECORD_4, "Sburb Alpha Client", 4),
-	SBURBALPHASERVER(Material.RECORD_3, "Sburb Alpha Server", 3),
+//	SBURBALPHACLIENT(Material.RECORD_4, "Sburb Alpha Client", 4),
+//	SBURBALPHASERVER(Material.RECORD_3, "Sburb Alpha Server", 3),
 	SGRUB(Material.RECORD_6, "Sgrub", 6);
 	// GRISTTORRENT ahaaaano.
 

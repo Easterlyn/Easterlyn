@@ -277,4 +277,21 @@ public class MachineManager {
 		}
 		return machines;
 	}
+
+	/**
+	 * Check to see if the <code>Player</code> in question has placed a
+	 * <code>Computer</code>.
+	 * 
+	 * @param p
+	 *            the <code>Player</code>
+	 * @return true if the Player has placed a <code>Computer</code>
+	 */
+	public boolean hasComputer(Player p) {
+		for (Machine m : machineKeys.values()) {
+			if (m instanceof Computer && m.getData().equals(p.getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
