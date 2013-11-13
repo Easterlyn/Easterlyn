@@ -144,7 +144,7 @@ public class PlayerData {
 				sUser.setUHCMode(rs.getByte("uhc"));
 			} else {
 				LilHal.tellAll("It would seem that "
-				+ rs.getStatement().toString().replace("SELECT * FROM PlayerData WHERE name=", "")
+				+ rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1")
 						+ " is joining us for the first time! Please welcome them.");
 			}
 		} catch (SQLException e) {
