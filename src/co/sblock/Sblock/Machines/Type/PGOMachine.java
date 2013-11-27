@@ -12,6 +12,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import co.sblock.Sblock.Machines.Type.Shape.Direction;
+
 /**
  * @author Jikoo
  */
@@ -168,5 +170,13 @@ public class PGOMachine extends Machine {
 		default:
 			return false;
 		}
+	}
+
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#getFacingDirection()
+	 */
+	@Override
+	public Direction getFacingDirection() {
+		return Direction.NORTH;
 	}
 }

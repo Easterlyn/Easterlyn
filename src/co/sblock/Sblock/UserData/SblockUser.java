@@ -1,7 +1,6 @@
 package co.sblock.Sblock.UserData;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -59,8 +58,6 @@ public class SblockUser {
 	/** UHC modes: negative = off; 1 = standard UHC; 2 = pre-1.8b food healing */
 	private byte uhc = 1;
 
-	// javadoc
-	private HashMap<String, Long> cooldowns = new HashMap<String, Long>();
 	/**
 	 * Creates a <code>SblockUser</code> object for a <code>Player</code>.
 	 * 
@@ -433,29 +430,6 @@ public class SblockUser {
 		if (this.getPlayer().isOnline())
 			userIP = this.getPlayer().getAddress().getAddress()
 					.getHostAddress();
-	}
-
-	// javadoc
-	public void addCooldown(String name, long lengthMillis) {
-		cooldowns.put(name, new Date().getTime() + lengthMillis);
-	}
-
-	// javadoc
-	public void clearCooldown(String name) {
-		cooldowns.remove(name);
-	}
-
-	// javadoc
-	public long getRemainingMilliseconds(String cooldownName) {
-		if (cooldowns.containsKey(cooldownName)) {
-			long now = new Date().getTime();
-			if (cooldowns.get(cooldownName) - now > 0) {
-				return cooldowns.get(cooldownName) - now;
-			} else {
-				return cooldowns.remove(cooldownName) - now;
-			}
-		}
-		return 0;
 	}
 
 	/**

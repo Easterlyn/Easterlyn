@@ -49,6 +49,7 @@ import co.sblock.Sblock.Events.Packets.Packet18SpawnMob;
 import co.sblock.Sblock.Events.Packets.Packet26EntityStatus;
 import co.sblock.Sblock.Events.Packets.SleepTeleport;
 import co.sblock.Sblock.Events.Packets.SendPacket;
+import co.sblock.Sblock.SblockEffects.Cooldowns;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -195,6 +196,7 @@ public class EventListener implements Listener, PacketListener {
 			u.removeListeningQuit(s);
 		}
 		DBManager.getDBM().saveUserData(event.getPlayer().getName());
+		Cooldowns.cleanup(event.getPlayer().getName());
 	}
 
 	/**

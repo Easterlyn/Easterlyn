@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.Type.Shape.Direction;
 
 /**
  * Framework for all "machine" block assemblies.
@@ -108,6 +109,13 @@ public abstract class Machine {
 	 * @return the <code>MachineType</code>
 	 */
 	public abstract MachineType getType();
+
+	/**
+	 * Gets the <code>Direction</code> the machine was placed in.
+	 * 
+	 * @return the <code>Direction</code>
+	 */
+	public abstract Direction getFacingDirection();
 
 	/**
 	 * Handles <code>Machine</code> deconstruction.

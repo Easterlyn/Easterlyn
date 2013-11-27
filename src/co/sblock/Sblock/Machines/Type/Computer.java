@@ -17,6 +17,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.Programs.Icon;
+import co.sblock.Sblock.Machines.Type.Shape.Direction;
 import co.sblock.Sblock.UserData.SblockUser;
 
 /**
@@ -95,5 +96,13 @@ public class Computer extends Machine implements InventoryHolder {
 	public boolean handleInteract(PlayerInteractEvent event) {
 		// Adam
 		return true;
+	}
+
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#getFacingDirection()
+	 */
+	@Override
+	public Direction getFacingDirection() {
+		return Direction.NORTH;
 	}
 }
