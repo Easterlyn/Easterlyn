@@ -155,8 +155,7 @@ public class EventListener implements Listener, PacketListener {
 			} else {
 				ChatUserManager.getUserManager().getUser(event.getPlayer().getName()).chat(event);
 			}
-		}
-		else	{
+		} else {
 			event.getPlayer().sendMessage(ChatColor.RED + "You are not in the SblockUser Database! Seek help immediately!");
 		}
 	}
@@ -189,8 +188,12 @@ public class EventListener implements Listener, PacketListener {
 		if (tasks.containsKey(u.getPlayerName())) {
 			Bukkit.getScheduler().cancelTask(tasks.remove(u.getPlayerName()));
 		}
-		Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
-		u.removeListening(regionC.getName());
+		try {
+			Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
+			u.removeListening(regionC.getName());
+		} catch (NullPointerException e) {
+			// User is in the Nether or some such world
+		}
 		for (String s : u.getListening()) {
 			u.removeListeningQuit(s);
 		}
