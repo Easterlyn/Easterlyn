@@ -59,8 +59,6 @@ public class MachineManager {
 		switch (m) {
 		case ALCHEMITER:
 			break;
-		case APPEARIFIER:
-			break;
 		case COMPUTER:
 			machine = new Computer(l, data);
 		case CRUXTRUDER:
@@ -71,9 +69,9 @@ public class MachineManager {
 			machine = new PGO(l, data);
 		case PUNCH_DESIGNIX:
 			break;
-		case SENDIFICATOR:
-			break;
 		case TOTEM_LATHE:
+			break;
+		case TRANSMATERIALIZER:
 			break;
 		case TRANSPORTALIZER:
 			machine = new Transportalizer(l, data, d);

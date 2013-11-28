@@ -1,5 +1,6 @@
 package co.sblock.Sblock.Machines.Type;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -17,6 +18,7 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.Shape.Direction;
@@ -39,7 +41,7 @@ public abstract class Machine {
 	/** The <code>Shape</code> of the <code>Machine</code> */
 	protected Shape shape;
 	/** A <code>Set</code> of all <code>Locations</code> defined as part of the <code>Machine</code>. */
-	protected Set<Location> blocks;
+	protected HashMap<Location, ItemStack> blocks;
 
 	/**
 	 * @param l
@@ -116,7 +118,7 @@ public abstract class Machine {
 		if (blocks == null) {
 			return shape.getBuildLocations(getFacingDirection()).keySet();
 		} else {
-			return blocks;
+			return blocks.keySet();
 		}
 	}
 

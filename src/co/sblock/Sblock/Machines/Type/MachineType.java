@@ -13,10 +13,9 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public enum MachineType {
 
-	ALCHEMITER("alc"), APPEARIFIER("app"), COMPUTER("cpu"),
-	CRUXTRUDER("crx"), INTELLIBEAM_LASERSTATION("il"),
-	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"),
-	SENDIFICATOR("snd"), TOTEM_LATHE("tl"),
+	ALCHEMITER("alc"), COMPUTER("cpu"), CRUXTRUDER("crx"),
+	INTELLIBEAM_LASERSTATION("il"), PERFECTLY_GENERIC_OBJECT("pgo"),
+	PUNCH_DESIGNIX("pd"), TOTEM_LATHE("tl"), TRANSMATERIALIZER("tm"),
 	TRANSPORTALIZER("tp"), ANY("NO.");
 
 	/** The shortened name of the <code>MachineType</code>. */
@@ -102,9 +101,7 @@ public enum MachineType {
 			im.setDisplayName(ChatColor.WHITE + "Transportalizer");
 			is.setItemMeta(im);
 		case ANY:
-			@SuppressWarnings("static-access")
-			MachineType[] types = this.values();
-			return types[(int) Math.random() * types.length].getUniqueDrop();
+			return values()[(int) Math.random() * values().length].getUniqueDrop();
 		default:
 			is = new ItemStack(Material.BEDROCK);
 			im = is.getItemMeta();
