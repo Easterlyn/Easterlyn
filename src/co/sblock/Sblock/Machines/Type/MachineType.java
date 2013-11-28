@@ -16,7 +16,8 @@ public enum MachineType {
 	ALCHEMITER("alc"), APPEARIFIER("app"), COMPUTER("cpu"),
 	CRUXTRUDER("crx"), INTELLIBEAM_LASERSTATION("il"),
 	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"),
-	SENDIFICATOR("snd"), TOTEM_LATHE("tl"), ANY("NO.");
+	SENDIFICATOR("snd"), TOTEM_LATHE("tl"),
+	TRANSPORTALIZER("tp"), ANY("NO.");
 
 	/** The shortened name of the <code>MachineType</code>. */
 	String type;
@@ -95,6 +96,11 @@ public enum MachineType {
 			im.setDisplayName(ChatColor.WHITE + "Perfectly generic object");
 			is.setItemMeta(im);
 			break;
+		case TRANSPORTALIZER:
+			is = new ItemStack(Material.CHEST);
+			im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + "Transportalizer");
+			is.setItemMeta(im);
 		case ANY:
 			@SuppressWarnings("static-access")
 			MachineType[] types = this.values();

@@ -3,9 +3,6 @@
  */
 package co.sblock.Sblock.Machines.Type;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -17,23 +14,15 @@ import co.sblock.Sblock.Machines.Type.Shape.Direction;
 /**
  * @author Jikoo
  */
-public class PGOMachine extends Machine {
+public class PGO extends Machine {
 
 	/**
-	 * Constructor for PGOMachine.
+	 * Constructor for PGO.
 	 * @param l Location
 	 * @param data String
 	 */
-	public PGOMachine(Location l, String data) {
-		super(l, data);
-	}
-
-	/**
-	 * Method getLocations.
-	 * @return List<Location>
-	 */
-	public List<Location> getLocations() {
-		return new ArrayList<Location>();
+	public PGO(Location l, String data) {
+		super(l, data, Direction.NORTH);
 	}
 
 	/**

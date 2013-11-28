@@ -1,6 +1,6 @@
 package co.sblock.Sblock.Machines.Type;
 
-import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.Shape.Direction;
+import co.sblock.Sblock.Machines.Type.Shape.Shape;
 
 /**
  * Framework for all "machine" block assemblies.
@@ -29,10 +30,16 @@ import co.sblock.Sblock.Machines.Type.Shape.Direction;
  */
 public abstract class Machine {
 
-	/** The <code>Location</code> of the key <code>Block</code> of this <code>Machine</code>. */
-	private Location l;
-	/** Additional data stored in this machine, e.g. creator name. */
+	/** The <code>Location</code> of the key <code>Block</code> of the <code>Machine</code>. */
+	protected Location l;
+	/** Additional data stored in the <code>Machine</code>, e.g. creator name. */
 	private String data;
+	/** <code>Machine</code> facing */
+	private Direction d;
+	/** The <code>Shape</code> of the <code>Machine</code> */
+	protected Shape shape;
+	/** A <code>Set</code> of all <code>Locations</code> defined as part of the <code>Machine</code>. */
+	protected Set<Location> blocks;
 
 	/**
 	 * @param l
@@ -40,10 +47,14 @@ public abstract class Machine {
 	 *            this <code>Machine</code>
 	 * @param data
 	 *            any additional data stored in this machine, e.g. creator name
+	 * @param d
+	 *            the facing direction of the <code>Machine</code>
 	 */
-	Machine(Location l, String data) {
+	Machine(Location l, String data, Direction d) {
 		this.l = l;
 		this.data = data;
+		this.shape = new Shape(l);
+		this.d = d;
 	}
 
 	/**
@@ -101,7 +112,13 @@ public abstract class Machine {
 	 * 
 	 * @return the <code>List<Location></code>
 	 */
-	public abstract List<Location> getLocations();
+	public Set<Location> getLocations() {
+		if (blocks == null) {
+			return shape.getBuildLocations(getFacingDirection()).keySet();
+		} else {
+			return blocks;
+		}
+	}
 
 	/**
 	 * Gets the <code>MachineType</code>.
@@ -115,7 +132,13 @@ public abstract class Machine {
 	 * 
 	 * @return the <code>Direction</code>
 	 */
-	public abstract Direction getFacingDirection();
+	public Direction getFacingDirection() {
+		return d;
+	}
+
+	public void setDirection(Direction d) {
+		this.d = d;
+	}
 
 	/**
 	 * Handles <code>Machine</code> deconstruction.

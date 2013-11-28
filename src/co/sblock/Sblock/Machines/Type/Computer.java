@@ -1,7 +1,7 @@
 package co.sblock.Sblock.Machines.Type;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,7 +29,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String)
 	 */
 	public Computer(Location l, String data) {
-		super(l, data);
+		super(l, data, Direction.NORTH);
 	}
 
 	/**
@@ -53,8 +53,8 @@ public class Computer extends Machine implements InventoryHolder {
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#getLocations()
 	 */
-	public List<Location> getLocations() {
-		return new ArrayList<Location>();
+	public Set<Location> getLocations() {
+		return new HashSet<Location>();
 	}
 
 	/**

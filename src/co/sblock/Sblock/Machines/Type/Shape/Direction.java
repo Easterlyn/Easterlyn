@@ -19,7 +19,7 @@ public enum Direction {
 	 * 
 	 * @return the byte that represents this <code>Direction</code>
 	 */
-	public byte getDirectionNumber() {
+	public byte getDirByte() {
 		return dirNum;
 	}
 
@@ -39,5 +39,18 @@ public enum Direction {
 			return NORTH;
 		else
 			return EAST;
+	}
+
+	/**
+	 * @param direction
+	 * @return
+	 */
+	public static Direction getDirection(byte direction) {
+		for (Direction d : Direction.values()) {
+			if (d.dirNum == direction) {
+				return d;
+			}
+		}
+		return NORTH;
 	}
 }

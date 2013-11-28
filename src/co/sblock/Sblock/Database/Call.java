@@ -27,8 +27,8 @@ public enum Call {
 			+ "modList=VALUES(modList), banList=VALUES(banList), approvedList=VALUES(approvedList)"),
 	CHANNEL_LOADALL("SELECT * FROM ChatChannels"),
 	CHANNEL_DELETE("DELETE FROM ChatChannels WHERE name = ?"),
-	MACHINE_SAVE("INSERT INTO Machines(location, type, data) VALUES (?, ?, ?) "
-			+ "ON DUPLICATE KEY UPDATE type=VALUES(type), data=VALUES(data)"),
+	MACHINE_SAVE("INSERT INTO Machines(location, type, data) VALUES (?, ?, ?, ?) "
+			+ "ON DUPLICATE KEY UPDATE type=VALUES(type), data=VALUES(data), face=VALUES(face)"),
 	MACHINE_LOADALL("SELECT * FROM Machines"),
 	MACHINE_DELETE("DELETE FROM Machines WHERE location = ?"),
 	BAN_SAVE("INSERT INTO BannedPlayers(name, ip, banDate, reason) VALUES(?, ?, ?, ?) ON DUPLICATE KEY "

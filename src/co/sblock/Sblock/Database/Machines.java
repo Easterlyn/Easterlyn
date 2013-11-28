@@ -13,7 +13,7 @@ import co.sblock.Sblock.Utilities.Sblogger;
  * A small helper class containing all methods that access the Machines table.
  * <p>
  * The Machines table is created by the following call:
- * CREATE TABLE Machines (location varchar(34) UNIQUE KEY, type varchar(3), data varchar(16));
+ * CREATE TABLE Machines (location varchar(34) UNIQUE KEY, type varchar(3), data varchar(16), face tinyint);
  * 
  * @author Jikoo
  *
@@ -34,6 +34,7 @@ public class Machines {
 			pst.setString(1, m.getLocationString());
 			pst.setString(2, m.getType().getAbbreviation());
 			pst.setString(3, m.getData());
+			pst.setByte(4, m.getFacingDirection().getDirByte());
 
 			pst.executeUpdate();
 		} catch (SQLException e) {
@@ -79,7 +80,7 @@ public class Machines {
 			MachineManager mm = MachineModule.getInstance().getManager();
 
 			while (rs.next()) {
-				mm.loadMachine(rs.getString("location"), rs.getString("type"), rs.getString("data"));
+				mm.loadMachine(rs.getString("location"), rs.getString("type"), rs.getString("data"), rs.getByte("face"));
 			}
 		} catch (SQLException e) {
 			Sblogger.err(e);

@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
+import co.sblock.Sblock.Machines.Type.Shape.Direction;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
@@ -45,7 +46,8 @@ public class MachineEvents implements Listener {
 			ItemStack is = mt.getUniqueDrop();
 			is.setAmount(event.getItemInHand().getAmount());
 			if (is.equals(event.getItemInHand())) {
-				m.addMachine(event.getBlock().getLocation(), mt, mt.getData(event)).assemble(event);
+				m.addMachine(event.getBlock().getLocation(), mt, mt.getData(event),
+						Direction.getFacingDirection(event.getPlayer())).assemble(event);
 				break;
 			}
 		}

@@ -16,7 +16,9 @@ import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
-import co.sblock.Sblock.Machines.Type.PGOMachine;
+import co.sblock.Sblock.Machines.Type.PGO;
+import co.sblock.Sblock.Machines.Type.Transportalizer;
+import co.sblock.Sblock.Machines.Type.Shape.Direction;
 
 /**
  * @author Jikoo
@@ -48,9 +50,11 @@ public class MachineManager {
 	 *            the <code>MachineType</code>
 	 * @param data
 	 *            the additional <code>Machine</code> data
+	 * @param d
+	 *            the facing direction
 	 * @return the <code>Machine</code> created
 	 */
-	public Machine addMachine(Location l, MachineType m, String data) {
+	public Machine addMachine(Location l, MachineType m, String data, Direction d) {
 		Machine machine = null;
 		switch (m) {
 		case ALCHEMITER:
@@ -64,12 +68,15 @@ public class MachineManager {
 		case INTELLIBEAM_LASERSTATION:
 			break;
 		case PERFECTLY_GENERIC_OBJECT:
-			machine = new PGOMachine(l, data);
+			machine = new PGO(l, data);
 		case PUNCH_DESIGNIX:
 			break;
 		case SENDIFICATOR:
 			break;
 		case TOTEM_LATHE:
+			break;
+		case TRANSPORTALIZER:
+			machine = new Transportalizer(l, data, d);
 			break;
 		default:
 			break;
@@ -92,11 +99,14 @@ public class MachineManager {
 	 *            the <code>MachineType</code> <code>String</code>
 	 * @param data
 	 *            the additional <code>Machine</code> data
+	 * @param direction
+	 *            the facing direction
 	 */
-	public void loadMachine(String location, String machineType, String data) {
+	public void loadMachine(String location, String machineType, String data, byte direction) {
 		String[] l = location.split(",");
 		addMachine(new Location(Bukkit.getWorld(l[0]), Integer.parseInt(l[1]),
-				Integer.parseInt(l[2]), Integer.parseInt(l[3])), MachineType.getType(machineType), data);
+				Integer.parseInt(l[2]), Integer.parseInt(l[3])),
+				MachineType.getType(machineType), data, Direction.getDirection(direction));
 		
 	}
 
