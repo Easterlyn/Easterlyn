@@ -81,7 +81,9 @@ public class MachineManager {
 		}
 		machineKeys.put(l, machine);
 		for (Location l1 : machine.getLocations()) {
-			machineBlocks.put(l1, l);
+			if (!machineBlocks.containsKey(l1)) {
+				machineBlocks.put(l1, l);
+			}
 		}
 		return machine;
 	}

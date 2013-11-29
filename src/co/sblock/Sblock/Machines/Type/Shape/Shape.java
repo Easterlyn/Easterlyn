@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 /**
  * A blank structure for building multi-block Machines.
@@ -14,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 public class Shape {
 
 	/** All relative <code>Location</code>s and <code>Material</code>s of the <code>Machine</code>. */
-	private HashMap<Location, ItemStack> blocks;
+	private HashMap<Vector, ItemStack> vectors;
 
 	/** The key <code>Location</code> of the <code>Machine</code>. */
 	private Location key;
@@ -25,7 +26,7 @@ public class Shape {
 	 */
 	public Shape(Location l) {
 		this.key = l;
-		this.blocks = new HashMap<Location, ItemStack>();
+		this.vectors = new HashMap<Vector, ItemStack>();
 	}
 
 	/**
@@ -41,8 +42,8 @@ public class Shape {
 	 *            the <code>ItemStack</code> (<code>Material</code> and damage)
 	 *            to make the <code>Block</code> from
 	 */
-	public void addBlock(Location l, ItemStack is) {
-		this.blocks.put(l, is);
+	public void addBlock(Vector v, ItemStack is) {
+		this.vectors.put(v, is);
 	}
 
 	/**
@@ -66,16 +67,16 @@ public class Shape {
 	 *            the <code>Direction</code> to rotate to
 	 * @return the rotated shape
 	 */
-	private HashMap<Location, ItemStack> rotate(Direction d) {
+	private HashMap<Vector, ItemStack> rotate(Direction d) {
 		switch (d) {
-		case WEST:
-			return rotateCCW();
-		case SOUTH:
-			return rotate180();
 		case EAST:
 			return rotateCW();
+		case NORTH:
+			return rotate180();
+		case WEST:
+			return rotateCCW();
 		default:
-			return blocks;
+			return vectors;
 		}
 	}
 
@@ -84,12 +85,12 @@ public class Shape {
 	 * 
 	 * @return the clockwise rotation of blocks
 	 */
-	private HashMap<Location,ItemStack> rotateCW() {
-		HashMap<Location, ItemStack> newBlocks = new HashMap<Location, ItemStack>();
-		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
-			Location newLoc = e.getKey().clone();
-			int x = newLoc.getBlockX();
-			int z = newLoc.getBlockZ();
+	private HashMap<Vector,ItemStack> rotateCW() {
+		HashMap<Vector, ItemStack> newVectors = new HashMap<Vector, ItemStack>();
+		for (Entry<Vector, ItemStack> e : vectors.entrySet()) {
+			Vector newVec = e.getKey().clone();
+			int x = newVec.getBlockX();
+			int z = newVec.getBlockZ();
 			if (x == 0) {
 				x = z;
 				z = 0;
@@ -112,11 +113,11 @@ public class Shape {
 					z = z * -1;
 				}
 			}
-			newLoc.setX(x);
-			newLoc.setZ(z);
-			newBlocks.put(newLoc, e.getValue());
+			newVec.setX(x);
+			newVec.setZ(z);
+			newVectors.put(newVec, e.getValue());
 		}
-		return newBlocks;
+		return newVectors;
 	}
 
 	/**
@@ -124,12 +125,12 @@ public class Shape {
 	 * 
 	 * @return the counterclockwise rotation of blocks
 	 */
-	private HashMap<Location,ItemStack> rotateCCW() {
-		HashMap<Location, ItemStack> newBlocks = new HashMap<Location, ItemStack>();
-		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
-			Location newLoc = e.getKey().clone();
-			int x = newLoc.getBlockX();
-			int z = newLoc.getBlockZ();
+	private HashMap<Vector,ItemStack> rotateCCW() {
+		HashMap<Vector, ItemStack> newVectors = new HashMap<Vector, ItemStack>();
+		for (Entry<Vector, ItemStack> e : vectors.entrySet()) {
+			Vector newVec = e.getKey().clone();
+			int x = newVec.getBlockX();
+			int z = newVec.getBlockZ();
 			if (x == 0) {
 				x = z * -1;
 				z = 0;
@@ -152,11 +153,11 @@ public class Shape {
 					x = x * -1;
 				}
 			}
-			newLoc.setX(x);
-			newLoc.setZ(z);
-			newBlocks.put(newLoc, e.getValue());
+			newVec.setX(x);
+			newVec.setZ(z);
+			newVectors.put(newVec, e.getValue());
 		}
-		return newBlocks;
+		return newVectors;
 	}
 
 	/**
@@ -164,13 +165,13 @@ public class Shape {
 	 * 
 	 * @return the 180 degree rotation of blocks
 	 */
-	private HashMap<Location, ItemStack> rotate180() {
-		HashMap<Location, ItemStack> newBlocks = new HashMap<Location, ItemStack>();
-		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
-			Location newLoc = e.getKey().clone();
-			newLoc.setX(newLoc.getBlockX() * -1);
-			newLoc.setZ(newLoc.getBlockZ() * -1);
-			newBlocks.put(newLoc, e.getValue());
+	private HashMap<Vector, ItemStack> rotate180() {
+		HashMap<Vector, ItemStack> newBlocks = new HashMap<Vector, ItemStack>();
+		for (Entry<Vector, ItemStack> e : vectors.entrySet()) {
+			Vector newVec = e.getKey().clone();
+			newVec.setX(newVec.getBlockX() * -1);
+			newVec.setZ(newVec.getBlockZ() * -1);
+			newBlocks.put(newVec, e.getValue());
 		}
 		return newBlocks;
 	}
@@ -183,10 +184,10 @@ public class Shape {
 	 *            the correctly rotated <code>Shape</code> <code>HashMap</code>
 	 * @return valid ingame coordinates for assembling a <code>Machine</code> in
 	 */
-	private HashMap<Location, ItemStack> assembly(HashMap<Location, ItemStack> translation) {
+	private HashMap<Location, ItemStack> assembly(HashMap<Vector, ItemStack> translation) {
 		HashMap<Location, ItemStack> newLocs = new HashMap<Location, ItemStack>();
-		for (Location l : translation.keySet()) {
-			newLocs.put(key.add(l), translation.get(l));
+		for (Vector v : translation.keySet()) {
+			newLocs.put(key.clone().add(v), translation.get(v));
 		}
 		return newLocs;
 	}

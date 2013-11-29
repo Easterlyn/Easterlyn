@@ -14,15 +14,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
-import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.Shape.Direction;
-import co.sblock.Sblock.Utilities.Sblogger;
 
 /**
  * @author Jikoo
- *
  */
 public class Transportalizer extends Machine {
 
@@ -33,32 +32,36 @@ public class Transportalizer extends Machine {
 	public Transportalizer(Location l, String data, Direction d) {
 		super(l, data, d);
 		ItemStack is = new ItemStack(Material.QUARTZ_BLOCK);
-		shape.addBlock(new Location(this.l.getWorld(), -1, 0, 0), is);
-		shape.addBlock(new Location(this.l.getWorld(), 1, 0, 0), is);
-		shape.addBlock(new Location(this.l.getWorld(), -1, 0, 1), is);
-		shape.addBlock(new Location(this.l.getWorld(), 0, 0, 1), is);
-		shape.addBlock(new Location(this.l.getWorld(), 1, 0, 1), is);
-		shape.addBlock(new Location(this.l.getWorld(), -1, 2, 1), is);
-		shape.addBlock(new Location(this.l.getWorld(), 0, 2, 1), is);
-		shape.addBlock(new Location(this.l.getWorld(), 1, 2, 1), is);
+		shape.addBlock(new Vector(-1, 0, 0), is);
+		shape.addBlock(new Vector(1, 0, 0), is);
+		shape.addBlock(new Vector(-1, 0, 1), is);
+		shape.addBlock(new Vector(0, 0, 1), is);
+		shape.addBlock(new Vector(1, 0, 1), is);
+		shape.addBlock(new Vector(-1, 2, 1), is);
+		shape.addBlock(new Vector(0, 2, 1), is);
+		shape.addBlock(new Vector(1, 2, 1), is);
+		is = new ItemStack(Material.QUARTZ_BLOCK);
+		is.setDurability((short) 2);
+		shape.addBlock(new Vector(0, 1, 1), is);
 		is = new ItemStack(Material.WOOD_BUTTON);
-		shape.addBlock(new Location(this.l.getWorld(), -1, 2, 0), is);
-		shape.addBlock(new Location(this.l.getWorld(), 1, 2, 0), is);
+		is.setDurability(d.getButtonByte());
+		shape.addBlock(new Vector(-1, 2, 0), is);
+		shape.addBlock(new Vector(1, 2, 0), is);
 		is = new ItemStack(Material.STEP);
 		is.setDurability((short) 7);
-		shape.addBlock(new Location(this.l.getWorld(), -1, 0, -1), is);
-		shape.addBlock(new Location(l.getWorld(), 0, 0, -1), is);
-		shape.addBlock(new Location(this.l.getWorld(), 1, 0, -1), is);
-		is.setDurability((short) 2);
-		shape.addBlock(new Location(this.l.getWorld(), 0, 1, 1), is);
+		shape.addBlock(new Vector(-1, 0, -1), is);
+		shape.addBlock(new Vector(0, 0, -1), is);
+		shape.addBlock(new Vector(1, 0, -1), is);
 		is = new ItemStack(Material.NETHER_FENCE);
-		shape.addBlock(new Location(this.l.getWorld(), -1, 1, 1), is);
-		shape.addBlock(new Location(this.l.getWorld(), 1, 1, 1), is);
-		is.setType(Material.CARPET);
-		is.setDurability((short) 5);
-		shape.addBlock(new Location(this.l.getWorld(), -1, 1, 0), is);
+		shape.addBlock(new Vector(-1, 1, 1), is);
+		shape.addBlock(new Vector(1, 1, 1), is);
+		is = new ItemStack(Material.CARPET);
 		is.setDurability((short) 14);
-		shape.addBlock(new Location(this.l.getWorld(), 1, 1, 0), is);
+		shape.addBlock(new Vector(-1, 1, 0), is);
+		is = new ItemStack(Material.CARPET);
+		is.setDurability((short) 5);
+		shape.addBlock(new Vector(1, 1, 0), is);
+		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 
 	/**
@@ -75,19 +78,18 @@ public class Transportalizer extends Machine {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void assemble(BlockPlaceEvent event) {
-		blocks = shape.getBuildLocations(getFacingDirection());
 		for (Location l : blocks.keySet()) {
 			if (!l.getBlock().isEmpty()) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
-				MachineModule.getInstance().getManager().removeMachineListing(l);
+				this.assemblyFailed();
 				return;
 			}
 		}
 		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
 			Block b = e.getKey().getBlock();
 			b.setType(e.getValue().getType());
-			b.setData(e.getValue().getData().getData(), false);
+			b.setData(e.getValue().getData().getData());
 		}
 	}
 
@@ -108,22 +110,15 @@ public class Transportalizer extends Machine {
 			return false;
 		} else {
 			// ESTABLISH REMOTE LOCATION
-			Location signLocation = establishSignLocation(event.getClickedBlock());
-			if (signLocation == null) {
-				Sblogger.warning("SblockMachines",
-						"Unable to establish sign location for registered Transportalizer at "
-								+ event.getClickedBlock().getLocation());
-				return false;
-			}
-			Block signBlock = signLocation.getBlock();
-			if (!signBlock.getType().equals(Material.SIGN)) {
+			Block signBlock = this.l.clone().add(new Vector(0, 2, 0)).getBlock();
+			if (!signBlock.getType().equals(Material.WALL_SIGN)) {
 				event.getPlayer().sendMessage(ChatColor.RED
 						+ "Please place a sign on your transportalizer between the buttons to use it."
 						+ "\nThe third row should contain your desired coordinates in x,y,x format."
 						+ "\nAll the other rows can contain whatever you like.");
 				return false;
 			}
-			Sign sign = (Sign) signBlock.getState().getData();
+			Sign sign = (Sign) signBlock.getState();
 			// Sign lines are 0-3
 			String checkLoc = sign.getLine(2);
 			if (!checkLoc.replaceAll("\\-?[0-9]+,[0-9]+,\\-?[0-9]+",
@@ -137,11 +132,12 @@ public class Transportalizer extends Machine {
 			int y = Integer.parseInt(locString[1]);
 			y = y > 0 ? y < 256 ? y : 255 : 1;
 			Location remote = new Location(event.getClickedBlock().getWorld(),
-					Integer.parseInt(locString[0]), y, Integer.parseInt(locString[2]));
+					Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
 
 			// CHECK FUEL
-			Chest chest = (Chest) l.getBlock().getState().getData();
-			if (!chest.getBlockInventory().contains(Material.COAL)) {
+			Chest chest = (Chest) l.getBlock().getState();
+			Inventory chestInv = chest.getBlockInventory();
+			if (!chestInv.contains(Material.REDSTONE)) {
 				event.getPlayer().sendMessage(ChatColor.RED
 						+ "The transportalizer makes a sputtering noise, but nothing happens."
 						+ "\nIt occurs to you that perhaps you should check the fuel level."
@@ -151,17 +147,27 @@ public class Transportalizer extends Machine {
 			// adam sound based on chest fill? maybe just raw usable ItemStacks rather than quantity for speed
 			l.getWorld().playSound(l, Sound.NOTE_PIANO, 5f, 5f);
 
+			// Adam fix under-fueled still working
+			consumeFuel(chest, remote);
+
 			// TELEPORT
 			// Messy, but avoids deprecation for now.
-			if (event.getClickedBlock().getRelative(BlockFace.DOWN)
-					.getState().getData().toItemStack().getDurability() == (short) 5) {
-				chest.getBlockInventory().remove(new ItemStack(Material.COAL));
-				event.getPlayer().teleport(remote);
+			Block pad = event.getClickedBlock().getRelative(BlockFace.DOWN);
+			if (pad.getState().getData().toItemStack().getDurability() == (short) 5) {
+				for (Entity e : l.getWorld().getEntities()) {
+					if (e.getLocation().getBlock().equals(pad)) {
+						remote.setPitch(e.getLocation().getPitch());
+						remote.setYaw(e.getLocation().getYaw());
+						e.teleport(remote);
+						break;
+					}
+				}
 			} else {
 				for (Entity e : l.getWorld().getEntities()) {
 					if (e.getLocation().getBlock().equals(remote.getBlock())) {
-						chest.getBlockInventory().remove(new ItemStack(Material.COAL));
-						e.teleport(new Location(l.getWorld(), l.getX(), l.getY() + 1, l.getZ()));
+						remote.setPitch(e.getLocation().getPitch());
+						remote.setYaw(e.getLocation().getYaw());
+						e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY() + 1, pad.getZ() + .5));
 						break;
 					}
 				}
@@ -170,29 +176,45 @@ public class Transportalizer extends Machine {
 		}
 	}
 
-	private Location establishSignLocation(Block b) {
-		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
-			if (e.getValue().getType().equals(Material.WOOD_BUTTON)) {
-				if (!e.getKey().equals(b.getLocation())) {
-					if (e.getKey().getBlockX() > b.getX()) {
-						return new Location(b.getWorld(),
-								b.getX() + 1, b.getY(), b.getZ());
-					}
-					if (e.getKey().getBlockX() < b.getX()) {
-						return new Location(b.getWorld(),
-								b.getX() - 1, b.getY(), b.getZ());
-					}
-					if(e.getKey().getBlockZ() > b.getZ()) {
-						return new Location(b.getWorld(),
-								b.getX(), b.getY(), b.getZ() + 1);
-					}
-					if(e.getKey().getBlockZ() < b.getZ()) {
-						return new Location(b.getWorld(),
-								b.getX(), b.getY(), b.getZ() - 1);
-					}
+	private void consumeFuel(Chest chest, Location destination) {
+		Inventory inv = chest.getBlockInventory();
+		int cost = (int) (l.distance(destination) / 75 + .5);
+		for (int i = 0; i < inv.getSize(); i++) {
+			if (cost <= 0) {
+				break;
+			}
+			ItemStack is = inv.getItem(i);
+			int rate = 0;
+			switch (is.getType()) {
+			case SULPHUR:
+				rate = 1;
+				break;
+			case REDSTONE:
+				rate = 2;
+				break;
+			case BLAZE_POWDER:
+				rate = 3;
+				break;
+			case GLOWSTONE_DUST:
+				rate = 4;
+				break;
+			case BLAZE_ROD:
+				rate = 6;
+				break;
+			default:
+				break;
+			}
+			if (rate > 0) {
+				int quantity = (int) (is.getAmount() - Math.ceil(cost / rate));
+				if (is.getAmount() <= quantity) {
+					cost -= is.getAmount() * rate;
+					is = null;
+				} else {
+					is.setAmount(quantity);
+					cost = 0;
 				}
+				inv.setItem(i, is);
 			}
 		}
-		return null;
 	}
 }

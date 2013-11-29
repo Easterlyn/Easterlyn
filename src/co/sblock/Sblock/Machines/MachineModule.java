@@ -20,13 +20,13 @@ public class MachineModule extends Module {
 	 */
 	@Override
 	protected void onEnable() {
-		Sblogger.info("SburbMachines", "Enabling Machines");
+		Sblogger.info("SblockMachines", "Enabling Machines");
 		instance = this;
 		manager = new MachineManager();
 		this.registerCommands(new MachineCommand());
 		this.registerEvents(new MachineEvents());
 		DBManager.getDBM().loadAllMachines();
-		Sblogger.info("SburbMachines", "Machines enabled");
+		Sblogger.info("SblockMachines", "Machines enabled");
 	}
 
 	/**

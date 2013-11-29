@@ -119,7 +119,7 @@ public class MachineEvents implements Listener {
 	 * @param event
 	 *            the <code>BlockPhysicsEvent</code>
 	 */
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(ignoreCancelled = false)
 	public void handlePhysics(BlockPhysicsEvent event) {
 		Machine machine = m.getMachineByBlock(event.getBlock());
 		if (machine != null) {

@@ -29,7 +29,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String)
 	 */
 	public Computer(Location l, String data) {
-		super(l, data, Direction.NORTH);
+		super(l, data);
 	}
 
 	/**

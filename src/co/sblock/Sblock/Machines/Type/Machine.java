@@ -3,6 +3,7 @@ package co.sblock.Sblock.Machines.Type;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.Event.Result;
@@ -20,6 +21,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.Shape.Direction;
 import co.sblock.Sblock.Machines.Type.Shape.Shape;
@@ -55,8 +57,22 @@ public abstract class Machine {
 	Machine(Location l, String data, Direction d) {
 		this.l = l;
 		this.data = data;
-		this.shape = new Shape(l);
 		this.d = d;
+		this.shape = new Shape(l.clone());
+	}
+
+	/**
+	 * @param l
+	 *            the <code>Location</code> of the key <code>Block</code> of
+	 *            this <code>Machine</code>
+	 * @param data
+	 *            any additional data stored in this machine, e.g. creator name
+	 */
+	Machine(Location l, String data) {
+		this.l = l;
+		this.data = data;
+		this.d = Direction.NORTH;
+		this.shape = new Shape(l.clone());
 	}
 
 	/**
@@ -109,10 +125,10 @@ public abstract class Machine {
 	public abstract void assemble(BlockPlaceEvent event);
 
 	/**
-	 * Gets a <code>List</code> of all non-key <code>Location</code>s of
+	 * Gets a <code>Set</code> of all non-key <code>Location</code>s of
 	 * <code>Block</code>s in a <code>Machine</code>.
 	 * 
-	 * @return the <code>List<Location></code>
+	 * @return the <code>Set<Location></code>
 	 */
 	public Set<Location> getLocations() {
 		if (blocks == null) {
@@ -273,5 +289,15 @@ public abstract class Machine {
 	public boolean handleClick(InventoryClickEvent event) {
 		event.setResult(Result.DENY);
 		return true;
+	}
+
+	protected void assemblyFailed() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new AssemblyFailed());
+	}
+
+	private class AssemblyFailed implements Runnable {
+		public void run() {
+			MachineModule.getInstance().getManager().removeMachineListing(l);
+		}
 	}
 }

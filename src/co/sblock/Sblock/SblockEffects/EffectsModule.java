@@ -28,15 +28,15 @@ public class EffectsModule extends Module {
 
 	@Override
 	public void onEnable() {
-		Sblogger.info("SburbEffects", "Enabling Effects");
+		Sblogger.info("SblockEffects", "Enabling Effects");
 		instance = this;
 		this.registerCommands(eCL);
 		this.registerEvents(eListener);
 		eL = new EffectListener();
 		eM = new EffectManager();
-		Sblogger.info("SburbEffects", "Effects check task started");
+		Sblogger.info("SblockEffects", "Effects check task started");
 		task = new EffectScheduler().runTaskTimer(Sblock.getInstance(), 0, 1180);
-		Sblogger.info("SburbEffects", "Effects enabled");
+		Sblogger.info("SblockEffects", "Effects enabled");
 	}
 
 	@Override

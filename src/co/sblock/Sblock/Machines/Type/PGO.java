@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock.Machines.Type;
 
 import org.bukkit.Location;
@@ -12,17 +9,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import co.sblock.Sblock.Machines.Type.Shape.Direction;
 
 /**
+ * Perfectly Generic Object Machine. Mimics most objects when placed against them.
  * @author Jikoo
  */
 public class PGO extends Machine {
 
 	/**
-	 * Constructor for PGO.
-	 * @param l Location
-	 * @param data String
+	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String)
 	 */
 	public PGO(Location l, String data) {
-		super(l, data, Direction.NORTH);
+		super(l, data);
 	}
 
 	/**
@@ -42,19 +38,12 @@ public class PGO extends Machine {
 		Material placedOn = event.getBlockAgainst().getType();
 		if (isValid(placedOn)) {
 			event.getBlockPlaced().setTypeIdAndData(placedOn.getId(), event.getBlockAgainst().getData(), false);
-		} else {
-			event.getBlockPlaced().setType(Material.DIRT);
 		}
 		// Future features: Make wall signs etc. valid and copy text
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockPlaceEvent)
-	 */
 	/**
-	 * Method meetsAdditionalBreakConditions.
-	 * @param event BlockBreakEvent
-	 * @return boolean
+	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockPlaceEvent)
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return true;
@@ -64,7 +53,7 @@ public class PGO extends Machine {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
 	 */
 	public boolean handleInteract(PlayerInteractEvent event) {
-		return true;
+		return false;
 	}
 
 	/**
@@ -102,7 +91,7 @@ public class PGO extends Machine {
 		case GOLD_BLOCK:
 		case GOLD_ORE:
 		case GRASS:
-		case GRAVEL:
+//		case GRAVEL:
 		case HARD_CLAY:
 		case HAY_BLOCK:
 		case HUGE_MUSHROOM_1:
@@ -133,7 +122,7 @@ public class PGO extends Machine {
 		case QUARTZ_STAIRS:
 		case REDSTONE_BLOCK:
 		case REDSTONE_ORE:
-		case SAND:
+//		case SAND:
 		case SANDSTONE:
 		case SANDSTONE_STAIRS:
 		case SMOOTH_BRICK:

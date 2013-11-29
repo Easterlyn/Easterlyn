@@ -7,11 +7,14 @@ import org.bukkit.entity.Player;
  * @author Jikoo
  */
 public enum Direction {
-	NORTH((byte) 0), EAST((byte) 1), SOUTH((byte) 2), WEST((byte) 3);
+	NORTH((byte) 0, (byte) 3), EAST((byte) 1, (byte) 2),
+	SOUTH((byte) 2, (byte) 4), WEST((byte) 3, (byte) 1);
 
 	private byte dirNum;
-	Direction(byte b) {
+	private byte button;
+	Direction(byte b, byte button) {
 		dirNum = b;
+		this.button = button;
 	}
 
 	/**
@@ -42,8 +45,21 @@ public enum Direction {
 	}
 
 	/**
+	 * For determining rotation of buttons in a <code>Machine</code>'s
+	 * <code>Shape</code>.
+	 * 
+	 * @return <code>byte</code>
+	 */
+	public byte getButtonByte() {
+		return button;
+	}
+
+	/**
+	 * Gets <code>Direction</code> by <code>byte</code>. For database use.
+	 * 
 	 * @param direction
-	 * @return
+	 *            <code>byte</code>
+	 * @return <code>Direction</code>
 	 */
 	public static Direction getDirection(byte direction) {
 		for (Direction d : Direction.values()) {

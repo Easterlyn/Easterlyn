@@ -100,6 +100,7 @@ public enum MachineType {
 			im = is.getItemMeta();
 			im.setDisplayName(ChatColor.WHITE + "Transportalizer");
 			is.setItemMeta(im);
+			break;
 		case ANY:
 			return values()[(int) Math.random() * values().length].getUniqueDrop();
 		default:
