@@ -1,8 +1,10 @@
 package co.sblock.Sblock.Machines.Type;
 
+import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -21,13 +23,21 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock.Machines.Type.Shape.Direction;
 
 /**
+ * <code>Machine</code> for <code>Entity</code> teleportation.
+ * <p>
+ * Costs fuel based on distance: 1 unit of fuel per 75 blocks
+ * of direct line travel rounded up.
+ * Gunpowder = 1 fuel, redstone = 2, blaze powder = 3, glowstone = 4,
+ * blaze rod = 6
+ * <p>
+ * Does not store excess fuel, uses first valid fuel object(s) available.
+ * 
  * @author Jikoo
  */
 public class Transportalizer extends Machine {
 
 	/**
-	 * @param l
-	 * @param data
+	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
 	public Transportalizer(Location l, String data, Direction d) {
 		super(l, data, d);
@@ -130,25 +140,38 @@ public class Transportalizer extends Machine {
 			}
 			String[] locString = sign.getLine(2).split(",");
 			int y = Integer.parseInt(locString[1]);
-			y = y > 0 ? y < 256 ? y : 255 : 1;
+			y = y > 0 ? y < 256 ? y : 255 : 63;
 			Location remote = new Location(event.getClickedBlock().getWorld(),
 					Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
 
 			// CHECK FUEL
 			Chest chest = (Chest) l.getBlock().getState();
-			Inventory chestInv = chest.getBlockInventory();
-			if (!chestInv.contains(Material.REDSTONE)) {
+			Inventory chestInv = chest.getInventory();
+			if (!chestInv.contains(Material.SULPHUR) && !chestInv.contains(Material.REDSTONE)
+					&& !chestInv.contains(Material.BLAZE_POWDER)
+					&& !chestInv.contains(Material.GLOWSTONE_DUST)
+					&& !chestInv.contains(Material.BLAZE_ROD)) {
 				event.getPlayer().sendMessage(ChatColor.RED
 						+ "The transportalizer makes a sputtering noise, but nothing happens."
 						+ "\nIt occurs to you that perhaps you should check the fuel level."
 						+ "\nYou give yourself a pat on the back for being a troubleshooting genius.");
 				return false;
 			}
-			// adam sound based on chest fill? maybe just raw usable ItemStacks rather than quantity for speed
-			l.getWorld().playSound(l, Sound.NOTE_PIANO, 5f, 5f);
 
-			// Adam fix under-fueled still working
-			consumeFuel(chest, remote);
+			ArrayList<ItemStack> removedFuel = consumeFuel(chest, remote);
+			if (removedFuel != null) {
+				for (ItemStack is : removedFuel) {
+					chest.getInventory().addItem(is);
+				}
+				event.getPlayer().sendMessage(ChatColor.RED
+						+ "The Transportalizer begins humming through standard teleport procedure,"
+						+ " when all of a sudden it chokes to a halt with an awful screeching noise."
+						+ "\nPerhaps it requires more fuel?");
+				l.getWorld().playSound(l, Sound.ENDERMAN_SCREAM, 10, 3);
+				return false;
+			}
+			// adam sound based on chest fill? maybe just raw usable ItemStacks rather than quantity for speed
+			l.getWorld().playSound(l, Sound.NOTE_PIANO, 5, 5);
 
 			// TELEPORT
 			// Messy, but avoids deprecation for now.
@@ -159,7 +182,9 @@ public class Transportalizer extends Machine {
 						remote.setPitch(e.getLocation().getPitch());
 						remote.setYaw(e.getLocation().getYaw());
 						e.teleport(remote);
-						break;
+						pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
+						pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);
+						return false;
 					}
 				}
 			} else {
@@ -167,8 +192,10 @@ public class Transportalizer extends Machine {
 					if (e.getLocation().getBlock().equals(remote.getBlock())) {
 						remote.setPitch(e.getLocation().getPitch());
 						remote.setYaw(e.getLocation().getYaw());
-						e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY() + 1, pad.getZ() + .5));
-						break;
+						e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(), pad.getZ() + .5));
+						pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
+						pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);
+						return false;
 					}
 				}
 			}
@@ -176,45 +203,57 @@ public class Transportalizer extends Machine {
 		}
 	}
 
-	private void consumeFuel(Chest chest, Location destination) {
-		Inventory inv = chest.getBlockInventory();
-		int cost = (int) (l.distance(destination) / 75 + .5);
+	// Adam debug removal adding
+	private ArrayList<ItemStack> consumeFuel(Chest chest, Location destination) {
+		Inventory inv = chest.getInventory();
+		ArrayList<ItemStack> removed = new ArrayList<ItemStack>();
+		int cost = (int) (l.distance(destination) / 75 + 1);
 		for (int i = 0; i < inv.getSize(); i++) {
 			if (cost <= 0) {
 				break;
 			}
 			ItemStack is = inv.getItem(i);
-			int rate = 0;
-			switch (is.getType()) {
-			case SULPHUR:
-				rate = 1;
-				break;
-			case REDSTONE:
-				rate = 2;
-				break;
-			case BLAZE_POWDER:
-				rate = 3;
-				break;
-			case GLOWSTONE_DUST:
-				rate = 4;
-				break;
-			case BLAZE_ROD:
-				rate = 6;
-				break;
-			default:
-				break;
-			}
-			if (rate > 0) {
-				int quantity = (int) (is.getAmount() - Math.ceil(cost / rate));
-				if (is.getAmount() <= quantity) {
-					cost -= is.getAmount() * rate;
-					is = null;
-				} else {
-					is.setAmount(quantity);
-					cost = 0;
+			if (is != null) {
+				int rate = 0;
+				switch (is.getType()) {
+				case SULPHUR:
+					rate = 1;
+					break;
+				case REDSTONE:
+					rate = 2;
+					break;
+				case BLAZE_POWDER:
+					rate = 3;
+					break;
+				case GLOWSTONE_DUST:
+					rate = 4;
+					break;
+				case BLAZE_ROD:
+					rate = 6;
+					break;
+				default:
+					break;
 				}
-				inv.setItem(i, is);
+				if (rate > 0) {
+					int quantity = (int) (is.getAmount()- Math.ceil(cost / rate));
+					if (is.getAmount() <= quantity) {
+						removed.add(is.clone());
+						cost -= is.getAmount() * rate;
+						is = null;
+					} else {
+						ItemStack rm = is.clone();
+						rm.setAmount(is.getAmount() - quantity);
+						removed.add(rm);
+						is.setAmount(quantity);
+						cost = 0;
+					}
+					chest.getInventory().setItem(i, is);
+				}
 			}
 		}
+		if (cost <= 0) {
+			return null;
+		}
+		return removed;
 	}
 }

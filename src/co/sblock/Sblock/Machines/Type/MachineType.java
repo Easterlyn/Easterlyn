@@ -95,6 +95,12 @@ public enum MachineType {
 			im.setDisplayName(ChatColor.WHITE + "Perfectly generic object");
 			is.setItemMeta(im);
 			break;
+		case TRANSMATERIALIZER:
+			is = new ItemStack(Material.CHEST);
+			im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + "Transmaterializer");
+			is.setItemMeta(im);
+			break;
 		case TRANSPORTALIZER:
 			is = new ItemStack(Material.CHEST);
 			im = is.getItemMeta();

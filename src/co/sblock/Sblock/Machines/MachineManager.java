@@ -17,6 +17,7 @@ import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Machines.Type.PGO;
+import co.sblock.Sblock.Machines.Type.Transmaterializer;
 import co.sblock.Sblock.Machines.Type.Transportalizer;
 import co.sblock.Sblock.Machines.Type.Shape.Direction;
 
@@ -72,6 +73,7 @@ public class MachineManager {
 		case TOTEM_LATHE:
 			break;
 		case TRANSMATERIALIZER:
+			machine = new Transmaterializer(l, data, d);
 			break;
 		case TRANSPORTALIZER:
 			machine = new Transportalizer(l, data, d);
@@ -291,14 +293,21 @@ public class MachineManager {
 	/**
 	 * Check to see if the <code>Player</code> in question has placed a
 	 * <code>Computer</code>.
+	 * <p>
+	 * For use in assembling a new <code>Computer</code> - <code>Player</code>s
+	 * are only allowed one.
+	 * 
+	 * @see co.sblock.Sblock.Machines.Type.Computer#assemble(org.bukkit.event.block.BlockPlaceEvent)
 	 * 
 	 * @param p
 	 *            the <code>Player</code>
+	 * @param key
+	 *            the location of the <code>Computer</code> just assembled
 	 * @return true if the Player has placed a <code>Computer</code>
 	 */
-	public boolean hasComputer(Player p) {
+	public boolean hasComputer(Player p, Location key) {
 		for (Machine m : machineKeys.values()) {
-			if (m instanceof Computer && m.getData().equals(p.getName())) {
+			if (m instanceof Computer && m.getData().equals(p.getName()) && !m.getKey().equals(key)) {
 				return true;
 			}
 		}

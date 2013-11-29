@@ -7,14 +7,16 @@ import org.bukkit.entity.Player;
  * @author Jikoo
  */
 public enum Direction {
-	NORTH((byte) 0, (byte) 3), EAST((byte) 1, (byte) 2),
-	SOUTH((byte) 2, (byte) 4), WEST((byte) 3, (byte) 1);
+	NORTH((byte) 0, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4),
+	SOUTH((byte) 2, (byte) 4, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5);
 
 	private byte dirNum;
 	private byte button;
-	Direction(byte b, byte button) {
+	private byte chest;
+	Direction(byte b, byte button, byte chest) {
 		dirNum = b;
 		this.button = button;
+		this.chest = chest;
 	}
 
 	/**
@@ -52,6 +54,16 @@ public enum Direction {
 	 */
 	public byte getButtonByte() {
 		return button;
+	}
+
+	/**
+	 * For determining rotation of chests in a <code>Machine</code>'s
+	 * <code>Shape</code>.
+	 * 
+	 * @return <code>byte</code>
+	 */
+	public byte getChestByte() {
+		return chest;
 	}
 
 	/**
