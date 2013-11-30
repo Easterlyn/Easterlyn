@@ -20,8 +20,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import co.sblock.Sblock.Machines.Type.Shape.Direction;
-
 /**
  * <code>Machine</code> for <code>Entity</code> teleportation.
  * <p>

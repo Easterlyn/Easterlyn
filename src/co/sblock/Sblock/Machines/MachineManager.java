@@ -14,12 +14,12 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Machines.Type.Computer;
+import co.sblock.Sblock.Machines.Type.Direction;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Machines.Type.PGO;
 import co.sblock.Sblock.Machines.Type.Transmaterializer;
 import co.sblock.Sblock.Machines.Type.Transportalizer;
-import co.sblock.Sblock.Machines.Type.Shape.Direction;
 
 /**
  * @author Jikoo

@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Machines.Type.Shape;
+package co.sblock.Sblock.Machines.Type;
 
 import org.bukkit.entity.Player;
 

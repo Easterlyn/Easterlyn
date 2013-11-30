@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import co.sblock.Sblock.Machines.MachineModule;
-import co.sblock.Sblock.Machines.Type.Shape.Direction;
 import co.sblock.Sblock.UserData.SblockUser;
 
 /**

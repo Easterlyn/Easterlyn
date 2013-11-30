@@ -6,8 +6,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import co.sblock.Sblock.Machines.Type.Shape.Direction;
-
 /**
  * Perfectly Generic Object Machine. Mimics most objects when placed against them.
  * @author Jikoo

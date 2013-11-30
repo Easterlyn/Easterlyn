@@ -12,8 +12,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import co.sblock.Sblock.Machines.Type.Shape.Direction;
-
 /**
  * @author Jikoo
  */

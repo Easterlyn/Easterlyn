@@ -23,8 +23,6 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.MachineModule;
-import co.sblock.Sblock.Machines.Type.Shape.Direction;
-import co.sblock.Sblock.Machines.Type.Shape.Shape;
 
 /**
  * Framework for all "machine" block assemblies.

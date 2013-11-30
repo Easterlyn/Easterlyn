@@ -21,9 +21,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock.Machines.Type.Direction;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
-import co.sblock.Sblock.Machines.Type.Shape.Direction;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
