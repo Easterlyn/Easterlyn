@@ -26,6 +26,12 @@ import co.sblock.Sblock.Utilities.Sblogger;
  */
 public class ChatModuleCommandListener implements CommandListener {
 
+	@SblockCommand
+	public boolean color(CommandSender sender) {
+		sender.sendMessage(ColorDef.listColors());
+		return true;
+	}
+
 	@SblockCommand(consoleFriendly = true, mergeLast = true)
 	public boolean lel(CommandSender sender, String text) {
 		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
@@ -102,7 +108,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			return true;
 		} else {
 			sender.sendMessage(ChatColor.BOLD + "[o] "
-					+ "You try to be the white text guy, but fail to be the white text guy."
+					+ "You try to be the white text guy, but fail to be the white text guy. "
 					+ "No one can be the white text guy except for the white text guy.");
 			return true;
 		}
