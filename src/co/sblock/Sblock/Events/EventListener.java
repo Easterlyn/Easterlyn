@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Dispenser;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +27,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
 import com.bergerkiller.bukkit.common.events.PacketReceiveEvent;
@@ -204,12 +207,30 @@ public class EventListener implements Listener, PacketListener {
 	 * <p>
 	 * Allows signs to be colored using &codes.
 	 * 
-	 * @param event the <code>SignChangeEvent</code>
+	 * @param event
+	 *            the <code>SignChangeEvent</code>
 	 */
 	@EventHandler
 	public void onSignPlace(SignChangeEvent event) {
 		for (int i = 0; i < 4; i++) {
 			event.setLine(i, ChatColor.translateAlternateColorCodes('\u0026', event.getLine(i)));
+		}
+	}
+
+	/**
+	 * Minecarts are automatically placed in dispensers upon collision.
+	 * 
+	 * @param event
+	 *            the <code>VehicleBlockCollisionEvent</code>
+	 */
+	@EventHandler
+	public void onVehicleBlockCollisionEvent(VehicleBlockCollisionEvent event) {
+		if (event.getVehicle().getType() == EntityType.MINECART
+				&& event.getBlock().getType() == Material.DISPENSER) {
+			Block b = event.getBlock();
+			Dispenser disp = (Dispenser)b.getState();
+			disp.getInventory().addItem(new ItemStack(Material.MINECART));
+			event.getVehicle().remove();
 		}
 	}
 
