@@ -14,8 +14,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 public enum MachineType {
 
 	ALCHEMITER("alc"), COMPUTER("cpu"), CRUXTRUDER("crx"),
-	INTELLIBEAM_LASERSTATION("il"), PERFECTLY_GENERIC_OBJECT("pgo"),
-	PUNCH_DESIGNIX("pd"), TOTEM_LATHE("tl"), TRANSMATERIALIZER("tm"),
+	INTELLIBEAM_LASERSTATION("il"), PERFECT_BUILDING_OBJECT("pbo"),
+	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"),
+	TOTEM_LATHE("tl"), TRANSMATERIALIZER("tm"),
 	TRANSPORTALIZER("tp"), ANY("NO.");
 
 	/** The shortened name of the <code>MachineType</code>. */
@@ -87,6 +88,12 @@ public enum MachineType {
 			im = is.getItemMeta();
 			im.setDisplayName(ChatColor.WHITE + "Computer");
 			// I'm not setting lore (yet) because carrying around a desktop doesn't seem like good global access.
+			is.setItemMeta(im);
+			break;
+		case PERFECT_BUILDING_OBJECT:
+			is = new ItemStack(Material.DIAMOND_BLOCK);
+			im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + "Perfect Building Object");
 			is.setItemMeta(im);
 			break;
 		case PERFECTLY_GENERIC_OBJECT:

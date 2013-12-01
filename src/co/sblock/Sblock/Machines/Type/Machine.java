@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.Event.Result;
@@ -165,7 +166,9 @@ public abstract class Machine {
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
 		if (event.getBlock().getLocation().equals(getKey()) && meetsAdditionalBreakConditions(event)) {
-			getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
+			if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+				getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
+			}
 			for (Location l : this.getLocations()) {
 				l.getBlock().setType(Material.AIR);
 			}

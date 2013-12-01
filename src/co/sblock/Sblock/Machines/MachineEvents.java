@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import co.sblock.Sblock.Machines.Type.Direction;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
+import co.sblock.Sblock.Machines.Type.PBO;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
@@ -46,6 +47,10 @@ public class MachineEvents implements Listener {
 			ItemStack is = mt.getUniqueDrop();
 			is.setAmount(event.getItemInHand().getAmount());
 			if (is.equals(event.getItemInHand())) {
+				if (mt == MachineType.PERFECT_BUILDING_OBJECT) {
+					new PBO(event.getBlock().getLocation(), "").assemble(event);
+					break;
+				}
 				m.addMachine(event.getBlock().getLocation(), mt, mt.getData(event),
 						Direction.getFacingDirection(event.getPlayer())).assemble(event);
 				break;

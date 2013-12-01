@@ -1,7 +1,5 @@
 package co.sblock.Sblock.Machines.Type;
 
-import java.util.ArrayList;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -12,14 +10,14 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public enum Icon {
 
-	PESTERCHUM(Material.GOLD_RECORD, ChatColor.WHITE + "Pesterchum", 1, null),
-	SBURBBETACLIENT(Material.RECORD_5, ChatColor.WHITE + "SburbBeta", 5, null),
-	SBURBBETASERVER(Material.GREEN_RECORD, ChatColor.WHITE + "SburbServer", 2, null),
+	PESTERCHUM(Material.GOLD_RECORD, ChatColor.WHITE + "Pesterchum", 1),
+	SBURBBETACLIENT(Material.RECORD_5, ChatColor.WHITE + "SburbBeta", 5),
+	SBURBBETASERVER(Material.GREEN_RECORD, ChatColor.WHITE + "SburbServer", 2),
 //	SBURBALPHACLIENT(Material.RECORD_4, "Sburb Alpha Client", 4, null),
-//	SBURBALPHASERVER(Material.RECORD_3, "Sburb Alpha Server", 3, null),
-//	SGRUB(Material.RECORD_6, "Sgrub", 6, null)
+//	SBURBALPHASERVER(Material.RECORD_3, "Sburb Alpha Server", 3),
+//	SGRUB(Material.RECORD_6, "Sgrub", 6)
 	// GRISTTORRENT ahaaaano.
-	BACK(Material.REDSTONE_BLOCK, ChatColor.DARK_RED + "Back", 0, "cd ..");
+	BACK(Material.REDSTONE_BLOCK, ChatColor.DARK_RED + "Back " + ChatColor.WHITE + "cd ..", 0);
 
 	/** The <code>Material</code> of the program. */
 	private Material m;
@@ -27,14 +25,11 @@ public enum Icon {
 	private String name;
 	/** The program ID. */
 	private int number;
-	/** Additional lore to add to the program. */
-	private String lore;
 
-	private Icon(Material m, String name, int number, String lore) {
+	private Icon(Material m, String name, int number) {
 		this.m = m;
 		this.name = name;
 		this.number = number;
-		this.lore = lore;
 	}
 
 	/**
@@ -46,11 +41,6 @@ public enum Icon {
 		ItemStack is = new ItemStack(m);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);
-		if (lore != null) {
-			ArrayList<String> loreList = new ArrayList<String>();
-			loreList.add(lore);
-			im.setLore(loreList);
-		}
 		is.setItemMeta(im);
 		return is;
 	}

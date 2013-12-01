@@ -67,6 +67,10 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
 		// Adam ensure upper inventory is clicked icon
+		if (event.getCurrentItem() == null) {
+			event.setResult(Result.DENY);
+			return true;
+		}
 		for (Icon ico : Icon.values()) {
 			if (event.getCurrentItem().equals(ico.getIcon())) {
 				switch (ico) {
@@ -87,7 +91,7 @@ public class Computer extends Machine implements InventoryHolder {
 			}
 		}
 		event.setResult(Result.DENY);
-		return false;
+		return true;
 	}
 
 	/**
@@ -102,7 +106,7 @@ public class Computer extends Machine implements InventoryHolder {
 			if (ico != null) {
 				event.setCancelled(true);
 				event.getPlayer().setItemInHand(null);
-				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed " + ico + "!");
+				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed " + ico + ChatColor.GREEN + "!");
 				SblockUser u = SblockUser.getUser(event.getPlayer().getName());
 				u.addProgram(ico.getProgramID());
 				return true;
