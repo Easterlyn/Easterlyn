@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
+import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -72,6 +73,27 @@ public class PlayerData {
 			}
 
 			new AsyncCall(pst).schedule();
+	}
+
+	/**
+	 * Prevents quick relogs from causing userdata to not be loaded for a
+	 * <code>Player</code>.
+	 * 
+	 * @param name
+	 *            the name of the <code>Player</code>
+	 */
+	protected static void verifyUserOffline(ResultSet rs) {
+		String name = null;
+		try {
+			name = rs.getStatement().toString().replace("SELECT * FROM PlayerData WHERE name=", "");
+		} catch (SQLException e) {
+			Sblogger.info("SblockDatabase", "Error verifying that player is offline.");
+		}
+		if (Bukkit.getPlayerExact(name).isOnline()) {
+			ChatUser u = DBManager.getDBM().loadUserData(name);
+			u.setCurrentRegion(Region.getLocationRegion(Bukkit.getPlayerExact(name).getLocation()));
+			u.syncJoinChannel("#" + u.getCurrentRegion().toString());
+		}
 	}
 
 	/**
