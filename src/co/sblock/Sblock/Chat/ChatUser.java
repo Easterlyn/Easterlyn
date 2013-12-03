@@ -380,6 +380,9 @@ public class ChatUser {
 	 *            the <code>Region</code> being transitioned into
 	 */
 	public void updateCurrentRegion(Region newR) {
+		if (newR == currentRegion) {
+			return;
+		}
 		Channel oldC = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
 		if (current == null ||  current.equals(oldC.getName())) {
