@@ -13,7 +13,7 @@ import co.sblock.Sblock.Utilities.Sblogger;
  * A small helper class containing all methods that access the Machines table.
  * <p>
  * The Machines table is created by the following call:
- * CREATE TABLE Machines (location varchar(34) UNIQUE KEY, type varchar(3), data varchar(16), face tinyint);
+ * CREATE TABLE Machines (location varchar(40) UNIQUE KEY, type varchar(3), data varchar(16), face tinyint);
  * 
  * @author Jikoo
  *

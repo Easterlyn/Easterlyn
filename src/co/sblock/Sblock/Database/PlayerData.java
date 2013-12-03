@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
-import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Sblogger;
@@ -22,7 +21,7 @@ import co.sblock.Sblock.Utilities.LilHal;
  * CREATE TABLE PlayerData (name varchar(16) UNIQUE KEY, class varchar(6),
  * aspect varchar(6), mPlanet varchar(5), dPlanet varchar(7), towerNum tinyint,
  * sleepState boolean, currentChannel varchar(16), isMute boolean, nickname varchar(16),
- * channels text, ip varchar(15), timePlayed varchar(20), previousLocation varchar(30),
+ * channels text, ip varchar(15), timePlayed varchar(20), previousLocation varchar(40),
  * programs varchar(31), uhc tinyint);
  * 
  * @author Jikoo
@@ -90,9 +89,7 @@ public class PlayerData {
 			Sblogger.info("SblockDatabase", "Error verifying that player is offline.");
 		}
 		if (Bukkit.getPlayerExact(name).isOnline()) {
-			ChatUser u = DBManager.getDBM().loadUserData(name);
-			u.setCurrentRegion(Region.getLocationRegion(Bukkit.getPlayerExact(name).getLocation()));
-			u.syncJoinChannel("#" + u.getCurrentRegion().toString());
+			DBManager.getDBM().loadUserData(name);
 		}
 	}
 
@@ -152,7 +149,9 @@ public class PlayerData {
 				if (rs.getString("channels") != null) {
 					String[] channels = rs.getString("channels").split(",");
 					for (int i = 0; i < channels.length; i++) {
-						cUser.syncJoinChannel(channels[i]);
+						if (!cUser.isListening(channels[i])) {
+							cUser.addListening(channels[i]);
+						}
 					}
 				}
 				if (rs.getString("previousLocation") != null) {
@@ -160,7 +159,7 @@ public class PlayerData {
 				} else {
 					sUser.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				}
-				cUser.syncSetCurrentChannel(rs.getString("currentChannel"));
+				cUser.setCurrent(rs.getString("currentChannel"));
 				sUser.setTimePlayed(rs.getString("timePlayed"));
 				sUser.setPrograms(rs.getString("programs"));
 				sUser.setUHCMode(rs.getByte("uhc"));

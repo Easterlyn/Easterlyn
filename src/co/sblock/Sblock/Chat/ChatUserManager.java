@@ -37,6 +37,9 @@ public class ChatUserManager {
 	}
 
 	public ChatUser addUser(String name) {
+		if (users.containsKey(name)) {
+			return users.get(name);
+		}
 		ChatUser u = new ChatUser(name);
 		users.put(name, u);
 		return u;

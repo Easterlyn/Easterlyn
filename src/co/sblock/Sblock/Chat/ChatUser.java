@@ -58,6 +58,8 @@ public class ChatUser {
 
 	public ChatUser(String name) {
 		this.playerName = name;
+		this.currentRegion = Region.getLocationRegion(this.getPlayer().getLocation());
+		this.addListening(ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString()));
 		if (this.current == null || listening.size() == 0) {
 			this.syncSetCurrentChannel("#");
 		}
@@ -170,17 +172,44 @@ public class ChatUser {
 			return;
 		}
 		if (c.isBanned(this)) {
-			this.getPlayer().sendMessage(ChatMsgs.isBanned(c));
+			this.getPlayer().sendMessage(ChatMsgs.isBanned(c.getName()));
 			return;
 		}
 		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
-			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c));
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c.getName()));
 			return;
 		}
 		if (!this.isListening(c)) {
 			this.addListening(c);
 		}
 		this.current = c.getName();
+		this.sendMessage(ChatMsgs.onChannelJoin(this, this.getCurrent()));
+	}
+
+	/**
+	 * Sets the <code>Player</code>'s current <code>Channel</code>.
+	 * 
+	 * @param c
+	 *            the <code>Channel</code> to set as current
+	 */
+	public void setCurrent(String s) {
+		Channel c = ChannelManager.getChannelManager().getChannel(s);
+		if (c == null) {
+			return;
+		}
+		if (c.isBanned(this)) {
+			this.getPlayer().sendMessage(ChatMsgs.isBanned(c.getName()));
+			return;
+		}
+		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c.getName()));
+			return;
+		}
+		this.current = c.getName();
+		if (!this.isListening(c)) {
+			this.addListening(c);
+			return;
+		}
 		this.sendMessage(ChatMsgs.onChannelJoin(this, this.getCurrent()));
 	}
 
@@ -207,11 +236,11 @@ public class ChatUser {
 			return false;
 		}
 		if (c.isBanned(this)) {
-			this.getPlayer().sendMessage(ChatMsgs.isBanned(c));
+			this.getPlayer().sendMessage(ChatMsgs.isBanned(c.getName()));
 			return false;
 		}
 		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
-			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c));
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c.getName()));
 			return false;
 		}
 		if (!this.isListening(c)) {
@@ -223,6 +252,40 @@ public class ChatUser {
 			return true;
 		} else {
 			this.sendMessage(ChatMsgs.errorAlreadyInChannel(c.getName()));
+			return false;
+		}
+	}
+
+	/**
+	 * Adds a <code>Channel</code> to the <code>Player</code>'s current
+	 * <code>List</code> of <code>Channel</code>s listened to.
+	 * 
+	 * @param s
+	 *            the <code>Channel</code> name to add
+	 * @return true if the <code>Channel</code> was added
+	 */
+	public boolean addListening(String s) {
+		Channel c = ChannelManager.getChannelManager().getChannel(s);
+		if (c == null) {
+			return false;
+		}
+		if (c.isBanned(this)) {
+			this.getPlayer().sendMessage(ChatMsgs.isBanned(s));
+			return false;
+		}
+		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(s));
+			return false;
+		}
+		if (!this.isListening(c)) {
+			this.listening.add(s);
+		}
+		if (!c.getListening().contains(this.playerName)) {
+			c.sendToAll(this, ChatMsgs.onChannelJoin(this, c), "channel");
+			c.addListening(this.playerName);
+			return true;
+		} else {
+			this.sendMessage(ChatMsgs.errorAlreadyInChannel(s));
 			return false;
 		}
 	}
@@ -290,6 +353,18 @@ public class ChatUser {
 	}
 
 	/**
+	 * Check if the <code>Player</code> is listening to a specific
+	 * <code>Channel</code>.
+	 * 
+	 * @param s
+	 *            the <code>Channel</code> name to check for
+	 * @return <code>true</code> if the <code>Player</code> is listening to c
+	 */
+	public boolean isListening(String s) {
+		return listening.contains(s);
+	}
+
+	/**
 	 * Gets the <code>Player</code>'s current <code>Region</code>.
 	 * 
 	 * @return the <code>Region</code> the <code>Player</code> is in.
@@ -299,28 +374,15 @@ public class ChatUser {
 	}
 
 	/**
-	 * Set the <code>Player</code>'s current <code>Region</code> to the
-	 * specified <code>Region</code>. Only for use on login.
-	 * 
-	 * @see #updateCurrentRegion
-	 * 
-	 * @param r
-	 *            the <code>Region</code> to set
-	 */
-	public void setCurrentRegion(Region r) {
-		currentRegion = r;
-	}
-
-	/**
 	 * Update current <code>Region</code> and change <code>RegionChannel</code>.
 	 * 
 	 * @param newR
 	 *            the <code>Region</code> being transitioned into
 	 */
 	public void updateCurrentRegion(Region newR) {
-		Channel oldC = ChannelManager.getChannelManager().getChannel("#" + this.getCurrentRegion().toString());
+		Channel oldC = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (current.equals(oldC.getName())) {
+		if (current == null ||  current.equals(oldC.getName())) {
 			current = newC.getName();
 		}
 		this.removeListening(oldC.getName());
@@ -381,7 +443,7 @@ public class ChatUser {
 				sendto = ChatModule.getChatModule().getChannelManager().getChannel(newChannel);
 				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender)) {
 					// User not approved in channel
-					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sendto));
+					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sendto.getName()));
 					return;
 				} else {
 					// should reach this point for publicchannel and approved users
@@ -651,60 +713,6 @@ public class ChatUser {
 	public void stopPendingTasks() {
 		for (int task : tasks.values()) {
 			Bukkit.getScheduler().cancelTask(task);
-		}
-	}
-
-	/**
-	 * Join a <code>Channel</code> synchronously. <code>BukkitTask</code> ID is
-	 * added to task list for cleanup. For use on login - instantly causing a
-	 * join results in failure for unknown reasons.
-	 * 
-	 * @param channelName
-	 *            the name of the <code>Channel</code> to join
-	 */
-	public void syncJoinChannel(String channelName) {
-		tasks.put(channelName, Bukkit.getScheduler()
-				.scheduleSyncDelayedTask(Sblock.getInstance(),
-						new ChannelJoinSynchronizer(this, channelName)));
-	}
-
-	/**
-	 * A small <code>Runnable</code> used to enter a <code>Channel</code>
-	 * synchronously.
-	 */
-	public class ChannelJoinSynchronizer implements Runnable {
-		/** The name of the <code>Channel</code> to join */
-		private String channelName;
-		/** The <code>SblockUser</code> who is joining */
-		private ChatUser user;
-
-		/**
-		 * Constructor for <code>ChannelJoinSynchronizer</code>.
-		 * 
-		 * @param user
-		 *            the <code>SblockUser</code> joining a <code>Channel</code>
-		 * @param channelName
-		 *            the name of the <code>Channel</code> to join
-		 */
-		public ChannelJoinSynchronizer(ChatUser user, String channelName) {
-			this.user = user;
-			this.channelName = channelName;
-		}
-
-		/**
-		 * Join the <code>Channel</code> and clean up entry from
-		 * <code>BukkitTask</code> list.
-		 * 
-		 * @see java.lang.Runnable#run()
-		 */
-		@Override
-		public void run() {
-			Channel c = ChatModule.getChatModule()
-					.getChannelManager().getChannel(channelName);
-			if (c != null && !user.isListening(c) && user.getPlayer().isOnline()) {
-				user.addListening(c);
-			}
-			tasks.remove(channelName);
 		}
 	}
 

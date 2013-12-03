@@ -162,16 +162,16 @@ public class ChatMsgs {
 		return null;
 	}
 
-	public static String isBanned(Channel c) {
-		return ChatColor.RED + "You are banned in channel " + ChatColor.GOLD
-				+ c.getName() + ChatColor.RED + "!";
+	public static String isBanned(String s) {
+		return ChatColor.RED + "You are banned from channel " + ChatColor.GOLD
+				+ s + ChatColor.RED + "!";
 	}
 
-	public static String onUserDeniedPrivateAccess(Channel c) {
-		return ChatColor.GOLD + c.getName() + ChatColor.RED
+	public static String onUserDeniedPrivateAccess(String s) {
+		return ChatColor.GOLD + s + ChatColor.RED
 				+ " is a private channel!\n" + ChatColor.YELLOW
 				+ "Request access with the command " + ChatColor.BLUE
-				+ "/sc request " + c.getName();
+				+ "/sc request " + s;
 	}
 
 	public static String errorInvalidChannel(String c) {

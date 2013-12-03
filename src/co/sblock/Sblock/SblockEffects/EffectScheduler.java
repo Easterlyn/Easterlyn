@@ -7,6 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.Database.DBManager;
 
 public class EffectScheduler extends BukkitRunnable {
 	
@@ -18,18 +19,20 @@ public class EffectScheduler extends BukkitRunnable {
 	
 	@Override
 	public void run() {
-	//	plugin.getLogger().info("Effect Tick");
-		for(Player p : Bukkit.getServer().getOnlinePlayers())	{
+		for(Player p : Bukkit.getServer().getOnlinePlayers()) {
 			eM.applyPassiveEffects(eM.scan(p), p);
 			ChatUserManager.getUserManager().getUser(p.getName()).setComputerAccess();
-			for(ChatUser u : ChatUserManager.getUserManager().getUserlist())	{
-				if(u.getComputerAccess() && !u.getListening().contains("#"))	{
+			for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
+				if (u == null) {
+					u = DBManager.getDBM().loadUserData(p.getName());
+				}
+				if (u.getComputerAccess() && !u.getListening().contains("#")) {
 					u.addListening(ChannelManager.getChannelManager().getChannel("#"));
 				}
-				if(!u.getComputerAccess() && u.getListening().contains("#"))	{
+				if (!u.getComputerAccess() && u.getListening().contains("#")) {
 					u.removeListening("#");
 				}
 			}
-		}		
+		}
 	}
 }

@@ -31,11 +31,6 @@ import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
-import com.bergerkiller.bukkit.common.events.PacketReceiveEvent;
-import com.bergerkiller.bukkit.common.events.PacketSendEvent;
-import com.bergerkiller.bukkit.common.protocol.PacketFields;
-import com.bergerkiller.bukkit.common.protocol.PacketListener;
-import com.bergerkiller.bukkit.common.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
@@ -61,7 +56,7 @@ import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 /**
  * @author Jikoo
  */
-public class EventListener implements Listener, PacketListener {
+public class EventListener implements Listener {
 
 	/** A <code>Map</code> of all scheduled tasks by ID. */
 	public Map<String, Integer> tasks;
@@ -134,12 +129,7 @@ public class EventListener implements Listener, PacketListener {
 	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		ChatUser u = DBManager.getDBM().loadUserData(event.getPlayer().getName());
-		
-		//RegionChannel handling
-		u.setCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
-		u.syncJoinChannel("#" + u.getCurrentRegion().toString());
-		//u.syncSetCurrentChannel("#");
+		DBManager.getDBM().loadUserData(event.getPlayer().getName());
 	}
 
 
@@ -363,42 +353,6 @@ public class EventListener implements Listener, PacketListener {
 	 * 
 	 * }
 	 */
-
-	/**
-	 * The event handler for packets received from clients.
-	 * 
-	 * @param event
-	 *            the <code>PacketReceiveEvent</code>
-	 * @see com.bergerkiller.bukkit.common.protocol.PacketListener#onPacketReceive(PacketReceiveEvent)
-	 * @see <a href="http://wiki.vg/Protocol#Entity_Action_.280x13.29">Minecraft packet protocol</a>
-	 */
-	@Override
-	public void onPacketReceive(PacketReceiveEvent event) {
-		if (event.getType().equals(PacketType.ENTITY_ACTION)) {
-			if (event.getPacket().read(PacketFields.ENTITY_ACTION.animation) == 3) {
-				Player p = event.getPlayer();
-				if (tasks.containsKey(p.getName())) {
-					event.setCancelled(true);
-					Bukkit.getScheduler().cancelTask(tasks.remove(p.getName()));
-					this.fakeWakeUp(p);
-				}
-			}
-		}
-	}
-
-	/**
-	 * The event handler for packets sent to clients.
-	 * 
-	 * @param event
-	 *            the <code>PacketSendEvent</code>
-	 * @see com.bergerkiller.bukkit.common.protocol.PacketListener#onPacketSend(PacketSendEvent)
-	 * @see <a href="http://wiki.vg/Protocol#Entity_Action_.280x13.29">Minecraft
-	 *      packet protocol</a>
-	 */
-	@Override
-	public void onPacketSend(PacketSendEvent event) {
-		
-	}
 
 	/**
 	 * Forcibly close game client by sending bad packets.

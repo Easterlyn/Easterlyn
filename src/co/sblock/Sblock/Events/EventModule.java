@@ -3,9 +3,6 @@ package co.sblock.Sblock.Events;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
-import com.bergerkiller.bukkit.common.protocol.PacketType;
-import com.bergerkiller.bukkit.common.utils.PacketUtil;
-
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Events.Region.RegionCheck;
@@ -42,9 +39,6 @@ public class EventModule extends Module {
 		towers.load();
 		listener = new EventListener();
 		this.registerEvents(listener);
-		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.ENTITY_ACTION);
-		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.MOB_SPAWN);
-		PacketUtil.addPacketListener(Sblock.getInstance(), listener, PacketType.DESTROY_ENTITY);
 		this.registerCommands(new PacketCommands());
 		status = Status.NEITHER;
 		regionTask = initiateRegionChecks();
@@ -58,7 +52,6 @@ public class EventModule extends Module {
 	protected void onDisable() {
 		Bukkit.getScheduler().cancelTask(regionTask);
 		Bukkit.getScheduler().cancelTask(sessionTask);
-		PacketUtil.removePacketListener(listener);
 		HandlerList.unregisterAll(listener);
 		listener = null;
 		towers.save();

@@ -37,6 +37,9 @@ public class UserManager {
 	 *            The <code>Player</code> that has logged on
 	 */
 	public SblockUser addUser(String name) {
+		if (users.containsKey(name)) {
+			return users.get(name);
+		}
 		SblockUser u = new SblockUser(name);
 		users.put(name, u);
 		return u;
