@@ -39,7 +39,6 @@ public class EventModule extends Module {
 		towers.load();
 		listener = new EventListener();
 		this.registerEvents(listener);
-		this.registerCommands(new PacketCommands());
 		status = Status.NEITHER;
 		regionTask = initiateRegionChecks();
 		sessionTask = initiateSessionChecks();

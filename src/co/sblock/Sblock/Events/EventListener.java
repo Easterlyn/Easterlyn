@@ -40,13 +40,9 @@ import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Events.Packets.AbstractPacket;
 import co.sblock.Sblock.Events.Packets.Packet11UseBed;
 import co.sblock.Sblock.Events.Packets.Packet12Animation;
-import co.sblock.Sblock.Events.Packets.Packet18SpawnMob;
-import co.sblock.Sblock.Events.Packets.Packet26EntityStatus;
 import co.sblock.Sblock.Events.Packets.SleepTeleport;
-import co.sblock.Sblock.Events.Packets.SendPacket;
 import co.sblock.Sblock.SblockEffects.Cooldowns;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -65,13 +61,10 @@ public class EventListener implements Listener {
 	 * sleep teleport.
 	 */
 	public Set<String> teleports;
-	/** The fake UUID used for mob spawn faking. */
-	private short fake_UUID;
 
 	public EventListener() {
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
-		fake_UUID = 25000;
 	}
 
 	/**
@@ -353,94 +346,4 @@ public class EventListener implements Listener {
 	 * 
 	 * }
 	 */
-
-	/**
-	 * Forcibly close game client by sending bad packets.
-	 * 
-	 * @param p
-	 *            the <code>Player</code> whose client should be crashed.
-	 */
-	public void forceCloseClient(Player p) {
-		Location l = p.getLocation();
-		Packet18SpawnMob spawn = new Packet18SpawnMob();
-		spawn.setEntityID(fake_UUID);
-		spawn.setType(EntityType.ENDER_DRAGON);
-		spawn.setX(l.getX());
-		spawn.setY(l.getY());
-		spawn.setZ(l.getZ());
-		spawn.setPitch(l.getPitch());
-		spawn.setYaw(l.getYaw());
-		spawn.setHeadYaw(l.getYaw());
-		spawn.setVelocityX(0);
-		spawn.setVelocityY(0);
-		spawn.setVelocityZ(0);
-
-		Packet26EntityStatus packet = new Packet26EntityStatus();
-		packet.setEntityId(fake_UUID);
-		packet.setEntityStatus(Packet26EntityStatus.Status.ENTITY_DEAD);
-
-		fake_UUID++;
-
-		try {
-			ProtocolLibrary.getProtocolManager().sendServerPacket(p, spawn.getHandle());
-			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
-		} catch (InvocationTargetException e) {
-			Sblogger.err(e);
-		}
-	}
-
-	/**
-	 * Fake spawn and kill an EnderDragon at specified <code>Location</code>
-	 * using packets.
-	 * 
-	 * @param l
-	 *            the <code>Location</code>
-	 */
-	public void dragon(Location l) {
-		Packet18SpawnMob spawn = new Packet18SpawnMob();
-		spawn.setEntityID(fake_UUID);
-		spawn.setType(EntityType.ENDER_DRAGON);
-		spawn.setX(l.getX());
-		spawn.setY(l.getY());
-		spawn.setZ(l.getZ());
-		spawn.setPitch(l.getPitch());
-		spawn.setYaw(l.getYaw());
-		spawn.setHeadYaw(l.getYaw());
-		spawn.setVelocityX(0);
-		spawn.setVelocityY(0);
-		spawn.setVelocityZ(0);
-
-		Packet26EntityStatus packet = new Packet26EntityStatus();
-		packet.setEntityId(fake_UUID);
-		packet.setEntityStatus(Packet26EntityStatus.Status.ENTITY_DEAD);
-
-		fake_UUID++;
-
-		try {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				if (p.getWorld().equals(l.getWorld()) && p.getLocation().distanceSquared(l) <= 2304) {
-					// 2304 = 48^2. Spigot by default does not render mobs beyond this point.
-					ProtocolLibrary.getProtocolManager().sendServerPacket(p, spawn.getHandle());
-					// Ideally this will fix what I suspect is the issue - the packet is
-					// probably sent too soon, or something of the sort.
-					// adam task tracking
-					this.schedulePacket(p, packet);
-				}
-			}
-		} catch (InvocationTargetException e) {
-			Sblogger.err(e);
-		}
-	}
-
-	/**
-	 * Schedule sending a packet to a <code>Player</code>.
-	 * 
-	 * @param p
-	 *            the <code>Player</code> to send a packet to
-	 * @param packet
-	 *            the <code>AbstractPacket</code> to send
-	 */
-	private void schedulePacket(Player p, AbstractPacket packet) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new SendPacket(p, packet));
-	}
 }
