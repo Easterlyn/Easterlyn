@@ -26,9 +26,6 @@ commands:
  o:
   usage: /o <text>
   description: '> Be Doc Scratch.'
- quit:
-  usage: /quit <optional text>
-  description: '> Player: Exit'
  sc:
   usage: /sc ? for help
   description: "SburbChat's main command"
@@ -50,10 +47,6 @@ commands:
  settower:
   usage: /settower <number>
   description: "Set tower teleport location to current for tower <number>"
-  permission: group.horrorterror
- dragon:
-  usage: /dragon
-  description: death by awesome
   permission: group.horrorterror
  meteormod:
   usage: /meteormod <p:player> <r:radius> <e:explode> <c:countdown> <m:material>
