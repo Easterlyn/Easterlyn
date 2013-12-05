@@ -31,6 +31,7 @@ public abstract class AbstractPacket {
 	 *            handle to the raw packet data.
 	 * @param packetID int
 	 */
+	@SuppressWarnings("deprecation")
 	protected AbstractPacket(PacketContainer handle, int packetID) {
 		// Make sure we're given a valid packet
 		if (handle == null)

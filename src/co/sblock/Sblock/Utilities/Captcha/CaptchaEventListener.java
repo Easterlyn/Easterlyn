@@ -328,7 +328,6 @@ public class CaptchaEventListener implements Listener	{
 		case HOPPER:
 		case ITEM_FRAME:
 		case LEVER:
-		case LOCKED_CHEST:
 		case NOTE_BLOCK:
 		case REDSTONE_COMPARATOR:
 		case REDSTONE_COMPARATOR_OFF:
