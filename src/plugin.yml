@@ -20,9 +20,6 @@ commands:
  whois:
   usage: /whois <target>
   description: Garner information
- scban:
-  usage: /scban <target>
-  description: NO ONE ESCAPES THE RED MILES.
  o:
   usage: /o <text>
   description: '> Be Doc Scratch.'
@@ -31,7 +28,7 @@ commands:
   description: "SburbChat's main command"
  sban:
   usage: /<command> <target> <reason>
-  description: "Ban a player and their IP address."
+  description: NO ONE ESCAPES THE RED MILES.
   permission: group.horrorterror
  unsban:
   usage: /<command> <target>

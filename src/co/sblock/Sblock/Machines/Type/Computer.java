@@ -66,7 +66,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
-		// Adam ensure upper inventory is clicked icon
+		event.getWhoClicked().getName().equals(this.getData());
 		if (event.getCurrentItem() == null) {
 			event.setResult(Result.DENY);
 			return true;

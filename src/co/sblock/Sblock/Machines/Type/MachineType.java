@@ -83,11 +83,23 @@ public enum MachineType {
 		ItemStack is = null;
 		ItemMeta im;
 		switch (this) {
+		case ALCHEMITER:
+			is = new ItemStack(Material.QUARTZ_BLOCK);
+			is.setDurability((short) 2);
+			im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + "Alchemiter");
+			is.setItemMeta(im);
+			break;
 		case COMPUTER:
 			is = new ItemStack(Material.JUKEBOX);
 			im = is.getItemMeta();
 			im.setDisplayName(ChatColor.WHITE + "Computer");
-			// I'm not setting lore (yet) because carrying around a desktop doesn't seem like good global access.
+			is.setItemMeta(im);
+			break;
+		case CRUXTRUDER:
+			is = new ItemStack(Material.BEACON);
+			im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + "Cruxtruder");
 			is.setItemMeta(im);
 			break;
 		case PERFECT_BUILDING_OBJECT:
@@ -100,6 +112,12 @@ public enum MachineType {
 			is = new ItemStack(Material.DIRT);
 			im = is.getItemMeta();
 			im.setDisplayName(ChatColor.WHITE + "Perfectly generic object");
+			is.setItemMeta(im);
+			break;
+		case PUNCH_DESIGNIX:
+			is = new ItemStack(Material.NOTE_BLOCK);
+			im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + "Punch Designix");
 			is.setItemMeta(im);
 			break;
 		case TRANSMATERIALIZER:

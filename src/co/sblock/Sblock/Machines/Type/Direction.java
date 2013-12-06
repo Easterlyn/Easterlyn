@@ -7,16 +7,18 @@ import org.bukkit.entity.Player;
  * @author Jikoo
  */
 public enum Direction {
-	NORTH((byte) 0, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4),
-	SOUTH((byte) 2, (byte) 4, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5);
+	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 1),
+	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 0);
 
 	private byte dirNum;
 	private byte button;
 	private byte chest;
-	Direction(byte b, byte button, byte chest) {
+	private byte stair;
+	Direction(byte b, byte button, byte chest, byte stair) {
 		dirNum = b;
 		this.button = button;
 		this.chest = chest;
+		this.stair = stair;
 	}
 
 	/**
@@ -64,6 +66,26 @@ public enum Direction {
 	 */
 	public byte getChestByte() {
 		return chest;
+	}
+
+	/**
+	 * For determining rotation of stairs in a <code>Machine</code>'s
+	 * <code>Shape</code>.
+	 * 
+	 * @return <code>byte</code>
+	 */
+	public byte getStairByte() {
+		return stair;
+	}
+
+	/**
+	 * For determining rotation of stairs in a <code>Machine</code>'s
+	 * <code>Shape</code>.
+	 * 
+	 * @return <code>byte</code>
+	 */
+	public byte getUpperStairByte() {
+		return (byte) (stair + 4);
 	}
 
 	/**
