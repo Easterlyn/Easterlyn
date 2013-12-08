@@ -94,7 +94,7 @@ public class Transmaterializer extends Machine {
 		return MachineType.TRANSMATERIALIZER;
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
 	 */
 	@Override

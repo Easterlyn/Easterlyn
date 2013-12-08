@@ -17,7 +17,8 @@ public enum Icon {
 //	SBURBALPHASERVER(Material.RECORD_3, "Sburb Alpha Server", 3),
 //	SGRUB(Material.RECORD_6, "Sgrub", 6)
 	// GRISTTORRENT ahaaaano.
-	BACK(Material.REDSTONE_BLOCK, ChatColor.DARK_RED + "Back " + ChatColor.WHITE + "cd ..", 0);
+	BACK(Material.REDSTONE_BLOCK, ChatColor.DARK_RED + "Back " + ChatColor.WHITE + "cd ..", 0),
+	DOWEL(Material.SKULL_ITEM, ChatColor.DARK_RED + "Cruxite Dowel", 4);
 
 	/** The <code>Material</code> of the program. */
 	private Material m;

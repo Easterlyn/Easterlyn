@@ -165,7 +165,8 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
-		if (event.getBlock().getLocation().equals(getKey()) && meetsAdditionalBreakConditions(event)) {
+		if (event.getBlock().getLocation().equals(getKey()) && meetsAdditionalBreakConditions(event)
+				|| event.getPlayer().hasPermission("group.denizen")) {
 			if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
 				getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
 			}

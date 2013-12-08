@@ -66,7 +66,10 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
-		event.getWhoClicked().getName().equals(this.getData());
+		if (!event.getWhoClicked().getName().equals(this.getData()) || !event.getWhoClicked().hasPermission("group.denizen")) {
+			event.setResult(Result.DENY);
+			return true;
+		}
 		if (event.getCurrentItem() == null) {
 			event.setResult(Result.DENY);
 			return true;
