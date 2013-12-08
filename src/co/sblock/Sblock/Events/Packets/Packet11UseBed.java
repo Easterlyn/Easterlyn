@@ -26,6 +26,7 @@ import com.comphenix.protocol.events.PacketEvent;
 public class Packet11UseBed extends AbstractPacket {
 	public static final int ID = 17;
 
+	@SuppressWarnings("deprecation")
 	public Packet11UseBed() {
 		super(new PacketContainer(ID), ID);
 		handle.getModifier().writeDefaults();

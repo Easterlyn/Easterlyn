@@ -20,6 +20,7 @@ package co.sblock.Sblock.Events.Packets;
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.events.PacketContainer;
 
+@SuppressWarnings("deprecation")
 public abstract class AbstractPacket {
 	/** The packet to modify. */
 	protected PacketContainer handle;
@@ -31,7 +32,6 @@ public abstract class AbstractPacket {
 	 *            handle to the raw packet data.
 	 * @param packetID int
 	 */
-	@SuppressWarnings("deprecation")
 	protected AbstractPacket(PacketContainer handle, int packetID) {
 		// Make sure we're given a valid packet
 		if (handle == null)

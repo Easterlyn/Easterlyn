@@ -57,6 +57,7 @@ public class Packet12Animation extends AbstractPacket {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public Packet12Animation() {
 		super(new PacketContainer(ID), ID);
 		handle.getModifier().writeDefaults();
