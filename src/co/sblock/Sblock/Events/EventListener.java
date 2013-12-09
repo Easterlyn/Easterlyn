@@ -33,7 +33,6 @@ import org.bukkit.material.Bed;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
