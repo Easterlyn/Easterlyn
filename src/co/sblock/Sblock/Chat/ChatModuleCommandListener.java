@@ -300,11 +300,11 @@ public class ChatModuleCommandListener implements CommandListener {
 			} else if (args[0].equalsIgnoreCase("channel")) {
 				// ChannelOwner/Mod commands
 				Channel c = user.getCurrent();
-				if(args[1].equalsIgnoreCase("info"))	{
+				if(args.length == 2 && args[1].equalsIgnoreCase("info"))	{
 					sender.sendMessage(c.toString());
 					return true;
 				}
-				if (c.isMod(user) || isHelper) {
+				if (c.isChannelMod(user) || isHelper) {
 					if (args.length == 1) {
 						this.sendChannelHelp(user, c);
 						return true;

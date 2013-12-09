@@ -570,7 +570,7 @@ public class ChatUser {
 
 		if (c instanceof RPChannel) {
 			if(c.hasNick(sender))	{
-				colorP = CanonNicks.valueOf(outputName).getColor();
+				colorP = CanonNicks.getNick(outputName).getColor();
 			}
 			else	{
 				sender.sendMessage(ChatMsgs.errorNickRequired(c.getName()));
