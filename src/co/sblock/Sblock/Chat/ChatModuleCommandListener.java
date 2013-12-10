@@ -26,6 +26,12 @@ import co.sblock.Sblock.Utilities.Sblogger;
 public class ChatModuleCommandListener implements CommandListener {
 
 	@SblockCommand
+	public boolean spawn(CommandSender sender) {
+		((Player) sender).performCommand("/mvs");
+		return true;
+	}
+
+	@SblockCommand
 	public boolean color(CommandSender sender) {
 		sender.sendMessage(ColorDef.listColors());
 		return true;

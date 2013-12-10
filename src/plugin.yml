@@ -8,6 +8,9 @@ description: Sblock's sexy mainframe
 depend: [ProtocolLib]
 
 commands:
+ spawn:
+  usage: /spawn
+  description: Teleport to spawn!
  color:
   usage: /color
   description: List all colors.
