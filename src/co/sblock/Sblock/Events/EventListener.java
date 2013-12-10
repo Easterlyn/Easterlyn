@@ -217,6 +217,7 @@ public class EventListener implements Listener {
 			Block b = event.getBlock();
 			Dispenser disp = (Dispenser)b.getState();
 			disp.getInventory().addItem(new ItemStack(Material.MINECART));
+			event.getVehicle().eject();
 			event.getVehicle().remove();
 		}
 	}
