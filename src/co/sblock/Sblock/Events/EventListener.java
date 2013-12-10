@@ -33,6 +33,7 @@ import org.bukkit.material.Bed;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
@@ -141,8 +142,7 @@ public class EventListener implements Listener {
 			} else {
 				ChatUserManager.getUserManager().getUser(event.getPlayer().getName()).chat(event);
 			}
-		}
-		else	{
+		} else {
 			event.getPlayer().sendMessage(ChatColor.RED + "You are not in the SblockUser Database! Seek help immediately!");
 		}
 	}
@@ -155,8 +155,12 @@ public class EventListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
-		ChatUserManager.getUserManager().getUser(event.getPlayer().getName())
-				.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
+		try {
+			ChatUserManager.getUserManager().getUser(event.getPlayer().getName())
+					.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
+		} catch (NullPointerException e) {
+			// User's Region is most likely the same, e.g. Earth, Earth_nether, and Earth_the_end all are Region.EARTH
+		}
 	}
 
 	/**
@@ -175,10 +179,11 @@ public class EventListener implements Listener {
 		if (tasks.containsKey(u.getPlayerName())) {
 			Bukkit.getScheduler().cancelTask(tasks.remove(u.getPlayerName()));
 		}
-		Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
-		u.removeListening(regionC.getName());
-		for (String s : u.getListening()) {
-			u.removeListeningQuit(s);
+		try {
+			Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
+			u.removeListening(regionC.getName());
+		} catch (NullPointerException e) {
+			// User is in the Nether or some such world
 		}
 		DBManager.getDBM().saveUserData(event.getPlayer().getName());
 		Cooldowns.cleanup(event.getPlayer().getName());

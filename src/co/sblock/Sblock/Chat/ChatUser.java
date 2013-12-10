@@ -19,6 +19,7 @@ import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
+import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
@@ -316,21 +317,6 @@ public class ChatUser {
 	}
 
 	/**
-	 * Tells a <code>Channel</code> the <code>Player</code> is leaving on quit.
-	 * 
-	 * @param cName
-	 *            the name of the <code>Channel</code> to inform
-	 */
-	public void removeListeningQuit(String cName) {
-		Channel c = ChatModule.getChatModule().getChannelManager()
-				.getChannel(cName);
-		if (c != null) {
-			c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), "channel");
-			c.removeListening(this.getPlayerName());
-		}
-	}
-
-	/**
 	 * Gets the <code>Set</code> of names of <code>Channel</code>s that the
 	 * <code>Player</code> is listening to.
 	 * 
@@ -383,13 +369,12 @@ public class ChatUser {
 		if (newR == currentRegion) {
 			return;
 		}
-		Channel oldC = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (current == null ||  current.equals(oldC.getName())) {
+		if (current == null ||  current.equals("#" + currentRegion.toString())) {
 			current = newC.getName();
 		}
-		this.removeListening(oldC.getName());
-		this.addListening(ChannelManager.getChannelManager().getChannel("#" + newR.toString()));
+		this.removeListening("#" + currentRegion.toString());
+		this.addListening(newC);
 		currentRegion = newR;
 	}
 
@@ -535,8 +520,13 @@ public class ChatUser {
 	 * @param type
 	 *            the type of chat for handling purposes
 	 */
-	@SuppressWarnings("deprecation")
 	public void sendMessageFromChannel(String s, Channel c, String type) {
+		Player p = this.getPlayer();
+		if (p == null) {
+			DBManager.getDBM().saveUserData(playerName);
+			c.removeListening(playerName);
+			return;
+		}
 		// final output, sends message to user
 		// alert for if its player's name is applied here i.e. {!}
 		// then just send it and be done!
@@ -550,17 +540,16 @@ public class ChatUser {
 						+ "{!}"
 						+ s.substring(s.indexOf("<"), s.indexOf(">") + 1)
 						+ ChatColor.WHITE + s.substring(s.indexOf(">") + 1);
-				this.getPlayer().sendMessage(output);
-				this.getPlayer().playEffect(this.getPlayer().getLocation(),
-						Effect.BOW_FIRE, 0);
+				p.sendMessage(output);
+				p.playEffect(p.getLocation(), Effect.BOW_FIRE, 0F);
 			} else {
-				this.getPlayer().sendMessage(s);
+				p.sendMessage(s);
 			}
 			break;
 		case "me":
 		case "channel":
 		default:
-			this.getPlayer().sendMessage(s);
+			p.sendMessage(s);
 			break;
 		}
 		// this.getPlayer().sendMessage(s);
@@ -635,7 +624,7 @@ public class ChatUser {
 
 		if (c instanceof RPChannel) {
 			if(c.hasNick(sender))	{
-				colorP = CanonNicks.valueOf(outputName).getColor();
+				colorP = CanonNicks.getNick(outputName).getColor();
 			}
 			else	{
 				sender.sendMessage(ChatMsgs.errorNickRequired(c.getName()));

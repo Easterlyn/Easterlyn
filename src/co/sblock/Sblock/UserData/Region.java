@@ -31,9 +31,13 @@ public enum Region {
 	 *         if invalid.
 	 */
 	public static Region uValueOf(String s) {
+		s = s.toUpperCase();
 		try {
-			return (Region.valueOf(s.toUpperCase()));
+			return (Region.valueOf(s));
 		} catch (IllegalArgumentException e) {
+			if (s.contains("MEDIUM")) {
+				return Region.MEDIUM;
+			}
 			return Region.EARTH;
 		}
 	}

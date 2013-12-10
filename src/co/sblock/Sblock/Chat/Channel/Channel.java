@@ -92,7 +92,8 @@ public abstract class Channel {
 	}
 
 	public boolean isOwner(ChatUser user) {
-		return user.getPlayerName().equalsIgnoreCase(owner);
+		return user.getPlayerName().equalsIgnoreCase(owner)
+				|| user.getPlayer().hasPermission("group.denizen");
 	}
 
 	/**
@@ -112,28 +113,28 @@ public abstract class Channel {
 		}
 		if (this.isChannelMod(sender) && !this.isChannelMod(ChatUser.getUser(username))) {
 			this.modList.add(username);
-			this.sendToAll(sender, ChatMsgs.onUserModAnnounce(username, this), "channel");
+			this.sendToAll(sender, ChatMsgs.onUserModAnnounce(username, this.name), "channel");
 			Player targetUser = Bukkit.getPlayerExact(username);
 			if (targetUser != null) {
-				targetUser.sendMessage(ChatMsgs.onUserMod(this));
+				targetUser.sendMessage(ChatMsgs.onUserMod(this.name));
 			}
 		} else if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onUserModFail(this));
+			sender.sendMessage(ChatMsgs.onUserModFail(this.name));
 		} else {
-			sender.sendMessage(ChatMsgs.onUserModAlready(username, this));
+			sender.sendMessage(ChatMsgs.onUserModAlready(username, this.name));
 		}
 	}
 
 	public void removeMod(ChatUser sender, String target) {
 		if (this.isChannelMod(sender) && this.isChannelMod(ChatUser.getUser(target))) {
 			this.modList.remove(target);
-			this.sendToAll(sender, ChatMsgs.onUserRmModAnnounce(target, this), "channel");
+			this.sendToAll(sender, ChatMsgs.onUserRmModAnnounce(target, this.name), "channel");
 			Player targetUser = Bukkit.getPlayerExact(target);
 			if (targetUser != null) {
-				targetUser.sendMessage(ChatMsgs.onUserRmMod(target, this)); 
+				targetUser.sendMessage(ChatMsgs.onUserRmMod(target, this.name)); 
 			}
 		} else if (!sender.getPlayerName().equals(this.owner)) {
-			sender.sendMessage(ChatMsgs.onUserModFail(this));
+			sender.sendMessage(ChatMsgs.onUserModFail(this.name));
 		} else {
 			sender.sendMessage(ChatColor.YELLOW + target + ChatColor.RED
 					+ " is not a mod in " + ChatColor.GOLD + this.name
@@ -146,30 +147,23 @@ public abstract class Channel {
 	}
 
 	public boolean isChannelMod(ChatUser user) {
-		if (modList.contains(user.getPlayerName()) || isMod(user)) {
-			return true;
-		}
-		return false;
+		return isMod(user) || user.getPlayer().hasPermission("group.helper");
 	}
 
 	public boolean isMod(ChatUser user) {
-		if (user.getPlayer().hasPermission("group.denizen")
-				|| user.getPlayer().hasPermission("group.horrorterror")) {
-			return true;
-		}
-		return false;
+		return modList.contains(user.getPlayerName()) || user.getPlayer().hasPermission("group.denizen");
 	}
 
 	public void kickUser(ChatUser user, ChatUser sender) {
 		if (this.isChannelMod(sender) && listening.contains(user.getPlayerName())) {
 			this.listening.remove(user);
-			user.sendMessage(ChatMsgs.onUserKick(this));
+			user.sendMessage(ChatMsgs.onUserKick(this.name));
 			user.removeListening(this.getName());
-			this.sendToAll(sender, ChatMsgs.onUserKickAnnounce(user, this), "channel");
+			this.sendToAll(sender, ChatMsgs.onUserKickAnnounce(user.getPlayerName(), this.name), "channel");
 		} else if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onUserKickFail(this));
+			sender.sendMessage(ChatMsgs.onUserKickFail(this.name));
 		} else {
-			sender.sendMessage(ChatMsgs.onUserKickedAlready(user, this));
+			sender.sendMessage(ChatMsgs.onUserKickedAlready(user.getPlayerName(), this.name));
 		}
 
 	}
@@ -192,15 +186,15 @@ public abstract class Channel {
 				ChatUser user = ChatUser.getUser(username);
 				if (user != null) {
 					user.removeListening(this.getName());
-					user.sendMessage(ChatMsgs.onUserBan(this));
+					user.sendMessage(ChatMsgs.onUserBan(this.name));
 				}
 			}
 			this.banList.add(username);
-			this.sendToAll(sender, ChatMsgs.onUserBanAnnounce(username, this), "channel");
+			this.sendToAll(sender, ChatMsgs.onUserBanAnnounce(username, this.name), "channel");
 		} else if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onUserBanFail(this));
+			sender.sendMessage(ChatMsgs.onUserBanFail(this.name));
 		} else {
-			sender.sendMessage(ChatMsgs.onUserBannedAlready(username, this));
+			sender.sendMessage(ChatMsgs.onUserBannedAlready(username, this.name));
 		}
 	}
 
@@ -209,13 +203,13 @@ public abstract class Channel {
 			this.banList.remove(username);
 			Player user = Bukkit.getPlayerExact(username);
 			if (user != null) {
-				user.sendMessage(ChatMsgs.onUserUnban(this));
+				user.sendMessage(ChatMsgs.onUserUnban(this.name));
 			}
-			this.sendToAll(sender, ChatMsgs.onUserUnbanAnnounce(username, this), "channel");
+			this.sendToAll(sender, ChatMsgs.onUserUnbanAnnounce(username, this.name), "channel");
 		} else if (!sender.getPlayerName().equalsIgnoreCase(owner)) {
-			sender.sendMessage(ChatMsgs.onUserUnbanFail(this));
+			sender.sendMessage(ChatMsgs.onUserUnbanFail(this.name));
 		} else {
-			sender.sendMessage(ChatMsgs.onUserUnbannedAlready(username, this));
+			sender.sendMessage(ChatMsgs.onUserUnbannedAlready(username, this.name));
 		}
 	}
 

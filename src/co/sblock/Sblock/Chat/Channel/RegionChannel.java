@@ -6,51 +6,56 @@ import co.sblock.Sblock.Chat.ChatUser;
 public class RegionChannel extends Channel {
 
 	/**
-	 * @param name
-	 * @param a
-	 * @param creator
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#Channel(String, AccessLevel, String)
 	 */
 	public RegionChannel(String name, AccessLevel a, String creator) {
 		super(name, a, creator);
 	}
-	
+
+	/**
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#getType()
+	 */
 	@Override
 	public ChannelType getType() {
 		return ChannelType.REGION;
 	}
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat2.Channel.Channel#setNick(co.sblock.Sblock.Chat2.ChatUser, java.lang.String)
+
+	/**
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#setNick(ChatUser, String)
 	 */
 	@Override
 	public void setNick(ChatUser sender, String nick) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this));		
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat2.Channel.Channel#removeNick(co.sblock.Sblock.Chat2.ChatUser)
+	/**
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#removeNick(ChatUser)
 	 */
 	@Override
 	public void removeNick(ChatUser sender) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this));		
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat2.Channel.Channel#getNick(co.sblock.Sblock.Chat2.ChatUser)
+	/**
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#getNick(ChatUser)
 	 */
 	@Override
 	public String getNick(ChatUser sender) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this));
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Chat2.Channel.Channel#hasNick(co.sblock.Sblock.Chat2.ChatUser)
+	/**
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#hasNick(ChatUser)
 	 */
 	@Override
 	public boolean hasNick(ChatUser sender) {
 		return false;
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#getNickOwner(String)
+	 */
 	@Override
 	public ChatUser getNickOwner(String nick) {
 		return null;

@@ -38,6 +38,10 @@ public class PlayerData {
 	protected static void saveUserData(String name) {
 		ChatUser cUser = ChatUserManager.getUserManager().removeUser(name);
 		SblockUser sUser = UserManager.getUserManager().removeUser(name);
+		if (cUser == null || sUser == null) {
+			Sblogger.warning("SblockDatabase", "Player " + name + " does not appear to have userdata loaded, skipping save.");
+			return;
+		}
 			PreparedStatement pst = null;
 			try {
 				pst = DBManager.getDBM().connection()
@@ -72,25 +76,6 @@ public class PlayerData {
 			}
 
 			new AsyncCall(pst).schedule();
-	}
-
-	/**
-	 * Prevents quick relogs from causing userdata to not be loaded for a
-	 * <code>Player</code>.
-	 * 
-	 * @param name
-	 *            the name of the <code>Player</code>
-	 */
-	protected static void verifyUserOffline(ResultSet rs) {
-		String name = null;
-		try {
-			name = rs.getStatement().toString().replace("SELECT * FROM PlayerData WHERE name=", "");
-		} catch (SQLException e) {
-			Sblogger.info("SblockDatabase", "Error verifying that player is offline.");
-		}
-		if (Bukkit.getPlayerExact(name).isOnline()) {
-			DBManager.getDBM().loadUserData(name);
-		}
 	}
 
 	/**
@@ -165,7 +150,7 @@ public class PlayerData {
 				sUser.setUHCMode(rs.getByte("uhc"));
 			} else {
 				LilHal.tellAll("It would seem that "
-				+ rs.getStatement().toString().replace("SELECT * FROM PlayerData WHERE name=", "")
+				+ rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1")
 						+ " is joining us for the first time! Please welcome them.");
 			}
 		} catch (SQLException e) {

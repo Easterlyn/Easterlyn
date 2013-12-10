@@ -53,9 +53,6 @@ public enum Call {
 		case PLAYER_LOAD:
 			PlayerData.loadPlayer(rs);
 			break;
-		case PLAYER_SAVE:
-			PlayerData.verifyUserOffline(rs);
-			break;
 		case BAN_LOAD:
 			BannedPlayers.removeBan(rs);
 			break;
