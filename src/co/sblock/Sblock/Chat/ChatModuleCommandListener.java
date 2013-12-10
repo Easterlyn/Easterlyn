@@ -134,7 +134,7 @@ public class ChatModuleCommandListener implements CommandListener {
 				Bukkit.banIP(victim.getUserIP());
 				victim.getPlayer().kickPlayer(args);
 			}
-			victim.getOfflinePlayer().setBanned(true);
+			Bukkit.getOfflinePlayer(target).setBanned(true);
 			DBManager.getDBM().deleteUser(target);
 			Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
 			return true;
