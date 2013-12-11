@@ -32,7 +32,12 @@ public class Machines {
 			pst = DBManager.getDBM().connection().prepareStatement(Call.MACHINE_SAVE.toString());
 
 			pst.setString(1, m.getLocationString());
-			pst.setString(2, m.getType().getAbbreviation());
+			try {
+				pst.setString(2, m.getType().getAbbreviation());
+			} catch (NullPointerException e) {
+				Sblogger.warning("SblockMachines", "Machine at " + m.getLocationString()
+						+ " is of invalid type, skipping save.");
+			}
 			pst.setString(3, m.getData());
 			pst.setByte(4, m.getFacingDirection().getDirByte());
 

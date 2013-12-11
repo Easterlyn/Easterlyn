@@ -1,8 +1,5 @@
 package co.sblock.Sblock.Machines.Type;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -32,6 +29,7 @@ public class Computer extends Machine implements InventoryHolder {
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble()
 	 */
+	@Override
 	public void assemble(BlockPlaceEvent event) {
 		if (MachineModule.getInstance().getManager().hasComputer(event.getPlayer(), l)) {
 			event.setCancelled(true);
@@ -45,14 +43,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockBreakEvent)
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		return event.getPlayer().getName().equals(getData());
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#getLocations()
-	 */
-	public Set<Location> getLocations() {
-		return new HashSet<Location>();
+		return event.getPlayer().getName().equals(getData()) || event.getPlayer().hasPermission("group.denizen");
 	}
 
 	/**

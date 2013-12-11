@@ -2,11 +2,14 @@ package co.sblock.Sblock.Machines.Type;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -112,7 +115,9 @@ public abstract class Machine {
 	 * @param event BlockBreakEvent
 	 * @return boolean
 	 */
-	public abstract boolean meetsAdditionalBreakConditions(BlockBreakEvent event);
+	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
+		return getData().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("group.denizen");
+	}
 
 	/**
 	 * Sets up the <code>Machine</code> <code>Block</code> configuration using a
@@ -121,7 +126,22 @@ public abstract class Machine {
 	 * @param event
 	 *            the <code>BlockPlaceEvent</code>
 	 */
-	public abstract void assemble(BlockPlaceEvent event);
+	@SuppressWarnings("deprecation")
+	public void assemble(BlockPlaceEvent event) {
+		for (Location l : blocks.keySet()) {
+			if (!l.getBlock().isEmpty()) {
+				event.setCancelled(true);
+				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
+				this.assemblyFailed();
+				return;
+			}
+		}
+		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
+			Block b = e.getKey().getBlock();
+			b.setType(e.getValue().getType());
+			b.setData(e.getValue().getData().getData());
+		}
+	}
 
 	/**
 	 * Gets a <code>Set</code> of all non-key <code>Location</code>s of
@@ -165,8 +185,7 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
-		if (event.getBlock().getLocation().equals(getKey()) && meetsAdditionalBreakConditions(event)
-				|| event.getPlayer().hasPermission("group.denizen")) {
+		if (meetsAdditionalBreakConditions(event) || event.getPlayer().hasPermission("group.denizen")) {
 			if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
 				getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
 			}

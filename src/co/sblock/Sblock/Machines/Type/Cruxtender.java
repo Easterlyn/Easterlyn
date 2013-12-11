@@ -48,14 +48,6 @@ public class Cruxtender extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockBreakEvent)
-	 */
-	@Override
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		return getData().equals(event.getPlayer().getName());
-	}
-
-	/**
 	 * Handles <code>Machine</code> deconstruction.
 	 * 
 	 * @param event
@@ -63,8 +55,7 @@ public class Cruxtender extends Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
-		if (event.getBlock().getLocation().equals(getKey()) && meetsAdditionalBreakConditions(event)
-				|| event.getPlayer().hasPermission("group.denizen")) {
+		if (meetsAdditionalBreakConditions(event) || event.getPlayer().hasPermission("group.denizen")) {
 			if (this.getKey().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
 				if (event.getBlock().getType().equals(Material.DIAMOND_BLOCK)) {
 					event.getBlock().setType(Material.BEACON);

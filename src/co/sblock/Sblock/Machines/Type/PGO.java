@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  * Perfectly Generic Object Machine. Mimics most objects when placed against them.
+ * 
  * @author Jikoo
  */
 public class PGO extends Machine {
@@ -20,16 +21,14 @@ public class PGO extends Machine {
 	}
 
 	/**
-	 * Method getType.
-	 * @return MachineType
+	 * @see co.sblock.Sblock.Machines.Type.Machine#getType()
 	 */
 	public MachineType getType() {
 		return MachineType.PERFECTLY_GENERIC_OBJECT;
 	}
 
 	/**
-	 * Method assemble.
-	 * @param event BlockPlaceEvent
+	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble(BlockPlaceEvent)
 	 */
 	@SuppressWarnings("deprecation")
 	public void assemble(BlockPlaceEvent event) {
@@ -41,14 +40,14 @@ public class PGO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockPlaceEvent)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockPlaceEvent)
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return true;
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	public boolean handleInteract(PlayerInteractEvent event) {
 		return false;

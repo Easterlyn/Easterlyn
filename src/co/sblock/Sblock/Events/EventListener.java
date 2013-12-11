@@ -179,6 +179,9 @@ public class EventListener implements Listener {
 		if (tasks.containsKey(u.getPlayerName())) {
 			Bukkit.getScheduler().cancelTask(tasks.remove(u.getPlayerName()));
 		}
+		for (String s : u.getListening()) {
+			u.removeListeningQuit(s);
+		}
 		try {
 			Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
 			u.removeListening(regionC.getName());

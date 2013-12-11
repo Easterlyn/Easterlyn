@@ -5,22 +5,18 @@ package co.sblock.Sblock.Machines.Type;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 /**
- * @author Maryanne
- *
+ * 
+ * @author Jikoo
  */
 public class PunchDesignix extends Machine {
 
 	/**
-	 * @param l
-	 * @param data
-	 * @param d
+	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
 	PunchDesignix(Location l, String data, Direction d) {
 		super(l, data, d);
@@ -44,31 +40,12 @@ public class PunchDesignix extends Machine {
 		shape.addBlock(new Vector(1, 1, 1), is);
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockBreakEvent)
-	 */
-	@Override
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble(org.bukkit.event.block.BlockPlaceEvent)
-	 */
-	@Override
-	public void assemble(BlockPlaceEvent event) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
+	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#getType()
 	 */
 	@Override
 	public MachineType getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return MachineType.PUNCH_DESIGNIX;
 	}
 
 	/* (non-Javadoc)

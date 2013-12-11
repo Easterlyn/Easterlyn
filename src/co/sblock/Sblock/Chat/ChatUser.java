@@ -317,6 +317,23 @@ public class ChatUser {
 	}
 
 	/**
+	 * Tells a <code>Channel</code> the <code>Player</code> is leaving on quit.
+	 * 
+	 * @param cName
+	 *            the name of the <code>Channel</code> to inform
+	 */
+
+	public void removeListeningQuit(String cName) {
+		Channel c = ChatModule.getChatModule().getChannelManager()
+				.getChannel(cName);
+		if (c != null) {
+			c.removeListening(this.getPlayerName());
+		} else {
+			this.listening.remove(cName);
+		}
+	}
+
+	/**
 	 * Gets the <code>Set</code> of names of <code>Channel</code>s that the
 	 * <code>Player</code> is listening to.
 	 * 
@@ -520,6 +537,7 @@ public class ChatUser {
 	 * @param type
 	 *            the type of chat for handling purposes
 	 */
+	@SuppressWarnings("deprecation")
 	public void sendMessageFromChannel(String s, Channel c, String type) {
 		Player p = this.getPlayer();
 		if (p == null) {
@@ -541,7 +559,7 @@ public class ChatUser {
 						+ s.substring(s.indexOf("<"), s.indexOf(">") + 1)
 						+ ChatColor.WHITE + s.substring(s.indexOf(">") + 1);
 				p.sendMessage(output);
-				p.playEffect(p.getLocation(), Effect.BOW_FIRE, 0F);
+				p.playEffect(p.getLocation(), Effect.BOW_FIRE, 0);
 			} else {
 				p.sendMessage(s);
 			}
