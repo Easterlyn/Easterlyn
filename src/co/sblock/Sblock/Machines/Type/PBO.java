@@ -1,9 +1,12 @@
 package co.sblock.Sblock.Machines.Type;
 
+import java.util.HashMap;
+
 import org.bukkit.Location;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * For Zack, with love.
@@ -18,6 +21,7 @@ public class PBO extends Machine {
 	 */
 	public PBO(Location l, String data) {
 		super(l, data);
+		this.blocks = new HashMap<Location, ItemStack>();
 	}
 
 	/**

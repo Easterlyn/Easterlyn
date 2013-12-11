@@ -13,11 +13,14 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Database.DBManager;
+import co.sblock.Sblock.Machines.Type.Alchemiter;
 import co.sblock.Sblock.Machines.Type.Computer;
+import co.sblock.Sblock.Machines.Type.Cruxtender;
 import co.sblock.Sblock.Machines.Type.Direction;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Machines.Type.PGO;
+import co.sblock.Sblock.Machines.Type.PunchDesignix;
 import co.sblock.Sblock.Machines.Type.Transmaterializer;
 import co.sblock.Sblock.Machines.Type.Transportalizer;
 
@@ -59,16 +62,21 @@ public class MachineManager {
 		Machine machine = null;
 		switch (m) {
 		case ALCHEMITER:
+			machine = new Alchemiter(l, data, d);
 			break;
 		case COMPUTER:
 			machine = new Computer(l, data);
+			break;
 		case CRUXTRUDER:
+			machine = new Cruxtender(l, data);
 			break;
 		case INTELLIBEAM_LASERSTATION:
 			break;
 		case PERFECTLY_GENERIC_OBJECT:
 			machine = new PGO(l, data);
+			break;
 		case PUNCH_DESIGNIX:
+			machine = new PunchDesignix(l, data, d);
 			break;
 		case TOTEM_LATHE:
 			break;

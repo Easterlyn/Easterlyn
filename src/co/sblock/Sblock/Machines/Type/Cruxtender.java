@@ -16,16 +16,15 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock.Machines.MachineModule;
 
 /**
+ * 
  * @author Jikoo
- *
  */
 public class Cruxtender extends Machine {
 
 	/**
-	 * @param l
-	 * @param data
+	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String)
 	 */
-	Cruxtender(Location l, String data) {
+	public Cruxtender(Location l, String data) {
 		super(l, data);
 		ItemStack is = new ItemStack(Material.DIAMOND_BLOCK);
 		shape.addBlock(new Vector(0, 1, 0), is);
@@ -45,6 +44,7 @@ public class Cruxtender extends Machine {
 		shape.addBlock(new Vector(1, 0, 1), is);
 		shape.addBlock(new Vector(0, 0, 1), is);
 		shape.addBlock(new Vector(-1, 0, 1), is);
+		blocks = shape.getBuildLocations(Direction.NORTH);
 	}
 
 	/**

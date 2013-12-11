@@ -18,7 +18,7 @@ public class Alchemiter extends Machine {
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
-	Alchemiter(Location l, String data, Direction d) {
+	public Alchemiter(Location l, String data, Direction d) {
 		super(l, data, d);
 		ItemStack is = new ItemStack(Material.QUARTZ_BLOCK);
 		is.setDurability((short) 1);
@@ -52,6 +52,7 @@ public class Alchemiter extends Machine {
 		is.setDurability(Direction.EAST.getStairByte());
 		shape.addBlock(new Vector(2, 0, 1), is);
 		shape.addBlock(new Vector(2, 0, 0), is);
+		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 
 	/**

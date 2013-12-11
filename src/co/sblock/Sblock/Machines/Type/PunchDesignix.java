@@ -18,7 +18,7 @@ public class PunchDesignix extends Machine {
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
-	PunchDesignix(Location l, String data, Direction d) {
+	public PunchDesignix(Location l, String data, Direction d) {
 		super(l, data, d);
 		ItemStack is = new ItemStack(Material.STEP);
 		is.setDurability((short) 15);
@@ -38,6 +38,7 @@ public class PunchDesignix extends Machine {
 		is.setDurability(Direction.NORTH.getStairByte());
 		shape.addBlock(new Vector(0, 1, 1), is);
 		shape.addBlock(new Vector(1, 1, 1), is);
+		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 
 	/**
