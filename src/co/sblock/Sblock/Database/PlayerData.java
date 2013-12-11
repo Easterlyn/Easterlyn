@@ -70,7 +70,7 @@ public class PlayerData {
 				}
 				pst.setString(14, sUser.getProgramString());
 				pst.setByte(15, sUser.getUHCMode());
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				Sblogger.err(e);
 				return;
 			}

@@ -48,7 +48,7 @@ public class Machines {
 			if (pst != null) {
 				try {
 					pst.close();
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					Sblogger.err(e);
 				}
 			}
