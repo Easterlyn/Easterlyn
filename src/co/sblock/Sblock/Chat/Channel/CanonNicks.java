@@ -15,13 +15,13 @@ public enum CanonNicks {
 	DAVE("Dave", "turntechGodhead", "4", "pestering"),
 	JADE("Jade", "gardenGnostic", "a", "pestering"),
 
-	DAD("Dad Egbert", "pipefan413", "8", "discussing matters of great import"),
-	DADCROCKER("Dad Crocker", "pipefan413", "8", "discussing matters of great import"),
+	DAD("Dad Egbert", "pipefan413", "8", "discussing matters of great import in"),
+	DADCROCKER("Dad Crocker", "pipefan413", "8", "discussing matters of great import in"),
 
 	ARADIA("Aradia", "apocalypseArisen", "4", "trolling"),
 	TAVROS("Tavros", "adiosToreador", "6", "trolling"),
 	SOLLUX("Sollux", "twinArmageddons", "e", "trolling"),
-	KARKAT("Karkat", "carcinoGeneticist", "8", "trolling"),
+	KARKAT("Karkat", "carcinoGeneticist", "7", "trolling"),
 	NEPETA("Nepeta", "arsenicCatnip", "2", "trolling"),
 	KANAYA("Kanaya", "grimAuxiliatrix", "2", "trolling"),
 	TEREZI("Terezi", "gallowsCalibrator", "3", "trolling"),
@@ -43,7 +43,7 @@ public enum CanonNicks {
 	DAMARA("Damara", null, "4", "trolling"),
 	RUFIOH("Rufioh", null, "6", "trolling"),
 	MITUNA("Mituna", null, "e", "trolling"),
-	KANKRI("Kankri", null, "8", "trolling"),
+	KANKRI("Kankri", null, "4", "trolling"),
 	MEULIN("Meulin", null, "2", "trolling"),
 	PORRIM("Porrim", null, "2", "trolling"),
 	LATULA("Latula", null, "3", "trolling"),
@@ -145,18 +145,19 @@ public enum CanonNicks {
 		case KANAYA:
 			break;
 		case KANKRI:
-			break;
+			return this.color + s.replaceAll("[oO]", "9").replaceAll("[bB]", "6");
 		case KARKAT:
-			break;
+			return this.color + s.toUpperCase();
 		case KURLOZ:
 			break;
 		case LATULA:
 			break;
 		case LILHALJUNIOR:
 			String[] responses = {"Hmm.", "Yes.", "Interesting."};
-			return responses[(int) (Math.random() * 3)];
+			return this.color + responses[(int) (Math.random() * 3)];
 		case MEENAH:
-			break;
+			return this.color + s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
+					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("H", ")(").replaceAll("E", "-E");
 		case MEULIN:
 			break;
 		case MITUNA:
@@ -164,11 +165,10 @@ public enum CanonNicks {
 		case NEPETA:
 			break;
 		case PORRIM:
-			break;
+			return this.color + s.replaceAll("o", "o+");
 		case ROSE:
-			break;
 		case ROXY:
-			break;
+			return this.color + randShuffle(s);
 		case RUFIOH:
 			break;
 		case SOLLUX:
@@ -214,10 +214,33 @@ public enum CanonNicks {
 	 * @return
 	 */
 	public static CanonNicks getNick(String nick) {
-		nick = nick.toUpperCase();
-		if(CanonNicks.valueOf(nick) != null)	{
-			return CanonNicks.valueOf(nick);
+		try {
+			return CanonNicks.valueOf(nick.toUpperCase());
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			for (CanonNicks n : CanonNicks.values()) {
+				if (nick.equals(n.name)) {
+					return n;
+				}
+			}
 		}
 		return null;
+	}
+
+	private String randShuffle(String s) {
+		String[] words = s.split(" ");
+		StringBuilder sb = new StringBuilder();
+		for (String s1 : words) {
+			if (Math.random() * 100 > 25 && !(s1.replaceAll("\\W", ":(").contains(":("))) {
+				StringBuilder shuffle = new StringBuilder();
+				while (s1.length() != 0) {
+					int next = (int) Math.random() * s1.length();
+					shuffle.append(s1.charAt(next));
+					s1 = s1.substring(0, next) + s1.substring(next + 1);
+				}
+				s1 = shuffle.toString();
+			}
+			sb.append(s1).append(" ");
+		}
+		return sb.substring(0, sb.length() - 1).toString();
 	}
 }

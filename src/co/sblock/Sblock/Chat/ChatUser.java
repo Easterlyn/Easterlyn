@@ -615,17 +615,17 @@ public class ChatUser {
 		// colors for <$name> applied here
 		String out = "";
 		String outputName = sender.getGlobalNick();
-		  switch (c.getType()) {
-		  case RP:
-		  case NICK:
-		   if (c.hasNick(sender)) {
-		    outputName = c.getNick(sender);
-		    break;
-		   }
-		  default:
-		   break;
-		  }		
-		
+		switch (c.getType()) {
+		case RP:
+		case NICK:
+			if (c.hasNick(sender)) {
+				outputName = c.getNick(sender);
+			}
+			break;
+		default:
+			break;
+		}
+
 		ChatColor colorP = ColorDef.RANK_HERO;
 		ChatColor colorW = ColorDef.DEFAULT;
 
@@ -641,10 +641,9 @@ public class ChatUser {
 			colorP = ColorDef.RANK_DONATOR;
 
 		if (c instanceof RPChannel) {
-			if(c.hasNick(sender))	{
+			if(c.hasNick(sender)) {
 				colorP = CanonNicks.getNick(outputName).getColor();
-			}
-			else	{
+			} else {
 				sender.sendMessage(ChatMsgs.errorNickRequired(c.getName()));
 			}
 		}

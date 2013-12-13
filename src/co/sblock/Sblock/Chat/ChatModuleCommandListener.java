@@ -27,7 +27,7 @@ public class ChatModuleCommandListener implements CommandListener {
 
 	@SblockCommand
 	public boolean spawn(CommandSender sender) {
-		((Player) sender).performCommand("/mvs");
+		((Player) sender).performCommand("mvs");
 		return true;
 	}
 
@@ -214,11 +214,11 @@ public class ChatModuleCommandListener implements CommandListener {
 			user.sendMessage(ChatMsgs.helpSCC());
 			return true;
 		}
-		if(ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
-			return true;
-		}
 		try {
+			if (ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
+				user.sendMessage(ChatMsgs.errorRegionChannelJoin());
+				return true;
+			}
 			user.setCurrent(ChatModule.getChatModule().getChannelManager().getChannel(args[1]));
 		} catch (NullPointerException e) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
@@ -231,11 +231,11 @@ public class ChatModuleCommandListener implements CommandListener {
 			user.sendMessage(ChatMsgs.helpSCL());
 			return true;
 		}
-		if (ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
-			return true;
-		}
 		try {
+			if (ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
+				user.sendMessage(ChatMsgs.errorRegionChannelJoin());
+				return true;
+			}
 			user.addListening(ChatModule.getChatModule().getChannelManager().getChannel(args[1]));
 		} catch (NullPointerException e) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
@@ -248,14 +248,15 @@ public class ChatModuleCommandListener implements CommandListener {
 			user.sendMessage(ChatMsgs.helpSCLeave());
 			return true;
 		}
-		if (ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelLeave());
-			return true;
-		}
 		try {
+			if (ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
+				user.sendMessage(ChatMsgs.errorRegionChannelLeave());
+				return true;
+			}
 			user.removeListening(args[1]);
 		} catch (NullPointerException e) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
+			user.removeListening(args[1]);
 		}
 		return true;
 		

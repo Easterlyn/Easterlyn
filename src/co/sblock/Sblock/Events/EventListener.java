@@ -54,7 +54,7 @@ import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
  */
 public class EventListener implements Listener {
 
-	/** A <code>Map</code> of all scheduled tasks by ID. */
+	/** A <code>Map</code> of all scheduled tasks by <code>Player</code>. */
 	public Map<String, Integer> tasks;
 	/**
 	 * A <code>Set</code> of the names of all <code>Player</code>s queuing to
@@ -81,8 +81,7 @@ public class EventListener implements Listener {
 			MOTD = EventModule.getEventModule().getStatus().getMOTDChange();
 		} else {
 			MOTD = event.getMotd().replaceAll("Player",
-					DBManager.getDBM()
-					.getUserFromIP(event.getAddress().getHostAddress()));
+					DBManager.getDBM().getUserFromIP(event.getAddress().getHostAddress()));
 		}
 		event.setMotd(MOTD);
 	}
@@ -143,7 +142,10 @@ public class EventListener implements Listener {
 				ChatUserManager.getUserManager().getUser(event.getPlayer().getName()).chat(event);
 			}
 		} else {
-			event.getPlayer().sendMessage(ChatColor.RED + "You are not in the SblockUser Database! Seek help immediately!");
+			event.getPlayer().sendMessage(ChatColor.RED
+					+ "[Lil Hal] Your Sblock playerdata appears to not be loaded."
+					+ "\nI'll take care of that for you, but make sure your /profile is correct.");
+			DBManager.getDBM().loadUserData(event.getPlayer().getName());
 		}
 	}
 

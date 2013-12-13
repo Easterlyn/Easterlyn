@@ -26,15 +26,13 @@ public class RPChannel extends NickChannel {
 	@Override
 	public void setNick(ChatUser sender, String nick) {
 		CanonNicks name = CanonNicks.getNick(nick);
-		if(name == null)	{
+		if (name == null) {
 			sender.sendMessage(ChatMsgs.errorNickNotCanon(nick));
 			return;
-		}
-		else if(this.getNickOwner(nick) == null)	{
-			super.setNick(sender, nick);
-		}
-		else	{
-			sender.sendMessage(ChatMsgs.errorNickInUse(nick));
+		} else if (this.getNickOwner(name.getName()) == null) {
+			super.setNick(sender, name.getName());
+		} else {
+			sender.sendMessage(ChatMsgs.errorNickInUse(name.getName()));
 		}
 	}
 }
