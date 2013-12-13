@@ -37,9 +37,12 @@ public class Computer extends Machine implements InventoryHolder {
 	@Override
 	public void assemble(BlockPlaceEvent event) {
 		if (MachineModule.getInstance().getManager().hasComputer(event.getPlayer(), l)) {
+			if (event.getPlayer().hasPermission("group.horrorterror")) {
+				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
+				return;
+			}
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer!");
-			event.getPlayer().setItemInHand(null);
+			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer placed!");
 			MachineModule.getInstance().getManager().removeMachineListing(l);
 		}
 	}
@@ -99,6 +102,13 @@ public class Computer extends Machine implements InventoryHolder {
 	public boolean handleInteract(PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
+		}
+		if (!event.getPlayer().getName().equals(this.getData())) {
+			if (event.getPlayer().hasPermission("group.denizen")) {
+				event.getPlayer().sendMessage("Allowing admin override for interaction with Computer.");
+			} else {
+				return true;
+			}
 		}
 		if (event.getMaterial().name().contains("RECORD")) {
 			Icon ico = Icon.getIcon(event.getMaterial());

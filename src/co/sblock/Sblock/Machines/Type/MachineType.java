@@ -99,7 +99,7 @@ public enum MachineType {
 		case CRUXTRUDER:
 			is = new ItemStack(Material.BEACON);
 			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Cruxtruder");
+			im.setDisplayName(ChatColor.WHITE + "Cruxtender");
 			is.setItemMeta(im);
 			break;
 		case PERFECT_BUILDING_OBJECT:

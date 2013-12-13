@@ -4,11 +4,12 @@ import org.bukkit.entity.Player;
 
 /**
  * <code>Enum</code> for compass direction based on <code>Player</code> yaw.
+ * 
  * @author Jikoo
  */
 public enum Direction {
-	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 1),
-	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 0);
+	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 2), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 0),
+	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 3), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 1);
 
 	private byte dirNum;
 	private byte button;
@@ -22,9 +23,9 @@ public enum Direction {
 	}
 
 	/**
-	 * Get the numeric representation of a number.
+	 * Get the numeric representation of a <code>Direction</code>.
 	 * 
-	 * @return the byte that represents this <code>Direction</code>
+	 * @return the <code>byte</code> that represents this <code>Direction</code>
 	 */
 	public byte getDirByte() {
 		return dirNum;

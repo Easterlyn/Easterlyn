@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.MachineModule;
@@ -75,6 +76,7 @@ public abstract class Machine {
 		this.data = data;
 		this.d = Direction.NORTH;
 		this.shape = new Shape(l.clone());
+		this.shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop());
 	}
 
 	/**
@@ -112,7 +114,9 @@ public abstract class Machine {
 	 * If a <code>Player</code> attempts to break a <code>Machine</code>, this condition must be met.
 	 * <p>
 	 * For most <code>Machine</code>s, <code>Player</code> name is compared to data.
-	 * @param event BlockBreakEvent
+	 * 
+	 * @param event
+	 *            the <code>BlockPlaceEvent</code>
 	 * @return boolean
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
@@ -128,6 +132,7 @@ public abstract class Machine {
 	 */
 	@SuppressWarnings("deprecation")
 	public void assemble(BlockPlaceEvent event) {
+		event.setCancelled(true);
 		for (Location l : blocks.keySet()) {
 			if (!l.getBlock().isEmpty()) {
 				event.setCancelled(true);
@@ -135,6 +140,11 @@ public abstract class Machine {
 				this.assemblyFailed();
 				return;
 			}
+		}
+		if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+			ItemStack is = event.getItemInHand();
+			is.setAmount(is.getAmount() - 1);
+			event.getPlayer().setItemInHand(is);
 		}
 		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
 			Block b = e.getKey().getBlock();
@@ -310,6 +320,21 @@ public abstract class Machine {
 	public boolean handleClick(InventoryClickEvent event) {
 		event.setResult(Result.DENY);
 		return true;
+	}
+
+	protected void changeKeyBlock(ItemStack is) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new ChangeKeyBlock(is));
+	}
+
+	private class ChangeKeyBlock implements Runnable {
+		private ItemStack is;
+		ChangeKeyBlock(ItemStack is) {
+			this.is = is;
+		}
+		@SuppressWarnings("deprecation")
+		public void run() {
+			l.getBlock().setTypeIdAndData(is.getTypeId(), (byte) is.getData().getData(), false);
+		}
 	}
 
 	protected void assemblyFailed() {
