@@ -94,8 +94,6 @@ public enum CanonNicks {
 //	Hearts Boxcars:
 //	Diamonds Droog://AKA Draconian Dignitary
 //	ALL OF THE FELT
-//	LORD ENGLISH: ALL CAPS BECAUSE HES ALREADY HERE
-//	Doc Scratch: White Text, perfect grammar and syntext
 //	AutoResponder: Dirks quirk, red text
 //	ErisolSprite: Eridan and Sollux's quirk, green text
 //	Fefeta Sprite: Feferi/nepeta, roxy pink. (I'll do the full quirks for the sprites later)
@@ -127,7 +125,7 @@ public enum CanonNicks {
 		case CRONUS:
 			break; // future
 		case DAMARA:
-			break; // future
+			return this.color + ancestral(s);
 		case DAVE:
 			return this.color + mixedToLowerCase(s).replaceAll("\\.{1,2}", "")
 					.replaceAll("\\.{4}", "").replaceAll("[\\W&&[^\\Q.!?\\E]]", "");
@@ -251,7 +249,7 @@ public enum CanonNicks {
 		int end = 0;
 		while (m.find()) {
 			sb.append(s.substring(end, m.start()));
-			if (Math.random() > 0.25) {
+			if (Math.random() > 0.75) {
 				StringBuilder shuffle = new StringBuilder();
 				String s1 = m.group();
 				while (s1.length() != 0) {
@@ -322,6 +320,25 @@ public enum CanonNicks {
 				sb.append(m.group().toUpperCase());
 			}
 			end = m.end();
+		}
+		return sb.toString();
+	}
+
+	// http://unicode-table.com/en/#cjk-unified-ideographs-extension-a
+	// 3440-9FFF, maximum fast calc range = 4000-8FFF (9FA0 last row without odd box chars)
+	private String ancestral(String s) {
+		StringBuilder sb = new StringBuilder();
+		String[] hex = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"};
+		for (int i = 0; i < s.length(); i++) {
+			String randChar = new StringBuilder()
+					.append(hex[(int) Math.random() * 5 + 4])
+					.append(hex[(int) Math.random() * hex.length])
+					.append(hex[(int) Math.random() * hex.length])
+					.append(hex[(int) Math.random() * hex.length]).toString();
+			sb.append((char) Integer.parseInt(randChar, 16));
+			if (Math.random() > 0.75) {
+				sb.append(" ");
+			}
 		}
 		return sb.toString();
 	}
