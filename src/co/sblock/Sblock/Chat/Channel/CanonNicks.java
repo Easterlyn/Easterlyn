@@ -85,8 +85,6 @@ public enum CanonNicks {
 //	Bro strider: same quirk and color as Dirk
 //	Grandpa Harley: Same color/quirk as jake
 //	ANCESTORS: same color quirks as their descendants, Cept Condy cus s)(e speak all ghetto
-//	Damara: I totally can fake the japanese stuff
-//	Aranea: Quirk and color as vriska
 //	Betty Crocker: White text, Condy's quirk
 //	LilCal: Orange, HEE HEE HEE HAA HAA HAA HOOO HOOO HOOO CAPS
 //	Jack Noir: absolutely no punctuation and no niceness he ain that fuckin sweet sugar
@@ -110,20 +108,18 @@ public enum CanonNicks {
 	public String applyQuirk(String s) {
 		switch (this) {
 		case ARADIA:
-			break; // future
-		case ARENEA:
-			break; // future
+			return this.color + s.toLowerCase().replace("o", "0").replace("0.0", "0_0").replaceAll("[\\W\\S]", "");
 		case AUTORESPONDER:
 			return this.color + s.replace("robot", "brobot");
 			// future more bropuns
 		case CALIBORN:
-			break; // future
+			return this.color + s.toUpperCase().replace("U", "u");
 		case CALLIOPE:
-			break; // future
+			return this.color + s.toLowerCase().replace("u", "U");
 		case CROCKERJANE:
 			return ChatColor.DARK_RED + s;
-		case CRONUS:
-			break; // future
+		case CRONUS: // future fix ISSUE wvITH ALLCAPS
+			return this.color + s.replaceAll("[vV]", "vw").replaceAll("([^vV]|\\b)([wW])", "wv").replace("B", "8");
 		case DAMARA:
 			return this.color + ancestral(s);
 		case DAVE:
@@ -132,36 +128,49 @@ public enum CanonNicks {
 		case DIRK:
 			break; // future bropuns
 		case EQUIUS:
-			break; // future
+			return this.color + "D --> " + s.replaceAll("[xX]", "%")
+					.replaceAll("[lL](([uU][eE])|([eE][uU])|([oO]{2,}))", "100")
+					.replaceAll("(([uU][eE])|([eE][uU])|([oO]{2,}))[lL]", "001")
+					.replaceAll("[sS]+[tT]+[rR]+[oO]+[nN]+[gG]+", "STRONG")
+					.replace("nay", "neigh").replaceAll("[nN][aA][yY]", "NEIGH");
 		case ERIDAN:
-			break; // future
+			return this.color + s.replaceAll("([vwVW])", "$1$1").replaceAll("\\ban\\b", "a")
+					.replaceAll("\\band\\b", "an").replaceAll("\\b(.*in)g\\b", "$1");
 		case FEFERI:
-			break; // future
+			return this.color + s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
+					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("[hH]", ")(")
+					.replace("E", "-E");
 		case GAMZEE:
-			break; // future
+			return this.color + alternateCase(s);
 		case HORUSS:
 			break; // future
 		case JADE:
-			break; // future
+			return this.color + s.toLowerCase().replace("'", "");
 		case JAKE:
+			if (s.length() > 1) {
+				s = Character.toUpperCase(s.charAt(0)) + mixedToLowerCase(s.substring(1));
+			}
+			return this.color + s.replace("'", "");
+		case JANE:
+			break; // Done.
+		case JOHN:
 			if (s.length() > 1) {
 				s = Character.toLowerCase(s.charAt(0)) + s.substring(1);
 			} else {
 				s = s.toLowerCase();
 			}
 			return this.color + s.toLowerCase();
-		case JANE:
-			break; // Done.
-		case JOHN:
-			break; // future
 		case KANAYA:
-			break; // future
+			return this.color + hellaAnnoying(s.replaceAll("[\\W\\S]", ""));
 		case KANKRI:
 			return this.color + s.replaceAll("[oO]", "9").replaceAll("[bB]", "6");
 		case KARKAT:
 			return this.color + s.toUpperCase();
 		case KURLOZ:
-			break; // future
+			if (!s.startsWith("#")) {
+				s = "";
+			}
+			return this.color + s;
 		case LATULA:
 			break; // future
 		case LILHALJUNIOR:
@@ -169,10 +178,10 @@ public enum CanonNicks {
 			return this.color + responses[(int) (Math.random() * 3)];
 		case MEENAH:
 			return this.color + s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
-					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("H", ")(")
-					.replaceAll("E", "-E").replaceAll("\\b(.*in)g\\b", "$1");
-		case MEULIN:
-			break; // future
+					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("[hH]", ")(")
+					.replace("E", "-E").replaceAll("\\b(.*in)g\\b", "$1");
+		case MEULIN: // future emoticons
+			return this.color + s.toUpperCase().replace("EE", "33");
 		case MITUNA:
 			break; // future
 		case NEPETA:
@@ -191,6 +200,7 @@ public enum CanonNicks {
 			return this.color + invertCase(s).replaceAll(".", ",");
 		case TEREZI:
 			break; // future
+		case ARENEA:
 		case VRISKA:
 			return this.color + s.replaceAll(":*([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2")
 					.replaceAll("([\\.!?])+", "$1$1$1$1$1$1$1$1");
@@ -341,5 +351,29 @@ public enum CanonNicks {
 			}
 		}
 		return sb.toString();
+	}
+
+	private String alternateCase(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			if (i % 2 == 0) {
+				sb.append(Character.toUpperCase(s.charAt(i)));
+			} else {
+				sb.append(Character.toLowerCase(s.charAt(i)));
+			}
+		}
+		return sb.toString();
+	}
+
+	private String hellaAnnoying(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (String s1 : s.split(" ")) {
+			if (s1.length() > 1) {
+				sb.append(Character.toUpperCase(s1.charAt(0))).append(s1.substring(1));
+			} else {
+				sb.append(s1.toUpperCase());
+			}
+		}
+		return sb.substring(0, sb.length() - 1).toString();
 	}
 }
