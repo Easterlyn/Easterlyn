@@ -3,7 +3,12 @@
  */
 package co.sblock.Sblock.Chat.Channel;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.ChatColor;
+
+import co.sblock.Sblock.Chat.ColorDef;
 
 /**
  * @author Jikoo
@@ -54,7 +59,9 @@ public enum CanonNicks {
 	MEENAH("Meenah", null, "5", "trolling"),
 
 	CALLIOPE("Calliope", "uranianUmbra", "7", "cheering"),
-	CALIBORN("Caliborn", "undyingUmbrage", "8", "jeering");
+	CALIBORN("Caliborn", "undyingUmbrage", "8", "jeering"),
+	SERKITFEATURE("L" + ChatColor.MAGIC + "o" + ChatColor.GREEN + "rd English",
+			"", "a", "paying attention to");
 
 
 	private String name;
@@ -107,82 +114,94 @@ public enum CanonNicks {
 	public String applyQuirk(String s) {
 		switch (this) {
 		case ARADIA:
-			break;
+			break; // future
 		case ARENEA:
-			break;
+			break; // future
 		case AUTORESPONDER:
-			break;
+			break; // future
 		case CALIBORN:
-			break;
+			break; // future
 		case CALLIOPE:
-			break;
+			break; // future
+		case CROCKERJANE:
+			break; // Done.
 		case CRONUS:
-			break;
+			break; // future
 		case DAMARA:
-			break;
+			break; // future
 		case DAVE:
-			break;
+			return this.color + mixedToLowerCase(s).replaceAll("[]", "");
 		case DIRK:
-			break;
+			break; // future
 		case EQUIUS:
-			break;
+			break; // future
 		case ERIDAN:
-			break;
+			break; // future
 		case FEFERI:
-			break;
+			break; // future
 		case GAMZEE:
-			break;
+			break; // future
 		case HORUSS:
-			break;
+			break; // future
 		case JADE:
-			break;
+			break; // future
 		case JAKE:
-			break;
+			if (s.length() > 1) {
+				s = Character.toLowerCase(s.charAt(0)) + s.substring(1);
+			} else {
+				s = s.toLowerCase();
+			}
+			return this.color + s.toLowerCase();
 		case JANE:
-			break;
+			break; // Done.
 		case JOHN:
-			break;
+			break; // future
 		case KANAYA:
-			break;
+			break; // future
 		case KANKRI:
 			return this.color + s.replaceAll("[oO]", "9").replaceAll("[bB]", "6");
 		case KARKAT:
 			return this.color + s.toUpperCase();
 		case KURLOZ:
-			break;
+			break; // future
 		case LATULA:
-			break;
+			break; // future
 		case LILHALJUNIOR:
 			String[] responses = {"Hmm.", "Yes.", "Interesting."};
 			return this.color + responses[(int) (Math.random() * 3)];
 		case MEENAH:
 			return this.color + s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
-					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("H", ")(").replaceAll("E", "-E");
+					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("H", ")(")
+					.replaceAll("E", "-E").replaceAll("\\b(.*in)g\\b", "$1");
 		case MEULIN:
-			break;
+			break; // future
 		case MITUNA:
-			break;
+			break; // future
 		case NEPETA:
-			break;
+			break; // future
 		case PORRIM:
 			return this.color + s.replaceAll("o", "o+");
-		case ROSE:
 		case ROXY:
+			s = mixedToLowerCase(s).replaceAll("\\b(.*in)g\\b", "$1");
+		case ROSE:
 			return this.color + randShuffle(s);
 		case RUFIOH:
-			break;
+			break; // future
 		case SOLLUX:
-			break;
+			break; // future
 		case TAVROS:
 			return this.color + invertCase(s).replaceAll(".", ",");
 		case TEREZI:
-			break;
+			break; // future
 		case VRISKA:
-			return this.color + s.replaceAll("([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2");
+			return this.color + s.replaceAll("([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2")
+					.replaceAll("([\\.!])+", "$1$1$1$1$1$1$1$1");
+		case SERKITFEATURE:
+			return serkitFeature(s);
 		default:
 			break;
 		}
-		return s;
+		return this.color + s;
 	}
 
 	@SuppressWarnings("unused")
@@ -227,21 +246,26 @@ public enum CanonNicks {
 	}
 
 	private String randShuffle(String s) {
-		String[] words = s.split(" ");
+		Matcher m = Pattern.compile("\\b\\w+\\b").matcher(s);
 		StringBuilder sb = new StringBuilder();
-		for (String s1 : words) {
-			if (Math.random() * 100 > 25 && !(s1.replaceAll("[^a-zA-Z0-9]", ":(").contains(":("))) {
+		int end = 0;
+		while (m.find()) {
+			sb.append(s.substring(end, m.start()));
+			if (Math.random() > 0.25) {
 				StringBuilder shuffle = new StringBuilder();
+				String s1 = m.group();
 				while (s1.length() != 0) {
 					int next = (int) Math.random() * s1.length();
 					shuffle.append(s1.charAt(next));
 					s1 = s1.substring(0, next) + s1.substring(next + 1);
 				}
-				s1 = shuffle.toString();
+				sb.append(shuffle.toString());
+			} else {
+				sb.append(m.group());
 			}
-			sb.append(s1).append(" ");
+			end = m.end();
 		}
-		return sb.substring(0, sb.length() - 1).toString();
+		return sb.toString();
 	}
 
 	private String invertCase(String s) {
@@ -254,6 +278,50 @@ public enum CanonNicks {
 			} else {
 				sb.append(s.charAt(i));
 			}
+		}
+		return sb.toString();
+	}
+
+	private String mixedToLowerCase(String s) {
+		Matcher m = Pattern.compile("\\w+").matcher(s);
+		StringBuilder sb = new StringBuilder();
+		int end = 0;
+		while (m.find()) {
+			sb.append(s.substring(end, m.start()));
+			if (m.group().equals(m.group().toUpperCase())) {
+				sb.append(m.group());
+			} else {
+				sb.append(m.group().toLowerCase());
+			}
+			end = m.end();
+		}
+		return sb.toString();
+	}
+
+	private String serkitFeature(String s) {
+		Matcher m = Pattern.compile("\\w*").matcher(s);
+		StringBuilder sb = new StringBuilder();
+		int end = 0;
+		while (m.find()) {
+			sb.append(s.substring(end, m.start()));
+			if (m.group().equals(m.group().toUpperCase())) {
+				for (int i = 0; i < m.group().length();) {
+					for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
+						if (i >= m.group().length())
+							break;
+						String next = m.group().substring(i, i + 1);
+						if (next.equals("O")) {
+							sb.append(ColorDef.RAINBOW[j]).append(ChatColor.MAGIC).append(next);
+						} else {
+							sb.append(ColorDef.RAINBOW[j]).append(next);
+						}
+						i++;
+					}
+				}
+			} else {
+				sb.append(m.group().toUpperCase());
+			}
+			end = m.end();
 		}
 		return sb.toString();
 	}

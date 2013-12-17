@@ -45,17 +45,14 @@ public class ChatModuleCommandListener implements CommandListener {
 				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
 					if (i >= text.length())
 						break;
-					lelOut = lelOut + ChatColor.valueOf(ColorDef.RAINBOW[j]) + ChatColor.MAGIC
+					lelOut = lelOut + ColorDef.RAINBOW[j] + ChatColor.MAGIC
 							+ text.charAt(i);
 					i++;
 				}
 			}
-			Sblogger.info("LEL", lelOut);
-			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-				p.sendMessage(lelOut);
-			}
+			Bukkit.broadcastMessage(lelOut);
 		} else {
-			sender.sendMessage(ChatColor.BLACK + "lul.");
+			sender.sendMessage(ChatColor.BLACK + "Lul.");
 		}
 		return true;
 	}
@@ -64,20 +61,24 @@ public class ChatModuleCommandListener implements CommandListener {
 	public boolean le(CommandSender sender, String text) {
 		if (!(sender instanceof Player) || sender.hasPermission("group.horrorterror")) {
 			String leOut = new String();
+			text = text.toUpperCase();
 			for (int i = 0; i < text.length();) {
 				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
 					if (i >= text.length())
 						break;
-					leOut = leOut + ChatColor.valueOf(ColorDef.RAINBOW[j]) + text.charAt(i);
+					String next = text.substring(i, i + 1);
+					if (next.equals("O")) {
+						leOut = leOut + ColorDef.RAINBOW[j] + ChatColor.MAGIC + next;
+					} else {
+						leOut = leOut + ColorDef.RAINBOW[j] + next;
+					}
 					i++;
 				}
 			}
-			Sblogger.info("LE", leOut);
-			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-				p.sendMessage(leOut);
-			}
+			Bukkit.broadcastMessage(leOut);
 		} else {
-			sender.sendMessage(ChatColor.BLACK + "Aren't you fancy.");
+			sender.sendMessage(ChatColor.BLACK
+					+ "Le no. Le command \"le\" is reserved for fancier people than you.");
 		}
 		return true;
 	}
