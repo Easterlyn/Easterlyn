@@ -174,11 +174,11 @@ public enum CanonNicks {
 		case SOLLUX:
 			break;
 		case TAVROS:
-			break;
+			return this.color + invertCase(s).replaceAll(".", ",");
 		case TEREZI:
 			break;
 		case VRISKA:
-			break;
+			return this.color + s.replaceAll("([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2");
 		default:
 			break;
 		}
@@ -230,7 +230,7 @@ public enum CanonNicks {
 		String[] words = s.split(" ");
 		StringBuilder sb = new StringBuilder();
 		for (String s1 : words) {
-			if (Math.random() * 100 > 25 && !(s1.replaceAll("\\W", ":(").contains(":("))) {
+			if (Math.random() * 100 > 25 && !(s1.replaceAll("[^a-zA-Z0-9]", ":(").contains(":("))) {
 				StringBuilder shuffle = new StringBuilder();
 				while (s1.length() != 0) {
 					int next = (int) Math.random() * s1.length();
@@ -242,5 +242,19 @@ public enum CanonNicks {
 			sb.append(s1).append(" ");
 		}
 		return sb.substring(0, sb.length() - 1).toString();
+	}
+
+	private String invertCase(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			if (Character.isLowerCase(s.charAt(i))) {
+				sb.append(Character.toUpperCase(s.charAt(i)));
+			} else if (Character.isUpperCase(s.charAt(i))) {
+				sb.append(Character.toLowerCase(s.charAt(i)));
+			} else {
+				sb.append(s.charAt(i));
+			}
+		}
+		return sb.toString();
 	}
 }
