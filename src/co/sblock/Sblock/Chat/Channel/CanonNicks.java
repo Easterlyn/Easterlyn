@@ -22,6 +22,7 @@ public enum CanonNicks {
 
 	DAD("Dad Egbert", "pipefan413", "8", "discussing matters of great import in"),
 	DADCROCKER("Dad Crocker", "pipefan413", "8", "discussing matters of great import in"),
+	// This is fabricated based Dad's header: http://www.mspaintadventures.com/?s=6&p=002167
 
 	ARADIA("Aradia", "apocalypseArisen", "4", "trolling"),
 	TAVROS("Tavros", "adiosToreador", "6", "trolling"),
@@ -76,10 +77,7 @@ public enum CanonNicks {
 		this.color = ChatColor.getByChar(colorCode);
 		this.pester = pester;
 	}
-	// This is fabricated based Dad's header: http://www.mspaintadventures.com/?s=6&p=002167
 
-
-//	Crocker!Jane: Red text, regular jane quirk
 //	Nakodile: Red text ALL CAPS NAK NAK NAK THE GLASSES ARE TALKING
 //	Salamander: Yellow text, all lower case glub glub
 //	MomLalonde: Same Quirk and color as roxy
@@ -118,21 +116,23 @@ public enum CanonNicks {
 		case ARENEA:
 			break; // future
 		case AUTORESPONDER:
-			break; // future
+			return this.color + s.replace("robot", "brobot");
+			// future more bropuns
 		case CALIBORN:
 			break; // future
 		case CALLIOPE:
 			break; // future
 		case CROCKERJANE:
-			break; // Done.
+			return ChatColor.DARK_RED + s;
 		case CRONUS:
 			break; // future
 		case DAMARA:
 			break; // future
 		case DAVE:
-			return this.color + mixedToLowerCase(s).replaceAll("[]", "");
+			return this.color + mixedToLowerCase(s).replaceAll("\\.{1,2}", "")
+					.replaceAll("\\.{4}", "").replaceAll("[\\W&&[^\\Q.!?\\E]]", "");
 		case DIRK:
-			break; // future
+			break; // future bropuns
 		case EQUIUS:
 			break; // future
 		case ERIDAN:
@@ -194,8 +194,8 @@ public enum CanonNicks {
 		case TEREZI:
 			break; // future
 		case VRISKA:
-			return this.color + s.replaceAll("([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2")
-					.replaceAll("([\\.!])+", "$1$1$1$1$1$1$1$1");
+			return this.color + s.replaceAll(":*([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2")
+					.replaceAll("([\\.!?])+", "$1$1$1$1$1$1$1$1");
 		case SERKITFEATURE:
 			return serkitFeature(s);
 		default:

@@ -98,7 +98,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			sender.sendMessage(u.toString());
 			return true;
 		} else {
-			sender.sendMessage(ChatMsgs.darkMysteries());
+			sender.sendMessage(ChatMsgs.permissionDenied());
 			return true;
 		}
 	}
@@ -146,7 +146,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
 			return true;
 		} else {
-			sender.sendMessage(ChatMsgs.darkMysteries());
+			sender.sendMessage(ChatMsgs.permissionDenied());
 			return true;
 		}
 	}
@@ -166,7 +166,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			}
 			return true;
 		} else {
-			sender.sendMessage(ChatMsgs.darkMysteries());
+			sender.sendMessage(ChatMsgs.permissionDenied());
 			return true;
 		}
 	}
@@ -335,7 +335,7 @@ public class ChatModuleCommandListener implements CommandListener {
 
 	private boolean scGlobal(ChatUser user, String[] args) {
 		if (!user.getPlayer().hasPermission("group.denizen")) {
-			user.sendMessage(ChatMsgs.darkMysteries());
+			user.sendMessage(ChatMsgs.permissionDenied());
 			return true;
 		}
 		if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
@@ -426,7 +426,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			return true;
 		}
 		if (!c.isChannelMod(user)) {
-			user.sendMessage(ChatMsgs.darkMysteries());
+			user.sendMessage(ChatMsgs.permissionDenied());
 			return true;
 		}
 		if (args.length == 1) {

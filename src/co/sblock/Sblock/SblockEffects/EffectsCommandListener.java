@@ -20,7 +20,7 @@ public class EffectsCommandListener implements CommandListener {
 		Player p = (Player) sender;
 		ArrayList<String> lore = new ArrayList<String>();
 		if (!sender.hasPermission("group.horrorterror")) {
-			sender.sendMessage(ChatMsgs.darkMysteries());
+			sender.sendMessage(ChatMsgs.permissionDenied());
 			return true;
 		}
 		if (args[0].equalsIgnoreCase("getlore")) {

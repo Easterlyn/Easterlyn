@@ -359,7 +359,7 @@ public class ChatMsgs {
 		return null;
 	}
 
-	public static String darkMysteries() {
-		return ChatColor.BLACK + "There are mysteries into which it behooves one not to delve too deeply...";
+	public static String permissionDenied() {
+		return ChatColor.RED + "[Lil Hal] I'm sorry Dirk, I'm afraid I can't do that.";
 	}
 }
