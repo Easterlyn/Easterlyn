@@ -170,12 +170,12 @@ public class ChatMsgs {
 
 	public static String onUserSetNick(String user, String nick, String s) {
 		return ChatColor.YELLOW + user + ChatColor.BLUE + " is now known as "
-				+ ChatColor.YELLOW + nick + " in " + s;
+				+ ChatColor.YELLOW + nick + ChatColor.YELLOW + " in " + s;
 	}
 
 	public static String onUserRmNick(String user, String nick, String s) {
 		return ChatColor.YELLOW + user + ChatColor.BLUE + " is no longer known as "
-				+ ChatColor.YELLOW + nick + " in " + s;
+				+ ChatColor.YELLOW + nick + ChatColor.YELLOW + " in " + s;
 	}
 
 	public static String onUserRmMod(String u, String s) {
@@ -318,7 +318,7 @@ public class ChatMsgs {
 				+ ChatColor.AQUA + "leave <channel>"
 				+ ChatColor.YELLOW + ": Stop listening to <channel>.\n"
 				+ ChatColor.AQUA + "nick <set/remove> <nick>"
-				+ ChatColor.YELLOW + ": Set a nick for a Nck or RP channel.\n"
+				+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.\n"
 				+ ChatColor.AQUA + "list"
 				+ ChatColor.YELLOW + ": List all channels you are listening to.\n"
 				+ ChatColor.AQUA + "listall"
@@ -351,8 +351,8 @@ public class ChatMsgs {
 	}
 
 	public static String helpSCNick() {
-		return ChatColor.AQUA + "nick <set/remove> <nick>"
-			+ ChatColor.YELLOW + ": Set a nick for a Nck or RP channel.";
+		return ChatColor.AQUA + "/sc nick <set/remove> <nick>"
+			+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.";
 	}
 
 	public static String helpSCGlobal() {

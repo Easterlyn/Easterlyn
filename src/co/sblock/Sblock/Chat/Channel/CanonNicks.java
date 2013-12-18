@@ -61,7 +61,7 @@ public enum CanonNicks {
 
 	CALLIOPE("Calliope", "uranianUmbra", "7", "cheering"),
 	CALIBORN("Caliborn", "undyingUmbrage", "8", "jeering"),
-	SERKITFEATURE("L" + ChatColor.MAGIC + "o" + ChatColor.GREEN + "rd English",
+	SERKITFEATURE(ChatColor.GREEN + "L" + ChatColor.MAGIC + "o" + ChatColor.GREEN + "rd English",
 			"", "a", "paying attention to");
 
 
@@ -108,7 +108,8 @@ public enum CanonNicks {
 	public String applyQuirk(String s) {
 		switch (this) {
 		case ARADIA:
-			return this.color + s.toLowerCase().replace("o", "0").replace("0.0", "0_0").replaceAll("[\\W\\S]", "");
+			return this.color + s.toLowerCase().replace("o", "0")
+					.replace("0.0", "0_0").replaceAll("[\\W&&[^\\s]]", "");
 		case AUTORESPONDER:
 			return this.color + s.replace("robot", "brobot");
 			// future more bropuns
@@ -119,12 +120,13 @@ public enum CanonNicks {
 		case CROCKERJANE:
 			return ChatColor.DARK_RED + s;
 		case CRONUS: // future fix ISSUE wvITH ALLCAPS
-			return this.color + s.replaceAll("[vV]", "vw").replaceAll("([^vV]|\\b)([wW])", "wv").replace("B", "8");
+			return this.color + s.replaceAll("[vV]", "vw")
+					.replaceAll("([^vV]|\\b)([wW])", "$1wv").replace("B", "8");
 		case DAMARA:
 			return this.color + ancestral(s);
 		case DAVE:
-			return this.color + mixedToLowerCase(s).replaceAll("\\.{1,2}", "")
-					.replaceAll("\\.{4}", "").replaceAll("[\\W&&[^\\Q.!?\\E]]", "");
+			return this.color + mixedToLowerCase(s).replaceAll("([^\\.])\\.{1,2}([^\\.])", "$1$2")
+					.replaceAll("\\.+", "...").replaceAll("[\\W&&[^\\s\\.!\\?]]", "");
 		case DIRK:
 			break; // future bropuns
 		case EQUIUS:
@@ -143,7 +145,7 @@ public enum CanonNicks {
 		case GAMZEE:
 			return this.color + alternateCase(s);
 		case HORUSS:
-			break; // future
+			return applyQuirk(s, EQUIUS).replaceAll("[iI]", "\\*").replaceFirst("D -->", "8=D <");
 		case JADE:
 			return this.color + s.toLowerCase().replace("'", "");
 		case JAKE:
@@ -161,7 +163,7 @@ public enum CanonNicks {
 			}
 			return this.color + s.toLowerCase();
 		case KANAYA:
-			return this.color + hellaAnnoying(s.replaceAll("[\\W\\S]", ""));
+			return this.color + hellaAnnoying(s.replaceAll("[\\W&&[^\\s]]", ""));
 		case KANKRI:
 			return this.color + s.replaceAll("[oO]", "9").replaceAll("[bB]", "6");
 		case KARKAT:
@@ -172,7 +174,7 @@ public enum CanonNicks {
 			}
 			return this.color + s;
 		case LATULA:
-			break; // future
+			return this.color + s.replace("A", "4").replace("E", "3").replace("I", "1");
 		case LILHALJUNIOR:
 			String[] responses = {"Hmm.", "Yes.", "Interesting."};
 			return this.color + responses[(int) (Math.random() * 3)];
@@ -183,9 +185,12 @@ public enum CanonNicks {
 		case MEULIN: // future emoticons
 			return this.color + s.toUpperCase().replace("EE", "33");
 		case MITUNA:
-			break; // future
+			return this.color + s.toUpperCase().replace("A", "4").replace("B", "8")
+					.replace("E", "3").replace("I", "1").replace("O", "0")
+					.replace("S", "5").replace("T", "7");
 		case NEPETA:
-			break; // future
+			return this.color + ":33 < " + s.replaceAll("[eE]{2},", "33")
+					.replace("ver", "fur").replace("pos", "paws");
 		case PORRIM:
 			return this.color + s.replaceAll("o", "o+");
 		case ROXY:
@@ -193,13 +198,20 @@ public enum CanonNicks {
 		case ROSE:
 			return this.color + randShuffle(s);
 		case RUFIOH:
-			break; // future
+			return this.color + mixedToLowerCase(s).replaceAll("[iI]", "1")
+					.replaceAll("([;:])([dDbBpPL\\Q)(][\\E])", "}$1$2");
 		case SOLLUX:
-			break; // future
+			return this.color + s.toLowerCase().replace("s", "2")
+					.replaceAll("i+", "ii").replaceAll("to+", "two");
 		case TAVROS:
-			return this.color + invertCase(s).replaceAll(".", ",");
+			return this.color + invertCase(s).replace(".", ",")
+					.replaceAll("([;:])([dDbBpPL\\Q)(][\\E])", "}$1$2");
 		case TEREZI:
-			break; // future
+			return this.color + s.toUpperCase().replace("A", "4")
+					.replace("E", "3").replace("I", "1").replace("'", "")
+					.replaceAll("([;:])([dDbBpPL\\Q)(][\\E])", ">$1$2")
+					.replaceAll(">([:;])\\(", ">$1[").replaceAll(">([:;])\\)", ">$1]")
+					.replaceAll("\\.{1,2}", "").replaceAll("\\.{4}", "...");
 		case ARENEA:
 		case VRISKA:
 			return this.color + s.replaceAll(":*([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2")
@@ -212,7 +224,6 @@ public enum CanonNicks {
 		return this.color + s;
 	}
 
-	@SuppressWarnings("unused")
 	private String applyQuirk(String s, CanonNicks n) {
 		// This is for quirks that make use of multiple existing quirks.
 		// Mostly will be used for combo sprites.
@@ -313,21 +324,16 @@ public enum CanonNicks {
 		while (m.find()) {
 			sb.append(s.substring(end, m.start()));
 			if (m.group().equals(m.group().toUpperCase())) {
-				for (int i = 0; i < m.group().length();) {
-					for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
-						if (i >= m.group().length())
-							break;
-						String next = m.group().substring(i, i + 1);
-						if (next.equals("O")) {
-							sb.append(ColorDef.RAINBOW[j]).append(ChatColor.MAGIC).append(next);
-						} else {
-							sb.append(ColorDef.RAINBOW[j]).append(next);
-						}
-						i++;
+				for (int i = 0; i < m.group().length(); i++) {
+					String next = m.group().substring(i, i + 1);
+					sb.append(ColorDef.RAINBOW[(int) Math.random() * ColorDef.RAINBOW.length]);
+					if (next.equals("O")) {
+						sb.append(ChatColor.MAGIC);
 					}
+					sb.append(next);
 				}
 			} else {
-				sb.append(m.group().toUpperCase());
+				sb.append(ChatColor.GREEN).append(m.group().toUpperCase());
 			}
 			end = m.end();
 		}
@@ -336,17 +342,12 @@ public enum CanonNicks {
 
 	// http://unicode-table.com/en/#cjk-unified-ideographs-extension-a
 	// 3440-9FFF, maximum fast calc range = 4000-8FFF (9FA0 last row without odd box chars)
+	// translates to 16384-40959,  40783 last useful
 	private String ancestral(String s) {
 		StringBuilder sb = new StringBuilder();
-		String[] hex = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"};
 		for (int i = 0; i < s.length(); i++) {
-			String randChar = new StringBuilder()
-					.append(hex[(int) Math.random() * 5 + 4])
-					.append(hex[(int) Math.random() * hex.length])
-					.append(hex[(int) Math.random() * hex.length])
-					.append(hex[(int) Math.random() * hex.length]).toString();
-			sb.append((char) Integer.parseInt(randChar, 16));
-			if (Math.random() > 0.75) {
+			sb.append((char) Math.floor(Math.random() * 24399 + 16384));
+			if (Math.random() > 0.8) {
 				sb.append(" ");
 			}
 		}
@@ -373,6 +374,7 @@ public enum CanonNicks {
 			} else {
 				sb.append(s1.toUpperCase());
 			}
+			sb.append(" ");
 		}
 		return sb.substring(0, sb.length() - 1).toString();
 	}

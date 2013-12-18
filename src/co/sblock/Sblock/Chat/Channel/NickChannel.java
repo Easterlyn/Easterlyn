@@ -37,7 +37,7 @@ public class NickChannel extends Channel {
 		nickList.put(sender, nick);
 		for (String s : this.getListening()) {
 			ChatUserManager.getUserManager().getUser(s).sendMessageFromChannel(
-					ChatMsgs.onUserSetNick(s, nick, this.name), this, "channel");
+					ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this.name), this, "channel");
 		}
 	}
 
@@ -47,7 +47,11 @@ public class NickChannel extends Channel {
 	@Override
 	public void removeNick(ChatUser sender) {
 		if (nickList.containsKey(sender)) {
-			nickList.remove(sender);
+			String old = nickList.remove(sender);
+			for (String s : this.getListening()) {
+				ChatUserManager.getUserManager().getUser(s).sendMessageFromChannel(
+						ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name), this, "channel");
+			}
 		}
 	}
 
