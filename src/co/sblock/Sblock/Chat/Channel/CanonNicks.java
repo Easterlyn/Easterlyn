@@ -112,14 +112,14 @@ public enum CanonNicks {
 					.replace("0.0", "0_0").replaceAll("[\\W&&[^\\s]]", "");
 		case AUTORESPONDER:
 			return this.color + s.replace("robot", "brobot");
-			// future more bropuns
+			// bropuns
 		case CALIBORN:
 			return this.color + s.toUpperCase().replace("U", "u");
 		case CALLIOPE:
 			return this.color + s.toLowerCase().replace("u", "U");
 		case CROCKERJANE:
 			return ChatColor.DARK_RED + s;
-		case CRONUS: // future fix ISSUE wvITH ALLCAPS
+		case CRONUS: // fix ISSUE wvITH ALLCAPS
 			return this.color + s.replaceAll("[vV]", "vw")
 					.replaceAll("([^vV]|\\b)([wW])", "$1wv").replace("B", "8");
 		case DAMARA:
@@ -128,7 +128,7 @@ public enum CanonNicks {
 			return this.color + mixedToLowerCase(s).replaceAll("([^\\.])\\.{1,2}([^\\.])", "$1$2")
 					.replaceAll("\\.+", "...").replaceAll("[\\W&&[^\\s\\.!\\?]]", "");
 		case DIRK:
-			break; // future bropuns
+			break; // bropuns
 		case EQUIUS:
 			return this.color + "D --> " + s.replaceAll("[xX]", "%")
 					.replaceAll("[lL](([uU][eE])|([eE][uU])|([oO]{2,}))", "100")
@@ -182,7 +182,7 @@ public enum CanonNicks {
 			return this.color + s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
 					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("[hH]", ")(")
 					.replace("E", "-E").replaceAll("\\b(.*in)g\\b", "$1");
-		case MEULIN: // future emoticons
+		case MEULIN: // emoticons
 			return this.color + s.toUpperCase().replace("EE", "33");
 		case MITUNA:
 			return this.color + s.toUpperCase().replace("A", "4").replace("B", "8")
