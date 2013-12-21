@@ -7,7 +7,6 @@ import java.util.Map;
 
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Utilities.Sblogger;
 
 public class ChannelManager {
 
@@ -32,8 +31,13 @@ public class ChannelManager {
 	}
 
 	public void createNewChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
+		this.loadChannel(name, access, creator, channelType);
+		ChatModule.slog().info("Channel " + name + " created: " + access + " " + creator);
+	}
+
+	public void loadChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
 		Channel c = null;
-		switch (channelType)	{
+		switch (channelType) {
 		case RP:
 			c = new RPChannel(name, access, creator);
 			break;
@@ -43,12 +47,15 @@ public class ChannelManager {
 		case REGION:
 			c = new RegionChannel(name, access, creator);
 			break;
+		//case TEMP:
+		//	c = new TempChannel(name, access, creator);
+		//	this.addUnsaveableChannel(name);
+		//	break;
 		default:
 			c = new NormalChannel(name, access, creator);
 			break;
 		}
 		ChannelManager.getChannelList().put(name, c);
-		ChatModule.slog().info("Channel " + c.getName() + " created: " + access + " " + creator);
 	}
 
 	public void createDefaultSet() {
@@ -56,12 +63,12 @@ public class ChannelManager {
 		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new NormalChannel("#help", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, "Dublek"));
-//		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#EARTH", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, "Dublek"));
-/*		defaults.add(new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#LOWAS", AccessLevel.PUBLIC, "Dublek"));
+		defaults.add(new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, "Dublek"));
+/*		defaults.add(new RegionChannel("#LOWAS", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, "Dublek"));
 		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, "Dublek"));*/
@@ -70,8 +77,6 @@ public class ChannelManager {
 			ChannelManager.getChannelList().put(c.getName(), c);
 			this.addUnsavableChannel(c.getName());
 		}
-
-		Sblogger.info("SblockChat", "Default channels created");
 	}
 
 	private void addUnsavableChannel(String s) {

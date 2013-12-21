@@ -91,7 +91,7 @@ public class ChatChannels {
 			ChannelManager cm = ChatModule.getChatModule().getChannelManager();
 
 			while (rs.next()) {
-				cm.createNewChannel(rs.getString("name"),
+				cm.loadChannel(rs.getString("name"),
 						AccessLevel.valueOf(rs.getString("access")), rs.getString("owner"),
 						ChannelType.valueOf(rs.getString("channelType")));
 				Channel c = ChatModule.getChatModule().getChannelManager()

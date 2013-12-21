@@ -41,7 +41,7 @@ public abstract class Channel {
 
 	public String getName() {
 		return this.name;
-	}	
+	}
 
 	public AccessLevel getAccess() {
 		return this.access;
