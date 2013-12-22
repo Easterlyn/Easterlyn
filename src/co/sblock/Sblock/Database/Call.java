@@ -1,9 +1,8 @@
-/**
- * 
- */
 package co.sblock.Sblock.Database;
 
 import java.sql.ResultSet;
+
+import org.bukkit.command.CommandSender;
 
 /**
  * @author Jikoo
@@ -20,6 +19,7 @@ public enum Call {
 			+ "timePlayed=VALUES(timePlayed), previousLocation=VALUES(previousLocation), "
 			+ "programs=VALUES(programs), uhc=VALUES(uhc)"),
 	PLAYER_LOAD("SELECT * FROM PlayerData WHERE name=?"),
+	PLAYER_LOOKUP("SELECT * FROM PlayerData WHERE name=?"),
 	PLAYER_DELETE("DELETE FROM PlayerData WHERE name = ?"),
 	CHANNEL_SAVE("INSERT INTO ChatChannels(name, channelType, access, owner, modList, "
 			+ "banList, approvedList) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
@@ -40,8 +40,13 @@ public enum Call {
 	TOWER_LOAD("SELECT * FROM TowerLocs");
 
 	private final String call;
+	private CommandSender sender = null;
 	private Call(String call) {
 		this.call = call;
+	}
+
+	public void setSender(CommandSender s) {
+		this.sender = s;
 	}
 
 	public String toString() {
@@ -52,6 +57,9 @@ public enum Call {
 		switch (this) {
 		case PLAYER_LOAD:
 			PlayerData.loadPlayer(rs);
+			break;
+		case PLAYER_LOOKUP:
+			PlayerData.loadOfflineLookup(sender, rs);
 			break;
 		case BAN_LOAD:
 			BannedPlayers.removeBan(rs);

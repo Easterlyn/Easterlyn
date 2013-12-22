@@ -88,11 +88,7 @@ public class ChatModuleCommandListener implements CommandListener {
 		if (!(sender instanceof Player) || sender.hasPermission("group.denizen")) {
 			ChatUser u = ChatUserManager.getUserManager().getUser(target);
 			if (u == null) {
-				sender.sendMessage(ChatMsgs.errorInvalidUser(target)
-						+ "\n/whois <player>\n" + "<name>, <class> of <aspect>\n"
-						+ "<mPlanet>, <dPlanet>, <towerNum>, <sleepState>\n"
-						+ "<isMute>, <currentChannel>, <listeningChannels>\n"
-						+ "<ip>, <previousLocation>\n" + "<timePlayed>, <lastLogin>");
+				DBManager.getDBM().startOfflineLookup(sender, target);
 				return true;
 			}
 			sender.sendMessage(u.toString());
@@ -135,7 +131,7 @@ public class ChatModuleCommandListener implements CommandListener {
 			if (victim != null) {
 				for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 					u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName()
-							+ " has been superbanned for " + args);
+							+ " has been superbanned. " + args);
 				}
 				DBManager.getDBM().addBan(victim, args);
 				Bukkit.banIP(victim.getUserIP());
@@ -156,10 +152,7 @@ public class ChatModuleCommandListener implements CommandListener {
 		if (!(sender instanceof Player) || sender.hasPermission("group.horrorterror")) {
 			DBManager.getDBM().removeBan(target);
 			if (Bukkit.getOfflinePlayer(target).hasPlayedBefore()) {
-				for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
-					u.sendMessage(ChatColor.GREEN + target + " has been unbanned.");
-				}
-				Sblogger.info("Sban", target + " has been unbanned!");
+				Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target + " has been unbanned.");
 			} else {
 				sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target
 						+ " has not played before or is an IP.");

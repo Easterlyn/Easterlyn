@@ -683,8 +683,8 @@ public class ChatUser {
 		String s = sys + "-----------------------------------------\n" + 
 				txt + this.playerName + div + sUser.getClassType() + " of " + sUser.getAspect() + "\n" + 
 				sUser.getMPlanet() + div + sUser.getDPlanet() + div + sUser.getTower() + div + sUser.isSleeping() + "\n" + 
-				this.isMute() + div + this.getCurrent().getName() + div + this.getListening().toString() + "\n" +
-				this.getCurrentRegion().toString() + div + sUser.getPreviousLocationString() + "\n" +
+				this.isMute() + div + this.current + div + this.getListening().toString() + "\n" +
+				this.currentRegion + div + sUser.getPreviousLocationString() + "\n" +
 				sUser.getUserIP() + "\n" +
 				sUser.getTimePlayed() + div + sUser.getPlayer().getLastPlayed() + "\n" +
 				sys + "-----------------------------------------";

@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.bukkit.command.CommandSender;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
@@ -108,6 +109,10 @@ public class DBManager {
 		ChatUser cUser = ChatUserManager.getUserManager().addUser(name);
 		PlayerData.loadUserData(name);
 		return cUser;
+	}
+
+	public void startOfflineLookup(CommandSender sender, String name) {
+		PlayerData.startOfflineLookup(sender, name);
 	}
 
 	/**

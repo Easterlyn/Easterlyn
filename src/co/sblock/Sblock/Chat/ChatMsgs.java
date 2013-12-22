@@ -300,10 +300,6 @@ public class ChatMsgs {
 				+ ChatColor.YELLOW + ": Kick a user from the channel\n"
 				+ ChatColor.AQUA + "channel ban <$user>"
 				+ ChatColor.YELLOW + ": Ban a user from the channel\n"
-				+ ChatColor.AQUA + "channel setalias <$alias>"
-				+ ChatColor.YELLOW + ": Set an alias for the channel\n"
-				+ ChatColor.AQUA + "channel rmalias"
-				+ ChatColor.YELLOW + ": Remove the channel alias\n"
 				+ ChatColor.AQUA + "channel getListeners"
 				+ ChatColor.YELLOW + ": List all users currently listening to this channel";
 	}

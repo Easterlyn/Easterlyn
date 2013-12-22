@@ -5,6 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
@@ -199,6 +202,75 @@ public class PlayerData {
 			return name;
 		} else {
 			return "Player";
+		}
+	}
+
+
+	/**
+	 * Create a PreparedStatement from a <code>Player</code>'s saved data.
+	 * 
+	 * @param sender
+	 *            the CommandSender requesting information
+	 * @param rs
+	 *            the <code>ResultSet</code> to load from
+	 */
+	protected static void startOfflineLookup(CommandSender sender, String name) {
+		if (Bukkit.getOfflinePlayer(name).hasPlayedBefore()) {
+			sender.sendMessage(ChatColor.GREEN + "Initiating offline lookup for " + name);
+		} else {
+			sender.sendMessage("Unknown player. Be sure to capitalize properly!");
+			return;
+		}
+		try {
+			Call c = Call.PLAYER_LOOKUP;
+			PreparedStatement pst = DBManager.getDBM().connection().prepareStatement(c.toString());
+			pst.setString(1, name);
+
+			c.setSender(sender);
+			new AsyncCall(pst, c).schedule();
+		} catch (SQLException e) {
+			Sblogger.err(e);
+		}
+	}
+
+	/**
+	 * Create a /whois from a <code>Player</code>'s saved data.
+	 * 
+	 * @param sender
+	 *            the CommandSender requesting information
+	 * @param rs
+	 *            the <code>ResultSet</code> to load from
+	 */
+	protected static void loadOfflineLookup(CommandSender sender, ResultSet rs) {
+		ChatColor sys = ChatColor.DARK_AQUA;
+		ChatColor txt = ChatColor.YELLOW;
+		String div = sys + ", " + txt;
+		String s = "Error retrieving player data.";
+
+		try {
+			if (rs.first()) {
+				s = sys + "-----------------------------------------\n" + 
+						txt + rs.getString("name") + div + rs.getString("class") + " of " + rs.getString("aspect") + "\n"
+						+  rs.getString("mPlanet") + div + rs.getString("dPlanet") + div + "Tower: "
+						+ rs.getShort("towerNum") + div + "Sleeping: " + rs.getBoolean("sleepState") + "\n"
+						+ rs.getBoolean("isMute") + div + rs.getString("currentChannel") + div + rs.getString("channels") + "\n"
+						+ "Region: OFFLINE" + div + "Prev Loc: " + rs.getString("previousLocation") + "\n"
+						+ rs.getString("ip") + "\n"
+						+ "Time: " + rs.getString("timePlayed") + div + "Last login (long): "
+						+ Bukkit.getOfflinePlayer(rs.getString("name")).getLastPlayed() + "\n"
+						+ sys + "-----------------------------------------";
+			}
+		} catch (SQLException e) {
+			Sblogger.err(e);
+		} finally {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				Sblogger.err(e);
+			}
+		}
+		if (!(sender instanceof Player) || ((Player) sender).isOnline()) {
+			sender.sendMessage(s);
 		}
 	}
 }
