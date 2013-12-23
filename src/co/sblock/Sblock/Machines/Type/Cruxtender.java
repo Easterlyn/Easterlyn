@@ -55,28 +55,29 @@ public class Cruxtender extends Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
-		if (meetsAdditionalBreakConditions(event) || event.getPlayer().hasPermission("group.denizen")) {
+		if (this.meetsAdditionalBreakConditions(event) || event.getPlayer().hasPermission("group.denizen")) {
 			if (this.getKey().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
 				if (event.getBlock().getType().equals(Material.DIAMOND_BLOCK)) {
 					event.getBlock().setType(Material.BEACON);
 				}
-				event.setCancelled(true);
 				event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), Icon.DOWEL.getIcon());
+				return true;
+			} else {
+				if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+					getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
+				}
+				for (Location l : this.getLocations()) {
+					l.getBlock().setType(Material.AIR);
+				}
+				getKey().getBlock().setType(Material.AIR);
+				MachineModule.getInstance().getManager().removeMachineListing(getKey());
 			}
-			if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-				getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
-			}
-			for (Location l : this.getLocations()) {
-				l.getBlock().setType(Material.AIR);
-			}
-			getKey().getBlock().setType(Material.AIR);
-			MachineModule.getInstance().getManager().removeMachineListing(getKey());
 		}
 		return true;
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble(org.bukkit.event.block.BlockPlaceEvent)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble(BlockPlaceEvent)
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
@@ -105,11 +106,18 @@ public class Cruxtender extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
 		return false;
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
+	 */
+	@Override
+	protected void postAssemble() {
+		this.l.getBlock().setType(Material.DIAMOND_BLOCK);
+	}
 }

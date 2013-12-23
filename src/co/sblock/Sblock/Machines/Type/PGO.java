@@ -158,4 +158,12 @@ public class PGO extends Machine {
 	public Direction getFacingDirection() {
 		return Direction.NORTH;
 	}
+
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
+	 */
+	@Override
+	protected void postAssemble() {
+		return;
+	}
 }

@@ -65,7 +65,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
-		if (!event.getWhoClicked().getName().equals(this.getData()) || !event.getWhoClicked().hasPermission("group.denizen")) {
+		if (!event.getWhoClicked().getName().equals(this.getData()) && !event.getWhoClicked().hasPermission("group.denizen")) {
 			event.setResult(Result.DENY);
 			return true;
 		}
@@ -158,5 +158,13 @@ public class Computer extends Machine implements InventoryHolder {
 		Inventory i = Bukkit.createInventory(this, 18, "~/SburbClient");
 		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
 		return i;
+	}
+
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
+	 */
+	@Override
+	protected void postAssemble() {
+		return;
 	}
 }

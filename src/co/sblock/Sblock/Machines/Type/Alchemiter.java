@@ -69,4 +69,14 @@ public class Alchemiter extends Machine {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
+	 */
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void postAssemble() {
+		this.l.getBlock().setType(Material.QUARTZ_BLOCK);
+		this.l.getBlock().setData((byte) 2, false);
+	}
+
 }

@@ -57,4 +57,12 @@ public class PBO extends Machine {
 		return false;
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
+	 */
+	@Override
+	protected void postAssemble() {
+		return;
+	}
+
 }

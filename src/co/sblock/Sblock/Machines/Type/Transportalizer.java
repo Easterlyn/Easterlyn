@@ -254,4 +254,12 @@ public class Transportalizer extends Machine {
 		}
 		return removed;
 	}
+
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
+	 */
+	@Override
+	protected void postAssemble() {
+		return;
+	}
 }

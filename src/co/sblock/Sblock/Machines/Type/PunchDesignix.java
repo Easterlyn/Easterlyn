@@ -22,7 +22,6 @@ public class PunchDesignix extends Machine {
 		super(l, data, d);
 		ItemStack is = new ItemStack(Material.STEP);
 		is.setDurability((short) 15);
-		shape.addBlock(new Vector(0, 0, 0), is);
 		shape.addBlock(new Vector(1, 0, 0), is);
 		is = new ItemStack(Material.CARPET);
 		is.setDurability((short) 8);
@@ -58,4 +57,13 @@ public class PunchDesignix extends Machine {
 		return false;
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
+	 */
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void postAssemble() {
+		this.l.getBlock().setType(Material.STEP);
+		this.l.getBlock().setData((byte) 15,  false);
+	}
 }

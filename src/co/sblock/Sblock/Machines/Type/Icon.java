@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public enum Icon {
 
 	PESTERCHUM(Material.GOLD_RECORD, ChatColor.WHITE + "Pesterchum", 1),
-	SBURBBETACLIENT(Material.RECORD_5, ChatColor.WHITE + "SburbBeta", 5),
+	SBURBBETACLIENT(Material.RECORD_5, ChatColor.WHITE + "SburbClient", 5),
 	SBURBBETASERVER(Material.GREEN_RECORD, ChatColor.WHITE + "SburbServer", 2),
 //	SBURBALPHACLIENT(Material.RECORD_4, "Sburb Alpha Client", 4, null),
 //	SBURBALPHASERVER(Material.RECORD_3, "Sburb Alpha Server", 3),
