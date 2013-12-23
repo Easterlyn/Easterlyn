@@ -57,7 +57,10 @@ public class SblockUser {
 	private Set<Integer> programs = new HashSet<Integer>();
 
 	/** UHC modes: negative = off; 1 = standard UHC; 2 = pre-1.8b food healing */
-	private byte uhc = 1;
+	private byte uhc = -1;
+
+	/** Boolean for ensuring that all PlayerData has been loaded. */
+	private boolean loaded = false;
 
 	/**
 	 * Creates a <code>SblockUser</code> object for a <code>Player</code>.
@@ -237,10 +240,10 @@ public class SblockUser {
 	 * Sets the <code>Player</code>'s previous <code>Location</code> from a
 	 * <code>String</code>. Only for use in <code>DatabaseManager</code>.
 	 * 
-	 * @param string
+	 * @param s
 	 */
-	public void setPreviousLocationFromString(String string) {
-		String[] loc = string.split(",");
+	public void setPreviousLocationFromString(String s) {
+		String[] loc = s.split(",");
 		World w = Bukkit.getWorld(loc[0]);
 		if (w != null) {
 			this.previousLocation = new Location(w,
@@ -259,7 +262,7 @@ public class SblockUser {
 	 * @return the previousLocation
 	 */
 	public Location getPreviousLocation() {
-		return previousLocation;
+		return this.previousLocation;
 	}
 
 	/**
@@ -269,10 +272,10 @@ public class SblockUser {
 	 * @return String
 	 */
 	public String getPreviousLocationString() {
-		return previousLocation.getWorld().getName() + ","
-				+ previousLocation.getBlockX() + ","
-				+ previousLocation.getBlockY() + ","
-				+ previousLocation.getBlockZ();
+		return this.previousLocation.getWorld().getName() + ","
+				+ this.previousLocation.getBlockX() + ","
+				+ this.previousLocation.getBlockY() + ","
+				+ this.previousLocation.getBlockZ();
 	}
 
 	/**
@@ -341,7 +344,7 @@ public class SblockUser {
 	 * @return the <code>Player</code>'s UHC mode
 	 */
 	public byte getUHCMode() {
-		return uhc;
+		return this.uhc;
 	}
 
 	/**
@@ -355,7 +358,7 @@ public class SblockUser {
 	public void setUHCMode(Byte b) {
 		// DB returns 0 if null
 		if (b != 0) {
-			uhc = b;
+			this.uhc = b;
 		}
 	}
 
@@ -392,7 +395,7 @@ public class SblockUser {
 			return;
 		}
 		for (String s1 : s.split(",")) {
-			addProgram(Integer.valueOf(s1));
+			this.programs.add(Integer.valueOf(s1));
 		}
 	}
 
@@ -405,7 +408,7 @@ public class SblockUser {
 	 */
 	public String getProgramString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i : getPrograms()) {
+		for (int i : this.programs) {
 			sb.append(i).append('\u002C');
 		}
 		if (sb.length() == 0) {
@@ -421,7 +424,7 @@ public class SblockUser {
 	 * @return the <code>Player</code>'s IP
 	 */
 	public String getUserIP() {
-		return userIP;
+		return this.userIP;
 	}
 
 	/**
@@ -430,8 +433,24 @@ public class SblockUser {
 	 */
 	public void setUserIP() {
 		if (this.getPlayer().isOnline())
-			userIP = this.getPlayer().getAddress().getAddress()
+			this.userIP = this.getPlayer().getAddress().getAddress()
 					.getHostAddress();
+	}
+
+	/**
+	 * Ensure that data is not overwritten if load is completed after quit.
+	 */
+	public void setLoaded() {
+		this.loaded = true;
+	}
+
+	/**
+	 * Check to ensure that load has been completed before saving.
+	 * 
+	 * @return true if load has been completed.
+	 */
+	public boolean isLoaded() {
+		return this.loaded;
 	}
 
 	/**

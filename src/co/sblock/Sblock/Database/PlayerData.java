@@ -41,7 +41,7 @@ public class PlayerData {
 	protected static void saveUserData(String name) {
 		ChatUser cUser = ChatUserManager.getUserManager().removeUser(name);
 		SblockUser sUser = UserManager.getUserManager().removeUser(name);
-		if (cUser == null || sUser == null) {
+		if (cUser == null || sUser == null || !sUser.isLoaded()) {
 			Sblogger.warning("SblockDatabase", "Player " + name + " does not appear to have userdata loaded, skipping save.");
 			return;
 		}
@@ -120,7 +120,13 @@ public class PlayerData {
 	protected static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
-				SblockUser sUser = UserManager.getUserManager().getUser(rs.getString("name"));
+				String name = rs.getString("name");
+				SblockUser sUser = UserManager.getUserManager().getUser(name);
+				ChatUser cUser = ChatUserManager.getUserManager().getUser(name);
+				if (sUser == null || cUser == null || !sUser.getPlayer().isOnline()) {
+					Sblogger.warning("SblockDatabase", name + "'s SblockUser was not instantiated!");
+					return;
+				}
 				sUser.setAspect(rs.getString("aspect"));
 				sUser.setPlayerClass(rs.getString("class"));
 				sUser.setMediumPlanet(rs.getString("mPlanet"));
@@ -130,7 +136,6 @@ public class PlayerData {
 					sUser.setTower((byte) tower);
 				}
 				sUser.updateSleepstate();
-				ChatUser cUser = ChatUserManager.getUserManager().getUser(rs.getString("name"));
 				if (rs.getBoolean("isMute")) {
 					cUser.setMute(true);
 				}
@@ -151,10 +156,17 @@ public class PlayerData {
 				sUser.setTimePlayed(rs.getString("timePlayed"));
 				sUser.setPrograms(rs.getString("programs"));
 				sUser.setUHCMode(rs.getByte("uhc"));
+				sUser.setLoaded();
+				UserManager.getUserManager().team(sUser.getPlayer());
 			} else {
+				String name = rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1");
 				LilHal.tellAll("It would seem that "
-				+ rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1")
-						+ " is joining us for the first time! Please welcome them.");
+				+ name + " is joining us for the first time! Please welcome them.");
+				try {
+					SblockUser.getUser(name).setLoaded();
+				} catch (NullPointerException e) {
+					Sblogger.warning("SblockDatabase", name + "'s SblockUser was not instantiated!");
+				}
 			}
 		} catch (SQLException e) {
 			Sblogger.err(e);
