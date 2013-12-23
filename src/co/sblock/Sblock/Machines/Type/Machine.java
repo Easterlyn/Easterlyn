@@ -143,6 +143,7 @@ public abstract class Machine {
 			b.setType(e.getValue().getType());
 			b.setData(e.getValue().getData().getData());
 		}
+		this.triggerPostAssemble();
 	}
 
 	/**

@@ -1,14 +1,9 @@
 package co.sblock.Sblock.Machines.Type;
 
-import java.util.Map.Entry;
-
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -48,11 +43,7 @@ public class Cruxtender extends Machine {
 	}
 
 	/**
-	 * Handles <code>Machine</code> deconstruction.
-	 * 
-	 * @param event
-	 *            the <code>BlockBreakEvent</code>
-	 * @return true if event should be cancelled
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleBreak(BlockBreakEvent)
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
 		if (this.meetsAdditionalBreakConditions(event) || event.getPlayer().hasPermission("group.denizen")) {
@@ -74,27 +65,6 @@ public class Cruxtender extends Machine {
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble(BlockPlaceEvent)
-	 */
-	@SuppressWarnings("deprecation")
-	@Override
-	public void assemble(BlockPlaceEvent event) {
-		for (Location l : blocks.keySet()) {
-			if (!l.getBlock().isEmpty()) {
-				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
-				this.assemblyFailed();
-				return;
-			}
-		}
-		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
-			Block b = e.getKey().getBlock();
-			b.setType(e.getValue().getType());
-			b.setData(e.getValue().getData().getData());
-		}
 	}
 
 	/**

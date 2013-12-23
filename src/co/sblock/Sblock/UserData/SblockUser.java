@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -209,8 +210,9 @@ public class SblockUser {
 	 * @param sleeping
 	 *            <code>true</code> if the <code>Player</code> is in dreamstate
 	 */
-	public void setIsSleeping(boolean sleeping) {
-		this.sleeping = sleeping;
+	public void updateSleepstate() {
+		this.sleeping = this.getPlayer().getWorld().getName().contains("Circle")
+				|| this.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 		this.getPlayer().setAllowFlight(sleeping);
 		this.getPlayer().setFlying(sleeping);
 	}

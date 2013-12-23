@@ -239,8 +239,8 @@ public class EventListener implements Listener {
 		if (!event.getFrom().getWorld().equals(event.getTo().getWorld()) && teleports.remove(p.getName())) {
 			SblockUser u = SblockUser.getUser(p.getName());
 			if (!u.isGodTier()) {
-				u.setIsSleeping(event.getTo().getWorld().getName().contains("Circle"));
 				u.setPreviousLocation(event.getFrom());
+				u.updateSleepstate();
 			}
 		}
 	}

@@ -129,7 +129,7 @@ public class PlayerData {
 				if (tower != -1) {
 					sUser.setTower((byte) tower);
 				}
-				sUser.setIsSleeping(rs.getBoolean("sleepState"));
+				sUser.updateSleepstate();
 				ChatUser cUser = ChatUserManager.getUserManager().getUser(rs.getString("name"));
 				if (rs.getBoolean("isMute")) {
 					cUser.setMute(true);
