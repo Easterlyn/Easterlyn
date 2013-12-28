@@ -1,6 +1,7 @@
 /*
  * PacketWrapper - Contains wrappers for each packet in Minecraft.
  * Copyright (C) 2012 Kristian S. Stangeland
+ * Modified 12/24/13 by A. Gunn aka Jikoo - updated to remove deprecation and correct for 1.7 changes.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation; either version 2 of
@@ -20,6 +21,7 @@ package co.sblock.Sblock.Events.Packets;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.IntEnum;
@@ -33,11 +35,14 @@ public class Packet12Animation extends AbstractPacket {
 	 * @author Kristian
 	 */
 	public static class Animations extends IntEnum {
-		public static final int NO_ANIMATION = 0;
-		public static final int SWING_ARM = 1;
-		public static final int DAMAGE_ANIMATION = 2;
-		public static final int LEAVE_BED = 3;
-		public static final int EAT_FOOD = 5;
+		// Jikoo start
+		public static final int SWING_ARM = 0;
+		public static final int DAMAGE_ANIMATION = 1;
+		public static final int LEAVE_BED = 2;
+		public static final int EAT_FOOD = 3;
+		public static final int CRITICAL_EFFECT = 4;
+		public static final int MAGIC_CRITICAL_EFFECT = 5;
+		// Jikoo end
 		public static final int UNKNOWN = 102;
 		public static final int CROUCH = 104;
 		public static final int UNCROUCH = 105;
@@ -57,14 +62,13 @@ public class Packet12Animation extends AbstractPacket {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public Packet12Animation() {
-		super(new PacketContainer(ID), ID);
+		super(new PacketContainer(PacketType.Play.Server.ANIMATION), PacketType.Play.Server.ANIMATION); // Jikoo
 		handle.getModifier().writeDefaults();
 	}
 
 	public Packet12Animation(PacketContainer packet) {
-		super(packet, ID);
+		super(packet, PacketType.Play.Server.ANIMATION); // Jikoo
 	}
 
 	/**

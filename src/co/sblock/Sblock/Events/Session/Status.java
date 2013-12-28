@@ -1,19 +1,21 @@
 package co.sblock.Sblock.Events.Session;
 
+import org.bukkit.ChatColor;
+
 /**
  * The status of Minecraft's servers.
  * 
  * @author Jikoo
  */
 public enum Status {
-	LOGIN("Login servers are down, don't close your client!",
+	LOGIN("Login servers aren't responding, don't close your client!",
 			"Login servers are back up, closing Minecraft is ok!", null),
-	SESSION("Session servers are down, don't disconnect!",
+	SESSION("Session servers aren't responding, don't disconnect!",
 			"Session servers are back up, multiplayer will work!",
-			"MC session servers are down! Can't log in."),
-	BOTH("Session and login servers are down, don't disconnect!",
+			"Session servers aren't responding! You might not be able to log in."),
+	BOTH("Session and login servers aren't responding, don't disconnect!",
 			"Session and login servers are back up! Continue play as usual.",
-			"MC session servers are down! Can't log in."),
+			"Session servers aren't responding! You might not be able to log in."),
 	NEITHER(null, null, null);
 
 	/** The message to broadcast initially. */
@@ -79,6 +81,6 @@ public enum Status {
 	 * @return String
 	 */
 	public String getMOTDChange() {
-		return MOTD;
+		return ChatColor.RED + "[Lil Hal] " + MOTD;
 	}
 }

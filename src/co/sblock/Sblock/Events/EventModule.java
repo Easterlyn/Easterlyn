@@ -3,6 +3,8 @@ package co.sblock.Sblock.Events;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
+import com.comphenix.protocol.ProtocolLibrary;
+
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Events.Region.RegionCheck;
@@ -39,6 +41,7 @@ public class EventModule extends Module {
 		towers.load();
 		listener = new EventListener();
 		this.registerEvents(listener);
+		ProtocolLibrary.getProtocolManager().addPacketListener(listener);
 		status = Status.NEITHER;
 		regionTask = initiateRegionChecks();
 		sessionTask = initiateSessionChecks();

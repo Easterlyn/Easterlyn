@@ -31,8 +31,11 @@ import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.ChatUser;
@@ -52,7 +55,7 @@ import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 /**
  * @author Jikoo
  */
-public class EventListener implements Listener {
+public class EventListener extends PacketAdapter implements Listener {
 
 	/** A <code>Map</code> of all scheduled tasks by <code>Player</code>. */
 	public Map<String, Integer> tasks;
@@ -63,6 +66,7 @@ public class EventListener implements Listener {
 	public Set<String> teleports;
 
 	public EventListener() {
+		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION);
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
 	}
@@ -330,7 +334,7 @@ public class EventListener implements Listener {
 	public void fakeWakeUp(Player p) {
 		Packet12Animation packet = new Packet12Animation();
 		packet.setEntityID(p.getEntityId());
-		packet.setAnimation((byte) 3);
+		packet.setAnimation((byte) Packet12Animation.Animations.LEAVE_BED);
 
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
@@ -339,21 +343,22 @@ public class EventListener implements Listener {
 		}
 	}
 
-	/*
-	 * @EventHandler public void onPlayerTagEvent(PlayerReceiveNameTagEvent
-	 * event) { Player p = event.getNamedPlayer();
+	/**
+	 * Check a packet from the client.
+	 * <p>
+	 * Currently intercepts only packets sent when client leaves bed.
 	 * 
-	 * if (p.hasPermission("group.horrorterror")) {
-	 * event.setTag(ColorDef.RANK_ADMIN + p.getName()); } else if
-	 * (p.hasPermission("group.denizen")) { event.setTag(ColorDef.RANK_MOD +
-	 * p.getName()); } else if (p.hasPermission("group.helper")) {
-	 * event.setTag(ColorDef.RANK_HELPER + p.getName()); } else if
-	 * (p.hasPermission("group.godtier")) { event.setTag(ColorDef.RANK_GODTIER +
-	 * p.getName()); } else if (p.hasPermission("group.donator")) {
-	 * event.setTag(ColorDef.RANK_DONATOR + p.getName()); } else if
-	 * (p.hasPermission("group.hero")) { event.setTag(ColorDef.RANK_HERO +
-	 * p.getName()); }
-	 * 
-	 * }
+	 * @see com.comphenix.protocol.events.PacketAdapter#onPacketReceiving(PacketEvent)
+	 * @param event the <code>PacketEvent</code>
 	 */
+	@Override
+	public void onPacketReceiving(PacketEvent event) {
+		if (event.getPacket().getType().equals(PacketType.Play.Client.ENTITY_ACTION)) {
+			int action = event.getPacket().getIntegers().read(1);
+			if (action == 3 && teleports.contains(event.getPlayer().getName())) {
+				event.setCancelled(true);
+				fakeWakeUp(event.getPlayer());
+			}
+		}
+	}
 }

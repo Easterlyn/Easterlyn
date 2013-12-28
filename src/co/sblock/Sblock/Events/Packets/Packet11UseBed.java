@@ -1,6 +1,7 @@
 /*
  * PacketWrapper - Contains wrappers for each packet in Minecraft.
  * Copyright (C) 2012 Kristian S. Stangeland
+ * Modified 12/24/13 by A. Gunn aka Jikoo - updated to remove deprecation.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation; either version 2 of
@@ -20,20 +21,20 @@ package co.sblock.Sblock.Events.Packets;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
 public class Packet11UseBed extends AbstractPacket {
 	public static final int ID = 17;
 
-	@SuppressWarnings("deprecation")
 	public Packet11UseBed() {
-		super(new PacketContainer(ID), ID);
+		super(new PacketContainer(PacketType.Play.Server.BED), PacketType.Play.Server.BED); // Jikoo
 		handle.getModifier().writeDefaults();
 	}
 
 	public Packet11UseBed(PacketContainer packet) {
-		super(packet, ID);
+		super(packet, PacketType.Play.Server.BED); // Jikoo
 	}
 
 	/**
