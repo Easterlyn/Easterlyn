@@ -2,6 +2,8 @@ package co.sblock.Sblock.Utilities;
 
 import org.bukkit.Bukkit;
 
+import co.sblock.Sblock.Sblock;
+
 /**
  * A small utility to make logging more easy on a per-module basis.
  * 
@@ -115,6 +117,17 @@ public class Sblogger {
 	 */
 	public static void severe(String logName, String msg) {
 		Bukkit.getLogger().severe("[" + logName + "] " + msg);
+	}
+
+	/**
+	 * Hackish debug logging that won't spam Prime server.
+	 * 
+	 * @param s the <code>String</code> to log
+	 */
+	public static void debug(String s) {
+		if (!Sblock.getInstance().getDataFolder().getAbsolutePath().contains("Prime")) {
+			info("DEBUG", s);
+		}
 	}
 
 	/**

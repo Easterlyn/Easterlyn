@@ -189,7 +189,7 @@ public class Shape {
 	private HashMap<Location, ItemStack> assembly(HashMap<Vector, ItemStack> translation) {
 		HashMap<Location, ItemStack> newLocs = new HashMap<Location, ItemStack>();
 		for (Vector v : translation.keySet()) {
-			Sblogger.info("Debug", key.clone().add(v).toString());
+			Sblogger.debug(key.clone().add(v).toString());
 			newLocs.put(key.clone().add(v), translation.get(v));
 		}
 		return newLocs;
