@@ -12,6 +12,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock.Sblock;
+
 /**
  * <code>SblockUser</code> is the class for storing all <code>Player</code>
  * data.
@@ -214,10 +216,15 @@ public class SblockUser {
 	 *            <code>true</code> if the <code>Player</code> is in dreamstate
 	 */
 	public void updateSleepstate() {
-		this.sleeping = this.getPlayer().getWorld().getName().contains("Circle")
-				|| this.getPlayer().getGameMode().equals(GameMode.CREATIVE);
-		this.getPlayer().setAllowFlight(sleeping);
-		this.getPlayer().setFlying(sleeping);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@Override
+			public void run() {
+				sleeping = getPlayer().getWorld().getName().contains("Circle")
+						|| getPlayer().getGameMode().equals(GameMode.CREATIVE);
+				getPlayer().setAllowFlight(sleeping);
+				getPlayer().setFlying(sleeping);
+			}
+		});
 	}
 
 	/**
