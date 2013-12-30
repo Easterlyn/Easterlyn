@@ -35,11 +35,11 @@ public class SleepTeleport implements Runnable {
 		if (p != null && user != null) {
 			switch (Region.getLocationRegion(p.getLocation())) {
 			case EARTH:
-//			case MEDIUM: // Someday, my pretties.
-//			case LOFAF:
-//			case LOHAC:
-//			case LOLAR:
-//			case LOWAS:
+			case MEDIUM:
+			case LOFAF:
+			case LOHAC:
+			case LOLAR:
+			case LOWAS:
 				if (user.getDPlanet().equals(DreamPlanet.NONE)) {
 					break;
 				} else {
