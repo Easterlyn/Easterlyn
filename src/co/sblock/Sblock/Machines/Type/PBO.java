@@ -16,8 +16,7 @@ import org.bukkit.inventory.ItemStack;
 public class PBO extends Machine {
 
 	/**
-	 * @param l
-	 * @param data
+	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String)
 	 */
 	public PBO(Location l, String data) {
 		super(l, data);
@@ -25,7 +24,7 @@ public class PBO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(org.bukkit.event.block.BlockBreakEvent)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockBreakEvent)
 	 */
 	@Override
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
@@ -33,7 +32,7 @@ public class PBO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble(org.bukkit.event.block.BlockPlaceEvent)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble(BlockPlaceEvent)
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
@@ -50,7 +49,7 @@ public class PBO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {

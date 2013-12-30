@@ -31,22 +31,22 @@ public class Alchemiter extends Machine {
 		shape.addBlock(new Vector(0, 3, 2), is);
 		shape.addBlock(new Vector(0, 3, 1), is);
 		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.NORTH.getStairByte());
+		is.setDurability(d.getStairByte());
 		shape.addBlock(new Vector(-1, 0, -1), is);
 		shape.addBlock(new Vector(0, 0, -1), is);
 		shape.addBlock(new Vector(1, 0, -1), is);
 		shape.addBlock(new Vector(2, 0, -1), is);
 		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.SOUTH.getStairByte());
+		is.setDurability(d.getRelativeDirection(Direction.SOUTH).getStairByte());
 		shape.addBlock(new Vector(-1, 0, 2), is);
 		shape.addBlock(new Vector(1, 0, 2), is);
 		shape.addBlock(new Vector(2, 0, 2), is);
 		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.WEST.getStairByte());
+		is.setDurability(d.getRelativeDirection(Direction.WEST).getStairByte());
 		shape.addBlock(new Vector(-1, 0, 1), is);
 		shape.addBlock(new Vector(-1, 0, 0), is);
 		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.EAST.getStairByte());
+		is.setDurability(d.getRelativeDirection(Direction.EAST).getStairByte());
 		shape.addBlock(new Vector(2, 0, 1), is);
 		shape.addBlock(new Vector(2, 0, 0), is);
 		blocks = shape.getBuildLocations(getFacingDirection());
@@ -69,14 +69,14 @@ public class Alchemiter extends Machine {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void postAssemble() {
 		this.l.getBlock().setType(Material.QUARTZ_BLOCK);
-		this.l.getBlock().setData((byte) 2, false);
+		this.l.getBlock().setData((byte) 1, false);
 	}
 
 }

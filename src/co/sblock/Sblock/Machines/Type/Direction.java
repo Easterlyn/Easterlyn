@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
  * @author Jikoo
  */
 public enum Direction {
-	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 2), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 0),
-	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 3), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 1);
+	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 0),
+	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 1);
 
 	private byte dirNum;
 	private byte button;
@@ -87,6 +87,25 @@ public enum Direction {
 	 */
 	public byte getUpperStairByte() {
 		return (byte) (stair + 4);
+	}
+
+	/**
+	 * For obtaining rotation based on original rotation - for stairs, etc. that
+	 * are not facing in the place <code>Direction</code> of the
+	 * <code>Machine</code>.
+	 * <p>
+	 * The input <code>Direction</code> is the desired rotation for blocks
+	 * relative to the original <code>Direction</code>. The original
+	 * <code>Direction</code> is assumed to be north relative to the new
+	 * <code>Direction</code>, as all <code>Shape</code>s are designed from a
+	 * north-facing perspective.
+	 * <p>
+	 * Ex.: Machine placed west, block in machine faces east when machine is placed north.
+	 * 
+	 * @param d the <code>Direction</code> relative to this as north.
+	 */
+	public Direction getRelativeDirection(Direction d) {
+		return getDirection((byte) ((this.dirNum + d.getDirByte()) % 4));
 	}
 
 	/**

@@ -74,7 +74,6 @@ public abstract class Machine {
 		this.data = data;
 		this.d = Direction.NORTH;
 		this.shape = new Shape(l.clone());
-//		this.shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop());
 	}
 
 	/**
@@ -315,25 +314,34 @@ public abstract class Machine {
 		return true;
 	}
 
+	/**
+	 * Triggers any events to occur on completion of <code>Machine</code> construction.
+	 * <p>
+	 * Primarily intended for changing the key block <code>Material</code>.
+	 */
 	protected abstract void postAssemble();
 
-	protected void triggerPostAssemble() {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new PostAssemble());
+	/**
+	 * Triggers postAssemble method on a synchronous 0 tick delay.
+	 */
+	private void triggerPostAssemble() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
+				new Runnable() {
+					public void run() {
+						postAssemble();
+					}
+				});
 	}
 
-	private class PostAssemble implements Runnable {
-		public void run() {
-			postAssemble();
-		}
-	}
-
+	/**
+	 * Removes this Machine's listing on a synchronous 0 tick delay.
+	 */
 	protected void assemblyFailed() {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new AssemblyFailed());
-	}
-
-	private class AssemblyFailed implements Runnable {
-		public void run() {
-			MachineModule.getInstance().getManager().removeMachineListing(l);
-		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
+				new Runnable() {
+					public void run() {
+						MachineModule.getInstance().getManager().removeMachineListing(l);
+					}
+				});
 	}
 }

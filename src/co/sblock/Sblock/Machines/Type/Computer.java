@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -45,13 +44,6 @@ public class Computer extends Machine implements InventoryHolder {
 			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer placed!");
 			MachineModule.getInstance().getManager().removeMachineListing(l);
 		}
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockBreakEvent)
-	 */
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		return event.getPlayer().getName().equals(getData()) || event.getPlayer().hasPermission("group.denizen");
 	}
 
 	/**
@@ -125,14 +117,6 @@ public class Computer extends Machine implements InventoryHolder {
 		}
 		event.getPlayer().openInventory(getInventory());
 		return true;
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#getFacingDirection()
-	 */
-	@Override
-	public Direction getFacingDirection() {
-		return Direction.NORTH;
 	}
 
 	/**

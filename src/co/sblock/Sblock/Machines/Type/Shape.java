@@ -7,8 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import co.sblock.Sblock.Utilities.Sblogger;
-
 /**
  * A blank structure for building multi-block Machines.
  * 
@@ -145,7 +143,6 @@ public class Shape {
 	private HashMap<Location, ItemStack> assembly(HashMap<Vector, ItemStack> translation) {
 		HashMap<Location, ItemStack> newLocs = new HashMap<Location, ItemStack>();
 		for (Vector v : translation.keySet()) {
-			Sblogger.debug(key.clone().add(v).toString());
 			newLocs.put(key.clone().add(v), translation.get(v));
 		}
 		return newLocs;
