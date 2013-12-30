@@ -91,32 +91,10 @@ public class Shape {
 		HashMap<Vector, ItemStack> newVectors = new HashMap<Vector, ItemStack>();
 		for (Entry<Vector, ItemStack> e : vectors.entrySet()) {
 			Vector newVec = e.getKey().clone();
-			int x = newVec.getBlockX();
-			int z = newVec.getBlockZ();
-			if (x == 0) {
-				x = z;
-				z = 0;
-			} else if (x < 0) {
-				if (z == 0) {
-					z = x * -1;
-					x = 0;
-				} else if (z < 0) {
-					z = z * -1;
-				} else {
-					x = x * -1;
-				}
-			} else {
-				if (z == 0) {
-					z = x * -1;
-					x = 0;
-				} else if (z < 0) {
-					x = x * -1;
-				} else {
-					z = z * -1;
-				}
-			}
-			newVec.setX(x);
-			newVec.setZ(z);
+			int newZ = - newVec.getBlockX();
+			int newX = newVec.getBlockZ();
+			newVec.setX(newX);
+			newVec.setZ(newZ);
 			newVectors.put(newVec, e.getValue());
 		}
 		return newVectors;
@@ -131,32 +109,10 @@ public class Shape {
 		HashMap<Vector, ItemStack> newVectors = new HashMap<Vector, ItemStack>();
 		for (Entry<Vector, ItemStack> e : vectors.entrySet()) {
 			Vector newVec = e.getKey().clone();
-			int x = newVec.getBlockX();
-			int z = newVec.getBlockZ();
-			if (x == 0) {
-				x = z * -1;
-				z = 0;
-			} else if (x < 0) {
-				if (z == 0) {
-					z = x;
-					x = 0;
-				} else if (z < 0) {
-					x = x * -1;
-				} else {
-					z = z * -1;
-				}
-			} else {
-				if (z == 0) {
-					z = x;
-					x = 0;
-				} else if (z < 0) {
-					z = z * -1;
-				} else {
-					x = x * -1;
-				}
-			}
-			newVec.setX(x);
-			newVec.setZ(z);
+			int newZ = newVec.getBlockX();
+			int newX = - newVec.getBlockZ();
+			newVec.setX(newX);
+			newVec.setZ(newZ);
 			newVectors.put(newVec, e.getValue());
 		}
 		return newVectors;
