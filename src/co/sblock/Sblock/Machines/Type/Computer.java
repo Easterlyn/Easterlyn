@@ -70,14 +70,18 @@ public class Computer extends Machine implements InventoryHolder {
 				switch (ico) {
 				case PESTERCHUM:
 					break;
-				case SBURBBETACLIENT:
+				case SBURBCLIENT:
 					event.getWhoClicked().openInventory(getClientInventory());
 					break;
-				case SBURBBETASERVER:
+				case SBURBSERVER:
+					event.getWhoClicked().openInventory(getVerify("SburbServer"));
 					break;
 				case BACK:
+					// if upper inv = getServerInv remove server status
 					event.getWhoClicked().openInventory(getInventory());
 					break;
+				case CONFIRM:
+					
 				default:
 					break;
 				}
@@ -102,8 +106,8 @@ public class Computer extends Machine implements InventoryHolder {
 				return true;
 			}
 		}
-		if (event.getMaterial().name().contains("RECORD")) {
-			Icon ico = Icon.getIcon(event.getMaterial());
+		if (event.getMaterial().name().contains("RECORD")) { // prevent non-program Icons from being registered
+			Icon ico = Icon.getIcon(event.getItem());
 			if (ico != null) {
 				event.setCancelled(true);
 				event.getPlayer().setItemInHand(null);
@@ -138,8 +142,25 @@ public class Computer extends Machine implements InventoryHolder {
 		return i;
 	}
 
+	/**
+	 * Create an <code>Inventory</code> that represents our Sburb client adaptation.
+	 * 
+	 * @return the <code>Inventory</code> created
+	 */
 	private Inventory getClientInventory() {
 		Inventory i = Bukkit.createInventory(this, 18, "~/SburbClient");
+		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
+		return i;
+	}
+
+	/**
+	 * Create an <code>Inventory</code> that represents our Sburb client adaptation.
+	 * 
+	 * @return the <code>Inventory</code> created
+	 */
+	private Inventory getVerify(String s) {
+		Inventory i = Bukkit.createInventory(this, 9, "~/verify/" + s);
+		i.addItem(Icon.CONFIRM.getIcon());
 		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
 		return i;
 	}

@@ -7,6 +7,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
+
 /**
  * 
  * @author Jikoo
@@ -48,7 +50,7 @@ public class Cruxtender extends Machine {
 			if (event.getBlock().getType().equals(Material.DIAMOND_BLOCK)) {
 				event.getBlock().setType(Material.BEACON);
 			}
-			event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), Icon.DOWEL.getIcon());
+			event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), CruxiteDowel.getDowel());
 		} else {
 			super.handleBreak(event);
 		}

@@ -64,6 +64,12 @@ public class SblockUser {
 	/** Boolean for ensuring that all PlayerData has been loaded. */
 	private boolean loaded = false;
 
+	/** <code>true</code> if the user is in server mode. */
+	private boolean server = false;
+
+	/** <code>true</code> if the user has a server. */
+	private boolean hasServer = false;
+
 	/**
 	 * Creates a <code>SblockUser</code> object for a <code>Player</code>.
 	 * 
@@ -470,5 +476,34 @@ public class SblockUser {
 	 */
 	public static SblockUser getUser(String userName) {
 		return UserManager.getUserManager().getUser(userName);
+	}
+
+	/**
+	 * Check if the user is in server mode.
+	 * 
+	 * @return <code>true</code> if the user is in server mode
+	 */
+	public boolean isServer() {
+		return this.server;
+	}
+
+	/**
+	 * Set the user's server mode.
+	 * 
+	 * @param b the boolean to set server mode to
+	 */
+	public boolean setServer(boolean b) {
+		if (!this.hasServer) {
+			this.server = b;
+			// if b
+			// get client, setHasServer true
+			// if !b
+			// tp to original location
+			// remove fly
+			// remove invisibility effects (teams + invis. Team = server's name?)
+			//   team color can be nothing - will (probably) be entirely heroes.
+			return true;
+		}
+		return false;
 	}
 }

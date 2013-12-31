@@ -257,7 +257,11 @@ public class EventListener extends PacketAdapter implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (!event.isCancelled() && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+		if (SblockUser.getUser(event.getPlayer().getName()).isServer()) {
+			event.setCancelled(true);
+			return;
+		}
+		if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			Block b = event.getClickedBlock();
 			if (b.getType().equals(Material.BED_BLOCK)) {
 				if (SblockUser.getUser(event.getPlayer().getName()).isGodTier()) {
