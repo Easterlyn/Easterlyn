@@ -64,6 +64,7 @@ public class PGO extends Machine {
 	 */
 	private boolean isValid(Material type) {
 		switch (type) {
+		case ACACIA_STAIRS:
 		case BIRCH_WOOD_STAIRS:
 		case BOOKSHELF:
 		case BRICK:
@@ -76,6 +77,7 @@ public class PGO extends Machine {
 		case COBBLESTONE:
 		case COBBLESTONE_STAIRS:
 		case COBBLE_WALL:
+		case DARK_OAK_STAIRS:
 		case DIAMOND_BLOCK:
 		case DIAMOND_ORE:
 		case DIRT:
@@ -107,7 +109,9 @@ public class PGO extends Machine {
 		case LAPIS_BLOCK:
 		case LAPIS_ORE:
 		case LEAVES:
+		case LEAVES_2:
 		case LOG:
+		case LOG_2:
 		case MELON_BLOCK:
 		case MOSSY_COBBLESTONE:
 		case MYCEL:
@@ -117,6 +121,7 @@ public class PGO extends Machine {
 		case NETHER_FENCE:
 		case NOTE_BLOCK:
 		case OBSIDIAN:
+		case PACKED_ICE:
 		case PUMPKIN:
 		case QUARTZ_BLOCK:
 		case QUARTZ_ORE:
@@ -133,6 +138,8 @@ public class PGO extends Machine {
 		case SPONGE:
 		case SPRUCE_WOOD_STAIRS:
 		case STAINED_CLAY:
+		case STAINED_GLASS:
+		case STAINED_GLASS_PANE:
 		case STEP:
 		case STONE:
 		case THIN_GLASS:
