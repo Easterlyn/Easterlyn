@@ -109,9 +109,10 @@ public class Computer extends Machine implements InventoryHolder {
 		if (event.getMaterial().name().contains("RECORD")) { // prevent non-program Icons from being registered
 			Icon ico = Icon.getIcon(event.getItem());
 			if (ico != null) {
+				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed "
+						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 				event.setCancelled(true);
 				event.getPlayer().setItemInHand(null);
-				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed " + ico + ChatColor.GREEN + "!");
 				SblockUser u = SblockUser.getUser(event.getPlayer().getName());
 				u.addProgram(ico.getProgramID());
 				return true;

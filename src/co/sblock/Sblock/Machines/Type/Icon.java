@@ -110,9 +110,11 @@ public enum Icon {
 	 */
 	public static Icon getIcon(ItemStack is) {
 		for (Icon i : Icon.values()) {
-			ItemStack installer = i.getInstaller();
-			if (installer != null && installer.equals(is)) {
-				return i;
+			if (i.number > 0) {
+				ItemStack installer = i.getInstaller();
+				if (installer != null && installer.equals(is)) {
+					return i;
+				}
 			}
 		}
 		return null;
