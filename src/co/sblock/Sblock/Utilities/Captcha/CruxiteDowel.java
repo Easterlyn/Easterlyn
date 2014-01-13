@@ -20,6 +20,7 @@ public class CruxiteDowel {
 	}
 	
 	public static boolean isDowel(ItemStack is)	{
+		//ADAM do this
 		return false;
 	}
 }
