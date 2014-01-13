@@ -40,7 +40,7 @@ public abstract class Machine {
 	/** Additional data stored in the <code>Machine</code>, e.g. creator name. */
 	private String data;
 	/** <code>Machine</code> facing */
-	private Direction d;
+	protected Direction d;
 	/** The <code>Shape</code> of the <code>Machine</code> */
 	protected Shape shape;
 	/** A <code>Set</code> of all <code>Locations</code> defined as part of the <code>Machine</code>. */

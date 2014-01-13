@@ -120,6 +120,12 @@ public enum MachineType {
 			im.setDisplayName(ChatColor.WHITE + "Punch Designix");
 			is.setItemMeta(im);
 			break;
+		case TOTEM_LATHE:
+			is = new ItemStack(Material.ANVIL);
+			im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + "Totem Lathe");
+			is.setItemMeta(im);
+			break;
 		case TRANSMATERIALIZER:
 			is = new ItemStack(Material.CHEST);
 			im = is.getItemMeta();

@@ -37,10 +37,10 @@ public class PunchDesignix extends Machine implements InventoryHolder	{
 	public PunchDesignix(Location l, String data, Direction d) {
 		super(l, data, d);
 		ItemStack is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.EAST.getUpperStairByte());
+		is.setDurability(d.getRelativeDirection(Direction.WEST).getUpperStairByte());
 		shape.addBlock(new Vector(1, 0, 0), is);
 		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.NORTH.getStairByte());
+		is.setDurability(d.getRelativeDirection(Direction.NORTH).getStairByte());
 		shape.addBlock(new Vector(0, 1, 0), is);
 		shape.addBlock(new Vector(1, 1, 0), is);
 		is = new ItemStack(Material.STEP);
@@ -147,7 +147,7 @@ public class PunchDesignix extends Machine implements InventoryHolder	{
 	@Override
 	protected void postAssemble() {
 		this.l.getBlock().setType(Material.QUARTZ_STAIRS);
-		this.l.getBlock().setData(Direction.WEST.getUpperStairByte());
+		this.l.getBlock().setData(d.getRelativeDirection(Direction.EAST).getUpperStairByte());
 	}
 
 	@Override

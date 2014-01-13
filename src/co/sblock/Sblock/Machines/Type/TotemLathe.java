@@ -3,6 +3,7 @@ package co.sblock.Sblock.Machines.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -48,7 +49,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		is = new ItemStack(Material.DAYLIGHT_DETECTOR);
 		shape.addBlock(new Vector(2, 1, 0), is);
 		is = new ItemStack(Material.ANVIL);
-		is.setDurability((short) 3);	//ADAM is making more work for himself with directions
+		is.setDurability((short) (d.getDirByte() % 2 + 2));
 		shape.addBlock(new Vector(3, 1, 0), is);
 		is = new ItemStack(Material.HOPPER);
 		shape.addBlock(new Vector(3, 2, 0), is);
@@ -63,8 +64,10 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+			Log.debug("Not a right click");
 			return true;
 		}
+		Log.debug("Right click, time to create inventory");
 		event.getPlayer().openInventory(getInventory());
 		return true;
 	}
@@ -92,6 +95,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	@Override
 	public Inventory getInventory() {
 		Inventory i = Bukkit.createInventory(this, InventoryType.FURNACE);
+		Log.debug("Created inventory");
 		return i;
 	}
 
