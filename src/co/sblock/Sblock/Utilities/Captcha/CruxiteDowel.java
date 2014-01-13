@@ -18,4 +18,8 @@ public class CruxiteDowel {
 		is.setItemMeta(im);
 		return is;
 	}
+	
+	public static boolean isDowel(ItemStack is)	{
+		return false;
+	}
 }

@@ -21,6 +21,7 @@ import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Machines.Type.PGO;
 import co.sblock.Sblock.Machines.Type.PunchDesignix;
+import co.sblock.Sblock.Machines.Type.TotemLathe;
 import co.sblock.Sblock.Machines.Type.Transmaterializer;
 import co.sblock.Sblock.Machines.Type.Transportalizer;
 
@@ -79,6 +80,7 @@ public class MachineManager {
 			machine = new PunchDesignix(l, data, d);
 			break;
 		case TOTEM_LATHE:
+			machine = new TotemLathe(l, data, d);
 			break;
 		case TRANSMATERIALIZER:
 			machine = new Transmaterializer(l, data, d);
