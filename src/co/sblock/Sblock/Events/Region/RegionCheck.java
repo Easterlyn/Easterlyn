@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.UserData.Region;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * Runnable used to update the <code>Region</code>s of all <code>Player</code>s.
@@ -27,6 +28,7 @@ public class RegionCheck implements Runnable {
 				}
 			}
 		} catch (NullPointerException e) {
+			Log.fineDebug("Region update error:\n" + e.getCause());
 		}
 	}
 }

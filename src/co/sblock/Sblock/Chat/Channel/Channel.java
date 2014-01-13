@@ -12,7 +12,7 @@ import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 /**
  * Defines default channel behavior
  * 
@@ -274,7 +274,7 @@ public abstract class Channel {
 		for (String failure : failures) {
 			this.listening.remove(failure);
 		}
-		Sblogger.infoNoLogName(s);
+		Log.infoNoName(s);
 	}
 	
 	public String toString()	{

@@ -61,7 +61,6 @@ public class PBO extends Machine {
 	 */
 	@Override
 	protected void postAssemble() {
-		return;
 	}
 
 }

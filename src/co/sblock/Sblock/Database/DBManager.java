@@ -15,7 +15,7 @@ import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.UserData.UserManager;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * Collection of all database-related functions.
@@ -47,7 +47,7 @@ public class DBManager {
 	 * @return true if enabled successfully
 	 */
 	public boolean enable() {
-		Sblogger.info("SblockDatabase", "Connecting to database.");
+		Log.info("SblockDatabase", "Connecting to database.");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"
@@ -56,19 +56,19 @@ public class DBManager {
 					+ Sblock.getInstance().getConfig().getString("database"),
 					Sblock.getInstance().getConfig().getString("username"),
 					Sblock.getInstance().getConfig().getString("password"));
-			Sblogger.info("SblockDatabase", "Connection established.");
+			Log.info("SblockDatabase", "Connection established.");
 		} catch (ClassNotFoundException e) {
-			Sblogger.severe("Database", "The database driver was not found."
+			Log.severe("Database", "The database driver was not found."
 							+ " Plugin functionality will be limited.");
 			return false;
 		} catch (SQLException e) {
-			Sblogger.severe("Database", "An error occurred while connecting to"
+			Log.severe("Database", "An error occurred while connecting to"
 					+ " the database. Plugin functionality will be limited.");
-			Sblogger.criticalErr(e);
+			Log.criticalErr(e);
 			return false;
 		}
 
-		Sblogger.info("SblockDatabase", "Database enabled");
+		Log.info("SblockDatabase", "Database enabled");
 		return true;
 	}
 
@@ -79,7 +79,7 @@ public class DBManager {
 		try {
 			connection.close();
 		} catch (Exception e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 		dbm = null;
 		connection = null;
@@ -193,7 +193,7 @@ public class DBManager {
 		try {
 			return connection.prepareStatement(MySQLStatement).executeQuery();
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 			return null;
 		}
 	}

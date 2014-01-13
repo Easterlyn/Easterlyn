@@ -13,8 +13,8 @@ import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
-import co.sblock.Sblock.Utilities.Sblogger;
-import co.sblock.Sblock.Utilities.LilHal;
+import co.sblock.Sblock.Utilities.Log;
+import co.sblock.Sblock.Utilities.Broadcast;
 
 /**
  * A small helper class containing all methods that access the PlayerData table.
@@ -42,7 +42,7 @@ public class PlayerData {
 		ChatUser cUser = ChatUserManager.getUserManager().removeUser(name);
 		SblockUser sUser = UserManager.getUserManager().removeUser(name);
 		if (cUser == null || sUser == null || !sUser.isLoaded()) {
-			Sblogger.warning("SblockDatabase", "Player " + name + " does not appear to have userdata loaded, skipping save.");
+			Log.warning("SblockDatabase", "Player " + name + " does not appear to have userdata loaded, skipping save.");
 			return;
 		}
 			PreparedStatement pst = null;
@@ -74,7 +74,7 @@ public class PlayerData {
 				pst.setString(14, sUser.getProgramString());
 				pst.setByte(15, sUser.getUHCMode());
 			} catch (Exception e) {
-				Sblogger.err(e);
+				Log.err(e);
 				return;
 			}
 
@@ -92,7 +92,7 @@ public class PlayerData {
 
 			new AsyncCall(pst, Call.PLAYER_LOAD).schedule();
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class PlayerData {
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class PlayerData {
 				SblockUser sUser = UserManager.getUserManager().getUser(name);
 				ChatUser cUser = ChatUserManager.getUserManager().getUser(name);
 				if (sUser == null || cUser == null || !sUser.getPlayer().isOnline()) {
-					Sblogger.warning("SblockDatabase", name + "'s SblockUser was not instantiated!");
+					Log.warning("SblockDatabase", name + "'s SblockUser was not instantiated!");
 					return;
 				}
 				sUser.setAspect(rs.getString("aspect"));
@@ -160,21 +160,21 @@ public class PlayerData {
 				UserManager.getUserManager().team(sUser.getPlayer());
 			} else {
 				String name = rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1");
-				LilHal.tellAll("It would seem that "
+				Broadcast.lilHal("It would seem that "
 				+ name + " is joining us for the first time! Please welcome them.");
 				try {
 					SblockUser.getUser(name).setLoaded();
 				} catch (NullPointerException e) {
-					Sblogger.warning("SblockDatabase", name + "'s SblockUser was not instantiated!");
+					Log.warning("SblockDatabase", name + "'s SblockUser was not instantiated!");
 				}
 			}
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		} finally {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				Sblogger.err(e);
+				Log.err(e);
 			}
 		}
 	}
@@ -200,13 +200,13 @@ public class PlayerData {
 				name = rs.getString("name");
 			}
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					Sblogger.err(e);
+					Log.err(e);
 				}
 			}
 		}
@@ -241,7 +241,7 @@ public class PlayerData {
 			c.setSender(sender);
 			new AsyncCall(pst, c).schedule();
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 	}
 
@@ -273,12 +273,12 @@ public class PlayerData {
 						+ sys + "-----------------------------------------";
 			}
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		} finally {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				Sblogger.err(e);
+				Log.err(e);
 			}
 		}
 		if (!(sender instanceof Player) || ((Player) sender).isOnline()) {

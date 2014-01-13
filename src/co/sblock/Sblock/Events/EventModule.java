@@ -11,7 +11,7 @@ import co.sblock.Sblock.Events.Region.RegionCheck;
 import co.sblock.Sblock.Events.Session.SessionCheck;
 import co.sblock.Sblock.Events.Session.Status;
 import co.sblock.Sblock.UserData.TowerData;
-import co.sblock.Sblock.Utilities.LilHal;
+import co.sblock.Sblock.Utilities.Broadcast;
 
 /**
  * @author Jikoo
@@ -88,7 +88,7 @@ public class EventModule extends Module {
 			announcement = status.getAnnouncement();
 		}
 		if (announcement != null) {
-			LilHal.tellAll(announcement);
+			Broadcast.lilHal(announcement);
 		}
 		this.status = status;
 	}

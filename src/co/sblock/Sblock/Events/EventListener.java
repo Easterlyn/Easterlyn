@@ -49,7 +49,7 @@ import co.sblock.Sblock.Events.Packets.SleepTeleport;
 import co.sblock.Sblock.SblockEffects.Cooldowns;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
@@ -165,7 +165,7 @@ public class EventListener extends PacketAdapter implements Listener {
 			ChatUserManager.getUserManager().getUser(event.getPlayer().getName())
 					.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
 		} catch (NullPointerException e) {
-			// User's Region is most likely the same, e.g. Earth, Earth_nether, and Earth_the_end all are Region.EARTH
+			Log.fineDebug("Error updating region, user is likely entering same overall region.");
 		}
 	}
 
@@ -192,7 +192,7 @@ public class EventListener extends PacketAdapter implements Listener {
 			Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
 			u.removeListening(regionC.getName());
 		} catch (NullPointerException e) {
-			// User is in the Nether or some such world
+			Log.warning("SblockChat", "User's region channel was invalid!");
 		}
 		DBManager.getDBM().saveUserData(event.getPlayer().getName());
 		Cooldowns.cleanup(event.getPlayer().getName());
@@ -312,7 +312,7 @@ public class EventListener extends PacketAdapter implements Listener {
 		try {
 			pm.sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 		scheduleSleepTeleport(p);
 	}
@@ -343,7 +343,7 @@ public class EventListener extends PacketAdapter implements Listener {
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 	}
 

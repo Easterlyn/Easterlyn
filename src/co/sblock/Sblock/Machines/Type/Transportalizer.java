@@ -227,6 +227,5 @@ public class Transportalizer extends Machine {
 	 */
 	@Override
 	protected void postAssemble() {
-		return;
 	}
 }

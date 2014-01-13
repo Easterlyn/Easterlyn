@@ -1,26 +1,24 @@
 package co.sblock.Sblock.Utilities;
 
+import java.util.logging.Logger;
+
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Sblock;
 
 /**
  * A small utility to make logging more easy on a per-module basis.
+ * <p>
+ * Extends Logger because my compiler warns when errors aren't logged.
  * 
  * @author Jikoo
  */
-public class Sblogger {
-	/** The name to prepend the log message with. */
-	private String logName;
-
+public class Log extends Logger {
 	/**
-	 * Constructor for Sblogger.
-	 * 
-	 * @param logName
-	 *            the name to prepend the log message with
+	 * @deprecated DO NOT USE.
 	 */
-	public Sblogger(String logName) {
-		this.logName = logName;
+	private Log(String arg0, String arg1) {
+		super(arg0, arg1);
 	}
 
 	/**
@@ -30,7 +28,7 @@ public class Sblogger {
 	 *            the message to log
 	 */
 	public void info(String msg) {
-		Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg);
+		Bukkit.getConsoleSender().sendMessage("[Sblock] " + msg);
 	}
 
 	/**
@@ -40,7 +38,7 @@ public class Sblogger {
 	 *            the message to log
 	 */
 	public void warning(String msg) {
-		Bukkit.getLogger().warning("[" + logName + "] " + msg);
+		getLogger("Minecraft").warning("[Sblock] " + msg);
 	}
 
 	/**
@@ -50,7 +48,29 @@ public class Sblogger {
 	 *            the message to log
 	 */
 	public void severe(String msg) {
-		Bukkit.getLogger().severe("[" + logName + "] " + msg);
+		getLogger("Minecraft").severe("[Sblock] " + msg);
+	}
+
+	/**
+	 * Fine level logging with no prepended name.
+	 * 
+	 * @param msg
+	 *            the message to log
+	 */
+	public static void fineNoName(Object msg) {
+		getLogger("Minecraft").fine(msg.toString());
+	}
+
+	/**
+	 * Fine level logging.
+	 * 
+	 * @param logName
+	 *            the name to prepend the log message with
+	 * @param msg
+	 *            the message to log
+	 */
+	public static void fine(String logName, Object msg) {
+		getLogger("Minecraft").fine("[" + logName + "] " + msg.toString());
 	}
 
 	/**
@@ -59,7 +79,7 @@ public class Sblogger {
 	 * @param msg
 	 *            the message to log
 	 */
-	public static void infoNoLogName(String msg) {
+	public static void infoNoName(String msg) {
 		Bukkit.getConsoleSender().sendMessage(msg);
 	}
 
@@ -71,8 +91,8 @@ public class Sblogger {
 	 * @param msg
 	 *            the message to log
 	 */
-	public static void info(String logName, String msg) {
-		Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg);
+	public static void info(String logName, Object msg) {
+		Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg.toString());
 	}
 
 	/**
@@ -81,8 +101,8 @@ public class Sblogger {
 	 * @param msg
 	 *            the message to log
 	 */
-	public static void warningNoLogName(String msg) {
-		Bukkit.getLogger().warning(msg);
+	public static void warningNoName(Object msg) {
+		getLogger("Minecraft").warning(msg.toString());
 	}
 
 	/**
@@ -93,8 +113,8 @@ public class Sblogger {
 	 * @param msg
 	 *            the message to log
 	 */
-	public static void warning(String logName, String msg) {
-		Bukkit.getLogger().warning("[" + logName + "] " + msg);
+	public static void warning(String logName, Object msg) {
+		getLogger("Minecraft").warning("[" + logName + "] " + msg.toString());
 	}
 
 	/**
@@ -103,8 +123,8 @@ public class Sblogger {
 	 * @param msg
 	 *            the message to log
 	 */
-	public static void severeNoLogName(String msg) {
-		Bukkit.getLogger().severe(msg);
+	public static void severeNoName(Object msg) {
+		Bukkit.getLogger().severe(msg.toString());
 	}
 
 	/**
@@ -115,8 +135,8 @@ public class Sblogger {
 	 * @param msg
 	 *            the message to log
 	 */
-	public static void severe(String logName, String msg) {
-		Bukkit.getLogger().severe("[" + logName + "] " + msg);
+	public static void severe(String logName, Object msg) {
+		Bukkit.getLogger().severe("[" + logName + "] " + msg.toString());
 	}
 
 	/**
@@ -124,7 +144,18 @@ public class Sblogger {
 	 * 
 	 * @param s the <code>String</code> to log
 	 */
-	public static void debug(String s) {
+	public static void fineDebug(Object s) {
+		if (!Sblock.getInstance().getDataFolder().getAbsolutePath().contains("Prime")) {
+			fine("DEBUG", s);
+		}
+	}
+
+	/**
+	 * Hackish debug logging that won't spam Prime server.
+	 * 
+	 * @param s the <code>String</code> to log
+	 */
+	public static void debug(Object s) {
 		if (!Sblock.getInstance().getDataFolder().getAbsolutePath().contains("Prime")) {
 			info("DEBUG", s);
 		}
@@ -149,8 +180,8 @@ public class Sblogger {
 				trace.append("\n\tat " + ste.toString());
 			}
 		}
-		warningNoLogName("Error report:\n" + trace.toString());
-		warningNoLogName("End of error report.");
+		warningNoName("Error report:\n" + trace.toString());
+		warningNoName("End of error report.");
 	}
 
 	/**
@@ -172,7 +203,7 @@ public class Sblogger {
 				trace.append("\n\tat " + ste.toString());
 			}
 		}
-		severeNoLogName("Error report:\n" + trace);
-		severeNoLogName("End of error report.");
+		severeNoName("Error report:\n" + trace);
+		severeNoName("End of error report.");
 	}
 }

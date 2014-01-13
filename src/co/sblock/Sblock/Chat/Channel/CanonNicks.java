@@ -169,7 +169,7 @@ public enum CanonNicks {
 		case KARKAT:
 			return this.color + s.toUpperCase();
 		case KURLOZ:
-			if (!s.startsWith("#")) {
+			if (s.length() == 0 || s.charAt(0) != '#') {
 				s = "";
 			}
 			return this.color + s;
@@ -348,7 +348,7 @@ public enum CanonNicks {
 		for (int i = 0; i < s.length(); i++) {
 			sb.append((char) Math.floor(Math.random() * 24399 + 16384));
 			if (Math.random() > 0.8) {
-				sb.append(" ");
+				sb.append('\u0020');
 			}
 		}
 		return sb.toString();
@@ -374,7 +374,7 @@ public enum CanonNicks {
 			} else {
 				sb.append(s1.toUpperCase());
 			}
-			sb.append(" ");
+			sb.append('\u0020');
 		}
 		return sb.substring(0, sb.length() - 1).toString();
 	}

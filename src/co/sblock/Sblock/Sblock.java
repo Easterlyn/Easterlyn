@@ -1,8 +1,8 @@
 package co.sblock.Sblock;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,6 +11,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.HandlerList;
@@ -22,39 +23,37 @@ import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.Machines.MachineModule;
 import co.sblock.Sblock.SblockEffects.EffectsModule;
 import co.sblock.Sblock.UserData.UserDataModule;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 import co.sblock.Sblock.Utilities.Counter.CounterModule;
 import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
 
-import com.google.common.base.Joiner;
-
 /**
- * <code>Sblock</code> is the base of Sblock.co's custom plugin. All features
- * handled by smaller <code>Module</code>s.
+ * Sblock is the base of Sblock.co's custom plugin. All features are
+ * handled by smaller modules.
  * 
  * @author Jikoo, FireNG, Dublek
  */
 public class Sblock extends JavaPlugin {
 
-	/** The <code>Sblock</code> instance. */
+	/** The Sblock instance. */
 	private static Sblock instance;
 
-	/** The <code>Set</code> of <code>Module</code>s enabled. */
+	/** The Set of Modules enabled. */
 	private Set<Module> modules;
 
-	/**
-	 * The <code>Map</code> of commands currently being managed and their
-	 * respective <code>Method</code>.
-	 */
+	/** The Map of commands currently being managed and their respective Method. */
 	private Map<String, Method> commandHandlers;
 
-	/** The <code>Map</code> of registered <code>CommandListeners</code>. */
+	/** The Map of registered CommandListeners. */
 	private Map<Class<? extends CommandListener>, CommandListener> listenerInstances;
 
+	/** The CommandMap used to register commands for Modules. */
+	private CommandMap cmdMap;
+
 	/**
-	 * Get the current instance of the <code>Sblock</code> plugin.
+	 * Get the current instance of the Sblock plugin.
 	 * 
-	 * @return the <code>Sblock</code> instance
+	 * @return the Sblock instance
 	 */
 	public static Sblock getInstance() {
 		return instance;
@@ -65,6 +64,16 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable() {
+		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R1.CraftServer) {
+			try {
+				Field f = org.bukkit.craftbukkit.v1_7_R1.CraftServer.class.getDeclaredField("commandMap");
+				f.setAccessible(true);
+				cmdMap = (CommandMap) f.get(Bukkit.getServer());
+			} catch (IllegalArgumentException | IllegalAccessException
+					| NoSuchFieldException | SecurityException e) {
+				Log.criticalErr(e);
+			}
+		}
 		instance = this;
 		this.modules = new HashSet<Module>();
 		this.commandHandlers = new HashMap<String, Method>();
@@ -134,37 +143,22 @@ public class Sblock extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!this.commandHandlers.containsKey(label)) {
-			this.getLogger().warning(
-					"Command /" + label + " has no associated handler.");
+			this.getLogger().warning( "Command /" + label + " has no associated handler.");
 			sender.sendMessage(ChatColor.RED
 					+ "An internal error has occurred. Please notify a member of staff of this issue as soon as possible.");
 			return true;
 		} else {
 			Method handlerMethod = this.commandHandlers.get(label);
-			Object[] params = new Object[handlerMethod.getParameterTypes().length];
 			if (sender instanceof ConsoleCommandSender
-					&& !handlerMethod.getAnnotation(SblockCommand.class)
-							.consoleFriendly()) {
+					&& !handlerMethod.getAnnotation(SblockCommand.class).consoleFriendly()) {
 				sender.sendMessage("You must be a player to use this command.");
 				return true;
 			}
-			params[0] = sender;
-			if (handlerMethod.getAnnotation(SblockCommand.class).mergeLast()
-					&& params.length - 1 <= args.length) {
-				System.arraycopy(args, 0, params, 1, params.length - 2);
-				params[params.length - 1] = Joiner.on(" ")
-						.join(Arrays.copyOfRange(args, params.length - 2,
-								args.length));
-			} else if (params.length - 1 == args.length) {
-				System.arraycopy(args, 0, params, 1, params.length - 1);
-			} else
-				// Not the right amount of arguments, GTFO
-				return false;
 			try {
 				return (Boolean) handlerMethod.invoke(this.listenerInstances
-						.get(handlerMethod.getDeclaringClass()), params);
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				Sblogger.err(e);
+						.get(handlerMethod.getDeclaringClass()), sender, args);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				Log.err(e);
 			}
 		}
 		return false;

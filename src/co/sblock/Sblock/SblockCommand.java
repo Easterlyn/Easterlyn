@@ -29,8 +29,8 @@ import java.lang.annotation.*;
  * 
  * <pre>
  * // in a class implementing CommandListener
- * &#064;SblockCommand(mergeLast = true)
- * public boolean ban(String executor, String message) {
+ * &#064;SblockCommand
+ * public boolean ban(String executor, String[] args) {
  * 	// Ban code goes here...
  * }
  * </pre>
@@ -41,16 +41,6 @@ import java.lang.annotation.*;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.METHOD)
 public @interface SblockCommand {
-
-	/**
-	 * (Optional, defaults to false)
-	 * <p>
-	 * 
-	 * Indicates that the last argument in this command method should receive
-	 * all of the remaining words the player types, allowing commands to contain
-	 * multi-word messages.
-	 */
-	public boolean mergeLast() default false;
 
 	/**
 	 * (Optional, defaults to false)

@@ -9,19 +9,19 @@ import org.bukkit.ChatColor;
  * @author Jikoo
  *
  */
-public class LilHal {
+public class Broadcast {
 
 	/**
 	 * Broadcast as Lil Hal to all users.
 	 */
-	public static void tellAll(String msg) {
+	public static void lilHal(String msg) {
 		Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + msg);
 	}
 
 	/**
-	 * Broadcast to mods+
+	 * General broadcast to all users.
 	 */
-	public static void tellMods(String msg) {
-		Bukkit.broadcast(ChatColor.RED + "[Lil Hal] Mods only: " + msg, "group.denizen");
+	public static void general(String msg) {
+		Bukkit.broadcastMessage(msg);
 	}
 }

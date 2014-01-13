@@ -89,6 +89,9 @@ public class MachineManager {
 		default:
 			break;
 		}
+		if (machine == null) {
+			return null;
+		}
 		machineKeys.put(l, machine);
 		for (Location l1 : machine.getLocations()) {
 			if (!machineBlocks.containsKey(l1)) {

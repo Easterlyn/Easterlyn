@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.UserData.SblockUser;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * A small helper class containing all methods that access the BannedPlayers table.
@@ -43,7 +43,7 @@ public class BannedPlayers {
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 	}
 
@@ -63,7 +63,7 @@ public class BannedPlayers {
 
 			new AsyncCall(pst, Call.BAN_LOAD).schedule();
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 	}
 
@@ -75,16 +75,24 @@ public class BannedPlayers {
 	 */
 	protected static void removeBan(ResultSet rs) {
 		try {
+			if (!rs.next()) {
+				// We have no record of this player's ban, but remove ban them anyway.
+				Bukkit.getOfflinePlayer(
+						rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1"))
+						.setBanned(false);
+			}
+			// Move cursor back to before first result set so while loop hits all
+			rs.absolute(0);
 			while (rs.next()) {
 				try {
 					Bukkit.unbanIP(rs.getString("ip"));
 				} catch (Exception e) {
-					// IP not saved/SQLException
+					Log.fineDebug("No IP saved for ban");
 				}
 				try {
 					Bukkit.getOfflinePlayer(rs.getString("name")).setBanned(false);
 				} catch (Exception e) {
-					// Name not saved/nonexistent player/SQLException
+					Log.fineDebug("No name saved for ban");
 				}
 				PreparedStatement pst = DBManager.getDBM().connection()
 						.prepareStatement(Call.BAN_DELETE.toString());
@@ -94,7 +102,7 @@ public class BannedPlayers {
 				new AsyncCall(pst).schedule();
 			}
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 	}
 
@@ -125,13 +133,13 @@ public class BannedPlayers {
 				}
 			}
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					Sblogger.err(e);
+					Log.err(e);
 				}
 			}
 		}

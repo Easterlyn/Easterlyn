@@ -7,6 +7,7 @@ import java.util.Map;
 
 import co.sblock.Sblock.Chat.ChatModule;
 import co.sblock.Sblock.Database.DBManager;
+import co.sblock.Sblock.Utilities.Log;
 
 public class ChannelManager {
 
@@ -32,7 +33,7 @@ public class ChannelManager {
 
 	public void createNewChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
 		this.loadChannel(name, access, creator, channelType);
-		ChatModule.slog().info("Channel " + name + " created: " + access + " " + creator);
+		Log.info("SblockChat", "Channel " + name + " created: " + access + " " + creator);
 	}
 
 	public void loadChannel(String name, AccessLevel access, String creator, ChannelType channelType) {

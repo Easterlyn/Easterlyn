@@ -73,7 +73,6 @@ public class Transmaterializer extends Machine {
 	 */
 	@Override
 	protected void postAssemble() {
-		return;
 	}
 
 }

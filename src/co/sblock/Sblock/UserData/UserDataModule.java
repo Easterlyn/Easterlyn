@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * This module holds player information and provides methods for other modules
@@ -22,7 +22,7 @@ public class UserDataModule extends Module {
 	 */
 	@Override
 	protected void onEnable() {
-		Sblogger.info("SblockUserData", "Enabling UserData Module");
+		Log.info("SblockUserData", "Enabling UserData Module");
 		// Initialize the player manager
 		UserManager.getUserManager();
 		this.registerCommands(new UserDataCommands());
@@ -31,7 +31,7 @@ public class UserDataModule extends Module {
 			DBManager.getDBM().loadUserData(p.getName());
 		}
 
-		Sblogger.info("SblockUserData", "UserData Module enabled");
+		Log.info("SblockUserData", "UserData Module enabled");
 
 	}
 

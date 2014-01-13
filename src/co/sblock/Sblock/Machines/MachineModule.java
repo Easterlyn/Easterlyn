@@ -2,7 +2,7 @@ package co.sblock.Sblock.Machines;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * @author Jikoo
@@ -20,13 +20,13 @@ public class MachineModule extends Module {
 	 */
 	@Override
 	protected void onEnable() {
-		Sblogger.info("SblockMachines", "Enabling Machines");
+		Log.info("SblockMachines", "Enabling Machines");
 		instance = this;
 		manager = new MachineManager();
 		this.registerCommands(new MachineCommand());
 		this.registerEvents(new MachineEvents());
 		DBManager.getDBM().loadAllMachines();
-		Sblogger.info("SblockMachines", "Machines enabled");
+		Log.info("SblockMachines", "Machines enabled");
 	}
 
 	/**

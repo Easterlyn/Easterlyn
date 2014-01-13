@@ -163,6 +163,5 @@ public class PGO extends Machine {
 	 */
 	@Override
 	protected void postAssemble() {
-		return;
 	}
 }

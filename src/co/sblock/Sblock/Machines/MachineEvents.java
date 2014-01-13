@@ -25,6 +25,7 @@ import co.sblock.Sblock.Machines.Type.Direction;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Machines.Type.PBO;
+import co.sblock.Sblock.Utilities.Log;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
@@ -51,8 +52,12 @@ public class MachineEvents implements Listener {
 					new PBO(event.getBlock().getLocation(), "").assemble(event);
 					break;
 				}
-				m.addMachine(event.getBlock().getLocation(), mt, mt.getData(event),
-						Direction.getFacingDirection(event.getPlayer())).assemble(event);
+				try {
+					m.addMachine(event.getBlock().getLocation(), mt, mt.getData(event),
+							Direction.getFacingDirection(event.getPlayer())).assemble(event);
+				} catch (NullPointerException e) {
+					Log.fineDebug("Invalid machine placed.");
+				}
 				break;
 			}
 		}

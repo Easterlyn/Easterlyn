@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
+import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Machines.Type.MachineType;
 
 /**
@@ -24,9 +25,16 @@ public class MachineCommand implements CommandListener {
 	 *            <code>MachineType</code>
 	 * @return true
 	 */
-	@SblockCommand(consoleFriendly = false, mergeLast = false)
-	public boolean sm(CommandSender sender, String type) {
-		((Player) sender).getInventory().addItem(MachineType.getType(type).getUniqueDrop());
+	@SblockCommand(consoleFriendly = false)
+	public boolean sm(CommandSender sender, String[] type) {
+		if (!sender.hasPermission("group.horrorterror")) {
+			sender.sendMessage(ChatMsgs.permissionDenied());
+			return true;
+		}
+		if (type == null || type.length == 0) {
+			return false;
+		}
+		((Player) sender).getInventory().addItem(MachineType.getType(type[0]).getUniqueDrop());
 		return true;
 	}
 

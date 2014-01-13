@@ -4,7 +4,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 
 public class EffectsModule extends Module {
 	/*
@@ -28,15 +28,15 @@ public class EffectsModule extends Module {
 
 	@Override
 	public void onEnable() {
-		Sblogger.info("SblockEffects", "Enabling Effects");
+		Log.info("SblockEffects", "Enabling Effects");
 		instance = this;
 		this.registerCommands(eCL);
 		this.registerEvents(eListener);
 		eL = new EffectListener();
 		eM = new EffectManager();
-		Sblogger.info("SblockEffects", "Effects check task started");
+		Log.info("SblockEffects", "Effects check task started");
 		task = new EffectScheduler().runTaskTimer(Sblock.getInstance(), 0, 1180);
-		Sblogger.info("SblockEffects", "Effects enabled");
+		Log.info("SblockEffects", "Effects enabled");
 	}
 
 	@Override

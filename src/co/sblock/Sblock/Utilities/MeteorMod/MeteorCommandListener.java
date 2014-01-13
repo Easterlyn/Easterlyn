@@ -27,9 +27,8 @@ public class MeteorCommandListener implements CommandListener {
 	 * @return <code>true</code> if <code>Command</code> was used correctly
 	 */
 	@SuppressWarnings("deprecation")
-	@SblockCommand(consoleFriendly = true, mergeLast = true)
-	public boolean meteormod(CommandSender sender, String arg) {
-		String[] args = arg.split(" ");
+	@SblockCommand(consoleFriendly = true)
+	public boolean meteormod(CommandSender sender, String[] args) {
 		Player p = (Player) sender;
 		Player pTarget = null;
 		Location target = null;

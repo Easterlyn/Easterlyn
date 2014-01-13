@@ -171,6 +171,5 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	@Override
 	protected void postAssemble() {
-		return;
 	}
 }

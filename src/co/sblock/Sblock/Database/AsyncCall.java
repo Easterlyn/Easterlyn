@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * @author Jikoo
@@ -41,13 +41,13 @@ public class AsyncCall {
 					pst.executeUpdate();
 				}
 			} catch (SQLException e) {
-				Sblogger.err(e);
+				Log.err(e);
 			} finally {
 				if (!callback) {
 					try {
 						pst.close();
 					} catch (SQLException e) {
-						Sblogger.err(e);
+						Log.err(e);
 					}
 				}
 			}

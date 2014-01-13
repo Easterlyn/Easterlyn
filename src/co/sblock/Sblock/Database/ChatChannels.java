@@ -9,7 +9,7 @@ import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
-import co.sblock.Sblock.Utilities.Sblogger;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * A small helper class containing all methods that access the ChatChannels table.
@@ -66,13 +66,13 @@ public class ChatChannels {
 
 			pst.executeUpdate();
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					Sblogger.err(e);
+					Log.err(e);
 				}
 			}
 		}
@@ -119,13 +119,13 @@ public class ChatChannels {
 				}
 			}
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					Sblogger.err(e);
+					Log.err(e);
 				}
 			}
 		}
@@ -146,7 +146,7 @@ public class ChatChannels {
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			Sblogger.err(e);
+			Log.err(e);
 		}
 	}
 }

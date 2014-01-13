@@ -26,20 +26,22 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @param sender
 	 *            the <code>CommandSender</code>
-	 * @param playerToLookup
+	 * @param target
 	 *            the <code>SblockUser</code> to look up
 	 * @return <code>true</code> if command was used correctly
 	 */
 	@SblockCommand(consoleFriendly = true)
-	public boolean profile(CommandSender sender, String playerToLookup) {
-		SblockUser user = UserManager.getUserManager().getUser(
-				playerToLookup);
+	public boolean profile(CommandSender sender, String[] target) {
+		if (target == null || target.length == 0) {
+			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
+		}
+		SblockUser user = UserManager.getUserManager().getUser(target[0]);
 		if (user == null)
 			sender.sendMessage(ChatColor.YELLOW + "User not found.");
 		else {
 			String message = 
 					PROFILE_COLOR + "-----------------------------------------\n"
-			   + ChatColor.YELLOW + playerToLookup + ": " + user.getClassType().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
+			   + ChatColor.YELLOW + target + ": " + user.getClassType().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
 			   + PROFILE_COLOR    + "-----------------------------------------\n"
 								  + "Dream planet: " + ChatColor.YELLOW + user.getDPlanet().getDisplayName() + "\n"
 			   + PROFILE_COLOR    + "Medium planet: " + ChatColor.YELLOW + user.getMPlanet().getShortName() + "\n"

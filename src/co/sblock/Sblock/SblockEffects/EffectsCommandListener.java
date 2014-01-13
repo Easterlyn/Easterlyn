@@ -14,9 +14,11 @@ import co.sblock.Sblock.Chat.ChatMsgs;
 
 public class EffectsCommandListener implements CommandListener {
 
-	@SblockCommand(consoleFriendly = false, mergeLast = true)
-	public boolean se(CommandSender sender, String text) {
-		String[] args = text.split(" ");
+	@SblockCommand(consoleFriendly = false)
+	public boolean se(CommandSender sender, String[] args) {
+		if (args == null || args.length == 0) {
+			return false;
+		}
 		Player p = (Player) sender;
 		ArrayList<String> lore = new ArrayList<String>();
 		if (!sender.hasPermission("group.horrorterror")) {
