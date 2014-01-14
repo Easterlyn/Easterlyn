@@ -14,6 +14,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -235,6 +236,21 @@ public class MachineEvents implements Listener {
 		Machine machine = (Machine) ih;
 		if (machine != null) {
 			event.setCancelled(machine.handleClick(event));
+		}
+	}
+
+	/**
+	 * An event handler for a change that is caused by or affects a
+	 * <code>Block</code> in a <code>Machine</code>.
+	 * 
+	 * @param event
+	 *            the <code>InventoryClickEvent</code>
+	 */
+	@EventHandler(ignoreCancelled = true)
+	public void handleBurnFuel(FurnaceBurnEvent event) {
+		Machine machine = m.getMachineByBlock(event.getBlock());
+		if (machine != null) {
+			event.setCancelled(machine.handleBurnFuel(event));
 		}
 	}
 

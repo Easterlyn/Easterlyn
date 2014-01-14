@@ -20,10 +20,12 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.MachineModule;
 
@@ -311,6 +313,17 @@ public abstract class Machine {
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
 		event.setResult(Result.DENY);
+		return true;
+	}
+
+	/**
+	 * Handles Furnaces in the <code>Machine</code> consuming fuel.
+	 * 
+	 * @param event
+	 *            the <code>FurnaceBurnEvent</code>
+	 * @return true if event should be cancelled
+	 */
+	public boolean handleBurnFuel(FurnaceBurnEvent event) {
 		return true;
 	}
 

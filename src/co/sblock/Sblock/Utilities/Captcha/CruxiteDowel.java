@@ -19,8 +19,18 @@ public class CruxiteDowel {
 		return is;
 	}
 	
-	public static boolean isDowel(ItemStack is)	{
-		//ADAM do this
+	public static boolean isBlankDowel(ItemStack is) {
+		if (is != null) {
+			return is.equals(getDowel());
+		}
 		return false;
+	}
+
+	public static ItemStack carve(ItemStack is) {
+		ItemStack dowel = getDowel();
+		ItemMeta im = dowel.getItemMeta();
+		im.setLore(is.getItemMeta().getLore());
+		dowel.setItemMeta(im);
+		return dowel;
 	}
 }

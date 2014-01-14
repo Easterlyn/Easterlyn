@@ -240,7 +240,7 @@ public class Captcha extends Module {
 	 * @return true if the <code>ItemStack</code> is a Punchcard
 	 */
 	public static boolean isPunchCard(ItemStack is) {
-		if (is.getType().equals(Material.PAPER) && is.hasItemMeta()
+		if (is != null && is.getType().equals(Material.PAPER) && is.hasItemMeta()
 				&& is.getItemMeta().getDisplayName().equals("Punchcard")) {
 			return true;
 		}

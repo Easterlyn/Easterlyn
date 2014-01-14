@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock.Machines.Type;
 
 import java.util.ArrayList;
