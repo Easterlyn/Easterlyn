@@ -47,7 +47,7 @@ public class DBManager {
 	 * @return true if enabled successfully
 	 */
 	public boolean enable() {
-		Log.info("SblockDatabase", "Connecting to database.");
+		Log.fineDebug("[SblockDatabase] Connecting to database.");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"
@@ -56,7 +56,7 @@ public class DBManager {
 					+ Sblock.getInstance().getConfig().getString("database"),
 					Sblock.getInstance().getConfig().getString("username"),
 					Sblock.getInstance().getConfig().getString("password"));
-			Log.info("SblockDatabase", "Connection established.");
+			Log.fineDebug("[SblockDatabase] Connection established.");
 		} catch (ClassNotFoundException e) {
 			Log.severe("Database", "The database driver was not found."
 							+ " Plugin functionality will be limited.");
@@ -68,7 +68,7 @@ public class DBManager {
 			return false;
 		}
 
-		Log.info("SblockDatabase", "Database enabled");
+		Log.fineDebug("[SblockDatabase] Database enabled");
 		return true;
 	}
 

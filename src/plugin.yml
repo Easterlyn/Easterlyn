@@ -6,30 +6,3 @@ author: Sblock Co.
 authors: [Dublek, Jikoo, FireNG]
 description: Sblock's sexy mainframe
 depend: [ProtocolLib]
-
-commands:
- meteormod:
-  usage: /meteormod <p:player> <r:radius> <e:explode> <c:countdown> <m:material>
-  description: Summon a meteor with ALL the parameters
- meteor:
-  usage: /meteor
-  description: Drop a meteor on the crosshairs
- se:
-  description: Root of all SburbEffects commands
-  usage: /se <getlore/setlore/clearlore/applyeffects/verbose> <lore>
- captcha:
-  description: Captchalogues item in hand
-  usage: /captcha
- uncaptcha:
-  description: Uncaptchas a card
-  usage: /uncaptcha
- punchcard:
-  description: Punches cards
-  usage: /punchcard
- captchadex:
-  description: GIVE.
-  usage: /captchadex
-  permission: group.horrorterror
- counter:
-  description: Starts a new XP Counter
-  usage: /counter <target> <duration>

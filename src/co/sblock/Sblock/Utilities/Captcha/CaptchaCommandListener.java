@@ -20,8 +20,8 @@ public class CaptchaCommandListener implements CommandListener {
 	 *            the <code>CommandSender</code>
 	 * @return true if the <code>CommandSender</code> is an operator
 	 */
-	@SblockCommand(consoleFriendly = false)
-	public boolean captcha(CommandSender sender) {
+	@SblockCommand(description = "Captchalogues item in hand", usage = "/captcha")
+	public boolean captcha(CommandSender sender, String[] args) {
 		if (sender.isOp()) {
 			Player p = (Player) sender;
 			ItemStack item = p.getItemInHand();
@@ -39,8 +39,8 @@ public class CaptchaCommandListener implements CommandListener {
 	 *            the <code>CommandSender</code>
 	 * @return true if the <code>CommandSender</code> is an operator
 	 */
-	@SblockCommand(consoleFriendly = false)
-	public boolean uncaptcha(CommandSender sender) {
+	@SblockCommand(description = "Uncaptchalogues item in hand", usage = "/uncaptcha")
+	public boolean uncaptcha(CommandSender sender, String[] args) {
 		if (sender.isOp()) {
 			Player p = (Player) sender;
 			ItemStack item = p.getItemInHand();
@@ -61,8 +61,8 @@ public class CaptchaCommandListener implements CommandListener {
 	 *            the <code>CommandSender</code>
 	 * @return true if the <code>CommandSender</code> is an operator
 	 */
-	@SblockCommand(consoleFriendly = false)
-	public boolean punchcard(CommandSender sender) {
+	@SblockCommand(description = "Punches card in hand", usage = "/punchcard")
+	public boolean punchcard(CommandSender sender, String[] args) {
 		if (sender.isOp()) {
 			Player p = (Player) sender;
 			ItemStack item = p.getItemInHand();
@@ -84,9 +84,10 @@ public class CaptchaCommandListener implements CommandListener {
 	 *            the <code>CommandSender</code>
 	 * @return true if the <code>CommandSender</code> is an operator
 	 */
-	@SblockCommand(consoleFriendly = false)
-	public boolean captchadex(CommandSender sender) {
-		((Player) sender).getInventory().addItem(Captchadex.createCaptchadexBook((Player) sender));
+	@SblockCommand(description = "Gives player a captchadex", usage = "/captchadex")
+	public boolean captchadex(CommandSender sender, String[] args) {
+		if (sender.isOp())
+			((Player) sender).getInventory().addItem(Captchadex.createCaptchadexBook((Player) sender));
 		return true;
 	}
 }

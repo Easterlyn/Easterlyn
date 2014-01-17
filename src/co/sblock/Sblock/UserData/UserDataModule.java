@@ -22,7 +22,7 @@ public class UserDataModule extends Module {
 	 */
 	@Override
 	protected void onEnable() {
-		Log.info("SblockUserData", "Enabling UserData Module");
+		Log.fineDebug("[SblockUserData] Enabling UserData Module");
 		// Initialize the player manager
 		UserManager.getUserManager();
 		this.registerCommands(new UserDataCommands());
@@ -31,7 +31,7 @@ public class UserDataModule extends Module {
 			DBManager.getDBM().loadUserData(p.getName());
 		}
 
-		Log.info("SblockUserData", "UserData Module enabled");
+		Log.fineDebug("[SblockUserData] UserData Module enabled");
 
 	}
 

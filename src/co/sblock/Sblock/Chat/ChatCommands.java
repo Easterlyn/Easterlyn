@@ -28,15 +28,17 @@ public class ChatCommands implements CommandListener {
 
 	private final char SPACE = '\u0020';
 
-	@SblockCommand
+	@SblockCommand(description = "List all colors.", usage = "/color")
 	public boolean color(CommandSender sender, String[] args) {
 		sender.sendMessage(ColorDef.listColors());
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "/le, now with 250% more brain pain.",
+			usage = "/lel <text>")
 	public boolean lel(CommandSender sender, String[] text) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror") || text == null) {
+		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")
+				|| text == null || text.length == 0) {
 			sender.sendMessage(ChatColor.BLACK + "Lul.");
 			return true;
 		}
@@ -56,10 +58,13 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "He's already here!",
+			usage = "/le <text>")
 	public boolean le(CommandSender sender, String[] text) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
+		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")
+				|| text == null || text.length == 0) {
 			sender.sendMessage(ChatColor.BLACK + "Le no. Le /le is reserved for le fancy people.");
+			return true;
 		}
 		StringBuilder lelOut = new StringBuilder();
 		for (String s : text) {
@@ -78,7 +83,8 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "Look up a user's profile.",
+			usage = "/whois <player>")
 	public boolean whois(CommandSender sender, String[] target) {
 		if (target == null || target.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
@@ -96,7 +102,8 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "> Be the white text guy",
+			usage = "/o <text>")
 	public boolean o(CommandSender sender, String text[]) {
 		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
 			sender.sendMessage(ChatColor.BOLD + "[o] "
@@ -106,6 +113,7 @@ public class ChatCommands implements CommandListener {
 		}
 		if (text == null || text.length == 0) {
 			sender.sendMessage(ChatColor.BOLD + "[o] If you're going to speak for me, please proceed.");
+			return true;
 		}
 		StringBuilder o = new StringBuilder(ChatColor.BOLD.toString()).append("[o] ");
 		for (String s : text) {
@@ -115,7 +123,8 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "YOU CAN'T ESCAPE THE RED MILES.",
+			usage = "/sban <target>")
 	public boolean sban(CommandSender sender, String[] args) {
 		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
 			sender.sendMessage(ChatMsgs.permissionDenied());
@@ -153,7 +162,7 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "DO THE WINDY THING.", usage = "/unsban <name|IP>")
 	public boolean unsban(CommandSender sender, String[] target) {
 		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
 			sender.sendMessage(ChatMsgs.permissionDenied());
@@ -174,7 +183,7 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "SblockChat's main command", usage = "/sc")
 	public boolean sc(CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) { // future console-friendly stuff
 			sender.sendMessage(ChatColor.DARK_RED + "No commands programmed yet! :D");

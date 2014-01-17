@@ -2,11 +2,12 @@ package co.sblock.Sblock;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * The base class for all plugin modules, allowing separate components of the
@@ -91,7 +92,7 @@ public abstract class Module {
 	 * @return a <code>Logger</code> that the plugin may use whose name is the same
 	 *         as this <code>Module</code>'s class name.
 	 */
-	public final Logger getLogger() {
-		return Logger.getLogger(this.getClass().getSimpleName());
+	public final Log getLogger() {
+		return new Log(this.getClass().getSimpleName(), null);
 	}
 }

@@ -1,6 +1,11 @@
 package co.sblock.Sblock;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 
 /**
  * Tag to place on executing methods indicating that the command should be
@@ -10,17 +15,11 @@ import java.lang.annotation.*;
  * About the command system: Command handlers are placed into a class
  * implementing the CommandListener interface, and must be registered in the
  * module through registerCommands(CommandListener).Each command handler must be
- * a public method that returns a <code>boolean</code> indicating that the
- * command is well-formed and can be run. (<code>false</code> will cause the
- * usage message to be displayed to the player.) The method must be named after
- * the command that it handles and tagged with this annotation. The first
- * parameter is the CommandSender object for who is issuing the command, and the
- * remaining parameters must be strings, one for each argument in the command.
- * <p>
- * 
- * 
- * Each command (As of now at least) must still be defined in plugin.yml, and
- * its usage message and permissions should still be placed there.
+ * a public method that returns a boolean indicating that the command is
+ * well-formed and can be run. The method must be named after the command that
+ * it handles and tagged with this annotation. The first parameter is the
+ * CommandSender object for who is issuing the command, and the second is a
+ * String[] containing all command arguments.
  * <p>
  * 
  * An example method for executing a ban command in this format: /ban (player)
@@ -35,7 +34,7 @@ import java.lang.annotation.*;
  * }
  * </pre>
  * 
- * @author FireNG
+ * @author FireNG, Jikoo
  */
 @Documented
 @Retention(value = RetentionPolicy.RUNTIME)
@@ -46,11 +45,36 @@ public @interface SblockCommand {
 	 * (Optional, defaults to false)
 	 * <p>
 	 * 
-	 * Indicates that this command may accept input from the console. If the
-	 * console executes this command, <code>null</code> will be passed to the
-	 * player parameter.
+	 * Indicates that this command may accept input from the console.
 	 * 
 	 * @return
 	 */
 	public boolean consoleFriendly() default false;
+
+	/**
+	 * Provides a description for this command in lieu of an entry in the plugin
+	 * description file.
+	 * 
+	 * @return
+	 */
+	public String description();
+
+	/**
+	 * Provides usage for this command in lieu of an entry in the plugin
+	 * description file.
+	 * 
+	 * @return
+	 */
+	public String usage();
+
+	/**
+	 * (Optional, defaults to group.hero)
+	 * <p>
+	 * 
+	 * Provides required permission for this command in lieu of an entry in the
+	 * plugin description file.
+	 * 
+	 * @return
+	 */
+	public String permission() default "group.hero";
 }

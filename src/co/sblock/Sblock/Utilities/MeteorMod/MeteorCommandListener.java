@@ -27,7 +27,8 @@ public class MeteorCommandListener implements CommandListener {
 	 * @return <code>true</code> if <code>Command</code> was used correctly
 	 */
 	@SuppressWarnings("deprecation")
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "Summon a meteor with parameters.",
+			usage = "/meteormod <p:player> <r:radius> <e:explode> <c:countdown> <m:material>")
 	public boolean meteormod(CommandSender sender, String[] args) {
 		Player p = (Player) sender;
 		Player pTarget = null;
@@ -79,8 +80,8 @@ public class MeteorCommandListener implements CommandListener {
 	 * @return <code>true</code> if <code>Command</code> was used correctly
 	 */
 	@SuppressWarnings("deprecation")
-	@SblockCommand(consoleFriendly = false)
-	public boolean meteor(CommandSender sender) {
+	@SblockCommand(description = "Drop a meteor on the crosshairs.", usage = "/meteor")
+	public boolean meteor(CommandSender sender, String[] args) {
 		Player p = (Player) sender;
 		Player pTarget = null;
 		Location target = null;

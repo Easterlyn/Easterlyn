@@ -9,7 +9,8 @@ import co.sblock.Sblock.SblockCommand;
 
 public class CounterCommandListener implements CommandListener {
 
-	@SblockCommand(consoleFriendly = true)
+	@SblockCommand(consoleFriendly = true, description = "Start a new XP counter",
+			usage = "/counter <target> <duration>")
 	public boolean counter(CommandSender sender, String[] args) {
 		if (sender.isOp()) {
 			if (args.length == 2) {

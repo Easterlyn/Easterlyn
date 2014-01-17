@@ -18,6 +18,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Database.DBManager;
 import co.sblock.Sblock.Events.EventModule;
 import co.sblock.Sblock.Machines.MachineModule;
@@ -117,17 +118,25 @@ public class Sblock extends JavaPlugin {
 			if (this.commandHandlers.containsKey(method))
 				throw new Error("Duplicate handlers for command " + method + " found in "
 						+ this.commandHandlers.get(method.getName()).getDeclaringClass().getName()
-						+ " and " + method.getDeclaringClass().getName());
+						+ " and " + listener.getClass().getName());
 			if (method.getAnnotation(SblockCommand.class) != null
-					&& method.getParameterTypes().length > 0 // Adam CommandSender, String[] args
-					&& CommandSender.class.isAssignableFrom(method.getParameterTypes()[0])) {
+					&& method.getParameterTypes().length > 1
+					&& CommandSender.class.isAssignableFrom(method.getParameterTypes()[0])
+					&& String[].class.isAssignableFrom(method.getParameterTypes()[1])) {
 				this.commandHandlers.put(method.getName(), method);
-				if (!this.getDescription().getCommands().containsKey(method.getName())) {
-					cmdMap.register(this.getDescription().getName(), new CustomCommand(method.getName()));
-				}
+				cmdMap.register(this.getDescription().getName(), createCommand(method));
 			}
 		}
 		this.listenerInstances.put(listener.getClass(), listener);
+	}
+
+	private CustomCommand createCommand(Method m) {
+		CustomCommand cmd = new CustomCommand(m.getName());
+		cmd.setDescription(m.getAnnotation(SblockCommand.class).description());
+		cmd.setUsage(m.getAnnotation(SblockCommand.class).usage());
+		cmd.setPermission(m.getAnnotation(SblockCommand.class).permission());
+		cmd.setPermissionMessage(ChatMsgs.permissionDenied());
+		return cmd;
 	}
 
 	/**
@@ -138,7 +147,7 @@ public class Sblock extends JavaPlugin {
 			try {
 				Bukkit.getPluginCommand(m.getName()).setExecutor(null);
 			} catch (NullPointerException e) {
-				Log.fineDebug(m.getName() + " was registered interally.");
+				Log.fineDebug("Command " + m.getName() + " was registered interally.");
 			}
 		}
 	}
@@ -164,8 +173,11 @@ public class Sblock extends JavaPlugin {
 				return true;
 			}
 			try {
-				return (Boolean) handlerMethod.invoke(this.listenerInstances
-						.get(handlerMethod.getDeclaringClass()), sender, args);
+				if (!(Boolean) handlerMethod.invoke(this.listenerInstances
+						.get(handlerMethod.getDeclaringClass()), sender, args)) {
+					sender.sendMessage(command.getUsage());
+				}
+				return true;
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				Log.err(e);
 			}

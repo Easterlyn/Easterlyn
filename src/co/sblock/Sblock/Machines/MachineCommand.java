@@ -7,6 +7,7 @@ import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Machines.Type.MachineType;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * @author Jikoo
@@ -25,7 +26,7 @@ public class MachineCommand implements CommandListener {
 	 *            <code>MachineType</code>
 	 * @return true
 	 */
-	@SblockCommand(consoleFriendly = false)
+	@SblockCommand(description = "Machine get", usage = "/sm <type>")
 	public boolean sm(CommandSender sender, String[] type) {
 		if (!sender.hasPermission("group.horrorterror")) {
 			sender.sendMessage(ChatMsgs.permissionDenied());
@@ -34,7 +35,11 @@ public class MachineCommand implements CommandListener {
 		if (type == null || type.length == 0) {
 			return false;
 		}
-		((Player) sender).getInventory().addItem(MachineType.getType(type[0]).getUniqueDrop());
+		try {
+			((Player) sender).getInventory().addItem(MachineType.getType(type[0]).getUniqueDrop());
+		} catch (Exception e) {
+			Log.fineDebug("Invalid machine: " + type[0]);
+		}
 		return true;
 	}
 

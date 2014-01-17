@@ -14,7 +14,8 @@ import co.sblock.Sblock.Chat.ChatMsgs;
 
 public class EffectsCommandListener implements CommandListener {
 
-	@SblockCommand(consoleFriendly = false)
+	@SblockCommand(description = "Root of all SburbEffects commands",
+			usage = "/se <getlore/setlore/clearlore/applyeffects/verbose> <lore>")
 	public boolean se(CommandSender sender, String[] args) {
 		if (args == null || args.length == 0) {
 			return false;

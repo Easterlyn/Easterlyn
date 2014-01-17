@@ -7,17 +7,13 @@ import org.bukkit.Bukkit;
 
 /**
  * A small utility to make logging more easy on a per-module basis.
- * <p>
- * Extends Logger because my compiler warns when errors aren't logged.
  * 
  * @author Jikoo
  */
 public class Log extends Logger {
-	/**
-	 * @deprecated DO NOT USE.
-	 */
-	private Log(String arg0, String arg1) {
-		super(arg0, arg1);
+
+	public Log(String name, String localization) {
+		super(name, localization);
 	}
 
 	/**
@@ -27,7 +23,7 @@ public class Log extends Logger {
 	 *            the message to log
 	 */
 	public void info(String msg) {
-		Bukkit.getConsoleSender().sendMessage("[Sblock] " + msg);
+		Bukkit.getConsoleSender().sendMessage("[" + this.getName() + "] " + msg);
 	}
 
 	/**
@@ -37,7 +33,7 @@ public class Log extends Logger {
 	 *            the message to log
 	 */
 	public void warning(String msg) {
-		getLogger("Minecraft").warning("[Sblock] " + msg);
+		getLogger("Minecraft").warning("[" + this.getName() + "] " + msg);
 	}
 
 	/**
@@ -47,7 +43,7 @@ public class Log extends Logger {
 	 *            the message to log
 	 */
 	public void severe(String msg) {
-		getLogger("Minecraft").severe("[Sblock] " + msg);
+		getLogger("Minecraft").severe("[" + this.getName() + "] " + msg);
 	}
 
 	/**
