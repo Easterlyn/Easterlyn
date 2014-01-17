@@ -8,56 +8,12 @@ description: Sblock's sexy mainframe
 depend: [ProtocolLib]
 
 commands:
- spawn:
-  usage: /spawn
-  description: Teleport to spawn!
- color:
-  usage: /color
-  description: List all colors.
- le:
-  usage: /le <text>
-  description: Well, this is a fascinating tale-- OH GOD THERE'S NO TIME, HE'S ALREADY HERE.
- lel:
-  usage: /lel <text>
-  description: /le, now with 250% more brainhurtiness
- whois:
-  usage: /whois <target>
-  description: Garner information
- o:
-  usage: /o <text>
-  description: '> Be Doc Scratch.'
- sc:
-  usage: /sc ? for help
-  description: "SburbChat's main command"
- sban:
-  usage: /<command> <target> <reason>
-  description: NO ONE ESCAPES THE RED MILES.
-  permission: group.horrorterror
- unsban:
-  usage: /<command> <target>
-  description: "Undo the effects of sban."
-  permission: group.horrorterror
- profile:
-  usage: /<command> <username>
-  description: "Shows a player's Sburb profile"
- setplayer:
-  usage: /<command> <playername> <class|aspect|land|dream> <value>
-  description: "Changes a player's information."
-  permission: group.horrorterror
- settower:
-  usage: /settower <number>
-  description: "Set tower teleport location to current for tower <number>"
-  permission: group.horrorterror
  meteormod:
   usage: /meteormod <p:player> <r:radius> <e:explode> <c:countdown> <m:material>
   description: Summon a meteor with ALL the parameters
  meteor:
   usage: /meteor
   description: Drop a meteor on the crosshairs
- sm:
-  description: Machines galore!
-  usage: /sm <machine abbreviaton or name>
-  permission: group.horrorterror
  se:
   description: Root of all SburbEffects commands
   usage: /se <getlore/setlore/clearlore/applyeffects/verbose> <lore>

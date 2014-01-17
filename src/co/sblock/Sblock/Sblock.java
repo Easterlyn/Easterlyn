@@ -29,8 +29,8 @@ import co.sblock.Sblock.Utilities.Counter.CounterModule;
 import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
 
 /**
- * Sblock is the base of Sblock.co's custom plugin. All features are
- * handled by smaller modules.
+ * Sblock is the base of Sblock.co's custom plugin. All features are handled by
+ * smaller modules.
  * 
  * @author Jikoo, FireNG, Dublek
  */
@@ -97,13 +97,13 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
-		instance = null;
 		for (Module module : this.modules) {
 			module.disable();
 		}
 		this.unregisterAllCommands();
 		HandlerList.unregisterAll(this);
 		DBManager.getDBM().disable();
+		instance = null;
 	}
 
 	/**
@@ -119,9 +119,13 @@ public class Sblock extends JavaPlugin {
 						+ this.commandHandlers.get(method.getName()).getDeclaringClass().getName()
 						+ " and " + method.getDeclaringClass().getName());
 			if (method.getAnnotation(SblockCommand.class) != null
-					&& method.getParameterTypes().length > 0
-					&& CommandSender.class.isAssignableFrom(method.getParameterTypes()[0]))
+					&& method.getParameterTypes().length > 0 // Adam CommandSender, String[] args
+					&& CommandSender.class.isAssignableFrom(method.getParameterTypes()[0])) {
 				this.commandHandlers.put(method.getName(), method);
+				if (!this.getDescription().getCommands().containsKey(method.getName())) {
+					cmdMap.register(this.getDescription().getName(), new CustomCommand(method.getName()));
+				}
+			}
 		}
 		this.listenerInstances.put(listener.getClass(), listener);
 	}
@@ -131,7 +135,11 @@ public class Sblock extends JavaPlugin {
 	 */
 	public void unregisterAllCommands() {
 		for (Method m : this.commandHandlers.values()) {
-			Bukkit.getPluginCommand(m.getName()).setExecutor(null);
+			try {
+				Bukkit.getPluginCommand(m.getName()).setExecutor(null);
+			} catch (NullPointerException e) {
+				Log.fineDebug(m.getName() + " was registered interally.");
+			}
 		}
 	}
 

@@ -29,12 +29,6 @@ public class ChatCommands implements CommandListener {
 	private final char SPACE = '\u0020';
 
 	@SblockCommand
-	public boolean spawn(CommandSender sender, String[] args) {
-		((Player) sender).performCommand("mvs");
-		return true;
-	}
-
-	@SblockCommand
 	public boolean color(CommandSender sender, String[] args) {
 		sender.sendMessage(ColorDef.listColors());
 		return true;
@@ -169,15 +163,15 @@ public class ChatCommands implements CommandListener {
 			sender.sendMessage(ChatColor.RED + "Specify a player.");
 			return true;
 		}
-			DBManager.getDBM().removeBan(target[0]);
-			if (Bukkit.getOfflinePlayer(target[0]).hasPlayedBefore()) {
-				Bukkit.getOfflinePlayer(target[0]).setBanned(false); //
-				Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
-			} else {
-				sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]
-						+ " has not played before or is an IP.");
-			}
-			return true;
+		DBManager.getDBM().removeBan(target[0]);
+		if (Bukkit.getOfflinePlayer(target[0]).hasPlayedBefore()) {
+			Bukkit.getOfflinePlayer(target[0]).setBanned(false); //
+			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
+		} else {
+			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]
+					+ " has not played before or is an IP.");
+		}
+		return true;
 	}
 
 	@SblockCommand(consoleFriendly = true)

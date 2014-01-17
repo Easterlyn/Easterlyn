@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
+import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Events.EventModule;
 
 /**
@@ -54,38 +55,34 @@ public class UserDataCommands implements CommandListener {
 	/**
 	 * Set <code>SblockUser</code> data.
 	 * 
-	 * @param sender
-	 *            the <code>CommandSender</code>
-	 * @param playerToModify
-	 *            the name of the <code>SblockUser</code> to modify
-	 * @param type
-	 *            the type of modification
-	 * @param value
-	 *            the value to set
-	 * @return <code>true</code> if command was used correctly
+	 * @param sender the <code>CommandSender</code>
+	 * @param args the String[] of arguments where 0 is player name, 1 is data
+	 *        being changed, and 2 is the new value
 	 */
 	@SblockCommand(consoleFriendly = true)
-	public boolean setplayer(CommandSender sender, String playerToModify, String type, String value)
-	{
-		if (sender instanceof Player && !sender.hasPermission("groups.horrorterror")) {
-			sender.sendMessage(ChatColor.BLACK +
-					"Such changes are not undertaken so easily by mere mortals.");
+	public boolean setplayer(CommandSender sender, String[] args) {
+		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
+			sender.sendMessage(ChatMsgs.permissionDenied());
 			return true;
 		}
-		SblockUser user = UserManager.getUserManager().getUser(playerToModify);
-		type = type.toLowerCase();
-		if(type.equals("class"))
-			user.setPlayerClass(value);
-		else if(type.equals("aspect"))
-			user.setAspect(value);
-		else if(type.replaceAll("m(edium_?)?planet", "land").equals("land"))
-			user.setMediumPlanet(value);
-		else if(type.replaceAll("d(ream_?)?planet", "dream").equals("dream"))
-			user.setDreamPlanet(value);
-		else if (type.equals("setprev")) {
+		if (args == null || args.length < 3) {
+			sender.sendMessage("setplayer <playername> <class|aspect|land|dream|prevloc> <value>");
+			return true;
+		}
+		SblockUser user = UserManager.getUserManager().getUser(args[0]);
+		args[1] = args[1].toLowerCase();
+		if(args[1].equals("class"))
+			user.setPlayerClass(args[2]);
+		else if(args[1].equals("aspect"))
+			user.setAspect(args[2]);
+		else if(args[1].replaceAll("m(edium_?)?planet", "land").equals("land"))
+			user.setMediumPlanet(args[2]);
+		else if(args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream"))
+			user.setDreamPlanet(args[2]);
+		else if (args[1].equals("prevloc")) {
 			user.setPreviousLocation(user.getPlayer().getLocation());
 		} else
-			return false;
+			sender.sendMessage("setplayer <playername> <class|aspect|land|dream|prevloc> <value>");
 		return true;
 	}
 	
@@ -100,11 +97,9 @@ public class UserDataCommands implements CommandListener {
 	 * @return <code>true</code> if command was used correctly
 	 */
 	@SblockCommand(consoleFriendly = false)
-	public boolean settower(CommandSender sender, String number)
-	{
-		if (sender instanceof Player && !sender.hasPermission("groups.horrorterror")) {
-			sender.sendMessage(ChatColor.BLACK +
-					"Such changes are not undertaken so easily by mere mortals.");
+	public boolean settower(CommandSender sender, String number) {
+		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
+			sender.sendMessage(ChatMsgs.permissionDenied());
 			return true;
 		}
 		switch (Region.uValueOf(((Player)sender).getWorld().getName())) {
@@ -118,8 +113,41 @@ public class UserDataCommands implements CommandListener {
 			}
 			return true;
 		default:
-			sender.sendMessage(ChatColor.RED + "Invalid dream world, get thee hence!");
-			return false;
+			sender.sendMessage(ChatColor.RED + "You do not appear to be in a dream planet.");
+			return true;
 		}
+	}
+
+	/**
+	 * A simple command warp wrapper to prevent users from using tower warps to other aspects.
+	 */
+	@SblockCommand(consoleFriendly = true)
+	public boolean aspectwarp(CommandSender sender, String[] args) {
+		if (sender instanceof Player && !sender.hasPermission("group.denizen")) {
+			sender.sendMessage(ChatMsgs.permissionDenied());
+		}
+		if (args == null || args.length < 2) {
+			sender.sendMessage("aspectwarp <warp> <player>: Warps player if aspect matches warp name.");
+			return true;
+		}
+		SblockUser u = SblockUser.getUser(args[1]);
+		if (u == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
+			return true;
+		}
+		if (!u.getAspect().name().equalsIgnoreCase(args[0])) {
+			return true;
+		}
+		sender.getServer().dispatchCommand(sender, "warp " + args[0] + " " + args[1]);
+		return true;
+	}
+
+	/**
+	 * Alias for spawn command to prevent confusion of new users.
+	 */
+	@SblockCommand
+	public boolean spawn(CommandSender sender, String[] args) {
+		((Player) sender).performCommand("mvs");
+		return true;
 	}
 }
