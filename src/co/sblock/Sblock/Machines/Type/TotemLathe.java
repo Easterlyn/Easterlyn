@@ -52,7 +52,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		shape.addBlock(new Vector(-2, 0, 0), is);
 		shape.addBlock(new Vector(-3, 0, 0), is);
 		is = new ItemStack(Material.FURNACE);
-		is.setDurability(d.getRelativeDirection(Direction.WEST).getChestByte());
+		is.setDurability(d.getRelativeDirection(Direction.EAST).getChestByte());
 		shape.addBlock(new Vector(-1, 1, 0), is);
 		is = new ItemStack(Material.DAYLIGHT_DETECTOR);
 		shape.addBlock(new Vector(-2, 1, 0), is);
