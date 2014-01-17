@@ -1,10 +1,9 @@
 package co.sblock.Sblock.Utilities;
 
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-
-import co.sblock.Sblock.Sblock;
 
 /**
  * A small utility to make logging more easy on a per-module basis.
@@ -145,9 +144,10 @@ public class Log extends Logger {
 	 * @param s the <code>String</code> to log
 	 */
 	public static void fineDebug(Object s) {
-		if (!Sblock.getInstance().getDataFolder().getAbsolutePath().contains("Prime")) {
+		if (!Paths.get("").toAbsolutePath().toString().contains("Prime")) {
 			fine("DEBUG", s);
 		}
+		
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class Log extends Logger {
 	 * @param s the <code>String</code> to log
 	 */
 	public static void debug(Object s) {
-		if (!Sblock.getInstance().getDataFolder().getAbsolutePath().contains("Prime")) {
+		if (!Paths.get("").toAbsolutePath().toString().contains("Prime")) {
 			info("DEBUG", s);
 		}
 	}
