@@ -7,11 +7,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.SblockChat;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
-import co.sblock.Sblock.Database.DBManager;
+import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Utilities.Log;
 /**
  * Defines default channel behavior
@@ -36,7 +36,7 @@ public abstract class Channel {
 		this.access = a;
 		this.owner = creator;
 		this.modList.add(creator);
-		DBManager.getDBM().saveChannelData(this);
+		SblockData.getDB().saveChannelData(this);
 	}
 
 	public String getName() {
@@ -258,7 +258,7 @@ public abstract class Channel {
 		for (String s : this.listening) {
 			ChatUserManager.getUserManager().getUser(s).removeListening(this.getName());
 		}
-		ChatModule.getChatModule().getChannelManager().dropChannel(this.name);
+		SblockChat.getChat().getChannelManager().dropChannel(this.name);
 	}
 
 	public void sendToAll(ChatUser sender, String s, String type) {

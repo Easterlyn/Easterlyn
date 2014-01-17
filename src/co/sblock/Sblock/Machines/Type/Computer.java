@@ -14,7 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.UserData.SblockUser;
 
 /**
@@ -35,14 +35,14 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	@Override
 	public void assemble(BlockPlaceEvent event) {
-		if (MachineModule.getInstance().getManager().hasComputer(event.getPlayer(), l)) {
+		if (SblockMachines.getMachines().getManager().hasComputer(event.getPlayer(), l)) {
 			if (event.getPlayer().hasPermission("group.horrorterror")) {
 				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
 				return;
 			}
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer placed!");
-			MachineModule.getInstance().getManager().removeMachineListing(l);
+			SblockMachines.getMachines().getManager().removeMachineListing(l);
 		}
 	}
 

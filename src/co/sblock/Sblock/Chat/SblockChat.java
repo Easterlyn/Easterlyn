@@ -5,9 +5,9 @@ import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
-public class ChatModule extends Module {
+public class SblockChat extends Module {
 
-	private static ChatModule instance;
+	private static SblockChat instance;
 	private ChannelManager cm = new ChannelManager();
 	private ChatCommands clistener = new ChatCommands();
 	private static boolean computersRequired = false;	//Hardcoded override, will be set to true come Entry
@@ -33,7 +33,7 @@ public class ChatModule extends Module {
 		return cm;
 	}
 
-	public static ChatModule getChatModule() {
+	public static SblockChat getChat() {
 		return instance;
 	}
 	

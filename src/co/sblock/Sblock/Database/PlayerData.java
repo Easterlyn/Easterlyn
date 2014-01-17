@@ -42,12 +42,13 @@ public class PlayerData {
 		ChatUser cUser = ChatUserManager.getUserManager().removeUser(name);
 		SblockUser sUser = UserManager.getUserManager().removeUser(name);
 		if (cUser == null || sUser == null || !sUser.isLoaded()) {
-			Log.warning("SblockDatabase", "Player " + name + " does not appear to have userdata loaded, skipping save.");
+			SblockData.getDB().getLogger().warning("Player " + name
+					+ " does not appear to have userdata loaded, skipping save.");
 			return;
 		}
 			PreparedStatement pst = null;
 			try {
-				pst = DBManager.getDBM().connection()
+				pst = SblockData.getDB().connection()
 						.prepareStatement(Call.PLAYER_SAVE.toString());
 				pst.setString(1, sUser.getPlayerName());
 				pst.setString(2, sUser.getClassType().getDisplayName());
@@ -86,7 +87,7 @@ public class PlayerData {
 	 */
 	protected static void loadUserData(String name) {
 		try {
-			PreparedStatement pst = DBManager.getDBM().connection()
+			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.PLAYER_LOAD.toString());
 			pst.setString(1, name);
 
@@ -101,7 +102,7 @@ public class PlayerData {
 	 */
 	protected static void deleteUser(String name) {
 		try {
-			PreparedStatement pst = DBManager.getDBM().connection()
+			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.PLAYER_DELETE.toString());
 			pst.setString(1, name);
 
@@ -124,7 +125,7 @@ public class PlayerData {
 				SblockUser sUser = UserManager.getUserManager().getUser(name);
 				ChatUser cUser = ChatUserManager.getUserManager().getUser(name);
 				if (sUser == null || cUser == null || !sUser.getPlayer().isOnline()) {
-					Log.warning("SblockDatabase", name + "'s SblockUser was not instantiated!");
+					SblockData.getDB().getLogger().warning(name + "'s SblockUser was not instantiated!");
 					return;
 				}
 				sUser.setAspect(rs.getString("aspect"));
@@ -165,7 +166,7 @@ public class PlayerData {
 				try {
 					SblockUser.getUser(name).setLoaded();
 				} catch (NullPointerException e) {
-					Log.warning("SblockDatabase", name + "'s SblockUser was not instantiated!");
+					SblockData.getDB().getLogger().warning(name + "'s SblockUser was not instantiated!");
 				}
 			}
 		} catch (SQLException e) {
@@ -190,7 +191,7 @@ public class PlayerData {
 		PreparedStatement pst = null;
 		String name = "Player";
 		try {
-			pst = DBManager.getDBM().connection().prepareStatement("SELECT * FROM PlayerData WHERE ip=?");
+			pst = SblockData.getDB().connection().prepareStatement("SELECT * FROM PlayerData WHERE ip=?");
 
 			pst.setString(1, hostAddress);
 
@@ -235,7 +236,7 @@ public class PlayerData {
 		}
 		try {
 			Call c = Call.PLAYER_LOOKUP;
-			PreparedStatement pst = DBManager.getDBM().connection().prepareStatement(c.toString());
+			PreparedStatement pst = SblockData.getDB().connection().prepareStatement(c.toString());
 			pst.setString(1, name);
 
 			c.setSender(sender);

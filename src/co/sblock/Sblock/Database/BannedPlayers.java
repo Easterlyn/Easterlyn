@@ -35,7 +35,7 @@ public class BannedPlayers {
 	protected static void addBan(SblockUser target, String reason) {
 		PreparedStatement pst;
 		try {
-			pst = DBManager.getDBM().connection().prepareStatement(Call.BAN_SAVE.toString());
+			pst = SblockData.getDB().connection().prepareStatement(Call.BAN_SAVE.toString());
 			pst.setString(1, target.getPlayerName());
 			pst.setString(2, target.getUserIP());
 			pst.setDate(3, new Date(new java.util.Date().getTime()));
@@ -56,7 +56,7 @@ public class BannedPlayers {
 	 */
 	protected static void loadAndDeleteBans(String target) {
 		try {
-			PreparedStatement pst = DBManager.getDBM().connection()
+			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.BAN_LOAD.toString());
 			pst.setString(1, target);
 			pst.setString(2, target);
@@ -87,14 +87,14 @@ public class BannedPlayers {
 				try {
 					Bukkit.unbanIP(rs.getString("ip"));
 				} catch (Exception e) {
-					Log.fineDebug("No IP saved for ban");
+					SblockData.getDB().getLogger().fine("No IP saved for ban");
 				}
 				try {
 					Bukkit.getOfflinePlayer(rs.getString("name")).setBanned(false);
 				} catch (Exception e) {
-					Log.fineDebug("No name saved for ban");
+					SblockData.getDB().getLogger().fine("No name saved for ban");
 				}
-				PreparedStatement pst = DBManager.getDBM().connection()
+				PreparedStatement pst = SblockData.getDB().connection()
 						.prepareStatement(Call.BAN_DELETE.toString());
 				pst.setString(1, rs.getString("name"));
 				pst.setString(2, rs.getString("ip"));
@@ -119,7 +119,7 @@ public class BannedPlayers {
 		PreparedStatement pst = null;
 		String ban = null;
 		try {
-			pst = DBManager.getDBM().connection().prepareStatement(Call.BAN_LOAD.toString());
+			pst = SblockData.getDB().connection().prepareStatement(Call.BAN_LOAD.toString());
 
 			pst.setString(1, name);
 			pst.setString(2, ip);

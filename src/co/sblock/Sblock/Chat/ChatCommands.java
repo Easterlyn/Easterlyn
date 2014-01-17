@@ -13,7 +13,7 @@ import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.Channel.NickChannel;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
-import co.sblock.Sblock.Database.DBManager;
+import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Broadcast;
@@ -95,7 +95,7 @@ public class ChatCommands implements CommandListener {
 		}
 		ChatUser u = ChatUserManager.getUserManager().getUser(target[0]);
 		if (u == null) {
-			DBManager.getDBM().startOfflineLookup(sender, target[0]);
+			SblockData.getDB().startOfflineLookup(sender, target[0]);
 			return true;
 		}
 		sender.sendMessage(u.toString());
@@ -152,12 +152,12 @@ public class ChatCommands implements CommandListener {
 				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName()
 						+ " has been superbanned: " + args);
 			}
-			DBManager.getDBM().addBan(victim, reason.toString());
+			SblockData.getDB().addBan(victim, reason.toString());
 			Bukkit.banIP(victim.getUserIP());
 			victim.getPlayer().kickPlayer(reason.toString());
 		}
 		Bukkit.getOfflinePlayer(target).setBanned(true);
-		DBManager.getDBM().deleteUser(target);
+		SblockData.getDB().deleteUser(target);
 		Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
 		return true;
 	}
@@ -172,7 +172,7 @@ public class ChatCommands implements CommandListener {
 			sender.sendMessage(ChatColor.RED + "Specify a player.");
 			return true;
 		}
-		DBManager.getDBM().removeBan(target[0]);
+		SblockData.getDB().removeBan(target[0]);
 		if (Bukkit.getOfflinePlayer(target[0]).hasPlayedBefore()) {
 			Bukkit.getOfflinePlayer(target[0]).setBanned(false); //
 			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
@@ -183,36 +183,31 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "SblockChat's main command", usage = "/sc")
+	@SblockCommand(description = "SblockChat's main command", usage = "/sc")
 	public boolean sc(CommandSender sender, String[] args) {
-		if (!(sender instanceof Player)) { // future console-friendly stuff
-			sender.sendMessage(ChatColor.DARK_RED + "No commands programmed yet! :D");
-			return true;
-		} else { // ingame commands
-			ChatUser user = ChatUserManager.getUserManager().getUser(sender.getName());
-			if (args == null || args.length == 0) {
-				sender.sendMessage(ChatMsgs.helpDefault());
-			} else if (args[0].equalsIgnoreCase("c")) {
-				return scC(user, args);
-			} else if (args[0].equalsIgnoreCase("l")) {
-				return scL(user, args);
-			} else if (args[0].equalsIgnoreCase("leave")) {
-				return scLeave(user, args);
-			} else if (args[0].equalsIgnoreCase("list")) {
-				return scList(user, args);
-			} else if (args[0].equalsIgnoreCase("listall")) {
-				return scListAll(user, args);
-			} else if (args[0].equalsIgnoreCase("new")) {
-				return scNew(user, args);
-			} else if(args[0].equalsIgnoreCase("nick")) {
-				return scNick(user, args);
-			} else if (args[0].equalsIgnoreCase("channel")) {
-				return scChannel(user, args);
-			} else if (args[0].equalsIgnoreCase("global")) {
-				return scGlobal(user, args);
-			} else {
-				sender.sendMessage(ChatMsgs.helpDefault());
-			}
+		ChatUser user = ChatUserManager.getUserManager().getUser(sender.getName());
+		if (args == null || args.length == 0) {
+			sender.sendMessage(ChatMsgs.helpDefault());
+		} else if (args[0].equalsIgnoreCase("c")) {
+			return scC(user, args);
+		} else if (args[0].equalsIgnoreCase("l")) {
+			return scL(user, args);
+		} else if (args[0].equalsIgnoreCase("leave")) {
+			return scLeave(user, args);
+		} else if (args[0].equalsIgnoreCase("list")) {
+			return scList(user, args);
+		} else if (args[0].equalsIgnoreCase("listall")) {
+			return scListAll(user, args);
+		} else if (args[0].equalsIgnoreCase("new")) {
+			return scNew(user, args);
+		} else if(args[0].equalsIgnoreCase("nick")) {
+			return scNick(user, args);
+		} else if (args[0].equalsIgnoreCase("channel")) {
+			return scChannel(user, args);
+		} else if (args[0].equalsIgnoreCase("global")) {
+			return scGlobal(user, args);
+		} else {
+			sender.sendMessage(ChatMsgs.helpDefault());
 		}
 		return true;
 	}
@@ -222,15 +217,16 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.helpSCC());
 			return true;
 		}
-		try {
-			if (ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
-				user.sendMessage(ChatMsgs.errorRegionChannelJoin());
-				return true;
-			}
-			user.setCurrent(ChatModule.getChatModule().getChannelManager().getChannel(args[1]));
-		} catch (NullPointerException e) {
+		Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
+		if (c == null) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
+			return true;
 		}
+		if (c.getType().equals(ChannelType.REGION)) {
+			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
+			return true;
+		}
+		user.setCurrent(c);
 		return true;
 	}
 
@@ -239,15 +235,16 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.helpSCL());
 			return true;
 		}
-		try {
-			if (ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
-				user.sendMessage(ChatMsgs.errorRegionChannelJoin());
-				return true;
-			}
-			user.addListening(ChatModule.getChatModule().getChannelManager().getChannel(args[1]));
-		} catch (NullPointerException e) {
+		Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
+		if (c == null) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
+			return true;
 		}
+		if (c.getType().equals(ChannelType.REGION)) {
+			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
+			return true;
+		}
+		user.addListening(c);
 		return true;
 	}
 
@@ -256,16 +253,17 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.helpSCLeave());
 			return true;
 		}
-		try {
-			if (ChatModule.getChatModule().getChannelManager().getChannel(args[1]).getType().equals(ChannelType.REGION)) {
-				user.sendMessage(ChatMsgs.errorRegionChannelLeave());
-				return true;
-			}
-			user.removeListening(args[1]);
-		} catch (NullPointerException e) {
+		Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
+		if (c == null) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
 			user.removeListening(args[1]);
+			return true;
 		}
+		if (c.getType().equals(ChannelType.REGION)) {
+			user.sendMessage(ChatMsgs.errorRegionChannelLeave());
+			return true;
+		}
+		user.removeListening(args[1]);
 		return true;
 		
 	}
@@ -309,10 +307,10 @@ public class ChatCommands implements CommandListener {
 		} else if (AccessLevel.getAccess(args[2]) == null) {
 			user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
 		} else {
-			ChatModule.getChatModule().getChannelManager()
+			SblockChat.getChat().getChannelManager()
 					.createNewChannel(args[1], AccessLevel.getAccess(args[2]),
 							user.getPlayerName(), ChannelType.getType(args[3]));
-			Channel c = ChatModule.getChatModule().getChannelManager().getChannel(args[1]);
+			Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
 			user.sendMessage(ChatMsgs.onChannelCreation(c));
 		}
 		return true;
@@ -480,7 +478,7 @@ public class ChatCommands implements CommandListener {
 					return true;
 				}
 			} else if (args.length >= 3 && args[1].equalsIgnoreCase("unban")) {
-				ChatModule.getChatModule().getChannelManager().getChannel(c.getName())
+				SblockChat.getChat().getChannelManager().getChannel(c.getName())
 						.unbanUser(args[2], user);
 				return true;
 			} else if (args.length >= 2 && args[1].equalsIgnoreCase("disband")) {

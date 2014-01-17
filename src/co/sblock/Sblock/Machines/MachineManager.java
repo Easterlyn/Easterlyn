@@ -12,7 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.Database.DBManager;
+import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Machines.Type.Alchemiter;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Cruxtender;
@@ -218,7 +218,7 @@ public class MachineManager {
 	 */
 	public void removeMachineListing(Location l) {
 		if (machineKeys.containsKey(l)) {
-			DBManager.getDBM().deleteMachine(machineKeys.remove(l));
+			SblockData.getDB().deleteMachine(machineKeys.remove(l));
 			ArrayList<Location> stagedRemoval = new ArrayList<Location>();
 			for (Entry<Location, Location> e : machineBlocks.entrySet()) {
 				if (e.getValue().equals(l)) {
@@ -236,7 +236,7 @@ public class MachineManager {
 	 */
 	public void saveToDb() {
 		for (Location l : machineKeys.keySet()) {
-			DBManager.getDBM().saveMachine(machineKeys.get(l));
+			SblockData.getDB().saveMachine(machineKeys.get(l));
 		}
 	}
 

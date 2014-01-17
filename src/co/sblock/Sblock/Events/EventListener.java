@@ -42,7 +42,7 @@ import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
-import co.sblock.Sblock.Database.DBManager;
+import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Events.Packets.Packet11UseBed;
 import co.sblock.Sblock.Events.Packets.Packet12Animation;
 import co.sblock.Sblock.Events.Packets.SleepTeleport;
@@ -81,11 +81,11 @@ public class EventListener extends PacketAdapter implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onServerListPing(ServerListPingEvent event) {
 		String MOTD;
-		if (EventModule.getEventModule().getStatus().hasMOTDChange()) {
-			MOTD = EventModule.getEventModule().getStatus().getMOTDChange();
+		if (SblockEvents.getEvents().getStatus().hasMOTDChange()) {
+			MOTD = SblockEvents.getEvents().getStatus().getMOTDChange();
 		} else {
 			MOTD = event.getMotd().replaceAll("Player",
-					DBManager.getDBM().getUserFromIP(event.getAddress().getHostAddress()));
+					SblockData.getDB().getUserFromIP(event.getAddress().getHostAddress()));
 		}
 		event.setMotd(MOTD);
 	}
@@ -105,7 +105,7 @@ public class EventListener extends PacketAdapter implements Listener {
 			return;
 		case KICK_BANNED:
 		case KICK_OTHER:
-			String reason = DBManager.getDBM().getBanReason(
+			String reason = SblockData.getDB().getBanReason(
 					event.getPlayer().getName(),
 					event.getAddress().getHostAddress());
 			if (reason != null) {
@@ -125,7 +125,7 @@ public class EventListener extends PacketAdapter implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		DBManager.getDBM().loadUserData(event.getPlayer().getName());
+		SblockData.getDB().loadUserData(event.getPlayer().getName());
 	}
 
 
@@ -149,7 +149,7 @@ public class EventListener extends PacketAdapter implements Listener {
 			event.getPlayer().sendMessage(ChatColor.RED
 					+ "[Lil Hal] Your Sblock playerdata appears to not be loaded."
 					+ "\nI'll take care of that for you, but make sure your /profile is correct.");
-			DBManager.getDBM().loadUserData(event.getPlayer().getName());
+			SblockData.getDB().loadUserData(event.getPlayer().getName());
 		}
 	}
 
@@ -165,7 +165,8 @@ public class EventListener extends PacketAdapter implements Listener {
 			ChatUserManager.getUserManager().getUser(event.getPlayer().getName())
 					.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
 		} catch (NullPointerException e) {
-			Log.fineDebug("Error updating region, user is likely entering same overall region.");
+			SblockEvents.getEvents().getLogger().fine(
+					"Error updating region, user is likely entering same overall region.");
 		}
 	}
 
@@ -192,9 +193,9 @@ public class EventListener extends PacketAdapter implements Listener {
 			Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
 			u.removeListening(regionC.getName());
 		} catch (NullPointerException e) {
-			Log.warning("SblockChat", "User's region channel was invalid!");
+			SblockEvents.getEvents().getLogger().warning("User's region channel was invalid!");
 		}
-		DBManager.getDBM().saveUserData(event.getPlayer().getName());
+		SblockData.getDB().saveUserData(event.getPlayer().getName());
 		Cooldowns.cleanup(event.getPlayer().getName());
 	}
 

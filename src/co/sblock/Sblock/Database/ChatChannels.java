@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.SblockChat;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
@@ -30,7 +30,7 @@ public class ChatChannels {
 	public static void saveChannelData(Channel c) {
 		PreparedStatement pst = null;
 		try {
-			pst = DBManager.getDBM().connection().prepareStatement(Call.CHANNEL_SAVE.toString());
+			pst = SblockData.getDB().connection().prepareStatement(Call.CHANNEL_SAVE.toString());
 
 			pst.setString(1, c.getName());
 			pst.setString(2, c.getType().name());
@@ -84,17 +84,17 @@ public class ChatChannels {
 	public static void loadAllChannelData() {
 		PreparedStatement pst = null;
 		try {
-			pst = DBManager.getDBM().connection().prepareStatement(Call.CHANNEL_LOADALL.toString());
+			pst = SblockData.getDB().connection().prepareStatement(Call.CHANNEL_LOADALL.toString());
 
 			ResultSet rs = pst.executeQuery();
 
-			ChannelManager cm = ChatModule.getChatModule().getChannelManager();
+			ChannelManager cm = SblockChat.getChat().getChannelManager();
 
 			while (rs.next()) {
 				cm.loadChannel(rs.getString("name"),
 						AccessLevel.valueOf(rs.getString("access")), rs.getString("owner"),
 						ChannelType.valueOf(rs.getString("channelType")));
-				Channel c = ChatModule.getChatModule().getChannelManager()
+				Channel c = SblockChat.getChat().getChannelManager()
 						.getChannel(rs.getString("name"));
 				String list = rs.getString("modList");
 				if (list != null) {
@@ -140,7 +140,7 @@ public class ChatChannels {
 	 */
 	public static void deleteChannel(String channelName) {
 		try {
-			PreparedStatement pst = DBManager.getDBM().connection()
+			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.CHANNEL_DELETE.toString());
 			pst.setString(1, channelName);
 

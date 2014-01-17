@@ -3,7 +3,7 @@ package co.sblock.Sblock.Events.Packets;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -43,9 +43,9 @@ public class SleepTeleport implements Runnable {
 				if (user.getDPlanet().equals(DreamPlanet.NONE)) {
 					break;
 				} else {
-					EventModule.getEventModule().getListener().teleports.add(p.getName());
+					SblockEvents.getEvents().getListener().teleports.add(p.getName());
 					if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
-						p.teleport(EventModule.getEventModule().getTowerData()
+						p.teleport(SblockEvents.getEvents().getTowerData()
 								.getLocation(user.getTower(), user.getDPlanet()));
 					} else {
 						p.teleport(user.getPreviousLocation());
@@ -54,7 +54,7 @@ public class SleepTeleport implements Runnable {
 				break;
 			case OUTERCIRCLE:
 			case INNERCIRCLE:
-				EventModule.getEventModule().getListener().teleports.add(p.getName());
+				SblockEvents.getEvents().getListener().teleports.add(p.getName());
 				if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
 					p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
 				} else {
@@ -65,9 +65,9 @@ public class SleepTeleport implements Runnable {
 				break;
 			}
 
-			EventModule.getEventModule().getListener().fakeWakeUp(p);
+			SblockEvents.getEvents().getListener().fakeWakeUp(p);
 
 		}
-		EventModule.getEventModule().getListener().tasks.remove(p.getName());
+		SblockEvents.getEvents().getListener().tasks.remove(p.getName());
 	}
 }

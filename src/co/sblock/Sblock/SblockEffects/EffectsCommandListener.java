@@ -51,13 +51,13 @@ public class EffectsCommandListener implements CommandListener {
 			return true;
 		} else if (args[0].equalsIgnoreCase("applyeffects") && !(args[1].equals(null))) {
 			Player target = Bukkit.getServer().getPlayer(args[1]);
-			ArrayList<String> playerLore = EffectsModule.getInstance().getEffectManager().scan(target);
+			ArrayList<String> playerLore = SblockEffects.getEffects().getEffectManager().scan(target);
 			p.sendMessage(target.getName() + playerLore);
-			EffectsModule.getInstance().getEffectManager().applyPassiveEffects(playerLore, target);
+			SblockEffects.getEffects().getEffectManager().applyPassiveEffects(playerLore, target);
 			return true;
 		} else if (args[0].equalsIgnoreCase("verbose")) {
-			EffectsModule.verbose = EffectsModule.verbose?false:true;
-			p.sendMessage("Verbose mode = " + EffectsModule.verbose);
+			SblockEffects.verbose = SblockEffects.verbose?false:true;
+			p.sendMessage("Verbose mode = " + SblockEffects.verbose);
 			return true;
 		} else if (args[0].equalsIgnoreCase("list")) {
 			sender.sendMessage(ChatColor.GREEN + "Active Effects:\n" +

@@ -16,10 +16,10 @@ import co.sblock.Sblock.Utilities.Broadcast;
 /**
  * @author Jikoo
  */
-public class EventModule extends Module {
+public class SblockEvents extends Module {
 
 	/** The <code>EventModule</code> instance. */
-	private static EventModule instance;
+	private static SblockEvents instance;
 	/** The <code>TowerData</code>. */
 	private TowerData towers;
 	/** The <code>EventListener</code>. */
@@ -68,7 +68,7 @@ public class EventModule extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	private int initiateSessionChecks() {
-		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new SessionCheck(), 0L, 6000L);
+		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new SessionCheck(), 0L, 1200L);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class EventModule extends Module {
 	 * 
 	 * @return the <code>EventModule</code> instance.
 	 */
-	public static EventModule getEventModule() {
+	public static SblockEvents getEvents() {
 		return instance;
 	}
 }

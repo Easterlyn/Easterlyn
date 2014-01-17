@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import co.sblock.Sblock.Chat.ChatModule;
-import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Utilities.Log;
+import co.sblock.Sblock.Chat.SblockChat;
+import co.sblock.Sblock.Database.SblockData;
 
 public class ChannelManager {
 
@@ -16,24 +15,24 @@ public class ChannelManager {
 	private List<String> noSave = new ArrayList<String>();
 
 	public void loadAllChannels() {
-		DBManager.getDBM().loadAllChannelData();
+		SblockData.getDB().loadAllChannelData();
 	}
 
 	public void saveAllChannels() {
 		for (Channel c : channelList.values()) {
 			if (!(noSave.contains(c.getName()) || c instanceof RegionChannel
 				/*	|| c instanceof TempChannel*/))
-				DBManager.getDBM().saveChannelData(c);
+				SblockData.getDB().saveChannelData(c);
 		}
 	}
 
 	public void saveChannel(Channel c) {
-		DBManager.getDBM().saveChannelData(c);
+		SblockData.getDB().saveChannelData(c);
 	}
 
 	public void createNewChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
 		this.loadChannel(name, access, creator, channelType);
-		Log.info("SblockChat", "Channel " + name + " created: " + access + " " + creator);
+		SblockChat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
 	}
 
 	public void loadChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
@@ -86,7 +85,7 @@ public class ChannelManager {
 
 	public void dropChannel(String channelName) {
 		ChannelManager.getChannelList().remove(channelName);
-		DBManager.getDBM().deleteChannel(channelName);
+		SblockData.getDB().deleteChannel(channelName);
 	}
 
 	public static Map<String, Channel> getChannelList() {
@@ -106,6 +105,6 @@ public class ChannelManager {
 	}
 
 	public static ChannelManager getChannelManager() {
-		return ChatModule.getChatModule().getChannelManager();
+		return SblockChat.getChat().getChannelManager();
 	}
 }

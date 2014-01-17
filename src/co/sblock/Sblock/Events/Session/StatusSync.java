@@ -3,7 +3,7 @@
  */
 package co.sblock.Sblock.Events.Session;
 
-import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Events.SblockEvents;
 
 /**
  * Changes <code>Status</code> synchronously to prevent concurrent file
@@ -22,7 +22,7 @@ public class StatusSync implements Runnable {
 	 */
 	@Override
 	public void run() {
-		EventModule.getEventModule().changeStatus(s);
+		SblockEvents.getEvents().changeStatus(s);
 	}
 
 }

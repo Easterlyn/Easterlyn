@@ -17,6 +17,19 @@ public class Log extends Logger {
 	}
 
 	/**
+	 * Hackish debug logging that won't spam Prime server.
+	 * 
+	 * @param s the <code>String</code> to log
+	 */
+	public void debug(Object s) {
+		if (Paths.get("").toAbsolutePath().toString().contains("Prime")) {
+			fine(s.toString());
+		} else {
+			info("DEBUG: " + s.toString());
+		}
+	}
+
+	/**
 	 * Info level logging.
 	 * 
 	 * @param msg
@@ -24,26 +37,6 @@ public class Log extends Logger {
 	 */
 	public void info(String msg) {
 		Bukkit.getConsoleSender().sendMessage("[" + this.getName() + "] " + msg);
-	}
-
-	/**
-	 * Warning level logging.
-	 * 
-	 * @param msg
-	 *            the message to log
-	 */
-	public void warning(String msg) {
-		getLogger("Minecraft").warning("[" + this.getName() + "] " + msg);
-	}
-
-	/**
-	 * Severe level logging.
-	 * 
-	 * @param msg
-	 *            the message to log
-	 */
-	public void severe(String msg) {
-		getLogger("Minecraft").severe("[" + this.getName() + "] " + msg);
 	}
 
 	/**
@@ -57,18 +50,6 @@ public class Log extends Logger {
 	}
 
 	/**
-	 * Fine level logging.
-	 * 
-	 * @param logName
-	 *            the name to prepend the log message with
-	 * @param msg
-	 *            the message to log
-	 */
-	public static void fine(String logName, Object msg) {
-		getLogger("Minecraft").fine("[" + logName + "] " + msg.toString());
-	}
-
-	/**
 	 * Info level logging with no prepended name.
 	 * 
 	 * @param msg
@@ -76,85 +57,6 @@ public class Log extends Logger {
 	 */
 	public static void infoNoName(String msg) {
 		Bukkit.getConsoleSender().sendMessage(msg);
-	}
-
-	/**
-	 * Info level logging.
-	 * 
-	 * @param logName
-	 *            the name to prepend the log message with
-	 * @param msg
-	 *            the message to log
-	 */
-	public static void info(String logName, Object msg) {
-		Bukkit.getConsoleSender().sendMessage("[" + logName + "] " + msg.toString());
-	}
-
-	/**
-	 * Warning level logging with no prepended name.
-	 * 
-	 * @param msg
-	 *            the message to log
-	 */
-	public static void warningNoName(Object msg) {
-		getLogger("Minecraft").warning(msg.toString());
-	}
-
-	/**
-	 * Warning level logging.
-	 * 
-	 * @param logName
-	 *            the name to prepend the log message with
-	 * @param msg
-	 *            the message to log
-	 */
-	public static void warning(String logName, Object msg) {
-		getLogger("Minecraft").warning("[" + logName + "] " + msg.toString());
-	}
-
-	/**
-	 * Severe level logging with no prepended name.
-	 * 
-	 * @param msg
-	 *            the message to log
-	 */
-	public static void severeNoName(Object msg) {
-		Bukkit.getLogger().severe(msg.toString());
-	}
-
-	/**
-	 * Severe level logging.
-	 * 
-	 * @param logName
-	 *            the name to prepend the log message with
-	 * @param msg
-	 *            the message to log
-	 */
-	public static void severe(String logName, Object msg) {
-		Bukkit.getLogger().severe("[" + logName + "] " + msg.toString());
-	}
-
-	/**
-	 * Hackish debug logging that won't spam Prime server.
-	 * 
-	 * @param s the <code>String</code> to log
-	 */
-	public static void fineDebug(Object s) {
-		if (!Paths.get("").toAbsolutePath().toString().contains("Prime")) {
-			fine("DEBUG", s);
-		}
-		
-	}
-
-	/**
-	 * Hackish debug logging that won't spam Prime server.
-	 * 
-	 * @param s the <code>String</code> to log
-	 */
-	public static void debug(Object s) {
-		if (!Paths.get("").toAbsolutePath().toString().contains("Prime")) {
-			info("DEBUG", s);
-		}
 	}
 
 	/**
@@ -176,8 +78,8 @@ public class Log extends Logger {
 				trace.append("\n\tat " + ste.toString());
 			}
 		}
-		warningNoName("Error report:\n" + trace.toString());
-		warningNoName("End of error report.");
+		Logger.getLogger("Minecraft").warning("Error report:\n" + trace.toString()
+				+ "\nEnd of error report.");
 	}
 
 	/**
@@ -199,7 +101,7 @@ public class Log extends Logger {
 				trace.append("\n\tat " + ste.toString());
 			}
 		}
-		severeNoName("Error report:\n" + trace);
-		severeNoName("End of error report.");
+		Logger.getLogger("Minecraft").severe("Error report:\n" + trace.toString()
+				+ "\nEnd of error report.");
 	}
 }

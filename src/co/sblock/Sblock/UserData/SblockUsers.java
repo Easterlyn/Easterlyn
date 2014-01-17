@@ -4,8 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Module;
-import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Utilities.Log;
+import co.sblock.Sblock.Database.SblockData;
 
 /**
  * This module holds player information and provides methods for other modules
@@ -13,7 +12,7 @@ import co.sblock.Sblock.Utilities.Log;
  * 
  * @author FireNG, Dublek
  */
-public class UserDataModule extends Module {
+public class SblockUsers extends Module {
 
 	/**
 	 * Method onEnable.
@@ -22,16 +21,16 @@ public class UserDataModule extends Module {
 	 */
 	@Override
 	protected void onEnable() {
-		Log.fineDebug("[SblockUserData] Enabling UserData Module");
+		getLogger().fine("Enabling UserData Module");
 		// Initialize the player manager
 		UserManager.getUserManager();
 		this.registerCommands(new UserDataCommands());
 
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			DBManager.getDBM().loadUserData(p.getName());
+			SblockData.getDB().loadUserData(p.getName());
 		}
 
-		Log.fineDebug("[SblockUserData] UserData Module enabled");
+		getLogger().fine("[SblockUserData] UserData Module enabled");
 
 	}
 

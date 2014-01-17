@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.Utilities.Log;
 
@@ -26,7 +26,7 @@ public class TowerLocs {
 	protected static void loadTowerData() {
 		PreparedStatement pst = null;
 		try {
-			pst = DBManager.getDBM().connection().prepareStatement(Call.TOWER_LOAD.toString());
+			pst = SblockData.getDB().connection().prepareStatement(Call.TOWER_LOAD.toString());
 
 			ResultSet rs = pst.executeQuery();
 
@@ -34,7 +34,7 @@ public class TowerLocs {
 				String towerID = rs.getString("towerID");
 				String location = rs.getString("location");
 				if (towerID != null && location != null) {
-					EventModule.getEventModule().getTowerData().add(towerID, location);
+					SblockEvents.getEvents().getTowerData().add(towerID, location);
 				}
 			}
 		} catch (SQLException e) {
@@ -58,7 +58,7 @@ public class TowerLocs {
 		PreparedStatement pst = null;
 		for (byte i = 0; i < 8; i++) {
 			try {
-				pst = DBManager.getDBM().connection().prepareStatement(Call.TOWER_SAVE.toString());
+				pst = SblockData.getDB().connection().prepareStatement(Call.TOWER_SAVE.toString());
 
 				pst.setString(1, "Derse" + i);
 				pst.setString(2, towers.getLocString("Derse", i));
@@ -76,7 +76,7 @@ public class TowerLocs {
 				}
 			}
 			try {
-				pst = DBManager.getDBM().connection().prepareStatement(Call.TOWER_SAVE.toString());
+				pst = SblockData.getDB().connection().prepareStatement(Call.TOWER_SAVE.toString());
 
 				pst.setString(1, "Prospit" + i);
 				pst.setString(2, towers.getLocString("Prospit", i));

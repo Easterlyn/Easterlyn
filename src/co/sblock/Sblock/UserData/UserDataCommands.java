@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
 import co.sblock.Sblock.Chat.ChatMsgs;
-import co.sblock.Sblock.Events.EventModule;
+import co.sblock.Sblock.Events.SblockEvents;
 
 /**
  * Class for holding commands associated with this module.
@@ -107,7 +107,7 @@ public class UserDataCommands implements CommandListener {
 		case INNERCIRCLE:
 		case OUTERCIRCLE:
 			try {
-				EventModule.getEventModule().getTowerData()
+				SblockEvents.getEvents().getTowerData()
 						.add(((Player)sender).getLocation(), Byte.valueOf(number[0]));
 			} catch (NumberFormatException e) {
 				sender.sendMessage(ChatColor.RED + number[0] + " is not a valid number! Remember, 0-7.");

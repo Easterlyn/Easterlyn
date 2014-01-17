@@ -7,7 +7,6 @@ import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Machines.Type.MachineType;
-import co.sblock.Sblock.Utilities.Log;
 
 /**
  * @author Jikoo
@@ -38,7 +37,7 @@ public class MachineCommand implements CommandListener {
 		try {
 			((Player) sender).getInventory().addItem(MachineType.getType(type[0]).getUniqueDrop());
 		} catch (Exception e) {
-			Log.fineDebug("Invalid machine: " + type[0]);
+			SblockMachines.getMachines().getLogger().fine("Invalid machine: " + type[0]);
 		}
 		return true;
 	}

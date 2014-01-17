@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import co.sblock.Sblock.Machines.MachineManager;
-import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Utilities.Log;
 
@@ -29,13 +29,14 @@ public class Machines {
 	public static void saveMachine(Machine m) {
 		PreparedStatement pst = null;
 		try {
-			pst = DBManager.getDBM().connection().prepareStatement(Call.MACHINE_SAVE.toString());
+			pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_SAVE.toString());
 
 			try {
 				pst.setString(1, m.getLocationString());
 				pst.setString(2, m.getType().getAbbreviation());
 			} catch (NullPointerException e) {
-				Log.warning("SblockMachines", "A Machine appears to have invalid data, skipping save.");
+				SblockData.getDB().getLogger().warning(
+						"A Machine appears to have invalid data, skipping save.");
 				return;
 			}
 			pst.setString(3, m.getData());
@@ -64,7 +65,7 @@ public class Machines {
 	 */
 	public static void deleteMachine(Machine m) {
 		try {
-			PreparedStatement pst = DBManager.getDBM().connection().prepareStatement(Call.MACHINE_DELETE.toString());
+			PreparedStatement pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_DELETE.toString());
 			pst.setString(1, m.getLocationString());
 
 			new AsyncCall(pst).schedule();
@@ -79,10 +80,10 @@ public class Machines {
 	public static void loadAllMachines() {
 		PreparedStatement pst = null;
 		try {
-			pst = DBManager.getDBM().connection().prepareStatement(Call.MACHINE_LOADALL.toString());
+			pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_LOADALL.toString());
 
 			ResultSet rs = pst.executeQuery();
-			MachineManager mm = MachineModule.getInstance().getManager();
+			MachineManager mm = SblockMachines.getMachines().getManager();
 
 			while (rs.next()) {
 				mm.loadMachine(rs.getString("location"), rs.getString("type"), rs.getString("data"), rs.getByte("face"));

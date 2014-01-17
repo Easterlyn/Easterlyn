@@ -1,16 +1,15 @@
 package co.sblock.Sblock.Machines;
 
 import co.sblock.Sblock.Module;
-import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Utilities.Log;
+import co.sblock.Sblock.Database.SblockData;
 
 /**
  * @author Jikoo
  */
-public class MachineModule extends Module {
+public class SblockMachines extends Module {
 
 	/** The <code>MachineModule</code> instance. */
-	private static MachineModule instance;
+	private static SblockMachines instance;
 
 	/** The <code>MachineManager</code>. */
 	private MachineManager manager;
@@ -20,13 +19,13 @@ public class MachineModule extends Module {
 	 */
 	@Override
 	protected void onEnable() {
-		Log.info("SblockMachines", "Enabling Machines");
+		getLogger().fine("Enabling Machines");
 		instance = this;
 		manager = new MachineManager();
 		this.registerCommands(new MachineCommand());
 		this.registerEvents(new MachineEvents());
-		DBManager.getDBM().loadAllMachines();
-		Log.info("SblockMachines", "Machines enabled");
+		SblockData.getDB().loadAllMachines();
+		getLogger().fine("Machines enabled");
 	}
 
 	/**
@@ -53,7 +52,7 @@ public class MachineModule extends Module {
 	 * 
 	 * @return the <code>MachineModule</code>
 	 */
-	public static MachineModule getInstance() {
+	public static SblockMachines getMachines() {
 		return instance;
 	}
 }

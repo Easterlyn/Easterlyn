@@ -7,9 +7,7 @@ public enum AccessLevel {
 		access = access.toUpperCase();
 		try {
 			return AccessLevel.valueOf(access);
-		} catch (IllegalStateException e) {
-			return null;
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalStateException | IllegalArgumentException e) {
 			return null;
 		}
 	}

@@ -19,10 +19,10 @@ import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
-import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Database.SblockData;
+import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.MachineType;
-import co.sblock.Sblock.SblockEffects.EffectsModule;
+import co.sblock.Sblock.SblockEffects.SblockEffects;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -105,10 +105,10 @@ public class ChatUser {
 	 *         of a <code>Computer</code>.
 	 */
 	public boolean hasComputerAccess() {
-		if (EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains("Computer")) {
+		if (SblockEffects.getEffects().getEffectManager().scan(this.getPlayer()).contains("Computer")) {
 			return true;
 		}
-		for (Location l : MachineModule.getInstance().getManager().getMachines(MachineType.COMPUTER)) {
+		for (Location l : SblockMachines.getMachines().getManager().getMachines(MachineType.COMPUTER)) {
 			// distanceSquared <= maximumDistance^2. In this case, maximumDistance = 10.
 			if (this.getPlayer().getLocation().distanceSquared(l) <= 100) {
 				return true;
@@ -221,7 +221,7 @@ public class ChatUser {
 	 * @return <code>Channel</code>
 	 */
 	public Channel getCurrent() {
-		return ChatModule.getChatModule().getChannelManager().getChannel(current);
+		return SblockChat.getChat().getChannelManager().getChannel(current);
 	}
 
 	/**
@@ -299,7 +299,7 @@ public class ChatUser {
 	 *            the name of the <code>Channel</code> to remove
 	 */
 	public void removeListening(String cName) {
-		Channel c = ChatModule.getChatModule().getChannelManager().getChannel(cName);
+		Channel c = SblockChat.getChat().getChannelManager().getChannel(cName);
 		if (c == null) {
 			this.sendMessage(ChatMsgs.errorInvalidChannel(cName));
 			this.listening.remove(cName);
@@ -324,7 +324,7 @@ public class ChatUser {
 	 */
 
 	public void removeListeningQuit(String cName) {
-		Channel c = ChatModule.getChatModule().getChannelManager()
+		Channel c = SblockChat.getChat().getChannelManager()
 				.getChannel(cName);
 		if (c != null) {
 			c.removeListening(this.getPlayerName());
@@ -396,7 +396,7 @@ public class ChatUser {
 	}
 
 	public boolean getComputerAccess() {
-		if (!ChatModule.getComputerRequired()) {
+		if (!SblockChat.getComputerRequired()) {
 			// Overrides the computer limitation for pre-Entry shenanigans
 			return true;
 		}
@@ -404,8 +404,8 @@ public class ChatUser {
 	}
 
 	public void setComputerAccess() {
-		if (EffectsModule.getInstance().getEffectManager().scan(this.getPlayer()).contains(PassiveEffect.COMPUTER)
-				|| MachineModule.getInstance().getManager().isByComputer(getPlayer(), 10)) {
+		if (SblockEffects.getEffects().getEffectManager().scan(this.getPlayer()).contains(PassiveEffect.COMPUTER)
+				|| SblockMachines.getMachines().getManager().isByComputer(getPlayer(), 10)) {
 			computerAccess = true;
 		} else {
 			computerAccess = false;
@@ -433,7 +433,7 @@ public class ChatUser {
 		ChatUser sender = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
 		String fullmsg = event.getMessage();
 		String outputmessage = fullmsg;
-		Channel sendto = ChatModule.getChatModule().getChannelManager().getChannel(sender.current);
+		Channel sendto = SblockChat.getChat().getChannelManager().getChannel(sender.current);
 
 		if (sender.isMute()) {
 			sender.sendMessage(ChatMsgs.isMute());
@@ -444,8 +444,8 @@ public class ChatUser {
 			int space = fullmsg.indexOf(" ");
 			String newChannel = fullmsg.substring(1, space);
 			//sender.sendMessage("\"" + newChannel + "\"");
-			if (ChatModule.getChatModule().getChannelManager().isValidChannel(newChannel)) {
-				sendto = ChatModule.getChatModule().getChannelManager().getChannel(newChannel);
+			if (SblockChat.getChat().getChannelManager().isValidChannel(newChannel)) {
+				sendto = SblockChat.getChat().getChannelManager().getChannel(newChannel);
 				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender)) {
 					// User not approved in channel
 					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sendto.getName()));
@@ -541,7 +541,7 @@ public class ChatUser {
 	public void sendMessageFromChannel(String s, Channel c, String type) {
 		Player p = this.getPlayer();
 		if (p == null) {
-			DBManager.getDBM().saveUserData(playerName);
+			SblockData.getDB().saveUserData(playerName);
 			c.removeListening(playerName);
 			return;
 		}
@@ -769,7 +769,7 @@ public class ChatUser {
 		 */
 		@Override
 		public void run() {
-			Channel c = ChatModule.getChatModule()
+			Channel c = SblockChat.getChat()
 					.getChannelManager().getChannel(channelName);
 			if (c != null && user.getPlayer().isOnline()) {
 				user.setCurrent(c);

@@ -33,13 +33,10 @@ public class EffectManager {
 			}
 		}
 		for (ItemStack i : iSA) { // Armor
-			try {
-				// System.out.println(i.getType().toString());
-				if (i.hasItemMeta() && i.getItemMeta().hasLore()) {
-					tempLore.addAll(i.getItemMeta().getLore());
-					playerLore.addAll(i.getItemMeta().getLore());
-				}
-			} catch (NullPointerException e) { // Catches empty armor slots
+			// System.out.println(i.getType().toString());
+			if (i != null && i.hasItemMeta() && i.getItemMeta().hasLore()) {
+				tempLore.addAll(i.getItemMeta().getLore());
+				playerLore.addAll(i.getItemMeta().getLore());
 			}
 		}
 		for (String s : tempLore) {
@@ -47,7 +44,7 @@ public class EffectManager {
 				playerLore.remove(playerLore.indexOf(s));
 			}
 		}
-		if (EffectsModule.verbose && playerLore.size() > 0) {
+		if (SblockEffects.verbose && playerLore.size() > 0) {
 			plugin.getLogger().info(p.getName() + playerLore);
 		}
 		return playerLore;
@@ -58,12 +55,9 @@ public class EffectManager {
 		ArrayList<String> lore = new ArrayList<String>();
 		ArrayList<String> tempLore = new ArrayList<String>();
 		ItemStack iS = p.getItemInHand();
-		try {
-			if (iS.hasItemMeta() && iS.getItemMeta().hasLore()) {
-				lore.addAll(iS.getItemMeta().getLore());
-				tempLore.addAll(iS.getItemMeta().getLore());
-			}
-		} catch (NullPointerException e) { // Catches empty inventory slots
+		if (iS != null && iS.hasItemMeta() && iS.getItemMeta().hasLore()) {
+			lore.addAll(iS.getItemMeta().getLore());
+			tempLore.addAll(iS.getItemMeta().getLore());
 		}
 		for (String s : tempLore) {
 			if (!ActiveEffect.isValidEffect(s)) {

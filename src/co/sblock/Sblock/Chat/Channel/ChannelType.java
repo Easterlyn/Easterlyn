@@ -10,9 +10,7 @@ public enum ChannelType {
 		s = s.replace("REGION", "NOPE, PLAYERS CAN'T MAKE THESE.");
 		try {
 			return ChannelType.valueOf(s);
-		} catch (IllegalStateException e) {
-			return null;
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalStateException | IllegalArgumentException e) {
 			return null;
 		}
 	}

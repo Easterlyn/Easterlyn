@@ -22,32 +22,31 @@ import co.sblock.Sblock.Utilities.Log;
  * 
  * @author Jikoo, FireNG
  */
-public class DBManager {
-	/** The <code>DatabaseManager</code> instance. */
-	private static DBManager dbm;
+public class SblockData {
+	/** The SblockData instance. */
+	private static SblockData db;
 
 	/**
-	 * <code>DatabaseManager</code> singleton.
+	 * SblockData singleton.
 	 * 
-	 * @return the <code>DatabaseManager</code> instance
+	 * @return the SblockData instance
 	 */
-	public static DBManager getDBM() {
-		if (dbm == null)
-			dbm = new DBManager();
-		return dbm;
+	public static SblockData getDB() {
+		if (db == null)
+			db = new SblockData();
+		return db;
 	}
 
-	/** The SQL <code>Connection</code> used by the <code>DatabaseManager</code>. */
+	/** The SQL Connection used by the SblockData. */
 	private Connection connection;
 
 	/**
-	 * Establish connection to database and create <code>DatabaseManager</code>
-	 * instance.
+	 * Establish connection to database and create SblockData instance.
 	 * 
 	 * @return true if enabled successfully
 	 */
 	public boolean enable() {
-		Log.fineDebug("[SblockDatabase] Connecting to database.");
+		getLogger().fine("Connecting to database.");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"
@@ -56,19 +55,19 @@ public class DBManager {
 					+ Sblock.getInstance().getConfig().getString("database"),
 					Sblock.getInstance().getConfig().getString("username"),
 					Sblock.getInstance().getConfig().getString("password"));
-			Log.fineDebug("[SblockDatabase] Connection established.");
+			getLogger().fine("Connection established.");
 		} catch (ClassNotFoundException e) {
-			Log.severe("Database", "The database driver was not found."
-							+ " Plugin functionality will be limited.");
+			getLogger().severe("Database driver not found. Plugin functionality will be limited.");
 			return false;
 		} catch (SQLException e) {
-			Log.severe("Database", "An error occurred while connecting to"
-					+ " the database. Plugin functionality will be limited.");
+			getLogger().severe("Connection error. Plugin functionality will be limited.");
 			Log.criticalErr(e);
 			return false;
+		} catch (NullPointerException e) {
+			getLogger().severe("Invalid config! Required strings: host, port, database, username, password.");
 		}
 
-		Log.fineDebug("[SblockDatabase] Database enabled");
+		getLogger().fine("Database enabled");
 		return true;
 	}
 
@@ -81,12 +80,16 @@ public class DBManager {
 		} catch (Exception e) {
 			Log.err(e);
 		}
-		dbm = null;
+		db = null;
 		connection = null;
 	}
 
 	protected Connection connection() {
 		return connection;
+	}
+
+	public final Log getLogger() {
+		return new Log("SblockData", null);
 	}
 
 	/**

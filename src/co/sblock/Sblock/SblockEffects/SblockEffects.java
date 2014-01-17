@@ -4,9 +4,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Utilities.Log;
 
-public class EffectsModule extends Module {
+public class SblockEffects extends Module {
 	/*
 	 * Keiko TODO:
 	 * low:
@@ -17,7 +16,7 @@ public class EffectsModule extends Module {
 	 * + 
 	 * 
 	 */
-	private static EffectsModule instance;
+	private static SblockEffects instance;
 	private EffectListener eL;
 	private EffectManager eM;
 	@SuppressWarnings("unused")
@@ -28,15 +27,15 @@ public class EffectsModule extends Module {
 
 	@Override
 	public void onEnable() {
-		Log.fineDebug("[SblockEffects] Enabling Effects");
+		getLogger().fine("Enabling Effects");
 		instance = this;
 		this.registerCommands(eCL);
 		this.registerEvents(eListener);
 		eL = new EffectListener();
 		eM = new EffectManager();
-		Log.fineDebug("[SblockEffects] Effects check task started");
+		getLogger().fine("Effects check task started");
 		task = new EffectScheduler().runTaskTimer(Sblock.getInstance(), 0, 1180);
-		Log.fineDebug("[SblockEffects] Effects enabled");
+		getLogger().fine("Effects enabled");
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class EffectsModule extends Module {
 	public EffectListener getEffectListener() {
 		return eL;
 	}
-	public static EffectsModule getInstance() {
+	public static SblockEffects getEffects() {
 		return instance;
 	}
 }

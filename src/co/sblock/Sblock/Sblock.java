@@ -17,15 +17,14 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import co.sblock.Sblock.Chat.ChatModule;
+import co.sblock.Sblock.Chat.SblockChat;
 import co.sblock.Sblock.Chat.ChatMsgs;
-import co.sblock.Sblock.Database.DBManager;
-import co.sblock.Sblock.Events.EventModule;
-import co.sblock.Sblock.Machines.MachineModule;
-import co.sblock.Sblock.SblockEffects.EffectsModule;
-import co.sblock.Sblock.UserData.UserDataModule;
+import co.sblock.Sblock.Database.SblockData;
+import co.sblock.Sblock.Events.SblockEvents;
+import co.sblock.Sblock.Machines.SblockMachines;
+import co.sblock.Sblock.SblockEffects.SblockEffects;
+import co.sblock.Sblock.UserData.SblockUsers;
 import co.sblock.Sblock.Utilities.Log;
-import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Counter.CounterModule;
 import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
 
@@ -36,6 +35,9 @@ import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
  * @author Jikoo, FireNG, Dublek
  */
 public class Sblock extends JavaPlugin {
+
+	/** Sblock's Log */
+	private static final Log logger = new Log("Sblock", null);
 
 	/** The Sblock instance. */
 	private static Sblock instance;
@@ -75,22 +77,24 @@ public class Sblock extends JavaPlugin {
 					| NoSuchFieldException | SecurityException e) {
 				Log.criticalErr(e);
 			}
+		} else {
+			getLog().severe("Invalid server version, Sblock commands will fail to register.");
 		}
 		instance = this;
 		this.modules = new HashSet<Module>();
 		this.commandHandlers = new HashMap<String, Method>();
 		this.listenerInstances = new HashMap<Class<? extends CommandListener>, CommandListener>();
 		saveDefaultConfig();
-		DBManager.getDBM().enable();
+		SblockData.getDB().enable();
 		
-		modules.add(new UserDataModule().enable());
-		modules.add(new ChatModule().enable());
-		modules.add(new EventModule().enable());
-		modules.add(new MeteorMod().enable());
-		modules.add(new EffectsModule().enable());
-		modules.add(new Captcha().enable());
-		modules.add(new MachineModule().enable());
+		modules.add(new SblockUsers().enable());
+		modules.add(new SblockChat().enable());
+		modules.add(new SblockEvents().enable());
+		modules.add(new SblockEffects().enable());
+		modules.add(new SblockMachines().enable());
+//		modules.add(new Captcha().enable());
 		modules.add(new CounterModule().enable());
+		modules.add(new MeteorMod().enable());
 	}
 
 	/**
@@ -98,12 +102,12 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
+		this.unregisterAllCommands();
+		HandlerList.unregisterAll(this);
 		for (Module module : this.modules) {
 			module.disable();
 		}
-		this.unregisterAllCommands();
-		HandlerList.unregisterAll(this);
-		DBManager.getDBM().disable();
+		SblockData.getDB().disable();
 		instance = null;
 	}
 
@@ -147,7 +151,7 @@ public class Sblock extends JavaPlugin {
 			try {
 				Bukkit.getPluginCommand(m.getName()).setExecutor(null);
 			} catch (NullPointerException e) {
-				Log.fineDebug("Command " + m.getName() + " was registered interally.");
+				getLog().fine("Command " + m.getName() + " was registered interally.");
 			}
 		}
 	}
@@ -183,5 +187,9 @@ public class Sblock extends JavaPlugin {
 			}
 		}
 		return false;
+	}
+
+	public static final Log getLog() {
+		return logger;
 	}
 }

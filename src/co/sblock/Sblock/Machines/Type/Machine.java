@@ -27,7 +27,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Machines.MachineModule;
+import co.sblock.Sblock.Machines.SblockMachines;
 
 /**
  * Framework for all "machine" block assemblies.
@@ -197,7 +197,7 @@ public abstract class Machine {
 				l.getBlock().setType(Material.AIR);
 			}
 			getKey().getBlock().setType(Material.AIR);
-			MachineModule.getInstance().getManager().removeMachineListing(getKey());
+			SblockMachines.getMachines().getManager().removeMachineListing(getKey());
 		}
 		return true;
 	}
@@ -353,7 +353,7 @@ public abstract class Machine {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
 				new Runnable() {
 					public void run() {
-						MachineModule.getInstance().getManager().removeMachineListing(l);
+						SblockMachines.getMachines().getManager().removeMachineListing(l);
 					}
 				});
 	}
