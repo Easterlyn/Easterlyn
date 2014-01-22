@@ -114,8 +114,7 @@ public class Sblock extends JavaPlugin {
 	/**
 	 * Register all commands for a CommandListener.
 	 * 
-	 * @param listener
-	 *            the CommandListener to register commands for
+	 * @param listener the CommandListener to register commands for
 	 */
 	public void registerCommands(CommandListener listener) {
 		for (Method method : listener.getClass().getMethods()) {
@@ -157,7 +156,7 @@ public class Sblock extends JavaPlugin {
 	}
 
 	/**
-	 * Handles all commands registered for Sblock.
+	 * Passes all registered commands to the CommandListener that registered them.
 	 * 
 	 * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command,
 	 *      String, String[])
@@ -173,7 +172,7 @@ public class Sblock extends JavaPlugin {
 			Method handlerMethod = this.commandHandlers.get(label);
 			if (sender instanceof ConsoleCommandSender
 					&& !handlerMethod.getAnnotation(SblockCommand.class).consoleFriendly()) {
-				sender.sendMessage("You must be a player to use this command.");
+				sender.sendMessage("This command cannot be issued from the console.");
 				return true;
 			}
 			try {

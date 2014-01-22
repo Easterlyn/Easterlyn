@@ -28,10 +28,15 @@ import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
  */
 public class TotemLathe extends Machine implements InventoryHolder	{
 
+	/** The Furnace Block */
 	private Block furnaceBlock;
 
+	/** The ID of the furnace updating task */
 	private int task;
 
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
+	 */
 	public TotemLathe(Location l, String data, Direction d) {
 		super(l, data, d);
 		ItemStack is = new ItemStack(Material.QUARTZ_BLOCK);
@@ -64,11 +69,17 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#getType()
+	 */
 	@Override
 	public MachineType getType() {
 		return MachineType.TOTEM_LATHE;
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -77,8 +88,11 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		event.getPlayer().openInventory(getInventory());
 		return true;
 	}
-	
-	public boolean handleClick(InventoryClickEvent event)	{
+
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
+	 */
+	public boolean handleClick(InventoryClickEvent event) {
 		if (event.getCurrentItem() == null) {
 			event.setResult(Result.DENY);
 			return true;
@@ -87,6 +101,11 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		return false;
 	}
 
+	/**
+	 * Trigger a synchronous repeating update of this Machine's Inventory.
+	 * <p>
+	 * This simulates the furnace smelting process for objects without a recipe.
+	 */
 	private void updateFurnaceInventory() {
 		task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 
@@ -130,6 +149,9 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		}, 0, 5);
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
+	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void postAssemble() {
@@ -137,6 +159,9 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		this.l.getBlock().setData((byte) 2, false);		
 	}
 
+	/**
+	 * @see org.bukkit.inventory.InventoryHolder#getInventory()
+	 */
 	@Override
 	public Inventory getInventory() {
 		if (furnaceBlock != null) {

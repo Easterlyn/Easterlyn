@@ -5,8 +5,9 @@ import java.sql.ResultSet;
 import org.bukkit.command.CommandSender;
 
 /**
+ * Enum containing all SQL queries for easier editing.
+ * 
  * @author Jikoo
- *
  */
 public enum Call {
 	PLAYER_SAVE("INSERT INTO PlayerData(name, class, aspect, mPlanet, dPlanet, towerNum, "
@@ -39,33 +40,59 @@ public enum Call {
 			+ "ON DUPLICATE KEY UPDATE location=VALUES(location)"),
 	TOWER_LOAD("SELECT * FROM TowerLocs");
 
+	/** The SQL query to make. */
 	private final String call;
+
+	/** The CommandSender triggering the query. */
 	private CommandSender sender = null;
+
+	/**
+	 * Constructor for Call.
+	 * 
+	 * @param call the SQL query to make
+	 */
 	private Call(String call) {
 		this.call = call;
 	}
 
+	/**
+	 * Set the CommandSender.
+	 * 
+	 * @param s the new CommandSender
+	 */
 	public void setSender(CommandSender s) {
 		this.sender = s;
 	}
 
+	/**
+	 * Returns the SQL call with which to create a proper PreparedStatement for this Call.
+	 * 
+	 * @see java.lang.Object#toString()
+	 * 
+	 * @return the String SQL call for a PreparedStatement
+	 */
 	public String toString() {
 		return this.call;
 	}
 
+	/**
+	 * Handle the ResultSet in the event that one is returned.
+	 * 
+	 * @param rs the ResultSet
+	 */
 	public void result(ResultSet rs) {
 		switch (this) {
 		case PLAYER_LOAD:
 			PlayerData.loadPlayer(rs);
-			break;
+			return;
 		case PLAYER_LOOKUP:
 			PlayerData.loadOfflineLookup(sender, rs);
-			break;
+			return;
 		case BAN_LOAD:
 			BannedPlayers.removeBan(rs);
-			break;
+			return;
 		default:
-			break;
+			return;
 		}
 	}
 }

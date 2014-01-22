@@ -23,10 +23,11 @@ import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
 
 /**
+ * Simulate a Sburb Punch Designix in Minecraft.
  * 
  * @author Dublek
  */
-public class PunchDesignix extends Machine implements InventoryHolder	{
+public class PunchDesignix extends Machine implements InventoryHolder {
 
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
@@ -59,8 +60,8 @@ public class PunchDesignix extends Machine implements InventoryHolder	{
 		return MachineType.PUNCH_DESIGNIX;
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
@@ -70,63 +71,63 @@ public class PunchDesignix extends Machine implements InventoryHolder	{
 		event.getPlayer().openInventory(getInventory());
 		return true;
 	}
-	
-	public boolean handleClick(InventoryClickEvent event)	{
+
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
+	 */
+	public boolean handleClick(InventoryClickEvent event) {
 		if (event.getCurrentItem() == null) {
 			event.setResult(Result.DENY);
 			return true;
 		}
 		final AnvilInventory ai = (AnvilInventory) event.getInventory();
-		if(event.getSlot() == 2 && event.getClickedInventory().equals(event.getView().getTopInventory()))	{
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable()	{
-				public void run()	{
+		if (event.getSlot() == 2 && event.getClickedInventory().equals(event.getView().getTopInventory())) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+				public void run() {
 					ItemStack is = ai.getItem(0);
-					if(is.getAmount() == 1)	{
+					if (is.getAmount() == 1) {
 						ai.setItem(0, null);
-					}
-					else	{
-					is.setAmount(is.getAmount() - 1);
-					ai.setItem(0, is);
+					} else {
+						is.setAmount(is.getAmount() - 1);
+						ai.setItem(0, is);
 					}
 				}
 			});
 			return false;
-		}
-		else	{
-			if(Captcha.isCaptchaCard(ai.getItem(0)) && ai.getItem(1) == null)	{
+		} else {
+			if (Captcha.isCaptchaCard(ai.getItem(0)) && ai.getItem(1) == null) {
 				final ItemStack is = Captchadex.punchCard(ai.getItem(0));
 				is.setAmount(1);
-				
-				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable()	{
-					public void run()	{
+
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+					public void run() {
 						ai.setItem(2, is);
 					}
 				});
 				return false;
-			}
-			else if(Captcha.isPunchCard(ai.getItem(0)) && Captcha.isPunchCard(ai.getItem(1)))	{
+			} else if (Captcha.isPunchCard(ai.getItem(0)) && Captcha.isPunchCard(ai.getItem(1))) {
 				ItemStack input = Captchadex.punchCard(ai.getItem(1));
 				final ItemStack output = Captchadex.punchCard(ai.getItem(0));
 				output.setAmount(1);
 				List<String> inputLore = new ArrayList<String>();
 				List<String> outputLore = new ArrayList<String>();
-				if(output.hasItemMeta() && output.getItemMeta().hasLore())	{
+				if (output.hasItemMeta() && output.getItemMeta().hasLore()) {
 					outputLore = output.getItemMeta().getLore();
 				}
-				if(input.hasItemMeta() && input.getItemMeta().hasLore())	{
+				if (input.hasItemMeta() && input.getItemMeta().hasLore()) {
 					inputLore = input.getItemMeta().getLore();
 				}
-				for(String s : inputLore)	{
-					if(s.startsWith(">"))	{
+				for (String s : inputLore) {
+					if (s.startsWith(">")) {
 						outputLore.add(s);
 					}
 				}
 				ItemMeta im = output.getItemMeta();
 				im.setLore(outputLore);
 				output.setItemMeta(im);
-				
-				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable()	{
-					public void run()	{
+
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+					public void run() {
 						ai.setItem(2, output);
 					}
 				});
@@ -134,7 +135,7 @@ public class PunchDesignix extends Machine implements InventoryHolder	{
 			}
 		}
 		event.setResult(Result.DENY);
-		return true;	
+		return true;
 	}
 
 	/**
@@ -147,6 +148,9 @@ public class PunchDesignix extends Machine implements InventoryHolder	{
 		this.l.getBlock().setData(d.getRelativeDirection(Direction.EAST).getUpperStairByte());
 	}
 
+	/**
+	 * @see org.bukkit.inventory.InventoryHolder#getInventory()
+	 */
 	@Override
 	public Inventory getInventory() {
 		Inventory i = Bukkit.createInventory(this, InventoryType.ANVIL);

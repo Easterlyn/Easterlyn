@@ -6,8 +6,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 /**
+ * A class for handling all functions of cruxite dowels.
+ * 
  * @author Jikoo
- *
  */
 public class CruxiteDowel {
 

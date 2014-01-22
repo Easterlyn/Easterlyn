@@ -1,13 +1,9 @@
-/**
- * 
- */
 package co.sblock.Sblock.Events.Session;
 
 import co.sblock.Sblock.Events.SblockEvents;
 
 /**
- * Changes <code>Status</code> synchronously to prevent concurrent file
- * modification.
+ * Changes Status synchronously to prevent concurrent file modification.
  * 
  * @author Jikoo
  */

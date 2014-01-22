@@ -18,9 +18,9 @@ import co.sblock.Sblock.Module;
  */
 public class Captcha extends Module {
 
-	/** The <code>CaptchaCommandListener</code>. */
+	/** The CaptchaCommandListener. */
 	private CaptchaCommandListener clistener = new CaptchaCommandListener();
-	/** The <code>CaptchaEventListener</code>. */
+	/** The CaptchaEventListener. */
 	private CaptchaEventListener cEL = new CaptchaEventListener();
 
 	/**
@@ -42,11 +42,11 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Converts an <code>ItemStack</code> into a Captchacard.
+	 * Converts an ItemStack into a Captchacard.
 	 * 
-	 * @param item
-	 *            the <code>ItemStack</code> to convert
-	 * @return the Captchacard representing by this <code>ItemStack</code>
+	 * @param item the ItemStack to convert
+	 * 
+	 * @return the Captchacard representing by this ItemStack
 	 */
 	@SuppressWarnings("deprecation")
 	public static ItemStack itemToCaptcha(ItemStack item) {
@@ -88,11 +88,11 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Converts a Captchacard into an <code>ItemStack</code>.
+	 * Converts a Captchacard into an ItemStack.
 	 * 
-	 * @param card
-	 *            the Captchacard <code>ItemStack</code>
-	 * @return the <code>ItemStack</code> represented by this Captchacard
+	 * @param card the Captchacard ItemStack
+	 * 
+	 * @return the ItemStack represented by this Captchacard
 	 */
 	@SuppressWarnings("deprecation")
 	public static ItemStack captchaToItem(ItemStack card) {
@@ -133,11 +133,11 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Converts a Captchdex entry into an <code>ItemStack</code>.
+	 * Converts a Captchdex entry into an ItemStack.
 	 * 
-	 * @param data
-	 *            the Captchadex page split at '\n' <code>ItemStack</code>
-	 * @return the <code>ItemStack</code> represented by this Captchacard
+	 * @param data the Captchadex page split at '\n' ItemStack
+	 * 
+	 * @return the ItemStack represented by this Captchacard
 	 */
 	@SuppressWarnings("deprecation")
 	public static ItemStack getCaptchaItem(String[] data) {
@@ -191,7 +191,7 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Adds the Captchacard recipe
+	 * Adds the Captchacard recipe.
 	 */
 	private void captchaCardRecipe() {
 		ShapedRecipe recipe = new ShapedRecipe(blankCaptchaCard());
@@ -201,11 +201,11 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Check if an <code>ItemStack</code> is a valid blank Captchacard.
+	 * Check if an ItemStack is a valid blank Captchacard.
 	 * 
-	 * @param is
-	 *            the <code>ItemStack</code> to check
-	 * @return true if the <code>ItemStack</code> is a blank Captchacard
+	 * @param is the ItemStack to check
+	 * 
+	 * @return true if the ItemStack is a blank Captchacard
 	 */
 	public static boolean isBlankCard(ItemStack is) {
 		if (is.getType().equals(Material.PAPER) && is.hasItemMeta()
@@ -217,11 +217,11 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Check if an <code>ItemStack</code> is a valid Captchacard.
+	 * Check if an ItemStack is a valid Captchacard.
 	 * 
-	 * @param is
-	 *            the <code>ItemStack</code> to check
-	 * @return true if the <code>ItemStack</code> is a Captchacard
+	 * @param is the ItemStack to check
+	 * 
+	 * @return true if the ItemStack is a Captchacard
 	 */
 	public static boolean isCaptchaCard(ItemStack is) {
 		if (is.getType().equals(Material.PAPER) && is.hasItemMeta()
@@ -233,11 +233,11 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Check if an <code>ItemStack</code> is a valid Punchcard.
+	 * Check if an ItemStack is a valid Punchcard.
 	 * 
-	 * @param is
-	 *            the <code>ItemStack</code> to check
-	 * @return true if the <code>ItemStack</code> is a Punchcard
+	 * @param is the ItemStack to check
+	 * 
+	 * @return true if the ItemStack is a Punchcard
 	 */
 	public static boolean isPunchCard(ItemStack is) {
 		if (is != null && is.getType().equals(Material.PAPER) && is.hasItemMeta()
@@ -248,11 +248,11 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Check if an <code>ItemStack</code> is a valid single Punchcard.
+	 * Check if an ItemStack is a valid single Punchcard.
 	 * 
-	 * @param is
-	 *            the <code>ItemStack</code> to check
-	 * @return true if the <code>ItemStack</code> is a single Punchcard
+	 * @param is the ItemStack to check
+	 * 
+	 * @return true if the ItemStack is a single Punchcard
 	 */
 	public static boolean isSinglePunchCard(ItemStack is) {
 		if (is.getType().equals(Material.PAPER) && is.hasItemMeta()

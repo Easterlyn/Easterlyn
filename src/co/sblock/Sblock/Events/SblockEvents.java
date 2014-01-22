@@ -14,20 +14,27 @@ import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.Utilities.Broadcast;
 
 /**
+ * The main Module for all events handled by the plugin.
+ * 
  * @author Jikoo
  */
 public class SblockEvents extends Module {
 
-	/** The <code>EventModule</code> instance. */
+	/** The EventModule instance. */
 	private static SblockEvents instance;
-	/** The <code>TowerData</code>. */
+
+	/** The TowerData. */
 	private TowerData towers;
-	/** The <code>EventListener</code>. */
+
+	/** The EventListener. */
 	private EventListener listener;
-	/** The Task ID of the <code>RegionCheck</code> task. */
+
+	/** The Task ID of the RegionCheck task. */
 	private int regionTask;
-	/** The Task ID of the <code>SessionCheck</code> task. */
+
+	/** The Task ID of the SessionCheck task. */
 	private int sessionTask;
+
 	/** The Minecraft servers' status */
 	private Status status;
 
@@ -62,9 +69,9 @@ public class SblockEvents extends Module {
 	}
 
 	/**
-	 * Schedules the <code>SessionCheck</code> to update the <code>Status</code> every 5 minutes.
+	 * Schedules the SessionCheck to update the Status every minute.
 	 * 
-	 * @return the <code>BukkitTask</code> ID
+	 * @return the BukkitTask ID
 	 */
 	@SuppressWarnings("deprecation")
 	private int initiateSessionChecks() {
@@ -72,13 +79,12 @@ public class SblockEvents extends Module {
 	}
 
 	/**
-	 * Change the <code>Status</code> of Minecraft's servers.
+	 * Change the Status of Minecraft's servers.
 	 * <p>
 	 * If a service is down, this will announce the issue to all players and set
 	 * a relevant MOTD.
 	 * 
-	 * @param status
-	 *            the <code>Status</code>
+	 * @param status the Status
 	 */
 	public void changeStatus(Status status) {
 		String announcement = null;
@@ -94,45 +100,44 @@ public class SblockEvents extends Module {
 	}
 
 	/**
-	 * Gets the current <code>Status</code>.
+	 * Gets the current Status.
 	 */
 	public Status getStatus() {
 		return status;
 	}
 
 	/**
-	 * Schedules the <code>RegionCheck</code> to update the <code>Region</code>
-	 * for each <code>Player</code> online every 5 seconds of game time (100
-	 * ticks).
+	 * Schedules the RegionCheck to update the Region for each Player online
+	 * every 5 seconds of game time (100 ticks).
 	 * 
-	 * @return the <code>BukkitTask</code> ID
+	 * @return the BukkitTask ID
 	 */
 	public int initiateRegionChecks() {
 		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
 	}
 
 	/**
-	 * Gets the <code>TowerData</code> used for sleep teleports.
+	 * Gets the TowerData used for sleep teleports.
 	 * 
-	 * @return the <code>TowerData</code>
+	 * @return the TowerData
 	 */
 	public TowerData getTowerData() {
 		return towers;
 	}
 
 	/**
-	 * Gets the <code>EventListener</code>.
+	 * Gets the EventListener.
 	 * 
-	 * @return the <code>EventListener</code>
+	 * @return the EventListener
 	 */
 	public EventListener getListener() {
 		return this.listener;
 	}
 
 	/**
-	 * Gets the <code>EventModule</code> instance.
+	 * Gets the EventModule instance.
 	 * 
-	 * @return the <code>EventModule</code> instance.
+	 * @return the EventModule instance.
 	 */
 	public static SblockEvents getEvents() {
 		return instance;

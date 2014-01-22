@@ -14,15 +14,16 @@ import org.bukkit.util.Vector;
  */
 public class Shape {
 
-	/** All relative <code>Location</code>s and <code>Material</code>s of the <code>Machine</code>. */
+	/** All relative Locations and Materials of the Machine. */
 	private HashMap<Vector, ItemStack> vectors;
 
-	/** The key <code>Location</code> of the <code>Machine</code>. */
+	/** The key Location of the Machine. */
 	private Location key;
 
 	/**
-	 * Constructor of <code>Shape</code>. Creates a blank <code>Shape</code>.
-	 * @param l
+	 * Constructor of Shape. Creates a blank Shape.
+	 * 
+	 * @param l the location the Machine is placed in
 	 */
 	public Shape(Location l) {
 		this.key = l;
@@ -30,41 +31,34 @@ public class Shape {
 	}
 
 	/**
-	 * Adds a <code>Block</code> to the defined <code>Shape</code> of a
-	 * <code>Machine</code>.
+	 * Adds a Block to the defined Shape of a Machine.
 	 * <p>
-	 * N.B. all <code>Location</code>s are relative to the key
-	 * <code>Block</code> of the <code>Machine</code>.
+	 * N.B. all Locations are relative to the key Block of the Machine.
 	 * 
-	 * @param l
-	 *            the <code>Location</code> to add
-	 * @param is
-	 *            the <code>ItemStack</code> (<code>Material</code> and damage)
-	 *            to make the <code>Block</code> from
+	 * @param l the Location to add
+	 * @param is the ItemStack (Material and damage) to make the Block from
 	 */
 	public void addBlock(Vector v, ItemStack is) {
 		this.vectors.put(v, is);
 	}
 
 	/**
-	 * Gets a <code>HashMap</code> of all properly oriented
-	 * <code>Location</code>s and <code>Material</code>s needed to build a
-	 * <code>Machine</code>.
+	 * Gets a HashMap of all properly oriented Locations and Materials needed to
+	 * build a Machine.
 	 * 
-	 * @param d
-	 *            the <code>Direction</code> the <code>Machine</code> needs to
-	 *            be built in
-	 * @return the <code>Location</code>s and relative <code>ItemStack</code>s
+	 * @param d the Direction the Machine needs to be built in
+	 * 
+	 * @return the Locations and relative ItemStacks
 	 */
 	public HashMap<Location, ItemStack> getBuildLocations(Direction d) {
 		return assembly(rotate(d));
 	}
 
 	/**
-	 * Rotates block shape based on input <code>Direction</code>.
+	 * Rotates block shape based on input Direction.
 	 * 
-	 * @param d
-	 *            the <code>Direction</code> to rotate to
+	 * @param d the Direction to rotate to
+	 * 
 	 * @return the rotated shape
 	 */
 	private HashMap<Vector, ItemStack> rotate(Direction d) {
@@ -133,12 +127,11 @@ public class Shape {
 	}
 
 	/**
-	 * Creates a <code>HashMap</code> of in-world <code>Location</code>s for
-	 * <code>Machine</code> components.
+	 * Creates a HashMap of in-world Locations for Machine components.
 	 * 
-	 * @param translation
-	 *            the correctly rotated <code>Shape</code> <code>HashMap</code>
-	 * @return valid ingame coordinates for assembling a <code>Machine</code> in
+	 * @param translation the correctly rotated Shape HashMap
+	 * 
+	 * @return valid ingame coordinates for assembling a Machine in
 	 */
 	private HashMap<Location, ItemStack> assembly(HashMap<Vector, ItemStack> translation) {
 		HashMap<Location, ItemStack> newLocs = new HashMap<Location, ItemStack>();

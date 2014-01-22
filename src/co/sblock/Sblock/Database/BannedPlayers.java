@@ -11,27 +11,24 @@ import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Log;
 
 /**
- * A small helper class containing all methods that access the BannedPlayers table.
+ * A small helper class containing all methods that access the BannedPlayers
+ * table.
  * <p>
  * The BannedPlayers table is created by the following call:
- * CREATE TABLE BannedPlayers (name varchar(16) UNIQUE KEY,
- * ip varchar(16), banDate Date, reason text);
+ * CREATE TABLE BannedPlayers (name varchar(16) UNIQUE KEY, ip varchar(16),
+ * banDate Date, reason text);
  * 
  * @author Jikoo
- *
  */
 public class BannedPlayers {
 
 	/**
-	 * Create a <code>PreparedStatement</code> with which to query the SQL database.
-	 * Adds a ban for the specified <code>SblockUser</code>.
+	 * Create a PreparedStatement with which to query the SQL database. Adds a
+	 * ban for the specified SblockUser.
 	 * 
-	 * @param target
-	 *            the <code>SblockUser</code> to add a ban for
-	 * @param reason
-	 *            the reason the <code>SblockUser</code> was banned
+	 * @param target the SblockUser to add a ban for
+	 * @param reason the reason the SblockUser was banned
 	 */
-
 	protected static void addBan(SblockUser target, String reason) {
 		PreparedStatement pst;
 		try {
@@ -48,11 +45,10 @@ public class BannedPlayers {
 	}
 
 	/**
-	 * Create a <code>PreparedStatement</code> with which to query the SQL database.
-	 * Fetch and remove all matching bans from the database.
+	 * Create a PreparedStatement with which to query the SQL database. Fetch
+	 * and remove all matching bans from the database.
 	 * 
-	 * @param target
-	 *            the name or IP to match
+	 * @param target the name or IP to match
 	 */
 	protected static void loadAndDeleteBans(String target) {
 		try {
@@ -70,8 +66,7 @@ public class BannedPlayers {
 	/**
 	 * Remove any bans by name and IP.
 	 * 
-	 * @param rs
-	 *            the <code>ResultSet</code> containing all matching bans
+	 * @param rs the ResultSet containing all matching bans
 	 */
 	protected static void removeBan(ResultSet rs) {
 		try {
@@ -107,12 +102,11 @@ public class BannedPlayers {
 	}
 
 	/**
-	 * Get the reason a <code>SblockUser</code> was banned.
+	 * Get the reason a SblockUser was banned.
 	 * 
-	 * @param name
-	 *            the name of the banned <code>SblockUser</code>
-	 * @param ip
-	 *            the IP of the banned <code>SblockUser</code>
+	 * @param name the name of the banned SblockUser
+	 * @param ip the IP of the banned SblockUser
+	 * 
 	 * @return the ban reason
 	 */
 	protected static String getBanReason(String name, String ip) {

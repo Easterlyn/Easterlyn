@@ -3,7 +3,7 @@ package co.sblock.Sblock.Machines.Type;
 import org.bukkit.entity.Player;
 
 /**
- * <code>Enum</code> for compass direction based on <code>Player</code> yaw.
+ * Enum for compass direction based on Player yaw.
  * 
  * @author Jikoo
  */
@@ -11,10 +11,26 @@ public enum Direction {
 	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 0),
 	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 1);
 
+	/** The arbitrarily defined byte deciding direction facing. */
 	private byte dirNum;
+
+	/** The byte for rotating a button to face the correct direction. */
 	private byte button;
+
+	/** The byte for rotating a chest or furnace to face the correct direction. */
 	private byte chest;
+
+	/** The byte for rotating stairs to face the correct direction. */
 	private byte stair;
+
+	/**
+	 * Constructor for Direction.
+	 * 
+	 * @param b the direction number
+	 * @param button the button direction byte
+	 * @param chest the chest or furnace direction byte
+	 * @param stair the stair direction byte
+	 */
 	Direction(byte b, byte button, byte chest, byte stair) {
 		dirNum = b;
 		this.button = button;
@@ -23,19 +39,20 @@ public enum Direction {
 	}
 
 	/**
-	 * Get the numeric representation of a <code>Direction</code>.
+	 * Get the numeric representation of a Direction.
 	 * 
-	 * @return the <code>byte</code> that represents this <code>Direction</code>
+	 * @return the byte that represents this Direction
 	 */
 	public byte getDirByte() {
 		return dirNum;
 	}
 
 	/**
-	 * Get a <code>Direction</code> based on <code>Player</code> facing.
-	 * @param p
-	 *            the <code>Player</code>
-	 * @return the <code>Direction</code> to rotate the <code>Shape</code> to face
+	 * Get a Direction based on Player facing.
+	 * 
+	 * @param p the Player
+	 * 
+	 * @return the Direction to rotate the Shape to face
 	 */
 	public static Direction getFacingDirection(Player p) {
 		byte playerFace = (byte) Math.round(p.getLocation().getYaw() / 90);
@@ -50,40 +67,36 @@ public enum Direction {
 	}
 
 	/**
-	 * For determining rotation of buttons in a <code>Machine</code>'s
-	 * <code>Shape</code>.
+	 * For determining rotation of buttons in a Machine's Shape.
 	 * 
-	 * @return <code>byte</code>
+	 * @return byte
 	 */
 	public byte getButtonByte() {
 		return button;
 	}
 
 	/**
-	 * For determining rotation of chests in a <code>Machine</code>'s
-	 * <code>Shape</code>.
+	 * For determining rotation of chests in a Machine's Shape.
 	 * 
-	 * @return <code>byte</code>
+	 * @return byte
 	 */
 	public byte getChestByte() {
 		return chest;
 	}
 
 	/**
-	 * For determining rotation of stairs in a <code>Machine</code>'s
-	 * <code>Shape</code>.
+	 * For determining rotation of stairs in a Machine's Shape.
 	 * 
-	 * @return <code>byte</code>
+	 * @return byte
 	 */
 	public byte getStairByte() {
 		return stair;
 	}
 
 	/**
-	 * For determining rotation of stairs in a <code>Machine</code>'s
-	 * <code>Shape</code>.
+	 * For determining rotation of stairs in a Machine's Shape.
 	 * 
-	 * @return <code>byte</code>
+	 * @return byte
 	 */
 	public byte getUpperStairByte() {
 		return (byte) (stair + 4);
@@ -91,29 +104,28 @@ public enum Direction {
 
 	/**
 	 * For obtaining rotation based on original rotation - for stairs, etc. that
-	 * are not facing in the place <code>Direction</code> of the
-	 * <code>Machine</code>.
+	 * are not facing in the place Direction of the Machine.
 	 * <p>
-	 * The input <code>Direction</code> is the desired rotation for blocks
-	 * relative to the original <code>Direction</code>. The original
-	 * <code>Direction</code> is assumed to be north relative to the new
-	 * <code>Direction</code>, as all <code>Shape</code>s are designed from a
+	 * The input Direction is the desired rotation for blocks relative to the
+	 * original Direction. The original Direction is assumed to be north
+	 * relative to the new Direction, as all Shapes are designed from a
 	 * north-facing perspective.
 	 * <p>
-	 * Ex.: Machine placed west, block in machine faces east when machine is placed north.
+	 * Ex.: Machine placed west, block in machine faces east when machine is
+	 * placed north.
 	 * 
-	 * @param d the <code>Direction</code> relative to this as north.
+	 * @param d the Direction relative to this as north.
 	 */
 	public Direction getRelativeDirection(Direction d) {
 		return getDirection((byte) ((this.dirNum + d.getDirByte()) % 4));
 	}
 
 	/**
-	 * Gets <code>Direction</code> by <code>byte</code>. For database use.
+	 * Gets Direction by byte. For database use.
 	 * 
-	 * @param direction
-	 *            <code>byte</code>
-	 * @return <code>Direction</code>
+	 * @param direction byte
+	 * 
+	 * @return Direction
 	 */
 	public static Direction getDirection(byte direction) {
 		for (Direction d : Direction.values()) {

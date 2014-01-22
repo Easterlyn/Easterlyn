@@ -15,44 +15,43 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.Sblock;
 
 /**
- * <code>SblockUser</code> is the class for storing all <code>Player</code>
- * data.
+ * SblockUser is the class for storing all Player data.
  * 
  * @author Jikoo, Dublek, FireNG
  */
 public class SblockUser {
 
-	/** The <code>Player</code> */
+	/** The Player */
 	private String playerName;
 
-	/** The <code>Player</code>'s chosen class */
+	/** The Player's chosen class */
 	private UserClass classType = UserClass.HEIR;
 
-	/** The <code>Player</code>'s chosen aspect */
+	/** The Player's chosen aspect */
 	private UserAspect aspect = UserAspect.BREATH;
 
-	/** The <code>Player</code>'s chosen Medium planet. */
+	/** The Player's chosen Medium planet. */
 	private MediumPlanet mPlanet = MediumPlanet.LOWAS;
 
-	/** The <code>Player</code>'s chosen dream planet. */
+	/** The Player's chosen dream planet. */
 	private DreamPlanet dPlanet = DreamPlanet.PROSPIT;
 
-	/** The <code>Player</code>'s tower number */
+	/** The Player's tower number */
 	private byte tower = (byte)(8 * Math.random());
 
-	/** <code>true</code> if the <code>Player</code> is in dreamstate */
+	/** true if the Player is in dreamstate */
 	private boolean sleeping = false;
 
-	/** The <code>Player</code>'s location prior to sleeping to swap worlds */
+	/** The Player's location prior to sleeping to swap worlds */
 	private Location previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
 
-	/** The total time the <code>Player</code> has spent logged in */
+	/** The total time the Player has spent logged in */
 	private long timePlayed = 0L;
 
-	/** The <code>Player</code>'s last login */
+	/** The Player's last login */
 	private Date login = new Date();
 
-	/** The <code>Player</code>'s IP address */
+	/** The Player's IP address */
 	private String userIP;
 
 	/** Programs installed to the player's computer */
@@ -64,17 +63,16 @@ public class SblockUser {
 	/** Boolean for ensuring that all PlayerData has been loaded. */
 	private boolean loaded = false;
 
-	/** <code>true</code> if the user is in server mode. */
+	/** true if the user is in server mode. */
 	private boolean server = false;
 
-	/** <code>true</code> if the user has a server. */
+	/** true if the user has a server. */
 	private boolean hasServer = false;
 
 	/**
-	 * Creates a <code>SblockUser</code> object for a <code>Player</code>.
+	 * Creates a SblockUser object for a Player.
 	 * 
-	 * @param playerName
-	 *            the name of the <code>Player</code> to create a <code>SblockUser</code> for
+	 * @param playerName the name of the Player to create a SblockUser for
 	 */
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
@@ -82,72 +80,70 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets the <code>Player</code>.
+	 * Gets the Player.
 	 * 
-	 * @return the <code>Player</code>
+	 * @return the Player
 	 */
 	public Player getPlayer() {
 		return Bukkit.getPlayerExact(playerName);
 	}
 
 	/**
-	 * Gets the <code>OfflinePlayer</code>.
+	 * Gets the OfflinePlayer.
 	 * 
-	 * @return the <code>OfflinePlayer</code>
+	 * @return the OfflinePlayer
 	 */
 	public OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(playerName);
 	}
 
 	/**
-	 * Gets the name of the <code>Player</code>.
+	 * Gets the name of the Player.
 	 * 
-	 * @return the <code>Player</code>
+	 * @return the Player
 	 */
 	public String getPlayerName() {
 		return this.playerName;
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s chosen <code>UserClass</code>.
+	 * Gets the Player's chosen UserClass.
 	 * 
-	 * @return the <code>UserClass</code>, <code>null</code> if unchosen
+	 * @return the UserClass, null if unchosen
 	 */
 	public UserClass getClassType() {
 		return this.classType;
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s chosen <code>UserAspect</code>.
+	 * Gets the Player's chosen UserAspect.
 	 * 
-	 * @return the <code>UserAspect</code>, <code>null</code> if unchosen
+	 * @return the UserAspect, null if unchosen
 	 */
 	public UserAspect getAspect() {
 		return this.aspect;
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s chosen <code>MediumPlanet</code>.
+	 * Gets the Player's chosen MediumPlanet.
 	 * 
-	 * @return the <code>Player</code>'s <code>MediumPlanet</code>
+	 * @return the Player's MediumPlanet
 	 */
 	public MediumPlanet getMPlanet() {
 		return this.mPlanet;
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s chosen <code>DreamPlanet</code>.
+	 * Gets the Player's chosen DreamPlanet.
 	 * 
-	
-	 * @return the <code>Player</code>'s <code>DreamPlanet</code>
+	 * @return the Player's DreamPlanet
 	 */
 	public DreamPlanet getDPlanet() {
 		return this.dPlanet;
 	}
 
 	/**
-	 * Gets the tower number generated for the <code>Player</code>.
-	 * 
+	 * Gets the tower number generated for the Player.
 	 * 
 	 * @return the number of the tower the player will "dream" to
 	 */
@@ -156,70 +152,64 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s dreamstate.
+	 * Gets the Player's dreamstate.
 	 * 
 	 * 
-	 * @return <code>true</code> if the <code>Player</code> is in dreamstate
+	 * @return true if the Player is in dreamstate
 	 */
 	public boolean isSleeping() {
 		return this.sleeping;
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s <code>UserClass</code>.
+	 * Sets the Player's UserClass.
 	 * 
-	 * @param uclass
-	 *            the new <code>UserClass</code>
+	 * @param uclass the new UserClass
 	 */
 	public void setPlayerClass(String uclass) {
 		this.classType = UserClass.getClass(uclass);
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s <code>UserAspect</code>.
+	 * Sets the Player's UserAspect.
 	 * 
-	 * @param aspect
-	 *            the new <code>UserAspect</code>
+	 * @param aspect the new UserAspect
 	 */
 	public void setAspect(String aspect) {
 		this.aspect = UserAspect.getAspect(aspect);
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s <code>MediumPlanet</code>.
+	 * Sets the Player's MediumPlanet.
 	 * 
-	 * @param mPlanet
-	 *            the new <code>MediumPlanet</code>
+	 * @param mPlanet the new MediumPlanet
 	 */
 	public void setMediumPlanet(String mPlanet) {
 		this.mPlanet = MediumPlanet.getPlanet(mPlanet);
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s <code>DreamPlanet</code>.
+	 * Sets the Player's DreamPlanet.
 	 * 
-	 * @param dPlanet
-	 *            the new <code>DreamPlanet</code>
+	 * @param dPlanet the new DreamPlanet
 	 */
 	public void setDreamPlanet(String dPlanet) {
 		this.dPlanet = DreamPlanet.getPlanet(dPlanet);
 	}
 
 	/**
-	 * Sets the tower number generated for the <code>Player</code>.
+	 * Sets the tower number generated for the Player.
 	 * 
-	 * @param tower
-	 *            the number of the tower the <code>Player</code> will "dream" to
+	 * @param tower the number of the tower the Player will "dream" to
 	 */
 	public void setTower(byte tower) {
 		this.tower = tower;
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s dreamstate.
+	 * Sets the Player's dreamstate.
 	 * 
-	 * @param sleeping
-	 *            <code>true</code> if the <code>Player</code> is in dreamstate
+	 * @param sleeping true if the Player is in dreamstate
 	 */
 	public void updateSleepstate() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
@@ -234,11 +224,9 @@ public class SblockUser {
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s <code>Location</code> from the last
-	 * <code>World</code> that they visited.
+	 * Sets the Player's Location from the last World that they visited.
 	 * 
-	 * @param l
-	 *            The <code>Player</code>'s previous <code>Location</code>
+	 * @param l The Player's previous Location
 	 */
 	public void setPreviousLocation(Location l) {
 		l.setX(l.getBlockX() + .5);
@@ -250,8 +238,8 @@ public class SblockUser {
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s previous <code>Location</code> from a
-	 * <code>String</code>. Only for use in <code>DatabaseManager</code>.
+	 * Sets the Player's previous Location from a String. Only for use in
+	 * DatabaseManager.
 	 * 
 	 * @param s
 	 */
@@ -269,8 +257,7 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets the <code>Location</code> of the <code>Player</code> prior to sleep
-	 * teleportation.
+	 * Gets the Location of the Player prior to sleep teleportation.
 	 * 
 	 * @return the previousLocation
 	 */
@@ -279,8 +266,8 @@ public class SblockUser {
 	}
 
 	/**
-	 * The <code>String</code> representation of the <code>Player</code>'s
-	 * <code>Location</code> prior to last sleep teleport.
+	 * The String representation of the Player's Location prior to last sleep
+	 * teleport.
 	 * 
 	 * @return String
 	 */
@@ -292,11 +279,10 @@ public class SblockUser {
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s total time ingame from a
-	 * <code>String</code>. For use in <code>DatabaseManager</code> only.
+	 * Sets the Player's total time ingame from a String. For use in
+	 * DatabaseManager only.
 	 * 
-	 * @param s
-	 *            String
+	 * @param s String
 	 */
 	public void setTimePlayed(String s) {
 		if (s != null) {
@@ -323,10 +309,9 @@ public class SblockUser {
 	}
 
 	/**
-	 * The <code>String</code> representation of the <code>Player</code>'s total
-	 * time ingame.
+	 * The String representation of the Player's total time ingame.
 	 * 
-	 * @return the <code>Player</code>'s time ingame
+	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
 		long current = this.timePlayed + new Date().getTime() - this.login.getTime();
@@ -350,23 +335,22 @@ public class SblockUser {
 	}
 
 	/**
-	 * Returns the <code>Player</code>'s UHC mode.
+	 * Returns the Player's UHC mode.
 	 * <p>
 	 * UHC modes: negative = off; 1 = standard UHC; 2 = pre-1.8b food healing
 	 * 
-	 * @return the <code>Player</code>'s UHC mode
+	 * @return the Player's UHC mode
 	 */
 	public byte getUHCMode() {
 		return this.uhc;
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s UHC mode.
+	 * Sets the Player's UHC mode.
 	 * <p>
 	 * UHC modes: negative = off; 1 = standard UHC; 2 = pre-1.8b food healing
 	 * 
-	 * @param b
-	 *            the UHC mode to set
+	 * @param b the UHC mode to set
 	 */
 	public void setUHCMode(Byte b) {
 		// DB returns 0 if null
@@ -376,8 +360,7 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets a <code>Set</code> of all <code>Computer</code> programs accessible
-	 * by the <code>Player</code>.
+	 * Gets a Set of all Computer programs accessible by the Player.
 	 * 
 	 * @return the programs installed
 	 */
@@ -386,22 +369,20 @@ public class SblockUser {
 	}
 
 	/**
-	 * Add an <code>Entry</code> to the <code>Set</code> of programs accessible
-	 * by the <code>Player</code> at their <code>Computer</code>.
+	 * Add an Entry to the Set of programs accessible by the Player at their
+	 * Computer.
 	 * 
-	 * @param i
-	 *            the number of the program to add
+	 * @param i the number of the program to add
 	 */
 	public void addProgram(int i) {
 		this.programs.add(i);
 	}
 
 	/**
-	 * Restore the <code>Player</code>'s installed programs from a
-	 * <code>String</code>. For use in <code>DatabaseManager</code> only.
+	 * Restore the Player's installed programs from a String. For use in
+	 * DatabaseManager only.
 	 * 
-	 * @param s
-	 *            the string containing programs previously installed
+	 * @param s the string containing programs previously installed
 	 */
 	public void setPrograms(String s) {
 		if (s == null || s.isEmpty()) {
@@ -413,9 +394,7 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets a <code>String</code> representation of the <code>Player</code>'s
-	 * installed programs.
-	 * 
+	 * Gets a String representation of the Player's installed programs.
 	 * 
 	 * @return representation of the contents of programs
 	 */
@@ -431,18 +410,16 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets a <code>String</code> representation of the <code>Player</code>'s
-	 * IP.
+	 * Gets a String representation of the Player's IP.
 	 * 
-	 * @return the <code>Player</code>'s IP
+	 * @return the Player's IP
 	 */
 	public String getUserIP() {
 		return this.userIP;
 	}
 
 	/**
-	 * Sets the <code>SblockUser</code>'s IP if the <code>Player</code> is
-	 * online.
+	 * Sets the SblockUser's IP if the Player is online.
 	 */
 	public void setUserIP() {
 		if (this.getPlayer().isOnline())
@@ -467,12 +444,11 @@ public class SblockUser {
 	}
 
 	/**
-	 * Gets a <code>SblockUser</code> by <code>Player</code> name.
+	 * Gets a SblockUser by Player name.
 	 * 
-	 * @param userName
-	 *            the name to match
-	 * @return the <code>SblockUser</code> specified or <code>null</code> if
-	 *         invalid.
+	 * @param userName the name to match
+	 * 
+	 * @return the SblockUser specified or null if invalid.
 	 */
 	public static SblockUser getUser(String userName) {
 		return UserManager.getUserManager().getUser(userName);
@@ -481,7 +457,7 @@ public class SblockUser {
 	/**
 	 * Check if the user is in server mode.
 	 * 
-	 * @return <code>true</code> if the user is in server mode
+	 * @return true if the user is in server mode
 	 */
 	public boolean isServer() {
 		return this.server;

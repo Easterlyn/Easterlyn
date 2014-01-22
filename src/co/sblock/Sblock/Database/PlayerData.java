@@ -20,7 +20,6 @@ import co.sblock.Sblock.Utilities.Broadcast;
  * A small helper class containing all methods that access the PlayerData table.
  * <p>
  * The PlayerData table is created by the following call:
- * 
  * CREATE TABLE PlayerData (name varchar(16) UNIQUE KEY, class varchar(6),
  * aspect varchar(6), mPlanet varchar(5), dPlanet varchar(7), towerNum tinyint,
  * sleepState boolean, currentChannel varchar(16), isMute boolean, nickname varchar(16),
@@ -31,12 +30,10 @@ import co.sblock.Sblock.Utilities.Broadcast;
  */
 public class PlayerData {
 	/**
-	 * Save the data stored for all related parts of a <code>Player</code>.
+	 * Save the data stored for all related parts of a Player.
 	 * 
-	 * @param cUser
-	 *            the <code>ChatUser</code> to save data for
-	 * @param sUser
-	 *            the <code>SblockUser</code> to save data for
+	 * @param cUser the ChatUser to save data for
+	 * @param sUser the SblockUser to save data for
 	 */
 	protected static void saveUserData(String name) {
 		ChatUser cUser = ChatUserManager.getUserManager().removeUser(name);
@@ -83,7 +80,9 @@ public class PlayerData {
 	}
 
 	/**
-	 * Create a <code>PreparedStatement</code> with which to query the SQL database.
+	 * Create a PreparedStatement with which to query the SQL database.
+	 * 
+	 * @param name the name of the user to load data for
 	 */
 	protected static void loadUserData(String name) {
 		try {
@@ -98,7 +97,9 @@ public class PlayerData {
 	}
 
 	/**
-	 * Create a <code>PreparedStatement</code> with which to query the SQL database.
+	 * Create a PreparedStatement with which to query the SQL database.
+	 * 
+	 * @param name the name of the user to delete data for
 	 */
 	protected static void deleteUser(String name) {
 		try {
@@ -113,10 +114,9 @@ public class PlayerData {
 	}
 
 	/**
-	 * Load a <code>Player</code>'s data from a <code>ResultSet</code>.
+	 * Load a Player's data from a ResultSet.
 	 * 
-	 * @param rs
-	 *            the <code>ResultSet</code> to load from
+	 * @param rs the ResultSet to load from
 	 */
 	protected static void loadPlayer(ResultSet rs) {
 		try {
@@ -181,11 +181,11 @@ public class PlayerData {
 	}
 
 	/**
-	 * Get a <code>SblockUser</code>'s name by the IP they last connected with.
+	 * Get a SblockUser's name by the IP they last connected with.
 	 * 
-	 * @param hostAddress
-	 *            the IP to look up
-	 * @return the name of the <code>SblockUser</code>, "Player" if invalid
+	 * @param hostAddress the IP to look up
+	 * 
+	 * @return the name of the SblockUser, "Player" if invalid
 	 */
 	protected static String getUserFromIP(String hostAddress) {
 		PreparedStatement pst = null;
@@ -220,12 +220,10 @@ public class PlayerData {
 
 
 	/**
-	 * Create a PreparedStatement from a <code>Player</code>'s saved data.
+	 * Create a PreparedStatement from a Player's saved data.
 	 * 
-	 * @param sender
-	 *            the CommandSender requesting information
-	 * @param rs
-	 *            the <code>ResultSet</code> to load from
+	 * @param sender the CommandSender requesting information
+	 * @param rs the ResultSet to load from
 	 */
 	protected static void startOfflineLookup(CommandSender sender, String name) {
 		if (Bukkit.getOfflinePlayer(name).hasPlayedBefore()) {
@@ -247,12 +245,10 @@ public class PlayerData {
 	}
 
 	/**
-	 * Create a /whois from a <code>Player</code>'s saved data.
+	 * Create a /whois from a Player's saved data.
 	 * 
-	 * @param sender
-	 *            the CommandSender requesting information
-	 * @param rs
-	 *            the <code>ResultSet</code> to load from
+	 * @param sender the CommandSender requesting information
+	 * @param rs the ResultSet to load from
 	 */
 	protected static void loadOfflineLookup(CommandSender sender, ResultSet rs) {
 		ChatColor sys = ChatColor.DARK_AQUA;

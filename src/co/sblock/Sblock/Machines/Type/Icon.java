@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 /**
- * Enum for supplying <code>ItemStack</code>s that represent
- * "programs" installed on a user's <code>Computer</code>.
+ * Enum for supplying ItemStacks that represent
+ * "programs" installed on a user's Computer.
  * 
  * @author Jikoo
  */
@@ -26,9 +26,9 @@ public enum Icon {
 	}
 
 	/**
-	 * Gets the "program installer" <code>ItemStack</code>, if any.
+	 * Gets the "program installer" ItemStack, if any.
 	 * 
-	 * @return is the installer <code>ItemStack</code>
+	 * @return is the installer ItemStack
 	 */
 	public ItemStack getInstaller() {
 		ItemStack is = new ItemStack(Material.GOLD_RECORD);
@@ -95,18 +95,18 @@ public enum Icon {
 	/**
 	 * Gets the program ID.
 	 * 
-	 * @return <code>int</code>
+	 * @return int
 	 */
 	public int getProgramID() {
 		return this.number;
 	}
 
 	/**
-	 * Get an <code>Icon</code> by "installer" <code>ItemStack</code>.
+	 * Get an Icon by "installer" ItemStack.
 	 * 
-	 * @param m
-	 *            the <code>Material</code> to match
-	 * @return the <code>Icon</code>
+	 * @param m the Material to match
+	 * 
+	 * @return the Icon
 	 */
 	public static Icon getIcon(ItemStack is) {
 		for (Icon i : Icon.values()) {
@@ -121,11 +121,11 @@ public enum Icon {
 	}
 
 	/**
-	 * Get an <code>Icon</code> by number.
+	 * Get an Icon by number.
 	 * 
-	 * @param i1
-	 *            the number to match
-	 * @return the <code>Icon</code>
+	 * @param i1 the number to match
+	 * 
+	 * @return the Icon
 	 */
 	public static Icon getIcon(int i1) {
 		for (Icon i : Icon.values()) {

@@ -10,6 +10,7 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
 
 /**
+ * Simulate a Sburb Cruxtender in Minecraft.
  * 
  * @author Jikoo
  */

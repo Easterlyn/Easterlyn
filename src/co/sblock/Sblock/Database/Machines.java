@@ -16,15 +16,13 @@ import co.sblock.Sblock.Utilities.Log;
  * CREATE TABLE Machines (location varchar(40) UNIQUE KEY, type varchar(3), data varchar(16), face tinyint);
  * 
  * @author Jikoo
- *
  */
 public class Machines {
 
 	/**
-	 * Save <code>Machine</code> data to database.
+	 * Save Machine data to database.
 	 * 
-	 * @param m
-	 *            the <code>Machine</code> to save data for
+	 * @param m the Machine to save data for
 	 */
 	public static void saveMachine(Machine m) {
 		PreparedStatement pst = null;
@@ -57,11 +55,10 @@ public class Machines {
 	}
 
 	/**
-	 * Create a <code>PreparedStatement</code> with which to query the SQL database.
-	 * Delete a specified <code>Machine</code>'s data from database.
+	 * Create a PreparedStatement with which to query the SQL database. Delete a
+	 * specified Machine's data from database.
 	 * 
-	 * @param m
-	 *            the <code>Machine</code> to delete data of
+	 * @param m the Machine to delete data of
 	 */
 	public static void deleteMachine(Machine m) {
 		try {
@@ -75,7 +72,7 @@ public class Machines {
 	}
 
 	/**
-	 * Creates and loads all <code>Machine</code>s from saved data.
+	 * Creates and loads all Machines from saved data.
 	 */
 	public static void loadAllMachines() {
 		PreparedStatement pst = null;

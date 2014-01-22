@@ -33,14 +33,13 @@ import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
  */
 public class MachineEvents implements Listener {
 
-	/** THe MachineManager instance. */
+	/** The MachineManager instance. */
 	private MachineManager m = SblockMachines.getMachines().getManager();
 
 	/**
-	 * Event handler for <code>Machine</code> construction.
+	 * Event handler for Machine construction.
 	 * 
-	 * @param event
-	 *            the <code>BlockPlaceEvent</code>
+	 * @param event the BlockPlaceEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void build(BlockPlaceEvent event) {
@@ -66,10 +65,9 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>Machine</code> deconstruction.
+	 * The event handler for Machine deconstruction.
 	 * 
-	 * @param event
-	 *            the <code>BlockBreakEvent</code>
+	 * @param event the BlockBreakEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleBreak(BlockBreakEvent event) {
@@ -80,11 +78,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockGrowEvent</code>
+	 * @param event the BlockGrowEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleGrow(BlockGrowEvent event) {
@@ -95,11 +92,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockFadeEvent</code>
+	 * @param event the BlockFadeEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleFade(BlockFadeEvent event) {
@@ -110,11 +106,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockIgniteEvent</code>
+	 * @param event the BlockIgniteEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleIgnite(BlockIgniteEvent event) {
@@ -125,11 +120,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockPhysicsEvent</code>
+	 * @param event the BlockPhysicsEvent
 	 */
 	@EventHandler(ignoreCancelled = false)
 	public void handlePhysics(BlockPhysicsEvent event) {
@@ -140,11 +134,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockPistonExtendEvent</code>
+	 * @param event the BlockPistonExtendEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handlePush(BlockPistonExtendEvent event) {
@@ -155,11 +148,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockPistonRetractEvent</code>
+	 * @param event the BlockPistonRetractEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handlePull(BlockPistonRetractEvent event) {
@@ -170,11 +162,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockSpreadEvent</code>
+	 * @param event the BlockSpreadEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleSpread(BlockSpreadEvent event) {
@@ -185,11 +176,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>PlayerInteractEvent</code>
+	 * @param event the PlayerInteractEvent
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 	public void handleInteract(PlayerInteractEvent event) {
@@ -203,11 +193,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>InventoryMoveItemEvent</code>
+	 * @param event the InventoryMoveItemEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleHopper(InventoryMoveItemEvent event) {
@@ -222,11 +211,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>InventoryClickEvent</code>
+	 * @param event the InventoryClickEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleClick(InventoryClickEvent event) {
@@ -241,11 +229,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>InventoryClickEvent</code>
+	 * @param event the InventoryClickEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleBurnFuel(FurnaceBurnEvent event) {
@@ -256,11 +243,10 @@ public class MachineEvents implements Listener {
 	}
 
 	/**
-	 * An event handler for a change that is caused by or affects a
-	 * <code>Block</code> in a <code>Machine</code>.
+	 * An event handler for a change that is caused by or affects a Block in a
+	 * Machine.
 	 * 
-	 * @param event
-	 *            the <code>InventoryCloseEvent</code>
+	 * @param event the InventoryCloseEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClose(InventoryCloseEvent event) {

@@ -72,7 +72,7 @@ public class SblockData {
 	}
 
 	/**
-	 * Close <code>Connection</code> and set instance to null.
+	 * Close Connection and set instance to null.
 	 */
 	public void disable() {
 		try {
@@ -84,29 +84,38 @@ public class SblockData {
 		connection = null;
 	}
 
+	/**
+	 * Get the Connection to the database.
+	 * 
+	 * @return the Connection
+	 */
 	protected Connection connection() {
 		return connection;
 	}
 
+	/**
+	 * Gets a Log for database-related events. Used to prevent confusion about
+	 * the source of messages.
+	 * 
+	 * @return the Log
+	 */
 	public final Log getLogger() {
 		return new Log("SblockData", null);
 	}
 
 	/**
-	 * Initiate user data saving for a <code>Player</code> by name.
+	 * Initiate user data saving for a Player by name.
 	 * 
-	 * @param name
-	 *            the name of the <code>Player</code>
+	 * @param name the name of the Player
 	 */
 	public void saveUserData(String name) {
 		PlayerData.saveUserData(name);
 	}
 
 	/**
-	 * Initiate loading of a <code>Player</code>'s stored data.
+	 * Initiate loading of a Player's stored data.
 	 * 
-	 * @param name
-	 *            the name of the <code>Payer</code> to load data for
+	 * @param name the name of the Payer to load data for
 	 */
 	public ChatUser loadUserData(String name) {
 		UserManager.getUserManager().addUser(name);
@@ -120,64 +129,59 @@ public class SblockData {
 	}
 
 	/**
-	 * Delete specified <code>Player</code>'s data from database.
+	 * Delete specified Player's data from database.
 	 * 
-	 * @param name
-	 *            the name of the <code>Player</code> whose data is to be deleted
+	 * @param name the name of the Player whose data is to be deleted
 	 */
 	public void deleteUser(String name) {
 		PlayerData.deleteUser(name);
 	}
 
 	/**
-	 * Save <code>Channel</code> data to database.
+	 * Save Channel data to database.
 	 * 
-	 * @param c
-	 *            the <code>Channel</code> to save data for
+	 * @param c the Channel to save data for
 	 */
 	public void saveChannelData(Channel c) {
 		ChatChannels.saveChannelData(c);
 	}
 
 	/**
-	 * Creates and loads all <code>Channel</code>s from saved data.
+	 * Creates and loads all Channels from saved data.
 	 */
 	public void loadAllChannelData() {
 		ChatChannels.loadAllChannelData();
 	}
 
 	/**
-	 * Delete a <code>Channel</code> by name.
+	 * Delete a Channel by name.
 	 * 
-	 * @param channelName
-	 *            the name of the <code>Channel</code> to delete
+	 * @param channelName the name of the Channel to delete
 	 */
 	public void deleteChannel(String channelName) {
 		ChatChannels.deleteChannel(channelName);
 	}
 
 	/**
-	 * Save <code>Machine</code> data to database.
+	 * Save Machine data to database.
 	 * 
-	 * @param m
-	 *            the <code>Machine</code> to save data for
+	 * @param m the Machine to save data for
 	 */
 	public void saveMachine(Machine m) {
 		Machines.saveMachine(m);
 	}
 
 	/**
-	 * Delete a specified <code>Machine</code>'s data from database.
+	 * Delete a specified Machine's data from database.
 	 * 
-	 * @param m
-	 *            the <code>Machine</code> to delete data of
+	 * @param m the Machine to delete data of
 	 */
 	public void deleteMachine(Machine m) {
 		Machines.deleteMachine(m);
 	}
 
 	/**
-	 * Creates and loads all <code>Machine</code>s from saved data.
+	 * Creates and loads all Machines from saved data.
 	 */
 	public void loadAllMachines() {
 		Machines.loadAllMachines();
@@ -186,11 +190,10 @@ public class SblockData {
 	/**
 	 * @deprecated Make a custom call to the database. For testing purposes
 	 *             only! Make a new method for new features.
-	 * @param MySQLStatement
-	 *            the call to make
-	 * @param resultExpected
-	 *            true if a <code>ResultSet</code> is expected
-	 * @return the <code>ResultSet</code> generated, if any.
+	 * @param MySQLStatement the call to make
+	 * @param resultExpected true if a ResultSet is expected
+	 * 
+	 * @return the ResultSet generated, if any.
 	 */
 	public ResultSet makeCustomCall(String MySQLStatement) {
 		try {
@@ -202,38 +205,38 @@ public class SblockData {
 	}
 
 	/**
-	 * Fills out <code>TowerData</code> from saved data.
+	 * Fills out TowerData from saved data.
 	 */
 	public void loadTowerData() {
 		TowerLocs.loadTowerData();
 	}
 
 	/**
-	 * Save all <code>TowerData</code>.
-	 * @param towers the <code>TowerData</code> to save
+	 * Save all TowerData.
+	 * 
+	 * @param towers the TowerData to save
 	 */
 	public void saveTowerData(TowerData towers) {
 		TowerLocs.saveTowerData(towers);
 	}
 
 	/**
-	 * Get a <code>SblockUser</code>'s name by the IP they last connected with.
+	 * Get a SblockUser's name by the IP they last connected with.
 	 * 
-	 * @param hostAddress
-	 *            the IP to look up
-	 * @return the name of the <code>SblockUser</code>, "Player" if invalid
+	 * @param hostAddress the IP to look up
+	 * 
+	 * @return the name of the SblockUser, "Player" if invalid
 	 */
 	public String getUserFromIP(String hostAddress) {
 		return PlayerData.getUserFromIP(hostAddress);
 	}
 
 	/**
-	 * Get the reason a <code>SblockUser</code> was banned.
+	 * Get the reason a SblockUser was banned.
 	 * 
-	 * @param name
-	 *            the name of the banned <code>SblockUser</code>
-	 * @param ip
-	 *            the IP of the banned <code>SblockUser</code>
+	 * @param name the name of the banned SblockUser
+	 * @param ip the IP of the banned SblockUser
+	 * 
 	 * @return the ban reason
 	 */
 	public String getBanReason(String name, String ip) {
@@ -241,12 +244,10 @@ public class SblockData {
 	}
 
 	/**
-	 * Add a ban and reason to a <code>SblockUser</code>.
+	 * Add a ban and reason to a SblockUser.
 	 * 
-	 * @param target
-	 *            the <code>SblockUser</code> to add a ban for
-	 * @param reason
-	 *            the reason the <code>SblockUser</code> was banned
+	 * @param target the SblockUser to add a ban for
+	 * @param reason the reason the SblockUser was banned
 	 */
 	public void addBan(SblockUser target, String reason) {
 		BannedPlayers.addBan(target, reason);
@@ -255,8 +256,7 @@ public class SblockData {
 	/**
 	 * Remove a ban by name or IP.
 	 * 
-	 * @param target
-	 *            the name or IP to unban
+	 * @param target the name or IP to unban
 	 */
 	public void removeBan(String target) {
 		BannedPlayers.loadAndDeleteBans(target);

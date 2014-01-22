@@ -20,17 +20,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+import co.sblock.Sblock.Utilities.Broadcast;
+
 /**
  * @author Jikoo, Dublek
  */
 public class CaptchaEventListener implements Listener	{
 
 	/**
-	 * The event handler for <code>Captcha</code>-related
-	 * <code>InventoryClickEvents</code>.
+	 * The event handler for Captcha-related InventoryClickEvents.
 	 * 
-	 * @param e
-	 *            the <code>InventoryClickEvent</code>
+	 * @param e the InventoryClickEvent
 	 */
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -183,10 +183,9 @@ public class CaptchaEventListener implements Listener	{
 	}
 
 	/**
-	 * The event handler for Captcha-related <code>InventoryDragEvent</code>s.
+	 * The event handler for Captcha-related InventoryDragEvents.
 	 * 
-	 * @param e
-	 *            the <code>InventoryDragEvent</code>
+	 * @param e the InventoryDragEvent
 	 */
 	@EventHandler
 	public void onItemDragDrop(InventoryDragEvent e) {
@@ -207,11 +206,10 @@ public class CaptchaEventListener implements Listener	{
 	}
 
 	/**
-	 * The event handler for Captcha-related <code>PlayerInteractEvents</code>
+	 * The event handler for Captcha-related PlayerInteractEvents
 	 * (Uncaptcha-ing).
 	 * 
-	 * @param e
-	 *            the <code>PlayerInteractEvent</code>
+	 * @param e the PlayerInteractEvent
 	 */
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -265,11 +263,10 @@ public class CaptchaEventListener implements Listener	{
 	}
 
 	/**
-	 * The event handler for saving Captchadex <code>Inventory</code> to a
-	 * <code>BookMeta</code> when closed.
+	 * The event handler for saving Captchadex Inventory to a
+	 * BookMeta when closed.
 	 * 
-	 * @param e
-	 *            the <code>InventoryCloseEvent</code>
+	 * @param e the InventoryCloseEvent
 	 */
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
@@ -279,27 +276,27 @@ public class CaptchaEventListener implements Listener	{
 	}
 
 	/**
-	 * The event handler for preventing <code>Player</code>s from manually
+	 * The event handler for preventing Players from manually
 	 * creating their own Captchadexes.
 	 * 
-	 * @param e
-	 *            the <code>PlayerEditBookEvent</code>
+	 * @param e the PlayerEditBookEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBookEdit(PlayerEditBookEvent e) {
 		if (e.isSigning() && e.getNewBookMeta().hasTitle() && e.getNewBookMeta().getTitle().equals("Captchadex")) {
 			BookMeta bm = e.getNewBookMeta().clone();
-			bm.setTitle(ChatColor.DARK_RED + "I am bad at cheating.");
+			bm.setTitle(ChatColor.DARK_RED + "CaptchaNOPE.");
 			e.setNewBookMeta(bm);
-			Bukkit.getServer().broadcastMessage(ChatColor.RED + e.getPlayer().getName()
+			Broadcast.lilHal("It appears that " + e.getPlayer().getName()
 					+ " just tried to title a book Captchadex. Please take a moment to laugh at them.");
 		}
 	}
 
 	/**
-	 * Check if a <code>Block</code> has a right click action that would take priority over opening a book.
-	 * @param b the <code>Block</code> to check
-	 * @return <code>true</code> if right clicking the block will not cause a book to open.
+	 * Check if a Block has a right click action that would take priority over opening a book.
+	 * @param b the Block to check
+	 * 
+	 * @return true if right clicking the block will not cause a book to open.
 	 */
 	private boolean hasRightClickFunction(Block b) {
 		switch (b.getType()) {
@@ -307,7 +304,6 @@ public class CaptchaEventListener implements Listener	{
 			// Awww yiss BookShelf <3
 			return Bukkit.getPluginManager().isPluginEnabled("BookShelf");
 		case CAULDRON:
-			// Forgot that only my plugin would cause cancellation of right clicking cauldron :V
 			return Bukkit.getPluginManager().isPluginEnabled("BookSuite");
 		case ANVIL:
 		case BEACON:

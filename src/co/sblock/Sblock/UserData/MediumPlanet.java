@@ -7,11 +7,10 @@ package co.sblock.Sblock.UserData;
  */
 public enum MediumPlanet {
 
-	NONE, LOFAF, LOHAC, LOLAR, LOWAS;
+	LOFAF, LOHAC, LOLAR, LOWAS;
 
 	/**
-	 * Gets the short name of a <code>MediumPlanet</code>.
-	 * 
+	 * Gets the short name of a MediumPlanet.
 	 * 
 	 * @return the short name
 	 */
@@ -20,8 +19,7 @@ public enum MediumPlanet {
 	}
 
 	/**
-	 * Gets the long name of a <code>MediumPlanet</code>.
-	 * 
+	 * Gets the long name of a MediumPlanet.
 	 * 
 	 * @return the long name
 	 */
@@ -35,26 +33,23 @@ public enum MediumPlanet {
 			return "Land of Light and Rain";
 		case LOWAS:
 			return "Land of Wind and Shade";
-		case NONE:
-			return "Land of Fail and Downvotes";
 		default:
 			return "Land of Fail and Downvotes";
 		}
 	}
 
 	/**
-	 * Gets the <code>MediumPlanet</code>.
+	 * Gets the MediumPlanet.
 	 * 
-	 * @param name
-	 *            the name of a <code>MediumPlanet</code>
+	 * @param name the name of a MediumPlanet
 	 * 
-	 * @return the <code>MediumPlanet</code>
+	 * @return the MediumPlanet
 	 */
 	public static MediumPlanet getPlanet(String name) {
 		try {
 			return MediumPlanet.valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return MediumPlanet.NONE;
+			return MediumPlanet.LOWAS;
 		}
 	}
 }

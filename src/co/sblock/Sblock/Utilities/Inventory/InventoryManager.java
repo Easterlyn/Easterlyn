@@ -12,28 +12,22 @@ import org.bukkit.inventory.ItemStack;
  */
 public class InventoryManager {
 
-	/**
-	 * A <code>Map</code> of all <code>Players</code> whose
-	 * <code>Inventory</code> has been replaced
-	 */
+	/** A Map of all Players whose Inventory has been replaced. */
 	private static Map<String, Inventory> viewers = new HashMap<String, Inventory>();
 
 	/**
-	 * Stores a <code>Player</code>'s <code>Inventory</code>, then clears their
-	 * ingame <code>Inventory</code>.
+	 * Stores and clears a Player's Inventory.
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
+	 * @param p the Player
 	 */
 	public static void storeAndClearInventory(Player p) {
 		viewers.put(p.getName(), p.getInventory());
 	}
 
 	/**
-	 * Restore a <code>Player</code>'s <code>Inventory</code>.
+	 * Restore a Player's Inventory.
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
+	 * @param p the Player
 	 */
 	public static void restoreInventory(Player p) {
 		if (viewers.containsKey(p.getName())) {
@@ -42,15 +36,12 @@ public class InventoryManager {
 	}
 
 	/**
-	 * Modify a stored <code>Player</code>'s <code>Inventory</code>.
+	 * Modify a stored Player's Inventory.
 	 * 
-	 * @param name
-	 *            the name of the <code>Player</code>
-	 * @param add
-	 *            <code>true</code> if adding an item
-	 * @param toModify
-	 *            the <code>ItemStack</code> to add or remove
-	 * @return <code>true</code> if the modification was possible
+	 * @param name the name of the Player
+	 * @param add true if adding an item
+	 * @param toModify the ItemStack to add or remove
+	 * @return true if the modification was possible
 	 */
 	public static boolean modifyPlayerInventory(String name, boolean add, ItemStack toModify) {
 		Inventory i = viewers.get(name);
@@ -63,7 +54,7 @@ public class InventoryManager {
 			return true;
 		}
 		if (i.contains(toModify)) {
-			i.remove(toModify);
+			i.remove(toModify); // Adam no this is not what you thought it was
 			viewers.put(name, i);
 			return true;
 		}

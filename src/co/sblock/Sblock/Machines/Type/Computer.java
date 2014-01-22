@@ -18,6 +18,8 @@ import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.UserData.SblockUser;
 
 /**
+ * Computers for players! Inventory-based selection system.
+ * 
  * @author Jikoo
  */
 public class Computer extends Machine implements InventoryHolder {
@@ -144,9 +146,9 @@ public class Computer extends Machine implements InventoryHolder {
 	}
 
 	/**
-	 * Create an <code>Inventory</code> that represents our Sburb client adaptation.
+	 * Create an Inventory that represents our Sburb client adaptation.
 	 * 
-	 * @return the <code>Inventory</code> created
+	 * @return the Inventory created
 	 */
 	private Inventory getClientInventory() {
 		Inventory i = Bukkit.createInventory(this, 18, "~/SburbClient");
@@ -155,9 +157,9 @@ public class Computer extends Machine implements InventoryHolder {
 	}
 
 	/**
-	 * Create an <code>Inventory</code> that represents our Sburb client adaptation.
+	 * Create an Inventory that represents our Sburb client adaptation.
 	 * 
-	 * @return the <code>Inventory</code> created
+	 * @return the Inventory created
 	 */
 	private Inventory getVerify(String s) {
 		Inventory i = Bukkit.createInventory(this, 9, "~/verify/" + s);

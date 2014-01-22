@@ -7,6 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 /**
+ * Machine for ItemStack teleportation.
+ * 
  * @author Jikoo
  */
 public class Transmaterializer extends Machine {

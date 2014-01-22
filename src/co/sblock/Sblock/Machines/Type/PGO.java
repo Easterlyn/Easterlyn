@@ -58,9 +58,11 @@ public class PGO extends Machine {
 	}
 
 	/**
-	 * Method isValid.
+	 * Verifies that a PGO is allowed to be turned into the specified Material.
+	 * 
 	 * @param type Material
-	 * @return boolean
+	 * 
+	 * @return true if Material can be mimicked
 	 */
 	private boolean isValid(Material type) {
 		switch (type) {

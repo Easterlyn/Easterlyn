@@ -14,11 +14,12 @@ import co.sblock.Sblock.SblockCommand;
 public class CaptchaCommandListener implements CommandListener {
 
 	/**
-	 * Command used to convert an <code>ItemStack</code> into a Captchacard.
+	 * Command used to convert an ItemStack into a Captchacard.
 	 * 
-	 * @param sender
-	 *            the <code>CommandSender</code>
-	 * @return true if the <code>CommandSender</code> is an operator
+	 * @param sender the CommandSender
+	 * @param args the command arguments
+	 * 
+	 * @return true if successful
 	 */
 	@SblockCommand(description = "Captchalogues item in hand", usage = "/captcha")
 	public boolean captcha(CommandSender sender, String[] args) {
@@ -33,11 +34,12 @@ public class CaptchaCommandListener implements CommandListener {
 	}
 
 	/**
-	 * Command used to convert a Captchacard into an <code>ItemStack</code>.
+	 * Command used to convert a Captchacard into an ItemStack.
 	 * 
-	 * @param sender
-	 *            the <code>CommandSender</code>
-	 * @return true if the <code>CommandSender</code> is an operator
+	 * @param sender the CommandSender
+	 * @param args the command arguments
+	 * 
+	 * @return true if successful
 	 */
 	@SblockCommand(description = "Uncaptchalogues item in hand", usage = "/uncaptcha")
 	public boolean uncaptcha(CommandSender sender, String[] args) {
@@ -57,9 +59,10 @@ public class CaptchaCommandListener implements CommandListener {
 	/**
 	 * Command used to convert a Captchacard into a Punchcard.
 	 * 
-	 * @param sender
-	 *            the <code>CommandSender</code>
-	 * @return true if the <code>CommandSender</code> is an operator
+	 * @param sender the CommandSender
+	 * @param args the command arguments
+	 * 
+	 * @return true if successful
 	 */
 	@SblockCommand(description = "Punches card in hand", usage = "/punchcard")
 	public boolean punchcard(CommandSender sender, String[] args) {
@@ -80,9 +83,10 @@ public class CaptchaCommandListener implements CommandListener {
 	/**
 	 * Command used to convert a Punchcard into a Captchacard.
 	 * 
-	 * @param sender
-	 *            the <code>CommandSender</code>
-	 * @return true if the <code>CommandSender</code> is an operator
+	 * @param sender the CommandSender
+	 * @param args the command arguments
+	 * 
+	 * @return true if successful
 	 */
 	@SblockCommand(description = "Gives player a captchadex", usage = "/captchadex")
 	public boolean captchadex(CommandSender sender, String[] args) {

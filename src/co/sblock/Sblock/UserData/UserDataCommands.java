@@ -10,12 +10,12 @@ import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Events.SblockEvents;
 
 /**
- * Class for holding commands associated with this module.
+ * Class for holding commands associated with the UserData module.
  * 
  * For more information on how the command system works, please see
  * {@link co.sblock.Sblock.SblockCommand}
  * 
- * @author FireNG
+ * @author FireNG, Jikoo
  */
 public class UserDataCommands implements CommandListener {
 
@@ -23,13 +23,12 @@ public class UserDataCommands implements CommandListener {
 	public static final ChatColor PROFILE_COLOR = ChatColor.DARK_AQUA;
 
 	/**
-	 * Gets the profile of a <code>SblockUser</code>.
+	 * Gets the profile of a SblockUser.
 	 * 
-	 * @param sender
-	 *            the <code>CommandSender</code>
-	 * @param target
-	 *            the <code>SblockUser</code> to look up
-	 * @return <code>true</code> if command was used correctly
+	 * @param sender the CommandSender
+	 * @param target the SblockUser to look up
+	 * 
+	 * @return true if command was used correctly
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Check a player's profile.", usage = "")
 	public boolean profile(CommandSender sender, String[] target) {
@@ -51,11 +50,13 @@ public class UserDataCommands implements CommandListener {
 	}
 	
 	/**
-	 * Set <code>SblockUser</code> data.
+	 * Set SblockUser data.
 	 * 
-	 * @param sender the <code>CommandSender</code>
+	 * @param sender the CommandSender
 	 * @param args the String[] of arguments where 0 is player name, 1 is data
 	 *        being changed, and 2 is the new value
+	 * 
+	 * @return true if command was used correctly
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Set player data",
 			usage = "setplayer <playername> <class|aspect|land|dream|prevloc> <value>")
@@ -85,14 +86,12 @@ public class UserDataCommands implements CommandListener {
 	}
 	
 	/**
-	 * Set specified tower <code>Location</code> to <code>CommandSender</code>'s
-	 * current <code>Location</code>.
+	 * Set specified tower Location to CommandSender's current Location.
 	 * 
-	 * @param sender
-	 *            the <code>CommandSender</code>
-	 * @param number
-	 *            the tower number to set
-	 * @return <code>true</code> if command was used correctly
+	 * @param sender the CommandSender
+	 * @param number the tower number to set
+	 * 
+	 * @return true if command was used correctly
 	 */
 	@SblockCommand(description = "Set tower location.", usage = "/settower <0-7>")
 	public boolean settower(CommandSender sender, String[] number) {
@@ -121,6 +120,11 @@ public class UserDataCommands implements CommandListener {
 
 	/**
 	 * A simple command warp wrapper to prevent users from using tower warps to other aspects.
+	 * 
+	 * @param sender the CommandSender
+	 * @param args the String[] of arguments where 0 is aspect/warp, 1 is player name
+	 * 
+	 * @return true if command was used correctly
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Warps player if aspect matches warp name.",
 			usage = "aspectwarp <warp> <player>")

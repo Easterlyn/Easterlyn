@@ -15,12 +15,11 @@ import co.sblock.Sblock.UserData.SblockUser;
  */
 public class SleepTeleport implements Runnable {
 
-	/** The <code>Player</code> to teleport. */
+	/** The Player to teleport. */
 	private Player p;
 
 	/**
-	 * @param p
-	 *            the <code>Player</code> to teleport
+	 * @param p the Player to teleport
 	 */
 	public SleepTeleport(Player p) {
 		this.p = p;

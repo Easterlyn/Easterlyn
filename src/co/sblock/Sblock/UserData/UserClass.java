@@ -6,31 +6,30 @@ package co.sblock.Sblock.UserData;
  * @author FireNG, Jikoo
  */
 public enum UserClass {
-	NONE, BARD, HEIR, KNIGHT, MAGE, MAID, PAGE,
+	BARD, HEIR, KNIGHT, MAGE, MAID, PAGE,
 	PRINCE, ROGUE, SEER, SYLPH, THEIF, WITCH;
 
 	/**
-	 * Gets the display name of the <code>UserClass</code>.
+	 * Gets the display name of the UserClass.
 	 * 
-	 * @return The display name of this <code>UserClass</code>.
+	 * @return The display name of this UserClass.
 	 */
 	public String getDisplayName() {
 		return this.name().charAt(0) + this.name().substring(1).toLowerCase();
 	}
 
 	/**
-	 * Gets the <code>UserClass</code>.
+	 * Gets the UserClass.
 	 * 
-	 * @param name
-	 *            the name of a <code>UserClass</code>
+	 * @param name the name of a UserClass
 	 * 
-	 * @return the <code>UserClass</code>
+	 * @return the UserClass
 	 */
 	public static UserClass getClass(String name) {
 		try {
 			return UserClass.valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return UserClass.NONE;
+			return UserClass.HEIR;
 		}
 	}
 }

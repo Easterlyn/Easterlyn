@@ -18,12 +18,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class Captchadex {
 
 	/**
-	 * Create an <code>ItemStack</code> representation of a
-	 * <code>Captchadex</code> for a <code>Player</code>.
+	 * Create an ItemStack representation of a Captchadex.
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
-	 * @return the <code>ItemStack</code> created
+	 * @param p the Player who owns the book
+	 * 
+	 * @return the ItemStack created
 	 */
 	public static ItemStack createCaptchadexBook(Player p) {
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
@@ -36,12 +35,11 @@ public class Captchadex {
 	}
 
 	/**
-	 * Translate <code>Captchadex</code> contents from an <code>ItemStack</code>
-	 * into an <code>Inventory</code>.
+	 * Translate Captchadex contents into an Inventory.
 	 * 
-	 * @param book
-	 *            the <code>ItemStack</code> to translate
-	 * @return the resulting <code>Inventory</code>
+	 * @param book the ItemStack to translate
+	 * 
+	 * @return the resulting Inventory
 	 */
 	public static Inventory loadCaptchadex(ItemStack book) {
 		BookMeta bm = (BookMeta) book.getItemMeta();
@@ -60,13 +58,12 @@ public class Captchadex {
 	}
 
 	/**
-	 * Translate Inventory contents into an <code>ItemStack</code>.
+	 * Translate Inventory contents into an ItemStack.
 	 * 
-	 * @param i
-	 *            the <code>Inventory</code> to save
-	 * @param book
-	 *            the <code>ItemStack</code> to save into
-	 * @return the saved <code>ItemStack</code>
+	 * @param i the Inventory to save
+	 * @param book the ItemStack to save into
+	 * 
+	 * @return the saved ItemStack
 	 */
 	public static ItemStack saveCaptchadex(Inventory i, ItemStack book) {
 		BookMeta bm = (BookMeta) book.getItemMeta();
@@ -90,22 +87,21 @@ public class Captchadex {
 	}
 
 	/**
-	 * Creates a <code>Captchadex</code> Inventory for the specified
-	 * <code>InventoryHolder</code>.
+	 * Creates a Captchadex Inventory for the specified InventoryHolder.
 	 * 
-	 * @param ih
-	 *            <code>InventoryHolder</code>
-	 * @return the created <code>Inventory</code>
+	 * @param ih the InventoryHolder
+	 * 
+	 * @return the Inventory created
 	 */
 	public static Inventory createCaptchadexInventory(InventoryHolder ih) {
 		return Bukkit.getServer().createInventory(ih, 27, "Captchadex");
 	}
 
 	/**
-	 * Creat a captchacard of an <code>ItemStack</code>.
+	 * Creates a captchacard from an ItemStack.
 	 * 
-	 * @param is
-	 *            the <code>ItemStack</code>
+	 * @param is the ItemStack
+	 * 
 	 * @return the captchacard created
 	 */
 	public static ItemStack punchCardToItem(ItemStack is) {
@@ -114,10 +110,10 @@ public class Captchadex {
 	}
 
 	/**
-	 * Create a captchacard from a punchcard.
+	 * Create a punchcard from an ItemStack.
 	 * 
-	 * @param is
-	 *            the captchacard to punch
+	 * @param is the ItemStack
+	 * 
 	 * @return the punched captchacard
 	 */
 	public static ItemStack itemToCard(ItemStack is) {
@@ -133,8 +129,8 @@ public class Captchadex {
 	 * <p>
 	 * For testing purposes only, good luck patching punched holes.
 	 * 
-	 * @param is
-	 *            the punchcard to unpunch
+	 * @param is the punchcard ItemStack
+	 * 
 	 * @return the unpunched captchacard
 	 */
 	public static ItemStack punchCard(ItemStack is) {

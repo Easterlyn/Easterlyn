@@ -19,23 +19,22 @@ public enum MachineType {
 	TOTEM_LATHE("tl"), TRANSMATERIALIZER("tm"),
 	TRANSPORTALIZER("tp"), ANY("NO.");
 
-	/** The shortened name of the <code>MachineType</code>. */
+	/** The shortened name of the MachineType. */
 	String type;
 
 	/**
 	 * Constructor for MachineType.
 	 * 
-	 * @param s
-	 *            the shortened name
+	 * @param s the shortened name
 	 */
 	private MachineType(String s) {
 		type = s;
 	}
 
 	/**
-	 * Gets a shorter name for the <code>MachineType</code>.
+	 * Gets a shorter name for the MachineType.
 	 * 
-	 * @return the shortened name for the <code>MachineType</code>
+	 * @return the shortened name for the MachineType
 	 */
 	public String getAbbreviation() {
 		return type;
@@ -44,9 +43,9 @@ public enum MachineType {
 	/**
 	 * Gets a MachineType by abbreviation or full name.
 	 * 
-	 * @param type
-	 *            the <code>String</code> to match
-	 * @return the <code>MachineType</code> or <code>null</code> if invalid
+	 * @param type the String to match
+	 * 
+	 * @return the MachineType or null if invalid
 	 */
 	public static MachineType getType(String type) {
 		for (MachineType m : MachineType.values()) {
@@ -58,12 +57,11 @@ public enum MachineType {
 	}
 
 	/**
-	 * Gets <code>Machine</code> data based on type from a
-	 * <code>BlockPlaceEvent</code>.
+	 * Gets Machine data based on type from a BlockPlaceEvent.
 	 * 
-	 * @param e
-	 *            the <code>BlockPlaceEvent</code>
-	 * @return the <code>Machine</code> data
+	 * @param e the BlockPlaceEvent
+	 * 
+	 * @return the Machine data
 	 */
 	@SuppressWarnings("deprecation")
 	public String getData(BlockPlaceEvent e) {
@@ -74,10 +72,9 @@ public enum MachineType {
 	}
 
 	/**
-	 * Gets the <code>ItemStack</code> that represents this
-	 * <code>MachineType</code>.
+	 * Gets the ItemStack that represents this MachineType.
 	 * 
-	 * @return the <code>ItemStack</code>
+	 * @return the ItemStack
 	 */
 	public ItemStack getUniqueDrop() {
 		ItemStack is = null;

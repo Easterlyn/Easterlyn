@@ -16,24 +16,23 @@ import co.sblock.Sblock.Utilities.Log;
  * @author FireNG
  */
 public abstract class Module {
-	/** The <code>Set</code> of <code>Listener</code>s registered by this <code>Module</code>. */
+	/** The Set of Listeners registered by this Module. */
 	private Set<Listener> listeners = new HashSet<Listener>();
 
 	/**
-	 * Called when the <code>Module</code> is enabled.
+	 * Called when the Module is enabled.
 	 */
 	protected abstract void onEnable();
 
 	/**
-	 * Called when the <code>Module</code> is disabled before handlers are unassigned.
+	 * Called when the Module is disabled before handlers are unassigned.
 	 */
 	protected abstract void onDisable();
 
 	/**
-	 * Register events for one or more <code>Listener</code>s.
+	 * Register events for one or more Listeners.
 	 * 
-	 * @param listeners
-	 *            <code>Listener[]</code>
+	 * @param listeners Listener[]
 	 */
 	protected final void registerEvents(Listener... listeners) {
 		for (Listener listener : listeners) {
@@ -43,19 +42,18 @@ public abstract class Module {
 	}
 
 	/**
-	 * Registers all of the <code>Command</code>s handled in the given <code>CommandListener</code>.
+	 * Registers all of the Commands handled in the given CommandListener.
 	 * 
-	 * @param listener
-	 *            <code>Listener</code> to register.
+	 * @param listener the Listener to register.
 	 */
 	protected final void registerCommands(CommandListener listener) {
 		Sblock.getInstance().registerCommands(listener);
 	}
 
 	/**
-	 * Enables the <code>Module</code>.
+	 * Enables the Module.
 	 * 
-	 * @return the <code>Module</code> enabled
+	 * @return the Module enabled
 	 */
 	public final Module enable() {
 		try {
@@ -68,9 +66,9 @@ public abstract class Module {
 	}
 
 	/**
-	 * Disables the <code>Module</code>.
+	 * Disables the Module.
 	 * 
-	 * @return the <code>Module</code> disabled
+	 * @return the Module disabled
 	 */
 	public final Module disable() {
 
@@ -88,9 +86,10 @@ public abstract class Module {
 	}
 
 	/**
+	 * Gets a Logger that the plugin may use whose name is the same as this
+	 * Module's class name.
 	 * 
-	 * @return a <code>Logger</code> that the plugin may use whose name is the same
-	 *         as this <code>Module</code>'s class name.
+	 * @return the Log
 	 */
 	public final Log getLogger() {
 		return new Log(this.getClass().getSimpleName(), null);

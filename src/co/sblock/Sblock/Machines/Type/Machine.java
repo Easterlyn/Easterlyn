@@ -30,32 +30,31 @@ import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.SblockMachines;
 
 /**
- * Framework for all "machine" block assemblies.
+ * Framework for all Machine block assemblies.
  * 
  * @author Jikoo
- * 
  */
 public abstract class Machine {
 
-	/** The <code>Location</code> of the key <code>Block</code> of the <code>Machine</code>. */
+	/** The Location of the key Block of the Machine. */
 	protected Location l;
-	/** Additional data stored in the <code>Machine</code>, e.g. creator name. */
+
+	/** Additional data stored in the Machine, e.g. creator name. */
 	private String data;
-	/** <code>Machine</code> facing */
+
+	/** Machine facing */
 	protected Direction d;
-	/** The <code>Shape</code> of the <code>Machine</code> */
+
+	/** The Shape of the Machine */
 	protected Shape shape;
-	/** A <code>Set</code> of all <code>Locations</code> defined as part of the <code>Machine</code>. */
+
+	/** A Set of all Locations defined as part of the Machine. */
 	protected HashMap<Location, ItemStack> blocks;
 
 	/**
-	 * @param l
-	 *            the <code>Location</code> of the key <code>Block</code> of
-	 *            this <code>Machine</code>
-	 * @param data
-	 *            any additional data stored in this machine, e.g. creator name
-	 * @param d
-	 *            the facing direction of the <code>Machine</code>
+	 * @param l the Location of the key Block of this Machine
+	 * @param data any additional data stored in this machine, e.g. creator name
+	 * @param d the facing direction of the Machine
 	 */
 	Machine(Location l, String data, Direction d) {
 		this.l = l;
@@ -65,11 +64,8 @@ public abstract class Machine {
 	}
 
 	/**
-	 * @param l
-	 *            the <code>Location</code> of the key <code>Block</code> of
-	 *            this <code>Machine</code>
-	 * @param data
-	 *            any additional data stored in this machine, e.g. creator name
+	 * @param l the Location of the key Block of this Machine
+	 * @param data any additional data stored in this machine, e.g. creator name
 	 */
 	Machine(Location l, String data) {
 		this.l = l;
@@ -79,43 +75,40 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Gets the <code>Location</code> of the key <code>Block</code> of this
-	 * <code>Machine</code>.
+	 * Gets the Location of the key Block of this Machine.
 	 * 
-	 * @return the <code>Location</code>
+	 * @return the Location
 	 */
 	public Location getKey() {
 		return l;
 	}
 
 	/**
-	 * Gets the <code>Location</code> of the key <code>Block</code> of this
-	 * <code>Machine</code> in <code>String</code> form.
+	 * Gets the Location of the key Block of this Machine in String form.
 	 * <p>
 	 * Primarily intended for saving to database.
 	 * 
-	 * @return the <code>Location</code> <code>String</code>
+	 * @return the Location String
 	 */
 	public String getLocationString() {
 		return l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ();
 	}
 
 	/**
-	 * Gets any additional data used to identify this <code>Machine</code>.
+	 * Gets any additional data used to identify this Machine.
 	 * 
-	 * @return <code>String</code>
+	 * @return String
 	 */
 	public String getData() {
 		return data;
 	}
 
 	/**
-	 * If a <code>Player</code> attempts to break a <code>Machine</code>, this condition must be met.
+	 * If a Player attempts to break a Machine, this condition must be met.
 	 * <p>
-	 * For most <code>Machine</code>s, <code>Player</code> name is compared to data.
+	 * For most Machines, placing Player name is compared to data.
 	 * 
-	 * @param event
-	 *            the <code>BlockPlaceEvent</code>
+	 * @param event the BlockPlaceEvent
 	 * @return boolean
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
@@ -123,11 +116,9 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Sets up the <code>Machine</code> <code>Block</code> configuration using a
-	 * <code>BlockPlaceEvent</code>.
+	 * Sets up the Machine Block configuration using a BlockPlaceEvent.
 	 * 
-	 * @param event
-	 *            the <code>BlockPlaceEvent</code>
+	 * @param event the BlockPlaceEvent
 	 */
 	@SuppressWarnings("deprecation")
 	public void assemble(BlockPlaceEvent event) {
@@ -148,10 +139,9 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Gets a <code>Set</code> of all non-key <code>Location</code>s of
-	 * <code>Block</code>s in a <code>Machine</code>.
+	 * Gets a Set of all non-key Locations of Blocks in a Machine.
 	 * 
-	 * @return the <code>Set<Location></code>
+	 * @return the Set
 	 */
 	public Set<Location> getLocations() {
 		if (blocks == null) {
@@ -162,30 +152,26 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Gets the <code>MachineType</code>.
+	 * Gets the MachineType.
 	 * 
-	 * @return the <code>MachineType</code>
+	 * @return the MachineType
 	 */
 	public abstract MachineType getType();
 
 	/**
-	 * Gets the <code>Direction</code> the machine was placed in.
+	 * Gets the Direction the machine was placed in.
 	 * 
-	 * @return the <code>Direction</code>
+	 * @return the Direction
 	 */
 	public Direction getFacingDirection() {
 		return d;
 	}
 
-	public void setDirection(Direction d) {
-		this.d = d;
-	}
-
 	/**
-	 * Handles <code>Machine</code> deconstruction.
+	 * Handles Machine deconstruction.
 	 * 
-	 * @param event
-	 *            the <code>BlockBreakEvent</code>
+	 * @param event the BlockBreakEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
@@ -203,11 +189,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles <code>Block</code> growth caused by the <code>Machine</code>'s
-	 * <code>Block</code>(s).
+	 * Handles Block growth caused by the Machine's Block(s).
 	 * 
-	 * @param event
-	 *            the <code>BlockGrowEvent</code>
+	 * @param event the BlockGrowEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleGrow(BlockGrowEvent event) {
@@ -215,10 +200,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles fading of <code>Block</code>s in the <code>Machine</code>.
+	 * Handles fading of Blocks in the Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockFadeEvent</code>
+	 * @param event the BlockFadeEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleFade(BlockFadeEvent event) {
@@ -226,10 +211,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles ignition of <code>Block</code>s in the <code>Machine</code>.
+	 * Handles ignition of Blocks in the Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockIgniteEvent</code>
+	 * @param event the BlockIgniteEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleIgnite(BlockIgniteEvent event) {
@@ -237,10 +222,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles physics on <code>Block</code>s in the <code>Machine</code>.
+	 * Handles physics on Blocks in the Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockPhysicsEvent</code>
+	 * @param event the BlockPhysicsEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handlePhysics(BlockPhysicsEvent event) {
@@ -248,10 +233,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles piston pushes on <code>Block</code>s in the <code>Machine</code>.
+	 * Handles piston pushes on Blocks in the Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockPistonExtendEvent</code>
+	 * @param event the BlockPistonExtendEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handlePush(BlockPistonExtendEvent event) {
@@ -259,10 +244,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles piston pulls on <code>Block</code>s in the <code>Machine</code>.
+	 * Handles piston pulls on Blocks in the Machine.
 	 * 
-	 * @param event
-	 *            the <code>BlockPistonRetractEvent</code>
+	 * @param event the BlockPistonRetractEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handlePull(BlockPistonRetractEvent event) {
@@ -270,11 +255,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles <code>Block</code> spread caused by the <code>Machine</code>'s
-	 * <code>Block</code>(s).
+	 * Handles Block spread caused by the Machine's Block(s).
 	 * 
-	 * @param event
-	 *            the <code>BlockSpreadEvent</code>
+	 * @param event the BlockSpreadEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleSpread(BlockSpreadEvent event) {
@@ -282,22 +266,21 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles <code>Player</code> interaction with <code>Block</code>s in the
-	 * <code>Machine</code>.
+	 * Handles Player interaction with Blocks in the Machine.
 	 * <p>
-	 * This should be handled based on type of <code>Machine</code>.
+	 * This should be handled based on type of Machine.
 	 * 
-	 * @param event
-	 *            the <code>PlayerInteractEvent</code>
+	 * @param event the PlayerInteractEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public abstract boolean handleInteract(PlayerInteractEvent event);
 
 	/**
-	 * Handles hopper interaction with <code>Block</code>s in the <code>Machine</code>.
+	 * Handles hopper interaction with Blocks in the Machine.
 	 * 
-	 * @param event
-	 *            the <code>InventoryMoveItemEvent</code>
+	 * @param event the InventoryMoveItemEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleHopper(InventoryMoveItemEvent event) {
@@ -305,10 +288,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles <code>Inventory</code> clicks for the <code>Machine</code>.
+	 * Handles Inventory clicks for the Machine.
 	 * 
-	 * @param event
-	 *            the <code>InventoryClickEvent</code>
+	 * @param event the InventoryClickEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
@@ -317,10 +300,10 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles Furnaces in the <code>Machine</code> consuming fuel.
+	 * Handles Furnaces in the Machine consuming fuel.
 	 * 
-	 * @param event
-	 *            the <code>FurnaceBurnEvent</code>
+	 * @param event the FurnaceBurnEvent
+	 * 
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBurnFuel(FurnaceBurnEvent event) {
@@ -328,9 +311,9 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Triggers any events to occur on completion of <code>Machine</code> construction.
+	 * Triggers any events to occur on completion of Machine construction.
 	 * <p>
-	 * Primarily intended for changing the key block <code>Material</code>.
+	 * Primarily intended for changing the key block Material.
 	 */
 	protected abstract void postAssemble();
 
@@ -338,23 +321,21 @@ public abstract class Machine {
 	 * Triggers postAssemble method on a synchronous 0 tick delay.
 	 */
 	private void triggerPostAssemble() {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
-				new Runnable() {
-					public void run() {
-						postAssemble();
-					}
-				});
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			public void run() {
+				postAssemble();
+			}
+		});
 	}
 
 	/**
 	 * Removes this Machine's listing on a synchronous 0 tick delay.
 	 */
 	protected void assemblyFailed() {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
-				new Runnable() {
-					public void run() {
-						SblockMachines.getMachines().getManager().removeMachineListing(l);
-					}
-				});
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			public void run() {
+				SblockMachines.getMachines().getManager().removeMachineListing(l);
+			}
+		});
 	}
 }

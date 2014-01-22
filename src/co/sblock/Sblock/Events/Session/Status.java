@@ -3,7 +3,7 @@ package co.sblock.Sblock.Events.Session;
 import org.bukkit.ChatColor;
 
 /**
- * The status of Minecraft's servers.
+ * Enum representing the status of Minecraft's servers.
  * 
  * @author Jikoo
  */
@@ -20,10 +20,20 @@ public enum Status {
 
 	/** The message to broadcast initially. */
 	private String announcement;
+
 	/** The message to broadcast when over. */
 	private String allClear;
+
 	/** The server list MOTD to set. */
 	private String MOTD;
+
+	/**
+	 * Constructor for Status.
+	 * 
+	 * @param announcement the message to broadcast when Status is set
+	 * @param allclear the message to broadcast when Status is changed
+	 * @param MOTD the MOTD to set in the server list
+	 */
 	private Status(String announcement, String allclear, String MOTD) {
 		this.announcement = announcement;
 		this.allClear = allclear;
@@ -31,9 +41,9 @@ public enum Status {
 	}
 
 	/**
-	 * Check if the <code>Status</code> has a message to broadcast initially.
+	 * Check if the Status has a message to broadcast initially.
 	 * 
-	 * @return true if the message is not <code>null</code>
+	 * @return true if the message is not null
 	 */
 	public boolean hasAnnouncement() {
 		return announcement != null;
@@ -49,9 +59,9 @@ public enum Status {
 	}
 
 	/**
-	 * Check if the <code>Status</code> has a message to broadcast when over.
+	 * Check if the Status has a message to broadcast when over.
 	 * 
-	 * @return true if the message is not <code>null</code>
+	 * @return true if the message is not null
 	 */
 	public boolean hasAllClear() {
 		return allClear != null;
@@ -67,9 +77,9 @@ public enum Status {
 	}
 
 	/**
-	 * Check if the <code>Status</code> has a server list MOTD.
+	 * Check if the Status has a server list MOTD.
 	 * 
-	 * @return true if the message is not <code>null</code>
+	 * @return true if the message is not null
 	 */
 	public boolean hasMOTDChange() {
 		return MOTD != null;

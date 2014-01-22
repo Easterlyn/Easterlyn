@@ -30,15 +30,9 @@ import co.sblock.Sblock.Machines.Type.Transportalizer;
  */
 public class MachineManager {
 
-	/**
-	 * A <code>Map</code> of <code>Machine</code> key <code>Locations</code> to
-	 * corresponding <code>Machine</code>.
-	 */
+	/** A Map of Machine key Locations to corresponding Machine. */
 	private Map<Location, Machine> machineKeys;
-	/**
-	 * A Map of <code>Machine</code> <code>Block</code> <code>Location</code>s
-	 * to the corresponding key <code>Location</code>.
-	 */
+	/** A Map of Machine Block Locations to the corresponding key Location. */
 	private Map<Location, Location> machineBlocks;
 
 	public MachineManager() {
@@ -47,17 +41,14 @@ public class MachineManager {
 	}
 
 	/**
-	 * Adds a <code>Machine</code> with the given parameters.
+	 * Adds a Machine with the given parameters.
 	 * 
-	 * @param l
-	 *            the <code>Location</code> of the key
-	 * @param m
-	 *            the <code>MachineType</code>
-	 * @param data
-	 *            the additional <code>Machine</code> data
-	 * @param d
-	 *            the facing direction
-	 * @return the <code>Machine</code> created
+	 * @param l the Location of the key
+	 * @param m the MachineType
+	 * @param data the additional Machine data
+	 * @param d the facing direction
+	 * 
+	 * @return the Machine created
 	 */
 	public Machine addMachine(Location l, MachineType m, String data, Direction d) {
 		Machine machine = null;
@@ -108,14 +99,10 @@ public class MachineManager {
 	 * <p>
 	 * This method has no error handling. Don't screw up.
 	 * 
-	 * @param location
-	 *            the <code>Location</code> <code>String</code>
-	 * @param machineType
-	 *            the <code>MachineType</code> <code>String</code>
-	 * @param data
-	 *            the additional <code>Machine</code> data
-	 * @param direction
-	 *            the facing direction
+	 * @param location the Location String
+	 * @param machineType the MachineType String
+	 * @param data the additional Machine data
+	 * @param direction the facing direction
 	 */
 	public void loadMachine(String location, String machineType, String data, byte direction) {
 		String[] l = location.split(",");
@@ -126,35 +113,33 @@ public class MachineManager {
 	}
 
 	/**
-	 * Checks a <code>Location</code> to see if there is a <code>Machine</code>
-	 * there.
+	 * Checks a Location to see if there is a Machine there.
 	 * 
-	 * @param l
-	 *            the <code>Location</code> to check
-	 * @return true if the <code>Location</code> is a <code>Machine</code>
+	 * @param l the Location to check
+	 * 
+	 * @return true if the Location is a Machine
 	 */
 	public boolean isMachine(Location l) {
 		return machineKeys.containsKey(l) || machineBlocks.containsKey(l);
 	}
 
 	/**
-	 * Checks a <code>Block</code> to see if it is part of a
-	 * <code>Machine</code>.
+	 * Checks a Block to see if it is part of a Machine.
 	 * 
-	 * @param b
-	 *            the <code>Block</code> to check
-	 * @return true if the <code>Block</code> is a <code>Machine</code>
+	 * @param b the Block to check
+	 * 
+	 * @return true if the Block is a Machine
 	 */
 	public boolean isMachine(Block b) {
 		return machineKeys.containsKey(b.getLocation()) || machineBlocks.containsKey(b.getLocation());
 	}
 
 	/**
-	 * Gets a <code>Machine</code> from a <code>Block</code>.
+	 * Gets a Machine from a Block.
 	 * 
-	 * @param b
-	 *            the <code>Block</code>
-	 * @return the <code>Machine</code>
+	 * @param b the Block
+	 * 
+	 * @return the Machine
 	 */
 	public Machine getMachineByBlock(Block b) {
 		Machine m = machineKeys.get(b.getLocation());
@@ -165,11 +150,11 @@ public class MachineManager {
 	}
 
 	/**
-	 * Gets a <code>Machine</code> from a <code>Location</code>.
+	 * Gets a Machine from a Location.
 	 * 
-	 * @param l
-	 *            the <code>Location</code>
-	 * @return the <code>Machine</code>
+	 * @param l the Location
+	 * 
+	 * @return the Machine
 	 */
 	public Machine getMachineByLocation(Location l) {
 		Machine m = machineKeys.get(l);
@@ -180,22 +165,20 @@ public class MachineManager {
 	}
 
 	/**
-	 * Gets a <code>Set</code> of all <code>Machine</code> key
-	 * <code>Locations</code>.
+	 * Gets a Set of all Machine key Locations.
 	 * 
-	 * @return the <code>Set<Location></code>
+	 * @return the Set
 	 */
 	public Set<Location> getMachines() {
 		return machineKeys.keySet();
 	}
 
 	/**
-	 * Gets a <code>Set</code> of all <code>Machine</code> key
-	 * <code>Locations</code> by <code>MachineType</code>.
+	 * Gets a Set of all Machine key Locations by MachineType.
 	 * 
-	 * @param m
-	 *            the <code>MachineType</code>
-	 * @return the <code>Set<Location></code>
+	 * @param m the MachineType
+	 * 
+	 * @return the Set
 	 */
 	public Set<Location> getMachines(MachineType m) {
 		Set<Location> set = new HashSet<Location>();
@@ -208,13 +191,11 @@ public class MachineManager {
 	}
 
 	/**
-	 * Remove the specified <code>Machine</code> listing.
+	 * Remove the specified Machine listing.
 	 * <p>
-	 * Be aware - this does not modify the <code>World</code>. All
-	 * <code>Block</code>s will remain.
+	 * Be aware - this does not modify the World. All Blocks will remain.
 	 * 
-	 * @param l
-	 *            the key <code>Location</code>
+	 * @param l the key Location
 	 */
 	public void removeMachineListing(Location l) {
 		if (machineKeys.containsKey(l)) {
@@ -232,7 +213,7 @@ public class MachineManager {
 	}
 
 	/**
-	 * Save all stored <code>Machine</code>s to the database.
+	 * Save all stored Machines to the database.
 	 */
 	public void saveToDb() {
 		for (Location l : machineKeys.keySet()) {
@@ -241,14 +222,12 @@ public class MachineManager {
 	}
 
 	/**
-	 * Check if a <code>Player</code> is within the specified radius of their
-	 * <code>Computer</code>.
+	 * Check if a Player is within the specified radius of their Computer.
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
-	 * @param distance
-	 *            the radius to search
-	 * @return true if the <code>Player</code> is within the radius
+	 * @param p the Player
+	 * @param distance the radius to search
+	 * 
+	 * @return true if the Player is within the radius
 	 */
 	public boolean isByComputer(Player p, int distance) {
 		for (Machine m : this.getMachinesInProximity(p.getLocation(), distance, MachineType.COMPUTER, true)) {
@@ -260,20 +239,15 @@ public class MachineManager {
 	}
 
 	/**
-	 * Returns a <code>Set</code> of <code>Machine</code>s within a specified
-	 * radius. If no <code>Machine</code>s match the specified conditions, an
-	 * empty <code>Set</code> is returned.
+	 * Returns a Set of Machines within a specified radius. If no Machines match
+	 * the specified conditions, an empty Set is returned.
 	 * 
-	 * @param current
-	 *            the current <code>Location</code> (presumably of a
-	 *            <code>Player</code>)
-	 * @param searchDistance
-	 *            the radius from current that is acceptable
-	 * @param keyRequired
-	 *            <code>true</code> if the key <code>Location</code> must be
-	 *            within the radius. Less intensive search.
-	 * @param mt
-	 *            the <code>MachineType</code> to search for
+	 * @param current the current Location (presumably of a Player)
+	 * @param searchDistance the radius from current that is acceptable
+	 * @param keyRequired true if the key Location must be within the radius.
+	 *        Less intensive search.
+	 * @param mt the MachineType to search for
+	 * 
 	 * @return all machines of the correct type within the specified radius
 	 */
 	public Set<Machine> getMachinesInProximity(Location current, int searchDistance,
@@ -304,19 +278,16 @@ public class MachineManager {
 	}
 
 	/**
-	 * Check to see if the <code>Player</code> in question has placed a
-	 * <code>Computer</code>.
+	 * Check to see if the Player in question has placed a Computer.
 	 * <p>
-	 * For use in assembling a new <code>Computer</code> - <code>Player</code>s
-	 * are only allowed one.
+	 * For use in assembling a new Computer - Players are only allowed one.
 	 * 
 	 * @see co.sblock.Sblock.Machines.Type.Computer#assemble(org.bukkit.event.block.BlockPlaceEvent)
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
-	 * @param key
-	 *            the location of the <code>Computer</code> just assembled
-	 * @return true if the Player has placed a <code>Computer</code>
+	 * @param p the Player
+	 * @param key the location of the Computer just assembled
+	 * 
+	 * @return true if the Player has placed a Computer
 	 */
 	public boolean hasComputer(Player p, Location key) {
 		for (Machine m : machineKeys.values()) {

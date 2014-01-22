@@ -9,48 +9,42 @@ public enum DreamPlanet {
 
 	NONE("Earth"), PROSPIT("InnerCircle"), DERSE("OuterCircle");
 
-	/** The name of the <code>World</code>. */
+	/** The name of the World. */
 	private String worldName;
 
 	/**
-	 * Constructor for <code>DreamPlanet</code>.
+	 * Constructor for DreamPlanet.
 	 * 
-	 * @param worldName
-	 *            the name of the <code>World</code> used for this
-	 *            <code>DreamPlanet</code>.
+	 * @param worldName the name of the World used for this DreamPlanet.
 	 */
 	DreamPlanet(String worldName) {
 		this.worldName = worldName;
 	}
 
 	/**
-	 * Gets the <code>DreamPlanet</code>'s display name.
+	 * Gets the DreamPlanet's display name.
 	 * 
-	 * 
-	 * @return The display name of this <code>DreamPlanet</code>.
+	 * @return The display name of this DreamPlanet.
 	 */
 	public String getDisplayName() {
 		return this.name().charAt(0) + this.name().substring(1).toLowerCase();
 	}
 
 	/**
-	 * Gets the name of the <code>World</code>.
+	 * Gets the name of the World.
 	 * 
-	 * 
-	 * @return the <code>World</code> name
+	 * @return the World name
 	 */
 	public String getWorldName() {
 		return this.worldName;
 	}
 
 	/**
-	 * Gets a <code>DreamPlanet</code> by name.
+	 * Gets a DreamPlanet by name.
 	 * 
-	 * @param name
-	 *            the name of a <code>DreamPlanet</code>
+	 * @param name the name of a DreamPlanet
 	 * 
-	 * @return the <code>DreamPlanet</code> specified,
-	 *         <code>DreamPlanet.NONE</code> if invalid.
+	 * @return the DreamPlanet specified, DreamPlanet.NONE if invalid.
 	 */
 	public static DreamPlanet getPlanet(String name) {
 		try {

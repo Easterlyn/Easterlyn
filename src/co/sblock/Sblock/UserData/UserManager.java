@@ -18,23 +18,16 @@ import co.sblock.Sblock.Chat.ColorDef;
  */
 public class UserManager {
 
-	/** The <code>UserManager</code> instance. */
+	/** The UserManager instance. */
 	private static UserManager manager;
 
-	/**
-	 * The <code>Map</code> of <code>Player</code> names and relevant
-	 * <code>SblockUsers</code> currently online.
-	 */
+	/** The Map of Player names and relevant SblockUsers currently online. */
 	private Map<String, SblockUser> users;
 
-	/**
-	 * The <code>Scoreboard</code> used to color <code>Player</code> names by rank.
-	 */
+	/**The Scoreboard used to color Player names by rank. */
 	private Scoreboard board;
 
-	/**
-	 * Constructor for UserManager.
-	 */
+	/** Constructor for UserManager. */
 	UserManager() {
 		manager = this;
 		this.users = new HashMap<String, SblockUser>();
@@ -42,10 +35,9 @@ public class UserManager {
 	}
 
 	/**
-	 * Adds a <code>Player</code> that has logged on to the users list
+	 * Adds a Player to the users list
 	 * 
-	 * @param player
-	 *            The <code>Player</code> that has logged on
+	 * @param player the name of the Player
 	 */
 	public SblockUser addUser(String name) {
 		if (users.containsKey(name)) {
@@ -57,45 +49,41 @@ public class UserManager {
 	}
 
 	/**
-	 * Removes a <code>Player</code> from the users list.
+	 * Removes a Player from the users list.
 	 * 
-	 * @param player
-	 *            The <code>Player</code> to remove
-	 * @return 
+	 * @param player the Player to remove
+	 * @return the SblockUser for the removed player, if any
 	 */
 	public SblockUser removeUser(Player player) {
 		return users.remove(player.getName());
 	}
 
 	/**
-	 * Removes a <code>Player</code> from the users list.
+	 * Removes a Player from the users list.
 	 * 
-	 * @param player
-	 *            The <code>Player</code> to remove
-	 * @return 
+	 * @param player the name of the Player to remove
+	 * @return the SblockUser for the removed player, if any
 	 */
 	public SblockUser removeUser(String player) {
 		return users.remove(player);
 	}
 
 	/**
-	 * Gets a <code>SblockUser</code>by <code>Player</code> name.
+	 * Gets a SblockUserby Player name.
 	 * 
-	 * @param name
-	 *            The name of the <code>Player</code> to look up
+	 * @param name the name of the Player to look up
 	 * 
-	 * @return The <code>SblockUser</code> associated with the given
-	 *         <code>Player</code>, or <code>null</code> if no
-	 *         <code>Player</code> with the given name is currently online.
+	 * @return the SblockUser associated with the given Player, or null if no
+	 *         Player with the given name is currently online.
 	 */
 	public SblockUser getUser(String name) {
 		return users.get(name);
 	}
 
 	/**
-	 * Gets a <code>Collection</code> of <code>SblockUsers</code> currently online.
+	 * Gets a Collection of SblockUsers currently online.
 	 * 
-	 * @return the <code>SblockUsers</code> currently online
+	 * @return the SblockUsers currently online
 	 */
 	public Collection<SblockUser> getUserlist() {
 		return this.users.values();
@@ -121,10 +109,9 @@ public class UserManager {
 	}
 
 	/**
-	 * Add a <code>Player</code> to their group's <code>Team</code>.
+	 * Add a Player to their group's Team.
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
+	 * @param p the Player
 	 */
 	public void team(Player p) {
 		Team team = null;
@@ -146,9 +133,9 @@ public class UserManager {
 	}
 
 	/**
-	 * Gets the <code>UserManager</code> instance.
+	 * Gets the UserManager instance.
 	 * 
-	 * @return the <code>UserManager</code> instance
+	 * @return the UserManager instance
 	 */
 	public static UserManager getUserManager() {
 		if (manager == null)

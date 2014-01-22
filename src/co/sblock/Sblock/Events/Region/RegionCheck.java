@@ -9,7 +9,7 @@ import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.UserData.Region;
 
 /**
- * Runnable used to update the <code>Region</code>s of all <code>Player</code>s.
+ * Runnable used to update the Regions of all Players.
  * 
  * @author Jikoo, Dublek
  */

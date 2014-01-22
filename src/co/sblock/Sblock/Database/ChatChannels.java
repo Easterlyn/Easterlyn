@@ -22,10 +22,9 @@ import co.sblock.Sblock.Utilities.Log;
  */
 public class ChatChannels {
 	/**
-	 * Save <code>Channel</code> data to database.
+	 * Save Channel data to database.
 	 * 
-	 * @param c
-	 *            the <code>Channel</code> to save data for
+	 * @param c the Channel to save data for
 	 */
 	public static void saveChannelData(Channel c) {
 		PreparedStatement pst = null;
@@ -79,7 +78,7 @@ public class ChatChannels {
 	}
 
 	/**
-	 * Creates and loads all <code>Channel</code>s from saved data.
+	 * Creates and loads all Channels from saved data.
 	 */
 	public static void loadAllChannelData() {
 		PreparedStatement pst = null;
@@ -132,11 +131,10 @@ public class ChatChannels {
 	}
 
 	/**
-	 * Create a <code>PreparedStatement</code> with which to query the SQL database.
-	 * Delete a <code>Channel</code> by name.
+	 * Create a PreparedStatement with which to query the SQL database. Delete a
+	 * Channel by name.
 	 * 
-	 * @param channelName
-	 *            the name of the <code>Channel</code> to delete
+	 * @param channelName the name of the Channel to delete
 	 */
 	public static void deleteChannel(String channelName) {
 		try {

@@ -18,11 +18,9 @@ public class MachineCommand implements CommandListener {
 	 * <p>
 	 * Admin only.
 	 * 
-	 * @param sender
-	 *            the <code>CommandSender</code>
-	 * @param type
-	 *            the <code>String</code> to interpret into
-	 *            <code>MachineType</code>
+	 * @param sender the CommandSender
+	 * @param type the String to interpret into MachineType
+	 * 
 	 * @return true
 	 */
 	@SblockCommand(description = "Machine get", usage = "/sm <type>")

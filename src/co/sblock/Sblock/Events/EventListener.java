@@ -57,12 +57,10 @@ import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
  */
 public class EventListener extends PacketAdapter implements Listener {
 
-	/** A <code>Map</code> of all scheduled tasks by <code>Player</code>. */
+	/** A Map of all scheduled tasks by Player. */
 	public Map<String, Integer> tasks;
-	/**
-	 * A <code>Set</code> of the names of all <code>Player</code>s queuing to
-	 * sleep teleport.
-	 */
+
+	/** A Set of the names of all Players queuing to sleep teleport. */
 	public Set<String> teleports;
 
 	public EventListener() {
@@ -72,11 +70,11 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>ServerListPingEvent</code>s.
+	 * The event handler for ServerListPingEvents.
 	 * <p>
 	 * If the IP pinging has played before, customize MOTD with their name.
 	 * 
-	 * @param event the <code>ServerListPingEvent</code>
+	 * @param event the ServerListPingEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onServerListPing(ServerListPingEvent event) {
@@ -91,10 +89,9 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>PlayerLoginEvent</code>s.
+	 * The event handler for PlayerLoginEvents.
 	 * 
-	 * @param event
-	 *            the <code>PlayerLoginEvent</code>
+	 * @param event the PlayerLoginEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
@@ -105,8 +102,7 @@ public class EventListener extends PacketAdapter implements Listener {
 			return;
 		case KICK_BANNED:
 		case KICK_OTHER:
-			String reason = SblockData.getDB().getBanReason(
-					event.getPlayer().getName(),
+			String reason = SblockData.getDB().getBanReason(event.getPlayer().getName(),
 					event.getAddress().getHostAddress());
 			if (reason != null) {
 				event.setKickMessage(reason);
@@ -118,10 +114,9 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>PlayerJoinEvent</code>s.
+	 * The event handler for PlayerJoinEvents.
 	 * 
-	 * @param event
-	 *            the <code>PlayerJoinEvent</code>
+	 * @param event the PlayerJoinEvent
 	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -130,10 +125,9 @@ public class EventListener extends PacketAdapter implements Listener {
 
 
 	/**
-	 * The event handler for <code>AsyncPlayerChatEvent</code>s.
+	 * The event handler for AsyncPlayerChatEvents.
 	 * 
-	 * @param event
-	 *            the <code>AsyncPlayerChatEvent</code>
+	 * @param event the AsyncPlayerChatEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -154,10 +148,9 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>PlayerChangedWorldEvent</code>s.
+	 * The event handler for PlayerChangedWorldEvents.
 	 * 
-	 * @param event
-	 *            the <code>PlayerChangedWorldEvent</code>
+	 * @param event the PlayerChangedWorldEvent
 	 */
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
@@ -171,10 +164,9 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>PlayerQuitEvent</code>s.
+	 * The event handler for PlayerQuitEvents.
 	 * 
-	 * @param event
-	 *            the <code>PlayerQuitEvent</code>
+	 * @param event the PlayerQuitEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent event) {
@@ -200,12 +192,11 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>SignChangeEvent</code>s.
+	 * The event handler for SignChangeEvents.
 	 * <p>
 	 * Allows signs to be colored using &codes.
 	 * 
-	 * @param event
-	 *            the <code>SignChangeEvent</code>
+	 * @param event the SignChangeEvent
 	 */
 	@EventHandler
 	public void onSignPlace(SignChangeEvent event) {
@@ -217,8 +208,7 @@ public class EventListener extends PacketAdapter implements Listener {
 	/**
 	 * Minecarts are automatically placed in dispensers upon collision.
 	 * 
-	 * @param event
-	 *            the <code>VehicleBlockCollisionEvent</code>
+	 * @param event the VehicleBlockCollisionEvent
 	 */
 	@EventHandler
 	public void onVehicleBlockCollisionEvent(VehicleBlockCollisionEvent event) {
@@ -233,10 +223,9 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>PlayerTeleportEvent</code>s.
+	 * The event handler for PlayerTeleportEvents.
 	 * 
-	 * @param event
-	 *            the <code>PlayerTeleportEvent</code>
+	 * @param event the PlayerTeleportEvent
 	 */
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
@@ -251,10 +240,9 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * The event handler for <code>PlayerInteractEvent</code>s.
+	 * The event handler for PlayerInteractEvents.
 	 * 
-	 * @param event
-	 *            the <code>PlayerInteractEvent</code>
+	 * @param event the PlayerInteractEvent
 	 */
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -293,13 +281,11 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * Sends a <code>Player</code> a fake packet for starting sleeping and
-	 * schedules them to be teleported to their <code>DreamPlanet</code>.
+	 * Sends a Player a fake packet for starting sleeping and schedules them to
+	 * be teleported to their DreamPlanet.
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
-	 * @param bed
-	 *            the <code>Location</code> of the bed to sleep in
+	 * @param p the Player
+	 * @param bed the Location of the bed to sleep in
 	 */
 	private void fakeSleepDream(Player p, Location bed) {
 		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
@@ -319,22 +305,19 @@ public class EventListener extends PacketAdapter implements Listener {
 	}
 
 	/**
-	 * Schedules a <code>SleepTeleport</code> for a <code>Player</code>.
+	 * Schedules a SleepTeleport for a Player.
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
+	 * @param p the Player
 	 */
 	private void scheduleSleepTeleport(Player p) {
-		tasks.put(p.getName(),
-				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
-						new SleepTeleport(p), 100L));
+		tasks.put(p.getName(), Bukkit.getScheduler().scheduleSyncDelayedTask(
+				Sblock.getInstance(), new SleepTeleport(p), 100L));
 	}
 
 	/**
-	 * Sends a <code>Player</code> a fake packet for waking up.
+	 * Sends a Player a fake packet for waking up.
 	 * 
-	 * @param p
-	 *            the <code>Player</code>
+	 * @param p the Player
 	 */
 	public void fakeWakeUp(Player p) {
 		Packet12Animation packet = new Packet12Animation();
@@ -354,7 +337,8 @@ public class EventListener extends PacketAdapter implements Listener {
 	 * Currently intercepts only packets sent when client leaves bed.
 	 * 
 	 * @see com.comphenix.protocol.events.PacketAdapter#onPacketReceiving(PacketEvent)
-	 * @param event the <code>PacketEvent</code>
+	 * 
+	 * @param event the PacketEvent
 	 */
 	@Override
 	public void onPacketReceiving(PacketEvent event) {

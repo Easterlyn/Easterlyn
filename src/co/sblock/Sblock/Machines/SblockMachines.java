@@ -8,10 +8,10 @@ import co.sblock.Sblock.Database.SblockData;
  */
 public class SblockMachines extends Module {
 
-	/** The <code>MachineModule</code> instance. */
+	/** The MachineModule instance. */
 	private static SblockMachines instance;
 
-	/** The <code>MachineManager</code>. */
+	/** The MachineManager. */
 	private MachineManager manager;
 
 	/**
@@ -39,9 +39,9 @@ public class SblockMachines extends Module {
 	}
 
 	/**
-	 * Gets the <code>MachineManager</code>.
+	 * Gets the MachineManager.
 	 * 
-	 * @return the <code>MachineManager</code>
+	 * @return the MachineManager
 	 */
 	public MachineManager getManager() {
 		return this.manager;
@@ -50,7 +50,7 @@ public class SblockMachines extends Module {
 	/**
 	 * Gets the current instance of MachineModule.
 	 * 
-	 * @return the <code>MachineModule</code>
+	 * @return the MachineModule
 	 */
 	public static SblockMachines getMachines() {
 		return instance;

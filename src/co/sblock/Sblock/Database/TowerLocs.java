@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock.Database;
 
 import java.sql.PreparedStatement;
@@ -16,12 +13,13 @@ import co.sblock.Sblock.Utilities.Log;
  * <p>
  * The TowerLocs table is created by the following call:
  * CREATE TABLE TowerLocs (towerID varchar(8) UNIQUE KEY, location varchar(15) UNIQUE KEY);
+ * 
  * @author Jikoo
- *
  */
 public class TowerLocs {
+
 	/**
-	 * Fills out <code>TowerData</code> from saved data.
+	 * Fills out TowerData from saved data.
 	 */
 	protected static void loadTowerData() {
 		PreparedStatement pst = null;
@@ -51,8 +49,9 @@ public class TowerLocs {
 	}
 
 	/**
-	 * Save all <code>TowerData</code>.
-	 * @param towers the <code>TowerData</code> to save
+	 * Save all TowerData.
+	 * 
+	 * @param towers the TowerData to save
 	 */
 	protected static void saveTowerData(TowerData towers) {
 		PreparedStatement pst = null;

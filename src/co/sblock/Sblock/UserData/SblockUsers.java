@@ -15,8 +15,6 @@ import co.sblock.Sblock.Database.SblockData;
 public class SblockUsers extends Module {
 
 	/**
-	 * Method onEnable.
-	 * 
 	 * @see co.sblock.Sblock.Module#onEnable()
 	 */
 	@Override
@@ -35,8 +33,6 @@ public class SblockUsers extends Module {
 	}
 
 	/**
-	 * Method onDisable.
-	 * 
 	 * @see co.sblock.Sblock.Module#onDisable()
 	 */
 	@Override

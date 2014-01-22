@@ -15,8 +15,9 @@ public enum Region {
 	MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF, UNKNOWN;
 
 	/**
-	 * Gets the name of the <code>Region</code>.
-	 * @return <code>Region.name()</code> in lower case
+	 * Gets the name of the Region.
+	 * 
+	 * @return Region.name() in lower case
 	 */
 	public String getRegionName() {
 		return this.name().toLowerCase();
@@ -25,10 +26,9 @@ public enum Region {
 	/**
 	 * Case-insensitive alternative to valueOf.
 	 * 
-	 * @param s
-	 *            the <code>String</code> to match
-	 * @return the <code>Region</code> that matches, <code>Region.Earth</code>
-	 *         if invalid.
+	 * @param s the String to match
+	 * 
+	 * @return the Region that matches, Region.Earth if invalid.
 	 */
 	public static Region uValueOf(String s) {
 		s = s.toUpperCase();
@@ -43,12 +43,11 @@ public enum Region {
 	}
 
 	/**
-	 * Gets the <code>ChatColor</code> that indicates users are in a specific
-	 * <code>Region</code>.
+	 * Gets the ChatColor that indicates users are in a specific Region.
 	 * 
-	 * @param r
-	 *            the <code>Region</code> to get the <code>ChatColor</code> of
-	 * @return the relevant <code>ChatColor</code>
+	 * @param r the Region to get the ChatColor of
+	 * 
+	 * @return the relevant ChatColor
 	 */
 	public static ChatColor getRegionColor(Region r) {
 		switch (r) {
@@ -72,11 +71,11 @@ public enum Region {
 	}
 
 	/**
-	 * Gets the <code>Region</code> that a <code>Location</code> is within.
+	 * Gets the Region that a Location is within.
 	 * 
-	 * @param l
-	 *            the <code>Location</code> to get the <code>Region</code> of
-	 * @return the relevant <code>Region</code>
+	 * @param l the Location to get the Region of
+	 * 
+	 * @return the relevant Region
 	 */
 	public static Region getLocationRegion(Location l) {
 		try {

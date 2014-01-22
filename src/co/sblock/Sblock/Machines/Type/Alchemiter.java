@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 /**
+ * Simulate a Sburb Alchemiter in Minecraft.
  * 
  * @author Jikoo
  */
@@ -60,8 +61,8 @@ public class Alchemiter extends Machine {
 		return MachineType.ALCHEMITER;
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {

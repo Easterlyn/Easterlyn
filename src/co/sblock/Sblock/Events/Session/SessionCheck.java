@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import co.sblock.Sblock.Sblock;
 
 /**
- * Checks and updates <code>Status</code> from Minecraft's servers.
+ * Checks and updates Status from Minecraft's servers.
  * 
  * @author Jikoo
  */

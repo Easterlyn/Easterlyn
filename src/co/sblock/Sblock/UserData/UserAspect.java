@@ -6,31 +6,30 @@ package co.sblock.Sblock.UserData;
  * @author FireNG, Jikoo
  */
 public enum UserAspect {
-	NONE, BLOOD, BREATH, DOOM, HEART, HOPE, LIFE,
+	BLOOD, BREATH, DOOM, HEART, HOPE, LIFE,
 	LIGHT, MIND, RAGE, SPACE, TIME, VOID;
 
 	/**
-	 * Gets the display name of the <code>PlayerAspect</code>.
+	 * Gets the display name of the PlayerAspect.
 	 * 
-	 * @return The display name of this <code>PlayerAspect</code>.
+	 * @return The display name of this PlayerAspect.
 	 */
 	public String getDisplayName() {
 		return this.name().charAt(0) + this.name().substring(1).toLowerCase();
 	}
 
 	/**
-	 * Gets the <code>PlayerAspect</code>.
+	 * Gets the PlayerAspect.
 	 * 
-	 * @param name
-	 *            the name of an aspect
+	 * @param name the name of an aspect
 	 * 
-	 * @return the <code>PlayerAspect</code>
+	 * @return the PlayerAspect
 	 */
 	public static UserAspect getAspect(String name) {
 		try {
 			return UserAspect.valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return UserAspect.NONE;
+			return UserAspect.BREATH;
 		}
 	}
 }

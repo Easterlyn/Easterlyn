@@ -17,12 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 /**
- * <code>Machine</code> for <code>Entity</code> teleportation.
+ * Machine for Entity teleportation.
  * <p>
- * Costs fuel based on distance: 1 unit of fuel per 75 blocks
- * of direct line travel rounded up.
- * Gunpowder = 1 fuel, redstone = 2, blaze powder = 3, glowstone = 4,
- * blaze rod = 6
+ * Costs fuel based on distance: 1 unit of fuel per 75 blocks of direct line
+ * travel rounded up. Gunpowder = 1 fuel, redstone = 2, blaze powder = 3,
+ * glowstone = 4, blaze rod = 6
  * <p>
  * Does not store excess fuel, uses first valid fuel object(s) available.
  * 
@@ -77,7 +76,7 @@ public class Transportalizer extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(org.bukkit.event.player.PlayerInteractEvent)
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
@@ -168,7 +167,7 @@ public class Transportalizer extends Machine {
 		}
 	}
 
-	// Adam debug removal adding
+	// Adam debug removal adding // javadoc
 	private ArrayList<ItemStack> consumeFuel(Chest chest, Location destination) {
 		Inventory inv = chest.getInventory();
 		ArrayList<ItemStack> removed = new ArrayList<ItemStack>();

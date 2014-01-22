@@ -19,7 +19,7 @@ public class Log extends Logger {
 	/**
 	 * Hackish debug logging that won't spam Prime server.
 	 * 
-	 * @param s the <code>String</code> to log
+	 * @param s the String to log
 	 */
 	public void debug(Object s) {
 		if (Paths.get("").toAbsolutePath().toString().contains("Prime")) {
@@ -32,8 +32,7 @@ public class Log extends Logger {
 	/**
 	 * Info level logging.
 	 * 
-	 * @param msg
-	 *            the message to log
+	 * @param msg the String to log
 	 */
 	public void info(String msg) {
 		Bukkit.getConsoleSender().sendMessage("[" + this.getName() + "] " + msg);
@@ -42,8 +41,7 @@ public class Log extends Logger {
 	/**
 	 * Fine level logging with no prepended name.
 	 * 
-	 * @param msg
-	 *            the message to log
+	 * @param msg the String to log
 	 */
 	public static void fineNoName(Object msg) {
 		getLogger("Minecraft").fine(msg.toString());
@@ -52,20 +50,18 @@ public class Log extends Logger {
 	/**
 	 * Info level logging with no prepended name.
 	 * 
-	 * @param msg
-	 *            the message to log
+	 * @param msg the String to log
 	 */
 	public static void infoNoName(String msg) {
 		Bukkit.getConsoleSender().sendMessage(msg);
 	}
 
 	/**
-	 * Log an <code>Exception</code> in a reader-friendly text block.
+	 * Log an Exception in a reader-friendly text block.
 	 * <p>
 	 * Designed for non-breaking errors, warning level logging.
 	 * 
-	 * @param e
-	 *            the <code>Exception</code> to log
+	 * @param e the Exception to log
 	 */
 	public static void err(Exception e) {
 		StringBuilder trace = new StringBuilder(e.toString());
@@ -83,12 +79,11 @@ public class Log extends Logger {
 	}
 
 	/**
-	 * Log an <code>Exception</code> in a reader-friendly text block.
+	 * Log an Exception in a reader-friendly text block.
 	 * <p>
 	 * Designed for game-breaking errors, severe level logging.
 	 * 
-	 * @param e
-	 *            the <code>Exception</code> to log
+	 * @param e the Exception to log
 	 */
 	public static void criticalErr(Exception e) {
 		StringBuilder trace = new StringBuilder(e.toString());
