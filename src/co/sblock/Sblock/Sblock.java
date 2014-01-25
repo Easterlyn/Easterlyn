@@ -87,8 +87,8 @@ public class Sblock extends JavaPlugin {
 		saveDefaultConfig();
 		SblockData.getDB().enable();
 		
-		modules.add(new SblockUsers().enable());
 		modules.add(new SblockChat().enable());
+		modules.add(new SblockUsers().enable());
 		modules.add(new SblockEvents().enable());
 		modules.add(new SblockEffects().enable());
 		modules.add(new SblockMachines().enable());
