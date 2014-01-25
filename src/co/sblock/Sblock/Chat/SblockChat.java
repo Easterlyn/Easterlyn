@@ -23,9 +23,9 @@ public class SblockChat extends Module {
 	@Override
 	protected void onDisable() {
 		cm.saveAllChannels();
-		SblockUser[] users = (SblockUser[]) UserManager.getUserManager().getUserlist().toArray();
+		Object[] users = UserManager.getUserManager().getUserlist().toArray();
 		for (int i = 0; i < users.length; i++) {
-			UserManager.getUserManager().removeUser(users[i].getPlayerName());
+			UserManager.getUserManager().removeUser(((SblockUser) users[i]).getPlayerName());
 		}
 		instance = null;
 	}
