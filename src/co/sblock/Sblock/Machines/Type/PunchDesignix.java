@@ -1,16 +1,12 @@
 package co.sblock.Sblock.Machines.Type;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.server.v1_7_R1.ContainerAnvil;
-import net.minecraft.server.v1_7_R1.EntityHuman;
-import net.minecraft.server.v1_7_R1.EntityPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
@@ -24,8 +20,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import com.comphenix.protocol.ProtocolLibrary;
+
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Machines.MachineManager;
+import co.sblock.Sblock.Events.Packets.WrapperPlayServerOpenWindow;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
@@ -76,7 +74,7 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		event.getPlayer().openInventory(getInventory(event.getPlayer()));
+		openInventory(event.getPlayer());
 		return true;
 	}
 
@@ -165,30 +163,16 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 		return null;
 	}
 	
-	public Inventory getInventory(Player player) {
-		Inventory i = Bukkit.createInventory(this, InventoryType.ANVIL);
-		SblockMachines.getMachines().getLogger().debug("Designinx Inventory create");
-		return i;
-		
-		EntityPlayer p = ((CraftPlayer) player).getHandle();
-	    AnvilContainer container = new AnvilContainer(p);
-	 
-	    int c = p.nextContainerCounter();
-	    p.playerConnection.sendPacket(new Packet100OpenWindow(c, 8, "Repairing", 9));
-	    p.activeContainer = container;
-	    p.activeContainer.windowId = c;
-	    p.activeContainer.addSlotListener(p);
-	}
-	public class AnvilContainer extends ContainerAnvil {
-		 
-	    public AnvilContainer(EntityHuman entity) {
-	        super(entity.inventory, entity.world, 0, 0, 0, entity);
-	    }
-	 
-	    @Override
-	    public boolean a(EntityHuman entityhuman) {
-	        return true;
-	    }
+	public void openInventory(Player player) {
+		// Bear in mind - we will need a packet listener to handle all events related to this.
+		// the window we are opening is fake and not recognized by the server.
+		WrapperPlayServerOpenWindow packet = new WrapperPlayServerOpenWindow();
+		packet.setInventoryType(InventoryType.ANVIL);
+		packet.setWindowTitle("Punch Designix");
+		try {
+			ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet.getHandle());
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 }
-
