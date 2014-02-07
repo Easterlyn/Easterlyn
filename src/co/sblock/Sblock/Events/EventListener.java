@@ -344,7 +344,8 @@ public class EventListener extends PacketAdapter implements Listener {
 	public void onPacketReceiving(PacketEvent event) {
 		if (event.getPacket().getType().equals(PacketType.Play.Client.ENTITY_ACTION)) {
 			int action = event.getPacket().getIntegers().read(1);
-			if (action == 3 && teleports.contains(event.getPlayer().getName())) {
+			if (WrapperPlayServerAnimation.Animations.LEAVE_BED == action
+					&& teleports.contains(event.getPlayer().getName())) {
 				event.setCancelled(true);
 				fakeWakeUp(event.getPlayer());
 			}
