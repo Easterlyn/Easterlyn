@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.SblockChat;
-import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 
@@ -21,15 +20,20 @@ import co.sblock.Sblock.Chat.Channel.ChannelManager;
  * @author Jikoo
  */
 public class ChesterListener implements Listener {
+
+	private int cancels = 0;
+
 	@EventHandler
 	public void onChesterLog(ChesterLogEvent event) {
 		ChatUser c = ChatUser.getUser(event.getPlayer().getName());
 		if (c == null) {
 			event.setCancelled(true);
+			cancels++;
 			return;
 		}
-		if (c.getCurrent().getAccess() != AccessLevel.PUBLIC) {
+		if (!c.getCurrent().getName().equals("#")) {
 			event.setCancelled(true);
+			cancels++;
 			return;
 		}
 		for (String s : SblockChat.chester) {
@@ -42,6 +46,11 @@ public class ChesterListener implements Listener {
 
 	@EventHandler
 	public void onChesterTalk(ChesterBroadcastEvent event) {
+		if (cancels > 0) {
+			event.getRecipients().clear();
+			cancels--;
+			return;
+		}
 		Channel c = ChannelManager.getChannelManager().getChannel("#");
 		if (c == null) {
 			event.getRecipients().clear();
