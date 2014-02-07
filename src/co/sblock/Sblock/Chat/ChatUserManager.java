@@ -12,8 +12,6 @@ public class ChatUserManager {
 	private  Map<String, ChatUser> users = new HashMap<String, ChatUser>();
 	private static ChatUserManager instance;
 
-	private ChatUserManager(){}
-
 	/**
 	 * Singleton
 	 */
