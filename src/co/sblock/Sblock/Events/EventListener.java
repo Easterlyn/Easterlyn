@@ -43,8 +43,8 @@ import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Database.SblockData;
-import co.sblock.Sblock.Events.Packets.Packet11UseBed;
-import co.sblock.Sblock.Events.Packets.Packet12Animation;
+import co.sblock.Sblock.Events.Packets.WrapperPlayServerBed;
+import co.sblock.Sblock.Events.Packets.WrapperPlayServerAnimation;
 import co.sblock.Sblock.Events.Packets.SleepTeleport;
 import co.sblock.Sblock.SblockEffects.Cooldowns;
 import co.sblock.Sblock.UserData.Region;
@@ -290,7 +290,7 @@ public class EventListener extends PacketAdapter implements Listener {
 	private void fakeSleepDream(Player p, Location bed) {
 		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
 
-		Packet11UseBed packet = new Packet11UseBed();
+		WrapperPlayServerBed packet = new WrapperPlayServerBed();
 		packet.setEntityId(p.getEntityId());
 		packet.setX(bed.getBlockX());
 		packet.setY((byte) bed.getBlockY());
@@ -320,9 +320,9 @@ public class EventListener extends PacketAdapter implements Listener {
 	 * @param p the Player
 	 */
 	public void fakeWakeUp(Player p) {
-		Packet12Animation packet = new Packet12Animation();
+		WrapperPlayServerAnimation packet = new WrapperPlayServerAnimation();
 		packet.setEntityID(p.getEntityId());
-		packet.setAnimation((byte) Packet12Animation.Animations.LEAVE_BED);
+		packet.setAnimation((byte) WrapperPlayServerAnimation.Animations.LEAVE_BED);
 
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
@@ -344,7 +344,8 @@ public class EventListener extends PacketAdapter implements Listener {
 	public void onPacketReceiving(PacketEvent event) {
 		if (event.getPacket().getType().equals(PacketType.Play.Client.ENTITY_ACTION)) {
 			int action = event.getPacket().getIntegers().read(1);
-			if (action == 3 && teleports.contains(event.getPlayer().getName())) {
+			if (WrapperPlayServerAnimation.Animations.LEAVE_BED == action
+					&& teleports.contains(event.getPlayer().getName())) {
 				event.setCancelled(true);
 				fakeWakeUp(event.getPlayer());
 			}
