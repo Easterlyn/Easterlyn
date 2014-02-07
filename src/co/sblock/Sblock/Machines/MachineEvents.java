@@ -218,6 +218,7 @@ public class MachineEvents implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void handleClick(InventoryClickEvent event) {
+		//Adam check for totem lathe furnace
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
 		if (ih == null || !(ih instanceof Machine)) {
 			return;

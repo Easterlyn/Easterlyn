@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
 
@@ -93,6 +94,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
+		SblockMachines.getMachines().getLogger().debug("TotemLathe handleClick");
 		if (event.getCurrentItem() == null) {
 			event.setResult(Result.DENY);
 			return true;
