@@ -42,17 +42,18 @@ public class ChatCommands implements CommandListener {
 			sender.sendMessage(ChatColor.BLACK + "Lul.");
 			return true;
 		}
+		StringBuilder msg = new StringBuilder();
+		for (int i = 0; i < text.length; i++) {
+			msg.append(text[i].toUpperCase()).append(' ');
+		}
 		StringBuilder lelOut = new StringBuilder();
-		for (String s : text) {
-			for (int i = 0; i < s.length();) {
-				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
-					if (i >= s.length())
-						break;
-					lelOut.append(ColorDef.RAINBOW[j]).append(ChatColor.MAGIC).append(s.charAt(i));
-					i++;
-				}
+		for (int i = 0; i < msg.length();) {
+			for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
+				if (i >= msg.length())
+					break;
+				lelOut.append(ColorDef.RAINBOW[j]).append(msg.charAt(i));
+				i++;
 			}
-			lelOut.append(SPACE);
 		}
 		Broadcast.general(lelOut.substring(0, lelOut.length() - 1 > 0 ? lelOut.length() - 1 : 0));
 		return true;
@@ -66,20 +67,20 @@ public class ChatCommands implements CommandListener {
 			sender.sendMessage(ChatColor.BLACK + "Le no. Le /le is reserved for le fancy people.");
 			return true;
 		}
-		StringBuilder lelOut = new StringBuilder();
-		for (String s : text) {
-			s = s.toUpperCase();
-			for (int i = 0; i < s.length();) {
-				for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
-					if (i >= s.length())
-						break;
-					lelOut.append(ColorDef.RAINBOW[j]).append(s.charAt(i));
-					i++;
-				}
-			}
-			lelOut.append(SPACE);
+		StringBuilder msg = new StringBuilder();
+		for (int i = 0; i < text.length; i++) {
+			msg.append(text[i].toUpperCase()).append(' ');
 		}
-		Broadcast.general(lelOut.substring(0, lelOut.length() - 1 > 0 ? lelOut.length() - 1 : 0));
+		StringBuilder leOut = new StringBuilder();
+		for (int i = 0; i < msg.length();) {
+			for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
+				if (i >= msg.length())
+					break;
+				leOut.append(ColorDef.RAINBOW[j]).append(msg.charAt(i));
+				i++;
+			}
+		}
+		Broadcast.general(leOut.substring(0, leOut.length() - 1 > 0 ? leOut.length() - 1 : 0));
 		return true;
 	}
 

@@ -54,7 +54,11 @@ public class PlayerData {
 				pst.setString(5, sUser.getDPlanet().getDisplayName());
 				pst.setShort(6, sUser.getTower());
 				pst.setBoolean(7, sUser.isSleeping());
-				pst.setString(8, cUser.getCurrent().getName());
+				try {
+					pst.setString(8, cUser.getCurrent().getName());
+				} catch (NullPointerException e1) {
+					pst.setString(8, "#" + cUser.getCurrentRegion().name());
+				}
 				pst.setBoolean(9, cUser.isMute());
 				StringBuilder sb = new StringBuilder();
 				for (String s : cUser.getListening()) {
