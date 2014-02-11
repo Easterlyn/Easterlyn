@@ -1,7 +1,5 @@
 package co.sblock.Sblock.SblockEffects;
 
-import org.bukkit.scheduler.BukkitTask;
-
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
 
@@ -10,7 +8,6 @@ public class SblockEffects extends Module {
 	private static SblockEffects instance;
 	private EffectListener eL;
 	private EffectManager eM;
-	private BukkitTask task;
 	protected static boolean verbose = false;
 	private EffectsCommandListener eCL = new EffectsCommandListener();
 	private EffectListener eListener = new EffectListener();
@@ -24,7 +21,7 @@ public class SblockEffects extends Module {
 		eL = new EffectListener();
 		eM = new EffectManager();
 		getLogger().fine("Effects check task started");
-		task = new EffectScheduler().runTaskTimer(Sblock.getInstance(), 0, 1180);
+		new EffectScheduler().runTaskTimer(Sblock.getInstance(), 0, 1180);
 		getLogger().fine("Effects enabled");
 	}
 

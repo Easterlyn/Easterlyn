@@ -13,11 +13,12 @@ public enum PassiveEffect {
 	FLOWERS("Flowers");
 	
 	private String loreText;
-	private PassiveEffect(String s)	{
+
+	private PassiveEffect(String s) {
 		loreText = s;
 	}
 	
-	public String getLoreText()	{
+	public String getLoreText() {
 		return this.loreText;
 	}
 	
@@ -25,11 +26,12 @@ public enum PassiveEffect {
 	 * Gets if a String is a valid PassiveEffect
 	 * 
 	 * @param s the String to test
+	 * 
 	 * @return true if the String is valid
 	 */
-	public static boolean isValidEffect(String s){
-		for(PassiveEffect p : PassiveEffect.values())	{
-			if(p.getLoreText().equalsIgnoreCase(s))	{
+	public static boolean isValidEffect(String s) {
+		for (PassiveEffect p : PassiveEffect.values()) {
+			if (p.getLoreText().equalsIgnoreCase(s)) {
 				return true;
 			}
 		}
@@ -45,12 +47,13 @@ public enum PassiveEffect {
 	 * Gets the specified effect
 	 * 
 	 * @param s the String to return the PassiveEffect for
+	 * 
 	 * @return the PassiveEffect. Null if Effect does not exist
 	 */
 	public static PassiveEffect getEffect(String s) {
 		PassiveEffect pE = null;
-		for(PassiveEffect p : PassiveEffect.values())	{
-			if(p.getLoreText().equalsIgnoreCase(s))	{
+		for (PassiveEffect p : PassiveEffect.values()) {
+			if (p.getLoreText().equalsIgnoreCase(s)) {
 				return p;
 			}
 		}
@@ -67,10 +70,10 @@ public enum PassiveEffect {
 	 * @param pE the PassiveEffect to be applied
 	 * @param strength the modifier on the PassiveEffect
 	 */
-	public static void applyEffect(Player p, PassiveEffect pE, Integer strength)	{
+	public static void applyEffect(Player p, PassiveEffect pE, Integer strength) {
 		PotionEffect potEffect;
-		switch (pE)	{
-		
+		switch (pE) {
+
 		case JUMP:
 			potEffect = new PotionEffect(PotionEffectType.JUMP, 1180, strength + 1);
 			p.addPotionEffect(potEffect, true);
@@ -80,7 +83,7 @@ public enum PassiveEffect {
 			p.addPotionEffect(potEffect, true);
 			break;
 		default:
-			break;	
+			break;
 		}
 	}
 	
@@ -90,10 +93,9 @@ public enum PassiveEffect {
 	 * @param p the Player to remove the PassiveEffect from
 	 * @param pE the PassiveEffect to be removed
 	 */
-	public static void removeEffect(Player p, PassiveEffect pE)	{
-		PotionEffect potEffect;
-		switch (pE)	{
-		
+	public static void removeEffect(Player p, PassiveEffect pE) {
+		switch (pE) {
+
 		case JUMP:
 			p.removePotionEffect(PotionEffectType.JUMP);
 			break;
