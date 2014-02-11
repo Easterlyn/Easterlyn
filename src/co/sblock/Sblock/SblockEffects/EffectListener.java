@@ -1,5 +1,7 @@
 package co.sblock.Sblock.SblockEffects;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -8,6 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -31,13 +36,50 @@ public class EffectListener implements Listener	{
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event)	{
 		Player p = event.getPlayer();
-		  eM.applyPassiveEffects(eM.scan(p), p);
+		SblockUser user = SblockUser.getUser(p.getName());
+		user.setAllPassiveEffects(EffectManager.passiveScan(p));
+		EffectManager.applyPassiveEffects(user);
 	}	
+	
+	@EventHandler
+	public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
+		Player p = event.getPlayer();
+		SblockUser user = SblockUser.getUser(p.getName());
+		user.setAllPassiveEffects(EffectManager.passiveScan(p));
+		EffectManager.applyPassiveEffects(user);
+	}
+	
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent event)	{
 		Player p = event.getPlayer();
-		eM.applyPassiveEffects(eM.scan(p), p);
+		SblockUser user = SblockUser.getUser(p.getName());
+		HashMap<PassiveEffect, Integer> effects = EffectManager.itemScan(event.getItem());
+		for (PassiveEffect e : effects.keySet()) {
+			user.addPassiveEffect(e);
+		}
+		EffectManager.applyPassiveEffects(user);
 	}
+	
+	@EventHandler
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
+		Player p = event.getPlayer();
+		SblockUser user = SblockUser.getUser(p.getName());
+		HashMap<PassiveEffect, Integer> effects = EffectManager.itemScan(event.getItemDrop());
+		for (PassiveEffect e : effects.keySet()) {
+			user.removePassiveEffect(e);
+		}
+		EffectManager.applyPassiveEffects(user);
+	}
+	
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		Player p = (Player) event.getPlayer();
+		SblockUser user = SblockUser.getUser(p.getName());
+		user.setAllPassiveEffects(EffectManager.passiveScan(p));
+		EffectManager.applyPassiveEffects(user);
+	}
+	
+	
 	@EventHandler
 	public void onPlayerRightClick(PlayerInteractEvent event)	{
 		Player p = event.getPlayer();

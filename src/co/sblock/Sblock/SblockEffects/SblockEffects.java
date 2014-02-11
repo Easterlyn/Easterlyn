@@ -19,7 +19,6 @@ public class SblockEffects extends Module {
 	private static SblockEffects instance;
 	private EffectListener eL;
 	private EffectManager eM;
-	@SuppressWarnings("unused")
 	private BukkitTask task;
 	protected static boolean verbose = false;
 	private EffectsCommandListener eCL = new EffectsCommandListener();
