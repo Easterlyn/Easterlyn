@@ -1,6 +1,7 @@
 package co.sblock.Sblock.UserData;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.SblockEffects.PassiveEffect;
 
 /**
  * SblockUser is the class for storing all Player data.
@@ -68,7 +70,11 @@ public class SblockUser {
 
 	/** true if the user has a server. */
 	private boolean hasServer = false;
-
+	
+	/** A map of the Effects applied to the Player, and their strength. */
+	private HashMap<PassiveEffect, Integer> passiveEffects;
+	
+	
 	/**
 	 * Creates a SblockUser object for a Player.
 	 * 
@@ -482,4 +488,66 @@ public class SblockUser {
 		}
 		return false;
 	}
+	
+	/**
+	 * Gets the user's current Passive Effects
+	 * 
+	 * @return the map of passive effects and their strengths
+	 */
+	public HashMap<PassiveEffect, Integer> getPassiveEffects() {
+		return this.passiveEffects;
+	}
+	
+	/**
+	 * Set the user's current Passive Effects. Will overlay existing map.
+	 * 
+	 * @param effects the map of all PassiveEffects to add
+	 */
+	public void setAllPassiveEffects(HashMap<PassiveEffect, Integer> effects) {
+		removeAllPassiveEffects();
+		this.passiveEffects = effects;
+	}
+	
+	/**
+	 * Removes all PassiveEffects from the user and cancels the Effect
+	 */
+	public void removeAllPassiveEffects() {
+		for (PassiveEffect effect : passiveEffects.keySet()) {
+			PassiveEffect.removeEffect(getPlayer(), effect);
+			this.passiveEffects.remove(effect);
+		}
+	}
+	
+	/**
+	 * Add a new effect to the user's current Passive Effects.
+	 * If the effect is already present, increases the strength by 1.
+	 * 
+	 * @param effect the PassiveEffect to add
+	 */
+	public void addPassiveEffect(PassiveEffect effect) {
+		if (this.passiveEffects.containsKey(effect)) {
+			this.passiveEffects.put(effect, 0);	
+		}
+		else {
+			this.passiveEffects.put(effect, this.passiveEffects.get(effect) + 1);
+		}
+	}
+	
+	/**
+	 * Set the user's current Passive Effects. Will overlay existing map.
+	 * 
+	 * @param effect the PassiveEffect to remove
+	 */
+	public void removePassiveEffect(PassiveEffect effect) {
+		if (this.passiveEffects.containsKey(effect)) {
+			if (this.passiveEffects.get(effect) > 0) {
+				this.passiveEffects.put(effect, this.passiveEffects.get(effect) - 1);
+			}
+			else {
+				this.passiveEffects.remove(effect);
+				PassiveEffect.removeEffect(getPlayer(), effect);
+			}
+		}
+	}
+	
 }

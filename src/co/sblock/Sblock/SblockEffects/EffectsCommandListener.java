@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
 import co.sblock.Sblock.Chat.ChatMsgs;
+import co.sblock.Sblock.UserData.SblockUser;
 
 public class EffectsCommandListener implements CommandListener {
 
@@ -53,7 +54,7 @@ public class EffectsCommandListener implements CommandListener {
 			Player target = Bukkit.getServer().getPlayer(args[1]);
 			ArrayList<String> playerLore = SblockEffects.getEffects().getEffectManager().scan(target);
 			p.sendMessage(target.getName() + playerLore);
-			SblockEffects.getEffects().getEffectManager().applyPassiveEffects(playerLore, target);
+			EffectManager.applyPassiveEffects(SblockUser.getUser(p.getName()));
 			return true;
 		} else if (args[0].equalsIgnoreCase("verbose")) {
 			SblockEffects.verbose = SblockEffects.verbose?false:true;

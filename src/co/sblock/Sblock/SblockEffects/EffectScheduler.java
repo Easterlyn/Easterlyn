@@ -8,6 +8,7 @@ import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Database.SblockData;
+import co.sblock.Sblock.UserData.SblockUser;
 
 public class EffectScheduler extends BukkitRunnable {
 	
@@ -20,7 +21,8 @@ public class EffectScheduler extends BukkitRunnable {
 	@Override
 	public void run() {
 		for(Player p : Bukkit.getServer().getOnlinePlayers()) {
-			eM.applyPassiveEffects(eM.scan(p), p);
+			SblockUser user = SblockUser.getUser(p.getName());
+			EffectManager.applyPassiveEffects(user);
 			ChatUserManager.getUserManager().getUser(p.getName()).setComputerAccess();
 			for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 				if (u == null) {
