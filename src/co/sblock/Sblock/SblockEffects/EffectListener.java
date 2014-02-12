@@ -10,11 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
@@ -31,22 +28,6 @@ public class EffectListener implements Listener	{
 	public EffectListener()	{
 		Bukkit.getServer().getPluginManager().registerEvents(this, Sblock.getInstance());
 		eM = new EffectManager();
-	}
-
-	@EventHandler
-	public void onPlayerLogin(PlayerLoginEvent event)	{
-		Player p = event.getPlayer();
-		SblockUser user = SblockUser.getUser(p.getName());
-		user.setAllPassiveEffects(EffectManager.passiveScan(p));
-		EffectManager.applyPassiveEffects(user);
-	}	
-	
-	@EventHandler
-	public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
-		Player p = event.getPlayer();
-		SblockUser user = SblockUser.getUser(p.getName());
-		user.setAllPassiveEffects(EffectManager.passiveScan(p));
-		EffectManager.applyPassiveEffects(user);
 	}
 	
 	@EventHandler
@@ -70,18 +51,13 @@ public class EffectListener implements Listener	{
 		}
 		EffectManager.applyPassiveEffects(user);
 	}
-	
-	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent event) {
-		Player p = (Player) event.getPlayer();
-		SblockUser user = SblockUser.getUser(p.getName());
-		user.setAllPassiveEffects(EffectManager.passiveScan(p));
-		EffectManager.applyPassiveEffects(user);
-	}
-	
-	
+
 	@EventHandler
 	public void onPlayerRightClick(PlayerInteractEvent event)	{
+		// TODO effects rework Keiko
+		// if you want to pass the event so you can better determine
+		// what's going on here that's fine too - this isn't always right
+		// click, could be a block, a player, etc.
 		Player p = event.getPlayer();
 		eM.applyActiveRightClickEffects(eM.activeScan(p), p);
 	}

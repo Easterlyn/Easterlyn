@@ -23,7 +23,6 @@ public class SblockMachines extends Module {
 		instance = this;
 		manager = new MachineManager();
 		this.registerCommands(new MachineCommand());
-		this.registerEvents(new MachineEvents());
 		SblockData.getDB().loadAllMachines();
 		getLogger().fine("Machines enabled");
 	}

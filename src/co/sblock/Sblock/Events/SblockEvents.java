@@ -1,17 +1,30 @@
 package co.sblock.Sblock.Events;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
-import org.bukkit.event.HandlerList;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Events.Listeners.*;
+import co.sblock.Sblock.Events.Packets.SleepTeleport;
+import co.sblock.Sblock.Events.Packets.WrapperPlayServerAnimation;
+import co.sblock.Sblock.Events.Packets.WrapperPlayServerBed;
 import co.sblock.Sblock.Events.Region.RegionCheck;
 import co.sblock.Sblock.Events.Session.SessionCheck;
 import co.sblock.Sblock.Events.Session.Status;
 import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.Utilities.Broadcast;
+import co.sblock.Sblock.Utilities.Log;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -26,9 +39,6 @@ public class SblockEvents extends Module {
 	/** The TowerData. */
 	private TowerData towers;
 
-	/** The EventListener. */
-	private EventListener listener;
-
 	/** The Task ID of the RegionCheck task. */
 	private int regionTask;
 
@@ -38,17 +48,33 @@ public class SblockEvents extends Module {
 	/** The Minecraft servers' status */
 	private Status status;
 
+	/** A Map of all scheduled tasks by Player. */
+	public Map<String, Integer> tasks;
+
+	/** A Set of the names of all Players queuing to sleep teleport. */
+	public Set<String> teleports;
+
 	/**
 	 * @see Module#onEnable()
 	 */
 	@Override
 	protected void onEnable() {
 		instance = this;
+		tasks = new HashMap<String, Integer>();
+		teleports = new HashSet<String>();
 		towers = new TowerData();
 		towers.load();
-		listener = new EventListener();
-		this.registerEvents(listener);
-		ProtocolLibrary.getProtocolManager().addPacketListener(listener);
+		
+		this.registerEvents(new BlockBreakListener(), new BlockFadeListener(), new BlockGrowListener(),
+				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
+				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
+				new FurnaceBurnListener(), new InventoryClickListener(), new InventoryCloseListener(),
+				new InventoryMoveItemListener(), new PlayerAsyncChatListener(),
+				new PlayerChangedWorldListener(), new PlayerInteractListener(),
+				new PlayerJoinListener(), new PlayerLoginListener(), new PlayerQuitListener(),
+				new PlayerTeleportListener(), new ServerListPingListener(),
+				new SignChangeListener(), new VehicleBlockCollisionListener());
+		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 		status = Status.NEITHER;
 		regionTask = initiateRegionChecks();
 		sessionTask = initiateSessionChecks();
@@ -61,11 +87,51 @@ public class SblockEvents extends Module {
 	protected void onDisable() {
 		Bukkit.getScheduler().cancelTask(regionTask);
 		Bukkit.getScheduler().cancelTask(sessionTask);
-		HandlerList.unregisterAll(listener);
-		listener = null;
 		towers.save();
 		towers = null;
 		instance = null;
+	}
+
+	/**
+	 * Sends a Player a fake packet for starting sleeping and schedules them to
+	 * be teleported to their DreamPlanet.
+	 * 
+	 * @param p the Player
+	 * @param bed the Location of the bed to sleep in
+	 */
+	public void fakeSleepDream(Player p, Location bed) {
+		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
+
+		WrapperPlayServerBed packet = new WrapperPlayServerBed();
+		packet.setEntityId(p.getEntityId());
+		packet.setX(bed.getBlockX());
+		packet.setY((byte) bed.getBlockY());
+		packet.setZ(bed.getBlockZ());
+
+		try {
+			pm.sendServerPacket(p, packet.getHandle());
+		} catch (InvocationTargetException e) {
+			Log.err(e);
+		}
+		tasks.put(p.getName(), Bukkit.getScheduler().scheduleSyncDelayedTask(
+				Sblock.getInstance(), new SleepTeleport(p), 100L));
+	}
+
+	/**
+	 * Sends a Player a fake packet for waking up.
+	 * 
+	 * @param p the Player
+	 */
+	public void fakeWakeUp(Player p) {
+		WrapperPlayServerAnimation packet = new WrapperPlayServerAnimation();
+		packet.setEntityID(p.getEntityId());
+		packet.setAnimation((byte) WrapperPlayServerAnimation.Animations.LEAVE_BED);
+
+		try {
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+		} catch (InvocationTargetException e) {
+			Log.err(e);
+		}
 	}
 
 	/**
@@ -123,15 +189,6 @@ public class SblockEvents extends Module {
 	 */
 	public TowerData getTowerData() {
 		return towers;
-	}
-
-	/**
-	 * Gets the EventListener.
-	 * 
-	 * @return the EventListener
-	 */
-	public EventListener getListener() {
-		return this.listener;
 	}
 
 	/**
