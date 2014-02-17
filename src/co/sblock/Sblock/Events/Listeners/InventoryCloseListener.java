@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import co.sblock.Sblock.SblockEffects.EffectManager;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.Utilities.Captcha.Captchadex;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
@@ -23,6 +24,11 @@ public class InventoryCloseListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClose(InventoryCloseEvent event) {
+		if (event.getInventory().getName().equals("Captchadex")) {
+			Captchadex.saveCaptchadex(event.getInventory(), event.getPlayer().getItemInHand());
+			// Adam verify hotbar slot isn't switched - latency etc.
+		}
+
 		InventoryManager.restoreInventory((Player) event.getPlayer());
 
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());

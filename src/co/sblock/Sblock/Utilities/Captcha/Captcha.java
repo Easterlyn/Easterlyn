@@ -20,8 +20,6 @@ public class Captcha extends Module {
 
 	/** The CaptchaCommandListener. */
 	private CaptchaCommandListener clistener = new CaptchaCommandListener();
-	/** The CaptchaEventListener. */
-	private CaptchaEventListener cEL = new CaptchaEventListener();
 
 	/**
 	 * @see Module#onEnable()
@@ -30,7 +28,6 @@ public class Captcha extends Module {
 	protected void onEnable() {
 		this.captchaCardRecipe();
 		this.registerCommands(clistener);
-		this.registerEvents(cEL);
 	}
 
 	/**
@@ -208,12 +205,10 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a blank Captchacard
 	 */
 	public static boolean isBlankCard(ItemStack is) {
-		if (is.getType().equals(Material.PAPER) && is.hasItemMeta()
+		return is != null && is.getType() == Material.PAPER
+				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName()
 				&& is.getItemMeta().getDisplayName().equals("Captchacard")
-				&& is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("Blank")) {
-			return true;
-		}
-		return false;
+				&& is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("Blank");
 	}
 
 	/**
@@ -224,12 +219,10 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a Captchacard
 	 */
 	public static boolean isCaptchaCard(ItemStack is) {
-		if (is.getType().equals(Material.PAPER) && is.hasItemMeta()
+		return is != null && is.getType() == Material.PAPER
+				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName()
 				&& is.getItemMeta().getDisplayName().equals("Captchacard")
-				&& is.getItemMeta().hasLore() && !is.getItemMeta().getLore().contains("Blank")) {
-			return true;
-		}
-		return false;
+				&& is.getItemMeta().hasLore() && !is.getItemMeta().getLore().contains("Blank");
 	}
 
 	/**

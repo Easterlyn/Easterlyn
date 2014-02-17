@@ -87,6 +87,24 @@ public class Captchadex {
 	}
 
 	/**
+	 * Check to see if the ItemStack in a player's hand is a Captchadex.
+	 * 
+	 * @param p the Player
+	 * 
+	 * @return true if the item in the Player's hand is a Captchadex
+	 */
+	public static boolean isCaptchadex(Player p) {
+		ItemStack is = p.getItemInHand();
+		if (is != null && is.getType().equals(Material.WRITTEN_BOOK) && is.hasItemMeta()
+				&& is.getItemMeta() instanceof BookMeta) {
+			BookMeta bm = (BookMeta) is.getItemMeta();
+			return bm.getTitle().equalsIgnoreCase("Captchadex")
+					&& bm.getAuthor().equalsIgnoreCase(p.getName());
+		}
+		return false;
+	}
+
+	/**
 	 * Creates a Captchadex Inventory for the specified InventoryHolder.
 	 * 
 	 * @param ih the InventoryHolder
