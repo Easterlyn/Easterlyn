@@ -95,7 +95,7 @@ public class PlayerInteractListener implements Listener {
 		}
 
 		// Uncaptcha
-		if (Captcha.isCaptchaCard(event.getItem()) || Captcha.isPunchCard(event.getItem())) {
+		if (Captcha.isCaptchaCard(event.getItem())) {
 			ItemStack captcha = Captcha.captchaToItem(event.getItem());
 			if (event.getItem().getAmount() > 1) {
 				event.getItem().setAmount(event.getItem().getAmount() - 1);
