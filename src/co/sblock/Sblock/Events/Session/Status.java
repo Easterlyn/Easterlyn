@@ -8,14 +8,14 @@ import org.bukkit.ChatColor;
  * @author Jikoo
  */
 public enum Status {
-	LOGIN("Login servers aren't responding, don't close your client!",
-			"Login servers are back up, closing Minecraft is ok!", null),
-	SESSION("Session servers aren't responding, don't disconnect!",
-			"Session servers are back up, multiplayer will work!",
-			"Session servers aren't responding! You might not be able to log in."),
-	BOTH("Session and login servers aren't responding, don't disconnect!",
-			"Session and login servers are back up! Continue play as usual.",
-			"Session servers aren't responding! You might not be able to log in."),
+	LOGIN("Minecraft's login servers aren't responding. Don't close your client!",
+			"Minecraft's login servers are back up, closing Minecraft is ok!", null),
+	SESSION("Minecraft's session servers aren't responding, don't disconnect!",
+			"Minecraft's session servers are back up, multiplayer will work!",
+			"Minecraft's session servers aren't responding! You might not be able to log in."),
+	BOTH("Minecraft's session and login servers aren't responding, don't disconnect!",
+			"Minecraft's session and login servers are back up! Continue play as usual.",
+			"Minecraft's session servers aren't responding! You might not be able to log in."),
 	NEITHER(null, null, null);
 
 	/** The message to broadcast initially. */

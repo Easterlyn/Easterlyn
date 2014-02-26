@@ -20,7 +20,7 @@ import co.sblock.Sblock.Events.Packets.SleepTeleport;
 import co.sblock.Sblock.Events.Packets.WrapperPlayServerAnimation;
 import co.sblock.Sblock.Events.Packets.WrapperPlayServerBed;
 import co.sblock.Sblock.Events.Region.RegionCheck;
-import co.sblock.Sblock.Events.Session.SessionCheck;
+import co.sblock.Sblock.Events.Session.StatusCheck;
 import co.sblock.Sblock.Events.Session.Status;
 import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.Utilities.Broadcast;
@@ -145,7 +145,7 @@ public class SblockEvents extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	private int initiateSessionChecks() {
-		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new SessionCheck(), 0L, 1200L);
+		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 0L, 1200L);
 	}
 
 	/**
