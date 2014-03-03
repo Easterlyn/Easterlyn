@@ -36,16 +36,15 @@ public class UserDataCommands implements CommandListener {
 			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
 		}
 		SblockUser user = UserManager.getUserManager().getUser(target[0]);
-		if (user == null)
+		if (user == null) {
 			sender.sendMessage(ChatColor.YELLOW + "User not found.");
-		else {
-			String message =  PROFILE_COLOR + "-----------------------------------------\n"
-					+ ChatColor.YELLOW + target + ": " + user.getClassType().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
-					+ PROFILE_COLOR    + "-----------------------------------------\n"
-					+ "Dream planet: " + ChatColor.YELLOW + user.getDPlanet().getDisplayName() + "\n"
-					+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMPlanet().getShortName();
-			sender.sendMessage(message);
+			return true;
 		}
+		sender.sendMessage(PROFILE_COLOR + "-----------------------------------------\n"
+				+ ChatColor.YELLOW + user.getPlayerName() + ": " + user.getClassType().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
+				+ PROFILE_COLOR    + "-----------------------------------------\n"
+				+ "Dream planet: " + ChatColor.YELLOW + user.getDPlanet().getDisplayName() + "\n"
+				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMPlanet().getShortName());
 		return true;
 	}
 	

@@ -273,55 +273,60 @@ public class ChatMsgs {
 	}
 
 	public static String helpGlobalMod() {
-		return ChatColor.YELLOW + "Mod Global Commands:\n"
-				+ ChatColor.AQUA + "global mute <$user>"
+		return ChatColor.AQUA + "/sc global "
+				+ ChatColor.YELLOW + "subcommands:\n"
+				+ ChatColor.AQUA + "mute <user>"
 				+ ChatColor.YELLOW + ": Mute a user in all channels\n"
-				+ ChatColor.AQUA + "global unmute <$user>"
+				+ ChatColor.AQUA + "unmute <user>"
 				+ ChatColor.YELLOW + ": Unmute a user in all channels\n"
-				+ ChatColor.AQUA + "global setnick <$user> <nick>"
+				+ ChatColor.AQUA + "setnick <user> <nick>"
 				+ ChatColor.YELLOW + ": Set a global nick for a player (Mostly for teh lulz)\n"
-				+ ChatColor.AQUA + "global rmnick <$user>"
+				+ ChatColor.AQUA + "rmnick <user>"
 				+ ChatColor.YELLOW + ": Remove a global nick from a player";
 	}
 
 	public static String helpChannelOwner() {
-		return ChatColor.YELLOW + "Channel Owner commands:\n"
-				+ ChatColor.AQUA + "channel mod <add/remove> <$user>"
+		return ChatColor.YELLOW + "Channel Owner "
+				+ ChatColor.AQUA + "/sc channel "
+				+ ChatColor.YELLOW + "subcommands:\n"
+				+ ChatColor.AQUA + "mod <add/remove> <user>"
 				+ ChatColor.YELLOW + ": Add or remove a channel mod\n"
-				+ ChatColor.AQUA + "channel <ban/unban> <$user>"
+				+ ChatColor.AQUA + "<ban/unban> <user>"
 				+ ChatColor.YELLOW + ": (Un)bans a user from the channel\n"
 				+ ChatColor.AQUA + "disband"
 				+ ChatColor.YELLOW + ": Drop the channel!";
 	}
 
 	public static String helpChannelMod() {
-		return ChatColor.YELLOW + "Channel Mod commands:\n"
-				+ ChatColor.AQUA + "channel kick <$user>"
+		return ChatColor.YELLOW + "Channel Mod "
+				+ ChatColor.AQUA + "/sc channel "
+				+ ChatColor.YELLOW + "subcommands:\n"
+				+ ChatColor.AQUA + "kick <user>"
 				+ ChatColor.YELLOW + ": Kick a user from the channel\n"
-				+ ChatColor.AQUA + "channel ban <$user>"
+				+ ChatColor.AQUA + "ban <user>"
 				+ ChatColor.YELLOW + ": Ban a user from the channel\n"
-				+ ChatColor.AQUA + "channel getListeners"
+				+ ChatColor.AQUA + "getListeners"
 				+ ChatColor.YELLOW + ": List all users currently listening to this channel";
 	}
 
 	public static String helpDefault() {
 		return ChatColor.AQUA + "/sc "
 				+ ChatColor.YELLOW + "subcommands:\n"
-				+ ChatColor.AQUA + "c <channel>"
+				+ ChatColor.AQUA + "/sc c <channel>"
 				+ ChatColor.YELLOW + ": Talking will send messages to <channel>.\n"
-				+ ChatColor.AQUA + "l <channel>"
+				+ ChatColor.AQUA + "/sc l <channel>"
 				+ ChatColor.YELLOW + ": Listen to <channel>.\n"
-				+ ChatColor.AQUA + "leave <channel>"
+				+ ChatColor.AQUA + "/sc leave <channel>"
 				+ ChatColor.YELLOW + ": Stop listening to <channel>.\n"
-				+ ChatColor.AQUA + "nick <set/remove> <nick>"
+				+ ChatColor.AQUA + "/sc nick <set|remove> <nick>"
 				+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.\n"
-				+ ChatColor.AQUA + "list"
+				+ ChatColor.AQUA + "/sc list"
 				+ ChatColor.YELLOW + ": List all channels you are listening to.\n"
-				+ ChatColor.AQUA + "listall"
+				+ ChatColor.AQUA + "/sc listall"
 				+ ChatColor.YELLOW + ": List all channels.\n"
-				+ ChatColor.AQUA + "new <name> <access> <type>"
+				+ ChatColor.AQUA + "/sc new <name> <access> <type>"
 				+ ChatColor.YELLOW + ": Create a new channel.\n"
-				+ ChatColor.AQUA + "channel"
+				+ ChatColor.AQUA + "/sc channel"
 				+ ChatColor.YELLOW + ": Channel moderation commands.";
 	}
 
@@ -347,7 +352,7 @@ public class ChatMsgs {
 	}
 
 	public static String helpSCNick() {
-		return ChatColor.AQUA + "/sc nick <set/remove> <nick>"
+		return ChatColor.AQUA + "/sc nick <set|remove> <nick>"
 			+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.";
 	}
 
