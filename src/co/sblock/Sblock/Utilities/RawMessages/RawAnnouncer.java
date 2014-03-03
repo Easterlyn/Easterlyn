@@ -75,12 +75,16 @@ public class RawAnnouncer extends Module implements CommandListener {
 				new MessageElement("!", ChatColor.RED)));
 
 		msgs.add(new Message(
-				new MessageHalement("Join us on Mumble for voice chat! The server is at "),
+				new MessageHalement("Join us on "),
+				new MessageElement("Mumble", ChatColor.AQUA)
+						.addClickEffect(new MessageClickEffect(ClickEffect.OPEN_URL,
+								"http://mumble.sourceforge.net/")),
+				new MessageElement(" for voice chat! The server is at ", ChatColor.RED),
 				new MessageElement("\nmumble.sblock.co", ChatColor.AQUA),
 				new MessageElement("!", ChatColor.RED)));
 
-		msgs.add(new Message(
-				new MessageHalement("It appears that enchanting furnaces is very beneficial.")));
+		msgs.add(new Message(new MessageHalement("It appears that enchanting furnaces is very "
+				+ "beneficial. You might consider giving it a try.")));
 
 		return msgs;
 	}
