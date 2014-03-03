@@ -26,13 +26,15 @@ public class StatusCheck implements Runnable {
 	public void run() {
 		boolean session = false;
 		boolean login = false;
+		JSONParser parser = new JSONParser();
 
-		// Session check
 		try {
-			JSONObject statusData = (JSONObject) new JSONParser().parse(new BufferedReader(
-					new InputStreamReader(new URL("http://status.mojang.com/check").openStream())));
-			session = !((String) statusData.get("session.minecraft.net")).equals("green");
-			login = !((String) statusData.get("login.minecraft.net")).equals("green");
+			JSONObject data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
+					new URL("http://status.mojang.com/check?service=session.minecraft.net").openStream())));
+			session = !((String) data.get("session.minecraft.net")).equals("green");
+			data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
+					new URL("http://status.mojang.com/check?service=login.minecraft.net").openStream())));
+			login = !((String) data.get("login.minecraft.net")).equals("green");
 		} catch (IOException | ParseException e) {
 			Log.getLogger("Session").warning("Unable to connect to http://status.mojang.com/check - status unavailable.");
 			return;
