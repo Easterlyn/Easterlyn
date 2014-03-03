@@ -262,17 +262,13 @@ public abstract class Channel {
 	}
 
 	public void sendToAll(ChatUser sender, String s, String type) {
-		Set<String> failures = new HashSet<String>();
-		for (String name : this.listening) {
-			ChatUser u = ChatUserManager.getUserManager().getUser(name);
+		for (Object name : this.listening.toArray()) {
+			ChatUser u = ChatUserManager.getUserManager().getUser((String) name);
 			if (u != null) {
 				u.sendMessageFromChannel(s, this, type);
 			} else {
-				failures.add(name);
+				listening.remove((String) name);
 			}
-		}
-		for (String failure : failures) {
-			this.listening.remove(failure);
 		}
 		Log.infoNoName(s);
 	}
