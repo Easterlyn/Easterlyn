@@ -55,32 +55,36 @@ public class RawAnnouncer extends Module implements CommandListener {
 	private List<Message> constructAnnouncements() {
 		List<Message> msgs = new ArrayList<Message>();
 
-		msgs.add(new Message(new MessageHalement("Click to join us on our subreddit, "),
-				new MessageElement("/r/Sblock", ChatColor.AQUA).addClickEffect(
-						new MessageClickEffect(ClickEffect.OPEN_URL,
-								"http://www.reddit.com/r/sblock")),
+		msgs.add(new Message(new MessageHalement("Join us on our subreddit, "),
+				new MessageElement("/r/Sblock", ChatColor.AQUA)
+						.addClickEffect(new MessageClickEffect(ClickEffect.OPEN_URL,
+								"http://www.reddit.com/r/sblock"))
+						.addHoverEffect(new MessageHoverEffect(HoverEffect.SHOW_TEXT,
+								ChatColor.GOLD + "Click here to go!")),
 				new MessageElement("!", ChatColor.RED)));
 
-		msgs.add(new Message(new MessageHalement("If you're having difficulty with chat, click "),
-				new MessageElement("here", ChatColor.AQUA)
+		msgs.add(new Message(new MessageHalement("If you're having difficulty with chat, "),
+				new MessageElement("/sc ?", ChatColor.AQUA)
 						.addClickEffect(new MessageClickEffect(ClickEffect.RUN_COMMAND, "/sc ?"))
 						.addHoverEffect(new MessageHoverEffect(HoverEffect.SHOW_TEXT,
-								ChatColor.AQUA + "/sc ?" + ChatColor.GOLD + " is your friend.")),
-				new MessageElement("!", ChatColor.RED)));
+								ChatColor.GOLD + "Click to run!")),
+				new MessageElement(" is your friend!", ChatColor.RED)));
 
 		msgs.add(new Message(new MessageHalement("Remember, we are in "),
 				new MessageElement("ALPHA", ChatColor.GOLD, ChatColor.BOLD)
 						.addHoverEffect(new MessageHoverEffect(HoverEffect.SHOW_TEXT,
-								ChatColor.RED + "We reserve the right to fuck up badly.")),
+								ChatColor.DARK_RED + "We reserve the right to fuck up badly.")),
 				new MessageElement("!", ChatColor.RED)));
 
 		msgs.add(new Message(
 				new MessageHalement("Join us on "),
 				new MessageElement("Mumble", ChatColor.AQUA)
 						.addClickEffect(new MessageClickEffect(ClickEffect.OPEN_URL,
-								"http://mumble.sourceforge.net/")),
+								"http://mumble.sourceforge.net/"))
+						.addHoverEffect(new MessageHoverEffect(HoverEffect.SHOW_TEXT,
+								ChatColor.GOLD + "Click here to download!")),
 				new MessageElement(" for voice chat! The server is at ", ChatColor.RED),
-				new MessageElement("\nmumble.sblock.co", ChatColor.AQUA),
+				new MessageElement("   mumble.sblock.co", ChatColor.AQUA),
 				new MessageElement("!", ChatColor.RED)));
 
 		msgs.add(new Message(new MessageHalement("It appears that enchanting furnaces is very "
