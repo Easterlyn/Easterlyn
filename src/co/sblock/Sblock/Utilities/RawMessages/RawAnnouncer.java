@@ -37,6 +37,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 			public void run() {
 				String announcement = announcements.get(
 						(int) (Math.random() * announcements.size())).toString();
+				getLogger().info(announcement);
 				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 							"tellraw " + p.getName() + " " + announcement);
@@ -83,8 +84,10 @@ public class RawAnnouncer extends Module implements CommandListener {
 								"http://mumble.sourceforge.net/"))
 						.addHoverEffect(new MessageHoverEffect(HoverEffect.SHOW_TEXT,
 								ChatColor.GOLD + "Click here to download!")),
-				new MessageElement(" for voice chat! The server is at ", ChatColor.RED),
-				new MessageElement("   mumble.sblock.co", ChatColor.AQUA),
+				new MessageElement(" for voice chat! The server is ", ChatColor.RED),
+				new MessageElement("   sblock.co", ChatColor.AQUA),
+				new MessageElement(", port ", ChatColor.RED),
+				new MessageElement("25560", ChatColor.AQUA),
 				new MessageElement("!", ChatColor.RED)));
 
 		msgs.add(new Message(new MessageHalement("It appears that enchanting furnaces is very "
