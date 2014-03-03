@@ -71,7 +71,7 @@ public class SblockUser {
 	/** true if the user has a server. */
 	private boolean hasServer = false;
 	
-	/** A map of the Effects applied to the Player, and their strength. */
+	/** A map of the Effects applied to the Player and their strength. */
 	private HashMap<PassiveEffect, Integer> passiveEffects;
 	
 	
@@ -83,6 +83,7 @@ public class SblockUser {
 	public SblockUser(String playerName) {
 		this.playerName = playerName;
 		this.setUserIP();
+		this.passiveEffects = new HashMap<PassiveEffect, Integer>();
 	}
 
 	/**
