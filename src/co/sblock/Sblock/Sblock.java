@@ -27,6 +27,7 @@ import co.sblock.Sblock.UserData.SblockUsers;
 import co.sblock.Sblock.Utilities.Log;
 import co.sblock.Sblock.Utilities.Counter.CounterModule;
 import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
+import co.sblock.Sblock.Utilities.RawMessages.RawAnnouncer;
 
 /**
  * Sblock is the base of Sblock.co's custom plugin. All features are handled by
@@ -95,6 +96,7 @@ public class Sblock extends JavaPlugin {
 //		modules.add(new Captcha().enable());
 		modules.add(new CounterModule().enable());
 		modules.add(new MeteorMod().enable());
+		modules.add(new RawAnnouncer().enable());
 	}
 
 	/**
