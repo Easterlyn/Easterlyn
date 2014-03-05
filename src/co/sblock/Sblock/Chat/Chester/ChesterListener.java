@@ -37,7 +37,7 @@ public class ChesterListener implements Listener {
 			return;
 		}
 		for (String s : SblockChat.chester) {
-			if (event.getMessage().equals(s)) {
+			if (event.getMessage().equalsIgnoreCase(s)) {
 				event.setCancelled(true);
 				return;
 			}
