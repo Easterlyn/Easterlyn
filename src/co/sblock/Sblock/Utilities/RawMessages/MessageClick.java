@@ -5,7 +5,8 @@ package co.sblock.Sblock.Utilities.RawMessages;
  * 
  * @author Jikoo
  */
-public class MessageClickEffect {
+public class MessageClick {
+
 	public enum ClickEffect {
 		OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND;
 	}
@@ -13,9 +14,13 @@ public class MessageClickEffect {
 	private ClickEffect effect;
 	private String data;
 
-	public MessageClickEffect(ClickEffect effect, String data) {
+	public MessageClick(ClickEffect effect, String data) {
 		this.effect = effect;
 		this.data = data;
+	}
+
+	public String getData() {
+		return this.data;
 	}
 
 	public String toString() {

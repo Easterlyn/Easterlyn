@@ -1,5 +1,6 @@
 package co.sblock.Sblock.UserData;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,10 +33,16 @@ public class UserDataCommands implements CommandListener {
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Check a player's profile.", usage = "")
 	public boolean profile(CommandSender sender, String[] target) {
+		SblockUser user;
 		if (target == null || target.length == 0) {
-			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
+				return true;
+			}
+			user = SblockUser.getUser(sender.getName());
+		} else {
+			user = UserManager.getUserManager().getUser(Bukkit.getPlayer(target[0]).getName());
 		}
-		SblockUser user = UserManager.getUserManager().getUser(target[0]);
 		if (user == null) {
 			sender.sendMessage(ChatColor.YELLOW + "User not found.");
 			return true;
