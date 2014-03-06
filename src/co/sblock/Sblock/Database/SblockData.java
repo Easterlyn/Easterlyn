@@ -259,6 +259,6 @@ public class SblockData {
 	 * @param target the name or IP to unban
 	 */
 	public void removeBan(String target) {
-		BannedPlayers.loadAndDeleteBans(target);
+		BannedPlayers.deleteBans(target);
 	}
 }

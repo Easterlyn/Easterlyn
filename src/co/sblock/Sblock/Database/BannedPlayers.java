@@ -1,22 +1,17 @@
 package co.sblock.Sblock.Database;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.bukkit.BanEntry;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
+import org.bukkit.BanList.Type;
 
 import co.sblock.Sblock.UserData.SblockUser;
-import co.sblock.Sblock.Utilities.Log;
 
 /**
- * A small helper class containing all methods that access the BannedPlayers
- * table.
- * <p>
- * The BannedPlayers table is created by the following call:
- * CREATE TABLE BannedPlayers (name varchar(16) UNIQUE KEY, ip varchar(16),
- * banDate Date, reason text);
+ * A small helper class containing all methods that access Minecraft's ban system.
  * 
  * @author Jikoo
  */
@@ -30,74 +25,46 @@ public class BannedPlayers {
 	 * @param reason the reason the SblockUser was banned
 	 */
 	protected static void addBan(SblockUser target, String reason) {
-		PreparedStatement pst;
-		try {
-			pst = SblockData.getDB().connection().prepareStatement(Call.BAN_SAVE.toString());
-			pst.setString(1, target.getPlayerName());
-			pst.setString(2, target.getUserIP());
-			pst.setDate(3, new Date(new java.util.Date().getTime()));
-			pst.setString(4, reason);
-
-			new AsyncCall(pst).schedule();
-		} catch (SQLException e) {
-			Log.err(e);
-		}
+		Bukkit.getBanList(Type.NAME).addBan(target.getPlayerName(),
+				"<ip=" + target.getUserIP() + ">" + reason, null, "sban");
+		Bukkit.getBanList(Type.IP).addBan(target.getUserIP(),
+				"<name=" + target.getPlayerName() + ">" + reason, null, "sban");
 	}
 
 	/**
-	 * Create a PreparedStatement with which to query the SQL database. Fetch
-	 * and remove all matching bans from the database.
+	 * Delete all bans (name or IP) matching the specified String.
 	 * 
 	 * @param target the name or IP to match
 	 */
-	protected static void loadAndDeleteBans(String target) {
-		try {
-			PreparedStatement pst = SblockData.getDB().connection()
-					.prepareStatement(Call.BAN_LOAD.toString());
-			pst.setString(1, target);
-			pst.setString(2, target);
-
-			new AsyncCall(pst, Call.BAN_LOAD).schedule();
-		} catch (SQLException e) {
-			Log.err(e);
+	protected static void deleteBans(String target) {
+		String relatedBan = null;
+		Type loop = Type.IP;
+		BanList bans = Bukkit.getBanList(Type.IP);
+		BanList pbans = Bukkit.getBanList(Type.NAME);
+		if (bans.isBanned(target)) {
+			relatedBan = bans.getBanEntry(target).getReason().replaceAll(".*<name=(\\w{1,16}+)>.*", "$1");
+			bans.pardon(target);
+			bans = pbans;
+			loop = Type.NAME;
+		} else if (pbans.isBanned(target)) {
+			relatedBan = pbans.getBanEntry(target).getReason()
+					.replaceAll(".*<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>.*", "$1");
+			pbans.pardon(target);
+		} else  {
+			return;
 		}
-	}
 
-	/**
-	 * Remove any bans by name and IP.
-	 * 
-	 * @param rs the ResultSet containing all matching bans
-	 */
-	protected static void removeBan(ResultSet rs) {
-		try {
-			if (!rs.next()) {
-				// We have no record of this player's ban, but remove ban them anyway.
-				Bukkit.getOfflinePlayer(
-						rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1"))
-						.setBanned(false);
-			}
-			// Move cursor back to before first result set so while loop hits all
-			rs.absolute(0);
-			while (rs.next()) {
-				try {
-					Bukkit.unbanIP(rs.getString("ip"));
-				} catch (Exception e) {
-					SblockData.getDB().getLogger().fine("No IP saved for ban");
+		Pattern p = Pattern.compile(loop == Type.IP 
+				? "<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>" : "<name=(\\w{1,16}+)>");
+		for (BanEntry b : bans.getBanEntries()) {
+			Matcher m = p.matcher(b.getReason());
+			while (m.find()) {
+				String s = m.group().replaceAll("<\\w++=", "");
+				s = s.substring(0,  s.length() - 1);
+				if (s.equals(relatedBan)) {
+					bans.pardon(relatedBan);
 				}
-				try {
-					Bukkit.getOfflinePlayer(rs.getString("name")).setBanned(false);
-				} catch (Exception e) {
-					SblockData.getDB().getLogger().fine("No name saved for ban");
-				}
-				PreparedStatement pst = SblockData.getDB().connection()
-						.prepareStatement(Call.BAN_DELETE.toString());
-				pst.setString(1, rs.getString("name"));
-				pst.setString(2, rs.getString("ip"));
-
-				new AsyncCall(pst).schedule();
 			}
-		} catch (SQLException e) {
-			Log.err(e);
 		}
 	}
 
@@ -110,33 +77,15 @@ public class BannedPlayers {
 	 * @return the ban reason
 	 */
 	protected static String getBanReason(String name, String ip) {
-		PreparedStatement pst = null;
-		String ban = null;
-		try {
-			pst = SblockData.getDB().connection().prepareStatement(Call.BAN_LOAD.toString());
-
-			pst.setString(1, name);
-			pst.setString(2, ip);
-
-			ResultSet rs = pst.executeQuery();
-
-			while (rs.next()) {
-				ban = rs.getString("reason");
-				if (name.equals(rs.getString("name"))) {
-					break;
-				}
-			}
-		} catch (SQLException e) {
-			Log.err(e);
-		} finally {
-			if (pst != null) {
-				try {
-					pst.close();
-				} catch (SQLException e) {
-					Log.err(e);
-				}
-			}
+		if (!Bukkit.getBanList(Type.IP).isBanned(ip) && !Bukkit.getBanList(Type.NAME).isBanned(name)) {
+			return null;
 		}
-		return ban;
+		if (Bukkit.getOfflinePlayer(name).isBanned()) {
+			return Bukkit.getBanList(Type.NAME).getBanEntry(name).getReason()
+					.replaceAll("<ip=[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+>", "");
+		} else {
+			return Bukkit.getBanList(Type.IP).getBanEntry(ip).getReason()
+					.replaceAll("<name=\\w{1,16}+>", "");
+		}
 	}
 }

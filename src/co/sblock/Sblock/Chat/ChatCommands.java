@@ -149,15 +149,15 @@ public class ChatCommands implements CommandListener {
 		}
 		SblockUser victim = UserManager.getUserManager().getUser(target);
 		if (victim != null) {
-			for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
-				u.sendMessage(ChatColor.DARK_RED + victim.getPlayerName()
-						+ " has been superbanned: " + args);
-			}
+			Broadcast.general(ChatColor.DARK_RED + target
+					+ " has been wiped from the face of the multiverse. " + reason.toString());
 			SblockData.getDB().addBan(victim, reason.toString());
-			Bukkit.banIP(victim.getUserIP());
 			victim.getPlayer().kickPlayer(reason.toString());
+		} else {
+			// Crappy match for offline IP sban
+			Bukkit.getBanList(target.contains(".") ? org.bukkit.BanList.Type.NAME : org.bukkit.BanList.Type.IP)
+					.addBan(target, reason.toString(), null, "sban");
 		}
-		Bukkit.getOfflinePlayer(target).setBanned(true);
 		SblockData.getDB().deleteUser(target);
 		Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
 		return true;
@@ -175,7 +175,6 @@ public class ChatCommands implements CommandListener {
 		}
 		SblockData.getDB().removeBan(target[0]);
 		if (Bukkit.getOfflinePlayer(target[0]).hasPlayedBefore()) {
-			Bukkit.getOfflinePlayer(target[0]).setBanned(false); //
 			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
 		} else {
 			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]

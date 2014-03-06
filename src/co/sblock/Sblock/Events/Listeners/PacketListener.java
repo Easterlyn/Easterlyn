@@ -30,7 +30,7 @@ public class PacketListener extends PacketAdapter implements Listener {
 		if (event.getPacket().getType().equals(PacketType.Play.Client.ENTITY_ACTION)) {
 			int action = event.getPacket().getIntegers().read(1);
 			if (WrapperPlayServerAnimation.Animations.LEAVE_BED == action
-					&& SblockEvents.getEvents().teleports.contains(event.getPlayer().getName())) {
+					&& SblockEvents.getEvents().teleports.remove(event.getPlayer().getName())) {
 				event.setCancelled(true);
 				SblockEvents.getEvents().fakeWakeUp(event.getPlayer());
 			}

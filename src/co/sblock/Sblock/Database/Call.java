@@ -32,10 +32,6 @@ public enum Call {
 			+ "ON DUPLICATE KEY UPDATE type=VALUES(type), data=VALUES(data), face=VALUES(face)"),
 	MACHINE_LOADALL("SELECT * FROM Machines"),
 	MACHINE_DELETE("DELETE FROM Machines WHERE location = ?"),
-	BAN_SAVE("INSERT INTO BannedPlayers(name, ip, banDate, reason) VALUES(?, ?, ?, ?) ON DUPLICATE KEY "
-			+ "UPDATE name=VALUES(name), ip=VALUES(ip), banDate=VALUES(banDate), reason=VALUES(reason)"),
-	BAN_LOAD("SELECT * FROM BannedPlayers WHERE name=? OR ip =?"),
-	BAN_DELETE("DELETE FROM BannedPlayers WHERE name=? OR ip=?"),
 	TOWER_SAVE("INSERT INTO TowerLocs(towerID, location) VALUES (?, ?) "
 			+ "ON DUPLICATE KEY UPDATE location=VALUES(location)"),
 	TOWER_LOAD("SELECT * FROM TowerLocs");
@@ -87,9 +83,6 @@ public enum Call {
 			return;
 		case PLAYER_LOOKUP:
 			PlayerData.loadOfflineLookup(sender, rs);
-			return;
-		case BAN_LOAD:
-			BannedPlayers.removeBan(rs);
 			return;
 		default:
 			return;
