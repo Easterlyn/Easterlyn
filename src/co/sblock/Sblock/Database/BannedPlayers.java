@@ -1,9 +1,5 @@
 package co.sblock.Sblock.Database;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.BanList.Type;
@@ -37,15 +33,13 @@ public class BannedPlayers {
 	 * @param target the name or IP to match
 	 */
 	protected static void deleteBans(String target) {
-		String relatedBan = null;
-		Type loop = Type.IP;
+		String relatedBan;
 		BanList bans = Bukkit.getBanList(Type.IP);
 		BanList pbans = Bukkit.getBanList(Type.NAME);
 		if (bans.isBanned(target)) {
 			relatedBan = bans.getBanEntry(target).getReason().replaceAll(".*<name=(\\w{1,16}+)>.*", "$1");
 			bans.pardon(target);
 			bans = pbans;
-			loop = Type.NAME;
 		} else if (pbans.isBanned(target)) {
 			relatedBan = pbans.getBanEntry(target).getReason()
 					.replaceAll(".*<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>.*", "$1");
@@ -54,18 +48,7 @@ public class BannedPlayers {
 			return;
 		}
 
-		Pattern p = Pattern.compile(loop == Type.IP 
-				? "<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>" : "<name=(\\w{1,16}+)>");
-		for (BanEntry b : bans.getBanEntries()) {
-			Matcher m = p.matcher(b.getReason());
-			while (m.find()) {
-				String s = m.group().replaceAll("<\\w++=", "");
-				s = s.substring(0,  s.length() - 1);
-				if (s.equals(relatedBan)) {
-					bans.pardon(relatedBan);
-				}
-			}
-		}
+		bans.pardon(relatedBan);
 	}
 
 	/**
