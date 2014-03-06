@@ -33,22 +33,19 @@ public class BannedPlayers {
 	 * @param target the name or IP to match
 	 */
 	protected static void deleteBans(String target) {
-		String relatedBan;
 		BanList bans = Bukkit.getBanList(Type.IP);
 		BanList pbans = Bukkit.getBanList(Type.NAME);
 		if (bans.isBanned(target)) {
-			relatedBan = bans.getBanEntry(target).getReason().replaceAll(".*<name=(\\w{1,16}+)>.*", "$1");
+			pbans.pardon(bans.getBanEntry(target).getReason()
+					.replaceAll(".*<name=(\\w{1,16}+)>.*", "$1"));
 			bans.pardon(target);
-			bans = pbans;
 		} else if (pbans.isBanned(target)) {
-			relatedBan = pbans.getBanEntry(target).getReason()
-					.replaceAll(".*<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>.*", "$1");
+			bans.pardon(pbans.getBanEntry(target).getReason()
+					.replaceAll(".*<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>.*", "$1"));
 			pbans.pardon(target);
 		} else  {
 			return;
 		}
-
-		bans.pardon(relatedBan);
 	}
 
 	/**
