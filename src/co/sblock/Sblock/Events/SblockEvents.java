@@ -7,18 +7,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Events.Listeners.*;
 import co.sblock.Sblock.Events.Packets.SleepTeleport;
 import co.sblock.Sblock.Events.Packets.WrapperPlayServerAnimation;
-import co.sblock.Sblock.Events.Packets.WrapperPlayServerBed;
 import co.sblock.Sblock.Events.Region.RegionCheck;
 import co.sblock.Sblock.Events.Session.StatusCheck;
 import co.sblock.Sblock.Events.Session.Status;
@@ -72,13 +69,13 @@ public class SblockEvents extends Module {
 				new FurnaceBurnListener(), new InventoryClickListener(), new InventoryCloseListener(),
 				new InventoryDragListener(), new InventoryMoveItemListener(),
 
-				new PlayerAsyncChatListener(), new PlayerChangedWorldListener(),
+				new PlayerAsyncChatListener(),
+				new PlayerBedLeaveListener(), new PlayerChangedWorldListener(),
 				new PlayerEditBookListener(), new PlayerInteractListener(),
 				new PlayerJoinListener(), new PlayerLoginListener(), new PlayerQuitListener(),
 				new PlayerTeleportListener(), new ServerListPingListener(),
 
 				new SignChangeListener(), new VehicleBlockCollisionListener());
-		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 		status = Status.NEITHER;
 		regionTask = initiateRegionChecks();
 		sessionTask = initiateSessionChecks();
@@ -97,26 +94,11 @@ public class SblockEvents extends Module {
 	}
 
 	/**
-	 * Sends a Player a fake packet for starting sleeping and schedules them to
-	 * be teleported to their DreamPlanet.
+	 * Schedules a Player to be teleported to their DreamPlanet.
 	 * 
 	 * @param p the Player
-	 * @param bed the Location of the bed to sleep in
 	 */
-	public void fakeSleepDream(Player p, Location bed) {
-		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-
-		WrapperPlayServerBed packet = new WrapperPlayServerBed();
-		packet.setEntityId(p.getEntityId());
-		packet.setX(bed.getBlockX());
-		packet.setY((byte) bed.getBlockY());
-		packet.setZ(bed.getBlockZ());
-
-		try {
-			pm.sendServerPacket(p, packet.getHandle());
-		} catch (InvocationTargetException e) {
-			Log.err(e);
-		}
+	public void sleepDream(Player p) {
 		tasks.put(p.getName(), Bukkit.getScheduler().scheduleSyncDelayedTask(
 				Sblock.getInstance(), new SleepTeleport(p), 100L));
 	}
