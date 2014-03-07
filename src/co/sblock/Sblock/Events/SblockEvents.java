@@ -11,7 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
@@ -104,7 +103,6 @@ public class SblockEvents extends Module {
 	 * @param bed the Location of the bed to sleep in
 	 */
 	public void fakeSleepDream(Player p, Location bed) {
-		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
 
 		WrapperPlayServerBed packet = new WrapperPlayServerBed();
 		packet.setEntityId(p.getEntityId());
@@ -113,7 +111,7 @@ public class SblockEvents extends Module {
 		packet.setZ(bed.getBlockZ());
 
 		try {
-			pm.sendServerPacket(p, packet.getHandle());
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
 			Log.err(e);
 		}
@@ -135,6 +133,11 @@ public class SblockEvents extends Module {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
 			Log.err(e);
+		}
+
+		Integer taskID = tasks.remove(p.getName());
+		if (taskID != null) {
+			Bukkit.getScheduler().cancelTask(taskID);
 		}
 	}
 
