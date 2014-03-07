@@ -4,6 +4,7 @@
 package co.sblock.Sblock.Events.Listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Bed;
 
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.Machines.SblockMachines;
@@ -50,7 +52,17 @@ public class PlayerInteractListener implements Listener {
 
 			// Sleep teleport
 			if (b.getType().equals(Material.BED_BLOCK)) {
-				// future: if p.isSneaking() voteDay(p)
+				// future: if p.isSneaking() voteDay(p)Bed bed = (Bed) b.getState().getData();
+
+				Bed bed = (Bed) b.getState().getData();
+				Location head;
+				if (bed.isHeadOfBed()) {
+					head = b.getLocation();
+				} else {
+					head = b.getRelative(bed.getFacing()).getLocation();
+					// getFace does not seem to work in most cases - adam test and fix
+				}
+
 				if (SblockUser.getUser(event.getPlayer().getName()).isGodTier()) {
 					// future feature
 					return;
@@ -60,7 +72,8 @@ public class PlayerInteractListener implements Listener {
 				case MEDIUM:
 				case INNERCIRCLE:
 				case OUTERCIRCLE:
-					SblockEvents.getEvents().sleepDream(event.getPlayer());
+					SblockEvents.getEvents().fakeSleepDream(event.getPlayer(), head);
+					event.setCancelled(true);
 					return;
 				default:
 					return;
