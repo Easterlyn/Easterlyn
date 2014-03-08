@@ -25,9 +25,11 @@ import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.SblockEffects.SblockEffects;
 import co.sblock.Sblock.UserData.SblockUsers;
 import co.sblock.Sblock.Utilities.Log;
+import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Counter.CounterModule;
 import co.sblock.Sblock.Utilities.MeteorMod.MeteorMod;
 import co.sblock.Sblock.Utilities.RawMessages.RawAnnouncer;
+import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
  * Sblock is the base of Sblock.co's custom plugin. All features are handled by
@@ -35,7 +37,7 @@ import co.sblock.Sblock.Utilities.RawMessages.RawAnnouncer;
  * 
  * @author Jikoo, FireNG, Dublek
  */
-public class Sblock extends JavaPlugin {
+public class Sblock extends JavaPlugin implements CommandListener {
 
 	/** Sblock's Log */
 	private static final Log logger = new Log("Sblock", null);
@@ -93,10 +95,11 @@ public class Sblock extends JavaPlugin {
 		modules.add(new SblockEvents().enable());
 		modules.add(new SblockEffects().enable());
 		modules.add(new SblockMachines().enable());
-//		modules.add(new Captcha().enable());
+		modules.add(new Captcha().enable());
 		modules.add(new CounterModule().enable());
 		modules.add(new MeteorMod().enable());
 		modules.add(new RawAnnouncer().enable());
+		modules.add(new Spectators().enable());
 	}
 
 	/**

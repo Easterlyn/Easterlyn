@@ -4,6 +4,7 @@
 package co.sblock.Sblock.Events.Listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,6 +22,7 @@ import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
+import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
  * @author Jikoo
@@ -38,6 +40,11 @@ public class PlayerInteractListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (SblockUser.getUser(event.getPlayer().getName()).isServer()) {
 			event.setCancelled(true);
+			return;
+		}
+		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
 			return;
 		}
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
