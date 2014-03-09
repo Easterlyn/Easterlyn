@@ -167,12 +167,13 @@ public class InventoryClickListener implements Listener {
 
 	// move bottom to top
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")
-				&& Captcha.isPunchCard(event.getCurrentItem())
-				&& event.getCurrentItem().getAmount() == 1) {
-			event.setCurrentItem(Captcha.captchaToItem(event.getCurrentItem()));
-		} else {
-			event.setResult(Result.DENY);
+		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
+			if (Captcha.isPunchCard(event.getCurrentItem())
+					&& event.getCurrentItem().getAmount() == 1) {
+				event.setCurrentItem(Captcha.captchaToItem(event.getCurrentItem()));
+			} else {
+				event.setResult(Result.DENY);
+			}
 		}
 	}
 
