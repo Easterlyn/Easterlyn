@@ -31,7 +31,8 @@ public class ChesterListener implements Listener {
 			cancels++;
 			return;
 		}
-		if (!c.getCurrent().getName().equals("#")) {
+		if (!c.getCurrent().getName().equals("#") || (event.getMessage().length() > 2
+				&& event.getMessage().charAt(0) == '@' && event.getMessage().charAt(1) != ' ')) {
 			event.setCancelled(true);
 			cancels++;
 			return;
