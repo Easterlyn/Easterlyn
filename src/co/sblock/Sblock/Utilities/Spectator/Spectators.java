@@ -4,16 +4,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.Module;
+import co.sblock.Sblock.SblockCommand;
 
 /**
  * @author Jikoo
  *
  */
-public class Spectators extends Module {
+public class Spectators extends Module implements CommandListener {
 
 	/** The Spectators instance. */
 	private static Spectators instance;
@@ -28,6 +32,7 @@ public class Spectators extends Module {
 	protected void onEnable() {
 		instance = this;
 		spectators = new HashMap<String, Location>();
+		this.registerCommands(this);
 	}
 
 	/**
@@ -56,6 +61,7 @@ public class Spectators extends Module {
 		p.setAllowFlight(true);
 		p.setFlying(true);
 		p.setNoDamageTicks(Integer.MAX_VALUE);
+		p.closeInventory();
 	}
 
 	public boolean isSpectator(String name) {
@@ -68,5 +74,17 @@ public class Spectators extends Module {
 		p.setFlying(false);
 		p.setAllowFlight(false);
 		p.setNoDamageTicks(0);
+	}
+
+	@SblockCommand(description = "Player: Become the ghost (toggles spectator mode)", usage = "/spectate")
+	public boolean spectate(CommandSender s, String[] args) {
+		if (this.spectators.containsKey(s.getName())) {
+			s.sendMessage(ChatColor.GREEN + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
+			this.removeSpectator((Player) s);
+		} else {
+			s.sendMessage(ChatColor.GREEN + "You feel a tingling sensation about your extremities as you hover up slightly.");
+			this.addSpectator((Player) s);
+		}
+		return true;
 	}
 }

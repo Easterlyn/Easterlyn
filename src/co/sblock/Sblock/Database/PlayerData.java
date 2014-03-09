@@ -24,7 +24,7 @@ import co.sblock.Sblock.Utilities.Broadcast;
  * aspect varchar(6), mPlanet varchar(5), dPlanet varchar(7), towerNum tinyint,
  * sleepState boolean, currentChannel varchar(16), isMute boolean, nickname varchar(16),
  * channels text, ip varchar(15), timePlayed varchar(20), previousLocation varchar(40),
- * programs varchar(31), uhc tinyint);
+ * programs varchar(31), uhc tinyint, client varchar(16), server varchar(16), isServer boolean);
  * 
  * @author Jikoo
  */

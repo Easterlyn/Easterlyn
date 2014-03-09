@@ -12,6 +12,7 @@ import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.SblockEffects.Cooldowns;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
+import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
  * Listener for PlayerQuitEvents.
@@ -26,6 +27,9 @@ public class PlayerQuitListener implements Listener {
 	 * @param event the PlayerQuitEvent
 	 */
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
+			Spectators.getSpectators().removeSpectator(event.getPlayer());
+		}
 		InventoryManager.restoreInventory(event.getPlayer());
 		ChatUser u = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
 		if (u == null) {

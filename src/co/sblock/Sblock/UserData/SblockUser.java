@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
+import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
  * SblockUser is the class for storing all Player data.
@@ -224,8 +225,10 @@ public class SblockUser {
 			public void run() {
 				sleeping = getPlayer().getWorld().getName().contains("Circle")
 						|| getPlayer().getGameMode().equals(GameMode.CREATIVE);
-				getPlayer().setAllowFlight(sleeping);
-				getPlayer().setFlying(sleeping);
+				if (!Spectators.getSpectators().isSpectator(playerName)) {
+					getPlayer().setAllowFlight(sleeping);
+					getPlayer().setFlying(sleeping);
+				}
 			}
 		});
 	}
