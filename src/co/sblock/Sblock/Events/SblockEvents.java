@@ -70,9 +70,10 @@ public class SblockEvents extends Module {
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
 				new FurnaceBurnListener(), new InventoryClickListener(), new InventoryCloseListener(),
 				new InventoryMoveItemListener(), new PlayerAsyncChatListener(),
-				new PlayerChangedWorldListener(), new PlayerInteractListener(),
-				new PlayerJoinListener(), new PlayerLoginListener(), new PlayerQuitListener(),
-				new PlayerTeleportListener(), new ServerListPingListener(),
+				new PlayerChangedWorldListener(), new PlayerDropItemListener(),
+				new PlayerInteractListener(), new PlayerJoinListener(), 
+				new PlayerLoginListener(), new PlayerPickupItemListener(),
+				new PlayerQuitListener(), new PlayerTeleportListener(), new ServerListPingListener(),
 				new SignChangeListener(), new VehicleBlockCollisionListener());
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 		status = Status.NEITHER;

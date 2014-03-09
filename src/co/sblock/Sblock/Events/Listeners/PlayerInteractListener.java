@@ -3,6 +3,8 @@
  */
 package co.sblock.Sblock.Events.Listeners;
 
+import java.util.HashMap;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,6 +17,9 @@ import org.bukkit.material.Bed;
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Machine;
+import co.sblock.Sblock.SblockEffects.ActiveEffect;
+import co.sblock.Sblock.SblockEffects.ActiveEffectType;
+import co.sblock.Sblock.SblockEffects.EffectManager;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 
@@ -67,6 +72,16 @@ public class PlayerInteractListener implements Listener {
 					return;
 				default:
 					return;
+				}
+			}
+		}
+		else if (event.getAction() == Action.RIGHT_CLICK_AIR) { //SblockEffects Active Effect
+			SblockUser user = SblockUser.getUser(event.getPlayer().getName());
+			HashMap<ActiveEffect, Integer> effects = EffectManager.activeScan(event.getPlayer());
+			if (effects.isEmpty()) return;
+			for (ActiveEffect aE : effects.keySet()) {
+				if (aE.getActiveEffectType() == ActiveEffectType.RIGHT_CLICK) {
+					ActiveEffect.applyRightClickEffect(event.getPlayer(), aE, effects.get(aE));
 				}
 			}
 		}

@@ -22,7 +22,6 @@ import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.MachineType;
-import co.sblock.Sblock.SblockEffects.SblockEffects;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -105,7 +104,8 @@ public class ChatUser {
 	 *         of a <code>Computer</code>.
 	 */
 	public boolean hasComputerAccess() {
-		if (SblockEffects.getEffects().getEffectManager().scan(this.getPlayer()).contains("Computer")) {
+		SblockUser user = SblockUser.getUser(this.playerName);
+		if (user.getPassiveEffects().containsKey(PassiveEffect.COMPUTER)) {
 			return true;
 		}
 		for (Location l : SblockMachines.getMachines().getManager().getMachines(MachineType.COMPUTER)) {
@@ -404,7 +404,8 @@ public class ChatUser {
 	}
 
 	public void setComputerAccess() {
-		if (SblockEffects.getEffects().getEffectManager().scan(this.getPlayer()).contains(PassiveEffect.COMPUTER)
+		SblockUser user = SblockUser.getUser(this.playerName);
+		if (user.getPassiveEffects().containsKey(PassiveEffect.COMPUTER)
 				|| SblockMachines.getMachines().getManager().isByComputer(getPlayer(), 10)) {
 			computerAccess = true;
 		} else {

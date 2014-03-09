@@ -11,21 +11,33 @@ import org.bukkit.util.Vector;
 
 public enum ActiveEffect {
 	
-	PSHOOOOT("PSHOOOOT"),	//Vector chucking
-	BACKPACK("Backpack"), 	//mobile enderchest access
-	HATGIVER("Hatgiver"),	//Pop-o-matic Vrillyhoo effect: random /hat from inventory item
-	STRENGTH("STRONG"),		//Extra damage applied by item
-	BLINK("Blink");			//teleport to crosshairs, may require cooldown
+	PSHOOOOT("PSHOOOOT", ActiveEffectType.RIGHT_CLICK),	//Vector chucking
+	BACKPACK("Backpack", ActiveEffectType.RIGHT_CLICK), 	//mobile enderchest access
+	HATGIVER("Hatgiver", ActiveEffectType.DAMAGE),	//Pop-o-matic Vrillyhoo effect: random /hat from inventory item
+	STRENGTH("STRONG", ActiveEffectType.DAMAGE),		//Extra damage applied by item
+	BLINK("Blink", ActiveEffectType.RIGHT_CLICK);			//teleport to crosshairs, may require cooldown
 	
 	private String loreText;
-	private ActiveEffect(String s)	{
+	private ActiveEffectType type;
+	private ActiveEffect(String s, ActiveEffectType AET) {
 		loreText = s;
+		type = AET;
 	}
 	
 	public String getLoreText()	{
 		return this.loreText;
 	}
+	public ActiveEffectType getActiveEffectType() {
+		return this.type;
+	}
 	
+	/**
+	 * Gets if a String is a valid ActiveEffect
+	 * 
+	 * @param s the String to test
+	 * 
+	 * @return true if the String is valid
+	 */
 	public static boolean isValidEffect(String s){
 		for(ActiveEffect a : ActiveEffect.values())	{
 			if(a.getLoreText().equalsIgnoreCase(s))	{
@@ -40,8 +52,28 @@ public enum ActiveEffect {
 		return true;
 	}
 	
-	public void getRightClickEffect(Player p)	{
-		switch (this)	{
+	/**
+	 * Gets the specified effect
+	 * 
+	 * @param s the String to return the ActiveEffect for
+	 * 
+	 * @return the ActiveEffect. Null if Effect does not exist
+	 */
+	public static ActiveEffect getEffect(String s) {
+		ActiveEffect aE = null;
+		for (ActiveEffect a : ActiveEffect.values()) {
+			if (a.getLoreText().equalsIgnoreCase(s)) {
+				return a;
+			}
+		}
+		try {
+			aE = ActiveEffect.valueOf(s);
+		} catch (IllegalArgumentException e) {}
+		return aE;
+	}
+		
+	public static void applyRightClickEffect(Player p, ActiveEffect aE, Integer strength)	{
+		switch (aE)	{
 		case BLINK:
 			@SuppressWarnings("deprecation")
 			Location target = p.getTargetBlock(null, 128).getLocation();
@@ -51,18 +83,16 @@ public enum ActiveEffect {
 			Inventory ec = p.getEnderChest();
 			p.openInventory(ec);
 			break;
-		case STRENGTH:
-			break;
 		case PSHOOOOT:
 			Vector v = p.getLocation().getDirection();
-			p.setVelocity(v.multiply(3));
+			p.setVelocity(v.multiply(strength + 2));
 			break;
 		default:
 			break;		
 		}
 	}
-	public void getDamageEffect(Player p, Player target)	{
-		switch (this)	{
+	public static void applyDamageEffect(Player p, Player target, ActiveEffect aE, Integer strength)	{
+		switch (aE)	{
 		case HATGIVER:
 			PlayerInventory inv = target.getInventory();
 			ItemStack oldHat = inv.getHelmet();
