@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Sblock;
@@ -120,7 +121,6 @@ public abstract class Machine {
 	 * 
 	 * @param event the BlockPlaceEvent
 	 */
-	@SuppressWarnings("deprecation")
 	public void assemble(BlockPlaceEvent event) {
 		for (Location l : blocks.keySet()) {
 			if (!l.getBlock().isEmpty()) {
@@ -130,12 +130,52 @@ public abstract class Machine {
 				return;
 			}
 		}
+		this.assemble();
+	}
+
+	/**
+	 * Helper method for assembling the Machine.
+	 */
+	@SuppressWarnings("deprecation")
+	private void assemble() {
 		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
 			Block b = e.getKey().getBlock();
 			b.setType(e.getValue().getType());
 			b.setData(e.getValue().getData().getData());
 		}
 		this.triggerPostAssemble();
+	}
+
+	/**
+	 * For use when Machine would be affected by an explosion.
+	 * <p>
+	 * Machines are very abusable in combination with CreeperHeal,
+	 * so instead of flat out cancelling the event, making it rather
+	 * difficult to do anything fun like drop a meteor on someone's
+	 * computer, we'll remove all blocks from the world and reset them.
+	 */
+	@SuppressWarnings("deprecation")
+	public void dodge() {
+		final HashMap<Location, ItemStack[]> invents = new HashMap<Location, ItemStack[]>();
+		for (Location l : blocks.keySet()) {
+			Block b = l.getBlock();
+			if (b.getState() instanceof InventoryHolder) {
+				InventoryHolder ih = (InventoryHolder) b.getState();
+				invents.put(l, ih.getInventory().getContents().clone());
+				ih.getInventory().clear();
+			}
+			b.setTypeId(0, false);
+		}
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@Override
+			public void run() {
+				assemble();
+				for (Entry<Location, ItemStack[]> e : invents.entrySet()) {
+					((InventoryHolder) l.getBlock().getState()).getInventory().setContents(e.getValue());
+				}
+			}
+		});
 	}
 
 	/**

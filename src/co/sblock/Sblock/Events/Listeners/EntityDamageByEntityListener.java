@@ -9,11 +9,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
+ * Listener for EntityDamageByEntityEvents.
+ * 
  * @author Jikoo
- *
  */
 public class EntityDamageByEntityListener implements Listener {
 
+	/**
+	 * EventHandler for EntityDamageByEntityEvents.
+	 * 
+	 * @param event the EntityDamageByEntityEvent
+	 */
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (!(event.getDamager() instanceof Player)) {

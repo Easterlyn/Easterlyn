@@ -1,6 +1,3 @@
-/**
- * 
- */
 package co.sblock.Sblock.Events.Listeners;
 
 import org.bukkit.ChatColor;
@@ -11,11 +8,17 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
+ * Listener for PlayerDropItemEvents.
+ * 
  * @author Jikoo
- *
  */
 public class PlayerDropItemListener implements Listener {
 
+	/**
+	 * EventHandler for PlayerDropItemEvents.
+	 * 
+	 * @param event the PlayerDropItemEvent
+	 */
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event) {
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
