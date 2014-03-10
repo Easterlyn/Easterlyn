@@ -17,7 +17,6 @@ public class EffectScheduler extends BukkitRunnable {
 	public void run() {
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			SblockUser user = UserManager.getUserManager().addUser(p.getName());
-			EffectManager.applyPassiveEffects(user);
 			ChatUser u = ChatUserManager.getUserManager().getUser(p.getName());
 			if (u == null) {
 				u = SblockData.getDB().loadUserData(p.getName());

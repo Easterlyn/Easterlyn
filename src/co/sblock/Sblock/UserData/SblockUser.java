@@ -518,8 +518,8 @@ public class SblockUser {
 	public void removeAllPassiveEffects() {
 		for (PassiveEffect effect : passiveEffects.keySet()) {
 			PassiveEffect.removeEffect(getPlayer(), effect);
-			this.passiveEffects.remove(effect);
 		}
+		this.passiveEffects.clear();
 	}
 	
 	/**
@@ -529,12 +529,13 @@ public class SblockUser {
 	 * @param effect the PassiveEffect to add
 	 */
 	public void addPassiveEffect(PassiveEffect effect) {
-		if (this.passiveEffects.containsKey(effect)) {
-			this.passiveEffects.put(effect, 0);	
+		if (!this.passiveEffects.containsKey(effect)) {
+			this.passiveEffects.put(effect, 1);
 		}
 		else {
 			this.passiveEffects.put(effect, this.passiveEffects.get(effect) + 1);
 		}
+		PassiveEffect.applyEffect(getPlayer(), effect, passiveEffects.get(effect));
 	}
 	
 	/**
@@ -542,16 +543,17 @@ public class SblockUser {
 	 * 
 	 * @param effect the PassiveEffect to remove
 	 */
-	public void removePassiveEffect(PassiveEffect effect) {
+	public void removePassiveEffect(PassiveEffect effect, Integer reduction) {
 		if (this.passiveEffects.containsKey(effect)) {
-			if (this.passiveEffects.get(effect) > 0) {
-				this.passiveEffects.put(effect, this.passiveEffects.get(effect) - 1);
+			if (this.passiveEffects.get(effect) - reduction > 0) {
+				PassiveEffect.removeEffect(getPlayer(), effect);
+				this.passiveEffects.put(effect, this.passiveEffects.get(effect) - reduction);
+				PassiveEffect.applyEffect(getPlayer(), effect, passiveEffects.get(effect));
 			}
 			else {
 				this.passiveEffects.remove(effect);
 				PassiveEffect.removeEffect(getPlayer(), effect);
 			}
 		}
-	}
-	
+	}	
 }

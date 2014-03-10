@@ -35,6 +35,5 @@ public class PlayerPickupItemListener implements Listener {
 		for (PassiveEffect e : effects.keySet()) {
 			user.addPassiveEffect(e);
 		}
-		EffectManager.applyPassiveEffects(user);
 	}
 }
