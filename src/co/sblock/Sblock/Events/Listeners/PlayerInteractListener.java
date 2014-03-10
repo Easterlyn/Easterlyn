@@ -1,7 +1,6 @@
-/**
- * 
- */
 package co.sblock.Sblock.Events.Listeners;
+
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +17,9 @@ import org.bukkit.material.Bed;
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Machine;
+import co.sblock.Sblock.SblockEffects.ActiveEffect;
+import co.sblock.Sblock.SblockEffects.ActiveEffectType;
+import co.sblock.Sblock.SblockEffects.EffectManager;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
@@ -25,8 +27,9 @@ import co.sblock.Sblock.Utilities.Captcha.Captchadex;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
+ * 
+ * 
  * @author Jikoo
- *
  */
 public class PlayerInteractListener implements Listener {
 
@@ -47,6 +50,22 @@ public class PlayerInteractListener implements Listener {
 			event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
 			return;
 		}
+
+		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			return;
+		}
+
+		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+			// ActiveEffect application
+			HashMap<ActiveEffect, Integer> effects = EffectManager.activeScan(event.getPlayer());
+			if (effects.isEmpty()) return;
+			for (ActiveEffect aE : effects.keySet()) {
+				if (aE.getActiveEffectType() == ActiveEffectType.RIGHT_CLICK) {
+					ActiveEffect.applyRightClickEffect(event.getPlayer(), aE, effects.get(aE));
+				}
+			}
+		}
+
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
 
@@ -92,10 +111,6 @@ public class PlayerInteractListener implements Listener {
 				// Other inventory/action. Do not proceed to captcha.
 				return;
 			}
-		}
-
-		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			return; // Captcha and Captchadex right clicks only.
 		}
 
 		// Captchadex
