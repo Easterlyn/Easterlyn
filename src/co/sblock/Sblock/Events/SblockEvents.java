@@ -68,15 +68,16 @@ public class SblockEvents extends Module {
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
 
+				new EntityDamageByEntityListener(), new EntityExplodeListener(),
+
 				new FurnaceBurnListener(), new InventoryClickListener(), new InventoryCloseListener(),
 				new InventoryDragListener(), new InventoryMoveItemListener(),
 
-				new EntityDamageByEntityListener(),
-
 				new PlayerAsyncChatListener(), new PlayerChangedWorldListener(),
-				new PlayerDropItemListener(), new PlayerPickupItemListener(),
-				new PlayerEditBookListener(), new PlayerInteractListener(),
-				new PlayerJoinListener(), new PlayerLoginListener(), new PlayerQuitListener(),
+				new PlayerDropItemListener(), new PlayerEditBookListener(),
+				new PlayerInteractEntityListener(), new PlayerInteractListener(),
+				new PlayerJoinListener(), new PlayerLoginListener(),
+				new PlayerPickupItemListener(), new PlayerQuitListener(),
 				new PlayerTeleportListener(), new ServerListPingListener(),
 
 				new SignChangeListener(), new VehicleBlockCollisionListener());
