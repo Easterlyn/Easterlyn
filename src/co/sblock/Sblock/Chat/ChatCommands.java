@@ -84,9 +84,8 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "Look up a user's profile.",
-			usage = "/whois <player>")
-	public boolean whowas(CommandSender sender, String[] target) {
+	@SblockCommand(consoleFriendly = true, description = "gurl", usage = "/whodat <gurl>")
+	public boolean whodat(CommandSender sender, String[] target) {
 		if (target == null || target.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
 		}
