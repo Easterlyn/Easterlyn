@@ -1,5 +1,7 @@
 package co.sblock.Sblock.Chat;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,29 +30,29 @@ import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
 /**
- * <code>ChatUser</code> is the class for storing all chat-related
- * <code>Player</code> data.
+ * ChatUser is the class for storing all chat-related
+ * Player data.
  * 
  * @author Jikoo, Dublek
  */
 public class ChatUser {
 
-	/** The <code>Player</code> */
+	/** The Player */
 	private String playerName;
 
-	/** The name of the <code>Player</code>'s current focused <code>Channel</code> */
+	/** The name of the Player's current focused Channel */
 	private String current;
 
-	/** The channels the <code>Player</code> is listening to */
+	/** The channels the Player is listening to */
 	private Set<String> listening = new HashSet<String>();
 
-	/** <code>true</code> if the <code>Player</code> is muted */
+	/** true if the Player is muted */
 	private boolean globalMute;
 
-	/** Map of task ID's. Key = <code>Channel</code> name, value = task ID. */
+	/** Map of task ID's. Key = Channel name, value = task ID. */
 	private Map<String, Integer> tasks = new HashMap<String, Integer>();
 	
-	/** Keeps track of current <code>Region</code> for <code>RegionChannel</code> purposes */
+	/** Keeps track of current Region for RegionChannel purposes */
 	private Region currentRegion;
 	
 	/** Is the Player within range of a Computer? */
@@ -66,26 +68,27 @@ public class ChatUser {
 	}
 
 	/**
-	 * Gets the <code>Player</code>.
+	 * Gets the Player.
 	 * 
-	 * @return the <code>Player</code>
+	 * @return the Player
 	 */
 	public Player getPlayer() {
 		return Bukkit.getPlayerExact(playerName);
 	}
 
 	/**
-	 * Gets the name of the <code>Player</code>.
+	 * Gets the name of the Player.
 	 * 
-	 * @return the <code>Player</code>
+	 * @return the Player
 	 */
 	public String getPlayerName() {
 		return this.playerName;
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s current <code>Region</code>
-	 * @return the <code>Region</code> that the <code>Player</code> is in
+	 * Gets the Player's current Region
+	 * 
+	 * @return the Region that the Player is in
 	 */
 	public Region getPlayerRegion() {
 		return Region.getLocationRegion(this.getPlayer().getLocation());
@@ -97,11 +100,9 @@ public class ChatUser {
 	 */
 
 	/**
-	 * Check to see if the <code>Player</code> is within range of a
-	 * <code>Computer</code>.
+	 * Check to see if the Player is within range of a Computer.
 	 * 
-	 * @return <code>true</code> if the <code>Player</code> is within 10 meters
-	 *         of a <code>Computer</code>.
+	 * @return true if the Player is within 10 meters of a Computer.
 	 */
 	public boolean hasComputerAccess() {
 		SblockUser user = SblockUser.getUser(this.playerName);
@@ -118,9 +119,9 @@ public class ChatUser {
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s global nickname.
+	 * Gets the Player's global nickname.
 	 * 
-	 * @return the <code>Player</code>'s global nickname
+	 * @return the Player's global nickname
 	 */
 	public String getGlobalNick() {
 		return this.getPlayer().getDisplayName();
@@ -129,19 +130,16 @@ public class ChatUser {
 	/**
 	 * Sets the Player's nickname.
 	 * 
-	 * @param newNick
-	 *            the new nickname for the <code>Player</code>
+	 * @param newNick the new nickname for the Player
 	 */
 	public void setGlobalNick(String newNick) {
 		this.getPlayer().setDisplayName(newNick);
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s chat mute status and sends corresponding
-	 * message.
+	 * Sets the Player's chat mute status and sends corresponding message.
 	 * 
-	 * @param b
-	 *            <code>true</code> if the <code>Player</code> is being muted
+	 * @param b true if the Player is being muted
 	 */
 	public void setMute(boolean b) {
 		this.globalMute = b;
@@ -153,19 +151,18 @@ public class ChatUser {
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s mute status.
+	 * Gets the Player's mute status.
 	 * 
-	 * @return <code>true</code> if the <code>Player</code> is muted
+	 * @return true if the Player is muted
 	 */
 	public boolean isMute() {
 		return globalMute;
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s current <code>Channel</code>.
+	 * Sets the Player's current Channel.
 	 * 
-	 * @param c
-	 *            the <code>Channel</code> to set as current
+	 * @param c the Channel to set as current
 	 */
 	public void setCurrent(Channel c) {
 		if (c == null) {
@@ -188,10 +185,9 @@ public class ChatUser {
 	}
 
 	/**
-	 * Sets the <code>Player</code>'s current <code>Channel</code>.
+	 * Sets the Player's current Channel.
 	 * 
-	 * @param c
-	 *            the <code>Channel</code> to set as current
+	 * @param c the Channel to set as current
 	 */
 	public void setCurrent(String s) {
 		Channel c = ChannelManager.getChannelManager().getChannel(s);
@@ -215,22 +211,20 @@ public class ChatUser {
 	}
 
 	/**
-	 * Gets the <code>Channel</code> the <code>Player</code> is currently
-	 * sending messages to.
+	 * Gets the Channel the Player is currently sending messages to.
 	 * 
-	 * @return <code>Channel</code>
+	 * @return Channel
 	 */
 	public Channel getCurrent() {
 		return SblockChat.getChat().getChannelManager().getChannel(current);
 	}
 
 	/**
-	 * Adds a <code>Channel</code> to the <code>Player</code>'s current
-	 * <code>List</code> of <code>Channel</code>s listened to.
+	 * Adds a Channel to the Player's current List of Channels listened to.
 	 * 
-	 * @param c
-	 *            the <code>Channel</code> to add
-	 * @return true if the <code>Channel</code> was added
+	 * @param c the Channel to add
+	 * 
+	 * @return true if the Channel was added
 	 */
 	public boolean addListening(Channel c) {
 		if (c == null) {
@@ -258,45 +252,55 @@ public class ChatUser {
 	}
 
 	/**
-	 * Adds a <code>Channel</code> to the <code>Player</code>'s current
-	 * <code>List</code> of <code>Channel</code>s listened to.
+	 * Adds a Channel to the Player's current List of Channels listened to.
 	 * 
-	 * @param s
-	 *            the <code>Channel</code> name to add
-	 * @return true if the <code>Channel</code> was added
+	 * @param s the Channel name to add
+	 * 
+	 * @return true if the Channel was added
 	 */
 	public boolean addListening(String s) {
 		Channel c = ChannelManager.getChannelManager().getChannel(s);
-		if (c == null) {
-			return false;
+		return this.addListening(c);
+	}
+
+	/**
+	 * Begin listening to a Set of channels. Used on login.
+	 * 
+	 * @param channels
+	 */
+	public void loginAddListening(String[] channels) {
+		for (Object s : channels) {
+			Channel c = ChannelManager.getChannelManager().getChannel((String) s);
+			if (c != null && !c.isBanned(this)
+					&& (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
+				this.listening.add((String) s);
+				c.addListening(playerName);
+			}
 		}
-		if (c.isBanned(this)) {
-			this.getPlayer().sendMessage(ChatMsgs.isBanned(s));
-			return false;
-		}
-		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
-			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(s));
-			return false;
-		}
-		if (!this.isListening(c)) {
-			this.listening.add(s);
-		}
-		if (!c.getListening().contains(this.playerName)) {
-			c.sendToAll(this, ChatMsgs.onChannelJoin(this, c), "channel");
-			c.addListening(this.playerName);
-			return true;
-		} else {
-			this.sendMessage(ChatMsgs.errorAlreadyInChannel(s));
-			return false;
+
+		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
+				.append(getPlayer().getDisplayName()).append(" began pestering <> at ")
+				.append(new SimpleDateFormat("HH:mm").format(new Date()));
+		// Heavy loopage ensues
+		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
+			StringBuilder matches = new StringBuilder();
+			for (String s : listening) {
+				if (u.listening.contains(s)) {
+					matches.append(ChatColor.GOLD).append(s).append(ChatColor.GREEN).append(", ");
+				}
+			}
+			if (matches.length() > 0) {
+				matches.replace(matches.length() - 3, matches.length() - 1, "");
+				int comma = matches.toString().lastIndexOf(',');
+				u.sendMessage(base.toString().replace("<>", matches.replace(comma, comma + 1, " and")));
+			}
 		}
 	}
 
 	/**
-	 * Remove a <code>Channel</code> from the <code>Player</code>'s listening
-	 * <code>List</code>.
+	 * Remove a Channel from the Player's listening List.
 	 * 
-	 * @param cName
-	 *            the name of the <code>Channel</code> to remove
+	 * @param cName the name of the Channel to remove
 	 */
 	public void removeListening(String cName) {
 		Channel c = SblockChat.getChat().getChannelManager().getChannel(cName);
@@ -317,12 +321,10 @@ public class ChatUser {
 	}
 
 	/**
-	 * Tells a <code>Channel</code> the <code>Player</code> is leaving on quit.
+	 * Tells a Channel the Player is leaving on quit.
 	 * 
-	 * @param cName
-	 *            the name of the <code>Channel</code> to inform
+	 * @param cName the name of the Channel to inform
 	 */
-
 	public void removeListeningQuit(String cName) {
 		Channel c = SblockChat.getChat().getChannelManager()
 				.getChannel(cName);
@@ -334,53 +336,49 @@ public class ChatUser {
 	}
 
 	/**
-	 * Gets the <code>Set</code> of names of <code>Channel</code>s that the
-	 * <code>Player</code> is listening to.
+	 * Gets the Set of names of Channels that the Player is listening to.
 	 * 
-	 * @return a <code>Set<String></code> of <code>Channel</code> names.
+	 * @return a Set<String> of Channel names.
 	 */
 	public Set<String> getListening() {
 		return listening;
 	}
 
 	/**
-	 * Check if the <code>Player</code> is listening to a specific
-	 * <code>Channel</code>.
+	 * Check if the Player is listening to a specific Channel.
 	 * 
-	 * @param c
-	 *            the <code>Channel</code> to check for
-	 * @return <code>true</code> if the <code>Player</code> is listening to c
+	 * @param c the Channel to check for
+	 * 
+	 * @return true if the Player is listening to c
 	 */
 	public boolean isListening(Channel c) {
 		return listening.contains(c.getName());
 	}
 
 	/**
-	 * Check if the <code>Player</code> is listening to a specific
-	 * <code>Channel</code>.
+	 * Check if the Player is listening to a specific Channel.
 	 * 
-	 * @param s
-	 *            the <code>Channel</code> name to check for
-	 * @return <code>true</code> if the <code>Player</code> is listening to c
+	 * @param s the Channel name to check for
+	 * 
+	 * @return true if the Player is listening to c
 	 */
 	public boolean isListening(String s) {
 		return listening.contains(s);
 	}
 
 	/**
-	 * Gets the <code>Player</code>'s current <code>Region</code>.
+	 * Gets the Player's current Region.
 	 * 
-	 * @return the <code>Region</code> the <code>Player</code> is in.
+	 * @return the Region the Player is in.
 	 */
 	public Region getCurrentRegion() {
 		return currentRegion;
 	}
 
 	/**
-	 * Update current <code>Region</code> and change <code>RegionChannel</code>.
+	 * Update current Region and change RegionChannel.
 	 * 
-	 * @param newR
-	 *            the <code>Region</code> being transitioned into
+	 * @param newR the Region being transitioned into
 	 */
 	public void updateCurrentRegion(Region newR) {
 		if (newR == currentRegion) {
@@ -412,15 +410,11 @@ public class ChatUser {
 			computerAccess = false;
 		}
 	}
-	
-
-	// -----------------------------------------------------------------------------------------------------------------------
 
 	/**
-	 * Method for handling all <code>Player</code> chat.
+	 * Method for handling all Player chat.
 	 * 
-	 * @param event
-	 *            the relevant <code>AsyncPlayerChatEvent</code>
+	 * @param event the relevant AsyncPlayerChatEvent
 	 */
 	public void chat(AsyncPlayerChatEvent event) {
 		// receives message from SblockChatListener
@@ -475,12 +469,12 @@ public class ChatUser {
 	}
 
 	/**
-	 * Format a chat message for sending to a <code>Channel</code>.
+	 * Format a chat message for sending to a Channel.
 	 * 
 	 * @param sender
-	 *            the <code>SblockUser</code> speaking
+	 *            the SblockUser speaking
 	 * @param c
-	 *            the <code>Channel</code> to send the message to
+	 *            the Channel to send the message to
 	 * @param s
 	 *            the message to send
 	 */
@@ -529,12 +523,12 @@ public class ChatUser {
 	}
 
 	/**
-	 * Send a message from a <code>Channel</code> to this <code>Player</code>.
+	 * Send a message from a Channel to this Player.
 	 * 
 	 * @param s
 	 *            the message to send
 	 * @param c
-	 *            the <code>Channel</code> to send to.
+	 *            the Channel to send to.
 	 * @param type
 	 *            the type of chat for handling purposes
 	 */
@@ -580,9 +574,9 @@ public class ChatUser {
 	 * Gets chat prefixing based on conditions.
 	 * 
 	 * @param sender
-	 *            the <code>SblockUser</code> sending the message
+	 *            the SblockUser sending the message
 	 * @param channel
-	 *            the <code>Channel</code> receiving the message
+	 *            the Channel receiving the message
 	 * @return the prefix for specified conditions
 	 */
 	public String getOutputChannelF(ChatUser sender, Channel channel) {
@@ -605,11 +599,11 @@ public class ChatUser {
 	 * Gets chat prefixing based on conditions.
 	 * 
 	 * @param sender
-	 *            the <code>SblockUser</code> sending the message
+	 *            the SblockUser sending the message
 	 * @param isThirdPerson
 	 *            whether or not to provide a third person prefix
 	 * @param channel
-	 *            the <code>Channel</code> receiving the message
+	 *            the Channel receiving the message
 	 * @return the prefix for specified conditions
 	 */
 	public String getOutputNameF(ChatUser sender, boolean isThirdPerson, Channel c) {
@@ -658,7 +652,7 @@ public class ChatUser {
 	}
 
 	/**
-	 * Sends a message to the <code>Player</code>.
+	 * Sends a message to the Player.
 	 * 
 	 * @param string
 	 *            the message to send
@@ -668,11 +662,11 @@ public class ChatUser {
 	}
 
 	/**
-	 * Important <code>SblockUser</code> data formatted to be easily readable
+	 * Important SblockUser data formatted to be easily readable
 	 * when printed.
 	 * 
 	 * @return a representation of the most important data stored by this
-	 *         <code>SblockUser</code>
+	 *         SblockUser
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -693,11 +687,11 @@ public class ChatUser {
 	}
 
 	/**
-	 * Gets a <code>ChatUser</code> by <code>Player</code> name.
+	 * Gets a ChatUser by Player name.
 	 * 
 	 * @param userName
 	 *            the name to match
-	 * @return the <code>ChatUser</code> specified or <code>null</code> if
+	 * @return the ChatUser specified or null if
 	 *         invalid.
 	 */
 	public static ChatUser getUser(String userName) {
@@ -705,12 +699,12 @@ public class ChatUser {
 	}
 
 	/**
-	 * Check to see if a <code>Player</code> by the specified name has played
+	 * Check to see if a Player by the specified name has played
 	 * before.
 	 * 
 	 * @param name
 	 *            the name to check
-	 * @return <code>true</code> if a <code>Player</code> by the specified name
+	 * @return true if a Player by the specified name
 	 *         has logged into the server
 	 */
 	public static boolean isValidUser(String name) {
@@ -718,7 +712,7 @@ public class ChatUser {
 	}
 
 	/**
-	 * Stop all pending tasks for this <code>SblockUser</code>.
+	 * Stop all pending tasks for this SblockUser.
 	 */
 	public void stopPendingTasks() {
 		for (int task : tasks.values()) {
@@ -727,55 +721,27 @@ public class ChatUser {
 	}
 
 	/**
-	 * Set a <code>Channel</code> to current synchronously.
-	 * <code>BukkitTask</code> ID is added to task list for cleanup. For use on
+	 * Set a Channel to current synchronously.
+	 * BukkitTask ID is added to task list for cleanup. For use on
 	 * login - instantly causing a join results in failure for unknown reasons.
 	 * 
 	 * @param channelName
-	 *            the name of the <code>Channel</code> to join
+	 *            the name of the Channel to join
 	 */
-	public void syncSetCurrentChannel(String channelName) {
+	public void syncSetCurrentChannel(final String channelName) {
+		final ChatUser user = this;
 		tasks.put(channelName, Bukkit.getScheduler()
-				.scheduleSyncDelayedTask(Sblock.getInstance(),
-						new ChannelSetCurrentSynchronizer(this, channelName)));
-	}
-
-	/**
-	 * A small <code>Runnable</code> used to set the current
-	 * <code>Channel</code> synchronously.
-	 */
-	public class ChannelSetCurrentSynchronizer implements Runnable {
-		/** The name of the <code>Channel</code> to join */
-		private String channelName;
-		/** The <code>SblockUser</code> who is joining */
-		private ChatUser user;
-
-		/**
-		 * Constructor for <code>ChannelSetCurrentSynchronizer</code>.
-		 * 
-		 * @param user
-		 *            the <code>SblockUser</code> joining a <code>Channel</code>
-		 * @param channelName
-		 *            the name of the <code>Channel</code> to join
-		 */
-		public ChannelSetCurrentSynchronizer(ChatUser user, String channelName) {
-			this.user = user;
-			this.channelName = channelName;
-		}
-
-		/**
-		 * Set current and clean up entry from <code>BukkitTask</code> list.
-		 * 
-		 * @see java.lang.Runnable#run()
-		 */
-		@Override
-		public void run() {
-			Channel c = SblockChat.getChat()
-					.getChannelManager().getChannel(channelName);
-			if (c != null && user.getPlayer().isOnline()) {
-				user.setCurrent(c);
-			}
-			tasks.remove(channelName);
-		}
+				.scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						Channel c = SblockChat.getChat()
+								.getChannelManager().getChannel(channelName);
+						if (c != null && user.getPlayer().isOnline()) {
+							user.setCurrent(c);
+						}
+						tasks.remove(channelName);
+					}
+					
+				}));
 	}
 }

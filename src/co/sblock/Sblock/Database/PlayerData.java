@@ -145,12 +145,7 @@ public class PlayerData {
 					cUser.setMute(true);
 				}
 				if (rs.getString("channels") != null) {
-					String[] channels = rs.getString("channels").split(",");
-					for (int i = 0; i < channels.length; i++) {
-						if (!cUser.isListening(channels[i])) {
-							cUser.addListening(channels[i]);
-						}
-					}
+					cUser.loginAddListening(rs.getString("channels").split(","));
 				}
 				if (rs.getString("previousLocation") != null) {
 					sUser.setPreviousLocationFromString(rs.getString("previousLocation"));
