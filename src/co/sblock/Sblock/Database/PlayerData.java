@@ -140,7 +140,7 @@ public class PlayerData {
 				if (tower != -1) {
 					sUser.setTower((byte) tower);
 				}
-				sUser.updateSleepstate();
+				sUser.updateFlight();
 				if (rs.getBoolean("isMute")) {
 					cUser.setMute(true);
 				}

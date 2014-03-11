@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.SblockCommand;
+import co.sblock.Sblock.UserData.SblockUser;
 
 /**
  * @author Jikoo
@@ -71,8 +72,7 @@ public class Spectators extends Module implements CommandListener {
 	public void removeSpectator(Player p) {
 		// TODO can teleport a player prior to logout?
 		p.teleport(spectators.remove(p.getName()));
-		p.setFlying(false);
-		p.setAllowFlight(false);
+		SblockUser.getUser(p.getName()).updateFlight();
 		p.setNoDamageTicks(0);
 	}
 

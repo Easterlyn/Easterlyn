@@ -219,16 +219,15 @@ public class SblockUser {
 	 * 
 	 * @param sleeping true if the Player is in dreamstate
 	 */
-	public void updateSleepstate() {
+	public void updateFlight() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@Override
 			public void run() {
 				sleeping = getPlayer().getWorld().getName().contains("Circle")
-						|| getPlayer().getGameMode().equals(GameMode.CREATIVE);
-				if (!Spectators.getSpectators().isSpectator(playerName)) {
-					getPlayer().setAllowFlight(sleeping);
-					getPlayer().setFlying(sleeping);
-				}
+						|| getPlayer().getGameMode().equals(GameMode.CREATIVE)
+						|| Spectators.getSpectators().isSpectator(playerName);
+				getPlayer().setAllowFlight(sleeping);
+				getPlayer().setFlying(sleeping);
 			}
 		});
 	}

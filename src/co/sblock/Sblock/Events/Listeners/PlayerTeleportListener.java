@@ -34,7 +34,7 @@ public class PlayerTeleportListener implements Listener {
 				SblockUser u = SblockUser.getUser(p.getName());
 				if (!u.isGodTier()) {
 					u.setPreviousLocation(event.getFrom());
-					u.updateSleepstate();
+					u.updateFlight();
 				}
 			}
 		}
