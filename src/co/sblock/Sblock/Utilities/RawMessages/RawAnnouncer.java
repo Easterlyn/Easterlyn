@@ -43,7 +43,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 							"tellraw " + p.getName() + " " + announcement);
 				}
 			}
-		}, 0, 1200 * 30); // 30 minutes in between rawnouncments
+		}, 0, 1200 * 15); // 15 minutes in between rawnouncments
 
 		this.registerCommands(this);
 	}
