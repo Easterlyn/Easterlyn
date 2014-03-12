@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 /**
  * Perfectly Generic Object Machine. Mimics most objects when placed against them.
@@ -21,7 +21,7 @@ public class PGO extends Machine {
 	 */
 	public PGO(Location l, String data) {
 		super(l, data);
-		this.blocks = new HashMap<Location, ItemStack>();
+		this.blocks = new HashMap<Location, MaterialData>();
 	}
 
 	/**

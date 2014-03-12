@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 /**
  * For Zack, with love.
@@ -20,7 +20,7 @@ public class PBO extends Machine {
 	 */
 	public PBO(Location l, String data) {
 		super(l, data);
-		this.blocks = new HashMap<Location, ItemStack>();
+		this.blocks = new HashMap<Location, MaterialData>();
 	}
 
 	/**

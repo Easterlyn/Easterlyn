@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -29,7 +29,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	public Computer(Location l, String data) {
 		super(l, data);
-		this.blocks = new HashMap<Location, ItemStack>();
+		this.blocks = new HashMap<Location, MaterialData>();
 	}
 
 	/**

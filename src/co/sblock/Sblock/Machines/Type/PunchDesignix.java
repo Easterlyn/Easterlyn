@@ -24,6 +24,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -44,23 +45,22 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
+	@SuppressWarnings("deprecation")
 	public PunchDesignix(Location l, String data, Direction d) {
 		super(l, data, d);
-		ItemStack is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(d.getRelativeDirection(Direction.WEST).getUpperStairByte());
-		shape.addBlock(new Vector(1, 0, 0), is);
-		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(d.getRelativeDirection(Direction.NORTH).getStairByte());
-		shape.addBlock(new Vector(0, 1, 0), is);
-		shape.addBlock(new Vector(1, 1, 0), is);
-		is = new ItemStack(Material.STEP);
-		is.setDurability((short) 15);
-		shape.addBlock(new Vector(0, 0, -1), is);
-		shape.addBlock(new Vector(1, 0, -1), is);
-		is = new ItemStack(Material.CARPET);
-		is.setDurability((short) 8);
-		shape.addBlock(new Vector(0, 1, -1), is);
-		shape.addBlock(new Vector(1, 1, -1), is);
+		MaterialData m = new MaterialData(Material.QUARTZ_STAIRS,
+				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
+		shape.addBlock(new Vector(1, 0, 0), m);
+		m = new MaterialData(Material.QUARTZ_STAIRS,
+				d.getRelativeDirection(Direction.NORTH).getStairByte());
+		shape.addBlock(new Vector(0, 1, 0), m);
+		shape.addBlock(new Vector(1, 1, 0), m);
+		m = new MaterialData(Material.STEP, (byte) 15);
+		shape.addBlock(new Vector(0, 0, -1), m);
+		shape.addBlock(new Vector(1, 0, -1), m);
+		m = new MaterialData(Material.CARPET, (byte) 8);
+		shape.addBlock(new Vector(0, 1, -1), m);
+		shape.addBlock(new Vector(1, 1, -1), m);
 		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 

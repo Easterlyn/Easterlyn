@@ -26,6 +26,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.SblockMachines;
@@ -50,7 +51,7 @@ public abstract class Machine {
 	protected Shape shape;
 
 	/** A Set of all Locations defined as part of the Machine. */
-	protected HashMap<Location, ItemStack> blocks;
+	protected HashMap<Location, MaterialData> blocks;
 
 	/**
 	 * @param l the Location of the key Block of this Machine
@@ -130,6 +131,7 @@ public abstract class Machine {
 				return;
 			}
 		}
+		event.setBuild(false); // TODO see if cancels event
 		this.assemble();
 	}
 
@@ -138,10 +140,10 @@ public abstract class Machine {
 	 */
 	@SuppressWarnings("deprecation")
 	private void assemble() {
-		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
+		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
 			Block b = e.getKey().getBlock();
-			b.setType(e.getValue().getType());
-			b.setData(e.getValue().getData().getData());
+			b.setType(e.getValue().getItemType());
+			b.setData(e.getValue().getData());
 		}
 		this.triggerPostAssemble();
 	}

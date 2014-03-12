@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock.Sblock;
@@ -38,35 +38,31 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
+	@SuppressWarnings("deprecation")
 	public TotemLathe(Location l, String data, Direction d) {
 		super(l, data, d);
-		ItemStack is = new ItemStack(Material.QUARTZ_BLOCK);
-		is.setDurability((short) 2);
-		shape.addBlock(new Vector(0, 1, 0), is);
-		shape.addBlock(new Vector(0, 2, 0), is);
-		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(d.getRelativeDirection(Direction.WEST).getUpperStairByte());
-		shape.addBlock(new Vector(-1, 0, 0), is);
-		is = new ItemStack(Material.STEP);
-		is.setDurability((short) 7);
-		shape.addBlock(new Vector(0, 3, 0), is);
-		shape.addBlock(new Vector(-1, 3, 0), is);
-		shape.addBlock(new Vector(-2, 3, 0), is);
-		shape.addBlock(new Vector(-3, 3, 0), is);
-		is = new ItemStack(Material.STEP);
-		is.setDurability((short) 15);
-		shape.addBlock(new Vector(-2, 0, 0), is);
-		shape.addBlock(new Vector(-3, 0, 0), is);
-		is = new ItemStack(Material.FURNACE);
-		is.setDurability(d.getRelativeDirection(Direction.EAST).getChestByte());
-		shape.addBlock(new Vector(-1, 1, 0), is);
-		is = new ItemStack(Material.DAYLIGHT_DETECTOR);
-		shape.addBlock(new Vector(-2, 1, 0), is);
-		is = new ItemStack(Material.ANVIL);
-		is.setDurability((short) (d.getDirByte() % 2 == 0 ? 3 : 2));
-		shape.addBlock(new Vector(-3, 1, 0), is);
-		is = new ItemStack(Material.HOPPER);
-		shape.addBlock(new Vector(-3, 2, 0), is);
+		MaterialData m = new MaterialData(Material.QUARTZ_BLOCK, (byte) 2);
+		shape.addBlock(new Vector(0, 1, 0), m);
+		shape.addBlock(new Vector(0, 2, 0), m);
+		m = new MaterialData(Material.QUARTZ_STAIRS,
+				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
+		shape.addBlock(new Vector(-1, 0, 0), m);
+		shape.addBlock(new Vector(0, 3, 0), m);
+		shape.addBlock(new Vector(-1, 3, 0), m);
+		shape.addBlock(new Vector(-2, 3, 0), m);
+		shape.addBlock(new Vector(-3, 3, 0), m);
+		m = new MaterialData(Material.STEP, (byte) 15);
+		shape.addBlock(new Vector(-2, 0, 0), m);
+		shape.addBlock(new Vector(-3, 0, 0), m);
+		m = new MaterialData(Material.FURNACE,
+				d.getRelativeDirection(Direction.EAST).getChestByte());
+		shape.addBlock(new Vector(-1, 1, 0), m);
+		m = new MaterialData(Material.DAYLIGHT_DETECTOR);
+		shape.addBlock(new Vector(-2, 1, 0), m);
+		m = new MaterialData(Material.ANVIL, (byte) (d.getDirByte() % 2 == 0 ? 3 : 2));
+		shape.addBlock(new Vector(-3, 1, 0), m);
+		m = new MaterialData(Material.HOPPER);
+		shape.addBlock(new Vector(-3, 2, 0), m);
 		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 
@@ -169,8 +165,8 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		if (furnaceBlock != null) {
 			return ((Furnace) furnaceBlock.getState()).getInventory();
 		}
-		for (Entry<Location, ItemStack> e : blocks.entrySet()) {
-			if (e.getValue().getType() == Material.FURNACE) {
+		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
+			if (e.getValue().getItemType() == Material.FURNACE) {
 				furnaceBlock = e.getKey().getBlock();
 				return ((Furnace) furnaceBlock.getState()).getInventory();
 			}

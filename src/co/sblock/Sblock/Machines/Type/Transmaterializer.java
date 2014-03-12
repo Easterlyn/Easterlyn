@@ -3,7 +3,7 @@ package co.sblock.Sblock.Machines.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 /**
@@ -16,40 +16,35 @@ public class Transmaterializer extends Machine {
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
+	@SuppressWarnings("deprecation")
 	public Transmaterializer(Location l, String data, Direction d) {
 		super(l, data, d);
-		ItemStack is = new ItemStack(Material.QUARTZ_BLOCK);
-		shape.addBlock(new Vector(-1, 0, 1), is);
-		shape.addBlock(new Vector(0, 0, 1), is);
-		shape.addBlock(new Vector(1, 0, 1), is);
-		shape.addBlock(new Vector(-1, 2, 1), is);
-		shape.addBlock(new Vector(0, 2, 1), is);
-		shape.addBlock(new Vector(1, 2, 1), is);
-		is = new ItemStack(Material.QUARTZ_BLOCK);
-		is.setDurability((short) 2);
-		shape.addBlock(new Vector(0, 1, 1), is);
-		is = new ItemStack(Material.WOOD_BUTTON);
-		is.setDurability(d.getButtonByte());
-		shape.addBlock(new Vector(-1, 2, 0), is);
-		shape.addBlock(new Vector(1, 2, 0), is);
-		is = new ItemStack(Material.STEP);
-		is.setDurability((short) 7);
-		shape.addBlock(new Vector(-1, 0, -1), is);
-		shape.addBlock(new Vector(0, 0, -1), is);
-		shape.addBlock(new Vector(1, 0, -1), is);
-		is = new ItemStack(Material.NETHER_FENCE);
-		shape.addBlock(new Vector(-1, 1, 1), is);
-		shape.addBlock(new Vector(1, 1, 1), is);
-		is = new ItemStack(Material.WOOL);
-		is.setDurability((short) 14);
-		shape.addBlock(new Vector(-1, 0, 0), is);
-		is = new ItemStack(Material.WOOL);
-		is.setDurability((short) 5);
-		shape.addBlock(new Vector(1, 0, 0), is);
-		is = new ItemStack(Material.CHEST);
-		is.setDurability((short) (d.getChestByte()));
-		shape.addBlock(new Vector(-1, 1, 0), is);
-		shape.addBlock(new Vector(1, 1, 0), is);
+		MaterialData m = new MaterialData(Material.QUARTZ_BLOCK);
+		shape.addBlock(new Vector(-1, 0, 1), m);
+		shape.addBlock(new Vector(0, 0, 1), m);
+		shape.addBlock(new Vector(1, 0, 1), m);
+		shape.addBlock(new Vector(-1, 2, 1), m);
+		shape.addBlock(new Vector(0, 2, 1), m);
+		shape.addBlock(new Vector(1, 2, 1), m);
+		m = new MaterialData(Material.QUARTZ_BLOCK, (byte) 2);
+		shape.addBlock(new Vector(0, 1, 1), m);
+		m = new MaterialData(Material.WOOD_BUTTON, d.getButtonByte());
+		shape.addBlock(new Vector(-1, 2, 0), m);
+		shape.addBlock(new Vector(1, 2, 0), m);
+		m = new MaterialData(Material.STEP, (byte) 7);
+		shape.addBlock(new Vector(-1, 0, -1), m);
+		shape.addBlock(new Vector(0, 0, -1), m);
+		shape.addBlock(new Vector(1, 0, -1), m);
+		m = new MaterialData(Material.NETHER_FENCE);
+		shape.addBlock(new Vector(-1, 1, 1), m);
+		shape.addBlock(new Vector(1, 1, 1), m);
+		m = new MaterialData(Material.WOOL, (byte) 14);
+		shape.addBlock(new Vector(-1, 0, 0), m);
+		m = new MaterialData(Material.WOOL, (byte) 5);
+		shape.addBlock(new Vector(1, 0, 0), m);
+		m = new MaterialData(Material.CHEST, (d.getChestByte()));
+		shape.addBlock(new Vector(-1, 1, 0), m);
+		shape.addBlock(new Vector(1, 1, 0), m);
 		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 

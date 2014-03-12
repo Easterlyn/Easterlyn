@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
@@ -19,26 +19,23 @@ public class Cruxtender extends Machine {
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String)
 	 */
+	@SuppressWarnings("deprecation")
 	public Cruxtender(Location l, String data) {
 		super(l, data);
-		ItemStack is = new ItemStack(Material.DIAMOND_BLOCK);
-		shape.addBlock(new Vector(0, 1, 0), is);
-		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.NORTH.getStairByte());
-		shape.addBlock(new Vector(1, 0, -1), is);
-		shape.addBlock(new Vector(0, 0, -1), is);
-		shape.addBlock(new Vector(-1, 0, -1), is);
-		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.EAST.getStairByte());
-		shape.addBlock(new Vector(1, 0, 0), is);
-		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.WEST.getStairByte());
-		shape.addBlock(new Vector(-1, 0, 0), is);
-		is = new ItemStack(Material.QUARTZ_STAIRS);
-		is.setDurability(Direction.SOUTH.getStairByte());
-		shape.addBlock(new Vector(1, 0, 1), is);
-		shape.addBlock(new Vector(0, 0, 1), is);
-		shape.addBlock(new Vector(-1, 0, 1), is);
+		MaterialData m = new MaterialData(Material.DIAMOND_BLOCK);
+		shape.addBlock(new Vector(0, 1, 0), m);
+		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.NORTH.getStairByte());
+		shape.addBlock(new Vector(1, 0, -1), m);
+		shape.addBlock(new Vector(0, 0, -1), m);
+		shape.addBlock(new Vector(-1, 0, -1), m);
+		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.EAST.getStairByte());
+		shape.addBlock(new Vector(1, 0, 0), m);
+		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.WEST.getStairByte());
+		shape.addBlock(new Vector(-1, 0, 0), m);
+		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.SOUTH.getStairByte());
+		shape.addBlock(new Vector(1, 0, 1), m);
+		shape.addBlock(new Vector(0, 0, 1), m);
+		shape.addBlock(new Vector(-1, 0, 1), m);
 		blocks = shape.getBuildLocations(Direction.NORTH);
 	}
 
