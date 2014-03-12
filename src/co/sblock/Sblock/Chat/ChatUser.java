@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.CanonNicks;
 import co.sblock.Sblock.Chat.Channel.Channel;
@@ -62,9 +61,6 @@ public class ChatUser {
 		this.playerName = name;
 		this.currentRegion = Region.getLocationRegion(this.getPlayer().getLocation());
 		this.addListening(ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString()));
-		if (this.current == null || listening.size() == 0) {
-			this.syncSetCurrentChannel("#");
-		}
 	}
 
 	/**
@@ -279,20 +275,21 @@ public class ChatUser {
 		}
 
 		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
-				.append(getPlayer().getDisplayName()).append(" began pestering <> at ")
+				.append(getPlayer().getDisplayName()).append(ChatColor.YELLOW)
+				.append(" began pestering <>").append(ChatColor.YELLOW).append(" at ")
 				.append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues
 		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 			StringBuilder matches = new StringBuilder();
 			for (String s : listening) {
 				if (u.listening.contains(s)) {
-					matches.append(ChatColor.GOLD).append(s).append(ChatColor.GREEN).append(", ");
+					matches.append(ChatColor.GOLD).append(s).append(ChatColor.YELLOW).append(", ");
 				}
 			}
 			if (matches.length() > 0) {
 				matches.replace(matches.length() - 3, matches.length() - 1, "");
 				int comma = matches.toString().lastIndexOf(',');
-				u.sendMessage(base.toString().replace("<>", matches.replace(comma, comma + 1, " and")));
+				u.sendMessage(base.toString().replace("<>", matches.replace(comma, comma + 1, ", and")));
 			}
 		}
 	}
@@ -718,30 +715,5 @@ public class ChatUser {
 		for (int task : tasks.values()) {
 			Bukkit.getScheduler().cancelTask(task);
 		}
-	}
-
-	/**
-	 * Set a Channel to current synchronously.
-	 * BukkitTask ID is added to task list for cleanup. For use on
-	 * login - instantly causing a join results in failure for unknown reasons.
-	 * 
-	 * @param channelName
-	 *            the name of the Channel to join
-	 */
-	public void syncSetCurrentChannel(final String channelName) {
-		final ChatUser user = this;
-		tasks.put(channelName, Bukkit.getScheduler()
-				.scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-					@Override
-					public void run() {
-						Channel c = SblockChat.getChat()
-								.getChannelManager().getChannel(channelName);
-						if (c != null && user.getPlayer().isOnline()) {
-							user.setCurrent(c);
-						}
-						tasks.remove(channelName);
-					}
-					
-				}));
 	}
 }

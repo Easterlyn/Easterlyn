@@ -153,6 +153,9 @@ public class PlayerData {
 					sUser.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				}
 				cUser.setCurrent(rs.getString("currentChannel"));
+				if (cUser.getCurrent() == null || cUser.getListening().size() == 0) {
+					cUser.setCurrent("#");
+				}
 				sUser.setTimePlayed(rs.getString("timePlayed"));
 				sUser.setPrograms(rs.getString("programs"));
 				sUser.setUHCMode(rs.getByte("uhc"));
