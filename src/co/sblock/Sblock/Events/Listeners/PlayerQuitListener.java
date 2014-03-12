@@ -1,6 +1,7 @@
 package co.sblock.Sblock.Events.Listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -26,17 +27,20 @@ public class PlayerQuitListener implements Listener {
 	 * 
 	 * @param event the PlayerQuitEvent
 	 */
+	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
 			Spectators.getSpectators().removeSpectator(event.getPlayer());
 		}
 		InventoryManager.restoreInventory(event.getPlayer());
+		if (SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
+			Bukkit.getScheduler().cancelTask(SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()));
+		}
+		Cooldowns.cleanup(event.getPlayer().getName());
 		ChatUser u = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
+		SblockData.getDB().saveUserData(event.getPlayer().getName());
 		if (u == null) {
 			return; // We don't want to make another db call just to announce quit.
-		}
-		if (SblockEvents.getEvents().tasks.containsKey(u.getPlayerName())) {
-			Bukkit.getScheduler().cancelTask(SblockEvents.getEvents().tasks.remove(u.getPlayerName()));
 		}
 		for (String s : u.getListening()) {
 			u.removeListeningQuit(s);
@@ -47,7 +51,5 @@ public class PlayerQuitListener implements Listener {
 		} catch (NullPointerException e) {
 			SblockEvents.getEvents().getLogger().warning("User's region channel was invalid!");
 		}
-		SblockData.getDB().saveUserData(event.getPlayer().getName());
-		Cooldowns.cleanup(event.getPlayer().getName());
 	}
 }

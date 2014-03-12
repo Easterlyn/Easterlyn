@@ -223,11 +223,13 @@ public class SblockUser {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				sleeping = getPlayer().getWorld().getName().contains("Circle")
+				sleeping = getOfflinePlayer().isOnline() && (getPlayer().getWorld().getName().contains("Circle")
 						|| getPlayer().getGameMode().equals(GameMode.CREATIVE)
-						|| Spectators.getSpectators().isSpectator(playerName);
-				getPlayer().setAllowFlight(sleeping);
-				getPlayer().setFlying(sleeping);
+						|| Spectators.getSpectators().isSpectator(playerName));
+				if (getOfflinePlayer().isOnline()) {
+					getPlayer().setAllowFlight(sleeping);
+					getPlayer().setFlying(sleeping);
+				}
 			}
 		});
 	}
