@@ -1,7 +1,5 @@
 package co.sblock.Sblock.Machines.Type;
 
-import java.util.HashMap;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -21,7 +19,7 @@ public class PGO extends Machine {
 	 */
 	public PGO(Location l, String data) {
 		super(l, data);
-		this.blocks = new HashMap<Location, MaterialData>();
+		this.blocks = shape.getBuildLocations(d);
 	}
 
 	/**
@@ -38,9 +36,10 @@ public class PGO extends Machine {
 	public void assemble(BlockPlaceEvent event) {
 		Material placedOn = event.getBlockAgainst().getType();
 		if (isValid(placedOn)) {
-			event.getBlockPlaced().setTypeIdAndData(placedOn.getId(), event.getBlockAgainst().getData(), false);
+			this.blocks.put(l, new MaterialData(event.getBlockAgainst().getType(), event.getBlockAgainst().getData()));
 		}
 		// Future features: Make wall signs etc. valid and copy text
+		this.assemble();
 	}
 
 	/**
@@ -158,12 +157,5 @@ public class PGO extends Machine {
 		default:
 			return false;
 		}
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
-	 */
-	@Override
-	protected void postAssemble() {
 	}
 }

@@ -23,6 +23,7 @@ public class Cruxtender extends Machine {
 	public Cruxtender(Location l, String data) {
 		super(l, data);
 		MaterialData m = new MaterialData(Material.DIAMOND_BLOCK);
+		shape.addBlock(new Vector(0, 0, 0), m);
 		shape.addBlock(new Vector(0, 1, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.NORTH.getStairByte());
 		shape.addBlock(new Vector(1, 0, -1), m);
@@ -46,7 +47,7 @@ public class Cruxtender extends Machine {
 		if (this.meetsAdditionalBreakConditions(event)
 				&& this.l.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
 			if (event.getBlock().getType().equals(Material.DIAMOND_BLOCK)) {
-				event.getBlock().setType(Material.BEACON);
+				event.getBlock().setType(Material.GLASS);
 			}
 			event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), CruxiteDowel.getDowel());
 		} else {
@@ -69,13 +70,5 @@ public class Cruxtender extends Machine {
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
 		return false;
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
-	 */
-	@Override
-	protected void postAssemble() {
-		this.l.getBlock().setType(Material.DIAMOND_BLOCK);
 	}
 }

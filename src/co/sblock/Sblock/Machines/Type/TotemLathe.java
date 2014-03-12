@@ -42,11 +42,13 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	public TotemLathe(Location l, String data, Direction d) {
 		super(l, data, d);
 		MaterialData m = new MaterialData(Material.QUARTZ_BLOCK, (byte) 2);
+		shape.addBlock(new Vector(0, 0, 0), m);
 		shape.addBlock(new Vector(0, 1, 0), m);
 		shape.addBlock(new Vector(0, 2, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS,
 				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
 		shape.addBlock(new Vector(-1, 0, 0), m);
+		m = new MaterialData(Material.STEP, (byte) 7);
 		shape.addBlock(new Vector(0, 3, 0), m);
 		shape.addBlock(new Vector(-1, 3, 0), m);
 		shape.addBlock(new Vector(-2, 3, 0), m);
@@ -145,16 +147,6 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 				f.update(true);
 			}
 		}, 0, 5);
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
-	 */
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void postAssemble() {
-		this.l.getBlock().setType(Material.QUARTZ_BLOCK);
-		this.l.getBlock().setData((byte) 2, false);		
 	}
 
 	/**

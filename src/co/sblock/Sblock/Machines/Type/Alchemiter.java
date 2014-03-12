@@ -20,6 +20,7 @@ public class Alchemiter extends Machine {
 	public Alchemiter(Location l, String data, Direction d) {
 		super(l, data, d);
 		MaterialData m = new MaterialData(Material.QUARTZ_BLOCK, (byte) 1);
+		shape.addBlock(new Vector(0, 0, 0), m);
 		shape.addBlock(new Vector(0, 0, 1), m);
 		shape.addBlock(new Vector(1, 0, 1), m);
 		shape.addBlock(new Vector(1, 0, 0), m);
@@ -67,15 +68,4 @@ public class Alchemiter extends Machine {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
-	 */
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void postAssemble() {
-		this.l.getBlock().setType(Material.QUARTZ_BLOCK);
-		this.l.getBlock().setData((byte) 1, false);
-	}
-
 }

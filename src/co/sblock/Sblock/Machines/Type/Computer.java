@@ -1,7 +1,5 @@
 package co.sblock.Sblock.Machines.Type;
 
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,7 +10,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.material.MaterialData;
 
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -29,7 +26,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	public Computer(Location l, String data) {
 		super(l, data);
-		this.blocks = new HashMap<Location, MaterialData>();
+		this.blocks = shape.getBuildLocations(d);
 	}
 
 	/**
@@ -166,12 +163,5 @@ public class Computer extends Machine implements InventoryHolder {
 		i.addItem(Icon.CONFIRM.getIcon());
 		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
 		return i;
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
-	 */
-	@Override
-	protected void postAssemble() {
 	}
 }

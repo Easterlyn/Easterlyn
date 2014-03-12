@@ -49,6 +49,9 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 	public PunchDesignix(Location l, String data, Direction d) {
 		super(l, data, d);
 		MaterialData m = new MaterialData(Material.QUARTZ_STAIRS,
+				d.getRelativeDirection(Direction.EAST).getUpperStairByte());
+		shape.addBlock(new Vector(0, 0, 0), m);
+		m = new MaterialData(Material.QUARTZ_STAIRS,
 				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
 		shape.addBlock(new Vector(1, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS,
@@ -149,16 +152,6 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 		}
 		event.setResult(Result.DENY);
 		return true;
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
-	 */
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void postAssemble() {
-		this.l.getBlock().setType(Material.QUARTZ_STAIRS);
-		this.l.getBlock().setData(d.getRelativeDirection(Direction.EAST).getUpperStairByte());
 	}
 
 	/**

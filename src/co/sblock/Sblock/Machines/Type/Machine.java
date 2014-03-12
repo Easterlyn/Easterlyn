@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.bukkit.util.Vector;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.SblockMachines;
@@ -63,6 +64,7 @@ public abstract class Machine {
 		this.data = data;
 		this.d = d;
 		this.shape = new Shape(l.clone());
+		shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop().getData());
 	}
 
 	/**
@@ -74,6 +76,7 @@ public abstract class Machine {
 		this.data = data;
 		this.d = Direction.NORTH;
 		this.shape = new Shape(l.clone());
+		shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop().getData());
 	}
 
 	/**
@@ -124,14 +127,13 @@ public abstract class Machine {
 	 */
 	public void assemble(BlockPlaceEvent event) {
 		for (Location l : blocks.keySet()) {
-			if (!l.getBlock().isEmpty()) {
+			if (!l.equals(this.l) && !l.getBlock().isEmpty()) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed();
 				return;
 			}
 		}
-		event.setBuild(false); // TODO see if cancels event
 		this.assemble();
 	}
 
@@ -139,7 +141,7 @@ public abstract class Machine {
 	 * Helper method for assembling the Machine.
 	 */
 	@SuppressWarnings("deprecation")
-	private void assemble() {
+	protected void assemble() {
 		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
 			Block b = e.getKey().getBlock();
 			b.setType(e.getValue().getItemType());
@@ -174,7 +176,13 @@ public abstract class Machine {
 			public void run() {
 				assemble();
 				for (Entry<Location, ItemStack[]> e : invents.entrySet()) {
-					((InventoryHolder) l.getBlock().getState()).getInventory().setContents(e.getValue());
+					try {
+						((InventoryHolder) e.getKey().getBlock().getState()).getInventory().setContents(e.getValue());
+					} catch (ClassCastException e1) {
+						for (ItemStack is : e.getValue()) {
+							l.getWorld().dropItem(l, is);
+						}
+					}
 				}
 			}
 		});
@@ -353,19 +361,16 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Triggers any events to occur on completion of Machine construction.
-	 * <p>
-	 * Primarily intended for changing the key block Material.
-	 */
-	protected abstract void postAssemble();
-
-	/**
 	 * Triggers postAssemble method on a synchronous 0 tick delay.
 	 */
 	private void triggerPostAssemble() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@SuppressWarnings("deprecation")
 			public void run() {
-				postAssemble();
+				MaterialData m = blocks.get(l);
+				Block b = l.getBlock();
+				b.setType(m.getItemType());
+				b.setData(m.getData());
 			}
 		});
 	}

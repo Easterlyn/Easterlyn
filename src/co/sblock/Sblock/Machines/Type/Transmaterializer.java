@@ -19,7 +19,9 @@ public class Transmaterializer extends Machine {
 	@SuppressWarnings("deprecation")
 	public Transmaterializer(Location l, String data, Direction d) {
 		super(l, data, d);
-		MaterialData m = new MaterialData(Material.QUARTZ_BLOCK);
+		MaterialData m = new MaterialData(Material.CHEST, d.getChestByte());
+		shape.addBlock(new Vector(0, 0, 0), m);
+		m = new MaterialData(Material.QUARTZ_BLOCK);
 		shape.addBlock(new Vector(-1, 0, 1), m);
 		shape.addBlock(new Vector(0, 0, 1), m);
 		shape.addBlock(new Vector(1, 0, 1), m);
@@ -64,12 +66,4 @@ public class Transmaterializer extends Machine {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
-	 */
-	@Override
-	protected void postAssemble() {
-	}
-
 }

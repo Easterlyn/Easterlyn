@@ -36,10 +36,10 @@ public class Shape {
 	 * N.B. all Locations are relative to the key Block of the Machine.
 	 * 
 	 * @param l the Location to add
-	 * @param is the MaterialData to make the Block from
+	 * @param m the MaterialData to make the Block from
 	 */
-	public void addBlock(Vector v, MaterialData is) {
-		this.vectors.put(v, is);
+	public void addBlock(Vector v, MaterialData m) {
+		this.vectors.put(v, m);
 	}
 
 	/**

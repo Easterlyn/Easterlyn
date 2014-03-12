@@ -37,7 +37,9 @@ public class Transportalizer extends Machine {
 	@SuppressWarnings("deprecation")
 	public Transportalizer(Location l, String data, Direction d) {
 		super(l, data, d);
-		MaterialData m = new MaterialData(Material.QUARTZ_BLOCK);
+		MaterialData m = new MaterialData(Material.CHEST, d.getChestByte());
+		shape.addBlock(new Vector(0, 0, 0), m);
+		m = new MaterialData(Material.QUARTZ_BLOCK);
 		shape.addBlock(new Vector(-1, 0, 0), m);
 		shape.addBlock(new Vector(1, 0, 0), m);
 		shape.addBlock(new Vector(-1, 0, 1), m);
@@ -217,12 +219,5 @@ public class Transportalizer extends Machine {
 			return null;
 		}
 		return removed;
-	}
-
-	/**
-	 * @see co.sblock.Sblock.Machines.Type.Machine#postAssemble()
-	 */
-	@Override
-	protected void postAssemble() {
 	}
 }
