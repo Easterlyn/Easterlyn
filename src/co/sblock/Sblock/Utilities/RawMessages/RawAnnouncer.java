@@ -99,6 +99,12 @@ public class RawAnnouncer extends Module implements CommandListener {
 										ChatColor.GOLD + "Click to run!")),
 						new MessageElement("!", ChatColor.RED)));
 
+		msgs.add(new MessageHalement("It is your generosity that keeps Sblock alive. Please consider ").addExtra(
+				new MessageElement("donating", ChatColor.AQUA)
+						.addClickEffect(new MessageClick(ClickEffect.OPEN_URL, "http://adf.ly/NThbj"))
+						.addHoverEffect(new MessageHover(HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click here to go!")),
+				new MessageElement(" to help.", ChatColor.RED)));
+
 		return msgs;
 	}
 
