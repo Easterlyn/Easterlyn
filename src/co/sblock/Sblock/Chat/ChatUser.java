@@ -289,7 +289,7 @@ public class ChatUser {
 			if (matches.length() > 0) {
 				matches.replace(matches.length() - 3, matches.length() - 1, "");
 				int comma = matches.toString().lastIndexOf(',');
-				u.sendMessage(base.toString().replace("<>", matches.replace(comma, comma + 1, ", and")));
+				u.sendMessage(base.toString().replace("<>", matches.replace(comma, comma + 1, " and")));
 			}
 		}
 	}
