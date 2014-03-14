@@ -74,6 +74,7 @@ public class SblockEvents extends Module {
 				new InventoryDragListener(), new InventoryMoveItemListener(),
 
 				new PlayerAsyncChatListener(), new PlayerChangedWorldListener(),
+				new PlayerCommandPreprocessListener(),
 				new PlayerDropItemListener(), new PlayerEditBookListener(),
 				new PlayerInteractEntityListener(), new PlayerInteractListener(),
 				new PlayerJoinListener(), new PlayerLoginListener(),
