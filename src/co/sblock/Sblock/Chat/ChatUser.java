@@ -288,8 +288,11 @@ public class ChatUser {
 			}
 			if (matches.length() > 0) {
 				matches.replace(matches.length() - 3, matches.length() - 1, "");
-				int comma = matches.toString().lastIndexOf(',');
-				u.sendMessage(base.toString().replace("<>", matches.replace(comma, comma + 1, " and")));
+				StringBuilder msg = new StringBuilder(base.toString().replace("<>", matches.toString()));
+				int comma = msg.toString().lastIndexOf(',');
+				if (comma != -1) {
+					u.sendMessage(msg.replace(comma, comma + 1, " and").toString());
+				}
 			}
 		}
 	}
@@ -453,11 +456,12 @@ public class ChatUser {
 			}
 		} else if (current == null) {
 			sender.sendMessage(ChatMsgs.errorNoCurrent());
+			event.setCancelled(true);
 			return;
 		}
 		
-		if(sendto instanceof RPChannel)	{
-			if(!sendto.hasNick(sender))	{
+		if (sendto instanceof RPChannel) {
+			if (!sendto.hasNick(sender)) {
 				sender.sendMessage(ChatMsgs.errorNickRequired(sendto.getName()));
 				return;
 			}

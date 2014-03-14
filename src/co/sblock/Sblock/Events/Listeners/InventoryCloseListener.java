@@ -32,6 +32,9 @@ public class InventoryCloseListener implements Listener {
 		InventoryManager.restoreInventory((Player) event.getPlayer());
 
 		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
+		if (u == null) {
+			return; // Player is probably logging out
+		}
 		u.setAllPassiveEffects(EffectManager.passiveScan((Player) event.getPlayer()));
 		EffectManager.applyPassiveEffects(u);
 	}

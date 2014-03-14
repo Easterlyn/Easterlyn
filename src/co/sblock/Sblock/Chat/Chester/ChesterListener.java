@@ -31,11 +31,14 @@ public class ChesterListener implements Listener {
 			cancels++;
 			return;
 		}
-		if (!c.getCurrent().getName().equals("#") || (event.getMessage().length() > 2
-				&& event.getMessage().charAt(0) == '@' && event.getMessage().charAt(1) != ' ')) {
+		if (c.getCurrent() != null && !c.getCurrent().getName().equals("#")
+				|| !event.getMessage().startsWith("@# ")) {
 			event.setCancelled(true);
 			cancels++;
 			return;
+		}
+		if (event.getMessage().startsWith("@# ") && event.getMessage().length() > 3) {
+			event.setMessage(event.getMessage().substring(3));
 		}
 		for (String s : SblockChat.chester) {
 			if (event.getMessage().equalsIgnoreCase(s)) {

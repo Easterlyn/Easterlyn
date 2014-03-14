@@ -47,7 +47,9 @@ public class PlayerInteractListener implements Listener {
 		}
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
+			if (!event.hasBlock() || !event.getClickedBlock().getType().name().contains("PLATE")) {
+				event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
+			}
 			return;
 		}
 
