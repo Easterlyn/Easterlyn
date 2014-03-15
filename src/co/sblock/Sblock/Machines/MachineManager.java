@@ -297,4 +297,20 @@ public class MachineManager {
 		}
 		return false;
 	}
+
+	/**
+	 * Gets the Computer owned by a particular Player.
+	 * 
+	 * @param player the name of the Player
+	 * 
+	 * @return the matching Machine, or null if the Player has no computer.
+	 */
+	public Machine getComputer(String player) {
+		for (Machine m : machineKeys.values()) {
+			if (m instanceof Computer && m.getData().equals(player)) {
+				return m;
+			}
+		}
+		return null;
+	}
 }

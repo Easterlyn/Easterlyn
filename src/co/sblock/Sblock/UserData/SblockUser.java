@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -14,6 +15,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Machines.SblockMachines;
+import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
@@ -67,11 +70,17 @@ public class SblockUser {
 	private boolean loaded = false;
 
 	/** true if the user is in server mode. */
-	private boolean server = false;
+	private boolean isServer = false;
 
-	/** true if the user has a server. */
-	private boolean hasServer = false;
-	
+	/** The name of the Player's server player, if any. */
+	private String server = null;
+
+	/** The name of the Player's client player, if any. */
+	private String client = null;
+
+	/** The Location to which the Player is to be teleported when exiting server mode. */
+	private Location serverDisableTeleport = null;
+
 	/** A map of the Effects applied to the Player and their strength. */
 	private HashMap<PassiveEffect, Integer> passiveEffects;
 	
@@ -225,7 +234,7 @@ public class SblockUser {
 			public void run() {
 				sleeping = getOfflinePlayer().isOnline() && (getPlayer().getWorld().getName().contains("Circle")
 						|| getPlayer().getGameMode().equals(GameMode.CREATIVE)
-						|| Spectators.getSpectators().isSpectator(playerName));
+						|| isServer || Spectators.getSpectators().isSpectator(playerName));
 				if (getOfflinePlayer().isOnline()) {
 					getPlayer().setAllowFlight(sleeping);
 					getPlayer().setFlying(sleeping);
@@ -471,27 +480,96 @@ public class SblockUser {
 	 * @return true if the user is in server mode
 	 */
 	public boolean isServer() {
+		return this.isServer;
+	}
+
+	/**
+	 * Initiate server mode! Funtimes commence.
+	 */
+	public void startServerMode() {
+		Player p = this.getPlayer();
+		if (this.client == null) {
+			p.sendMessage(ChatColor.RED + "You must have a client to enter server mode!"
+					+ "+\nAsk someone with " + ChatColor.AQUA + "/requestclient <player>");
+			return;
+		}
+		SblockUser u = getUser(client);
+		if (u == null) {
+			p.sendMessage(ChatColor.RED + "You should wait for " + client + " before progressing!");
+			return;
+		}
+		Machine m = SblockMachines.getMachines().getManager().getComputer(client);
+		if (m == null) {
+			p.sendMessage(ChatColor.RED + client + " has not placed their computer in their house!");
+			return;
+		}
+		this.serverDisableTeleport = p.getLocation();
+		if (!SblockMachines.getMachines().getManager().isByComputer(u.getPlayer(), 25)) {
+			p.teleport(m.getKey());
+		} else {
+			p.teleport(u.getPlayer());
+		}
+		this.isServer = true;
+		this.updateFlight();
+		p.setNoDamageTicks(Integer.MAX_VALUE);
+		p.sendMessage(ChatColor.GREEN + "Server mode enabled!");
+	}
+
+	/**
+	 * Disable server mode.
+	 */
+	public void stopServerMode() {
+		this.isServer = false;
+		this.updateFlight();
+		Player p = this.getPlayer();
+		p.teleport(serverDisableTeleport);
+		p.setFallDistance(0);
+		p.setNoDamageTicks(0);
+		p.sendMessage(ChatColor.GREEN + "Server program closed!");
+	}
+
+	/**
+	 * Set the user's server player.
+	 * 
+	 * @param s the name of the Player to set as the server player.
+	 */
+	public boolean setServer(String s) {
+		if (this.server == null) {
+			this.server = s;
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Get the user's server player.
+	 * 
+	 * @return the saved server player
+	 */
+	public String getServer() {
 		return this.server;
 	}
 
 	/**
-	 * Set the user's server mode.
+	 * Set the user's client player.
 	 * 
-	 * @param b the boolean to set server mode to
+	 * @param s the name of the Player to set as the client player.
 	 */
-	public boolean setServer(boolean b) {
-		if (!this.hasServer) {
-			this.server = b;
-			// if b
-			// get client, setHasServer true
-			// if !b
-			// tp to original location
-			// remove fly
-			// remove invisibility effects (teams + invis. Team = server's name?)
-			//   team color can be nothing - will (probably) be entirely heroes.
+	public boolean setClient(String s) {
+		if (this.client == null) {
+			this.client = s;
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Get the user's client player.
+	 * 
+	 * @return the saved client player
+	 */
+	public String getClient() {
+		return this.client;
 	}
 	
 	/**

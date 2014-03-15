@@ -31,6 +31,7 @@ import org.bukkit.util.Vector;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.SblockMachines;
+import co.sblock.Sblock.UserData.SblockUser;
 
 /**
  * Framework for all Machine block assemblies.
@@ -117,7 +118,8 @@ public abstract class Machine {
 	 * @return boolean
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		return getData().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("group.denizen");
+		return getData().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("group.denizen")
+				|| SblockUser.getUser(data) != null && SblockUser.getUser(data).getServer().equals(event.getPlayer().getName());
 	}
 
 	/**
@@ -135,6 +137,10 @@ public abstract class Machine {
 			}
 		}
 		this.assemble();
+		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
+		if (u != null && u.isServer() && data.equals(u.getPlayerName())) {
+			this.data = u.getClient();
+		}
 	}
 
 	/**
