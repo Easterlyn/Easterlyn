@@ -60,7 +60,6 @@ public class PlayerInteractListener implements Listener {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			// ActiveEffect application
 			HashMap<ActiveEffect, Integer> effects = EffectManager.activeScan(event.getPlayer());
-			if (effects.isEmpty()) return;
 			for (ActiveEffect aE : effects.keySet()) {
 				if (aE.getActiveEffectType() == ActiveEffectType.RIGHT_CLICK) {
 					ActiveEffect.applyRightClickEffect(event.getPlayer(), aE, effects.get(aE));
