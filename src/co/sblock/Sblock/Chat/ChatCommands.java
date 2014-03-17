@@ -222,7 +222,7 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
 			return true;
 		}
-		if (c.getType().equals(ChannelType.REGION)) {
+		if (c.getType().equals(ChannelType.REGION) && !user.isListening(c)) {
 			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
 			return true;
 		}
