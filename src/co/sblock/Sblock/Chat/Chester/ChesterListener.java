@@ -58,6 +58,7 @@ public class ChesterListener implements Listener {
 		Channel c = ChannelManager.getChannelManager().getChannel("#");
 		if (c == null) {
 			event.getRecipients().clear();
+			return;
 		}
 		Set<Player> listeners = new HashSet<Player>();
 		for (String s : c.getListening()) {

@@ -318,7 +318,7 @@ public class ChatMsgs {
 				+ ChatColor.YELLOW + ": Listen to <channel>.\n"
 				+ ChatColor.AQUA + "/sc leave <channel>"
 				+ ChatColor.YELLOW + ": Stop listening to <channel>.\n"
-				+ ChatColor.AQUA + "/sc nick <set|remove> <nick>"
+				+ ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
 				+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.\n"
 				+ ChatColor.AQUA + "/sc list"
 				+ ChatColor.YELLOW + ": List all channels you are listening to.\n"
@@ -352,7 +352,7 @@ public class ChatMsgs {
 	}
 
 	public static String helpSCNick() {
-		return ChatColor.AQUA + "/sc nick <set|remove> <nick>"
+		return ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
 			+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.";
 	}
 

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.SblockCommand;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
+import co.sblock.Sblock.Chat.Channel.CanonNicks;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
@@ -326,6 +327,20 @@ public class ChatCommands implements CommandListener {
 				return true;
 			} else if (args[1].equalsIgnoreCase("remove")) {
 				c.removeNick(user);
+				return true;
+			} else if (args[1].equalsIgnoreCase("list")) {
+				if (c instanceof NickChannel) {
+					user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.");
+					return true;
+				}
+				StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString());
+				sb.append("Canon nicks: ").append(ChatColor.AQUA);
+				for (CanonNicks n : CanonNicks.values()) {
+					if (n != CanonNicks.SERKITFEATURE) {
+						sb.append(n.getName()).append(" ");
+					}
+				}
+				user.sendMessage(sb.toString());
 				return true;
 			} else {
 				user.sendMessage(ChatMsgs.helpSCNick());
