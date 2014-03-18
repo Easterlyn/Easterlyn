@@ -32,10 +32,12 @@ public class ChesterListener implements Listener {
 			return;
 		}
 		if (c.getCurrent() != null && !c.getCurrent().getName().equals("#")
-				|| !event.getMessage().startsWith("@# ")) {
-			event.setCancelled(true);
-			cancels++;
-			return;
+				|| event.getMessage().charAt(0) == '@') {
+			if (!event.getMessage().startsWith("@# ")) {
+				event.setCancelled(true);
+				cancels++;
+				return;
+			}
 		}
 		if (event.getMessage().startsWith("@# ") && event.getMessage().length() > 3) {
 			event.setMessage(event.getMessage().substring(3));
@@ -52,6 +54,7 @@ public class ChesterListener implements Listener {
 	public void onChesterTalk(ChesterBroadcastEvent event) {
 		if (cancels > 0) {
 			event.getRecipients().clear();
+			event.setMessage("Chat cancelled when logged.");
 			cancels--;
 			return;
 		}
