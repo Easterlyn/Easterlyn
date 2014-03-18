@@ -59,8 +59,10 @@ public class AsyncCall {
 			public void run() {
 				try {
 					if (callback) {
-						Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
-								new CallBack(pst.executeQuery()));
+						if (Sblock.getInstance().isEnabled()) {
+							Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
+									new CallBack(pst.executeQuery()));
+						}
 					} else {
 						pst.executeUpdate();
 					}

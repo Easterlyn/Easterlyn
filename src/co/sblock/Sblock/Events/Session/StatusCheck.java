@@ -52,6 +52,8 @@ public class StatusCheck implements Runnable {
 				status = Status.SESSION;
 			}
 		}
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new StatusSync(status));
+		if (Sblock.getInstance().isEnabled()) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new StatusSync(status));
+		}
 	}
 }
