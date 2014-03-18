@@ -24,7 +24,9 @@ import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
+import co.sblock.Sblock.Utilities.Server.ServerMode;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
+import co.sblock.Sblock.Utilities.Vote.SleepVote;
 
 /**
  * 
@@ -42,7 +44,13 @@ public class PlayerInteractListener implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (SblockUser.getUser(event.getPlayer().getName()).isServer()) {
-			event.setCancelled(true);
+			// Allow placing and breaking of blocks
+			// TODO instabreak similar to creative if block within x of computer?
+			if (event.getAction() == Action.LEFT_CLICK_BLOCK
+					&& ServerMode.getInstance().isApproved(event.getClickedBlock().getType())
+					&& !SblockMachines.getMachines().getManager().isMachine(event.getClickedBlock())) {
+				event.getClickedBlock().setType(Material.AIR);
+			}
 			return;
 		}
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
@@ -77,10 +85,13 @@ public class PlayerInteractListener implements Listener {
 				return;
 			}
 
-			// Sleep teleport
 			if (b.getType().equals(Material.BED_BLOCK)) {
-				// future: if p.isSneaking() voteDay(p)Bed bed = (Bed) b.getState().getData();
+				// Sleep voting
+				if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
+					SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
+				}
 
+				// Sleep teleport
 				Bed bed = (Bed) b.getState().getData();
 				Location head;
 				if (bed.isHeadOfBed()) {

@@ -105,6 +105,8 @@ public class RawAnnouncer extends Module implements CommandListener {
 						.addHoverEffect(new MessageHover(HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click here to go!")),
 				new MessageElement(" to help.", ChatColor.RED)));
 
+		msgs.add(new MessageHalement("Sleeping now is more beneficial. Try pressing shift when right clicking!"));
+
 		return msgs;
 	}
 
