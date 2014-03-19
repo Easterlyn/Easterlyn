@@ -87,36 +87,36 @@ public class PlayerInteractListener implements Listener {
 
 			if (b.getType().equals(Material.BED_BLOCK)) {
 				// Sleep voting
-				if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
+				if (event.getPlayer().isSneaking()
+						&& (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm())) {
 					SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
+					return;
 				}
 
-				if (!event.getPlayer().isSneaking()) {
-					// Sleep teleport
-					Bed bed = (Bed) b.getState().getData();
-					Location head;
-					if (bed.isHeadOfBed()) {
-						head = b.getLocation();
-					} else {
-						head = b.getRelative(bed.getFacing()).getLocation();
-						// getFace does not seem to work in most cases - adam test and fix
-					}
-	
-					if (SblockUser.getUser(event.getPlayer().getName()).isGodTier()) {
-						// future feature
-						return;
-					}
-					switch (Region.uValueOf(b.getWorld().getName())) {
-					case EARTH:
-					case MEDIUM:
-					case INNERCIRCLE:
-					case OUTERCIRCLE:
-						SblockEvents.getEvents().fakeSleepDream(event.getPlayer(), head);
-						event.setCancelled(true);
-						return;
-					default:
-						return;
-					}
+				// Sleep teleport
+				Bed bed = (Bed) b.getState().getData();
+				Location head;
+				if (bed.isHeadOfBed()) {
+					head = b.getLocation();
+				} else {
+					head = b.getRelative(bed.getFacing()).getLocation();
+					// getFace does not seem to work in most cases - adam test and fix
+				}
+
+				if (SblockUser.getUser(event.getPlayer().getName()).isGodTier()) {
+					// future feature
+					return;
+				}
+				switch (Region.uValueOf(b.getWorld().getName())) {
+				case EARTH:
+				case MEDIUM:
+				case INNERCIRCLE:
+				case OUTERCIRCLE:
+					SblockEvents.getEvents().fakeSleepDream(event.getPlayer(), head);
+					event.setCancelled(true);
+					return;
+				default:
+					return;
 				}
 			}
 

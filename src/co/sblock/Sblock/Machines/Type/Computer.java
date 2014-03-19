@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -30,6 +31,8 @@ public class Computer extends Machine implements InventoryHolder {
 	}
 
 	/**
+	 * Players can only have one computer, and servers cannot place them for the client.
+	 * 
 	 * @see co.sblock.Sblock.Machines.Type.Machine#assemble()
 	 */
 	@Override
@@ -43,6 +46,16 @@ public class Computer extends Machine implements InventoryHolder {
 			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer placed!");
 			SblockMachines.getMachines().getManager().removeMachineListing(l);
 		}
+	}
+
+	/**
+	 * Servers cannot break client's computer.
+	 * 
+	 * @see co.sblock.Sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockBreakEvent)
+	 */
+	@Override
+	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
+		return getData().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("group.denizen");
 	}
 
 	/**
