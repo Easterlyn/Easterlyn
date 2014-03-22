@@ -87,9 +87,13 @@ public class PlayerInteractListener implements Listener {
 
 			if (b.getType().equals(Material.BED_BLOCK)) {
 				// Sleep voting
-				if (event.getPlayer().isSneaking()
-						&& (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm())) {
-					SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
+				if (event.getPlayer().isSneaking()) {
+					if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
+						SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
+					} else {
+						event.getPlayer().sendMessage(ChatColor.YELLOW + "It's not dark or raining!");
+					}
+					event.setCancelled(true);
 					return;
 				}
 
