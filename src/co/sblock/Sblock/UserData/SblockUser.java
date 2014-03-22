@@ -18,6 +18,7 @@ import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
+import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
@@ -488,6 +489,9 @@ public class SblockUser {
 	 */
 	public void startServerMode() {
 		Player p = this.getPlayer();
+		if (Spectators.getSpectators().isSpectator(playerName)) {
+			Spectators.getSpectators().removeSpectator(p);
+		}
 		if (this.client == null) {
 			p.sendMessage(ChatColor.RED + "You must have a client to enter server mode!"
 					+ "+\nAsk someone with " + ChatColor.AQUA + "/requestclient <player>");
@@ -512,6 +516,7 @@ public class SblockUser {
 		this.isServer = true;
 		this.updateFlight();
 		p.setNoDamageTicks(Integer.MAX_VALUE);
+		InventoryManager.storeAndClearInventory(p);
 		p.sendMessage(ChatColor.GREEN + "Server mode enabled!");
 	}
 
@@ -525,6 +530,7 @@ public class SblockUser {
 		p.teleport(serverDisableTeleport);
 		p.setFallDistance(0);
 		p.setNoDamageTicks(0);
+		InventoryManager.restoreInventory(p);
 		p.sendMessage(ChatColor.GREEN + "Server program closed!");
 	}
 

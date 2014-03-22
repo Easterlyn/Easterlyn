@@ -12,13 +12,13 @@ import org.bukkit.command.CommandSender;
 public enum Call {
 	PLAYER_SAVE("INSERT INTO PlayerData(name, class, aspect, mPlanet, dPlanet, towerNum, "
 			+ "sleepState, currentChannel, isMute, channels, ip, timePlayed, previousLocation, "
-			+ "programs, uhc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+			+ "programs, uhc, client, server) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 			+ "ON DUPLICATE KEY UPDATE class=VALUES(class), aspect=VALUES(aspect), "
 			+ "mPlanet=VALUES(mPlanet), dPlanet=VALUES(dPlanet), towerNum=VALUES(towerNum), "
 			+ "sleepState=VALUES(sleepState), currentChannel=VALUES(currentChannel), "
 			+ "isMute=VALUES(isMute), channels=VALUES(channels), ip=VALUES(ip), "
 			+ "timePlayed=VALUES(timePlayed), previousLocation=VALUES(previousLocation), "
-			+ "programs=VALUES(programs), uhc=VALUES(uhc)"),
+			+ "programs=VALUES(programs), uhc=VALUES(uhc), client=VALUES(client), server=VALUES(server)"),
 	PLAYER_LOAD("SELECT * FROM PlayerData WHERE name=?"),
 	PLAYER_LOOKUP("SELECT * FROM PlayerData WHERE name=?"),
 	PLAYER_DELETE("DELETE FROM PlayerData WHERE name = ?"),

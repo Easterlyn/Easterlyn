@@ -8,6 +8,7 @@ import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.SblockEffects.EffectManager;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
+import co.sblock.Sblock.Utilities.Vote.SleepVote;
 
 /**
  * Listener for PlayerJoinEvents.
@@ -28,5 +29,7 @@ public class PlayerJoinListener implements Listener {
 		SblockUser u = UserManager.getUserManager().addUser(event.getPlayer().getName());
 		u.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
 		EffectManager.applyPassiveEffects(u);
+
+		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld());
 	}
 }

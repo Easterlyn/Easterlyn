@@ -38,7 +38,7 @@ public class SleepVote {
 	}
 
 	public void sleepVote(World world, Player p) {
-		if (votes.get(world.getName()) == null) {
+		if (!votes.containsKey(world.getName())) {
 			votes.put(world.getName(), new HashSet<String>());
 			resetVote(world);
 		}
@@ -47,31 +47,48 @@ public class SleepVote {
 		}
 	}
 
+	/**
+	 * Updates the percentage of players who have slept.
+	 * Intended for use when a player is logging in or out.
+	 * 
+	 * @param world the world to update
+	 */
+	public void updateVoteCount(final World world) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				updateVotes(world, null);
+			}
+		}, 0);
+	}
+
 	public void updateVotes(World world, String player) {
 		if (!votes.containsKey(world.getName())) {
-			// Vote has succeeded, task is completing.
+			// No vote running in this world, nothing to update.
 			return;
 		}
-		if (player == null) {
-			// Timeout reached, should be day by now
-			votes.remove(world.getName());
-			return;
+		StringBuilder sb = new StringBuilder();
+		if (player != null) {
+			sb.append(ChatColor.GREEN).append(player).append(ChatColor.YELLOW).append(" has gone to bed. ");
 		}
 		int percent = (int) 100 * votes.get(world.getName()).size() / world.getPlayers().size();
-		StringBuilder sb = new StringBuilder(ChatColor.GREEN.toString()).append(player).append(ChatColor.YELLOW);
-		sb.append(" has gone to bed. ").append(percent).append("% of players have slept.");
+		sb.append(ChatColor.YELLOW).append("% of players have slept.");
 		if (percent > 50) {
 			sb.append('\n').append("Time to get up, a new day awaits!");
 			world.setTime(0);
 			world.setStorm(false);
 			world.setWeatherDuration(world.getWeatherDuration() > 12000 ? world.getWeatherDuration() : 12000);
+			Bukkit.getConsoleSender().sendMessage("[SleepVote] " + world.getName() + " set to morning!");
 			votes.remove(world.getName());
+		} else if (player == null) {
+			// No spam on log in/out
+			return;
 		}
 		String msg = sb.toString();
 		for (Player p : world.getPlayers()) {
 			p.sendMessage(msg);
 		}
-		Bukkit.getConsoleSender().sendMessage("[SleepVote] " + world.getName() + " set to morning!");
 	}
 
 	public void resetVote(final World world) {
@@ -79,7 +96,7 @@ public class SleepVote {
 
 			@Override
 			public void run() {
-				updateVotes(world, null);
+				votes.remove(world.getName());
 			}
 		}, 24001 - world.getTime());
 	}

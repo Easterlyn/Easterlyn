@@ -31,11 +31,11 @@ public class MessageElement {
 			if (colors[i].isFormat()) {
 				applicableFormats.add(colors[i]);
 			} else {
-				color = ",color:" + colors[i].name().toLowerCase();
+				color = ",\"color\":\"" + colors[i].name().toLowerCase() + "\"";
 			}
 		}
 		for (ChatColor c : applicableFormats) {
-			formats.append(',').append(c.name().toLowerCase()).append(":true");
+			formats.append(',').append('"').append(c.name().toLowerCase()).append('"').append(":\"true\"");
 		}
 	}
 

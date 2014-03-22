@@ -32,10 +32,20 @@ public class PlayerDropItemListener implements Listener {
 			return;
 		}
 
-		SblockUser user = SblockUser.getUser(event.getPlayer().getName());
+		// valid SblockUser required for all events below this point
+		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
+		if (u == null) {
+			return;
+		}
+
+		if (u.isServer()) {
+			event.setCancelled(true);
+			return;
+		}
+
 		HashMap<PassiveEffect, Integer> effects = EffectManager.itemScan(event.getItemDrop());
 		for (PassiveEffect e : effects.keySet()) {
-			user.removePassiveEffect(e, effects.get(e));
+			u.removePassiveEffect(e, effects.get(e));
 		}
 	}
 }

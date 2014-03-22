@@ -139,13 +139,27 @@ public class UserDataCommands implements CommandListener {
 	 * @return true
 	 */
 	@SblockCommand(description = "Ask someone to be your Sburb Server player!", usage = "/requestserver <player>")
-	public boolean requestServer(CommandSender s, String[] args) {
+	public boolean requestserver(CommandSender s, String[] args) {
 		if (args.length == 0) {
 			s.sendMessage(ChatColor.RED + "Who ya gonna call?");
 			return true;
 		}
-		SblockUser u = SblockUser.getUser(Bukkit.getPlayer(args[0]).getName());
-		if (u != null && u.getClient() != null) {
+		if (s.getName().equalsIgnoreCase(args[0])) {
+			s.sendMessage(ChatColor.RED + "Playing with yourself can only entertain you for so long. Find a friend!");
+			return true;
+		}
+		Player p = Bukkit.getPlayer(args[0]);
+		if (p == null) {
+			s.sendMessage(ChatColor.RED + "Unknown user!");
+			return true;
+		}
+		SblockUser u = SblockUser.getUser(p.getName());
+		if (u == null) {
+			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
+			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
+			return true;
+		}
+		if (u.getClient() != null) {
 			s.sendMessage(ChatColor.GOLD + u.getPlayerName() + ChatColor.RED
 					+ " appears to have a client already! You'd best find someone else.");
 			return true;
@@ -172,13 +186,27 @@ public class UserDataCommands implements CommandListener {
 	 * @return true
 	 */
 	@SblockCommand(description = "Ask someone to be your Sburb Client player!", usage = "/requestclient <player>")
-	public boolean requestClient(CommandSender s, String[] args) {
+	public boolean requestclient(CommandSender s, String[] args) {
 		if (args.length == 0) {
 			s.sendMessage(ChatColor.RED + "Who ya gonna call?");
 			return true;
 		}
-		SblockUser u = SblockUser.getUser(Bukkit.getPlayer(args[0]).getName());
-		if (u != null && u.getServer() != null) {
+		if (s.getName().equalsIgnoreCase(args[0])) {
+			s.sendMessage(ChatColor.RED + "Playing with yourself can only entertain you for so long. Find a friend!");
+			return true;
+		}
+		Player p = Bukkit.getPlayer(args[0]);
+		if (p == null) {
+			s.sendMessage(ChatColor.RED + "Unknown user!");
+			return true;
+		}
+		SblockUser u = SblockUser.getUser(p.getName());
+		if (u == null) {
+			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
+			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
+			return true;
+		}
+		if (u.getServer() != null) {
 			s.sendMessage(ChatColor.GOLD + u.getPlayerName() + ChatColor.RED
 					+ " appears to have a server already! You'd best find someone else.");
 			return true;
@@ -205,7 +233,7 @@ public class UserDataCommands implements CommandListener {
 	 * @return true
 	 */
 	@SblockCommand(description = "Accept an open request!", usage = "/acceptrequest")
-	public boolean acceptRequest(CommandSender s, String[] args) {
+	public boolean acceptrequest(CommandSender s, String[] args) {
 		if (!requests.containsKey(s.getName())) {
 			s.sendMessage(ChatColor.RED + "You should get someone to /requestserver or /requestclient before attempting to accept!");
 			return true;
@@ -238,7 +266,7 @@ public class UserDataCommands implements CommandListener {
 	 * @return true
 	 */
 	@SblockCommand(description = "Say \"no\" to peer pressure!", usage = "/declinerequest")
-	public boolean declineRequest(CommandSender s, String[] args) {
+	public boolean declinerequest(CommandSender s, String[] args) {
 		if (!requests.containsKey(s.getName())) {
 			s.sendMessage(ChatColor.RED + "You vigorously decline... no one."
 					+ "\nPerhaps you should get someone to /requestserver or /requestclient first?");

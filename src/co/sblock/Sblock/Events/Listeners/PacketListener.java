@@ -1,7 +1,5 @@
 package co.sblock.Sblock.Events.Listeners;
 
-import org.bukkit.event.Listener;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -12,7 +10,7 @@ import co.sblock.Sblock.Events.SblockEvents;
 /**
  * @author Jikoo
  */
-public class PacketListener extends PacketAdapter implements Listener {
+public class PacketListener extends PacketAdapter {
 
 	public PacketListener() {
 		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.WINDOW_CLICK);

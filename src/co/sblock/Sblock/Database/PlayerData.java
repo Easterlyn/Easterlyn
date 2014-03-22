@@ -56,7 +56,7 @@ public class PlayerData {
 				pst.setBoolean(7, sUser.isSleeping());
 				try {
 					pst.setString(8, cUser.getCurrent().getName());
-				} catch (NullPointerException e1) {
+				} catch (NullPointerException e) {
 					pst.setString(8, "#" + cUser.getCurrentRegion().name());
 				}
 				pst.setBoolean(9, cUser.isMute());
@@ -75,6 +75,8 @@ public class PlayerData {
 				}
 				pst.setString(14, sUser.getProgramString());
 				pst.setByte(15, sUser.getUHCMode());
+				pst.setString(16, sUser.getClient());
+				pst.setString(17, sUser.getServer());
 			} catch (Exception e) {
 				Log.err(e);
 				return;
@@ -159,6 +161,8 @@ public class PlayerData {
 				sUser.setTimePlayed(rs.getString("timePlayed"));
 				sUser.setPrograms(rs.getString("programs"));
 				sUser.setUHCMode(rs.getByte("uhc"));
+				sUser.setClient(rs.getString("client"));
+				sUser.setServer(rs.getString("server"));
 				sUser.setLoaded();
 				UserManager.getUserManager().team(sUser.getPlayer());
 			} else {

@@ -13,6 +13,7 @@ import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.SblockCommand;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
  * Module for managing players in a custom gamemode. Designed to allow players
@@ -91,6 +92,7 @@ public class Spectators extends Module implements CommandListener {
 		p.setFlying(true);
 		p.setNoDamageTicks(Integer.MAX_VALUE);
 		p.closeInventory();
+		InventoryManager.storeAndClearInventory(p);
 	}
 
 	/**
@@ -115,6 +117,7 @@ public class Spectators extends Module implements CommandListener {
 		SblockUser.getUser(p.getName()).updateFlight();
 		p.setNoDamageTicks(0);
 		p.setFallDistance(e.getFall());
+		InventoryManager.restoreInventory(p);
 	}
 
 	/**
@@ -127,6 +130,10 @@ public class Spectators extends Module implements CommandListener {
 	 */
 	@SblockCommand(description = "Player: Become the ghost (toggles spectator mode)", usage = "/spectate")
 	public boolean spectate(CommandSender s, String[] args) {
+		if (SblockUser.getUser(s.getName()).isServer()) {
+			s.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
+			return true;
+		}
 		if (this.spectators.containsKey(s.getName())) {
 			s.sendMessage(ChatColor.GREEN + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
 			this.removeSpectator((Player) s);

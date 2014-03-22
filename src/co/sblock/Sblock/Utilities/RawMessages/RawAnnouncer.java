@@ -3,6 +3,8 @@ package co.sblock.Sblock.Utilities.RawMessages;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.util.org.apache.commons.lang3.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -118,10 +120,26 @@ public class RawAnnouncer extends Module implements CommandListener {
 		Bukkit.getScheduler().cancelTask(taskId);
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "Force a raw message announcement.",
-			usage = "/rawnounce", permission = "group.horrorterror")
-	public boolean rawnounce(CommandSender s, String[] args) {
-		MessageElement msg = announcements.get((int) (Math.random() * announcements.size()));
+	@SblockCommand(consoleFriendly = true, description = "Force a raw message announcement or talk as Hal.",
+			usage = "/hal", permission = "group.horrorterror")
+	public boolean hal(CommandSender s, String[] args) {
+		MessageElement msg;
+		if (args.length == 1) {
+			try {
+				int msgNum = Integer.valueOf(args[0]);
+				if (msgNum > announcements.size()) {
+					s.sendMessage(ChatColor.RED.toString() + announcements.size() + " announcements exist currently.");
+					msgNum = announcements.size();
+				}
+				msg = announcements.get(msgNum - 1);
+			} catch (NumberFormatException e) {
+				msg = new MessageHalement(args[0]);
+			}
+		} else if (args.length > 0) {
+			msg = new MessageHalement(StringUtils.join(args, ' '));
+		} else {
+			msg = announcements.get((int) (Math.random() * announcements.size()));
+		}
 		getLogger().info(msg.getConsoleFriendly());
 		String announcement = msg.toString();
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {

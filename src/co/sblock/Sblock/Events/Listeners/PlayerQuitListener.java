@@ -12,8 +12,10 @@ import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.SblockEffects.Cooldowns;
+import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
+import co.sblock.Sblock.Utilities.Vote.SleepVote;
 
 /**
  * Listener for PlayerQuitEvents.
@@ -29,25 +31,45 @@ public class PlayerQuitListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
+
+		// Update vote
+		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld());
+
+		// Remove Spectator status
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
 			Spectators.getSpectators().removeSpectator(event.getPlayer());
 		}
-		InventoryManager.restoreInventory(event.getPlayer());
+
+		// Stop scheduled sleep teleport
 		if (SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
 			Bukkit.getScheduler().cancelTask(SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()));
 		}
+
+		// Clean up any expired cooldown entries for the player
 		Cooldowns.cleanup(event.getPlayer().getName());
-		ChatUser u = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
-		SblockData.getDB().saveUserData(event.getPlayer().getName());
-		if (u == null) {
-			return; // We don't want to make another db call just to announce quit.
+
+		// Remove Server status
+		SblockUser sUser = SblockUser.getUser(event.getPlayer().getName());
+		if (sUser != null && sUser.isServer()) {
+			sUser.stopServerMode();
 		}
-		for (String s : u.getListening()) {
-			u.removeListeningQuit(s);
+
+		// Restore inventory if still preserved
+		InventoryManager.restoreInventory(event.getPlayer());
+
+		// Save data and inform channels that the player is no longer listening to them
+		ChatUser cUser = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
+		SblockData.getDB().saveUserData(event.getPlayer().getName());
+		if (cUser == null) {
+			// Sending a message to a channel will remove invalid players.
+			return;
+		}
+		for (String s : cUser.getListening()) {
+			cUser.removeListeningQuit(s);
 		}
 		try {
-			Channel regionC = ChannelManager.getChannelManager().getChannel("#" + u.getCurrentRegion().toString());
-			u.removeListening(regionC.getName());
+			Channel regionC = ChannelManager.getChannelManager().getChannel("#" + cUser.getCurrentRegion().toString());
+			cUser.removeListeningQuit(regionC.getName());
 		} catch (NullPointerException e) {
 			SblockEvents.getEvents().getLogger().warning("User's region channel was invalid!");
 		}
