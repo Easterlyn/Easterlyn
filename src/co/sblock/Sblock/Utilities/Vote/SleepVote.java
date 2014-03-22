@@ -73,8 +73,8 @@ public class SleepVote {
 			sb.append(ChatColor.GREEN).append(player).append(ChatColor.YELLOW).append(" has gone to bed. ");
 		}
 		int percent = (int) 100 * votes.get(world.getName()).size() / world.getPlayers().size();
-		sb.append(ChatColor.YELLOW).append("% of players have slept.");
-		if (percent > 50) {
+		sb.append(ChatColor.YELLOW).append(percent).append("% of players have slept.");
+		if (percent >= 50) {
 			sb.append('\n').append("Time to get up, a new day awaits!");
 			world.setTime(0);
 			world.setStorm(false);
