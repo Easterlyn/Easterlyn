@@ -53,14 +53,15 @@ public class SleepVote {
 	 * 
 	 * @param world the world to update
 	 */
-	public void updateVoteCount(final World world) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+	public void updateVoteCount(final String world, String player) {
+		if (!votes.containsKey(world)) {
+			return;
+		}
+		if (player != null) {
+			votes.get(world).remove(player);
+		}
 
-			@Override
-			public void run() {
-				updateVotes(world, null);
-			}
-		}, 0);
+		updateVotes(Bukkit.getWorld(world), null);
 	}
 
 	public void updateVotes(World world, String player) {
@@ -69,10 +70,13 @@ public class SleepVote {
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
+		int worldsize = world.getPlayers().size();
 		if (player != null) {
 			sb.append(ChatColor.GREEN).append(player).append(ChatColor.YELLOW).append(" has gone to bed. ");
+		} else {
+			worldsize--;
 		}
-		int percent = (int) 100 * votes.get(world.getName()).size() / world.getPlayers().size();
+		int percent = (int) 100 * votes.get(world.getName()).size() / worldsize;
 		sb.append(ChatColor.YELLOW).append(percent).append("% of players have slept.");
 		if (percent >= 50) {
 			sb.append('\n').append("Time to get up, a new day awaits!");

@@ -33,7 +33,7 @@ public class PlayerQuitListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 
 		// Update vote
-		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld());
+		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
 
 		// Remove Spectator status
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
