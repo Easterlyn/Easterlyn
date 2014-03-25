@@ -71,9 +71,9 @@ public class Sblock extends JavaPlugin implements CommandListener {
 	 */
 	@Override
 	public void onEnable() {
-		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R1.CraftServer) {
+		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R2.CraftServer) {
 			try {
-				Field f = org.bukkit.craftbukkit.v1_7_R1.CraftServer.class.getDeclaredField("commandMap");
+				Field f = org.bukkit.craftbukkit.v1_7_R2.CraftServer.class.getDeclaredField("commandMap");
 				f.setAccessible(true);
 				cmdMap = (CommandMap) f.get(Bukkit.getServer());
 			} catch (IllegalArgumentException | IllegalAccessException
