@@ -39,7 +39,7 @@ public class UserDataCommands implements CommandListener {
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Check a player's profile.", usage = "")
 	public boolean profile(CommandSender sender, String[] target) {
-		SblockUser user;
+		SblockUser user = null;
 		if (target == null || target.length == 0) {
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
@@ -47,7 +47,10 @@ public class UserDataCommands implements CommandListener {
 			}
 			user = SblockUser.getUser(sender.getName());
 		} else {
-			user = UserManager.getUserManager().getUser(Bukkit.getPlayer(target[0]).getName());
+			Player pTarget = Bukkit.getPlayer(target[0]);
+			if (pTarget != null) {
+				user = UserManager.getUserManager().getUser(pTarget.getName());
+			}
 		}
 		if (user == null) {
 			sender.sendMessage(ChatColor.YELLOW + "User not found.");
