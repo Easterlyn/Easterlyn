@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -496,15 +498,10 @@ public class ChatUser {
 		// check for thirdperson # modifier and reformat appropriately
 		// finally, channel.sendtochannel
 
-		String channelF = "";
-		String nameF = "";
-		String output = "";
+		String nameF;
 
 		boolean isThirdPerson = s.charAt(0) == '#';
 
-		if (!isThirdPerson) {
-			channelF = this.getOutputChannelF(sender, c);
-		}
 		if (isThirdPerson) {
 			s = s.substring(1);
 		}
@@ -517,12 +514,8 @@ public class ChatUser {
 			// color formatting
 			s = ChatColor.translateAlternateColorCodes('&', s);
 		}
-		output = channelF + nameF + s;
-		if (isThirdPerson) {
-			c.sendToAll(sender, output, "me");
-		} else {
-			c.sendToAll(sender, output, "chat");
-		}
+		String output = getOutputChannelF(sender, c) + nameF + s;
+		c.sendToAll(sender, output, isThirdPerson ? "me" : "chat");
 	}
 
 	/**
@@ -545,9 +538,32 @@ public class ChatUser {
 		// then just send it and be done!
 		switch (type) {
 		case "chat":
-			int nameStart = s.toLowerCase().indexOf(this.playerName.toLowerCase());
-			if (nameStart > 10 + this.playerName.length() + c.getName().length()) {
-				s = s.replaceFirst("\\] .{2}?<.{2}?([\\w]+)", ChatColor.BLUE + "{!}$1");
+			if (s.toLowerCase().indexOf(c.getNick(this).toLowerCase()) > 14 + c.getName().length()
+					|| s.toLowerCase().indexOf(playerName.toLowerCase()) > 14 + c.getName().length()) {
+				// 14 + Channel prevents self highlight:
+				// 12345$Channel678901234$Name345678
+				// &F[&6$Channel&F]&2 <&F$Name&2> &fMessage
+				s = s.replaceFirst("\\[(.{1,18})\\](..) <..(.+)>",
+						ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!! $2<" + ChatColor.AQUA +"$3>");
+				StringBuilder regex = new StringBuilder().append('(');
+				String nick = c.getNick(this);
+				if (nick != playerName) {
+					regex.append(ignoreCaseRegex(nick)).append('|');
+				}
+				regex.append(ignoreCaseRegex(playerName));
+				StringBuilder msg = new StringBuilder();
+				Matcher match = Pattern.compile(regex.append(')').toString()).matcher(s);
+				int lastEnd = 0;
+				while (match.find()) {
+					msg.append(s.substring(lastEnd, match.start()));
+					String last = ChatColor.getLastColors(msg.toString());
+					msg.append(ChatColor.AQUA).append(match.group()).append(last);
+					lastEnd = match.end();
+				}
+				if (lastEnd < s.length()) {
+				msg.append(s.substring(lastEnd));
+				}
+				s = msg.toString();
 				p.playEffect(p.getLocation(), Effect.BOW_FIRE, 0);
 			}
 		case "me":
@@ -557,6 +573,21 @@ public class ChatUser {
 			break;
 		}
 		// this.getPlayer().sendMessage(s);
+	}
+
+	private String ignoreCaseRegex(String s) {
+		StringBuilder regex = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			regex.append('[');
+			char ch = s.charAt(i);
+			if (Character.isLetter(ch)) {
+				regex.append(Character.toUpperCase(ch)).append(Character.toLowerCase(ch));
+			} else {
+				regex.append(ch);
+			}
+			regex.append(']');
+		}
+		return regex.toString();
 	}
 
 	// Here begins output formatting. Abandon all hope ye who enter
@@ -579,7 +610,7 @@ public class ChatUser {
 		} else if (channel.isChannelMod(sender)) {
 			color = ColorDef.CHATRANK_MOD;
 		}
-		out = ChatColor.WHITE + "[" + color + channel.getName() + ChatColor.WHITE + "] ";
+		out = ChatColor.WHITE + "[" + color + channel.getName() + ChatColor.WHITE + "]";
 		return out;
 	}
 
@@ -595,17 +626,7 @@ public class ChatUser {
 	public String getOutputNameF(ChatUser sender, boolean isThirdPerson, Channel c) {
 		// colors for <$name> applied here
 		String out = "";
-		String outputName = sender.getGlobalNick();
-		switch (c.getType()) {
-		case RP:
-		case NICK:
-			if (c.hasNick(sender)) {
-				outputName = c.getNick(sender);
-			}
-			break;
-		default:
-			break;
-		}
+		String outputName = c.getNick(sender);
 
 		ChatColor colorP = ColorDef.RANK_HERO;
 		ChatColor colorW = ColorDef.DEFAULT;
@@ -630,7 +651,7 @@ public class ChatUser {
 		}
 		colorW = Region.getRegionColor(getPlayerRegion());
 
-		out = (isThirdPerson ? ChatColor.BLUE + "> " : colorW + "<") + colorP + outputName
+		out = (isThirdPerson ? ChatColor.BLUE + "> " : colorW + " <") + colorP + outputName
 				+ ChatColor.WHITE
 				+ (isThirdPerson ? ChatColor.BLUE + ": " : colorW + "> ") + ChatColor.WHITE;
 		// sender.getPlayer().sendMessage(out);

@@ -60,7 +60,7 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public String getNick(ChatUser sender) {
-		return nickList.get(sender);
+		return nickList.containsKey(sender) ? nickList.get(sender) : sender.getGlobalNick();
 	}
 
 	/**

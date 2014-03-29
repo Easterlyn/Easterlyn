@@ -41,8 +41,7 @@ public class RegionChannel extends Channel {
 	 */
 	@Override
 	public String getNick(ChatUser sender) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
-		return null;
+		return sender.getGlobalNick();
 	}
 
 	/**
