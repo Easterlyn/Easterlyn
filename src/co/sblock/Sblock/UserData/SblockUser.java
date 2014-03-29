@@ -1,10 +1,11 @@
 package co.sblock.Sblock.UserData;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -307,24 +308,10 @@ public class SblockUser {
 	 */
 	public void setTimePlayed(String s) {
 		if (s != null) {
-			String[] nums = s.split(":");
-			for (int i = 0; i < nums.length; i++) {
-				switch (i) {
-				case 1:
-					this.timePlayed += Long.valueOf(nums[nums.length-i]);
-					break;
-				case 2:
-					this.timePlayed += Long.valueOf(nums[nums.length-i]) * 1000L;
-					break;
-				case 3:
-					this.timePlayed += Long.valueOf(nums[nums.length-i]) * 60000L;
-					break;
-				case 4:
-					this.timePlayed += Long.valueOf(nums[nums.length-i]) * 3600000L;
-					break;
-				default:
-					break;
-				}
+			try {
+				timePlayed = new SimpleDateFormat("hhh:mm:ss:SSS").parse(s).getTime();
+			} catch (ParseException e) {
+				// String ain't right D:
 			}
 		}
 	}
@@ -335,15 +322,8 @@ public class SblockUser {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		long current = this.timePlayed + new Date().getTime() - this.login.getTime();
-		long hrs = TimeUnit.MILLISECONDS.toHours(current);
-		long mins = TimeUnit.MILLISECONDS.toMinutes(current) -
-				TimeUnit.HOURS.toMinutes(hrs);
-		long secs = TimeUnit.MILLISECONDS.toSeconds(current) -
-				TimeUnit.HOURS.toSeconds(hrs) - TimeUnit.MINUTES.toSeconds(mins);
-		long millis = current - TimeUnit.HOURS.toMillis(hrs) -
-				TimeUnit.MINUTES.toMillis(mins) - TimeUnit.SECONDS.toMillis(secs);
-		return String.format("%02d:%02d:%02d:%03d", hrs, mins, secs, millis);
+		return new SimpleDateFormat("hhh:mm:ss:SSS")
+				.format(new Date(this.timePlayed + new Date().getTime() - this.login.getTime()));
 	}
 
 	/**
@@ -444,8 +424,7 @@ public class SblockUser {
 	 */
 	public void setUserIP() {
 		if (this.getPlayer().isOnline())
-			this.userIP = this.getPlayer().getAddress().getAddress()
-					.getHostAddress();
+			this.userIP = this.getPlayer().getAddress().getAddress().getHostAddress();
 	}
 
 	/**

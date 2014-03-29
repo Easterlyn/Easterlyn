@@ -322,4 +322,12 @@ public class UserDataCommands implements CommandListener {
 		((Player) sender).performCommand("mvs");
 		return true;
 	}
+
+	/**
+	 * Ben always does this, and I dunno why. Hell yeah, catering to end users.
+	 */
+	@SblockCommand(description = "Teleport to this world's spawn.", usage = "/mvs")
+	public boolean spewnt(CommandSender sender, String[] args) {
+		return spawn(sender, args);
+	}
 }

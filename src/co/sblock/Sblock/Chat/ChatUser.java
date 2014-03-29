@@ -29,8 +29,7 @@ import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.UserData.UserManager;
 
 /**
- * ChatUser is the class for storing all chat-related
- * Player data.
+ * ChatUser is the class for storing all chat-related Player data.
  * 
  * @author Jikoo, Dublek
  */
@@ -60,7 +59,6 @@ public class ChatUser {
 	public ChatUser(String name) {
 		this.playerName = name;
 		this.currentRegion = Region.getLocationRegion(this.getPlayer().getLocation());
-		this.addListening(ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString()));
 	}
 
 	/**
@@ -382,10 +380,14 @@ public class ChatUser {
 	 */
 	public void updateCurrentRegion(Region newR) {
 		if (newR == currentRegion) {
+			if (!listening.contains("#" + currentRegion.toString())) {
+				Channel c = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
+				this.addListening(c);
+			}
 			return;
 		}
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (current == null ||  current.equals("#" + currentRegion.toString())) {
+		if (current == null || current.equals("#" + currentRegion.toString())) {
 			current = newC.getName();
 		}
 		this.removeListening("#" + currentRegion.toString());
@@ -426,19 +428,19 @@ public class ChatUser {
 		// output of channel, string
 
 		ChatUser sender = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
-		String fullmsg = event.getMessage();
-		String outputmessage = fullmsg;
-		Channel sendto = SblockChat.getChat().getChannelManager().getChannel(sender.current);
 
 		if (sender.isMute()) {
 			sender.sendMessage(ChatMsgs.isMute());
 			return;
 		}
 
-		if (fullmsg.indexOf("@") == 0) { // Check for alternate channel destination
-			int space = fullmsg.indexOf(" ");
-			String newChannel = fullmsg.substring(1, space);
-			//sender.sendMessage("\"" + newChannel + "\"");
+		String msg = event.getMessage();
+		Channel sendto = SblockChat.getChat().getChannelManager().getChannel(sender.current);
+
+		if (msg.indexOf("@") == 0 && msg.indexOf(" ") > 1) {
+			// Check for alternate channel destination. Failing that, warn user.
+			int space = msg.indexOf(" ");
+			String newChannel = msg.substring(1, space);
 			if (SblockChat.getChat().getChannelManager().isValidChannel(newChannel)) {
 				sendto = SblockChat.getChat().getChannelManager().getChannel(newChannel);
 				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender)) {
@@ -447,10 +449,14 @@ public class ChatUser {
 					return;
 				} else {
 					// should reach this point for publicchannel and approved users
-					outputmessage = fullmsg.substring(space + 1);
+					msg = msg.substring(space + 1);
+					if (msg.length() == 0) {
+						// Do not display blank messages for @<channel> with no message
+						return;
+					}
 				}
 			} else {
-				// invalidChannel
+				// Invalid channel specified
 				sender.sendMessage(ChatMsgs.errorInvalidChannel(newChannel));
 				return;
 			}
@@ -466,18 +472,15 @@ public class ChatUser {
 				return;
 			}
 		}
-		this.formatMessage(sender, sendto, outputmessage);
+		this.formatMessage(sender, sendto, msg);
 	}
 
 	/**
 	 * Format a chat message for sending to a Channel.
 	 * 
-	 * @param sender
-	 *            the SblockUser speaking
-	 * @param c
-	 *            the Channel to send the message to
-	 * @param s
-	 *            the message to send
+	 * @param sender the SblockUser speaking
+	 * @param c the Channel to send the message to
+	 * @param s the message to send
 	 */
 	public void formatMessage(ChatUser sender, Channel c, String s) {
 		// remember, [$channel]<$player> $message
@@ -497,7 +500,7 @@ public class ChatUser {
 		String nameF = "";
 		String output = "";
 
-		boolean isThirdPerson = (s.charAt(0) == '\u0023') ? true : false;
+		boolean isThirdPerson = s.charAt(0) == '#';
 
 		if (!isThirdPerson) {
 			channelF = this.getOutputChannelF(sender, c);
@@ -507,13 +510,12 @@ public class ChatUser {
 		}
 		nameF = this.getOutputNameF(sender, isThirdPerson, c);
 		
-		if(c.getType().equals(ChannelType.RP)) {
+		if(c.getType() == ChannelType.RP) {
 			//apply quirk to s
 			s = CanonNicks.getNick(c.getNick(sender)).applyQuirk(s);
-		}
-		else if (c.isChannelMod(sender)) {
+		} else if (c.isChannelMod(sender)) {
 			// color formatting
-			s = ChatColor.translateAlternateColorCodes('\u0026', s);
+			s = ChatColor.translateAlternateColorCodes('&', s);
 		}
 		output = channelF + nameF + s;
 		if (isThirdPerson) {
@@ -526,12 +528,9 @@ public class ChatUser {
 	/**
 	 * Send a message from a Channel to this Player.
 	 * 
-	 * @param s
-	 *            the message to send
-	 * @param c
-	 *            the Channel to send to.
-	 * @param type
-	 *            the type of chat for handling purposes
+	 * @param s the message to send
+	 * @param c the Channel to send to.
+	 * @param type the type of chat for handling purposes
 	 */
 	@SuppressWarnings("deprecation")
 	public void sendMessageFromChannel(String s, Channel c, String type) {
@@ -546,20 +545,11 @@ public class ChatUser {
 		// then just send it and be done!
 		switch (type) {
 		case "chat":
-			if (ChatColor.stripColor(s).toLowerCase()
-					.indexOf(this.getPlayerName().toLowerCase()) > s
-					.indexOf(">")) {
-				String output = "";
-				output = s.substring(0, s.indexOf("]") + 1) + ChatColor.BLUE
-						+ "{!}"
-						+ s.substring(s.indexOf("<"), s.indexOf(">") + 1)
-						+ ChatColor.WHITE + s.substring(s.indexOf(">") + 1);
-				p.sendMessage(output);
+			int nameStart = s.toLowerCase().indexOf(this.playerName.toLowerCase());
+			if (nameStart > 10 + this.playerName.length() + c.getName().length()) {
+				s = s.replaceFirst("\\] .{2}?<.{2}?([\\w]+)", ChatColor.BLUE + "{!}$1");
 				p.playEffect(p.getLocation(), Effect.BOW_FIRE, 0);
-			} else {
-				p.sendMessage(s);
 			}
-			break;
 		case "me":
 		case "channel":
 		default:
@@ -574,10 +564,9 @@ public class ChatUser {
 	/**
 	 * Gets chat prefixing based on conditions.
 	 * 
-	 * @param sender
-	 *            the SblockUser sending the message
-	 * @param channel
-	 *            the Channel receiving the message
+	 * @param sender the SblockUser sending the message
+	 * @param channel the Channel receiving the message
+	 * 
 	 * @return the prefix for specified conditions
 	 */
 	public String getOutputChannelF(ChatUser sender, Channel channel) {
@@ -590,21 +579,17 @@ public class ChatUser {
 		} else if (channel.isChannelMod(sender)) {
 			color = ColorDef.CHATRANK_MOD;
 		}
-		out = ChatColor.WHITE + "[" + color + channel.getName()
-				+ ChatColor.WHITE + "] ";
-		// sender.getPlayer().sendMessage(out);
+		out = ChatColor.WHITE + "[" + color + channel.getName() + ChatColor.WHITE + "] ";
 		return out;
 	}
 
 	/**
 	 * Gets chat prefixing based on conditions.
 	 * 
-	 * @param sender
-	 *            the SblockUser sending the message
-	 * @param isThirdPerson
-	 *            whether or not to provide a third person prefix
-	 * @param channel
-	 *            the Channel receiving the message
+	 * @param sender the SblockUser sending the message
+	 * @param isThirdPerson whether or not to provide a third person prefix
+	 * @param channel the Channel receiving the message
+	 * 
 	 * @return the prefix for specified conditions
 	 */
 	public String getOutputNameF(ChatUser sender, boolean isThirdPerson, Channel c) {
@@ -655,20 +640,16 @@ public class ChatUser {
 	/**
 	 * Sends a message to the Player.
 	 * 
-	 * @param string
-	 *            the message to send
+	 * @param string the message to send
 	 */
 	public void sendMessage(String string) {
 		this.getPlayer().sendMessage(string);
 	}
 
 	/**
-	 * Important SblockUser data formatted to be easily readable
-	 * when printed.
+	 * Important SblockUser data formatted to be easily readable when printed.
 	 * 
-	 * @return a representation of the most important data stored by this
-	 *         SblockUser
-	 * @see java.lang.Object#toString()
+	 * @return a representation of the most important data stored by this SblockUser
 	 */
 	public String toString() {
 		ChatColor sys = ChatColor.DARK_AQUA;
@@ -690,23 +671,20 @@ public class ChatUser {
 	/**
 	 * Gets a ChatUser by Player name.
 	 * 
-	 * @param userName
-	 *            the name to match
-	 * @return the ChatUser specified or null if
-	 *         invalid.
+	 * @param userName the name to match
+	 * 
+	 * @return the ChatUser specified or null if invalid.
 	 */
 	public static ChatUser getUser(String userName) {
 		return ChatUserManager.getUserManager().getUser(userName);
 	}
 
 	/**
-	 * Check to see if a Player by the specified name has played
-	 * before.
+	 * Check to see if a Player by the specified name has played before.
 	 * 
-	 * @param name
-	 *            the name to check
-	 * @return true if a Player by the specified name
-	 *         has logged into the server
+	 * @param name the name to check
+	 * 
+	 * @return true if a Player by the specified name has logged into the server
 	 */
 	public static boolean isValidUser(String name) {
 		return Bukkit.getOfflinePlayer(name).hasPlayedBefore();

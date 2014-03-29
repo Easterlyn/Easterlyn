@@ -158,6 +158,9 @@ public class PlayerData {
 				if (cUser.getCurrent() == null || cUser.getListening().size() == 0) {
 					cUser.setCurrent("#");
 				}
+				if (sUser.getOfflinePlayer().isOnline()) {
+					cUser.updateCurrentRegion(cUser.getPlayerRegion());
+				}
 				sUser.setTimePlayed(rs.getString("timePlayed"));
 				sUser.setPrograms(rs.getString("programs"));
 				sUser.setUHCMode(rs.getByte("uhc"));
