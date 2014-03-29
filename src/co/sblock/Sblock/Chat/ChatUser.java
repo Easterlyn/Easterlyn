@@ -498,14 +498,12 @@ public class ChatUser {
 		// check for thirdperson # modifier and reformat appropriately
 		// finally, channel.sendtochannel
 
-		String nameF;
 
 		boolean isThirdPerson = s.charAt(0) == '#';
 
 		if (isThirdPerson) {
 			s = s.substring(1);
 		}
-		nameF = this.getOutputNameF(sender, isThirdPerson, c);
 		
 		if(c.getType() == ChannelType.RP) {
 			//apply quirk to s
@@ -514,7 +512,7 @@ public class ChatUser {
 			// color formatting
 			s = ChatColor.translateAlternateColorCodes('&', s);
 		}
-		String output = getOutputChannelF(sender, c) + nameF + s;
+		String output = getOutputChannelF(sender, c) + this.getOutputNameF(sender, isThirdPerson, c) + s;
 		c.sendToAll(sender, output, isThirdPerson ? "me" : "chat");
 	}
 
@@ -538,21 +536,21 @@ public class ChatUser {
 		// then just send it and be done!
 		switch (type) {
 		case "chat":
-			if (s.toLowerCase().indexOf(c.getNick(this).toLowerCase()) > 14 + c.getName().length()
-					|| s.toLowerCase().indexOf(playerName.toLowerCase()) > 14 + c.getName().length()) {
-				// 14 + Channel prevents self highlight:
-				// 12345$Channel678901234$Name345678
-				// &F[&6$Channel&F]&2 <&F$Name&2> &fMessage
-				s = s.replaceFirst("\\[(.{1,18})\\](..) <..(.+)>",
-						ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!! $2<" + ChatColor.AQUA +"$3>");
-				StringBuilder regex = new StringBuilder().append('(');
-				String nick = c.getNick(this);
-				if (nick != playerName) {
-					regex.append(ignoreCaseRegex(nick)).append('|');
+			if (!s.startsWith(getOutputChannelF(this, c) + this.getOutputNameF(this, false, c))) {
+				// Chat is not being sent by this ChatUser. Proceed with matching funtimes!
+
+				StringBuilder regex = new StringBuilder();
+				String nick = ChatColor.stripColor(c.getNick(this));
+				if (nick.equals(playerName)) {
+					regex.append('(').append(ignoreCaseRegex(playerName)).append(')');
+				} else {
+					regex.append("((").append(ignoreCaseRegex(nick)).append(")|(")
+					.append(ignoreCaseRegex(playerName)).append("))");
 				}
-				regex.append(ignoreCaseRegex(playerName));
+				// Regex completed, should be similar to (([Nn][Ii][Cc][Kk])|([Nn][Aa][Mm][Ee]))
+
 				StringBuilder msg = new StringBuilder();
-				Matcher match = Pattern.compile(regex.append(')').toString()).matcher(s);
+				Matcher match = Pattern.compile(regex.toString()).matcher(s);
 				int lastEnd = 0;
 				while (match.find()) {
 					msg.append(s.substring(lastEnd, match.start()));
@@ -564,7 +562,13 @@ public class ChatUser {
 				msg.append(s.substring(lastEnd));
 				}
 				s = msg.toString();
-				p.playEffect(p.getLocation(), Effect.BOW_FIRE, 0);
+
+				if (lastEnd > 0) {
+					// Matches were found, commence highlight format changes.
+					s = s.replaceFirst("\\[(.{1,18})\\](..) <..(.+)>",
+						ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!! $2<" + ChatColor.AQUA +"$3>");
+					p.playEffect(p.getLocation(), Effect.BOW_FIRE, 0);
+				}
 			}
 		case "me":
 		case "channel":
