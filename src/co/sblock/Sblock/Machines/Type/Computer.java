@@ -3,6 +3,7 @@ package co.sblock.Sblock.Machines.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -69,7 +70,8 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
-		if (!event.getWhoClicked().getName().equals(this.getData()) && !event.getWhoClicked().hasPermission("group.denizen")) {
+		if (!event.getWhoClicked().getName().equals(this.getData())
+				&& !event.getWhoClicked().hasPermission("group.denizen")) {
 			event.setResult(Result.DENY);
 			return true;
 		}
@@ -77,30 +79,44 @@ public class Computer extends Machine implements InventoryHolder {
 			event.setResult(Result.DENY);
 			return true;
 		}
+		event.setResult(Result.DENY);
 		for (Icon ico : Icon.values()) {
 			if (event.getCurrentItem().equals(ico.getIcon())) {
 				switch (ico) {
+				case BACK:
+					event.getWhoClicked().openInventory(getInventory());
+					break;
+				case BOONDOLLAR_SHOP:
+					// Keiko, shop name is all you,t set to LOHACSE for now
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bossshop open LOHACSE " + event.getWhoClicked().getName());
+					break;
 				case PESTERCHUM:
 					break;
 				case SBURBCLIENT:
 					event.getWhoClicked().openInventory(getClientInventory());
 					break;
 				case SBURBSERVER:
-					event.getWhoClicked().openInventory(getVerify("SburbServer"));
-					break;
-				case BACK:
-					// if upper inv = getServerInv remove server status
-					event.getWhoClicked().openInventory(getInventory());
+					if (!event.getWhoClicked().getName().equals(this.getData())) {
+						((Player) event.getWhoClicked()).sendMessage(
+								"Note: server from " + getData() + "'s computer != server as " + getData());
+					}
+					event.getWhoClicked().openInventory(getServerConfirmation());
 					break;
 				case CONFIRM:
-					
+					SblockUser u = SblockUser.getUser(event.getWhoClicked().getName());
+					if (u == null) {
+						((Player) event.getWhoClicked()).sendMessage(
+								ChatColor.RED + "Your data appears to not have loaded properly. Please relog.");
+						break;
+					}
+					// All checks for starting server mode handled inside startServerMode()
+					u.startServerMode();
 				default:
 					break;
 				}
 				break;
 			}
 		}
-		event.setResult(Result.DENY);
 		return true;
 	}
 
@@ -167,13 +183,13 @@ public class Computer extends Machine implements InventoryHolder {
 	}
 
 	/**
-	 * Create an Inventory that represents our Sburb client adaptation.
+	 * Create a confirmation screen prior to entering server mode.
 	 * 
 	 * @return the Inventory created
 	 */
-	private Inventory getVerify(String s) {
-		Inventory i = Bukkit.createInventory(this, 9, "~/verify/" + s);
-		i.addItem(Icon.CONFIRM.getIcon());
+	private Inventory getServerConfirmation() {
+		Inventory i = Bukkit.createInventory(this, 9, "~/Verify?initialize=SburbServer");
+		i.setItem(0, Icon.CONFIRM.getIcon());
 		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
 		return i;
 	}

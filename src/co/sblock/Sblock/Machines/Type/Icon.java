@@ -16,7 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public enum Icon {
 
 	PESTERCHUM(1), SBURBCLIENT(5), SBURBSERVER(2),
-	BACK(0), CONFIRM(0);
+	BACK(0), CONFIRM(0), BOONDOLLAR_SHOP(0);
 
 	/** The program ID. */
 	private int number;
@@ -61,12 +61,18 @@ public enum Icon {
 	public ItemStack getIcon() {
 		ItemStack is = new ItemStack(Material.DIRT);
 		ItemMeta im = is.getItemMeta();
+		ArrayList<String> lore = new ArrayList<String>();
 		switch(this) {
 		case BACK:
 			is.setType(Material.REDSTONE_BLOCK);
 			im.setDisplayName(ChatColor.DARK_RED + "Back");
-			ArrayList<String> lore = new ArrayList<String>();
 			lore.add(ChatColor.WHITE + "cd ..");
+			im.setLore(lore);
+			break;
+		case BOONDOLLAR_SHOP:
+			is.setType(Material.CHEST);
+			im.setDisplayName(ChatColor.DARK_RED + "LOHACSE");
+			lore.add(ChatColor.WHITE + "Trade on the Stock Exchange!");
 			im.setLore(lore);
 			break;
 		case CONFIRM:
