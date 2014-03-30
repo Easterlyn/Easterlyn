@@ -31,7 +31,9 @@ public class SblockChat extends Module {
 		this.cm.createDefaultSet();
 
 		if (Bukkit.getPluginManager().isPluginEnabled("Chester")) {
-			this.registerEvents(new ChesterListener());
+			ChesterListener cl = new ChesterListener();
+			this.registerEvents(cl);
+			this.registerCommands(cl);
 		} else {
 			return;
 		}
