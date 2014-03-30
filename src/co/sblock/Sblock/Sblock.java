@@ -14,6 +14,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -178,6 +179,11 @@ public class Sblock extends JavaPlugin implements CommandListener {
 			if (sender instanceof ConsoleCommandSender
 					&& !handlerMethod.getAnnotation(SblockCommand.class).consoleFriendly()) {
 				sender.sendMessage("This command cannot be issued from the console.");
+				return true;
+			}
+			if (sender instanceof Player && !((Player)sender).hasPermission(
+					handlerMethod.getAnnotation(SblockCommand.class).permission())) {
+				sender.sendMessage(ChatMsgs.permissionDenied());
 				return true;
 			}
 			try {
