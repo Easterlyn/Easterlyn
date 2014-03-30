@@ -2,6 +2,7 @@ package co.sblock.Sblock.Chat.Chester;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import info.gomeow.chester.API.ChesterBroadcastEvent;
 import info.gomeow.chester.API.ChesterLogEvent;
@@ -39,16 +40,12 @@ public class ChesterListener implements CommandListener, Listener {
 
 		if (!c.getCurrent().getName().equals("#")) {
 			if (!event.getMessage().startsWith("@# ")) {
-				event.setCancelled(true);
-				cancels++;
-				new Log("ChesterListener", null).info("Not logging: Not talking to #. " + cancels + " trigger cancels.");
+				stopLogging(event);
 				return;
 			}
 		} else {
 			if (event.getMessage().charAt(0) == '@' && !event.getMessage().startsWith("@# ")) {
-				event.setCancelled(true);
-				cancels++;
-				new Log("ChesterListener", null).info("Not logging: Not talking to #. " + cancels + " trigger cancels.");
+				stopLogging(event);
 				return;
 			}
 		}
@@ -64,6 +61,33 @@ public class ChesterListener implements CommandListener, Listener {
 				return;
 			}
 		}
+	}
+
+	private void stopLogging(ChesterLogEvent event) {
+		StringBuilder regex = new StringBuilder().append('(');
+		for (String s : SblockChat.chester) {
+			regex.append('(').append(ignoreCaseRegex(s)).append(')').append('|');
+		}
+		regex.replace(regex.length() - 1, regex.length(), ")");
+		if (Pattern.compile(regex.toString()).matcher(event.getMessage()).find()) {
+			cancels++;
+		}
+		event.setCancelled(true);
+	}
+
+	private String ignoreCaseRegex(String s) {
+		StringBuilder regex = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			regex.append('[');
+			char ch = s.charAt(i);
+			if (Character.isLetter(ch)) {
+				regex.append(Character.toUpperCase(ch)).append(Character.toLowerCase(ch));
+			} else {
+				regex.append(ch);
+			}
+			regex.append(']');
+		}
+		return regex.toString();
 	}
 
 	@EventHandler
