@@ -1,5 +1,6 @@
 package co.sblock.Sblock.Events.Listeners;
 
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -23,6 +24,8 @@ public class PlayerJoinListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		event.setJoinMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.GREEN + " logs the fuck in");
+
 		SblockData.getDB().loadUserData(event.getPlayer().getName());
 
 		SblockUser u = UserManager.getUserManager().addUser(event.getPlayer().getName());

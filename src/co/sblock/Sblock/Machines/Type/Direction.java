@@ -103,6 +103,27 @@ public enum Direction {
 	}
 
 	/**
+	 * For determining rotation of doors in a Machine's Shape.
+	 * 
+	 * @return byte
+	 */
+	public byte getDoorByte() {
+		if (dirNum == 0) {
+			return 3;
+		}
+		return (byte) (dirNum - 1);
+	}
+
+	/**
+	 * Door tops always have a data value of 8, I'm just going to forget this.
+	 * 
+	 * @return byte
+	 */
+	public byte getDoorTopByte() {
+		return 8;
+	}
+
+	/**
 	 * For obtaining rotation based on original rotation - for stairs, etc. that
 	 * are not facing in the place Direction of the Machine.
 	 * <p>

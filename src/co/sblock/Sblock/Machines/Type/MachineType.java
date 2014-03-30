@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public enum MachineType {
 
-	ALCHEMITER("alc"), COMPUTER("cpu"), CRUXTRUDER("crx"),
+	ALCHEMITER("alc"), BANK("bnk"), COMPUTER("cpu"), CRUXTRUDER("crx"),
 	INTELLIBEAM_LASERSTATION("il"), PERFECT_BUILDING_OBJECT("pbo"),
 	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"),
 	TOTEM_LATHE("tl"), TRANSMATERIALIZER("tm"),
@@ -87,6 +87,11 @@ public enum MachineType {
 			im.setDisplayName(ChatColor.WHITE + "Alchemiter");
 			is.setItemMeta(im);
 			break;
+		case BANK:
+			is = new ItemStack(Material.CHEST);
+			im = is.getItemMeta();
+			im.setDisplayName(ChatColor.WHITE + "Bank Booth");
+			is.setItemMeta(im);
 		case COMPUTER:
 			is = new ItemStack(Material.JUKEBOX);
 			im = is.getItemMeta();

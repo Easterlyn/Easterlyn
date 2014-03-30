@@ -1,14 +1,13 @@
 package co.sblock.Sblock.Events.Listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.ChatUserManager;
-import co.sblock.Sblock.Chat.Channel.Channel;
-import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.SblockEffects.Cooldowns;
@@ -31,6 +30,8 @@ public class PlayerQuitListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		// Our very own custom quits!
+		event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED + " ollies outie");
 
 		// Update vote
 		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
@@ -66,12 +67,6 @@ public class PlayerQuitListener implements Listener {
 		}
 		for (String s : cUser.getListening()) {
 			cUser.removeListeningQuit(s);
-		}
-		try {
-			Channel regionC = ChannelManager.getChannelManager().getChannel("#" + cUser.getCurrentRegion().toString());
-			cUser.removeListeningQuit(regionC.getName());
-		} catch (NullPointerException e) {
-			SblockEvents.getEvents().getLogger().warning("User's region channel was invalid!");
 		}
 	}
 }

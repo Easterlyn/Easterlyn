@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Machines.Type.Alchemiter;
+import co.sblock.Sblock.Machines.Type.Bank;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Cruxtender;
 import co.sblock.Sblock.Machines.Type.Direction;
@@ -56,6 +57,8 @@ public class MachineManager {
 		case ALCHEMITER:
 			machine = new Alchemiter(l, data, d);
 			break;
+		case BANK:
+			machine = new Bank(l, data);
 		case COMPUTER:
 			machine = new Computer(l, data);
 			break;

@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.Module;
@@ -32,15 +33,20 @@ public class Spectators extends Module implements CommandListener {
 	private class Entry {
 		private Location l;
 		private float fall;
-		public Entry(Location l, float fall) {
+		private Object[] effects;
+		public Entry(Location l, float fall, Object[] effects) {
 			this.l = l;
 			this.fall = fall;
+			this.effects = effects;
 		}
 		public Location getLocation() {
 			return l;
 		}
 		public float getFall() {
 			return fall;
+		}
+		public Object[] getPotionEffects() {
+			return effects;
 		}
 	}
 
@@ -87,7 +93,8 @@ public class Spectators extends Module implements CommandListener {
 	 * @param p the player to add
 	 */
 	public void addSpectator(Player p) {
-		spectators.put(p.getName(), new Entry(p.getLocation(), p.getFallDistance()));
+		spectators.put(p.getName(), new Entry(p.getLocation(), p.getFallDistance(),
+				p.getActivePotionEffects().toArray()));
 		p.setAllowFlight(true);
 		p.setFlying(true);
 		p.setNoDamageTicks(Integer.MAX_VALUE);
@@ -118,6 +125,9 @@ public class Spectators extends Module implements CommandListener {
 		p.setNoDamageTicks(0);
 		p.setFallDistance(e.getFall());
 		InventoryManager.restoreInventory(p);
+		for (Object potion : e.getPotionEffects()) {
+			p.addPotionEffect((PotionEffect) potion);
+		}
 	}
 
 	/**
