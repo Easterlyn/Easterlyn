@@ -98,6 +98,8 @@ public class UserManager {
 		team.setPrefix(ColorDef.RANK_ADMIN.toString());
 		team = this.board.registerNewTeam("mod");
 		team.setPrefix(ColorDef.RANK_MOD.toString());
+		team = this.board.registerNewTeam("felt");
+		team.setPrefix(ColorDef.RANK_FELT.toString());
 		team = this.board.registerNewTeam("helper");
 		team.setPrefix(ColorDef.RANK_HELPER.toString());
 		team = this.board.registerNewTeam("donator");
@@ -119,6 +121,8 @@ public class UserManager {
 			team = this.board.getTeam("admin");
 		} else if (p.hasPermission("group.denizen")) {
 			team = this.board.getTeam("mod");
+		} else if (p.hasPermission("group.felt")) {
+			team = this.board.getTeam("felt");
 		} else if (p.hasPermission("group.helper")) {
 			team = this.board.getTeam("helper");
 		} else if (p.hasPermission("group.donator")) {

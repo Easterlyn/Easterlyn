@@ -14,9 +14,10 @@ public class ColorDef {
 	
 	public static final ChatColor RANK_ADMIN = ChatColor.DARK_RED;
 	public static final ChatColor RANK_MOD = ChatColor.BLUE;
+	public static final ChatColor RANK_FELT = ChatColor.GREEN;
 	public static final ChatColor RANK_HELPER = ChatColor.DARK_GRAY;
 	public static final ChatColor RANK_GODTIER = ChatColor.GOLD; 
-	public static final ChatColor RANK_DONATOR = ChatColor.GREEN; 
+	public static final ChatColor RANK_DONATOR = ChatColor.DARK_GREEN; 
 	public static final ChatColor RANK_HERO = ChatColor.WHITE;
 	
 	public static final ChatColor CHATRANK_OWNER = ChatColor.RED;

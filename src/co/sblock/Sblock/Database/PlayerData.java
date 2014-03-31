@@ -176,16 +176,18 @@ public class PlayerData {
 				SblockUser u = UserManager.getUserManager().getUser(name);
 				if (u == null) {
 					SblockData.getDB().getLogger().warning(name + "'s SblockUser was not instantiated!");
-					UserManager.getUserManager().addUser(name).setLoaded();
-				} else {
-					u.setLoaded();
+					u = UserManager.getUserManager().addUser(name);
 				}
-				if (ChatUser.getUser(name) == null) {
+				u.setLoaded();
+				ChatUser cu = ChatUser.getUser(name);
+				if (cu == null) {
 					SblockData.getDB().getLogger().warning(name + "'s ChatUser was not instantiated!");
-					ChatUserManager.getUserManager().addUser(name);
+					cu = ChatUserManager.getUserManager().addUser(name);
 				}
-				if (Bukkit.getOfflinePlayer(name).isOnline()) {
-					Bukkit.getPlayerExact(name).teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 0, 1));
+				cu.setCurrent("#");
+				cu.updateCurrentRegion(cu.getPlayerRegion());
+				if (Bukkit.getPlayerExact(name) != null) {
+					Bukkit.getPlayerExact(name).teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
 				}
 			}
 		} catch (SQLException e) {
