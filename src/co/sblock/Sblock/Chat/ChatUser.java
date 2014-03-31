@@ -639,6 +639,8 @@ public class ChatUser {
 			colorP = ColorDef.RANK_ADMIN;
 		else if (sender.getPlayer().hasPermission("group.denizen"))
 			colorP = ColorDef.RANK_MOD;
+		else if (sender.getPlayer().hasPermission("group.felt"))
+			colorP = ColorDef.RANK_FELT;
 		else if (sender.getPlayer().hasPermission("group.helper"))
 			colorP = ColorDef.RANK_HELPER;
 		else if (sender.getPlayer().hasPermission("group.godtier"))
