@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -172,10 +173,19 @@ public class PlayerData {
 				String name = rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1");
 				Broadcast.lilHal("It would seem that "
 				+ name + " is joining us for the first time! Please welcome them.");
-				try {
-					SblockUser.getUser(name).setLoaded();
-				} catch (NullPointerException e) {
+				SblockUser u = UserManager.getUserManager().getUser(name);
+				if (u == null) {
 					SblockData.getDB().getLogger().warning(name + "'s SblockUser was not instantiated!");
+					UserManager.getUserManager().addUser(name).setLoaded();
+				} else {
+					u.setLoaded();
+				}
+				if (ChatUser.getUser(name) == null) {
+					SblockData.getDB().getLogger().warning(name + "'s ChatUser was not instantiated!");
+					ChatUserManager.getUserManager().addUser(name);
+				}
+				if (Bukkit.getOfflinePlayer(name).isOnline()) {
+					Bukkit.getPlayerExact(name).teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 0, 1));
 				}
 			}
 		} catch (SQLException e) {

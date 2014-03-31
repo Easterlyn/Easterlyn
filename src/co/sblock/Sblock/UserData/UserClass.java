@@ -7,7 +7,7 @@ package co.sblock.Sblock.UserData;
  */
 public enum UserClass {
 	BARD, HEIR, KNIGHT, MAGE, MAID, PAGE,
-	PRINCE, ROGUE, SEER, SYLPH, THEIF, WITCH;
+	PRINCE, ROGUE, SEER, SYLPH, THIEF, WITCH;
 
 	/**
 	 * Gets the display name of the UserClass.

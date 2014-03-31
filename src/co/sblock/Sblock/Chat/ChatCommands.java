@@ -155,7 +155,7 @@ public class ChatCommands implements CommandListener {
 			victim.getPlayer().kickPlayer(reason.toString());
 		} else {
 			// Crappy match for offline IP sban
-			Bukkit.getBanList(target.contains(".") ? org.bukkit.BanList.Type.NAME : org.bukkit.BanList.Type.IP)
+			Bukkit.getBanList(target.contains(".") ? org.bukkit.BanList.Type.IP : org.bukkit.BanList.Type.NAME)
 					.addBan(target, reason.toString(), null, "sban");
 		}
 		SblockData.getDB().deleteUser(target);
