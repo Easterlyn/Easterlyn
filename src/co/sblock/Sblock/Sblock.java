@@ -10,11 +10,15 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.Sblock.Chat.SblockChat;
@@ -88,6 +92,8 @@ public class Sblock extends JavaPlugin implements CommandListener {
 		this.commandHandlers = new HashMap<String, Method>();
 		this.listenerInstances = new HashMap<Class<? extends CommandListener>, CommandListener>();
 		saveDefaultConfig();
+		createRecipes();
+
 		SblockData.getDB().enable();
 		
 		modules.add(new SblockChat().enable());
@@ -123,14 +129,11 @@ public class Sblock extends JavaPlugin implements CommandListener {
 	 */
 	public void registerCommands(CommandListener listener) {
 		for (Method method : listener.getClass().getMethods()) {
-			if (this.commandHandlers.containsKey(method))
-				throw new Error("Duplicate handlers for command " + method + " found in "
+			if (this.commandHandlers.containsKey(method)) {
+				getLog().severe("Duplicate handlers for command " + method.getName() + " found in "
 						+ this.commandHandlers.get(method.getName()).getDeclaringClass().getName()
 						+ " and " + listener.getClass().getName());
-			if (method.getAnnotation(SblockCommand.class) != null
-					&& method.getParameterTypes().length > 1
-					&& CommandSender.class.isAssignableFrom(method.getParameterTypes()[0])
-					&& String[].class.isAssignableFrom(method.getParameterTypes()[1])) {
+			} else if (isValidCommand(method)) {
 				this.commandHandlers.put(method.getName(), method);
 				cmdMap.register(this.getDescription().getName(), createCommand(method));
 			}
@@ -138,6 +141,45 @@ public class Sblock extends JavaPlugin implements CommandListener {
 		this.listenerInstances.put(listener.getClass(), listener);
 	}
 
+	/**
+	 * Verifies that a SblockCommand is properly formed.
+	 * <p>
+	 * A properly formed SblockCommand accepts a CommandSender and String[] as
+	 * arguments and returns a boolean.
+	 * 
+	 * @param method the potential SblockCommand
+	 * 
+	 * @return true if the method is a SblockCommand
+	 */
+	private boolean isValidCommand(Method method) {
+		if (method.getAnnotation(SblockCommand.class) == null) {
+			// Method is not a SblockCommand, fail silently.
+			return false;
+		}
+
+		if (method.getParameterTypes().length < 2
+				|| !CommandSender.class.isAssignableFrom(method.getParameterTypes()[0])
+				|| !String[].class.isAssignableFrom(method.getParameterTypes()[1])
+				|| !Boolean.class.isAssignableFrom(method.getGenericReturnType().getClass())) {
+
+			getLog().severe("Malformed SblockCommand: " + method.getName() + ". Expected public boolean "
+				 + method.getDeclaringClass().getName() + "." + method.getName()
+				+ "(org.bukkit.command.CommandSender, java.lang.String...) and recieved "
+				+ method.toString());
+			return false;
+		}
+
+		// TODO check if name must be lower case despite most recent onCommand changes
+		return true;
+	}
+
+	/**
+	 * Creates a CustomCommand that can be added to a CommandMap.
+	 * 
+	 * @param m the Method which will be used by the command
+	 * 
+	 * @return the CustomCommand created
+	 */
 	private CustomCommand createCommand(Method m) {
 		CustomCommand cmd = new CustomCommand(m.getName());
 		cmd.setDescription(m.getAnnotation(SblockCommand.class).description());
@@ -145,6 +187,25 @@ public class Sblock extends JavaPlugin implements CommandListener {
 		cmd.setPermission(m.getAnnotation(SblockCommand.class).permission());
 		cmd.setPermissionMessage(ChatMsgs.permissionDenied());
 		return cmd;
+	}
+
+	/**
+	 * Creates generic crafting recipies allowed by Sblock.
+	 * <p>
+	 * Module-dependent recipes such as CaptchaCards should be registered in
+	 * {@link Module#onEnable()}.
+	 */
+	public void createRecipes() {
+		// BoonConomy: 1 emerald -> 9 lapis block
+		ShapelessRecipe toLapis = new ShapelessRecipe(new ItemStack(Material.LAPIS_BLOCK, 9));
+		toLapis.addIngredient(Material.EMERALD);
+		getServer().addRecipe(toLapis);
+
+		// BoonConomy: 9 lapis block -> 1 emerald
+		ShapedRecipe toEmerald = new ShapedRecipe(new ItemStack(Material.EMERALD));
+		toEmerald.shape("XXX", "XXX", "XXX");
+		toEmerald.setIngredient('X', Material.LAPIS_BLOCK);
+		getServer().addRecipe(toEmerald);
 	}
 
 	/**
