@@ -15,7 +15,8 @@ public class Broadcast {
 	 * Broadcast as Lil Hal to all users.
 	 */
 	public static void lilHal(String msg) {
-		Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + msg);
+		Bukkit.broadcastMessage("[" + ChatColor.RED + "#" + ChatColor.WHITE + "] <"
+				+ ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + "> " + msg);
 	}
 
 	/**

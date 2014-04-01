@@ -44,7 +44,7 @@ import co.sblock.Sblock.Utilities.Spectator.Spectators;
 public class Sblock extends JavaPlugin implements CommandListener {
 
 	/** Sblock's Log */
-	private static final Log logger = new Log("Sblock", null);
+	private static final Log logger = Log.getLog("Sblock");
 
 	/** The Sblock instance. */
 	private static Sblock instance;
@@ -82,7 +82,7 @@ public class Sblock extends JavaPlugin implements CommandListener {
 				cmdMap = (CommandMap) f.get(Bukkit.getServer());
 			} catch (IllegalArgumentException | IllegalAccessException
 					| NoSuchFieldException | SecurityException e) {
-				Log.criticalErr(e);
+				logger.criticalErr(e);
 			}
 		} else {
 			getLog().severe("Invalid server version, Sblock commands will fail to register.");
@@ -160,11 +160,11 @@ public class Sblock extends JavaPlugin implements CommandListener {
 		if (method.getParameterTypes().length < 2
 				|| !CommandSender.class.isAssignableFrom(method.getParameterTypes()[0])
 				|| !String[].class.isAssignableFrom(method.getParameterTypes()[1])
-				|| !Boolean.class.isAssignableFrom(method.getGenericReturnType().getClass())) {
+				|| boolean.class != method.getGenericReturnType()) {
 
-			getLog().severe("Malformed SblockCommand: " + method.getName() + ". Expected public boolean "
+			logger.severe("Malformed SblockCommand: " + method.getName() + ". Expected public boolean "
 				 + method.getDeclaringClass().getName() + "." + method.getName()
-				+ "(org.bukkit.command.CommandSender, java.lang.String...) and recieved "
+				+ "(org.bukkit.command.CommandSender,java.lang.String[]) and recieved "
 				+ method.toString());
 			return false;
 		}
@@ -253,7 +253,7 @@ public class Sblock extends JavaPlugin implements CommandListener {
 				}
 				return true;
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				Log.err(e);
+				logger.err(e);
 			}
 		}
 		return false;

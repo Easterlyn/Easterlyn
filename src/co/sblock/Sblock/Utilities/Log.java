@@ -1,6 +1,7 @@
 package co.sblock.Sblock.Utilities;
 
 import java.nio.file.Paths;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -14,6 +15,7 @@ public class Log extends Logger {
 
 	public Log(String name, String localization) {
 		super(name, localization);
+		LogManager.getLogManager().addLogger(this);
 	}
 
 	/**
@@ -39,21 +41,21 @@ public class Log extends Logger {
 	}
 
 	/**
-	 * Fine level logging with no prepended name.
+	 * Warning level logging.
 	 * 
 	 * @param msg the String to log
 	 */
-	public static void fineNoName(Object msg) {
-		getLogger("Minecraft").fine(msg.toString());
+	public void warning(String msg) {
+		super.warning("[" + this.getName() + "] " + msg);
 	}
 
 	/**
-	 * Info level logging with no prepended name.
+	 * Severe level logging.
 	 * 
 	 * @param msg the String to log
 	 */
-	public static void infoNoName(String msg) {
-		Bukkit.getConsoleSender().sendMessage(msg);
+	public void severe(String msg) {
+		super.warning("[" + this.getName() + "] " + msg);
 	}
 
 	/**
@@ -63,7 +65,7 @@ public class Log extends Logger {
 	 * 
 	 * @param e the Exception to log
 	 */
-	public static void err(Exception e) {
+	public void err(Exception e) {
 		StringBuilder trace = new StringBuilder(e.toString());
 		for (StackTraceElement ste : e.getStackTrace()) {
 			trace.append("\n\tat " + ste.toString());
@@ -74,8 +76,7 @@ public class Log extends Logger {
 				trace.append("\n\tat " + ste.toString());
 			}
 		}
-		Logger.getLogger("Minecraft").warning("Error report:\n" + trace.toString()
-				+ "\nEnd of error report.");
+		warning("Error report:\n" + trace.toString() + "\nEnd of error report.");
 	}
 
 	/**
@@ -85,7 +86,7 @@ public class Log extends Logger {
 	 * 
 	 * @param e the Exception to log
 	 */
-	public static void criticalErr(Exception e) {
+	public void criticalErr(Exception e) {
 		StringBuilder trace = new StringBuilder(e.toString());
 		for (StackTraceElement ste : e.getStackTrace()) {
 			trace.append("\n\tat " + ste.toString());
@@ -96,7 +97,33 @@ public class Log extends Logger {
 				trace.append("\n\tat " + ste.toString());
 			}
 		}
-		Logger.getLogger("Minecraft").severe("Error report:\n" + trace.toString()
-				+ "\nEnd of error report.");
+		severe("Error report:\n" + trace.toString() + "\nEnd of error report.");
+	}
+
+	/**
+	 * Fine level logging with no prepended name.
+	 * 
+	 * @param msg the String to log
+	 */
+	public static void anonymousFine(Object msg) {
+		getLogger("Minecraft").fine(msg.toString());
+	}
+
+	/**
+	 * Info level logging with no prepended name.
+	 * 
+	 * @param msg the String to log
+	 */
+	public static void anonymousInfo(String msg) {
+		Bukkit.getConsoleSender().sendMessage(msg);
+	}
+
+	public static Log getLog(String name) {
+		Log log = (Log) LogManager.getLogManager().getLogger(name);
+		if (log == null) {
+			log = new Log(name, null);
+			LogManager.getLogManager().addLogger(log);
+		}
+		return log;
 	}
 }

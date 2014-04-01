@@ -393,7 +393,7 @@ public class ChatCommands implements CommandListener {
 		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg);
 		}
-		Log.infoNoName(msg);
+		Log.anonymousInfo(msg);
 	}
 
 	private void scGlobalRmNick(ChatUser user, String[] args) {
@@ -406,7 +406,7 @@ public class ChatCommands implements CommandListener {
 		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg);
 		}
-		Log.infoNoName(msg);
+		Log.anonymousInfo(msg);
 		victim.setGlobalNick(victim.getPlayerName());
 	}
 
@@ -421,7 +421,7 @@ public class ChatCommands implements CommandListener {
 		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg);
 		}
-		Log.infoNoName(msg);
+		Log.anonymousInfo(msg);
 	}
 
 	private void scGlobalUnmute(ChatUser user, String[] args) {
@@ -435,7 +435,7 @@ public class ChatCommands implements CommandListener {
 		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg);
 		}
-		Log.infoNoName(msg);
+		Log.anonymousInfo(msg);
 	}
 
 	private boolean scChannel(ChatUser user, String[] args) {

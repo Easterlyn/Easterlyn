@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import co.sblock.Sblock.Machines.MachineManager;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Machine;
-import co.sblock.Sblock.Utilities.Log;
 
 /**
  * A small helper class containing all methods that access the Machines table.
@@ -33,8 +32,7 @@ public class Machines {
 				pst.setString(1, m.getLocationString());
 				pst.setString(2, m.getType().getAbbreviation());
 			} catch (NullPointerException e) {
-				SblockData.getDB().getLogger().warning(
-						"A Machine appears to have invalid data, skipping save.");
+				SblockData.getLogger().warning("A Machine appears to have invalid data, skipping save.");
 				return;
 			}
 			pst.setString(3, m.getData());
@@ -42,13 +40,13 @@ public class Machines {
 
 			pst.executeUpdate();
 		} catch (SQLException e) {
-			Log.err(e);
+			SblockMachines.getMachines().getLogger().err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (Exception e) {
-					Log.err(e);
+					SblockMachines.getMachines().getLogger().err(e);
 				}
 			}
 		}
@@ -67,7 +65,7 @@ public class Machines {
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			Log.err(e);
+			SblockMachines.getMachines().getLogger().err(e);
 		}
 	}
 
@@ -86,13 +84,13 @@ public class Machines {
 				mm.loadMachine(rs.getString("location"), rs.getString("type"), rs.getString("data"), rs.getByte("face"));
 			}
 		} catch (SQLException e) {
-			Log.err(e);
+			SblockMachines.getMachines().getLogger().err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					Log.err(e);
+					SblockMachines.getMachines().getLogger().err(e);
 				}
 			}
 		}

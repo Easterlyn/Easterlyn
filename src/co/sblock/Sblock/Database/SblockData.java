@@ -26,6 +26,8 @@ public class SblockData {
 	/** The SblockData instance. */
 	private static SblockData db;
 
+	private static final Log logger = Log.getLog("SblockData");
+
 	/**
 	 * SblockData singleton.
 	 * 
@@ -46,7 +48,7 @@ public class SblockData {
 	 * @return true if enabled successfully
 	 */
 	public boolean enable() {
-		getLogger().fine("Connecting to database.");
+		logger.fine("Connecting to database.");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"
@@ -55,19 +57,19 @@ public class SblockData {
 					+ Sblock.getInstance().getConfig().getString("database"),
 					Sblock.getInstance().getConfig().getString("username"),
 					Sblock.getInstance().getConfig().getString("password"));
-			getLogger().fine("Connection established.");
+			logger.fine("Connection established.");
 		} catch (ClassNotFoundException e) {
-			getLogger().severe("Database driver not found. Plugin functionality will be limited.");
+			logger.severe("Database driver not found. Plugin functionality will be limited.");
 			return false;
 		} catch (SQLException e) {
-			getLogger().severe("Connection error. Plugin functionality will be limited.");
-			Log.criticalErr(e);
+			logger.severe("Connection error. Plugin functionality will be limited.");
+			logger.criticalErr(e);
 			return false;
 		} catch (NullPointerException e) {
-			getLogger().severe("Invalid config! Required strings: host, port, database, username, password.");
+			logger.severe("Invalid config! Required strings: host, port, database, username, password.");
 		}
 
-		getLogger().fine("Database enabled");
+		logger.fine("Database enabled");
 		return true;
 	}
 
@@ -78,7 +80,7 @@ public class SblockData {
 		try {
 			connection.close();
 		} catch (Exception e) {
-			Log.err(e);
+			logger.err(e);
 		}
 		db = null;
 		connection = null;
@@ -99,8 +101,8 @@ public class SblockData {
 	 * 
 	 * @return the Log
 	 */
-	public final Log getLogger() {
-		return new Log("SblockData", null);
+	public static Log getLogger() {
+		return logger;
 	}
 
 	/**
@@ -199,7 +201,7 @@ public class SblockData {
 		try {
 			return connection.prepareStatement(MySQLStatement).executeQuery();
 		} catch (SQLException e) {
-			Log.err(e);
+			logger.err(e);
 			return null;
 		}
 	}

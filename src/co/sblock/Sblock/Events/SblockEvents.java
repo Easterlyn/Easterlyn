@@ -23,7 +23,6 @@ import co.sblock.Sblock.Events.Session.StatusCheck;
 import co.sblock.Sblock.Events.Session.Status;
 import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.Utilities.Broadcast;
-import co.sblock.Sblock.Utilities.Log;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -121,7 +120,7 @@ public class SblockEvents extends Module {
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			Log.err(e);
+			getLogger().err(e);
 		}
 		tasks.put(p.getName(), Bukkit.getScheduler().scheduleSyncDelayedTask(
 				Sblock.getInstance(), new SleepTeleport(p), 100L));
@@ -140,7 +139,7 @@ public class SblockEvents extends Module {
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			Log.err(e);
+			getLogger().err(e);
 		}
 
 		Integer taskID = tasks.remove(p.getName());
@@ -171,7 +170,7 @@ public class SblockEvents extends Module {
 		String announcement = null;
 		if (this.status.hasAllClear() && !status.hasAnnouncement()) {
 			announcement = this.status.getAllClear();
-		} else if (status.hasAnnouncement()) {
+		} else if (status.hasAnnouncement() && status != this.status) {
 			announcement = status.getAnnouncement();
 		}
 		if (announcement != null) {

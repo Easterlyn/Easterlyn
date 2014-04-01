@@ -270,7 +270,7 @@ public abstract class Channel {
 				listening.remove((String) name);
 			}
 		}
-		Log.infoNoName(s);
+		Log.anonymousInfo(s);
 	}
 	
 	public String toString()	{

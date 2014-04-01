@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Utilities.Log;
 
 /**
  * A wrapper for making asynchronous SQL calls.
@@ -67,13 +66,13 @@ public class AsyncCall {
 						pst.executeUpdate();
 					}
 				} catch (SQLException e) {
-					Log.err(e);
+					SblockData.getLogger().err(e);
 				} finally {
 					if (!callback) {
 						try {
 							pst.close();
 						} catch (SQLException e) {
-							Log.err(e);
+							SblockData.getLogger().err(e);
 						}
 					}
 				}

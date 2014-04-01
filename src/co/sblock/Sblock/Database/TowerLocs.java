@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.UserData.TowerData;
-import co.sblock.Sblock.Utilities.Log;
 
 /**
  * A small helper class containing all methods that access the TowerLocs table.
@@ -36,13 +35,13 @@ public class TowerLocs {
 				}
 			}
 		} catch (SQLException e) {
-			Log.err(e);
+			SblockData.getLogger().err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					Log.err(e);
+					SblockData.getLogger().err(e);
 				}
 			}
 		}
@@ -64,13 +63,13 @@ public class TowerLocs {
 
 				pst.executeUpdate();
 			} catch (SQLException e) {
-				Log.err(e);
+				SblockData.getLogger().err(e);
 			} finally {
 				if (pst != null) {
 					try {
 						pst.close();
 					} catch (SQLException e) {
-						Log.err(e);
+						SblockData.getLogger().err(e);
 					}
 				}
 			}
@@ -82,13 +81,13 @@ public class TowerLocs {
 
 				pst.executeUpdate();
 			} catch (SQLException e) {
-				Log.err(e);
+				SblockData.getLogger().err(e);
 			} finally {
 				if (pst != null) {
 					try {
 						pst.close();
 					} catch (SQLException e) {
-						Log.err(e);
+						SblockData.getLogger().err(e);
 					}
 				}
 			}
