@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Machine;
+import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
@@ -496,6 +497,7 @@ public class SblockUser {
 		this.updateFlight();
 		p.setNoDamageTicks(Integer.MAX_VALUE);
 		InventoryManager.storeAndClearInventory(p);
+		p.getInventory().addItem(MachineType.COMPUTER.getUniqueDrop());
 		p.sendMessage(ChatColor.GREEN + "Server mode enabled!");
 	}
 

@@ -10,9 +10,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
+import co.sblock.Sblock.Machines.Type.MachineType;
+import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
+import co.sblock.Sblock.Utilities.Server.ServerMode;
 
 /**
  * Listener for InventoryClickEvents.
@@ -99,17 +103,26 @@ public class InventoryClickListener implements Listener {
 			// Screw it, this is too complex with Bukkit's limited API
 			event.setResult(Result.DENY);
 		}
+		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
+			event.setResult(Result.DENY);
+		}
 	}
 
 	// remove top
+	@SuppressWarnings("deprecation")
 	private void itemRemoveTop(InventoryClickEvent event) {
 		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
 			if (event.getClick() == ClickType.LEFT) {
 				event.setCurrentItem(Captchadex.itemToCard(event.getCurrentItem()));
 			} else {
-				// Adam fix PICKUP_HALF
 				event.setResult(Result.DENY);
 			}
+		}
+		// Server mode: Do not remove, clone to cursor.
+		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
+			event.setResult(Result.DENY);
+			event.setCursor(event.getCurrentItem().clone());
+			((Player) event.getWhoClicked()).updateInventory();
 		}
 	}
 
@@ -124,17 +137,12 @@ public class InventoryClickListener implements Listener {
 			// TODO verify that this works
 			event.setCursor(Captcha.captchaToItem(event.getCursor()));
 			((Player) event.getWhoClicked()).updateInventory();
-			// Old working code:
-//			ItemStack cursor = e.getCursor().clone();
-//			ItemStack[] contents = clickedInv.getContents();
-//			e.setCursor(null);
-//			Player p = (Player) e.getWhoClicked();
-//			Inventory i = Captchadex.createCaptchadexInventory(p);
-//			p.closeInventory();
-//			i.setContents(contents);
-//			i.addItem(Captchadex.punchCardToItem(cursor));
-//			p.openInventory(i);
-//			p.updateInventory();
+		}
+		// Server mode: Do not add, delete.
+		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
+			event.setResult(Result.DENY);
+			event.setCursor(null);
+			((Player) event.getWhoClicked()).updateInventory();
 		}
 	}
 
@@ -143,9 +151,15 @@ public class InventoryClickListener implements Listener {
 		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
 			event.setCurrentItem(Captchadex.itemToCard(event.getCurrentItem()));
 		}
+		// Server mode: Do not move, clone and add.
+		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
+			event.setResult(Result.DENY);
+			event.getWhoClicked().getInventory().addItem(event.getCurrentItem().clone());
+		}
 	}
 
 	// switch top
+	@SuppressWarnings("deprecation")
 	private void itemSwapIntoTop(InventoryClickEvent event) {
 		if (!event.getClickedInventory().getTitle().equals("Captchadex")
 				&& Captcha.isBlankCard(event.getCurrentItem())) {
@@ -153,11 +167,26 @@ public class InventoryClickListener implements Listener {
 			// Could instead verify swap in is single punchcard,
 			// but not really worth the bother - rare scenario.
 		}
+		// Server mode: Do not swap, delete.
+		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
+			event.setResult(Result.DENY);
+			event.setCursor(null);
+			((Player) event.getWhoClicked()).updateInventory();
+		}
 	}
 
 	// remove bottom
 	private void itemRemoveBottom(InventoryClickEvent event) {
-		
+
+		// Server: Click computer icon -> open computer interface
+		if (SblockUser.getUser(event.getWhoClicked().getName()).isServer()) {
+			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+				// Right click air: Open computer
+				event.setCancelled(true);
+				event.getWhoClicked().openInventory(new Computer(event.getWhoClicked().getLocation(),
+						event.getWhoClicked().getName()).getInventory());
+			}
+		}
 	}
 
 	// add bottom
@@ -166,6 +195,7 @@ public class InventoryClickListener implements Listener {
 	}
 
 	// move bottom to top
+	@SuppressWarnings("deprecation")
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			if (Captcha.isPunchCard(event.getCurrentItem())
@@ -173,6 +203,15 @@ public class InventoryClickListener implements Listener {
 				event.setCurrentItem(Captcha.captchaToItem(event.getCurrentItem()));
 			} else {
 				event.setResult(Result.DENY);
+			}
+		}
+		// Server mode: Do not move, delete.
+		if (SblockUser.getUser(event.getWhoClicked().getName()).isServer()) {
+			event.setResult(Result.DENY);
+			// Do not delete Computer icon.
+			if (!event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+				event.setCurrentItem(null);
+				((Player) event.getWhoClicked()).updateInventory();
 			}
 		}
 	}
@@ -189,7 +228,6 @@ public class InventoryClickListener implements Listener {
 				// Invalid captcha objects
 				return;
 			}
-			// Adam verify that modified code works
 			Player p = (Player) event.getWhoClicked();
 			ItemStack captcha = Captcha.itemToCaptcha(event.getCursor());
 			event.setCursor(null);
@@ -206,10 +244,21 @@ public class InventoryClickListener implements Listener {
 			}
 			p.updateInventory();
 		}
+
+		// Server: No picking up computer icon
+		if (SblockUser.getUser(event.getWhoClicked().getName()).isServer()) {
+			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+				event.setCancelled(true);
+			}
+		}
 	}
 
 	// hotbar with inv
 	private void itemSwapToHotbar(InventoryClickEvent event) {
-		
+		if (SblockUser.getUser(event.getWhoClicked().getName()).isServer()) {
+			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+				event.setCancelled(true);
+			}
+		}
 	}
 }

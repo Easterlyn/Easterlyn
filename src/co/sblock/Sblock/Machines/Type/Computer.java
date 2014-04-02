@@ -110,7 +110,11 @@ public class Computer extends Machine implements InventoryHolder {
 						break;
 					}
 					// All checks for starting server mode handled inside startServerMode()
-					u.startServerMode();
+					if (u.isServer()) {
+						u.stopServerMode();
+					} else {
+						u.startServerMode();
+					}
 				default:
 					break;
 				}

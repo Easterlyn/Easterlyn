@@ -3,7 +3,10 @@ package co.sblock.Sblock.Utilities.Server;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -11,9 +14,10 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Jikoo
  */
-public class ServerMode {
+public class ServerMode implements InventoryHolder {
 
-	public static ServerMode instance;
+	private static ServerMode instance;
+	private Inventory inv;
 
 	private Map<Material, Integer> approved;
 
@@ -79,6 +83,16 @@ public class ServerMode {
 			is.setDurability((short) 0);
 		}
 		return is;
+	}
+
+	public Inventory getInventory() {
+		if (inv == null) {
+			inv = Bukkit.createInventory(this, 45, "Server Supplies");
+			for (Material m : approved.keySet()) {
+				inv.addItem(new ItemStack(m));
+			}
+		}
+		return inv;
 	}
 
 	public static ServerMode getInstance() {

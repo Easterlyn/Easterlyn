@@ -16,7 +16,9 @@ import org.bukkit.material.Bed;
 
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.Machines.SblockMachines;
+import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
+import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.SblockEffects.ActiveEffect;
 import co.sblock.Sblock.SblockEffects.ActiveEffectType;
 import co.sblock.Sblock.SblockEffects.EffectManager;
@@ -45,11 +47,20 @@ public class PlayerInteractListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (SblockUser.getUser(event.getPlayer().getName()).isServer()) {
 			// Allow placing and breaking of blocks
-			// TODO instabreak similar to creative if block within x of computer?
+			// TODO instabreak only if block within x of computer
 			if (event.getAction() == Action.LEFT_CLICK_BLOCK
 					&& ServerMode.getInstance().isApproved(event.getClickedBlock().getType())
 					&& !SblockMachines.getMachines().getManager().isMachine(event.getClickedBlock())) {
 				event.getClickedBlock().setType(Material.AIR);
+			} else if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getItem() != null) {
+				if (ServerMode.getInstance().isApproved(event.getMaterial())) {
+					// Right click air: Cycle to next approved material
+					ServerMode.getInstance().cycleData(event.getItem());
+				} else if (event.getItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+					// Right click air: Open computer
+					event.getPlayer().openInventory(new Computer(event.getPlayer().getLocation(),
+							event.getPlayer().getName()).getInventory());
+				}
 			}
 			return;
 		}
