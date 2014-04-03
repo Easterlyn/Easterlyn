@@ -52,6 +52,9 @@ public class SblockEvents extends Module {
 	/** A Set of the names of all Players queuing to sleep teleport. */
 	public Set<String> teleports;
 
+	/** A Set of the names of all Players opening Captchadexes. */
+	public Set<String> openingCaptchadex;
+
 	/**
 	 * @see Module#onEnable()
 	 */
@@ -60,6 +63,7 @@ public class SblockEvents extends Module {
 		instance = this;
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
+		openingCaptchadex = new HashSet<String>();
 		towers = new TowerData();
 		towers.load();
 		
@@ -72,13 +76,16 @@ public class SblockEvents extends Module {
 				// new EntityExplodeListener(),
 
 				new FoodLevelChangeListener(), new FurnaceBurnListener(),
+
 				new InventoryClickListener(), new InventoryCloseListener(),
 				new InventoryDragListener(), new InventoryMoveItemListener(),
+				new InventoryOpenListener(),
 
 				new PlayerAsyncChatListener(), new PlayerChangedWorldListener(),
 				new PlayerCommandPreprocessListener(), new PlayerDeathListener(),
 				new PlayerDropItemListener(), new PlayerEditBookListener(),
 				new PlayerInteractEntityListener(), new PlayerInteractListener(),
+				new PlayerItemHeldListener(),
 				new PlayerJoinListener(), new PlayerLoginListener(),
 				new PlayerPickupItemListener(), new PlayerQuitListener(),
 				new PlayerTeleportListener(), new ServerListPingListener(),

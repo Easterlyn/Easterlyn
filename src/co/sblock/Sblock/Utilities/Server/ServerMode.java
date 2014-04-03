@@ -5,9 +5,14 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+
+import co.sblock.Sblock.Machines.SblockMachines;
+import co.sblock.Sblock.Machines.Type.Machine;
+import co.sblock.Sblock.UserData.SblockUser;
 
 /**
  * 
@@ -83,6 +88,11 @@ public class ServerMode implements InventoryHolder {
 			is.setDurability((short) 0);
 		}
 		return is;
+	}
+
+	public boolean isWithinRange(SblockUser server, Block broken) {
+		Machine computer = SblockMachines.getMachines().getManager().getComputer(server.getClient());
+		return computer != null && computer.getKey().distanceSquared(broken.getLocation()) <= 625;
 	}
 
 	public Inventory getInventory() {

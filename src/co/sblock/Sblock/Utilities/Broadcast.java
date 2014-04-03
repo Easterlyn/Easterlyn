@@ -16,7 +16,7 @@ public class Broadcast {
 	 */
 	public static void lilHal(String msg) {
 		Bukkit.broadcastMessage("[" + ChatColor.RED + "#" + ChatColor.WHITE + "] <"
-				+ ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + "> " + msg);
+				+ ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + "> " + ChatColor.RED + msg);
 	}
 
 	/**

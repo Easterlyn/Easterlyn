@@ -46,8 +46,14 @@ public class PlayerInteractListener implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (SblockUser.getUser(event.getPlayer().getName()).isServer()) {
-			// Allow placing and breaking of blocks
-			// TODO instabreak only if block within x of computer
+			// No interaction with any blocks while out of range.
+			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
+					SblockUser.getUser(event.getPlayer().getName()), event.getClickedBlock())) {
+				event.getPlayer().sendMessage(ChatColor.RED + "Block out of range!");
+				event.setCancelled(true);
+				return;
+			}
+			// Breaking and placing blocks is acceptable, instabreak blocks in approved list.
 			if (event.getAction() == Action.LEFT_CLICK_BLOCK
 					&& ServerMode.getInstance().isApproved(event.getClickedBlock().getType())
 					&& !SblockMachines.getMachines().getManager().isMachine(event.getClickedBlock())) {
@@ -64,6 +70,7 @@ public class PlayerInteractListener implements Listener {
 			}
 			return;
 		}
+
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
 			event.setCancelled(true);
 			if (!event.hasBlock() || !event.getClickedBlock().getType().name().contains("PLATE")) {
@@ -144,6 +151,8 @@ public class PlayerInteractListener implements Listener {
 
 		// Captchadex
 		if (Captchadex.isCaptchadex(event.getPlayer())) {
+			// It is possible to change active hotbar slots or drop items before inventories open.
+			SblockEvents.getEvents().openingCaptchadex.add(event.getPlayer().getName());
 			event.getPlayer().openInventory(Captchadex.loadCaptchadex(event.getItem()));
 			return;
 		}

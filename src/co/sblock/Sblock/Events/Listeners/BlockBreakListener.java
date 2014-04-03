@@ -6,6 +6,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Machine;
+import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.Utilities.Server.ServerMode;
 
 /**
  * Listener for BlockBreakEvents.
@@ -19,11 +21,16 @@ public class BlockBreakListener implements Listener {
 	 * 
 	 * @param event the BlockBreakEvent
 	 */
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
 		if (m != null) {
 			event.setCancelled(m.handleBreak(event));
+		}
+
+		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
+		if (u != null && u.isServer()) {
+			event.setCancelled(!ServerMode.getInstance().isWithinRange(u, event.getBlock()));
 		}
 	}
 }

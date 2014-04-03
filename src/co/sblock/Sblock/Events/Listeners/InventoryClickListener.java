@@ -6,6 +6,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -38,6 +39,22 @@ public class InventoryClickListener implements Listener {
 			Machine m = (Machine) ih;
 			if (m != null) {
 				event.setCancelled(m.handleClick(event));
+				return;
+			}
+		}
+		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
+			// General cancellation: Books cannot be captcha'd, so this is easier
+			// than trying to detect the Captchadex and prevent clicking it.
+			if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD
+					|| event.getAction() == InventoryAction.HOTBAR_SWAP) {
+				if (event.getView().getBottomInventory().getItem(event.getHotbarButton()).getType()
+						== Material.WRITTEN_BOOK) {
+					event.setCancelled(true);
+					return;
+				}
+			}
+			if (event.getCurrentItem().getType() == Material.WRITTEN_BOOK) {
+				event.setCancelled(true);
 				return;
 			}
 		}

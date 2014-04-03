@@ -9,6 +9,7 @@ import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.SblockEffects.EffectManager;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.Utilities.Vote.SleepVote;
 
 /**
  * Listener for PlayerChangedWorldEvents.
@@ -24,6 +25,10 @@ public class PlayerChangedWorldListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
+
+		// TODO verify that this returns the correct number and not 1 lower
+		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
+
 		try {
 			ChatUserManager.getUserManager().getUser(event.getPlayer().getName())
 					.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));

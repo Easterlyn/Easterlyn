@@ -11,6 +11,7 @@ import co.sblock.Sblock.Machines.Type.Direction;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Machines.Type.PBO;
+import co.sblock.Sblock.UserData.SblockUser;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -34,6 +35,16 @@ public class BlockPlaceListener implements Listener {
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You decide against fussing with the internals of this machine.");
+		}
+
+		// Server mode placement
+		if (SblockUser.getUser(event.getPlayer().getName()).isServer()) {
+			if (event.getItemInHand().equals(MachineType.COMPUTER.getUniqueDrop())) {
+				event.setCancelled(true);
+			} else {
+				// Should ideally never run out this way.
+				event.getItemInHand().setAmount(2);
+			}
 		}
 
 		// Machine place logic

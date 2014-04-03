@@ -199,13 +199,22 @@ public class Sblock extends JavaPlugin implements CommandListener {
 		// BoonConomy: 1 emerald -> 9 lapis block
 		ShapelessRecipe toLapis = new ShapelessRecipe(new ItemStack(Material.LAPIS_BLOCK, 9));
 		toLapis.addIngredient(Material.EMERALD);
-		getServer().addRecipe(toLapis);
+		//getServer().addRecipe(toLapis);
 
 		// BoonConomy: 9 lapis block -> 1 emerald
-		ShapedRecipe toEmerald = new ShapedRecipe(new ItemStack(Material.EMERALD));
-		toEmerald.shape("XXX", "XXX", "XXX");
-		toEmerald.setIngredient('X', Material.LAPIS_BLOCK);
-		getServer().addRecipe(toEmerald);
+		ShapedRecipe shaped = new ShapedRecipe(new ItemStack(Material.EMERALD));
+		shaped.shape("XXX", "XXX", "XXX");
+		shaped.setIngredient('X', Material.LAPIS_BLOCK);
+		//getServer().addRecipe(shaped);
+
+		// General: Packed ice = 2 snow 2 ice
+		shaped = new ShapedRecipe(new ItemStack(Material.PACKED_ICE));
+		shaped.shape("XY", "YX");
+		shaped.setIngredient('X', Material.SNOW_BLOCK);
+		shaped.setIngredient('Y', Material.ICE);
+		getServer().addRecipe(shaped);
+		shaped.shape("YX", "XY");
+		getServer().addRecipe(shaped);
 	}
 
 	/**
