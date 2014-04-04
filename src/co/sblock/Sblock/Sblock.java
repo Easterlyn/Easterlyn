@@ -15,6 +15,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -135,7 +136,10 @@ public class Sblock extends JavaPlugin implements CommandListener {
 						+ " and " + listener.getClass().getName());
 			} else if (isValidCommand(method)) {
 				this.commandHandlers.put(method.getName(), method);
-				cmdMap.register(this.getDescription().getName(), createCommand(method));
+				Command cmd = createCommand(method);
+				if (cmd instanceof CustomCommand) {
+					cmdMap.register(this.getDescription().getName(), createCommand(method));
+				}
 			}
 		}
 		this.listenerInstances.put(listener.getClass(), listener);
@@ -180,8 +184,14 @@ public class Sblock extends JavaPlugin implements CommandListener {
 	 * 
 	 * @return the CustomCommand created
 	 */
-	private CustomCommand createCommand(Method m) {
-		CustomCommand cmd = new CustomCommand(m.getName());
+	private Command createCommand(Method m) {
+		Command cmd = getServer().getPluginCommand(m.getName());
+		if (cmd != null) {
+			// Command has been registered by another plugin.
+			((PluginCommand) cmd).setExecutor(this);
+		} else {
+			cmd = new CustomCommand(m.getName());
+		}
 		cmd.setDescription(m.getAnnotation(SblockCommand.class).description());
 		cmd.setUsage(m.getAnnotation(SblockCommand.class).usage());
 		cmd.setPermission(m.getAnnotation(SblockCommand.class).permission());
