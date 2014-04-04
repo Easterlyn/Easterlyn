@@ -60,8 +60,7 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "He's already here!",
-			usage = "/le <text>")
+	@SblockCommand(consoleFriendly = true, description = "He's already here!", usage = "/le <text>")
 	public boolean le(CommandSender sender, String[] text) {
 		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")
 				|| text == null || text.length == 0) {

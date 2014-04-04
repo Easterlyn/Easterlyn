@@ -274,7 +274,7 @@ public enum CanonNicks {
 				StringBuilder shuffle = new StringBuilder();
 				String s1 = m.group();
 				while (s1.length() != 0) {
-					int next = (int) Math.random() * s1.length();
+					int next = (int) (Math.random() * s1.length());
 					shuffle.append(s1.charAt(next));
 					s1 = s1.substring(0, next) + s1.substring(next + 1);
 				}
@@ -326,7 +326,7 @@ public enum CanonNicks {
 			if (m.group().equals(m.group().toUpperCase())) {
 				for (int i = 0; i < m.group().length(); i++) {
 					String next = m.group().substring(i, i + 1);
-					sb.append(ColorDef.RAINBOW[(int) Math.random() * ColorDef.RAINBOW.length]);
+					sb.append(ColorDef.RAINBOW[(int) (Math.random() * ColorDef.RAINBOW.length)]);
 					if (next.equals("O")) {
 						sb.append(ChatColor.MAGIC);
 					}
@@ -346,7 +346,7 @@ public enum CanonNicks {
 	private String ancestral(String s) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {
-			sb.append((char) Math.floor(Math.random() * 24399 + 16384));
+			sb.append((char) (int) (Math.random() * 24399 + 16384));
 			if (Math.random() > 0.8) {
 				sb.append('\u0020');
 			}

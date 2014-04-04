@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
  * Tag to place on executing methods indicating that the command should be
  * registered.
@@ -28,7 +27,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * // in a class implementing CommandListener
- * &#064;SblockCommand
+ * &#064;SblockCommand(description = "Ban a player.", usage = "/ban (player)")
  * public boolean ban(String executor, String[] args) {
  * 	// Ban code goes here...
  * }
