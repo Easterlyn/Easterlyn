@@ -1,5 +1,6 @@
 package co.sblock.Sblock.Chat;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -213,6 +214,12 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
+	@SblockCommand(description = "At long last, /me for Sblock.", usage = "/me (@channel) <message>")
+	public boolean me(CommandSender sender, String[] args) {
+		ChatUserManager.getUserManager().getUser(sender.getName()).chat(StringUtils.join(args, ' '), true);
+		return true;
+	}
+
 	private boolean scC(ChatUser user, String[] args) {
 		if (args.length == 1) {
 			user.sendMessage(ChatMsgs.helpSCC());
@@ -330,7 +337,7 @@ public class ChatCommands implements CommandListener {
 				c.removeNick(user);
 				return true;
 			} else if (args[1].equalsIgnoreCase("list")) {
-				if (c instanceof NickChannel) {
+				if (!(c instanceof RPChannel)) {
 					user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.");
 					return true;
 				}

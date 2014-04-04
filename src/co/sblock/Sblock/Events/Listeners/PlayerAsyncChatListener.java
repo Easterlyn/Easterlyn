@@ -24,17 +24,16 @@ public class PlayerAsyncChatListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
+		event.setCancelled(true);
 		if (SblockUser.getUser(event.getPlayer().getName()) != null) {
-			event.setCancelled(true);
 			if (event.getMessage().charAt(0) == '\u002F') {
-				event.getPlayer().performCommand(
-						event.getMessage().substring(1));
+				event.getPlayer().performCommand(event.getMessage().substring(1));
 			} else {
-				ChatUserManager.getUserManager().getUser(event.getPlayer().getName()).chat(event);
+				ChatUserManager.getUserManager().getUser(event.getPlayer().getName()).chat(event.getMessage(), false);
 			}
 		} else {
-			event.getPlayer().sendMessage(ChatColor.RED
-					+ "[Lil Hal] Your Sblock playerdata appears to not be loaded."
+			event.getPlayer().sendMessage(ChatColor.BOLD
+					+ "[o] Your Sblock playerdata appears to not be loaded."
 					+ "\nI'll take care of that for you, but make sure your /profile is correct.");
 			SblockData.getDB().loadUserData(event.getPlayer().getName());
 		}

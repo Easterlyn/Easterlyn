@@ -11,10 +11,9 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
 import co.sblock.Sblock.Chat.Channel.CanonNicks;
@@ -420,37 +419,30 @@ public class ChatUser {
 	 * 
 	 * @param event the relevant AsyncPlayerChatEvent
 	 */
-	public void chat(AsyncPlayerChatEvent event) {
-		// receives message from SblockChatListener
-		// determine channel. if message doesn't begin with @$channelname, then
-		// this.current confirm destination channel
+	public void chat(String msg, boolean forceThirdPerson) {
 
-		// confirm user has perm to send to channel (channel.cansend()) and also
-		// muteness
-		// output of channel, string
-
-		ChatUser sender = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
-
-		if (sender.isMute()) {
-			sender.sendMessage(ChatMsgs.isMute());
+		// Check if the user can speak
+		if (isMute()) {
+			sendMessage(ChatMsgs.isMute());
 			return;
 		}
 
-		String msg = event.getMessage();
-		Channel sendto = SblockChat.getChat().getChannelManager().getChannel(sender.current);
+		// default to current channel recieving message
+		Channel sendto = SblockChat.getChat().getChannelManager().getChannel(current);
 
-		if (msg.indexOf("@") == 0 && msg.indexOf(" ") > 1) {
+		// check if chat is directed at another channel
+		int space = msg.indexOf(' ');
+		if (msg.indexOf("@") == 0 && space > 1) {
 			// Check for alternate channel destination. Failing that, warn user.
-			int space = msg.indexOf(" ");
 			String newChannel = msg.substring(1, space);
 			if (SblockChat.getChat().getChannelManager().isValidChannel(newChannel)) {
 				sendto = SblockChat.getChat().getChannelManager().getChannel(newChannel);
-				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(sender)) {
+				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(this)) {
 					// User not approved in channel
-					sender.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sendto.getName()));
+					sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sendto.getName()));
 					return;
 				} else {
-					// should reach this point for publicchannel and approved users
+					// should reach this point for public channels and approved users
 					msg = msg.substring(space + 1);
 					if (msg.length() == 0) {
 						// Do not display blank messages for @<channel> with no message
@@ -459,72 +451,71 @@ public class ChatUser {
 				}
 			} else {
 				// Invalid channel specified
-				sender.sendMessage(ChatMsgs.errorInvalidChannel(newChannel));
+				sendMessage(ChatMsgs.errorInvalidChannel(newChannel));
 				return;
 			}
 		} else if (current == null) {
-			sender.sendMessage(ChatMsgs.errorNoCurrent());
-			event.setCancelled(true);
+			sendMessage(ChatMsgs.errorNoCurrent());
 			return;
 		}
 		
 		if (sendto instanceof RPChannel) {
-			if (!sendto.hasNick(sender)) {
-				sender.sendMessage(ChatMsgs.errorNickRequired(sendto.getName()));
+			if (!sendto.hasNick(this)) {
+				sendMessage(ChatMsgs.errorNickRequired(sendto.getName()));
 				return;
 			}
 		}
-		this.formatMessage(sender, sendto, msg);
+
+		// Chat is being done via /me
+		if (forceThirdPerson) {
+			msg = '#' + msg;
+		}
+
+		this.sendMessageToChannel(sendto, msg);
 	}
 
 	/**
-	 * Format a chat message for sending to a Channel.
+	 * Format a chat message and send it to a Channel.
 	 * 
 	 * @param sender the SblockUser speaking
 	 * @param c the Channel to send the message to
 	 * @param s the message to send
 	 */
-	public void formatMessage(ChatUser sender, Channel c, String s) {
-		// remember, [$channel]<$player> $message
+	public void sendMessageToChannel(Channel c, String s) {
 
-		// perhaps call getOutputChannelF and getOutputNameF?
-		// though I should def include a ColorDefinitons class -- DONE
-
-		// check for a global nick, prolly only occurs if admin is being
-		// tricksty
-
-		// next add or strip colors in message. based on perm
-		// this part may change as I start working on other channeltypes
-		// check for thirdperson # modifier and reformat appropriately
-		// finally, channel.sendtochannel
-
-
+		// check for third person modifier (#)
 		boolean isThirdPerson = s.charAt(0) == '#';
 
+		// strip third person modifier from chat
 		if (isThirdPerson) {
 			s = s.substring(1);
 		}
-		
+
 		if(c.getType() == ChannelType.RP) {
-			//apply quirk to s
-			s = CanonNicks.getNick(c.getNick(sender)).applyQuirk(s);
-		} else if (c.isChannelMod(sender)) {
-			// color formatting
+			//apply quirk to message
+			s = CanonNicks.getNick(c.getNick(this)).applyQuirk(s);
+		} else if (c.isChannelMod(this)) {
+			// color formatting - applies only to channel mods.
 			s = ChatColor.translateAlternateColorCodes('&', s);
 		}
-		String output = getOutputChannelF(sender, c) + this.getOutputNameF(sender, isThirdPerson, c) + s;
-		c.sendToAll(sender, output, isThirdPerson ? "me" : "chat");
+
+		// apply channel and display name formatting
+		// [$channel] <$player> $message normal chat
+		// [$channel]>$player: $message /me chat
+		String output = getOutputChannelF(this, c) + this.getOutputNameF(this, isThirdPerson, c) + s;
+
+		// send message to everyone in channel
+		c.sendToAll(this, output, isThirdPerson ? "me" : "chat");
 	}
 
 	/**
 	 * Send a message from a Channel to this Player.
 	 * 
-	 * @param s the message to send
+	 * @param message the message to send
 	 * @param c the Channel to send to.
 	 * @param type the type of chat for handling purposes
 	 */
-	@SuppressWarnings("deprecation")
-	public void sendMessageFromChannel(String s, Channel c, String type) {
+	public void sendMessageFromChannel(String message, Channel c, String type) {
 		Player p = this.getPlayer();
 		if (p == null) {
 			SblockData.getDB().saveUserData(playerName);
@@ -532,12 +523,12 @@ public class ChatUser {
 			return;
 		}
 		// final output, sends message to user
-		// alert for if its player's name is applied here i.e. {!}
-		// then just send it and be done!
 		switch (type) {
 		case "chat":
-			if (!s.startsWith(getOutputChannelF(this, c) + this.getOutputNameF(this, false, c))) {
-				// Chat is not being sent by this ChatUser. Proceed with matching funtimes!
+		case "me":
+			// Checking for highlights within the message commences
+			if (!message.startsWith(getOutputChannelF(this, c) + this.getOutputNameF(this, false, c))) {
+				// Chat is not being sent by this ChatUser, attempt highlight matches
 
 				StringBuilder regex = new StringBuilder();
 				String nick = ChatColor.stripColor(c.getNick(this));
@@ -550,33 +541,45 @@ public class ChatUser {
 				// Regex completed, should be similar to (([Nn][Ii][Cc][Kk])|([Nn][Aa][Mm][Ee]))
 
 				StringBuilder msg = new StringBuilder();
-				Matcher match = Pattern.compile(regex.toString()).matcher(s);
+				Matcher match = Pattern.compile(regex.toString()).matcher(message);
 				int lastEnd = 0;
+				// For every match, prepend aqua chat color and append previous color
 				while (match.find()) {
-					msg.append(s.substring(lastEnd, match.start()));
+					msg.append(message.substring(lastEnd, match.start()));
 					String last = ChatColor.getLastColors(msg.toString());
 					msg.append(ChatColor.AQUA).append(match.group()).append(last);
 					lastEnd = match.end();
 				}
-				if (lastEnd < s.length()) {
-				msg.append(s.substring(lastEnd));
+				if (lastEnd < message.length()) {
+				msg.append(message.substring(lastEnd));
 				}
-				s = msg.toString();
+				message = msg.toString();
 
 				if (lastEnd > 0) {
 					// Matches were found, commence highlight format changes.
-					s = s.replaceFirst("\\[(.{1,18})\\](..) <..(.+)>",
-						ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!! $2<" + ChatColor.AQUA +"$3>");
-					p.playEffect(p.getLocation(), Effect.BOW_FIRE, 0);
+					message = message.replaceFirst("\\[(.{1,18})\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
+					// Funtimes sound effects here
+					switch ((int) (Math.random() * 20)) {
+					case 0:
+						p.playSound(p.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
+						break;
+					case 1:
+						p.playSound(p.getLocation(), Sound.WITHER_SPAWN, 1, 2);
+						break;
+					case 2:
+					case 3:
+						p.playSound(p.getLocation(), Sound.ANVIL_LAND, 1, 1);
+						break;
+					default:
+						p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 2);
+					}
 				}
 			}
-		case "me":
 		case "channel":
 		default:
-			p.sendMessage(s);
+			p.sendMessage(message);
 			break;
 		}
-		// this.getPlayer().sendMessage(s);
 	}
 
 	private String ignoreCaseRegex(String s) {
