@@ -576,9 +576,8 @@ public class ChatUser {
 					}
 				}
 			}
-		} else {
-			p.sendMessage(message);
 		}
+		p.sendMessage(message);
 	}
 
 	private String ignoreCaseRegex(String s) {
