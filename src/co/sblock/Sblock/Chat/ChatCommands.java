@@ -1,6 +1,7 @@
 package co.sblock.Sblock.Chat;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -27,8 +28,6 @@ import co.sblock.Sblock.Utilities.Log;
  * @author Dublek, Jikoo
  */
 public class ChatCommands implements CommandListener {
-
-	private final char SPACE = '\u0020';
 
 	@SblockCommand(description = "List all colors.", usage = "/color")
 	public boolean color(CommandSender sender, String[] args) {
@@ -120,7 +119,7 @@ public class ChatCommands implements CommandListener {
 		}
 		StringBuilder o = new StringBuilder(ChatColor.BOLD.toString()).append("[o] ");
 		for (String s : text) {
-			o.append(s).append(SPACE);
+			o.append(s).append(' ');
 		}
 		Broadcast.general(o.substring(0, o.length() - 1 > 0 ? o.length() - 1 : 0));
 		return true;
@@ -140,7 +139,7 @@ public class ChatCommands implements CommandListener {
 		String target = args[0];
 		StringBuilder reason = new StringBuilder();
 		for (int i = 1; i < args.length; i++) {
-			reason.append(args[i]).append(SPACE);
+			reason.append(args[i]).append(' ');
 		}
 		if (args.length == 1) {
 			reason.append("Git wrekt m8.");
@@ -279,7 +278,7 @@ public class ChatCommands implements CommandListener {
 	private boolean scList(ChatUser user, String[] args) {
 		StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW).append("Currently pestering: ");
 		for (String s : user.getListening()) {
-			sb.append(s).append(SPACE);
+			sb.append(s).append(' ');
 		}
 		user.sendMessage(sb.toString());
 		return true;
@@ -297,7 +296,7 @@ public class ChatCommands implements CommandListener {
 			} else {
 				cc = ChatColor.RED;
 			}
-			sb.append(cc).append(c.getName()).append(SPACE);
+			sb.append(cc).append(c.getName()).append(' ');
 		}
 		user.sendMessage(sb.toString());
 		return true;
@@ -468,9 +467,9 @@ public class ChatCommands implements CommandListener {
 			for (String s : c.getListening()) {
 				ChatUser u = ChatUserManager.getUserManager().getUser(s);
 				if (u.getCurrent().equals(c)) {
-					sb.append(ChatColor.GREEN).append(u.getPlayerName()).append(SPACE);
+					sb.append(ChatColor.GREEN).append(u.getPlayerName()).append(' ');
 				} else {
-					sb.append(ChatColor.YELLOW).append(u.getPlayerName()).append(SPACE);
+					sb.append(ChatColor.YELLOW).append(u.getPlayerName()).append(' ');
 				}
 			}
 			user.sendMessage(sb.toString());
