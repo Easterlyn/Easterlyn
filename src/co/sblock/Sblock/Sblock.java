@@ -188,6 +188,8 @@ public class Sblock extends JavaPlugin implements CommandListener {
 		Command cmd = getServer().getPluginCommand(m.getName());
 		if (cmd != null) {
 			// Command has been registered by another plugin.
+			getLog().info("Overriding control of /" + m.getName() + " by "
+					+ ((PluginCommand) cmd).getExecutor().getClass().getName());
 			((PluginCommand) cmd).setExecutor(this);
 		} else {
 			cmd = new CustomCommand(m.getName());

@@ -517,17 +517,18 @@ public class ChatUser {
 	 */
 	public void sendMessageFromChannel(String message, Channel c, String type) {
 		Player p = this.getPlayer();
+
+		// Check to make sure user is online
 		if (p == null) {
 			SblockData.getDB().saveUserData(playerName);
 			c.removeListening(playerName);
 			return;
 		}
+
 		// final output, sends message to user
-		switch (type) {
-		case "chat":
-		case "me":
+		if (!type.equals("channel")) {
 			// Checking for highlights within the message commences
-			if (!message.startsWith(getOutputChannelF(this, c) + this.getOutputNameF(this, false, c))) {
+			if (!message.startsWith(getOutputChannelF(this, c) + this.getOutputNameF(this, type.equals("me"), c))) {
 				// Chat is not being sent by this ChatUser, attempt highlight matches
 
 				StringBuilder regex = new StringBuilder();
@@ -575,10 +576,8 @@ public class ChatUser {
 					}
 				}
 			}
-		case "channel":
-		default:
+		} else {
 			p.sendMessage(message);
-			break;
 		}
 	}
 
