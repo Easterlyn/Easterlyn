@@ -1,6 +1,7 @@
 package co.sblock.Sblock.Chat.Chester;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +16,6 @@ import org.bukkit.event.Listener;
 
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.Chat.ChatUser;
-import co.sblock.Sblock.Chat.SblockChat;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Utilities.Log;
@@ -29,14 +29,17 @@ public class ChesterListener implements CommandListener, Listener {
 
 	private Pattern pattern;
 
+	private List<String> triggers;
+
 	public ChesterListener() {
+		triggers = Bukkit.getPluginManager().getPlugin("Chester").getConfig().getStringList("triggerwords");
 		pattern = Pattern.compile(createRegex());
 		Log.getLog("ChesterListener").info("Compiled regex: " + pattern.toString());
 	}
 
 	private String createRegex() {
 		StringBuilder regex = new StringBuilder().append('(');
-		for (String s : SblockChat.chester) {
+		for (String s : triggers) {
 			regex.append('(');
 			for (int i = 0; i < s.length(); i++) {
 				regex.append('[');
@@ -78,7 +81,7 @@ public class ChesterListener implements CommandListener, Listener {
 			event.setMessage(event.getMessage().substring(3));
 		}
 
-		for (String s : SblockChat.chester) {
+		for (String s : triggers) {
 			if (event.getMessage().equalsIgnoreCase(s)) {
 				Log.getLog("ChesterListener").info("Not logging: Chat equals trigger \"" + event.getMessage() + "\"");
 				event.setCancelled(true);

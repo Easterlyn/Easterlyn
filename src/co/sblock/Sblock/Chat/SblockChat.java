@@ -1,14 +1,8 @@
 package co.sblock.Sblock.Chat;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import co.sblock.Sblock.Module;
-import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Chester.ChesterListener;
 import co.sblock.Sblock.UserData.SblockUser;
@@ -21,8 +15,6 @@ public class SblockChat extends Module {
 	private ChatCommands clistener = new ChatCommands();
 	private static boolean computersRequired = false;	//Hardcoded override, will be set to true come Entry
 
-	public static ArrayList<String> chester = new ArrayList<String>();
-
 	@Override
 	protected void onEnable() {
 		instance = this;
@@ -34,17 +26,6 @@ public class SblockChat extends Module {
 			ChesterListener cl = new ChesterListener();
 			this.registerEvents(cl);
 			this.registerCommands(cl);
-		} else {
-			return;
-		}
-
-		File chesterCFG = new File(Sblock.getInstance().getDataFolder().getParent() + "/Chester/", "config.yml");
-		if (chesterCFG.exists()) {
-			YamlConfiguration chesterYML = YamlConfiguration.loadConfiguration(chesterCFG);
-			List<String> triggers = chesterYML.getStringList("triggerwords");
-			if (triggers != null) {
-				chester = new ArrayList<String>(triggers);
-			}
 		}
 	}
 
