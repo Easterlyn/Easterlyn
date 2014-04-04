@@ -78,6 +78,7 @@ public enum Icon {
 		case CONFIRM:
 			is.setType(Material.EMERALD_BLOCK);
 			im.setDisplayName(ChatColor.GREEN + "Confirm");
+			break;
 		case PESTERCHUM:
 			is.setType(Material.RAW_FISH);
 			is.setDurability((short) 3);

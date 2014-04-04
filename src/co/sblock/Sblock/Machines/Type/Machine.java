@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -363,6 +364,17 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBurnFuel(FurnaceBurnEvent event) {
+		return true;
+	}
+
+	/**
+	 * Handles Furnaces in the Machine smelting items.
+	 * 
+	 * @param event the FurnaceSmeltEvent
+	 * 
+	 * @return true if the event should be cancelled
+	 */
+	public boolean handleFurnaceSmelt(FurnaceSmeltEvent event) {
 		return true;
 	}
 

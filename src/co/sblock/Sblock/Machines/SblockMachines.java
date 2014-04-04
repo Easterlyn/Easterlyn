@@ -1,5 +1,10 @@
 package co.sblock.Sblock.Machines;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.ItemStack;
+
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Database.SblockData;
 
@@ -24,6 +29,10 @@ public class SblockMachines extends Module {
 		manager = new MachineManager();
 		this.registerCommands(new MachineCommand());
 		SblockData.getDB().loadAllMachines();
+
+		// Recipe does nothing on its own - We'll cancel all smelts that do not happen within a TotemLate.
+		Bukkit.addRecipe(new FurnaceRecipe(new ItemStack(Material.NETHER_BRICK_ITEM), Material.NETHER_BRICK_ITEM));
+
 		getLogger().fine("Machines enabled");
 	}
 

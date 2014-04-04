@@ -4,15 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.v1_7_R2.ContainerAnvil;
-import net.minecraft.server.v1_7_R2.EntityHuman;
-import net.minecraft.server.v1_7_R2.EntityPlayer;
-import net.minecraft.server.v1_7_R2.World;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
@@ -175,7 +169,7 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		EntityPlayer p = ((CraftPlayer) player).getHandle();
+		net.minecraft.server.v1_7_R2.EntityPlayer p = ((org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer) player).getHandle();
 		AnvilContainer container = new AnvilContainer(p);
 
 		p.activeContainer = container;
@@ -183,14 +177,14 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 		p.activeContainer.addSlotListener(p);
 	}
 
-	public class AnvilContainer extends ContainerAnvil {
+	public class AnvilContainer extends net.minecraft.server.v1_7_R2.ContainerAnvil {
 
-		public AnvilContainer(EntityHuman entity) {
-			super(entity.inventory, (World) l.getWorld(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), entity);
+		public AnvilContainer(net.minecraft.server.v1_7_R2.EntityHuman entity) {
+			super(entity.inventory, ((org.bukkit.craftbukkit.v1_7_R2.CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), entity);
 		}
 
 		@Override
-		public boolean a(EntityHuman entityhuman) {
+		public boolean a(net.minecraft.server.v1_7_R2.EntityHuman entityhuman) {
 			return true;
 		}
 	}

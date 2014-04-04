@@ -1,5 +1,7 @@
 package co.sblock.Sblock.Events.Listeners;
 
+import org.bukkit.Material;
+import org.bukkit.block.Furnace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
@@ -24,6 +26,13 @@ public class FurnaceBurnListener implements Listener {
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
 		if (m != null) {
 			event.setCancelled(m.handleBurnFuel(event));
+			return;
+		}
+
+		if (((Furnace) event.getBlock().getState()).getInventory().getSmelting().getType()
+				== Material.NETHER_BRICK_ITEM) {
+			// Nether bricks are our dowels, the recipe created for them is quite useless.
+			event.setCancelled(true);
 		}
 	}
 }

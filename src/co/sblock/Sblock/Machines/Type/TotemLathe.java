@@ -7,14 +7,15 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
-import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
@@ -31,9 +32,6 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 
 	/** The Furnace Block */
 	private Block furnaceBlock;
-
-	/** The ID of the furnace updating task */
-	private int task;
 
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
@@ -88,26 +86,46 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		return true;
 	}
 
+	@Override
+	public boolean handleFurnaceSmelt(FurnaceSmeltEvent event) {
+		Furnace furnace = (Furnace) event.getBlock().getState();
+		FurnaceInventory fi = furnace.getInventory();
+		if (!CruxiteDowel.isBlankDowel(fi.getSmelting()) || !Captcha.isPunchCard(fi.getFuel())) {
+			// Objects are invalid.
+			return true;
+		}
+		fi.setResult(CruxiteDowel.carve(fi.getFuel()));
+		ItemStack decrease = fi.getSmelting();
+		if (decrease.getAmount() > 1) {
+			decrease.setAmount(decrease.getAmount() - 1);
+		} else {
+			decrease = null;
+		}
+		fi.setSmelting(decrease);
+		decrease = fi.getFuel();
+		if (decrease.getAmount() > 1) {
+			decrease.setAmount(decrease.getAmount() - 1);
+		} else {
+			decrease = null;
+		}
+		fi.setFuel(decrease);
+		return true;
+	}
+
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
 		SblockMachines.getMachines().getLogger().debug("TotemLathe handleClick");
-		if (event.getCurrentItem() == null) {
-			event.setResult(Result.DENY);
-			return true;
-		}
 		updateFurnaceInventory();
 		return false;
 	}
 
 	/**
-	 * Trigger a synchronous repeating update of this Machine's Inventory.
-	 * <p>
-	 * This simulates the furnace smelting process for objects without a recipe.
+	 * Trigger a check that will cause the dowel to start smelting.
 	 */
 	private void updateFurnaceInventory() {
-		task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
@@ -116,37 +134,16 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 					// TileEntity is not loaded.
 					return;
 				}
-				FurnaceInventory fi = f.getInventory();
 
-				boolean fuelIsDowel = CruxiteDowel.isBlankDowel(fi.getFuel());
-				if ((fuelIsDowel || CruxiteDowel.isBlankDowel(fi.getSmelting()))
-						&& (Captcha.isPunchCard(fi.getSmelting()) || Captcha.isPunchCard(fi.getFuel()))) {
-					if (f.getCookTime() > 190) {
-						fi.setResult(CruxiteDowel.carve(fuelIsDowel ? fi.getSmelting() : fi.getFuel()));
-						if (fuelIsDowel) {
-							fi.setFuel(null);
-						} else {
-							fi.setSmelting(null);
-						}
-						f.setBurnTime((short) 0);
-						f.setCookTime((short) 0);
-						f.update(true);
-						Bukkit.getScheduler().cancelTask(task);
-						return;
-					}
-					if (f.getBurnTime() > 200 - f.getCookTime()) {
-						f.setBurnTime((short) 200);
-					}
-					// 200 ticks standard cook time
-					f.setCookTime((short) (f.getCookTime() + 5));
+				if (CruxiteDowel.isBlankDowel(f.getInventory().getSmelting())
+						&& Captcha.isPunchCard(f.getInventory().getFuel())) {
+					f.setBurnTime((short) 200);
 				} else {
 					f.setBurnTime((short) 0);
-					f.setCookTime((short) 0);
-					Bukkit.getScheduler().cancelTask(task);
 				}
 				f.update(true);
 			}
-		}, 0, 5);
+		});
 	}
 
 	/**
