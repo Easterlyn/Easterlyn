@@ -22,7 +22,9 @@ public class CruxiteDowel {
 	
 	public static boolean isBlankDowel(ItemStack is) {
 		if (is != null) {
-			return is.equals(getDowel());
+			ItemStack dowel = getDowel();
+			dowel.setAmount(is.getAmount());
+			return is.equals(dowel);
 		}
 		return false;
 	}

@@ -159,22 +159,26 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 
 	// Adam read source for this + other window opens
 	public void openInventory(Player player) {
-		// Bear in mind - we will need a packet listener to handle all events related to this.
-		// the window we are opening is fake and not recognized by the server.
+		// Opens a real anvil window for the Player in question
 		WrapperPlayServerOpenWindow packet = new WrapperPlayServerOpenWindow();
 		packet.setInventoryType(InventoryType.ANVIL);
-		packet.setWindowTitle("Punch Designix");
+		packet.setWindowTitle("Punch Designix"); // Does not display. Minecraft limitation.
+
+		net.minecraft.server.v1_7_R2.EntityPlayer p = ((org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer) player).getHandle();
+
+		// tick container counter - otherwise server will be confused by slot numbers
+		packet.setWindowId((byte) p.nextContainerCounter());
+
+		AnvilContainer container = new AnvilContainer(p);
+		p.activeContainer = container;
+		p.activeContainer.windowId = packet.getWindowId();
+		container.addSlotListener(p);
+
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet.getHandle());
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		net.minecraft.server.v1_7_R2.EntityPlayer p = ((org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer) player).getHandle();
-		AnvilContainer container = new AnvilContainer(p);
-
-		p.activeContainer = container;
-		p.activeContainer.windowId = packet.getWindowId();
-		p.activeContainer.addSlotListener(p);
 	}
 
 	public class AnvilContainer extends net.minecraft.server.v1_7_R2.ContainerAnvil {

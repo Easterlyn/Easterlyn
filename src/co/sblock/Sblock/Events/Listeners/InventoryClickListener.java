@@ -1,6 +1,7 @@
 package co.sblock.Sblock.Events.Listeners;
 
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
@@ -33,15 +35,25 @@ public class InventoryClickListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
-		//Adam check for totem lathe furnace
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
-		if (ih != null && (ih instanceof Machine)) {
+
+		if (ih != null && ih instanceof Machine) {
 			Machine m = (Machine) ih;
 			if (m != null) {
 				event.setCancelled(m.handleClick(event));
 				return;
 			}
 		}
+
+		// Finds inventories other than chests opened by Machines
+		if (ih != null && ih instanceof BlockState) {
+			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
+			if (m != null) {
+				event.setCancelled(m.handleClick(event));
+				return;
+			}
+		}
+
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			// General cancellation: Books cannot be captcha'd, so this is easier
 			// than trying to detect the Captchadex and prevent clicking it.
