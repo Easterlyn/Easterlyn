@@ -46,6 +46,9 @@ public class SblockEvents extends Module {
 	/** The Minecraft servers' status */
 	private Status status;
 
+	/** The number of repeated status checks that have come back red. */
+	private int statusResample = 0;
+
 	/** A Map of all scheduled tasks by Player. */
 	public Map<String, Integer> tasks;
 
@@ -174,7 +177,14 @@ public class SblockEvents extends Module {
 	 * 
 	 * @param status the Status
 	 */
+	@SuppressWarnings("deprecation")
 	public void changeStatus(Status status) {
+		if (status.hasAnnouncement() && statusResample < 5) {
+			// less spam - must return red status 5 times in a row to announce.
+			statusResample++;
+			Bukkit.getScheduler().scheduleAsyncDelayedTask(Sblock.getInstance(), new StatusCheck());
+			return;
+		}
 		String announcement = null;
 		if (this.status.hasAllClear() && !status.hasAnnouncement()) {
 			announcement = this.status.getAllClear();
@@ -183,6 +193,7 @@ public class SblockEvents extends Module {
 		}
 		if (announcement != null) {
 			Broadcast.lilHal(announcement);
+			statusResample = 0;
 		}
 		this.status = status;
 	}
