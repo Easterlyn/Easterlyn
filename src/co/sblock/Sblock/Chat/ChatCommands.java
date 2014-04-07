@@ -52,7 +52,7 @@ public class ChatCommands implements CommandListener {
 			for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
 				if (i >= msg.length())
 					break;
-				lelOut.append(ColorDef.RAINBOW[j]).append(msg.charAt(i));
+				lelOut.append(ColorDef.RAINBOW[j]).append(ChatColor.MAGIC).append(msg.charAt(i));
 				i++;
 			}
 		}
@@ -142,10 +142,6 @@ public class ChatCommands implements CommandListener {
 		}
 		if (args.length == 1) {
 			reason.append("Git wrekt m8.");
-		}
-		if (!Bukkit.getOfflinePlayer(target).hasPlayedBefore()) {
-			sender.sendMessage("Unknown user, check your spelling.");
-			return true;
 		}
 		SblockUser victim = UserManager.getUserManager().getUser(target);
 		if (victim != null) {

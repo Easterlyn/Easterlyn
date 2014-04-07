@@ -468,7 +468,7 @@ public class ChatUser {
 
 		// Chat is being done via /me
 		if (forceThirdPerson) {
-			msg = '#' + msg;
+			msg = "#>" + msg;
 		}
 
 		this.sendMessageToChannel(sendto, msg);
@@ -484,11 +484,11 @@ public class ChatUser {
 	public void sendMessageToChannel(Channel c, String s) {
 
 		// check for third person modifier (#)
-		boolean isThirdPerson = s.charAt(0) == '#';
+		boolean isThirdPerson = s.length() > 2 && s.charAt(0) == '#' && s.charAt(1) == '>';
 
 		// strip third person modifier from chat
 		if (isThirdPerson) {
-			s = s.substring(1);
+			s = s.substring(2);
 		}
 
 		if(c.getType() == ChannelType.RP) {

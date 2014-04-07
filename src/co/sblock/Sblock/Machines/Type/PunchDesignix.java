@@ -169,27 +169,17 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 		// tick container counter - otherwise server will be confused by slot numbers
 		packet.setWindowId((byte) p.nextContainerCounter());
 
-		AnvilContainer container = new AnvilContainer(p);
+		AnvilContainer container = new AnvilContainer(p, l);
 		p.activeContainer = container;
 		p.activeContainer.windowId = packet.getWindowId();
 		container.addSlotListener(p);
+		
+		
 
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet.getHandle());
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
-		}
-	}
-
-	public class AnvilContainer extends net.minecraft.server.v1_7_R2.ContainerAnvil {
-
-		public AnvilContainer(net.minecraft.server.v1_7_R2.EntityHuman entity) {
-			super(entity.inventory, ((org.bukkit.craftbukkit.v1_7_R2.CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), entity);
-		}
-
-		@Override
-		public boolean a(net.minecraft.server.v1_7_R2.EntityHuman entityhuman) {
-			return true;
 		}
 	}
 }
