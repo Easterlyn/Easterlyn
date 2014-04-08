@@ -122,7 +122,7 @@ public class Captchadex {
 	 * 
 	 * @return the captchacard created
 	 */
-	public static ItemStack punchCardToItem(ItemStack is) {
+	public static ItemStack punchcardToItem(ItemStack is) {
 		ItemStack pc = Captcha.captchaToItem(is);
 		return pc;
 	}
@@ -134,7 +134,7 @@ public class Captchadex {
 	 * 
 	 * @return the punched captchacard
 	 */
-	public static ItemStack itemToCard(ItemStack is) {
+	public static ItemStack itemToPunchcard(ItemStack is) {
 		ItemStack pc = Captcha.itemToCaptcha(is);
 		ItemMeta im = pc.getItemMeta();
 		im.setDisplayName("Punchcard");

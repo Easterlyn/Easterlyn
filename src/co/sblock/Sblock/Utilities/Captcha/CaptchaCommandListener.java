@@ -69,7 +69,7 @@ public class CaptchaCommandListener implements CommandListener {
 		if (sender.isOp()) {
 			Player p = (Player) sender;
 			ItemStack item = p.getItemInHand();
-			if (Captcha.isCaptchaCard(item)) {
+			if (Captcha.isUsedCaptcha(item)) {
 				p.getInventory().clear(p.getInventory().getHeldItemSlot());
 				p.getInventory().addItem(Captchadex.punchCard(item));
 				return true;

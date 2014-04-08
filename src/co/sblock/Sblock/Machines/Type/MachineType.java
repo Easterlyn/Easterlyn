@@ -1,6 +1,8 @@
 package co.sblock.Sblock.Machines.Type;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -77,82 +79,65 @@ public enum MachineType {
 	 * @return the ItemStack
 	 */
 	public ItemStack getUniqueDrop() {
-		ItemStack is = null;
-		ItemMeta im;
+		ItemStack is = new ItemStack(Material.BEDROCK);
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(ChatColor.WHITE + getFriendlyName());
 		switch (this) {
 		case ALCHEMITER:
-			is = new ItemStack(Material.QUARTZ_BLOCK);
+			is.setType(Material.QUARTZ_BLOCK);
 			is.setDurability((short) 2);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Alchemiter");
-			is.setItemMeta(im);
 			break;
 		case BANK:
-			is = new ItemStack(Material.CHEST);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Bank Booth");
-			is.setItemMeta(im);
+			is.setType(Material.CHEST);
 		case COMPUTER:
-			is = new ItemStack(Material.JUKEBOX);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Computer");
-			is.setItemMeta(im);
+			is.setType(Material.JUKEBOX);
 			break;
 		case CRUXTRUDER:
-			is = new ItemStack(Material.BEACON);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Cruxtender");
-			is.setItemMeta(im);
+			is.setType(Material.BEACON);
 			break;
 		case PERFECT_BUILDING_OBJECT:
-			is = new ItemStack(Material.DIAMOND_BLOCK);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Perfect Building Object");
-			is.setItemMeta(im);
+			is.setType(Material.DIAMOND_BLOCK);
 			break;
 		case PERFECTLY_GENERIC_OBJECT:
-			is = new ItemStack(Material.DIRT);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Perfectly generic object");
-			is.setItemMeta(im);
+			is.setType(Material.DIRT);
 			break;
 		case PUNCH_DESIGNIX:
-			is = new ItemStack(Material.NOTE_BLOCK);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Punch Designix");
-			is.setItemMeta(im);
+			is.setType(Material.NOTE_BLOCK);
 			break;
 		case TOTEM_LATHE:
-			is = new ItemStack(Material.ANVIL);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Totem Lathe");
-			is.setItemMeta(im);
+			is.setType(Material.ANVIL);
 			break;
 		case TRANSMATERIALIZER:
-			is = new ItemStack(Material.CHEST);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Transmaterializer");
-			is.setItemMeta(im);
+			is.setType(Material.CHEST);
 			break;
 		case TRANSPORTALIZER:
-			is = new ItemStack(Material.CHEST);
-			im = is.getItemMeta();
-			im.setDisplayName(ChatColor.WHITE + "Transportalizer");
-			is.setItemMeta(im);
+			is.setType(Material.CHEST);
 			break;
 		case ANY:
 			return values()[(int) Math.random() * values().length].getUniqueDrop();
 		default:
-			is = new ItemStack(Material.BEDROCK);
-			im = is.getItemMeta();
 			im.setDisplayName(ChatColor.WHITE + "Don't place this.");
 			ArrayList<String> lore = new ArrayList<String>();
 			lore.add(ChatColor.DARK_RED + "It'd make my life a lot easier.");
 			im.setLore(lore);
-			is.setItemMeta(im);
 			break;
 		}
+		is.setItemMeta(im);
 		return is;
+	}
+
+	public String getFriendlyName() {
+		StringBuilder sb = new StringBuilder();
+		String s = name().toLowerCase();
+		Matcher m = Pattern.compile("(\\A|_)[a-z]").matcher(s);
+		int end = 0;
+		while (m.find()) {
+			sb.append(s.substring(end, m.start()));
+			sb.append(m.group().toUpperCase().replace("_", " "));
+			end = m.end();
+		}
+		sb.append(s.substring(end));
+		return sb.toString();
 	}
 	// Future stuff:
 	// Holopad: Largely useless unless we redo captchas NOW to use books.

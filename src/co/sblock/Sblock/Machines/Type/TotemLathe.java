@@ -89,7 +89,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	public boolean handleFurnaceSmelt(FurnaceSmeltEvent event) {
 		Furnace furnace = (Furnace) event.getBlock().getState();
 		FurnaceInventory fi = furnace.getInventory();
-		if (!CruxiteDowel.isBlankDowel(fi.getSmelting()) || !Captcha.isPunchCard(fi.getFuel())) {
+		if (!CruxiteDowel.isBlankDowel(fi.getSmelting()) || !Captcha.isPunch(fi.getFuel())) {
 			// Objects are invalid.
 			return true;
 		}
@@ -134,7 +134,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 				}
 
 				if (CruxiteDowel.isBlankDowel(f.getInventory().getSmelting())
-						&& Captcha.isPunchCard(f.getInventory().getFuel())) {
+						&& Captcha.isPunch(f.getInventory().getFuel())) {
 					short cookRemaining = (short) (200 - f.getCookTime());
 					if (f.getBurnTime() < cookRemaining) {
 						f.setBurnTime(cookRemaining);

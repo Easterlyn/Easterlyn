@@ -12,7 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
@@ -39,12 +38,6 @@ public class InventoryClickListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
 
-		if (ih != null) {
-			SblockEvents.getEvents().getLogger().debug("Top: " + ih);
-		}
-		SblockEvents.getEvents().getLogger().debug("Top: " + event.getView().getTopInventory());
-		SblockEvents.getEvents().getLogger().debug("Bottom: " + (event.getView().getBottomInventory().getHolder() != null ? event.getView().getBottomInventory().getHolder() : "null")
-		+ " View: " + event.getView().getType().name());
 		Machine m;
 		if (ih != null && ih instanceof Machine) {
 			m = (Machine) ih;
@@ -158,7 +151,7 @@ public class InventoryClickListener implements Listener {
 	private void itemRemoveTop(InventoryClickEvent event) {
 		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
 			if (event.getClick() == ClickType.LEFT) {
-				event.setCurrentItem(Captchadex.itemToCard(event.getCurrentItem()));
+				event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
 			} else {
 				event.setResult(Result.DENY);
 			}
@@ -175,7 +168,7 @@ public class InventoryClickListener implements Listener {
 	@SuppressWarnings("deprecation")
 	private void itemAddTop(InventoryClickEvent event) {
 		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
-			if (!Captcha.isPunchCard(event.getCursor()) || event.getCursor().getAmount() > 1) {
+			if (!Captcha.isPunch(event.getCursor()) || event.getCursor().getAmount() > 1) {
 				event.setResult(Result.DENY);
 				return;
 			}
@@ -194,7 +187,7 @@ public class InventoryClickListener implements Listener {
 	// move top to bottom
 	private void itemShiftTopToBottom(InventoryClickEvent event) {
 		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
-			event.setCurrentItem(Captchadex.itemToCard(event.getCurrentItem()));
+			event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
 		}
 		// Server mode: Do not move, clone and add.
 		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
@@ -207,7 +200,7 @@ public class InventoryClickListener implements Listener {
 	@SuppressWarnings("deprecation")
 	private void itemSwapIntoTop(InventoryClickEvent event) {
 		if (!event.getClickedInventory().getTitle().equals("Captchadex")
-				&& Captcha.isBlankCard(event.getCurrentItem())) {
+				&& Captcha.isBlankCaptcha(event.getCurrentItem())) {
 			event.setResult(Result.DENY);
 			// Could instead verify swap in is single punchcard,
 			// but not really worth the bother - rare scenario.
@@ -243,7 +236,7 @@ public class InventoryClickListener implements Listener {
 	@SuppressWarnings("deprecation")
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			if (Captcha.isPunchCard(event.getCurrentItem())
+			if (Captcha.isPunch(event.getCurrentItem())
 					&& event.getCurrentItem().getAmount() == 1) {
 				event.setCurrentItem(Captcha.captchaToItem(event.getCurrentItem()));
 			} else {
@@ -264,7 +257,7 @@ public class InventoryClickListener implements Listener {
 	// switch bottom
 	@SuppressWarnings("deprecation")
 	private void itemSwapIntoBottom(InventoryClickEvent event) {
-		if (Captcha.isBlankCard(event.getCurrentItem())) {
+		if (Captcha.isBlankCaptcha(event.getCurrentItem())) {
 			if (event.getCursor().getType() == Material.BOOK_AND_QUILL
 					|| event.getCursor().getType() == Material.WRITTEN_BOOK
 					|| (event.getCursor().hasItemMeta() && event.getCursor().getItemMeta().hasDisplayName()

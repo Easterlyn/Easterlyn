@@ -91,42 +91,8 @@ public class Captcha extends Module {
 	 * 
 	 * @return the ItemStack represented by this Captchacard
 	 */
-	@SuppressWarnings("deprecation")
 	public static ItemStack captchaToItem(ItemStack card) {
-		ArrayList<String> lore = (ArrayList<String>) card.getItemMeta().getLore();
-		// Item: ID, quantity, data (damage)
-		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf(lore.get(1))),
-				Integer.valueOf(lore.get(3)), Short.valueOf(lore.get(2)));
-
-		ItemMeta im = is.getItemMeta();
-		if (!lore.get(0).equals(is.getType().toString())) {
-			im.setDisplayName(lore.get(0));
-			// Custom display names starting with ">" or ":" could break our parsing
-			// or, worse, allow free illegal enchants. Can you say Sharpness 32767?
-			lore.set(0, "No.");
-		} else {
-			im.setDisplayName(null);
-		}
-		List<String> itemLore = new ArrayList<String>();
-		for (String s : lore) {
-			if (s.charAt(0) == '\u003A') {
-				// Enchantments line format
-				String[] enchs = s.substring(1).split(":");
-				for (String s1 : enchs) {
-					String[] ench = s1.split(";");
-					im.addEnchant(Enchantment.getById(Integer.parseInt(ench[0])),
-							Integer.parseInt(ench[1]), true);
-				}
-			} else if (s.charAt(0) == '\u003E') {
-				// Lore lines format
-				itemLore.add(s.substring(1));
-			}
-		}
-		if (!itemLore.isEmpty()) {
-			im.setLore(itemLore);
-		}
-		is.setItemMeta(im);
-		return is;
+		return getCaptchaItem(card.getItemMeta().getLore().toArray());
 	}
 
 	/**
@@ -137,12 +103,12 @@ public class Captcha extends Module {
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	@SuppressWarnings("deprecation")
-	public static ItemStack getCaptchaItem(String[] data) {
-		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
-				Integer.valueOf(data[3]), Short.valueOf(data[2]));
+	public static ItemStack getCaptchaItem(Object[] data) {
+		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf((String) data[1])),
+				Integer.valueOf((String) data[3]), Short.valueOf((String) data[2]));
 		ItemMeta im = is.getItemMeta();
 		if (!data[0].equals(is.getType().toString())) {
-			im.setDisplayName(data[0]);
+			im.setDisplayName((String) data[0]);
 			// Custom display names starting with ">" or ":" could break our parsing
 			// or, worse, allow free illegal enchants. Can you say Sharpness 32767?
 			data[0] = "No.";
@@ -150,7 +116,8 @@ public class Captcha extends Module {
 			im.setDisplayName(null);
 		}
 		List<String> itemLore = new ArrayList<String>();
-		for (String s : data) {
+		for (Object o : data) {
+			String s = (String) o;
 			if (s.charAt(0) == '\u003A') {
 				// Enchantments line format
 				String[] enchs = s.substring(1).split(":");
@@ -204,7 +171,7 @@ public class Captcha extends Module {
 	 * 
 	 * @return true if the ItemStack is a blank Captchacard
 	 */
-	public static boolean isBlankCard(ItemStack is) {
+	public static boolean isBlankCaptcha(ItemStack is) {
 		return is != null && is.getType() == Material.PAPER
 				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName()
 				&& is.getItemMeta().getDisplayName().equals("Captchacard")
@@ -218,7 +185,7 @@ public class Captcha extends Module {
 	 * 
 	 * @return true if the ItemStack is a Captchacard
 	 */
-	public static boolean isCaptchaCard(ItemStack is) {
+	public static boolean isUsedCaptcha(ItemStack is) {
 		return is != null && is.getType() == Material.PAPER
 				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName()
 				&& is.getItemMeta().getDisplayName().equals("Captchacard")
@@ -232,12 +199,10 @@ public class Captcha extends Module {
 	 * 
 	 * @return true if the ItemStack is a Punchcard
 	 */
-	public static boolean isPunchCard(ItemStack is) {
-		if (is != null && is.getType().equals(Material.PAPER) && is.hasItemMeta()
-				&& is.getItemMeta().getDisplayName().equals("Punchcard")) {
-			return true;
-		}
-		return false;
+	public static boolean isPunch(ItemStack is) {
+		return is != null && is.getType() == Material.PAPER && is.hasItemMeta()
+				&& is.getItemMeta().hasLore() && is.getItemMeta().hasDisplayName()
+				&& is.getItemMeta().getDisplayName().equals("Punchcard");
 	}
 
 	/**
@@ -247,11 +212,35 @@ public class Captcha extends Module {
 	 * 
 	 * @return true if the ItemStack is a single Punchcard
 	 */
-	public static boolean isSinglePunchCard(ItemStack is) {
-		if (is.getType().equals(Material.PAPER) && is.hasItemMeta()
-				&& is.getItemMeta().getDisplayName().equals("Punchcard") && is.getAmount() == 1) {
-			return true;
+	public static boolean isSinglePunch(ItemStack is) {
+		return is.getType() == Material.PAPER && is.hasItemMeta()
+				&& is.getItemMeta().hasLore() && is.getItemMeta().hasDisplayName()
+				&& is.getItemMeta().getDisplayName().equals("Punchcard") && is.getAmount() == 1;
+	}
+
+	public static boolean isCard(ItemStack is) {
+		return is.getType() == Material.PAPER && is.hasItemMeta() && is.getItemMeta().hasDisplayName()
+				&& is.getItemMeta().hasLore() && (is.getItemMeta().getDisplayName().equals("Captchacard")
+						|| is.getItemMeta().getDisplayName().equals("Punchcard"));
+	}
+
+	public static ItemStack createPunchCard(ItemStack card1, ItemStack card2) {
+		if (card2 != null && !isPunch(card2)) {
+			return null;
 		}
-		return false;
+		ItemMeta captchaMeta = card1.getItemMeta();
+		if (card2 != null && !isBlankCaptcha(card2)) {
+			ItemStack is1 = captchaToItem(card1);
+			ItemStack is2 = captchaToItem(card2);
+			List<String> lore = new ArrayList<>(captchaMeta.getLore());
+			lore.addAll(is2.getItemMeta().getLore());
+			captchaMeta.setLore(lore);
+			is1.setItemMeta(captchaMeta);
+			card1 = itemToCaptcha(is1);
+			captchaMeta = card1.getItemMeta();
+		}
+		captchaMeta.setDisplayName("Punchcard");
+		card1.setItemMeta(captchaMeta);
+		return card1;
 	}
 }
