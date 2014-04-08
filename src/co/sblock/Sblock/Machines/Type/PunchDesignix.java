@@ -1,6 +1,5 @@
 package co.sblock.Sblock.Machines.Type;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
@@ -21,10 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-import com.comphenix.protocol.ProtocolLibrary;
-
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Events.Packets.WrapperPlayServerOpenWindow;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
@@ -159,27 +154,6 @@ public class PunchDesignix extends Machine implements InventoryHolder {
 
 	// Adam read source for this + other window opens
 	public void openInventory(Player player) {
-		// Opens a real anvil window for the Player in question
-		WrapperPlayServerOpenWindow packet = new WrapperPlayServerOpenWindow();
-		packet.setInventoryType(InventoryType.ANVIL);
-		packet.setWindowTitle("Punch Designix"); // Does not display. Minecraft limitation.
-
-		net.minecraft.server.v1_7_R2.EntityPlayer p = ((org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer) player).getHandle();
-
-		// tick container counter - otherwise server will be confused by slot numbers
-		packet.setWindowId((byte) p.nextContainerCounter());
-
-		AnvilContainer container = new AnvilContainer(p, l);
-		p.activeContainer = container;
-		p.activeContainer.windowId = packet.getWindowId();
-		container.addSlotListener(p);
-		
-		
-
-		try {
-			ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet.getHandle());
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		MachineInventoryTracker.getTracker().openAnvil(player, this);
 	}
 }

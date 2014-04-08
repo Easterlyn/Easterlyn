@@ -12,9 +12,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
+import co.sblock.Sblock.Machines.Type.MachineInventoryTracker;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
@@ -37,8 +39,15 @@ public class InventoryClickListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
 
+		if (ih != null) {
+			SblockEvents.getEvents().getLogger().debug("Top: " + ih);
+		}
+		SblockEvents.getEvents().getLogger().debug("Top: " + event.getView().getTopInventory());
+		SblockEvents.getEvents().getLogger().debug("Bottom: " + (event.getView().getBottomInventory().getHolder() != null ? event.getView().getBottomInventory().getHolder() : "null")
+		+ " View: " + event.getView().getType().name());
+		Machine m;
 		if (ih != null && ih instanceof Machine) {
-			Machine m = (Machine) ih;
+			m = (Machine) ih;
 			if (m != null) {
 				event.setCancelled(m.handleClick(event));
 				return;
@@ -47,11 +56,18 @@ public class InventoryClickListener implements Listener {
 
 		// Finds inventories other than chests opened by Machines
 		if (ih != null && ih instanceof BlockState) {
-			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
+			m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
 			if (m != null) {
 				event.setCancelled(m.handleClick(event));
 				return;
 			}
+		}
+
+		// Finds inventories forcibly opened by Machines
+		m = MachineInventoryTracker.getTracker().getOpenMachine((Player) event.getWhoClicked());
+		if (m != null) {
+			event.setCancelled(m.handleClick(event));
+			return;
 		}
 
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
