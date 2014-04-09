@@ -10,6 +10,7 @@ import info.gomeow.chester.API.ChesterBroadcastEvent;
 import info.gomeow.chester.API.ChesterLogEvent;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -117,5 +118,6 @@ public class ChesterListener implements CommandListener, Listener {
 			listeners.add(Bukkit.getPlayerExact(s));
 		}
 		event.getRecipients().retainAll(listeners);
+		event.setMessage(ChatColor.stripColor(event.getMessage()));
 	}
 }
