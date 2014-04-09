@@ -92,7 +92,7 @@ public class Captcha extends Module {
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	public static ItemStack captchaToItem(ItemStack card) {
-		return getCaptchaItem(card.getItemMeta().getLore().toArray());
+		return getCaptchaItem(card.getItemMeta().getLore().toArray(new String[0]));
 	}
 
 	/**
@@ -103,9 +103,9 @@ public class Captcha extends Module {
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	@SuppressWarnings("deprecation")
-	public static ItemStack getCaptchaItem(Object[] data) {
-		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf((String) data[1])),
-				Integer.valueOf((String) data[3]), Short.valueOf((String) data[2]));
+	public static ItemStack getCaptchaItem(String[] data) {
+		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
+				Integer.valueOf(data[3]), Short.valueOf(data[2]));
 		ItemMeta im = is.getItemMeta();
 		if (!data[0].equals(is.getType().toString())) {
 			im.setDisplayName((String) data[0]);
@@ -116,8 +116,7 @@ public class Captcha extends Module {
 			im.setDisplayName(null);
 		}
 		List<String> itemLore = new ArrayList<String>();
-		for (Object o : data) {
-			String s = (String) o;
+		for (String s : data) {
 			if (s.charAt(0) == '\u003A') {
 				// Enchantments line format
 				String[] enchs = s.substring(1).split(":");
@@ -179,7 +178,7 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Check if an ItemStack is a valid Captchacard.
+	 * Check if an ItemStack is a valid Captchacard that has been used.
 	 * 
 	 * @param is the ItemStack to check
 	 * 
@@ -191,6 +190,20 @@ public class Captcha extends Module {
 				&& is.getItemMeta().getDisplayName().equals("Captchacard")
 				&& is.getItemMeta().hasLore() && !is.getItemMeta().getLore().contains("Blank");
 	}
+
+	/**
+	 * Check if an ItemStack is a valid Captchacard.
+	 * 
+	 * @param is the ItemStack to check
+	 * 
+	 * @return true if the ItemStack is a Captchacard
+	 */
+	public static boolean isCaptcha(ItemStack is) {
+		return is != null && is.getType() == Material.PAPER && is.hasItemMeta()
+				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
+				&& is.getItemMeta().getDisplayName().equals("Captchacard");
+	}
+
 
 	/**
 	 * Check if an ItemStack is a valid Punchcard.
@@ -218,29 +231,48 @@ public class Captcha extends Module {
 				&& is.getItemMeta().getDisplayName().equals("Punchcard") && is.getAmount() == 1;
 	}
 
+	/**
+	 * Checks if an ItemStack is any Punchcard or Captchacard.
+	 * 
+	 * @param is the ItemStack to check
+	 * 
+	 * @return true if the ItemStack is a card
+	 */
 	public static boolean isCard(ItemStack is) {
-		return is.getType() == Material.PAPER && is.hasItemMeta() && is.getItemMeta().hasDisplayName()
-				&& is.getItemMeta().hasLore() && (is.getItemMeta().getDisplayName().equals("Captchacard")
+		return is != null && is.getType() == Material.PAPER && is.hasItemMeta()
+				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
+				&& (is.getItemMeta().getDisplayName().equals("Captchacard")
 						|| is.getItemMeta().getDisplayName().equals("Punchcard"));
 	}
 
-	public static ItemStack createPunchCard(ItemStack card1, ItemStack card2) {
-		if (card2 != null && !isPunch(card2)) {
+	/**
+	 * Creates a Punchcard from one or two cards.
+	 * If card2 is null, creates a clone of card1.
+	 * card2 must be a Punchcard or null.
+	 * 
+	 * @param card1 the first card
+	 * @param card2 the second card, or null to clone card1
+	 * 
+	 * @return the ItemStack created or null if invalid cards are provided
+	 */
+	public static ItemStack createCombinedPunch(ItemStack card1, ItemStack card2) {
+		if (!isCard(card1) || (card2 != null && !isPunch(card2))) {
 			return null;
 		}
-		ItemMeta captchaMeta = card1.getItemMeta();
-		if (card2 != null && !isBlankCaptcha(card2)) {
-			ItemStack is1 = captchaToItem(card1);
-			ItemStack is2 = captchaToItem(card2);
-			List<String> lore = new ArrayList<>(captchaMeta.getLore());
-			lore.addAll(is2.getItemMeta().getLore());
-			captchaMeta.setLore(lore);
-			is1.setItemMeta(captchaMeta);
-			card1 = itemToCaptcha(is1);
-			captchaMeta = card1.getItemMeta();
+		ItemStack result = new ItemStack(Material.PAPER);
+		ArrayList<String> lore = new ArrayList<>();
+		lore.addAll(card1.getItemMeta().getLore());
+		if (card2 != null) {
+			for (String s : card2.getItemMeta().getLore()) {
+				if (s.length() > 1 && s.charAt(0) == '>') {
+					lore.add(s);
+				}
+			}
 		}
-		captchaMeta.setDisplayName("Punchcard");
-		card1.setItemMeta(captchaMeta);
-		return card1;
+		ItemMeta im = result.getItemMeta();
+		im.setLore(lore);
+		im.setDisplayName("Punchcard");
+		result.setItemMeta(im);
+		return result;
 	}
 }

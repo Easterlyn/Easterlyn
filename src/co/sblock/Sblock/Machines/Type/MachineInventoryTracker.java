@@ -13,6 +13,8 @@ import net.minecraft.server.v1_7_R2.IMerchant;
 import net.minecraft.server.v1_7_R2.ItemStack;
 import net.minecraft.server.v1_7_R2.MerchantRecipe;
 import net.minecraft.server.v1_7_R2.MerchantRecipeList;
+import net.minecraft.server.v1_7_R2.PacketDataSerializer;
+import net.minecraft.util.io.netty.buffer.Unpooled;
 
 import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
@@ -20,6 +22,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
+import co.sblock.Sblock.Events.Packets.WrapperPlayServerCustomPayload;
 import co.sblock.Sblock.Events.Packets.WrapperPlayServerOpenWindow;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -51,7 +54,7 @@ public class MachineInventoryTracker {
 		openMachines.remove(p);
 	}
 
-	public void openMachineInventory(Player player, Machine m, InventoryType it) {
+	public void openMachineInventory(Player player, Machine m, InventoryType it, org.bukkit.inventory.ItemStack... items) {
 		// Opens a real anvil window for the Player in question
 		WrapperPlayServerOpenWindow packet = new WrapperPlayServerOpenWindow();
 		packet.setInventoryType(it);
@@ -86,9 +89,41 @@ public class MachineInventoryTracker {
 			e.printStackTrace();
 			return;
 		}
+
 		this.openMachines.put(player, m);
+
+		if (!(container instanceof MerchantContainer)) {
+			return;
+		}
+		MerchantRecipeList list = new MerchantRecipeList();
+		for (int i = 0; i < items.length; i++) {
+			if (i % 3 == 0 && items.length - i > 2) {
+				System.out.println(i);
+				list.a(new MerchantRecipe(org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i]),
+						org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i+1]),
+						org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i+2])));
+			}
+		}
+		try {
+
+			PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
+			out.writeInt(packet.getWindowId());
+			list.a(out);
+
+			WrapperPlayServerCustomPayload trades = new WrapperPlayServerCustomPayload();
+			trades.setChannel("MC|TrList");
+			trades.setData(out.array());
+			ProtocolLibrary.getProtocolManager().sendServerPacket(player, trades.getHandle());
+
+			
+
+		} catch (IllegalArgumentException | SecurityException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
+	
 	public class MerchantContainer extends ContainerMerchant {
 
 		public MerchantContainer(EntityPlayer player) {
@@ -121,7 +156,7 @@ public class MachineInventoryTracker {
 
 		@Override
 		public void a(MerchantRecipe paramMerchantRecipe) {
-			// adds recipe to list if valid, I think.
+			// adds a trade
 		}
 
 		@Override

@@ -79,7 +79,7 @@ public class InventoryClickListener implements Listener {
 				return;
 			}
 		}
-		boolean top = event.getView().getTopInventory().equals(event.getClickedInventory());
+		boolean top = event.getRawSlot() == event.getView().convertSlot(event.getRawSlot());
 		switch (event.getAction()) {
 		case COLLECT_TO_CURSOR:
 			itemGather(event);
