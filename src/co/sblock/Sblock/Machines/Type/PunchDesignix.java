@@ -24,11 +24,13 @@ import co.sblock.Sblock.Utilities.Captcha.Captcha;
 /**
  * Simulate a Sburb Punch Designix in Minecraft.
  * 
- * @author Dublek
+ * @author Jikoo
  */
 public class PunchDesignix extends Machine {
 
+	/** The ItemStack used to create usage help */
 	private static ItemStack[] exampleRecipes;
+
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
@@ -143,6 +145,15 @@ public class PunchDesignix extends Machine {
 		return false;
 	}
 
+	/**
+	 * Reduces an ItemStack by the given quantity. If the ItemStack would have a
+	 * quantity of 0, returns null.
+	 * 
+	 * @param is the ItemStack to reduce
+	 * @param amount the amount to reduce the ItemStack by
+	 * 
+	 * @return the reduced ItemStack
+	 */
 	private ItemStack decrement(ItemStack is, int amount) {
 		if (is == null) {
 			return null;
@@ -155,6 +166,14 @@ public class PunchDesignix extends Machine {
 		return is;
 	}
 
+	/**
+	 * Calculates the maximum number of items that can be crafted with the given ItemStacks.
+	 * 
+	 * @param slot1 the first ItemStack
+	 * @param slot2 the second ItemStack
+	 * 
+	 * @return the least of the two, or, if slot2 is null, the amount in slot1
+	 */
 	private int getMaximumCrafts(ItemStack slot1, ItemStack slot2) {
 		return slot2 == null ? slot1.getAmount() 
 				: slot1.getAmount() > slot2.getAmount() ? slot1.getAmount() : slot2.getAmount();
@@ -168,6 +187,11 @@ public class PunchDesignix extends Machine {
 		return count;
 	}
 
+	/**
+	 * Calculate result slot and update inventory on a delay (post-event completion)
+	 * 
+	 * @param name the name of the player who is using the Punch Designix
+	 */
 	public void updateInventory(final String name) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@SuppressWarnings("deprecation")
@@ -194,10 +218,18 @@ public class PunchDesignix extends Machine {
 		});
 	}
 
+	/**
+	 * Open a PunchDesignix inventory for a Player.
+	 * 
+	 * @param player the Player
+	 */
 	public void openInventory(Player player) {
 		MachineInventoryTracker.getTracker().openMachineInventory(player, this, InventoryType.MERCHANT, getExampleRecipes());
 	}
 
+	/**
+	 * Singleton for getting usage help ItemStacks.
+	 */
 	public static ItemStack[] getExampleRecipes() {
 		if (exampleRecipes == null) {
 			exampleRecipes = createExampleRecipes();
@@ -205,6 +237,11 @@ public class PunchDesignix extends Machine {
 		return exampleRecipes;
 	}
 
+	/**
+	 * Creates the ItemStacks used in displaying usage help.
+	 * 
+	 * @return
+	 */
 	private static ItemStack[] createExampleRecipes() {
 		ItemStack is1 = new ItemStack(Material.PAPER);
 		ItemMeta im = is1.getItemMeta();
