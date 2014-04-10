@@ -206,7 +206,7 @@ public class PunchDesignix extends Machine {
 	}
 
 	private static ItemStack[] createExampleRecipes() {
-		ItemStack is1 = new ItemStack(Material.SIGN);
+		ItemStack is1 = new ItemStack(Material.PAPER);
 		ItemMeta im = is1.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 1 options:");
 		ArrayList<String> lore = new ArrayList<>();
@@ -216,7 +216,7 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is1.setItemMeta(im);
 
-		ItemStack is2 = new ItemStack(Material.SIGN);
+		ItemStack is2 = new ItemStack(Material.PAPER);
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 2 options:");
 		lore = new ArrayList<>();
@@ -226,15 +226,20 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is2.setItemMeta(im);
 
-		ItemStack is3 = new ItemStack(Material.SIGN);
+		ItemStack is3 = new ItemStack(Material.PAPER);
 		im = is3.getItemMeta();
-		im.setDisplayName(ChatColor.GOLD + "Results:");
+		im.setDisplayName(ChatColor.GOLD + "Punchcard Result:");
 		lore = new ArrayList<>();
-		lore.add(ChatColor.GOLD + "1) Punchcard");
-		lore.add(ChatColor.GOLD + "2) Punchcard (copy of slot 1)");
-		lore.add(ChatColor.GOLD + "3) Punchcard (lore merged)");
+		lore.add(ChatColor.GOLD + "1) Card 1 punched");
+		lore.add(ChatColor.GOLD + "2) Copy of card 1");
+		lore.add(ChatColor.GOLD + "3) Card 1 and lore of 2");
+		lore.add(ChatColor.DARK_RED + "Note: Due to a Minecraft");
+		lore.add(ChatColor.DARK_RED + "limitation, the resulting card");
+		lore.add(ChatColor.DARK_RED + "may not display properly.");
+		lore.add(ChatColor.AQUA + "Click anyway.");
 		im.setLore(lore);
 		is3.setItemMeta(im);
+
 		return new ItemStack[] {is1, is2, is3};
 	}
 }
