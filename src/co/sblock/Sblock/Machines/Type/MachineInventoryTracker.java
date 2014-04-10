@@ -98,7 +98,6 @@ public class MachineInventoryTracker {
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (int i = 0; i < items.length; i++) {
 			if (i % 3 == 0 && items.length - i > 2) {
-				System.out.println(i);
 				list.a(new MerchantRecipe(org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i]),
 						org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i+1]),
 						org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i+2])));

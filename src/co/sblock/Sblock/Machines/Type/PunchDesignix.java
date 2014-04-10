@@ -81,8 +81,8 @@ public class PunchDesignix extends Machine {
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event) {
 		if (event.getSlot() == 2 && event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())
-				&& event.getCurrentItem() != null) {
-			// Clicking a non-null item in result slot
+				&& event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
+			// Clicking an item in result slot
 
 			Inventory merchant = event.getInventory();
 
@@ -181,6 +181,9 @@ public class PunchDesignix extends Machine {
 				Inventory open = player.getOpenInventory().getTopInventory();
 				ItemStack result;
 				if (Captcha.isCaptcha(open.getItem(1))) {
+					if (!Captcha.isPunch(open.getItem(0))) {
+						result = null;
+					}
 					result = Captcha.createCombinedPunch(open.getItem(0), null);
 				} else {
 					result = Captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
@@ -203,7 +206,7 @@ public class PunchDesignix extends Machine {
 	}
 
 	private static ItemStack[] createExampleRecipes() {
-		ItemStack is1 = new ItemStack(Material.PAPER);
+		ItemStack is1 = new ItemStack(Material.SIGN);
 		ItemMeta im = is1.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 1 options:");
 		ArrayList<String> lore = new ArrayList<>();
@@ -213,7 +216,7 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is1.setItemMeta(im);
 
-		ItemStack is2 = new ItemStack(Material.PAPER);
+		ItemStack is2 = new ItemStack(Material.SIGN);
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 2 options:");
 		lore = new ArrayList<>();
@@ -223,7 +226,7 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is2.setItemMeta(im);
 
-		ItemStack is3 = new ItemStack(Material.PAPER);
+		ItemStack is3 = new ItemStack(Material.SIGN);
 		im = is3.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Results:");
 		lore = new ArrayList<>();
