@@ -13,7 +13,7 @@ import co.sblock.Sblock.Events.SblockEvents;
 public class PacketListener extends PacketAdapter {
 
 	public PacketListener() {
-		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.WINDOW_CLICK);
+		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION);
 	}
 
 	/**
@@ -31,10 +31,6 @@ public class PacketListener extends PacketAdapter {
 				event.setCancelled(true);
 				SblockEvents.getEvents().fakeWakeUp(event.getPlayer());
 			}
-		}
-
-		if (event.getPacket().getType().equals(PacketType.Play.Client.WINDOW_CLICK)) {
-			// TODO punch designix handling (Keiko?)
 		}
 	}
 }

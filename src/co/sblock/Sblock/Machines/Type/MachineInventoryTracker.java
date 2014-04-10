@@ -73,7 +73,6 @@ public class MachineInventoryTracker {
 			break;
 		case MERCHANT:
 			container = new MerchantContainer(p);
-			// TODO supply fake recipes for ease-of-use demonstration
 			break;
 		default:
 			return;
@@ -117,7 +116,6 @@ public class MachineInventoryTracker {
 			
 
 		} catch (IllegalArgumentException | SecurityException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

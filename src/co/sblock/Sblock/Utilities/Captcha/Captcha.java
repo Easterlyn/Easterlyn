@@ -85,7 +85,8 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Converts a Captchacard into an ItemStack.
+	 * Converts a Captchacard into an ItemStack. Also used for Punchcards and
+	 * Cruxite Dowels.
 	 * 
 	 * @param card the Captchacard ItemStack
 	 * 

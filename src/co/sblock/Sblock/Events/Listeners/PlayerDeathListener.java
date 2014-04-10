@@ -19,7 +19,10 @@ public class PlayerDeathListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		event.getEntity().sendMessage(ChatColor.RED + "Oh dear, you are dead. Death point: "
+		String message = new String[] {"Oh dear, you are dead.", "Crikey, that was a big 'un!",
+				"I say, my dear chap, you appear to have died a little there.", "Git rekt.",
+				"That was a fatal miscalculation."}[(int) (Math.random() * 5)];
+		event.getEntity().sendMessage(ChatColor.RED + message + " Death point: "
 				+ ChatColor.AQUA + event.getEntity().getLocation().getBlockX() +"x, "
 				+ event.getEntity().getLocation().getBlockY() +"y, "
 				+ event.getEntity().getLocation().getBlockZ() +"z");

@@ -273,7 +273,7 @@ public class PunchDesignix extends Machine {
 		lore.add(ChatColor.DARK_RED + "Note: Due to a Minecraft");
 		lore.add(ChatColor.DARK_RED + "limitation, the resulting card");
 		lore.add(ChatColor.DARK_RED + "may not display properly.");
-		lore.add(ChatColor.AQUA + "Click anyway.");
+		lore.add(ChatColor.AQUA + "Click the slot anyway.");
 		im.setLore(lore);
 		is3.setItemMeta(im);
 

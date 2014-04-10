@@ -1,10 +1,23 @@
 package co.sblock.Sblock.Machines.Type;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
+
+import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Utilities.Captcha.Captcha;
+import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
 
 /**
  * Simulate a Sburb Alchemiter in Minecraft.
@@ -65,7 +78,88 @@ public class Alchemiter extends Machine {
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
-		// TODO Auto-generated method stub
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+			return true;
+		}
+		openInventory(event.getPlayer());
+		return true;
+	}
+
+	/**
+	 * Open a PunchDesignix inventory for a Player.
+	 * 
+	 * @param player the Player
+	 */
+	public void openInventory(Player player) {
+		MachineInventoryTracker.getTracker().openMachineInventory(player, this, InventoryType.MERCHANT);
+	}
+
+	/**
+	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
+	 */
+	public boolean handleClick(InventoryClickEvent event) {
+		if (event.getRawSlot() != event.getView().convertSlot(event.getRawSlot())) {
+			return false;
+		}
+		if (event.getSlot() == 1) {
+			return true;
+		}
+		if (event.getSlot() == 2 && event.getCurrentItem() != null
+				&& event.getCurrentItem().getType() != Material.AIR) {
+			// TODO handle item crafting
+		}
 		return false;
+	}
+
+	/**
+	 * Calculate result slot and update inventory on a delay (post-event completion)
+	 * 
+	 * @param name the name of the player who is using the Punch Designix
+	 */
+	public void updateInventory(final String name) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@SuppressWarnings("deprecation")
+			public void run() {
+				// Must re-obtain player or update doesn't seem to happen
+				Player player = Bukkit.getPlayerExact(name);
+				if (player == null || !MachineInventoryTracker.getTracker().hasMachineOpen(player)) {
+					// Player has logged out or closed inventory. Inventories are per-player, ignore.
+					return;
+				}
+
+				Inventory open = player.getOpenInventory().getTopInventory();
+				ItemStack result;
+				ItemStack expCost;
+				if (CruxiteDowel.isUsedDowel(open.getItem(0))) {
+					result = Captcha.captchaToItem(open.getItem(0));
+					expCost = new ItemStack(Material.EXP_BOTTLE);
+					int levels = getGristCost(result);
+					ItemMeta im = expCost.getItemMeta();
+					im.setDisplayName(ChatColor.AQUA.toString() + levels);
+					expCost.setItemMeta(im);
+					if (levels < 128) {
+						// Max possible stack is 127 I believe.
+						expCost.setAmount(levels);
+					}
+				} else {
+					result = null;
+					expCost = null;
+				}
+				// Set output slot to results
+				open.setItem(1, expCost);
+				open.setItem(2, result);
+
+				player.updateInventory();
+			}
+		});
+	}
+
+	/**
+	 * @param result
+	 * @return
+	 */
+	protected int getGristCost(ItemStack result) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

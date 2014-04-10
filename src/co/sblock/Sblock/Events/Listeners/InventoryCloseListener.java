@@ -26,7 +26,6 @@ public class InventoryCloseListener implements Listener {
 	public void onInventoryClose(InventoryCloseEvent event) {
 		if (event.getInventory().getName().equals("Captchadex")) {
 			Captchadex.saveCaptchadex(event.getInventory(), event.getPlayer().getItemInHand());
-			// Adam verify hotbar slot isn't switched - latency etc.
 		}
 
 		MachineInventoryTracker.getTracker().closeMachine((Player) event.getPlayer());
