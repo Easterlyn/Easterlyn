@@ -1,4 +1,4 @@
-package co.sblock.Sblock.Machines.Type;
+package co.sblock.Sblock.Machines;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.InventoryType;
 
 import co.sblock.Sblock.Events.Packets.WrapperPlayServerCustomPayload;
 import co.sblock.Sblock.Events.Packets.WrapperPlayServerOpenWindow;
+import co.sblock.Sblock.Machines.Type.Machine;
 
 import com.comphenix.protocol.ProtocolLibrary;
 
@@ -69,7 +70,7 @@ public class MachineInventoryTracker {
 		Container container;
 		switch (it) {
 		case ANVIL:
-			container = new AnvilContainer(p, m.l);
+			container = new AnvilContainer(p, m.getKey());
 			break;
 		case MERCHANT:
 			container = new MerchantContainer(p);

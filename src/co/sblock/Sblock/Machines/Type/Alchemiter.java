@@ -1,5 +1,7 @@
 package co.sblock.Sblock.Machines.Type;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,6 +18,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock.Sblock;
+import co.sblock.Sblock.Machines.MachineInventoryTracker;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
 
@@ -116,12 +119,12 @@ public class Alchemiter extends Machine {
 	 * 
 	 * @param name the name of the player who is using the Punch Designix
 	 */
-	public void updateInventory(final String name) {
+	public void updateInventory(final UUID id) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@SuppressWarnings("deprecation")
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
-				Player player = Bukkit.getPlayerExact(name);
+				Player player = Bukkit.getPlayer(id);
 				if (player == null || !MachineInventoryTracker.getTracker().hasMachineOpen(player)) {
 					// Player has logged out or closed inventory. Inventories are per-player, ignore.
 					return;

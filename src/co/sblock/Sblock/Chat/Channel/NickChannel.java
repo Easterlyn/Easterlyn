@@ -2,6 +2,7 @@ package co.sblock.Sblock.Chat.Channel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ChatUser;
@@ -14,14 +15,15 @@ import co.sblock.Sblock.Chat.ChatUserManager;
  */
 public class NickChannel extends Channel {
 
-	protected Map<ChatUser, String> nickList = new HashMap<ChatUser, String>();
+	protected Map<ChatUser, String> nickList; 
 
 	/**
-	 * @see co.sblock.Sblock.Chat.Channel.Channel#Channel(String, AccessLevel,
-	 *      String)
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#Channel(String, AccessLevel, UUID)
 	 */
-	public NickChannel(String name, AccessLevel a, String creator) {
+	public NickChannel(String name, AccessLevel a, UUID creator) {
 		super(name, a, creator);
+		nickList = new HashMap<ChatUser, String>();
+
 	}
 
 	@Override
@@ -35,8 +37,8 @@ public class NickChannel extends Channel {
 	@Override
 	public void setNick(ChatUser sender, String nick) {
 		nickList.put(sender, nick);
-		for (String s : this.getListening()) {
-			ChatUserManager.getUserManager().getUser(s).sendMessageFromChannel(
+		for (UUID userID : this.getListening()) {
+			ChatUserManager.getUserManager().getUser(userID).sendMessageFromChannel(
 					ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this.name), this, "channel");
 		}
 	}
@@ -48,8 +50,8 @@ public class NickChannel extends Channel {
 	public void removeNick(ChatUser sender) {
 		if (nickList.containsKey(sender)) {
 			String old = nickList.remove(sender);
-			for (String s : this.getListening()) {
-				ChatUserManager.getUserManager().getUser(s).sendMessageFromChannel(
+			for (UUID userID : this.getListening()) {
+				ChatUserManager.getUserManager().getUser(userID).sendMessageFromChannel(
 						ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name), this, "channel");
 			}
 		}
@@ -88,9 +90,9 @@ public class NickChannel extends Channel {
 	}
 
 	/**
-	 * Get the <code>Map</code> of nicks in use stored by <code>ChatUser</code>.
+	 * Get the Map of nicks in use stored by ChatUser.
 	 * 
-	 * @return <code>Map</code>
+	 * @return the Map
 	 */
 	public Map<ChatUser, String> getNickList() {
 		return nickList;

@@ -1,5 +1,7 @@
 package co.sblock.Sblock.Chat.Channel;
 
+import java.util.UUID;
+
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Chat.ChatUser;
 /**
@@ -10,19 +12,23 @@ import co.sblock.Sblock.Chat.ChatUser;
 public class RPChannel extends NickChannel {
 	
 	/**
-	 * @param name
-	 * @param a
-	 * @param creator
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#Channel(String, AccessLevel, UUID)
 	 */
-	public RPChannel(String name, AccessLevel a, String creator) {
+	public RPChannel(String name, AccessLevel a, UUID creator) {
 		super(name, a, creator);
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#getType()
+	 */
 	@Override
 	public ChannelType getType() {
 		return ChannelType.RP;
 	}
 
+	/**
+	 * @see co.sblock.Sblock.Chat.Channel.Channel#setNick(ChatUser, String)
+	 */
 	@Override
 	public void setNick(ChatUser sender, String nick) {
 		CanonNicks name = CanonNicks.getNick(nick);

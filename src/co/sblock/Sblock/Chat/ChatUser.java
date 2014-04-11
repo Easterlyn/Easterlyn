@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +38,7 @@ import co.sblock.Sblock.UserData.UserManager;
 public class ChatUser {
 
 	/** The Player */
-	private String playerName;
+	private UUID playerID;
 
 	/** The name of the Player's current focused Channel */
 	private String current;
@@ -57,8 +58,8 @@ public class ChatUser {
 	/** Is the Player within range of a Computer? */
 	private boolean computerAccess;
 
-	public ChatUser(String name) {
-		this.playerName = name;
+	public ChatUser(UUID playerID) {
+		this.playerID = playerID;
 		this.currentRegion = Region.getLocationRegion(this.getPlayer().getLocation());
 	}
 
@@ -68,7 +69,7 @@ public class ChatUser {
 	 * @return the Player
 	 */
 	public Player getPlayer() {
-		return Bukkit.getPlayerExact(playerName);
+		return Bukkit.getPlayer(playerID);
 	}
 
 	/**
@@ -77,7 +78,16 @@ public class ChatUser {
 	 * @return the Player
 	 */
 	public String getPlayerName() {
-		return this.playerName;
+		return Bukkit.getPlayer(playerID).getName();
+	}
+
+	/**
+	 * Gets the UUID of the Player.
+	 * 
+	 * @return the UUID
+	 */
+	public UUID getUUID() {
+		return this.playerID;
 	}
 
 	/**
@@ -100,7 +110,7 @@ public class ChatUser {
 	 * @return true if the Player is within 10 meters of a Computer.
 	 */
 	public boolean hasComputerAccess() {
-		SblockUser user = SblockUser.getUser(this.playerName);
+		SblockUser user = SblockUser.getUser(this.playerID);
 		if (user.getPassiveEffects().containsKey(PassiveEffect.COMPUTER)) {
 			return true;
 		}
@@ -236,9 +246,9 @@ public class ChatUser {
 		if (!this.isListening(c)) {
 			this.listening.add(c.getName());
 		}
-		if (!c.getListening().contains(this.playerName)) {
+		if (!c.getListening().contains(this.playerID)) {
 			c.sendToAll(this, ChatMsgs.onChannelJoin(this, c), "channel");
-			c.addListening(this.playerName);
+			c.addListening(this.playerID);
 			return true;
 		} else {
 			this.sendMessage(ChatMsgs.errorAlreadyInChannel(c.getName()));
@@ -269,7 +279,7 @@ public class ChatUser {
 			if (c != null && !c.isBanned(this)
 					&& (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
 				this.listening.add((String) s);
-				c.addListening(playerName);
+				c.addListening(playerID);
 			}
 		}
 
@@ -310,7 +320,7 @@ public class ChatUser {
 		}
 		if (this.listening.remove(cName)) {
 				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), "channel");
-				c.removeListening(this.getPlayerName());
+				c.removeListening(this.playerID);
 			if (cName.equals(current)) {
 				current = null;
 			}
@@ -328,7 +338,7 @@ public class ChatUser {
 		Channel c = SblockChat.getChat().getChannelManager()
 				.getChannel(cName);
 		if (c != null) {
-			c.removeListening(this.getPlayerName());
+			c.removeListening(this.getUUID());
 		} else {
 			this.listening.remove(cName);
 		}
@@ -405,7 +415,7 @@ public class ChatUser {
 	}
 
 	public void setComputerAccess() {
-		SblockUser user = SblockUser.getUser(this.playerName);
+		SblockUser user = SblockUser.getUser(this.playerID);
 		if (user.getPassiveEffects().containsKey(PassiveEffect.COMPUTER)
 				|| SblockMachines.getMachines().getManager().isByComputer(getPlayer(), 10)) {
 			computerAccess = true;
@@ -520,8 +530,8 @@ public class ChatUser {
 
 		// Check to make sure user is online
 		if (p == null) {
-			SblockData.getDB().saveUserData(playerName);
-			c.removeListening(playerName);
+			SblockData.getDB().saveUserData(playerID);
+			c.removeListening(playerID);
 			return;
 		}
 
@@ -533,11 +543,11 @@ public class ChatUser {
 
 				StringBuilder regex = new StringBuilder();
 				String nick = ChatColor.stripColor(c.getNick(this));
-				if (nick.equals(playerName)) {
-					regex.append('(').append(ignoreCaseRegex(playerName)).append(')');
+				if (nick.equals(p.getName())) {
+					regex.append('(').append(ignoreCaseRegex(p.getName())).append(')');
 				} else {
 					regex.append("((").append(ignoreCaseRegex(nick)).append(")|(")
-					.append(ignoreCaseRegex(playerName)).append("))");
+					.append(ignoreCaseRegex(p.getName())).append("))");
 				}
 				// Regex completed, should be similar to (([Nn][Ii][Cc][Kk])|([Nn][Aa][Mm][Ee]))
 
@@ -686,7 +696,7 @@ public class ChatUser {
 		SblockUser sUser = UserManager.getUserManager().getUser(getPlayerName());
 		
 		String s = sys + "-----------------------------------------\n" + 
-				txt + this.playerName + div + sUser.getClassType() + " of " + sUser.getAspect() + "\n" + 
+				txt + this.getPlayer().getName() + div + sUser.getClassType() + " of " + sUser.getAspect() + "\n" + 
 				sUser.getMPlanet() + div + sUser.getDPlanet() + div + sUser.getTower() + div + sUser.isSleeping() + "\n" + 
 				this.isMute() + div + this.current + div + this.getListening().toString() + "\n" +
 				this.currentRegion + div + sUser.getPreviousLocationString() + "\n" +
@@ -704,18 +714,15 @@ public class ChatUser {
 	 * @return the ChatUser specified or null if invalid.
 	 */
 	public static ChatUser getUser(String userName) {
-		return ChatUserManager.getUserManager().getUser(userName);
+		Player p = Bukkit.getPlayer(userName);
+		if (p == null) {
+			return null;
+		}
+		return ChatUserManager.getUserManager().getUser(p.getUniqueId());
 	}
 
-	/**
-	 * Check to see if a Player by the specified name has played before.
-	 * 
-	 * @param name the name to check
-	 * 
-	 * @return true if a Player by the specified name has logged into the server
-	 */
-	public static boolean isValidUser(String name) {
-		return Bukkit.getOfflinePlayer(name).hasPlayedBefore();
+	public static ChatUser getUser(UUID userID) {
+		return ChatUserManager.getUserManager().getUser(userID);
 	}
 
 	/**

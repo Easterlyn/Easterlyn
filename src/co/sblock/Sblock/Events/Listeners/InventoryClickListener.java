@@ -12,10 +12,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock.Machines.MachineInventoryTracker;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
-import co.sblock.Sblock.Machines.Type.MachineInventoryTracker;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.UserData.SblockUser;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;

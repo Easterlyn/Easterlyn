@@ -3,13 +3,14 @@ package co.sblock.Sblock.Chat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Jikoo
  */
 public class ChatUserManager {
 
-	private  Map<String, ChatUser> users = new HashMap<String, ChatUser>();
+	private  Map<UUID, ChatUser> users;
 	private static ChatUserManager instance;
 
 	/**
@@ -22,24 +23,28 @@ public class ChatUserManager {
 		return instance;
 	}
 
-	public ChatUser getUser(String name) {
-		return users.get(name);
+	private ChatUserManager() {
+		users = new HashMap<>();
 	}
 
-	public ChatUser removeUser(String name) {
-		ChatUser u = users.remove(name);
+	public ChatUser getUser(UUID userID) {
+		return users.get(userID);
+	}
+
+	public ChatUser removeUser(UUID userID) {
+		ChatUser u = users.remove(userID);
 		if (u != null) {
 			u.stopPendingTasks();
 		}
 		return u;
 	}
 
-	public ChatUser addUser(String name) {
-		if (users.containsKey(name)) {
-			return users.get(name);
+	public ChatUser addUser(UUID userID) {
+		if (users.containsKey(userID)) {
+			return users.get(userID);
 		}
-		ChatUser u = new ChatUser(name);
-		users.put(name, u);
+		ChatUser u = new ChatUser(userID);
+		users.put(userID, u);
 		return u;
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import co.sblock.Sblock.Chat.SblockChat;
 import co.sblock.Sblock.Database.SblockData;
@@ -30,12 +31,12 @@ public class ChannelManager {
 		SblockData.getDB().saveChannelData(c);
 	}
 
-	public void createNewChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
+	public void createNewChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
 		this.loadChannel(name, access, creator, channelType);
 		SblockChat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
 	}
 
-	public void loadChannel(String name, AccessLevel access, String creator, ChannelType channelType) {
+	public void loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
 		Channel c = null;
 		switch (channelType) {
 		case RP:
@@ -47,10 +48,6 @@ public class ChannelManager {
 		case REGION:
 			c = new RegionChannel(name, access, creator);
 			break;
-		//case TEMP:
-		//	c = new TempChannel(name, access, creator);
-		//	this.addUnsaveableChannel(name);
-		//	break;
 		default:
 			c = new NormalChannel(name, access, creator);
 			break;
@@ -60,18 +57,18 @@ public class ChannelManager {
 
 	public void createDefaultSet() {
 		List<Channel> defaults = new ArrayList<Channel>();
-		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new NormalChannel("#help", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#EARTH", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, "Dublek"));
-/*		defaults.add(new RegionChannel("#LOWAS", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, "Dublek"));
-		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, "Dublek"));*/
+		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new NormalChannel("#help", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RegionChannel("#EARTH", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RegionChannel("#LOWAS", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
 
 		for (Channel c : defaults) {
 			ChannelManager.getChannelList().put(c.getName(), c);
