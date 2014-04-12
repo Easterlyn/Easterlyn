@@ -3,7 +3,7 @@ package co.sblock.Sblock.Chat.Channel;
 import java.util.UUID;
 
 import co.sblock.Sblock.Chat.ChatMsgs;
-import co.sblock.Sblock.Chat.ChatUser;
+import co.sblock.Sblock.UserData.User;
 /**
  * Defines normal channel behavior.
  * 
@@ -29,31 +29,31 @@ public class NormalChannel extends Channel {
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#setNick(ChatUser, String)
 	 */
 	@Override
-	public void setNick(ChatUser sender, String nick) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
+	public void setNick(User sender, String nick) {
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
 	}
 
 	/**
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#removeNick(ChatUser)
 	 */
 	@Override
-	public void removeNick(ChatUser sender) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
+	public void removeNick(User sender) {
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
 	}
 
 	/**
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#getNick(ChatUser)
 	 */
 	@Override
-	public String getNick(ChatUser sender) {
-		return sender.getGlobalNick();
+	public String getNick(User sender) {
+		return sender.getPlayer().getDisplayName();
 	}
 
 	/**
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#hasNick(ChatUser)
 	 */
 	@Override
-	public boolean hasNick(ChatUser sender) {
+	public boolean hasNick(User sender) {
 		return false;
 	}
 
@@ -61,7 +61,7 @@ public class NormalChannel extends Channel {
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#getNickOwner(String)
 	 */
 	@Override
-	public ChatUser getNickOwner(String nick) {
+	public User getNickOwner(String nick) {
 		return null;
 	}
 }

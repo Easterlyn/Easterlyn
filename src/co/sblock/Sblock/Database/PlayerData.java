@@ -3,6 +3,9 @@ package co.sblock.Sblock.Database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,9 +13,9 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import co.sblock.Sblock.Chat.ChatUser;
-import co.sblock.Sblock.Chat.ChatUserManager;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.Chat.Channel.Channel;
+import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Broadcast;
 
@@ -20,11 +23,11 @@ import co.sblock.Sblock.Utilities.Broadcast;
  * A small helper class containing all methods that access the PlayerData table.
  * <p>
  * The PlayerData table is created by the following call:
- * CREATE TABLE PlayerData (name varchar(16) UNIQUE KEY, class varchar(6),
+ * CREATE TABLE PlayerData (uuid varchar(255) UNIQUE KEY, class varchar(6),
  * aspect varchar(6), mPlanet varchar(5), dPlanet varchar(7), towerNum tinyint,
  * sleepState boolean, currentChannel varchar(16), isMute boolean, nickname varchar(16),
- * channels text, ip varchar(15), timePlayed varchar(20), previousLocation varchar(40),
- * programs varchar(31), uhc tinyint, client varchar(16), server varchar(16));
+ * channels text, ip varchar(15), timePlayed varchar(255), previousLocation varchar(255),
+ * programs varchar(255), client varchar(255), server varchar(255), name varchar(255));
  * 
  * @author Jikoo
  */
@@ -35,11 +38,10 @@ public class PlayerData {
 	 * @param cUser the ChatUser to save data for
 	 * @param sUser the SblockUser to save data for
 	 */
-	protected static void saveUserData(String name) {
-		ChatUser cUser = ChatUserManager.getUserManager().removeUser(name);
-		SblockUser sUser = UserManager.getUserManager().removeUser(name);
-		if (cUser == null || sUser == null || !sUser.isLoaded()) {
-			SblockData.getLogger().warning("Player " + name
+	protected static void saveUserData(UUID userID) {
+		User user = UserManager.getUserManager().removeUser(userID);
+		if (user == null || !user.isLoaded()) {
+			SblockData.getLogger().warning("UUID " + userID.toString()
 					+ " does not appear to have userdata loaded, skipping save.");
 			return;
 		}
@@ -47,36 +49,33 @@ public class PlayerData {
 			try {
 				pst = SblockData.getDB().connection()
 						.prepareStatement(Call.PLAYER_SAVE.toString());
-				pst.setString(1, sUser.getPlayerName());
-				pst.setString(2, sUser.getClassType().getDisplayName());
-				pst.setString(3, sUser.getAspect().getDisplayName());
-				pst.setString(4, sUser.getMPlanet().getShortName());
-				pst.setString(5, sUser.getDPlanet().getDisplayName());
-				pst.setShort(6, sUser.getTower());
-				pst.setBoolean(7, sUser.isSleeping());
-				try {
-					pst.setString(8, cUser.getCurrent().getName());
-				} catch (NullPointerException e) {
-					pst.setString(8, "#" + cUser.getCurrentRegion().name());
-				}
-				pst.setBoolean(9, cUser.isMute());
+				pst.setString(1, user.getPlayerName());
+				pst.setString(2, user.getPlayerClass().getDisplayName());
+				pst.setString(3, user.getAspect().getDisplayName());
+				pst.setString(4, user.getMediumPlanet().getShortName());
+				pst.setString(5, user.getDreamPlanet().getDisplayName());
+				pst.setShort(6, user.getTower());
+				pst.setBoolean(7, user.canFly());
+				Channel c = ChatUser.getCurrent(user);
+				pst.setString(8, c != null ? c.getName() : "#" + user.getCurrentRegion().name());
+				pst.setBoolean(9, ChatUser.isMute(user));
 				StringBuilder sb = new StringBuilder();
-				for (String s : cUser.getListening()) {
+				for (String s : ChatUser.getListening(user)) {
 					sb.append(s + ",");
 				}
 				pst.setString(10, sb.substring(0, sb.length() - 1));
-				pst.setString(11, sUser.getUserIP());
-				pst.setString(12, sUser.getTimePlayed());
-				try {
-					pst.setString(13, sUser.getPreviousLocationString());
-				} catch (NullPointerException e) {
-					sUser.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
-					pst.setString(13, sUser.getPreviousLocationString());
+				pst.setString(11, user.getUserIP());
+				pst.setString(12, user.getTimePlayed());
+				String location = user.getPreviousLocationString();
+				if (location == null) {
+					user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
+					location = user.getPreviousLocationString();
 				}
-				pst.setString(14, sUser.getProgramString());
-				pst.setByte(15, sUser.getUHCMode());
-				pst.setString(16, sUser.getClient());
-				pst.setString(17, sUser.getServer());
+				pst.setString(13, location);
+				pst.setString(14, user.getProgramString());
+				pst.setString(15, user.getClient().toString());
+				pst.setString(16, user.getServer().toString());
+				pst.setString(17, user.getPlayerName());
 			} catch (Exception e) {
 				SblockData.getLogger().err(e);
 				return;
@@ -90,13 +89,13 @@ public class PlayerData {
 	 * 
 	 * @param name the name of the user to load data for
 	 */
-	protected static void loadUserData(String name) {
+	protected static void loadUserData(UUID userID) {
 		try {
 			PreparedStatement pst = SblockData.getDB().connection()
-					.prepareStatement(Call.PLAYER_LOAD.toString());
-			pst.setString(1, name);
+					.prepareStatement(Call.PLAYER_LOAD_UUID.toString());
+			pst.setString(1, userID.toString());
 
-			new AsyncCall(pst, Call.PLAYER_LOAD).schedule();
+			new AsyncCall(pst, Call.PLAYER_LOAD_UUID).schedule();
 		} catch (SQLException e) {
 			SblockData.getLogger().err(e);
 		}
@@ -127,67 +126,58 @@ public class PlayerData {
 	protected static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
-				String name = rs.getString("name");
-				SblockUser sUser = UserManager.getUserManager().getUser(name);
-				ChatUser cUser = ChatUserManager.getUserManager().getUser(name);
-				if (sUser == null || cUser == null || !sUser.getPlayer().isOnline()) {
-					SblockData.getLogger().warning(name + "'s SblockUser was not instantiated!");
+				User user = UserManager.getUserManager().getUser(UUID.fromString(rs.getString("uuid")));
+				if (user == null || user.getPlayer() == null) {
+					SblockData.getLogger().warning(rs.getString("uuid") + "'s SblockUser was not instantiated!");
 					return;
 				}
-				sUser.setAspect(rs.getString("aspect"));
-				sUser.setPlayerClass(rs.getString("class"));
-				sUser.setMediumPlanet(rs.getString("mPlanet"));
-				sUser.setDreamPlanet(rs.getString("dPlanet"));
+				user.setAspect(rs.getString("aspect"));
+				user.setPlayerClass(rs.getString("class"));
+				user.setMediumPlanet(rs.getString("mPlanet"));
+				user.setDreamPlanet(rs.getString("dPlanet"));
 				short tower = rs.getShort("towerNum");
 				if (tower != -1) {
-					sUser.setTower((byte) tower);
+					user.setTower((byte) tower);
 				}
-				sUser.updateFlight();
+				user.updateFlight();
 				if (rs.getBoolean("isMute")) {
-					cUser.setMute(true);
+					ChatUser.setMute(user, true);
 				}
 				if (rs.getString("channels") != null) {
-					cUser.loginAddListening(rs.getString("channels").split(","));
+					ChatUser.loginAddListening(user, rs.getString("channels").split(","));
 				}
 				if (rs.getString("previousLocation") != null) {
-					sUser.setPreviousLocationFromString(rs.getString("previousLocation"));
+					user.setPreviousLocationFromString(rs.getString("previousLocation"));
 				} else {
-					sUser.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
+					user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				}
-				cUser.setCurrent(rs.getString("currentChannel"));
-				if (cUser.getCurrent() == null || cUser.getListening().size() == 0) {
-					cUser.setCurrent("#");
+				ChatUser.setCurrent(user, rs.getString("currentChannel"));
+				if (ChatUser.getCurrent(user) == null || ChatUser.getListening(user).size() == 0) {
+					ChatUser.setCurrent(user, "#");
 				}
-				if (sUser.getOfflinePlayer().isOnline()) {
-					cUser.updateCurrentRegion(cUser.getPlayerRegion());
+				user.setTimePlayed(rs.getString("timePlayed"));
+				user.setPrograms(rs.getString("programs"));
+				user.setClient(rs.getString("client") != null ? UUID.fromString(rs.getString("client")) : null);
+				user.setServer(rs.getString("server") != null ? UUID.fromString(rs.getString("server")) : null);
+				if (user.getPlayer() != null) { // Player is still logged in, complete load
+					user.updateCurrentRegion(user.getPlayerRegion());
+					user.setLoaded();
 				}
-				sUser.setTimePlayed(rs.getString("timePlayed"));
-				sUser.setPrograms(rs.getString("programs"));
-				sUser.setUHCMode(rs.getByte("uhc"));
-				sUser.setClient(rs.getString("client"));
-				sUser.setServer(rs.getString("server"));
-				sUser.setLoaded();
-				UserManager.getUserManager().team(sUser.getPlayer());
+				UserManager.getUserManager().team(user.getPlayer());
 			} else {
-				String name = rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1");
-				Broadcast.lilHal("It would seem that "
-				+ name + " is joining us for the first time! Please welcome them.");
-				SblockUser u = UserManager.getUserManager().getUser(name);
-				if (u == null) {
-					SblockData.getLogger().warning(name + "'s SblockUser was not instantiated!");
-					u = UserManager.getUserManager().addUser(name);
+				String uuid = rs.getStatement().toString().replaceAll("com.*uuid='(.*)'", "$1");
+				Player p = Bukkit.getPlayer(UUID.fromString(uuid));
+				if (p == null) {
+					// Player is not logged in any more
+					return;
 				}
-				u.setLoaded();
-				ChatUser cu = ChatUser.getUser(name);
-				if (cu == null) {
-					SblockData.getLogger().warning(name + "'s ChatUser was not instantiated!");
-					cu = ChatUserManager.getUserManager().addUser(name);
-				}
-				cu.setCurrent("#");
-				cu.updateCurrentRegion(cu.getPlayerRegion());
-				if (Bukkit.getPlayerExact(name) != null) {
-					Bukkit.getPlayerExact(name).teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
-				}
+				Broadcast.lilHal("It would seem that " + p.getName()
+						+ " is joining us for the first time! Please welcome them.");
+				User user = UserManager.getUserManager().getUser(p.getUniqueId());
+				ChatUser.setCurrent(user, "#");
+				user.updateCurrentRegion(user.getPlayerRegion());
+				
+				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
 			}
 		} catch (SQLException e) {
 			SblockData.getLogger().err(e);
@@ -243,17 +233,11 @@ public class PlayerData {
 	 * Create a PreparedStatement from a Player's saved data.
 	 * 
 	 * @param sender the CommandSender requesting information
-	 * @param rs the ResultSet to load from
 	 */
 	protected static void startOfflineLookup(CommandSender sender, String name) {
-		if (Bukkit.getOfflinePlayer(name).hasPlayedBefore()) {
-			sender.sendMessage(ChatColor.GREEN + "Initiating offline lookup for " + name);
-		} else {
-			sender.sendMessage("Unknown player. Be sure to capitalize properly!");
-			return;
-		}
+		sender.sendMessage(ChatColor.GREEN + "Initiating offline lookup for " + name);
 		try {
-			Call c = Call.PLAYER_LOOKUP;
+			Call c = Call.PLAYER_LOAD_NAME;
 			PreparedStatement pst = SblockData.getDB().connection().prepareStatement(c.toString());
 			pst.setString(1, name);
 
@@ -274,20 +258,31 @@ public class PlayerData {
 		ChatColor sys = ChatColor.DARK_AQUA;
 		ChatColor txt = ChatColor.YELLOW;
 		String div = sys + ", " + txt;
-		String s = "Error retrieving player data.";
+		StringBuilder sb = new StringBuilder();
 
 		try {
-			if (rs.first()) {
-				s = sys + "-----------------------------------------\n" + 
-						txt + rs.getString("name") + div + rs.getString("class") + " of " + rs.getString("aspect") + "\n"
-						+  rs.getString("mPlanet") + div + rs.getString("dPlanet") + div + "Tower: "
-						+ rs.getShort("towerNum") + div + "Sleeping: " + rs.getBoolean("sleepState") + "\n"
-						+ rs.getBoolean("isMute") + div + rs.getString("currentChannel") + div + rs.getString("channels") + "\n"
-						+ "Region: OFFLINE" + div + "Prev Loc: " + rs.getString("previousLocation") + "\n"
-						+ rs.getString("ip") + "\n"
-						+ "Time: " + rs.getString("timePlayed") + div + "Last login (long): "
-						+ Bukkit.getOfflinePlayer(rs.getString("name")).getLastPlayed() + "\n"
-						+ sys + "-----------------------------------------";
+			while (rs.next()) {
+				sb.append(sys).append("-----------------------------------------\n").append(txt);
+				sb.append(rs.getString("name")).append(div).append(rs.getString("class")).append(" of ")
+						.append(rs.getString("aspect")).append('\n');
+				sb.append(rs.getString("mPlanet")).append(div).append(rs.getString("dPlanet"))
+						.append(div).append("Tower: ").append(rs.getShort("towerNum")).append(div)
+						.append("Sleeping: ").append(rs.getBoolean("sleepState")).append('\n');
+				sb.append(rs.getBoolean("isMute")).append(div).append(rs.getString("currentChannel"))
+						.append(div).append(rs.getString("channels")).append('\n');
+				sb.append("Region: OFFLINE").append(div).append("Prev Loc: ")
+						.append(rs.getString("previousLocation")).append('\n');
+				sb.append(rs.getString("ip")).append('\n');
+				sb.append("Time: ").append(rs.getString("timePlayed")).append(div).append("Last login: ")
+						.append(new SimpleDateFormat("hh:mm:ss on dd:MM:YY").format(new Date(
+								Bukkit.getOfflinePlayer(UUID.fromString(rs.getString("uuid")))
+								.getLastPlayed()))).append('\n');
+				// TODO getOfflinePlayer cannot be called on main thread
+			}
+			sb.append(sys).append("-----------------------------------------\n");
+			if (!(sender instanceof Player) || ((Player) sender).isOnline()) {
+				sender.sendMessage(sb.length() > 0 ? sb.toString()
+						: "No player data found for " + rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1"));
 			}
 		} catch (SQLException e) {
 			SblockData.getLogger().err(e);
@@ -297,9 +292,6 @@ public class PlayerData {
 			} catch (SQLException e) {
 				SblockData.getLogger().err(e);
 			}
-		}
-		if (!(sender instanceof Player) || ((Player) sender).isOnline()) {
-			sender.sendMessage(s);
 		}
 	}
 }

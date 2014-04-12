@@ -4,7 +4,7 @@ import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.BanList.Type;
 
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * A small helper class containing all methods that access Minecraft's ban system.
@@ -20,7 +20,7 @@ public class BannedPlayers {
 	 * @param target the SblockUser to add a ban for
 	 * @param reason the reason the SblockUser was banned
 	 */
-	protected static void addBan(SblockUser target, String reason) {
+	protected static void addBan(User target, String reason) {
 		Bukkit.getBanList(Type.NAME).addBan(target.getPlayerName(),
 				"<ip=" + target.getUserIP() + ">" + reason, null, "sban");
 		Bukkit.getBanList(Type.IP).addBan(target.getUserIP(),
@@ -60,12 +60,12 @@ public class BannedPlayers {
 		if (!Bukkit.getBanList(Type.IP).isBanned(ip) && !Bukkit.getBanList(Type.NAME).isBanned(name)) {
 			return null;
 		}
-		if (Bukkit.getOfflinePlayer(name).isBanned()) {
+		if (Bukkit.getBanList(Type.NAME).isBanned(name)) {
 			return Bukkit.getBanList(Type.NAME).getBanEntry(name).getReason()
 					.replaceAll("<ip=[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+>", "");
 		} else {
 			return Bukkit.getBanList(Type.IP).getBanEntry(ip).getReason()
-					.replaceAll("<name=\\w{1,16}+>", "");
+					.replaceAll("<uuid=[\\w-]+>", "").replaceAll("<name=[\\w-]{1,16}+>", "");
 		}
 	}
 }

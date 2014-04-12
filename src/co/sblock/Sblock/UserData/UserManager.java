@@ -3,6 +3,7 @@ package co.sblock.Sblock.UserData;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.Sblock.Chat.ColorDef;
+import co.sblock.Sblock.Database.SblockData;
 
 /**
  * Class that keeps track of players currently logged on to the game
@@ -21,8 +23,8 @@ public class UserManager {
 	/** The UserManager instance. */
 	private static UserManager manager;
 
-	/** The Map of Player names and relevant SblockUsers currently online. */
-	private Map<String, SblockUser> users;
+	/** The Map of Player UUID and relevant SblockUsers currently online. */
+	private Map<UUID, User> users;
 
 	/**The Scoreboard used to color Player names by rank. */
 	private Scoreboard board;
@@ -30,7 +32,7 @@ public class UserManager {
 	/** Constructor for UserManager. */
 	UserManager() {
 		manager = this;
-		this.users = new HashMap<String, SblockUser>();
+		this.users = new HashMap<>();
 		this.createTeams();
 	}
 
@@ -39,23 +41,13 @@ public class UserManager {
 	 * 
 	 * @param player the name of the Player
 	 */
-	public SblockUser addUser(String name) {
-		if (users.containsKey(name)) {
-			return users.get(name);
+	public User addUser(UUID userID) {
+		if (users.containsKey(userID)) {
+			return users.get(userID);
 		}
-		SblockUser u = new SblockUser(name);
-		users.put(name, u);
+		User u = new User(userID);
+		users.put(userID, u);
 		return u;
-	}
-
-	/**
-	 * Removes a Player from the users list.
-	 * 
-	 * @param player the Player to remove
-	 * @return the SblockUser for the removed player, if any
-	 */
-	public SblockUser removeUser(Player player) {
-		return users.remove(player.getName());
 	}
 
 	/**
@@ -64,8 +56,8 @@ public class UserManager {
 	 * @param player the name of the Player to remove
 	 * @return the SblockUser for the removed player, if any
 	 */
-	public SblockUser removeUser(String player) {
-		return users.remove(player);
+	public User removeUser(UUID userID) {
+		return users.remove(userID);
 	}
 
 	/**
@@ -76,8 +68,11 @@ public class UserManager {
 	 * @return the SblockUser associated with the given Player, or null if no
 	 *         Player with the given name is currently online.
 	 */
-	public SblockUser getUser(String name) {
-		return users.get(name);
+	public User getUser(UUID userID) {
+		if (users.containsKey(userID)) {
+			return users.get(userID);
+		}
+		return SblockData.getDB().loadUserData(userID);
 	}
 
 	/**
@@ -85,7 +80,7 @@ public class UserManager {
 	 * 
 	 * @return the SblockUsers currently online
 	 */
-	public Collection<SblockUser> getUserlist() {
+	public Collection<User> getUserlist() {
 		return this.users.values();
 	}
 

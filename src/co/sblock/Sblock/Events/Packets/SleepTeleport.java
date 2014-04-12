@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.UserData.DreamPlanet;
 import co.sblock.Sblock.UserData.Region;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * Causes a sleep teleport to occur.
@@ -30,7 +30,7 @@ public class SleepTeleport implements Runnable {
 	 */
 	@Override
 	public void run() {
-		SblockUser user = SblockUser.getUser(p.getName());
+		User user = User.getUser(p.getUniqueId());
 		if (p != null && user != null) {
 			switch (Region.getLocationRegion(p.getLocation())) {
 			case EARTH:
@@ -39,13 +39,13 @@ public class SleepTeleport implements Runnable {
 			case LOHAC:
 			case LOLAR:
 			case LOWAS:
-				if (user.getDPlanet().equals(DreamPlanet.NONE)) {
+				if (user.getDreamPlanet().equals(DreamPlanet.NONE)) {
 					break;
 				} else {
 					SblockEvents.getEvents().teleports.add(p.getName());
 					if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
 						p.teleport(SblockEvents.getEvents().getTowerData()
-								.getLocation(user.getTower(), user.getDPlanet()));
+								.getLocation(user.getTower(), user.getDreamPlanet()));
 					} else {
 						p.teleport(user.getPreviousLocation());
 					}

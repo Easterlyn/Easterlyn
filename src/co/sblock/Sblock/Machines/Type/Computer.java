@@ -1,5 +1,7 @@
 package co.sblock.Sblock.Machines.Type;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 import co.sblock.Sblock.Machines.SblockMachines;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * Computers for players! Inventory-based selection system.
@@ -103,7 +105,7 @@ public class Computer extends Machine implements InventoryHolder {
 					event.getWhoClicked().openInventory(getServerConfirmation());
 					break;
 				case CONFIRM:
-					SblockUser u = SblockUser.getUser(event.getWhoClicked().getName());
+					User u = User.getUser(event.getWhoClicked().getUniqueId());
 					if (u == null) {
 						((Player) event.getWhoClicked()).sendMessage(
 								ChatColor.RED + "Your data appears to not have loaded properly. Please relog.");
@@ -145,7 +147,7 @@ public class Computer extends Machine implements InventoryHolder {
 						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 				event.setCancelled(true);
 				event.getPlayer().setItemInHand(null);
-				SblockUser u = SblockUser.getUser(event.getPlayer().getName());
+				User u = User.getUser(event.getPlayer().getUniqueId());
 				u.addProgram(ico.getProgramID());
 				return true;
 			} else {
@@ -161,7 +163,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	@Override
 	public Inventory getInventory() {
-		SblockUser u = SblockUser.getUser(getData());
+		User u = User.getUser(UUID.fromString(getData()));
 		Inventory i = Bukkit.createInventory(this, 9, getData() + "@sblock.co:~/");
 		if (u == null) {
 			return i;

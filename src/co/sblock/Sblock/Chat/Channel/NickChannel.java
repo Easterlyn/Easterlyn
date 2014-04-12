@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import co.sblock.Sblock.Chat.ChatMsgs;
-import co.sblock.Sblock.Chat.ChatUser;
-import co.sblock.Sblock.Chat.ChatUserManager;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * Defines nick channel behavior
@@ -15,14 +14,14 @@ import co.sblock.Sblock.Chat.ChatUserManager;
  */
 public class NickChannel extends Channel {
 
-	protected Map<ChatUser, String> nickList; 
+	protected Map<User, String> nickList; 
 
 	/**
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#Channel(String, AccessLevel, UUID)
 	 */
 	public NickChannel(String name, AccessLevel a, UUID creator) {
 		super(name, a, creator);
-		nickList = new HashMap<ChatUser, String>();
+		nickList = new HashMap<>();
 
 	}
 
@@ -35,25 +34,19 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#setNick(ChatUser, String)
 	 */
 	@Override
-	public void setNick(ChatUser sender, String nick) {
+	public void setNick(User sender, String nick) {
 		nickList.put(sender, nick);
-		for (UUID userID : this.getListening()) {
-			ChatUserManager.getUserManager().getUser(userID).sendMessageFromChannel(
-					ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this.name), this, "channel");
-		}
+		this.sendToAll(sender, ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this.name), false);
 	}
 
 	/**
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#removeNick(ChatUser)
 	 */
 	@Override
-	public void removeNick(ChatUser sender) {
+	public void removeNick(User sender) {
 		if (nickList.containsKey(sender)) {
 			String old = nickList.remove(sender);
-			for (UUID userID : this.getListening()) {
-				ChatUserManager.getUserManager().getUser(userID).sendMessageFromChannel(
-						ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name), this, "channel");
-			}
+			this.sendToAll(sender, ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name), false);
 		}
 	}
 
@@ -61,15 +54,15 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#getNick(ChatUser)
 	 */
 	@Override
-	public String getNick(ChatUser sender) {
-		return nickList.containsKey(sender) ? nickList.get(sender) : sender.getGlobalNick();
+	public String getNick(User sender) {
+		return nickList.containsKey(sender) ? nickList.get(sender) : sender.getPlayer().getDisplayName();
 	}
 
 	/**
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#hasNick(ChatUser)
 	 */
 	@Override
-	public boolean hasNick(ChatUser sender) {
+	public boolean hasNick(User sender) {
 		return nickList.containsKey(sender);
 	}
 
@@ -77,10 +70,10 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.Sblock.Chat.Channel.Channel#getNickOwner(String)
 	 */
 	@Override
-	public ChatUser getNickOwner(String nick) {
-		ChatUser owner = null;
+	public User getNickOwner(String nick) {
+		User owner = null;
 		if (nickList.containsValue(nick)) {
-			for (ChatUser u : nickList.keySet()) {
+			for (User u : nickList.keySet()) {
 				if (nickList.get(u).equalsIgnoreCase(nick)) {
 					owner = u;
 				}
@@ -94,7 +87,7 @@ public class NickChannel extends Channel {
 	 * 
 	 * @return the Map
 	 */
-	public Map<ChatUser, String> getNickList() {
+	public Map<User, String> getNickList() {
 		return nickList;
 	}
 }

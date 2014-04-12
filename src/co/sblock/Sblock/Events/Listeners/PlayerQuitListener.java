@@ -6,12 +6,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import co.sblock.Sblock.Chat.ChatUser;
-import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.SblockEffects.Cooldowns;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 import co.sblock.Sblock.Utilities.Vote.SleepVote;
@@ -37,7 +36,7 @@ public class PlayerQuitListener implements Listener {
 		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
 
 		// Remove Spectator status
-		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
+		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
 			Spectators.getSpectators().removeSpectator(event.getPlayer());
 		}
 
@@ -53,23 +52,20 @@ public class PlayerQuitListener implements Listener {
 		Cooldowns.cleanup(event.getPlayer().getName());
 
 		// Remove Server status
-		SblockUser sUser = SblockUser.getUser(event.getPlayer().getName());
-		if (sUser != null && sUser.isServer()) {
-			sUser.stopServerMode();
+		User user = User.getUser(event.getPlayer().getUniqueId());
+		if (user != null && user.isServer()) {
+			user.stopServerMode();
 		}
 
 		// Restore inventory if still preserved
 		InventoryManager.restoreInventory(event.getPlayer());
 
-		// Save data and inform channels that the player is no longer listening to them
-		ChatUser cUser = ChatUserManager.getUserManager().getUser(event.getPlayer().getName());
-		SblockData.getDB().saveUserData(event.getPlayer().getName());
-		if (cUser == null) {
-			// Sending a message to a channel will remove invalid players.
-			return;
-		}
-		for (String s : cUser.getListening()) {
-			cUser.removeListeningQuit(s);
+		// Save user data
+		SblockData.getDB().saveUserData(event.getPlayer().getUniqueId());
+
+		// Inform channels that the player is no longer listening to them
+		for (String s : ChatUser.getListening(user)) {
+			ChatUser.removeListeningQuit(user, s);
 		}
 	}
 }

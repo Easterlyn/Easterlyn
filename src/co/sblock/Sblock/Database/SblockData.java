@@ -4,15 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.Chat.ChatUser;
-import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Machines.Type.Machine;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.UserData.TowerData;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Log;
@@ -110,8 +109,8 @@ public class SblockData {
 	 * 
 	 * @param name the name of the Player
 	 */
-	public void saveUserData(String name) {
-		PlayerData.saveUserData(name);
+	public void saveUserData(UUID userID) {
+		PlayerData.saveUserData(userID);
 	}
 
 	/**
@@ -119,11 +118,9 @@ public class SblockData {
 	 * 
 	 * @param name the name of the Payer to load data for
 	 */
-	public ChatUser loadUserData(String name) {
-		UserManager.getUserManager().addUser(name);
-		ChatUser u = ChatUserManager.getUserManager().addUser(name);
-		PlayerData.loadUserData(name);
-		return u;
+	public User loadUserData(UUID userID) {
+		PlayerData.loadUserData(userID);
+		return UserManager.getUserManager().addUser(userID);
 	}
 
 	public void startOfflineLookup(CommandSender sender, String name) {
@@ -223,42 +220,42 @@ public class SblockData {
 	}
 
 	/**
-	 * Get a SblockUser's name by the IP they last connected with.
+	 * Get a User's name by the IP they last connected with.
 	 * 
 	 * @param hostAddress the IP to look up
 	 * 
-	 * @return the name of the SblockUser, "Player" if invalid
+	 * @return the name of the User, "Player" if invalid
 	 */
 	public String getUserFromIP(String hostAddress) {
 		return PlayerData.getUserFromIP(hostAddress);
 	}
 
 	/**
-	 * Get the reason a SblockUser was banned.
+	 * Get the reason a User was banned.
 	 * 
-	 * @param name the name of the banned SblockUser
-	 * @param ip the IP of the banned SblockUser
+	 * @param user the name of UUID of the banned User
+	 * @param ip the IP of the banned User
 	 * 
 	 * @return the ban reason
 	 */
-	public String getBanReason(String name, String ip) {
-		return BannedPlayers.getBanReason(name, ip);
+	public String getBanReason(String user, String ip) {
+		return BannedPlayers.getBanReason(user, ip);
 	}
 
 	/**
-	 * Add a ban and reason to a SblockUser.
+	 * Add a ban and reason to a User.
 	 * 
-	 * @param target the SblockUser to add a ban for
-	 * @param reason the reason the SblockUser was banned
+	 * @param target the User to add a ban for
+	 * @param reason the reason the User was banned
 	 */
-	public void addBan(SblockUser target, String reason) {
+	public void addBan(User target, String reason) {
 		BannedPlayers.addBan(target, reason);
 	}
 
 	/**
-	 * Remove a ban by name or IP.
+	 * Remove a ban by name, IP, or UUID.
 	 * 
-	 * @param target the name or IP to unban
+	 * @param target the name, IP, or UUID to unban
 	 */
 	public void removeBan(String target) {
 		BannedPlayers.deleteBans(target);

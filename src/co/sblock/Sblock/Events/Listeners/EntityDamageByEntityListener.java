@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import co.sblock.Sblock.SblockEffects.ActiveEffect;
 import co.sblock.Sblock.SblockEffects.ActiveEffectType;
 import co.sblock.Sblock.SblockEffects.EffectManager;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
@@ -34,13 +34,13 @@ public class EntityDamageByEntityListener implements Listener {
 
 		Player p = (Player) event.getDamager();
 
-		if (Spectators.getSpectators().isSpectator(p.getName())) {
+		if (Spectators.getSpectators().isSpectator(p.getUniqueId())) {
 			p.sendMessage(ChatColor.RED + "You waggle your fingers wildly, but your target remains unmussed.");
 			event.setCancelled(true);
 			return;
 		}
 
-		SblockUser u = SblockUser.getUser(p.getName());
+		User u = User.getUser(p.getUniqueId());
 		if (u != null && u.isServer()) {
 			event.setCancelled(true);
 			return;

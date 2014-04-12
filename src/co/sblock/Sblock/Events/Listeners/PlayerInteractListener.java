@@ -23,7 +23,7 @@ import co.sblock.Sblock.SblockEffects.ActiveEffect;
 import co.sblock.Sblock.SblockEffects.ActiveEffectType;
 import co.sblock.Sblock.SblockEffects.EffectManager;
 import co.sblock.Sblock.UserData.Region;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
 import co.sblock.Sblock.Utilities.Server.ServerMode;
@@ -45,10 +45,10 @@ public class PlayerInteractListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (SblockUser.getUser(event.getPlayer().getName()).isServer()) {
+		if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
 			// No interaction with any blocks while out of range.
 			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
-					SblockUser.getUser(event.getPlayer().getName()), event.getClickedBlock())) {
+					User.getUser(event.getPlayer().getUniqueId()), event.getClickedBlock())) {
 				event.getPlayer().sendMessage(ChatColor.RED + "Block out of range!");
 				event.setCancelled(true);
 				return;
@@ -71,7 +71,7 @@ public class PlayerInteractListener implements Listener {
 			return;
 		}
 
-		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
+		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			if (!event.hasBlock() || !event.getClickedBlock().getType().name().contains("PLATE")) {
 				event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
@@ -125,10 +125,6 @@ public class PlayerInteractListener implements Listener {
 					// getFace does not seem to work in most cases - adam test and fix
 				}
 
-				if (SblockUser.getUser(event.getPlayer().getName()).isGodTier()) {
-					// future feature
-					return;
-				}
 				switch (Region.uValueOf(b.getWorld().getName())) {
 				case EARTH:
 				case MEDIUM:

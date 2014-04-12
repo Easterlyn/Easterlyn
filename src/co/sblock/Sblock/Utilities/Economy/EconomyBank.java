@@ -70,7 +70,7 @@ public class EconomyBank {
 		if (args.length < 3) {
 			return false;
 		}
-		Player p = Bukkit.getPlayerExact(args[1]);
+		Player p = Bukkit.getPlayer(args[1]);
 		if (p == null) {
 			s.sendMessage("Invalid player: " + args[1]);
 			return true;

@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import co.sblock.Sblock.Sblock;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 
 public class EffectManager {
 
@@ -130,7 +130,7 @@ public class EffectManager {
 	 * 
 	 * @param user the SblockUSer to apply PassiveEffects to
 	 */
-	public static void applyPassiveEffects(SblockUser user) {
+	public static void applyPassiveEffects(User user) {
 		HashMap<PassiveEffect, Integer> effects = user.getPassiveEffects();
 		for (PassiveEffect pE : effects.keySet()) {
 			PassiveEffect.applyEffect(user.getPlayer(), pE, effects.get(pE));

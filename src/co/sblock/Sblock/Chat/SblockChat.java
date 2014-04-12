@@ -5,8 +5,6 @@ import org.bukkit.Bukkit;
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Chat.Chester.ChesterListener;
-import co.sblock.Sblock.UserData.SblockUser;
-import co.sblock.Sblock.UserData.UserManager;
 
 public class SblockChat extends Module {
 
@@ -32,10 +30,6 @@ public class SblockChat extends Module {
 	@Override
 	protected void onDisable() {
 		cm.saveAllChannels();
-		Object[] users = UserManager.getUserManager().getUserlist().toArray();
-		for (int i = 0; i < users.length; i++) {
-			UserManager.getUserManager().removeUser(((SblockUser) users[i]).getPlayerName());
-		}
 		instance = null;
 	}
 

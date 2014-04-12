@@ -3,6 +3,7 @@ package co.sblock.Sblock.Utilities.Spectator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,7 +14,7 @@ import org.bukkit.potion.PotionEffect;
 import co.sblock.Sblock.CommandListener;
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.SblockCommand;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Inventory.InventoryManager;
 
 /**
@@ -54,7 +55,7 @@ public class Spectators extends Module implements CommandListener {
 	private static Spectators instance;
 
 	/** The List of Players in spectator mode */
-	private Map<String, Entry> spectators;
+	private Map<UUID, Entry> spectators;
 
 	/**
 	 * @see co.sblock.Sblock.Module#onEnable()
@@ -62,7 +63,7 @@ public class Spectators extends Module implements CommandListener {
 	@Override
 	protected void onEnable() {
 		instance = this;
-		spectators = new HashMap<String, Entry>();
+		spectators = new HashMap<>();
 		this.registerCommands(this);
 	}
 
@@ -83,7 +84,7 @@ public class Spectators extends Module implements CommandListener {
 		return instance;
 	}
 
-	public Set<String> spectators() {
+	public Set<UUID> spectators() {
 		return spectators.keySet();
 	}
 
@@ -93,7 +94,7 @@ public class Spectators extends Module implements CommandListener {
 	 * @param p the player to add
 	 */
 	public void addSpectator(Player p) {
-		spectators.put(p.getName(), new Entry(p.getLocation(), p.getFallDistance(),
+		spectators.put(p.getUniqueId(), new Entry(p.getLocation(), p.getFallDistance(),
 				p.getActivePotionEffects().toArray()));
 		p.setAllowFlight(true);
 		p.setFlying(true);
@@ -109,8 +110,8 @@ public class Spectators extends Module implements CommandListener {
 	 * 
 	 * @return true if the player is a spectator
 	 */
-	public boolean isSpectator(String name) {
-		return spectators.containsKey(name);
+	public boolean isSpectator(UUID userID) {
+		return spectators.containsKey(userID);
 	}
 
 	/**
@@ -119,9 +120,9 @@ public class Spectators extends Module implements CommandListener {
 	 * @param p
 	 */
 	public void removeSpectator(Player p) {
-		Entry e = spectators.remove(p.getName());
+		Entry e = spectators.remove(p.getUniqueId());
 		p.teleport(e.getLocation());
-		SblockUser.getUser(p.getName()).updateFlight();
+		User.getUser(p.getUniqueId()).updateFlight();
 		p.setNoDamageTicks(0);
 		p.setFallDistance(e.getFall());
 		InventoryManager.restoreInventory(p);
@@ -140,7 +141,7 @@ public class Spectators extends Module implements CommandListener {
 	 */
 	@SblockCommand(description = "Player: Become the ghost (toggles spectator mode)", usage = "/spectate")
 	public boolean spectate(CommandSender s, String[] args) {
-		if (SblockUser.getUser(s.getName()).isServer()) {
+		if (User.getUser(((Player) s).getUniqueId()).isServer()) {
 			s.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
 			return true;
 		}

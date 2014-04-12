@@ -4,11 +4,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
-import co.sblock.Sblock.Chat.ChatUserManager;
-import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.SblockEffects.EffectManager;
 import co.sblock.Sblock.UserData.Region;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Vote.SleepVote;
 
 /**
@@ -26,19 +24,16 @@ public class PlayerChangedWorldListener implements Listener {
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
 
-		// TODO verify that this returns the correct number and not 1 lower
+		// adam verify that this returns the correct number and not 1 lower
 		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
 
-		try {
-			ChatUserManager.getUserManager().getUser(event.getPlayer().getName())
-					.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
-		} catch (NullPointerException e) {
-			SblockEvents.getEvents().getLogger().fine(
-					"Error updating region, user is likely entering same overall region.");
-		}
+		User user = User.getUser(event.getPlayer().getUniqueId());
 
-		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
-		u.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
-		EffectManager.applyPassiveEffects(u);
+		// Update region
+		user.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
+
+		// Scan for and apply passive effects
+		user.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
+		EffectManager.applyPassiveEffects(user);
 	}
 }

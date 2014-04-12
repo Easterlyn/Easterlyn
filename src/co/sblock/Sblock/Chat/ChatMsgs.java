@@ -1,7 +1,6 @@
 package co.sblock.Sblock.Chat;
 
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
 
 import org.bukkit.ChatColor;
@@ -9,6 +8,7 @@ import org.bukkit.ChatColor;
 import co.sblock.Sblock.Chat.Channel.CanonNicks;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelType;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * A container for all messages sent to <code>Player</code>s from various Chat subsections.
@@ -17,13 +17,13 @@ import co.sblock.Sblock.Chat.Channel.ChannelType;
  */
 public class ChatMsgs {
 
-	public static String onChannelJoin(ChatUser u, Channel c) {
-		String name = u.getGlobalNick();
+	public static String onChannelJoin(User user, Channel channel) {
+		String name = user.getPlayer().getDisplayName();
 		String message = "pestering";
 		ChatColor nameC = ChatColor.GREEN;
-		if (c.hasNick(u)) {
-			name = c.getNick(u);
-			if (c.getType().equals(ChannelType.RP)) {
+		if (channel.hasNick(user)) {
+			name = channel.getNick(user);
+			if (channel.getType().equals(ChannelType.RP)) {
 				nameC = CanonNicks.getNick(name).getColor();
 				message = CanonNicks.getNick(name).getPester();
 				name = CanonNicks.getNick(name).getHandle();
@@ -31,35 +31,27 @@ public class ChatMsgs {
 		}
 		return nameC + name + ChatColor.YELLOW + " began "
 				+ message + " " + ChatColor.GOLD
-				+ c.getName() + ChatColor.YELLOW + " at "
+				+ channel.getName() + ChatColor.YELLOW + " at "
 				+ new SimpleDateFormat("HH:mm").format(new Date());
 	}
 
-	public static String onChannelLeave(ChatUser u, Channel c) {
-		return ChatMsgs.onChannelJoin(u, c).replaceAll("began", "ceased");
+	public static String onChannelLeave(User user, Channel channel) {
+		return ChatMsgs.onChannelJoin(user, channel).replaceAll("began", "ceased");
 	}
 
-	public static String onChannelCreation(Channel c) {
-		return ChatColor.GOLD + c.getName() + ChatColor.GREEN
-				+ " has been created with access " + ChatColor.GOLD+ c.getAccess() + ChatColor.GREEN
-				+ " and type " + ChatColor.GOLD + c.getType();
+	public static String onChannelCreation(Channel channel) {
+		return ChatColor.GOLD + channel.getName() + ChatColor.GREEN
+				+ " has been created with access " + ChatColor.GOLD + channel.getAccess()
+				+ ChatColor.GREEN + " and type " + ChatColor.GOLD + channel.getType();
 	}
 
-	public static String onChannelDisband(String c) {
-		return ChatColor.GOLD + c + ChatColor.RED
+	public static String onChannelDisband(String channelName) {
+		return ChatColor.GOLD + channelName + ChatColor.RED
 				+ " has been disbanded! These are indeed dark times...";
-	}
-
-	public static String onUserMute() {
-		return ChatColor.RED + "You have been muted in all channels.";
 	}
 
 	public static String onUserMute(String name) {
 		return ChatColor.YELLOW + name + ChatColor.RED + " has been muted in all channels.";
-	}
-
-	public static String onUserUnmute() {
-		return ChatColor.GREEN + "You have been unmuted in all channels.";
 	}
 
 	public static String onUserUnmute(String name) {
@@ -70,162 +62,86 @@ public class ChatMsgs {
 		return ChatColor.RED + "You are muted!";
 	}
 
-	public static String onUserKick(String s) {
-		return ChatColor.YELLOW + "You have been kicked from "
-				+ ChatColor.GOLD + s + ChatColor.YELLOW + "!";
+	public static String onUserKickAnnounce(String userName, String channelName) {
+		return ChatColor.YELLOW + userName + " has been kicked from " + ChatColor.GOLD
+				+ channelName + ChatColor.YELLOW + "!";
 	}
 
-	public static String onUserKickAnnounce(String name, String s) {
-		return ChatColor.YELLOW + name + " has been kicked from "
-				+ ChatColor.GOLD + s + ChatColor.YELLOW + "!";
-	}
-
-	public static String onUserKickFail(String s) {
-		return ChatColor.RED + "You do not have permission to kick people in "
-				+ ChatColor.GOLD + s + ChatColor.RED + "!";
-	}
-
-	public static String onUserKickedAlready(String name, String s) {
-		return ChatColor.YELLOW + name + ChatColor.RED +
-				" is not chatting in " + ChatColor.GOLD + s +
-				ChatColor.RED + "!";
-	}
-
-	public static String onUserBan(String s) {
-		return ChatColor.RED + "You have been " + ChatColor.BOLD
-				+ "banned" + ChatColor.RESET + ChatColor.RED + " from "
-				+ ChatColor.GOLD + s + ChatColor.RED + "!";
-	}
-
-	public static String onUserBanAnnounce(String u, String s) {
-		return ChatColor.YELLOW + u + ChatColor.RED
-				+ " has been " + ChatColor.BOLD + "banned"
-				+ ChatColor.RESET + " from " + ChatColor.GOLD
-				+ s + ChatColor.RED + "!";
-	}
-
-	public static String onUserBanFail(String s) {
-		return ChatColor.RED + "You do not have permission to ban people in "
-				+ ChatColor.GOLD + s + ChatColor.RED + "!";
-	}
-
-	public static String onUserBannedAlready(String u, String s) {
-		return ChatColor.YELLOW + u + ChatColor.RED +
-				" is already banned in " + ChatColor.GOLD
-				+ s + ChatColor.RED + "!";
-	}
-
-	public static String onUserUnban(String s) {
-		return ChatColor.RED + "You have been " + ChatColor.BOLD
-				+ "unbanned" + ChatColor.RESET + " from " + ChatColor.GOLD
-				+ s + ChatColor.RED + "!";
-	}
-
-	public static String onUserUnbanAnnounce(String u, String s) {
-		return ChatColor.YELLOW + u + ChatColor.RED +
-				" has been " + ChatColor.BOLD + "unbanned" + ChatColor.RESET +
-				" from " + ChatColor.GOLD + s + ChatColor.RED + "!";
-	}
-
-	public static String onUserUnbanFail(String s) {
-		return ChatColor.RED + "You do not have permission to unban people in "
-				+ ChatColor.GOLD + s + ChatColor.RED + "!";
-	}
-
-	public static String onUserUnbannedAlready(String u, String s) {
-		return ChatColor.YELLOW + u + ChatColor.RED +
-				" is not banned in " + ChatColor.GOLD + s
+	public static String onUserBanAnnounce(String userName, String channelName) {
+		return ChatColor.YELLOW + userName + ChatColor.RED + " has been " + ChatColor.BOLD
+				+ "banned" + ChatColor.RESET + " from " + ChatColor.GOLD + channelName
 				+ ChatColor.RED + "!";
 	}
 
-	public static String onUserMod(String s) {
-		return ChatColor.GREEN + "You are now a mod in " + ChatColor.GOLD
-				+ s + ChatColor.GREEN + "!";
+	public static String onUserUnbanAnnounce(String userName, String channelName) {
+		return ChatColor.YELLOW + userName + ChatColor.RED + " has been " + ChatColor.BOLD
+				+ "unbanned" + ChatColor.RESET + " from " + ChatColor.GOLD + channelName
+				+ ChatColor.RED + "!";
 	}
 
-	public static String onUserModAnnounce(String user, String s) {
-		return ChatColor.YELLOW + user + " is now a mod in " + 
-				ChatColor.GOLD + s + ChatColor.YELLOW + "!";
+	public static String onChannelModAdd(String userName, String channelName) {
+		return ChatColor.YELLOW + userName + " is now a mod in " + ChatColor.GOLD + channelName
+				+ ChatColor.YELLOW + "!";
 	}
 
-	public static String onUserModFail(String s) {
-		return ChatColor.RED + "You do not have permission to (de)mod people in "
-				+ ChatColor.GOLD + s + ChatColor.RED + "!";
-	}
-
-	public static String onUserModAlready(String user, String s) {
-		return ChatColor.YELLOW + user + ChatColor.RED + " is already a mod in "
-				+ ChatColor.GOLD + s + ChatColor.RED + "!";
-	}
-
-	public static String onUserSetGlobalNick(String user, String nick) {
-		return ChatColor.YELLOW + user + ChatColor.BLUE + " shall henceforth be know as "
+	public static String onUserSetGlobalNick(String userName, String nick) {
+		return ChatColor.YELLOW + userName + ChatColor.BLUE + " shall henceforth be know as "
 				+ ChatColor.YELLOW + nick;
 	}
 
-	public static String onUserRmGlobalNick(String user, String nick) {
-		return ChatColor.YELLOW + user + ChatColor.BLUE + " is no longer known as "
+	public static String onUserRmGlobalNick(String userName, String nick) {
+		return ChatColor.YELLOW + userName + ChatColor.BLUE + " is no longer known as "
 				+ ChatColor.YELLOW + nick;
 	}
 
-	public static String onUserSetNick(String user, String nick, String s) {
-		return ChatColor.YELLOW + user + ChatColor.BLUE + " is now known as "
-				+ ChatColor.YELLOW + nick + ChatColor.YELLOW + " in " + s;
+	public static String onUserSetNick(String userName, String nick, String channelName) {
+		return ChatColor.YELLOW + userName + ChatColor.BLUE + " is now known as "
+				+ ChatColor.YELLOW + nick + ChatColor.YELLOW + " in " + channelName;
 	}
 
-	public static String onUserRmNick(String user, String nick, String s) {
-		return ChatColor.YELLOW + user + ChatColor.BLUE + " is no longer known as "
-				+ ChatColor.YELLOW + nick + ChatColor.YELLOW + " in " + s;
+	public static String onUserRmNick(String userName, String nick, String channelName) {
+		return ChatColor.YELLOW + userName + ChatColor.BLUE + " is no longer known as "
+				+ ChatColor.YELLOW + nick + ChatColor.YELLOW + " in " + channelName;
 	}
 
-	public static String onUserRmMod(String u, String s) {
-		return null;
+	public static String onChannelCommandFail(String channelName) {
+		return ChatColor.RED + "You do not have high enough access in " + ChatColor.GOLD
+				+ channelName + ChatColor.RED + " to perform that action!";
 	}
 
-	public static String onUserRmModAnnounce(String target, String s) {
-		return null;
+	public static String onChannelModRm(String userName, String channelName) {
+		return ChatColor.YELLOW + userName + ChatColor.RED + " is no longer a mod in " + ChatColor.GOLD
+				+ channelName + ChatColor.RED + "!";
 	}
 
-	public static String isBanned(String s) {
-		return ChatColor.RED + "You are banned from channel " + ChatColor.GOLD
-				+ s + ChatColor.RED + "!";
+	public static String onUserDeniedPrivateAccess(String channelName) {
+		return ChatColor.GOLD + channelName + ChatColor.RED + " is a private channel!\n"
+				+ ChatColor.YELLOW + "Request access with the command " + ChatColor.BLUE
+				+ "/sc request " + channelName;
 	}
 
-	public static String onUserDeniedPrivateAccess(String s) {
-		return ChatColor.GOLD + s + ChatColor.RED
-				+ " is a private channel!\n" + ChatColor.YELLOW
-				+ "Request access with the command " + ChatColor.BLUE
-				+ "/sc request " + s;
+	public static String errorInvalidChannel(String channelName) {
+		return ChatColor.RED + "Channel " + ChatColor.GOLD + channelName + ChatColor.RED
+				+ " does not exist!";
 	}
 
-	public static String errorInvalidChannel(String c) {
-		return ChatColor.RED + "Channel " + ChatColor.GOLD + c
-				+ ChatColor.RED + " does not exist!";
+	public static String errorInvalidType(String typeName) {
+		return ChatColor.GOLD + typeName + ChatColor.RED
+				+ " is not a valid channel type!\nValid types: NORMAL, RP, NICK.";
 	}
 
-	public static String errorInvalidType(String s) {
-		return ChatColor.GOLD + s + ChatColor.RED +
-				" is not a valid channel type!\nValid types: NORMAL, RP, NICK.";
+	public static String unsupportedOperation(String channelName) {
+		return ChatColor.RED + "Channel " + ChatColor.GOLD + channelName + ChatColor.RED
+				+ " does not support that operation.";
 	}
 
-	public static String unsupportedOperation(String s) {
-		return ChatColor.RED + "Channel " + ChatColor.GOLD + s
-				+ ChatColor.RED + " does not support that operation.";
+	public static String errorInvalidAccess(String accessName) {
+		return ChatColor.GOLD + accessName + ChatColor.RED
+				+ " is not a valid access level!\nValid levels: PUBLIC, PRIVATE";
 	}
 
-	public static String errorInvalidAccess(String s) {
-		return ChatColor.GOLD + s + ChatColor.RED +
-				" is not a valid access level!\nValid levels: PUBLIC, PRIVATE";
-	}
-
-	public static String errorInvalidUser(String username) {
-		return ChatColor.YELLOW + username + ChatColor.RED
-				+ " does not exist! Get them to log in once.";
-	}
-
-	public static String errorAlreadyInChannel(String s) {
-		return ChatColor.RED + "You are already listening to "
-				+ ChatColor.GOLD + s;
+	public static String errorInvalidUser(String userName) {
+		return ChatColor.YELLOW + userName + ChatColor.RED + " does not exist! Get them to log in.";
 	}
 
 	public static String errorNoCurrent() {
@@ -233,23 +149,21 @@ public class ChatMsgs {
 				+ ChatColor.GREEN + "/sc c <channel>";
 	}
 
-	public static String errorNotListening(String s) {
-		return ChatColor.RED + "You are not listening to channel "
-				+ ChatColor.GOLD + s;
+	public static String errorAlreadyListening(String channelName) {
+		return ChatColor.RED + "You are already listening to channel " + ChatColor.GOLD + channelName;
 	}
 
-	public static String errorNickUnsupported() {
-		return ChatColor.RED + "This channel does not support nicks!";
+	public static String errorNotListening(String channelName) {
+		return ChatColor.RED + "You are not listening to channel " + ChatColor.GOLD + channelName;
 	}
 
-	public static String errorNickRequired(String name) {
-		return ChatColor.GOLD + name + ChatColor.RED +
-				" is a roleplaying channel. You must have a nickname to talk!";
+	public static String errorNickRequired(String channelName) {
+		return ChatColor.GOLD + channelName + ChatColor.RED
+				+ " is a roleplaying channel. You must have a nickname to talk!";
 	}
 
 	public static String errorNickNotCanon(String nick) {
-		return ChatColor.GOLD + nick + ChatColor.RED + 
-				" is not a canon nickname!";
+		return ChatColor.GOLD + nick + ChatColor.RED + " is not a canon nickname!";
 	}
 
 	public static String errorNickInUse(String nick) {
@@ -260,16 +174,12 @@ public class ChatMsgs {
 		return ChatColor.RED + "Channel names may not exceed 16 characters in length!";
 	}
 
-	public static String errorRegionChannel() {
-		return ChatColor.RED + "You cannot do this operation in a Region channel!";
-	}
-
 	public static String errorRegionChannelJoin() {
 		return ChatColor.RED + "You cannot join a region channel!";
 	}
 
 	public static String errorRegionChannelLeave() {
-		return ChatColor.RED + "You cannot join a region channel!";
+		return ChatColor.RED + "You cannot leave a region channel!";
 	}
 
 	public static String helpGlobalMod() {
@@ -354,10 +264,6 @@ public class ChatMsgs {
 	public static String helpSCNick() {
 		return ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
 			+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.";
-	}
-
-	public static String helpSCGlobal() {
-		return null;
 	}
 
 	public static String permissionDenied() {

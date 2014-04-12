@@ -3,6 +3,7 @@ package co.sblock.Sblock.Database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import co.sblock.Sblock.Chat.SblockChat;
 import co.sblock.Sblock.Chat.Channel.AccessLevel;
@@ -15,7 +16,7 @@ import co.sblock.Sblock.Chat.Channel.ChannelType;
  * <p>
  * The ChatChannels table is created by the following call:
  * CREATE TABLE ChatChannels (name varchar(16) UNIQUE KEY, channelType varchar(6),
- * access varchar(7), owner varchar(16), modList text, banList text, approvedList text);
+ * access varchar(7), owner varchar(255), modList text, banList text, approvedList text);
  * 
  * @author Jikoo
  */
@@ -33,10 +34,10 @@ public class ChatChannels {
 			pst.setString(1, c.getName());
 			pst.setString(2, c.getType().name());
 			pst.setString(3, c.getAccess().name());
-			pst.setString(4, c.getOwner());
+			pst.setString(4, c.getOwner().toString());
 			StringBuilder sb = new StringBuilder();
-			for (String s : c.getModList()) {
-				sb.append(s + ",");
+			for (UUID uuid : c.getModList()) {
+				sb.append(uuid).append(",");
 			}
 			if (sb.length() > 0) {
 				pst.setString(5, sb.substring(0, sb.length() - 1));
@@ -44,8 +45,8 @@ public class ChatChannels {
 				pst.setString(5, null);
 			}
 			sb = new StringBuilder();
-			for (String s : c.getBanList()) {
-				sb.append(s + ",");
+			for (UUID uuid : c.getBanList()) {
+				sb.append(uuid).append(",");
 			}
 			if (sb.length() > 0) {
 				pst.setString(6, sb.substring(0, sb.length() - 1));
@@ -53,8 +54,8 @@ public class ChatChannels {
 				pst.setString(6, null);
 			}
 			sb = new StringBuilder();
-			for (String s : c.getApprovedUsers()) {
-				sb.append(s + ",");
+			for (UUID uuid : c.getApprovedUsers()) {
+				sb.append(uuid).append(",");
 			}
 			if (sb.length() > 0) {
 				pst.setString(7, sb.substring(0, sb.length() - 1));
@@ -90,7 +91,7 @@ public class ChatChannels {
 
 			while (rs.next()) {
 				cm.loadChannel(rs.getString("name"),
-						AccessLevel.valueOf(rs.getString("access")), rs.getString("owner"),
+						AccessLevel.valueOf(rs.getString("access")), UUID.fromString(rs.getString("owner")),
 						ChannelType.valueOf(rs.getString("channelType")));
 				Channel c = SblockChat.getChat().getChannelManager()
 						.getChannel(rs.getString("name"));
@@ -98,21 +99,21 @@ public class ChatChannels {
 				if (list != null) {
 					String[] modList = list.split(",");
 					for (int i = 0; i < modList.length; i++) {
-						c.loadMod(modList[i]);
+						c.loadMod(UUID.fromString(modList[i]));
 					}
 				}
 				list = rs.getString("banList");
 				if (list != null) {
 					String[] banList = list.split(",");
 					for (int i = 0; i < banList.length; i++) {
-						c.loadBan(banList[i]);
+						c.loadBan(UUID.fromString(banList[i]));
 					}
 				}
 				list = rs.getString("approvedList");
 				if (list != null) {
 					String[] approvedList = list.split(",");
 					for (int i = 0; i < approvedList.length; i++) {
-						c.loadApproval(approvedList[i]);
+						c.loadApproval(UUID.fromString(approvedList[i]));
 					}
 				}
 			}

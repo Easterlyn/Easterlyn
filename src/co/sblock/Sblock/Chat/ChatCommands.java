@@ -1,7 +1,8 @@
 package co.sblock.Sblock.Chat;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -17,7 +18,8 @@ import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.Channel.NickChannel;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Database.SblockData;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Broadcast;
 import co.sblock.Sblock.Utilities.Log;
@@ -94,11 +96,12 @@ public class ChatCommands implements CommandListener {
 			((Player) sender).performCommand("profile " + target[0]);
 			return true;
 		}
-		ChatUser u = ChatUserManager.getUserManager().getUser(target[0]);
-		if (u == null) {
+		Player p = Bukkit.getPlayer(target[0]);
+		if (p == null) {
 			SblockData.getDB().startOfflineLookup(sender, target[0]);
 			return true;
 		}
+		User u = UserManager.getUserManager().getUser(p.getUniqueId());
 		sender.sendMessage(u.toString());
 		return true;
 	}
@@ -143,45 +146,44 @@ public class ChatCommands implements CommandListener {
 		if (args.length == 1) {
 			reason.append("Git wrekt m8.");
 		}
-		SblockUser victim = UserManager.getUserManager().getUser(target);
-		if (victim != null) {
+		if (target.contains(".")) { // IPs probably shouldn't be announced.
+			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, "sban");
+		} else {
 			Broadcast.general(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
-			SblockData.getDB().addBan(victim, reason.toString());
-			victim.getPlayer().kickPlayer(reason.toString());
-		} else {
-			// Crappy match for offline IP sban
-			Bukkit.getBanList(target.contains(".") ? org.bukkit.BanList.Type.IP : org.bukkit.BanList.Type.NAME)
-					.addBan(target, reason.toString(), null, "sban");
+			Player p = Bukkit.getPlayer(target);
+			if (p != null) {
+				User victim = UserManager.getUserManager().getUser(p.getUniqueId());
+				SblockData.getDB().addBan(victim, reason.toString());
+				SblockData.getDB().deleteUser(victim.getPlayerName());
+				victim.getPlayer().kickPlayer(reason.toString());
+			} else {
+				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, "sban");
+			}
 		}
-		SblockData.getDB().deleteUser(target);
 		Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "DO THE WINDY THING.", usage = "/unsban <name|IP>")
+	@SblockCommand(consoleFriendly = true, description = "DO THE WINDY THING.", usage = "/unsban <UUID|name|IP>",
+			permission = "group.horrorterror")
 	public boolean unsban(CommandSender sender, String[] target) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
-			sender.sendMessage(ChatMsgs.permissionDenied());
-			return true;
-		}
 		if (target == null || target.length == 0) {
-			sender.sendMessage(ChatColor.RED + "Specify a player.");
-			return true;
+			return false;
 		}
 		SblockData.getDB().removeBan(target[0]);
-		if (Bukkit.getOfflinePlayer(target[0]).hasPlayedBefore()) {
-			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
-		} else {
+		if (target[0].contains(".")) {
 			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]
-					+ " has not played before or is an IP.");
+					+ " may be an IP.");
+		} else {
+			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
 		}
 		return true;
 	}
 
 	@SblockCommand(description = "SblockChat's main command", usage = "/sc")
 	public boolean sc(CommandSender sender, String[] args) {
-		ChatUser user = ChatUserManager.getUserManager().getUser(sender.getName());
+		User user = UserManager.getUserManager().getUser(((Player) sender).getUniqueId());
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatMsgs.helpDefault());
 		} else if (args[0].equalsIgnoreCase("c")) {
@@ -210,81 +212,81 @@ public class ChatCommands implements CommandListener {
 
 	@SblockCommand(description = "At long last, /me for Sblock.", usage = "/me (@channel) <message>")
 	public boolean me(CommandSender sender, String[] args) {
-		ChatUserManager.getUserManager().getUser(sender.getName()).chat(StringUtils.join(args, ' '), true);
+		ChatUser.chat(User.getUser(((Player) sender).getUniqueId()), StringUtils.join(args, ' '), true);
 		return true;
 	}
 
-	private boolean scC(ChatUser user, String[] args) {
+	private boolean scC(User user, String[] args) {
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCC());
+			user.sendMessage(ChatMsgs.helpSCC(), false);
 			return true;
 		}
 		Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
 		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
+			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]), false);
 			return true;
 		}
-		if (c.getType().equals(ChannelType.REGION) && !user.isListening(c)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
+		if (c.getType().equals(ChannelType.REGION) && !ChatUser.isListening(user, c)) {
+			user.sendMessage(ChatMsgs.errorRegionChannelJoin(), false);
 			return true;
 		}
-		user.setCurrent(c);
+		ChatUser.setCurrent(user, c);
 		return true;
 	}
 
-	private boolean scL(ChatUser user, String[] args) {
+	private boolean scL(User user, String[] args) {
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCL());
+			user.sendMessage(ChatMsgs.helpSCL(), false);
 			return true;
 		}
 		Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
 		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
+			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]), false);
 			return true;
 		}
 		if (c.getType().equals(ChannelType.REGION)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
+			user.sendMessage(ChatMsgs.errorRegionChannelJoin(), false);
 			return true;
 		}
-		user.addListening(c);
+		ChatUser.addListening(user, c);
 		return true;
 	}
 
-	private boolean scLeave(ChatUser user, String[] args) {
+	private boolean scLeave(User user, String[] args) {
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCLeave());
+			user.sendMessage(ChatMsgs.helpSCLeave(), false);
 			return true;
 		}
 		Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
 		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
-			user.removeListening(args[1]);
+			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]), false);
+			ChatUser.removeListening(user, args[1]);
 			return true;
 		}
 		if (c.getType().equals(ChannelType.REGION)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelLeave());
+			user.sendMessage(ChatMsgs.errorRegionChannelLeave(), false);
 			return true;
 		}
-		user.removeListening(args[1]);
+		ChatUser.removeListening(user, args[1]);
 		return true;
 		
 	}
 
-	private boolean scList(ChatUser user, String[] args) {
+	private boolean scList(User user, String[] args) {
 		StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW).append("Currently pestering: ");
-		for (String s : user.getListening()) {
+		for (String s : ChatUser.getListening(user)) {
 			sb.append(s).append(' ');
 		}
-		user.sendMessage(sb.toString());
+		user.sendMessage(sb.toString(), false);
 		return true;
 	}
 
-	private boolean scListAll(ChatUser user, String[] args) {
+	private boolean scListAll(User user, String[] args) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ChatColor.YELLOW).append("All channels: ");
 		for (Channel c : ChannelManager.getChannelList().values()) {
 			ChatColor cc;
-			if (user.isListening(c)) {
+			if (ChatUser.isListening(user, c)) {
 				cc = ChatColor.YELLOW;
 			} else if (c.getAccess().equals(AccessLevel.PUBLIC)) {
 				cc = ChatColor.GREEN;
@@ -293,35 +295,38 @@ public class ChatCommands implements CommandListener {
 			}
 			sb.append(cc).append(c.getName()).append(' ');
 		}
-		user.sendMessage(sb.toString());
+		user.sendMessage(sb.toString(), false);
 		return true;
 	}
 
-	private boolean scNew(ChatUser user, String[] args) {
+	private boolean scNew(User user, String[] args) {
 		if (args.length != 4) {
-			user.sendMessage(ChatMsgs.helpSCNew());
+			user.sendMessage(ChatMsgs.helpSCNew(), false);
 			return true;
 		}
 		if (args[1].length() > 16) {
-			user.sendMessage(ChatMsgs.errorChannelNameTooLong());
+			user.sendMessage(ChatMsgs.errorChannelNameTooLong(), false);
 		} else if (ChannelType.getType(args[3]) == null) {
-			user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
+			user.sendMessage(ChatMsgs.errorInvalidType(args[3]), false);
 		} else if (AccessLevel.getAccess(args[2]) == null) {
-			user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
+			user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]), false);
 		} else {
-			SblockChat.getChat().getChannelManager()
-					.createNewChannel(args[1], AccessLevel.getAccess(args[2]),
-							user.getPlayerName(), ChannelType.getType(args[3]));
+			SblockChat.getChat().getChannelManager().createNewChannel(args[1],
+					AccessLevel.getAccess(args[2]), user.getUUID(), ChannelType.getType(args[3]));
 			Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
-			user.sendMessage(ChatMsgs.onChannelCreation(c));
+			user.sendMessage(ChatMsgs.onChannelCreation(c), false);
 		}
 		return true;
 	}
 
-	private boolean scNick(ChatUser user, String[] args) {
-		Channel c = user.getCurrent();
+	private boolean scNick(User user, String[] args) {
+		Channel c = ChatUser.getCurrent(user);
+		if (c == null) {
+			user.sendMessage(ChatMsgs.errorNoCurrent(), false);
+			return true;
+		}
 		if (args.length == 1 || args.length > 3) {
-			user.sendMessage(ChatMsgs.helpSCNick());
+			user.sendMessage(ChatMsgs.helpSCNick(), false);
 			return true;
 		} else if (c instanceof NickChannel || c instanceof RPChannel) {
 			if (args[1].equalsIgnoreCase("set") && args.length == 3) {
@@ -332,7 +337,7 @@ public class ChatCommands implements CommandListener {
 				return true;
 			} else if (args[1].equalsIgnoreCase("list")) {
 				if (!(c instanceof RPChannel)) {
-					user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.");
+					user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.", false);
 					return true;
 				}
 				StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString());
@@ -342,21 +347,21 @@ public class ChatCommands implements CommandListener {
 						sb.append(n.getName()).append(" ");
 					}
 				}
-				user.sendMessage(sb.toString());
+				user.sendMessage(sb.toString(), false);
 				return true;
 			} else {
-				user.sendMessage(ChatMsgs.helpSCNick());
+				user.sendMessage(ChatMsgs.helpSCNick(), false);
 				return true;
 			}
 		} else {
-			user.sendMessage(ChatMsgs.errorNickUnsupported());
+			user.sendMessage(ChatMsgs.unsupportedOperation(c.getName()), false);
 			return true;
 		}
 	}
 
-	private boolean scGlobal(ChatUser user, String[] args) {
+	private boolean scGlobal(User user, String[] args) {
 		if (!user.getPlayer().hasPermission("group.denizen")) {
-			user.sendMessage(ChatMsgs.permissionDenied());
+			user.sendMessage(ChatMsgs.permissionDenied(), false);
 			return true;
 		}
 		if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
@@ -373,137 +378,142 @@ public class ChatCommands implements CommandListener {
 				scGlobalRmNick(user, args);
 				return true;
 			} else if (args[1].equalsIgnoreCase("clearnicks")) {
-				for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
-					if (!u.getGlobalNick().equals(u.getPlayerName())) {
-						u.setGlobalNick(u.getPlayerName());
+				for (User u : UserManager.getUserManager().getUserlist()) {
+					if (!u.getPlayer().getDisplayName().equals(u.getPlayerName())) {
+						u.getPlayer().setDisplayName(u.getPlayerName());
 					}
 				}
 			}
 		}
-		user.sendMessage(ChatMsgs.helpGlobalMod());
+		user.sendMessage(ChatMsgs.helpGlobalMod(), false);
 		return true;
 	}
 
-	private void scGlobalSetNick(ChatUser user, String[] args) {
-		ChatUser victim = ChatUserManager.getUserManager().getUser(args[2]);
-		if (victim == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
+	private void scGlobalSetNick(User user, String[] args) {
+		Player p = Bukkit.getPlayer(args[2]);
+		if (p == null) {
+			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]), false);
 			return;
 		}
-		victim.setGlobalNick(args[3]);
+		User victim = User.getUser(Bukkit.getPlayer(args[2]).getUniqueId());
+		victim.getPlayer().setDisplayName(args[3]);
 		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
-		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
-			u.sendMessage(msg);
+		for (User u : UserManager.getUserManager().getUserlist()) {
+			u.sendMessage(msg, false);
 		}
 		Log.anonymousInfo(msg);
 	}
 
-	private void scGlobalRmNick(ChatUser user, String[] args) {
-		ChatUser victim = ChatUserManager.getUserManager().getUser(args[2]);
-		if (victim == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
+	private void scGlobalRmNick(User user, String[] args) {
+		Player p = Bukkit.getPlayer(args[2]);
+		if (p == null) {
+			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]), false);
 			return;
 		}
-		String msg = ChatMsgs.onUserRmGlobalNick(args[2], user.getGlobalNick());
-		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
-			u.sendMessage(msg);
+		User victim = UserManager.getUserManager().getUser(p.getUniqueId());
+		String msg = ChatMsgs.onUserRmGlobalNick(args[2], p.getDisplayName());
+		for (User u : UserManager.getUserManager().getUserlist()) {
+			u.sendMessage(msg, false);
 		}
 		Log.anonymousInfo(msg);
-		victim.setGlobalNick(victim.getPlayerName());
+		p.setDisplayName(victim.getPlayerName());
 	}
 
-	private void scGlobalMute(ChatUser user, String[] args) {
-		ChatUser victim = ChatUserManager.getUserManager().getUser(args[2]);
-		if (victim == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
+	private void scGlobalMute(User user, String[] args) {
+		Player p = Bukkit.getPlayer(args[2]);
+		if (p == null) {
+			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]), false);
 			return;
 		}
-		victim.setMute(true);
+		User victim = UserManager.getUserManager().getUser(p.getUniqueId());
+		ChatUser.setMute(victim, true);
 		String msg = ChatMsgs.onUserMute(args[2]);
-		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
-			u.sendMessage(msg);
+		for (User u : UserManager.getUserManager().getUserlist()) {
+			u.sendMessage(msg, false);
 		}
 		Log.anonymousInfo(msg);
 	}
 
-	private void scGlobalUnmute(ChatUser user, String[] args) {
-		ChatUser victim = ChatUserManager.getUserManager().getUser(args[2]);
-		if (victim == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
+	private void scGlobalUnmute(User user, String[] args) {
+		Player p = Bukkit.getPlayer(args[2]);
+		if (p == null) {
+			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]), false);
 			return;
 		}
-		victim.setMute(true);
+		User victim = UserManager.getUserManager().getUser(p.getUniqueId());
+		ChatUser.setMute(victim, true);
 		String msg = ChatMsgs.onUserUnmute(args[2]);
-		for (ChatUser u : ChatUserManager.getUserManager().getUserlist()) {
-			u.sendMessage(msg);
+		for (User u : UserManager.getUserManager().getUserlist()) {
+			u.sendMessage(msg, false);
 		}
 		Log.anonymousInfo(msg);
 	}
 
-	private boolean scChannel(ChatUser user, String[] args) {
-		Channel c = user.getCurrent();
+	private boolean scChannel(User user, String[] args) {
+		Channel c = ChatUser.getCurrent(user);
 		if (args.length == 2 && args[1].equalsIgnoreCase("info")) {
-			user.sendMessage(c.toString());
+			user.sendMessage(c.toString(), false);
 			return true;
 		}
 		if (!c.isChannelMod(user)) {
-			user.sendMessage(ChatMsgs.permissionDenied());
+			user.sendMessage(ChatMsgs.permissionDenied(), false);
 			return true;
 		}
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpChannelMod());
+			user.sendMessage(ChatMsgs.helpChannelMod(), false);
 			if (c.isOwner(user)) {
-				user.sendMessage(ChatMsgs.helpChannelOwner());
+				user.sendMessage(ChatMsgs.helpChannelOwner(), false);
 			}
 			return true;
 		} else if (args.length >= 2 && args[1].equalsIgnoreCase("getlisteners")) {
 			StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW);
 			sb.append("Channel members: ");
-			for (String s : c.getListening()) {
-				ChatUser u = ChatUserManager.getUserManager().getUser(s);
-				if (u.getCurrent().equals(c)) {
-					sb.append(ChatColor.GREEN).append(u.getPlayerName()).append(' ');
+			for (UUID userID : c.getListening()) {
+				User u = UserManager.getUserManager().getUser(userID);
+				if (ChatUser.getCurrent(u).equals(c)) {
+					sb.append(ChatColor.GREEN);
 				} else {
-					sb.append(ChatColor.YELLOW).append(u.getPlayerName()).append(' ');
+					sb.append(ChatColor.YELLOW);
 				}
+				sb.append(u.getPlayerName()).append(' ');
 			}
-			user.sendMessage(sb.toString());
+			user.sendMessage(sb.toString(), false);
 			return true;
 		} else if (args.length >= 3) {
 			if (args[1].equalsIgnoreCase("kick")) {
-				c.kickUser(ChatUserManager.getUserManager().getUser(args[2]), user);
+				c.kickUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			} else if (args[1].equalsIgnoreCase("ban")) {
-				c.banUser(args[2], user);
+				c.banUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			}
 		}
 		if (c.isOwner(user)) {
 			if (args.length >= 4 && args[1].equalsIgnoreCase("mod")) {
 				if (args[2].equalsIgnoreCase("add")) {
-					c.addMod(user, args[3]);
+					c.addMod(user, Bukkit.getPlayer(args[3]).getUniqueId());
 					return true;
 				} else if (args[2].equalsIgnoreCase("remove")) {
-					c.removeMod(user, args[3]);
+					c.removeMod(user, Bukkit.getPlayer(args[3]).getUniqueId());
 					return true;
 				} else {
-					user.sendMessage(ChatMsgs.helpChannelMod());
+					user.sendMessage(ChatMsgs.helpChannelMod(), false);
 					if (c.isOwner(user)) {
-						user.sendMessage(ChatMsgs.helpChannelOwner());
+						user.sendMessage(ChatMsgs.helpChannelOwner(), false);
 					}
 					return true;
 				}
 			} else if (args.length >= 3 && args[1].equalsIgnoreCase("unban")) {
 				SblockChat.getChat().getChannelManager().getChannel(c.getName())
-						.unbanUser(args[2], user);
+						.unbanUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			} else if (args.length >= 2 && args[1].equalsIgnoreCase("disband")) {
 				c.disband(user);
 				return true;
 			} else {
-				user.sendMessage(ChatMsgs.helpChannelMod());
+				user.sendMessage(ChatMsgs.helpChannelMod(), false);
 				if (c.isOwner(user)) {
-					user.sendMessage(ChatMsgs.helpChannelOwner());
+					user.sendMessage(ChatMsgs.helpChannelOwner(), false);
 				}
 				return true;
 			}

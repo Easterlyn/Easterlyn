@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -25,6 +26,8 @@ import co.sblock.Sblock.Machines.Type.PunchDesignix;
 import co.sblock.Sblock.Machines.Type.TotemLathe;
 import co.sblock.Sblock.Machines.Type.Transmaterializer;
 import co.sblock.Sblock.Machines.Type.Transportalizer;
+import co.sblock.Sblock.SblockEffects.PassiveEffect;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * @author Jikoo
@@ -234,7 +237,7 @@ public class MachineManager {
 	 */
 	public boolean isByComputer(Player p, int distance) {
 		for (Machine m : this.getMachinesInProximity(p.getLocation(), distance, MachineType.COMPUTER, true)) {
-			if (m.getData().equals(p.getName())) {
+			if (m.getData().equals(p.getUniqueId().toString())) {
 				return true;
 			}
 		}
@@ -294,7 +297,7 @@ public class MachineManager {
 	 */
 	public boolean hasComputer(Player p, Location key) {
 		for (Machine m : machineKeys.values()) {
-			if (m instanceof Computer && m.getData().equals(p.getName()) && !m.getKey().equals(key)) {
+			if (m instanceof Computer && m.getData().equals(p.getUniqueId().toString()) && !m.getKey().equals(key)) {
 				return true;
 			}
 		}
@@ -304,16 +307,28 @@ public class MachineManager {
 	/**
 	 * Gets the Computer owned by a particular Player.
 	 * 
-	 * @param player the name of the Player
+	 * @param playerID the UUID of the Player
 	 * 
 	 * @return the matching Machine, or null if the Player has no computer.
 	 */
-	public Machine getComputer(String player) {
+	public Machine getComputer(UUID playerID) {
 		for (Machine m : machineKeys.values()) {
-			if (m instanceof Computer && m.getData().equals(player)) {
+			if (m instanceof Computer && m.getData().equals(playerID.toString())) {
 				return m;
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Check to see if the Player is within range of a Computer.
+	 * 
+	 * @return true if the Player is within 10 meters of a Computer.
+	 */
+	public static boolean hasComputerAccess(User user) {
+		if (user.getPassiveEffects().containsKey(PassiveEffect.COMPUTER)) {
+			return true;
+		}
+		return SblockMachines.getMachines().getManager().isByComputer(user.getPlayer(), 10);
 	}
 }

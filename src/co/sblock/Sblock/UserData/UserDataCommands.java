@@ -39,17 +39,17 @@ public class UserDataCommands implements CommandListener {
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Check a player's profile.", usage = "")
 	public boolean profile(CommandSender sender, String[] target) {
-		SblockUser user = null;
+		User user = null;
 		if (target == null || target.length == 0) {
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
 				return true;
 			}
-			user = SblockUser.getUser(sender.getName());
+			user = User.getUser(((Player) sender).getUniqueId());
 		} else {
 			Player pTarget = Bukkit.getPlayer(target[0]);
 			if (pTarget != null) {
-				user = UserManager.getUserManager().getUser(pTarget.getName());
+				user = UserManager.getUserManager().getUser(pTarget.getUniqueId());
 			}
 		}
 		if (user == null) {
@@ -57,10 +57,10 @@ public class UserDataCommands implements CommandListener {
 			return true;
 		}
 		sender.sendMessage(PROFILE_COLOR + "-----------------------------------------\n"
-				+ ChatColor.YELLOW + user.getPlayerName() + ": " + user.getClassType().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
+				+ ChatColor.YELLOW + user.getPlayerName() + ": " + user.getPlayerClass().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
 				+ PROFILE_COLOR    + "-----------------------------------------\n"
-				+ "Dream planet: " + ChatColor.YELLOW + user.getDPlanet().getDisplayName() + "\n"
-				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMPlanet().getShortName());
+				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().getDisplayName() + "\n"
+				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().getShortName());
 		return true;
 	}
 	
@@ -74,16 +74,13 @@ public class UserDataCommands implements CommandListener {
 	 * @return true if command was used correctly
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Set player data",
-			usage = "setplayer <playername> <class|aspect|land|dream|prevloc> <value>")
+			usage = "setplayer <playername> <class|aspect|land|dream|prevloc> <value>",
+			permission = "group.horrorterror")
 	public boolean setplayer(CommandSender sender, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
-			sender.sendMessage(ChatMsgs.permissionDenied());
-			return true;
-		}
 		if (args == null || args.length < 3) {
 			return false;
 		}
-		SblockUser user = UserManager.getUserManager().getUser(args[0]);
+		User user = UserManager.getUserManager().getUser(Bukkit.getPlayer(args[0]).getUniqueId());
 		args[1] = args[1].toLowerCase();
 		if(args[1].equals("class"))
 			user.setPlayerClass(args[2]);
@@ -108,12 +105,9 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true if command was used correctly
 	 */
-	@SblockCommand(description = "Set tower location.", usage = "/settower <0-7>")
+	@SblockCommand(description = "Set tower location.", usage = "/settower <0-7>",
+			permission = "group.horrorterror")
 	public boolean settower(CommandSender sender, String[] number) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
-			sender.sendMessage(ChatMsgs.permissionDenied());
-			return true;
-		}
 		if (number == null || number.length == 0) {
 			return false;
 		}
@@ -156,7 +150,7 @@ public class UserDataCommands implements CommandListener {
 			s.sendMessage(ChatColor.RED + "Unknown user!");
 			return true;
 		}
-		SblockUser u = SblockUser.getUser(p.getName());
+		User u = User.getUser(p.getUniqueId());
 		if (u == null) {
 			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
 			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
@@ -203,7 +197,7 @@ public class UserDataCommands implements CommandListener {
 			s.sendMessage(ChatColor.RED + "Unknown user!");
 			return true;
 		}
-		SblockUser u = SblockUser.getUser(p.getName());
+		User u = User.getUser(p.getUniqueId());
 		if (u == null) {
 			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
 			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
@@ -242,18 +236,19 @@ public class UserDataCommands implements CommandListener {
 			return true;
 		}
 		String req = requests.remove(s.getName());
-		SblockUser u = SblockUser.getUser(s.getName());
-		SblockUser u1 = SblockUser.getUser(req.substring(1));
-		if (u1 == null) {
+		User u = User.getUser(((Player) s).getUniqueId());
+		Player p1 = Bukkit.getPlayer(req.substring(1));
+		if (p1 == null) {
 			s.sendMessage(ChatColor.GOLD + req.substring(1) + ChatColor.RED + " appears to be offline! Request removed.");
 			return true;
 		}
+		User u1 = User.getUser(p1.getUniqueId());
 		if (req.charAt(0) == 'c') {
-			u.setClient(u1.getPlayerName());
-			u1.setServer(u.getPlayerName());
+			u.setClient(u1.getUUID());
+			u1.setServer(u.getUUID());
 		} else {
-			u1.setClient(u.getPlayerName());
-			u.setServer(u1.getPlayerName());
+			u1.setClient(u.getUUID());
+			u.setServer(u1.getUUID());
 		}
 		s.sendMessage(ChatColor.YELLOW + "Accepted " + ChatColor.GREEN + u1.getPlayerName() + ChatColor.YELLOW + "'s request!");
 		u1.getPlayer().sendMessage(ChatColor.GREEN + u1.getPlayerName() + ChatColor.YELLOW + " accepted your request!");
@@ -294,19 +289,17 @@ public class UserDataCommands implements CommandListener {
 	 * @return true if command was used correctly
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Warps player if aspect matches warp name.",
-			usage = "aspectwarp <warp> <player>")
+			usage = "aspectwarp <warp> <player>", permission = "group.denizen")
 	public boolean aspectwarp(CommandSender sender, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission("group.denizen")) {
-			sender.sendMessage(ChatMsgs.permissionDenied());
-		}
 		if (args == null || args.length < 2) {
 			return false;
 		}
-		SblockUser u = SblockUser.getUser(args[1]);
-		if (u == null) {
+		Player p = Bukkit.getPlayer(args[1]);
+		if (p == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
+		User u = User.getUser(p.getUniqueId());
 		if (!u.getAspect().name().equalsIgnoreCase(args[0])) {
 			return true;
 		}
@@ -321,13 +314,5 @@ public class UserDataCommands implements CommandListener {
 	public boolean spawn(CommandSender sender, String[] args) {
 		((Player) sender).performCommand("mvs");
 		return true;
-	}
-
-	/**
-	 * Ben always does this, and I dunno why. Hell yeah, catering to end users.
-	 */
-	@SblockCommand(description = "Teleport to this world's spawn.", usage = "/mvs")
-	public boolean spewnt(CommandSender sender, String[] args) {
-		return spawn(sender, args);
 	}
 }

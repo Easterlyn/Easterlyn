@@ -6,9 +6,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import co.sblock.Sblock.Chat.ChatUserManager;
 import co.sblock.Sblock.Database.SblockData;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * Listener for PlayerAsyncChatEvents.
@@ -25,17 +25,13 @@ public class PlayerAsyncChatListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		event.setCancelled(true);
-		if (SblockUser.getUser(event.getPlayer().getName()) != null) {
-			if (event.getMessage().charAt(0) == '\u002F') {
-				event.getPlayer().performCommand(event.getMessage().substring(1));
-			} else {
-				ChatUserManager.getUserManager().getUser(event.getPlayer().getName()).chat(event.getMessage(), false);
-			}
+		if (User.getUser(event.getPlayer().getUniqueId()) != null) {
+			ChatUser.chat(User.getUser(event.getPlayer().getUniqueId()), event.getMessage(), false);
 		} else {
 			event.getPlayer().sendMessage(ChatColor.BOLD
 					+ "[o] Your Sblock playerdata appears to not be loaded."
 					+ "\nI'll take care of that for you, but make sure your /profile is correct.");
-			SblockData.getDB().loadUserData(event.getPlayer().getName());
+			SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
 		}
 	}
 }

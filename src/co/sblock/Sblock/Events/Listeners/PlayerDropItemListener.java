@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import co.sblock.Sblock.Events.SblockEvents;
 import co.sblock.Sblock.SblockEffects.EffectManager;
 import co.sblock.Sblock.SblockEffects.PassiveEffect;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
@@ -27,7 +27,7 @@ public class PlayerDropItemListener implements Listener {
 	 */
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event) {
-		if (Spectators.getSpectators().isSpectator(event.getPlayer().getName())) {
+		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "Inventory? Spectral beings don't have those, don't be silly.");
 			return;
@@ -40,19 +40,19 @@ public class PlayerDropItemListener implements Listener {
 		}
 
 		// valid SblockUser required for all events below this point
-		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
-		if (u == null) {
+		User user = User.getUser(event.getPlayer().getUniqueId());
+		if (user == null) {
 			return;
 		}
 
-		if (u.isServer()) {
+		if (user.isServer()) {
 			event.setCancelled(true);
 			return;
 		}
 
 		HashMap<PassiveEffect, Integer> effects = EffectManager.itemScan(event.getItemDrop());
 		for (PassiveEffect e : effects.keySet()) {
-			u.removePassiveEffect(e, effects.get(e));
+			user.reducePassiveEffect(e, effects.get(e));
 		}
 	}
 }

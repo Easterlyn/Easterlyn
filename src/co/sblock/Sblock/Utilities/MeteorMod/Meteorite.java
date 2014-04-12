@@ -2,15 +2,18 @@ package co.sblock.Sblock.Utilities.MeteorMod;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+
 import co.sblock.Sblock.Sblock;
 
 /**
@@ -181,6 +184,7 @@ public class Meteorite implements Listener {
 	 * Drop the <code>Meteorite</code>, or, if there is still time remaining on
 	 * the countdown, tick the timer.
 	 */
+	@SuppressWarnings("deprecation")
 	public void dropMeteorite() {
 		if (countdown >= 0) {
 			if (pTarget != null) {
@@ -197,8 +201,10 @@ public class Meteorite implements Listener {
 											// been run (well)
 				for (Location a : sphereCoords) {
 					a.getBlock().setType(Material.AIR);
-					blockID.add(skyTarget.getWorld().spawnFallingBlock(a, mat, (byte) 0)
-							.getUniqueId());
+					FallingBlock f = skyTarget.getWorld().spawnFallingBlock(a, mat, (byte) 0);
+					blockID.add(f.getUniqueId());
+					f.setDropItem(false);
+					f.setFireTicks(Integer.MAX_VALUE);
 				}
 				Bukkit.getLogger().info(
 						"Meteorificationalizing " + target.getBlockX() + ", " + target.getBlockZ());

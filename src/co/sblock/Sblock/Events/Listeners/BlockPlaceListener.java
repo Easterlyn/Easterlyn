@@ -11,7 +11,7 @@ import co.sblock.Sblock.Machines.Type.Direction;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Machines.Type.PBO;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -38,7 +38,7 @@ public class BlockPlaceListener implements Listener {
 		}
 
 		// Server mode placement
-		if (SblockUser.getUser(event.getPlayer().getName()).isServer()) {
+		if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
 			if (event.getItemInHand().equals(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {

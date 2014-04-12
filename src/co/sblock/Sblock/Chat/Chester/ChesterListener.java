@@ -3,6 +3,7 @@ package co.sblock.Sblock.Chat.Chester;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,10 +17,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import co.sblock.Sblock.CommandListener;
-import co.sblock.Sblock.Chat.ChatUser;
 import co.sblock.Sblock.Chat.Channel.Channel;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
+import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Log;
+import co.sblock.Sblock.Utilities.Regex.RegexUtils;
 
 /**
  * @author Jikoo
@@ -28,45 +31,33 @@ public class ChesterListener implements CommandListener, Listener {
 
 	private int cancels = 0;
 
-	private Pattern pattern;
+	private Pattern pattern, whitespacePattern;
 
 	private List<String> triggers;
 
 	public ChesterListener() {
 		triggers = Bukkit.getPluginManager().getPlugin("Chester").getConfig().getStringList("triggerwords");
-		pattern = Pattern.compile(createRegex());
+		pattern = Pattern.compile(RegexUtils.ignoreCaseRegex(triggers.toArray(new String[0])));
+		whitespacePattern = Pattern.compile(createRegex());
 		Log.getLog("ChesterListener").info("Compiled regex: " + pattern.toString());
 	}
 
 	private String createRegex() {
-		StringBuilder regex = new StringBuilder().append('(');
-		for (String s : triggers) {
-			regex.append('(');
-			for (int i = 0; i < s.length(); i++) {
-				regex.append('[');
-				char ch = s.charAt(i);
-				if (Character.isLetter(ch)) {
-					regex.append(Character.toUpperCase(ch)).append(Character.toLowerCase(ch));
-				} else {
-					regex.append(ch);
-				}
-				regex.append(']');
-			}
-			regex.append(')').append('|');
-		}
-		regex.setCharAt(regex.length() - 1, ')');
+		StringBuilder regex = new StringBuilder().append("(\\s|\\A)");
+		regex.append(pattern.toString());
+		regex.append("(\\s|\\Z|\\z)");
 		return regex.toString();
 	}
 
 	@EventHandler
 	public void onChesterLog(ChesterLogEvent event) {
-		ChatUser c = ChatUser.getUser(event.getPlayer().getName());
-		if (c == null || c.getCurrent() == null) {
+		User c = User.getUser(event.getPlayer().getUniqueId());
+		if (c == null || ChatUser.getCurrent(c) == null) {
 			stopLogging(event);
 			return;
 		}
 
-		if (!c.getCurrent().getName().equals("#")) {
+		if (!ChatUser.getCurrent(c).getName().equals("#")) {
 			if (!event.getMessage().startsWith("@# ")) {
 				stopLogging(event);
 				return;
@@ -89,6 +80,8 @@ public class ChesterListener implements CommandListener, Listener {
 				return;
 			}
 		}
+
+		stopIndirectTrigger(event);
 	}
 
 	private void stopLogging(ChesterLogEvent event) {
@@ -98,6 +91,14 @@ public class ChesterListener implements CommandListener, Listener {
 			Log.getLog("ChesterListener").info("Match found: " + m.group() + ". Cancels: " + cancels);
 		}
 		event.setCancelled(true);
+	}
+
+	private void stopIndirectTrigger(ChesterLogEvent event) {
+		Matcher m = pattern.matcher(event.getMessage());
+		if (m.find() && !whitespacePattern.matcher(event.getMessage()).find()) {
+			cancels++;
+			Log.getLog("ChesterListener").info("Inexact match found: " + m.group() + ". Cancels: " + cancels);
+		}
 	}
 
 	@EventHandler
@@ -114,8 +115,8 @@ public class ChesterListener implements CommandListener, Listener {
 			return;
 		}
 		Set<Player> listeners = new HashSet<Player>();
-		for (String s : c.getListening()) {
-			listeners.add(Bukkit.getPlayerExact(s));
+		for (UUID userID : c.getListening()) {
+			listeners.add(Bukkit.getPlayer(userID));
 		}
 		event.getRecipients().retainAll(listeners);
 		event.setMessage(ChatColor.stripColor(event.getMessage()));

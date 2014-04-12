@@ -3,6 +3,7 @@ package co.sblock.Sblock.Machines.Type;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,7 +33,7 @@ import org.bukkit.util.Vector;
 
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.SblockMachines;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * Framework for all Machine block assemblies.
@@ -120,7 +121,7 @@ public abstract class Machine {
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return getData().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("group.denizen")
-				|| SblockUser.getUser(data) != null && SblockUser.getUser(data).getServer().equals(event.getPlayer().getName());
+				|| User.getUser(UUID.fromString(data)) != null && User.getUser(UUID.fromString(data)).getServer().equals(event.getPlayer().getUniqueId());
 	}
 
 	/**
@@ -138,9 +139,9 @@ public abstract class Machine {
 			}
 		}
 		this.assemble();
-		SblockUser u = SblockUser.getUser(event.getPlayer().getName());
+		User u = User.getUser(event.getPlayer().getUniqueId());
 		if (u != null && u.isServer() && data.equals(u.getPlayerName())) {
-			this.data = u.getClient();
+			this.data = u.getClient().toString();
 		}
 	}
 

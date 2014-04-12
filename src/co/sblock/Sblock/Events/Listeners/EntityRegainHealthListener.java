@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
@@ -29,13 +29,13 @@ public class EntityRegainHealthListener implements Listener {
 
 		Player p = (Player) event.getEntity();
 
-		if (Spectators.getSpectators().isSpectator(p.getName())) {
+		if (Spectators.getSpectators().isSpectator(p.getUniqueId())) {
 			event.setCancelled(true);
 			return;
 		}
 
-		SblockUser u = SblockUser.getUser(p.getName());
-		if (u != null && u.isServer()) {
+		User user = User.getUser(p.getUniqueId());
+		if (user != null && user.isServer()) {
 			event.setCancelled(true);
 			return;
 		}

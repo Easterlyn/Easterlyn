@@ -11,7 +11,7 @@ import co.sblock.Sblock.UserData.TowerData;
  * A small helper class containing all methods that access the TowerLocs table.
  * <p>
  * The TowerLocs table is created by the following call:
- * CREATE TABLE TowerLocs (towerID varchar(8) UNIQUE KEY, location varchar(15) UNIQUE KEY);
+ * CREATE TABLE TowerLocs (towerID varchar(8) UNIQUE KEY, location varchar(255) UNIQUE KEY);
  * 
  * @author Jikoo
  */

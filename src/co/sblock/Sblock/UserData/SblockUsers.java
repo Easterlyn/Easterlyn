@@ -25,7 +25,7 @@ public class SblockUsers extends Module {
 		this.registerCommands(new UserDataCommands());
 
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			SblockData.getDB().loadUserData(p.getName());
+			SblockData.getDB().loadUserData(p.getUniqueId());
 		}
 
 		getLogger().fine("[SblockUserData] UserData Module enabled");

@@ -7,6 +7,9 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -275,5 +278,35 @@ public class Captcha extends Module {
 		im.setDisplayName("Punchcard");
 		result.setItemMeta(im);
 		return result;
+	}
+
+	/**
+	 * @param event
+	 */
+	@SuppressWarnings("deprecation")
+	public static void handleCaptcha(InventoryClickEvent event) {
+		if (Captcha.isBlankCaptcha(event.getCurrentItem())) {
+			if (event.getCursor().getType() == Material.BOOK_AND_QUILL
+					|| event.getCursor().getType() == Material.WRITTEN_BOOK
+					|| Captcha.isCard(event.getCursor())) {
+				// Invalid captcha objects
+				return;
+			}
+			Player p = (Player) event.getWhoClicked();
+			ItemStack captcha = Captcha.itemToCaptcha(event.getCursor());
+			event.setCursor(null);
+			event.setResult(Result.DENY);;
+			if (event.getCurrentItem().getAmount() > 1) {
+				event.getCurrentItem().setAmount(event.getCurrentItem().getAmount() - 1);
+				if (p.getInventory().firstEmpty() != -1) {
+					p.getInventory().addItem(captcha);
+				} else {
+					event.setCursor(captcha);
+				}
+			} else {
+				event.setCurrentItem(captcha);
+			}
+			p.updateInventory();
+		}
 	}
 }

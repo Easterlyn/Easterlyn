@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Machine;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 
 /**
  * 
@@ -90,7 +90,7 @@ public class ServerMode implements InventoryHolder {
 		return is;
 	}
 
-	public boolean isWithinRange(SblockUser server, Block broken) {
+	public boolean isWithinRange(User server, Block broken) {
 		Machine computer = SblockMachines.getMachines().getManager().getComputer(server.getClient());
 		return computer != null && computer.getKey().distanceSquared(broken.getLocation()) <= 625;
 	}

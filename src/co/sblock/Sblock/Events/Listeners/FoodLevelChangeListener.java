@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Spectator.Spectators;
 
 /**
@@ -21,12 +21,12 @@ public class FoodLevelChangeListener implements Listener {
 	 */
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
-		if (Spectators.getSpectators().isSpectator(event.getEntity().getName())) {
+		if (Spectators.getSpectators().isSpectator(event.getEntity().getUniqueId())) {
 			event.setCancelled(true);
 		}
 
-		SblockUser u = SblockUser.getUser(event.getEntity().getName());
-		if (u != null && u.isServer()) {
+		User user = User.getUser(event.getEntity().getUniqueId());
+		if (user != null && user.isServer()) {
 			event.setCancelled(true);
 			return;
 		}

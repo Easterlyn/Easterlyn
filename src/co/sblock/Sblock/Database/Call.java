@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
  * @author Jikoo
  */
 public enum Call {
-	PLAYER_SAVE("INSERT INTO PlayerData(name, class, aspect, mPlanet, dPlanet, towerNum, "
+	PLAYER_SAVE("INSERT INTO PlayerData(uuid, class, aspect, mPlanet, dPlanet, towerNum, "
 			+ "sleepState, currentChannel, isMute, channels, ip, timePlayed, previousLocation, "
 			+ "programs, uhc, client, server) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 			+ "ON DUPLICATE KEY UPDATE class=VALUES(class), aspect=VALUES(aspect), "
@@ -18,9 +18,9 @@ public enum Call {
 			+ "sleepState=VALUES(sleepState), currentChannel=VALUES(currentChannel), "
 			+ "isMute=VALUES(isMute), channels=VALUES(channels), ip=VALUES(ip), "
 			+ "timePlayed=VALUES(timePlayed), previousLocation=VALUES(previousLocation), "
-			+ "programs=VALUES(programs), uhc=VALUES(uhc), client=VALUES(client), server=VALUES(server)"),
-	PLAYER_LOAD("SELECT * FROM PlayerData WHERE name=?"),
-	PLAYER_LOOKUP("SELECT * FROM PlayerData WHERE name=?"),
+			+ "programs=VALUES(programs), client=VALUES(client), server=VALUES(server), name=VALUES(name)"),
+	PLAYER_LOAD_UUID("SELECT * FROM PlayerData WHERE uuid = ?"),
+	PLAYER_LOAD_NAME("SELECT * FROM PlayerData WHERE name = ?"),
 	PLAYER_DELETE("DELETE FROM PlayerData WHERE name = ?"),
 	CHANNEL_SAVE("INSERT INTO ChatChannels(name, channelType, access, owner, modList, "
 			+ "banList, approvedList) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
@@ -78,10 +78,10 @@ public enum Call {
 	 */
 	public void result(ResultSet rs) {
 		switch (this) {
-		case PLAYER_LOAD:
+		case PLAYER_LOAD_UUID:
 			PlayerData.loadPlayer(rs);
 			return;
-		case PLAYER_LOOKUP:
+		case PLAYER_LOAD_NAME:
 			PlayerData.loadOfflineLookup(sender, rs);
 			return;
 		default:

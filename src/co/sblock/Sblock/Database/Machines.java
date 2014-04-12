@@ -12,7 +12,7 @@ import co.sblock.Sblock.Machines.Type.Machine;
  * A small helper class containing all methods that access the Machines table.
  * <p>
  * The Machines table is created by the following call:
- * CREATE TABLE Machines (location varchar(40) UNIQUE KEY, type varchar(3), data varchar(16), face tinyint);
+ * CREATE TABLE Machines (location varchar(255) UNIQUE KEY, type varchar(3), data varchar(255), face tinyint);
  * 
  * @author Jikoo
  */

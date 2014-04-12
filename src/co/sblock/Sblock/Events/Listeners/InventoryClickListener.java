@@ -10,14 +10,13 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Machines.MachineInventoryTracker;
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Computer;
 import co.sblock.Sblock.Machines.Type.Machine;
 import co.sblock.Sblock.Machines.Type.MachineType;
-import co.sblock.Sblock.UserData.SblockUser;
+import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
 import co.sblock.Sblock.Utilities.Server.ServerMode;
@@ -199,12 +198,13 @@ public class InventoryClickListener implements Listener {
 	// switch top
 	@SuppressWarnings("deprecation")
 	private void itemSwapIntoTop(InventoryClickEvent event) {
-		if (!event.getClickedInventory().getTitle().equals("Captchadex")
-				&& Captcha.isBlankCaptcha(event.getCurrentItem())) {
+		// Captchadex
+		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
 			event.setResult(Result.DENY);
 			// Could instead verify swap in is single punchcard,
 			// but not really worth the bother - rare scenario.
 		}
+
 		// Server mode: Do not swap, delete.
 		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
 			event.setResult(Result.DENY);
@@ -217,7 +217,7 @@ public class InventoryClickListener implements Listener {
 	private void itemRemoveBottom(InventoryClickEvent event) {
 
 		// Server: Click computer icon -> open computer interface
-		if (SblockUser.getUser(event.getWhoClicked().getName()).isServer()) {
+		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
 			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
@@ -235,6 +235,7 @@ public class InventoryClickListener implements Listener {
 	// move bottom to top
 	@SuppressWarnings("deprecation")
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
+		// Captchadex: convert single punchcard to item inside
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			if (Captcha.isPunch(event.getCurrentItem())
 					&& event.getCurrentItem().getAmount() == 1) {
@@ -243,8 +244,9 @@ public class InventoryClickListener implements Listener {
 				event.setResult(Result.DENY);
 			}
 		}
+
 		// Server mode: Do not move, delete.
-		if (SblockUser.getUser(event.getWhoClicked().getName()).isServer()) {
+		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
 			event.setResult(Result.DENY);
 			// Do not delete Computer icon.
 			if (!event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
@@ -255,45 +257,21 @@ public class InventoryClickListener implements Listener {
 	}
 
 	// switch bottom
-	@SuppressWarnings("deprecation")
 	private void itemSwapIntoBottom(InventoryClickEvent event) {
-		if (Captcha.isBlankCaptcha(event.getCurrentItem())) {
-			if (event.getCursor().getType() == Material.BOOK_AND_QUILL
-					|| event.getCursor().getType() == Material.WRITTEN_BOOK
-					|| (event.getCursor().hasItemMeta() && event.getCursor().getItemMeta().hasDisplayName()
-							&& event.getCursor().getItemMeta().getDisplayName().equals("Captchacard")
-							&& event.getCursor().getItemMeta().hasLore())) {
-				// Invalid captcha objects
-				return;
-			}
-			Player p = (Player) event.getWhoClicked();
-			ItemStack captcha = Captcha.itemToCaptcha(event.getCursor());
-			event.setCursor(null);
-			event.setResult(Result.DENY);;
-			if (event.getCurrentItem().getAmount() > 1) {
-				event.getCurrentItem().setAmount(event.getCurrentItem().getAmount() - 1);
-				if (p.getInventory().firstEmpty() != -1) {
-					p.getInventory().addItem(captcha);
-				} else {
-					event.setCursor(captcha);
-				}
-			} else {
-				event.setCurrentItem(captcha);
-			}
-			p.updateInventory();
-		}
-
 		// Server: No picking up computer icon
-		if (SblockUser.getUser(event.getWhoClicked().getName()).isServer()) {
+		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
 			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			}
 		}
+
+		// Captcha: attempt to captcha item on cursor
+		Captcha.handleCaptcha(event);
 	}
 
 	// hotbar with inv
 	private void itemSwapToHotbar(InventoryClickEvent event) {
-		if (SblockUser.getUser(event.getWhoClicked().getName()).isServer()) {
+		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
 			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			}
