@@ -148,7 +148,7 @@ public class InventoryClickListener implements Listener {
 	// remove top
 	@SuppressWarnings("deprecation")
 	private void itemRemoveTop(InventoryClickEvent event) {
-		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
+		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			if (event.getClick() == ClickType.LEFT) {
 				event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
 			} else {
@@ -166,7 +166,7 @@ public class InventoryClickListener implements Listener {
 	// add top
 	@SuppressWarnings("deprecation")
 	private void itemAddTop(InventoryClickEvent event) {
-		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
+		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			if (!Captcha.isPunch(event.getCursor()) || event.getCursor().getAmount() > 1) {
 				event.setResult(Result.DENY);
 				return;
@@ -185,7 +185,7 @@ public class InventoryClickListener implements Listener {
 
 	// move top to bottom
 	private void itemShiftTopToBottom(InventoryClickEvent event) {
-		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
+		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
 		}
 		// Server mode: Do not move, clone and add.
@@ -199,7 +199,7 @@ public class InventoryClickListener implements Listener {
 	@SuppressWarnings("deprecation")
 	private void itemSwapIntoTop(InventoryClickEvent event) {
 		// Captchadex
-		if (event.getClickedInventory().getTitle().equals("Captchadex")) {
+		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			event.setResult(Result.DENY);
 			// Could instead verify swap in is single punchcard,
 			// but not really worth the bother - rare scenario.
