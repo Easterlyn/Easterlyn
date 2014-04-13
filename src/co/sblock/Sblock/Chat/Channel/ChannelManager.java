@@ -57,18 +57,18 @@ public class ChannelManager {
 
 	public void createDefaultSet() {
 		List<Channel> defaults = new ArrayList<Channel>();
-		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new NormalChannel("#help", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RegionChannel("#EARTH", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RegionChannel("#LOWAS", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
-		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, UUID.fromString("Dublek")));
+		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, null));
+		defaults.add(new NormalChannel("#help", AccessLevel.PUBLIC, null));
+		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, null));
+		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, null));
+		defaults.add(new RegionChannel("#EARTH", AccessLevel.PUBLIC, null));
+		defaults.add(new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null));
+		defaults.add(new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null));
+		defaults.add(new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, null));
+		defaults.add(new RegionChannel("#LOWAS", AccessLevel.PUBLIC, null));
+		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, null));
+		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null));
+		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null));
 
 		for (Channel c : defaults) {
 			ChannelManager.getChannelList().put(c.getName(), c);
