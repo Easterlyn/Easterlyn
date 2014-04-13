@@ -11,7 +11,7 @@ import co.sblock.Sblock.Chat.ColorDef;
 import co.sblock.Sblock.Chat.SblockChat;
 import co.sblock.Sblock.Chat.ChatMsgs;
 import co.sblock.Sblock.Database.SblockData;
-import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.ChatData;
 import co.sblock.Sblock.UserData.Region;
 import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.UserData.UserManager;
@@ -184,7 +184,7 @@ public abstract class Channel {
 		} else if (listening.contains(user.getPlayerName())) {
 			this.sendToAll(sender, message, false);
 			this.listening.remove(user.getUUID());
-			ChatUser.removeListening(user, this.getName());
+			ChatData.removeListening(user, this.getName());
 		} else {
 			sender.sendMessage(message, false);
 		}
@@ -220,7 +220,7 @@ public abstract class Channel {
 			this.banList.add(userID);
 			this.sendToAll(sender, message, false);
 			if (listening.contains(userID)) {
-				ChatUser.removeListening(user, this.getName());
+				ChatData.removeListening(user, this.getName());
 			}
 		} else {
 			sender.sendMessage(message, false);
@@ -292,7 +292,7 @@ public abstract class Channel {
 		}
 		this.sendToAll(sender, ChatMsgs.onChannelDisband(this.getName()), false);
 		for (UUID userID : this.listening) {
-			ChatUser.removeListening(User.getUser(userID), this.getName());
+			ChatData.removeListening(User.getUser(userID), this.getName());
 		}
 		SblockChat.getChat().getChannelManager().dropChannel(this.name);
 	}

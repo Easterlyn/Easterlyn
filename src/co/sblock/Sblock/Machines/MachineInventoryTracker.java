@@ -4,20 +4,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_7_R2.Container;
-import net.minecraft.server.v1_7_R2.ContainerAnvil;
-import net.minecraft.server.v1_7_R2.ContainerMerchant;
-import net.minecraft.server.v1_7_R2.EntityHuman;
-import net.minecraft.server.v1_7_R2.EntityPlayer;
-import net.minecraft.server.v1_7_R2.IMerchant;
-import net.minecraft.server.v1_7_R2.ItemStack;
-import net.minecraft.server.v1_7_R2.MerchantRecipe;
-import net.minecraft.server.v1_7_R2.MerchantRecipeList;
-import net.minecraft.server.v1_7_R2.PacketDataSerializer;
+import net.minecraft.server.v1_7_R3.Container;
+import net.minecraft.server.v1_7_R3.ContainerAnvil;
+import net.minecraft.server.v1_7_R3.ContainerMerchant;
+import net.minecraft.server.v1_7_R3.EntityHuman;
+import net.minecraft.server.v1_7_R3.EntityPlayer;
+import net.minecraft.server.v1_7_R3.IMerchant;
+import net.minecraft.server.v1_7_R3.ItemStack;
+import net.minecraft.server.v1_7_R3.MerchantRecipe;
+import net.minecraft.server.v1_7_R3.MerchantRecipeList;
+import net.minecraft.server.v1_7_R3.PacketDataSerializer;
 import net.minecraft.util.io.netty.buffer.Unpooled;
 
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -98,9 +99,9 @@ public class MachineInventoryTracker {
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (int i = 0; i < items.length; i++) {
 			if (i % 3 == 0 && items.length - i > 2) {
-				list.a(new MerchantRecipe(org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i]),
-						org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i+1]),
-						org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack.asNMSCopy(items[i+2])));
+				list.a(new MerchantRecipe(CraftItemStack.asNMSCopy(items[i]),
+						CraftItemStack.asNMSCopy(items[i+1]),
+						CraftItemStack.asNMSCopy(items[i+2])));
 			}
 		}
 		try {
@@ -165,7 +166,7 @@ public class MachineInventoryTracker {
 
 	public class AnvilContainer extends ContainerAnvil {
 
-		public AnvilContainer(net.minecraft.server.v1_7_R2.EntityHuman entity, Location l) {
+		public AnvilContainer(EntityHuman entity, Location l) {
 			super(entity.inventory, ((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), entity);
 		}
 

@@ -18,7 +18,7 @@ import co.sblock.Sblock.Chat.Channel.ChannelType;
 import co.sblock.Sblock.Chat.Channel.NickChannel;
 import co.sblock.Sblock.Chat.Channel.RPChannel;
 import co.sblock.Sblock.Database.SblockData;
-import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.ChatData;
 import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.UserData.UserManager;
 import co.sblock.Sblock.Utilities.Broadcast;
@@ -212,7 +212,7 @@ public class ChatCommands implements CommandListener {
 
 	@SblockCommand(description = "At long last, /me for Sblock.", usage = "/me (@channel) <message>")
 	public boolean me(CommandSender sender, String[] args) {
-		ChatUser.chat(User.getUser(((Player) sender).getUniqueId()), StringUtils.join(args, ' '), true);
+		ChatData.chat(User.getUser(((Player) sender).getUniqueId()), StringUtils.join(args, ' '), true);
 		return true;
 	}
 
@@ -226,11 +226,11 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]), false);
 			return true;
 		}
-		if (c.getType().equals(ChannelType.REGION) && !ChatUser.isListening(user, c)) {
+		if (c.getType().equals(ChannelType.REGION) && !ChatData.isListening(user, c)) {
 			user.sendMessage(ChatMsgs.errorRegionChannelJoin(), false);
 			return true;
 		}
-		ChatUser.setCurrent(user, c);
+		ChatData.setCurrent(user, c);
 		return true;
 	}
 
@@ -248,7 +248,7 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorRegionChannelJoin(), false);
 			return true;
 		}
-		ChatUser.addListening(user, c);
+		ChatData.addListening(user, c);
 		return true;
 	}
 
@@ -260,21 +260,21 @@ public class ChatCommands implements CommandListener {
 		Channel c = SblockChat.getChat().getChannelManager().getChannel(args[1]);
 		if (c == null) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]), false);
-			ChatUser.removeListening(user, args[1]);
+			ChatData.removeListening(user, args[1]);
 			return true;
 		}
 		if (c.getType().equals(ChannelType.REGION)) {
 			user.sendMessage(ChatMsgs.errorRegionChannelLeave(), false);
 			return true;
 		}
-		ChatUser.removeListening(user, args[1]);
+		ChatData.removeListening(user, args[1]);
 		return true;
 		
 	}
 
 	private boolean scList(User user, String[] args) {
 		StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW).append("Currently pestering: ");
-		for (String s : ChatUser.getListening(user)) {
+		for (String s : ChatData.getListening(user)) {
 			sb.append(s).append(' ');
 		}
 		user.sendMessage(sb.toString(), false);
@@ -286,7 +286,7 @@ public class ChatCommands implements CommandListener {
 		sb.append(ChatColor.YELLOW).append("All channels: ");
 		for (Channel c : ChannelManager.getChannelList().values()) {
 			ChatColor cc;
-			if (ChatUser.isListening(user, c)) {
+			if (ChatData.isListening(user, c)) {
 				cc = ChatColor.YELLOW;
 			} else if (c.getAccess().equals(AccessLevel.PUBLIC)) {
 				cc = ChatColor.GREEN;
@@ -320,7 +320,7 @@ public class ChatCommands implements CommandListener {
 	}
 
 	private boolean scNick(User user, String[] args) {
-		Channel c = ChatUser.getCurrent(user);
+		Channel c = ChatData.getCurrent(user);
 		if (c == null) {
 			user.sendMessage(ChatMsgs.errorNoCurrent(), false);
 			return true;
@@ -426,7 +426,7 @@ public class ChatCommands implements CommandListener {
 			return;
 		}
 		User victim = UserManager.getUserManager().getUser(p.getUniqueId());
-		ChatUser.setMute(victim, true);
+		ChatData.setMute(victim, true);
 		String msg = ChatMsgs.onUserMute(args[2]);
 		for (User u : UserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg, false);
@@ -441,7 +441,7 @@ public class ChatCommands implements CommandListener {
 			return;
 		}
 		User victim = UserManager.getUserManager().getUser(p.getUniqueId());
-		ChatUser.setMute(victim, true);
+		ChatData.setMute(victim, true);
 		String msg = ChatMsgs.onUserUnmute(args[2]);
 		for (User u : UserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg, false);
@@ -450,7 +450,7 @@ public class ChatCommands implements CommandListener {
 	}
 
 	private boolean scChannel(User user, String[] args) {
-		Channel c = ChatUser.getCurrent(user);
+		Channel c = ChatData.getCurrent(user);
 		if (args.length == 2 && args[1].equalsIgnoreCase("info")) {
 			user.sendMessage(c.toString(), false);
 			return true;
@@ -470,7 +470,7 @@ public class ChatCommands implements CommandListener {
 			sb.append("Channel members: ");
 			for (UUID userID : c.getListening()) {
 				User u = UserManager.getUserManager().getUser(userID);
-				if (ChatUser.getCurrent(u).equals(c)) {
+				if (ChatData.getCurrent(u).equals(c)) {
 					sb.append(ChatColor.GREEN);
 				} else {
 					sb.append(ChatColor.YELLOW);

@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock.Chat.Channel.ChannelManager;
 import co.sblock.Sblock.Database.SblockData;
 import co.sblock.Sblock.Machines.MachineManager;
-import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.ChatData;
 import co.sblock.Sblock.UserData.User;
 
 public class EffectScheduler extends BukkitRunnable {
@@ -20,11 +20,11 @@ public class EffectScheduler extends BukkitRunnable {
 				u = SblockData.getDB().loadUserData(p.getUniqueId());
 			}
 			boolean computerAccess = MachineManager.hasComputerAccess(u);
-			if (computerAccess && !ChatUser.getListening(u).contains("#")) {
-				ChatUser.addListening(u, ChannelManager.getChannelManager().getChannel("#"));
+			if (computerAccess && !ChatData.getListening(u).contains("#")) {
+				ChatData.addListening(u, ChannelManager.getChannelManager().getChannel("#"));
 			}
-			if (computerAccess && ChatUser.getListening(u).contains("#")) {
-				ChatUser.removeListening(u, "#");
+			if (computerAccess && ChatData.getListening(u).contains("#")) {
+				ChatData.removeListening(u, "#");
 			}
 		}
 	}

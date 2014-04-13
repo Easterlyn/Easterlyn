@@ -440,7 +440,7 @@ public class User {
 		if (newR == currentRegion) {
 			if (!listening.contains("#" + currentRegion.toString())) {
 				Channel c = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
-				ChatUser.addListening(this, c);
+				ChatData.addListening(this, c);
 			}
 			return;
 		}
@@ -448,8 +448,8 @@ public class User {
 		if (current == null || current.equals("#" + currentRegion.toString())) {
 			current = newC.getName();
 		}
-		ChatUser.removeListening(this, "#" + currentRegion.toString());
-		ChatUser.addListening(this, newC);
+		ChatData.removeListening(this, "#" + currentRegion.toString());
+		ChatData.addListening(this, newC);
 		currentRegion = newR;
 	}
 

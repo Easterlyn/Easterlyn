@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.Sblock.Database.SblockData;
-import co.sblock.Sblock.UserData.ChatUser;
+import co.sblock.Sblock.UserData.ChatData;
 import co.sblock.Sblock.UserData.User;
 
 /**
@@ -26,7 +26,7 @@ public class PlayerAsyncChatListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		event.setCancelled(true);
 		if (User.getUser(event.getPlayer().getUniqueId()) != null) {
-			ChatUser.chat(User.getUser(event.getPlayer().getUniqueId()), event.getMessage(), false);
+			ChatData.chat(User.getUser(event.getPlayer().getUniqueId()), event.getMessage(), false);
 		} else {
 			event.getPlayer().sendMessage(ChatColor.BOLD
 					+ "[o] Your Sblock playerdata appears to not be loaded."

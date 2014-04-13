@@ -20,7 +20,7 @@ import co.sblock.Sblock.UserData.UserManager;
  * 
  * @author Jikoo, Dublek
  */
-public class ChatUser {
+public class ChatData {
 
 	/**
 	 * Sets the Player's chat mute status and sends corresponding message.
@@ -60,7 +60,7 @@ public class ChatUser {
 		}
 		user.current = c.getName();
 		if (!user.listening.contains(c)) {
-			ChatUser.addListening(user, c);
+			ChatData.addListening(user, c);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class ChatUser {
 	 */
 	public static void setCurrent(User user, String s) {
 		Channel c = ChannelManager.getChannelManager().getChannel(s);
-		ChatUser.setCurrent(user, c);
+		ChatData.setCurrent(user, c);
 	}
 
 	/**
