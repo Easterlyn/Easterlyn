@@ -33,10 +33,10 @@ public class EconomyBank {
 	}
 
 	public boolean withdraw(Player p, double amount) {
-		EconomyResponse er = e.bankWithdraw(p.getName(), amount);
+		EconomyResponse er = e.bankWithdraw(p.getUniqueId().toString(), amount);
 		if (er.type == ResponseType.FAILURE) {
 			if (er.errorMessage.equals("That bank does not exist!")) {
-				e.createBank(p.getName(), p.getName());
+				e.createBank(p.getUniqueId().toString(), p.getUniqueId().toString());
 			}
 			p.sendMessage(ChatColor.RED + "Balance too low! Current balance: B" + er.balance);
 			return false;
@@ -46,10 +46,10 @@ public class EconomyBank {
 	}
 
 	public boolean deposit(Player p, double amount) {
-		EconomyResponse er = e.bankWithdraw(p.getName(), amount);
+		EconomyResponse er = e.bankWithdraw(p.getUniqueId().toString(), amount);
 		if (er.type == ResponseType.FAILURE) {
 			if (er.errorMessage.equals("That bank does not exist!")) {
-				er = e.createBank(p.getName(), p.getName());
+				er = e.createBank(p.getUniqueId().toString(), p.getUniqueId().toString());
 				if (er.type == ResponseType.SUCCESS) {
 					return deposit(p, amount);
 				}
