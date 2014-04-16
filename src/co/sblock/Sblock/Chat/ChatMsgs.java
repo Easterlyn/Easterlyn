@@ -39,6 +39,10 @@ public class ChatMsgs {
 		return ChatMsgs.onChannelJoin(user, channel).replaceAll("began", "ceased");
 	}
 
+	public static String onChannelSetCurrent(String channelName) {
+		return ChatColor.YELLOW + "Current channel set to " + ChatColor.GOLD + channelName;
+	}
+
 	public static String onChannelCreation(Channel channel) {
 		return ChatColor.GOLD + channel.getName() + ChatColor.GREEN
 				+ " has been created with access " + ChatColor.GOLD + channel.getAccess()
@@ -163,7 +167,8 @@ public class ChatMsgs {
 	}
 
 	public static String errorNickNotCanon(String nick) {
-		return ChatColor.GOLD + nick + ChatColor.RED + " is not a canon nickname!";
+		return ChatColor.GOLD + nick + ChatColor.RED + " is not a canon nickname! Use "
+				+ ChatColor.AQUA + "/sc nick list" + ChatColor.RED + " for a list.";
 	}
 
 	public static String errorNickInUse(String nick) {

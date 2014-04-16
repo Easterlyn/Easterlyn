@@ -59,8 +59,10 @@ public class ChatData {
 			return;
 		}
 		user.current = c.getName();
-		if (!user.listening.contains(c)) {
+		if (!user.listening.contains(c.getName())) {
 			ChatData.addListening(user, c);
+		} else {
+			user.sendMessage(ChatMsgs.onChannelSetCurrent(c.getName()), false);
 		}
 	}
 
@@ -106,8 +108,9 @@ public class ChatData {
 			user.listening.add(channel.getName());
 		}
 		if (!channel.getListening().contains(user.getUUID())) {
-			channel.sendToAll(user, ChatMsgs.onChannelJoin(user, channel), false);
 			channel.addListening(user.getUUID());
+			user.listening.add(channel.getName());
+			channel.sendToAll(user, ChatMsgs.onChannelJoin(user, channel), false);
 			return true;
 		} else {
 			user.sendMessage(ChatMsgs.errorAlreadyListening(channel.getName()), false);

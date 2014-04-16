@@ -451,7 +451,9 @@ public class User {
 		if (currentRegion != null) {
 			ChatData.removeListening(this, "#" + currentRegion.toString());
 		}
-		ChatData.addListening(this, newC);
+		if (!this.listening.contains(newC.getName())) {
+			ChatData.addListening(this, newC);
+		}
 		currentRegion = newR;
 	}
 

@@ -325,36 +325,42 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorNoCurrent(), false);
 			return true;
 		}
-		if (args.length == 1 || args.length > 3) {
+		if (args.length == 1) {
 			user.sendMessage(ChatMsgs.helpSCNick(), false);
 			return true;
-		} else if (c instanceof NickChannel || c instanceof RPChannel) {
-			if (args[1].equalsIgnoreCase("set") && args.length == 3) {
-				c.setNick(user, args[2]);
-				return true;
-			} else if (args[1].equalsIgnoreCase("remove")) {
-				c.removeNick(user);
-				return true;
-			} else if (args[1].equalsIgnoreCase("list")) {
-				if (!(c instanceof RPChannel)) {
-					user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.", false);
-					return true;
-				}
-				StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString());
-				sb.append("Canon nicks: ").append(ChatColor.AQUA);
-				for (CanonNicks n : CanonNicks.values()) {
-					if (n != CanonNicks.SERKITFEATURE) {
-						sb.append(n.getName()).append(" ");
-					}
-				}
-				user.sendMessage(sb.toString(), false);
-				return true;
-			} else {
-				user.sendMessage(ChatMsgs.helpSCNick(), false);
+		}
+		if (!(c instanceof NickChannel)) {
+			user.sendMessage(ChatMsgs.unsupportedOperation(c.getName()), false);
+			return true;
+		}
+		if (args[1].equalsIgnoreCase("list")) {
+			if (!(c instanceof RPChannel)) {
+				user.sendMessage(ChatColor.YELLOW
+						+ "You can use any nick you want in a nick channel.", false);
 				return true;
 			}
+			StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString()).append("Nicks: ");
+			for (CanonNicks n : CanonNicks.values()) {
+				if (n != CanonNicks.SERKITFEATURE) {
+					sb.append(ChatColor.AQUA).append(n.getName());
+					sb.append(ChatColor.YELLOW).append(", ");
+				}
+			}
+			user.sendMessage(sb.substring(0, sb.length() - 4).toString(), false);
+			return true;
+		}
+		if (args.length == 2) {
+			user.sendMessage(ChatMsgs.helpSCNick(), false);
+			return true;
+		}
+		if (args[1].equalsIgnoreCase("set")) {
+			c.setNick(user, StringUtils.join(args, ' ', 2, args.length));
+			return true;
+		} else if (args[1].equalsIgnoreCase("remove")) {
+			c.removeNick(user);
+			return true;
 		} else {
-			user.sendMessage(ChatMsgs.unsupportedOperation(c.getName()), false);
+			user.sendMessage(ChatMsgs.helpSCNick(), false);
 			return true;
 		}
 	}
