@@ -23,11 +23,11 @@ import co.sblock.Sblock.Utilities.Broadcast;
  * A small helper class containing all methods that access the PlayerData table.
  * <p>
  * The PlayerData table is created by the following call:
- * CREATE TABLE PlayerData (uuid varchar(255) UNIQUE KEY, class varchar(6),
+ * CREATE TABLE PlayerData (name varchar(255), class varchar(6),
  * aspect varchar(6), mPlanet varchar(5), dPlanet varchar(7), towerNum tinyint,
  * sleepState boolean, currentChannel varchar(16), isMute boolean, nickname varchar(16),
  * channels text, ip varchar(15), timePlayed varchar(255), previousLocation varchar(255),
- * programs varchar(255), client varchar(255), server varchar(255), name varchar(255));
+ * programs varchar(255), uuid varchar(255) UNIQUE KEY, client varchar(255), server varchar(255));
  * 
  * @author Jikoo
  */
@@ -73,9 +73,9 @@ public class PlayerData {
 				}
 				pst.setString(13, location);
 				pst.setString(14, user.getProgramString());
-				pst.setString(15, user.getClient().toString());
-				pst.setString(16, user.getServer().toString());
-				pst.setString(17, user.getPlayerName());
+				pst.setString(15, user.getPlayer().getUniqueId().toString());
+				pst.setString(16, user.getClient() != null ? user.getClient().toString() : "null");
+				pst.setString(17, user.getServer() != null ? user.getServer().toString() : "null");
 			} catch (Exception e) {
 				SblockData.getLogger().err(e);
 				return;
@@ -157,15 +157,15 @@ public class PlayerData {
 				}
 				user.setTimePlayed(rs.getString("timePlayed"));
 				user.setPrograms(rs.getString("programs"));
-				user.setClient(rs.getString("client") != null ? UUID.fromString(rs.getString("client")) : null);
-				user.setServer(rs.getString("server") != null ? UUID.fromString(rs.getString("server")) : null);
+				user.setClient(rs.getString("client").equals("null") ? null : UUID.fromString(rs.getString("client")));
+				user.setServer(rs.getString("server").equals("null") ? null : UUID.fromString(rs.getString("server")));
 				if (user.getPlayer() != null) { // Player is still logged in, complete load
 					user.updateCurrentRegion(user.getPlayerRegion());
 					user.setLoaded();
 				}
 				UserManager.getUserManager().team(user.getPlayer());
 			} else {
-				String uuid = rs.getStatement().toString().replaceAll("com.*uuid='(.*)'", "$1");
+				String uuid = rs.getStatement().toString().replaceAll("com.*uuid = '(.*)'", "$1");
 				Player p = Bukkit.getPlayer(UUID.fromString(uuid));
 				if (p == null) {
 					// Player is not logged in any more
@@ -173,11 +173,12 @@ public class PlayerData {
 				}
 				Broadcast.lilHal("It would seem that " + p.getName()
 						+ " is joining us for the first time! Please welcome them.");
+				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
+
 				User user = UserManager.getUserManager().getUser(p.getUniqueId());
 				ChatData.setCurrent(user, "#");
 				user.updateCurrentRegion(user.getPlayerRegion());
-				
-				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
+				user.setLoaded();
 			}
 		} catch (SQLException e) {
 			SblockData.getLogger().err(e);

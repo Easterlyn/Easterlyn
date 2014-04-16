@@ -437,7 +437,7 @@ public class User {
 	 * @param newR the Region being transitioned into
 	 */
 	public void updateCurrentRegion(Region newR) {
-		if (newR == currentRegion) {
+		if (currentRegion != null && newR == currentRegion) {
 			if (!listening.contains("#" + currentRegion.toString())) {
 				Channel c = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
 				ChatData.addListening(this, c);
@@ -445,10 +445,12 @@ public class User {
 			return;
 		}
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (current == null || current.equals("#" + currentRegion.toString())) {
+		if (current == null || currentRegion != null && current.equals("#" + currentRegion.toString())) {
 			current = newC.getName();
 		}
-		ChatData.removeListening(this, "#" + currentRegion.toString());
+		if (currentRegion != null) {
+			ChatData.removeListening(this, "#" + currentRegion.toString());
+		}
 		ChatData.addListening(this, newC);
 		currentRegion = newR;
 	}
