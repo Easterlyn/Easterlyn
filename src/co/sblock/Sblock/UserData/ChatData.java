@@ -316,7 +316,7 @@ public class ChatData {
 				user.sendMessage(ChatMsgs.errorInvalidChannel(newChannel), false);
 				return;
 			}
-		} else if (user.current == null) {
+		} else if (sendto == null) {
 			user.sendMessage(ChatMsgs.errorNoCurrent(), false);
 			return;
 		}

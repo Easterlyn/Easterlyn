@@ -305,7 +305,9 @@ public class ChatCommands implements CommandListener {
 			return true;
 		}
 		if (args[1].length() > 16) {
-			user.sendMessage(ChatMsgs.errorChannelNameTooLong(), false);
+			user.sendMessage(ChatMsgs.errorChannelName(), false);
+		} else if (args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("group.denizen")) {
+			user.sendMessage(ChatMsgs.errorChannelName(), false);
 		} else if (ChannelType.getType(args[3]) == null) {
 			user.sendMessage(ChatMsgs.errorInvalidType(args[3]), false);
 		} else if (AccessLevel.getAccess(args[2]) == null) {

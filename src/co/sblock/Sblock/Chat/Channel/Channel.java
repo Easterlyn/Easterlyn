@@ -292,6 +292,7 @@ public abstract class Channel {
 	public void disband(User sender) {
 		if (this.owner == null) {
 			sender.sendMessage(ChatMsgs.errorDisbandDefault(), false);
+			return;
 		}
 		if (!this.isOwner(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);

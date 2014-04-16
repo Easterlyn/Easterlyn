@@ -175,8 +175,8 @@ public class ChatMsgs {
 		return ChatColor.GOLD + nick + ChatColor.RED + " is already in use!";
 	}
 
-	public static String errorChannelNameTooLong() {
-		return ChatColor.RED + "Channel names may not exceed 16 characters in length!";
+	public static String errorChannelName() {
+		return ChatColor.RED + "Channel names must start with '#' and cannot exceed 16 characters!";
 	}
 
 	public static String errorRegionChannelJoin() {
