@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -73,6 +74,12 @@ public class Spectators extends Module implements CommandListener {
 	@Override
 	protected void onDisable() {
 		instance = null;
+		for (UUID u : spectators.keySet().toArray(new UUID[0])) {
+			Player p = Bukkit.getPlayer(u);
+			if (p != null) {
+				this.removeSpectator(p);
+			}
+		}
 	}
 
 	/**
@@ -146,7 +153,7 @@ public class Spectators extends Module implements CommandListener {
 			s.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
 			return true;
 		}
-		if (this.spectators.containsKey(s.getName())) {
+		if (this.spectators.containsKey(((Player) s).getUniqueId())) {
 			s.sendMessage(ChatColor.GREEN + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
 			this.removeSpectator((Player) s);
 		} else {
