@@ -34,8 +34,8 @@ public class Spectators extends Module implements CommandListener {
 	private class Entry {
 		private Location l;
 		private float fall;
-		private Object[] effects;
-		public Entry(Location l, float fall, Object[] effects) {
+		private PotionEffect[] effects;
+		public Entry(Location l, float fall, PotionEffect[] effects) {
 			this.l = l;
 			this.fall = fall;
 			this.effects = effects;
@@ -46,7 +46,7 @@ public class Spectators extends Module implements CommandListener {
 		public float getFall() {
 			return fall;
 		}
-		public Object[] getPotionEffects() {
+		public PotionEffect[] getPotionEffects() {
 			return effects;
 		}
 	}
@@ -95,7 +95,8 @@ public class Spectators extends Module implements CommandListener {
 	 */
 	public void addSpectator(Player p) {
 		spectators.put(p.getUniqueId(), new Entry(p.getLocation(), p.getFallDistance(),
-				p.getActivePotionEffects().toArray()));
+				p.getActivePotionEffects().toArray(new PotionEffect[0]).clone()) );
+		p.getActivePotionEffects().clear();
 		p.setAllowFlight(true);
 		p.setFlying(true);
 		p.setNoDamageTicks(Integer.MAX_VALUE);
@@ -126,8 +127,8 @@ public class Spectators extends Module implements CommandListener {
 		p.setNoDamageTicks(0);
 		p.setFallDistance(e.getFall());
 		InventoryManager.restoreInventory(p);
-		for (Object potion : e.getPotionEffects()) {
-			p.addPotionEffect((PotionEffect) potion);
+		for (PotionEffect potion : e.getPotionEffects()) {
+			p.addPotionEffect(potion);
 		}
 	}
 

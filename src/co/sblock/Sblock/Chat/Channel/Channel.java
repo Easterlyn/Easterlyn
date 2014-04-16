@@ -372,10 +372,9 @@ public abstract class Channel {
 
 		ChatColor region = Region.getRegionColor(sender.getCurrentRegion());
 
-		return ChatColor.WHITE + "[" + channelRank + this.name + ChatColor.WHITE + "]"
-				+ (isThirdPerson ? ChatColor.BLUE + "> " : region + " <") + globalRank
-				+ this.getNick(sender) + ChatColor.WHITE
-				+ (isThirdPerson ? ChatColor.BLUE + ": " : region + "> ") + ChatColor.WHITE;
+		return ChatColor.WHITE + "[" + channelRank + this.name + ChatColor.WHITE + "]" + region
+				+ (isThirdPerson ? "> " : " <") + globalRank + this.getNick(sender)
+				+ (isThirdPerson ? " " : region + "> ") + ChatColor.WHITE;
 	}
 
 	public String toString() {
