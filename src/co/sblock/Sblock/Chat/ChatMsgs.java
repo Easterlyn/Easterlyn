@@ -149,8 +149,8 @@ public class ChatMsgs {
 	}
 
 	public static String errorNoCurrent() {
-		return ChatColor.RED + "You must have set a current channel to chat! Use "
-				+ ChatColor.GREEN + "/sc c <channel>";
+		return ChatColor.RED + "You must set a current channel to chat! Use "
+				+ ChatColor.AQUA + "/sc c <channel>";
 	}
 
 	public static String errorAlreadyListening(String channelName) {
@@ -185,6 +185,10 @@ public class ChatMsgs {
 
 	public static String errorRegionChannelLeave() {
 		return ChatColor.RED + "You cannot leave a region channel!";
+	}
+
+	public static String errorDisbandDefault() {
+		return ChatColor.RED + "Hardcoded default channels cannot be disbanded.";
 	}
 
 	public static String helpGlobalMod() {

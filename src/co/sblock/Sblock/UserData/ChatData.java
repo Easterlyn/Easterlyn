@@ -25,6 +25,7 @@ public class ChatData {
 	/**
 	 * Sets the Player's chat mute status and sends corresponding message.
 	 * 
+	 * @param user the User
 	 * @param b true if the Player is being muted
 	 */
 	public static void setMute(User user, boolean b) {
@@ -34,6 +35,7 @@ public class ChatData {
 	/**
 	 * Gets the Player's mute status.
 	 * 
+	 * @param user the User
 	 * @return true if the Player is muted
 	 */
 	public static boolean isMute(User user) {
@@ -43,6 +45,7 @@ public class ChatData {
 	/**
 	 * Sets the Player's current Channel.
 	 * 
+	 * @param user the User
 	 * @param c the Channel to set as current
 	 */
 	public static void setCurrent(User user, Channel c) {
@@ -69,6 +72,7 @@ public class ChatData {
 	/**
 	 * Sets the Player's current Channel.
 	 * 
+	 * @param user the User
 	 * @param c the Channel to set as current
 	 */
 	public static void setCurrent(User user, String s) {
@@ -79,6 +83,8 @@ public class ChatData {
 	/**
 	 * Gets the Channel the Player is currently sending messages to.
 	 * 
+	 * @param user the User
+	 * 
 	 * @return Channel
 	 */
 	public static Channel getCurrent(User user) {
@@ -88,6 +94,7 @@ public class ChatData {
 	/**
 	 * Adds a Channel to the Player's current List of Channels listened to.
 	 * 
+	 * @param user the User
 	 * @param channel the Channel to add
 	 * 
 	 * @return true if the Channel was added
@@ -121,6 +128,7 @@ public class ChatData {
 	/**
 	 * Adds a Channel to the Player's current List of Channels listened to.
 	 * 
+	 * @param user the User
 	 * @param s the Channel name to add
 	 * 
 	 * @return true if the Channel was added
@@ -133,6 +141,7 @@ public class ChatData {
 	/**
 	 * Begin listening to a Set of channels. Used on login.
 	 * 
+	 * @param user the User
 	 * @param channels
 	 */
 	public static void loginAddListening(User user, String[] channels) {
@@ -171,6 +180,7 @@ public class ChatData {
 	/**
 	 * Remove a Channel from the Player's listening List.
 	 * 
+	 * @param user the User
 	 * @param cName the name of the Channel to remove
 	 */
 	public static void removeListening(User user, String cName) {
@@ -192,8 +202,23 @@ public class ChatData {
 	}
 
 	/**
+	 * Silently removes a Channel from the Player's listening list.
+	 * 
+	 * @param user the User
+	 * @param channel the Channel to remove
+	 */
+	public static void removeListeningSilent(User user, Channel channel) {
+		user.listening.remove(channel.getName());
+		if (user.listening != null && user.listening.equals(channel.getName())) {
+			user.listening = null;
+		}
+		channel.removeListening(user.getUUID());
+	}
+
+	/**
 	 * Tells a Channel the Player is leaving on quit.
 	 * 
+	 * @param user the User
 	 * @param cName the name of the Channel to inform
 	 */
 	public static void removeListeningQuit(User user, String cName) {
@@ -209,6 +234,8 @@ public class ChatData {
 	/**
 	 * Gets the Set of names of Channels that the Player is listening to.
 	 * 
+	 * @param user the User
+	 * 
 	 * @return a Set<String> of Channel names.
 	 */
 	public static Set<String> getListening(User user) {
@@ -218,6 +245,7 @@ public class ChatData {
 	/**
 	 * Check if the Player is listening to a specific Channel.
 	 * 
+	 * @param user the User
 	 * @param c the Channel to check for
 	 * 
 	 * @return true if the Player is listening to c
@@ -229,6 +257,7 @@ public class ChatData {
 	/**
 	 * Check if the Player is listening to a specific Channel.
 	 * 
+	 * @param user the User
 	 * @param s the Channel name to check for
 	 * 
 	 * @return true if the Player is listening to c
@@ -248,7 +277,9 @@ public class ChatData {
 	/**
 	 * Method for handling all Player chat.
 	 * 
-	 * @param event the relevant AsyncPlayerChatEvent
+	 * @param user the User
+	 * @param msg the message being sent
+	 * @param forceThirdPerson true if the message is to be prepended with a modifier
 	 */
 	public static void chat(User user, String msg, boolean forceThirdPerson) {
 
@@ -258,7 +289,7 @@ public class ChatData {
 			return;
 		}
 
-		// default to current channel recieving message
+		// default to current channel receiving message
 		Channel sendto = SblockChat.getChat().getChannelManager().getChannel(user.current);
 
 		// check if chat is directed at another channel

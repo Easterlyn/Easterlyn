@@ -290,13 +290,16 @@ public abstract class Channel {
 	}
 
 	public void disband(User sender) {
+		if (this.owner == null) {
+			sender.sendMessage(ChatMsgs.errorDisbandDefault(), false);
+		}
 		if (!this.isOwner(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
 			return;
 		}
 		this.sendToAll(sender, ChatMsgs.onChannelDisband(this.getName()), false);
 		for (UUID userID : this.listening) {
-			ChatData.removeListening(User.getUser(userID), this.getName());
+			ChatData.removeListeningSilent(User.getUser(userID), this);
 		}
 		SblockChat.getChat().getChannelManager().dropChannel(this.name);
 	}
