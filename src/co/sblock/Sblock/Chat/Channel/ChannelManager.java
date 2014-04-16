@@ -1,8 +1,6 @@
 package co.sblock.Sblock.Chat.Channel;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -13,17 +11,15 @@ public class ChannelManager {
 
 	private static Map<String, Channel> channelList = new HashMap<String, Channel>();
 
-	private List<String> noSave = new ArrayList<String>();
-
 	public void loadAllChannels() {
 		SblockData.getDB().loadAllChannelData();
 	}
 
 	public void saveAllChannels() {
 		for (Channel c : channelList.values()) {
-			if (!(noSave.contains(c.getName()) || c instanceof RegionChannel
-				/*	|| c instanceof TempChannel*/))
+			if (c.getOwner() != null) {
 				SblockData.getDB().saveChannelData(c);
+			}
 		}
 	}
 
@@ -56,28 +52,19 @@ public class ChannelManager {
 	}
 
 	public void createDefaultSet() {
-		List<Channel> defaults = new ArrayList<Channel>();
-		defaults.add(new NormalChannel("#", AccessLevel.PUBLIC, null));
-		defaults.add(new NormalChannel("#help", AccessLevel.PUBLIC, null));
-		defaults.add(new RPChannel("#rp", AccessLevel.PUBLIC, null));
-		defaults.add(new RPChannel("#rp2", AccessLevel.PUBLIC, null));
-		defaults.add(new RegionChannel("#EARTH", AccessLevel.PUBLIC, null));
-		defaults.add(new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null));
-		defaults.add(new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null));
-		defaults.add(new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, null));
-		defaults.add(new RegionChannel("#LOWAS", AccessLevel.PUBLIC, null));
-		defaults.add(new RegionChannel("#LOLAR", AccessLevel.PUBLIC, null));
-		defaults.add(new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null));
-		defaults.add(new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null));
+		channelList.put("#", new NormalChannel("#", AccessLevel.PUBLIC, null));
+		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null));
+		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null));
+		channelList.put("#rp2", new RPChannel("#rp2", AccessLevel.PUBLIC, null));
+		channelList.put("#EARTH", new RegionChannel("#EARTH", AccessLevel.PUBLIC, null));
+		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null));
+		channelList.put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null));
+		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, null));
+		channelList.put("#LOWAS", new RegionChannel("#LOWAS", AccessLevel.PUBLIC, null));
+		channelList.put("#LOLAR", new RegionChannel("#LOLAR", AccessLevel.PUBLIC, null));
+		channelList.put("#LOHAC", new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null));
+		channelList.put("#LOFAF", new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null));
 
-		for (Channel c : defaults) {
-			ChannelManager.getChannelList().put(c.getName(), c);
-			this.addUnsavableChannel(c.getName());
-		}
-	}
-
-	private void addUnsavableChannel(String s) {
-		noSave.add(s);
 	}
 
 	public void dropChannel(String channelName) {

@@ -38,13 +38,17 @@ public abstract class Channel {
 		this.name = name;
 		this.access = a;
 		this.owner = creator;
-		this.modList.add(creator);
 		approvedList = new HashSet<>();
 		modList = new HashSet<>();
+		if (creator != null) {
+			this.modList.add(creator);
+		}
 		muteList = new HashSet<>();
 		banList = new HashSet<>();
 		listening = new HashSet<>();
-		SblockData.getDB().saveChannelData(this);
+		if (creator != null) {
+			SblockData.getDB().saveChannelData(this);
+		}
 	}
 
 	public String getName() {
@@ -374,7 +378,7 @@ public abstract class Channel {
 
 		return ChatColor.WHITE + "[" + channelRank + this.name + ChatColor.WHITE + "]" + region
 				+ (isThirdPerson ? "> " : " <") + globalRank + this.getNick(sender)
-				+ (isThirdPerson ? " " : region + "> ") + ChatColor.WHITE;
+				+ (isThirdPerson ? " " : region + "> ") + ChatColor.WHITE + message;
 	}
 
 	public String toString() {

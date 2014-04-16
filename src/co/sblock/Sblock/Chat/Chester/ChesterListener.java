@@ -43,9 +43,9 @@ public class ChesterListener implements CommandListener, Listener {
 	}
 
 	private String createRegex() {
-		StringBuilder regex = new StringBuilder().append("(\\s|\\A)");
+		StringBuilder regex = new StringBuilder().append("(\\W|\\A)");
 		regex.append(pattern.toString());
-		regex.append("(\\s|\\Z|\\z)");
+		regex.append("(\\W|\\Z|\\z)");
 		return regex.toString();
 	}
 
