@@ -1,7 +1,6 @@
 package co.sblock.Sblock.Machines.Type;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -22,6 +21,7 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.MachineInventoryTracker;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
+import co.sblock.Sblock.Utilities.Inventory.InventoryUtils;
 
 /**
  * Simulate a Sburb Punch Designix in Minecraft.
@@ -116,7 +116,7 @@ public class PunchDesignix extends Machine {
 				result.setAmount(crafts);
 
 				// Decrement number of crafts by number of items that failed to be added
-				crafts -= getAddFailures(event.getWhoClicked().getInventory().addItem(result));
+				crafts -= InventoryUtils.getAddFailures(event.getWhoClicked().getInventory().addItem(result));
 			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
 				// Single click. Attempting to pick up a single item (even if right click)
 				crafts = 1;
@@ -134,38 +134,17 @@ public class PunchDesignix extends Machine {
 
 			// If second item is a captcha, first item is a punchcard being copied. Do not decrement.
 			if (!Captcha.isCaptcha(merchant.getItem(1))) {
-				merchant.setItem(0, decrement(merchant.getItem(0), crafts));
+				merchant.setItem(0, InventoryUtils.decrement(merchant.getItem(0), crafts));
 			}
 
 			// In all cases (combine, punch single, copy punch) if second is not null it decrements.
-			merchant.setItem(1, decrement(merchant.getItem(1), crafts));
+			merchant.setItem(1, InventoryUtils.decrement(merchant.getItem(1), crafts));
 
 			updateInventory(event.getWhoClicked().getUniqueId());
 			return true;
 		}
 		updateInventory(event.getWhoClicked().getUniqueId());
 		return false;
-	}
-
-	/**
-	 * Reduces an ItemStack by the given quantity. If the ItemStack would have a
-	 * quantity of 0, returns null.
-	 * 
-	 * @param is the ItemStack to reduce
-	 * @param amount the amount to reduce the ItemStack by
-	 * 
-	 * @return the reduced ItemStack
-	 */
-	private ItemStack decrement(ItemStack is, int amount) {
-		if (is == null) {
-			return null;
-		}
-		if (is.getAmount() > amount) {
-			is.setAmount(is.getAmount() - amount);
-		} else {
-			is = null;
-		}
-		return is;
 	}
 
 	/**
@@ -179,14 +158,6 @@ public class PunchDesignix extends Machine {
 	private int getMaximumCrafts(ItemStack slot1, ItemStack slot2) {
 		return slot2 == null ? slot1.getAmount() 
 				: slot1.getAmount() > slot2.getAmount() ? slot1.getAmount() : slot2.getAmount();
-	}
-
-	private int getAddFailures(Map<Integer, ItemStack> failures) {
-		int count = 0;
-		for (ItemStack is : failures.values()) {
-			count += is.getAmount();
-		}
-		return count;
 	}
 
 	/**

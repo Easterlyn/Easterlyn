@@ -15,6 +15,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.Sblock.Module;
+import co.sblock.Sblock.Utilities.Inventory.InventoryUtils;
 
 /**
  * @author Dublek, Jikoo
@@ -294,17 +295,26 @@ public class Captcha extends Module {
 			}
 			Player p = (Player) event.getWhoClicked();
 			ItemStack captcha = Captcha.itemToCaptcha(event.getCursor());
-			event.setCursor(null);
-			event.setResult(Result.DENY);;
-			if (event.getCurrentItem().getAmount() > 1) {
-				event.getCurrentItem().setAmount(event.getCurrentItem().getAmount() - 1);
-				if (p.getInventory().firstEmpty() != -1) {
-					p.getInventory().addItem(captcha);
+			event.setResult(Result.DENY);
+			event.setCurrentItem(InventoryUtils.decrement(event.getCurrentItem(), 1));
+
+			// attempt to add to inventory that contained the captchacards
+			int leftover = InventoryUtils.getAddFailures(event.getClickedInventory().addItem(captcha));
+
+			// attempt to add to other inventory if first inv was too full
+			if (leftover > 0) {
+				if (event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())) {
+					leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
 				} else {
-					event.setCursor(captcha);
+					leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
 				}
+			}
+
+			// If both are full, set cursor to captcha
+			if (leftover > 0) {
+				event.setCursor(captcha);
 			} else {
-				event.setCurrentItem(captcha);
+				event.setCursor(null);
 			}
 			p.updateInventory();
 		}

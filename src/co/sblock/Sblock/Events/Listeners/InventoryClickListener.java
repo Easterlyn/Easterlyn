@@ -211,6 +211,9 @@ public class InventoryClickListener implements Listener {
 			event.setCursor(null);
 			((Player) event.getWhoClicked()).updateInventory();
 		}
+
+		// Captcha: attempt to captcha item on cursor
+		Captcha.handleCaptcha(event);
 	}
 
 	// remove bottom
