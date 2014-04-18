@@ -39,16 +39,17 @@ public class SleepTeleport implements Runnable {
 			case LOHAC:
 			case LOLAR:
 			case LOWAS:
-				if (user.getDreamPlanet().equals(DreamPlanet.NONE)) {
+				if (user.getDreamPlanet() == DreamPlanet.NONE) {
 					break;
+				}
+				SblockEvents.getEvents().teleports.add(p.getName());
+				if (p.getWorld().equals(user.getPreviousLocation().getWorld())
+						|| !user.getDreamPlanet().getWorldName()
+								.equals(user.getPreviousLocation().getWorld().getName())) {
+					p.teleport(SblockEvents.getEvents().getTowerData()
+							.getLocation(user.getTower(), user.getDreamPlanet()));
 				} else {
-					SblockEvents.getEvents().teleports.add(p.getName());
-					if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
-						p.teleport(SblockEvents.getEvents().getTowerData()
-								.getLocation(user.getTower(), user.getDreamPlanet()));
-					} else {
-						p.teleport(user.getPreviousLocation());
-					}
+					p.teleport(user.getPreviousLocation());
 				}
 				break;
 			case OUTERCIRCLE:
