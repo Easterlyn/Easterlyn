@@ -88,21 +88,33 @@ public class UserManager {
 	 * Creates teams for display name coloring.
 	 */
 	private void createTeams() {
-		this.board = Bukkit.getScoreboardManager().getNewScoreboard();
-		Team team = this.board.registerNewTeam("admin");
-		team.setPrefix(ColorDef.RANK_ADMIN.toString());
-		team = this.board.registerNewTeam("mod");
-		team.setPrefix(ColorDef.RANK_MOD.toString());
-		team = this.board.registerNewTeam("felt");
-		team.setPrefix(ColorDef.RANK_FELT.toString());
-		team = this.board.registerNewTeam("helper");
-		team.setPrefix(ColorDef.RANK_HELPER.toString());
-		team = this.board.registerNewTeam("donator");
-		team.setPrefix(ColorDef.RANK_DONATOR.toString());
-		team = this.board.registerNewTeam("godtier");
-		team.setPrefix(ColorDef.RANK_GODTIER.toString());
-		team = this.board.registerNewTeam("hero");
-		team.setPrefix(ColorDef.RANK_HERO.toString());
+		this.board = Bukkit.getScoreboardManager().getMainScoreboard();
+		String[] teams = new String[] {"horrorterror", "denizen", "felt", "helper", "donator", "godtier", "hero"};
+		Team team;
+		for (String teamName : teams) {
+			team = this.board.getTeam(teamName);
+			if (team == null) {
+				team = this.board.registerNewTeam(teamName);
+				switch (teamName) {
+				case "horrorterror":
+					team.setPrefix(ColorDef.RANK_ADMIN.toString());
+					break;
+				case "denizen":
+					team.setPrefix(ColorDef.RANK_MOD.toString());
+					break;
+				case "felt":
+					team.setPrefix(ColorDef.RANK_FELT.toString());
+				case "helper":
+					team.setPrefix(ColorDef.RANK_HELPER.toString());
+				case "donator":
+					team.setPrefix(ColorDef.RANK_DONATOR.toString());
+				case "godtier":
+					team.setPrefix(ColorDef.RANK_GODTIER.toString());
+				default:
+					team.setPrefix(ColorDef.RANK_HERO.toString());
+				}
+			}
+		}
 	}
 
 	/**

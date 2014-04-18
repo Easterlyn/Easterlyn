@@ -315,4 +315,16 @@ public class UserDataCommands implements CommandListener {
 		((Player) sender).performCommand("mvs");
 		return true;
 	}
+
+	/**
+	 * Updates all players' scoreboard teams.
+	 */
+	@SblockCommand(description = "Updates scoreboard teams for tab/overhead colors.",
+			usage = "/updateteams", permission = "group.horrorterror")
+	public boolean updateteams(CommandSender sender, String[] args) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			UserManager.getUserManager().team(p);
+		}
+		return true;
+	}
 }
