@@ -341,9 +341,9 @@ public abstract class Channel {
 
 		ChatColor globalRank;
 		if (sender.getPlayer().hasPermission("group.horrorterror"))
-			globalRank = ColorDef.RANK_ADMIN;
+			globalRank = ColorDef.RANK_HORRORTERROR;
 		else if (sender.getPlayer().hasPermission("group.denizen"))
-			globalRank = ColorDef.RANK_MOD;
+			globalRank = ColorDef.RANK_DENIZEN;
 		else if (sender.getPlayer().hasPermission("group.felt"))
 			globalRank = ColorDef.RANK_FELT;
 		else if (sender.getPlayer().hasPermission("group.helper"))

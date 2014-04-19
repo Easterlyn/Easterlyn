@@ -95,22 +95,17 @@ public class UserManager {
 			team = this.board.getTeam(teamName);
 			if (team == null) {
 				team = this.board.registerNewTeam(teamName);
-				switch (teamName) {
-				case "horrorterror":
-					team.setPrefix(ColorDef.RANK_ADMIN.toString());
-					break;
-				case "denizen":
-					team.setPrefix(ColorDef.RANK_MOD.toString());
-					break;
-				case "felt":
+				if (teamName.equals("horrorterror")) {
+					team.setPrefix(ColorDef.RANK_HORRORTERROR.toString());
+				} else if (teamName.equals("denizen")) {
+					team.setPrefix(ColorDef.RANK_DENIZEN.toString());
+				} else if (teamName.equals("felt")) {
 					team.setPrefix(ColorDef.RANK_FELT.toString());
-				case "helper":
+				} else if (teamName.equals("helper")) {
 					team.setPrefix(ColorDef.RANK_HELPER.toString());
-				case "donator":
-					team.setPrefix(ColorDef.RANK_DONATOR.toString());
-				case "godtier":
+				} else if (teamName.equals("godtier")) {
 					team.setPrefix(ColorDef.RANK_GODTIER.toString());
-				default:
+				} else {
 					team.setPrefix(ColorDef.RANK_HERO.toString());
 				}
 			}
@@ -125,9 +120,9 @@ public class UserManager {
 	public void team(Player p) {
 		Team team = null;
 		if (p.hasPermission("group.horrorterror")) {
-			team = this.board.getTeam("admin");
+			team = this.board.getTeam("horrorterror");
 		} else if (p.hasPermission("group.denizen")) {
-			team = this.board.getTeam("mod");
+			team = this.board.getTeam("denizen");
 		} else if (p.hasPermission("group.felt")) {
 			team = this.board.getTeam("felt");
 		} else if (p.hasPermission("group.helper")) {
@@ -140,7 +135,6 @@ public class UserManager {
 			team = this.board.getTeam("hero");
 		}
 		team.addPlayer(p);
-		p.setScoreboard(board);
 	}
 
 	/**

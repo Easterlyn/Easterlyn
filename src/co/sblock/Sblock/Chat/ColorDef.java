@@ -12,8 +12,8 @@ public class ColorDef {
 	
 	public static final ChatColor DEFAULT = ChatColor.WHITE;
 	
-	public static final ChatColor RANK_ADMIN = ChatColor.DARK_RED;
-	public static final ChatColor RANK_MOD = ChatColor.BLUE;
+	public static final ChatColor RANK_HORRORTERROR = ChatColor.DARK_RED;
+	public static final ChatColor RANK_DENIZEN = ChatColor.BLUE;
 	public static final ChatColor RANK_FELT = ChatColor.GREEN;
 	public static final ChatColor RANK_HELPER = ChatColor.DARK_GRAY;
 	public static final ChatColor RANK_GODTIER = ChatColor.GOLD; 
