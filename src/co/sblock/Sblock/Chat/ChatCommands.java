@@ -216,6 +216,28 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
+	@SblockCommand(description = "Help people find their way", usage = "/forcechannel <channel> <player>",
+			consoleFriendly = true, permission = "group.felt")
+	public boolean forcechannel(CommandSender sender, String[] args) {
+		if (args.length < 2) {
+			return false;
+		}
+		Channel c = ChannelManager.getChannelManager().getChannel(args[0]);
+		if (c == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
+			return true;
+		}
+		Player p = Bukkit.getPlayer(args[1]);
+		if (p == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
+			return true;
+		}
+		User user = User.getUser(p.getUniqueId());
+		ChatData.setCurrent(user, c);
+		sender.sendMessage(ChatColor.GREEN + "Channel forced!");
+		return true;
+	}
+
 	private boolean scC(User user, String[] args) {
 		if (args.length == 1) {
 			user.sendMessage(ChatMsgs.helpSCC(), false);
