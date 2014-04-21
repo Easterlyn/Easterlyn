@@ -11,17 +11,19 @@ import org.bukkit.util.Vector;
 
 public enum ActiveEffect {
 	
-	PSHOOOOT("PSHOOOOT", ActiveEffectType.RIGHT_CLICK),	//Vector chucking
-	BACKPACK("Backpack", ActiveEffectType.RIGHT_CLICK), 	//mobile enderchest access
-	HATGIVER("Hatgiver", ActiveEffectType.DAMAGE),	//Pop-o-matic Vrillyhoo effect: random /hat from inventory item
-	STRENGTH("STRONG", ActiveEffectType.DAMAGE),		//Extra damage applied by item
-	BLINK("Blink", ActiveEffectType.RIGHT_CLICK);			//teleport to crosshairs, may require cooldown
+	PSHOOOOT("PSHOOOOT", ActiveEffectType.RIGHT_CLICK, 350),	//Vector chucking
+	BACKPACK("Backpack", ActiveEffectType.RIGHT_CLICK, 800), 	//mobile enderchest access
+	HATGIVER("Hatgiver", ActiveEffectType.DAMAGE, 150),	//Pop-o-matic Vrillyhoo effect: random /hat from inventory item
+	STRENGTH("STRONG", ActiveEffectType.DAMAGE, 500),		//Extra damage applied by item
+	BLINK("Blink", ActiveEffectType.RIGHT_CLICK, 800);			//teleport to crosshairs, may require cooldown
 	
 	private String loreText;
 	private ActiveEffectType type;
-	private ActiveEffect(String s, ActiveEffectType AET) {
+	private int cost;
+	private ActiveEffect(String s, ActiveEffectType AET, int cost) {
 		loreText = s;
 		type = AET;
+		this.cost = cost;
 	}
 	
 	public String getLoreText()	{
@@ -29,6 +31,10 @@ public enum ActiveEffect {
 	}
 	public ActiveEffectType getActiveEffectType() {
 		return this.type;
+	}
+
+	public int getCost() {
+		return this.cost;
 	}
 	
 	/**

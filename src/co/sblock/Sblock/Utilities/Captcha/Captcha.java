@@ -30,7 +30,12 @@ public class Captcha extends Module {
 	 */
 	@Override
 	protected void onEnable() {
+		// Instantiate grist cost map
+		CruxiteDowel.getGrist();
+
+		// Add captcha recipe
 		this.captchaCardRecipe();
+
 		this.registerCommands(clistener);
 	}
 

@@ -12,6 +12,10 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
+
+import co.sblock.Sblock.SblockEffects.ActiveEffect;
+import co.sblock.Sblock.SblockEffects.PassiveEffect;
 
 /**
  * A class for handling all functions of cruxite dowels.
@@ -53,11 +57,41 @@ public class CruxiteDowel {
 	}
 
 	public static int expCost(ItemStack toCreate) {
-		// if hashmap contains materialdata
-		// fetch
+		int cost = getGrist().get(toCreate.getType().name());
+		if (cost == Integer.MAX_VALUE) {
+			// Item cannot be made with grist, we're done here.
+			return cost;
+		}
+
+		// 2 exp/boondollar seems reasonable.
+		// Puts a stack of cobble at lvl 0-13, nether star at 0-42.
+		cost *= 2 * toCreate.getAmount();
+
+		if (!toCreate.getItemMeta().hasLore()) {
+			return cost;
+		}
+
 		// if item contains special lore and !repairable, raise price
-		// if repairable, get % and repair cost
-		return 0; // TODO
+		boolean willNeedRepair = toCreate.getItemMeta() instanceof Repairable;
+
+		for (String lore : toCreate.getItemMeta().getLore()) {
+			int loreCost = 0;
+			ActiveEffect active = ActiveEffect.getEffect(lore);
+			if (active != null) {
+				loreCost = active.getCost();
+			} else {
+				PassiveEffect passive = PassiveEffect.getEffect(lore);
+				if (passive != null) {
+					loreCost = passive.getCost();
+				}
+			}
+			if (!willNeedRepair) {
+				loreCost *= 1.5;
+			}
+			cost += loreCost;
+		}
+
+		return cost;
 	}
 
 	public static HashMap<String, Integer> getGrist() {

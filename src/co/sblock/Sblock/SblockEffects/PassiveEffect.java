@@ -6,20 +6,27 @@ import org.bukkit.potion.PotionEffectType;
 
 public enum PassiveEffect {
 	
-	COMPUTER("Computer"),
-	PSHOOOES("PSHOOOES"),
-	JUMP("Boing"),
-	SPEED("Speed"),
-	FLOWERS("Flowers");
+	COMPUTER("Computer", 0),
+	PSHOOOES("PSHOOOES", 800),
+	JUMP("Boing", 500),
+	SPEED("Speed", 500),
+	FLOWERS("Flowers", 1000);
 	
 	private String loreText;
 
-	private PassiveEffect(String s) {
+	private int cost;
+
+	private PassiveEffect(String s, int cost) {
 		loreText = s;
+		this.cost = cost;
 	}
 	
 	public String getLoreText() {
 		return this.loreText;
+	}
+
+	public int getCost() {
+		return this.cost;
 	}
 	
 	/**
