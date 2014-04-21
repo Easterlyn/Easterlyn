@@ -1,8 +1,13 @@
 package co.sblock.Sblock.Utilities.Inventory;
 
+import java.util.HashSet;
 import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
+
+import co.sblock.Sblock.Machines.Type.MachineType;
+import co.sblock.Sblock.Utilities.Captcha.Captcha;
+import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
 
 /**
  * 
@@ -10,6 +15,25 @@ import org.bukkit.inventory.ItemStack;
  * @author Jikoo
  */
 public class InventoryUtils {
+
+	private static HashSet<ItemStack> uniques;
+
+	public static HashSet<ItemStack> getUniqueItems() {
+		if (uniques == null) {
+			uniques = new HashSet<>();
+			for (MachineType mt : MachineType.values()) {
+				uniques.add(mt.getUniqueDrop());
+			}
+		}
+		return uniques;
+	}
+
+	public static boolean isUniqueItem(ItemStack is) {
+		ItemStack toCheck = is.clone();
+		toCheck.setAmount(1);
+		return Captcha.isCaptcha(toCheck) || CruxiteDowel.isDowel(toCheck)
+				|| getUniqueItems().contains(toCheck);
+	}
 
 	public static int getAddFailures(Map<Integer, ItemStack> failures) {
 		int count = 0;

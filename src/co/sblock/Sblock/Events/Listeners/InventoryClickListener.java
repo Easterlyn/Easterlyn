@@ -7,9 +7,10 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Machines.MachineInventoryTracker;
 import co.sblock.Sblock.Machines.SblockMachines;
@@ -19,6 +20,7 @@ import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.UserData.User;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.Captchadex;
+import co.sblock.Sblock.Utilities.Inventory.InventoryUtils;
 import co.sblock.Sblock.Utilities.Server.ServerMode;
 
 /**
@@ -62,22 +64,6 @@ public class InventoryClickListener implements Listener {
 			return;
 		}
 
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			// General cancellation: Books cannot be captcha'd, so this is easier
-			// than trying to detect the Captchadex and prevent clicking it.
-			if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD
-					|| event.getAction() == InventoryAction.HOTBAR_SWAP) {
-				if (event.getView().getBottomInventory().getItem(event.getHotbarButton()).getType()
-						== Material.WRITTEN_BOOK) {
-					event.setCancelled(true);
-					return;
-				}
-			}
-			if (event.getCurrentItem().getType() == Material.WRITTEN_BOOK) {
-				event.setCancelled(true);
-				return;
-			}
-		}
 		boolean top = event.getRawSlot() == event.getView().convertSlot(event.getRawSlot());
 		switch (event.getAction()) {
 		case COLLECT_TO_CURSOR:
@@ -85,6 +71,9 @@ public class InventoryClickListener implements Listener {
 			break;
 		case HOTBAR_MOVE_AND_READD:
 			itemShiftTopToBottom(event);
+			if (!event.isCancelled()) {
+				itemSwapToHotbar(event);
+			}
 			break;
 		case MOVE_TO_OTHER_INVENTORY:
 			if (top) {
@@ -171,7 +160,6 @@ public class InventoryClickListener implements Listener {
 				event.setResult(Result.DENY);
 				return;
 			}
-			// TODO verify that this works
 			event.setCursor(Captcha.captchaToItem(event.getCursor()));
 			((Player) event.getWhoClicked()).updateInventory();
 		}
@@ -181,13 +169,21 @@ public class InventoryClickListener implements Listener {
 			event.setCursor(null);
 			((Player) event.getWhoClicked()).updateInventory();
 		}
+
+		// No putting special Sblock items into anvils, it'll ruin them.
+		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
+				&& InventoryUtils.isUniqueItem(event.getCursor())) {
+			event.setResult(Result.DENY);
+		}
 	}
 
 	// move top to bottom
 	private void itemShiftTopToBottom(InventoryClickEvent event) {
+		// Captchadex
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
 		}
+
 		// Server mode: Do not move, clone and add.
 		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
 			event.setResult(Result.DENY);
@@ -203,6 +199,7 @@ public class InventoryClickListener implements Listener {
 			event.setResult(Result.DENY);
 			// Could instead verify swap in is single punchcard,
 			// but not really worth the bother - rare scenario.
+			return;
 		}
 
 		// Server mode: Do not swap, delete.
@@ -210,6 +207,14 @@ public class InventoryClickListener implements Listener {
 			event.setResult(Result.DENY);
 			event.setCursor(null);
 			((Player) event.getWhoClicked()).updateInventory();
+			return;
+		}
+
+		// No putting special Sblock items into anvils, it'll ruin them.
+		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
+				&& InventoryUtils.isUniqueItem(event.getCursor())) {
+			event.setResult(Result.DENY);
+			return;
 		}
 
 		// Captcha: attempt to captcha item on cursor
@@ -246,6 +251,7 @@ public class InventoryClickListener implements Listener {
 			} else {
 				event.setResult(Result.DENY);
 			}
+			return;
 		}
 
 		// Server mode: Do not move, delete.
@@ -256,16 +262,23 @@ public class InventoryClickListener implements Listener {
 				event.setCurrentItem(null);
 				((Player) event.getWhoClicked()).updateInventory();
 			}
+			return;
+		}
+
+		// No putting special Sblock items into anvils, it'll ruin them.
+		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
+				&& InventoryUtils.isUniqueItem(event.getCurrentItem())) {
+			event.setResult(Result.DENY);
 		}
 	}
 
 	// switch bottom
 	private void itemSwapIntoBottom(InventoryClickEvent event) {
 		// Server: No picking up computer icon
-		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
-			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
-				event.setCancelled(true);
-			}
+		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()
+				&& event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+			event.setCancelled(true);
+			return;
 		}
 
 		// Captcha: attempt to captcha item on cursor
@@ -274,9 +287,29 @@ public class InventoryClickListener implements Listener {
 
 	// hotbar with inv
 	private void itemSwapToHotbar(InventoryClickEvent event) {
-		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
-			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
+
+		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()
+				&& (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())
+						|| hotbar.equals(MachineType.COMPUTER.getUniqueDrop()))) {
+			event.setCancelled(true);
+			return;
+		}
+
+		// No putting special Sblock items into anvils, it'll ruin them.
+		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
+				&& (InventoryUtils.isUniqueItem(event.getCursor())
+						|| InventoryUtils.isUniqueItem(hotbar))) {
+			event.setResult(Result.DENY);
+			return;
+		}
+
+		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
+			// General cancellation: Books cannot be captcha'd. Faster than detecting Captchadex.
+			if (hotbar.getType() == Material.WRITTEN_BOOK
+					|| event.getCurrentItem().getType() == Material.WRITTEN_BOOK) {
 				event.setCancelled(true);
+				return;
 			}
 		}
 	}

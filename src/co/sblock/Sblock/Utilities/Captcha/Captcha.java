@@ -176,10 +176,8 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a blank Captchacard
 	 */
 	public static boolean isBlankCaptcha(ItemStack is) {
-		return is != null && is.getType() == Material.PAPER
-				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName()
-				&& is.getItemMeta().getDisplayName().equals("Captchacard")
-				&& is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("Blank");
+		return isCard(is) && is.getItemMeta().getDisplayName().equals("Captchacard")
+				&& is.getItemMeta().getLore().contains("Blank");
 	}
 
 	/**
@@ -190,10 +188,8 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a Captchacard
 	 */
 	public static boolean isUsedCaptcha(ItemStack is) {
-		return is != null && is.getType() == Material.PAPER
-				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName()
-				&& is.getItemMeta().getDisplayName().equals("Captchacard")
-				&& is.getItemMeta().hasLore() && !is.getItemMeta().getLore().contains("Blank");
+		return isCard(is) && is.getItemMeta().getDisplayName().equals("Captchacard")
+				&& !is.getItemMeta().getLore().contains("Blank");
 	}
 
 	/**
@@ -204,9 +200,7 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a Captchacard
 	 */
 	public static boolean isCaptcha(ItemStack is) {
-		return is != null && is.getType() == Material.PAPER && is.hasItemMeta()
-				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
-				&& is.getItemMeta().getDisplayName().equals("Captchacard");
+		return isCard(is) && is.getItemMeta().getDisplayName().equals("Captchacard");
 	}
 
 
@@ -218,9 +212,7 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a Punchcard
 	 */
 	public static boolean isPunch(ItemStack is) {
-		return is != null && is.getType() == Material.PAPER && is.hasItemMeta()
-				&& is.getItemMeta().hasLore() && is.getItemMeta().hasDisplayName()
-				&& is.getItemMeta().getDisplayName().equals("Punchcard");
+		return isCard(is) && is.getItemMeta().getDisplayName().equals("Punchcard");
 	}
 
 	/**
@@ -231,9 +223,8 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a single Punchcard
 	 */
 	public static boolean isSinglePunch(ItemStack is) {
-		return is.getType() == Material.PAPER && is.hasItemMeta()
-				&& is.getItemMeta().hasLore() && is.getItemMeta().hasDisplayName()
-				&& is.getItemMeta().getDisplayName().equals("Punchcard") && is.getAmount() == 1;
+		return isCard(is) && is.getItemMeta().getDisplayName().equals("Punchcard")
+				&& is.getAmount() == 1;
 	}
 
 	/**
@@ -286,37 +277,37 @@ public class Captcha extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void handleCaptcha(InventoryClickEvent event) {
-		if (Captcha.isBlankCaptcha(event.getCurrentItem())) {
-			if (event.getCursor().getType() == Material.BOOK_AND_QUILL
-					|| event.getCursor().getType() == Material.WRITTEN_BOOK
-					|| Captcha.isCard(event.getCursor())) {
-				// Invalid captcha objects
-				return;
-			}
-			Player p = (Player) event.getWhoClicked();
-			ItemStack captcha = Captcha.itemToCaptcha(event.getCursor());
-			event.setResult(Result.DENY);
-			event.setCurrentItem(InventoryUtils.decrement(event.getCurrentItem(), 1));
-
-			// attempt to add to inventory that contained the captchacards
-			int leftover = InventoryUtils.getAddFailures(event.getClickedInventory().addItem(captcha));
-
-			// attempt to add to other inventory if first inv was too full
-			if (leftover > 0) {
-				if (event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())) {
-					leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
-				} else {
-					leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
-				}
-			}
-
-			// If both are full, set cursor to captcha
-			if (leftover > 0) {
-				event.setCursor(captcha);
-			} else {
-				event.setCursor(null);
-			}
-			p.updateInventory();
+		if (!Captcha.isBlankCaptcha(event.getCurrentItem())) {
+			return;
 		}
+		if (CruxiteDowel.expCost(event.getCursor()) == Integer.MAX_VALUE
+				|| InventoryUtils.isUniqueItem(event.getCursor())) {
+			// Invalid captcha objects
+			return;
+		}
+		Player p = (Player) event.getWhoClicked();
+		ItemStack captcha = Captcha.itemToCaptcha(event.getCursor());
+		event.setResult(Result.DENY);
+		event.setCurrentItem(InventoryUtils.decrement(event.getCurrentItem(), 1));
+
+		// attempt to add to inventory that contained the captchacards
+		int leftover = InventoryUtils.getAddFailures(event.getClickedInventory().addItem(captcha));
+
+		// attempt to add to other inventory if first inv was too full
+		if (leftover > 0) {
+			if (event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())) {
+				leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
+			} else {
+				leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
+			}
+		}
+
+		// If both are full, set cursor to captcha
+		if (leftover > 0) {
+			event.setCursor(captcha);
+		} else {
+			event.setCursor(null);
+		}
+		p.updateInventory();
 	}
 }

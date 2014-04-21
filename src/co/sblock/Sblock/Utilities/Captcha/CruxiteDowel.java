@@ -1,10 +1,16 @@
 package co.sblock.Sblock.Utilities.Captcha;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 /**
@@ -25,18 +31,17 @@ public class CruxiteDowel {
 	}
 
 	public static boolean isBlankDowel(ItemStack is) {
-		if (is != null) {
-			ItemStack dowel = getDowel();
-			dowel.setAmount(is.getAmount());
-			return is.equals(dowel);
-		}
-		return false;
+		return isDowel(is) && !is.getItemMeta().hasLore();
+	}
+
+	public static boolean isDowel(ItemStack is) {
+		return is != null && is.getType() == Material.NETHER_BRICK_ITEM && is.hasItemMeta()
+				&& is.getItemMeta().hasDisplayName()
+				&& is.getItemMeta().getDisplayName().equals(ChatColor.WHITE + "Cruxite Dowel");
 	}
 
 	public static boolean isUsedDowel(ItemStack is) {
-		return is != null && is.getType() == Material.NETHER_BRICK_ITEM && is.hasItemMeta()
-				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
-				&& is.getItemMeta().getDisplayName().equals(ChatColor.WHITE + "Cruxite Dowel");
+		return isDowel(is) && is.getItemMeta().hasLore();
 	}
 
 	public static ItemStack carve(ItemStack is) {
@@ -47,7 +52,7 @@ public class CruxiteDowel {
 		return dowel;
 	}
 
-	public static long expCost(ItemStack dowel) {
+	public static int expCost(ItemStack toCreate) {
 		// if hashmap contains materialdata
 		// fetch
 		// if item contains special lore and !repairable, raise price
@@ -57,323 +62,282 @@ public class CruxiteDowel {
 
 	public static HashMap<String, Integer> getGrist() {
 		if (grist == null) {
-			grist = createGrist();
+			grist = createBaseGrist();
+			fillFromRecipes();
 		}
 		return grist;
 	}
 
-	private static HashMap<String, Integer> createGrist() {
+	private static HashMap<String, Integer> createBaseGrist() {
+		HashMap<String, Integer> materialValues = new HashMap<>();
 		for (Material m : Material.values()) {
 			switch(m) {
-			case AIR:
-				break;
-			case APPLE:
-				break;
-			case ARROW:
-				break;
-			case BAKED_POTATO:
-				break;
-			case BEDROCK:
-				break;
-			case BLAZE_ROD:
-				break;
-			case BONE:
-				break;
-			case BRICK:
-				break;
-			case BROWN_MUSHROOM:
-				break;
-			case BURNING_FURNACE:
-				break;
-			case CACTUS:
-				break;
-			case CARROT:
-				break;
-			case CARROT_ITEM:
-				break;
-			case CHAINMAIL_BOOTS:
-				break;
-			case CHAINMAIL_CHESTPLATE:
-				break;
-			case CHAINMAIL_HELMET:
-				break;
-			case CHAINMAIL_LEGGINGS:
-				break;
 			case CLAY_BALL:
-				break;
-			case CLAY_BRICK:
-				break;
-			case COAL:
-				break;
-			case COAL_ORE:
-				break;
-			case COBBLESTONE:
-				break;
-			case COCOA:
-				break;
-			case COMMAND:
-				break;
-			case COMMAND_MINECART:
-				break;
-			case COOKED_BEEF:
-				break;
-			case COOKED_CHICKEN:
-				break;
-			case COOKED_FISH:
-				break;
-			case CROPS:
-				break;
 			case DEAD_BUSH:
-				break;
-			case DIAMOND:
-				break;
-			case DIAMOND_BARDING:
-				break;
-			case DIAMOND_ORE:
-				break;
 			case DIRT:
-				break;
-			case DOUBLE_PLANT:
-				break;
-			case DRAGON_EGG:
-				break;
-			case EGG:
-				break;
-			case EMERALD:
-				break;
-			case EMERALD_ORE:
-				break;
-			case ENCHANTED_BOOK:
-				break;
-			case ENDER_PEARL:
-				break;
-			case ENDER_PORTAL:
-				break;
-			case ENDER_PORTAL_FRAME:
-				break;
-			case ENDER_STONE:
-				break;
-			case EXP_BOTTLE:
-				break;
-			case FEATHER:
-				break;
-			case FIRE:
-				break;
-			case FLINT:
-				break;
-			case GHAST_TEAR:
-				break;
-			case GLASS:
-				break;
-			case GLOWING_REDSTONE_ORE:
-				break;
-			case GLOWSTONE_DUST:
-				break;
-			case GOLD_BARDING:
-				break;
-			case GOLD_INGOT:
-				break;
-			case GOLD_ORE:
-				break;
-			case GOLD_RECORD:
-				break;
-			case GRASS:
-				break;
 			case GRAVEL:
-				break;
-			case GREEN_RECORD:
-				break;
-			case GRILLED_PORK:
-				break;
-			case HUGE_MUSHROOM_1:
-				break;
-			case HUGE_MUSHROOM_2:
-				break;
-			case ICE:
-				break;
-			case INK_SACK:
-				break;
-			case IRON_BARDING:
-				break;
-			case IRON_INGOT:
-				break;
-			case IRON_ORE:
-				break;
-			case LAPIS_ORE:
-				break;
-			case LAVA:
-				break;
-			case LAVA_BUCKET:
-				break;
-			case LEATHER:
-				break;
 			case LEAVES:
 			case LEAVES_2:
+			case LONG_GRASS:
+			case POISONOUS_POTATO:
+			case SAND:
+			case SEEDS:
+			case SNOW_BALL:
+				materialValues.put(m.name(), 1);
 				break;
+			case CACTUS:
+			case CARROT_ITEM:
+			case COBBLESTONE:
+			case NETHER_BRICK_ITEM:
+			case RED_MUSHROOM:
+			case RED_ROSE:
+			case SOUL_SAND:
+			case SUGAR_CANE:
+			case VINE:
+			case WHEAT:
+			case WATER_LILY:
+			case YELLOW_FLOWER:
+				materialValues.put(m.name(), 2);
+				break;
+			case BROWN_MUSHROOM:
+			case NETHERRACK:
+			case HUGE_MUSHROOM_1:
+			case HUGE_MUSHROOM_2:
+			case POTATO_ITEM:
+			case ROTTEN_FLESH:
+				materialValues.put(m.name(), 3);
+				break;
+			case ARROW:
+			case DOUBLE_PLANT:
+			case FEATHER:
+			case RAW_CHICKEN:
+				materialValues.put(m.name(), 4);
+				break;
+			case CLAY_BRICK:
+			case FLINT:
+			case RAW_FISH:
+				materialValues.put(m.name(), 5);
+				break;
+			case BAKED_POTATO:
+			case EGG:
+			case NETHER_BRICK:
+			case STONE:
+				materialValues.put(m.name(), 6);
+				break;
+			case COOKED_CHICKEN:
 			case LOG:
 			case LOG_2:
-				break;
-			case LONG_GRASS:
-				break;
-			case MAP: // Not crafted, right click
-				break;
-			case MELON:
-				break;
-			case MELON_STEM:
-				break;
-			case MILK_BUCKET:
-				break;
-			case MOB_SPAWNER:
-				break;
-			case MONSTER_EGG:
-				break;
-			case MONSTER_EGGS:
-				break;
-			case MOSSY_COBBLESTONE:
-				break;
-			case MYCEL:
-				break;
-			case NAME_TAG:
-				break;
-			case NETHERRACK:
-				break;
-			case NETHER_BRICK:
-				break;
-			case NETHER_BRICK_ITEM:
-				break;
-			case NETHER_STALK:
-				break;
-			case NETHER_STAR:
-				break;
-			case NETHER_WARTS:
-				break;
-			case OBSIDIAN:
-				break;
-			case PACKED_ICE:
-				break;
-			case PISTON_BASE:
-				break;
-			case PISTON_EXTENSION:
-				break;
-			case PISTON_MOVING_PIECE:
-				break;
-			case PISTON_STICKY_BASE:
-				break;
-			case POISONOUS_POTATO:
-				break;
-			case PORK:
-				break;
-			case PORTAL:
-				break;
-			case POTATO:
-				break;
-			case POTATO_ITEM:
-				break;
-			case POTION:
-				break;
-			case PUMPKIN:
-				break;
-			case PUMPKIN_STEM:
-				break;
-			case QUARTZ:
-				break;
-			case QUARTZ_ORE:
-				break;
 			case RAW_BEEF:
-				break;
-			case RAW_CHICKEN:
-				break;
-			case RAW_FISH:
-				break;
-			case RECORD_10:
-				break;
-			case RECORD_11:
-				break;
-			case RECORD_12:
-				break;
-			case RECORD_3:
-				break;
-			case RECORD_4:
-				break;
-			case RECORD_5:
-				break;
-			case RECORD_6:
-				break;
-			case RECORD_7:
-				break;
-			case RECORD_8:
-				break;
-			case RECORD_9:
-				break;
 			case REDSTONE:
+			case STRING:
+				materialValues.put(m.name(), 8);
 				break;
-			case REDSTONE_ORE:
+			case COOKED_FISH:
+			case INK_SACK: // Dyes all == most expensive. No phr33 st00f.
+			case NETHER_WARTS:
+				materialValues.put(m.name(), 9);
 				break;
-			case RED_MUSHROOM:
+			case ENDER_STONE:
+			case GLOWSTONE_DUST:
+			case ICE:
+			case LEATHER:
+			case MELON:
+			case MOSSY_COBBLESTONE:
+			case PORK:
+			case SLIME_BALL:
+				materialValues.put(m.name(), 10);
 				break;
-			case RED_ROSE:
+			case APPLE:
+			case BONE:
+			case COAL:
+			case COOKED_BEEF:
+			case GOLD_NUGGET:
+			case PUMPKIN:
+			case SPIDER_EYE:
+				materialValues.put(m.name(), 12);
 				break;
-			case ROTTEN_FLESH:
-				break;
-			case SADDLE:
-				break;
-			case SAND:
+			case GRILLED_PORK:
+				materialValues.put(m.name(), 14);
 				break;
 			case SAPLING:
+			case SADDLE:
+				materialValues.put(m.name(), 16);
 				break;
-			case SEEDS:
-				break;
-			case SKULL:
-				break;
-			case SKULL_ITEM:
-				break;
-			case SLIME_BALL:
-				break;
-			case SNOW:
-				break;
-			case SNOW_BALL:
-				break;
-			case SOIL:
-				break;
-			case SOUL_SAND:
-				break;
-			case SPIDER_EYE:
-				break;
-			case SPONGE:
-				break;
-			case STATIONARY_LAVA:
-				break;
-			case STATIONARY_WATER:
-				break;
-			case STONE:
-				break;
-			case STRING:
-				break;
-			case SUGAR_CANE:
-				break;
+			case CHAINMAIL_BOOTS:
 			case SULPHUR:
+			case MAP: // Not crafted, right click
+			case MYCEL:
+				materialValues.put(m.name(), 20);
 				break;
-			case VINE:
+			case CHAINMAIL_HELMET:
+			case ENCHANTED_BOOK:
+				materialValues.put(m.name(), 25);
 				break;
-			case WATER:
+			case PACKED_ICE:
+				materialValues.put(m.name(), 28);
 				break;
+			case BLAZE_ROD:
+			case GRASS:
+				materialValues.put(m.name(), 30);
+				break;
+			case CHAINMAIL_LEGGINGS:
+			case GHAST_TEAR:
+				materialValues.put(m.name(), 35);
+				break;
+			case IRON_ORE:
+			case QUARTZ:
+				materialValues.put(m.name(), 37);
+				break;
+			case CHAINMAIL_CHESTPLATE:
+				materialValues.put(m.name(), 40);
+				break;
+			case IRON_INGOT:
+				materialValues.put(m.name(), 41);
+				break;
+			case COAL_ORE:
+			case QUARTZ_ORE:
+				materialValues.put(m.name(), 44);
+				break;
+			case GOLD_RECORD:
+			case GREEN_RECORD:
+				materialValues.put(m.name(), 50);
+				break;
+			case RECORD_10:
+			case RECORD_11:
+			case RECORD_12:
+			case RECORD_3:
+			case RECORD_4:
+			case RECORD_5:
+			case RECORD_6:
+			case RECORD_7:
+			case RECORD_8:
+			case RECORD_9:
+				materialValues.put(m.name(), 70);
+				break;
+			case PISTON_BASE:
+			case OBSIDIAN:
+			case EMERALD:
+			case REDSTONE_ORE:
+				materialValues.put(m.name(), 81);
+				break;
+			case ENDER_PEARL:
+			case PISTON_STICKY_BASE:
+				materialValues.put(m.name(), 90);
+				break;
+			case GOLD_ORE:
+				materialValues.put(m.name(), 104);
+				break;
+			case LAVA_BUCKET:
+			case MILK_BUCKET:
 			case WATER_BUCKET:
+				materialValues.put(m.name(), 138);
 				break;
-			case WATER_LILY:
+			case DIAMOND:
+				materialValues.put(m.name(), 167);
 				break;
+			case DIAMOND_ORE:
+				materialValues.put(m.name(), 187);
+				break;
+			case IRON_BARDING:
+				materialValues.put(m.name(), 261);
+				break;
+			case NAME_TAG:
+				materialValues.put(m.name(), 405);
+				break;
+			case GOLD_BARDING:
+				materialValues.put(m.name(), 663);
+				break;
+			case DIAMOND_BARDING:
+			case DRAGON_EGG:
+			case NETHER_STAR:
+				materialValues.put(m.name(), 1000);
+				break;
+			// UNOBTAINABLE
+			case AIR:
+			case BEDROCK:
+			case BURNING_FURNACE:
+			case CARROT: // plant
+			case COCOA: // plant
+			case COMMAND:
+			case COMMAND_MINECART:
+			case CROPS: // plant
+			case EMERALD_ORE: // Can't be captcha'd
+			case ENDER_PORTAL:
+			case ENDER_PORTAL_FRAME:
+			case EXP_BOTTLE: // Can't be captcha'd
+			case FIRE:
+			case GLOWING_REDSTONE_ORE:
+			case LAPIS_ORE: // Can't be captcha'd
+			case LAVA:
+			case MELON_STEM: // plant
+			case MOB_SPAWNER:
+			case MONSTER_EGG:
+			case MONSTER_EGGS:
+			case NETHER_STALK: // plant
+			case PISTON_EXTENSION:
+			case PISTON_MOVING_PIECE:
+			case PORTAL:
+			case POTATO: // plant
+			case POTION: // Can't be captcha'd
+			case PUMPKIN_STEM: // plant
+			case SKULL:
+			case SKULL_ITEM: // Can't be captcha'd
+			case SNOW:
+			case SOIL:
+			case SPONGE:
+			case STATIONARY_LAVA:
+			case STATIONARY_WATER:
+			case WATER:
 			case WEB:
-				break;
-			case WHEAT:
-				break;
-			case WRITTEN_BOOK:
-				break;
-			case YELLOW_FLOWER:
-				break;
+			case WRITTEN_BOOK: // Can't be captcha'd
+				materialValues.put(m.name(), Integer.MAX_VALUE);
 			default:
 				break;
-			
 			}
 		}
-		return grist;
+		return materialValues;
+	}
+
+	private static void fillFromRecipes() {
+		for (Material m : Material.values()) {
+			grist.put(m.name(), getRecipeCost(m));
+		}
+	}
+
+	private static int getRecipeCost(Material m) {
+		if (grist.containsKey(m.name())) {
+			return getGrist().get(m.name());
+		}
+		int minimum = Integer.MAX_VALUE;
+		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(m))) {
+			int newMin;
+			if (r instanceof FurnaceRecipe) {
+				newMin = 2 + getRecipeCost(((FurnaceRecipe) r).getInput().getType());
+			} else if (r instanceof ShapedRecipe) {
+				newMin = 0;
+				HashMap<Character, Integer> materialQuantity = new HashMap<>();
+				for (String s : ((ShapedRecipe) r).getShape()) {
+					for (char c : s.toCharArray()) {
+						if (materialQuantity.containsKey(c)) {
+							materialQuantity.put(c, materialQuantity.get(c) + 1);
+						} else {
+							materialQuantity.put(c, 1);
+						}
+					}
+				}
+				for (Entry<Character, Integer> e : materialQuantity.entrySet()) {
+					newMin += getRecipeCost(((ShapedRecipe) r).getIngredientMap().get(e.getKey()).getType()) * e.getValue();
+				}
+			} else {
+				newMin = 0;
+				for (ItemStack is : ((ShapelessRecipe) r).getIngredientList()) {
+					newMin += getRecipeCost(is.getType());
+				}
+			}
+			if (newMin < minimum) {
+				minimum = newMin;
+			}
+		}
+		return minimum;
 	}
 }
