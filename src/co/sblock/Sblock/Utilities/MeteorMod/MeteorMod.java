@@ -1,31 +1,35 @@
 package co.sblock.Sblock.Utilities.MeteorMod;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+
 import co.sblock.Sblock.Module;
 import co.sblock.Sblock.Sblock;
 
 /**
- * @author Dublek
+ * @author Dublek, Jikoo
  */
 public class MeteorMod extends Module implements Listener {
 	/** The MeteorMod instance. */
 	private static MeteorMod instance;
-	// private BukkitTask task;
-	/** The MeteorCommandListener. */
-	private MeteorCommandListener mcl = new MeteorCommandListener();
+	/** The Map of Meteorite FallingBlock UUIDs */
+	private HashMap<UUID, Boolean> entities;
 
-	/** The <code>List</code> of active <code>Meteorite</code>s. */
-	private static ArrayList<Meteorite> meteorites = new ArrayList<Meteorite>();
-
-	// keiko Move commands into Fire's command handler
 	/**
 	 * @see Module#onEnable()
 	 */
 	@Override
 	public void onEnable() {
-		this.registerCommands(mcl);
+		instance = this;
+		entities = new HashMap<>();
+		this.registerCommands(new MeteorCommandListener());
 		Sblock.getInstance().getServer().getPluginManager()
 				.registerEvents(this, Sblock.getInstance());
 		// startReckoning(20*20);
@@ -36,34 +40,62 @@ public class MeteorMod extends Module implements Listener {
 	 */
 	@Override
 	public void onDisable() {
-		meteorites = null;
 		// stopReckoning();
 	}
 
 	/**
-	 * Gets the <code>MeteorMod</code> instance.
+	 * Gets the MeteorMod instance.
 	 * 
-	 * @return the <code>MeteorMod</code> instance
+	 * @return the MeteorMod instance
 	 */
 	public static MeteorMod getInstance() {
 		return instance;
 	}
 
 	/**
-	 * Gets the <code>List</code> of <code>Meteorite</code>s currently active.
+	 * Add a FallingBlock entity UUID.
 	 * 
-	 * @return the <code>ArrayList<Meteorite></code>
+	 * @param uuid the UUID
+	 * @param damage true if the explosion is to do terrain damage
 	 */
-	public static ArrayList<Meteorite> getMeteorites() {
-		return meteorites;
+	public void addUUID(UUID uuid, boolean damage) {
+		entities.put(uuid, damage);
 	}
 
 	/**
-	 * Starts <code>Meteorite</code>s being created in the area of online
-	 * <code>Players</code>.
+	 * The EventHandler for EntityChangeBlockEvents to handle Meteorite FallingBlock landings.
 	 * 
-	 * @param rLong
-	 *            the time to delay the reckoning start by in ticks
+	 * @param event the EntityChangeBlockEvent
+	 */
+	@EventHandler
+	public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
+		if (event.getEntityType() != EntityType.FALLING_BLOCK) {
+			return;
+		}
+		if (entities.containsKey(event.getEntity().getUniqueId())) {
+			event.setCancelled(true);
+			event.getEntity().remove();
+			explode(event.getBlock().getLocation(), entities.get(event.getEntity().getUniqueId()));
+			event.getBlock().setType(Material.AIR);
+			entities.remove(event.getEntity().getUniqueId());
+			return;
+		}
+	}
+
+	/**
+	 * Cause an explosion at a Location.
+	 * 
+	 * @param loc the Location to explode at
+	 */
+	public void explode(Location loc, boolean explosionBlockDamage) {
+		loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 4F, false,
+				explosionBlockDamage);
+	}
+
+	/**
+	 * Starts Meteorites being created in the area of online Players.
+	 * 
+	 * @param rLong the time to delay the reckoning start by in ticks
 	 */
 	/*
 	 * public void startReckoning(long rLong) { task = new
