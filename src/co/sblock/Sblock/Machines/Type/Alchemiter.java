@@ -155,7 +155,11 @@ public class Alchemiter extends Machine {
 				ItemStack result;
 				ItemStack expCost;
 				if (CruxiteDowel.isUsedDowel(open.getItem(0))) {
-					result = Captcha.captchaToItem(open.getItem(0));
+					if (open.getItem(0).getItemMeta().getLore().contains("Blank")) {
+						result = MachineType.PERFECTLY_GENERIC_OBJECT.getUniqueDrop();
+					} else {
+						result = Captcha.captchaToItem(open.getItem(0));
+					}
 					expCost = new ItemStack(Material.EXP_BOTTLE);
 					int exp = CruxiteDowel.expCost(result);
 					ItemMeta im = expCost.getItemMeta();

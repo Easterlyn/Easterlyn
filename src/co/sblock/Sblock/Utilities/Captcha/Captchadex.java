@@ -123,8 +123,7 @@ public class Captchadex {
 	 * @return the captchacard created
 	 */
 	public static ItemStack punchcardToItem(ItemStack is) {
-		ItemStack pc = Captcha.captchaToItem(is);
-		return pc;
+		return Captcha.captchaToItem(is);
 	}
 
 	/**

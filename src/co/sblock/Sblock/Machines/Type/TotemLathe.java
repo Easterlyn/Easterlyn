@@ -146,7 +146,8 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 				}
 
 				if (CruxiteDowel.isBlankDowel(f.getInventory().getSmelting())
-						&& Captcha.isPunch(f.getInventory().getFuel())) {
+						&& Captcha.isPunch(f.getInventory().getFuel())
+						&& !f.getInventory().getFuel().getItemMeta().getLore().contains("Lorecard")) {
 					short cookRemaining = (short) (200 - f.getCookTime());
 					if (f.getBurnTime() < cookRemaining) {
 						f.setBurnTime(cookRemaining);

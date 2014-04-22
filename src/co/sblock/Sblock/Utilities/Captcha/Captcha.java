@@ -15,6 +15,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.Sblock.Module;
+import co.sblock.Sblock.Machines.Type.MachineType;
 import co.sblock.Sblock.Utilities.Inventory.InventoryUtils;
 
 /**
@@ -55,6 +56,10 @@ public class Captcha extends Module {
 	 * @return the Captchacard representing by this ItemStack
 	 */
 	public static ItemStack itemToCaptcha(ItemStack item) {
+		if (isCard(item)) {
+			// 
+			return item;
+		}
 		ItemStack card = blankCaptchaCard();
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta iM = item.getItemMeta();
@@ -88,6 +93,10 @@ public class Captcha extends Module {
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	public static ItemStack captchaToItem(ItemStack card) {
+		if (card.getItemMeta().getLore().contains("Lorecard")) {
+			// Specialty items cannot be uncaptcha'd.
+			return card;
+		}
 		return getCaptchaItem(card.getItemMeta().getLore().toArray(new String[0]));
 	}
 
@@ -101,6 +110,18 @@ public class Captcha extends Module {
 	@SuppressWarnings("deprecation")
 	public static ItemStack getCaptchaItem(String[] data) {
 		ItemStack is;
+		ItemMeta im;
+		if (data[0].equals("Lorecard")) {
+			is = createLoreCard(data[1]);
+			im = is.getItemMeta();
+			ArrayList<String> lore = new ArrayList<>(im.getLore());
+			for (int i = 2; i < data.length; i++) {
+				lore.add(data[i]);
+			}
+			im.setLore(lore);
+			is.setItemMeta(im);
+			return is;
+		}
 		try {
 			is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
 					Integer.valueOf(data[3]), Short.valueOf(data[2]));
@@ -108,7 +129,7 @@ public class Captcha extends Module {
 			is = new ItemStack(Material.getMaterial(data[1]),
 					Integer.valueOf(data[3]), Short.valueOf(data[2]));
 		}
-		ItemMeta im = is.getItemMeta();
+		im = is.getItemMeta();
 		if (!data[0].equals(is.getType().toString())) {
 			im.setDisplayName((String) data[0]);
 			// Custom display names starting with ">" or ":" could break our parsing
@@ -286,13 +307,21 @@ public class Captcha extends Module {
 		if (!isBlankCaptcha(event.getCurrentItem())) {
 			return;
 		}
+		ItemStack captcha = null;
 		if (CruxiteDowel.expCost(event.getCursor()) == Integer.MAX_VALUE
 				|| InventoryUtils.isUniqueItem(event.getCursor())) {
 			// Invalid captcha objects
-			return;
+			if (!InventoryUtils.equalsIgnoreAmount(event.getCursor(), MachineType.COMPUTER.getUniqueDrop())) {
+				// Computers can (and should) be alchemized.
+				return;
+			} else {
+				captcha = createLoreCard("Computer");
+			}
 		}
 		Player p = (Player) event.getWhoClicked();
-		ItemStack captcha = itemToCaptcha(event.getCursor());
+		if (captcha == null) {
+			captcha = itemToCaptcha(event.getCursor());
+		}
 		event.setResult(Result.DENY);
 		event.setCurrentItem(InventoryUtils.decrement(event.getCurrentItem(), 1));
 
@@ -315,6 +344,22 @@ public class Captcha extends Module {
 			event.setCursor(null);
 		}
 		p.updateInventory();
+	}
+
+	/**
+	 * @param string
+	 * @return
+	 */
+	public static ItemStack createLoreCard(String lore) {
+		ItemStack card = new ItemStack(Material.PAPER);
+		ItemMeta im = card.getItemMeta();
+		ArrayList<String> loreList = new ArrayList<>();
+		loreList.add("Lorecard");
+		loreList.add(lore);
+		im.setLore(loreList);
+		im.setDisplayName("Captchacard");
+		card.setItemMeta(im);
+		return card;
 	}
 
 	private static void hotbarCaptcha(InventoryClickEvent event) {
