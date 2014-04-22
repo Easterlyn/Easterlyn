@@ -22,7 +22,6 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
-import co.sblock.Sblock.Utilities.Inventory.InventoryUtils;
 
 /**
  * 
@@ -99,7 +98,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 			result.setAmount(fi.getResult().getAmount() + 1);
 		}
 		if (fi.getResult() != null && (fi.getResult().getAmount() == 64 
-				|| !InventoryUtils.equalsIgnoreAmount(fi.getResult(), result))) {
+				|| fi.getResult().isSimilar(result))) {
 			return true;
 		} else {
 			fi.setResult(result);

@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock.Machines.SblockMachines;
 import co.sblock.Sblock.Machines.Type.Direction;
@@ -39,7 +38,7 @@ public class BlockPlaceListener implements Listener {
 
 		// Server mode placement
 		if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
-			if (event.getItemInHand().equals(MachineType.COMPUTER.getUniqueDrop())) {
+			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {
 				// Should ideally never run out this way.
@@ -49,9 +48,7 @@ public class BlockPlaceListener implements Listener {
 
 		// Machine place logic
 		for (MachineType mt : MachineType.values()) {
-			ItemStack is = mt.getUniqueDrop();
-			is.setAmount(event.getItemInHand().getAmount());
-			if (is.equals(event.getItemInHand())) {
+			if (mt.getUniqueDrop().isSimilar(event.getItemInHand())) {
 				if (mt == MachineType.PERFECT_BUILDING_OBJECT) {
 					new PBO(event.getBlock().getLocation(), "").assemble(event);
 					break;

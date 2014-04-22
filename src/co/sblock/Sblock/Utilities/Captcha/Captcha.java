@@ -311,7 +311,7 @@ public class Captcha extends Module {
 		if (CruxiteDowel.expCost(event.getCursor()) == Integer.MAX_VALUE
 				|| InventoryUtils.isUniqueItem(event.getCursor())) {
 			// Invalid captcha objects
-			if (!InventoryUtils.equalsIgnoreAmount(event.getCursor(), MachineType.COMPUTER.getUniqueDrop())) {
+			if (!event.getCursor().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Computers can (and should) be alchemized.
 				return;
 			} else {

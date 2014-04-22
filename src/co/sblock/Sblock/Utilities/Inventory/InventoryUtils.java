@@ -10,7 +10,7 @@ import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
 
 /**
- * 
+ * A set of useful methods for in
  * 
  * @author Jikoo
  */
@@ -28,11 +28,18 @@ public class InventoryUtils {
 		return uniques;
 	}
 
-	public static boolean isUniqueItem(ItemStack is) {
-		ItemStack toCheck = is.clone();
-		toCheck.setAmount(1);
-		return Captcha.isCaptcha(toCheck) || CruxiteDowel.isDowel(toCheck)
-				|| getUniqueItems().contains(toCheck);
+	public static boolean isUniqueItem(ItemStack toCheck) {
+		if (Captcha.isCaptcha(toCheck) || CruxiteDowel.isDowel(toCheck)) {
+			return true;
+		}
+
+		for (ItemStack is : getUniqueItems()) {
+			if (is.isSimilar(toCheck)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static int getAddFailures(Map<Integer, ItemStack> failures) {
@@ -62,11 +69,5 @@ public class InventoryUtils {
 			is = null;
 		}
 		return is;
-	}
-
-	public static boolean equalsIgnoreAmount(ItemStack is1, ItemStack is2) {
-		ItemStack temp = is2.clone();
-		temp.setAmount(is1.getAmount());
-		return is1.equals(temp);
 	}
 }
