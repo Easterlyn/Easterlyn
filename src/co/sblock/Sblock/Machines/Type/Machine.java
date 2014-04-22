@@ -233,7 +233,7 @@ public abstract class Machine {
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
 		if (meetsAdditionalBreakConditions(event) || event.getPlayer().hasPermission("group.denizen")) {
-			if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+			if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !getType().isFree()) {
 				getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
 			}
 			for (Location l : this.getLocations()) {
