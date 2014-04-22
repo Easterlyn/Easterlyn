@@ -21,10 +21,12 @@ import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 import co.sblock.Sblock.Events.Packets.WrapperPlayServerCustomPayload;
 import co.sblock.Sblock.Events.Packets.WrapperPlayServerOpenWindow;
+import co.sblock.Sblock.Machines.Type.Alchemiter;
 import co.sblock.Sblock.Machines.Type.Machine;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -52,8 +54,15 @@ public class MachineInventoryTracker {
 		return openMachines.get(p);
 	}
 
-	public void closeMachine(Player p) {
-		openMachines.remove(p);
+	public void closeMachine(InventoryCloseEvent event) {
+		Machine m = openMachines.remove((Player) event.getPlayer());
+		if (m == null) {
+			return;
+		}
+
+		if (m instanceof Alchemiter) {
+			event.getInventory().setItem(1, null);
+		}
 	}
 
 	public void openMachineInventory(Player player, Machine m, InventoryType it, org.bukkit.inventory.ItemStack... items) {
@@ -104,6 +113,13 @@ public class MachineInventoryTracker {
 						CraftItemStack.asNMSCopy(items[i+2])));
 			}
 		}
+
+		if (list.isEmpty()) {
+			// Setting result in a villager inventory with recipes doesn't play nice clientside.
+			// To make life easier, if there are no recipes, don't send the trade recipe packet.
+			return;
+		}
+
 		try {
 
 			PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
