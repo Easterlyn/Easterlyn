@@ -4,3 +4,4 @@ Required .jars for compilation
 * [ProtocolLib](http://dev.bukkit.org/bukkit-plugins/protocollib/)
 * [Chester](http://dev.bukkit.org/bukkit-plugins/chester/)
 * [Vault](http://dev.bukkit.org/bukkit-plugins/vault/)
+* [HoloAPI](http://ci.hawkfalcon.com/job/HoloAPI/lastSuccessfulBuild/artifact/target/HoloAPI.jar)
