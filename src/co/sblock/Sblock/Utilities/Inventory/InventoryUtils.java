@@ -63,4 +63,10 @@ public class InventoryUtils {
 		}
 		return is;
 	}
+
+	public static boolean equalsIgnoreAmount(ItemStack is1, ItemStack is2) {
+		ItemStack temp = is2.clone();
+		temp.setAmount(is1.getAmount());
+		return is1.equals(temp);
+	}
 }

@@ -64,14 +64,6 @@ public class CruxiteDowel {
 			return cost;
 		}
 
-		// 2 exp/boondollar seems reasonable.
-		// Puts a stack of cobble at lvl 0-13, nether star at 0-42.
-		cost *= 2 * toCreate.getAmount();
-
-		if (!toCreate.getItemMeta().hasLore()) {
-			return cost;
-		}
-
 		for (Entry<Enchantment, Integer> entry : toCreate.getEnchantments().entrySet()) {
 			// (16 - weight) * level * 20 seems to be a good rate.
 			// Sharpness 5: 6 * 5 * 20 = 300 exp, 0-26
@@ -86,27 +78,32 @@ public class CruxiteDowel {
 			cost += 85;
 		}
 
-		// if item contains special lore and !repairable, raise price
-		boolean willNeedRepair = toCreate.getItemMeta() instanceof Repairable;
 
-		for (String lore : toCreate.getItemMeta().getLore()) {
-			int loreCost = 0;
-			ActiveEffect active = ActiveEffect.getEffect(lore);
-			if (active != null) {
-				loreCost = active.getCost();
-			} else {
-				PassiveEffect passive = PassiveEffect.getEffect(lore);
-				if (passive != null) {
-					loreCost = passive.getCost();
+		if (toCreate.getItemMeta().hasLore()) {
+			// if item contains special lore and !repairable, raise price
+			boolean willNeedRepair = toCreate.getItemMeta() instanceof Repairable;
+
+			for (String lore : toCreate.getItemMeta().getLore()) {
+				int loreCost = 0;
+				ActiveEffect active = ActiveEffect.getEffect(lore);
+				if (active != null) {
+					loreCost = active.getCost();
+				} else {
+					PassiveEffect passive = PassiveEffect.getEffect(lore);
+					if (passive != null) {
+						loreCost = passive.getCost();
+					}
 				}
+				if (!willNeedRepair) {
+					loreCost *= 1.5;
+				}
+				cost += loreCost;
 			}
-			if (!willNeedRepair) {
-				loreCost *= 1.5;
-			}
-			cost += loreCost;
 		}
 
-		cost *= toCreate.getAmount();
+		// 2 exp/boondollar seems reasonable.
+		// Puts a stack of cobble at lvl 0-13, nether star at 0-42.
+		cost *= 2 * toCreate.getAmount();
 
 		return cost;
 	}

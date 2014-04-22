@@ -104,9 +104,9 @@ public class Alchemiter extends Machine {
 	 */
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event) {
+		updateInventory(event.getWhoClicked().getUniqueId());
 		if (event.getRawSlot() != event.getView().convertSlot(event.getRawSlot())) {
 			// Clicked inv is not the top.
-			updateInventory(event.getWhoClicked().getUniqueId());
 			return false;
 		}
 		if (event.getSlot() == 1) {
@@ -132,7 +132,6 @@ public class Alchemiter extends Machine {
 			player.setTotalExperience(player.getTotalExperience() - expCost);
 			player.updateInventory();
 		}
-		updateInventory(event.getWhoClicked().getUniqueId());
 		return false;
 	}
 

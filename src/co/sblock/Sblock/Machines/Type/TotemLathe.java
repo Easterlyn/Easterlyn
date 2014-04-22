@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
+import co.sblock.Sblock.Utilities.Inventory.InventoryUtils;
 
 /**
  * 
@@ -93,7 +94,16 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 			// Objects are invalid.
 			return true;
 		}
-		fi.setResult(CruxiteDowel.carve(fi.getFuel()));
+		ItemStack result = CruxiteDowel.carve(fi.getFuel());
+		if (fi.getResult() != null) {
+			result.setAmount(fi.getResult().getAmount() + 1);
+		}
+		if (fi.getResult() != null && (fi.getResult().getAmount() == 64 
+				|| !InventoryUtils.equalsIgnoreAmount(fi.getResult(), result))) {
+			return true;
+		} else {
+			fi.setResult(result);
+		}
 		ItemStack decrease = fi.getSmelting();
 		if (decrease.getAmount() > 1) {
 			decrease.setAmount(decrease.getAmount() - 1);
@@ -108,6 +118,8 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 			decrease = null;
 		}
 		fi.setFuel(decrease);
+
+		updateFurnaceInventory();
 		return true;
 	}
 

@@ -94,4 +94,19 @@ public class CaptchaCommandListener implements CommandListener {
 			((Player) sender).getInventory().addItem(Captchadex.createCaptchadexBook((Player) sender));
 		return true;
 	}
+
+	@SblockCommand(description = "Converts captchacards from itemID format",
+			usage = "Run /convert with a Captchacard in hand.")
+	public boolean convert(CommandSender sender, String[] args) {
+		Player player = (Player) sender;
+		if (!Captcha.isUsedCaptcha(player.getItemInHand())) {
+			return false;
+		}
+		int amount = player.getItemInHand().getAmount();
+		ItemStack newCard = Captcha.itemToCaptcha(Captcha.captchaToItem(player.getItemInHand()));
+		newCard.setAmount(amount);
+		player.setItemInHand(newCard);
+		player.sendMessage(ChatColor.GREEN + "Captchacard converted!");
+		return true;
+	}
 }
