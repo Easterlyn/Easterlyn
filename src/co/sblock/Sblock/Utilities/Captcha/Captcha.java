@@ -57,7 +57,7 @@ public class Captcha extends Module {
 	 */
 	public static ItemStack itemToCaptcha(ItemStack item) {
 		if (isCard(item)) {
-			// 
+			// prevents Captchadex funkiness
 			return item;
 		}
 		ItemStack card = blankCaptchaCard();
@@ -121,6 +121,9 @@ public class Captcha extends Module {
 			im.setLore(lore);
 			is.setItemMeta(im);
 			return is;
+		}
+		if (data[0].equals("Blank")) {
+			return MachineType.PERFECTLY_GENERIC_OBJECT.getUniqueDrop();
 		}
 		try {
 			is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),

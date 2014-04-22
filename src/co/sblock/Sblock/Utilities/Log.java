@@ -119,7 +119,12 @@ public class Log extends Logger {
 	}
 
 	public static Log getLog(String name) {
-		Log log = (Log) LogManager.getLogManager().getLogger(name);
+		Log log = null;
+		try {
+			log = (Log) LogManager.getLogManager().getLogger(name);
+		} catch (ClassCastException e) {
+			// We probably just reloaded.
+		}
 		if (log == null) {
 			log = new Log(name, null);
 			LogManager.getLogManager().addLogger(log);
