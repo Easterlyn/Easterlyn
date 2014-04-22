@@ -279,7 +279,11 @@ public class Captcha extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void handleCaptcha(InventoryClickEvent event) {
-		if (!Captcha.isBlankCaptcha(event.getCurrentItem())) {
+		if (event.getAction().name().contains("HOTBAR")) {
+			hotbarCaptcha(event);
+			return;
+		}
+		if (!isBlankCaptcha(event.getCurrentItem())) {
 			return;
 		}
 		if (CruxiteDowel.expCost(event.getCursor()) == Integer.MAX_VALUE
@@ -288,7 +292,7 @@ public class Captcha extends Module {
 			return;
 		}
 		Player p = (Player) event.getWhoClicked();
-		ItemStack captcha = Captcha.itemToCaptcha(event.getCursor());
+		ItemStack captcha = itemToCaptcha(event.getCursor());
 		event.setResult(Result.DENY);
 		event.setCurrentItem(InventoryUtils.decrement(event.getCurrentItem(), 1));
 
@@ -311,5 +315,21 @@ public class Captcha extends Module {
 			event.setCursor(null);
 		}
 		p.updateInventory();
+	}
+
+	private static void hotbarCaptcha(InventoryClickEvent event) {
+		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
+		if (!isBlankCaptcha(hotbar)) {
+			return;
+		}
+		ItemStack captcha = itemToCaptcha(event.getCurrentItem());
+		event.setResult(Result.DENY);
+		event.getView().getBottomInventory().setItem(event.getHotbarButton(), InventoryUtils.decrement(hotbar, 1));
+
+		int leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
+		event.setCurrentItem(null);
+		if (leftover > 0) {
+			InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
+		}
 	}
 }

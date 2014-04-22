@@ -312,5 +312,8 @@ public class InventoryClickListener implements Listener {
 				return;
 			}
 		}
+
+		// Captcha: attempt to captcha item in clicked slot
+		Captcha.handleCaptcha(event);
 	}
 }
