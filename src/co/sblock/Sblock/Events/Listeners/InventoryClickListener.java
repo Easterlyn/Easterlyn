@@ -125,36 +125,46 @@ public class InventoryClickListener implements Listener {
 
 	// doubleclick gather
 	private void itemGather(InventoryClickEvent event) {
+		// Captchadex
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			// Screw it, this is too complex with Bukkit's limited API
 			event.setResult(Result.DENY);
+			return;
 		}
+
+		// Server mode: No gathering to cursor.
 		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
 			event.setResult(Result.DENY);
+			return;
 		}
 	}
 
 	// remove top
 	@SuppressWarnings("deprecation")
 	private void itemRemoveTop(InventoryClickEvent event) {
+		// Captchadex
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			if (event.getClick() == ClickType.LEFT) {
 				event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
 			} else {
 				event.setResult(Result.DENY);
 			}
+			return;
 		}
+
 		// Server mode: Do not remove, clone to cursor.
 		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
 			event.setResult(Result.DENY);
 			event.setCursor(event.getCurrentItem().clone());
 			((Player) event.getWhoClicked()).updateInventory();
+			return;
 		}
 	}
 
 	// add top
 	@SuppressWarnings("deprecation")
 	private void itemAddTop(InventoryClickEvent event) {
+		// Captchadex
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			if (!Captcha.isPunch(event.getCursor()) || event.getCursor().getAmount() > 1) {
 				event.setResult(Result.DENY);
@@ -162,12 +172,15 @@ public class InventoryClickListener implements Listener {
 			}
 			event.setCursor(Captcha.captchaToItem(event.getCursor()));
 			((Player) event.getWhoClicked()).updateInventory();
+			return;
 		}
+
 		// Server mode: Do not add, delete.
 		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
 			event.setResult(Result.DENY);
 			event.setCursor(null);
 			((Player) event.getWhoClicked()).updateInventory();
+			return;
 		}
 
 		// No putting special Sblock items into anvils, it'll ruin them.
@@ -182,12 +195,14 @@ public class InventoryClickListener implements Listener {
 		// Captchadex
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
+			return;
 		}
 
 		// Server mode: Do not move, clone and add.
 		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
 			event.setResult(Result.DENY);
 			event.getWhoClicked().getInventory().addItem(event.getCurrentItem().clone());
+			return;
 		}
 	}
 
@@ -232,6 +247,7 @@ public class InventoryClickListener implements Listener {
 				event.getWhoClicked().openInventory(new Computer(event.getWhoClicked().getLocation(),
 						event.getWhoClicked().getName()).getInventory());
 			}
+			return;
 		}
 	}
 
@@ -269,6 +285,7 @@ public class InventoryClickListener implements Listener {
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
 				&& InventoryUtils.isUniqueItem(event.getCurrentItem())) {
 			event.setResult(Result.DENY);
+			return;
 		}
 	}
 

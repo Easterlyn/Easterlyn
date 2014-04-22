@@ -10,7 +10,7 @@ import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
 
 /**
- * A set of useful methods for in
+ * A set of useful methods for inventory functions.
  * 
  * @author Jikoo
  */
