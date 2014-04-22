@@ -54,32 +54,18 @@ public class Captcha extends Module {
 	 * 
 	 * @return the Captchacard representing by this ItemStack
 	 */
-	@SuppressWarnings("deprecation")
 	public static ItemStack itemToCaptcha(ItemStack item) {
 		ItemStack card = blankCaptchaCard();
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta iM = item.getItemMeta();
-		String name;
-		if (iM.hasDisplayName()) {
-			name = iM.getDisplayName();
-		} else {
-			name = item.getType().toString();
-		}
 		ArrayList<String> cardLore = new ArrayList<String>();
-		cardLore.add(name);
-		cardLore.add(String.valueOf(item.getTypeId()));
+		cardLore.add(iM.hasDisplayName() ? iM.getDisplayName() : item.getType().name());
+		cardLore.add(String.valueOf(item.getType().name()));
 		cardLore.add(String.valueOf(item.getDurability()));
 		cardLore.add(String.valueOf(item.getAmount()));
 		// Enchantments
-		StringBuilder enchants = new StringBuilder();
-		if (iM.hasEnchants()) {
-			for (Entry<Enchantment, Integer> e : iM.getEnchants().entrySet()) {
-				enchants.append('\u003A').append(e.getKey().getId()).append('\u003B')
-						.append(e.getValue());
-			}
-		}
-		if (enchants.length() > 0) {
-			cardLore.add(enchants.toString());
+		for (Entry<Enchantment, Integer> e : iM.getEnchants().entrySet()) {
+			cardLore.add(':' + e.getKey().getName() + ';' + e.getValue());
 		}
 		// Lore
 		if (iM.hasLore()) {
@@ -114,8 +100,14 @@ public class Captcha extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	public static ItemStack getCaptchaItem(String[] data) {
-		ItemStack is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
-				Integer.valueOf(data[3]), Short.valueOf(data[2]));
+		ItemStack is;
+		try {
+			is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
+					Integer.valueOf(data[3]), Short.valueOf(data[2]));
+		} catch (NumberFormatException e) {
+			is = new ItemStack(Material.getMaterial(data[1]),
+					Integer.valueOf(data[3]), Short.valueOf(data[2]));
+		}
 		ItemMeta im = is.getItemMeta();
 		if (!data[0].equals(is.getType().toString())) {
 			im.setDisplayName((String) data[0]);
@@ -127,15 +119,20 @@ public class Captcha extends Module {
 		}
 		List<String> itemLore = new ArrayList<String>();
 		for (String s : data) {
-			if (s.charAt(0) == '\u003A') {
+			if (s.charAt(0) == ':') {
 				// Enchantments line format
 				String[] enchs = s.substring(1).split(":");
 				for (String s1 : enchs) {
 					String[] ench = s1.split(";");
-					im.addEnchant(Enchantment.getById(Integer.parseInt(ench[0])),
-							Integer.parseInt(ench[1]), true);
+					try {
+						im.addEnchant(Enchantment.getById(Integer.parseInt(ench[0])),
+								Integer.parseInt(ench[1]), true);
+					} catch (NumberFormatException e) {
+						im.addEnchant(Enchantment.getByName(ench[0]),
+								Integer.parseInt(ench[1]), true);
+					}
 				}
-			} else if (s.charAt(0) == '\u003E') {
+			} else if (s.charAt(0) == '>') {
 				// Lore lines format
 				itemLore.add(s.substring(1));
 			}

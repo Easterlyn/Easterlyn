@@ -109,6 +109,9 @@ public class RawAnnouncer extends Module implements CommandListener {
 
 		msgs.add(new MessageHalement("Sleeping now is more beneficial. Try holding shift while right clicking your bed!"));
 
+		msgs.add(new MessageHalement("Please ").addExtra(new MessageElement("/convert", ChatColor.AQUA),
+				new MessageElement(" all your captchas to the new format!", ChatColor.RED)));
+
 		return msgs;
 	}
 
