@@ -1,5 +1,6 @@
 package co.sblock.Sblock.Machines.Type;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -21,6 +22,7 @@ import co.sblock.Sblock.Sblock;
 import co.sblock.Sblock.Machines.MachineInventoryTracker;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
+import co.sblock.Sblock.Utilities.Inventory.InventoryUtils;
 
 /**
  * Simulate a Sburb Alchemiter in Minecraft.
@@ -100,17 +102,37 @@ public class Alchemiter extends Machine {
 	/**
 	 * @see co.sblock.Sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event) {
 		if (event.getRawSlot() != event.getView().convertSlot(event.getRawSlot())) {
+			// Clicked inv is not the top.
+			updateInventory(event.getWhoClicked().getUniqueId());
 			return false;
 		}
 		if (event.getSlot() == 1) {
+			// Exp slot is being clicked. No adding or removing items.
 			return true;
 		}
 		if (event.getSlot() == 2 && event.getCurrentItem() != null
 				&& event.getCurrentItem().getType() != Material.AIR) {
-			// TODO handle item crafting
+			// Item is being crafted
+			Inventory top = event.getView().getTopInventory();
+			Player player = (Player) event.getWhoClicked();
+			if (event.getClick().name().contains("SHIFT")) {
+				player.getInventory().addItem(event.getCurrentItem().clone());
+			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
+				event.setCursor(event.getCurrentItem());
+			} else {
+				return true;
+			}
+			event.setCurrentItem(null);
+			top.setItem(0, InventoryUtils.decrement(top.getItem(0), 1));
+			// Color code + "Grist cost: " = 14 chars
+			int expCost = Integer.valueOf(top.getItem(1).getItemMeta().getDisplayName().substring(14));
+			player.setTotalExperience(player.getTotalExperience() - expCost);
+			player.updateInventory();
 		}
+		updateInventory(event.getWhoClicked().getUniqueId());
 		return false;
 	}
 
@@ -136,33 +158,30 @@ public class Alchemiter extends Machine {
 				if (CruxiteDowel.isUsedDowel(open.getItem(0))) {
 					result = Captcha.captchaToItem(open.getItem(0));
 					expCost = new ItemStack(Material.EXP_BOTTLE);
-					int levels = getGristCost(result);
+					int exp = CruxiteDowel.expCost(result);
 					ItemMeta im = expCost.getItemMeta();
-					im.setDisplayName(ChatColor.AQUA.toString() + levels);
-					expCost.setItemMeta(im);
-					if (levels < 128) {
-						// Max possible stack is 127 I believe.
-						expCost.setAmount(levels);
+					int remainder = player.getTotalExperience() - exp;
+					ChatColor color = remainder > 0 ? ChatColor.GREEN : ChatColor.DARK_RED;
+					im.setDisplayName(color + "Grist cost: " + exp);
+					ArrayList<String> lore = new ArrayList<>();
+					lore.add(ChatColor.GOLD + "Current: " + player.getTotalExperience());
+					if (remainder > 0) {
+						lore.add(ChatColor.GOLD + "Remainder: " + remainder);
+					} else {
+						lore.add(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Not enough grist!");
+						result = null;
 					}
+					im.setLore(lore);
+					expCost.setItemMeta(im);
 				} else {
 					result = null;
 					expCost = null;
 				}
-				// Set output slot to results
+				// Set items
 				open.setItem(1, expCost);
 				open.setItem(2, result);
-
 				player.updateInventory();
 			}
 		});
-	}
-
-	/**
-	 * @param result
-	 * @return
-	 */
-	protected int getGristCost(ItemStack result) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

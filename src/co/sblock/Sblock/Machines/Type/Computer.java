@@ -98,10 +98,6 @@ public class Computer extends Machine implements InventoryHolder {
 					event.getWhoClicked().openInventory(getClientInventory());
 					break;
 				case SBURBSERVER:
-					if (!event.getWhoClicked().getName().equals(this.getData())) {
-						((Player) event.getWhoClicked()).sendMessage(
-								"Note: server from " + getData() + "'s computer != server as " + getData());
-					}
 					event.getWhoClicked().openInventory(getServerConfirmation());
 					break;
 				case CONFIRM:
@@ -133,7 +129,7 @@ public class Computer extends Machine implements InventoryHolder {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		if (!event.getPlayer().getName().equals(this.getData())) {
+		if (!event.getPlayer().getUniqueId().toString().equals(this.getData())) {
 			if (event.getPlayer().hasPermission("group.denizen")) {
 				event.getPlayer().sendMessage("Allowing admin override for interaction with Computer.");
 			} else {
@@ -164,10 +160,7 @@ public class Computer extends Machine implements InventoryHolder {
 	@Override
 	public Inventory getInventory() {
 		User u = User.getUser(UUID.fromString(getData()));
-		Inventory i = Bukkit.createInventory(this, 9, getData() + "@sblock.co:~/");
-		if (u == null) {
-			return i;
-		}
+		Inventory i = Bukkit.createInventory(this, 9, u.getPlayerName() + "@sblock.co:~/");
 		for (int i1 : u.getPrograms()) {
 			i.addItem(Icon.getIcon(i1).getIcon());
 		}

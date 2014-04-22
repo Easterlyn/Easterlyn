@@ -140,6 +140,7 @@ public class CruxiteDowel {
 			case CARROT_ITEM:
 			case COBBLESTONE:
 			case NETHER_BRICK_ITEM:
+			case PAPER:
 			case RED_MUSHROOM:
 			case RED_ROSE:
 			case SOUL_SAND:
@@ -168,6 +169,7 @@ public class CruxiteDowel {
 			case CLAY_BRICK:
 			case FLINT:
 			case RAW_FISH:
+			case WOOL:
 				materialValues.put(m.name(), 5);
 				break;
 			case BAKED_POTATO:
@@ -232,7 +234,6 @@ public class CruxiteDowel {
 			case GHAST_TEAR:
 				materialValues.put(m.name(), 35);
 				break;
-			case IRON_ORE:
 			case QUARTZ:
 				materialValues.put(m.name(), 37);
 				break;
@@ -245,6 +246,7 @@ public class CruxiteDowel {
 				break;
 			case GOLD_RECORD:
 			case GREEN_RECORD:
+			case IRON_ORE:
 				materialValues.put(m.name(), 50);
 				break;
 			case RECORD_10:
@@ -269,9 +271,10 @@ public class CruxiteDowel {
 			case PISTON_STICKY_BASE:
 				materialValues.put(m.name(), 90);
 				break;
-			case GOLD_ORE:
-				materialValues.put(m.name(), 104);
+			case GOLD_INGOT:
+				materialValues.put(m.name(), 108);
 				break;
+			case GOLD_ORE:
 			case LAVA_BUCKET:
 			case MILK_BUCKET:
 			case WATER_BUCKET:
@@ -363,7 +366,7 @@ public class CruxiteDowel {
 
 	private static int getRecipeCost(Material m) {
 		if (grist.containsKey(m.name())) {
-			return getGrist().get(m.name());
+			return grist.get(m.name());
 		}
 		int minimum = Integer.MAX_VALUE;
 		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(m))) {
@@ -383,7 +386,10 @@ public class CruxiteDowel {
 					}
 				}
 				for (Entry<Character, Integer> e : materialQuantity.entrySet()) {
-					newMin += getRecipeCost(((ShapedRecipe) r).getIngredientMap().get(e.getKey()).getType()) * e.getValue();
+					ItemStack is = ((ShapedRecipe) r).getIngredientMap().get(e.getKey());
+					if (is != null) {
+						newMin += getRecipeCost(is.getType()) * e.getValue();
+					}
 				}
 			} else {
 				newMin = 0;

@@ -68,8 +68,6 @@ public class MachineManager {
 		case CRUXTRUDER:
 			machine = new Cruxtender(l, data);
 			break;
-		case INTELLIBEAM_LASERSTATION:
-			break;
 		case PERFECTLY_GENERIC_OBJECT:
 			machine = new PGO(l, data);
 			break;

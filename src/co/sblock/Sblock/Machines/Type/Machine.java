@@ -3,7 +3,6 @@ package co.sblock.Sblock.Machines.Type;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -120,8 +119,8 @@ public abstract class Machine {
 	 * @return boolean
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		return getData().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("group.denizen")
-				|| User.getUser(UUID.fromString(data)) != null && User.getUser(UUID.fromString(data)).getServer().equals(event.getPlayer().getUniqueId());
+		return this.getType().isFree() || event.getPlayer().hasPermission("group.denizen")
+				|| getData().equals(event.getPlayer().getUniqueId().toString());
 	}
 
 	/**

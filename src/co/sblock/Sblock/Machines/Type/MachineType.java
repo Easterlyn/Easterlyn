@@ -16,9 +16,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 public enum MachineType {
 
 	ALCHEMITER("alc"), BANK("bnk"), COMPUTER("cpu"), CRUXTRUDER("crx"),
-	INTELLIBEAM_LASERSTATION("il"), PERFECT_BUILDING_OBJECT("pbo"),
-	PERFECTLY_GENERIC_OBJECT("pgo"), PUNCH_DESIGNIX("pd"),
-	TOTEM_LATHE("tl"), TRANSMATERIALIZER("tm"),
+	PERFECT_BUILDING_OBJECT("pbo"), PERFECTLY_GENERIC_OBJECT("pgo"),
+	PUNCH_DESIGNIX("pd"), TOTEM_LATHE("tl"), TRANSMATERIALIZER("tm"),
 	TRANSPORTALIZER("tp"), ANY("NO.");
 
 	/** The shortened name of the MachineType. */
@@ -139,6 +138,21 @@ public enum MachineType {
 		sb.append(s.substring(end));
 		return sb.toString();
 	}
+
+	public boolean isFree() {
+		switch (this) {
+		case ALCHEMITER:
+		case CRUXTRUDER:
+		case PERFECTLY_GENERIC_OBJECT:
+		case PERFECT_BUILDING_OBJECT:
+		case PUNCH_DESIGNIX:
+		case TOTEM_LATHE:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	// Future stuff:
 	// Holopad: Largely useless unless we redo captchas NOW to use books.
 	// Intellibeam Laserstation: captcha books/Captchacards?

@@ -28,7 +28,7 @@ public class InventoryCloseListener implements Listener {
 			Captchadex.saveCaptchadex(event.getInventory(), event.getPlayer().getItemInHand());
 		}
 
-		MachineInventoryTracker.getTracker().closeMachine((Player) event.getPlayer());
+		MachineInventoryTracker.getTracker().closeMachine(event);
 
 		User user = User.getUser(event.getPlayer().getUniqueId());
 		if (user == null) {
