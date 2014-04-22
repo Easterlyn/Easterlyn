@@ -166,7 +166,7 @@ public class SblockEvents extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	private int initiateSessionChecks() {
-		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 0L, 1200L);
+		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 200L, 1200L);
 	}
 
 	/**
