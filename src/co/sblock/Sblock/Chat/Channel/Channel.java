@@ -221,6 +221,7 @@ public abstract class Channel {
 			if (modList.contains(userID)) {
 				modList.remove(userID);
 			}
+			this.approvedList.remove(userID);
 			this.banList.add(userID);
 			this.sendToAll(sender, message, false);
 			if (listening.contains(userID)) {
@@ -263,21 +264,21 @@ public abstract class Channel {
 		this.approvedList.add(userID);
 	}
 
-	public void approveUser(User sender, User user) {
+	public void approveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
 			return;
 		} else {
-			approvedList.add(user.getUUID());
+			approvedList.add(target);
 		}
 	}
 
-	public void deapproveUser(User sender, User user) {
+	public void deapproveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
 			return;
 		} else {
-			approvedList.remove(user.getUUID());
+			approvedList.remove(target);
 		}
 	}
 

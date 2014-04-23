@@ -225,7 +225,9 @@ public class ChatMsgs {
 				+ ChatColor.AQUA + "ban <user>"
 				+ ChatColor.YELLOW + ": Ban a user from the channel\n"
 				+ ChatColor.AQUA + "getListeners"
-				+ ChatColor.YELLOW + ": List all users currently listening to this channel";
+				+ ChatColor.YELLOW + ": List all users currently listening to this channel"
+				+ ChatColor.AQUA + "(de)approve <user>"
+				+ ChatColor.YELLOW + ": (De)approve a user for this channel.";
 	}
 
 	public static String helpDefault() {

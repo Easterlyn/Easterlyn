@@ -516,6 +516,12 @@ public class ChatCommands implements CommandListener {
 			} else if (args[1].equalsIgnoreCase("ban")) {
 				c.banUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
+			} else if (args[1].equalsIgnoreCase("approve")) {
+				c.approveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+				return true;
+			} else if (args[1].equalsIgnoreCase("deapprove")) {
+				c.deapproveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+				return true;
 			}
 		}
 		if (c.isOwner(user)) {
@@ -540,14 +546,12 @@ public class ChatCommands implements CommandListener {
 			} else if (args.length >= 2 && args[1].equalsIgnoreCase("disband")) {
 				c.disband(user);
 				return true;
-			} else {
-				user.sendMessage(ChatMsgs.helpChannelMod(), false);
-				if (c.isOwner(user)) {
-					user.sendMessage(ChatMsgs.helpChannelOwner(), false);
-				}
-				return true;
 			}
 		}
-		return false;
+		user.sendMessage(ChatMsgs.helpChannelMod(), false);
+		if (c.isOwner(user)) {
+			user.sendMessage(ChatMsgs.helpChannelOwner(), false);
+		}
+		return true;
 	}
 }
