@@ -358,7 +358,7 @@ public class Captcha extends Module {
 		ItemMeta im = card.getItemMeta();
 		ArrayList<String> loreList = new ArrayList<>();
 		loreList.add("Lorecard");
-		loreList.add(lore);
+		loreList.add('>' + lore);
 		im.setLore(loreList);
 		im.setDisplayName("Captchacard");
 		card.setItemMeta(im);
@@ -367,7 +367,7 @@ public class Captcha extends Module {
 
 	private static void hotbarCaptcha(InventoryClickEvent event) {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
-		if (!isBlankCaptcha(hotbar)) {
+		if (!isBlankCaptcha(hotbar) || event.getCurrentItem() == null) {
 			return;
 		}
 		ItemStack captcha = itemToCaptcha(event.getCurrentItem());
