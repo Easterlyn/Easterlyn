@@ -277,7 +277,7 @@ public abstract class Channel {
 			}
 			approvedList.add(target);
 			this.sendToAll(sender, message, false);
-			targ.sendMessage(message, false);
+			targ.sendMessage(message, true);
 		}
 	}
 
@@ -287,7 +287,7 @@ public abstract class Channel {
 			return;
 		} else {
 			User targ = User.getUser(target);
-			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
+			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
 			if (!this.isApproved(targ)) {
 				sender.sendMessage(message, false);
 				return;

@@ -23,6 +23,7 @@ import co.sblock.Sblock.Machines.MachineInventoryTracker;
 import co.sblock.Sblock.Utilities.Captcha.Captcha;
 import co.sblock.Sblock.Utilities.Captcha.CruxiteDowel;
 import co.sblock.Sblock.Utilities.Inventory.InventoryUtils;
+import co.sblock.Sblock.Utilities.experience.Experience;
 
 /**
  * Simulate a Sburb Alchemiter in Minecraft.
@@ -129,7 +130,7 @@ public class Alchemiter extends Machine {
 			top.setItem(0, InventoryUtils.decrement(top.getItem(0), 1));
 			// Color code + "Grist cost: " = 14 chars
 			int expCost = Integer.valueOf(top.getItem(1).getItemMeta().getDisplayName().substring(14));
-			player.setTotalExperience(player.getTotalExperience() - expCost);
+			Experience.changeExp(player, -expCost);
 			player.updateInventory();
 		}
 		return false;
@@ -163,12 +164,13 @@ public class Alchemiter extends Machine {
 					expCost = new ItemStack(Material.EXP_BOTTLE);
 					int exp = CruxiteDowel.expCost(result);
 					ItemMeta im = expCost.getItemMeta();
-					int remainder = player.getTotalExperience() - exp;
+					int playerExp = Experience.getExp(player);
+					int remainder = playerExp - exp;
 					ChatColor color = remainder > 0 ? ChatColor.GREEN : ChatColor.DARK_RED;
 					im.setDisplayName(color + "Grist cost: " + exp);
 					ArrayList<String> lore = new ArrayList<>();
-					lore.add(ChatColor.GOLD + "Current: " + player.getTotalExperience());
-					if (remainder > 0) {
+					lore.add(ChatColor.GOLD + "Current: " + playerExp);
+					if (remainder >= 0) {
 						lore.add(ChatColor.GOLD + "Remainder: " + remainder);
 					} else {
 						lore.add(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Not enough grist!");
