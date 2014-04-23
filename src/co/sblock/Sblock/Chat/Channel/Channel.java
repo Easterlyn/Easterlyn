@@ -269,7 +269,15 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
 			return;
 		} else {
+			User targ = User.getUser(target);
+			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
+			if (this.isApproved(targ)) {
+				sender.sendMessage(message, false);
+				return;
+			}
 			approvedList.add(target);
+			this.sendToAll(sender, message, false);
+			targ.sendMessage(message, false);
 		}
 	}
 
@@ -278,7 +286,15 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
 			return;
 		} else {
+			User targ = User.getUser(target);
+			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
+			if (!this.isApproved(targ)) {
+				sender.sendMessage(message, false);
+				return;
+			}
 			approvedList.remove(target);
+			this.sendToAll(sender, message, false);
+			ChatData.removeListeningSilent(targ, this);
 		}
 	}
 

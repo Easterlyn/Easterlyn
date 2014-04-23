@@ -83,6 +83,16 @@ public class ChatMsgs {
 				+ ChatColor.RED + "!";
 	}
 
+	public static String onUserApproved(String userName, String channelName) {
+		return ChatColor.YELLOW + userName + " has been approved in "
+				+ ChatColor.GOLD + channelName + ChatColor.YELLOW + "!";
+	}
+
+	public static String onUserDeapproved(String userName, String channelName) {
+		return ChatColor.YELLOW + userName + " has been deapproved in "
+				+ ChatColor.GOLD + channelName + ChatColor.YELLOW + "!";
+	}
+
 	public static String onChannelModAdd(String userName, String channelName) {
 		return ChatColor.YELLOW + userName + " is now a mod in " + ChatColor.GOLD + channelName
 				+ ChatColor.YELLOW + "!";
@@ -119,9 +129,8 @@ public class ChatMsgs {
 	}
 
 	public static String onUserDeniedPrivateAccess(String channelName) {
-		return ChatColor.GOLD + channelName + ChatColor.RED + " is a private channel!\n"
-				+ ChatColor.YELLOW + "Request access with the command " + ChatColor.BLUE
-				+ "/sc request " + channelName;
+		return ChatColor.GOLD + channelName + ChatColor.RED + " is a private channel."
+				+ ChatColor.YELLOW + " Ask a channel mod for access!";
 	}
 
 	public static String errorInvalidChannel(String channelName) {
@@ -163,7 +172,8 @@ public class ChatMsgs {
 
 	public static String errorNickRequired(String channelName) {
 		return ChatColor.GOLD + channelName + ChatColor.RED
-				+ " is a roleplaying channel. You must have a nickname to talk!";
+				+ " is a roleplaying channel. Talking requires a nick! Use "
+				+ ChatColor.AQUA + "/sc nick set";
 	}
 
 	public static String errorNickNotCanon(String nick) {
@@ -225,7 +235,7 @@ public class ChatMsgs {
 				+ ChatColor.AQUA + "ban <user>"
 				+ ChatColor.YELLOW + ": Ban a user from the channel\n"
 				+ ChatColor.AQUA + "getListeners"
-				+ ChatColor.YELLOW + ": List all users currently listening to this channel"
+				+ ChatColor.YELLOW + ": List all users currently listening to this channel\n"
 				+ ChatColor.AQUA + "(de)approve <user>"
 				+ ChatColor.YELLOW + ": (De)approve a user for this channel.";
 	}
