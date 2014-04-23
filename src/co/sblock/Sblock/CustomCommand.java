@@ -1,5 +1,6 @@
 package co.sblock.Sblock;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
@@ -22,7 +23,12 @@ public class CustomCommand extends Command implements PluginIdentifiableCommand 
 	 */
 	@Override
 	public boolean execute(CommandSender sender, String label, String[] args) {
-		return Sblock.getInstance().onCommand(sender, this, label, args);
+		try {
+			return Bukkit.getPluginManager().getPlugin("Sblock").onCommand(sender, this, label, args);
+		} catch (NullPointerException e) {
+			// Sblock has not enabled properly.
+			return false;
+		}
 	}
 
 	/**
@@ -30,7 +36,7 @@ public class CustomCommand extends Command implements PluginIdentifiableCommand 
 	 */
 	@Override
 	public Plugin getPlugin() {
-		return Sblock.getInstance();
+		return Bukkit.getPluginManager().getPlugin("Sblock");
 	}
 
 }

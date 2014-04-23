@@ -166,14 +166,17 @@ public class Sblock extends JavaPlugin implements CommandListener {
 				|| !String[].class.isAssignableFrom(method.getParameterTypes()[1])
 				|| boolean.class != method.getGenericReturnType()) {
 
-			logger.severe("Malformed SblockCommand: " + method.getName() + ". Expected public boolean "
+			logger.severe("Malformed SblockCommand: " + method.getName() + "\nExpected public boolean "
 				 + method.getDeclaringClass().getName() + "." + method.getName()
 				+ "(org.bukkit.command.CommandSender,java.lang.String[]) and recieved "
 				+ method.toString());
 			return false;
 		}
 
-		// TODO check if name must be lower case despite most recent onCommand changes
+		if (!method.getName().toLowerCase().equals(method.getName())) {
+			logger.severe("Malformed SblockCommand: " + method.getDeclaringClass().getName() + "."
+					+ method.getName() + "\nMethod name must be entirely lower case.");
+		}
 		return true;
 	}
 
