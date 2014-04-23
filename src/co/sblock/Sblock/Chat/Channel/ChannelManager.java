@@ -68,7 +68,7 @@ public class ChannelManager {
 	}
 
 	public void dropChannel(String channelName) {
-		ChannelManager.getChannelList().remove(channelName);
+		channelList.remove(channelName);
 		SblockData.getDB().deleteChannel(channelName);
 	}
 

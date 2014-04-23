@@ -299,7 +299,7 @@ public abstract class Channel {
 			return;
 		}
 		this.sendToAll(sender, ChatMsgs.onChannelDisband(this.getName()), false);
-		for (UUID userID : this.listening) {
+		for (UUID userID : this.listening.toArray(new UUID[0])) {
 			ChatData.removeListeningSilent(User.getUser(userID), this);
 		}
 		SblockChat.getChat().getChannelManager().dropChannel(this.name);

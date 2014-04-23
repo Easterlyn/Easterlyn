@@ -209,8 +209,8 @@ public class ChatData {
 	 */
 	public static void removeListeningSilent(User user, Channel channel) {
 		user.listening.remove(channel.getName());
-		if (user.listening != null && user.listening.equals(channel.getName())) {
-			user.listening = null;
+		if (user.current != null && user.current.equals(channel.getName())) {
+			user.current = null;
 		}
 		channel.removeListening(user.getUUID());
 	}
