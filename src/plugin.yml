@@ -1,6 +1,6 @@
 name: Sblock
 
-main: co.sblock.Sblock.Sblock
+main: co.sblock.Sblock
 version: 2.0.0-DEV
 author: Sblock Co.
 authors: [Dublek, Jikoo, FireNG]
