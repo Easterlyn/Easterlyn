@@ -36,8 +36,7 @@ public class PlayerData {
 	/**
 	 * Save the data stored for all related parts of a Player.
 	 * 
-	 * @param cUser the ChatUser to save data for
-	 * @param sUser the SblockUser to save data for
+	 * @param userID the Player UUID to save data for
 	 */
 	protected static void saveUserData(UUID userID) {
 		User user = UserManager.getUserManager().removeUser(userID);
@@ -89,7 +88,7 @@ public class PlayerData {
 	/**
 	 * Create a PreparedStatement with which to query the SQL database.
 	 * 
-	 * @param name the name of the user to load data for
+	 * @param userID the UUID of the user to load data for
 	 */
 	protected static void loadUserData(UUID userID) {
 		try {
@@ -106,7 +105,7 @@ public class PlayerData {
 	/**
 	 * Create a PreparedStatement with which to query the SQL database.
 	 * 
-	 * @param name the name of the user to delete data for
+	 * @param userID the UUID of the user to delete data for
 	 */
 	protected static void deleteUser(String name) {
 		try {
@@ -130,7 +129,7 @@ public class PlayerData {
 			if (rs.next()) {
 				User user = UserManager.getUserManager().getUser(UUID.fromString(rs.getString("uuid")));
 				if (user == null || user.getPlayer() == null) {
-					SblockData.getLogger().warning(rs.getString("uuid") + "'s SblockUser was not instantiated!");
+					UserManager.getUserManager().removeUser(user.getUUID());
 					return;
 				}
 				user.setAspect(rs.getString("aspect"));
@@ -159,19 +158,17 @@ public class PlayerData {
 				}
 				user.setTimePlayed(rs.getString("timePlayed"));
 				user.setPrograms(rs.getString("programs"));
-				try {
-					user.setClient(rs.getString("client").equals("null") ? null : UUID.fromString(rs.getString("client")));
-					user.setServer(rs.getString("server").equals("null") ? null : UUID.fromString(rs.getString("server")));
-				} catch (Exception e) {
-					// TODO remove after pushing to live and calling UPDATE PlayerData SET client = NULL;UPDATE PlayerData SET server = NULL;
+				if (rs.getString("client") != null) {
+					user.setClient(UUID.fromString(rs.getString("client")));
+				}
+				if (rs.getString("server") != null) {
+					user.setServer(UUID.fromString(rs.getString("server")));
 				}
 				if (rs.getString("progression") != null) {
 					user.setProgression(ProgressionState.valueOf(rs.getString("progression")));
 				}
-				if (user.getPlayer() != null) { // Player is still logged in, complete load
-					user.updateCurrentRegion(user.getPlayerRegion());
-					user.setLoaded();
-				}
+				user.updateCurrentRegion(user.getPlayerRegion());
+				user.setLoaded();
 				UserManager.getUserManager().team(user.getPlayer());
 			} else {
 				String uuid = rs.getStatement().toString().replaceAll("com.*uuid = '(.*)'", "$1");
