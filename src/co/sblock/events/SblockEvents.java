@@ -74,7 +74,7 @@ public class SblockEvents extends Module {
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
 
-				new EntityDamageByEntityListener(), new EntityDamageListener(),
+				new EntityDamageByEntityListener(),
 				// Temporarily disabling explosion dodging in favor of blocking places in Machine locations.
 				// new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),

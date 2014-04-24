@@ -360,7 +360,7 @@ public class User {
 	public void setTimePlayed(String s) {
 		if (s != null) {
 			try {
-				timePlayed = new SimpleDateFormat("hhh:mm:ss:SSS").parse(s).getTime();
+				timePlayed = new SimpleDateFormat("DDD:HH:mm:ss:SSS").parse(s).getTime();
 			} catch (ParseException e) {
 				// String ain't right D:
 			}
@@ -373,7 +373,7 @@ public class User {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		return new SimpleDateFormat("hhh:mm:ss:SSS").format(new Date(this.timePlayed
+		return new SimpleDateFormat("DDD:HH:mm:ss:SSS").format(new Date(this.timePlayed
 				+ new Date().getTime() - this.login));
 	}
 

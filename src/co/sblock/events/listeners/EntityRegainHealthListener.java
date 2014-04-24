@@ -1,18 +1,13 @@
 package co.sblock.events.listeners;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import co.sblock.users.User;
 import co.sblock.utilities.spectator.Spectators;
-
-import com.dsh105.holoapi.HoloAPI;
 
 /**
  * Listener for EntityRegainHealthEvents.
@@ -44,18 +39,5 @@ public class EntityRegainHealthListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-	}
-
-	/**
-	 * EventHandler for EntityRegainHealthEvents. Checks post-event completion to create holograms.
-	 * 
-	 * @param event the EntityRegainHealthEvent
-	 */
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityRegainHealthComplete(EntityRegainHealthEvent event) {
-		Location l = event.getEntity().getLocation().clone();
-		l.setY(l.getY() + 2);
-		HoloAPI.getManager().createSimpleHologram(l, 2, true,
-				ChatColor.GREEN.toString() + (int) event.getAmount() + '\u2764');
 	}
 }
