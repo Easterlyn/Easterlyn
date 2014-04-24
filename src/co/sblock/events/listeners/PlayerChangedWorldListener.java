@@ -24,7 +24,6 @@ public class PlayerChangedWorldListener implements Listener {
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
 
-		// adam verify that this returns the correct number and not 1 lower
 		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
 
 		User user = User.getUser(event.getPlayer().getUniqueId());
