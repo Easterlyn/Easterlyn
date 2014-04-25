@@ -63,7 +63,7 @@ public class MachineManager {
 		case BANK:
 			machine = new Bank(l, data);
 		case COMPUTER:
-			machine = new Computer(l, data);
+			machine = new Computer(l, data, false);
 			break;
 		case CRUXTRUDER:
 			machine = new Cruxtruder(l, data);

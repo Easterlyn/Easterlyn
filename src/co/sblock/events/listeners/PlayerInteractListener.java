@@ -65,7 +65,8 @@ public class PlayerInteractListener implements Listener {
 				} else if (event.getItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 					// Right click air: Open computer
 					event.getPlayer().openInventory(new Computer(event.getPlayer().getLocation(),
-							event.getPlayer().getName()).getInventory());
+							event.getPlayer().getUniqueId().toString(), true)
+									.getInventory(User.getUser(event.getPlayer().getUniqueId())));
 				}
 			}
 			return;

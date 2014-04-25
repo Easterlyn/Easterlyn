@@ -1,7 +1,6 @@
 package co.sblock.events.listeners;
 
-import java.util.HashSet;
-
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,16 +23,15 @@ public class EntityExplodeListener implements Listener {
 	 */
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent event) {
-		HashSet<Machine> affected = new HashSet<Machine>();
-		for (Block b : event.blockList()) {
+		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")) {
+			// Machine protection will be handled in CreeperHeal's custom events.
+			return;
+		}
+		for (Block b : event.blockList().toArray(new Block[0])) {
 			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
 			if (m != null) {
-				affected.add(m);
+				event.blockList().remove(b);
 			}
-		}
-
-		for (Machine m : affected) {
-			m.dodge();
 		}
 	}
 }

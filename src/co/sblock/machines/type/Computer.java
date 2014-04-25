@@ -1,7 +1,5 @@
 package co.sblock.machines.type;
 
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,11 +24,15 @@ import co.sblock.users.User;
 public class Computer extends Machine implements InventoryHolder {
 
 	/**
+	 * Creates a Computer. If virtual is true, computer is not to actually be built.
+	 * 
 	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String)
 	 */
-	public Computer(Location l, String data) {
+	public Computer(Location l, String data, boolean virtual) {
 		super(l, data);
-		this.blocks = shape.getBuildLocations(d);
+		if (!virtual) {
+			this.blocks = shape.getBuildLocations(d);
+		}
 	}
 
 	/**
@@ -86,16 +88,15 @@ public class Computer extends Machine implements InventoryHolder {
 			if (event.getCurrentItem().equals(ico.getIcon())) {
 				switch (ico) {
 				case BACK:
-					event.getWhoClicked().openInventory(getInventory());
+					event.getWhoClicked().openInventory(getInventory(User.getUser(event.getWhoClicked().getUniqueId())));
 					break;
 				case BOONDOLLAR_SHOP:
-					// Keiko, shop name is all you,t set to LOHACSE for now
+					// Keiko, shop name is all you, set to LOHACSE for now
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bossshop open LOHACSE " + event.getWhoClicked().getName());
 					break;
-				case PESTERCHUM:
-					break;
 				case SBURBCLIENT:
-					event.getWhoClicked().openInventory(getClientInventory());
+					// if gamestate != none
+				case PESTERCHUM:
 					break;
 				case SBURBSERVER:
 					event.getWhoClicked().openInventory(getServerConfirmation());
@@ -150,7 +151,7 @@ public class Computer extends Machine implements InventoryHolder {
 				event.getPlayer().openInventory(getInventory());
 			}
 		}
-		event.getPlayer().openInventory(getInventory());
+		event.getPlayer().openInventory(getInventory(User.getUser(event.getPlayer().getUniqueId())));
 		return true;
 	}
 
@@ -159,25 +160,17 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	@Override
 	public Inventory getInventory() {
-		User u = User.getUser(UUID.fromString(getData()));
-		Inventory i = Bukkit.createInventory(this, 9, u.getPlayerName() + "@sblock.co:~/");
-		for (int i1 : u.getPrograms()) {
+		return null;
+	}
+
+	public Inventory getInventory(User user) {
+		Inventory i = Bukkit.createInventory(this, 9, user.getPlayerName() + "@sblock.co:~/");
+		for (int i1 : user.getPrograms()) {
 			i.addItem(Icon.getIcon(i1).getIcon());
 		}
 		if (i.firstEmpty() == 9) {
-			u.getPlayer().sendMessage(ChatColor.RED + "You do not have any programs installed!");
+			user.getPlayer().sendMessage(ChatColor.RED + "You do not have any programs installed!");
 		}
-		return i;
-	}
-
-	/**
-	 * Create an Inventory that represents our Sburb client adaptation.
-	 * 
-	 * @return the Inventory created
-	 */
-	private Inventory getClientInventory() {
-		Inventory i = Bukkit.createInventory(this, 18, "~/SburbClient");
-		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
 		return i;
 	}
 

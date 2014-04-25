@@ -2,6 +2,7 @@ package co.sblock.events.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -24,7 +25,8 @@ public class BlockPlaceListener implements Listener {
 	 * 
 	 * @param event the BlockPlaceEvent
 	 */
-	@EventHandler(ignoreCancelled = true)
+	@SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
@@ -43,6 +45,7 @@ public class BlockPlaceListener implements Listener {
 			} else {
 				// Should ideally never run out this way.
 				event.getItemInHand().setAmount(2);
+				event.getPlayer().updateInventory();
 			}
 		}
 

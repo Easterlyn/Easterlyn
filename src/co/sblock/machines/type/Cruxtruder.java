@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.progression.Entry;
@@ -49,13 +50,17 @@ public class Cruxtruder extends Machine {
 		if ((event.getPlayer().hasPermission("group.denizen")
 				|| getData().equals(event.getPlayer().getUniqueId().toString()))
 				&& this.l.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
-			if (event.getBlock().getType().equals(Material.DIAMOND_BLOCK)) {
-				if (Entry.getEntry().canStart(User.getUser(event.getPlayer().getUniqueId()))) {
-					event.getBlock().setType(Material.GLASS);
-					Entry.getEntry().startEntry(User.getUser(event.getPlayer().getUniqueId()), event.getBlock().getLocation());
-				} else {
-					return true;
-				}
+			User user = User.getUser(event.getPlayer().getUniqueId());
+			if (user == null) {
+				return true;
+			}
+			if (Entry.getEntry().canStart(user)) {
+				Entry.getEntry().startEntry(user, event.getBlock().getLocation());
+			}
+			if (user.getProgression() != ProgressionState.NONE || Entry.getEntry().isEntering(user)) {
+				event.getBlock().setType(Material.GLASS);
+			} else {
+				return true;
 			}
 			event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), CruxiteDowel.getDowel());
 		} else {

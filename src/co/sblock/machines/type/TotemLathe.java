@@ -1,6 +1,6 @@
 package co.sblock.machines.type;
 
-import java.util.Map.Entry;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,8 +20,11 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.users.ProgressionState;
+import co.sblock.users.User;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
+import co.sblock.utilities.progression.Entry;
 
 /**
  * Simulates a Totem Lathe from Sburb.
@@ -82,8 +85,11 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		if (event.getPlayer().hasPermission("group.denizen")
-				|| event.getPlayer().getUniqueId().toString().equals(getData())) {
+		User user = User.getUser(event.getPlayer().getUniqueId());
+		if ((user != null && (user.getProgression() != ProgressionState.NONE
+				|| Entry.getEntry().isEntering(user)))
+				&& (event.getPlayer().hasPermission("group.denizen")
+						|| event.getPlayer().getUniqueId().toString().equals(getData()))) {
 			event.getPlayer().openInventory(getInventory());
 		}
 		return true;
@@ -175,7 +181,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		if (furnaceBlock != null) {
 			return ((Furnace) furnaceBlock.getState()).getInventory();
 		}
-		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
+		for (Map.Entry<Location, MaterialData> e : blocks.entrySet()) {
 			if (e.getValue().getItemType() == Material.FURNACE) {
 				furnaceBlock = e.getKey().getBlock();
 				return ((Furnace) furnaceBlock.getState()).getInventory();

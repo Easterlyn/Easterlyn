@@ -245,7 +245,8 @@ public class InventoryClickListener implements Listener {
 				// Right click air: Open computer
 				event.setCancelled(true);
 				event.getWhoClicked().openInventory(new Computer(event.getWhoClicked().getLocation(),
-						event.getWhoClicked().getName()).getInventory());
+						event.getWhoClicked().getUniqueId().toString(), true)
+								.getInventory(User.getUser(event.getWhoClicked().getUniqueId())));
 			}
 			return;
 		}

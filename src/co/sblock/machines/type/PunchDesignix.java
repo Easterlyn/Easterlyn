@@ -20,8 +20,11 @@ import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
 import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.users.ProgressionState;
+import co.sblock.users.User;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
+import co.sblock.utilities.progression.Entry;
 
 /**
  * Simulate a Sburb Punch Designix in Minecraft.
@@ -75,7 +78,11 @@ public class PunchDesignix extends Machine {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		openInventory(event.getPlayer());
+		User user = User.getUser(event.getPlayer().getUniqueId());
+		if (user != null && (user.getProgression() != ProgressionState.NONE
+				|| Entry.getEntry().isEntering(user))) {
+			openInventory(event.getPlayer());
+		}
 		return true;
 	}
 

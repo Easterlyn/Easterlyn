@@ -12,6 +12,7 @@ import co.sblock.events.SblockEvents;
 import co.sblock.users.ChatData;
 import co.sblock.users.User;
 import co.sblock.utilities.inventory.InventoryManager;
+import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.spectator.Spectators;
 import co.sblock.utilities.vote.SleepVote;
 
@@ -55,6 +56,11 @@ public class PlayerQuitListener implements Listener {
 		User user = User.getUser(event.getPlayer().getUniqueId());
 		if (user != null && user.isServer()) {
 			user.stopServerMode();
+		}
+
+		// Fail Entry if in progress
+		if (user != null) {
+			Entry.getEntry().fail(user);
 		}
 
 		// Restore inventory if still preserved

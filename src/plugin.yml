@@ -6,4 +6,4 @@ author: Sblock Co.
 authors: [Dublek, Jikoo, FireNG]
 description: Sblock's sexy mainframe
 depend: [ProtocolLib, Vault, HoloAPI]
-softdepend: [Chester]
+softdepend: [Chester, CreeperHeal]

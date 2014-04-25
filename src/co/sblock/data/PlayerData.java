@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
 import co.sblock.users.ChatData;
 import co.sblock.users.ProgressionState;
@@ -45,44 +46,49 @@ public class PlayerData {
 					+ " does not appear to have userdata loaded, skipping save.");
 			return;
 		}
-			PreparedStatement pst = null;
-			try {
-				pst = SblockData.getDB().connection()
-						.prepareStatement(Call.PLAYER_SAVE.toString());
-				pst.setString(1, user.getPlayerName());
-				pst.setString(2, user.getPlayerClass().getDisplayName());
-				pst.setString(3, user.getAspect().getDisplayName());
-				pst.setString(4, user.getMediumPlanet().getShortName());
-				pst.setString(5, user.getDreamPlanet().getDisplayName());
-				pst.setShort(6, user.getTower());
-				pst.setBoolean(7, user.canFly());
-				Channel c = ChatData.getCurrent(user);
-				pst.setString(8, c != null ? c.getName() : "#" + user.getCurrentRegion().name());
-				pst.setBoolean(9, ChatData.isMute(user));
-				StringBuilder sb = new StringBuilder();
-				for (String s : ChatData.getListening(user)) {
-					sb.append(s + ",");
-				}
-				pst.setString(10, sb.substring(0, sb.length() - 1));
-				pst.setString(11, user.getUserIP());
-				pst.setString(12, user.getTimePlayed());
-				String location = user.getPreviousLocationString();
-				if (location == null) {
-					user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
-					location = user.getPreviousLocationString();
-				}
-				pst.setString(13, location);
-				pst.setString(14, user.getProgramString());
-				pst.setString(15, user.getPlayer().getUniqueId().toString());
-				pst.setString(16, user.getClient() != null ? user.getClient().toString() : null);
-				pst.setString(17, user.getServer() != null ? user.getServer().toString() : null);
-				pst.setString(18, user.getProgression().name());
-			} catch (Exception e) {
-				SblockData.getLogger().err(e);
-				return;
+		PreparedStatement pst = null;
+		try {
+			pst = SblockData.getDB().connection()
+					.prepareStatement(Call.PLAYER_SAVE.toString());
+			pst.setString(1, user.getPlayerName());
+			pst.setString(2, user.getPlayerClass().getDisplayName());
+			pst.setString(3, user.getAspect().getDisplayName());
+			pst.setString(4, user.getMediumPlanet().getShortName());
+			pst.setString(5, user.getDreamPlanet().getDisplayName());
+			pst.setShort(6, user.getTower());
+			pst.setBoolean(7, user.canFly());
+			Channel c = ChatData.getCurrent(user);
+			pst.setString(8, c != null ? c.getName() : "#" + user.getCurrentRegion().name());
+			pst.setBoolean(9, ChatData.isMute(user));
+			StringBuilder sb = new StringBuilder();
+			for (String s : ChatData.getListening(user)) {
+				sb.append(s + ",");
 			}
+			pst.setString(10, sb.substring(0, sb.length() - 1));
+			pst.setString(11, user.getUserIP());
+			pst.setString(12, user.getTimePlayed());
+			String location = user.getPreviousLocationString();
+			if (location == null) {
+				user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
+				location = user.getPreviousLocationString();
+			}
+			pst.setString(13, location);
+			pst.setString(14, user.getProgramString());
+			pst.setString(15, user.getPlayer().getUniqueId().toString());
+			pst.setString(16, user.getClient() != null ? user.getClient().toString() : null);
+			pst.setString(17, user.getServer() != null ? user.getServer().toString() : null);
+			pst.setString(18, user.getProgression().name());
 
-			new AsyncCall(pst).schedule();
+			if (Sblock.getInstance().isEnabled()) {
+				new AsyncCall(pst).schedule();
+			} else {
+				// Plugin is disabling, tasks cannot be scheduled.
+				pst.executeUpdate();
+			}
+		} catch (Exception e) {
+			SblockData.getLogger().err(e);
+			return;
+		}
 	}
 
 	/**

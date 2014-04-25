@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +25,7 @@ import co.sblock.chat.channel.ChannelManager;
 import co.sblock.data.SblockData;
 import co.sblock.effects.PassiveEffect;
 import co.sblock.machines.SblockMachines;
+import co.sblock.machines.type.Icon;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.MachineType;
 import co.sblock.utilities.inventory.InventoryManager;
@@ -52,6 +54,8 @@ public class User {
 	/** Keeps track of current Region for various purposes */
 	private Region currentRegion;
 
+	/** Used to calculate elapsed times. */
+	private SimpleDateFormat dateFormat;
 
 	/* SBLOCK USER DATA BELOW */
 	/** Classpect */
@@ -102,10 +106,13 @@ public class User {
 	public User(UUID playerID) {
 		// Generic user data
 		this.playerID = playerID;
-		login = new Date().getTime();
+		login = System.nanoTime();
 		timePlayed = 0;
 		this.setUserIP();
 		loaded = false;
+
+		dateFormat = new SimpleDateFormat("DDD:HH:mm:ss:SSS");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 		// SblockUser-set data
 		classType = UserClass.HEIR;
@@ -360,7 +367,7 @@ public class User {
 	public void setTimePlayed(String s) {
 		if (s != null) {
 			try {
-				timePlayed = new SimpleDateFormat("DDD:HH:mm:ss:SSS").parse(s).getTime();
+				timePlayed = dateFormat.parse(s).getTime();
 			} catch (ParseException e) {
 				// String ain't right D:
 			}
@@ -373,8 +380,8 @@ public class User {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		return new SimpleDateFormat("DDD:HH:mm:ss:SSS").format(new Date(this.timePlayed
-				+ new Date().getTime() - this.login));
+		//return dateFormat.format(new Date(getPlayer().getStatistic(Statistic.PLAY_ONE_TICK) * 50L));
+		return dateFormat.format(new Date(this.timePlayed + System.nanoTime() - this.login));
 	}
 
 	/**
@@ -528,6 +535,10 @@ public class User {
 		User u = getUser(client);
 		if (u == null) {
 			p.sendMessage(ChatColor.RED + "You should wait for your client before progressing!");
+			return;
+		}
+		if (!u.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())) {
+			p.sendMessage(ChatColor.RED + u.getPlayerName() + " does not have the Sburb Client installed!");
 			return;
 		}
 		Machine m = SblockMachines.getMachines().getManager().getComputer(client);
@@ -750,7 +761,7 @@ public class User {
 				" Mute: " + this.globalMute + div + " Current: " + this.current + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
 				" IP: " + this.userIP + "\n" +
-				" Playtime: " + this.timePlayed + div + " Last Login: " + new SimpleDateFormat("hh:mm on dd/MM/YY").format(new Date(this.login)) + "\n" +
+				" Playtime: " + this.getTimePlayed() + div + " Last Login: " + new SimpleDateFormat("hh:mm 'on' dd/MM/YY").format(new Date(this.login)) + "\n" +
 				sys + "-----------------------------------------";
 		return s;
 	}

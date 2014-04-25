@@ -1,10 +1,12 @@
 package co.sblock.utilities.meteors;
 
 import java.util.HashMap;
-import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +22,9 @@ public class MeteorMod extends Module implements Listener {
 	/** The MeteorMod instance. */
 	private static MeteorMod instance;
 	/** The Map of Meteorite FallingBlock UUIDs */
-	private HashMap<UUID, Boolean> entities;
+	private HashMap<Entity, Boolean> entities;
+	/** exploding entitiy id's, probably. */
+	private int task;
 
 	/**
 	 * @see Module#onEnable()
@@ -32,6 +36,7 @@ public class MeteorMod extends Module implements Listener {
 		this.registerCommands(new MeteorCommandListener());
 		Sblock.getInstance().getServer().getPluginManager()
 				.registerEvents(this, Sblock.getInstance());
+		task = -1;
 		// startReckoning(20*20);
 	}
 
@@ -53,13 +58,33 @@ public class MeteorMod extends Module implements Listener {
 	}
 
 	/**
-	 * Add a FallingBlock entity UUID.
+	 * Add an Entity. If FallingBlock, specify if the entity is to explode on contact.
 	 * 
-	 * @param uuid the UUID
+	 * @param entity the Entity
 	 * @param damage true if the explosion is to do terrain damage
 	 */
-	public void addUUID(UUID uuid, boolean damage) {
-		entities.put(uuid, damage);
+	public void addEntity(Entity entity, boolean damage) {
+		entities.put(entity, damage);
+		if (task == -1) {
+			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+				@Override
+				public void run() {
+					if (entities.size() == 0) {
+						Bukkit.getScheduler().cancelTask(task);
+						task = -1;
+						return;
+					}
+					for (Entity entity : entities.keySet().toArray(new Entity[0])) {
+						if (entity.isDead()) {
+							entities.remove(entity);
+						}
+						if (entity.getType() == EntityType.FALLING_BLOCK) {
+							entity.getWorld().playEffect(entity.getLocation(), Effect.MOBSPAWNER_FLAMES, 48);
+						}
+					}
+				}
+			}, 0, 4);
+		}
 	}
 
 	/**
@@ -72,12 +97,12 @@ public class MeteorMod extends Module implements Listener {
 		if (event.getEntityType() != EntityType.FALLING_BLOCK) {
 			return;
 		}
-		if (entities.containsKey(event.getEntity().getUniqueId())) {
+		if (entities.containsKey(event.getEntity())) {
+			
 			event.setCancelled(true);
 			event.getEntity().remove();
-			explode(event.getBlock().getLocation(), entities.get(event.getEntity().getUniqueId()));
+			explode(event.getBlock().getLocation(), entities.remove(event.getEntity()));
 			event.getBlock().setType(Material.AIR);
-			entities.remove(event.getEntity().getUniqueId());
 			return;
 		}
 	}

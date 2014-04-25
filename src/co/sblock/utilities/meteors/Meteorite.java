@@ -34,7 +34,6 @@ public class Meteorite implements Listener {
 	 * @param explode true if the Meteorite should explode on contact with the ground
 	 */
 	public Meteorite(Location target, String m, int r, boolean explode) {
-		sphereCoords = new HashSet<>();
 
 		skyTarget = target.clone();
 		skyTarget.setY(255 - radius);
@@ -75,12 +74,11 @@ public class Meteorite implements Listener {
 					@Override
 					public void run() {
 						MeteorMod mm = MeteorMod.getInstance();
-						for (Location a : sphereCoords) {
-							a.getBlock().setType(Material.AIR);
-							FallingBlock f = skyTarget.getWorld().spawnFallingBlock(a, mat, (byte) 0);
+						for (Location location : sphereCoords) {
+							location.getBlock().setType(Material.AIR);
+							FallingBlock f = skyTarget.getWorld().spawnFallingBlock(location, mat, (byte) 0);
 							f.setDropItem(false);
-							f.setFireTicks(Integer.MAX_VALUE);
-							mm.addUUID(f.getUniqueId(), explosionBlockDamage);
+							mm.addEntity(f, explosionBlockDamage);
 						}
 						MeteorMod.getInstance().getLogger().info(
 								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());
@@ -94,7 +92,9 @@ public class Meteorite implements Listener {
 	 * Generates the Location sphere that represents a Meteorite.
 	 */
 	public void genMeteorite() {
-		sphereCoords = this.genSphereCoords(radius);
+		if (sphereCoords == null) {
+			sphereCoords = this.genSphereCoords(radius);
+		}
 		sphereCoords.removeAll(this.genSphereCoords(radius - 1));
 	}
 

@@ -12,6 +12,7 @@ import co.sblock.CommandListener;
 import co.sblock.SblockCommand;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.events.SblockEvents;
+import co.sblock.machines.type.Icon;
 
 /**
  * Class for holding commands associated with the UserData module.
@@ -161,11 +162,17 @@ public class UserDataCommands implements CommandListener {
 					+ " appears to have a client already! You'd best find someone else.");
 			return true;
 		}
+		if (!u.getPrograms().contains(Icon.SBURBSERVER.getProgramID())) {
+			s.sendMessage(ChatColor.GOLD + u.getPlayerName() + ChatColor.RED
+					+ " does not have the Sburb Server installed!");
+			return true;
+		}
 		if (requests.containsKey(u.getPlayerName())) {
 			s.sendMessage(ChatColor.GOLD + u.getPlayerName() + ChatColor.RED
 					+ " has a pending request to handle already!");
 			return true;
 		}
+		s.sendMessage(ChatColor.YELLOW + "Request sent to " + ChatColor.GREEN + p.getName());
 		requests.put(u.getPlayerName(), "c" + s.getName());
 		u.getPlayer().sendMessage(ChatColor.GREEN + s.getName() + ChatColor.YELLOW
 				+ " has requested that you be their server!" + ChatColor.AQUA
@@ -208,11 +215,17 @@ public class UserDataCommands implements CommandListener {
 					+ " appears to have a server already! You'd best find someone else.");
 			return true;
 		}
+		if (!u.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())) {
+			s.sendMessage(ChatColor.GOLD + u.getPlayerName() + ChatColor.RED
+					+ " does not have the Sburb Client installed!");
+			return true;
+		}
 		if (requests.containsKey(u.getPlayerName())) {
 			s.sendMessage(ChatColor.GOLD + u.getPlayerName() + ChatColor.RED
 					+ " has a pending request to handle already!");
 			return true;
 		}
+		s.sendMessage(ChatColor.YELLOW + "Request sent to " + ChatColor.GREEN + p.getName());
 		requests.put(u.getPlayerName(), "s" + s.getName());
 		u.getPlayer().sendMessage(ChatColor.GREEN + s.getName() + ChatColor.YELLOW
 				+ " has requested that you be their client!" + ChatColor.AQUA
@@ -251,7 +264,7 @@ public class UserDataCommands implements CommandListener {
 			u.setServer(u1.getUUID());
 		}
 		s.sendMessage(ChatColor.YELLOW + "Accepted " + ChatColor.GREEN + u1.getPlayerName() + ChatColor.YELLOW + "'s request!");
-		u1.getPlayer().sendMessage(ChatColor.GREEN + u1.getPlayerName() + ChatColor.YELLOW + " accepted your request!");
+		u1.getPlayer().sendMessage(ChatColor.GREEN + s.getName() + ChatColor.YELLOW + " accepted your request!");
 		return true;
 	}
 

@@ -74,9 +74,7 @@ public class SblockEvents extends Module {
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
 
-				new EntityDamageByEntityListener(),
-				// Temporarily disabling explosion dodging in favor of blocking places in Machine locations.
-				// new EntityExplodeListener(),
+				new EntityDamageByEntityListener(), new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
 				
 				new FurnaceBurnListener(), new FurnaceSmeltListener(),
@@ -96,6 +94,10 @@ public class SblockEvents extends Module {
 
 				new SignChangeListener(), new VehicleBlockCollisionListener());
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
+
+		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")) {
+			this.registerEvents(new CHBlockHealEvent(), new CHExplosionRecordListener());
+		}
 		status = Status.NEITHER;
 		regionTask = initiateRegionChecks();
 		sessionTask = initiateSessionChecks();

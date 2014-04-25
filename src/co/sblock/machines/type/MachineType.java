@@ -64,12 +64,11 @@ public enum MachineType {
 	 * 
 	 * @return the Machine data
 	 */
-	@SuppressWarnings("deprecation")
 	public String getData(BlockPlaceEvent e) {
 		if (this != MachineType.PERFECTLY_GENERIC_OBJECT) {
 			return e.getPlayer().getUniqueId().toString();
 		}
-		return e.getBlockAgainst().getTypeId() + ":" + e.getBlockAgainst().getData();
+		return e.getBlockAgainst().getState().getData().toString();
 	}
 
 	/**

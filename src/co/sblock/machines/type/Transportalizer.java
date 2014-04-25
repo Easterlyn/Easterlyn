@@ -18,6 +18,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import co.sblock.users.ProgressionState;
+import co.sblock.users.User;
+
 /**
  * Machine for Entity teleportation.
  * <p>
@@ -80,6 +83,15 @@ public class Transportalizer extends Machine {
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
+
+		User user = User.getUser(event.getPlayer().getUniqueId());
+		if (user != null && user.getProgression() != ProgressionState.NONE) {
+			// Transportalizers can only be used by players who have completed Entry.
+			// Any entity, including pre-entry players, can be transported by a
+			// post-entry player pressing the button.
+			return true;
+		}
+
 		if (!event.getClickedBlock().getType().equals(Material.WOOD_BUTTON)) {
 			return false;
 		} else {
