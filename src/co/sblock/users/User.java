@@ -111,7 +111,8 @@ public class User {
 		this.setUserIP();
 		loaded = false;
 
-		dateFormat = new SimpleDateFormat("DDD:HH:mm:ss:SSS");
+		dateFormat = new SimpleDateFormat("DDD 'days' HH:mm:ss");
+		// Time will not be properly displayed if not in UTC
 		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 		// SblockUser-set data

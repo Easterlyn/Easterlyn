@@ -13,6 +13,7 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelManager;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.machines.SblockMachines;
+import co.sblock.utilities.regex.RegexUtils;
 
 /**
  * ChatUser is the class used to alter all Chat-related data.
@@ -321,6 +322,12 @@ public class ChatData {
 		
 		if (sendto.getType() == ChannelType.RP && !sendto.hasNick(user)) {
 			user.sendMessage(ChatMsgs.errorNickRequired(sendto.getName()), false);
+			return;
+		}
+
+		// Trim whitespace created by formatting codes, etc.
+		msg = RegexUtils.trimExtraWhitespace(msg);
+		if (RegexUtils.appearsEmpty(msg)) {
 			return;
 		}
 

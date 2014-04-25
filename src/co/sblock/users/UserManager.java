@@ -72,7 +72,10 @@ public class UserManager {
 		if (users.containsKey(userID)) {
 			return users.get(userID);
 		}
-		return SblockData.getDB().loadUserData(userID);
+		if (Bukkit.getPlayer(userID) != null) {
+			return SblockData.getDB().loadUserData(userID);
+		}
+		return null;
 	}
 
 	/**

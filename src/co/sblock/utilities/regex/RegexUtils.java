@@ -1,5 +1,15 @@
 package co.sblock.utilities.regex;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Skeleton.SkeletonType;
+
 /**
  * A collection of useful regex functions.
  * 
@@ -41,5 +51,61 @@ public class RegexUtils {
 			regex.append(')');
 		}
 		return regex.toString();
+	}
+
+	/**
+	 * Trims additional spaces, including ones surrounding chat colors.
+	 * 
+	 * @param s the String to trim
+	 * 
+	 * @return the trimmed String
+	 */
+	public static String trimExtraWhitespace(String s) {
+		return s.replaceAll("(\\A|\\s)+((" + ChatColor.COLOR_CHAR + "[0-9a-fk-rA-FK-R])+)?\\s+?", " $2");
+	}
+
+	/**
+	 * Checks if a String is nothing but ChatColors and whitespace.
+	 * 
+	 * @param s the String to check
+	 * 
+	 * @return true if the String will appear empty to the client
+	 */
+	public static boolean appearsEmpty(String s) {
+		return s.replaceAll("(\\s|" + ChatColor.COLOR_CHAR + "[0-9a-fk-rA-FK-R]))", "").isEmpty();
+	}
+
+	/**
+	 * Returns a more user-friendly version of standard Enum names.
+	 * 
+	 * @param name the name to prettify
+	 * 
+	 * @return the user-friendly version of the name
+	 */
+	public static String getFriendlyName(String name) {
+		StringBuilder sb = new StringBuilder();
+		name = name.toLowerCase();
+		Matcher m = Pattern.compile("(\\A|_)[a-z]").matcher(name);
+		int end = 0;
+		while (m.find()) {
+			sb.append(name.substring(end, m.start()));
+			sb.append(m.group().toUpperCase().replace("_", " "));
+			end = m.end();
+		}
+		sb.append(name.substring(end));
+		return sb.toString();
+	}
+
+	public static String getFriendlyName(LivingEntity e) {
+		StringBuilder sb = new StringBuilder();
+		if (e.getType() == EntityType.SKELETON && ((Skeleton) e).getSkeletonType() == SkeletonType.WITHER) {
+			sb.append("Wither ");
+		}
+		return sb.append(getFriendlyName(e.getType().name().toLowerCase())).toString();
+		
+	}
+
+	public static String getFriendlyName(Material m) {
+		return getFriendlyName(m.name().toLowerCase());
 	}
 }

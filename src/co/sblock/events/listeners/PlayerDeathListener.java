@@ -78,30 +78,4 @@ public class PlayerDeathListener implements Listener {
 //		
 //		}
 	}
-
-//	private String getFriendlyName(LivingEntity e) {
-//		StringBuilder sb = new StringBuilder();
-//		if (e.getType() == EntityType.SKELETON && ((Skeleton) e).getSkeletonType() == SkeletonType.WITHER) {
-//			sb.append("Wither ");
-//		}
-//		return sb.append(getFriendlyName(e.getType().name().toLowerCase())).toString();
-//		
-//	}
-//
-//	private String getFriendlyName(Material m) {
-//		return getFriendlyName(m.name().toLowerCase());
-//	}
-//
-//	private String getFriendlyName(String s) {
-//		StringBuilder sb = new StringBuilder();
-//		Matcher m = Pattern.compile("(\\A|_)[a-z]").matcher(s);
-//		int end = 0;
-//		while (m.find()) {
-//			sb.append(s.substring(end, m.start()));
-//			sb.append(m.group().toUpperCase().replace("_", " "));
-//			end = m.end();
-//		}
-//		sb.append(s.substring(end));
-//		return sb.toString();
-//	}
 }
