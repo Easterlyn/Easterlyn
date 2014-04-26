@@ -2,6 +2,8 @@ package co.sblock.utilities.rawmessages;
 
 import org.bukkit.ChatColor;
 
+import co.sblock.chat.ColorDef;
+
 /**
  * Puns. Such puns.
  * 
@@ -10,9 +12,6 @@ import org.bukkit.ChatColor;
 public class MessageHalement extends MessageElement {
 
 	public MessageHalement(String text) {
-		super(new StringBuilder().append(ChatColor.WHITE).append('[').append(ChatColor.RED)
-				.append('#').append(ChatColor.WHITE).append("] <").append(ChatColor.DARK_RED)
-				.append("Lil Hal").append(ChatColor.WHITE).append("> ").append(ChatColor.RED)
-				.append(text).toString(), ChatColor.RED);
+		super(new StringBuilder().append(ColorDef.HAL).append(text).toString(), ChatColor.RED);
 	}
 }

@@ -1,7 +1,8 @@
 package co.sblock.utilities;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+
+import co.sblock.chat.ColorDef;
 
 /**
  * A tiny class used to ensure that all announcements follow the same format.
@@ -15,8 +16,7 @@ public class Broadcast {
 	 * Broadcast as Lil Hal to all users.
 	 */
 	public static void lilHal(String msg) {
-		Bukkit.broadcastMessage("[" + ChatColor.RED + "#" + ChatColor.WHITE + "] <"
-				+ ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + "> " + ChatColor.RED + msg);
+		Bukkit.broadcastMessage(ColorDef.HAL + msg);
 	}
 
 	/**

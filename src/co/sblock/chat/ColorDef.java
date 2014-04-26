@@ -35,6 +35,9 @@ public class ColorDef {
 		ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.AQUA, ChatColor.DARK_AQUA,
 		ChatColor.BLUE, ChatColor.DARK_BLUE, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE};
 
+	public static final String HAL = ChatColor.WHITE + "[" + ChatColor.RED + "#" + ChatColor.WHITE
+			+ "] <" + ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + "> " + ChatColor.RED;
+
 	public static String listColors() {
 		StringBuilder sb = new StringBuilder();
 		for (ChatColor c : ChatColor.values()) {

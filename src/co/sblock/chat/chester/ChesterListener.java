@@ -1,9 +1,6 @@
 package co.sblock.chat.chester;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,12 +9,11 @@ import info.gomeow.chester.API.ChesterLogEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import co.sblock.CommandListener;
-import co.sblock.chat.channel.Channel;
+import co.sblock.chat.ColorDef;
 import co.sblock.chat.channel.ChannelManager;
 import co.sblock.users.ChatData;
 import co.sblock.users.User;
@@ -103,22 +99,13 @@ public class ChesterListener implements CommandListener, Listener {
 
 	@EventHandler
 	public void onChesterTalk(ChesterBroadcastEvent event) {
+		event.getRecipients().clear();
 		if (cancels > 0) {
-			event.getRecipients().clear();
 			cancels--;
 			Log.getLog("ChesterListener").info("Chat cancelled when logged. " + cancels + " cancels remain.");
 			return;
 		}
-		Channel c = ChannelManager.getChannelManager().getChannel("#");
-		if (c == null) {
-			event.getRecipients().clear();
-			return;
-		}
-		Set<Player> listeners = new HashSet<Player>();
-		for (UUID userID : c.getListening()) {
-			listeners.add(Bukkit.getPlayer(userID));
-		}
-		event.getRecipients().retainAll(listeners);
-		event.setMessage(ChatColor.stripColor(event.getMessage()));
+		ChannelManager.getChannelManager().getChannel("#")
+				.sendToAll(null, ColorDef.HAL + ChatColor.stripColor(event.getMessage()), false);
 	}
 }

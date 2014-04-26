@@ -61,7 +61,7 @@ public class RegexUtils {
 	 * @return the trimmed String
 	 */
 	public static String trimExtraWhitespace(String s) {
-		return s.replaceAll("(\\A|\\s)+((" + ChatColor.COLOR_CHAR + "[0-9a-fk-rA-FK-R])+)?\\s+?", " $2");
+		return s.replaceAll("(\\A|\\s)+((\\" + ChatColor.COLOR_CHAR + "[0-9a-fk-rA-FK-R])+)?\\s+?", " $2");
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class RegexUtils {
 	 * @return true if the String will appear empty to the client
 	 */
 	public static boolean appearsEmpty(String s) {
-		return s.replaceAll("(\\s|" + ChatColor.COLOR_CHAR + "[0-9a-fk-rA-FK-R]))", "").isEmpty();
+		return s.replaceAll("(\\s|" + ChatColor.COLOR_CHAR + "[0-9a-fk-rA-FK-R])", "").isEmpty();
 	}
 
 	/**

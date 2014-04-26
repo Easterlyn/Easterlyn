@@ -329,8 +329,8 @@ public abstract class Channel {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
 			User u = User.getUser(userID);
 			if (u != null) {
-				u.sendMessage(message, !userID.equals(sender.getUUID()), u.getPlayer()
-						.getDisplayName(), this.getNick(u));
+				u.sendMessage(message, sender != null && !userID.equals(sender.getUUID()),
+						u.getPlayer().getDisplayName(), this.getNick(u));
 			} else {
 				listening.remove(userID);
 			}
