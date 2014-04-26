@@ -36,7 +36,7 @@ public class PGO extends Machine {
 	public void assemble(BlockPlaceEvent event) {
 		Material placedOn = event.getBlockAgainst().getType();
 		if (isValid(placedOn)) {
-			this.blocks.put(l, new MaterialData(event.getBlockAgainst().getType(), event.getBlockAgainst().getData()));
+			this.blocks.put(key, new MaterialData(event.getBlockAgainst().getType(), event.getBlockAgainst().getData()));
 		}
 		// Future features: Make wall signs etc. valid and copy text
 		this.assemble();

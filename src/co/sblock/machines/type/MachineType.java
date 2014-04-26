@@ -1,8 +1,6 @@
 package co.sblock.machines.type;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,7 +8,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import co.sblock.utilities.regex.RegexUtils;
+
 /**
+ * Enum defining all types of Machines.
+ * 
  * @author Jikoo
  */
 public enum MachineType {
@@ -79,7 +81,7 @@ public enum MachineType {
 	public ItemStack getUniqueDrop() {
 		ItemStack is = new ItemStack(Material.BEDROCK);
 		ItemMeta im = is.getItemMeta();
-		im.setDisplayName(ChatColor.WHITE + getFriendlyName());
+		im.setDisplayName(ChatColor.WHITE + RegexUtils.getFriendlyName(name()));
 		switch (this) {
 		case ALCHEMITER:
 			is.setType(Material.QUARTZ_BLOCK);
@@ -119,24 +121,6 @@ public enum MachineType {
 		}
 		is.setItemMeta(im);
 		return is;
-	}
-
-	/**
-	 * Returns a more user-friendly 
-	 * @return
-	 */
-	public String getFriendlyName() {
-		StringBuilder sb = new StringBuilder();
-		String s = name().toLowerCase();
-		Matcher m = Pattern.compile("(\\A|_)[a-z]").matcher(s);
-		int end = 0;
-		while (m.find()) {
-			sb.append(s.substring(end, m.start()));
-			sb.append(m.group().toUpperCase().replace("_", " "));
-			end = m.end();
-		}
-		sb.append(s.substring(end));
-		return sb.toString();
 	}
 
 	public boolean isFree() {

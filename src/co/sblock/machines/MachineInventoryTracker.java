@@ -28,6 +28,7 @@ import co.sblock.events.packets.WrapperPlayServerCustomPayload;
 import co.sblock.events.packets.WrapperPlayServerOpenWindow;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.MachineType;
+import co.sblock.utilities.regex.RegexUtils;
 
 import com.comphenix.protocol.ProtocolLibrary;
 
@@ -70,7 +71,7 @@ public class MachineInventoryTracker {
 		// Opens a real anvil window for the Player in question
 		WrapperPlayServerOpenWindow packet = new WrapperPlayServerOpenWindow();
 		packet.setInventoryType(it);
-		packet.setWindowTitle(m.getType().getFriendlyName());
+		packet.setWindowTitle(RegexUtils.getFriendlyName(m.getType().name()));
 		packet.setTitleExact(true);
 
 		EntityPlayer p = ((CraftPlayer) player).getHandle();

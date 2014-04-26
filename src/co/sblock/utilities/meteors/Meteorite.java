@@ -36,7 +36,9 @@ public class Meteorite implements Listener {
 	public Meteorite(Location target, String m, int r, boolean explode) {
 
 		skyTarget = target.clone();
-		skyTarget.setY(255 - radius);
+		int highestPossible = 255 - radius;
+		int visible = target.getWorld().getHighestBlockYAt(target) + 40;
+		skyTarget.setY(visible > highestPossible ? highestPossible : visible);
 
 		if (r > 0) {
 			radius = r;
@@ -75,7 +77,9 @@ public class Meteorite implements Listener {
 					public void run() {
 						MeteorMod mm = MeteorMod.getInstance();
 						for (Location location : sphereCoords) {
-							location.getBlock().setType(Material.AIR);
+							if (location.getBlock().getType() == mat) {
+								location.getBlock().setType(Material.AIR);
+							}
 							FallingBlock f = skyTarget.getWorld().spawnFallingBlock(location, mat, (byte) 0);
 							f.setDropItem(false);
 							mm.addEntity(f, explosionBlockDamage);
@@ -103,7 +107,9 @@ public class Meteorite implements Listener {
 	 */
 	public void hoverMeteorite() {
 		for (Location a : sphereCoords) {
-			a.getBlock().setType(mat);
+			if (a.getBlock().isEmpty()) {
+				a.getBlock().setType(mat);
+			}
 		}
 	}
 

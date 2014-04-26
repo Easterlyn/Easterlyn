@@ -74,7 +74,8 @@ public class SblockEvents extends Module {
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
 
-				new EntityDamageByEntityListener(), new EntityExplodeListener(),
+				new EntityDamageByEntityListener(), new EntityDamageByBlockListener(),
+				new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
 				
 				new FurnaceBurnListener(), new FurnaceSmeltListener(),
@@ -93,11 +94,13 @@ public class SblockEvents extends Module {
 				new PlayerTeleportListener(), new ServerListPingListener(),
 
 				new SignChangeListener(), new VehicleBlockCollisionListener());
+
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 
 		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")) {
-			this.registerEvents(new CHBlockHealEvent(), new CHExplosionRecordListener());
+			this.registerEvents(new CHBlockHealListener());
 		}
+
 		status = Status.NEITHER;
 		regionTask = initiateRegionChecks();
 		sessionTask = initiateSessionChecks();
@@ -168,7 +171,7 @@ public class SblockEvents extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	private int initiateSessionChecks() {
-		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 200L, 1200L);
+		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 100L, 1200L);
 	}
 
 	/**

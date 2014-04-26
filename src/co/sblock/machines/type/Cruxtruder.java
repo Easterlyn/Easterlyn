@@ -49,7 +49,7 @@ public class Cruxtruder extends Machine {
 	public boolean handleBreak(BlockBreakEvent event) {
 		if ((event.getPlayer().hasPermission("group.denizen")
 				|| getData().equals(event.getPlayer().getUniqueId().toString()))
-				&& this.l.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
+				&& this.key.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
 			User user = User.getUser(event.getPlayer().getUniqueId());
 			if (user == null) {
 				return true;

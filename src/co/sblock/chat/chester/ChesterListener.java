@@ -99,13 +99,26 @@ public class ChesterListener implements CommandListener, Listener {
 
 	@EventHandler
 	public void onChesterTalk(ChesterBroadcastEvent event) {
+		// No matter the outcome, we do not want to use the inbuilt chat feature.
 		event.getRecipients().clear();
 		if (cancels > 0) {
 			cancels--;
 			Log.getLog("ChesterListener").info("Chat cancelled when logged. " + cancels + " cancels remain.");
 			return;
 		}
-		ChannelManager.getChannelManager().getChannel("#")
-				.sendToAll(null, ColorDef.HAL + ChatColor.stripColor(event.getMessage()), false);
+
+		String message = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+		if (message.startsWith("#>")) {
+			int space = message.indexOf(' ');
+			if (space == -1) {
+				return;
+			}
+			message = ColorDef.HAL_ME + message.substring(space);
+		} else {
+			message = ColorDef.HAL + message;
+		}
+
+		// Allows Hal to highlight players
+		ChannelManager.getChannelManager().getChannel("#").sendToAll(null, message, false);
 	}
 }

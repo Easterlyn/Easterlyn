@@ -40,6 +40,9 @@ public class Bank extends Machine {
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
+		if (super.handleInteract(event)) {
+			return true;
+		}
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bossshop open bank " + event.getPlayer().getName());
 		return true;
 	}

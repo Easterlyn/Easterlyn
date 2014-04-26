@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -83,6 +84,9 @@ public class Transportalizer extends Machine {
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
+		if (super.handleInteract(event)) {
+			return true;
+		}
 
 		User user = User.getUser(event.getPlayer().getUniqueId());
 		if (user != null && user.getProgression() != ProgressionState.NONE) {
@@ -96,7 +100,7 @@ public class Transportalizer extends Machine {
 			return false;
 		} else {
 			// ESTABLISH REMOTE LOCATION
-			Block signBlock = this.l.clone().add(new Vector(0, 2, 0)).getBlock();
+			Block signBlock = this.key.clone().add(new Vector(0, 2, 0)).getBlock();
 			if (!signBlock.getType().equals(Material.WALL_SIGN)) {
 				event.getPlayer().sendMessage(ChatColor.RED
 						+ "Please place a sign on your transportalizer between the buttons to use it."
@@ -121,7 +125,7 @@ public class Transportalizer extends Machine {
 					Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
 
 			// CHECK FUEL
-			Chest chest = (Chest) l.getBlock().getState();
+			Chest chest = (Chest) key.getBlock().getState();
 			Inventory chestInv = chest.getInventory();
 			if (!chestInv.contains(Material.SULPHUR) && !chestInv.contains(Material.REDSTONE)
 					&& !chestInv.contains(Material.BLAZE_POWDER)
@@ -143,17 +147,17 @@ public class Transportalizer extends Machine {
 						+ "The Transportalizer begins humming through standard teleport procedure,"
 						+ " when all of a sudden it chokes to a halt with an awful screeching noise."
 						+ "\nPerhaps it requires more fuel?");
-				l.getWorld().playSound(l, Sound.ENDERMAN_SCREAM, 10, 3);
+				key.getWorld().playSound(key, Sound.ENDERMAN_SCREAM, 10, 3);
 				return false;
 			}
 			// adam sound based on chest fill? maybe just raw usable ItemStacks rather than quantity for speed
-			l.getWorld().playSound(l, Sound.NOTE_PIANO, 5, 5);
+			key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 5);
 
 			// TELEPORT
 			// Messy, but avoids deprecation for now.
 			Block pad = event.getClickedBlock().getRelative(BlockFace.DOWN);
 			if (pad.getState().getData().toItemStack().getDurability() == (short) 5) {
-				for (Entity e : l.getWorld().getEntities()) {
+				for (Entity e : key.getWorld().getEntities()) {
 					if (e.getLocation().getBlock().equals(pad)) {
 						remote.setPitch(e.getLocation().getPitch());
 						remote.setYaw(e.getLocation().getYaw());
@@ -164,7 +168,7 @@ public class Transportalizer extends Machine {
 					}
 				}
 			} else {
-				for (Entity e : l.getWorld().getEntities()) {
+				for (Entity e : key.getWorld().getEntities()) {
 					if (e.getLocation().getBlock().equals(remote.getBlock())) {
 						remote.setPitch(e.getLocation().getPitch());
 						remote.setYaw(e.getLocation().getYaw());
@@ -183,7 +187,7 @@ public class Transportalizer extends Machine {
 	private ArrayList<ItemStack> consumeFuel(Chest chest, Location destination) {
 		Inventory inv = chest.getInventory();
 		ArrayList<ItemStack> removed = new ArrayList<ItemStack>();
-		int cost = (int) (l.distance(destination) / 75 + 1);
+		int cost = (int) (key.distance(destination) / 75 + 1);
 		for (int i = 0; i < inv.getSize(); i++) {
 			if (cost <= 0) {
 				break;
@@ -231,5 +235,13 @@ public class Transportalizer extends Machine {
 			return null;
 		}
 		return removed;
+	}
+
+	/**
+	 * @see co.sblock.machines.type.Machine#handleClick(org.bukkit.event.inventory.InventoryClickEvent)
+	 */
+	@Override
+	public boolean handleClick(InventoryClickEvent event) {
+		return false;
 	}
 }

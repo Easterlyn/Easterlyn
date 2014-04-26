@@ -327,7 +327,7 @@ public class ChatData {
 
 		// Trim whitespace created by formatting codes, etc.
 		msg = RegexUtils.trimExtraWhitespace(msg);
-		if (RegexUtils.appearsEmpty(msg)) {
+		if (RegexUtils.appearsEmpty(msg.substring(0 , 2).equals("#>") ? msg.substring(2) : msg)) {
 			return;
 		}
 

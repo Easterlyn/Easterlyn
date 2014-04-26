@@ -35,7 +35,7 @@ public class Shape {
 	 * <p>
 	 * N.B. all Locations are relative to the key Block of the Machine.
 	 * 
-	 * @param l the Location to add
+	 * @param key the Location to add
 	 * @param m the MaterialData to make the Block from
 	 */
 	public void addBlock(Vector v, MaterialData m) {

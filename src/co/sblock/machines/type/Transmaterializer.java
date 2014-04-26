@@ -63,6 +63,9 @@ public class Transmaterializer extends Machine {
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
+		if (super.handleInteract(event)) {
+			return true;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}

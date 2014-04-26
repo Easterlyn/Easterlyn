@@ -87,6 +87,9 @@ public class Alchemiter extends Machine {
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
+		if (super.handleInteract(event)) {
+			return true;
+		}
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}

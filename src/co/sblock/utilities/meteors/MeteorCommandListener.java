@@ -1,6 +1,7 @@
 package co.sblock.utilities.meteors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -48,6 +49,15 @@ public class MeteorCommandListener implements CommandListener {
 			}
 		}
 		new Meteorite(target, material, radius, blockDamage).dropMeteorite();
+		return true;
+	}
+
+	@SblockCommand(description = "Toggle bore mode", permission = "meteor.launch",
+			usage = "/meteorbore")
+	public boolean meteorbore(CommandSender sender, String[] args) {
+		
+		sender.sendMessage(ChatColor.GREEN + "Toggled bore mode to "
+				+ MeteorMod.getInstance().setBore(!MeteorMod.getInstance().getBore()));
 		return true;
 	}
 }

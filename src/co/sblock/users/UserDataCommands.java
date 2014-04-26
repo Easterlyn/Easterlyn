@@ -75,7 +75,7 @@ public class UserDataCommands implements CommandListener {
 	 * @return true if command was used correctly
 	 */
 	@SblockCommand(consoleFriendly = true, description = "Set player data",
-			usage = "setplayer <playername> <class|aspect|land|dream|prevloc> <value>",
+			usage = "setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>",
 			permission = "group.horrorterror")
 	public boolean setplayer(CommandSender sender, String[] args) {
 		if (args == null || args.length < 3) {
@@ -91,6 +91,8 @@ public class UserDataCommands implements CommandListener {
 			user.setMediumPlanet(args[2]);
 		else if(args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream"))
 			user.setDreamPlanet(args[2]);
+		else if(args[1].equals("progression"))
+			user.setProgression(ProgressionState.valueOf(args[2].toUpperCase()));
 		else if (args[1].equals("prevloc")) {
 			user.setPreviousLocation(user.getPlayer().getLocation());
 		} else

@@ -25,6 +25,8 @@ public class MeteorMod extends Module implements Listener {
 	private HashMap<Entity, Boolean> entities;
 	/** exploding entitiy id's, probably. */
 	private int task;
+	/** Toggles bore mode on or off */
+	private boolean bore;
 
 	/**
 	 * @see Module#onEnable()
@@ -33,9 +35,9 @@ public class MeteorMod extends Module implements Listener {
 	public void onEnable() {
 		instance = this;
 		entities = new HashMap<>();
+		setBore(false);
 		this.registerCommands(new MeteorCommandListener());
-		Sblock.getInstance().getServer().getPluginManager()
-				.registerEvents(this, Sblock.getInstance());
+		this.registerEvents(this);
 		task = -1;
 		// startReckoning(20*20);
 	}
@@ -55,6 +57,25 @@ public class MeteorMod extends Module implements Listener {
 	 */
 	public static MeteorMod getInstance() {
 		return instance;
+	}
+
+	/**
+	 * Check if Meteor explosions should bore.
+	 * 
+	 * @return true if meteors should bore
+	 */
+	public boolean getBore() {
+		return bore;
+	}
+
+	/**
+	 * Set whether or not Meteorites should bore.
+	 * 
+	 * @param bore the bore to set
+	 */
+	public boolean setBore(boolean bore) {
+		this.bore = bore;
+		return bore;
 	}
 
 	/**

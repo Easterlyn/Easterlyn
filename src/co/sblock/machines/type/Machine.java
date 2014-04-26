@@ -31,6 +31,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.machines.MachineManager;
 import co.sblock.machines.SblockMachines;
 import co.sblock.users.User;
 
@@ -42,7 +43,7 @@ import co.sblock.users.User;
 public abstract class Machine {
 
 	/** The Location of the key Block of the Machine. */
-	protected Location l;
+	protected Location key;
 
 	/** Additional data stored in the Machine, e.g. creator name. */
 	private String data;
@@ -57,27 +58,27 @@ public abstract class Machine {
 	protected HashMap<Location, MaterialData> blocks;
 
 	/**
-	 * @param l the Location of the key Block of this Machine
+	 * @param key the Location of the key Block of this Machine
 	 * @param data any additional data stored in this machine, e.g. creator name
 	 * @param d the facing direction of the Machine
 	 */
-	Machine(Location l, String data, Direction d) {
-		this.l = l;
+	Machine(Location key, String data, Direction d) {
+		this.key = key;
 		this.data = data;
 		this.d = d;
-		this.shape = new Shape(l.clone());
+		this.shape = new Shape(key.clone());
 		shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop().getData());
 	}
 
 	/**
-	 * @param l the Location of the key Block of this Machine
+	 * @param key the Location of the key Block of this Machine
 	 * @param data any additional data stored in this machine, e.g. creator name
 	 */
-	Machine(Location l, String data) {
-		this.l = l;
+	Machine(Location key, String data) {
+		this.key = key;
 		this.data = data;
 		this.d = Direction.NORTH;
-		this.shape = new Shape(l.clone());
+		this.shape = new Shape(key.clone());
 		shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop().getData());
 	}
 
@@ -87,7 +88,7 @@ public abstract class Machine {
 	 * @return the Location
 	 */
 	public Location getKey() {
-		return l;
+		return key;
 	}
 
 	/**
@@ -98,7 +99,7 @@ public abstract class Machine {
 	 * @return the Location String
 	 */
 	public String getLocationString() {
-		return l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ();
+		return key.getWorld().getName() + "," + key.getBlockX() + "," + key.getBlockY() + "," + key.getBlockZ();
 	}
 
 	/**
@@ -130,7 +131,8 @@ public abstract class Machine {
 	 */
 	public void assemble(BlockPlaceEvent event) {
 		for (Location l : blocks.keySet()) {
-			if (!l.equals(this.l) && !l.getBlock().isEmpty()) {
+			if (!l.equals(this.key) && (!l.getBlock().isEmpty()
+					|| MachineManager.getManager().isExploded(l.getBlock()))) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed();
@@ -158,15 +160,14 @@ public abstract class Machine {
 	}
 
 	/**
-	 * For use when Machine would be affected by an explosion.
+	 * For use when Machine would be affected by an explosion without CreeperHeal enabled.
 	 * <p>
-	 * Machines are very abusable in combination with CreeperHeal,
-	 * so instead of flat out cancelling the event, making it rather
-	 * difficult to do anything fun like drop a meteor on someone's
-	 * computer, we'll remove all blocks from the world and reset them.
+	 * Machines are very abusable in combination with CreeperHeal, so instead of flat out cancelling
+	 * the event, making it rather difficult to do anything fun like drop a meteor on someone's
+	 * computer, we'll hook it and play nice.
 	 */
 	@SuppressWarnings("deprecation")
-	public void dodge() {
+	public void reassemble() {
 		final HashMap<Location, ItemStack[]> invents = new HashMap<Location, ItemStack[]>();
 		for (Location l : blocks.keySet()) {
 			Block b = l.getBlock();
@@ -187,7 +188,7 @@ public abstract class Machine {
 						((InventoryHolder) e.getKey().getBlock().getState()).getInventory().setContents(e.getValue());
 					} catch (ClassCastException e1) {
 						for (ItemStack is : e.getValue()) {
-							l.getWorld().dropItem(l, is);
+							key.getWorld().dropItem(key, is);
 						}
 					}
 				}
@@ -202,10 +203,9 @@ public abstract class Machine {
 	 */
 	public Set<Location> getLocations() {
 		if (blocks == null) {
-			return shape.getBuildLocations(getFacingDirection()).keySet();
-		} else {
-			return blocks.keySet();
+			blocks = shape.getBuildLocations(getFacingDirection());
 		}
+		return blocks.keySet();
 	}
 
 	/**
@@ -232,16 +232,23 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
-		if (meetsAdditionalBreakConditions(event) || event.getPlayer().hasPermission("group.denizen")) {
-			if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !getType().isFree()) {
-				getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
-			}
-			for (Location l : this.getLocations()) {
-				l.getBlock().setType(Material.AIR);
-			}
-			getKey().getBlock().setType(Material.AIR);
-			SblockMachines.getMachines().getManager().removeMachineListing(getKey());
+		if (!meetsAdditionalBreakConditions(event) && !event.getPlayer().hasPermission("group.denizen")) {
+			return true;
 		}
+		for (Location l : this.blocks.keySet()) {
+			if (MachineManager.getManager().isExploded(l.getBlock())) {
+				event.getPlayer().sendMessage(ChatColor.RED + "This machine is too damaged to remove!");
+				return true;
+			}
+		}
+		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !getType().isFree()) {
+			getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
+		}
+		for (Location l : this.getLocations()) {
+			l.getBlock().setType(Material.AIR);
+		}
+		getKey().getBlock().setType(Material.AIR);
+		SblockMachines.getMachines().getManager().removeMachineListing(getKey());
 		return true;
 	}
 
@@ -331,7 +338,15 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public abstract boolean handleInteract(PlayerInteractEvent event);
+	public boolean handleInteract(PlayerInteractEvent event) {
+		for (Location l : this.blocks.keySet()) {
+			if (MachineManager.getManager().isExploded(l.getBlock())) {
+				event.getPlayer().sendMessage(ChatColor.RED + "This machine is too damaged to use!");
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Handles hopper interaction with Blocks in the Machine.
@@ -385,8 +400,8 @@ public abstract class Machine {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@SuppressWarnings("deprecation")
 			public void run() {
-				MaterialData m = blocks.get(l);
-				Block b = l.getBlock();
+				MaterialData m = blocks.get(key);
+				Block b = key.getBlock();
 				b.setType(m.getItemType());
 				b.setData(m.getData());
 			}
@@ -399,7 +414,7 @@ public abstract class Machine {
 	protected void assemblyFailed() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			public void run() {
-				SblockMachines.getMachines().getManager().removeMachineListing(l);
+				SblockMachines.getMachines().getManager().removeMachineListing(key);
 			}
 		});
 	}

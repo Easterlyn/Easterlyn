@@ -42,14 +42,14 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	@Override
 	public void assemble(BlockPlaceEvent event) {
-		if (SblockMachines.getMachines().getManager().hasComputer(event.getPlayer(), l)) {
+		if (SblockMachines.getMachines().getManager().hasComputer(event.getPlayer(), key)) {
 			if (event.getPlayer().hasPermission("group.horrorterror")) {
 				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
 				return;
 			}
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer placed!");
-			SblockMachines.getMachines().getManager().removeMachineListing(l);
+			SblockMachines.getMachines().getManager().removeMachineListing(key);
 		}
 	}
 
@@ -127,6 +127,9 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	public boolean handleInteract(PlayerInteractEvent event) {
+		if (super.handleInteract(event)) {
+			return true;
+		}
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}

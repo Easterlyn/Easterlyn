@@ -104,7 +104,7 @@ public class Entry {
 		// Reverts the Machine to its original state.
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(holo.getDefaultLocation().getBlock());
 		if (m != null && m.getType() == MachineType.CRUXTRUDER) {
-			m.dodge();
+			m.reassemble();
 		}
 
 		// Kicks the server out of server mode

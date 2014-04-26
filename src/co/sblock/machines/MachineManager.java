@@ -38,10 +38,13 @@ public class MachineManager {
 	private Map<Location, Machine> machineKeys;
 	/** A Map of Machine Block Locations to the corresponding key Location. */
 	private Map<Location, Location> machineBlocks;
+	/** A Map of all exploded blocks. */
+	private Set<Block> exploded;
 
 	public MachineManager() {
 		this.machineKeys = new HashMap<Location, Machine>();
 		this.machineBlocks = new HashMap<Location, Location>();
+		this.exploded = new HashSet<Block>();
 	}
 
 	/**
@@ -328,5 +331,38 @@ public class MachineManager {
 			return true;
 		}
 		return SblockMachines.getMachines().getManager().isByComputer(user.getPlayer(), 10);
+	}
+
+	/**
+	 * Checks to see if a Machine block is exploded.
+	 * 
+	 * @param b the Block to check
+	 * 
+	 * @return true if the block is recorded as being exploded.
+	 */
+	public boolean isExploded(Block b) {
+		return exploded.contains(b);
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param b
+	 */
+	public void addBlock(Block b) {
+		exploded.add(b);
+	}
+
+	public boolean unexplode(Block b) {
+		return exploded.remove(b);
+	}
+
+	/**
+	 * Gets the MachineManager instance.
+	 * 
+	 * @return the MachineManager
+	 */
+	public static MachineManager getManager() {
+		return SblockMachines.getMachines().getManager();
 	}
 }
