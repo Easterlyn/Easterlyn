@@ -1,5 +1,6 @@
 package co.sblock.utilities.progression;
 
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -32,11 +33,13 @@ public class Entry {
 	private static Entry instance;
 
 	private HashBiMap<Hologram, UUID> holograms;
+	private HashMap<UUID, Meteorite> meteors;
 
 	private int task;
 
 	public Entry() {
 		holograms = HashBiMap.create();
+		meteors = new HashMap<>();
 		task = -1;
 		HoloAPI.getTagFormatter().addFormat(Pattern.compile("\\%entry:([0-9]+)\\%"), new EntryTimeTillTag());
 	}
@@ -58,8 +61,13 @@ public class Entry {
 		// Center hologram inside the space above the block
 		final Location holoLoc = cruxtruder.clone().add(new Vector(0.5, 0, 0.5));
 		// 4:13 = 253 seconds, 2 second display of 0:00
+		// Set to 254 seconds because 1ms delay and rounding causes the display to start at 4:13
 		holograms.put(HoloAPI.getManager().createSimpleHologram(holoLoc, 260,
 				"%entry:" + (System.currentTimeMillis() + 254000) + "%"), user.getUUID());
+		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true);
+		// 254 seconds * 20 ticks per second = 5080
+		meteorite.hoverMeteorite(5080);
+		meteors.put(user.getUUID(), meteorite);
 
 		if (task != -1) {
 			return;
@@ -93,13 +101,16 @@ public class Entry {
 		if (holo == null) {
 			return;
 		}
-		// Set Hologram invisible (prevents potentially odd logouts)
+		// Set Hologram invisible (necessary since logout = failure)
 		holo.clearAllPlayerViews();
 		// Create a new Hologram of short duration for effect
 		HoloAPI.getManager().createSimpleHologram(holo.getDefaultLocation(), 5, "0:00");
 
-		// Create and drop a Meteorite. TODO display during Entry?
-		new Meteorite(holo.getDefaultLocation(), Material.NETHERRACK.name(), 3, true).dropMeteorite();;
+		// Drop the Meteor created.
+		Meteorite meteorite = meteors.remove(user.getUUID());
+		if (!meteorite.hasDropped()) {
+			meteorite.dropMeteorite();
+		}
 
 		// Reverts the Machine to its original state.
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(holo.getDefaultLocation().getBlock());

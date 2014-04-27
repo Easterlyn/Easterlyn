@@ -21,11 +21,11 @@ import co.sblock.Sblock;
 public class MeteorMod extends Module implements Listener {
 	/** The MeteorMod instance. */
 	private static MeteorMod instance;
-	/** The Map of Meteorite FallingBlock UUIDs */
+	/** The Map of Meteorite FallingBlock UUIDs. */
 	private HashMap<Entity, Boolean> entities;
-	/** exploding entitiy id's, probably. */
+	/** Task ID for creating particle effects on Meteorites. */
 	private int task;
-	/** Toggles bore mode on or off */
+	/** Toggles bore mode on or off. */
 	private boolean bore;
 
 	/**

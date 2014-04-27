@@ -6,13 +6,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.FallingBlock;
-import org.bukkit.event.Listener;
+
 import co.sblock.Sblock;
 
 /**
  * @author Dublek, Jikoo
  */
-public class Meteorite implements Listener {
+public class Meteorite {
 
 	/** The radius to drop the Meteorite within. */
 	private int radius;
@@ -24,6 +24,8 @@ public class Meteorite implements Listener {
 	private Material mat;
 	/** The Locations of a Voxel sphere around the Meteorite's spawn Location. */
 	private HashSet<Location> sphereCoords;
+	/** The Task ID for dropping a Meteorite. */
+	private int dropTask;
 
 	/**
 	 * Create a new Meteorite targeting a Player or Location.
@@ -37,7 +39,7 @@ public class Meteorite implements Listener {
 
 		skyTarget = target.clone();
 		int highestPossible = 255 - radius;
-		int visible = target.getWorld().getHighestBlockYAt(target) + 40;
+		int visible = target.getWorld().getHighestBlockYAt(target) + 40 + r;
 		skyTarget.setY(visible > highestPossible ? highestPossible : visible);
 
 		if (r > 0) {
@@ -52,8 +54,7 @@ public class Meteorite implements Listener {
 			mat = Material.NETHERRACK;
 		}
 		explosionBlockDamage = explode;
-		// module = instance;
-		Bukkit.getPluginManager().registerEvents(this, Sblock.getInstance());
+		dropTask = -1;
 	}
 
 	/**
@@ -67,11 +68,11 @@ public class Meteorite implements Listener {
 			@Override
 			public void run() {
 				genMeteorite();
-				if (sphereCoords.size() < 1) {
+				if (sphereCoords.size() == 0) {
 					return;
 				}
 
-				// The rest must be done on the main thread. Yes, this is hideous. Get over it.
+				// Spawning and (where applicable) removing blocks must be done on the main thread
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 					@Override
 					public void run() {
@@ -105,12 +106,39 @@ public class Meteorite implements Listener {
 	/**
 	 * Sets all blocks in the Meteorite to the Meteorite's Material.
 	 */
-	public void hoverMeteorite() {
-		for (Location a : sphereCoords) {
-			if (a.getBlock().isEmpty()) {
-				a.getBlock().setType(mat);
+	@SuppressWarnings("deprecation")
+	public void hoverMeteorite(final long hoverTicks) {
+		// Generation is a heavy operation - do it off the main thread.
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@Override
+			public void run() {
+				genMeteorite();
+				if (sphereCoords.size() == 0) {
+					return;
+				}
+
+				// Construct the meteor in the world - must be on the main thread
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						for (Location a : sphereCoords) {
+							if (a.getBlock().isEmpty()) {
+								a.getBlock().setType(mat);
+							}
+						}
+					}
+				});
+
+				// Schedule the meteorite to drop later
+				dropTask = Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						dropMeteorite();
+						dropTask = -1;
+					}
+				}, hoverTicks);
 			}
-		}
+		});
 	}
 
 	/**
@@ -145,5 +173,23 @@ public class Meteorite implements Listener {
 			}
 		}
 		return coords;
+	}
+
+	/**
+	 * Check if the Meteorite has been dropped. Applicable only when hoverMeteorite has been called.
+	 * 
+	 * @return true if a task is pending to drop the Meteorite.
+	 */
+	public boolean hasDropped() {
+		return dropTask == -1;
+	}
+
+	/**
+	 * Gets the Meteorite dropping task.
+	 * 
+	 * @return the dropTask ID
+	 */
+	public int getDropTask() {
+		return dropTask;
 	}
 }
