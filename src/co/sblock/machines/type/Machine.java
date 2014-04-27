@@ -197,6 +197,17 @@ public abstract class Machine {
 	}
 
 	/**
+	 * Removes this machine's blocks and listing.
+	 */
+	public void remove() {
+		for (Location l : this.getLocations()) {
+			l.getBlock().setType(Material.AIR);
+		}
+		getKey().getBlock().setType(Material.AIR);
+		SblockMachines.getMachines().getManager().removeMachineListing(getKey());
+	}
+
+	/**
 	 * Gets a Set of all non-key Locations of Blocks in a Machine.
 	 * 
 	 * @return the Set
@@ -238,11 +249,7 @@ public abstract class Machine {
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !getType().isFree()) {
 			getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
 		}
-		for (Location l : this.getLocations()) {
-			l.getBlock().setType(Material.AIR);
-		}
-		getKey().getBlock().setType(Material.AIR);
-		SblockMachines.getMachines().getManager().removeMachineListing(getKey());
+		remove();
 		return true;
 	}
 

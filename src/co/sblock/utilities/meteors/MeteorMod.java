@@ -47,6 +47,10 @@ public class MeteorMod extends Module implements Listener {
 	 */
 	@Override
 	public void onDisable() {
+		for (Entity e : entities.keySet().toArray(new Entity[0])) {
+			entities.remove(e);
+			e.remove();
+		}
 		// stopReckoning();
 	}
 

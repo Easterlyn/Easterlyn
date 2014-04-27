@@ -21,7 +21,7 @@ public class BlockBreakListener implements Listener {
 	 * 
 	 * @param event the BlockBreakEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
 		if (m != null) {

@@ -179,6 +179,8 @@ public class MachineManager {
 		return machineKeys.keySet();
 	}
 
+	
+
 	/**
 	 * Gets a Set of all Machine key Locations by MachineType.
 	 * 
@@ -223,6 +225,65 @@ public class MachineManager {
 		for (Location l : machineKeys.keySet()) {
 			SblockData.getDB().saveMachine(machineKeys.get(l));
 		}
+	}
+
+	/**
+	 * Flags block(s) as having been exploded.
+	 * 
+	 * @param b the Block
+	 */
+	public void addBlock(Block... blocks) {
+		for (Block b : blocks) {
+			exploded.put(b, true);
+		}
+	}
+
+	/**
+	 * Checks to see if a Machine block is exploded.
+	 * 
+	 * @param b the Block to check
+	 * 
+	 * @return true if the block is recorded as being exploded.
+	 */
+	public boolean isExploded(Block b) {
+		return exploded.containsKey(b);
+	}
+
+	/**
+	 * Marks a Block as having been restored post-explosion.
+	 * 
+	 * @param b the Block
+	 */
+	public void setRestored(Block b) {
+		exploded.remove(b);
+	}
+
+	/**
+	 * Register stored blocks as not to be regenerated. For use when a Machine is broken.
+	 * 
+	 * @param blocks
+	 */
+	public void setRemoved(Block... blocks) {
+		for (Block b : blocks) {
+			if (exploded.containsKey(b)) {
+				exploded.put(b, false);
+			}
+		}
+	}
+
+	/**
+	 * Checks if a Block should be replaced post-explosion. This allows Machines to be unregistered
+	 * while partially exploded.
+	 * 
+	 * @param b the Block
+	 * 
+	 * @return true if the block is to be restored
+	 */
+	public boolean shouldRestore(Block b) {
+		if (exploded.containsKey(b)) {
+			return exploded.get(b);
+		}
+		return true;
 	}
 
 	/**
@@ -318,6 +379,23 @@ public class MachineManager {
 	}
 
 	/**
+	 * Gets all machines with the Player's UUID for data.
+	 * 
+	 * @param playerID the Player's UUID
+	 * 
+	 * @return the Set of Machines
+	 */
+	public Set<Machine> getMachines(UUID playerID) {
+		HashSet<Machine> machines = new HashSet<>();
+		for (Machine m : machineKeys.values()) {
+			if (m.getData().equals(playerID.toString())) {
+				machines.add(m);
+			}
+		}
+		return machines;
+	}
+
+	/**
 	 * Check to see if the Player is within range of a Computer.
 	 * 
 	 * @return true if the Player is within 10 meters of a Computer.
@@ -327,54 +405,6 @@ public class MachineManager {
 			return true;
 		}
 		return SblockMachines.getMachines().getManager().isByComputer(user.getPlayer(), 10);
-	}
-
-	/**
-	 * Flags block(s) as having been exploded.
-	 * 
-	 * @param b the Block
-	 */
-	public void addBlock(Block... blocks) {
-		for (Block b : blocks) {
-			exploded.put(b, true);
-		}
-	}
-
-	/**
-	 * Checks to see if a Machine block is exploded.
-	 * 
-	 * @param b the Block to check
-	 * 
-	 * @return true if the block is recorded as being exploded.
-	 */
-	public boolean isExploded(Block b) {
-		return exploded.containsKey(b);
-	}
-
-	/**
-	 * Register stored blocks as not to be regenerated. For use when a Machine is broken.
-	 * 
-	 * @param blocks
-	 */
-	public void setRemoved(Block... blocks) {
-		for (Block b : blocks) {
-			if (exploded.containsKey(b)) {
-				exploded.put(b, false);
-			}
-		}
-	}
-
-	/**
-	 * Checks if a Block should be replaced post-explosion. This allows Machines to be unregistered
-	 * while partially exploded.
-	 * 
-	 * @param b the Block
-	 * 
-	 * @return true if the block is to be restored
-	 */
-	public boolean shouldRestore(Block b) {
-		Boolean shouldRestore = exploded.remove(b);
-		return shouldRestore != null ? shouldRestore : true;
 	}
 
 	/**

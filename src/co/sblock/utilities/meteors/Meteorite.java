@@ -63,6 +63,12 @@ public class Meteorite {
 	 */
 	@SuppressWarnings("deprecation")
 	public void dropMeteorite() {
+		// Meteorite cannot be dropped, tasks cannot be scheduled.
+		if (!Sblock.getInstance().isEnabled()) {
+			this.removeMeteor();
+			return;
+		}
+
 		// Decently heavy operation, should be run off the main thread where possible.
 		Bukkit.getScheduler().scheduleAsyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@Override
@@ -182,6 +188,21 @@ public class Meteorite {
 	 */
 	public boolean hasDropped() {
 		return dropTask == -1;
+	}
+
+	/**
+	 * Removes the hovered meteorite, if any.
+	 */
+	public void removeMeteor() {
+		if (hasDropped()) {
+			return;
+		}
+		Bukkit.getScheduler().cancelTask(dropTask);
+		for (Location location : sphereCoords) {
+			if (location.getBlock().getType() == mat) {
+				location.getBlock().setType(Material.AIR);
+			}
+		}
 	}
 
 	/**

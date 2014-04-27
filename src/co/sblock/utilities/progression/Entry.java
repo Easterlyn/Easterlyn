@@ -40,7 +40,6 @@ public class Entry {
 		task = -1;
 		HoloAPI.getTagFormatter().addFormat(Pattern.compile("\\%entry:([0-9]+)\\%"), new EntryTimeTillTag());
 	}
-
 	public boolean canStart(User user) {
 		if (!holograms.values().contains(user.getUUID()) && user.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())
 				&& user.getProgression() == ProgressionState.NONE) {
@@ -49,6 +48,11 @@ public class Entry {
 		// User has started or finished Entry already or not installed the SburbClient.
 		return false;
 	}
+
+	public boolean isEntering(User user) {
+		return holograms.containsValue(user.getUUID());
+	}
+
 
 	public void startEntry(User user, Location cruxtruder) {
 		if (!canStart(user)) {
@@ -136,9 +140,5 @@ public class Entry {
 			instance = new Entry();
 		}
 		return instance;
-	}
-
-	public boolean isEntering(User user) {
-		return holograms.containsValue(user.getUUID());
 	}
 }

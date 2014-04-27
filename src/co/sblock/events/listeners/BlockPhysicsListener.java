@@ -19,7 +19,7 @@ public class BlockPhysicsListener implements Listener {
 	 * 
 	 * @param event the BlockPhysicsEvent
 	 */
-	@EventHandler(ignoreCancelled = false)
+	@EventHandler(ignoreCancelled = true)
 	public void onBlockPhysics(BlockPhysicsEvent event) {
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
 		if (m != null) {
