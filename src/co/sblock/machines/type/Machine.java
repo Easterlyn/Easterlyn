@@ -235,12 +235,6 @@ public abstract class Machine {
 		if (!meetsAdditionalBreakConditions(event) && !event.getPlayer().hasPermission("group.denizen")) {
 			return true;
 		}
-		for (Location l : this.blocks.keySet()) {
-			if (MachineManager.getManager().isExploded(l.getBlock())) {
-				event.getPlayer().sendMessage(ChatColor.RED + "This machine is too damaged to remove!");
-				return true;
-			}
-		}
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !getType().isFree()) {
 			getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
 		}

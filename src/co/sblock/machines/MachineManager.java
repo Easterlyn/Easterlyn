@@ -1,6 +1,5 @@
 package co.sblock.machines;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -39,12 +38,12 @@ public class MachineManager {
 	/** A Map of Machine Block Locations to the corresponding key Location. */
 	private Map<Location, Location> machineBlocks;
 	/** A Map of all exploded blocks. */
-	private Set<Block> exploded;
+	private Map<Block, Boolean> exploded;
 
 	public MachineManager() {
-		this.machineKeys = new HashMap<Location, Machine>();
-		this.machineBlocks = new HashMap<Location, Location>();
-		this.exploded = new HashSet<Block>();
+		this.machineKeys = new HashMap<>();
+		this.machineBlocks = new HashMap<>();
+		this.exploded = new HashMap<>();
 	}
 
 	/**
@@ -204,17 +203,15 @@ public class MachineManager {
 	 * 
 	 * @param l the key Location
 	 */
+	@SuppressWarnings("unchecked")
 	public void removeMachineListing(Location l) {
 		if (machineKeys.containsKey(l)) {
 			SblockData.getDB().deleteMachine(machineKeys.remove(l));
-			ArrayList<Location> stagedRemoval = new ArrayList<Location>();
-			for (Entry<Location, Location> e : machineBlocks.entrySet()) {
+			for (Entry<Location, Location> e : machineBlocks.entrySet().toArray(new Entry[0])) {
 				if (e.getValue().equals(l)) {
-					stagedRemoval.add(e.getKey());
+					machineBlocks.remove(e.getKey());
+					setRemoved(e.getKey().getBlock());
 				}
-			}
-			for (Location l1 : stagedRemoval) {
-				machineBlocks.remove(l1);
 			}
 		}
 	}
@@ -246,13 +243,12 @@ public class MachineManager {
 	}
 
 	/**
-	 * Returns a Set of Machines within a specified radius. If no Machines match
-	 * the specified conditions, an empty Set is returned.
+	 * Returns a Set of Machines within a specified radius. If no Machines match the specified
+	 * conditions, an empty Set is returned.
 	 * 
 	 * @param current the current Location (presumably of a Player)
 	 * @param searchDistance the radius from current that is acceptable
-	 * @param keyRequired true if the key Location must be within the radius.
-	 *        Less intensive search.
+	 * @param keyRequired true if the key Location must be within the radius. Less intensive search.
 	 * @param mt the MachineType to search for
 	 * 
 	 * @return all machines of the correct type within the specified radius
@@ -334,6 +330,17 @@ public class MachineManager {
 	}
 
 	/**
+	 * Flags block(s) as having been exploded.
+	 * 
+	 * @param b the Block
+	 */
+	public void addBlock(Block... blocks) {
+		for (Block b : blocks) {
+			exploded.put(b, true);
+		}
+	}
+
+	/**
 	 * Checks to see if a Machine block is exploded.
 	 * 
 	 * @param b the Block to check
@@ -341,20 +348,33 @@ public class MachineManager {
 	 * @return true if the block is recorded as being exploded.
 	 */
 	public boolean isExploded(Block b) {
-		return exploded.contains(b);
+		return exploded.containsKey(b);
 	}
 
 	/**
+	 * Register stored blocks as not to be regenerated. For use when a Machine is broken.
 	 * 
-	 * 
-	 * @param b
+	 * @param blocks
 	 */
-	public void addBlock(Block b) {
-		exploded.add(b);
+	public void setRemoved(Block... blocks) {
+		for (Block b : blocks) {
+			if (exploded.containsKey(b)) {
+				exploded.put(b, false);
+			}
+		}
 	}
 
-	public boolean unexplode(Block b) {
-		return exploded.remove(b);
+	/**
+	 * Checks if a Block should be replaced post-explosion. This allows Machines to be unregistered
+	 * while partially exploded.
+	 * 
+	 * @param b the Block
+	 * 
+	 * @return true if the block is to be restored
+	 */
+	public boolean shouldRestore(Block b) {
+		Boolean shouldRestore = exploded.remove(b);
+		return shouldRestore != null ? shouldRestore : true;
 	}
 
 	/**

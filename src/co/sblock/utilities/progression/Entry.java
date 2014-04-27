@@ -14,10 +14,7 @@ import com.dsh105.holoapi.api.Hologram;
 import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
-import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Icon;
-import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.MachineType;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.utilities.hologram.EntryTimeTillTag;
@@ -112,12 +109,6 @@ public class Entry {
 			meteorite.dropMeteorite();
 		}
 
-		// Reverts the Machine to its original state.
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(holo.getDefaultLocation().getBlock());
-		if (m != null && m.getType() == MachineType.CRUXTRUDER) {
-			m.reassemble();
-		}
-
 		// Kicks the server out of server mode
 		User server = User.getUser(user.getServer());
 		if (server != null && server.isServer()) {
@@ -130,6 +121,14 @@ public class Entry {
 
 		// Uninstalls the client program
 		user.getPrograms().remove(Icon.SBURBCLIENT.getProgramID());
+
+		// Reverts the Machine to its original state.
+	}
+
+	public void succeed(User user) {
+		finish(user);
+
+		
 	}
 
 	public static Entry getEntry() {
