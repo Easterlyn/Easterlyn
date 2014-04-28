@@ -293,7 +293,7 @@ public class ChatData {
 
 		// check if chat is directed at another channel
 		int space = msg.indexOf(' ');
-		if (msg.indexOf('@') == 0 && space > 1) {
+		if (msg.charAt(0) == '@' && space > 1) {
 			// Check for alternate channel destination. Failing that, warn user.
 			String newChannel = msg.substring(1, space);
 			if (ChannelManager.getChannelManager().isValidChannel(newChannel)) {
