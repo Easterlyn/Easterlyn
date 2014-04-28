@@ -335,7 +335,10 @@ public abstract class Channel {
 				listening.remove(userID);
 			}
 		}
-		Log.anonymousInfo(message);
+		if (sender != null) {
+			// Chester logs even if events are cancelled, chat appears in console.
+			Log.anonymousInfo(message);
+		}
 	}
 
 	/**
