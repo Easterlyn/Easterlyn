@@ -1,11 +1,15 @@
 package co.sblock.utilities.meteors;
 
-import java.util.HashMap;
+import java.util.HashSet;
+
+import net.minecraft.server.v1_7_R3.Explosion;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -21,12 +25,10 @@ import co.sblock.Sblock;
 public class MeteorMod extends Module implements Listener {
 	/** The MeteorMod instance. */
 	private static MeteorMod instance;
-	/** The Map of Meteorite FallingBlock UUIDs. */
-	private HashMap<Entity, Boolean> entities;
+	/** The Set of Meteorite FallingBlock UUIDs. */
+	private HashSet<Entity> entities;
 	/** Task ID for creating particle effects on Meteorites. */
 	private int task;
-	/** Toggles bore mode on or off. */
-	private boolean bore;
 
 	/**
 	 * @see Module#onEnable()
@@ -34,8 +36,7 @@ public class MeteorMod extends Module implements Listener {
 	@Override
 	public void onEnable() {
 		instance = this;
-		entities = new HashMap<>();
-		setBore(false);
+		entities = new HashSet<>();
 		this.registerCommands(new MeteorCommandListener());
 		this.registerEvents(this);
 		task = -1;
@@ -47,7 +48,7 @@ public class MeteorMod extends Module implements Listener {
 	 */
 	@Override
 	public void onDisable() {
-		for (Entity e : entities.keySet().toArray(new Entity[0])) {
+		for (Entity e : entities.toArray(new Entity[0])) {
 			entities.remove(e);
 			e.remove();
 		}
@@ -64,32 +65,13 @@ public class MeteorMod extends Module implements Listener {
 	}
 
 	/**
-	 * Check if Meteor explosions should bore.
-	 * 
-	 * @return true if meteors should bore
-	 */
-	public boolean getBore() {
-		return bore;
-	}
-
-	/**
-	 * Set whether or not Meteorites should bore.
-	 * 
-	 * @param bore the bore to set
-	 */
-	public boolean setBore(boolean bore) {
-		this.bore = bore;
-		return bore;
-	}
-
-	/**
 	 * Add an Entity. If FallingBlock, specify if the entity is to explode on contact.
 	 * 
 	 * @param entity the Entity
 	 * @param damage true if the explosion is to do terrain damage
 	 */
-	public void addEntity(Entity entity, boolean damage) {
-		entities.put(entity, damage);
+	public void addEntity(Entity entity) {
+		entities.add(entity);
 		if (task == -1) {
 			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 				@Override
@@ -99,13 +81,11 @@ public class MeteorMod extends Module implements Listener {
 						task = -1;
 						return;
 					}
-					for (Entity entity : entities.keySet().toArray(new Entity[0])) {
+					for (Entity entity : entities.toArray(new Entity[0])) {
 						if (entity.isDead()) {
 							entities.remove(entity);
 						}
-						if (entity.getType() == EntityType.FALLING_BLOCK) {
-							entity.getWorld().playEffect(entity.getLocation(), Effect.MOBSPAWNER_FLAMES, 48);
-						}
+						entity.getWorld().playEffect(entity.getLocation(), Effect.MOBSPAWNER_FLAMES, 48);
 					}
 				}
 			}, 0, 4);
@@ -122,11 +102,11 @@ public class MeteorMod extends Module implements Listener {
 		if (event.getEntityType() != EntityType.FALLING_BLOCK) {
 			return;
 		}
-		if (entities.containsKey(event.getEntity())) {
-			
+		if (entities.contains(event.getEntity())) {
 			event.setCancelled(true);
+			entities.remove(event.getEntity());
+			explode(event.getBlock().getLocation(), event.getEntity());
 			event.getEntity().remove();
-			explode(event.getBlock().getLocation(), entities.remove(event.getEntity()));
 			event.getBlock().setType(Material.AIR);
 			return;
 		}
@@ -137,35 +117,16 @@ public class MeteorMod extends Module implements Listener {
 	 * 
 	 * @param loc the Location to explode at
 	 */
-	public void explode(Location loc, boolean explosionBlockDamage) {
-		loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 4F, false,
-				explosionBlockDamage);
+	public void explode(Location loc, Entity explodeAs) {
+		
+		
+		Explosion explosion = new Explosion(((CraftWorld) loc.getWorld()).getHandle(),
+				((CraftEntity) explodeAs).getHandle(), loc.getX(), loc.getY(), loc.getZ(), 4F);
+		// Explosion.a = doFireDamage, set fire to terrain
+		explosion.a = false;
+		explosion.b = ((MeteoriteComponent) ((CraftEntity) explodeAs).getHandle()).shouldExplode();
+		explosion.a();
+		explosion.a(true);
+		loc.getWorld().playEffect(loc, Effect.EXPLOSION_HUGE, 4);
 	}
-
-	/**
-	 * Starts Meteorites being created in the area of online Players.
-	 * 
-	 * @param rLong the time to delay the reckoning start by in ticks
-	 */
-	/*
-	 * public void startReckoning(long rLong) { task = new
-	 * scheduledReckoning().runTaskTimer(this, 20*300, rLong); }
-	 * 
-	 * public void stopReckoning() { task.cancel(); }
-	 */
-
-	/*
-	 * public class scheduledReckoning extends BukkitRunnable {
-	 * 
-	 * @Override public void run() { if (getServer().getOnlinePlayers().length
-	 * >= 1) { Player pTarget = getServer().getOnlinePlayers()[(int)
-	 * (getServer() .getOnlinePlayers().length * Math.random())]; Location
-	 * target = pTarget.getLocation(); target.setX((int) ((160 * Math.random())
-	 * - 80)); target.setZ((int) ((160 * Math.random()) - 80)); int radius = -1;
-	 * int countdown = -1; String material = ""; boolean blockDamage = false;
-	 * getLogger().info( pTarget.getName() +
-	 * "has been randomly selected for termination"); meteorites.add(new
-	 * Meteorite(plugin, pTarget, target, material, radius, countdown,
-	 * blockDamage)); } } }
-	 */
 }

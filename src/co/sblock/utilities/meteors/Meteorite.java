@@ -5,7 +5,7 @@ import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Entity;
 
 import co.sblock.Sblock;
 
@@ -20,6 +20,8 @@ public class Meteorite {
 	private Location skyTarget;
 	/** Whether or not to do Block damage when the Meteorite lands. */
 	private boolean explosionBlockDamage;
+	/** Whether or not the meteor should be in bore mode. */
+	private boolean boreMode;
 	/** The Material to make the Meteorite be built of. */
 	private Material mat;
 	/** The Locations of a Voxel sphere around the Meteorite's spawn Location. */
@@ -35,11 +37,12 @@ public class Meteorite {
 	 * @param r the radius to drop the Meteorite within
 	 * @param explode true if the Meteorite should explode on contact with the ground
 	 */
-	public Meteorite(Location target, String m, int r, boolean explode) {
+	public Meteorite(Location target, String m, int r, boolean explode, int bore) {
 
 		skyTarget = target.clone();
 		int highestPossible = 255 - radius;
-		int visible = target.getWorld().getHighestBlockYAt(target) + 40 + r;
+		int highestBlock = target.getWorld().getHighestBlockYAt(target);
+		int visible = highestBlock + 40 + r;
 		skyTarget.setY(visible > highestPossible ? highestPossible : visible);
 
 		if (r > 0) {
@@ -52,6 +55,11 @@ public class Meteorite {
 		}
 		if (mat == null) {
 			mat = Material.NETHERRACK;
+		}
+		if (bore == -1) {
+			boreMode = target.getBlockY() < highestBlock;
+		} else {
+			boreMode = bore == 2 ? true : false;
 		}
 		explosionBlockDamage = explode;
 		dropTask = -1;
@@ -87,9 +95,7 @@ public class Meteorite {
 							if (location.getBlock().getType() == mat) {
 								location.getBlock().setType(Material.AIR);
 							}
-							FallingBlock f = skyTarget.getWorld().spawnFallingBlock(location, mat, (byte) 0);
-							f.setDropItem(false);
-							mm.addEntity(f, explosionBlockDamage);
+							mm.addEntity((Entity) new MeteoriteComponent(location, mat, explosionBlockDamage, boreMode).getBukkitEntity());
 						}
 						MeteorMod.getInstance().getLogger().info(
 								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());

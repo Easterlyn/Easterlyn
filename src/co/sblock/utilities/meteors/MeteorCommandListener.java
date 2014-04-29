@@ -1,7 +1,6 @@
 package co.sblock.utilities.meteors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,34 +29,31 @@ public class MeteorCommandListener implements CommandListener {
 		int radius = -1;
 		String material = "";
 		boolean blockDamage = false;
+		int bore = -1;
 		target = p.getTargetBlock(null, 128).getLocation();
 		for (String s : args) {
-			if (s.substring(0, 2).equalsIgnoreCase("u:")) {
+			// lighter than multiple .equalsIgnoreCase
+			s = s.toLowerCase();
+			if (s.substring(0, 2).equals("u:")) {
 				// set target (player or crosshairs)
 				Player pTarget = Bukkit.getPlayer(s.substring(2));
 				if (pTarget != null) {
 					target = pTarget.getLocation();
 				}
-			} else if (s.substring(0, 2).equalsIgnoreCase("r:")) {
+			} else if (s.substring(0, 2).equals("r:")) {
 				// set radius
 				radius = Integer.parseInt(s.substring(2));
-			} else if (s.substring(0, 2).equalsIgnoreCase("e:")) {
+			} else if (s.substring(0, 2).equals("e:")) {
 				// set explosion block damage
-				blockDamage = s.substring(2).equalsIgnoreCase("true");
-			} else if (s.substring(0, 2).equalsIgnoreCase("m:")) {
-				material = s.substring(2);
+				blockDamage = s.substring(2).equals("true");
+			} else if (s.substring(0, 2).equals("m:")) {
+				material = s.substring(2).toUpperCase();
+			} else if (s.subSequence(0, 2).equals("b:")) {
+				// set meteor to bore mode (default behavior: bore if not highest block)
+				bore = s.substring(2).equals("true") ? 1 : 0;
 			}
 		}
-		new Meteorite(target, material, radius, blockDamage).dropMeteorite();
-		return true;
-	}
-
-	@SblockCommand(description = "Toggle bore mode", permission = "meteor.launch",
-			usage = "/meteorbore")
-	public boolean meteorbore(CommandSender sender, String[] args) {
-		
-		sender.sendMessage(ChatColor.GREEN + "Toggled bore mode to "
-				+ MeteorMod.getInstance().setBore(!MeteorMod.getInstance().getBore()));
+		new Meteorite(target, material, radius, blockDamage, bore).dropMeteorite();
 		return true;
 	}
 }

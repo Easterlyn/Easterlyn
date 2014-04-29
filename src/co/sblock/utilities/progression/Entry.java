@@ -14,7 +14,9 @@ import com.dsh105.holoapi.api.Hologram;
 import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
+import co.sblock.machines.MachineManager;
 import co.sblock.machines.type.Icon;
+import co.sblock.machines.type.Machine;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.utilities.hologram.EntryTimeTillTag;
@@ -29,12 +31,14 @@ public class Entry {
 
 	private static Entry instance;
 
+//	private final Material[] materials;
 	private HashBiMap<Hologram, UUID> holograms;
 	private HashMap<UUID, Meteorite> meteors;
 
 	private int task;
 
 	public Entry() {
+//		materials = createMaterialList();
 		holograms = HashBiMap.create();
 		meteors = new HashMap<>();
 		task = -1;
@@ -65,7 +69,7 @@ public class Entry {
 		// Set to 254 seconds because 1ms delay and rounding causes the display to start at 4:13
 		holograms.put(HoloAPI.getManager().createSimpleHologram(holoLoc, 260,
 				"%entry:" + (System.currentTimeMillis() + 254000) + "%"), user.getUUID());
-		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true);
+		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true, -1);
 		// 254 seconds * 20 ticks per second = 5080
 		meteorite.hoverMeteorite(5080);
 		meteors.put(user.getUUID(), meteorite);
@@ -126,13 +130,18 @@ public class Entry {
 		// Uninstalls the client program
 		user.getPrograms().remove(Icon.SBURBCLIENT.getProgramID());
 
-		// Reverts the Machine to its original state.
+		// Removes all free machines placed by the User or their server
+		for (Machine m : MachineManager.getManager().getMachines(user.getUUID())) {
+			if (m.getType().isFree()) {
+				m.remove();
+			}
+		}
 	}
 
 	public void succeed(User user) {
 		finish(user);
 
-		
+		// TODO
 	}
 
 	public static Entry getEntry() {
@@ -140,5 +149,9 @@ public class Entry {
 			instance = new Entry();
 		}
 		return instance;
+	}
+
+	private Material[] createMaterialList() {
+		return null; // TODO
 	}
 }

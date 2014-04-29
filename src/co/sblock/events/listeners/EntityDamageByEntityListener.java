@@ -3,6 +3,10 @@ package co.sblock.events.listeners;
 import java.util.HashMap;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftEntity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +16,7 @@ import co.sblock.effects.ActiveEffect;
 import co.sblock.effects.ActiveEffectType;
 import co.sblock.effects.EffectManager;
 import co.sblock.users.User;
+import co.sblock.utilities.meteors.MeteoriteComponent;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -28,6 +33,24 @@ public class EntityDamageByEntityListener implements Listener {
 	 */
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (event.getDamager().getType() == EntityType.FALLING_BLOCK) {
+			if (((FallingBlock) event.getDamager()).getMaterial() == Material.ANVIL) {
+				// Anvils are the only vanilla fallingblock that cause damage.
+				return;
+			}
+			if (((CraftEntity) event.getDamager()).getHandle() instanceof MeteoriteComponent) {
+				if (event.getEntityType() == EntityType.FALLING_BLOCK
+						&& ((MeteoriteComponent) ((CraftEntity)event.getDamager()).getHandle()).shouldBore()) {
+					event.setCancelled(true);
+					return;
+				}
+			}
+			if (event.getEntityType() == EntityType.DROPPED_ITEM
+					|| event.getEntityType() == EntityType.PLAYER) {
+				event.setCancelled(true);
+				return;
+			}
+		}
 		if (!(event.getDamager() instanceof Player)) {
 			return;
 		}

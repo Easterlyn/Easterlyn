@@ -179,8 +179,6 @@ public class MachineManager {
 		return machineKeys.keySet();
 	}
 
-	
-
 	/**
 	 * Gets a Set of all Machine key Locations by MachineType.
 	 * 

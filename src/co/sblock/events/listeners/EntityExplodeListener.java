@@ -33,7 +33,7 @@ public class EntityExplodeListener implements Listener {
 						event.getEntity())) {
 
 			HashSet<Block> affected = new HashSet<>();
-			for (Block b : event.blockList().toArray(new Block[0])) {
+			for (Block b : event.blockList()) {
 				Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
 				if (m != null) {
 					affected.add(b);

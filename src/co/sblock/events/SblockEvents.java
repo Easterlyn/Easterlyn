@@ -74,8 +74,7 @@ public class SblockEvents extends Module {
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
 
-				new EntityDamageByEntityListener(), new EntityDamageByBlockListener(),
-				new EntityExplodeListener(),
+				new EntityDamageByEntityListener(), new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
 				
 				new FurnaceBurnListener(), new FurnaceSmeltListener(),
