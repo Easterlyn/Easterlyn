@@ -8,7 +8,7 @@ import java.util.UUID;
 import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelManager;
+import co.sblock.chat.ChannelManager;
 import co.sblock.chat.channel.ChannelType;
 
 /**

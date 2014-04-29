@@ -1,7 +1,6 @@
 package co.sblock.effects;
 
 import co.sblock.Module;
-import co.sblock.Sblock;
 
 public class SblockEffects extends Module {
 	
@@ -16,8 +15,6 @@ public class SblockEffects extends Module {
 		instance = this;
 		this.registerCommands(eCL);
 		eM = new EffectManager();
-		getLogger().fine("Effects check task started");
-		new EffectScheduler().runTaskTimer(Sblock.getInstance(), 0, 1180);
 		getLogger().fine("Effects enabled");
 	}
 

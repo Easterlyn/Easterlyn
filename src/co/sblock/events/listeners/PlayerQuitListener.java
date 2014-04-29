@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import co.sblock.data.SblockData;
 import co.sblock.effects.Cooldowns;
 import co.sblock.events.SblockEvents;
-import co.sblock.users.ChatData;
 import co.sblock.users.User;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.progression.Entry;
@@ -70,8 +69,8 @@ public class PlayerQuitListener implements Listener {
 		SblockData.getDB().saveUserData(event.getPlayer().getUniqueId());
 
 		// Inform channels that the player is no longer listening to them
-		for (String s : ChatData.getListening(user)) {
-			ChatData.removeListeningQuit(user, s);
+		for (String s : user.getListening()) {
+			user.removeListeningQuit(s);
 		}
 	}
 }

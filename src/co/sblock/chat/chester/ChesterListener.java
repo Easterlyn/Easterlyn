@@ -14,8 +14,7 @@ import org.bukkit.event.Listener;
 
 import co.sblock.CommandListener;
 import co.sblock.chat.ColorDef;
-import co.sblock.chat.channel.ChannelManager;
-import co.sblock.users.ChatData;
+import co.sblock.chat.ChannelManager;
 import co.sblock.users.User;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.regex.RegexUtils;
@@ -47,13 +46,13 @@ public class ChesterListener implements CommandListener, Listener {
 
 	@EventHandler
 	public void onChesterLog(ChesterLogEvent event) {
-		User c = User.getUser(event.getPlayer().getUniqueId());
-		if (c == null || ChatData.getCurrent(c) == null) {
+		User user = User.getUser(event.getPlayer().getUniqueId());
+		if (user == null ||user.getCurrent() == null || user.isMute() || user.isSuppressing()) {
 			stopLogging(event);
 			return;
 		}
 
-		if (!ChatData.getCurrent(c).getName().equals("#")) {
+		if (!user.getCurrent().getName().equals("#")) {
 			if (!event.getMessage().startsWith("@# ")) {
 				stopLogging(event);
 				return;

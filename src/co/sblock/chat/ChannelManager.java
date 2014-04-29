@@ -1,16 +1,23 @@
-package co.sblock.chat.channel;
+package co.sblock.chat;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import co.sblock.chat.SblockChat;
+import co.sblock.chat.channel.AccessLevel;
+import co.sblock.chat.channel.Channel;
+import co.sblock.chat.channel.ChannelType;
+import co.sblock.chat.channel.NickChannel;
+import co.sblock.chat.channel.NormalChannel;
+import co.sblock.chat.channel.RPChannel;
+import co.sblock.chat.channel.RegionChannel;
 import co.sblock.data.SblockData;
 
 
 public class ChannelManager {
 
-	private static Map<String, Channel> channelList = new HashMap<String, Channel>();
+	private ConcurrentHashMap<String, Channel> channelList = new ConcurrentHashMap<>();
 
 	public void loadAllChannels() {
 		SblockData.getDB().loadAllChannelData();
@@ -49,11 +56,11 @@ public class ChannelManager {
 			c = new NormalChannel(name, access, creator);
 			break;
 		}
-		ChannelManager.getChannelList().put(name, c);
+		this.channelList.put(name, c);
 	}
 
 	public void createDefaultSet() {
-		channelList.put("#", new NormalChannel("#", AccessLevel.PUBLIC, null));
+		channelList.put("#", new RegionChannel("#", AccessLevel.PUBLIC, null));
 		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null));
 		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null));
 		channelList.put("#rp2", new RPChannel("#rp2", AccessLevel.PUBLIC, null));
@@ -73,22 +80,18 @@ public class ChannelManager {
 		SblockData.getDB().deleteChannel(channelName);
 	}
 
-	public static Map<String, Channel> getChannelList() {
-		return channelList;
+	public Map<String, Channel> getChannelList() {
+		return this.channelList;
 	}
 
+
 	public Channel getChannel(String channelname) {
-		if (channelList.containsKey(channelname)) {
-			return channelList.get(channelname);
-		} else {
-			return null;
-		}
+		return channelList.get(channelname);
 	}
 
 	public boolean isValidChannel(String channelname) {
 		return channelList.containsKey(channelname);
 	}
-
 	public static ChannelManager getChannelManager() {
 		return SblockChat.getChat().getChannelManager();
 	}

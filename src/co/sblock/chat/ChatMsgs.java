@@ -197,6 +197,11 @@ public class ChatMsgs {
 		return ChatColor.RED + "You cannot leave a region channel!";
 	}
 
+	public static String errorSuppressingGlobal() {
+		return ChatColor.RED + "You cannot talk in a global channel while suppressing!\nUse "
+				+ ChatColor.AQUA + "/sc suppress" + ChatColor.RED + " to toggle.";
+	}
+
 	public static String errorDisbandDefault() {
 		return ChatColor.RED + "Hardcoded default channels cannot be disbanded.";
 	}
@@ -249,12 +254,14 @@ public class ChatMsgs {
 				+ ChatColor.YELLOW + ": Listen to <channel>.\n"
 				+ ChatColor.AQUA + "/sc leave <channel>"
 				+ ChatColor.YELLOW + ": Stop listening to <channel>.\n"
-				+ ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
-				+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.\n"
 				+ ChatColor.AQUA + "/sc list"
 				+ ChatColor.YELLOW + ": List all channels you are listening to.\n"
 				+ ChatColor.AQUA + "/sc listall"
 				+ ChatColor.YELLOW + ": List all channels.\n"
+				+ ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
+				+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.\n"
+				+ ChatColor.AQUA + "/sc suppress"
+				+ ChatColor.YELLOW + ": Toggle ignoring global channels.\n"
 				+ ChatColor.AQUA + "/sc new <name> <access> <type>"
 				+ ChatColor.YELLOW + ": Create a new channel.\n"
 				+ ChatColor.AQUA + "/sc channel"

@@ -1,8 +1,8 @@
 package co.sblock.chat.channel;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import co.sblock.chat.ChatMsgs;
 import co.sblock.users.User;
@@ -21,7 +21,7 @@ public class NickChannel extends Channel {
 	 */
 	public NickChannel(String name, AccessLevel a, UUID creator) {
 		super(name, a, creator);
-		nickList = new HashMap<>();
+		nickList = new ConcurrentHashMap<>();
 
 	}
 

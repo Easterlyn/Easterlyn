@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,8 +22,12 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
+import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.SblockChat;
+import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelManager;
+import co.sblock.chat.ChannelManager;
+import co.sblock.chat.channel.ChannelType;
 import co.sblock.data.SblockData;
 import co.sblock.effects.PassiveEffect;
 import co.sblock.machines.SblockMachines;
@@ -87,16 +93,13 @@ public class User {
 
 	/* CHAT USER DATA BELOW */
 	/** The name of the Player's current focused Channel */
-	protected String current;
+	private String current;
 
 	/** The channels the Player is listening to */
-	protected HashSet<String> listening;
+	private HashSet<String> listening;
 
-	/** true if the Player is muted */
-	protected boolean globalMute;
-	
-	/** Is the Player within range of a Computer? */
-	protected boolean computerAccess;
+	/** Booleans affecting channel message reception. */
+	private AtomicBoolean globalMute, suppress;
 	
 	/**
 	 * Creates a SblockUser object for a Player.
@@ -133,8 +136,8 @@ public class User {
 		// ChatUser-set data
 		current = null;
 		listening = new HashSet<String>();
-		globalMute = false;
-		computerAccess = false;
+		globalMute = new AtomicBoolean();
+		suppress = new AtomicBoolean();
 	}
 
 	/**
@@ -469,7 +472,7 @@ public class User {
 		if (currentRegion != null && newR == currentRegion) {
 			if (!listening.contains("#" + currentRegion.toString())) {
 				Channel c = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
-				ChatData.addListening(this, c);
+				this.addListening(c);
 			}
 			return;
 		}
@@ -478,10 +481,10 @@ public class User {
 			current = newC.getName();
 		}
 		if (currentRegion != null) {
-			ChatData.removeListening(this, "#" + currentRegion.toString());
+			this.removeListening("#" + currentRegion.toString());
 		}
 		if (!this.listening.contains(newC.getName())) {
-			ChatData.addListening(this, newC);
+			this.addListening(newC);
 		}
 		currentRegion = newR;
 	}
@@ -745,6 +748,330 @@ public class User {
 		p.sendMessage(message);
 	}
 
+	/**
+	 * Sets the Player's chat mute status.
+	 * 
+	 * @param b true if the Player is being muted
+	 */
+	public void setMute(boolean b) {
+		this.globalMute.set(b);
+	}
+
+	/**
+	 * Gets the Player's mute status.
+	 * 
+	 * @return true if the Player is muted
+	 */
+	public boolean isMute() {
+		return this.globalMute.get();
+	}
+
+	/**
+	 * Sets the Player's current chat suppression status.
+	 * 
+	 * @param b true if the player is to suppress global channels
+	 */
+	public void setSuppressing(boolean b) {
+		this.suppress.lazySet(b);
+	}
+
+	/**
+	 * Gets the Player's suppression status.
+	 * 
+	 * @return true if the Player is suppressing global channels.
+	 */
+	public boolean isSuppressing() {
+		return this.suppress.get();
+	}
+
+	/**
+	 * Sets the Player's current Channel.
+	 * 
+	 * @param c the Channel to set as current
+	 */
+	public void setCurrent(Channel c) {
+		if (c == null) {
+			this.sendMessage(ChatMsgs.errorInvalidChannel("null"), false);
+			return;
+		}
+		if (c.isBanned(this)) {
+			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), c.getName()), false);
+			return;
+		}
+		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c.getName()), false);
+			return;
+		}
+		current = c.getName();
+		if (!this.listening.contains(c.getName())) {
+			this.addListening(c);
+		} else {
+			this.sendMessage(ChatMsgs.onChannelSetCurrent(c.getName()), false);
+		}
+	}
+
+	/**
+	 * Sets the Player's current Channel.
+	 * 
+	 * @param c the Channel to set as current
+	 */
+	public void setCurrent(String s) {
+		Channel c = ChannelManager.getChannelManager().getChannel(s);
+		this.setCurrent(c);
+	}
+
+	/**
+	 * Gets the Channel the Player is currently sending messages to.
+	 * 
+	 * @return Channel
+	 */
+	public Channel getCurrent() {
+		return ChannelManager.getChannelManager().getChannel(this.current);
+	}
+
+	/**
+	 * Adds a Channel to the Player's current List of Channels listened to.
+	 * 
+	 * @param channel the Channel to add
+	 * 
+	 * @return true if the Channel was added
+	 */
+	public boolean addListening(Channel channel) {
+		if (channel == null) {
+			return false;
+		}
+		if (channel.isBanned(this)) {
+			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()), false);
+			return false;
+		}
+		if (channel.getAccess().equals(AccessLevel.PRIVATE) && !channel.isApproved(this)) {
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(channel.getName()), false);
+			return false;
+		}
+		if (!this.listening.contains(channel)) {
+			this.listening.add(channel.getName());
+		}
+		if (!channel.getListening().contains(this.playerID)) {
+			channel.addListening(this.playerID);
+			this.listening.add(channel.getName());
+			channel.sendToAll(this, ChatMsgs.onChannelJoin(this, channel), false);
+			return true;
+		} else {
+			this.sendMessage(ChatMsgs.errorAlreadyListening(channel.getName()), false);
+			return false;
+		}
+	}
+
+	/**
+	 * Adds a Channel to the Player's current List of Channels listened to.
+	 * 
+	 * @param s the Channel name to add
+	 * 
+	 * @return true if the Channel was added
+	 */
+	public boolean addListening(User user, String channelName) {
+		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+		return this.addListening(channel);
+	}
+
+	/**
+	 * Begin listening to a Set of channels. Used on login.
+	 * 
+	 * @param channels
+	 */
+	public void loginAddListening(String[] channels) {
+		for (String s : channels) {
+			Channel c = ChannelManager.getChannelManager().getChannel(s);
+			if (c != null && !c.isBanned(this)
+					&& (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
+				this.listening.add((String) s);
+				c.addListening(this.playerID);
+			}
+		}
+
+		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
+				.append(this.getPlayerName()).append(ChatColor.YELLOW)
+				.append(" began pestering <>").append(ChatColor.YELLOW).append(" at ")
+				.append(new SimpleDateFormat("HH:mm").format(new Date()));
+		// Heavy loopage ensues
+		for (User u : UserManager.getUserManager().getUserlist()) {
+			StringBuilder matches = new StringBuilder();
+			for (String s : this.listening) {
+				if (u.listening.contains(s)) {
+					matches.append(ChatColor.GOLD).append(s).append(ChatColor.YELLOW).append(", ");
+				}
+			}
+			if (matches.length() > 0) {
+				matches.replace(matches.length() - 3, matches.length() - 1, "");
+				StringBuilder msg = new StringBuilder(base.toString().replace("<>", matches.toString()));
+				int comma = msg.toString().lastIndexOf(',');
+				if (comma != -1) {
+					u.sendMessage(msg.replace(comma, comma + 1, " and").toString(), false);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Remove a Channel from the Player's listening List.
+	 * 
+	 * @param cName the name of the Channel to remove
+	 */
+	public void removeListening(String cName) {
+		Channel c = ChannelManager.getChannelManager().getChannel(cName);
+		if (c == null) {
+			this.sendMessage(ChatMsgs.errorInvalidChannel(cName), false);
+			this.listening.remove(cName);
+			return;
+		}
+		if (this.listening.remove(cName)) {
+				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), false);
+				c.removeListening(this.playerID);
+			if (this.current != null && cName.equals(this.current)) {
+				this.current = null;
+			}
+		} else {
+			this.sendMessage(ChatMsgs.errorNotListening(cName), false);
+		}
+	}
+
+	/**
+	 * Silently removes a Channel from the Player's listening list.
+	 * 
+	 * @param channel the Channel to remove
+	 */
+	public void removeListeningSilent(Channel channel) {
+		this.listening.remove(channel.getName());
+		if (this.current != null && this.current.equals(channel.getName())) {
+			this.current = null;
+		}
+		channel.removeListening(this.getUUID());
+	}
+
+	/**
+	 * Tells a Channel the Player is leaving on quit.
+	 * 
+	 * @param cName the name of the Channel to inform
+	 */
+	public void removeListeningQuit(String cName) {
+		Channel c = ChannelManager.getChannelManager().getChannel(cName);
+		if (c != null) {
+			c.removeListening(this.playerID);
+		} else {
+			this.listening.remove(cName);
+		}
+	}
+
+	/**
+	 * Gets the Set of names of Channels that the Player is listening to.
+	 * 
+	 * @return a Set<String> of Channel names.
+	 */
+	public Set<String> getListening() {
+		return this.listening;
+	}
+
+	/**
+	 * Check if the Player is listening to a specific Channel.
+	 * 
+	 * @param c the Channel to check for
+	 * 
+	 * @return true if the Player is listening to c
+	 */
+	public boolean isListening(Channel c) {
+		return this.listening.contains(c.getName());
+	}
+
+	/**
+	 * Check if the Player is listening to a specific Channel.
+	 * 
+	 * @param s the Channel name to check for
+	 * 
+	 * @return true if the Player is listening to c
+	 */
+	public boolean isListening(String s) {
+		return this.listening.contains(s);
+	}
+
+	/**
+	 * Checks if the Player is close enough to a Computer to chat in #.
+	 * 
+	 * @return true if the Player can chat in #
+	 */
+	public boolean getComputerAccess() {
+		if (!SblockChat.getComputerRequired()) {
+			// Overrides the computer limitation for pre-Entry shenanigans
+			return true;
+		}
+		return SblockMachines.getMachines().getManager().isByComputer(this.getPlayer(), 10);
+	}
+
+	/**
+	 * Method for handling all Player chat.
+	 * 
+	 * @param msg the message being sent
+	 * @param forceThirdPerson true if the message is to be prepended with a modifier
+	 */
+	public void chat(String msg, boolean forceThirdPerson) {
+
+		// Check if the user can speak
+		if (this.globalMute.get()) {
+			this.sendMessage(ChatMsgs.isMute(), false);
+			return;
+		}
+
+		// default to current channel receiving message
+		Channel sendto = ChannelManager.getChannelManager().getChannel(this.current);
+
+		// check if chat is directed at another channel
+		int space = msg.indexOf(' ');
+		if (msg.charAt(0) == '@' && space > 1) {
+			// Check for alternate channel destination. Failing that, warn user.
+			String newChannel = msg.substring(1, space);
+			if (ChannelManager.getChannelManager().isValidChannel(newChannel)) {
+				sendto = ChannelManager.getChannelManager().getChannel(newChannel);
+				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(this)) {
+					// User not approved in channel
+					this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sendto.getName()), false);
+					return;
+				} else {
+					// should reach this point for public channels and approved users
+					msg = msg.substring(space + 1);
+					if (msg.length() == 0) {
+						// Do not display blank messages for @<channel> with no message
+						return;
+					}
+				}
+			} else {
+				// Invalid channel specified
+				this.sendMessage(ChatMsgs.errorInvalidChannel(newChannel), false);
+				return;
+			}
+		} else if (sendto == null) {
+			this.sendMessage(ChatMsgs.errorNoCurrent(), false);
+			return;
+		}
+
+		if (sendto.getType() == ChannelType.REGION && this.suppress.get()) {
+			this.sendMessage(ChatMsgs.errorSuppressingGlobal(), false);
+		} else if (sendto.getType() == ChannelType.RP && !sendto.hasNick(this)) {
+			this.sendMessage(ChatMsgs.errorNickRequired(sendto.getName()), false);
+			return;
+		}
+
+		// Trim whitespace created by formatting codes, etc.
+		msg = RegexUtils.trimExtraWhitespace(msg);
+		if (RegexUtils.appearsEmpty(msg.substring(0 , 2).equals("#>") ? msg.substring(2) : msg)) {
+			return;
+		}
+
+		// Chat is being done via /me
+		if (forceThirdPerson) {
+			msg = "#>" + msg;
+		}
+
+		sendto.sendToAll(this, msg, true);
+	}
 
 	/**
 	 * Important SblockUser data formatted to be easily readable when printed.
@@ -759,7 +1086,7 @@ public class User {
 		String s = sys + "-----------------------------------------\n" + 
 				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
 				this.mPlanet + div + this.dPlanet.getDisplayName() + div + " Tower: " + this.tower + div + " Flight: " + this.allowFlight + "\n" + 
-				" Mute: " + this.globalMute + div + " Current: " + this.current + div + this.listening.toString() + "\n" +
+				" Mute: " + this.globalMute.get() + div + " Current: " + this.current + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
 				" IP: " + this.userIP + "\n" +
 				" Playtime: " + this.getTimePlayed() + div + " Last Login: " + new SimpleDateFormat("hh:mm 'on' dd/MM/YY").format(new Date(this.login)) + "\n" +

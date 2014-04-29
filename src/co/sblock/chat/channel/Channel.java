@@ -1,8 +1,9 @@
 package co.sblock.chat.channel;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,7 +12,6 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.SblockChat;
 import co.sblock.data.SblockData;
-import co.sblock.users.ChatData;
 import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.utilities.Log;
@@ -38,14 +38,14 @@ public abstract class Channel {
 		this.name = name;
 		this.access = a;
 		this.owner = creator;
-		approvedList = new HashSet<>();
-		modList = new HashSet<>();
+		approvedList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		modList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 		if (creator != null) {
 			this.modList.add(creator);
 		}
-		muteList = new HashSet<>();
-		banList = new HashSet<>();
-		listening = new HashSet<>();
+		muteList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
+		banList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
+		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
 		if (creator != null) {
 			SblockData.getDB().saveChannelData(this);
 		}
@@ -188,7 +188,7 @@ public abstract class Channel {
 		} else if (listening.contains(user.getPlayerName())) {
 			this.sendToAll(sender, message, false);
 			this.listening.remove(user.getUUID());
-			ChatData.removeListening(user, this.getName());
+			user.removeListening(this.getName());
 		} else {
 			sender.sendMessage(message, false);
 		}
@@ -225,7 +225,7 @@ public abstract class Channel {
 			this.banList.add(userID);
 			this.sendToAll(sender, message, false);
 			if (listening.contains(userID)) {
-				ChatData.removeListening(user, this.getName());
+				user.removeListening(this.getName());
 			}
 		} else {
 			sender.sendMessage(message, false);
@@ -294,7 +294,7 @@ public abstract class Channel {
 			}
 			approvedList.remove(target);
 			this.sendToAll(sender, message, false);
-			ChatData.removeListeningSilent(targ, this);
+			targ.removeListeningSilent(this);
 		}
 	}
 
@@ -317,7 +317,7 @@ public abstract class Channel {
 		}
 		this.sendToAll(sender, ChatMsgs.onChannelDisband(this.getName()), false);
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			ChatData.removeListeningSilent(User.getUser(userID), this);
+			User.getUser(userID).removeListeningSilent(this);
 		}
 		SblockChat.getChat().getChannelManager().dropChannel(this.name);
 	}
@@ -328,17 +328,14 @@ public abstract class Channel {
 		}
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
 			User u = User.getUser(userID);
-			if (u != null) {
-				u.sendMessage(message, sender != null && !userID.equals(sender.getUUID()),
-						u.getPlayer().getDisplayName(), this.getNick(u));
-			} else {
+			if (u == null) {
 				listening.remove(userID);
+				continue;
 			}
+			u.sendMessage(message, !userID.equals(sender.getUUID()), u.getPlayer().getDisplayName(),
+					this.getNick(u));
 		}
-		if (sender != null) {
-			// Chester logs even if events are cancelled, chat appears in console.
-			Log.anonymousInfo(message);
-		}
+		Log.anonymousInfo(message);
 	}
 
 	/**

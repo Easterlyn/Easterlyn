@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
-import co.sblock.users.ChatData;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
@@ -57,11 +56,11 @@ public class PlayerData {
 			pst.setString(5, user.getDreamPlanet().getDisplayName());
 			pst.setShort(6, user.getTower());
 			pst.setBoolean(7, user.canFly());
-			Channel c = ChatData.getCurrent(user);
+			Channel c = user.getCurrent();
 			pst.setString(8, c != null ? c.getName() : "#" + user.getCurrentRegion().name());
-			pst.setBoolean(9, ChatData.isMute(user));
+			pst.setBoolean(9, user.isMute());
 			StringBuilder sb = new StringBuilder();
-			for (String s : ChatData.getListening(user)) {
+			for (String s : user.getListening()) {
 				sb.append(s + ",");
 			}
 			pst.setString(10, sb.substring(0, sb.length() - 1));
@@ -148,19 +147,19 @@ public class PlayerData {
 				}
 				user.updateFlight();
 				if (rs.getBoolean("isMute")) {
-					ChatData.setMute(user, true);
+					user.setMute(true);;
 				}
 				if (rs.getString("channels") != null) {
-					ChatData.loginAddListening(user, rs.getString("channels").split(","));
+					user.loginAddListening(rs.getString("channels").split(","));
 				}
 				if (rs.getString("previousLocation") != null) {
 					user.setPreviousLocationFromString(rs.getString("previousLocation"));
 				} else {
 					user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				}
-				ChatData.setCurrent(user, rs.getString("currentChannel"));
-				if (ChatData.getCurrent(user) == null || ChatData.getListening(user).size() == 0) {
-					ChatData.setCurrent(user, "#");
+				user.setCurrent(rs.getString("currentChannel"));
+				if (user.getCurrent() == null || user.getListening().size() == 0) {
+					user.setCurrent("#");
 				}
 				user.setTimePlayed(rs.getString("timePlayed"));
 				user.setPrograms(rs.getString("programs"));
@@ -188,7 +187,7 @@ public class PlayerData {
 				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
 
 				User user = UserManager.getUserManager().getUser(p.getUniqueId());
-				ChatData.setCurrent(user, "#");
+				user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
 				user.updateCurrentRegion(user.getPlayerRegion());
 				user.setLoaded();
 			}

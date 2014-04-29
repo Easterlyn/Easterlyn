@@ -3,7 +3,6 @@ package co.sblock.chat;
 import org.bukkit.Bukkit;
 
 import co.sblock.Module;
-import co.sblock.chat.channel.ChannelManager;
 import co.sblock.chat.chester.ChesterListener;
 
 public class SblockChat extends Module {
