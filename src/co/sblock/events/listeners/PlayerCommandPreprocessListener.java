@@ -22,11 +22,21 @@ public class PlayerCommandPreprocessListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().length() > 7 && event.getMessage().substring(1, 8).equalsIgnoreCase("sethome")
+		String lowercase = event.getMessage().toLowerCase();
+		if (lowercase.startsWith("/sethome")
 				&& (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())
 				|| User.getUser(event.getPlayer().getUniqueId()).isServer())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");
+			return;
+		}
+
+		// Essentials doesn't have a perm node that allows access to just /tps.
+		if ((lowercase.startsWith("/gc") || lowercase.startsWith("/lag") || lowercase.startsWith("/mem")
+				|| lowercase.startsWith("/uptime") || lowercase.startsWith("/entities"))
+				&& !event.getPlayer().hasPermission("group.helper")) {
+			event.setMessage("/tps");
+			return;
 		}
 	}
 }
