@@ -1061,7 +1061,7 @@ public class User {
 
 		// Trim whitespace created by formatting codes, etc.
 		msg = RegexUtils.trimExtraWhitespace(msg);
-		if (RegexUtils.appearsEmpty(msg.substring(0 , 2).equals("#>") ? msg.substring(2) : msg)) {
+		if (msg.length() > 1 &&RegexUtils.appearsEmpty(msg.substring(0 , 2).equals("#>") ? msg.substring(2) : msg)) {
 			return;
 		}
 
