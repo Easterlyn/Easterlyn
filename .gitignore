@@ -41,6 +41,12 @@ local.properties
 
 *.jar
 
+#################
+## IntelliJ IDEA
+#################
+
+.idea/
+Sblock.iml
 
 #################
 ## Visual Studio

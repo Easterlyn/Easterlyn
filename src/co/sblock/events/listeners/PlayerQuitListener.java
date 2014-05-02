@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import co.sblock.data.SblockData;
 import co.sblock.effects.Cooldowns;
 import co.sblock.events.SblockEvents;
+import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.progression.Entry;
@@ -58,7 +59,7 @@ public class PlayerQuitListener implements Listener {
 		}
 
 		// Fail Entry if in progress
-		if (user != null) {
+		if (user != null && user.getProgression() == ProgressionState.NONE) {
 			Entry.getEntry().fail(user);
 		}
 

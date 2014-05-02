@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 
 import com.dsh105.holoapi.HoloAPI;
 import com.dsh105.holoapi.api.Hologram;
+
 import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
@@ -29,18 +30,27 @@ import co.sblock.utilities.meteors.Meteorite;
  */
 public class Entry {
 
+	private class EntryStorage {
+		public Meteorite meteorite;
+		public Material cruxtype;
+		public EntryStorage(Meteorite meteorite, Material cruxtype) {
+			this.meteorite = meteorite;
+			this.cruxtype = cruxtype;
+		}
+	}
+
 	private static Entry instance;
 
-//	private final Material[] materials;
+	private final Material[] materials;
 	private HashBiMap<Hologram, UUID> holograms;
-	private HashMap<UUID, Meteorite> meteors;
+	private HashMap<UUID, EntryStorage> data;
 
 	private int task;
 
 	public Entry() {
-//		materials = createMaterialList();
+		materials = createMaterialList();
 		holograms = HashBiMap.create();
-		meteors = new HashMap<>();
+		data = new HashMap<>();
 		task = -1;
 		HoloAPI.getTagFormatter().addFormat(Pattern.compile("\\%entry:([0-9]+)\\%"), new EntryTimeTillTag());
 	}
@@ -72,7 +82,7 @@ public class Entry {
 		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true, -1);
 		// 254 seconds * 20 ticks per second = 5080
 		meteorite.hoverMeteorite(5080);
-		meteors.put(user.getUUID(), meteorite);
+		data.put(user.getUUID(), new EntryStorage(meteorite, materials[(int) (materials.length *  Math.random())]));
 
 		if (task != -1) {
 			return;
@@ -112,7 +122,7 @@ public class Entry {
 		HoloAPI.getManager().createSimpleHologram(holo.getDefaultLocation(), 5, "0:00");
 
 		// Drop the Meteor created.
-		Meteorite meteorite = meteors.remove(user.getUUID());
+		Meteorite meteorite = data.remove(user.getUUID()).meteorite;
 		if (!meteorite.hasDropped()) {
 			meteorite.dropMeteorite();
 		}
@@ -152,6 +162,10 @@ public class Entry {
 	}
 
 	private Material[] createMaterialList() {
-		return null; // TODO
+		return new Material[] { Material.WOOL, Material.MELON_BLOCK, Material.TORCH,
+				Material.LADDER, Material.WATER_LILY, Material.REDSTONE_TORCH_ON,
+				Material.CARROT_STICK, Material.LAVA_BUCKET, Material.WATER_BUCKET, Material.APPLE,
+				Material.EGG, Material.SAPLING, Material.SUGAR_CANE, Material.QUARTZ,
+				Material.BLAZE_ROD };
 	}
 }
