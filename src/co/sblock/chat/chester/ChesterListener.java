@@ -12,7 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import co.sblock.CommandListener;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.ChannelManager;
 import co.sblock.users.User;
@@ -22,7 +21,7 @@ import co.sblock.utilities.regex.RegexUtils;
 /**
  * @author Jikoo
  */
-public class ChesterListener implements CommandListener, Listener {
+public class ChesterListener implements Listener {
 
 	private int cancels = 0;
 
