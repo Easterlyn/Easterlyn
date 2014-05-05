@@ -18,7 +18,7 @@ public enum ActiveEffect {
 	HATGIVER("Hatgiver", ActiveEffectType.DAMAGE, 150), // Pop-o-matic Vrillyhoo effect: random /hat from inventory item
 	STRENGTH("STRONG", ActiveEffectType.DAMAGE, 500), // Extra damage applied by item
 	BLINK("Blink", ActiveEffectType.RIGHT_CLICK, 800), // teleport to crosshairs, may require cooldown
-	CROTCHROCKET("Rocketjump", ActiveEffectType.RIGHT_CLICK, 500); // Ride a rocket!
+	CROTCHROCKET("RocketJump", ActiveEffectType.RIGHT_CLICK, 500); // Ride a rocket!
 
 	private String loreText;
 	private ActiveEffectType type;
