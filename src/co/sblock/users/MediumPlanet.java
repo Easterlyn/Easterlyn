@@ -1,5 +1,8 @@
 package co.sblock.users;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
 /**
  * Represents each planet in the Medium.
  * 
@@ -51,5 +54,29 @@ public enum MediumPlanet {
 		} catch (IllegalArgumentException e) {
 			return MediumPlanet.LOWAS;
 		}
+	}
+
+	/**
+	 * Gets the center point of the MediumPlanet. Note that this Location can be unsafe.
+	 * 
+	 * @return the Location
+	 */
+	public Location getCenter() {
+		Location l = new Location(Bukkit.getWorld("Medium"), 2500 + 256, 64, 2500 + 256);
+		switch (this) {
+		case LOFAF:
+			l.setZ(-l.getZ());
+			break;
+		case LOHAC:
+			l.setZ(-l.getZ());
+		case LOLAR:
+			l.setX(-l.getX());
+			break;
+		case LOWAS:
+		default:
+			break;
+		
+		}
+		return l;
 	}
 }

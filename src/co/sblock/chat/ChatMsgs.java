@@ -259,7 +259,7 @@ public class ChatMsgs {
 				+ ChatColor.AQUA + "/sc listall"
 				+ ChatColor.YELLOW + ": List all channels.\n"
 				+ ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
-				+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.\n"
+				+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.\n"
 				+ ChatColor.AQUA + "/sc suppress"
 				+ ChatColor.YELLOW + ": Toggle ignoring global channels.\n"
 				+ ChatColor.AQUA + "/sc new <name> <access> <type>"
@@ -291,7 +291,7 @@ public class ChatMsgs {
 
 	public static String helpSCNick() {
 		return ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
-			+ ChatColor.YELLOW + ": Set a nick for a Nick or RP channel.";
+			+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.";
 	}
 
 	public static String permissionDenied() {

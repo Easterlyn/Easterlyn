@@ -1,5 +1,6 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -164,6 +165,13 @@ public class InventoryClickListener implements Listener {
 	// add top
 	@SuppressWarnings("deprecation")
 	private void itemAddTop(InventoryClickEvent event) {
+		// Cruxite items should not be tradeable.
+		if (event.getCursor() != null && event.getCursor().getItemMeta().hasDisplayName()
+				&& event.getCursor().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
+			event.setCancelled(true);
+			return;
+		}
+
 		// Captchadex
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			if (!Captcha.isPunch(event.getCursor()) || event.getCursor().getAmount() > 1) {
@@ -209,6 +217,13 @@ public class InventoryClickListener implements Listener {
 	// switch top
 	@SuppressWarnings("deprecation")
 	private void itemSwapIntoTop(InventoryClickEvent event) {
+		// Cruxite items should not be tradeable.
+		if (event.getCursor() != null && event.getCursor().getItemMeta().hasDisplayName()
+				&& event.getCursor().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
+			event.setCancelled(true);
+			return;
+		}
+
 		// Captchadex
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			event.setResult(Result.DENY);
@@ -260,6 +275,13 @@ public class InventoryClickListener implements Listener {
 	// move bottom to top
 	@SuppressWarnings("deprecation")
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
+		// Cruxite items should not be tradeable.
+		if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().hasDisplayName()
+				&& event.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
+			event.setCancelled(true);
+			return;
+		}
+
 		// Captchadex: convert single punchcard to item inside
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
 			if (Captcha.isPunch(event.getCurrentItem())
@@ -330,6 +352,8 @@ public class InventoryClickListener implements Listener {
 				return;
 			}
 		}
+
+		// TODO ENTRY
 
 		// Captcha: attempt to captcha item in clicked slot
 		Captcha.handleCaptcha(event);

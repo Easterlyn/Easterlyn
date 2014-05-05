@@ -25,6 +25,9 @@ import co.sblock.Sblock;
 public class MeteorMod extends Module implements Listener {
 	/** The MeteorMod instance. */
 	private static MeteorMod instance;
+
+	/** The MeteorCommandListener. */
+	private MeteorCommandListener meteorListener;
 	/** The Set of Meteorite FallingBlock UUIDs. */
 	private HashSet<Entity> entities;
 	/** Task ID for creating particle effects on Meteorites. */
@@ -37,7 +40,8 @@ public class MeteorMod extends Module implements Listener {
 	public void onEnable() {
 		instance = this;
 		entities = new HashSet<>();
-		this.registerCommands(new MeteorCommandListener());
+		this.meteorListener = new MeteorCommandListener();
+		this.registerCommands(this.meteorListener);
 		this.registerEvents(this);
 		task = -1;
 		// startReckoning(20*20);
@@ -53,6 +57,15 @@ public class MeteorMod extends Module implements Listener {
 			e.remove();
 		}
 		// stopReckoning();
+	}
+
+	/**
+	 * Gets the MeteorCommandListener. For creating meteors or crotchrockets easily.
+	 * 
+	 * @return the MeteorCommandListener
+	 */
+	public MeteorCommandListener getCommandListener() {
+		return this.meteorListener;
 	}
 
 	/**
@@ -118,8 +131,6 @@ public class MeteorMod extends Module implements Listener {
 	 * @param loc the Location to explode at
 	 */
 	public void explode(Location loc, Entity explodeAs) {
-		
-		
 		Explosion explosion = new Explosion(((CraftWorld) loc.getWorld()).getHandle(),
 				((CraftEntity) explodeAs).getHandle(), loc.getX(), loc.getY(), loc.getZ(), 4F);
 		// Explosion.a = doFireDamage, set fire to terrain

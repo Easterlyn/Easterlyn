@@ -33,6 +33,14 @@ public class PlayerDropItemListener implements Listener {
 			return;
 		}
 
+		// Cruxite items should not be tradeable.
+		if (event.getItemDrop().getItemStack().getItemMeta().hasDisplayName()
+				&& event.getItemDrop().getItemStack().getItemMeta().getDisplayName()
+						.startsWith(ChatColor.AQUA + "Cruxite ")) {
+			event.setCancelled(true);
+			return;
+		}
+
 		// No dropping Captchadex if it's opening.
 		if (SblockEvents.getEvents().openingCaptchadex.contains(event.getPlayer().getName())) {
 			event.setCancelled(true);

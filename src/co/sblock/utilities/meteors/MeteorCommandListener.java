@@ -1,12 +1,21 @@
 package co.sblock.utilities.meteors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.util.Vector;
+
+import com.comphenix.protocol.ProtocolLibrary;
 
 import co.sblock.CommandListener;
+import co.sblock.Sblock;
 import co.sblock.SblockCommand;
+import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 
 /**
  * @author Dublek, Jikoo
@@ -21,7 +30,7 @@ public class MeteorCommandListener implements CommandListener {
 	 * @return true if Command was used correctly
 	 */
 	@SuppressWarnings("deprecation")
-	@SblockCommand(description = "Summon a meteor with parameters.", permission = "meteor.launch",
+	@SblockCommand(description = "Summon a meteor with parameters.", permission = "meteor.meteorite",
 			usage = "/meteor <u:user> <r:radius> <e:explode> <c:countdown> <m:material>")
 	public boolean meteor(CommandSender sender, String[] args) {
 		Player p = (Player) sender;
@@ -54,6 +63,46 @@ public class MeteorCommandListener implements CommandListener {
 			}
 		}
 		new Meteorite(target, material, radius, blockDamage, bore).dropMeteorite();
+		return true;
+	}
+
+	@SblockCommand(description = "Uncomfortably fun!", permission = "meteor.rocket", usage = "/crotchrocket")
+	public boolean crotchrocket(CommandSender sender, String[] args) {
+		final Player player = (Player) sender;
+		player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);
+
+		final Firework firework = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+		FireworkMeta fm = firework.getFireworkMeta();
+		fm.setPower(4);
+		firework.setFireworkMeta(fm);
+		firework.setPassenger(player);
+
+		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+					try {
+						WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
+						packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
+						packet.setNumberOfParticles(5);
+						packet.setLocation(firework.getLocation());
+						packet.setOffset(new Vector(0.5, 0.5, 0.5));
+
+						ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
+					} catch (Exception e) {
+						// Player is null or packet is malformed
+					}
+			}
+		}, 0, 1L);
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				Bukkit.getScheduler().cancelTask(particleTask);
+				firework.remove();
+			}
+		}, 40L);
 		return true;
 	}
 }

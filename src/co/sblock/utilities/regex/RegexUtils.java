@@ -22,7 +22,7 @@ public class RegexUtils {
 	 * 
 	 * @param s the Strings
 	 * 
-	 * @return the regular expression created
+	 * @return the regular expression create
 	 */
 	public static String ignoreCaseRegex(String... s) {
 		if (s.length == 0) {
@@ -61,7 +61,27 @@ public class RegexUtils {
 	 * @return the trimmed String
 	 */
 	public static String trimExtraWhitespace(String s) {
-		return s.replaceAll("(\\A|\\s)+(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)?\\s+?", " $2");
+		// Strip all spaces between colors
+		Pattern p = Pattern.compile("(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)\\s+(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)");
+		boolean complete = false;
+		while (!complete) {
+			Matcher m = p.matcher(s);
+			int lastMatch = 0;
+			StringBuilder newMessage = new StringBuilder();
+			while (m.find()) {
+				newMessage.append(s.substring(lastMatch, m.start())).append(m.group(3)).append(m.group(4));
+				lastMatch = m.end();
+			}
+			if (lastMatch > 0) {
+				s = newMessage.append(s.substring(lastMatch)).toString();
+				continue;
+			}
+			complete = true;
+		}
+		// Strip all useless colors
+		//s = s.replaceAll("(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-F])", "$4");
+		
+		return s.replaceAll("(\\A|\\s)+((((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)?\\s+?)", " $3");
 	}
 
 	/**

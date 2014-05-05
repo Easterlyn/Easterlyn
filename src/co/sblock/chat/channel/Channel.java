@@ -389,14 +389,8 @@ public abstract class Channel {
 			globalRank = ColorDef.RANK_HERO;
 		}
 
-		if (this instanceof RPChannel) {
-			// guaranteed to have a nick if this point is reached.
-			globalRank = CanonNicks.getNick(this.getNick(sender)).getColor();
-		}
-
 		// check for third person modifier (#>)
-		boolean isThirdPerson = message.length() > 2 && message.charAt(0) == '#'
-				&& message.charAt(1) == '>';
+		boolean isThirdPerson = message.startsWith("#>");
 
 		// strip third person modifier from chat
 		if (isThirdPerson) {
@@ -404,6 +398,7 @@ public abstract class Channel {
 		}
 
 		if (this.getType() == ChannelType.RP) {
+			globalRank = CanonNicks.getNick(this.getNick(sender)).getColor();
 			// apply quirk to message
 			message = CanonNicks.getNick(this.getNick(sender)).applyQuirk(message);
 		} else if (this.isChannelMod(sender)) {
