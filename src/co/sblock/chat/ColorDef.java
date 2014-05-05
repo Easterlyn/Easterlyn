@@ -29,6 +29,19 @@ public class ColorDef {
 	public static final ChatColor WORLD_OUTERCIRCLE = ChatColor.DARK_PURPLE;
 	public static final ChatColor WORLD_MEDIUM = ChatColor.GRAY;
 	public static final ChatColor WORLD_FURTHESTRING = ChatColor.BLACK;
+
+	public static final ChatColor ASPECT_BLOOD = ChatColor.DARK_RED;
+	public static final ChatColor ASPECT_BREATH = ChatColor.AQUA;
+	public static final ChatColor ASPECT_DOOM = ChatColor.DARK_GREEN;
+	public static final ChatColor ASPECT_HEART = ChatColor.LIGHT_PURPLE;
+	public static final ChatColor ASPECT_HOPE = ChatColor.GOLD;
+	public static final ChatColor ASPECT_LIFE = ChatColor.GREEN;
+	public static final ChatColor ASPECT_LIGHT = ChatColor.YELLOW;
+	public static final ChatColor ASPECT_MIND = ChatColor.DARK_AQUA;
+	public static final ChatColor ASPECT_RAGE = ChatColor.DARK_PURPLE;
+	public static final ChatColor ASPECT_SPACE = ChatColor.BLACK;
+	public static final ChatColor ASPECT_TIME = ChatColor.RED;
+	public static final ChatColor ASPECT_VOID = ChatColor.DARK_BLUE;
 	
 	public static final ChatColor RAINBOW[] = {
 		ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW,

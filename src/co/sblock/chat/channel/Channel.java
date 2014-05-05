@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.ColorDef;
@@ -347,6 +348,13 @@ public abstract class Channel {
 	 */
 	public String formatMessage(User sender, String message) {
 
+		Player player = sender.getPlayer();
+
+		ChatColor guildRank = ColorDef.RANK_HERO;
+		if (player.hasPermission("sblock.guildleader")) {
+			guildRank = sender.getAspect().getColor();
+		}
+
 		ChatColor channelRank;
 		if (this.isOwner(sender)) {
 			channelRank = ColorDef.CHATRANK_OWNER;
@@ -356,8 +364,16 @@ public abstract class Channel {
 			channelRank = ColorDef.CHATRANK_MEMBER;
 		}
 
-		ChatColor globalRank;
-		if (sender.getPlayer().hasPermission("group.horrorterror"))
+		ChatColor globalRank = null;
+		for (ChatColor c : ChatColor.values()) {
+			if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
+				globalRank = c;
+				break;
+			}
+		}
+		if (globalRank != null) {
+			// Do nothing, we've got a fancy override going on
+		} else if (sender.getPlayer().hasPermission("group.horrorterror"))
 			globalRank = ColorDef.RANK_HORRORTERROR;
 		else if (sender.getPlayer().hasPermission("group.denizen"))
 			globalRank = ColorDef.RANK_DENIZEN;
@@ -397,7 +413,7 @@ public abstract class Channel {
 
 		ChatColor region = Region.getRegionColor(sender.getCurrentRegion());
 
-		return ChatColor.WHITE + "[" + channelRank + this.name + ChatColor.WHITE + "]" + region
+		return guildRank+ "[" + channelRank + this.name + guildRank + "]" + region
 				+ (isThirdPerson ? "> " : " <") + globalRank + this.getNick(sender)
 				+ (isThirdPerson ? " " : region + "> ") + ChatColor.WHITE + message;
 	}
