@@ -26,14 +26,10 @@ public class UserManager {
 	/** The Map of Player UUID and relevant SblockUsers currently online. */
 	private Map<UUID, User> users;
 
-	/**The Scoreboard used to color Player names by rank. */
-	private Scoreboard board;
-
 	/** Constructor for UserManager. */
 	UserManager() {
 		manager = this;
 		this.users = new HashMap<>();
-		this.createTeams();
 	}
 
 	/**
@@ -88,56 +84,52 @@ public class UserManager {
 	}
 
 	/**
-	 * Creates teams for display name coloring.
-	 */
-	private void createTeams() {
-		this.board = Bukkit.getScoreboardManager().getMainScoreboard();
-		String[] teams = new String[] {"horrorterror", "denizen", "felt", "helper", "donator", "godtier", "hero"};
-		Team team;
-		for (String teamName : teams) {
-			team = this.board.getTeam(teamName);
-			if (team == null) {
-				team = this.board.registerNewTeam(teamName);
-				if (teamName.equals("horrorterror")) {
-					team.setPrefix(ColorDef.RANK_HORRORTERROR.toString());
-				} else if (teamName.equals("denizen")) {
-					team.setPrefix(ColorDef.RANK_DENIZEN.toString());
-				} else if (teamName.equals("felt")) {
-					team.setPrefix(ColorDef.RANK_FELT.toString());
-				} else if (teamName.equals("helper")) {
-					team.setPrefix(ColorDef.RANK_HELPER.toString());
-				} else if (teamName.equals("godtier")) {
-					team.setPrefix(ColorDef.RANK_GODTIER.toString());
-				} else {
-					team.setPrefix(ColorDef.RANK_HERO.toString());
-				}
-			}
-		}
-	}
-
-	/**
 	 * Add a Player to their group's Team.
 	 * 
 	 * @param p the Player
 	 */
 	public void team(Player p) {
-		Team team = null;
+		String teamName;
 		if (p.hasPermission("group.horrorterror")) {
-			team = this.board.getTeam("horrorterror");
+			teamName = "horrorterror";
 		} else if (p.hasPermission("group.denizen")) {
-			team = this.board.getTeam("denizen");
+			teamName = "denizen";
 		} else if (p.hasPermission("group.felt")) {
-			team = this.board.getTeam("felt");
+			teamName = "felt";
 		} else if (p.hasPermission("group.helper")) {
-			team = this.board.getTeam("helper");
+			teamName = "helper";
 		} else if (p.hasPermission("group.donator")) {
-			team = this.board.getTeam("donator");
+			teamName = "donator";
 		} else if (p.hasPermission("group.godtier")) {
-			team = this.board.getTeam("godtier");
+			teamName = "godtier";
 		} else {
-			team = this.board.getTeam("hero");
+			teamName = "hero";
+		}
+		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
+		Team team = board.getTeam(teamName);
+		if (team == null) {
+			team = board.registerNewTeam(teamName);
+			team.setPrefix(getTeamPrefix(teamName));
 		}
 		team.addPlayer(p);
+	}
+
+	/**
+	 * Fetches team prefixes.
+	 */
+	private String getTeamPrefix(String teamName) {
+		if (teamName.equals("horrorterror")) {
+			return ColorDef.RANK_HORRORTERROR.toString();
+		} else if (teamName.equals("denizen")) {
+			return ColorDef.RANK_DENIZEN.toString();
+		} else if (teamName.equals("felt")) {
+			return ColorDef.RANK_FELT.toString();
+		} else if (teamName.equals("helper")) {
+			return ColorDef.RANK_HELPER.toString();
+		} else if (teamName.equals("godtier")) {
+			return ColorDef.RANK_GODTIER.toString();
+		}
+		return ColorDef.RANK_HERO.toString();
 	}
 
 	/**
