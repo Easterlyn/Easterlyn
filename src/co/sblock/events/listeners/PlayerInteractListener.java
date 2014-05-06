@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Biome;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -108,7 +108,7 @@ public class PlayerInteractListener implements Listener {
 			if (b.getType().equals(Material.BED_BLOCK)) {
 				// Sleep voting
 				if (event.getPlayer().isSneaking()) {
-					if (b.getBiome() == Biome.HELL || b.getBiome() == Biome.SKY) {
+					if (b.getWorld().getEnvironment() == Environment.NETHER || b.getWorld().getEnvironment() == Environment.THE_END) {
 						// World is nether/end
 						event.getPlayer().sendMessage("You cannot sleep in this world!");
 					} else if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
