@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Module;
 import co.sblock.data.SblockData;
+import co.sblock.machines.type.Machine;
 
 /**
  * @author Jikoo
@@ -41,6 +42,12 @@ public class SblockMachines extends Module {
 	 */
 	@Override
 	protected void onDisable() {
+		for (Machine m : manager.getMachines()) {
+			m.disable();
+			if (m.getData() != null) {
+				SblockData.getDB().saveMachine(m);
+			}
+		}
 		instance = null;
 		manager = null;
 	}

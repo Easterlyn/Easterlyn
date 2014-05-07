@@ -2,6 +2,7 @@ package co.sblock.machines.type;
 
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -9,12 +10,9 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Dispenser;
-import org.bukkit.block.Hopper;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
@@ -22,9 +20,12 @@ import org.bukkit.util.Vector;
 
 import com.dsh105.holoapi.HoloAPI;
 import com.dsh105.holoapi.api.Hologram;
+import com.dsh105.holoapi.api.HologramFactory;
 
+import co.sblock.Sblock;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.utilities.inventory.InventoryUtils;
@@ -79,20 +80,17 @@ public class Transportalizer extends Machine {
 		m = new MaterialData(Material.CARPET, (byte) 5);
 		shape.addBlock(new Vector(1, 1, 0), m);
 		blocks = shape.getBuildLocations(getFacingDirection());
+
 		fuel = 0;
-		Location display = null;
+		Location holoLoc = null;
 		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
 			if (e.getValue().equals(new MaterialData(Material.STAINED_GLASS))) {
-				display = e.getKey().clone().add(0.5, 0, 0.5);
+				holoLoc = e.getKey().clone().add(0.5, 0, 0.5);
 				break;
 			}
 		}
-		if (display == null) {
-			display = key.clone();
-		}
-		// This hologram will disappear given a few weeks. I don't see us going that long without a restart.
-		fuelHolo = HoloAPI.getManager().createSimpleHologram(display, Integer.MAX_VALUE, String.valueOf(fuel));
-		fuelHolo.refreshDisplay(false);
+		fuelHolo = new HologramFactory(Sblock.getInstance()).withLocation(holoLoc)
+				.withText(String.valueOf(fuel)).build();
 	}
 
 	/**
@@ -118,35 +116,51 @@ public class Transportalizer extends Machine {
 	public void setData(String data) {
 		try {
 			fuel = Long.valueOf(data);
-			fuelHolo.updateLines(data);
+			// HoloAPI doesn't accept line updates till all holograms are loaded at 10 seconds after start.
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+				@Override
+				public void run() {
+					if (fuelHolo != null) {
+						fuelHolo.updateLines(String.valueOf(fuel));
+					}
+				}
+			}, 200);
 		} catch (NumberFormatException e)  {
 			fuel = 0;
 		}
 	}
 
 	@Override
-	public boolean handleHopper(org.bukkit.event.inventory.InventoryMoveItemEvent event) {
-		if (event.getDestination().getHolder() instanceof Dispenser && !blocks.containsKey(((Hopper) event.getSource().getHolder()).getBlock())) {
-			key.getWorld().dropItemNaturally(key.clone().add(new Vector(0, 1, 0)), event.getItem());
-			event.setItem(null);
-			return true;
-		}
-		for (int i = 0; i < event.getSource().getSize(); i++) {
-			if (event.getSource().getItem(i) == null) {
-				continue;
+	public boolean handleHopper(final org.bukkit.event.inventory.InventoryMoveItemEvent event) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					for (int i = 0; i < event.getSource().getSize(); i++) {
+						if (event.getSource().getItem(i) == null) {
+							continue;
+						}
+						if (hasValue(event.getSource().getItem(i).getType())) {
+							fuel += getValue(event.getSource().getItem(i).getType());
+							fuelHolo.updateLines(String.valueOf(fuel));
+							key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
+							event.getSource().setItem(i, InventoryUtils.decrement(event.getSource().getItem(i), 1));
+							break;
+						} else {
+							key.getWorld().dropItem(key.clone().add(Shape.getRelativeVector(direction
+											.getRelativeDirection(Direction.SOUTH), new Vector(0.5, 0.5, -1.5))),
+									event.getSource().getItem(i));
+							event.getSource().setItem(i, null);
+							break;
+						}
+					}
+				} catch (Exception e) {
+					// Machine was destroyed, probably with items in the hopper.
+				}
 			}
-			if (hasValue(event.getSource().getItem(i).getType())) {
-				fuel += getValue(event.getSource().getItem(i).getType());
-				fuelHolo.updateLines(String.valueOf(fuel));
-				key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
-				event.getSource().setItem(i, InventoryUtils.decrement(event.getSource().getItem(i), 1));
-				break;
-			} else {
-				key.getWorld().dropItemNaturally(key, event.getSource().getItem(i));
-				event.getSource().setItem(i, null);
-				break;
-			}
-		}
+			
+		});
 		return true;
 	}
 
@@ -190,8 +204,6 @@ public class Transportalizer extends Machine {
 		// Players should not be able to access it.
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK
 				&& event.getClickedBlock().getType() == Material.DISPENSER) {
-			Hopper hopper = (Hopper) key.getBlock().getState();
-			event.getPlayer().openInventory(hopper.getInventory());
 			return true;
 		}
 
@@ -233,14 +245,15 @@ public class Transportalizer extends Machine {
 		Location remote = new Location(event.getClickedBlock().getWorld(),
 				Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
 
-		int cost = (int) Math.ceil(key.distance(remote) / 75 + 1);
+		// 
+		int cost = (int) (key.distance(remote) / 75 + 1);
 		// CHECK FUEL
 		if (fuel < cost) {
 			event.getPlayer().sendMessage(ChatColor.RED
 					+ "The Transportalizer begins humming through standard teleport procedure,"
-					+ " when all of a sudden it chokes to a halt with an awful screeching noise."
+					+ " when all of a sudden it growls to a halt."
 					+ "\nPerhaps it requires more fuel?");
-			key.getWorld().playSound(key, Sound.ENDERMAN_SCREAM, 10, 2);
+			key.getWorld().playSound(key, Sound.WOLF_GROWL, 16, 2);
 			return false;
 		}
 
@@ -254,6 +267,7 @@ public class Transportalizer extends Machine {
 				if (e.getLocation().getBlock().equals(pad)) {
 					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
 					fuel -= cost;
+					fuelHolo.updateLines(String.valueOf(fuel));
 					remote.setPitch(e.getLocation().getPitch());
 					remote.setYaw(e.getLocation().getYaw());
 					e.teleport(remote);
@@ -266,6 +280,7 @@ public class Transportalizer extends Machine {
 			for (Entity e : key.getWorld().getEntities()) {
 				if (e.getLocation().getBlock().equals(remote.getBlock())) {
 					fuel -= cost;
+					fuelHolo.updateLines(String.valueOf(fuel));
 					e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(), pad.getZ() + .5,
 							e.getLocation().getYaw(), e.getLocation().getPitch()));
 					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
@@ -286,15 +301,18 @@ public class Transportalizer extends Machine {
 		return false;
 	}
 
+	private void removeHolo() {
+		HoloAPI.getManager().stopTracking(fuelHolo);
+		HoloAPI.getManager().clearFromFile(fuelHolo);
+		fuelHolo.clearAllPlayerViews();
+		fuelHolo = null;
+	}
+
 	/**
-	 * @see co.sblock.machines.type.Machine#handleBreak(BlockBreakEvent)
+	 * @see co.sblock.machines.type.Machine#disable()
 	 */
 	@Override
-	public boolean handleBreak(BlockBreakEvent event) {
-		if (super.handleBreak(event)) {
-			fuelHolo.clearAllPlayerViews();
-			return true;
-		}
-		return false;
+	public void disable() {
+		removeHolo();
 	}
 }

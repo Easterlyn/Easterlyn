@@ -15,7 +15,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-import co.sblock.data.SblockData;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Icon;
@@ -54,11 +53,12 @@ public class Computer extends Machine implements InventoryHolder {
 				return;
 			}
 			event.setCancelled(true);
+			event.getBlock().setType(Material.AIR);
 			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer placed!");
 			this.assemblyFailed();
 			return;
 		}
-		SblockData.getDB().saveMachine(this);
+		super.assemble(event);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
-		if (!event.getWhoClicked().getName().equals(this.getData())
+		if (!event.getWhoClicked().getName().equals(this.owner)
 				&& !event.getWhoClicked().hasPermission("group.denizen")) {
 			event.setResult(Result.DENY);
 			return true;
@@ -131,7 +131,7 @@ public class Computer extends Machine implements InventoryHolder {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		if (!event.getPlayer().getUniqueId().toString().equals(this.getData())) {
+		if (!event.getPlayer().getUniqueId().toString().equals(this.owner)) {
 			if (event.getPlayer().hasPermission("group.denizen")) {
 				event.getPlayer().sendMessage("Allowing admin override for interaction with Computer.");
 			} else {

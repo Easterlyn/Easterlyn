@@ -1,5 +1,6 @@
 package co.sblock.machines;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -178,8 +179,12 @@ public class MachineManager {
 	 * 
 	 * @return the Set
 	 */
-	public Set<Location> getMachines() {
+	public Set<Location> getMachineLocs() {
 		return machineKeys.keySet();
+	}
+
+	public Collection<Machine> getMachines() {
+		return machineKeys.values();
 	}
 
 	/**
@@ -288,7 +293,7 @@ public class MachineManager {
 	 */
 	public boolean isByComputer(Player p, int distance) {
 		for (Machine m : this.getMachinesInProximity(p.getLocation(), distance, MachineType.COMPUTER, true)) {
-			if (m.getData().equals(p.getUniqueId().toString())) {
+			if (m.getOwner().equals(p.getUniqueId().toString())) {
 				return true;
 			}
 		}
@@ -347,7 +352,7 @@ public class MachineManager {
 	 */
 	public boolean hasComputer(Player p, Location key) {
 		for (Machine m : machineKeys.values()) {
-			if (m instanceof Computer && m.getData().equals(p.getUniqueId().toString()) && !m.getKey().equals(key)) {
+			if (m instanceof Computer && m.getOwner().equals(p.getUniqueId().toString()) && !m.getKey().equals(key)) {
 				return true;
 			}
 		}
@@ -363,7 +368,7 @@ public class MachineManager {
 	 */
 	public Machine getComputer(UUID playerID) {
 		for (Machine m : machineKeys.values()) {
-			if (m instanceof Computer && m.getData().equals(playerID.toString())) {
+			if (m instanceof Computer && m.getOwner().equals(playerID.toString())) {
 				return m;
 			}
 		}
@@ -380,7 +385,7 @@ public class MachineManager {
 	public Set<Machine> getMachines(UUID playerID) {
 		HashSet<Machine> machines = new HashSet<>();
 		for (Machine m : machineKeys.values()) {
-			if (m.getData().equals(playerID.toString())) {
+			if (m.getOwner().equals(playerID.toString())) {
 				machines.add(m);
 			}
 		}

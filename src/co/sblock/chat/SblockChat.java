@@ -28,7 +28,6 @@ public class SblockChat extends Module {
 	@Override
 	protected void onDisable() {
 		cm.saveAllChannels();
-		instance = null;
 	}
 
 	public ChannelManager getChannelManager() {

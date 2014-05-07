@@ -220,6 +220,7 @@ public abstract class Machine {
 	 * Removes this machine's blocks and listing.
 	 */
 	public void remove() {
+		disable();
 		for (Location l : this.getLocations()) {
 			l.getBlock().setType(Material.AIR);
 		}
@@ -438,5 +439,12 @@ public abstract class Machine {
 				SblockMachines.getMachines().getManager().removeMachineListing(key);
 			}
 		});
+	}
+
+	/**
+	 * Used to trigger cleanup when a Machine listing is removed on plugin disable.
+	 */
+	public void disable() {
+		// Most machines do not do anything when disabled.
 	}
 }

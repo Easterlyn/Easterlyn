@@ -27,7 +27,7 @@ public class Shape {
 	 */
 	public Shape(Location l) {
 		this.key = l;
-		this.vectors = new HashMap<Vector, MaterialData>();
+		this.vectors = new HashMap<>();
 	}
 
 	/**
@@ -81,8 +81,8 @@ public class Shape {
 	 * 
 	 * @return the clockwise rotation of blocks
 	 */
-	private HashMap<Vector,MaterialData> rotateCW() {
-		HashMap<Vector, MaterialData> newVectors = new HashMap<Vector, MaterialData>();
+	private HashMap<Vector, MaterialData> rotateCW() {
+		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
 		for (Entry<Vector, MaterialData> e : vectors.entrySet()) {
 			Vector newVec = e.getKey().clone();
 			int newZ = -newVec.getBlockX();
@@ -99,7 +99,7 @@ public class Shape {
 	 * @return the counterclockwise rotation of blocks
 	 */
 	private HashMap<Vector,MaterialData> rotateCCW() {
-		HashMap<Vector, MaterialData> newVectors = new HashMap<Vector, MaterialData>();
+		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
 		for (Entry<Vector, MaterialData> e : vectors.entrySet()) {
 			Vector newVec = e.getKey().clone();
 			int newZ = newVec.getBlockX();
@@ -116,7 +116,7 @@ public class Shape {
 	 * @return the 180 degree rotation of blocks
 	 */
 	private HashMap<Vector, MaterialData> rotate180() {
-		HashMap<Vector, MaterialData> newBlocks = new HashMap<Vector, MaterialData>();
+		HashMap<Vector, MaterialData> newBlocks = new HashMap<>();
 		for (Entry<Vector, MaterialData> e : vectors.entrySet()) {
 			Vector newVec = e.getKey().clone();
 			newVec.setX(-newVec.getBlockX());
@@ -134,10 +134,33 @@ public class Shape {
 	 * @return valid ingame coordinates for assembling a Machine in
 	 */
 	private HashMap<Location, MaterialData> assembly(HashMap<Vector, MaterialData> translation) {
-		HashMap<Location, MaterialData> newLocs = new HashMap<Location, MaterialData>();
+		HashMap<Location, MaterialData> newLocs = new HashMap<>();
 		for (Vector v : translation.keySet()) {
 			newLocs.put(key.clone().add(v), translation.get(v));
 		}
 		return newLocs;
+	}
+
+	public static Vector getRelativeVector(Direction d, Vector v) {
+		switch (d) {
+		case EAST:
+			double newZ = v.getX();
+			v.setX(v.getBlockZ());
+			v.setZ(newZ);
+			return v;
+		case SOUTH:
+			v.setX(-v.getX());
+			v.setZ(-v.getZ());
+			return v;
+		case WEST:
+			double newZ1 = -v.getX();
+			v.setX(v.getBlockZ());
+			v.setZ(newZ1);
+			return v;
+		case NORTH:
+		default:
+			v.setX(-v.getX());
+			return v;
+		}
 	}
 }
