@@ -370,8 +370,8 @@ public class Captcha extends Module {
 		ItemStack captcha;
 		if (!isBlankCaptcha(hotbar) || event.getCurrentItem() == null
 				|| event.getCurrentItem().getType() == Material.AIR
-				|| CruxiteDowel.expCost(event.getCursor()) == Integer.MAX_VALUE
-				|| InventoryUtils.isUniqueItem(event.getCursor())) {
+				|| CruxiteDowel.expCost(event.getCurrentItem()) == Integer.MAX_VALUE
+				|| InventoryUtils.isUniqueItem(event.getCurrentItem())) {
 			// Invalid captcha objects
 			if (!event.getCursor().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Computers can (and should) be alchemized.
