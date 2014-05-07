@@ -8,6 +8,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
 
+import co.sblock.machines.utilities.MachineType;
+
 /**
  * For Zack, with love.
  * 
@@ -38,6 +40,8 @@ public class PBO extends Machine {
 	@Override
 	public void assemble(BlockPlaceEvent event) {
 		event.getBlockPlaced().setTypeIdAndData(event.getBlockAgainst().getTypeId(), event.getBlockAgainst().getData(), false);
+		event.setCancelled(true);
+		event.getPlayer().updateInventory();
 	}
 
 	/**

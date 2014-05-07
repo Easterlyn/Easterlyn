@@ -12,7 +12,7 @@ import co.sblock.CommandListener;
 import co.sblock.SblockCommand;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.events.SblockEvents;
-import co.sblock.machines.type.Icon;
+import co.sblock.machines.utilities.Icon;
 
 /**
  * Class for holding commands associated with the UserData module.

@@ -41,7 +41,6 @@ public class SblockMachines extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		manager.saveToDb();
 		instance = null;
 		manager = null;
 	}

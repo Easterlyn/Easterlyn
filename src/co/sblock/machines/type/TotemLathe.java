@@ -20,6 +20,8 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Direction;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.utilities.captcha.Captcha;
@@ -48,24 +50,24 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		shape.addBlock(new Vector(0, 2, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS,
 				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
-		shape.addBlock(new Vector(-1, 0, 0), m);
+		shape.addBlock(new Vector(1, 0, 0), m);
 		m = new MaterialData(Material.STEP, (byte) 7);
 		shape.addBlock(new Vector(0, 3, 0), m);
-		shape.addBlock(new Vector(-1, 3, 0), m);
-		shape.addBlock(new Vector(-2, 3, 0), m);
-		shape.addBlock(new Vector(-3, 3, 0), m);
+		shape.addBlock(new Vector(1, 3, 0), m);
+		shape.addBlock(new Vector(2, 3, 0), m);
+		shape.addBlock(new Vector(3, 3, 0), m);
 		m = new MaterialData(Material.STEP, (byte) 15);
-		shape.addBlock(new Vector(-2, 0, 0), m);
-		shape.addBlock(new Vector(-3, 0, 0), m);
+		shape.addBlock(new Vector(2, 0, 0), m);
+		shape.addBlock(new Vector(3, 0, 0), m);
 		m = new MaterialData(Material.FURNACE,
 				d.getRelativeDirection(Direction.EAST).getChestByte());
-		shape.addBlock(new Vector(-1, 1, 0), m);
+		shape.addBlock(new Vector(1, 1, 0), m);
 		m = new MaterialData(Material.DAYLIGHT_DETECTOR);
-		shape.addBlock(new Vector(-2, 1, 0), m);
-		m = new MaterialData(Material.ANVIL, (byte) (d.getDirByte() % 2 == 0 ? 3 : 2));
-		shape.addBlock(new Vector(-3, 1, 0), m);
+		shape.addBlock(new Vector(2, 1, 0), m);
+		m = new MaterialData(Material.ANVIL, (byte) (d.getDirByte() % 2 == 0 ? 1 : 0));
+		shape.addBlock(new Vector(3, 1, 0), m);
 		m = new MaterialData(Material.HOPPER);
-		shape.addBlock(new Vector(-3, 2, 0), m);
+		shape.addBlock(new Vector(3, 2, 0), m);
 		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 

@@ -17,7 +17,7 @@ import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.MachineType;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.User;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.Captchadex;
@@ -66,61 +66,66 @@ public class InventoryClickListener implements Listener {
 		}
 
 		boolean top = event.getRawSlot() == event.getView().convertSlot(event.getRawSlot());
-		switch (event.getAction()) {
-		case COLLECT_TO_CURSOR:
+		switch (event.getClick()) {
+		case DOUBLE_CLICK:
 			itemGather(event);
 			break;
-		case HOTBAR_MOVE_AND_READD:
-			itemShiftTopToBottom(event);
+		case NUMBER_KEY:
+			if (top) {
+				itemShiftTopToBottom(event);
+			}
 			if (!event.isCancelled()) {
 				itemSwapToHotbar(event);
 			}
 			break;
-		case MOVE_TO_OTHER_INVENTORY:
+		case LEFT:
+		case RIGHT:
+			if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
+				if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+					return;
+				}
+				if (top) {
+					itemRemoveTop(event);
+				} else {
+					itemRemoveBottom(event);
+				}
+			} else if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+				if (top) {
+					itemAddTop(event);
+				} else {
+					itemAddBottom(event);
+				}
+			} else {
+				if (top) {
+					itemSwapIntoTop(event);
+				} else {
+					itemSwapIntoBottom(event);
+				}
+			}
+			break;
+		case SHIFT_LEFT:
+		case SHIFT_RIGHT:
 			if (top) {
 				itemShiftTopToBottom(event);
 			} else {
 				itemShiftBottomToTop(event);
 			}
 			break;
-		case HOTBAR_SWAP:
-			itemSwapToHotbar(event);
-			break;
-		case PICKUP_ALL:
-		case PICKUP_HALF:
-		case PICKUP_ONE:
-		case PICKUP_SOME:
+		case CONTROL_DROP:
 			if (top) {
 				itemRemoveTop(event);
 			} else {
 				itemRemoveBottom(event);
 			}
 			break;
-		case PLACE_ALL:
-		case PLACE_ONE:
-		case PLACE_SOME:
-			if (top) {
-				itemAddTop(event);
-			} else {
-				itemAddBottom(event);
-			}
-			break;
-		case SWAP_WITH_CURSOR:
-			if (top) {
-				itemSwapIntoTop(event);
-			} else {
-				itemSwapIntoBottom(event);
-			}
-			break;
-		case CLONE_STACK:
-		case DROP_ALL_CURSOR:
-		case DROP_ALL_SLOT:
-		case DROP_ONE_CURSOR:
-		case DROP_ONE_SLOT:
-		case NOTHING:
+		case CREATIVE:
+		case MIDDLE:
 		case UNKNOWN:
+		case DROP:
+		case WINDOW_BORDER_LEFT:
+		case WINDOW_BORDER_RIGHT:
 		default:
-			break;
+			return;
 		}
 	}
 

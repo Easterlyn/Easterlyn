@@ -3,17 +3,22 @@ package co.sblock.machines.type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.material.MaterialData;
+import org.bukkit.util.Vector;
 
+import co.sblock.data.SblockData;
 import co.sblock.machines.SblockMachines;
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Icon;
 import co.sblock.users.User;
 
 /**
@@ -28,10 +33,11 @@ public class Computer extends Machine implements InventoryHolder {
 	 * 
 	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String)
 	 */
-	public Computer(Location l, String data, boolean virtual) {
-		super(l, data);
+	public Computer(Location l, String owner, boolean virtual) {
+		super(l, owner);
 		if (!virtual) {
-			this.blocks = shape.getBuildLocations(d);
+			shape.addBlock(new Vector(0, 0, 0), new MaterialData(Material.JUKEBOX));
+			this.blocks = shape.getBuildLocations(direction);
 		}
 	}
 
@@ -49,18 +55,10 @@ public class Computer extends Machine implements InventoryHolder {
 			}
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer placed!");
-			SblockMachines.getMachines().getManager().removeMachineListing(key);
+			this.assemblyFailed();
+			return;
 		}
-	}
-
-	/**
-	 * Servers cannot break client's computer.
-	 * 
-	 * @see co.sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockBreakEvent)
-	 */
-	@Override
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		return getData().equals(event.getPlayer().getName()) || event.getPlayer().hasPermission("group.denizen");
+		SblockData.getDB().saveMachine(this);
 	}
 
 	/**
@@ -141,11 +139,11 @@ public class Computer extends Machine implements InventoryHolder {
 			}
 		}
 		if (event.getMaterial().name().contains("RECORD")) { // prevent non-program Icons from being registered
+			event.setCancelled(true);
 			Icon ico = Icon.getIcon(event.getItem());
 			if (ico != null) {
 				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed "
 						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
-				event.setCancelled(true);
 				event.getPlayer().setItemInHand(null);
 				User u = User.getUser(event.getPlayer().getUniqueId());
 				u.addProgram(ico.getProgramID());

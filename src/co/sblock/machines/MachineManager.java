@@ -18,14 +18,14 @@ import co.sblock.machines.type.Alchemiter;
 import co.sblock.machines.type.Bank;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Cruxtruder;
-import co.sblock.machines.type.Direction;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.MachineType;
 import co.sblock.machines.type.PGO;
 import co.sblock.machines.type.PunchDesignix;
 import co.sblock.machines.type.TotemLathe;
 import co.sblock.machines.type.Transmaterializer;
 import co.sblock.machines.type.Transportalizer;
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Direction;
 import co.sblock.users.User;
 
 /**
@@ -51,39 +51,41 @@ public class MachineManager {
 	 * 
 	 * @param l the Location of the key
 	 * @param m the MachineType
-	 * @param data the additional Machine data
+	 * @param owner the owner of the Machine
 	 * @param d the facing direction
+	 * @param data the additional data stored by the Machine
 	 * 
 	 * @return the Machine created
 	 */
-	public Machine addMachine(Location l, MachineType m, String data, Direction d) {
+	public Machine addMachine(Location l, MachineType m, String owner, Direction d, String data) {
 		Machine machine = null;
 		switch (m) {
 		case ALCHEMITER:
-			machine = new Alchemiter(l, data, d);
+			machine = new Alchemiter(l, owner, d);
 			break;
 		case BANK:
-			machine = new Bank(l, data);
+			machine = new Bank(l, owner);
+			break;
 		case COMPUTER:
-			machine = new Computer(l, data, false);
+			machine = new Computer(l, owner, false);
 			break;
 		case CRUXTRUDER:
-			machine = new Cruxtruder(l, data);
+			machine = new Cruxtruder(l, owner);
 			break;
 		case PERFECTLY_GENERIC_OBJECT:
-			machine = new PGO(l, data);
+			machine = new PGO(l, owner);
 			break;
 		case PUNCH_DESIGNIX:
-			machine = new PunchDesignix(l, data, d);
+			machine = new PunchDesignix(l, owner, d);
 			break;
 		case TOTEM_LATHE:
-			machine = new TotemLathe(l, data, d);
+			machine = new TotemLathe(l, owner, d);
 			break;
 		case TRANSMATERIALIZER:
-			machine = new Transmaterializer(l, data, d);
+			machine = new Transmaterializer(l, owner, d);
 			break;
 		case TRANSPORTALIZER:
-			machine = new Transportalizer(l, data, d);
+			machine = new Transportalizer(l, owner, d);
 			break;
 		default:
 			break;
@@ -93,9 +95,10 @@ public class MachineManager {
 		}
 		machineKeys.put(l, machine);
 		for (Location l1 : machine.getLocations()) {
-			if (!machineBlocks.containsKey(l1)) {
-				machineBlocks.put(l1, l);
-			}
+			machineBlocks.put(l1, l);
+		}
+		if (data != null) {
+			machine.setData(data);
 		}
 		return machine;
 	}
@@ -107,14 +110,14 @@ public class MachineManager {
 	 * 
 	 * @param location the Location String
 	 * @param machineType the MachineType String
-	 * @param data the additional Machine data
+	 * @param owner the owner of the Machine
 	 * @param direction the facing direction
 	 */
-	public void loadMachine(String location, String machineType, String data, byte direction) {
+	public void loadMachine(String location, String machineType, String owner, byte direction, String data) {
 		String[] l = location.split(",");
 		addMachine(new Location(Bukkit.getWorld(l[0]), Integer.parseInt(l[1]),
 				Integer.parseInt(l[2]), Integer.parseInt(l[3])),
-				MachineType.getType(machineType), data, Direction.getDirection(direction));
+				MachineType.getType(machineType), owner, Direction.getDirection(direction), data);
 		
 	}
 
@@ -213,15 +216,6 @@ public class MachineManager {
 					setRemoved(e.getKey().getBlock());
 				}
 			}
-		}
-	}
-
-	/**
-	 * Save all stored Machines to the database.
-	 */
-	public void saveToDb() {
-		for (Location l : machineKeys.keySet()) {
-			SblockData.getDB().saveMachine(machineKeys.get(l));
 		}
 	}
 

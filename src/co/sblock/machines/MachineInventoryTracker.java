@@ -27,7 +27,7 @@ import org.bukkit.event.inventory.InventoryType;
 import co.sblock.events.packets.WrapperPlayServerCustomPayload;
 import co.sblock.events.packets.WrapperPlayServerOpenWindow;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.MachineType;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.regex.RegexUtils;
 
 import com.comphenix.protocol.ProtocolLibrary;

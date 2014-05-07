@@ -35,8 +35,9 @@ public class Machines {
 				SblockData.getLogger().warning("A Machine appears to have invalid data, skipping save.");
 				return;
 			}
-			pst.setString(3, m.getData());
+			pst.setString(3, m.getOwner());
 			pst.setByte(4, m.getFacingDirection().getDirByte());
+			pst.setString(5, m.getData());
 
 			pst.executeUpdate();
 		} catch (SQLException e) {
@@ -81,7 +82,8 @@ public class Machines {
 			MachineManager mm = SblockMachines.getMachines().getManager();
 
 			while (rs.next()) {
-				mm.loadMachine(rs.getString("location"), rs.getString("type"), rs.getString("data"), rs.getByte("face"));
+				mm.loadMachine(rs.getString("location"), rs.getString("type"),
+						rs.getString("owner"), rs.getByte("face"), rs.getString("data"));
 			}
 		} catch (SQLException e) {
 			SblockMachines.getMachines().getLogger().err(e);

@@ -7,6 +7,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import co.sblock.machines.utilities.MachineType;
+
 /**
  * 
  * 
@@ -25,6 +27,7 @@ public class Bank extends Machine {
 		shape.addBlock(new Vector(0, 0, 0), new MaterialData(Material.QUARTZ_BLOCK, (byte) 2));
 		shape.addBlock(new Vector(0, 1, 0), new MaterialData(Material.STAINED_GLASS));
 		shape.addBlock(new Vector(0, 2, 0), new MaterialData(Material.STEP, (byte) 7));
+		blocks = shape.getBuildLocations(getFacingDirection());
 	}
 
 	/* (non-Javadoc)

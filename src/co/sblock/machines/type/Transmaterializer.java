@@ -6,6 +6,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Direction;
+
 /**
  * Machine for ItemStack teleportation.
  * 
@@ -17,8 +20,8 @@ public class Transmaterializer extends Machine {
 	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
-	public Transmaterializer(Location l, String data, Direction d) {
-		super(l, data, d);
+	public Transmaterializer(Location l, String owner, Direction d) {
+		super(l, owner, d);
 		MaterialData m = new MaterialData(Material.CHEST, d.getChestByte());
 		shape.addBlock(new Vector(0, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_BLOCK);

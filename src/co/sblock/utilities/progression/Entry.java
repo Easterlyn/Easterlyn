@@ -32,7 +32,7 @@ import com.google.common.collect.HashBiMap;
 import co.sblock.Sblock;
 import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 import co.sblock.machines.MachineManager;
-import co.sblock.machines.type.Icon;
+import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.MediumPlanet;
 import co.sblock.users.ProgressionState;

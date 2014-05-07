@@ -1,4 +1,4 @@
-package co.sblock.machines.type;
+package co.sblock.machines.utilities;
 
 import java.util.ArrayList;
 

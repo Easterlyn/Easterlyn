@@ -19,6 +19,8 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
@@ -64,11 +66,11 @@ public class Alchemiter extends Machine {
 		shape.addBlock(new Vector(1, 0, 2), m);
 		shape.addBlock(new Vector(2, 0, 2), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.WEST).getStairByte());
+				d.getRelativeDirection(Direction.EAST).getStairByte());
 		shape.addBlock(new Vector(-1, 0, 1), m);
 		shape.addBlock(new Vector(-1, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.EAST).getStairByte());
+				d.getRelativeDirection(Direction.WEST).getStairByte());
 		shape.addBlock(new Vector(2, 0, 1), m);
 		shape.addBlock(new Vector(2, 0, 0), m);
 		blocks = shape.getBuildLocations(getFacingDirection());

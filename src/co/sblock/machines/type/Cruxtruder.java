@@ -7,6 +7,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Direction;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.utilities.captcha.CruxiteDowel;
@@ -32,9 +34,9 @@ public class Cruxtruder extends Machine {
 		shape.addBlock(new Vector(1, 0, -1), m);
 		shape.addBlock(new Vector(0, 0, -1), m);
 		shape.addBlock(new Vector(-1, 0, -1), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.EAST.getStairByte());
-		shape.addBlock(new Vector(1, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.WEST.getStairByte());
+		shape.addBlock(new Vector(1, 0, 0), m);
+		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.EAST.getStairByte());
 		shape.addBlock(new Vector(-1, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.SOUTH.getStairByte());
 		shape.addBlock(new Vector(1, 0, 1), m);

@@ -1,4 +1,4 @@
-package co.sblock.machines.type;
+package co.sblock.machines.utilities;
 
 import java.util.ArrayList;
 
@@ -67,10 +67,10 @@ public enum MachineType {
 	 * @return the Machine data
 	 */
 	public String getData(BlockPlaceEvent e) {
-		if (this != MachineType.PERFECTLY_GENERIC_OBJECT) {
-			return e.getPlayer().getUniqueId().toString();
+		if (this == MachineType.PERFECTLY_GENERIC_OBJECT) {
+			return e.getBlockAgainst().getState().getData().toString();
 		}
-		return e.getBlockAgainst().getState().getData().toString();
+		return null;
 	}
 
 	/**

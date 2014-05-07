@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 
 import co.sblock.CommandListener;
 import co.sblock.SblockCommand;
-import co.sblock.machines.type.Icon;
-import co.sblock.machines.type.MachineType;
+import co.sblock.machines.utilities.Icon;
+import co.sblock.machines.utilities.MachineType;
 
 /**
  * @author Jikoo

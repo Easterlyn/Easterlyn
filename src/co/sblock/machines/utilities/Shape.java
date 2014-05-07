@@ -1,4 +1,4 @@
-package co.sblock.machines.type;
+package co.sblock.machines.utilities;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -39,6 +39,8 @@ public class Shape {
 	 * @param m the MaterialData to make the Block from
 	 */
 	public void addBlock(Vector v, MaterialData m) {
+		// x axis is inverted for our interpretation of north on an x, z plane
+		v.setX(-v.getX());
 		this.vectors.put(v, m);
 	}
 

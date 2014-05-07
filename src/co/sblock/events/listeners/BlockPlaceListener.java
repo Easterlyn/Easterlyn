@@ -1,16 +1,19 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import co.sblock.Sblock;
 import co.sblock.machines.SblockMachines;
-import co.sblock.machines.type.Direction;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.MachineType;
 import co.sblock.machines.type.PBO;
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Direction;
 import co.sblock.users.User;
 
 /**
@@ -45,7 +48,13 @@ public class BlockPlaceListener implements Listener {
 			} else {
 				// Should ideally never run out this way.
 				event.getItemInHand().setAmount(2);
-				event.getPlayer().updateInventory();
+				final Player player = event.getPlayer();
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						player.updateInventory();
+					}
+				});
 			}
 		}
 
@@ -58,8 +67,8 @@ public class BlockPlaceListener implements Listener {
 				}
 				try {
 					SblockMachines.getMachines().getManager().addMachine(
-							event.getBlock().getLocation(), mt, mt.getData(event),
-							Direction.getFacingDirection(event.getPlayer())).assemble(event);
+							event.getBlock().getLocation(), mt, event.getPlayer().getUniqueId().toString(),
+							Direction.getFacingDirection(event.getPlayer()), mt.getData(event)).assemble(event);
 				} catch (NullPointerException e) {
 					SblockMachines.getMachines().getLogger().debug("Invalid machine placed.");
 					event.setBuild(false);

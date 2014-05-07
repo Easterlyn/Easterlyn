@@ -19,6 +19,8 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
@@ -43,10 +45,10 @@ public class PunchDesignix extends Machine {
 	public PunchDesignix(Location l, String data, Direction d) {
 		super(l, data, d);
 		MaterialData m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.EAST).getUpperStairByte());
+				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
 		shape.addBlock(new Vector(0, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
+				d.getRelativeDirection(Direction.EAST).getUpperStairByte());
 		shape.addBlock(new Vector(1, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS,
 				d.getRelativeDirection(Direction.NORTH).getStairByte());

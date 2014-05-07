@@ -7,6 +7,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
 
+import co.sblock.machines.utilities.MachineType;
+
 /**
  * Perfectly Generic Object Machine. Mimics most objects when placed against them.
  * 
@@ -19,7 +21,7 @@ public class PGO extends Machine {
 	 */
 	public PGO(Location l, String data) {
 		super(l, data);
-		this.blocks = shape.getBuildLocations(d);
+		this.blocks = shape.getBuildLocations(direction);
 	}
 
 	/**

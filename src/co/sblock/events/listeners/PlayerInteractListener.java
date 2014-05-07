@@ -22,7 +22,7 @@ import co.sblock.events.SblockEvents;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.MachineType;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.utilities.captcha.Captcha;

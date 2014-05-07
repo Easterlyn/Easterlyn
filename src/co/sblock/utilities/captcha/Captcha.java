@@ -15,7 +15,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.Module;
-import co.sblock.machines.type.MachineType;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
@@ -367,10 +367,20 @@ public class Captcha extends Module {
 
 	private static void hotbarCaptcha(InventoryClickEvent event) {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
-		if (!isBlankCaptcha(hotbar) || event.getCurrentItem() == null) {
-			return;
+		ItemStack captcha;
+		if (!isBlankCaptcha(hotbar) || event.getCurrentItem() == null
+				|| event.getCurrentItem().getType() == Material.AIR
+				|| CruxiteDowel.expCost(event.getCursor()) == Integer.MAX_VALUE
+				|| InventoryUtils.isUniqueItem(event.getCursor())) {
+			// Invalid captcha objects
+			if (!event.getCursor().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
+				// Computers can (and should) be alchemized.
+				return;
+			} else {
+				captcha = createLoreCard("Computer");
+			}
 		}
-		ItemStack captcha = itemToCaptcha(event.getCurrentItem());
+		captcha = itemToCaptcha(event.getCurrentItem());
 		event.setResult(Result.DENY);
 		event.getView().getBottomInventory().setItem(event.getHotbarButton(), InventoryUtils.decrement(hotbar, 1));
 

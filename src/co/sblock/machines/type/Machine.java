@@ -31,8 +31,12 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.data.SblockData;
 import co.sblock.machines.MachineManager;
 import co.sblock.machines.SblockMachines;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Shape;
 import co.sblock.users.User;
 
 /**
@@ -45,11 +49,11 @@ public abstract class Machine {
 	/** The Location of the key Block of the Machine. */
 	protected Location key;
 
-	/** Additional data stored in the Machine, e.g. creator name. */
-	private String data;
+	/** The owner and any other data stored for the Machine. */
+	protected String owner, data;
 
 	/** Machine facing */
-	protected Direction d;
+	protected Direction direction;
 
 	/** The Shape of the Machine */
 	protected Shape shape;
@@ -59,27 +63,23 @@ public abstract class Machine {
 
 	/**
 	 * @param key the Location of the key Block of this Machine
-	 * @param data any additional data stored in this machine, e.g. creator name
-	 * @param d the facing direction of the Machine
+	 * @param owner the UUID of the Machine's owner
+	 * @param direction the facing direction of the Machine
 	 */
-	Machine(Location key, String data, Direction d) {
+	Machine(Location key, String owner, Direction direction) {
 		this.key = key;
-		this.data = data;
-		this.d = d;
+		this.owner = owner;
+		this.direction = direction;
 		this.shape = new Shape(key.clone());
 		shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop().getData());
 	}
 
 	/**
 	 * @param key the Location of the key Block of this Machine
-	 * @param data any additional data stored in this machine, e.g. creator name
+	 * @param owner any additional data stored in this machine, e.g. creator name
 	 */
-	Machine(Location key, String data) {
-		this.key = key;
-		this.data = data;
-		this.d = Direction.NORTH;
-		this.shape = new Shape(key.clone());
-		shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop().getData());
+	Machine(Location key, String owner) {
+		this(key, owner, Direction.NORTH);
 	}
 
 	/**
@@ -103,6 +103,24 @@ public abstract class Machine {
 	}
 
 	/**
+	 * Gets the owner of this Machine.
+	 * 
+	 * @return the UUID of the owner of the Machine
+	 */
+	public String getOwner() {
+		return this.owner;
+	}
+
+	/**
+	 * Sets additional data stored for the Machine.
+	 * 
+	 * @param data the data to set
+	 */
+	public void setData(String data) {
+		this.data = data;
+	}
+
+	/**
 	 * Gets any additional data used to identify this Machine.
 	 * 
 	 * @return String
@@ -114,20 +132,21 @@ public abstract class Machine {
 	/**
 	 * If a Player attempts to break a Machine, this condition must be met.
 	 * <p>
-	 * For most Machines, placing Player name is compared to data.
+	 * For most Machines, placing Player name is compared to the owner.
 	 * 
 	 * @param event the BlockPlaceEvent
 	 * @return boolean
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return this.getType().isFree() || event.getPlayer().hasPermission("group.denizen")
-				|| getData().equals(event.getPlayer().getUniqueId().toString());
+				|| owner.equals(event.getPlayer().getUniqueId().toString());
 	}
 
 	/**
 	 * Sets up the Machine Block configuration using a BlockPlaceEvent.
 	 * 
 	 * @param event the BlockPlaceEvent
+	 * @return 
 	 */
 	public void assemble(BlockPlaceEvent event) {
 		for (Location l : blocks.keySet()) {
@@ -144,6 +163,7 @@ public abstract class Machine {
 		if (u != null && u.isServer() && data.equals(u.getPlayerName())) {
 			this.data = u.getClient().toString();
 		}
+		SblockData.getDB().saveMachine(this);
 	}
 
 	/**
@@ -232,7 +252,7 @@ public abstract class Machine {
 	 * @return the Direction
 	 */
 	public Direction getFacingDirection() {
-		return d;
+		return direction;
 	}
 
 	/**

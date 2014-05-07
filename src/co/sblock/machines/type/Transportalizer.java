@@ -1,6 +1,6 @@
 package co.sblock.machines.type;
 
-import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -9,18 +9,25 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Chest;
+import org.bukkit.block.Dispenser;
+import org.bukkit.block.Hopper;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import com.dsh105.holoapi.HoloAPI;
+import com.dsh105.holoapi.api.Hologram;
+
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Direction;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
  * Machine for Entity teleportation.
@@ -35,24 +42,27 @@ import co.sblock.users.User;
  */
 public class Transportalizer extends Machine {
 
+	private long fuel;
+	private Hologram fuelHolo;
 	/**
 	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
 	public Transportalizer(Location l, String data, Direction d) {
 		super(l, data, d);
-		MaterialData m = new MaterialData(Material.CHEST, d.getChestByte());
+		MaterialData m = new MaterialData(Material.HOPPER, d.getRelativeDirection(Direction.SOUTH).getChestByte());
 		shape.addBlock(new Vector(0, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_BLOCK);
 		shape.addBlock(new Vector(-1, 0, 0), m);
 		shape.addBlock(new Vector(1, 0, 0), m);
 		shape.addBlock(new Vector(-1, 0, 1), m);
-		shape.addBlock(new Vector(0, 0, 1), m);
 		shape.addBlock(new Vector(1, 0, 1), m);
 		shape.addBlock(new Vector(-1, 2, 1), m);
 		shape.addBlock(new Vector(0, 2, 1), m);
 		shape.addBlock(new Vector(1, 2, 1), m);
-		m = new MaterialData(Material.QUARTZ_BLOCK, (byte) 2);
+		m = new MaterialData(Material.DISPENSER, (byte) 1);
+		shape.addBlock(new Vector(0, 0, 1), m);
+		m = new MaterialData(Material.STAINED_GLASS);
 		shape.addBlock(new Vector(0, 1, 1), m);
 		m = new MaterialData(Material.WOOD_BUTTON, d.getButtonByte());
 		shape.addBlock(new Vector(-1, 2, 0), m);
@@ -69,6 +79,20 @@ public class Transportalizer extends Machine {
 		m = new MaterialData(Material.CARPET, (byte) 5);
 		shape.addBlock(new Vector(1, 1, 0), m);
 		blocks = shape.getBuildLocations(getFacingDirection());
+		fuel = 0;
+		Location display = null;
+		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
+			if (e.getValue().equals(new MaterialData(Material.STAINED_GLASS))) {
+				display = e.getKey().clone().add(0.5, 0, 0.5);
+				break;
+			}
+		}
+		if (display == null) {
+			display = key.clone();
+		}
+		// This hologram will disappear given a few weeks. I don't see us going that long without a restart.
+		fuelHolo = HoloAPI.getManager().createSimpleHologram(display, Integer.MAX_VALUE, String.valueOf(fuel));
+		fuelHolo.refreshDisplay(false);
 	}
 
 	/**
@@ -80,6 +104,80 @@ public class Transportalizer extends Machine {
 	}
 
 	/**
+	 * @see co.sblock.machines.type.Machine#getType()
+	 */
+	@Override
+	public String getData() {
+		return String.valueOf(fuel);
+	}
+
+	/**
+	 * @see co.sblock.machines.type.Machine#getType()
+	 */
+	@Override
+	public void setData(String data) {
+		try {
+			fuel = Long.valueOf(data);
+			fuelHolo.updateLines(data);
+		} catch (NumberFormatException e)  {
+			fuel = 0;
+		}
+	}
+
+	@Override
+	public boolean handleHopper(org.bukkit.event.inventory.InventoryMoveItemEvent event) {
+		if (event.getDestination().getHolder() instanceof Dispenser && !blocks.containsKey(((Hopper) event.getSource().getHolder()).getBlock())) {
+			key.getWorld().dropItemNaturally(key.clone().add(new Vector(0, 1, 0)), event.getItem());
+			event.setItem(null);
+			return true;
+		}
+		for (int i = 0; i < event.getSource().getSize(); i++) {
+			if (event.getSource().getItem(i) == null) {
+				continue;
+			}
+			if (hasValue(event.getSource().getItem(i).getType())) {
+				fuel += getValue(event.getSource().getItem(i).getType());
+				fuelHolo.updateLines(String.valueOf(fuel));
+				key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
+				event.getSource().setItem(i, InventoryUtils.decrement(event.getSource().getItem(i), 1));
+				break;
+			} else {
+				key.getWorld().dropItemNaturally(key, event.getSource().getItem(i));
+				event.getSource().setItem(i, null);
+				break;
+			}
+		}
+		return true;
+	}
+
+	private boolean hasValue(Material m) {
+		return m == Material.SULPHUR || m == Material.REDSTONE || m == Material.BLAZE_POWDER
+				|| m == Material.GLOWSTONE_DUST || m == Material.BLAZE_ROD
+				|| m == Material.GLOWSTONE || m == Material.REDSTONE_BLOCK;
+	}
+
+	private int getValue(Material m) {
+		switch (m) {
+		case SULPHUR:
+			return 1;
+		case REDSTONE:
+			return 2;
+		case BLAZE_POWDER:
+			return 3;
+		case GLOWSTONE_DUST:
+			return 4;
+		case BLAZE_ROD:
+			return 6;
+		case GLOWSTONE:
+			return 16;
+		case REDSTONE_BLOCK:
+			return 18;
+		default:
+			return 0;
+		}
+	}
+
+	/**
 	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
@@ -88,8 +186,17 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 
+		// Dispenser inventory really only exists for easy slow fuel consumption.
+		// Players should not be able to access it.
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK
+				&& event.getClickedBlock().getType() == Material.DISPENSER) {
+			Hopper hopper = (Hopper) key.getBlock().getState();
+			event.getPlayer().openInventory(hopper.getInventory());
+			return true;
+		}
+
 		User user = User.getUser(event.getPlayer().getUniqueId());
-		if (user != null && user.getProgression() != ProgressionState.NONE) {
+		if (user != null && user.getProgression() == ProgressionState.NONE) {
 			// Transportalizers can only be used by players who have completed Entry.
 			// Any entity, including pre-entry players, can be transported by a
 			// post-entry player pressing the button.
@@ -98,143 +205,77 @@ public class Transportalizer extends Machine {
 
 		if (!event.getClickedBlock().getType().equals(Material.WOOD_BUTTON)) {
 			return false;
-		} else {
-			// ESTABLISH REMOTE LOCATION
-			Block signBlock = this.key.clone().add(new Vector(0, 2, 0)).getBlock();
-			if (!signBlock.getType().equals(Material.WALL_SIGN)) {
-				event.getPlayer().sendMessage(ChatColor.RED
-						+ "Please place a sign on your transportalizer between the buttons to use it."
-						+ "\nThe third row should contain your desired coordinates in x,y,x format."
-						+ "\nAll the other rows can contain whatever you like.");
-				return false;
-			}
-			Sign sign = (Sign) signBlock.getState();
-			// Sign lines are 0-3
-			String checkLoc = sign.getLine(2);
-			if (!checkLoc.replaceAll("\\-?[0-9]+,[0-9]+,\\-?[0-9]+",
-					"Too long a string!").equals("Too long a string!")) {
-				event.getPlayer().sendMessage(ChatColor.RED
-						+ "The third line of your transportalizer sign must contain "
-						+ "your desired destination in x,y,z format. Ex: 0,64,0");
-				return false;
-			}
-			String[] locString = sign.getLine(2).split(",");
-			int y = Integer.parseInt(locString[1]);
-			y = y > 0 ? y < 256 ? y : 255 : 63;
-			Location remote = new Location(event.getClickedBlock().getWorld(),
-					Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
+		}
 
-			// CHECK FUEL
-			Chest chest = (Chest) key.getBlock().getState();
-			Inventory chestInv = chest.getInventory();
-			if (!chestInv.contains(Material.SULPHUR) && !chestInv.contains(Material.REDSTONE)
-					&& !chestInv.contains(Material.BLAZE_POWDER)
-					&& !chestInv.contains(Material.GLOWSTONE_DUST)
-					&& !chestInv.contains(Material.BLAZE_ROD)) {
-				event.getPlayer().sendMessage(ChatColor.RED
-						+ "The transportalizer makes a sputtering noise, but nothing happens."
-						+ "\nIt occurs to you that perhaps you should check the fuel level."
-						+ "\nYou give yourself a pat on the back for being a troubleshooting genius.");
-				return false;
-			}
-
-			ArrayList<ItemStack> removedFuel = consumeFuel(chest, remote);
-			if (removedFuel != null) {
-				for (ItemStack is : removedFuel) {
-					chest.getInventory().addItem(is);
-				}
-				event.getPlayer().sendMessage(ChatColor.RED
-						+ "The Transportalizer begins humming through standard teleport procedure,"
-						+ " when all of a sudden it chokes to a halt with an awful screeching noise."
-						+ "\nPerhaps it requires more fuel?");
-				key.getWorld().playSound(key, Sound.ENDERMAN_SCREAM, 10, 3);
-				return false;
-			}
-			// adam sound based on chest fill? maybe just raw usable ItemStacks rather than quantity for speed
-			key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 5);
-
-			// TELEPORT
-			// Messy, but avoids deprecation for now.
-			Block pad = event.getClickedBlock().getRelative(BlockFace.DOWN);
-			if (pad.getState().getData().toItemStack().getDurability() == (short) 5) {
-				for (Entity e : key.getWorld().getEntities()) {
-					if (e.getLocation().getBlock().equals(pad)) {
-						remote.setPitch(e.getLocation().getPitch());
-						remote.setYaw(e.getLocation().getYaw());
-						e.teleport(remote);
-						pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
-						pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);
-						return false;
-					}
-				}
-			} else {
-				for (Entity e : key.getWorld().getEntities()) {
-					if (e.getLocation().getBlock().equals(remote.getBlock())) {
-						remote.setPitch(e.getLocation().getPitch());
-						remote.setYaw(e.getLocation().getYaw());
-						e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(), pad.getZ() + .5));
-						pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
-						pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);
-						return false;
-					}
-				}
-			}
+		// Check for a sign in the proper location
+		Block signBlock = this.key.clone().add(new Vector(0, 2, 0)).getBlock();
+		if (!signBlock.getType().equals(Material.WALL_SIGN)) {
+			event.getPlayer().sendMessage(ChatColor.RED
+					+ "Please place a sign on your transportalizer between the buttons to use it."
+					+ "\nThe third row should contain your desired coordinates in x,y,x format."
+					+ "\nAll the other rows can contain whatever you like.");
 			return false;
 		}
-	}
 
-	// Adam debug removal adding // javadoc
-	private ArrayList<ItemStack> consumeFuel(Chest chest, Location destination) {
-		Inventory inv = chest.getInventory();
-		ArrayList<ItemStack> removed = new ArrayList<ItemStack>();
-		int cost = (int) (key.distance(destination) / 75 + 1);
-		for (int i = 0; i < inv.getSize(); i++) {
-			if (cost <= 0) {
-				break;
-			}
-			ItemStack is = inv.getItem(i);
-			if (is != null) {
-				int rate = 0;
-				switch (is.getType()) {
-				case SULPHUR:
-					rate = 1;
-					break;
-				case REDSTONE:
-					rate = 2;
-					break;
-				case BLAZE_POWDER:
-					rate = 3;
-					break;
-				case GLOWSTONE_DUST:
-					rate = 4;
-					break;
-				case BLAZE_ROD:
-					rate = 6;
-					break;
-				default:
-					break;
+		// Check sign for proper format - sign lines are 0-3, third line is line 2
+		String line3 = ((Sign) signBlock.getState()).getLine(2);
+		if (!line3.matches("\\-?[0-9]+,[0-9]+,\\-?[0-9]+")) {
+			event.getPlayer().sendMessage(ChatColor.RED
+					+ "The third line of your transportalizer sign must contain "
+					+ "your desired destination in x,y,z format. Ex: 0,64,0");
+			return false;
+		}
+
+		// Parse remote location. Do not allow invalid height.
+		String[] locString = line3.split(",");
+		int y = Integer.parseInt(locString[1]);
+		y = y > 0 ? y < 256 ? y : 255 : 63;
+		Location remote = new Location(event.getClickedBlock().getWorld(),
+				Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
+
+		int cost = (int) Math.ceil(key.distance(remote) / 75 + 1);
+		// CHECK FUEL
+		if (fuel < cost) {
+			event.getPlayer().sendMessage(ChatColor.RED
+					+ "The Transportalizer begins humming through standard teleport procedure,"
+					+ " when all of a sudden it chokes to a halt with an awful screeching noise."
+					+ "\nPerhaps it requires more fuel?");
+			key.getWorld().playSound(key, Sound.ENDERMAN_SCREAM, 10, 2);
+			return false;
+		}
+
+		key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
+
+		// TELEPORT
+		// Messy, but avoids deprecation for now.
+		Block pad = event.getClickedBlock().getRelative(BlockFace.DOWN);
+		if (pad.getState().getData().toItemStack().getDurability() == (short) 5) {
+			for (Entity e : key.getWorld().getEntities()) {
+				if (e.getLocation().getBlock().equals(pad)) {
+					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
+					fuel -= cost;
+					remote.setPitch(e.getLocation().getPitch());
+					remote.setYaw(e.getLocation().getYaw());
+					e.teleport(remote);
+					pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
+					pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);
+					return false;
 				}
-				if (rate > 0) {
-					int quantity = (int) (is.getAmount()- Math.ceil(cost / rate));
-					if (is.getAmount() <= quantity) {
-						removed.add(is.clone());
-						cost -= is.getAmount() * rate;
-						is = null;
-					} else {
-						ItemStack rm = is.clone();
-						rm.setAmount(is.getAmount() - quantity);
-						removed.add(rm);
-						is.setAmount(quantity);
-						cost = 0;
-					}
-					chest.getInventory().setItem(i, is);
+			}
+		} else {
+			for (Entity e : key.getWorld().getEntities()) {
+				if (e.getLocation().getBlock().equals(remote.getBlock())) {
+					fuel -= cost;
+					e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(), pad.getZ() + .5,
+							e.getLocation().getYaw(), e.getLocation().getPitch()));
+					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
+					pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
+					pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);
+					return false;
 				}
 			}
 		}
-		if (cost <= 0) {
-			return null;
-		}
-		return removed;
+		return false;
 	}
 
 	/**
@@ -242,6 +283,18 @@ public class Transportalizer extends Machine {
 	 */
 	@Override
 	public boolean handleClick(InventoryClickEvent event) {
+		return false;
+	}
+
+	/**
+	 * @see co.sblock.machines.type.Machine#handleBreak(BlockBreakEvent)
+	 */
+	@Override
+	public boolean handleBreak(BlockBreakEvent event) {
+		if (super.handleBreak(event)) {
+			fuelHolo.clearAllPlayerViews();
+			return true;
+		}
 		return false;
 	}
 }

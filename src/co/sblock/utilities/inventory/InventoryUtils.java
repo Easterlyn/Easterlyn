@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.machines.type.MachineType;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
 

@@ -28,8 +28,8 @@ public enum Call {
 			+ "modList=VALUES(modList), banList=VALUES(banList), approvedList=VALUES(approvedList)"),
 	CHANNEL_LOADALL("SELECT * FROM ChatChannels"),
 	CHANNEL_DELETE("DELETE FROM ChatChannels WHERE name = ?"),
-	MACHINE_SAVE("INSERT INTO Machines(location, type, data, face) VALUES (?, ?, ?, ?) "
-			+ "ON DUPLICATE KEY UPDATE type=VALUES(type), data=VALUES(data), face=VALUES(face)"),
+	MACHINE_SAVE("INSERT INTO Machines(location, type, owner, face, data) VALUES (?, ?, ?, ?, ?) "
+			+ "ON DUPLICATE KEY UPDATE type=VALUES(type), owner=VALUES(owner), face=VALUES(face), data=VALUES(data)"),
 	MACHINE_LOADALL("SELECT * FROM Machines"),
 	MACHINE_DELETE("DELETE FROM Machines WHERE location = ?"),
 	TOWER_SAVE("INSERT INTO TowerLocs(towerID, location) VALUES (?, ?) "
