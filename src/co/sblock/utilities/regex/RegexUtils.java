@@ -61,27 +61,17 @@ public class RegexUtils {
 	 * @return the trimmed String
 	 */
 	public static String trimExtraWhitespace(String s) {
-		// Strip all spaces between colors
-		Pattern p = Pattern.compile("(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)\\s+(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)");
-		boolean complete = false;
-		while (!complete) {
-			Matcher m = p.matcher(s);
-			int lastMatch = 0;
-			StringBuilder newMessage = new StringBuilder();
-			while (m.find()) {
-				newMessage.append(s.substring(lastMatch, m.start())).append(m.group(3)).append(m.group(4));
-				lastMatch = m.end();
-			}
-			if (lastMatch > 0) {
-				s = newMessage.append(s.substring(lastMatch)).toString();
-				continue;
-			}
-			complete = true;
-		}
-		// Strip all useless colors
-		//s = s.replaceAll("(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-F])", "$4");
-		
-		return s.replaceAll("(\\A|\\s)+((((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-rA-FK-R])+)?\\s+?)", " $3");
+		// Strips useless codes and any spaces between them. Reset negates all prior colors and formatting.
+		s = s.replaceAll("((((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-orA-FK-OR])+)\\s+?)+((\\" + ChatColor.COLOR_CHAR + "|&)[rR])", "$5");
+		// Strips useless codes and any spaces between them. Colors reset prior colors and formatting.
+		s = s.replaceAll("((((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-orA-FK-OR])+)\\s+?)((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fA-F])", "$5");
+		// Strip all spaces between chat colors - actually strips about 1/2 per iteration
+		s = s.replaceAll("\\s+(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-orA-FK-OR])+)\\s+", " $1");
+		// Strip all spaces that appear to be at start
+		s = s.replaceAll("(\\A|\\s+)((((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-orA-FK-OR])+)?\\s+?)", " $3");
+		// Strip spaces at start
+		s = s.replaceAll("\\A\\s+", "");
+		return s;
 	}
 
 	/**
