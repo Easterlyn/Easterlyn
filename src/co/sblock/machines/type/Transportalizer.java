@@ -168,7 +168,7 @@ public class Transportalizer extends Machine {
 	}
 
 	/**
-	 * Checks if a material is a fuel
+	 * Checks if a Material is a fuel
 	 * 
 	 * @param m the Material to check
 	 * 
@@ -180,6 +180,13 @@ public class Transportalizer extends Machine {
 				|| m == Material.GLOWSTONE || m == Material.REDSTONE_BLOCK;
 	}
 
+	/**
+	 * Gets the fuel value for the Material provided.
+	 * 
+	 * @param m the Material to check
+	 * 
+	 * @return the fuel value of the Material
+	 */
 	private int getValue(Material m) {
 		switch (m) {
 		case SULPHUR:
@@ -311,18 +318,14 @@ public class Transportalizer extends Machine {
 		return false;
 	}
 
-	private void removeHolo() {
-		HoloAPI.getManager().stopTracking(fuelHolo);
-		HoloAPI.getManager().clearFromFile(fuelHolo);
-		fuelHolo.clearAllPlayerViews();
-		fuelHolo = null;
-	}
-
 	/**
 	 * @see co.sblock.machines.type.Machine#disable()
 	 */
 	@Override
 	public void disable() {
-		removeHolo();
+		HoloAPI.getManager().stopTracking(fuelHolo);
+		HoloAPI.getManager().clearFromFile(fuelHolo);
+		fuelHolo.clearAllPlayerViews();
+		fuelHolo = null;
 	}
 }
