@@ -1,9 +1,62 @@
 name: Sblock
 
-main: co.sblock.Sblock.Sblock
+main: co.sblock.Sblock
 version: 2.0.0-DEV
 author: Sblock Co.
-authors: [Dublek, Jikoo, FireNG]
+authors: [Jikoo, Dublek, FireNG]
 description: Sblock's sexy mainframe
-depend: [ProtocolLib, Vault]
-softdepend: [Chester]
+depend: [ProtocolLib, Vault, HoloAPI]
+softdepend: [Chester, CreeperHeal]
+
+permissions:
+ sblock.guildleader:
+  description: Default false - not all horrorterrors are guild leaders.
+  default: false
+ sblockchat.color:
+  description: Default false to prevent horrorterror names being black. Perms listed by color priority.
+  default: false
+  children:
+   sblockchat.black:
+    default: false
+   sblockchat.dark_blue:
+    default: false
+   sblockchat.dark_green:
+    default: false
+   sblockchat.dark_aqua:
+    default: false
+   sblockchat.dark_red:
+    default: false
+   sblockchat.dark_purple:
+    default: false
+   sblockchat.gold:
+    default: false
+   sblockchat.gray:
+    default: false
+   sblockchat.dark_gray:
+    default: false
+   sblockchat.blue:
+    default: false
+   sblockchat.green:
+    default: false
+   sblockchat.aqua:
+    default: false
+   sblockchat.red:
+    default: false
+   sblockchat.light_purple:
+    default: false
+   sblockchat.yellow:
+    default: false
+   sblockchat.white:
+    default: false
+   sblockchat.magic:
+    default: false
+   sblockchat.bold:
+    default: false
+   sblockchat.strikethrough:
+    default: false
+   sblockchat.underline:
+    default: false
+   sblockchat.italic:
+    default: false
+   sblockchat.reset:
+    default: false
