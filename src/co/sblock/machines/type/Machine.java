@@ -436,6 +436,7 @@ public abstract class Machine {
 	protected void assemblyFailed() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			public void run() {
+				disable();
 				SblockMachines.getMachines().getManager().removeMachineListing(key);
 			}
 		});

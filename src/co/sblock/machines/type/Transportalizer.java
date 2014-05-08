@@ -33,9 +33,9 @@ import co.sblock.utilities.inventory.InventoryUtils;
 /**
  * Machine for Entity teleportation.
  * <p>
- * Costs fuel based on distance: 1 unit of fuel per 75 blocks of direct line
+ * Costs fuel based on distance: 1 unit of fuel per 50 blocks of direct line
  * travel rounded up. Gunpowder = 1 fuel, redstone = 2, blaze powder = 3,
- * glowstone = 4, blaze rod = 6
+ * glowstone = 4, blaze rod = 6, glowstone block = 16, redstone block = 18.
  * <p>
  * Does not store excess fuel, uses first valid fuel object(s) available.
  * 
@@ -46,7 +46,7 @@ public class Transportalizer extends Machine {
 	private long fuel;
 	private Hologram fuelHolo;
 	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String, Direction)
+	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
 	public Transportalizer(Location l, String data, Direction d) {
@@ -94,7 +94,7 @@ public class Transportalizer extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.machines.type.Machine#getType()
 	 */
 	@Override
 	public MachineType getType() {
@@ -130,6 +130,9 @@ public class Transportalizer extends Machine {
 		}
 	}
 
+	/**
+	 * @see co.sblock.machines.type.Machine#handleHopper(InventoryMoveItemEvent)
+	 */
 	@Override
 	public boolean handleHopper(final org.bukkit.event.inventory.InventoryMoveItemEvent event) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
@@ -164,6 +167,13 @@ public class Transportalizer extends Machine {
 		return true;
 	}
 
+	/**
+	 * Checks if a material is a fuel
+	 * 
+	 * @param m the Material to check
+	 * 
+	 * @return true if the Material is a fuel
+	 */
 	private boolean hasValue(Material m) {
 		return m == Material.SULPHUR || m == Material.REDSTONE || m == Material.BLAZE_POWDER
 				|| m == Material.GLOWSTONE_DUST || m == Material.BLAZE_ROD
@@ -246,7 +256,7 @@ public class Transportalizer extends Machine {
 				Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
 
 		// 
-		int cost = (int) (key.distance(remote) / 75 + 1);
+		int cost = (int) (key.distance(remote) / 50 + 1);
 		// CHECK FUEL
 		if (fuel < cost) {
 			event.getPlayer().sendMessage(ChatColor.RED
