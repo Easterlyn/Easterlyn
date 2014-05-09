@@ -105,6 +105,9 @@ public class InventoryClickListener implements Listener {
 			break;
 		case SHIFT_LEFT:
 		case SHIFT_RIGHT:
+			if (event.getCurrentItem() == null) {
+				break;
+			}
 			if (top) {
 				itemShiftTopToBottom(event);
 			} else {
@@ -112,6 +115,9 @@ public class InventoryClickListener implements Listener {
 			}
 			break;
 		case CONTROL_DROP:
+		case DROP:
+		case WINDOW_BORDER_LEFT:
+		case WINDOW_BORDER_RIGHT:
 			if (top) {
 				itemRemoveTop(event);
 			} else {
@@ -121,9 +127,6 @@ public class InventoryClickListener implements Listener {
 		case CREATIVE:
 		case MIDDLE:
 		case UNKNOWN:
-		case DROP:
-		case WINDOW_BORDER_LEFT:
-		case WINDOW_BORDER_RIGHT:
 		default:
 			return;
 		}

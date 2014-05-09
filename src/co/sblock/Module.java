@@ -56,6 +56,7 @@ public abstract class Module {
 	 * @return the Module enabled
 	 */
 	public final Module enable() {
+		this.getLogger().info("Enabling module " + this.getClass().getSimpleName());
 		try {
 			this.onEnable();
 		} catch (Exception e) {

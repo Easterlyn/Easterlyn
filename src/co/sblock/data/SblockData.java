@@ -47,7 +47,7 @@ public class SblockData {
 	 * @return true if enabled successfully
 	 */
 	public boolean enable() {
-		logger.fine("Connecting to database.");
+		logger.info("Enabling SblockData");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"

@@ -19,7 +19,6 @@ public class SblockUsers extends Module {
 	 */
 	@Override
 	protected void onEnable() {
-		getLogger().fine("Enabling UserData Module");
 		// Initialize the player manager
 		UserManager.getUserManager();
 		this.registerCommands(new UserDataCommands());
@@ -27,9 +26,6 @@ public class SblockUsers extends Module {
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			SblockData.getDB().loadUserData(p.getUniqueId());
 		}
-
-		getLogger().fine("[SblockUserData] UserData Module enabled");
-
 	}
 
 	/**

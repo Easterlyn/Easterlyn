@@ -11,11 +11,9 @@ public class SblockEffects extends Module {
 
 	@Override
 	public void onEnable() {
-		getLogger().fine("Enabling Effects");
 		instance = this;
 		this.registerCommands(eCL);
 		eM = new EffectManager();
-		getLogger().fine("Effects enabled");
 	}
 
 	@Override
