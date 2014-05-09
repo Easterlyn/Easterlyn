@@ -105,7 +105,7 @@ public class InventoryClickListener implements Listener {
 			break;
 		case SHIFT_LEFT:
 		case SHIFT_RIGHT:
-			if (event.getCurrentItem() == null) {
+			if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 				break;
 			}
 			if (top) {
