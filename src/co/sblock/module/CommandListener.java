@@ -1,4 +1,4 @@
-package co.sblock;
+package co.sblock.module;
 
 /**
  * This interface marks a class that contains inner classes that handle

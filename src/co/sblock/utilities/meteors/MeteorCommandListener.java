@@ -12,10 +12,14 @@ import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.ProtocolLibrary;
 
-import co.sblock.CommandListener;
 import co.sblock.Sblock;
-import co.sblock.SblockCommand;
 import co.sblock.events.packets.WrapperPlayServerWorldParticles;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.SblockCommand;
 
 /**
  * @author Dublek, Jikoo
@@ -29,9 +33,12 @@ public class MeteorCommandListener implements CommandListener {
 	 * @param arg the Command arguments
 	 * @return true if Command was used correctly
 	 */
+	@CommandDenial
+	@CommandDescription("Summon a meteor with parameters.")
+	@CommandPermission("group.denizen")
+	@CommandUsage("/meteor <u:user> <r:radius> <e:explode> <c:countdown> <m:material>")
 	@SuppressWarnings("deprecation")
-	@SblockCommand(description = "Summon a meteor with parameters.", permission = "meteor.meteorite",
-			usage = "/meteor <u:user> <r:radius> <e:explode> <c:countdown> <m:material>")
+	@SblockCommand
 	public boolean meteor(CommandSender sender, String[] args) {
 		Player p = (Player) sender;
 		Location target = null;
@@ -66,7 +73,11 @@ public class MeteorCommandListener implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(description = "Uncomfortably fun!", permission = "meteor.rocket", usage = "/crotchrocket")
+	@CommandDenial
+	@CommandDescription("Uncomfortably fun!")
+	@CommandPermission("group.denizen")
+	@CommandUsage("/crotchrocket")
+	@SblockCommand
 	public boolean crotchrocket(CommandSender sender, String[] args) {
 		final Player player = (Player) sender;
 		player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);

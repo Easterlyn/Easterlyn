@@ -8,11 +8,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import co.sblock.CommandListener;
-import co.sblock.SblockCommand;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.utilities.Icon;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.SblockCommand;
 
 /**
  * Class for holding commands associated with the UserData module.
@@ -38,7 +42,9 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true if command was used correctly
 	 */
-	@SblockCommand(consoleFriendly = true, description = "Check a player's profile.", usage = "")
+	@CommandDescription("Check a player's profile.")
+	@CommandUsage("/profile <player>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean profile(CommandSender sender, String[] target) {
 		User user = null;
 		if (target == null || target.length == 0) {
@@ -74,9 +80,11 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true if command was used correctly
 	 */
-	@SblockCommand(consoleFriendly = true, description = "Set player data",
-			usage = "setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>",
-			permission = "group.horrorterror")
+	@CommandDenial
+	@CommandDescription("Set player data manually.")
+	@CommandUsage("setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>")
+	@CommandPermission("group.horrorterror")
+	@SblockCommand(consoleFriendly = true)
 	public boolean setplayer(CommandSender sender, String[] args) {
 		if (args == null || args.length < 3) {
 			return false;
@@ -108,8 +116,11 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true if command was used correctly
 	 */
-	@SblockCommand(description = "Set tower location.", usage = "/settower <0-7>",
-			permission = "group.horrorterror")
+	@CommandDenial
+	@CommandDescription("Set tower location.")
+	@CommandUsage("/settower <0-7>")
+	@CommandPermission("group.horrorterror")
+	@SblockCommand
 	public boolean settower(CommandSender sender, String[] number) {
 		if (number == null || number.length == 0) {
 			return false;
@@ -138,7 +149,9 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true
 	 */
-	@SblockCommand(description = "Ask someone to be your Sburb Server player!", usage = "/requestserver <player>")
+	@CommandDescription("Ask someone to be your Sburb Server player!")
+	@CommandUsage("/requestserver <player>")
+	@SblockCommand
 	public boolean requestserver(CommandSender s, String[] args) {
 		if (args.length == 0) {
 			s.sendMessage(ChatColor.RED + "Who ya gonna call?");
@@ -191,7 +204,9 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true
 	 */
-	@SblockCommand(description = "Ask someone to be your Sburb Client player!", usage = "/requestclient <player>")
+	@CommandDescription("Ask someone to be your Sburb Client player!")
+	@CommandUsage("/requestclient <player>")
+	@SblockCommand
 	public boolean requestclient(CommandSender s, String[] args) {
 		if (args.length == 0) {
 			s.sendMessage(ChatColor.RED + "Who ya gonna call?");
@@ -244,7 +259,9 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true
 	 */
-	@SblockCommand(description = "Accept an open request!", usage = "/acceptrequest")
+	@CommandDescription("Accept an open request!")
+	@CommandUsage("/acceptrequest")
+	@SblockCommand
 	public boolean acceptrequest(CommandSender s, String[] args) {
 		if (!requests.containsKey(s.getName())) {
 			s.sendMessage(ChatColor.RED + "You should get someone to /requestserver or /requestclient before attempting to accept!");
@@ -278,7 +295,9 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true
 	 */
-	@SblockCommand(description = "Say \"no\" to peer pressure!", usage = "/declinerequest")
+	@CommandDescription("Say \"no\" to peer pressure!")
+	@CommandUsage("/declinerequest")
+	@SblockCommand
 	public boolean declinerequest(CommandSender s, String[] args) {
 		if (!requests.containsKey(s.getName())) {
 			s.sendMessage(ChatColor.RED + "You vigorously decline... no one."
@@ -303,8 +322,11 @@ public class UserDataCommands implements CommandListener {
 	 * 
 	 * @return true if command was used correctly
 	 */
-	@SblockCommand(consoleFriendly = true, description = "Warps player if aspect matches warp name.",
-			usage = "aspectwarp <warp> <player>", permission = "group.denizen")
+	@CommandDenial
+	@CommandDescription("Warps player if aspect matches warp name.")
+	@CommandPermission("group.felt")
+	@CommandUsage("aspectwarp <warp> <player>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean aspectwarp(CommandSender sender, String[] args) {
 		if (args == null || args.length < 2) {
 			return false;
@@ -325,21 +347,11 @@ public class UserDataCommands implements CommandListener {
 	/**
 	 * Alias for spawn command to prevent confusion of new users.
 	 */
-	@SblockCommand(description = "Teleport to this world's spawn.", usage = "/mvs")
+	@CommandDescription("Teleport to this world's spawn.")
+	@CommandUsage("/mvs")
+	@SblockCommand
 	public boolean spawn(CommandSender sender, String[] args) {
 		((Player) sender).performCommand("mvs");
-		return true;
-	}
-
-	/**
-	 * Updates all players' scoreboard teams.
-	 */
-	@SblockCommand(description = "Updates scoreboard teams for tab/overhead colors.",
-			usage = "/updateteams", permission = "group.horrorterror")
-	public boolean updateteams(CommandSender sender, String[] args) {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			UserManager.getUserManager().team(p);
-		}
 		return true;
 	}
 }

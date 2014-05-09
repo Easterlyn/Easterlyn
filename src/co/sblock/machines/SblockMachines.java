@@ -5,9 +5,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.Module;
 import co.sblock.data.SblockData;
 import co.sblock.machines.type.Machine;
+import co.sblock.module.Module;
 
 /**
  * @author Jikoo

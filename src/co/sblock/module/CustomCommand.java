@@ -1,4 +1,4 @@
-package co.sblock;
+package co.sblock.module;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -38,5 +38,7 @@ public class CustomCommand extends Command implements PluginIdentifiableCommand 
 	public Plugin getPlugin() {
 		return Bukkit.getPluginManager().getPlugin("Sblock");
 	}
+
+	// TODO override tab completion
 
 }

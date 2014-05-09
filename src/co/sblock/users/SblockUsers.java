@@ -3,8 +3,8 @@ package co.sblock.users;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import co.sblock.Module;
 import co.sblock.data.SblockData;
+import co.sblock.module.Module;
 
 /**
  * This module holds player information and provides methods for other modules

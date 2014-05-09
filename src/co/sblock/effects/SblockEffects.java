@@ -1,6 +1,6 @@
 package co.sblock.effects;
 
-import co.sblock.Module;
+import co.sblock.module.Module;
 
 public class SblockEffects extends Module {
 	

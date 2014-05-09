@@ -7,24 +7,26 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import co.sblock.CommandListener;
-import co.sblock.SblockCommand;
-import co.sblock.chat.ChatMsgs;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.SblockCommand;
 
 public class EffectsCommandListener implements CommandListener {
 
-	@SblockCommand(description = "Root of all SburbEffects commands",
-			usage = "/se <getlore/setlore/clearlore/applyeffects/verbose> <lore>")
+	@CommandDenial
+	@CommandDescription("Root of all SburbEffects commands")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/se <getlore/setlore/clearlore/applyeffects/verbose> <lore>")
+	@SblockCommand
 	public boolean se(CommandSender sender, String[] args) {
 		if (args == null || args.length == 0) {
 			return false;
 		}
 		Player p = (Player) sender;
 		ArrayList<String> lore = new ArrayList<String>();
-		if (!sender.hasPermission("group.horrorterror")) {
-			sender.sendMessage(ChatMsgs.permissionDenied());
-			return true;
-		}
 		if (args[0].equalsIgnoreCase("getlore")) {
 			if (p.getItemInHand().getItemMeta().hasLore()) {
 				lore = (ArrayList<String>) p.getItemInHand().getItemMeta().getLore();

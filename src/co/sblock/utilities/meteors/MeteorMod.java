@@ -16,8 +16,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-import co.sblock.Module;
 import co.sblock.Sblock;
+import co.sblock.module.Module;
 
 /**
  * @author Dublek, Jikoo

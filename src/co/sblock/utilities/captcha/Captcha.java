@@ -14,8 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import co.sblock.Module;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.module.Module;
 import co.sblock.utilities.inventory.InventoryUtils;
 
 /**

@@ -5,23 +5,23 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.CommandListener;
-import co.sblock.SblockCommand;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.SblockCommand;
 
 /**
  * @author Dublek, Jikoo
  */
 public class CaptchaCommandListener implements CommandListener {
 
-	/**
-	 * Command used to convert an ItemStack into a Captchacard.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the command arguments
-	 * 
-	 * @return true if successful
-	 */
-	@SblockCommand(description = "Captchalogues item in hand", usage = "/captcha")
+	@CommandDenial
+	@CommandDescription("Captchalogues item in hand")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/captcha")
+	@SblockCommand
 	public boolean captcha(CommandSender sender, String[] args) {
 		if (sender.isOp()) {
 			Player p = (Player) sender;
@@ -33,38 +33,11 @@ public class CaptchaCommandListener implements CommandListener {
 		return false;
 	}
 
-	/**
-	 * Command used to convert a Captchacard into an ItemStack.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the command arguments
-	 * 
-	 * @return true if successful
-	 */
-	@SblockCommand(description = "Uncaptchalogues item in hand", usage = "/uncaptcha")
-	public boolean uncaptcha(CommandSender sender, String[] args) {
-		if (sender.isOp()) {
-			Player p = (Player) sender;
-			ItemStack item = p.getItemInHand();
-			if (item.getItemMeta().hasDisplayName()
-					&& item.getItemMeta().getDisplayName().equals("Captchacard")) {
-				p.getInventory().clear(p.getInventory().getHeldItemSlot());
-				p.getInventory().addItem(Captcha.captchaToItem(item));
-			}
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Command used to convert a Captchacard into a Punchcard.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the command arguments
-	 * 
-	 * @return true if successful
-	 */
-	@SblockCommand(description = "Punches card in hand", usage = "/punchcard")
+	@CommandDenial
+	@CommandDescription("Punches card in hand. Good luck patching punched holes.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/punchcard")
+	@SblockCommand
 	public boolean punchcard(CommandSender sender, String[] args) {
 		if (sender.isOp()) {
 			Player p = (Player) sender;
@@ -80,23 +53,20 @@ public class CaptchaCommandListener implements CommandListener {
 		return false;
 	}
 
-	/**
-	 * Command used to convert a Punchcard into a Captchacard.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the command arguments
-	 * 
-	 * @return true if successful
-	 */
-	@SblockCommand(description = "Gives player a captchadex", usage = "/captchadex")
+	@CommandDenial
+	@CommandDescription("Gives player a captchadex.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/captchadex")
+	@SblockCommand
 	public boolean captchadex(CommandSender sender, String[] args) {
 		if (sender.isOp())
 			((Player) sender).getInventory().addItem(Captchadex.createCaptchadexBook((Player) sender));
 		return true;
 	}
 
-	@SblockCommand(description = "Converts captchacards from itemID format",
-			usage = "Run /convert with a Captchacard in hand.")
+	@CommandDescription("Converts captchacards from itemID format.")
+	@CommandUsage("Run /convert with a Captchacard in hand.")
+	@SblockCommand
 	public boolean convert(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
 		if (!Captcha.isUsedCaptcha(player.getItemInHand())) {

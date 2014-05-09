@@ -293,8 +293,4 @@ public class ChatMsgs {
 		return ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
 			+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.";
 	}
-
-	public static String permissionDenied() {
-		return ChatColor.RED + "[Lil Hal] I'm sorry Dirk, I'm afraid I can't do that.";
-	}
 }

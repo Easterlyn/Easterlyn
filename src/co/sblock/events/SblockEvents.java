@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.ProtocolLibrary;
 
-import co.sblock.Module;
 import co.sblock.Sblock;
 import co.sblock.events.listeners.*;
 import co.sblock.events.packets.SleepTeleport;
@@ -21,6 +20,7 @@ import co.sblock.events.packets.WrapperPlayServerBed;
 import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
+import co.sblock.module.Module;
 import co.sblock.users.TowerData;
 import co.sblock.utilities.Broadcast;
 

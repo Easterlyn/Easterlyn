@@ -8,14 +8,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import co.sblock.SblockCommand;
+
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.Module;
+import co.sblock.module.SblockCommand;
 
 /**
  * Utility for ATMs and computer-based deposit boxes.
  * 
  * @author Jikoo
  */
-public class EconomyBank {
+public class EconomyBank extends Module implements CommandListener {
 
 	private static EconomyBank instance;
 
@@ -23,13 +30,21 @@ public class EconomyBank {
 
 	public static EconomyBank getBank() {
 		if (instance == null) {
-			instance = new EconomyBank();
+			instance = (EconomyBank) new EconomyBank().enable();
 		}
 		return instance;
 	}
 
-	public EconomyBank() {
+	@Override
+	protected void onEnable() {
 		e = Bukkit.getServicesManager().getRegistration(Economy.class).getProvider();
+		this.registerCommands(this);
+	}
+
+	@Override
+	protected void onDisable() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public boolean withdraw(Player p, double amount) {
@@ -64,8 +79,11 @@ public class EconomyBank {
 	/**
 	 * Extremely basic command for depositing to and withdrawing from banks.
 	 */
-	@SblockCommand(description = "The Boonconomy's one and only command.",
-			usage = "boonconomy w|d <player> <double>", consoleFriendly = true, permission = "group.horrorterror")
+	@CommandDenial("Banked and carried wealth reset to 0.")
+	@CommandDescription("The Boonconomy's one and only command.")
+	@CommandUsage("boonconomy w|d <player> <double>")
+	@CommandPermission("group.horrorterror")
+	@SblockCommand(consoleFriendly = true)
 	public boolean boonconomy(CommandSender s, String[] args) {
 		if (args.length < 3) {
 			return false;

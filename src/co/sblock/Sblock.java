@@ -23,10 +23,18 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.chat.SblockChat;
-import co.sblock.chat.ChatMsgs;
 import co.sblock.data.SblockData;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.SblockMachines;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.CustomCommand;
+import co.sblock.module.Module;
+import co.sblock.module.SblockCommand;
+import co.sblock.module.WrappedPluginCommand;
 import co.sblock.effects.SblockEffects;
 import co.sblock.users.SblockUsers;
 import co.sblock.utilities.Log;
@@ -41,7 +49,7 @@ import co.sblock.utilities.spectator.Spectators;
  * 
  * @author Jikoo, FireNG, Dublek
  */
-public class Sblock extends JavaPlugin implements CommandListener {
+public class Sblock extends JavaPlugin {
 
 	/** Sblock's Log */
 	private static final Log logger = Log.getLog("Sblock");
@@ -88,9 +96,9 @@ public class Sblock extends JavaPlugin implements CommandListener {
 			getLog().severe("Invalid server version, Sblock commands will fail to register.");
 		}
 		instance = this;
-		this.modules = new HashSet<Module>();
+		this.modules = new HashSet<>();
 		this.commandHandlers = new HashMap<String, Method>();
-		this.listenerInstances = new HashMap<Class<? extends CommandListener>, CommandListener>();
+		this.listenerInstances = new HashMap<>();
 		saveDefaultConfig();
 		createRecipes();
 
@@ -189,16 +197,42 @@ public class Sblock extends JavaPlugin implements CommandListener {
 		Command cmd = getServer().getPluginCommand(m.getName());
 		if (cmd != null && cmd.getName().equals(m.getName())) {
 			// Command has been registered by another plugin.
-			getLog().info("Overriding control of /" + m.getName() + " by "
+			getLog().info("Wrapping and overriding /" + m.getName() + " by "
 					+ ((PluginCommand) cmd).getExecutor().getClass().getName());
+			WrappedPluginCommand wrappedCommand = new WrappedPluginCommand((PluginCommand) cmd);
+			if (!cmdMap.register(wrappedCommand.getName(),
+					wrappedCommand.getPlugin().getName() + ":" + wrappedCommand.getName(), wrappedCommand)) {
+				getLog().warning("Unable to register wrapped command! Any aliases will be broken.");
+			}
 			((PluginCommand) cmd).setExecutor(this);
 		} else {
 			cmd = new CustomCommand(m.getName());
 		}
-		cmd.setDescription(m.getAnnotation(SblockCommand.class).description());
-		cmd.setUsage(m.getAnnotation(SblockCommand.class).usage());
-		cmd.setPermission(m.getAnnotation(SblockCommand.class).permission());
-		cmd.setPermissionMessage(ChatMsgs.permissionDenied());
+		String s;
+		if (m.getAnnotation(CommandDescription.class) != null) {
+			s = ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value());
+		} else {
+			s = ChatColor.YELLOW + "A Sblock command.";
+		}
+		cmd.setDescription(s);
+		if (m.getAnnotation(CommandUsage.class) != null) {
+			s = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value());
+		} else {
+			s = ChatColor.RED + "/<command>";
+		}
+		cmd.setUsage(s);
+		if (m.getAnnotation(CommandPermission.class) != null) {
+			s = m.getAnnotation(CommandPermission.class).value();
+		} else {
+			s = null;
+		}
+		cmd.setPermission(s);
+		if (m.getAnnotation(CommandDenial.class) != null) {
+			s = ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value());
+		} else {
+			s = ChatColor.RED + "By the order of the Jarl, stop right there!";
+		}
+		cmd.setPermissionMessage(s);
 		return cmd;
 	}
 
@@ -257,26 +291,24 @@ public class Sblock extends JavaPlugin implements CommandListener {
 			sender.sendMessage(ChatColor.RED
 					+ "An internal error has occurred. Please notify a member of staff of this issue as soon as possible.");
 			return true;
-		} else {
-			Method handlerMethod = this.commandHandlers.get(command.getName());
-			if (sender instanceof ConsoleCommandSender
-					&& !handlerMethod.getAnnotation(SblockCommand.class).consoleFriendly()) {
-				sender.sendMessage("This command cannot be issued from the console.");
-				return true;
+		}
+		Method handlerMethod = this.commandHandlers.get(command.getName());
+		if (sender instanceof ConsoleCommandSender
+				&& !handlerMethod.getAnnotation(SblockCommand.class).consoleFriendly()) {
+			sender.sendMessage("This command cannot be issued from the console.");
+			return true;
+		}
+		if (!command.testPermission(sender)) {
+			return true;
+		}
+		try {
+			if (!(Boolean) handlerMethod.invoke(this.listenerInstances
+					.get(handlerMethod.getDeclaringClass()), sender, args)) {
+				sender.sendMessage(command.getUsage());
 			}
-			if (!sender.hasPermission(command.getPermission())) {
-				sender.sendMessage(command.getPermissionMessage());
-				return true;
-			}
-			try {
-				if (!(Boolean) handlerMethod.invoke(this.listenerInstances
-						.get(handlerMethod.getDeclaringClass()), sender, args)) {
-					sender.sendMessage(command.getUsage());
-				}
-				return true;
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				logger.err(e);
-			}
+			return true;
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			logger.err(e);
 		}
 		return false;
 	}

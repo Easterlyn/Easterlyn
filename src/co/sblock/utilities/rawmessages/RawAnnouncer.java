@@ -10,10 +10,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import co.sblock.CommandListener;
-import co.sblock.Module;
 import co.sblock.Sblock;
-import co.sblock.SblockCommand;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.Module;
+import co.sblock.module.SblockCommand;
 
 /**
  * @author Jikoo
@@ -121,8 +125,11 @@ public class RawAnnouncer extends Module implements CommandListener {
 		Bukkit.getScheduler().cancelTask(taskId);
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "Force a raw message announcement or talk as Hal.",
-			usage = "/hal", permission = "group.horrorterror")
+	@CommandDenial
+	@CommandDescription("Force a raw message announcement or talk as Hal.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/hal [0-8|text]")
+	@SblockCommand(consoleFriendly = true)
 	public boolean hal(CommandSender s, String[] args) {
 		MessageElement msg;
 		if (args.length == 1) {

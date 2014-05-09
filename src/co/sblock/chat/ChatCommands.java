@@ -8,14 +8,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import co.sblock.CommandListener;
-import co.sblock.SblockCommand;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.data.SblockData;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.SblockCommand;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Broadcast;
@@ -28,20 +32,20 @@ import co.sblock.utilities.Log;
  */
 public class ChatCommands implements CommandListener {
 
-	@SblockCommand(description = "List all colors.", usage = "/color")
+	@CommandDescription("List all colors.")
+	@CommandUsage("&c/color")
+	@SblockCommand
 	public boolean color(CommandSender sender, String[] args) {
 		sender.sendMessage(ColorDef.listColors());
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "/le, now with 250% more brain pain.",
-			usage = "/lel <text>")
+	@CommandDenial("&0Lul.")
+	@CommandDescription("/le, now with 250% more &kbrain pain.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/lel <text>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean lel(CommandSender sender, String[] text) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")
-				|| text == null || text.length == 0) {
-			sender.sendMessage(ChatColor.BLACK + "Lul.");
-			return true;
-		}
 		StringBuilder msg = new StringBuilder();
 		for (int i = 0; i < text.length; i++) {
 			msg.append(text[i].toUpperCase()).append(' ');
@@ -59,13 +63,12 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "He's already here!", usage = "/le <text>")
+	@CommandDenial("&0Le no. Le /le is reserved for le fancy people.")
+	@CommandDescription("&4He's already here!")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/le <text>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean le(CommandSender sender, String[] text) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")
-				|| text == null || text.length == 0) {
-			sender.sendMessage(ChatColor.BLACK + "Le no. Le /le is reserved for le fancy people.");
-			return true;
-		}
 		StringBuilder msg = new StringBuilder();
 		for (int i = 0; i < text.length; i++) {
 			msg.append(text[i].toUpperCase()).append(' ');
@@ -83,8 +86,9 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "Check data stored for a player",
-			usage = "/whois <exact player>")
+	@CommandDescription("Check data stored for a player")
+	@CommandUsage("/whois <exact player>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean whois(CommandSender sender, String[] target) {
 		if (target == null || target.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
@@ -103,15 +107,13 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "> Be the white text guy",
-			usage = "/o <text>")
+	@CommandDenial("&l[o] You try to be the white text guy, but fail to be the white text guy. "
+					+ "No one can be the white text guy except for the white text guy.")
+	@CommandDescription("> Be the white text guy")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/o <text>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean o(CommandSender sender, String text[]) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
-			sender.sendMessage(ChatColor.BOLD + "[o] "
-					+ "You try to be the white text guy, but fail to be the white text guy. "
-					+ "No one can be the white text guy except for the white text guy.");
-			return true;
-		}
 		if (text == null || text.length == 0) {
 			sender.sendMessage(ChatColor.BOLD + "[o] If you're going to speak for me, please proceed.");
 			return true;
@@ -124,13 +126,12 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "YOU CAN'T ESCAPE THE RED MILES.",
-			usage = "/sban <target>")
+	@CommandDenial
+	@CommandDescription("YOU CAN'T ESCAPE THE RED MILES.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/sban <target>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean sban(CommandSender sender, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission("group.horrorterror")) {
-			sender.sendMessage(ChatMsgs.permissionDenied());
-			return true;
-		}
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Specify a player.");
 			return true;
@@ -162,8 +163,11 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "DO THE WINDY THING.", usage = "/unsban <UUID|name|IP>",
-			permission = "group.horrorterror")
+	@CommandDenial
+	@CommandDescription("DO THE WINDY THING.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/unsban <UUID|name|IP>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean unsban(CommandSender sender, String[] target) {
 		if (target == null || target.length == 0) {
 			return false;
@@ -178,7 +182,9 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(description = "SblockChat's main command", usage = "/sc")
+	@CommandDescription("SblockChat's main command")
+	@CommandUsage("/sc")
+	@SblockCommand
 	public boolean sc(CommandSender sender, String[] args) {
 		User user = User.getUser(((Player) sender).getUniqueId());
 		if (args == null || args.length == 0) {
@@ -215,14 +221,19 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@SblockCommand(description = "At long last, /me for Sblock.", usage = "/me (@channel) <message>")
+	@CommandDescription("#>does an action")
+	@CommandUsage("/me (@channel) <message>")
+	@SblockCommand
 	public boolean me(CommandSender sender, String[] args) {
 		User.getUser(((Player) sender).getUniqueId()).chat(StringUtils.join(args, ' '), true);
 		return true;
 	}
 
-	@SblockCommand(description = "Help people find their way", usage = "/forcechannel <channel> <player>",
-			consoleFriendly = true, permission = "group.felt")
+	@CommandDenial
+	@CommandDescription("Help people find their way")
+	@CommandPermission("group.felt")
+	@CommandUsage("/forcechannel <channel> <player>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean forcechannel(CommandSender sender, String[] args) {
 		if (args.length < 2) {
 			return false;
@@ -396,8 +407,7 @@ public class ChatCommands implements CommandListener {
 
 	private boolean scGlobal(User user, String[] args) {
 		if (!user.getPlayer().hasPermission("group.denizen")) {
-			user.sendMessage(ChatMsgs.permissionDenied(), false);
-			return true;
+			return false;
 		}
 		if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
 			scGlobalSetNick(user, args);
@@ -491,7 +501,7 @@ public class ChatCommands implements CommandListener {
 			return true;
 		}
 		if (!c.isChannelMod(user)) {
-			user.sendMessage(ChatMsgs.permissionDenied(), false);
+			user.sendMessage(ChatMsgs.onChannelCommandFail(c.getName()), false);
 			return true;
 		}
 		if (args.length == 1) {
