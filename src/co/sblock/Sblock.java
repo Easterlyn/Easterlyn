@@ -12,10 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -34,7 +35,6 @@ import co.sblock.module.CommandUsage;
 import co.sblock.module.CustomCommand;
 import co.sblock.module.Module;
 import co.sblock.module.SblockCommand;
-import co.sblock.module.WrappedPluginCommand;
 import co.sblock.effects.SblockEffects;
 import co.sblock.users.SblockUsers;
 import co.sblock.utilities.Log;
@@ -66,8 +66,11 @@ public class Sblock extends JavaPlugin {
 	/** The Map of registered CommandListeners. */
 	private Map<Class<? extends CommandListener>, CommandListener> listenerInstances;
 
+	/** A List of overridden commands. Allows their aliases to function. */
+	private Map<PluginCommand, CommandExecutor> overriddenCommands;
+
 	/** The CommandMap used to register commands for Modules. */
-	private CommandMap cmdMap;
+	private SimpleCommandMap cmdMap;
 
 	/**
 	 * Get the current instance of the Sblock plugin.
@@ -87,7 +90,7 @@ public class Sblock extends JavaPlugin {
 			try {
 				Field f = org.bukkit.craftbukkit.v1_7_R3.CraftServer.class.getDeclaredField("commandMap");
 				f.setAccessible(true);
-				cmdMap = (CommandMap) f.get(Bukkit.getServer());
+				cmdMap = (SimpleCommandMap) f.get(Bukkit.getServer());
 			} catch (IllegalArgumentException | IllegalAccessException
 					| NoSuchFieldException | SecurityException e) {
 				logger.criticalErr(e);
@@ -97,8 +100,9 @@ public class Sblock extends JavaPlugin {
 		}
 		instance = this;
 		this.modules = new HashSet<>();
-		this.commandHandlers = new HashMap<String, Method>();
+		this.commandHandlers = new HashMap<>();
 		this.listenerInstances = new HashMap<>();
+		this.overriddenCommands = new HashMap<>();
 		saveDefaultConfig();
 		createRecipes();
 
@@ -197,13 +201,10 @@ public class Sblock extends JavaPlugin {
 		Command cmd = getServer().getPluginCommand(m.getName());
 		if (cmd != null && cmd.getName().equals(m.getName())) {
 			// Command has been registered by another plugin.
-			getLog().info("Wrapping and overriding /" + m.getName() + " by "
-					+ ((PluginCommand) cmd).getExecutor().getClass().getName());
-			WrappedPluginCommand wrappedCommand = new WrappedPluginCommand((PluginCommand) cmd);
-			if (!cmdMap.register(wrappedCommand.getName(),
-					wrappedCommand.getPlugin().getName() + ":" + wrappedCommand.getName(), wrappedCommand)) {
-				getLog().warning("Unable to register wrapped command! Any aliases will be broken.");
-			}
+			getLog().info("Overriding /" + m.getName() + " by "
+					+ ((PluginCommand) cmd).getExecutor().getClass().getName()
+					+ ". The original is available through " + cmd.getAliases().toString());
+			this.overriddenCommands.put((PluginCommand) cmd, ((PluginCommand) cmd).getExecutor());
 			((PluginCommand) cmd).setExecutor(this);
 		} else {
 			cmd = new CustomCommand(m.getName());
@@ -287,7 +288,14 @@ public class Sblock extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!this.commandHandlers.containsKey(label)) {
-			this.getLogger().warning( "Command /" + label + " has no associated handler.");
+			if (this.overriddenCommands.containsKey(command)) {
+				if (this.overriddenCommands.get(command).onCommand(sender, command, label, args)) {
+					return true;
+				}
+			}
+		}
+		if (!this.commandHandlers.containsKey(command.getName())) {
+			this.getLogger().warning( "Command /" + command.getName() + " has no associated handler.");
 			sender.sendMessage(ChatColor.RED
 					+ "An internal error has occurred. Please notify a member of staff of this issue as soon as possible.");
 			return true;
