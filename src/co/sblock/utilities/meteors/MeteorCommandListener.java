@@ -88,21 +88,17 @@ public class MeteorCommandListener implements CommandListener {
 		firework.setFireworkMeta(fm);
 		firework.setPassenger(player);
 
+		final WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
+		packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
+		packet.setNumberOfParticles(5);
+		packet.setOffset(new Vector(0.5, 0.5, 0.5));
+
 		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
-					try {
-						WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
-						packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
-						packet.setNumberOfParticles(5);
-						packet.setLocation(firework.getLocation());
-						packet.setOffset(new Vector(0.5, 0.5, 0.5));
-
-						ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
-					} catch (Exception e) {
-						// Player is null or packet is malformed
-					}
+				packet.setLocation(firework.getLocation());
+				ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
 			}
 		}, 0, 1L);
 

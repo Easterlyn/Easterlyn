@@ -292,6 +292,7 @@ public class Sblock extends JavaPlugin {
 				if (this.overriddenCommands.get(command).onCommand(sender, command, label, args)) {
 					return true;
 				}
+				// Fall through to Sblock - most plugins return true with custom permission denial messages, etc.
 			}
 		}
 		if (!this.commandHandlers.containsKey(command.getName())) {

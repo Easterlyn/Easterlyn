@@ -69,9 +69,7 @@ public class RegexUtils {
 		s = s.replaceAll("\\s+(((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-orA-FK-OR])+)\\s+", " $1");
 		// Strip all spaces that appear to be at start
 		s = s.replaceAll("(\\A|\\s+)((((\\" + ChatColor.COLOR_CHAR + "|&)[0-9a-fk-orA-FK-OR])+)?\\s+?)", " $3");
-		// Strip spaces at start
-		s = s.replaceAll("\\A\\s+", "");
-		return s;
+		return s.trim();
 	}
 
 	/**

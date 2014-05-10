@@ -1,6 +1,7 @@
 package co.sblock.utilities.meteors;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import net.minecraft.server.v1_7_R3.Explosion;
 
@@ -15,8 +16,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.util.Vector;
+
+import com.comphenix.protocol.ProtocolLibrary;
 
 import co.sblock.Sblock;
+import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 import co.sblock.module.Module;
 
 /**
@@ -32,6 +37,15 @@ public class MeteorMod extends Module implements Listener {
 	private HashSet<Entity> entities;
 	/** Task ID for creating particle effects on Meteorites. */
 	private int task;
+
+	private final WrapperPlayServerWorldParticles PACKET_LAVA;
+
+	public MeteorMod() {
+		this.PACKET_LAVA = new WrapperPlayServerWorldParticles();
+		this.PACKET_LAVA.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.LAVA);
+		this.PACKET_LAVA.setNumberOfParticles(1);
+		this.PACKET_LAVA.setOffset(new Vector(0.5, 0.5, 0.5));
+	}
 
 	/**
 	 * @see Module#onEnable()
@@ -78,10 +92,9 @@ public class MeteorMod extends Module implements Listener {
 	}
 
 	/**
-	 * Add an Entity. If FallingBlock, specify if the entity is to explode on contact.
+	 * Add an Entity.
 	 * 
 	 * @param entity the Entity
-	 * @param damage true if the explosion is to do terrain damage
 	 */
 	public void addEntity(Entity entity) {
 		entities.add(entity);
@@ -89,19 +102,24 @@ public class MeteorMod extends Module implements Listener {
 			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 				@Override
 				public void run() {
+					Iterator<Entity> iterator = entities.iterator();
+					while (iterator.hasNext()) {
+						Entity entity = iterator.next();
+						PACKET_LAVA.setLocation(entity.getLocation());
+						ProtocolLibrary.getProtocolManager().broadcastServerPacket(PACKET_LAVA.getHandle(), entity.getLocation(), 48);
+						if (entity.isDead()) {
+							iterator.remove();
+							continue;
+						}
+					}
+
 					if (entities.size() == 0) {
 						Bukkit.getScheduler().cancelTask(task);
 						task = -1;
 						return;
 					}
-					for (Entity entity : entities.toArray(new Entity[0])) {
-						if (entity.isDead()) {
-							entities.remove(entity);
-						}
-						entity.getWorld().playEffect(entity.getLocation(), Effect.MOBSPAWNER_FLAMES, 48);
-					}
 				}
-			}, 0, 4);
+			}, 1, 1);
 		}
 	}
 
