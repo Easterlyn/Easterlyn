@@ -22,7 +22,6 @@ public class NickChannel extends Channel {
 	public NickChannel(String name, AccessLevel a, UUID creator) {
 		super(name, a, creator);
 		nickList = new ConcurrentHashMap<>();
-
 	}
 
 	@Override
@@ -43,10 +42,12 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.Chat.Channel.Channel#removeNick(ChatUser)
 	 */
 	@Override
-	public void removeNick(User sender) {
+	public void removeNick(User sender, boolean warn) {
 		if (nickList.containsKey(sender)) {
 			String old = nickList.remove(sender);
-			this.sendToAll(sender, ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name), false);
+			if (warn) {
+				this.sendToAll(sender, ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name), false);
+			}
 		}
 	}
 

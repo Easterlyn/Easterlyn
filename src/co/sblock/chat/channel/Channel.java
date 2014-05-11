@@ -33,8 +33,7 @@ public abstract class Channel {
 	protected Set<UUID> muteList;
 	protected Set<UUID> banList;
 	protected Set<UUID> listening;
-	
-	
+
 	public Channel(String name, AccessLevel a, UUID creator) {
 		this.name = name;
 		this.access = a;
@@ -65,7 +64,7 @@ public abstract class Channel {
 	}
 
 	public abstract ChannelType getType();
-	
+
 	/**
 	 * ONLY CALL FROM CHATUSER
 	 * 
@@ -74,7 +73,7 @@ public abstract class Channel {
 	public void addListening(UUID userID) {
 		this.listening.add(userID);
 	}
-	
+
 	/**
 	 * ONLY CALL FROM CHATUSER
 	 * 
@@ -86,7 +85,7 @@ public abstract class Channel {
 
 	public abstract void setNick(User sender, String nick);
 
-	public abstract void removeNick(User sender);
+	public abstract void removeNick(User sender, boolean warn);
 
 	public abstract String getNick(User sender);
 
@@ -195,7 +194,7 @@ public abstract class Channel {
 		}
 
 	}
-	
+
 	/**
 	 * Method used by database to load a ban silently.
 	 * 

@@ -38,8 +38,10 @@ public class NormalChannel extends Channel {
 	 * @see co.sblock.Chat.Channel.Channel#removeNick(ChatUser)
 	 */
 	@Override
-	public void removeNick(User sender) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+	public void removeNick(User sender, boolean warn) {
+		if (warn) {
+			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+		}
 	}
 
 	/**

@@ -925,8 +925,9 @@ public class User {
 			return;
 		}
 		if (this.listening.remove(cName)) {
-				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), false);
-				c.removeListening(this.playerID);
+			c.removeNick(this, false);
+			c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), false);
+			c.removeListening(this.playerID);
 			if (this.current != null && cName.equals(this.current)) {
 				this.current = null;
 			}
@@ -941,6 +942,7 @@ public class User {
 	 * @param channel the Channel to remove
 	 */
 	public void removeListeningSilent(Channel channel) {
+		channel.removeNick(this, false);
 		this.listening.remove(channel.getName());
 		if (this.current != null && this.current.equals(channel.getName())) {
 			this.current = null;

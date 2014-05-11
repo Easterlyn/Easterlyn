@@ -397,7 +397,7 @@ public class ChatCommands implements CommandListener {
 			c.setNick(user, StringUtils.join(args, ' ', 2, args.length));
 			return true;
 		} else if (args[1].equalsIgnoreCase("remove")) {
-			c.removeNick(user);
+			c.removeNick(user, true);
 			return true;
 		} else {
 			user.sendMessage(ChatMsgs.helpSCNick(), false);
