@@ -247,13 +247,13 @@ public class Sblock extends JavaPlugin {
 		// BoonConomy: 1 emerald -> 9 lapis block
 		ShapelessRecipe toLapis = new ShapelessRecipe(new ItemStack(Material.LAPIS_BLOCK, 9));
 		toLapis.addIngredient(Material.EMERALD);
-		//getServer().addRecipe(toLapis);
+		getServer().addRecipe(toLapis);
 
 		// BoonConomy: 9 lapis block -> 1 emerald
 		ShapedRecipe shaped = new ShapedRecipe(new ItemStack(Material.EMERALD));
 		shaped.shape("XXX", "XXX", "XXX");
 		shaped.setIngredient('X', Material.LAPIS_BLOCK);
-		//getServer().addRecipe(shaped);
+		getServer().addRecipe(shaped);
 
 		// General: Packed ice = 2 snow 2 ice
 		shaped = new ShapedRecipe(new ItemStack(Material.PACKED_ICE));
