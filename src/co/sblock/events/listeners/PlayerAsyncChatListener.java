@@ -2,7 +2,6 @@ package co.sblock.events.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -21,7 +20,7 @@ public class PlayerAsyncChatListener implements Listener {
 	 * 
 	 * @param event the AsyncPlayerChatEvent
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		event.setCancelled(true);
 		if (User.getUser(event.getPlayer().getUniqueId()) != null) {
