@@ -40,6 +40,37 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
+	@CommandDenial("&0&lYOU SEE NOTHING.")
+	@CommandDescription("The voice of the god Anaash. Can be recolored for plaintext messaging.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/an <text>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean an(CommandSender sender, String[] text) {
+		Broadcast.general(ChatColor.BLACK + ChatColor.BOLD.toString() + ChatColor.translateAlternateColorCodes('&', StringUtils.join(text, ' ').toUpperCase()));
+		return true;
+	}
+
+	@CommandDenial("The aetherial realm eludes your grasp once more.")
+	@CommandDescription("For usage in console largely. Talks in #Aether.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/aether <text>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean aether(CommandSender sender, String[] text) {
+		String message = "[#Aether]";
+		if (!text[0].equals(">")) {
+			message += " ";
+		}
+		message += StringUtils.join(text, ' ');
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			User u = User.getUser(p.getUniqueId());
+			if (!u.isSuppressing()) {
+				u.sendMessage(message, true);
+			}
+		}
+		Bukkit.getConsoleSender().sendMessage(message);
+		return true;
+	}
+
 	@CommandDenial("&0Lul.")
 	@CommandDescription("/le, now with 250% more &kbrain pain.")
 	@CommandPermission("group.horrorterror")

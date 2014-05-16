@@ -25,10 +25,9 @@ public class PlayerCommandPreprocessListener implements Listener {
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
 		if (!event.getPlayer().hasPermission("group.denizen") && 0 < colon && (colon < space || space < 0)) {
-			event.getPlayer().sendMessage(ChatColor.RED + "Command aliasing has been disabled.");
-			event.setCancelled(true);
+			event.setMessage("/" + event.getMessage().substring(colon));
 		}
-		
+
 		String lowercase = event.getMessage().toLowerCase();
 		if (lowercase.startsWith("/sethome")
 				&& (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())
