@@ -12,6 +12,7 @@ import co.sblock.events.SblockEvents;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.utilities.inventory.InventoryManager;
+import co.sblock.utilities.minecarts.FreeCart;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.spectator.Spectators;
 import co.sblock.utilities.vote.SleepVote;
@@ -35,6 +36,9 @@ public class PlayerQuitListener implements Listener {
 
 		// Update vote
 		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+
+		// Remove free minecart if riding one
+		FreeCart.getInstance().remove(event.getPlayer());
 
 		// Remove Spectator status
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {

@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import co.sblock.chat.ChatMsgs;
 import co.sblock.events.SblockEvents;
@@ -17,6 +19,7 @@ import co.sblock.module.CommandListener;
 import co.sblock.module.CommandPermission;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.SblockCommand;
+import co.sblock.utilities.minecarts.FreeCart;
 
 /**
  * Class for holding commands associated with the UserData module.
@@ -344,6 +347,33 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
+	@CommandDenial
+	@CommandDescription("Teleports a player with no confirmation to either party involved. Intended for commandsigns.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("silenttp <player> <x> <y> <z> [pitch] [yaw]")
+	@SblockCommand(consoleFriendly = true)
+	public boolean silenttp(CommandSender sender, String[] args) {
+		if (args == null || args.length < 4) {
+			return false;
+		}
+		Player pTarget = Bukkit.getPlayer(args[0]);
+		if (pTarget == null) {
+			// silently eat player get failure in case CommandSign messes up, have seen it happen.
+			return true;
+		}
+		try {
+			Location tpdest = new Location(pTarget.getWorld(), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
+			if (args.length >= 6) {
+				tpdest.setPitch(Float.valueOf(args[4]));
+				tpdest.setYaw(Float.valueOf(args[5]));
+			}
+			pTarget.teleport(tpdest);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
 	/**
 	 * Alias for spawn command to prevent confusion of new users.
 	 */
@@ -353,5 +383,28 @@ public class UserDataCommands implements CommandListener {
 	public boolean spawn(CommandSender sender, String[] args) {
 		((Player) sender).performCommand("mvs");
 		return true;
+	}
+
+	@CommandDenial
+	@CommandDescription("Spawns a temporary minecart with specified velocity vector at location, then mounts player.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("tempcart <player> <locX> <locY> <locZ> <vecX> <vecZ>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean tempcart(CommandSender sender, String[] args) {
+		if (args == null || args.length < 6) {
+			return false;
+		}
+		Player pTarget = Bukkit.getPlayer(args[0]);
+		if (pTarget == null) {
+			return true;
+		}
+		try {
+			Location cartDest = new Location(pTarget.getWorld(), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
+			Vector cartVector = new Vector(Double.valueOf(args[4]), 0, Double.valueOf(args[5]));
+			FreeCart.getInstance().spawnCart(pTarget, cartDest, cartVector);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 }

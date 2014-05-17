@@ -23,6 +23,7 @@ import co.sblock.events.session.StatusCheck;
 import co.sblock.module.Module;
 import co.sblock.users.TowerData;
 import co.sblock.utilities.Broadcast;
+import co.sblock.utilities.minecarts.FreeCart;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -92,7 +93,9 @@ public class SblockEvents extends Module {
 				new PlayerPickupItemListener(), new PlayerQuitListener(),
 				new PlayerTeleportListener(), new ServerListPingListener(),
 
-				new SignChangeListener(), new VehicleBlockCollisionListener());
+				new SignChangeListener(),
+
+				new VehicleBlockCollisionListener(), new VehicleDestroyListener(), new VehicleExitListener());
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 
@@ -112,6 +115,7 @@ public class SblockEvents extends Module {
 	protected void onDisable() {
 		Bukkit.getScheduler().cancelTask(regionTask);
 		Bukkit.getScheduler().cancelTask(sessionTask);
+		FreeCart.getInstance().cleanUp();
 		towers.save();
 		towers = null;
 		instance = null;
