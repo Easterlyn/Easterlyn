@@ -26,7 +26,7 @@ public class FreeCart {
 	public void spawnCart(Player p, Location location, Vector startspeed) {
 		Minecart m = (Minecart) location.getWorld().spawnEntity(location, EntityType.MINECART);
 		m.setPassenger(p);
-		m.setVelocity(m.getLocation().getDirection().multiply(startspeed));
+		m.setVelocity(startspeed);
 		carts.add(m);
 	}
 

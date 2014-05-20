@@ -37,7 +37,7 @@ public class VehicleBlockCollisionListener implements Listener {
 		if (event.getBlock().getType() == Material.DISPENSER || event.getBlock().getType() == Material.DROPPER) {
 			BlockState b = event.getBlock().getState();
 			if (((InventoryHolder) b).getInventory().firstEmpty() == -1) {
-				return; // We only use infinite dispensers, not hoppers.
+				return;
 			}
 			((InventoryHolder) b).getInventory().addItem(new ItemStack(Material.MINECART));
 			b.update(true);

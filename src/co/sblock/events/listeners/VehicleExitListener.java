@@ -21,7 +21,7 @@ public class VehicleExitListener implements Listener {
 	 * @param event the VehicleExitEvent
 	 */
 	@EventHandler
-	public void onVehicleDestroy(VehicleExitEvent event) {
+	public void onVehicleExit(VehicleExitEvent event) {
 		if (event.getVehicle().getType() == EntityType.MINECART) {
 			FreeCart.getInstance().remove((Minecart) event.getVehicle());
 		}
