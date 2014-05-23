@@ -43,7 +43,7 @@ public class RegionChannel extends NormalChannel {
 						u.getPlayer().getDisplayName(), this.getNick(u));
 			}
 		}
-		if (sender != null) {
+		if (sender != null && !this.name.equals("#")) {
 			// Chester logs even if events are cancelled, chat appears in console.
 			Log.anonymousInfo(message);
 		}
