@@ -99,4 +99,23 @@ public enum Region {
 			return Region.EARTH;
 		}
 	}
+
+	public String getResourcePackURL() {
+		switch (this) {
+		case INNERCIRCLE:
+			return "http://sblock.co/rpack/Prospit.zip";
+		case OUTERCIRCLE:
+			return "http://sblock.co/rpack/Derse.zip";
+		case EARTH:
+		case FURTHESTRING:
+		case LOFAF:
+		case LOHAC:
+		case LOLAR:
+		case LOWAS:
+		case MEDIUM:
+		case UNKNOWN:
+		default:
+			return "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip";
+		}
+	}
 }

@@ -487,6 +487,7 @@ public class User {
 			this.addListening(newC);
 		}
 		currentRegion = newR;
+		getPlayer().setResourcePack(newR.getResourcePackURL());
 	}
 
 	/**
