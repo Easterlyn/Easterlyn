@@ -18,6 +18,7 @@ import co.sblock.module.CommandPermission;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.Module;
 import co.sblock.module.SblockCommand;
+import co.sblock.utilities.Log;
 
 /**
  * @author Jikoo
@@ -40,7 +41,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 			@Override
 			public void run() {
 				MessageElement msg = announcements.get((int) (Math.random() * announcements.size()));
-				getLogger().info(msg.getConsoleFriendly());
+				Log.anonymousInfo(msg.getConsoleFriendly());
 				String announcement = msg.toString();
 				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
@@ -109,10 +110,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 						.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click here to go!")),
 				new MessageElement(" to help.", ChatColor.RED)));
 
-		msgs.add(new MessageHalement("Sleeping now is more beneficial. Try holding shift while right clicking your bed!"));
-
-		msgs.add(new MessageHalement("Please ").addExtra(new MessageElement("/convert", ChatColor.AQUA),
-				new MessageElement(" all your captchas to the new format!", ChatColor.RED)));
+		msgs.add(new MessageHalement("To sleep without dreaming, sneak while right clicking your bed!"));
 
 		return msgs;
 	}
@@ -148,7 +146,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 		} else {
 			msg = announcements.get((int) (Math.random() * announcements.size()));
 		}
-		getLogger().info(msg.getConsoleFriendly());
+		Log.anonymousInfo(msg.getConsoleFriendly());
 		String announcement = msg.toString();
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + announcement);
