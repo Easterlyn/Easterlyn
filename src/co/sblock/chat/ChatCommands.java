@@ -13,7 +13,6 @@ import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NickChannel;
-import co.sblock.data.SblockData;
 import co.sblock.module.CommandDenial;
 import co.sblock.module.CommandDescription;
 import co.sblock.module.CommandListener;
@@ -117,27 +116,6 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@CommandDescription("Check data stored for a player")
-	@CommandUsage("/whois <exact player>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean whois(CommandSender sender, String[] target) {
-		if (target == null || target.length == 0) {
-			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
-		}
-		if (sender instanceof Player && !sender.hasPermission("group.denizen")) {
-			((Player) sender).performCommand("profile " + target[0]);
-			return true;
-		}
-		Player p = Bukkit.getPlayer(target[0]);
-		if (p == null) {
-			SblockData.getDB().startOfflineLookup(sender, target[0]);
-			return true;
-		}
-		User u = User.getUser(p.getUniqueId());
-		sender.sendMessage(u.toString());
-		return true;
-	}
-
 	@CommandDenial("&l[o] You try to be the white text guy, but fail to be the white text guy. "
 					+ "No one can be the white text guy except for the white text guy.")
 	@CommandDescription("> Be the white text guy")
@@ -154,62 +132,6 @@ public class ChatCommands implements CommandListener {
 			o.append(s).append(' ');
 		}
 		Broadcast.general(o.substring(0, o.length() - 1 > 0 ? o.length() - 1 : 0));
-		return true;
-	}
-
-	@CommandDenial
-	@CommandDescription("YOU CAN'T ESCAPE THE RED MILES.")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/sban <target>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean sban(CommandSender sender, String[] args) {
-		if (args == null || args.length == 0) {
-			sender.sendMessage(ChatColor.RED + "Specify a player.");
-			return true;
-		}
-		String target = args[0];
-		StringBuilder reason = new StringBuilder();
-		for (int i = 1; i < args.length; i++) {
-			reason.append(args[i]).append(' ');
-		}
-		if (args.length == 1) {
-			reason.append("Git wrekt m8.");
-		}
-		if (target.contains(".")) { // IPs probably shouldn't be announced.
-			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, "sban");
-		} else {
-			Broadcast.general(ChatColor.DARK_RED + target
-					+ " has been wiped from the face of the multiverse. " + reason.toString());
-			Player p = Bukkit.getPlayer(target);
-			if (p != null) {
-				User victim = User.getUser(p.getUniqueId());
-				SblockData.getDB().addBan(victim, reason.toString());
-				SblockData.getDB().deleteUser(victim.getPlayerName());
-				victim.getPlayer().kickPlayer(reason.toString());
-			} else {
-				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, "sban");
-			}
-		}
-		Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
-		return true;
-	}
-
-	@CommandDenial
-	@CommandDescription("DO THE WINDY THING.")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/unsban <UUID|name|IP>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean unsban(CommandSender sender, String[] target) {
-		if (target == null || target.length == 0) {
-			return false;
-		}
-		SblockData.getDB().removeBan(target[0]);
-		if (target[0].contains(".")) {
-			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]
-					+ " may be an IP.");
-		} else {
-			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
-		}
 		return true;
 	}
 

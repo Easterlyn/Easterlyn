@@ -157,8 +157,9 @@ public class PlayerData {
 				} else {
 					user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				}
-				user.setCurrent(rs.getString("currentChannel"));
-				if (user.getCurrent() == null || user.getListening().size() == 0) {
+				if (rs.getString("currentChannel") != null) {
+					user.setCurrent(rs.getString("currentChannel"));
+				} else {
 					user.setCurrent("#");
 				}
 				user.setTimePlayed(rs.getString("timePlayed"));

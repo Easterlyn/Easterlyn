@@ -3,6 +3,7 @@ package co.sblock.users;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import co.sblock.chat.ChatMsgs;
+import co.sblock.data.SblockData;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.module.CommandDenial;
@@ -19,6 +21,7 @@ import co.sblock.module.CommandListener;
 import co.sblock.module.CommandPermission;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.SblockCommand;
+import co.sblock.utilities.Broadcast;
 import co.sblock.utilities.minecarts.FreeCart;
 
 /**
@@ -37,14 +40,6 @@ public class UserDataCommands implements CommandListener {
 	/** Map containing all server/client player requests */
 	public static Map<String, String> requests = new HashMap<String, String>();
 
-	/**
-	 * Gets the profile of a SblockUser.
-	 * 
-	 * @param sender the CommandSender
-	 * @param target the SblockUser to look up
-	 * 
-	 * @return true if command was used correctly
-	 */
 	@CommandDescription("Check a player's profile.")
 	@CommandUsage("/profile <player>")
 	@SblockCommand(consoleFriendly = true)
@@ -73,16 +68,28 @@ public class UserDataCommands implements CommandListener {
 				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().getShortName());
 		return true;
 	}
-	
-	/**
-	 * Set SblockUser data.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the String[] of arguments where 0 is player name, 1 is data
-	 *        being changed, and 2 is the new value
-	 * 
-	 * @return true if command was used correctly
-	 */
+
+	@CommandDescription("Check data stored for a player")
+	@CommandUsage("/whois <exact player>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean whois(CommandSender sender, String[] target) {
+		if (target == null || target.length == 0) {
+			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
+		}
+		if (sender instanceof Player && !sender.hasPermission("group.denizen")) {
+			((Player) sender).performCommand("profile " + target[0]);
+			return true;
+		}
+		Player p = Bukkit.getPlayer(target[0]);
+		if (p == null) {
+			SblockData.getDB().startOfflineLookup(sender, target[0]);
+			return true;
+		}
+		User u = User.getUser(p.getUniqueId());
+		sender.sendMessage(u.toString());
+		return true;
+	}
+
 	@CommandDenial
 	@CommandDescription("Set player data manually.")
 	@CommandUsage("setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>")
@@ -110,15 +117,7 @@ public class UserDataCommands implements CommandListener {
 			return false;
 		return true;
 	}
-	
-	/**
-	 * Set specified tower Location to CommandSender's current Location.
-	 * 
-	 * @param sender the CommandSender
-	 * @param number the tower number to set
-	 * 
-	 * @return true if command was used correctly
-	 */
+
 	@CommandDenial
 	@CommandDescription("Set tower location.")
 	@CommandUsage("/settower <0-7>")
@@ -144,15 +143,7 @@ public class UserDataCommands implements CommandListener {
 		}
 	}
 
-	/**
-	 * Send a request for a server player.
-	 * 
-	 * @param s the CommandSender
-	 * @param args the name of the player to send a request to
-	 * 
-	 * @return true
-	 */
-	@CommandDescription("Ask someone to be your Sburb Server player!")
+	@CommandDescription("Ask someone to be your Sburb server player!")
 	@CommandUsage("/requestserver <player>")
 	@SblockCommand
 	public boolean requestserver(CommandSender s, String[] args) {
@@ -199,15 +190,7 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
-	/**
-	 * Send a request for a client player.
-	 * 
-	 * @param s the CommandSender
-	 * @param args the name of the player to send a request to
-	 * 
-	 * @return true
-	 */
-	@CommandDescription("Ask someone to be your Sburb Client player!")
+	@CommandDescription("Ask someone to be your Sburb client player!")
 	@CommandUsage("/requestclient <player>")
 	@SblockCommand
 	public boolean requestclient(CommandSender s, String[] args) {
@@ -254,14 +237,6 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
-	/**
-	 * Accept a pending server or client request.
-	 * 
-	 * @param s the CommandSender
-	 * @param args ignored
-	 * 
-	 * @return true
-	 */
 	@CommandDescription("Accept an open request!")
 	@CommandUsage("/acceptrequest")
 	@SblockCommand
@@ -290,14 +265,6 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
-	/**
-	 * Decline a pending server or client request.
-	 * 
-	 * @param s the CommandSender
-	 * @param args ignored
-	 * 
-	 * @return true
-	 */
 	@CommandDescription("Say \"no\" to peer pressure!")
 	@CommandUsage("/declinerequest")
 	@SblockCommand
@@ -317,14 +284,6 @@ public class UserDataCommands implements CommandListener {
 		
 	}
 
-	/**
-	 * A simple command warp wrapper to prevent users from using tower warps to other aspects.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the String[] of arguments where 0 is aspect/warp, 1 is player name
-	 * 
-	 * @return true if command was used correctly
-	 */
 	@CommandDenial
 	@CommandDescription("Warps player if aspect matches warp name.")
 	@CommandPermission("group.felt")
@@ -406,5 +365,78 @@ public class UserDataCommands implements CommandListener {
 		} catch (NumberFormatException e) {
 			return false;
 		}
+	}
+
+	@CommandDenial
+	@CommandDescription("YOU CAN'T ESCAPE THE RED MILES.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/sban <target>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean sban(CommandSender sender, String[] args) {
+		if (args == null || args.length == 0) {
+			sender.sendMessage(ChatColor.RED + "Specify a player.");
+			return true;
+		}
+		String target = args[0];
+		StringBuilder reason = new StringBuilder();
+		for (int i = 1; i < args.length; i++) {
+			reason.append(args[i]).append(' ');
+		}
+		if (args.length == 1) {
+			reason.append("Git wrekt m8.");
+		}
+		if (target.contains(".")) { // IPs probably shouldn't be announced.
+			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, "sban");
+		} else {
+			Broadcast.general(ChatColor.DARK_RED + target
+					+ " has been wiped from the face of the multiverse. " + reason.toString());
+			Player p = Bukkit.getPlayer(target);
+			if (p != null) {
+				User victim = User.getUser(p.getUniqueId());
+				SblockData.getDB().addBan(victim, reason.toString());
+				SblockData.getDB().deleteUser(victim.getPlayerName());
+				victim.getPlayer().kickPlayer(reason.toString());
+				Bukkit.dispatchCommand(sender, "lwc admin purge " + p.getUniqueId());
+			} else {
+				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, "sban");
+			}
+		}
+		Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
+		return true;
+	}
+
+	@CommandDenial
+	@CommandDescription("DO THE WINDY THING.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/unsban <UUID|name|IP>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean unsban(CommandSender sender, String[] target) {
+		if (target == null || target.length == 0) {
+			return false;
+		}
+		SblockData.getDB().removeBan(target[0]);
+		if (target[0].contains(".")) {
+			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]
+					+ " may be an IP.");
+		} else {
+			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
+		}
+		return true;
+	}
+
+	@CommandDescription("Run an eye over the server rules.")
+	@CommandUsage("/? Rules")
+	@SblockCommand
+	public boolean rules(CommandSender sender, String[] args) {
+		((Player) sender).performCommand("? Rules");
+		return true;
+	}
+
+	@CommandDescription("See what's what.")
+	@CommandUsage("/?")
+	@SblockCommand
+	public boolean help(CommandSender sender, String[] args) {
+		((Player) sender).performCommand(("? " + StringUtils.join(args, ' ')).trim());
+		return true;
 	}
 }
