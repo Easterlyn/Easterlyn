@@ -112,6 +112,12 @@ public class RawAnnouncer extends Module implements CommandListener {
 
 		msgs.add(new MessageHalement("To sleep without dreaming, sneak while right clicking your bed!"));
 
+		msgs.add(new MessageHalement("If you're using our resource pack, we suggest you ").addExtra(
+				new MessageElement("download", ChatColor.AQUA)
+				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://sblock.co/rpack/"))
+				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click to see all Sblock rpacks!")),
+		new MessageElement(" the sound pack as well.", ChatColor.RED)));
+
 		return msgs;
 	}
 

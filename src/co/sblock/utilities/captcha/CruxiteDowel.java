@@ -183,7 +183,6 @@ public class CruxiteDowel {
 				materialValues.put(m.name(), 8);
 				break;
 			case COOKED_FISH:
-			case INK_SACK: // Dyes all == most expensive. No phr33 st00f.
 			case NETHER_WARTS:
 				materialValues.put(m.name(), 9);
 				break;
@@ -195,6 +194,7 @@ public class CruxiteDowel {
 			case MOSSY_COBBLESTONE:
 			case PORK:
 			case SLIME_BALL:
+			case STAINED_GLASS:
 				materialValues.put(m.name(), 10);
 				break;
 			case APPLE:
@@ -205,6 +205,9 @@ public class CruxiteDowel {
 			case PUMPKIN:
 			case SPIDER_EYE:
 				materialValues.put(m.name(), 12);
+				break;
+			case STAINED_CLAY:
+				materialValues.put(m.name(), 13);
 				break;
 			case GRILLED_PORK:
 				materialValues.put(m.name(), 14);
@@ -312,6 +315,7 @@ public class CruxiteDowel {
 			// UNOBTAINABLE
 			case AIR:
 			case BEDROCK:
+			case INK_SACK: // Lapis is a dye
 			case BURNING_FURNACE:
 			case CARROT: // plant
 			case COCOA: // plant
