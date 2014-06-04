@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -70,7 +71,6 @@ public class User {
 	private MediumPlanet mPlanet;
 	private DreamPlanet dPlanet;
 	private ProgressionState progression;
-	
 
 	/** The Player's tower number */
 	private byte tower;
@@ -911,6 +911,8 @@ public class User {
 				}
 			}
 		}
+
+		Bukkit.getConsoleSender().sendMessage(this.getPlayerName() + " began pestering " + StringUtils.join(channels, ' '));
 	}
 
 	/**
