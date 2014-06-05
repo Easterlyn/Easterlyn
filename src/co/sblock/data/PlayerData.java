@@ -286,10 +286,9 @@ public class PlayerData {
 						.append(rs.getString("previousLocation")).append('\n');
 				sb.append(rs.getString("ip")).append('\n');
 				sb.append("Time: ").append(rs.getString("timePlayed")).append(div).append("Last login: ")
-						.append(new SimpleDateFormat("HH:mm:ss 'on' dd:MM:YY").format(new Date(
+						.append(new SimpleDateFormat("HH:mm:ss 'on' dd/MM/YY").format(new Date(
 								Bukkit.getOfflinePlayer(UUID.fromString(rs.getString("uuid")))
 								.getLastPlayed()))).append('\n');
-				// TODO getOfflinePlayer cannot be called on main thread
 			}
 			sb.append(sys).append("-----------------------------------------\n");
 			if (!(sender instanceof Player) || ((Player) sender).isOnline()) {

@@ -48,9 +48,6 @@ public class User {
 	/** Player's UUID */
 	private UUID playerID;
 
-	/** Play time tracking information */
-	private long login;
-
 	/** The Player's IP address */
 	private String userIP;
 
@@ -108,7 +105,6 @@ public class User {
 	public User(UUID playerID) {
 		// Generic user data
 		this.playerID = playerID;
-		login = System.nanoTime();
 		this.setUserIP();
 		loaded = false;
 
@@ -1075,7 +1071,7 @@ public class User {
 				" Mute: " + this.globalMute.get() + div + " Current: " + this.current + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
 				" IP: " + this.userIP + "\n" +
-				" Playtime: " + this.getTimePlayed() + div + " Last Login: " + new SimpleDateFormat("hh:mm 'on' dd/MM/YY").format(new Date(this.login)) + "\n" +
+				" Playtime: " + this.getTimePlayed() + div + " Last Login: Online now!\n" +
 				sys + "-----------------------------------------";
 		return s;
 	}
