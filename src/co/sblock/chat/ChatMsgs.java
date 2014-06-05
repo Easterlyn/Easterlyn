@@ -189,6 +189,10 @@ public class ChatMsgs {
 		return ChatColor.RED + "Channel names must start with '#' and cannot exceed 16 characters!";
 	}
 
+	public static String errorChannelExists() {
+		return ChatColor.RED + "A channel by that name already exists!";
+	}
+
 	public static String errorRegionChannelJoin() {
 		return ChatColor.RED + "You cannot join a region channel!";
 	}

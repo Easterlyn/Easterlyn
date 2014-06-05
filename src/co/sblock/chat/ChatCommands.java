@@ -295,6 +295,15 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.helpSCNew(), false);
 			return true;
 		}
+		if (ChannelManager.getChannelManager().isValidChannel(args[1])) {
+			user.sendMessage(ChatMsgs.errorChannelExists(), false);
+		}
+		for (char c : args[1].substring(1).toCharArray()) {
+			if (!Character.isAlphabetic(c)) {
+				user.sendMessage(ChatMsgs.errorChannelName(), false);
+				return true;
+			}
+		}
 		if (args[1].length() > 16) {
 			user.sendMessage(ChatMsgs.errorChannelName(), false);
 		} else if (args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("group.denizen")) {
