@@ -162,7 +162,6 @@ public class PlayerData {
 				} else {
 					user.setCurrent("#");
 				}
-				user.setTimePlayed(rs.getString("timePlayed"));
 				user.setPrograms(rs.getString("programs"));
 				if (rs.getString("client") != null) {
 					user.setClient(UUID.fromString(rs.getString("client")));

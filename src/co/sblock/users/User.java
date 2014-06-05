@@ -1,6 +1,5 @@
 package co.sblock.users;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,14 +49,14 @@ public class User {
 	private UUID playerID;
 
 	/** Play time tracking information */
-	private long login, timePlayed;
+	private long login;
 
 	/** The Player's IP address */
 	private String userIP;
 
 	/** Ensures that User data is not overwritten */
 	private boolean loaded;
-	
+
 	/** Keeps track of current Region for various purposes */
 	private Region currentRegion;
 
@@ -110,7 +109,6 @@ public class User {
 		// Generic user data
 		this.playerID = playerID;
 		login = System.nanoTime();
-		timePlayed = 0;
 		this.setUserIP();
 		loaded = false;
 
@@ -130,7 +128,6 @@ public class User {
 		this.updateFlight();
 		previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
 		programs = new HashSet<>();
-		
 		this.passiveEffects = new HashMap<>();
 
 		// ChatUser-set data
@@ -364,28 +361,12 @@ public class User {
 	}
 
 	/**
-	 * Sets the Player's total time ingame from a String. For use in DatabaseManager only.
-	 * 
-	 * @param s String
-	 */
-	public void setTimePlayed(String s) {
-		if (s != null) {
-			try {
-				timePlayed = dateFormat.parse(s).getTime();
-			} catch (ParseException e) {
-				// String ain't right D:
-			}
-		}
-	}
-
-	/**
 	 * The String representation of the Player's total time ingame.
 	 * 
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		//return dateFormat.format(new Date(getPlayer().getStatistic(Statistic.PLAY_ONE_TICK) * 50L));
-		return dateFormat.format(new Date(this.timePlayed + System.nanoTime() - this.login));
+		return dateFormat.format(new Date(getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK) * 50L));
 	}
 
 	/**
