@@ -5,7 +5,7 @@ version: 2.0.0-DEV
 author: Sblock Co.
 authors: [Jikoo, Dublek, FireNG]
 description: Sblock's sexy mainframe
-depend: [ProtocolLib, Vault, HoloAPI]
+depend: [ProtocolLib, HoloAPI]
 softdepend: [Chester, CreeperHeal]
 
 permissions:
