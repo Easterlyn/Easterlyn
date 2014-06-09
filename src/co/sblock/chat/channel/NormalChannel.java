@@ -31,7 +31,7 @@ public class NormalChannel extends Channel {
 	 */
 	@Override
 	public void setNick(User sender, String nick) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class NormalChannel extends Channel {
 	@Override
 	public void removeNick(User sender, boolean warn) {
 		if (warn) {
-			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 		}
 	}
 

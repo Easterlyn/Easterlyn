@@ -24,8 +24,9 @@ public class MessageElement {
 	public MessageElement(String text) {
 		this.text = text;
 	}
+
 	public MessageElement(String text, ChatColor... colors) {
-		this.text = text;
+		this(text);
 		HashSet<ChatColor> applicableFormats = new HashSet<ChatColor>();
 		for (int i = 0; i < colors.length; i++) {
 			if (colors[i].isFormat()) {

@@ -118,45 +118,45 @@ public abstract class Channel {
 
 	public void addMod(User sender, UUID userID) {
 		if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
 		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
 		User user = User.getUser(userID);
 		String message = ChatMsgs.onChannelModAdd(user.getPlayerName(), this.name);
 		if (!this.isChannelMod(User.getUser(userID))) {
 			this.modList.add(userID);
-			this.sendToAll(sender, message, false);
+			this.sendMessage(message);
 			if (!this.listening.contains(userID)) {
-				user.sendMessage(message, true);
+				user.sendMessage(message);
 			}
 		} else {
-			sender.sendMessage(message, false);
+			sender.sendMessage(message);
 		}
 	}
 
 	public void removeMod(User sender, UUID userID) {
 		if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
 		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
 		User user = User.getUser(userID);
 		String message = ChatMsgs.onChannelModRm(user.getPlayerName(), this.name);
 		if (this.modList.contains(userID) && !this.isOwner(user)) {
 			this.modList.remove(userID);
-			this.sendToAll(sender, message, false);
+			this.sendMessage(message);
 			if (!this.listening.contains(userID)) {
-				user.sendMessage(message, true);
+				user.sendMessage(message);
 			}
 		} else {
-			sender.sendMessage(message, false);
+			sender.sendMessage(message);
 		}
 	}
 
@@ -174,23 +174,23 @@ public abstract class Channel {
 
 	public void kickUser(User sender, UUID userID) {
 		if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
 		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
 		User user = User.getUser(userID);
 		String message = ChatMsgs.onUserKickAnnounce(user.getPlayerName(), this.name);
 		if (this.isOwner(user)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 		} else if (listening.contains(user.getPlayerName())) {
-			this.sendToAll(sender, message, false);
+			this.sendMessage(message);
 			this.listening.remove(user.getUUID());
 			user.removeListening(this.getName());
 		} else {
-			sender.sendMessage(message, false);
+			sender.sendMessage(message);
 		}
 
 	}
@@ -206,49 +206,49 @@ public abstract class Channel {
 
 	public void banUser(User sender, UUID userID) {
 		if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
 		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
 		User user = User.getUser(userID);
 		String message = ChatMsgs.onUserBanAnnounce(Bukkit.getPlayer(userID).getName(), this.name);
 		if (this.isOwner(user)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 		} else if (!this.isBanned(user)) {
 			if (modList.contains(userID)) {
 				modList.remove(userID);
 			}
 			this.approvedList.remove(userID);
 			this.banList.add(userID);
-			this.sendToAll(sender, message, false);
+			this.sendMessage(message);
 			if (listening.contains(userID)) {
 				user.removeListening(this.getName());
 			}
 		} else {
-			sender.sendMessage(message, false);
+			sender.sendMessage(message);
 		}
 	}
 
 	public void unbanUser(User sender, UUID userID) {
 		if (!this.isOwner(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
 		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
 		User user = User.getUser(userID);
 		String message = ChatMsgs.onUserUnbanAnnounce(user.getPlayerName(), this.name);
 		if (banList.contains(userID)) {
 			this.banList.remove(userID);
-			user.sendMessage(message, true);
-			this.sendToAll(sender, message, false);
+			user.sendMessage(message);
+			this.sendMessage(message);
 		} else {
-			sender.sendMessage(message, false);
+			sender.sendMessage(message);
 		}
 	}
 
@@ -266,34 +266,34 @@ public abstract class Channel {
 
 	public void approveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
-			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
 			User targ = User.getUser(target);
 			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
 			if (this.isApproved(targ)) {
-				sender.sendMessage(message, false);
+				sender.sendMessage(message);
 				return;
 			}
 			approvedList.add(target);
-			this.sendToAll(sender, message, false);
-			targ.sendMessage(message, true);
+			this.sendMessage(message);
+			targ.sendMessage(message);
 		}
 	}
 
 	public void deapproveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
-			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
 			User targ = User.getUser(target);
 			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
 			if (!this.isApproved(targ)) {
-				sender.sendMessage(message, false);
+				sender.sendMessage(message);
 				return;
 			}
 			approvedList.remove(target);
-			this.sendToAll(sender, message, false);
+			this.sendMessage(message);
 			targ.removeListeningSilent(this);
 		}
 	}
@@ -308,32 +308,34 @@ public abstract class Channel {
 
 	public void disband(User sender) {
 		if (this.owner == null) {
-			sender.sendMessage(ChatMsgs.errorDisbandDefault(), false);
+			sender.sendMessage(ChatMsgs.errorDisbandDefault());
 			return;
 		}
 		if (!this.isOwner(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		this.sendToAll(sender, ChatMsgs.onChannelDisband(this.getName()), false);
+		this.sendMessage(ChatMsgs.onChannelDisband(this.getName()));
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
 			User.getUser(userID).removeListeningSilent(this);
 		}
 		SblockChat.getChat().getChannelManager().dropChannel(this.name);
 	}
 
-	public void sendToAll(User sender, String message, boolean format) {
-		if (format) {
-			message = this.formatMessage(sender, message);
-		}
+	/**
+	 * For sending a channel message, not for chat! Chat should be handled by getting a Message from
+	 * ChannelManager.
+	 * 
+	 * @param message the message to send the channel.
+	 */
+	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
 			User u = User.getUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;
 			}
-			u.sendMessage(message, !userID.equals(sender.getUUID()), u.getPlayer().getDisplayName(),
-					this.getNick(u));
+			u.sendMessage(message);
 		}
 		Log.anonymousInfo(message);
 	}
@@ -347,45 +349,65 @@ public abstract class Channel {
 	 */
 	public String formatMessage(User sender, String message) {
 
-		Player player = sender.getPlayer();
-
 		ChatColor guildRank = ColorDef.RANK_HERO;
-		if (player.hasPermission("sblock.guildleader")) {
-			guildRank = sender.getAspect().getColor();
-		}
-
 		ChatColor channelRank;
-		if (this.isOwner(sender)) {
-			channelRank = ColorDef.CHATRANK_OWNER;
-		} else if (this.isChannelMod(sender)) {
-			channelRank = ColorDef.CHATRANK_MOD;
-		} else {
-			channelRank = ColorDef.CHATRANK_MEMBER;
-		}
-
 		ChatColor globalRank = null;
-		for (ChatColor c : ChatColor.values()) {
-			if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
-				globalRank = c;
-				break;
+		ChatColor region;
+		String nick;
+
+		if (sender != null) {
+			Player player = sender.getPlayer();
+			if (player.hasPermission("sblock.guildleader")) {
+				guildRank = sender.getAspect().getColor();
 			}
-		}
-		if (globalRank != null) {
-			// Do nothing, we've got a fancy override going on
-		} else if (sender.getPlayer().hasPermission("group.horrorterror"))
+			if (this.isOwner(sender)) {
+				channelRank = ColorDef.CHATRANK_OWNER;
+			} else if (this.isChannelMod(sender)) {
+				channelRank = ColorDef.CHATRANK_MOD;
+			} else {
+				channelRank = ColorDef.CHATRANK_MEMBER;
+			}
+			for (ChatColor c : ChatColor.values()) {
+				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
+					globalRank = c;
+					break;
+				}
+			}
+			if (globalRank != null) {
+				// Do nothing, we've got a fancy override going on
+			} else if (sender.getPlayer().hasPermission("group.horrorterror"))
+				globalRank = ColorDef.RANK_HORRORTERROR;
+			else if (sender.getPlayer().hasPermission("group.denizen"))
+				globalRank = ColorDef.RANK_DENIZEN;
+			else if (sender.getPlayer().hasPermission("group.felt"))
+				globalRank = ColorDef.RANK_FELT;
+			else if (sender.getPlayer().hasPermission("group.helper"))
+				globalRank = ColorDef.RANK_HELPER;
+			else if (sender.getPlayer().hasPermission("group.godtier"))
+				globalRank = ColorDef.RANK_GODTIER;
+			else if (sender.getPlayer().hasPermission("group.donator"))
+				globalRank = ColorDef.RANK_DONATOR;
+			else {
+				globalRank = ColorDef.RANK_HERO;
+			}
+
+			nick = this.getNick(sender);
+
+			if (this.getType() == ChannelType.RP) {
+				globalRank = CanonNicks.getNick(this.getNick(sender)).getColor();
+				// apply quirk to message
+				message = CanonNicks.getNick(this.getNick(sender)).applyQuirk(message);
+			} else if (this.isChannelMod(sender)) {
+				// color formatting - applies only to channel mods.
+				message = ChatColor.translateAlternateColorCodes('&', message);
+			}
+
+			region = Region.getRegionColor(sender.getCurrentRegion());
+		} else {
+			channelRank = ColorDef.CHATRANK_OWNER;
 			globalRank = ColorDef.RANK_HORRORTERROR;
-		else if (sender.getPlayer().hasPermission("group.denizen"))
-			globalRank = ColorDef.RANK_DENIZEN;
-		else if (sender.getPlayer().hasPermission("group.felt"))
-			globalRank = ColorDef.RANK_FELT;
-		else if (sender.getPlayer().hasPermission("group.helper"))
-			globalRank = ColorDef.RANK_HELPER;
-		else if (sender.getPlayer().hasPermission("group.godtier"))
-			globalRank = ColorDef.RANK_GODTIER;
-		else if (sender.getPlayer().hasPermission("group.donator"))
-			globalRank = ColorDef.RANK_DONATOR;
-		else {
-			globalRank = ColorDef.RANK_HERO;
+			region = ColorDef.WORLD_AETHER;
+			nick = "<nonhuman>";
 		}
 
 		// check for third person modifier (#>)
@@ -396,20 +418,9 @@ public abstract class Channel {
 			message = message.substring(2);
 		}
 
-		if (this.getType() == ChannelType.RP) {
-			globalRank = CanonNicks.getNick(this.getNick(sender)).getColor();
-			// apply quirk to message
-			message = CanonNicks.getNick(this.getNick(sender)).applyQuirk(message);
-		} else if (this.isChannelMod(sender)) {
-			// color formatting - applies only to channel mods.
-			message = ChatColor.translateAlternateColorCodes('&', message);
-		}
-
-		ChatColor region = Region.getRegionColor(sender.getCurrentRegion());
-
 		return guildRank+ "[" + channelRank + this.name + guildRank + "]" + region
-				+ (isThirdPerson ? "> " : " <") + globalRank + this.getNick(sender)
-				+ (isThirdPerson ? " " : region + "> ") + ChatColor.WHITE + message;
+				+ (isThirdPerson ? "> " : " <") + globalRank + nick
+				+ (isThirdPerson ? "" : region + ">") + ChatColor.WHITE + ' ' + message;
 	}
 
 	public String toString() {
@@ -419,4 +430,10 @@ public abstract class Channel {
 				+ Bukkit.getOfflinePlayer(this.getOwner()).getName();
 	}
 
+	public boolean equals(Object o) {
+		if (o instanceof String) {
+			return this.name.equals(o);
+		}
+		return super.equals(o);
+	}
 }

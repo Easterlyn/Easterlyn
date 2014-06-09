@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.entity.Player;
+
 import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
@@ -13,11 +15,16 @@ import co.sblock.chat.channel.NormalChannel;
 import co.sblock.chat.channel.RPChannel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.data.SblockData;
+import co.sblock.users.User;
 
 
 public class ChannelManager {
 
-	private ConcurrentHashMap<String, Channel> channelList = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, Channel> channelList;
+
+	public ChannelManager() {
+		channelList = new ConcurrentHashMap<>();
+	}
 
 	public void loadAllChannels() {
 		SblockData.getDB().loadAllChannelData();
@@ -84,14 +91,39 @@ public class ChannelManager {
 		return this.channelList;
 	}
 
-
 	public Channel getChannel(String channelname) {
+		if (channelname == null || !channelList.containsKey(channelname)) {
+			// ConcurrentHashMap tends to NPE instead of returning null. Manual fix!
+			return null;
+		}
 		return channelList.get(channelname);
 	}
 
 	public boolean isValidChannel(String channelname) {
 		return channelList.containsKey(channelname);
 	}
+
+	public Message parseMessage(Player player, String message) {
+		User sender = User.getUser(player.getUniqueId());
+		Channel destination;
+		int space = message.indexOf(' ');
+		// Check for @<channel> destination
+		if (message.charAt(0) == '@' && space > 1) {
+			String target = message.substring(1, space);
+			message = message.substring(space);
+			destination = this.getChannel(target);
+			if (destination == null) {
+				sender.sendMessage(ChatMsgs.errorInvalidChannel(target));
+			}
+		} else  {
+			destination = sender.getCurrent();
+			if (destination == null) {
+				sender.sendMessage(ChatMsgs.errorNoCurrent());
+			}
+		}
+		return new Message(sender, destination, message);
+	}
+
 	public static ChannelManager getChannelManager() {
 		return SblockChat.getChat().getChannelManager();
 	}

@@ -172,7 +172,7 @@ public class ChatMsgs {
 
 	public static String errorNickRequired(String channelName) {
 		return ChatColor.GOLD + channelName + ChatColor.RED
-				+ " is a roleplaying channel. Talking requires a nick! Use "
+				+ " is a roleplay channel, a nick is required. Use "
 				+ ChatColor.AQUA + "/sc nick set";
 	}
 

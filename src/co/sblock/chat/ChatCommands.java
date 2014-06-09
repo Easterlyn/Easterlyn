@@ -55,7 +55,7 @@ public class ChatCommands implements CommandListener {
 	@CommandUsage("/aether <text>")
 	@SblockCommand(consoleFriendly = true)
 	public boolean aether(CommandSender sender, String[] text) {
-		String message = "[#Aether]";
+		String message = ChatColor.WHITE + "[" + ChatColor.GOLD + "#Aether" + ChatColor.WHITE + "]" + ChatColor.WHITE;
 		if (!text[0].equals(">")) {
 			message += " ";
 		}
@@ -63,7 +63,7 @@ public class ChatCommands implements CommandListener {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			User u = User.getUser(p.getUniqueId());
 			if (!u.isSuppressing()) {
-				u.sendMessage(message, true);
+				u.rawHighlight(message);
 			}
 		}
 		Bukkit.getConsoleSender().sendMessage(message);
@@ -162,7 +162,7 @@ public class ChatCommands implements CommandListener {
 			return scNick(user, args);
 		} else if (args[0].equals("suppress")) {
 			user.setSuppressing(!user.isSuppressing());
-			user.sendMessage(ChatColor.GREEN + "Suppression toggled!", false);
+			user.sendMessage(ChatColor.GREEN + "Suppression toggled!");
 			return true;
 		} else if (args[0].equals("channel")) {
 			return scChannel(user, args);
@@ -175,10 +175,15 @@ public class ChatCommands implements CommandListener {
 	}
 
 	@CommandDescription("#>does an action")
-	@CommandUsage("/me (@channel) <message>")
+	@CommandUsage("YOU FOOKIN WOT M8? /me (@channel) <message>")
 	@SblockCommand
 	public boolean me(CommandSender sender, String[] args) {
-		User.getUser(((Player) sender).getUniqueId()).chat(StringUtils.join(args, ' '), true);
+		if (args.length == 0) {
+			return false;
+		}
+		Message message = ChannelManager.getChannelManager().parseMessage((Player) sender, StringUtils.join(args, ' '));
+		message.setMessage("#>" + message.getMessage());
+		message.send();
 		return true;
 	}
 
@@ -209,16 +214,16 @@ public class ChatCommands implements CommandListener {
 
 	private boolean scC(User user, String[] args) {
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCC(), false);
+			user.sendMessage(ChatMsgs.helpSCC());
 			return true;
 		}
 		Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
 		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]), false);
+			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
 			return true;
 		}
 		if (c.getType().equals(ChannelType.REGION) && !user.isListening(c)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin(), false);
+			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
 			return true;
 		}
 		user.setCurrent(c);
@@ -227,16 +232,16 @@ public class ChatCommands implements CommandListener {
 
 	private boolean scL(User user, String[] args) {
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCL(), false);
+			user.sendMessage(ChatMsgs.helpSCL());
 			return true;
 		}
 		Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
 		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]), false);
+			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
 			return true;
 		}
 		if (c.getType().equals(ChannelType.REGION)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin(), false);
+			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
 			return true;
 		}
 		user.addListening(c);
@@ -245,17 +250,17 @@ public class ChatCommands implements CommandListener {
 
 	private boolean scLeave(User user, String[] args) {
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCLeave(), false);
+			user.sendMessage(ChatMsgs.helpSCLeave());
 			return true;
 		}
 		Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
 		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]), false);
+			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
 			user.removeListening(args[1]);
 			return true;
 		}
 		if (c.getType().equals(ChannelType.REGION)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelLeave(), false);
+			user.sendMessage(ChatMsgs.errorRegionChannelLeave());
 			return true;
 		}
 		user.removeListening(args[1]);
@@ -268,7 +273,7 @@ public class ChatCommands implements CommandListener {
 		for (String s : user.getListening()) {
 			sb.append(s).append(' ');
 		}
-		user.sendMessage(sb.toString(), false);
+		user.sendMessage(sb.toString());
 		return true;
 	}
 
@@ -286,37 +291,37 @@ public class ChatCommands implements CommandListener {
 			}
 			sb.append(cc).append(c.getName()).append(' ');
 		}
-		user.sendMessage(sb.toString(), false);
+		user.sendMessage(sb.toString());
 		return true;
 	}
 
 	private boolean scNew(User user, String[] args) {
 		if (args.length != 4) {
-			user.sendMessage(ChatMsgs.helpSCNew(), false);
+			user.sendMessage(ChatMsgs.helpSCNew());
 			return true;
 		}
 		if (ChannelManager.getChannelManager().isValidChannel(args[1])) {
-			user.sendMessage(ChatMsgs.errorChannelExists(), false);
+			user.sendMessage(ChatMsgs.errorChannelExists());
 		}
 		for (char c : args[1].substring(1).toCharArray()) {
 			if (!Character.isAlphabetic(c)) {
-				user.sendMessage(ChatMsgs.errorChannelName(), false);
+				user.sendMessage(ChatMsgs.errorChannelName());
 				return true;
 			}
 		}
 		if (args[1].length() > 16) {
-			user.sendMessage(ChatMsgs.errorChannelName(), false);
+			user.sendMessage(ChatMsgs.errorChannelName());
 		} else if (args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("group.denizen")) {
-			user.sendMessage(ChatMsgs.errorChannelName(), false);
+			user.sendMessage(ChatMsgs.errorChannelName());
 		} else if (ChannelType.getType(args[3]) == null) {
-			user.sendMessage(ChatMsgs.errorInvalidType(args[3]), false);
+			user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
 		} else if (AccessLevel.getAccess(args[2]) == null) {
-			user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]), false);
+			user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
 		} else {
 			ChannelManager.getChannelManager().createNewChannel(args[1],
 					AccessLevel.getAccess(args[2]), user.getUUID(), ChannelType.getType(args[3]));
 			Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
-			user.sendMessage(ChatMsgs.onChannelCreation(c), false);
+			user.sendMessage(ChatMsgs.onChannelCreation(c));
 		}
 		return true;
 	}
@@ -324,21 +329,20 @@ public class ChatCommands implements CommandListener {
 	private boolean scNick(User user, String[] args) {
 		Channel c = user.getCurrent();
 		if (c == null) {
-			user.sendMessage(ChatMsgs.errorNoCurrent(), false);
+			user.sendMessage(ChatMsgs.errorNoCurrent());
 			return true;
 		}
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCNick(), false);
+			user.sendMessage(ChatMsgs.helpSCNick());
 			return true;
 		}
 		if (!(c instanceof NickChannel)) {
-			user.sendMessage(ChatMsgs.unsupportedOperation(c.getName()), false);
+			user.sendMessage(ChatMsgs.unsupportedOperation(c.getName()));
 			return true;
 		}
 		if (args[1].equalsIgnoreCase("list")) {
 			if (c.getType() == ChannelType.NICK) {
-				user.sendMessage(ChatColor.YELLOW
-						+ "You can use any nick you want in a nick channel.", false);
+				user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.");
 				return true;
 			}
 			StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString()).append("Nicks: ");
@@ -348,11 +352,11 @@ public class ChatCommands implements CommandListener {
 					sb.append(ChatColor.YELLOW).append(", ");
 				}
 			}
-			user.sendMessage(sb.substring(0, sb.length() - 4).toString(), false);
+			user.sendMessage(sb.substring(0, sb.length() - 4).toString());
 			return true;
 		}
 		if (args.length == 2) {
-			user.sendMessage(ChatMsgs.helpSCNick(), false);
+			user.sendMessage(ChatMsgs.helpSCNick());
 			return true;
 		}
 		if (args[1].equalsIgnoreCase("set")) {
@@ -362,7 +366,7 @@ public class ChatCommands implements CommandListener {
 			c.removeNick(user, true);
 			return true;
 		} else {
-			user.sendMessage(ChatMsgs.helpSCNick(), false);
+			user.sendMessage(ChatMsgs.helpSCNick());
 			return true;
 		}
 	}
@@ -392,21 +396,21 @@ public class ChatCommands implements CommandListener {
 				}
 			}
 		}
-		user.sendMessage(ChatMsgs.helpGlobalMod(), false);
+		user.sendMessage(ChatMsgs.helpGlobalMod());
 		return true;
 	}
 
 	private void scGlobalSetNick(User user, String[] args) {
 		Player p = Bukkit.getPlayer(args[2]);
 		if (p == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]), false);
+			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
 		User victim = User.getUser(Bukkit.getPlayer(args[2]).getUniqueId());
 		victim.getPlayer().setDisplayName(args[3]);
 		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
 		for (User u : UserManager.getUserManager().getUserlist()) {
-			u.sendMessage(msg, false);
+			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
 	}
@@ -414,13 +418,13 @@ public class ChatCommands implements CommandListener {
 	private void scGlobalRmNick(User user, String[] args) {
 		Player p = Bukkit.getPlayer(args[2]);
 		if (p == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]), false);
+			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
 		User victim = User.getUser(p.getUniqueId());
 		String msg = ChatMsgs.onUserRmGlobalNick(args[2], p.getDisplayName());
 		for (User u : UserManager.getUserManager().getUserlist()) {
-			u.sendMessage(msg, false);
+			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
 		p.setDisplayName(victim.getPlayerName());
@@ -429,14 +433,14 @@ public class ChatCommands implements CommandListener {
 	private void scGlobalMute(User user, String[] args) {
 		Player p = Bukkit.getPlayer(args[2]);
 		if (p == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]), false);
+			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
 		User victim = User.getUser(p.getUniqueId());
 		victim.setMute(true);
 		String msg = ChatMsgs.onUserMute(args[2]);
 		for (User u : UserManager.getUserManager().getUserlist()) {
-			u.sendMessage(msg, false);
+			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
 	}
@@ -444,14 +448,14 @@ public class ChatCommands implements CommandListener {
 	private void scGlobalUnmute(User user, String[] args) {
 		Player p = Bukkit.getPlayer(args[2]);
 		if (p == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]), false);
+			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
 		User victim = User.getUser(p.getUniqueId());
 		victim.setMute(false);;
 		String msg = ChatMsgs.onUserUnmute(args[2]);
 		for (User u : UserManager.getUserManager().getUserlist()) {
-			u.sendMessage(msg, false);
+			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
 	}
@@ -459,17 +463,17 @@ public class ChatCommands implements CommandListener {
 	private boolean scChannel(User user, String[] args) {
 		Channel c = user.getCurrent();
 		if (args.length == 2 && args[1].equalsIgnoreCase("info")) {
-			user.sendMessage(c.toString(), false);
+			user.sendMessage(c.toString());
 			return true;
 		}
 		if (!c.isChannelMod(user)) {
-			user.sendMessage(ChatMsgs.onChannelCommandFail(c.getName()), false);
+			user.sendMessage(ChatMsgs.onChannelCommandFail(c.getName()));
 			return true;
 		}
 		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpChannelMod(), false);
+			user.sendMessage(ChatMsgs.helpChannelMod());
 			if (c.isOwner(user)) {
-				user.sendMessage(ChatMsgs.helpChannelOwner(), false);
+				user.sendMessage(ChatMsgs.helpChannelOwner());
 			}
 			return true;
 		} else if (args.length >= 2 && args[1].equalsIgnoreCase("getlisteners")) {
@@ -484,7 +488,7 @@ public class ChatCommands implements CommandListener {
 				}
 				sb.append(u.getPlayerName()).append(' ');
 			}
-			user.sendMessage(sb.toString(), false);
+			user.sendMessage(sb.toString());
 			return true;
 		} else if (args.length >= 3) {
 			if (args[1].equalsIgnoreCase("kick")) {
@@ -510,9 +514,9 @@ public class ChatCommands implements CommandListener {
 					c.removeMod(user, Bukkit.getPlayer(args[3]).getUniqueId());
 					return true;
 				} else {
-					user.sendMessage(ChatMsgs.helpChannelMod(), false);
+					user.sendMessage(ChatMsgs.helpChannelMod());
 					if (c.isOwner(user)) {
-						user.sendMessage(ChatMsgs.helpChannelOwner(), false);
+						user.sendMessage(ChatMsgs.helpChannelOwner());
 					}
 					return true;
 				}
@@ -525,9 +529,9 @@ public class ChatCommands implements CommandListener {
 				return true;
 			}
 		}
-		user.sendMessage(ChatMsgs.helpChannelMod(), false);
+		user.sendMessage(ChatMsgs.helpChannelMod());
 		if (c.isOwner(user)) {
-			user.sendMessage(ChatMsgs.helpChannelOwner(), false);
+			user.sendMessage(ChatMsgs.helpChannelOwner());
 		}
 		return true;
 	}

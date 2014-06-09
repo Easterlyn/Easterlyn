@@ -65,6 +65,8 @@ public enum Region {
 			return ColorDef.WORLD_MEDIUM;
 		case OUTERCIRCLE:
 			return ColorDef.WORLD_OUTERCIRCLE;
+		case UNKNOWN:
+			return ColorDef.WORLD_AETHER;
 		default:
 			return ColorDef.DEFAULT;
 		}

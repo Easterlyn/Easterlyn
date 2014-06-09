@@ -34,12 +34,12 @@ public class RPChannel extends NickChannel {
 	public void setNick(User sender, String nick) {
 		CanonNicks name = CanonNicks.getNick(nick);
 		if (name == null) {
-			sender.sendMessage(ChatMsgs.errorNickNotCanon(nick), false);
+			sender.sendMessage(ChatMsgs.errorNickNotCanon(nick));
 			return;
-		} else if (this.getNickOwner(name.getName()) == null) {
-			super.setNick(sender, name.getName());
+		} else if (this.getNickOwner(name.getColor() + name.getName()) == null) {
+			super.setNick(sender, name.getColor() + name.getName());
 		} else {
-			sender.sendMessage(ChatMsgs.errorNickInUse(name.getName()), false);
+			sender.sendMessage(ChatMsgs.errorNickInUse(name.getName()));
 		}
 	}
 }

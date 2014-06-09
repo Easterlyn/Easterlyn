@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -68,7 +69,7 @@ public class UserManager {
 		if (users.containsKey(userID)) {
 			return users.get(userID);
 		}
-		if (Bukkit.getPlayer(userID) != null) {
+		if (Bukkit.getOfflinePlayer(userID).isOnline()) {
 			return SblockData.getDB().loadUserData(userID);
 		}
 		return null;
@@ -89,21 +90,29 @@ public class UserManager {
 	 * @param p the Player
 	 */
 	public void team(Player p) {
-		String teamName;
-		if (p.hasPermission("group.horrorterror")) {
-			teamName = "horrorterror";
+		String teamName = null;
+		for (ChatColor c : ChatColor.values()) {
+			if (p.hasPermission("sblockchat." + c.name().toLowerCase())) {
+				teamName = c.name();
+				break;
+			}
+		}
+		if (teamName != null) {
+			// Do nothing, we've got a fancy override going on
+		} else if (p.hasPermission("group.horrorterror")) {
+			teamName = ColorDef.RANK_HORRORTERROR.name();
 		} else if (p.hasPermission("group.denizen")) {
-			teamName = "denizen";
+			teamName = ColorDef.RANK_DENIZEN.name();
 		} else if (p.hasPermission("group.felt")) {
-			teamName = "felt";
+			teamName = ColorDef.RANK_FELT.name();
 		} else if (p.hasPermission("group.helper")) {
-			teamName = "helper";
+			teamName = ColorDef.RANK_HELPER.name();
 		} else if (p.hasPermission("group.donator")) {
-			teamName = "donator";
+			teamName = ColorDef.RANK_DONATOR.name();
 		} else if (p.hasPermission("group.godtier")) {
-			teamName = "godtier";
+			teamName = ColorDef.RANK_GODTIER.name();
 		} else {
-			teamName = "hero";
+			teamName = ColorDef.RANK_HERO.name();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 		Team team = board.getTeam(teamName);
@@ -118,18 +127,7 @@ public class UserManager {
 	 * Fetches team prefixes.
 	 */
 	private String getTeamPrefix(String teamName) {
-		if (teamName.equals("horrorterror")) {
-			return ColorDef.RANK_HORRORTERROR.toString();
-		} else if (teamName.equals("denizen")) {
-			return ColorDef.RANK_DENIZEN.toString();
-		} else if (teamName.equals("felt")) {
-			return ColorDef.RANK_FELT.toString();
-		} else if (teamName.equals("helper")) {
-			return ColorDef.RANK_HELPER.toString();
-		} else if (teamName.equals("godtier")) {
-			return ColorDef.RANK_GODTIER.toString();
-		}
-		return ColorDef.RANK_HERO.toString();
+		return ChatColor.valueOf(teamName).toString();
 	}
 
 	/**

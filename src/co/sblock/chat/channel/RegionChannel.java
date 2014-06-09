@@ -25,13 +25,10 @@ public class RegionChannel extends NormalChannel {
 	/**
 	 * Allows null senders and chat suppression for global channels.
 	 * 
-	 * @see co.sblock.chat.channel.Channel#sendToAll(User, String, boolean)
+	 * @see co.sblock.chat.channel.Channel#sendMessage(User, String, boolean)
 	 */
 	@Override
-	public void sendToAll(User sender, String message, boolean format) {
-		if (format) {
-			message = this.formatMessage(sender, message);
-		}
+	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
 			User u = User.getUser(userID);
 			if (u == null) {
@@ -39,13 +36,9 @@ public class RegionChannel extends NormalChannel {
 				continue;
 			}
 			if (!u.isSuppressing()) {
-				u.sendMessage(message, sender != null && !userID.equals(sender.getUUID()),
-						u.getPlayer().getDisplayName(), this.getNick(u));
+				u.sendMessage(message);
 			}
 		}
-		if (sender != null && !this.name.equals("#")) {
-			// Chester logs even if events are cancelled, chat appears in console.
-			Log.anonymousInfo(message);
-		}
+		Log.anonymousInfo(message);
 	}
 }
