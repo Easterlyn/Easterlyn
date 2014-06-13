@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.User;
@@ -177,6 +176,7 @@ public class Message {
 
 	private MessageElement processMessageSegment(String substring) {
 		MessageElement msg;
+		// TODO allow links to not be unreadable by quirking here
 		// Could do this more cleanly with casting, but ifs will work for now.
 //		if (sender != null && channel.getType() == ChannelType.RP) {
 //			CanonNicks nick = CanonNicks.getNick(channel.getNick(sender));
