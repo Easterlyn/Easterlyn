@@ -1,5 +1,7 @@
 package co.sblock.chat;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +31,7 @@ public class Message {
 	private Channel channel;
 	private String message;
 	private boolean escape;
+	private Set<ChatColor> colors;
 
 	public Message(User sender, Channel channel, String message) {
 		this(channel, message);
@@ -48,6 +51,8 @@ public class Message {
 		if (!escape) {
 			message = message.substring(1);
 		}
+
+		this.colors = new HashSet<>();
 	}
 
 	public User getSender() {
@@ -64,6 +69,10 @@ public class Message {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public void addColor(ChatColor color) {
+		colors.add(color);
 	}
 
 	public boolean validate() {
@@ -118,6 +127,11 @@ public class Message {
 			message = message.replaceFirst("<nonhuman>", name);
 		}
 
+		// Send console chat message
+		if (channel.getType() != ChannelType.REGION) {
+			Bukkit.getConsoleSender().sendMessage(message);
+		}
+
 		// Create raw message and wrap links Minecraft would recognize
 		message = wrapLinks(message);
 
@@ -140,15 +154,10 @@ public class Message {
 	}
 
 	private String wrapLinks(String message) {
-		Matcher match = Pattern.compile("(https?://)?(([\\w]+\\.)+([a-zA-Z]{2,4}))(#|/|\\s)(\\S*)?").matcher(message);
+		Matcher match = Pattern.compile("(https?://)?(([\\w]+\\.)+([a-zA-Z]{2,4}))((#|/).*\\b)?").matcher(message);
 		int lastEnd = 0;
 		String lastColor = new String();
-		MessageElement rawMsg;
-		if (channel.getType() == ChannelType.RP) {
-			rawMsg = new MessageElement("", CanonNicks.getNick(channel.getNick(sender)).getColor());
-		} else {
-			rawMsg = new MessageElement("");
-		}
+		MessageElement rawMsg = new MessageElement("", colors.toArray(new ChatColor[0]));
 		while (match.find()) {
 			rawMsg.addExtra(processMessageSegment(lastColor + message.substring(lastEnd, match.start())));
 			lastColor = ChatColor.getLastColors(rawMsg.toString());
@@ -169,26 +178,20 @@ public class Message {
 	private MessageElement processMessageSegment(String substring) {
 		MessageElement msg;
 		// Could do this more cleanly with casting, but ifs will work for now.
-		if (sender != null && channel.getType() == ChannelType.RP) {
-			CanonNicks nick = CanonNicks.getNick(channel.getNick(sender));
+//		if (sender != null && channel.getType() == ChannelType.RP) {
+//			CanonNicks nick = CanonNicks.getNick(channel.getNick(sender));
+//			if (escape) {
+//				msg = new EscapedElement(nick.applyQuirk(substring), nick.getColor());
+//			} else {
+//				msg = new MessageElement(nick.applyQuirk(substring), nick.getColor());
+//			}
+//		} else {
 			if (escape) {
-				msg = new EscapedElement(nick.applyQuirk(substring), nick.getColor());
+				msg = new EscapedElement(substring, colors.toArray(new ChatColor[0]));
 			} else {
-				msg = new MessageElement(nick.applyQuirk(substring), nick.getColor());
+				msg = new MessageElement(substring, colors.toArray(new ChatColor[0]));
 			}
-		} else if (sender != null && channel.isMod(sender)) {
-			if (escape) {
-				msg = new EscapedElement(ChatColor.translateAlternateColorCodes('&', substring));
-			} else {
-				msg = new MessageElement(ChatColor.translateAlternateColorCodes('&', substring));
-			}
-		} else {
-			if (escape) {
-				msg = new EscapedElement(substring);
-			} else {
-				msg = new MessageElement(substring);
-			}
-		}
+//		}
 		return msg;
 	}
 }

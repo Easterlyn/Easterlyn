@@ -23,6 +23,7 @@ import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Broadcast;
 import co.sblock.utilities.Log;
+import co.sblock.utilities.rawmessages.EscapedElement;
 
 /**
  * Command handler for all Chat-related commands.
@@ -60,13 +61,14 @@ public class ChatCommands implements CommandListener {
 			message += " ";
 		}
 		message += StringUtils.join(text, ' ');
+		Bukkit.getConsoleSender().sendMessage(message);
+		message = new EscapedElement(message).toString();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			User u = User.getUser(p.getUniqueId());
 			if (!u.isSuppressing()) {
 				u.rawHighlight(message);
 			}
 		}
-		Bukkit.getConsoleSender().sendMessage(message);
 		return true;
 	}
 

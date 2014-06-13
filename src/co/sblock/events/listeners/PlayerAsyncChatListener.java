@@ -56,6 +56,8 @@ public class PlayerAsyncChatListener implements Listener {
 		if (message.getChannel().getType() == ChannelType.REGION) {
 			event.setCancelled(false);
 		}
+		// Clear @channels, though /me and escaping will remain
+		event.setMessage(message.getMessage());
 		message.send();
 		event.setFormat("[" + message.getChannel().getName() + "] <%1$s> %2$s");
 	}

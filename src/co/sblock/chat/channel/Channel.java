@@ -349,7 +349,7 @@ public abstract class Channel {
 	 */
 	public String formatMessage(User sender, String message) {
 
-		ChatColor guildRank = ColorDef.RANK_HERO;
+		ChatColor guildRank;
 		ChatColor channelRank;
 		ChatColor globalRank = null;
 		ChatColor region;
@@ -357,9 +357,15 @@ public abstract class Channel {
 
 		if (sender != null) {
 			Player player = sender.getPlayer();
+
+			// Guild leader color
 			if (player.hasPermission("sblock.guildleader")) {
 				guildRank = sender.getAspect().getColor();
+			} else {
+				guildRank = ColorDef.RANK_HERO;
 			}
+
+			// Chat rank color
 			if (this.isOwner(sender)) {
 				channelRank = ColorDef.CHATRANK_OWNER;
 			} else if (this.isChannelMod(sender)) {
@@ -367,36 +373,40 @@ public abstract class Channel {
 			} else {
 				channelRank = ColorDef.CHATRANK_MEMBER;
 			}
+
+			// Message coloring provided by additional perms
 			for (ChatColor c : ChatColor.values()) {
 				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
-					globalRank = c;
+					message = c + message;
 					break;
 				}
 			}
-			if (globalRank != null) {
-				// Do nothing, we've got a fancy override going on
-			} else if (sender.getPlayer().hasPermission("group.horrorterror"))
-				globalRank = ColorDef.RANK_HORRORTERROR;
-			else if (sender.getPlayer().hasPermission("group.denizen"))
-				globalRank = ColorDef.RANK_DENIZEN;
-			else if (sender.getPlayer().hasPermission("group.felt"))
-				globalRank = ColorDef.RANK_FELT;
-			else if (sender.getPlayer().hasPermission("group.helper"))
-				globalRank = ColorDef.RANK_HELPER;
-			else if (sender.getPlayer().hasPermission("group.godtier"))
-				globalRank = ColorDef.RANK_GODTIER;
-			else if (sender.getPlayer().hasPermission("group.donator"))
-				globalRank = ColorDef.RANK_DONATOR;
-			else {
-				globalRank = ColorDef.RANK_HERO;
+
+			// Name color fetched from scoreboard, if team invalid perm-based instead.
+			try {
+				globalRank = ChatColor.valueOf(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getName());
+			} catch (IllegalStateException | IllegalArgumentException e) {
+				if (sender.getPlayer().hasPermission("group.horrorterror"))
+					globalRank = ColorDef.RANK_HORRORTERROR;
+				else if (sender.getPlayer().hasPermission("group.denizen"))
+					globalRank = ColorDef.RANK_DENIZEN;
+				else if (sender.getPlayer().hasPermission("group.felt"))
+					globalRank = ColorDef.RANK_FELT;
+				else if (sender.getPlayer().hasPermission("group.helper"))
+					globalRank = ColorDef.RANK_HELPER;
+				else if (sender.getPlayer().hasPermission("group.godtier"))
+					globalRank = ColorDef.RANK_GODTIER;
+				else if (sender.getPlayer().hasPermission("group.donator"))
+					globalRank = ColorDef.RANK_DONATOR;
+				else {
+					globalRank = ColorDef.RANK_HERO;
+				}
 			}
 
 			nick = this.getNick(sender);
 
 			if (this.getType() == ChannelType.RP) {
-				globalRank = CanonNicks.getNick(this.getNick(sender)).getColor();
-				// apply quirk to message
-				message = CanonNicks.getNick(this.getNick(sender)).applyQuirk(message);
+				message = CanonNicks.getNick(nick).applyQuirk(message);
 			} else if (this.isChannelMod(sender)) {
 				// color formatting - applies only to channel mods.
 				message = ChatColor.translateAlternateColorCodes('&', message);
@@ -404,6 +414,7 @@ public abstract class Channel {
 
 			region = Region.getRegionColor(sender.getCurrentRegion());
 		} else {
+			guildRank = ColorDef.RANK_HERO;
 			channelRank = ColorDef.CHATRANK_OWNER;
 			globalRank = ColorDef.RANK_HORRORTERROR;
 			region = ColorDef.WORLD_AETHER;

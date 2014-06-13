@@ -66,7 +66,6 @@ public class ChesterListener implements Listener {
 		for (String s : triggers) {
 			if (sentMessage.getMessage().equalsIgnoreCase(s)) {
 				event.setCancelled(true);
-				return;
 			}
 		}
 
@@ -91,8 +90,10 @@ public class ChesterListener implements Listener {
 		}
 
 		// Allows Hal to highlight players
-		new Message("Lil Hal", pendingResponses.get(0),
-				ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', event.getMessage()))).send();
+		Message m = new Message("Lil Hal", pendingResponses.get(0), ChatColor.RED
+				+ ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', event.getMessage())));
+		m.addColor(ChatColor.RED);
+		m.send();
 
 		pendingResponses.remove(0);
 	}
