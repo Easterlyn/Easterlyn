@@ -58,7 +58,8 @@ public class ChesterListener implements Listener {
 		Message sentMessage = ChannelManager.getChannelManager().parseMessage(event.getPlayer(), event.getMessage());
 
 		if (sentMessage.getChannel().getAccess() == AccessLevel.PRIVATE
-				|| sentMessage.getChannel().getType() == ChannelType.RP) {
+				|| sentMessage.getChannel().getType() == ChannelType.RP
+				|| sentMessage.getMessage().isEmpty()) {
 			event.setCancelled(true);
 			return;
 		}
@@ -72,11 +73,19 @@ public class ChesterListener implements Listener {
 		// No need to allow @channel or escape formatting to persist.
 		event.setMessage(ChatColor.stripColor(sentMessage.getMessage()));
 
-		// Stops indirect triggers, e.g. "HALlway"
-		if (!pattern.matcher(event.getMessage()).find()
-				|| !whitespacePattern.matcher(event.getMessage()).find()) {
+		// If Chester isn't triggered, we're done.
+		if (!pattern.matcher(event.getMessage()).find()) {
 			return;
 		}
+
+		// Because Chester keeps logging blank lines, freeze all logging that actually contains triggers.
+		event.setCancelled(true);
+
+		// Stops indirect triggers, e.g. "HALlway"
+		if (!whitespacePattern.matcher(event.getMessage()).find()) {
+			return;
+		}
+
 
 		pendingResponses.add(sentMessage.getChannel());
 	}
@@ -96,5 +105,9 @@ public class ChesterListener implements Listener {
 		m.send();
 
 		pendingResponses.remove(0);
+	}
+
+	public static List<String> getTriggers() {
+		return Bukkit.getPluginManager().getPlugin("Chester").getConfig().getStringList("triggerwords");
 	}
 }

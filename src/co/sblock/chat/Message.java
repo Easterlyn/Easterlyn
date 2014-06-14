@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.User;
@@ -30,6 +31,7 @@ public class Message {
 	private Channel channel;
 	private String message;
 	private boolean escape;
+	private boolean thirdPerson;
 	private Set<ChatColor> colors;
 
 	public Message(User sender, Channel channel, String message) {
@@ -49,6 +51,11 @@ public class Message {
 		escape = message.length() > 0 && message.charAt(0) != '\\';
 		if (!escape) {
 			message = message.substring(1);
+		}
+
+		thirdPerson = message.startsWith("#>");
+		if (thirdPerson) {
+			message = message.substring(2);
 		}
 
 		this.colors = new HashSet<>();
@@ -121,10 +128,11 @@ public class Message {
 		}
 
 		// Get channel formatting
-		message = channel.formatMessage(sender, message);
+		String channelPrefixing = channel.formatMessage(sender, thirdPerson);
 		if (sender == null) {
-			message = message.replaceFirst("<nonhuman>", name);
+			channelPrefixing = channelPrefixing.replaceFirst("<nonhuman>", name);
 		}
+		MessageElement rawMsg = new MessageElement(channelPrefixing, colors.toArray(new ChatColor[0]));
 
 		// Send console chat message
 		if (channel.getType() != ChannelType.REGION) {
@@ -132,7 +140,7 @@ public class Message {
 		}
 
 		// Create raw message and wrap links Minecraft would recognize
-		message = wrapLinks(message);
+		message = wrapLinks(rawMsg, message);
 
 		for (UUID uuid : channel.getListening()) {
 			User u = User.getUser(uuid);
@@ -152,11 +160,10 @@ public class Message {
 		}
 	}
 
-	private String wrapLinks(String message) {
+	private String wrapLinks(MessageElement rawMsg, String message) {
 		Matcher match = Pattern.compile("(https?://)?(([\\w]+\\.)+([a-zA-Z]{2,4}))((#|/).*\\b)?").matcher(message);
 		int lastEnd = 0;
 		String lastColor = new String();
-		MessageElement rawMsg = new MessageElement("", colors.toArray(new ChatColor[0]));
 		while (match.find()) {
 			rawMsg.addExtra(processMessageSegment(lastColor + message.substring(lastEnd, match.start())));
 			lastColor = ChatColor.getLastColors(rawMsg.toString());
@@ -178,20 +185,24 @@ public class Message {
 		MessageElement msg;
 		// TODO allow links to not be unreadable by quirking here
 		// Could do this more cleanly with casting, but ifs will work for now.
-//		if (sender != null && channel.getType() == ChannelType.RP) {
-//			CanonNicks nick = CanonNicks.getNick(channel.getNick(sender));
-//			if (escape) {
-//				msg = new EscapedElement(nick.applyQuirk(substring), nick.getColor());
-//			} else {
-//				msg = new MessageElement(nick.applyQuirk(substring), nick.getColor());
-//			}
-//		} else {
+		if (sender != null && channel.getType() == ChannelType.RP) {
+			CanonNicks nick = CanonNicks.getNick(channel.getNick(sender));
+			if (escape) {
+				msg = new EscapedElement(nick.applyQuirk(substring), nick.getColor());
+			} else {
+				msg = new MessageElement(nick.applyQuirk(substring), nick.getColor());
+			}
+		} else {
+			if (channel.isChannelMod(sender)) {
+				// Colors for channel mods!
+				substring = ChatColor.translateAlternateColorCodes('&', substring);
+			}
 			if (escape) {
 				msg = new EscapedElement(substring, colors.toArray(new ChatColor[0]));
 			} else {
 				msg = new MessageElement(substring, colors.toArray(new ChatColor[0]));
 			}
-//		}
+		}
 		return msg;
 	}
 }

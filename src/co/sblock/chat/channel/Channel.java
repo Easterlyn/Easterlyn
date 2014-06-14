@@ -347,13 +347,14 @@ public abstract class Channel {
 	 * 
 	 * @return the channel prefix
 	 */
-	public String formatMessage(User sender, String message) {
+	public String formatMessage(User sender, boolean isThirdPerson) {
 
 		ChatColor guildRank;
 		ChatColor channelRank;
 		ChatColor globalRank = null;
 		ChatColor region;
 		String nick;
+		String prepend = new String();
 
 		if (sender != null) {
 			Player player = sender.getPlayer();
@@ -376,8 +377,9 @@ public abstract class Channel {
 
 			// Message coloring provided by additional perms
 			for (ChatColor c : ChatColor.values()) {
-				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
-					message = c + message;
+				if (player.hasPermission("sblockchat.color")
+						&& player.hasPermission("sblockchat." + c.name().toLowerCase())) {
+					prepend += c;
 					break;
 				}
 			}
@@ -405,13 +407,6 @@ public abstract class Channel {
 
 			nick = this.getNick(sender);
 
-			if (this.getType() == ChannelType.RP) {
-				message = CanonNicks.getNick(nick).applyQuirk(message);
-			} else if (this.isChannelMod(sender)) {
-				// color formatting - applies only to channel mods.
-				message = ChatColor.translateAlternateColorCodes('&', message);
-			}
-
 			region = Region.getRegionColor(sender.getCurrentRegion());
 		} else {
 			guildRank = ColorDef.RANK_HERO;
@@ -421,17 +416,9 @@ public abstract class Channel {
 			nick = "<nonhuman>";
 		}
 
-		// check for third person modifier (#>)
-		boolean isThirdPerson = message.startsWith("#>");
-
-		// strip third person modifier from chat
-		if (isThirdPerson) {
-			message = message.substring(2);
-		}
-
 		return guildRank+ "[" + channelRank + this.name + guildRank + "]" + region
 				+ (isThirdPerson ? "> " : " <") + globalRank + nick
-				+ (isThirdPerson ? "" : region + ">") + ChatColor.WHITE + ' ' + message;
+				+ (isThirdPerson ? "" : region + ">") + ChatColor.WHITE + ' ' + prepend;
 	}
 
 	public String toString() {
