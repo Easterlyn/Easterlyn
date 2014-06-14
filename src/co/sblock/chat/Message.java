@@ -136,7 +136,7 @@ public class Message {
 
 		// Send console chat message
 		if (channel.getType() != ChannelType.REGION) {
-			Bukkit.getConsoleSender().sendMessage(message);
+			Bukkit.getConsoleSender().sendMessage(channelPrefixing + message);
 		}
 
 		// Create raw message and wrap links Minecraft would recognize
@@ -193,7 +193,7 @@ public class Message {
 				msg = new MessageElement(nick.applyQuirk(substring), nick.getColor());
 			}
 		} else {
-			if (channel.isChannelMod(sender)) {
+			if (sender != null && channel.isChannelMod(sender)) {
 				// Colors for channel mods!
 				substring = ChatColor.translateAlternateColorCodes('&', substring);
 			}
