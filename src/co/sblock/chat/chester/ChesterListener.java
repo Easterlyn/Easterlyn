@@ -12,7 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Message;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
@@ -55,9 +54,10 @@ public class ChesterListener implements Listener {
 			return;
 		}
 
-		Message sentMessage = ChannelManager.getChannelManager().parseMessage(event.getPlayer(), event.getMessage());
+		Message sentMessage = new Message(User.getUser(event.getPlayer().getUniqueId()), event.getMessage());
 
-		if (sentMessage.getChannel().getAccess() == AccessLevel.PRIVATE
+		if (!sentMessage.validate(false)
+				|| sentMessage.getChannel().getAccess() == AccessLevel.PRIVATE
 				|| sentMessage.getChannel().getType() == ChannelType.RP
 				|| sentMessage.getMessage().isEmpty()) {
 			event.setCancelled(true);
@@ -86,7 +86,6 @@ public class ChesterListener implements Listener {
 			return;
 		}
 
-
 		pendingResponses.add(sentMessage.getChannel());
 	}
 
@@ -99,10 +98,13 @@ public class ChesterListener implements Listener {
 		}
 
 		// Allows Hal to highlight players
-		Message m = new Message("Lil Hal", pendingResponses.get(0), ChatColor.RED
+		Message m = new Message("Lil Hal", ChatColor.RED
 				+ ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', event.getMessage())));
+		m.setChannel(pendingResponses.get(0));
 		m.addColor(ChatColor.RED);
-		m.send();
+		if (m.validate(false)) {
+			m.send();
+		}
 
 		pendingResponses.remove(0);
 	}

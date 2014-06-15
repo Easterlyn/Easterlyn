@@ -34,29 +34,30 @@ public class Message {
 	private boolean thirdPerson;
 	private Set<ChatColor> colors;
 
-	public Message(User sender, Channel channel, String message) {
-		this(channel, message);
+	public Message(User sender, String message) {
+		this(message);
 		this.sender = sender;
 	}
 
-	public Message(String name, Channel channel, String message) {
-		this(channel, message);
+	public Message(String name, String message) {
+		this(message);
 		this.name = name;
 	}
 
-	private Message(Channel channel, String message) {
-		this.channel = channel;
-		this.message = message;
+	private Message(String message) {
+
+		// TODO make this less order-specific, e.g. allow @# #>
+		thirdPerson = message.startsWith("#>");
+		if (thirdPerson) {
+			message = message.substring(2);
+		}
 
 		escape = message.length() > 0 && message.charAt(0) != '\\';
 		if (!escape) {
 			message = message.substring(1);
 		}
 
-		thirdPerson = message.startsWith("#>");
-		if (thirdPerson) {
-			message = message.substring(2);
-		}
+		this.message = message;
 
 		this.colors = new HashSet<>();
 	}
@@ -67,6 +68,10 @@ public class Message {
 
 	public Channel getChannel() {
 		return channel;
+	}
+
+	public void setChannel(Channel channel) {
+		this.channel = channel;
 	}
 
 	public String getMessage() {
@@ -81,9 +86,34 @@ public class Message {
 		colors.add(color);
 	}
 
-	public boolean validate() {
-		if (channel == null) {
-			return false;
+	public boolean validate(boolean notify) {
+		if (sender == null) {
+			notify = false;
+		}
+
+		int space = message.indexOf(' ');
+		// Check for @<channel> destination
+		if (message.charAt(0) == '@' && space > 1) {
+			String target = message.substring(1, space);
+			message = message.substring(space);
+			// If channel was already set, probably being overridden by Chester.
+			if (channel == null) {
+				channel = ChannelManager.getChannelManager().getChannel(target);
+				if (channel == null) {
+					if (notify) {
+						sender.sendMessage(ChatMsgs.errorInvalidChannel(target));
+					}
+					return false;
+				}
+			}
+		} else if (sender != null) {
+			channel = sender.getCurrent();
+			if (channel == null) {
+				if (notify) {
+					sender.sendMessage(ChatMsgs.errorNoCurrent());
+				}
+				return false;
+			}
 		}
 
 		if (sender == null) {
@@ -95,19 +125,25 @@ public class Message {
 
 		// No sending messages to global chats while ignoring them
 		if (channel.getType() == ChannelType.REGION && sender.isSuppressing()) {
-			sender.sendMessage(ChatMsgs.errorSuppressingGlobal());
+			if (notify) {
+				sender.sendMessage(ChatMsgs.errorSuppressingGlobal());
+			}
 			return false;
 		}
 
 		// Must be in target channel to send messages
 		if (!channel.getListening().contains(sender.getUUID())) {
-			sender.sendMessage(ChatMsgs.errorNotListening(channel.getName()));
+			if (notify) {
+				sender.sendMessage(ChatMsgs.errorNotListening(channel.getName()));
+			}
 			return false;
 		}
 
 		// Nicks required in RP channels.
 		if (channel.getType() == ChannelType.RP && !channel.hasNick(sender)) {
-			sender.sendMessage(ChatMsgs.errorNickRequired(channel.getName()));
+			if (notify) {
+				sender.sendMessage(ChatMsgs.errorNickRequired(channel.getName()));
+			}
 			return false;
 		}
 
@@ -116,8 +152,8 @@ public class Message {
 
 	public void send() {
 
-		// Check if the sender can in fact send the message to the intended target
-		if (!validate()) {
+		// Check if the message is valid
+		if (sender == null && name == null || channel == null) {
 			return;
 		}
 

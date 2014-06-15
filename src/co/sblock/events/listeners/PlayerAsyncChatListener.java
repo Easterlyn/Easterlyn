@@ -5,10 +5,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Message;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.data.SblockData;
+import co.sblock.users.User;
 
 /**
  * Listener for PlayerAsyncChatEvents.
@@ -40,7 +40,7 @@ public class PlayerAsyncChatListener implements Listener {
 		}
 		// Clear recipients so as to not duplicate messages for global chat
 		event.getRecipients().clear();
-		Message message = ChannelManager.getChannelManager().parseMessage(event.getPlayer(), event.getMessage());
+		Message message = new Message(User.getUser(event.getPlayer().getUniqueId()), event.getMessage());
 		if (message.getSender() == null) {
 			event.getPlayer().sendMessage(ChatColor.BOLD
 					+ "[o] Your Sblock playerdata appears to not be loaded."
@@ -49,7 +49,7 @@ public class PlayerAsyncChatListener implements Listener {
 			return;
 		}
 		// Ensure message can be sent
-		if (!message.validate()) {
+		if (!message.validate(true)) {
 			return;
 		}
 		// Uncancel global chat to play nice with IRC plugins/Dynmap
