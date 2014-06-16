@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import co.sblock.SblockCommand;
 
 /**
@@ -32,7 +33,8 @@ public class EconomyBank {
 		e = Bukkit.getServicesManager().getRegistration(Economy.class).getProvider();
 	}
 
-	public boolean withdraw(Player p, double amount) {
+	@SuppressWarnings("deprecation")
+    public boolean withdraw(Player p, double amount) {
 		EconomyResponse er = e.bankWithdraw(p.getUniqueId().toString(), amount);
 		if (er.type == ResponseType.FAILURE) {
 			if (er.errorMessage.equals("That bank does not exist!")) {
@@ -45,7 +47,8 @@ public class EconomyBank {
 		return true;
 	}
 
-	public boolean deposit(Player p, double amount) {
+	@SuppressWarnings("deprecation")
+    public boolean deposit(Player p, double amount) {
 		EconomyResponse er = e.bankWithdraw(p.getUniqueId().toString(), amount);
 		if (er.type == ResponseType.FAILURE) {
 			if (er.errorMessage.equals("That bank does not exist!")) {
