@@ -49,11 +49,20 @@ public class Entry {
 
 	private class EntryStorage {
 		public Meteorite meteorite;
-		public Material cruxtype;
+		private Material cruxtype;
 		public EntryStorage(Meteorite meteorite, Material cruxtype) {
 			this.meteorite = meteorite;
-			this.cruxtype = cruxtype;
+			this.setCruxtype(cruxtype);
 		}
+        @SuppressWarnings("unused")
+        public Material getCruxtype()
+        {
+            return cruxtype;
+        }
+        public void setCruxtype(Material cruxtype)
+        {
+            this.cruxtype = cruxtype;
+        }
 	}
 
 	private static Entry instance;
