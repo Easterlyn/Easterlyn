@@ -43,7 +43,7 @@ public class BannedPlayers {
 			bans.pardon(pbans.getBanEntry(target).getReason()
 					.replaceAll(".*<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>.*", "$1"));
 			pbans.pardon(target);
-		} else  {
+		} else	{
 			return;
 		}
 	}

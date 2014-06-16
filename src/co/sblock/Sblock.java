@@ -344,7 +344,7 @@ public class Sblock extends JavaPlugin {
 	 * them.
 	 * 
 	 * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command,
-	 *      String, String[])
+	 *		String, String[])
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

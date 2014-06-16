@@ -33,7 +33,7 @@ public class Cooldowns {
 	 * lacked an entry, creates a new one.
 	 * 
 	 * @param name
-	 *            the name of the <code>Player</code>
+	 *			  the name of the <code>Player</code>
 	 * @return HashMap containing all cooldowns for a <code>Player</code>
 	 */
 	private HashMap<String, Long> getCooldownMap(String name) {
@@ -50,11 +50,11 @@ public class Cooldowns {
 	 * Adds a cooldown for a <code>Player</code> of specified duration in milliseconds.
 	 * 
 	 * @param playerName
-	 *            the name of the <code>Player</code>
+	 *			  the name of the <code>Player</code>
 	 * @param cooldownName
-	 *            the name of the cooldown
+	 *			  the name of the cooldown
 	 * @param durationMillis
-	 *            the length of the cooldown in milliseconds
+	 *			  the length of the cooldown in milliseconds
 	 */
 	public void addCooldown(String playerName, String cooldownName, long durationMillis) {
 		HashMap<String, Long> playerCooldowns = this.getCooldownMap(playerName);
@@ -68,9 +68,9 @@ public class Cooldowns {
 	 * entirely removed.
 	 * 
 	 * @param playerName
-	 *            the name of the <code>Player</code>
+	 *			  the name of the <code>Player</code>
 	 * @param cooldownName
-	 *            the name of the cooldown
+	 *			  the name of the cooldown
 	 */
 	public void clearCooldown(String playerName, String cooldownName) {
 		if (!cooldowns.containsKey(playerName)) {
@@ -84,9 +84,9 @@ public class Cooldowns {
 	 * methods.
 	 * 
 	 * @param playerName
-	 *            the name of the <code>Player</code>
+	 *			  the name of the <code>Player</code>
 	 * @param cooldownName
-	 *            the name of the cooldown
+	 *			  the name of the cooldown
 	 */
 	private void clearCooldownHelper(String playerName, String cooldownName) {
 		HashMap<String, Long> playerCooldowns = this.getCooldownMap(playerName);
@@ -103,9 +103,9 @@ public class Cooldowns {
 	 * certain cooldown.
 	 * 
 	 * @param name
-	 *            the name of the Player
+	 *			  the name of the Player
 	 * @param cooldownName
-	 *            the name of the cooldown
+	 *			  the name of the cooldown
 	 * @return the remaining milliseconds until specified ability can be re-used
 	 */
 	public long getRemainingMilliseconds(String name, String cooldownName) {

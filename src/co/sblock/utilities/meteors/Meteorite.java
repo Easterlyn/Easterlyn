@@ -95,8 +95,8 @@ public class Meteorite {
 					@Override
 					public void run() {
 						/* again, cant use this till you COMMIT YOUR DAMN CODE
-					    ParticleUtils pu = ParticleUtils.getInstance();
-					    */
+						ParticleUtils pu = ParticleUtils.getInstance();
+						*/
 						for (Location location : sphereCoords) {
 							if (location.getBlock().getType() == mat) {
 								location.getBlock().setType(Material.AIR);
@@ -229,23 +229,23 @@ public class Meteorite {
 		return dropTask;
 	}
 
-    public boolean isBoreMode()
-    {
-        return boreMode;
-    }
+	public boolean isBoreMode()
+	{
+		return boreMode;
+	}
 
-    public void setBoreMode(boolean boreMode)
-    {
-        this.boreMode = boreMode;
-    }
+	public void setBoreMode(boolean boreMode)
+	{
+		this.boreMode = boreMode;
+	}
 
-    public boolean isExplosionBlockDamage()
-    {
-        return explosionBlockDamage;
-    }
+	public boolean isExplosionBlockDamage()
+	{
+		return explosionBlockDamage;
+	}
 
-    public void setExplosionBlockDamage(boolean explosionBlockDamage)
-    {
-        this.explosionBlockDamage = explosionBlockDamage;
-    }
+	public void setExplosionBlockDamage(boolean explosionBlockDamage)
+	{
+		this.explosionBlockDamage = explosionBlockDamage;
+	}
 }

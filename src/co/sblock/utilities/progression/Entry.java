@@ -54,15 +54,15 @@ public class Entry {
 			this.meteorite = meteorite;
 			this.setCruxtype(cruxtype);
 		}
-        @SuppressWarnings("unused")
-        public Material getCruxtype()
-        {
-            return cruxtype;
-        }
-        public void setCruxtype(Material cruxtype)
-        {
-            this.cruxtype = cruxtype;
-        }
+		@SuppressWarnings("unused")
+		public Material getCruxtype()
+		{
+			return cruxtype;
+		}
+		public void setCruxtype(Material cruxtype)
+		{
+			this.cruxtype = cruxtype;
+		}
 	}
 
 	private static Entry instance;
