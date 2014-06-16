@@ -24,56 +24,56 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class EntityDamageByEntityListener implements Listener {
 
-    /**
-     * EventHandler for EntityDamageByEntityEvents.
-     * 
-     * @param event the EntityDamageByEntityEvent
-     */
-    @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntityType() == EntityType.DROPPED_ITEM) {
-            event.setCancelled(true);
-            return;
-        }
-        if (event.getDamager().getType() == EntityType.FALLING_BLOCK
-                && ((CraftEntity) event.getDamager()).getHandle() instanceof MeteoriteComponent) {
-            if (event.getEntityType() == EntityType.PLAYER) {
-                event.setCancelled(true);
-                return;
-            }
-            if (event.getEntityType() == EntityType.FALLING_BLOCK
-                    && ((MeteoriteComponent) ((CraftEntity)event.getDamager()).getHandle()).shouldBore()) {
-                event.setCancelled(true);
-                return;
-            }
-        }
-        if (!(event.getDamager() instanceof Player)) {
-            return;
-        }
+	/**
+	 * EventHandler for EntityDamageByEntityEvents.
+	 * 
+	 * @param event the EntityDamageByEntityEvent
+	 */
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (event.getEntityType() == EntityType.DROPPED_ITEM) {
+			event.setCancelled(true);
+			return;
+		}
+		if (event.getDamager().getType() == EntityType.FALLING_BLOCK
+				&& ((CraftEntity) event.getDamager()).getHandle() instanceof MeteoriteComponent) {
+			if (event.getEntityType() == EntityType.PLAYER) {
+				event.setCancelled(true);
+				return;
+			}
+			if (event.getEntityType() == EntityType.FALLING_BLOCK
+					&& ((MeteoriteComponent) ((CraftEntity)event.getDamager()).getHandle()).shouldBore()) {
+				event.setCancelled(true);
+				return;
+			}
+		}
+		if (!(event.getDamager() instanceof Player)) {
+			return;
+		}
 
-        Player p = (Player) event.getDamager();
+		Player p = (Player) event.getDamager();
 
-        if (Spectators.getSpectators().isSpectator(p.getUniqueId())) {
-            p.sendMessage(ChatColor.RED + "You waggle your fingers wildly, but your target remains unmussed.");
-            event.setCancelled(true);
-            return;
-        }
+		if (Spectators.getSpectators().isSpectator(p.getUniqueId())) {
+			p.sendMessage(ChatColor.RED + "You waggle your fingers wildly, but your target remains unmussed.");
+			event.setCancelled(true);
+			return;
+		}
 
-        User u = User.getUser(p.getUniqueId());
-        if (u != null && u.isServer()) {
-            event.setCancelled(true);
-            return;
-        }
+		User u = User.getUser(p.getUniqueId());
+		if (u != null && u.isServer()) {
+			event.setCancelled(true);
+			return;
+		}
 
-        if (event.getEntity() instanceof Player) {
-            Player target = (Player) event.getEntity();
-            HashMap<ActiveEffect, Integer> effects = EffectManager.activeScan(p);
-            if (effects.isEmpty()) return;
-            for (ActiveEffect aE : effects.keySet()) {
-                if (aE.getActiveEffectType() == ActiveEffectType.DAMAGE) {
-                    ActiveEffect.applyDamageEffect(p, target, aE, effects.get(aE));
-                }
-            }
-        }
-    }
+		if (event.getEntity() instanceof Player) {
+			Player target = (Player) event.getEntity();
+			HashMap<ActiveEffect, Integer> effects = EffectManager.activeScan(p);
+			if (effects.isEmpty()) return;
+			for (ActiveEffect aE : effects.keySet()) {
+				if (aE.getActiveEffectType() == ActiveEffectType.DAMAGE) {
+					ActiveEffect.applyDamageEffect(p, target, aE, effects.get(aE));
+				}
+			}
+		}
+	}
 }

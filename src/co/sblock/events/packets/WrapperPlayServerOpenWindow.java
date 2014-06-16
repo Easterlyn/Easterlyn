@@ -73,12 +73,12 @@ public class WrapperPlayServerOpenWindow extends AbstractPacket {
      * @return The current inventory type
     */
     public InventoryType getInventoryType() {
-        int id = handle.getIntegers().read(1);
-        
-        if (id >= 0 && id <= inventoryByID.size())
-            return inventoryByID.get(id);
-        else
-            throw new IllegalArgumentException("Cannot find inventory type " + id);
+    	int id = handle.getIntegers().read(1);
+    	
+    	if (id >= 0 && id <= inventoryByID.size())
+    		return inventoryByID.get(id);
+    	else
+    		throw new IllegalArgumentException("Cannot find inventory type " + id);
     }
     
     /**
@@ -86,12 +86,12 @@ public class WrapperPlayServerOpenWindow extends AbstractPacket {
      * @param value - new value.
     */
     public void setInventoryType(InventoryType value) {
-        int id = inventoryByID.indexOf(value);
-        
-        if (id > 0)
-            handle.getIntegers().write(1, id);
-        else
-            throw new IllegalArgumentException("Cannot find the ID of " + value);
+    	int id = inventoryByID.indexOf(value);
+    	
+    	if (id > 0)
+    		handle.getIntegers().write(1, id);
+    	else
+    		throw new IllegalArgumentException("Cannot find the ID of " + value);
     }
     
     /**

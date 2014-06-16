@@ -17,19 +17,19 @@ import co.sblock.users.UserManager;
  */
 public class PlayerJoinListener implements Listener {
 
-    /**
-     * The event handler for PlayerJoinEvents.
-     * 
-     * @param event the PlayerJoinEvent
-     */
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        event.setJoinMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.GREEN + " logs the fuck in");
+	/**
+	 * The event handler for PlayerJoinEvents.
+	 * 
+	 * @param event the PlayerJoinEvent
+	 */
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		event.setJoinMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.GREEN + " logs the fuck in");
 
-        SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
+		SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
 
-        User u = UserManager.getUserManager().addUser(event.getPlayer().getUniqueId());
-        u.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
-        EffectManager.applyPassiveEffects(u);
-    }
+		User u = UserManager.getUserManager().addUser(event.getPlayer().getUniqueId());
+		u.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
+		EffectManager.applyPassiveEffects(u);
+	}
 }

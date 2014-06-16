@@ -16,20 +16,20 @@ import co.sblock.machines.type.Machine;
  */
 public class InventoryMoveItemListener implements Listener {
 
-    /**
-     * EventHandler for when hoppers move items.
-     * 
-     * @param event the InventoryMoveItemEvent
-     */
-    @EventHandler(ignoreCancelled = true)
-    public void onHopperMoveItem(InventoryMoveItemEvent event) {
-        InventoryHolder ih = event.getDestination().getHolder();
-        if (ih != null && ih instanceof BlockState) {
-            Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
-            if (m != null) {
-                event.setCancelled(m.handleHopper(event));
-                return;
-            }
-        }
-    }
+	/**
+	 * EventHandler for when hoppers move items.
+	 * 
+	 * @param event the InventoryMoveItemEvent
+	 */
+	@EventHandler(ignoreCancelled = true)
+	public void onHopperMoveItem(InventoryMoveItemEvent event) {
+		InventoryHolder ih = event.getDestination().getHolder();
+		if (ih != null && ih instanceof BlockState) {
+			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
+			if (m != null) {
+				event.setCancelled(m.handleHopper(event));
+				return;
+			}
+		}
+	}
 }

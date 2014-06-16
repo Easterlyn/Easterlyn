@@ -24,58 +24,58 @@ import co.sblock.utilities.vote.SleepVote;
  */
 public class PlayerQuitListener implements Listener {
 
-    /**
-     * The event handler for PlayerQuitEvents.
-     * 
-     * @param event the PlayerQuitEvent
-     */
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        // Our very own custom quits!
-        event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED + " ollies outie");
+	/**
+	 * The event handler for PlayerQuitEvents.
+	 * 
+	 * @param event the PlayerQuitEvent
+	 */
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		// Our very own custom quits!
+		event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED + " ollies outie");
 
-        // Update vote
-        SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+		// Update vote
+		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
 
-        // Remove free minecart if riding one
-        FreeCart.getInstance().remove(event.getPlayer());
+		// Remove free minecart if riding one
+		FreeCart.getInstance().remove(event.getPlayer());
 
-        // Remove Spectator status
-        if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
-            Spectators.getSpectators().removeSpectator(event.getPlayer());
-        }
+		// Remove Spectator status
+		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
+			Spectators.getSpectators().removeSpectator(event.getPlayer());
+		}
 
-        // Stop scheduled sleep teleport
-        if (SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
-            Bukkit.getScheduler().cancelTask(SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()));
-        }
+		// Stop scheduled sleep teleport
+		if (SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
+			Bukkit.getScheduler().cancelTask(SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()));
+		}
 
-        // Remove from list awaiting Captchadex inventory opening
-        SblockEvents.getEvents().openingCaptchadex.remove(event.getPlayer().getName());
+		// Remove from list awaiting Captchadex inventory opening
+		SblockEvents.getEvents().openingCaptchadex.remove(event.getPlayer().getName());
 
-        // Clean up any expired cooldown entries for the player
-        Cooldowns.cleanup(event.getPlayer().getName());
+		// Clean up any expired cooldown entries for the player
+		Cooldowns.cleanup(event.getPlayer().getName());
 
-        // Remove Server status
-        User user = User.getUser(event.getPlayer().getUniqueId());
-        if (user != null && user.isServer()) {
-            user.stopServerMode();
-        }
+		// Remove Server status
+		User user = User.getUser(event.getPlayer().getUniqueId());
+		if (user != null && user.isServer()) {
+			user.stopServerMode();
+		}
 
-        // Fail Entry if in progress
-        if (user != null && user.getProgression() == ProgressionState.NONE) {
-            Entry.getEntry().fail(user);
-        }
+		// Fail Entry if in progress
+		if (user != null && user.getProgression() == ProgressionState.NONE) {
+			Entry.getEntry().fail(user);
+		}
 
-        // Restore inventory if still preserved
-        InventoryManager.restoreInventory(event.getPlayer());
+		// Restore inventory if still preserved
+		InventoryManager.restoreInventory(event.getPlayer());
 
-        // Save user data
-        SblockData.getDB().saveUserData(event.getPlayer().getUniqueId());
+		// Save user data
+		SblockData.getDB().saveUserData(event.getPlayer().getUniqueId());
 
-        // Inform channels that the player is no longer listening to them
-        for (String s : user.getListening()) {
-            user.removeListeningQuit(s);
-        }
-    }
+		// Inform channels that the player is no longer listening to them
+		for (String s : user.getListening()) {
+			user.removeListeningQuit(s);
+		}
+	}
 }

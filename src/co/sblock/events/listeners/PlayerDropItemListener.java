@@ -20,47 +20,47 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class PlayerDropItemListener implements Listener {
 
-    /**
-     * EventHandler for PlayerDropItemEvents.
-     * 
-     * @param event the PlayerDropItemEvent
-     */
-    @EventHandler
-    public void onItemDrop(PlayerDropItemEvent event) {
-        if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "Inventory? Spectral beings don't have those, don't be silly.");
-            return;
-        }
+	/**
+	 * EventHandler for PlayerDropItemEvents.
+	 * 
+	 * @param event the PlayerDropItemEvent
+	 */
+	@EventHandler
+	public void onItemDrop(PlayerDropItemEvent event) {
+		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.RED + "Inventory? Spectral beings don't have those, don't be silly.");
+			return;
+		}
 
-        // Cruxite items should not be tradeable.
-        if (event.getItemDrop().getItemStack().getItemMeta().hasDisplayName()
-                && event.getItemDrop().getItemStack().getItemMeta().getDisplayName()
-                        .startsWith(ChatColor.AQUA + "Cruxite ")) {
-            event.setCancelled(true);
-            return;
-        }
+		// Cruxite items should not be tradeable.
+		if (event.getItemDrop().getItemStack().getItemMeta().hasDisplayName()
+				&& event.getItemDrop().getItemStack().getItemMeta().getDisplayName()
+						.startsWith(ChatColor.AQUA + "Cruxite ")) {
+			event.setCancelled(true);
+			return;
+		}
 
-        // No dropping Captchadex if it's opening.
-        if (SblockEvents.getEvents().openingCaptchadex.contains(event.getPlayer().getName())) {
-            event.setCancelled(true);
-            return;
-        }
+		// No dropping Captchadex if it's opening.
+		if (SblockEvents.getEvents().openingCaptchadex.contains(event.getPlayer().getName())) {
+			event.setCancelled(true);
+			return;
+		}
 
-        // valid SblockUser required for all events below this point
-        User user = User.getUser(event.getPlayer().getUniqueId());
-        if (user == null) {
-            return;
-        }
+		// valid SblockUser required for all events below this point
+		User user = User.getUser(event.getPlayer().getUniqueId());
+		if (user == null) {
+			return;
+		}
 
-        if (user.isServer()) {
-            event.setCancelled(true);
-            return;
-        }
+		if (user.isServer()) {
+			event.setCancelled(true);
+			return;
+		}
 
-        HashMap<PassiveEffect, Integer> effects = EffectManager.itemScan(event.getItemDrop());
-        for (PassiveEffect e : effects.keySet()) {
-            user.reducePassiveEffect(e, effects.get(e));
-        }
-    }
+		HashMap<PassiveEffect, Integer> effects = EffectManager.itemScan(event.getItemDrop());
+		for (PassiveEffect e : effects.keySet()) {
+			user.reducePassiveEffect(e, effects.get(e));
+		}
+	}
 }

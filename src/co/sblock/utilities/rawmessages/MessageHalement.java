@@ -11,7 +11,7 @@ import co.sblock.chat.ColorDef;
  */
 public class MessageHalement extends MessageElement {
 
-    public MessageHalement(String text) {
-        super(new StringBuilder().append(ColorDef.HAL).append(text).toString(), ChatColor.RED);
-    }
+	public MessageHalement(String text) {
+		super(new StringBuilder().append(ColorDef.HAL).append(text).toString(), ChatColor.RED);
+	}
 }

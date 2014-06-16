@@ -12,17 +12,17 @@ import co.sblock.chat.ColorDef;
  */
 public class Broadcast {
 
-    /**
-     * Broadcast as Lil Hal to all users.
-     */
-    public static void lilHal(String msg) {
-        Bukkit.broadcastMessage(ColorDef.HAL + msg);
-    }
+	/**
+	 * Broadcast as Lil Hal to all users.
+	 */
+	public static void lilHal(String msg) {
+		Bukkit.broadcastMessage(ColorDef.HAL + msg);
+	}
 
-    /**
-     * General broadcast to all users.
-     */
-    public static void general(String msg) {
-        Bukkit.broadcastMessage(msg);
-    }
+	/**
+	 * General broadcast to all users.
+	 */
+	public static void general(String msg) {
+		Bukkit.broadcastMessage(msg);
+	}
 }

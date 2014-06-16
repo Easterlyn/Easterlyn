@@ -17,39 +17,39 @@ import co.sblock.data.SblockData;
  */
 public class PlayerLoginListener implements Listener {
 
-    private Pattern pattern;
+	private Pattern pattern;
 
-    public PlayerLoginListener() {
-        pattern = Pattern.compile("\\W");
-    }
+	public PlayerLoginListener() {
+		pattern = Pattern.compile("\\W");
+	}
 
-    /**
-     * The event handler for PlayerLoginEvents.
-     * 
-     * @param event the PlayerLoginEvent
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        if (pattern.matcher(event.getPlayer().getName()).find()) {
-            event.setResult(Result.KICK_BANNED);
-            event.setKickMessage("Your name contains invalid characters. Valid characters are [a-zA-Z_0-9]."
-                    + "\nPlease contact Mojang about this issue.");
-        }
-        switch (event.getResult()) {
-        case ALLOWED:
-        case KICK_FULL:
-        case KICK_WHITELIST:
-            return;
-        case KICK_BANNED:
-        case KICK_OTHER:
-            String reason = SblockData.getDB().getBanReason(event.getPlayer().getName(),
-                    event.getAddress().getHostAddress());
-            if (reason != null) {
-                event.setKickMessage(reason);
-            }
-            return;
-        default:
-            return;
-        }
-    }
+	/**
+	 * The event handler for PlayerLoginEvents.
+	 * 
+	 * @param event the PlayerLoginEvent
+	 */
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		if (pattern.matcher(event.getPlayer().getName()).find()) {
+			event.setResult(Result.KICK_BANNED);
+			event.setKickMessage("Your name contains invalid characters. Valid characters are [a-zA-Z_0-9]."
+					+ "\nPlease contact Mojang about this issue.");
+		}
+		switch (event.getResult()) {
+		case ALLOWED:
+		case KICK_FULL:
+		case KICK_WHITELIST:
+			return;
+		case KICK_BANNED:
+		case KICK_OTHER:
+			String reason = SblockData.getDB().getBanReason(event.getPlayer().getName(),
+					event.getAddress().getHostAddress());
+			if (reason != null) {
+				event.setKickMessage(reason);
+			}
+			return;
+		default:
+			return;
+		}
+	}
 }

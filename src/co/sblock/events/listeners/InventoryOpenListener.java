@@ -16,23 +16,23 @@ import co.sblock.utilities.progression.ServerMode;
  */
 public class InventoryOpenListener implements Listener {
 
-    /**
-     * EventHandler for InventoryOpenEvents.
-     * 
-     * @param event the InventoryOpenEvent
-     */
-    @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent event) {
+	/**
+	 * EventHandler for InventoryOpenEvents.
+	 * 
+	 * @param event the InventoryOpenEvent
+	 */
+	@EventHandler
+	public void onInventoryOpen(InventoryOpenEvent event) {
 
-        // Captchadex opening - events no longer need be cancelled.
-        SblockEvents.getEvents().openingCaptchadex.remove(event.getPlayer().getName());
+		// Captchadex opening - events no longer need be cancelled.
+		SblockEvents.getEvents().openingCaptchadex.remove(event.getPlayer().getName());
 
-        if (User.getUser(event.getPlayer().getUniqueId()).isServer()
-                && event.getInventory().getHolder() != null
-                && !(event.getInventory().getHolder() instanceof ServerMode)
-                && !(event.getInventory().getHolder() instanceof Computer)) {
-            event.setCancelled(true);
-            event.getPlayer().openInventory(ServerMode.getInstance().getInventory());
-        }
-    }
+		if (User.getUser(event.getPlayer().getUniqueId()).isServer()
+				&& event.getInventory().getHolder() != null
+				&& !(event.getInventory().getHolder() instanceof ServerMode)
+				&& !(event.getInventory().getHolder() instanceof Computer)) {
+			event.setCancelled(true);
+			event.getPlayer().openInventory(ServerMode.getInstance().getInventory());
+		}
+	}
 }

@@ -15,19 +15,19 @@ import co.sblock.utilities.Broadcast;
  */
 public class PlayerEditBookListener implements Listener {
 
-    /**
-     * EventHandler for PlayerEditBookEvents.
-     * 
-     * @param event the PlayerEditBookEvent
-     */
-    @EventHandler(ignoreCancelled = true)
-    public void onBookEdit(PlayerEditBookEvent e) {
-        if (e.isSigning() && e.getNewBookMeta().hasTitle() && e.getNewBookMeta().getTitle().equals("Captchadex")) {
-            BookMeta bm = e.getNewBookMeta().clone();
-            bm.setTitle(ChatColor.DARK_RED + "CaptchaNOPE.");
-            e.setNewBookMeta(bm);
-            Broadcast.lilHal("It appears that " + e.getPlayer().getName()
-                    + " just tried to title a book Captchadex. Please take a moment to laugh at them.");
-        }
-    }
+	/**
+	 * EventHandler for PlayerEditBookEvents.
+	 * 
+	 * @param event the PlayerEditBookEvent
+	 */
+	@EventHandler(ignoreCancelled = true)
+	public void onBookEdit(PlayerEditBookEvent e) {
+		if (e.isSigning() && e.getNewBookMeta().hasTitle() && e.getNewBookMeta().getTitle().equals("Captchadex")) {
+			BookMeta bm = e.getNewBookMeta().clone();
+			bm.setTitle(ChatColor.DARK_RED + "CaptchaNOPE.");
+			e.setNewBookMeta(bm);
+			Broadcast.lilHal("It appears that " + e.getPlayer().getName()
+					+ " just tried to title a book Captchadex. Please take a moment to laugh at them.");
+		}
+	}
 }

@@ -13,17 +13,17 @@ import co.sblock.events.SblockEvents;
  */
 public class PlayerItemHeldListener implements Listener {
 
-    /**
-     * EventHandler for PlayerHeldItemEvents.
-     * 
-     * @param event the PlayerHeldItemEvent
-     */
-    @EventHandler
-    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+	/**
+	 * EventHandler for PlayerHeldItemEvents.
+	 * 
+	 * @param event the PlayerHeldItemEvent
+	 */
+	@EventHandler
+	public void onPlayerItemHeld(PlayerItemHeldEvent event) {
 
-        // No swapping hotbar slots while opening Captchadex.
-        if (SblockEvents.getEvents().openingCaptchadex.contains(event.getPlayer().getName())) {
-            event.setCancelled(true);
-        }
-    }
+		// No swapping hotbar slots while opening Captchadex.
+		if (SblockEvents.getEvents().openingCaptchadex.contains(event.getPlayer().getName())) {
+			event.setCancelled(true);
+		}
+	}
 }

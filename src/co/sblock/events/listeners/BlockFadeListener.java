@@ -14,16 +14,16 @@ import co.sblock.machines.type.Machine;
  */
 public class BlockFadeListener implements Listener {
 
-    /**
-     * EventHandler for BlockFadeEvents.
-     * 
-     * @param event the BlockFadeEvent
-     */
-    @EventHandler(ignoreCancelled = true)
-    public void onBlockFade(BlockFadeEvent event) {
-        Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
-        if (m != null) {
-            event.setCancelled(m.handleFade(event));
-        }
-    }
+	/**
+	 * EventHandler for BlockFadeEvents.
+	 * 
+	 * @param event the BlockFadeEvent
+	 */
+	@EventHandler(ignoreCancelled = true)
+	public void onBlockFade(BlockFadeEvent event) {
+		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+		if (m != null) {
+			event.setCancelled(m.handleFade(event));
+		}
+	}
 }

@@ -23,59 +23,59 @@ import co.sblock.users.User;
  */
 public class BlockPlaceListener implements Listener {
 
-    /**
-     * Event handler for Machine construction.
-     * 
-     * @param event the BlockPlaceEvent
-     */
-    @SuppressWarnings("deprecation")
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent event) {
+	/**
+	 * Event handler for Machine construction.
+	 * 
+	 * @param event the BlockPlaceEvent
+	 */
+	@SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onBlockPlace(BlockPlaceEvent event) {
 
-        Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
-        if (m != null) {
-            // Block registered as part of a machine. Most likely removed by explosion or similar.
-            // Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
-            // location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "You decide against fussing with the internals of this machine.");
-        }
+		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+		if (m != null) {
+			// Block registered as part of a machine. Most likely removed by explosion or similar.
+			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
+			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.RED + "You decide against fussing with the internals of this machine.");
+		}
 
-        // Server mode placement
-        if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
-            if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
-                event.setCancelled(true);
-            } else {
-                // Should ideally never run out this way.
-                event.getItemInHand().setAmount(2);
-                final Player player = event.getPlayer();
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        player.updateInventory();
-                    }
-                });
-            }
-        }
+		// Server mode placement
+		if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
+			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
+				event.setCancelled(true);
+			} else {
+				// Should ideally never run out this way.
+				event.getItemInHand().setAmount(2);
+				final Player player = event.getPlayer();
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						player.updateInventory();
+					}
+				});
+			}
+		}
 
-        // Machine place logic
-        for (MachineType mt : MachineType.values()) {
-            if (mt.getUniqueDrop().isSimilar(event.getItemInHand())) {
-                if (mt == MachineType.PERFECT_BUILDING_OBJECT) {
-                    new PBO(event.getBlock().getLocation(), "").assemble(event);
-                    break;
-                }
-                try {
-                    SblockMachines.getMachines().getManager().addMachine(
-                            event.getBlock().getLocation(), mt, event.getPlayer().getUniqueId().toString(),
-                            Direction.getFacingDirection(event.getPlayer()), mt.getData(event)).assemble(event);
-                } catch (NullPointerException e) {
-                    SblockMachines.getMachines().getLogger().debug("Invalid machine placed.");
-                    event.setBuild(false);
-                    event.setCancelled(true);
-                }
-                break;
-            }
-        }
-    }
+		// Machine place logic
+		for (MachineType mt : MachineType.values()) {
+			if (mt.getUniqueDrop().isSimilar(event.getItemInHand())) {
+				if (mt == MachineType.PERFECT_BUILDING_OBJECT) {
+					new PBO(event.getBlock().getLocation(), "").assemble(event);
+					break;
+				}
+				try {
+					SblockMachines.getMachines().getManager().addMachine(
+							event.getBlock().getLocation(), mt, event.getPlayer().getUniqueId().toString(),
+							Direction.getFacingDirection(event.getPlayer()), mt.getData(event)).assemble(event);
+				} catch (NullPointerException e) {
+					SblockMachines.getMachines().getLogger().debug("Invalid machine placed.");
+					event.setBuild(false);
+					event.setCancelled(true);
+				}
+				break;
+			}
+		}
+	}
 }

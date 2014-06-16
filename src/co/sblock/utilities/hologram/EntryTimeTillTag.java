@@ -17,21 +17,21 @@ import com.dsh105.holoapi.api.Hologram;
  */
 public class EntryTimeTillTag extends DynamicTagFormat {
 
-    private SimpleDateFormat format;
+	private SimpleDateFormat format;
 
-    public EntryTimeTillTag() {
-        format = new SimpleDateFormat("m:ss");
-        format.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
+	public EntryTimeTillTag() {
+		format = new SimpleDateFormat("m:ss");
+		format.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 
-    /* (non-Javadoc)
-     * @see com.dsh105.holoapi.api.DynamicTagFormat#match(Matcher, String, Hologram, Player)
-     */
-    @Override
-    public String match(Matcher matcher, String content, Hologram hologram, Player observer) {
-        long current = System.currentTimeMillis();
-        long time = Long.parseLong(matcher.group(1));
-        return format.format(new Date(time > current ? time - current : 0));
-    }
+	/* (non-Javadoc)
+	 * @see com.dsh105.holoapi.api.DynamicTagFormat#match(Matcher, String, Hologram, Player)
+	 */
+	@Override
+	public String match(Matcher matcher, String content, Hologram hologram, Player observer) {
+		long current = System.currentTimeMillis();
+		long time = Long.parseLong(matcher.group(1));
+		return format.format(new Date(time > current ? time - current : 0));
+	}
 
 }

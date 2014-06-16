@@ -15,15 +15,15 @@ import co.sblock.utilities.minecarts.FreeCart;
  */
 public class VehicleExitListener implements Listener {
 
-    /**
-     * EventHandler for VehicleExitEvents.
-     * 
-     * @param event the VehicleExitEvent
-     */
-    @EventHandler
-    public void onVehicleExit(VehicleExitEvent event) {
-        if (event.getVehicle().getType() == EntityType.MINECART) {
-            FreeCart.getInstance().remove((Minecart) event.getVehicle());
-        }
-    }
+	/**
+	 * EventHandler for VehicleExitEvents.
+	 * 
+	 * @param event the VehicleExitEvent
+	 */
+	@EventHandler
+	public void onVehicleExit(VehicleExitEvent event) {
+		if (event.getVehicle().getType() == EntityType.MINECART) {
+			FreeCart.getInstance().remove((Minecart) event.getVehicle());
+		}
+	}
 }
