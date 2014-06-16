@@ -17,24 +17,24 @@ import co.sblock.utilities.captcha.Captchadex;
  */
 public class InventoryCloseListener implements Listener {
 
-	/**
-	 * EventHandler for InventoryCloseEvents.
-	 * 
-	 * @param event the InventoryCloseEvent
-	 */
-	@EventHandler(ignoreCancelled = true)
-	public void onInventoryClose(InventoryCloseEvent event) {
-		if (event.getInventory().getName().equals("Captchadex")) {
-			Captchadex.saveCaptchadex(event.getInventory(), event.getPlayer().getItemInHand());
-		}
+    /**
+     * EventHandler for InventoryCloseEvents.
+     * 
+     * @param event the InventoryCloseEvent
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getInventory().getName().equals("Captchadex")) {
+            Captchadex.saveCaptchadex(event.getInventory(), event.getPlayer().getItemInHand());
+        }
 
-		MachineInventoryTracker.getTracker().closeMachine(event);
+        MachineInventoryTracker.getTracker().closeMachine(event);
 
-		User user = User.getUser(event.getPlayer().getUniqueId());
-		if (user == null) {
-			return; // Player is probably logging out
-		}
-		user.setAllPassiveEffects(EffectManager.passiveScan((Player) event.getPlayer()));
-		EffectManager.applyPassiveEffects(user);
-	}
+        User user = User.getUser(event.getPlayer().getUniqueId());
+        if (user == null) {
+            return; // Player is probably logging out
+        }
+        user.setAllPassiveEffects(EffectManager.passiveScan((Player) event.getPlayer()));
+        EffectManager.applyPassiveEffects(user);
+    }
 }

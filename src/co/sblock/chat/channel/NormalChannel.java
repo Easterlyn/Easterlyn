@@ -11,60 +11,60 @@ import co.sblock.users.User;
  * @author Dublek
  */
 public class NormalChannel extends Channel {
-	/**
-	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, String)
-	 */
-	public NormalChannel(String name, AccessLevel a, UUID creator) {
-		super(name, a, creator);
-	}
+    /**
+     * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, String)
+     */
+    public NormalChannel(String name, AccessLevel a, UUID creator) {
+        super(name, a, creator);
+    }
 
-	/**
-	 * @see co.sblock.Chat.Channel.Channel#getType()
-	 */
-	@Override
-	public ChannelType getType() {
-		return ChannelType.NORMAL;
-	}
+    /**
+     * @see co.sblock.Chat.Channel.Channel#getType()
+     */
+    @Override
+    public ChannelType getType() {
+        return ChannelType.NORMAL;
+    }
 
-	/**
-	 * @see co.sblock.Chat.Channel.Channel#setNick(ChatUser, String)
-	 */
-	@Override
-	public void setNick(User sender, String nick) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
-	}
+    /**
+     * @see co.sblock.Chat.Channel.Channel#setNick(ChatUser, String)
+     */
+    @Override
+    public void setNick(User sender, String nick) {
+        sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
+    }
 
-	/**
-	 * @see co.sblock.Chat.Channel.Channel#removeNick(ChatUser)
-	 */
-	@Override
-	public void removeNick(User sender, boolean warn) {
-		if (warn) {
-			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
-		}
-	}
+    /**
+     * @see co.sblock.Chat.Channel.Channel#removeNick(ChatUser)
+     */
+    @Override
+    public void removeNick(User sender, boolean warn) {
+        if (warn) {
+            sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
+        }
+    }
 
-	/**
-	 * @see co.sblock.Chat.Channel.Channel#getNick(ChatUser)
-	 */
-	@Override
-	public String getNick(User sender) {
-		return sender.getPlayer().getDisplayName();
-	}
+    /**
+     * @see co.sblock.Chat.Channel.Channel#getNick(ChatUser)
+     */
+    @Override
+    public String getNick(User sender) {
+        return sender.getPlayer().getDisplayName();
+    }
 
-	/**
-	 * @see co.sblock.Chat.Channel.Channel#hasNick(ChatUser)
-	 */
-	@Override
-	public boolean hasNick(User sender) {
-		return false;
-	}
+    /**
+     * @see co.sblock.Chat.Channel.Channel#hasNick(ChatUser)
+     */
+    @Override
+    public boolean hasNick(User sender) {
+        return false;
+    }
 
-	/**
-	 * @see co.sblock.Chat.Channel.Channel#getNickOwner(String)
-	 */
-	@Override
-	public User getNickOwner(String nick) {
-		return null;
-	}
+    /**
+     * @see co.sblock.Chat.Channel.Channel#getNickOwner(String)
+     */
+    @Override
+    public User getNickOwner(String nick) {
+        return null;
+    }
 }

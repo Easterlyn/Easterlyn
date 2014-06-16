@@ -18,5 +18,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface CommandDenial {
-	public abstract String value() default "<&4Lil Hal&f> &cI'm sorry Dirk, I'm afraid I can't do that.";
+    public abstract String value() default "<&4Lil Hal&f> &cI'm sorry Dirk, I'm afraid I can't do that.";
 }

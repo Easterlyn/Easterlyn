@@ -14,16 +14,16 @@ import co.sblock.machines.type.Machine;
  */
 public class BlockIgniteListener implements Listener {
 
-	/**
-	 * EventHandler for BlockIgniteEvents.
-	 * 
-	 * @param event the BlockIgniteEvent
-	 */
-	@EventHandler(ignoreCancelled = true)
-	public void onBlockIgnite(BlockIgniteEvent event) {
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handleIgnite(event));
-		}
-	}
+    /**
+     * EventHandler for BlockIgniteEvents.
+     * 
+     * @param event the BlockIgniteEvent
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+        if (m != null) {
+            event.setCancelled(m.handleIgnite(event));
+        }
+    }
 }

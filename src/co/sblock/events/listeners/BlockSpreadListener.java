@@ -14,16 +14,16 @@ import co.sblock.machines.type.Machine;
  */
 public class BlockSpreadListener implements Listener {
 
-	/**
-	 * EventHandler for BlockSpreadEvents.
-	 * 
-	 * @param event the BlockSpreadEvent
-	 */
-	@EventHandler(ignoreCancelled = true)
-	public void onBlockSpread(BlockSpreadEvent event) {
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handleSpread(event));
-		}
-	}
+    /**
+     * EventHandler for BlockSpreadEvents.
+     * 
+     * @param event the BlockSpreadEvent
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockSpread(BlockSpreadEvent event) {
+        Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+        if (m != null) {
+            event.setCancelled(m.handleSpread(event));
+        }
+    }
 }

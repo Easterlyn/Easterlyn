@@ -13,23 +13,23 @@ import org.bukkit.event.inventory.InventoryDragEvent;
  */
 public class InventoryDragListener implements Listener {
 
-	/**
-	 * EventHandler for all InventoryDragEvents.
-	 * 
-	 * @param event the InventoryDragEvent
-	 */
-	@EventHandler
-	public void onItemDragDrop(InventoryDragEvent event) {
-		if (event.getInventory() == null || !(event.getWhoClicked() instanceof Player)) {
-			return;
-		}
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			for (int i : event.getRawSlots()) {
-				if (event.getView().getTopInventory().getSize() > i) {
-					event.setResult(Result.DENY);
-					break;
-				}
-			}
-		}
-	}
+    /**
+     * EventHandler for all InventoryDragEvents.
+     * 
+     * @param event the InventoryDragEvent
+     */
+    @EventHandler
+    public void onItemDragDrop(InventoryDragEvent event) {
+        if (event.getInventory() == null || !(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
+        if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
+            for (int i : event.getRawSlots()) {
+                if (event.getView().getTopInventory().getSize() > i) {
+                    event.setResult(Result.DENY);
+                    break;
+                }
+            }
+        }
+    }
 }

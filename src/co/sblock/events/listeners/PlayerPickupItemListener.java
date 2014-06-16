@@ -18,32 +18,32 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class PlayerPickupItemListener implements Listener {
 
-	/**
-	 * EventHandler for PlayerPickupItemEvents.
-	 * 
-	 * @param event the PlayerPickupItemEvent
-	 */
-	@EventHandler
-	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
-			event.setCancelled(true);
-			return;
-		}
+    /**
+     * EventHandler for PlayerPickupItemEvents.
+     * 
+     * @param event the PlayerPickupItemEvent
+     */
+    @EventHandler
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+            return;
+        }
 
-		// valid SblockUser required for all events below this point
-		User user = User.getUser(event.getPlayer().getUniqueId());
-		if (user == null) {
-			return;
-		}
+        // valid SblockUser required for all events below this point
+        User user = User.getUser(event.getPlayer().getUniqueId());
+        if (user == null) {
+            return;
+        }
 
-		if (user.isServer()) {
-			event.setCancelled(true);
-			return;
-		}
+        if (user.isServer()) {
+            event.setCancelled(true);
+            return;
+        }
 
-		HashMap<PassiveEffect, Integer> effects = EffectManager.itemScan(event.getItem());
-		for (PassiveEffect e : effects.keySet()) {
-			user.addPassiveEffect(e);
-		}
-	}
+        HashMap<PassiveEffect, Integer> effects = EffectManager.itemScan(event.getItem());
+        for (PassiveEffect e : effects.keySet()) {
+            user.addPassiveEffect(e);
+        }
+    }
 }

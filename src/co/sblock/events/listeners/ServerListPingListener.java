@@ -14,22 +14,22 @@ import co.sblock.events.SblockEvents;
  */
 public class ServerListPingListener implements Listener {
 
-	/**
-	 * The event handler for ServerListPingEvents.
-	 * <p>
-	 * If the IP pinging has played before, customize MOTD with their name.
-	 * 
-	 * @param event the ServerListPingEvent
-	 */
-	@EventHandler(ignoreCancelled = true)
-	public void onServerListPing(ServerListPingEvent event) {
-		String MOTD;
-		if (SblockEvents.getEvents().getStatus().hasMOTDChange()) {
-			MOTD = SblockEvents.getEvents().getStatus().getMOTDChange();
-		} else {
-			MOTD = event.getMotd().replaceAll("Player",
-					SblockData.getDB().getUserFromIP(event.getAddress().getHostAddress()));
-		}
-		event.setMotd(MOTD);
-	}
+    /**
+     * The event handler for ServerListPingEvents.
+     * <p>
+     * If the IP pinging has played before, customize MOTD with their name.
+     * 
+     * @param event the ServerListPingEvent
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onServerListPing(ServerListPingEvent event) {
+        String MOTD;
+        if (SblockEvents.getEvents().getStatus().hasMOTDChange()) {
+            MOTD = SblockEvents.getEvents().getStatus().getMOTDChange();
+        } else {
+            MOTD = event.getMotd().replaceAll("Player",
+                    SblockData.getDB().getUserFromIP(event.getAddress().getHostAddress()));
+        }
+        event.setMotd(MOTD);
+    }
 }

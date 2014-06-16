@@ -63,7 +63,7 @@ public class WrapperPlayServerBed extends AbstractPacket {
      * @return The player's entity.
      */
     public Entity getEntity(World world) {
-    	return handle.getEntityModifier(world).read(0);
+        return handle.getEntityModifier(world).read(0);
     }
 
     /**
@@ -72,7 +72,7 @@ public class WrapperPlayServerBed extends AbstractPacket {
      * @return The player's entity.
      */
     public Entity getEntity(PacketEvent event) {
-    	return getEntity(event.getPlayer().getWorld());
+        return getEntity(event.getPlayer().getWorld());
     }
     
     /**
@@ -129,7 +129,7 @@ public class WrapperPlayServerBed extends AbstractPacket {
      * @return The location.
      */
     public Location getLocation(PacketEvent event) {
-    	return new Location(event.getPlayer().getWorld(), getX(), getY(), getZ());
+        return new Location(event.getPlayer().getWorld(), getX(), getY(), getZ());
     }
     
     /**
@@ -137,9 +137,9 @@ public class WrapperPlayServerBed extends AbstractPacket {
      * @param loc - the new location.
      */
     public void setLocation(Location loc) {
-    	setX(loc.getBlockX());
-    	setY((byte) loc.getBlockY());
-    	setZ(loc.getBlockZ());
+        setX(loc.getBlockX());
+        setY((byte) loc.getBlockY());
+        setZ(loc.getBlockZ());
     }
 }
 

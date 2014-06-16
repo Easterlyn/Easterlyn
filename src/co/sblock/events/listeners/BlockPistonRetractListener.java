@@ -14,16 +14,16 @@ import co.sblock.machines.type.Machine;
  */
 public class BlockPistonRetractListener implements Listener {
 
-	/**
-	 * EventHandler for when a block is pulled by a sticky piston.
-	 * 
-	 * @param event the BlockPistonRetractEvent
-	 */
-	@EventHandler(ignoreCancelled = true)
-	public void onBlockPull(BlockPistonRetractEvent event) {
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handlePull(event));
-		}
-	}
+    /**
+     * EventHandler for when a block is pulled by a sticky piston.
+     * 
+     * @param event the BlockPistonRetractEvent
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPull(BlockPistonRetractEvent event) {
+        Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+        if (m != null) {
+            event.setCancelled(m.handlePull(event));
+        }
+    }
 }

@@ -18,83 +18,83 @@ import co.sblock.machines.type.Machine;
  */
 public class Machines {
 
-	/**
-	 * Save Machine data to database.
-	 * 
-	 * @param m the Machine to save data for
-	 */
-	public static void saveMachine(Machine m) {
-		PreparedStatement pst = null;
-		try {
-			pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_SAVE.toString());
+    /**
+     * Save Machine data to database.
+     * 
+     * @param m the Machine to save data for
+     */
+    public static void saveMachine(Machine m) {
+        PreparedStatement pst = null;
+        try {
+            pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_SAVE.toString());
 
-			try {
-				pst.setString(1, m.getLocationString());
-				pst.setString(2, m.getType().getAbbreviation());
-			} catch (NullPointerException e) {
-				SblockData.getLogger().warning("A Machine appears to have invalid data, skipping save.");
-				return;
-			}
-			pst.setString(3, m.getOwner());
-			pst.setByte(4, m.getFacingDirection().getDirByte());
-			pst.setString(5, m.getData());
+            try {
+                pst.setString(1, m.getLocationString());
+                pst.setString(2, m.getType().getAbbreviation());
+            } catch (NullPointerException e) {
+                SblockData.getLogger().warning("A Machine appears to have invalid data, skipping save.");
+                return;
+            }
+            pst.setString(3, m.getOwner());
+            pst.setByte(4, m.getFacingDirection().getDirByte());
+            pst.setString(5, m.getData());
 
-			pst.executeUpdate();
-		} catch (SQLException e) {
-			SblockMachines.getMachines().getLogger().err(e);
-		} finally {
-			if (pst != null) {
-				try {
-					pst.close();
-				} catch (Exception e) {
-					SblockMachines.getMachines().getLogger().err(e);
-				}
-			}
-		}
-	}
+            pst.executeUpdate();
+        } catch (SQLException e) {
+            SblockMachines.getMachines().getLogger().err(e);
+        } finally {
+            if (pst != null) {
+                try {
+                    pst.close();
+                } catch (Exception e) {
+                    SblockMachines.getMachines().getLogger().err(e);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Create a PreparedStatement with which to query the SQL database. Delete a
-	 * specified Machine's data from database.
-	 * 
-	 * @param m the Machine to delete data of
-	 */
-	public static void deleteMachine(Machine m) {
-		try {
-			PreparedStatement pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_DELETE.toString());
-			pst.setString(1, m.getLocationString());
+    /**
+     * Create a PreparedStatement with which to query the SQL database. Delete a
+     * specified Machine's data from database.
+     * 
+     * @param m the Machine to delete data of
+     */
+    public static void deleteMachine(Machine m) {
+        try {
+            PreparedStatement pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_DELETE.toString());
+            pst.setString(1, m.getLocationString());
 
-			new AsyncCall(pst).schedule();
-		} catch (SQLException e) {
-			SblockMachines.getMachines().getLogger().err(e);
-		}
-	}
+            new AsyncCall(pst).schedule();
+        } catch (SQLException e) {
+            SblockMachines.getMachines().getLogger().err(e);
+        }
+    }
 
-	/**
-	 * Creates and loads all Machines from saved data.
-	 */
-	public static void loadAllMachines() {
-		PreparedStatement pst = null;
-		try {
-			pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_LOADALL.toString());
+    /**
+     * Creates and loads all Machines from saved data.
+     */
+    public static void loadAllMachines() {
+        PreparedStatement pst = null;
+        try {
+            pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_LOADALL.toString());
 
-			ResultSet rs = pst.executeQuery();
-			MachineManager mm = SblockMachines.getMachines().getManager();
+            ResultSet rs = pst.executeQuery();
+            MachineManager mm = SblockMachines.getMachines().getManager();
 
-			while (rs.next()) {
-				mm.loadMachine(rs.getString("location"), rs.getString("type"),
-						rs.getString("owner"), rs.getByte("face"), rs.getString("data"));
-			}
-		} catch (SQLException e) {
-			SblockMachines.getMachines().getLogger().err(e);
-		} finally {
-			if (pst != null) {
-				try {
-					pst.close();
-				} catch (SQLException e) {
-					SblockMachines.getMachines().getLogger().err(e);
-				}
-			}
-		}
-	}
+            while (rs.next()) {
+                mm.loadMachine(rs.getString("location"), rs.getString("type"),
+                        rs.getString("owner"), rs.getByte("face"), rs.getString("data"));
+            }
+        } catch (SQLException e) {
+            SblockMachines.getMachines().getLogger().err(e);
+        } finally {
+            if (pst != null) {
+                try {
+                    pst.close();
+                } catch (SQLException e) {
+                    SblockMachines.getMachines().getLogger().err(e);
+                }
+            }
+        }
+    }
 }

@@ -9,11 +9,11 @@ import org.bukkit.ChatColor;
  */
 public class EscapedElement extends MessageElement {
 
-	public EscapedElement(String text) {
-		super(text.replace("\\", "\\\\").replace("\"", "\\\""));
-	}
+    public EscapedElement(String text) {
+        super(text.replace("\\", "\\\\").replace("\"", "\\\""));
+    }
 
-	public EscapedElement(String text, ChatColor... colors) {
-		super(text.replace("\\", "\\\\").replace("\"", "\\\""), colors);
-	}
+    public EscapedElement(String text, ChatColor... colors) {
+        super(text.replace("\\", "\\\\").replace("\"", "\\\""), colors);
+    }
 }

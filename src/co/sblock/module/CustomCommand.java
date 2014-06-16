@@ -14,31 +14,31 @@ import org.bukkit.plugin.Plugin;
  */
 public class CustomCommand extends Command implements PluginIdentifiableCommand {
 
-	public CustomCommand(String name) {
-		super(name);
-	}
+    public CustomCommand(String name) {
+        super(name);
+    }
 
-	/**
-	 * @see org.bukkit.command.Command#execute(CommandSender, String, String[])
-	 */
-	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		try {
-			return Bukkit.getPluginManager().getPlugin("Sblock").onCommand(sender, this, label, args);
-		} catch (NullPointerException e) {
-			// Sblock has not enabled properly.
-			return false;
-		}
-	}
+    /**
+     * @see org.bukkit.command.Command#execute(CommandSender, String, String[])
+     */
+    @Override
+    public boolean execute(CommandSender sender, String label, String[] args) {
+        try {
+            return Bukkit.getPluginManager().getPlugin("Sblock").onCommand(sender, this, label, args);
+        } catch (NullPointerException e) {
+            // Sblock has not enabled properly.
+            return false;
+        }
+    }
 
-	/**
-	 * @see org.bukkit.command.PluginIdentifiableCommand#getPlugin()
-	 */
-	@Override
-	public Plugin getPlugin() {
-		return Bukkit.getPluginManager().getPlugin("Sblock");
-	}
+    /**
+     * @see org.bukkit.command.PluginIdentifiableCommand#getPlugin()
+     */
+    @Override
+    public Plugin getPlugin() {
+        return Bukkit.getPluginManager().getPlugin("Sblock");
+    }
 
-	// TODO override tab completion
+    // TODO override tab completion
 
 }

@@ -14,16 +14,16 @@ import co.sblock.machines.type.Machine;
  */
 public class BlockPhysicsListener implements Listener {
 
-	/**
-	 * EventHandler for BlockPhysicsEvents.
-	 * 
-	 * @param event the BlockPhysicsEvent
-	 */
-	@EventHandler(ignoreCancelled = true)
-	public void onBlockPhysics(BlockPhysicsEvent event) {
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handlePhysics(event));
-		}
-	}
+    /**
+     * EventHandler for BlockPhysicsEvents.
+     * 
+     * @param event the BlockPhysicsEvent
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPhysics(BlockPhysicsEvent event) {
+        Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+        if (m != null) {
+            event.setCancelled(m.handlePhysics(event));
+        }
+    }
 }

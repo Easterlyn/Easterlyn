@@ -15,19 +15,19 @@ import co.sblock.machines.type.Machine;
  */
 public class BlockPistonExtendListener implements Listener {
 
-	/**
-	 * EventHandler for pistons pushing blocks.
-	 * 
-	 * @param event the BlockPistonExtendEvent
-	 */
-	@EventHandler(ignoreCancelled = true)
-	public void onBlockPush(BlockPistonExtendEvent event) {
-		for (Block b : event.getBlocks()) {
-			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
-			if (m != null) {
-				event.setCancelled(m.handlePush(event));
-				return;
-			}
-		}
-	}
+    /**
+     * EventHandler for pistons pushing blocks.
+     * 
+     * @param event the BlockPistonExtendEvent
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPush(BlockPistonExtendEvent event) {
+        for (Block b : event.getBlocks()) {
+            Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
+            if (m != null) {
+                event.setCancelled(m.handlePush(event));
+                return;
+            }
+        }
+    }
 }

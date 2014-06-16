@@ -21,36 +21,36 @@ import co.sblock.machines.type.Machine;
  */
 public class EntityExplodeListener implements Listener {
 
-	/**
-	 * EventHandler for EntityExplodeEvents.
-	 * 
-	 * @param event the EntityExplodeEvent
-	 */
-	@EventHandler
-	public void onEntityExplode(EntityExplodeEvent event) {
-		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")
-				&& CreeperConfig.getWorld(event.getLocation().getWorld().getName()).shouldReplace(
-						event.getEntity())) {
+    /**
+     * EventHandler for EntityExplodeEvents.
+     * 
+     * @param event the EntityExplodeEvent
+     */
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")
+                && CreeperConfig.getWorld(event.getLocation().getWorld().getName()).shouldReplace(
+                        event.getEntity())) {
 
-			HashSet<Block> affected = new HashSet<>();
-			for (Block b : event.blockList()) {
-				Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
-				if (m != null) {
-					affected.add(b);
-				}
-			}
+            HashSet<Block> affected = new HashSet<>();
+            for (Block b : event.blockList()) {
+                Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
+                if (m != null) {
+                    affected.add(b);
+                }
+            }
 
-			MachineManager.getManager().addBlock(affected.toArray(new Block[0]));
+            MachineManager.getManager().addBlock(affected.toArray(new Block[0]));
 
-			return;
-		}
+            return;
+        }
 
-		// CreeperHeal is not set to heal whatever destroyed this machine. Prevent damage.
-		for (Block b : event.blockList().toArray(new Block[0])) {
-			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
-			if (m != null) {
-				event.blockList().remove(b);
-			}
-		}
-	}
+        // CreeperHeal is not set to heal whatever destroyed this machine. Prevent damage.
+        for (Block b : event.blockList().toArray(new Block[0])) {
+            Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
+            if (m != null) {
+                event.blockList().remove(b);
+            }
+        }
+    }
 }

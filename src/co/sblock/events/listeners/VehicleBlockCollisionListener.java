@@ -19,31 +19,31 @@ import co.sblock.utilities.minecarts.FreeCart;
  */
 public class VehicleBlockCollisionListener implements Listener {
 
-	/**
-	 * Minecarts are automatically placed in dispensers upon collision.
-	 * 
-	 * @param event the VehicleBlockCollisionEvent
-	 */
-	@EventHandler
-	public void onVehicleBlockCollisionEvent(VehicleBlockCollisionEvent event) {
-		if (event.getVehicle().getType() != EntityType.MINECART) {
-			return;
-		}
-		FreeCart.getInstance().remove((Minecart) event.getVehicle());
-		if (event.getVehicle().isDead()) {
-			// Was a FreeCart cart.
-			return;
-		}
-		if (event.getBlock().getType() == Material.DISPENSER || event.getBlock().getType() == Material.DROPPER) {
-			BlockState b = event.getBlock().getState();
-			if (((InventoryHolder) b).getInventory().firstEmpty() == -1) {
-				return;
-			}
-			((InventoryHolder) b).getInventory().addItem(new ItemStack(Material.MINECART));
-			b.update(true);
-			event.getVehicle().eject();
-			event.getVehicle().remove();
-			return;
-		}
-	}
+    /**
+     * Minecarts are automatically placed in dispensers upon collision.
+     * 
+     * @param event the VehicleBlockCollisionEvent
+     */
+    @EventHandler
+    public void onVehicleBlockCollisionEvent(VehicleBlockCollisionEvent event) {
+        if (event.getVehicle().getType() != EntityType.MINECART) {
+            return;
+        }
+        FreeCart.getInstance().remove((Minecart) event.getVehicle());
+        if (event.getVehicle().isDead()) {
+            // Was a FreeCart cart.
+            return;
+        }
+        if (event.getBlock().getType() == Material.DISPENSER || event.getBlock().getType() == Material.DROPPER) {
+            BlockState b = event.getBlock().getState();
+            if (((InventoryHolder) b).getInventory().firstEmpty() == -1) {
+                return;
+            }
+            ((InventoryHolder) b).getInventory().addItem(new ItemStack(Material.MINECART));
+            b.update(true);
+            event.getVehicle().eject();
+            event.getVehicle().remove();
+            return;
+        }
+    }
 }

@@ -14,21 +14,21 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class FoodLevelChangeListener implements Listener {
 
-	/**
-	 * EventHandler for FoodLevelChangeEvents.
-	 * 
-	 * @param event the FoodLevelChangeEvent
-	 */
-	@EventHandler
-	public void onFoodLevelChange(FoodLevelChangeEvent event) {
-		if (Spectators.getSpectators().isSpectator(event.getEntity().getUniqueId())) {
-			event.setCancelled(true);
-		}
+    /**
+     * EventHandler for FoodLevelChangeEvents.
+     * 
+     * @param event the FoodLevelChangeEvent
+     */
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        if (Spectators.getSpectators().isSpectator(event.getEntity().getUniqueId())) {
+            event.setCancelled(true);
+        }
 
-		User user = User.getUser(event.getEntity().getUniqueId());
-		if (user != null && user.isServer()) {
-			event.setCancelled(true);
-			return;
-		}
-	}
+        User user = User.getUser(event.getEntity().getUniqueId());
+        if (user != null && user.isServer()) {
+            event.setCancelled(true);
+            return;
+        }
+    }
 }

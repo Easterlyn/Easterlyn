@@ -11,24 +11,24 @@ package co.sblock.utilities.rawmessages;
  */
 public class MessageHover {
 
-	public enum HoverEffect {
-		SHOW_TEXT, SHOW_ITEM, SHOW_ACHIEVEMENT, SHOW_ENTITY;
-	}
+    public enum HoverEffect {
+        SHOW_TEXT, SHOW_ITEM, SHOW_ACHIEVEMENT, SHOW_ENTITY;
+    }
 
-	private HoverEffect effect;
-	private String data;
+    private HoverEffect effect;
+    private String data;
 
-	public MessageHover(HoverEffect effect, String data) {
-		this.effect = effect;
-		this.data = data;
-	}
+    public MessageHover(HoverEffect effect, String data) {
+        this.effect = effect;
+        this.data = data;
+    }
 
-	public String getData() {
-		return this.data;
-	}
+    public String getData() {
+        return this.data;
+    }
 
-	public String toString() {
-		return new StringBuilder(",\"hoverEvent\":{\"action\":\"").append(effect.name().toLowerCase())
-				.append("\",\"value\":\"").append(data).append("\"}").toString();
-	}
+    public String toString() {
+        return new StringBuilder(",\"hoverEvent\":{\"action\":\"").append(effect.name().toLowerCase())
+                .append("\",\"value\":\"").append(data).append("\"}").toString();
+    }
 }

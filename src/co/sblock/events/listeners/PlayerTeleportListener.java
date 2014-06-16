@@ -17,24 +17,24 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class PlayerTeleportListener implements Listener {
 
-	/**
-	 * The event handler for PlayerTeleportEvents.
-	 * 
-	 * @param event the PlayerTeleportEvent
-	 */
-	@EventHandler
-	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		Player p = event.getPlayer();
-		if (!event.getFrom().getWorld().equals(event.getTo().getWorld())) {
-			if (Spectators.getSpectators().isSpectator(p.getUniqueId())) {
-				event.setCancelled(true);
-				p.sendMessage(ChatColor.RED + "You cannot visit another world in spectator mode!");
-			}
-			if (SblockEvents.getEvents().teleports.remove(p.getName())) {
-				User user = User.getUser(p.getUniqueId());
-				user.setPreviousLocation(event.getFrom());
-				user.updateFlight();
-			}
-		}
-	}
+    /**
+     * The event handler for PlayerTeleportEvents.
+     * 
+     * @param event the PlayerTeleportEvent
+     */
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        Player p = event.getPlayer();
+        if (!event.getFrom().getWorld().equals(event.getTo().getWorld())) {
+            if (Spectators.getSpectators().isSpectator(p.getUniqueId())) {
+                event.setCancelled(true);
+                p.sendMessage(ChatColor.RED + "You cannot visit another world in spectator mode!");
+            }
+            if (SblockEvents.getEvents().teleports.remove(p.getName())) {
+                User user = User.getUser(p.getUniqueId());
+                user.setPreviousLocation(event.getFrom());
+                user.updateFlight();
+            }
+        }
+    }
 }

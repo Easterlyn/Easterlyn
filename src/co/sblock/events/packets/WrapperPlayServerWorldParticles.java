@@ -36,80 +36,80 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @author Kristian
      */
     public enum ParticleEffect {
-		HUGE_EXPLOSION("hugeexplosion"),
-		LARGE_EXPLODE("largeexplode"),
-		FIREWORKS_SPARK("fireworksSpark"),
-		BUBBLE("bubble"),
-		SUSPEND("suspend"),
-		DEPTH_SUSPEND("depthSuspend"),
-		TOWN_AURA("townaura"),
-		CRIT("crit"),
-		MAGIC_CRIT("magicCrit"),
-		MOB_SPELL("mobSpell"),
-		MOB_SPELL_AMBIENT("mobSpellAmbient"),
-		SPELL("spell"),
-		INSTANT_SPELL("instantSpell"),
-		WITCH_MAGIC("witchMagic"),
-		NOTE("note"),
-		PORTAL("portal"),
-		ENCHANTMENT_TABLE("enchantmenttable"),
-		EXPLODE("explode"),
-		FLAME("flame"),
-		LAVA("lava"),
-		FOOTSTEP("footstep"),
-		SPLASH("splash"),
-		LARGE_SMOKE("largesmoke"),
-		CLOUD("cloud"),
-		RED_DUST("reddust"),
-		SNOWBALL_POOF("snowballpoof"),
-		DRIP_WATER("dripWater"),
-		DRIP_LAVA("dripLava"),
-		SNOW_SHOVEL("snowshovel"),
-		SLIME("slime"),
-		HEART("heart"),
-		ANGRY_VILLAGER("angryVillager"),
-		HAPPY_VILLAGER("happerVillager"),
-		ICONCRACK("iconcrack_"),
-		TILECRACK("tilecrack_");
+        HUGE_EXPLOSION("hugeexplosion"),
+        LARGE_EXPLODE("largeexplode"),
+        FIREWORKS_SPARK("fireworksSpark"),
+        BUBBLE("bubble"),
+        SUSPEND("suspend"),
+        DEPTH_SUSPEND("depthSuspend"),
+        TOWN_AURA("townaura"),
+        CRIT("crit"),
+        MAGIC_CRIT("magicCrit"),
+        MOB_SPELL("mobSpell"),
+        MOB_SPELL_AMBIENT("mobSpellAmbient"),
+        SPELL("spell"),
+        INSTANT_SPELL("instantSpell"),
+        WITCH_MAGIC("witchMagic"),
+        NOTE("note"),
+        PORTAL("portal"),
+        ENCHANTMENT_TABLE("enchantmenttable"),
+        EXPLODE("explode"),
+        FLAME("flame"),
+        LAVA("lava"),
+        FOOTSTEP("footstep"),
+        SPLASH("splash"),
+        LARGE_SMOKE("largesmoke"),
+        CLOUD("cloud"),
+        RED_DUST("reddust"),
+        SNOWBALL_POOF("snowballpoof"),
+        DRIP_WATER("dripWater"),
+        DRIP_LAVA("dripLava"),
+        SNOW_SHOVEL("snowshovel"),
+        SLIME("slime"),
+        HEART("heart"),
+        ANGRY_VILLAGER("angryVillager"),
+        HAPPY_VILLAGER("happerVillager"),
+        ICONCRACK("iconcrack_"),
+        TILECRACK("tilecrack_");
        
-	    private final String name;
-	    
-	    // Fast lookup of effects
-	    private volatile static Map<String, ParticleEffect> LOOKUP = generateLookup();
-	   
-	    /**
-	     * Generate a fast string lookup of every particle effect.
-	     * @return A string lookup.
-	     */
-	    private static Map<String, ParticleEffect> generateLookup() {
-    		Map<String, ParticleEffect> created = new HashMap<String, ParticleEffect>();
-    		
-    		// Update the thread local copy first - avoid potential concurrency issues
-    		for (ParticleEffect effect : values())
-    			created.put(effect.getParticleName(), effect);
-    		return created;
-	    }
-	    
-	    private ParticleEffect(String name) {
-	        this.name = name;
-	    }
-	    
-	    /**
-	     * Retrieve the particle effect from a corresponding name. 
-	     * @param name - the particle name.
-	     * @return The effect, or NULL if not found.
-	     */
-	    public static ParticleEffect fromName(String name) {
-	    	return LOOKUP.get(name);
-	    }
-	    
-	    /**
-	     * Retrieve the particle name.
-	     * @return The particle name.
-	     */
-	    public String getParticleName() {
-			return name;
-		}
+        private final String name;
+        
+        // Fast lookup of effects
+        private volatile static Map<String, ParticleEffect> LOOKUP = generateLookup();
+       
+        /**
+         * Generate a fast string lookup of every particle effect.
+         * @return A string lookup.
+         */
+        private static Map<String, ParticleEffect> generateLookup() {
+            Map<String, ParticleEffect> created = new HashMap<String, ParticleEffect>();
+            
+            // Update the thread local copy first - avoid potential concurrency issues
+            for (ParticleEffect effect : values())
+                created.put(effect.getParticleName(), effect);
+            return created;
+        }
+        
+        private ParticleEffect(String name) {
+            this.name = name;
+        }
+        
+        /**
+         * Retrieve the particle effect from a corresponding name. 
+         * @param name - the particle name.
+         * @return The effect, or NULL if not found.
+         */
+        public static ParticleEffect fromName(String name) {
+            return LOOKUP.get(name);
+        }
+        
+        /**
+         * Retrieve the particle name.
+         * @return The particle name.
+         */
+        public String getParticleName() {
+            return name;
+        }
     }
     
     /**
@@ -136,11 +136,11 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @param offset - the random offset that will be applied to each particle.
      */
     public WrapperPlayServerWorldParticles(ParticleEffect effect, int count, Location location, Vector offset) {
-    	this();
-    	setParticleEffect(effect);
-    	setNumberOfParticles(count);
-    	setLocation(location);
-    	setOffset(offset);
+        this();
+        setParticleEffect(effect);
+        setNumberOfParticles(count);
+        setLocation(location);
+        setOffset(offset);
     }
     
     /**
@@ -164,7 +164,7 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @return The particle effect, or NULL if not known.
      */
     public ParticleEffect getParticleEffect() {
-    	return ParticleEffect.fromName(getParticleName());
+        return ParticleEffect.fromName(getParticleName());
     }
     
     /**
@@ -172,9 +172,9 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @param effect - the particle effect.
      */
     public void setParticleEffect(ParticleEffect effect) {
-    	if (effect == null)
-    		throw new IllegalArgumentException("effect cannot be NULL.");
-    	setParticleName(effect.getParticleName());
+        if (effect == null)
+            throw new IllegalArgumentException("effect cannot be NULL.");
+        setParticleName(effect.getParticleName());
     }
     
     /**
@@ -183,7 +183,7 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @return The location.
      */
     public Location getLocation(PacketEvent event) {
-    	return getLocation(event.getPlayer().getWorld());
+        return getLocation(event.getPlayer().getWorld());
     }
     
     /**
@@ -192,7 +192,7 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @return The location.
      */
     public Location getLocation(World world) {
-    	return new Location(world, getX(), getY(), getZ());
+        return new Location(world, getX(), getY(), getZ());
     }
     
     /**
@@ -200,11 +200,11 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @param loc - the location.
      */
     public void setLocation(Location loc) {
-    	if (loc == null)
-    		throw new IllegalArgumentException("Location cannot be NULL.");
-    	setX((float) loc.getX());
-    	setY((float) loc.getY());
-    	setZ((float) loc.getZ());
+        if (loc == null)
+            throw new IllegalArgumentException("Location cannot be NULL.");
+        setX((float) loc.getX());
+        setY((float) loc.getY());
+        setZ((float) loc.getZ());
     }
     
     /**
@@ -212,11 +212,11 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @param vector - the random vector offset.
      */
     public void setOffset(Vector vector) {
-    	if (vector == null)
-    		throw new IllegalArgumentException("Vector cannot be NULL.");
-    	setOffsetX((float) vector.getX());
-    	setOffsetY((float) vector.getY());
-    	setOffsetZ((float) vector.getZ());
+        if (vector == null)
+            throw new IllegalArgumentException("Vector cannot be NULL.");
+        setOffsetX((float) vector.getX());
+        setOffsetY((float) vector.getY());
+        setOffsetZ((float) vector.getZ());
     }
     
     /**
@@ -224,7 +224,7 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
      * @return The random offset.
      */
     public Vector getOffset() {
-    	return new Vector(getX(), getY(), getZ());
+        return new Vector(getX(), getY(), getZ());
     }
     
     /**
