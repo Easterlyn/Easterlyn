@@ -387,7 +387,7 @@ public abstract class Channel {
 			// Name color fetched from scoreboard, if team invalid perm-based instead.
 			try {
 				globalRank = ChatColor.valueOf(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getName());
-			} catch (IllegalStateException | IllegalArgumentException e) {
+			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
 				if (sender.getPlayer().hasPermission("group.horrorterror"))
 					globalRank = ColorDef.RANK_HORRORTERROR;
 				else if (sender.getPlayer().hasPermission("group.denizen"))

@@ -190,6 +190,7 @@ public class PlayerData {
 				user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
 				user.updateCurrentRegion(user.getPlayerRegion());
 				user.setLoaded();
+				UserManager.getUserManager().team(p);
 			}
 		} catch (SQLException e) {
 			SblockData.getLogger().err(e);
