@@ -12,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+
 import co.sblock.module.Module;
 
 /**
@@ -96,4 +97,9 @@ public class MeteorMod extends Module implements Listener {
 		explosion.a(true);
 		loc.getWorld().playEffect(loc, Effect.EXPLOSION_HUGE, 4);
 	}
+
+    @Override
+    public String getName() {
+        return "Meteor Mod";
+    }
 }

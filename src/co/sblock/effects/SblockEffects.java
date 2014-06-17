@@ -26,4 +26,9 @@ public class SblockEffects extends Module {
 	public static SblockEffects getEffects() {
 		return instance;
 	}
+
+    @Override
+    public String getName() {
+        return "SblockEffects";
+    }
 }

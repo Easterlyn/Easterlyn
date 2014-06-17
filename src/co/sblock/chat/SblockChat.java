@@ -41,4 +41,9 @@ public class SblockChat extends Module {
 	public static boolean getComputerRequired() {
 		return computersRequired;
 	}
+
+    @Override
+    public String getName() {
+        return "SblockChat";
+    }
 }
