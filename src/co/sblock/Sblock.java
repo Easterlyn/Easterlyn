@@ -210,31 +210,26 @@ public class Sblock extends JavaPlugin {
 		} else {
 			cmd = new CustomCommand(m.getName());
 		}
-		String s;
-		if (m.getAnnotation(CommandDescription.class) != null) {
-			s = ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value());
-		} else {
-			s = ChatColor.YELLOW + "A Sblock command.";
-		}
-		cmd.setDescription(s);
-		if (m.getAnnotation(CommandUsage.class) != null) {
-			s = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value());
-		} else {
-			s = ChatColor.RED + "/<command>";
-		}
-		cmd.setUsage(s);
-		if (m.getAnnotation(CommandPermission.class) != null) {
-			s = m.getAnnotation(CommandPermission.class).value();
-		} else {
-			s = null;
-		}
-		cmd.setPermission(s);
-		if (m.getAnnotation(CommandDenial.class) != null) {
-			s = ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value());
-		} else {
-			s = ChatColor.RED + "By the order of the Jarl, stop right there!";
-		}
-		cmd.setPermissionMessage(s);
+		
+		
+		cmd.setDescription(ChatColor.YELLOW + 
+		                   (m.getAnnotation(CommandDescription.class) != null ?
+		                           ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value())
+		                           :ChatColor.YELLOW + "A Sblock command."));
+		
+		cmd.setUsage(ChatColor.RED + 
+		             (m.getAnnotation(CommandUsage.class) != null ?
+		                     ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value())
+		                     :"/<command>"));
+		
+		cmd.setPermission(m.getAnnotation(CommandPermission.class) != null ?
+		                  m.getAnnotation(CommandPermission.class).value()
+                          :null);
+
+		cmd.setPermissionMessage(m.getAnnotation(CommandDenial.class) != null ?
+		        ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value())
+                :ChatColor.RED + "By the order of the Jarl, stop right there!");
+
 		return cmd;
 	}
 
@@ -383,6 +378,10 @@ public class Sblock extends JavaPlugin {
 		return false;
 	}
 
+	
+	/**
+	 * @return the Sblock custom logger
+	 */
 	public static final Log getLog() {
 		return logger;
 	}
