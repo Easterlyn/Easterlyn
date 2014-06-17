@@ -241,8 +241,8 @@ public class SblockEvents extends Module {
 		return instance;
 	}
 
-    @Override
-    public String getName() {
-        return "SblockEvents";
-    }
+	@Override
+	public String getName() {
+		return "SblockEvents";
+	}
 }

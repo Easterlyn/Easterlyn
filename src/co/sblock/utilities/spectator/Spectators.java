@@ -168,8 +168,8 @@ public class Spectators extends Module implements CommandListener {
 	}
 
 	
-    @Override
-    public String getName() {
-        return "Spectators";
-    }
+	@Override
+	public String getName() {
+		return "Spectators";
+	}
 }

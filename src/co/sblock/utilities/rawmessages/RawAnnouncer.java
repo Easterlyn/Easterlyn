@@ -162,8 +162,8 @@ public class RawAnnouncer extends Module implements CommandListener {
 		return true;
 	}
 
-    @Override
-    public String getName() {
-        return "Raw Announcer";
-    }
+	@Override
+	public String getName() {
+		return "Raw Announcer";
+	}
 }

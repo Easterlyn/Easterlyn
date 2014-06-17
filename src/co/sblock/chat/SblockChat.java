@@ -42,8 +42,8 @@ public class SblockChat extends Module {
 		return computersRequired;
 	}
 
-    @Override
-    public String getName() {
-        return "SblockChat";
-    }
+	@Override
+	public String getName() {
+		return "SblockChat";
+	}
 }

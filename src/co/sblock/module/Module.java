@@ -17,7 +17,7 @@ import co.sblock.utilities.Log;
  * @author FireNG
  */
 public abstract class Module {
-    
+	
 	/* The Set of Listeners registered by this Module. */
 	private Set<Listener> listeners = new HashSet<Listener>();
 
@@ -62,8 +62,8 @@ public abstract class Module {
 		try {
 			this.onEnable();
 		} catch (Exception e) {
-		    String message = "[SblockSuite] Unhandled exception in module " + getName()
-                           + ". Plugin failed to load.";
+			String message = "[SblockSuite] Unhandled exception in module " + getName()
+						   + ". Plugin failed to load.";
 			throw new RuntimeException(message, e);
 		}
 		return this;
@@ -81,8 +81,8 @@ public abstract class Module {
 				HandlerList.unregisterAll(listener);
 			}
 		} catch (Exception e) {
-		    String message = "Unhandled exception in module " + getName()
-		                   + ". Plugin failed to properly disable.";
+			String message = "Unhandled exception in module " + getName()
+						   + ". Plugin failed to properly disable.";
 			throw new RuntimeException(message, e);
 		}
 		getLogger().info("Disabled module " + getName());

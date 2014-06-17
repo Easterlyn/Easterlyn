@@ -88,10 +88,10 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable() {
-	    // must be at the beginning for thread saftey
-	    instance = this;
+		// must be at the beginning for thread saftey
+		instance = this;
 
-	    //TODO: the fuck is this... make it better, reflection baaaaaad
+		//TODO: the fuck is this... make it better, reflection baaaaaad
 		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R3.CraftServer) {
 			try {
 				Field f = org.bukkit.craftbukkit.v1_7_R3.CraftServer.class.getDeclaredField("commandMap");
@@ -219,22 +219,22 @@ public class Sblock extends JavaPlugin {
 		
 		
 		cmd.setDescription(ChatColor.YELLOW + 
-		                   (m.getAnnotation(CommandDescription.class) != null ?
-		                           ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value())
-		                           :ChatColor.YELLOW + "A Sblock command."));
+						   (m.getAnnotation(CommandDescription.class) != null ?
+								   ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value())
+								   :ChatColor.YELLOW + "A Sblock command."));
 		
 		cmd.setUsage(ChatColor.RED + 
-		             (m.getAnnotation(CommandUsage.class) != null ?
-		                     ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value())
-		                     :"/<command>"));
+					 (m.getAnnotation(CommandUsage.class) != null ?
+							 ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value())
+							 :"/<command>"));
 		
 		cmd.setPermission(m.getAnnotation(CommandPermission.class) != null ?
-		                  m.getAnnotation(CommandPermission.class).value()
-                          :null);
+						  m.getAnnotation(CommandPermission.class).value()
+						  :null);
 
 		cmd.setPermissionMessage(m.getAnnotation(CommandDenial.class) != null ?
-		        ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value())
-                :ChatColor.RED + "By the order of the Jarl, stop right there!");
+				ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value())
+				:ChatColor.RED + "By the order of the Jarl, stop right there!");
 
 		return cmd;
 	}

@@ -98,8 +98,8 @@ public class MeteorMod extends Module implements Listener {
 		loc.getWorld().playEffect(loc, Effect.EXPLOSION_HUGE, 4);
 	}
 
-    @Override
-    public String getName() {
-        return "Meteor Mod";
-    }
+	@Override
+	public String getName() {
+		return "Meteor Mod";
+	}
 }

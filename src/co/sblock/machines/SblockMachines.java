@@ -67,8 +67,8 @@ public class SblockMachines extends Module {
 		return instance;
 	}
 
-    @Override
-    public String getName() {
-        return "Sblock Machines";
-    }
+	@Override
+	public String getName() {
+		return "Sblock Machines";
+	}
 }

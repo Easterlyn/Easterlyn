@@ -391,8 +391,8 @@ public class Captcha extends Module {
 		}
 	}
 
-    @Override
-    public String getName() {
-        return "Captchas";
-    }
+	@Override
+	public String getName() {
+		return "Captchas";
+	}
 }
