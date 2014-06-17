@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import co.sblock.effects.EffectManager;
 import co.sblock.users.Region;
 import co.sblock.users.User;
-import co.sblock.utilities.voting.ElectionCenter;
+import co.sblock.utilities.vote.SleepVote;
 
 /**
  * Listener for PlayerChangedWorldEvents.
@@ -23,7 +23,8 @@ public class PlayerChangedWorldListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
-		ElectionCenter.getInstance().voteNo(event.getPlayer(), event.getFrom());
+
+		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
 
 		User user = User.getUser(event.getPlayer().getUniqueId());
 

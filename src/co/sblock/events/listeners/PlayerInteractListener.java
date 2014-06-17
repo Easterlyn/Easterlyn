@@ -29,7 +29,7 @@ import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.Captchadex;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.spectator.Spectators;
-import co.sblock.utilities.voting.ElectionCenter;
+import co.sblock.utilities.vote.SleepVote;
 
 /**
  * 
@@ -112,7 +112,7 @@ public class PlayerInteractListener implements Listener {
 						// World is nether/end
 						event.getPlayer().sendMessage("You cannot sleep in this world!");
 					} else if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
-						ElectionCenter.getInstance().voteYes(event.getPlayer(), b.getWorld());
+						SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					} else {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "It's not dark or raining!");
