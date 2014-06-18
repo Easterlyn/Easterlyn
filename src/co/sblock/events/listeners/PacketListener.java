@@ -15,7 +15,8 @@ import co.sblock.events.SblockEvents;
 public class PacketListener extends PacketAdapter {
 
 	public PacketListener() {
-		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.CHAT);
+		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION,
+				PacketType.Play.Client.CHAT);
 	}
 
 	/**

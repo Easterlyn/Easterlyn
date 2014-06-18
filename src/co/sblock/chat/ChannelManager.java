@@ -14,7 +14,6 @@ import co.sblock.chat.channel.RPChannel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.data.SblockData;
 
-
 public class ChannelManager {
 
 	private ConcurrentHashMap<String, Channel> channelList;
@@ -39,9 +38,11 @@ public class ChannelManager {
 		SblockData.getDB().saveChannelData(c);
 	}
 
-	public void createNewChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
+	public void createNewChannel(String name, AccessLevel access, UUID creator,
+			ChannelType channelType) {
 		this.loadChannel(name, access, creator, channelType);
-		SblockChat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
+		SblockChat.getChat().getLogger()
+				.info("Channel " + name + " created: " + access + " " + creator);
 	}
 
 	public void loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
@@ -63,6 +64,7 @@ public class ChannelManager {
 		this.channelList.put(name, c);
 	}
 
+	//@formatter:off
 	public void createDefaultSet() {
 		channelList.put("#", new RegionChannel("#", AccessLevel.PUBLIC, null));
 		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null));
@@ -70,14 +72,14 @@ public class ChannelManager {
 		channelList.put("#rp2", new RPChannel("#rp2", AccessLevel.PUBLIC, null));
 		channelList.put("#EARTH", new RegionChannel("#EARTH", AccessLevel.PUBLIC, null));
 		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null));
-		channelList.put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null));
+		channelList .put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null));
 		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, null));
 		channelList.put("#LOWAS", new RegionChannel("#LOWAS", AccessLevel.PUBLIC, null));
 		channelList.put("#LOLAR", new RegionChannel("#LOLAR", AccessLevel.PUBLIC, null));
 		channelList.put("#LOHAC", new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null));
 		channelList.put("#LOFAF", new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null));
-
 	}
+	//@formatter:on
 
 	public void dropChannel(String channelName) {
 		channelList.remove(channelName);

@@ -10,8 +10,18 @@ import co.sblock.chat.ColorDef;
  * @author FireNG, Jikoo
  */
 public enum UserAspect {
-	BLOOD, BREATH, DOOM, HEART, HOPE, LIFE,
-	LIGHT, MIND, RAGE, SPACE, TIME, VOID;
+	BLOOD,
+	BREATH,
+	DOOM,
+	HEART,
+	HOPE,
+	LIFE,
+	LIGHT,
+	MIND,
+	RAGE,
+	SPACE,
+	TIME,
+	VOID;
 
 	/**
 	 * Gets the display name of the PlayerAspect.

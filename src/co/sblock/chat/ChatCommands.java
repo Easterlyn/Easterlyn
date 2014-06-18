@@ -46,7 +46,10 @@ public class ChatCommands implements CommandListener {
 	@CommandUsage("/an <text>")
 	@SblockCommand(consoleFriendly = true)
 	public boolean an(CommandSender sender, String[] text) {
-		Broadcast.general(ChatColor.BLACK + ChatColor.BOLD.toString() + ChatColor.translateAlternateColorCodes('&', StringUtils.join(text, ' ').toUpperCase()));
+		Broadcast.general(ChatColor.BLACK
+				+ ChatColor.BOLD.toString()
+				+ ChatColor.translateAlternateColorCodes('&', StringUtils.join(text, ' ')
+						.toUpperCase()));
 		return true;
 	}
 
@@ -56,7 +59,8 @@ public class ChatCommands implements CommandListener {
 	@CommandUsage("/aether <text>")
 	@SblockCommand(consoleFriendly = true)
 	public boolean aether(CommandSender sender, String[] text) {
-		String message = ChatColor.WHITE + "[" + ChatColor.GOLD + "#Aether" + ChatColor.WHITE + "]" + ChatColor.WHITE;
+		String message = ChatColor.WHITE + "[" + ChatColor.GOLD + "#Aether" + ChatColor.WHITE + "]"
+				+ ChatColor.WHITE;
 		if (!text[0].equals(">")) {
 			message += " ";
 		}
@@ -119,14 +123,15 @@ public class ChatCommands implements CommandListener {
 	}
 
 	@CommandDenial("&l[o] You try to be the white text guy, but fail to be the white text guy. "
-					+ "No one can be the white text guy except for the white text guy.")
+			+ "No one can be the white text guy except for the white text guy.")
 	@CommandDescription("> Be the white text guy")
 	@CommandPermission("group.horrorterror")
 	@CommandUsage("/o <text>")
 	@SblockCommand(consoleFriendly = true)
 	public boolean o(CommandSender sender, String text[]) {
 		if (text == null || text.length == 0) {
-			sender.sendMessage(ChatColor.BOLD + "[o] If you're going to speak for me, please proceed.");
+			sender.sendMessage(ChatColor.BOLD
+					+ "[o] If you're going to speak for me, please proceed.");
 			return true;
 		}
 		StringBuilder o = new StringBuilder(ChatColor.BOLD.toString()).append("[o] ");
@@ -183,7 +188,8 @@ public class ChatCommands implements CommandListener {
 		if (args.length == 0) {
 			return false;
 		}
-		Message message = new Message(User.getUser(((Player) sender).getUniqueId()), "#>" + StringUtils.join(args, ' '));
+		Message message = new Message(User.getUser(((Player) sender).getUniqueId()), "#>"
+				+ StringUtils.join(args, ' '));
 		message.validate(true);
 		message.send();
 		return true;
@@ -267,11 +273,12 @@ public class ChatCommands implements CommandListener {
 		}
 		user.removeListening(args[1]);
 		return true;
-		
+
 	}
 
 	private boolean scList(User user, String[] args) {
-		StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW).append("Currently pestering: ");
+		StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW).append(
+				"Currently pestering: ");
 		for (String s : user.getListening()) {
 			sb.append(s).append(' ');
 		}
@@ -344,7 +351,8 @@ public class ChatCommands implements CommandListener {
 		}
 		if (args[1].equalsIgnoreCase("list")) {
 			if (c.getType() == ChannelType.NICK) {
-				user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.");
+				user.sendMessage(ChatColor.YELLOW
+						+ "You can use any nick you want in a nick channel.");
 				return true;
 			}
 			StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString()).append("Nicks: ");
@@ -454,7 +462,8 @@ public class ChatCommands implements CommandListener {
 			return;
 		}
 		User victim = User.getUser(p.getUniqueId());
-		victim.setMute(false);;
+		victim.setMute(false);
+		;
 		String msg = ChatMsgs.onUserUnmute(args[2]);
 		for (User u : UserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg);

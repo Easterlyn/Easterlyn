@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 /**
  * Used to specify an alternate denial of access message for a CustomCommand.
  * <p>
- * If the user does not have
- * the correct permission, the message specified will be displayed instead of the default.
+ * If the user does not have the correct permission, the message specified will be displayed instead
+ * of the default.
  * 
  * @author Jikoo
  */

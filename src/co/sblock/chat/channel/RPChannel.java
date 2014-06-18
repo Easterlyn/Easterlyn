@@ -11,7 +11,7 @@ import co.sblock.users.User;
  * @author Dublek
  */
 public class RPChannel extends NickChannel {
-	
+
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, UUID)
 	 */

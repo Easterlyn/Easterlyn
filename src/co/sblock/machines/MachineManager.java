@@ -106,12 +106,14 @@ public class MachineManager {
 	 * @param owner the owner of the Machine
 	 * @param direction the facing direction
 	 */
-	public void loadMachine(String location, String machineType, String owner, byte direction, String data) {
+	public void loadMachine(String location, String machineType, String owner, byte direction,
+			String data) {
 		String[] l = location.split(",");
-		addMachine(new Location(Bukkit.getWorld(l[0]), Integer.parseInt(l[1]),
-				Integer.parseInt(l[2]), Integer.parseInt(l[3])),
-				MachineType.getType(machineType), owner, Direction.getDirection(direction), data);
-		
+		addMachine(
+				new Location(Bukkit.getWorld(l[0]), Integer.parseInt(l[1]), Integer.parseInt(l[2]),
+						Integer.parseInt(l[3])), MachineType.getType(machineType), owner,
+				Direction.getDirection(direction), data);
+
 	}
 
 	/**
@@ -133,7 +135,8 @@ public class MachineManager {
 	 * @return true if the Block is a Machine
 	 */
 	public boolean isMachine(Block b) {
-		return machineKeys.containsKey(b.getLocation()) || machineBlocks.containsKey(b.getLocation());
+		return machineKeys.containsKey(b.getLocation())
+				|| machineBlocks.containsKey(b.getLocation());
 	}
 
 	/**
@@ -284,7 +287,8 @@ public class MachineManager {
 	 * @return true if the Player is within the radius
 	 */
 	public boolean isByComputer(Player p, int distance) {
-		for (Machine m : this.getMachinesInProximity(p.getLocation(), distance, MachineType.COMPUTER, true)) {
+		for (Machine m : this.getMachinesInProximity(p.getLocation(), distance,
+				MachineType.COMPUTER, true)) {
 			if (m.getOwner().equals(p.getUniqueId().toString())) {
 				return true;
 			}
@@ -344,7 +348,8 @@ public class MachineManager {
 	 */
 	public boolean hasComputer(Player p, Location key) {
 		for (Machine m : machineKeys.values()) {
-			if (m instanceof Computer && m.getOwner().equals(p.getUniqueId().toString()) && !m.getKey().equals(key)) {
+			if (m instanceof Computer && m.getOwner().equals(p.getUniqueId().toString())
+					&& !m.getKey().equals(key)) {
 				return true;
 			}
 		}

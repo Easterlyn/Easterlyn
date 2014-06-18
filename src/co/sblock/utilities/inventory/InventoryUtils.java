@@ -51,8 +51,8 @@ public class InventoryUtils {
 	}
 
 	/**
-	 * Reduces an ItemStack by the given quantity. If the ItemStack would have a
-	 * quantity of 0, returns null.
+	 * Reduces an ItemStack by the given quantity. If the ItemStack would have a quantity of 0,
+	 * returns null.
 	 * 
 	 * @param is the ItemStack to reduce
 	 * @param amount the amount to reduce the ItemStack by

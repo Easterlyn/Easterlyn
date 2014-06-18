@@ -24,7 +24,8 @@ public class PlayerChangedWorldListener implements Listener {
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
 
-		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
+		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(),
+				event.getPlayer().getName());
 
 		User user = User.getUser(event.getPlayer().getUniqueId());
 

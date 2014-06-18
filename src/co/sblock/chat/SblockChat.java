@@ -10,7 +10,8 @@ public class SblockChat extends Module {
 	private static SblockChat instance;
 	private ChannelManager cm = new ChannelManager();
 	private ChatCommands clistener = new ChatCommands();
-	private static boolean computersRequired = false;	//Hardcoded override, will be set to true come Entry
+	private static boolean computersRequired = false; // Hardcoded override, will be set to true
+														// come Entry
 
 	@Override
 	protected void onEnable() {
@@ -37,8 +38,13 @@ public class SblockChat extends Module {
 	public static SblockChat getChat() {
 		return instance;
 	}
-	
-	public static boolean getComputerRequired()	{
+
+	public static boolean getComputerRequired() {
 		return computersRequired;
+	}
+
+	@Override
+	public String getName() {
+		return "SblockChat";
 	}
 }

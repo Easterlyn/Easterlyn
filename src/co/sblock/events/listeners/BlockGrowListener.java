@@ -15,8 +15,7 @@ import co.sblock.machines.type.Machine;
 public class BlockGrowListener implements Listener {
 
 	/**
-	 * An event handler for a change that is caused by or affects a Block in a
-	 * Machine.
+	 * An event handler for a change that is caused by or affects a Block in a Machine.
 	 * 
 	 * @param event the BlockGrowEvent
 	 */

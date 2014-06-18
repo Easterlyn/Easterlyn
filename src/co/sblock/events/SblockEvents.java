@@ -70,14 +70,15 @@ public class SblockEvents extends Module {
 		openingCaptchadex = new HashSet<String>();
 		towers = new TowerData();
 		towers.load();
-		
-		this.registerEvents(new BlockBreakListener(), new BlockFadeListener(), new BlockGrowListener(),
-				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
-				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
+
+		this.registerEvents(new BlockBreakListener(), new BlockFadeListener(),
+				new BlockGrowListener(), new BlockIgniteListener(), new BlockPhysicsListener(),
+				new BlockPistonExtendListener(), new BlockPistonRetractListener(),
+				new BlockPlaceListener(), new BlockSpreadListener(),
 
 				new EntityDamageByEntityListener(), new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
-				
+
 				new FurnaceBurnListener(), new FurnaceSmeltListener(),
 
 				new InventoryClickListener(), new InventoryCloseListener(),
@@ -88,14 +89,14 @@ public class SblockEvents extends Module {
 				new PlayerCommandPreprocessListener(), new PlayerDeathListener(),
 				new PlayerDropItemListener(), new PlayerEditBookListener(),
 				new PlayerInteractEntityListener(), new PlayerInteractListener(),
-				new PlayerItemHeldListener(),
-				new PlayerJoinListener(), new PlayerLoginListener(),
+				new PlayerItemHeldListener(), new PlayerJoinListener(), new PlayerLoginListener(),
 				new PlayerPickupItemListener(), new PlayerQuitListener(),
 				new PlayerTeleportListener(), new ServerListPingListener(),
 
 				new SignChangeListener(),
 
-				new VehicleBlockCollisionListener(), new VehicleDestroyListener(), new VehicleExitListener());
+				new VehicleBlockCollisionListener(), new VehicleDestroyListener(),
+				new VehicleExitListener());
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 
@@ -122,8 +123,8 @@ public class SblockEvents extends Module {
 	}
 
 	/**
-	 * Sends a Player a fake packet for starting sleeping and schedules them to
-	 * be teleported to their DreamPlanet.
+	 * Sends a Player a fake packet for starting sleeping and schedules them to be teleported to
+	 * their DreamPlanet.
 	 * 
 	 * @param p the Player
 	 * @param bed the Location of the bed to sleep in
@@ -141,8 +142,10 @@ public class SblockEvents extends Module {
 		} catch (InvocationTargetException e) {
 			getLogger().err(e);
 		}
-		tasks.put(p.getName(), Bukkit.getScheduler().scheduleSyncDelayedTask(
-				Sblock.getInstance(), new SleepTeleport(p), 100L));
+		tasks.put(
+				p.getName(),
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
+						new SleepTeleport(p), 100L));
 	}
 
 	/**
@@ -174,14 +177,14 @@ public class SblockEvents extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	private int initiateSessionChecks() {
-		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 100L, 1200L);
+		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(),
+				new StatusCheck(), 100L, 1200L);
 	}
 
 	/**
 	 * Change the Status of Minecraft's servers.
 	 * <p>
-	 * If a service is down, this will announce the issue to all players and set
-	 * a relevant MOTD.
+	 * If a service is down, this will announce the issue to all players and set a relevant MOTD.
 	 * 
 	 * @param status the Status
 	 */
@@ -214,13 +217,14 @@ public class SblockEvents extends Module {
 	}
 
 	/**
-	 * Schedules the RegionCheck to update the Region for each Player online
-	 * every 5 seconds of game time (100 ticks).
+	 * Schedules the RegionCheck to update the Region for each Player online every 5 seconds of game
+	 * time (100 ticks).
 	 * 
 	 * @return the BukkitTask ID
 	 */
 	public int initiateRegionChecks() {
-		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
+		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(),
+				new RegionCheck(), 0L, 100L);
 	}
 
 	/**
@@ -239,5 +243,10 @@ public class SblockEvents extends Module {
 	 */
 	public static SblockEvents getEvents() {
 		return instance;
+	}
+
+	@Override
+	public String getName() {
+		return "SblockEvents";
 	}
 }

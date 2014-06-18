@@ -82,7 +82,8 @@ public class MeteorCommandListener implements CommandListener {
 		final Player player = (Player) sender;
 		player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);
 
-		final Firework firework = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+		final Firework firework = (Firework) player.getWorld().spawnEntity(player.getLocation(),
+				EntityType.FIREWORK);
 		FireworkMeta fm = firework.getFireworkMeta();
 		fm.setPower(4);
 		firework.setFireworkMeta(fm);
@@ -93,14 +94,16 @@ public class MeteorCommandListener implements CommandListener {
 		packet.setNumberOfParticles(5);
 		packet.setOffset(new Vector(0.5, 0.5, 0.5));
 
-		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(
+				Sblock.getInstance(), new Runnable() {
 
-			@Override
-			public void run() {
-				packet.setLocation(firework.getLocation());
-				ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
-			}
-		}, 0, 1L);
+					@Override
+					public void run() {
+						packet.setLocation(firework.getLocation());
+						ProtocolLibrary.getProtocolManager().broadcastServerPacket(
+								packet.getHandle(), firework.getLocation(), 64);
+					}
+				}, 0, 1L);
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 

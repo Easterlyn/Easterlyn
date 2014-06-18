@@ -8,8 +8,8 @@ import org.bukkit.ChatColor;
 /**
  * Used to create a /tellraw JSON String.
  * <p>
- * Please note that while all Strings can include ChatColors and function,
- * the proper usage is to create a new MessageElement for each color.
+ * Please note that while all Strings can include ChatColors and function, the proper usage is to
+ * create a new MessageElement for each color.
  * 
  * @author Jikoo
  */
@@ -19,7 +19,7 @@ public class MessageElement {
 	private StringBuilder formats = new StringBuilder();
 	private MessageClick clickEffect = null;
 	private MessageHover hoverEffect = null;
-	private LinkedList<MessageElement> messageElements= null;
+	private LinkedList<MessageElement> messageElements = null;
 
 	public MessageElement(String text) {
 		this.text = text;
@@ -36,7 +36,8 @@ public class MessageElement {
 			}
 		}
 		for (ChatColor c : applicableFormats) {
-			formats.append(',').append('"').append(c.name().toLowerCase()).append('"').append(":\"true\"");
+			formats.append(',').append('"').append(c.name().toLowerCase()).append('"')
+					.append(":\"true\"");
 		}
 	}
 

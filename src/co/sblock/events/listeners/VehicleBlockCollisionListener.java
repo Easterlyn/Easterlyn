@@ -34,7 +34,8 @@ public class VehicleBlockCollisionListener implements Listener {
 			// Was a FreeCart cart.
 			return;
 		}
-		if (event.getBlock().getType() == Material.DISPENSER || event.getBlock().getType() == Material.DROPPER) {
+		if (event.getBlock().getType() == Material.DISPENSER
+				|| event.getBlock().getType() == Material.DROPPER) {
 			BlockState b = event.getBlock().getState();
 			if (((InventoryHolder) b).getInventory().firstEmpty() == -1) {
 				return;

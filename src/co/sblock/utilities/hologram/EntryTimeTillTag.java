@@ -24,7 +24,9 @@ public class EntryTimeTillTag extends DynamicTagFormat {
 		format.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.dsh105.holoapi.api.DynamicTagFormat#match(Matcher, String, Hologram, Player)
 	 */
 	@Override

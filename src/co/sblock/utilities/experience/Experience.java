@@ -2,7 +2,6 @@ package co.sblock.utilities.experience;
 
 import org.bukkit.entity.Player;
 
-
 /**
  * A utility for managing Player experience properly.
  * 
@@ -12,6 +11,7 @@ public class Experience {
 
 	/**
 	 * Calculates a player's total exp based on level and progress to next.
+	 * 
 	 * @see http://minecraft.gamepedia.com/Experience#Formulas_and_Tables
 	 * 
 	 * @param player the Player
@@ -19,8 +19,8 @@ public class Experience {
 	 * @return the amount of exp the Player has
 	 */
 	public static int getExp(Player player) {
-		return (int) (getLevelExp(player.getLevel())
-				+ Math.round(getExpToNext(player.getLevel()) * player.getExp()));
+		return (int) (getLevelExp(player.getLevel()) + Math.round(getExpToNext(player.getLevel())
+				* player.getExp()));
 	}
 
 	private static int getLevelExp(int level) {

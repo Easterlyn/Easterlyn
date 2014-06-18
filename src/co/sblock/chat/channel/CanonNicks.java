@@ -73,38 +73,39 @@ public enum CanonNicks {
 		this.pester = pester;
 	}
 
-//	Nakodile: Red text ALL CAPS NAK NAK NAK THE GLASSES ARE TALKING
-//	Salamander: Yellow text, all lower case glub glub
-//	MomLalonde: Same Quirk and color as roxy
-//	DadLalonde: White text, perfect grammar and syntext
-//	Bro strider: same quirk and color as Dirk
-//	Grandpa Harley: Same color/quirk as jake
-//	ANCESTORS: same color quirks as their descendants, Cept Condy cus s)(e speak all ghetto
-//	Betty Crocker: White text, Condy's quirk
-//	LilCal: Orange, HEE HEE HEE HAA HAA HAA HOOO HOOO HOOO CAPS
-//	Jack Noir: absolutely no punctuation and no niceness he ain that fuckin sweet sugar
-//	Clubs Deuce:
-//	Hearts Boxcars:
-//	Diamonds Droog://AKA Draconian Dignitary
-//	ALL OF THE FELT
-//	AutoResponder: Dirks quirk, red text
-//	ErisolSprite: Eridan and Sollux's quirk, green text
-//	Fefeta Sprite: Feferi/nepeta, roxy pink. (I'll do the full quirks for the sprites later)
-//	ARQuiusSprite: Not sure how to handle the glasses arrow, we'll think of something
-//	NannaSprite
-//	TavriskaSprite
-//	JasperSprite
-//	JadeSprite
-//	BecSprite: Again &k ALL TEXT except Woof or Bark
-//	Snowman:
-//	DaveSprite:
-//	Trickster?
+	// Nakodile: Red text ALL CAPS NAK NAK NAK THE GLASSES ARE TALKING
+	// Salamander: Yellow text, all lower case glub glub
+	// MomLalonde: Same Quirk and color as roxy
+	// DadLalonde: White text, perfect grammar and syntext
+	// Bro strider: same quirk and color as Dirk
+	// Grandpa Harley: Same color/quirk as jake
+	// ANCESTORS: same color quirks as their descendants, Cept Condy cus s)(e speak all ghetto
+	// Betty Crocker: White text, Condy's quirk
+	// LilCal: Orange, HEE HEE HEE HAA HAA HAA HOOO HOOO HOOO CAPS
+	// Jack Noir: absolutely no punctuation and no niceness he ain that fuckin sweet sugar
+	// Clubs Deuce:
+	// Hearts Boxcars:
+	// Diamonds Droog://AKA Draconian Dignitary
+	// ALL OF THE FELT
+	// AutoResponder: Dirks quirk, red text
+	// ErisolSprite: Eridan and Sollux's quirk, green text
+	// Fefeta Sprite: Feferi/nepeta, roxy pink. (I'll do the full quirks for the sprites later)
+	// ARQuiusSprite: Not sure how to handle the glasses arrow, we'll think of something
+	// NannaSprite
+	// TavriskaSprite
+	// JasperSprite
+	// JadeSprite
+	// BecSprite: Again &k ALL TEXT except Woof or Bark
+	// Snowman:
+	// DaveSprite:
+	// Trickster?
 
 	public String applyQuirk(String s) {
 		switch (this) {
 		case ARADIA:
-			return this.color + s.toLowerCase().replace("o", "0")
-					.replace("0.0", "0_0").replaceAll("[\\W&&[^\\s]]", "");
+			return this.color
+					+ s.toLowerCase().replace("o", "0").replace("0.0", "0_0")
+							.replaceAll("[\\W&&[^\\s]]", "");
 		case AUTORESPONDER:
 			return this.color + s.replace("robot", "brobot");
 			// bropuns
@@ -115,28 +116,34 @@ public enum CanonNicks {
 		case CROCKERJANE:
 			break;
 		case CRONUS: // fix ISSUE wvITH ALLCAPS
-			return this.color + s.replaceAll("[vV]", "vw")
-					.replaceAll("([^vV]|\\b)([wW])", "$1wv").replace("B", "8");
+			return this.color
+					+ s.replaceAll("[vV]", "vw").replaceAll("([^vV]|\\b)([wW])", "$1wv")
+							.replace("B", "8");
 		case DAMARA:
 			return this.color + ancestral(s);
 		case DAVE:
-			return this.color + mixedToLowerCase(s).replaceAll("([^\\.])\\.{1,2}([^\\.])", "$1$2")
-					.replaceAll("\\.+", "...").replaceAll("[\\W&&[^\\s\\.!\\?]]", "");
+			return this.color
+					+ mixedToLowerCase(s).replaceAll("([^\\.])\\.{1,2}([^\\.])", "$1$2")
+							.replaceAll("\\.+", "...").replaceAll("[\\W&&[^\\s\\.!\\?]]", "");
 		case DIRK:
 			break; // bropuns
 		case EQUIUS:
-			return this.color + "D --> " + s.replaceAll("[xX]", "%")
-					.replaceAll("[lL](([uU][eE])|([eE][uU])|([oO]{2,}))", "100")
-					.replaceAll("(([uU][eE])|([eE][uU])|([oO]{2,}))[lL]", "001")
-					.replaceAll("[sS]+[tT]+[rR]+[oO]+[nN]+[gG]+", "STRONG")
-					.replace("nay", "neigh").replaceAll("[nN][aA][yY]", "NEIGH");
+			return this.color
+					+ "D --> "
+					+ s.replaceAll("[xX]", "%")
+							.replaceAll("[lL](([uU][eE])|([eE][uU])|([oO]{2,}))", "100")
+							.replaceAll("(([uU][eE])|([eE][uU])|([oO]{2,}))[lL]", "001")
+							.replaceAll("[sS]+[tT]+[rR]+[oO]+[nN]+[gG]+", "STRONG")
+							.replace("nay", "neigh").replaceAll("[nN][aA][yY]", "NEIGH");
 		case ERIDAN:
-			return this.color + s.replaceAll("([vwVW])", "$1$1").replaceAll("\\ban\\b", "a")
-					.replaceAll("\\band\\b", "an").replaceAll("\\b(.*in)g\\b", "$1");
+			return this.color
+					+ s.replaceAll("([vwVW])", "$1$1").replaceAll("\\ban\\b", "a")
+							.replaceAll("\\band\\b", "an").replaceAll("\\b(.*in)g\\b", "$1");
 		case FEFERI:
-			return this.color + s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
-					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("[hH]", ")(")
-					.replace("E", "-E");
+			return this.color
+					+ s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
+							.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("[hH]", ")(")
+							.replace("E", "-E");
 		case GAMZEE:
 			return this.color + alternateCase(s);
 		case HORUSS:
@@ -171,21 +178,23 @@ public enum CanonNicks {
 		case LATULA:
 			return this.color + s.replace("A", "4").replace("E", "3").replace("I", "1");
 		case LILHALJUNIOR:
-			String[] responses = {"Hmm.", "Yes.", "Interesting."};
+			String[] responses = { "Hmm.", "Yes.", "Interesting." };
 			return this.color + responses[(int) (Math.random() * 3)];
 		case MEENAH:
-			return this.color + s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
-					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("[hH]", ")(")
-					.replace("E", "-E").replaceAll("\\b(.*in)g\\b", "$1");
+			return this.color
+					+ s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
+							.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("[hH]", ")(")
+							.replace("E", "-E").replaceAll("\\b(.*in)g\\b", "$1");
 		case MEULIN: // emoticons
 			return this.color + s.toUpperCase().replace("EE", "33");
 		case MITUNA:
-			return this.color + s.toUpperCase().replace("A", "4").replace("B", "8")
-					.replace("E", "3").replace("I", "1").replace("O", "0")
-					.replace("S", "5").replace("T", "7");
+			return this.color
+					+ s.toUpperCase().replace("A", "4").replace("B", "8").replace("E", "3")
+							.replace("I", "1").replace("O", "0").replace("S", "5")
+							.replace("T", "7");
 		case NEPETA:
-			return this.color + ":33 < " + s.replaceAll("[eE]{2},", "33")
-					.replace("ver", "fur").replace("pos", "paws");
+			return this.color + ":33 < "
+					+ s.replaceAll("[eE]{2},", "33").replace("ver", "fur").replace("pos", "paws");
 		case PORRIM:
 			return this.color + s.replaceAll("o", "o+");
 		case ROXY:
@@ -193,24 +202,28 @@ public enum CanonNicks {
 		case ROSE:
 			return this.color + randShuffle(s);
 		case RUFIOH:
-			return this.color + mixedToLowerCase(s).replaceAll("[iI]", "1")
-					.replaceAll("([;:])([dDbBpPL\\Q)(][\\E])", "}$1$2");
+			return this.color
+					+ mixedToLowerCase(s).replaceAll("[iI]", "1").replaceAll(
+							"([;:])([dDbBpPL\\Q)(][\\E])", "}$1$2");
 		case SOLLUX:
-			return this.color + s.toLowerCase().replace("s", "2")
-					.replaceAll("i+", "ii").replaceAll("to+", "two");
+			return this.color
+					+ s.toLowerCase().replace("s", "2").replaceAll("i+", "ii")
+							.replaceAll("to+", "two");
 		case TAVROS:
-			return this.color + invertCase(s).replace(".", ",")
-					.replaceAll("([;:])([dDbBpPL\\Q)(][\\E])", "}$1$2");
+			return this.color
+					+ invertCase(s).replace(".", ",").replaceAll("([;:])([dDbBpPL\\Q)(][\\E])",
+							"}$1$2");
 		case TEREZI:
-			return this.color + s.toUpperCase().replace("A", "4")
-					.replace("E", "3").replace("I", "1").replace("'", "")
-					.replaceAll("([;:])([dDbBpPL\\Q)(][\\E])", ">$1$2")
-					.replaceAll(">([:;])\\(", ">$1[").replaceAll(">([:;])\\)", ">$1]")
-					.replaceAll("\\.{1,2}", "").replaceAll("\\.{4}", "...");
+			return this.color
+					+ s.toUpperCase().replace("A", "4").replace("E", "3").replace("I", "1")
+							.replace("'", "").replaceAll("([;:])([dDbBpPL\\Q)(][\\E])", ">$1$2")
+							.replaceAll(">([:;])\\(", ">$1[").replaceAll(">([:;])\\)", ">$1]")
+							.replaceAll("\\.{1,2}", "").replaceAll("\\.{4}", "...");
 		case ARANEA:
 		case VRISKA:
-			return this.color + s.replaceAll(":*([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2")
-					.replaceAll("([\\.!?])+", "$1$1$1$1$1$1$1$1");
+			return this.color
+					+ s.replaceAll(":*([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2").replaceAll(
+							"([\\.!?])+", "$1$1$1$1$1$1$1$1");
 		case SERKITFEATURE:
 			return serkitFeature(s);
 		default:
@@ -240,7 +253,6 @@ public enum CanonNicks {
 	public String getHandle() {
 		return this.color + this.chumHandle;
 	}
-
 
 	/**
 	 * @param string
@@ -337,7 +349,7 @@ public enum CanonNicks {
 
 	// http://unicode-table.com/en/#cjk-unified-ideographs-extension-a
 	// 3440-9FFF, maximum fast calc range = 4000-8FFF (9FA0 last row without odd box chars)
-	// translates to 16384-40959,  40783 last useful
+	// translates to 16384-40959, 40783 last useful
 	private String ancestral(String s) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {

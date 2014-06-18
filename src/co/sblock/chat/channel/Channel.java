@@ -17,7 +17,6 @@ import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.utilities.Log;
 
-
 /**
  * Defines default channel behavior
  * 
@@ -43,9 +42,12 @@ public abstract class Channel {
 		if (creator != null) {
 			this.modList.add(creator);
 		}
-		muteList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
-		banList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
-		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
+		muteList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		;
+		banList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		;
+		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		;
 		if (creator != null) {
 			SblockData.getDB().saveChannelData(this);
 		}
@@ -92,7 +94,7 @@ public abstract class Channel {
 	public abstract boolean hasNick(User sender);
 
 	public abstract User getNickOwner(String nick);
-	
+
 	public void setOwner(User sender, UUID newOwner) {
 		if (sender.equals(this.owner)) {
 			this.owner = newOwner;
@@ -169,7 +171,8 @@ public abstract class Channel {
 	}
 
 	public boolean isMod(User sender) {
-		return modList.contains(sender.getUUID()) || sender.getPlayer().hasPermission("group.denizen");
+		return modList.contains(sender.getUUID())
+				|| sender.getPlayer().hasPermission("group.denizen");
 	}
 
 	public void kickUser(User sender, UUID userID) {
@@ -386,7 +389,8 @@ public abstract class Channel {
 
 			// Name color fetched from scoreboard, if team invalid perm-based instead.
 			try {
-				globalRank = ChatColor.valueOf(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getName());
+				globalRank = ChatColor.valueOf(Bukkit.getScoreboardManager().getMainScoreboard()
+						.getPlayerTeam(player).getName());
 			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
 				if (sender.getPlayer().hasPermission("group.horrorterror"))
 					globalRank = ColorDef.RANK_HORRORTERROR;
@@ -416,7 +420,7 @@ public abstract class Channel {
 			nick = "<nonhuman>";
 		}
 
-		return guildRank+ "[" + channelRank + this.name + guildRank + "]" + region
+		return guildRank + "[" + channelRank + this.name + guildRank + "]" + region
 				+ (isThirdPerson ? "> " : " <") + globalRank + nick
 				+ (isThirdPerson ? "" : region + ">") + ChatColor.WHITE + ' ' + prepend;
 	}

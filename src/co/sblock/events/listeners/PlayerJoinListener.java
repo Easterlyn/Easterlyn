@@ -24,7 +24,8 @@ public class PlayerJoinListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		event.setJoinMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.GREEN + " logs the fuck in");
+		event.setJoinMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.GREEN
+				+ " logs the fuck in");
 
 		SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
 

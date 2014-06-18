@@ -48,8 +48,9 @@ public class PlayerInteractListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
 			// No interaction with any blocks while out of range.
-			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
-					User.getUser(event.getPlayer().getUniqueId()), event.getClickedBlock())) {
+			if (event.getAction().name().contains("BLOCK")
+					&& !ServerMode.getInstance().isWithinRange(
+							User.getUser(event.getPlayer().getUniqueId()), event.getClickedBlock())) {
 				event.getPlayer().sendMessage(ChatColor.RED + "Block out of range!");
 				event.setCancelled(true);
 				return;
@@ -57,7 +58,8 @@ public class PlayerInteractListener implements Listener {
 			// Breaking and placing blocks is acceptable, instabreak blocks in approved list.
 			if (event.getAction() == Action.LEFT_CLICK_BLOCK
 					&& ServerMode.getInstance().isApproved(event.getClickedBlock().getType())
-					&& !SblockMachines.getMachines().getManager().isMachine(event.getClickedBlock())) {
+					&& !SblockMachines.getMachines().getManager()
+							.isMachine(event.getClickedBlock())) {
 				event.getClickedBlock().setType(Material.AIR);
 			} else if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getItem() != null) {
 				if (ServerMode.getInstance().isApproved(event.getMaterial())) {
@@ -65,9 +67,10 @@ public class PlayerInteractListener implements Listener {
 					ServerMode.getInstance().cycleData(event.getItem());
 				} else if (event.getItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 					// Right click air: Open computer
-					event.getPlayer().openInventory(new Computer(event.getPlayer().getLocation(),
-							event.getPlayer().getUniqueId().toString(), true)
-									.getInventory(User.getUser(event.getPlayer().getUniqueId())));
+					event.getPlayer().openInventory(
+							new Computer(event.getPlayer().getLocation(), event.getPlayer()
+									.getUniqueId().toString(), true).getInventory(User
+									.getUser(event.getPlayer().getUniqueId())));
 				}
 			}
 			return;
@@ -76,12 +79,16 @@ public class PlayerInteractListener implements Listener {
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			if (!event.hasBlock() || !event.getClickedBlock().getType().name().contains("PLATE")) {
-				event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
+				event.getPlayer()
+						.sendMessage(
+								ChatColor.RED
+										+ "You flail your incorporeal arms wildly. The world remains unimpressed.");
 			}
 			return;
 		}
 
-		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+		if (event.getAction() == Action.LEFT_CLICK_AIR
+				|| event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			return;
 		}
 
@@ -108,14 +115,16 @@ public class PlayerInteractListener implements Listener {
 			if (b.getType().equals(Material.BED_BLOCK)) {
 				// Sleep voting
 				if (event.getPlayer().isSneaking()) {
-					if (b.getWorld().getEnvironment() == Environment.NETHER || b.getWorld().getEnvironment() == Environment.THE_END) {
+					if (b.getWorld().getEnvironment() == Environment.NETHER
+							|| b.getWorld().getEnvironment() == Environment.THE_END) {
 						// World is nether/end
 						event.getPlayer().sendMessage("You cannot sleep in this world!");
 					} else if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
 						SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					} else {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "It's not dark or raining!");
+						event.getPlayer().sendMessage(
+								ChatColor.YELLOW + "It's not dark or raining!");
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					}
 					event.setCancelled(true);
@@ -145,8 +154,7 @@ public class PlayerInteractListener implements Listener {
 				}
 			}
 
-			if (hasRightClickFunction(event.getClickedBlock())
-					&& !event.getPlayer().isSneaking()) {
+			if (hasRightClickFunction(event.getClickedBlock()) && !event.getPlayer().isSneaking()) {
 				// Other inventory/action. Do not proceed to captcha.
 				return;
 			}
@@ -168,8 +176,11 @@ public class PlayerInteractListener implements Listener {
 				if (event.getPlayer().getInventory().firstEmpty() != -1) {
 					event.getPlayer().getInventory().addItem(captcha);
 				} else {
-					event.getPlayer().getWorld().dropItem(event.getPlayer().getEyeLocation(), captcha)
-							.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
+					event.getPlayer()
+							.getWorld()
+							.dropItem(event.getPlayer().getEyeLocation(), captcha)
+							.setVelocity(
+									event.getPlayer().getLocation().getDirection().multiply(0.4));
 				}
 			} else {
 				event.getPlayer().setItemInHand(captcha);
@@ -183,7 +194,7 @@ public class PlayerInteractListener implements Listener {
 	 * 
 	 * @param b the Block to check
 	 * 
-	 * @return true if right clicking the block without sneaking will cause 
+	 * @return true if right clicking the block without sneaking will cause
 	 */
 	private boolean hasRightClickFunction(Block b) {
 		switch (b.getType()) {

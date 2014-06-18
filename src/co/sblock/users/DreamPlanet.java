@@ -7,7 +7,9 @@ package co.sblock.users;
  */
 public enum DreamPlanet {
 
-	NONE("Earth"), PROSPIT("InnerCircle"), DERSE("OuterCircle");
+	NONE("Earth"),
+	PROSPIT("InnerCircle"),
+	DERSE("OuterCircle");
 
 	/** The name of the World. */
 	private String worldName;

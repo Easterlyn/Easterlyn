@@ -53,8 +53,8 @@ public class SblockData {
 			connection = DriverManager.getConnection("jdbc:mysql://"
 					+ Sblock.getInstance().getConfig().getString("host") + ":"
 					+ Sblock.getInstance().getConfig().getString("port") + "/"
-					+ Sblock.getInstance().getConfig().getString("database"),
-					Sblock.getInstance().getConfig().getString("username"),
+					+ Sblock.getInstance().getConfig().getString("database"), Sblock.getInstance()
+					.getConfig().getString("username"),
 					Sblock.getInstance().getConfig().getString("password"));
 			logger.fine("Connection established.");
 		} catch (ClassNotFoundException e) {
@@ -95,8 +95,8 @@ public class SblockData {
 	}
 
 	/**
-	 * Gets a Log for database-related events. Used to prevent confusion about
-	 * the source of messages.
+	 * Gets a Log for database-related events. Used to prevent confusion about the source of
+	 * messages.
 	 * 
 	 * @return the Log
 	 */
@@ -187,8 +187,8 @@ public class SblockData {
 	}
 
 	/**
-	 * @deprecated Make a custom call to the database. For testing purposes
-	 *             only! Make a new method for new features.
+	 * @deprecated Make a custom call to the database. For testing purposes only! Make a new method
+	 *             for new features.
 	 * @param MySQLStatement the call to make
 	 * @param resultExpected true if a ResultSet is expected
 	 * 

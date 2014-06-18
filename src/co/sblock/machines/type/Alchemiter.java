@@ -60,17 +60,17 @@ public class Alchemiter extends Machine {
 		shape.addBlock(new Vector(0, 0, -1), m);
 		shape.addBlock(new Vector(1, 0, -1), m);
 		shape.addBlock(new Vector(2, 0, -1), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.SOUTH).getStairByte());
+		m = new MaterialData(Material.QUARTZ_STAIRS, d.getRelativeDirection(Direction.SOUTH)
+				.getStairByte());
 		shape.addBlock(new Vector(-1, 0, 2), m);
 		shape.addBlock(new Vector(1, 0, 2), m);
 		shape.addBlock(new Vector(2, 0, 2), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.EAST).getStairByte());
+		m = new MaterialData(Material.QUARTZ_STAIRS, d.getRelativeDirection(Direction.EAST)
+				.getStairByte());
 		shape.addBlock(new Vector(-1, 0, 1), m);
 		shape.addBlock(new Vector(-1, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.WEST).getStairByte());
+		m = new MaterialData(Material.QUARTZ_STAIRS, d.getRelativeDirection(Direction.WEST)
+				.getStairByte());
 		shape.addBlock(new Vector(2, 0, 1), m);
 		shape.addBlock(new Vector(2, 0, 0), m);
 		blocks = shape.getBuildLocations(getFacingDirection());
@@ -96,8 +96,9 @@ public class Alchemiter extends Machine {
 			return true;
 		}
 		User user = User.getUser(event.getPlayer().getUniqueId());
-		if (user != null && (user.getProgression() != ProgressionState.NONE
-				|| Entry.getEntry().isEntering(user))) {
+		if (user != null
+				&& (user.getProgression() != ProgressionState.NONE || Entry.getEntry().isEntering(
+						user))) {
 			openInventory(event.getPlayer());
 		}
 		return true;
@@ -109,7 +110,8 @@ public class Alchemiter extends Machine {
 	 * @param player the Player
 	 */
 	public void openInventory(Player player) {
-		MachineInventoryTracker.getTracker().openMachineInventory(player, this, InventoryType.MERCHANT);
+		MachineInventoryTracker.getTracker().openMachineInventory(player, this,
+				InventoryType.MERCHANT);
 	}
 
 	/**
@@ -141,7 +143,8 @@ public class Alchemiter extends Machine {
 			event.setCurrentItem(null);
 			top.setItem(0, InventoryUtils.decrement(top.getItem(0), 1));
 			// Color code + "Grist cost: " = 14 chars
-			int expCost = Integer.valueOf(top.getItem(1).getItemMeta().getDisplayName().substring(14));
+			int expCost = Integer.valueOf(top.getItem(1).getItemMeta().getDisplayName()
+					.substring(14));
 			Experience.changeExp(player, -expCost);
 			player.updateInventory();
 		}
@@ -160,7 +163,8 @@ public class Alchemiter extends Machine {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);
 				if (player == null || !MachineInventoryTracker.getTracker().hasMachineOpen(player)) {
-					// Player has logged out or closed inventory. Inventories are per-player, ignore.
+					// Player has logged out or closed inventory. Inventories are per-player,
+					// ignore.
 					return;
 				}
 
@@ -185,7 +189,8 @@ public class Alchemiter extends Machine {
 					if (remainder >= 0) {
 						lore.add(ChatColor.GOLD + "Remainder: " + remainder);
 					} else {
-						lore.add(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Not enough grist!");
+						lore.add(ChatColor.DARK_RED.toString() + ChatColor.BOLD
+								+ "Not enough grist!");
 						result = null;
 					}
 					im.setLore(lore);

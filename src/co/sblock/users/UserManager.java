@@ -62,8 +62,8 @@ public class UserManager {
 	 * 
 	 * @param name the name of the Player to look up
 	 * 
-	 * @return the SblockUser associated with the given Player, or null if no
-	 *         Player with the given name is currently online.
+	 * @return the SblockUser associated with the given Player, or null if no Player with the given
+	 *         name is currently online.
 	 */
 	public User getUser(UUID userID) {
 		if (users.containsKey(userID)) {

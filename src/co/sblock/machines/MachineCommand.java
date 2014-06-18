@@ -38,7 +38,8 @@ public class MachineCommand implements CommandListener {
 		}
 		if (args[0].equalsIgnoreCase("get")) {
 			try {
-				((Player) sender).getInventory().addItem(MachineType.getType(args[1]).getUniqueDrop());
+				((Player) sender).getInventory().addItem(
+						MachineType.getType(args[1]).getUniqueDrop());
 				sender.sendMessage("Machine get!");
 			} catch (Exception e) {
 				SblockMachines.getMachines().getLogger().fine("Invalid machine: " + args[1]);

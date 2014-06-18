@@ -10,9 +10,11 @@ import co.sblock.events.SblockEvents;
 public class StatusSync implements Runnable {
 
 	private Status s;
+
 	protected StatusSync(Status s) {
 		this.s = s;
 	}
+
 	/**
 	 * @see java.lang.Runnable#run()
 	 */

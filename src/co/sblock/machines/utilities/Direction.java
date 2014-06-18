@@ -8,8 +8,10 @@ import org.bukkit.entity.Player;
  * @author Jikoo
  */
 public enum Direction {
-	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 0),
-	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 1);
+	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3),
+	EAST((byte) 1, (byte) 2, (byte) 4, (byte) 0),
+	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2),
+	WEST((byte) 3, (byte) 1, (byte) 5, (byte) 1);
 
 	/** The arbitrarily defined byte deciding direction facing. */
 	private byte dirNum;
@@ -124,16 +126,14 @@ public enum Direction {
 	}
 
 	/**
-	 * For obtaining rotation based on original rotation - for stairs, etc. that
-	 * are not facing in the place Direction of the Machine.
+	 * For obtaining rotation based on original rotation - for stairs, etc. that are not facing in
+	 * the place Direction of the Machine.
 	 * <p>
-	 * The input Direction is the desired rotation for blocks relative to the
-	 * original Direction. The original Direction is assumed to be north
-	 * relative to the new Direction, as all Shapes are designed from a
-	 * north-facing perspective.
+	 * The input Direction is the desired rotation for blocks relative to the original Direction.
+	 * The original Direction is assumed to be north relative to the new Direction, as all Shapes
+	 * are designed from a north-facing perspective.
 	 * <p>
-	 * Ex.: Machine placed west, block in machine faces east when machine is
-	 * placed north.
+	 * Ex.: Machine placed west, block in machine faces east when machine is placed north.
 	 * 
 	 * @param d the Direction relative to this as north.
 	 */

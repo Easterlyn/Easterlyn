@@ -29,8 +29,7 @@ public class FurnaceBurnListener implements Listener {
 			return;
 		}
 
-		if (((Furnace) event.getBlock().getState()).getInventory().getSmelting().getType()
-				== Material.NETHER_BRICK_ITEM) {
+		if (((Furnace) event.getBlock().getState()).getInventory().getSmelting().getType() == Material.NETHER_BRICK_ITEM) {
 			// Nether bricks are our dowels, the recipe created for them is quite useless.
 			event.setCancelled(true);
 		}

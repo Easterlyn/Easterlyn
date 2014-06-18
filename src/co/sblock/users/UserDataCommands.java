@@ -27,8 +27,7 @@ import co.sblock.utilities.minecarts.FreeCart;
 /**
  * Class for holding commands associated with the UserData module.
  * 
- * For more information on how the command system works, please see
- * {@link co.sblock.SblockCommand}
+ * For more information on how the command system works, please see {@link co.sblock.SblockCommand}
  * 
  * @author FireNG, Jikoo
  */
@@ -62,10 +61,12 @@ public class UserDataCommands implements CommandListener {
 			return true;
 		}
 		sender.sendMessage(PROFILE_COLOR + "-----------------------------------------\n"
-				+ ChatColor.YELLOW + user.getPlayerName() + ": " + user.getPlayerClass().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
-				+ PROFILE_COLOR    + "-----------------------------------------\n"
-				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().getDisplayName() + "\n"
-				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().getShortName());
+				+ ChatColor.YELLOW + user.getPlayerName() + ": "
+				+ user.getPlayerClass().getDisplayName() + " of "
+				+ user.getAspect().getDisplayName() + "\n" + PROFILE_COLOR
+				+ "-----------------------------------------\n" + "Dream planet: "
+				+ ChatColor.YELLOW + user.getDreamPlanet().getDisplayName() + "\n" + PROFILE_COLOR
+				+ "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().getShortName());
 		return true;
 	}
 
@@ -101,15 +102,15 @@ public class UserDataCommands implements CommandListener {
 		}
 		User user = UserManager.getUserManager().getUser(Bukkit.getPlayer(args[0]).getUniqueId());
 		args[1] = args[1].toLowerCase();
-		if(args[1].equals("class"))
+		if (args[1].equals("class"))
 			user.setPlayerClass(args[2]);
-		else if(args[1].equals("aspect"))
+		else if (args[1].equals("aspect"))
 			user.setAspect(args[2]);
-		else if(args[1].replaceAll("m(edium_?)?planet", "land").equals("land"))
+		else if (args[1].replaceAll("m(edium_?)?planet", "land").equals("land"))
 			user.setMediumPlanet(args[2]);
-		else if(args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream"))
+		else if (args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream"))
 			user.setDreamPlanet(args[2]);
-		else if(args[1].equals("progression"))
+		else if (args[1].equals("progression"))
 			user.setProgression(ProgressionState.valueOf(args[2].toUpperCase()));
 		else if (args[1].equals("prevloc")) {
 			user.setPreviousLocation(user.getPlayer().getLocation());
@@ -127,14 +128,15 @@ public class UserDataCommands implements CommandListener {
 		if (number == null || number.length == 0) {
 			return false;
 		}
-		switch (Region.uValueOf(((Player)sender).getWorld().getName())) {
+		switch (Region.uValueOf(((Player) sender).getWorld().getName())) {
 		case INNERCIRCLE:
 		case OUTERCIRCLE:
 			try {
 				SblockEvents.getEvents().getTowerData()
-						.add(((Player)sender).getLocation(), Byte.valueOf(number[0]));
+						.add(((Player) sender).getLocation(), Byte.valueOf(number[0]));
 			} catch (NumberFormatException e) {
-				sender.sendMessage(ChatColor.RED + number[0] + " is not a valid number! Remember, 0-7.");
+				sender.sendMessage(ChatColor.RED + number[0]
+						+ " is not a valid number! Remember, 0-7.");
 			}
 			return true;
 		default:
@@ -152,7 +154,8 @@ public class UserDataCommands implements CommandListener {
 			return true;
 		}
 		if (s.getName().equalsIgnoreCase(args[0])) {
-			s.sendMessage(ChatColor.RED + "Playing with yourself can only entertain you for so long. Find a friend!");
+			s.sendMessage(ChatColor.RED
+					+ "Playing with yourself can only entertain you for so long. Find a friend!");
 			return true;
 		}
 		Player p = Bukkit.getPlayer(args[0]);
@@ -163,7 +166,8 @@ public class UserDataCommands implements CommandListener {
 		User u = User.getUser(p.getUniqueId());
 		if (u == null) {
 			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
-			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
+			p.sendMessage(ChatColor.RED
+					+ "Your data appears to not have been loaded. Please log out and back in!");
 			return true;
 		}
 		if (u.getClient() != null) {
@@ -183,10 +187,11 @@ public class UserDataCommands implements CommandListener {
 		}
 		s.sendMessage(ChatColor.YELLOW + "Request sent to " + ChatColor.GREEN + p.getName());
 		requests.put(u.getPlayerName(), "c" + s.getName());
-		u.getPlayer().sendMessage(ChatColor.GREEN + s.getName() + ChatColor.YELLOW
-				+ " has requested that you be their server!" + ChatColor.AQUA
-				+ "\n/acceptrequest" + ChatColor.YELLOW + " or "
-				+ ChatColor.AQUA + "/declinerequest");
+		u.getPlayer().sendMessage(
+				ChatColor.GREEN + s.getName() + ChatColor.YELLOW
+						+ " has requested that you be their server!" + ChatColor.AQUA
+						+ "\n/acceptrequest" + ChatColor.YELLOW + " or " + ChatColor.AQUA
+						+ "/declinerequest");
 		return true;
 	}
 
@@ -199,7 +204,8 @@ public class UserDataCommands implements CommandListener {
 			return true;
 		}
 		if (s.getName().equalsIgnoreCase(args[0])) {
-			s.sendMessage(ChatColor.RED + "Playing with yourself can only entertain you for so long. Find a friend!");
+			s.sendMessage(ChatColor.RED
+					+ "Playing with yourself can only entertain you for so long. Find a friend!");
 			return true;
 		}
 		Player p = Bukkit.getPlayer(args[0]);
@@ -210,7 +216,8 @@ public class UserDataCommands implements CommandListener {
 		User u = User.getUser(p.getUniqueId());
 		if (u == null) {
 			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
-			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
+			p.sendMessage(ChatColor.RED
+					+ "Your data appears to not have been loaded. Please log out and back in!");
 			return true;
 		}
 		if (u.getServer() != null) {
@@ -230,10 +237,11 @@ public class UserDataCommands implements CommandListener {
 		}
 		s.sendMessage(ChatColor.YELLOW + "Request sent to " + ChatColor.GREEN + p.getName());
 		requests.put(u.getPlayerName(), "s" + s.getName());
-		u.getPlayer().sendMessage(ChatColor.GREEN + s.getName() + ChatColor.YELLOW
-				+ " has requested that you be their client!" + ChatColor.AQUA
-				+ "\n/acceptrequest" + ChatColor.YELLOW + " or "
-				+ ChatColor.AQUA + "/declinerequest");
+		u.getPlayer().sendMessage(
+				ChatColor.GREEN + s.getName() + ChatColor.YELLOW
+						+ " has requested that you be their client!" + ChatColor.AQUA
+						+ "\n/acceptrequest" + ChatColor.YELLOW + " or " + ChatColor.AQUA
+						+ "/declinerequest");
 		return true;
 	}
 
@@ -242,14 +250,16 @@ public class UserDataCommands implements CommandListener {
 	@SblockCommand
 	public boolean acceptrequest(CommandSender s, String[] args) {
 		if (!requests.containsKey(s.getName())) {
-			s.sendMessage(ChatColor.RED + "You should get someone to /requestserver or /requestclient before attempting to accept!");
+			s.sendMessage(ChatColor.RED
+					+ "You should get someone to /requestserver or /requestclient before attempting to accept!");
 			return true;
 		}
 		String req = requests.remove(s.getName());
 		User u = User.getUser(((Player) s).getUniqueId());
 		Player p1 = Bukkit.getPlayer(req.substring(1));
 		if (p1 == null) {
-			s.sendMessage(ChatColor.GOLD + req.substring(1) + ChatColor.RED + " appears to be offline! Request removed.");
+			s.sendMessage(ChatColor.GOLD + req.substring(1) + ChatColor.RED
+					+ " appears to be offline! Request removed.");
 			return true;
 		}
 		User u1 = User.getUser(p1.getUniqueId());
@@ -260,8 +270,10 @@ public class UserDataCommands implements CommandListener {
 			u1.setClient(u.getUUID());
 			u.setServer(u1.getUUID());
 		}
-		s.sendMessage(ChatColor.YELLOW + "Accepted " + ChatColor.GREEN + u1.getPlayerName() + ChatColor.YELLOW + "'s request!");
-		u1.getPlayer().sendMessage(ChatColor.GREEN + s.getName() + ChatColor.YELLOW + " accepted your request!");
+		s.sendMessage(ChatColor.YELLOW + "Accepted " + ChatColor.GREEN + u1.getPlayerName()
+				+ ChatColor.YELLOW + "'s request!");
+		u1.getPlayer().sendMessage(
+				ChatColor.GREEN + s.getName() + ChatColor.YELLOW + " accepted your request!");
 		return true;
 	}
 
@@ -276,12 +288,13 @@ public class UserDataCommands implements CommandListener {
 		String name = requests.remove(s.getName()).substring(1);
 		Player p = Bukkit.getPlayer(name);
 		if (p != null) {
-			p.sendMessage(ChatColor.GOLD + s.getName() + ChatColor.RED + " has declined your request!");
+			p.sendMessage(ChatColor.GOLD + s.getName() + ChatColor.RED
+					+ " has declined your request!");
 		}
 		s.sendMessage(ChatColor.RED + "Declined request from " + ChatColor.GOLD + name
 				+ ChatColor.RED + "!");
 		return true;
-		
+
 	}
 
 	@CommandDenial
@@ -321,7 +334,8 @@ public class UserDataCommands implements CommandListener {
 			return true;
 		}
 		try {
-			Location tpdest = new Location(pTarget.getWorld(), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
+			Location tpdest = new Location(pTarget.getWorld(), Double.valueOf(args[1]),
+					Double.valueOf(args[2]), Double.valueOf(args[3]));
 			if (args.length >= 6) {
 				tpdest.setPitch(Float.valueOf(args[4]));
 				tpdest.setYaw(Float.valueOf(args[5]));
@@ -358,7 +372,8 @@ public class UserDataCommands implements CommandListener {
 			return true;
 		}
 		try {
-			Location cartDest = new Location(pTarget.getWorld(), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
+			Location cartDest = new Location(pTarget.getWorld(), Double.valueOf(args[1]),
+					Double.valueOf(args[2]), Double.valueOf(args[3]));
 			Vector cartVector = new Vector(Double.valueOf(args[4]), 0, Double.valueOf(args[5]));
 			FreeCart.getInstance().spawnCart(pTarget, cartDest, cartVector);
 			return true;
@@ -386,7 +401,8 @@ public class UserDataCommands implements CommandListener {
 			reason.append("Git wrekt m8.");
 		}
 		if (target.contains(".")) { // IPs probably shouldn't be announced.
-			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, "sban");
+			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null,
+					"sban");
 		} else {
 			Broadcast.general(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
@@ -398,7 +414,8 @@ public class UserDataCommands implements CommandListener {
 				victim.getPlayer().kickPlayer(reason.toString());
 				Bukkit.dispatchCommand(sender, "lwc admin purge " + p.getUniqueId());
 			} else {
-				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, "sban");
+				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(),
+						null, "sban");
 			}
 		}
 		Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
@@ -419,7 +436,8 @@ public class UserDataCommands implements CommandListener {
 			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]
 					+ " may be an IP.");
 		} else {
-			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
+			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0]
+					+ " has been unbanned.");
 		}
 		return true;
 	}

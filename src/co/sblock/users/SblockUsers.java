@@ -7,8 +7,8 @@ import co.sblock.data.SblockData;
 import co.sblock.module.Module;
 
 /**
- * This module holds player information and provides methods for other modules
- * to access that data, as well as interfacing with the database.
+ * This module holds player information and provides methods for other modules to access that data,
+ * as well as interfacing with the database.
  * 
  * @author FireNG, Dublek
  */
@@ -36,6 +36,11 @@ public class SblockUsers extends Module {
 		for (User u : UserManager.getUserManager().getUserlist().toArray(new User[0])) {
 			SblockData.getDB().saveUserData(u.getUUID());
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "Core User Mod";
 	}
 
 }

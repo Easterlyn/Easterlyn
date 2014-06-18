@@ -29,7 +29,7 @@ public class Captchadex {
 		BookMeta bm = (BookMeta) book.getItemMeta();
 		bm.setTitle("Captchadex");
 		bm.setAuthor(p.getName());
-		bm.addPage("\n\n\n\n\nThis page intentionally         left blank");
+		bm.addPage("\n\n\n\n\nThis page intentionally		  left blank");
 		book.setItemMeta(bm);
 		return book;
 	}
@@ -69,7 +69,7 @@ public class Captchadex {
 		BookMeta bm = (BookMeta) book.getItemMeta();
 		ItemStack[] contents = i.getContents();
 		bm.setPages(new ArrayList<String>());
-		bm.addPage("\n\n\n\n\nThis page intentionally         left blank");
+		bm.addPage("\n\n\n\n\nThis page intentionally		  left blank");
 		for (int slot = 0; slot < contents.length; slot++) {
 			ItemStack is = contents[slot];
 			if (is != null) {

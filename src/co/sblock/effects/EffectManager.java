@@ -30,7 +30,7 @@ public class EffectManager {
 		ItemStack[] iSA = pInv.getArmorContents();
 		ArrayList<String> playerLore = new ArrayList<String>();
 		ArrayList<String> tempLore = new ArrayList<String>();
-		
+
 		for (ItemStack i : iS) { // Inventory
 			if (i != null) {
 				// System.out.println(i.getType().toString());
@@ -47,23 +47,22 @@ public class EffectManager {
 				playerLore.addAll(i.getItemMeta().getLore());
 			}
 		}
-		for (String s : tempLore) { //Removes all invalid lore
+		for (String s : tempLore) { // Removes all invalid lore
 			if (!PassiveEffect.isValidEffect(s)) {
 				playerLore.remove(playerLore.indexOf(s));
 			}
 		}
 		for (String s : playerLore) {
 			PassiveEffect pE = PassiveEffect.getEffect(s);
-			if(!effects.containsKey(pE)) {
+			if (!effects.containsKey(pE)) {
 				effects.put(pE, 0);
-			}
-			else {
+			} else {
 				effects.put(pE, effects.get(pE) + 1);
 			}
-		}		
+		}
 		return effects;
 	}
-	
+
 	/**
 	 * Scans a specific ItemStack for all valid PassiveEffects
 	 * 
@@ -75,7 +74,7 @@ public class EffectManager {
 		HashMap<PassiveEffect, Integer> effects = new HashMap<PassiveEffect, Integer>();
 		ArrayList<String> playerLore = new ArrayList<String>();
 		ArrayList<String> tempLore = new ArrayList<String>();
-		
+
 		if (iS.hasItemMeta() && iS.getItemMeta().hasLore()) {
 			tempLore.addAll(iS.getItemMeta().getLore());
 			playerLore.addAll(iS.getItemMeta().getLore());
@@ -87,17 +86,16 @@ public class EffectManager {
 		}
 		for (String s : playerLore) {
 			PassiveEffect pE = PassiveEffect.getEffect(s);
-			if(!effects.containsKey(pE)) {
+			if (!effects.containsKey(pE)) {
 				effects.put(pE, 0);
-			}
-			else {
+			} else {
 				effects.put(pE, effects.get(pE) + 1);
 			}
 		}
-		
+
 		return effects;
-	}	
-	
+	}
+
 	public static HashMap<ActiveEffect, Integer> activeScan(Player p) {
 		HashMap<ActiveEffect, Integer> effects = new HashMap<ActiveEffect, Integer>();
 		ArrayList<String> playerLore = new ArrayList<String>();
@@ -114,10 +112,9 @@ public class EffectManager {
 		}
 		for (String s : playerLore) {
 			ActiveEffect pE = ActiveEffect.getEffect(s);
-			if(!effects.containsKey(pE)) {
+			if (!effects.containsKey(pE)) {
 				effects.put(pE, 0);
-			}
-			else {
+			} else {
 				effects.put(pE, effects.get(pE) + 1);
 			}
 		}
@@ -125,8 +122,7 @@ public class EffectManager {
 	}
 
 	/**
-	 * Applies all PassiveEffects to a Player based on
-	 * the HashMap stored in their SblockUser
+	 * Applies all PassiveEffects to a Player based on the HashMap stored in their SblockUser
 	 * 
 	 * @param user the SblockUSer to apply PassiveEffects to
 	 */

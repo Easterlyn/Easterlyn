@@ -29,7 +29,8 @@ public class PlayerDropItemListener implements Listener {
 	public void onItemDrop(PlayerDropItemEvent event) {
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "Inventory? Spectral beings don't have those, don't be silly.");
+			event.getPlayer().sendMessage(
+					ChatColor.RED + "Inventory? Spectral beings don't have those, don't be silly.");
 			return;
 		}
 

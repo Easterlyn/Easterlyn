@@ -11,8 +11,16 @@ import co.sblock.chat.ColorDef;
  * @author Jikoo, Dublek
  */
 public enum Region {
-	EARTH, INNERCIRCLE, OUTERCIRCLE, FURTHESTRING,
-	MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF, UNKNOWN;
+	EARTH,
+	INNERCIRCLE,
+	OUTERCIRCLE,
+	FURTHESTRING,
+	MEDIUM,
+	LOWAS,
+	LOLAR,
+	LOHAC,
+	LOFAF,
+	UNKNOWN;
 
 	/**
 	 * Gets the name of the Region.

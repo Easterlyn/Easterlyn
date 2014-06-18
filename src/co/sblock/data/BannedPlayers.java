@@ -14,8 +14,8 @@ import co.sblock.users.User;
 public class BannedPlayers {
 
 	/**
-	 * Create a PreparedStatement with which to query the SQL database. Adds a
-	 * ban for the specified SblockUser.
+	 * Create a PreparedStatement with which to query the SQL database. Adds a ban for the specified
+	 * SblockUser.
 	 * 
 	 * @param target the SblockUser to add a ban for
 	 * @param reason the reason the SblockUser was banned
@@ -40,10 +40,13 @@ public class BannedPlayers {
 					.replaceAll(".*<name=(\\w{1,16}+)>.*", "$1"));
 			bans.pardon(target);
 		} else if (pbans.isBanned(target)) {
-			bans.pardon(pbans.getBanEntry(target).getReason()
-					.replaceAll(".*<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>.*", "$1"));
+			bans.pardon(pbans
+					.getBanEntry(target)
+					.getReason()
+					.replaceAll(".*<ip=([0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+\\.[0-9]{1,3}+)>.*",
+							"$1"));
 			pbans.pardon(target);
-		} else  {
+		} else {
 			return;
 		}
 	}
@@ -57,7 +60,8 @@ public class BannedPlayers {
 	 * @return the ban reason
 	 */
 	protected static String getBanReason(String name, String ip) {
-		if (!Bukkit.getBanList(Type.IP).isBanned(ip) && !Bukkit.getBanList(Type.NAME).isBanned(name)) {
+		if (!Bukkit.getBanList(Type.IP).isBanned(ip)
+				&& !Bukkit.getBanList(Type.NAME).isBanned(name)) {
 			return null;
 		}
 		if (Bukkit.getBanList(Type.NAME).isBanned(name)) {

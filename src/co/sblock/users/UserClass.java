@@ -6,8 +6,18 @@ package co.sblock.users;
  * @author FireNG, Jikoo
  */
 public enum UserClass {
-	BARD, HEIR, KNIGHT, MAGE, MAID, PAGE,
-	PRINCE, ROGUE, SEER, SYLPH, THIEF, WITCH;
+	BARD,
+	HEIR,
+	KNIGHT,
+	MAGE,
+	MAID,
+	PAGE,
+	PRINCE,
+	ROGUE,
+	SEER,
+	SYLPH,
+	THIEF,
+	WITCH;
 
 	/**
 	 * Gets the display name of the UserClass.

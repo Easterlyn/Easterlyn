@@ -45,8 +45,7 @@ public class Shape {
 	}
 
 	/**
-	 * Gets a HashMap of all properly oriented Locations and Materials needed to
-	 * build a Machine.
+	 * Gets a HashMap of all properly oriented Locations and Materials needed to build a Machine.
 	 * 
 	 * @param d the Direction the Machine needs to be built in
 	 * 
@@ -98,7 +97,7 @@ public class Shape {
 	 * 
 	 * @return the counterclockwise rotation of blocks
 	 */
-	private HashMap<Vector,MaterialData> rotateCCW() {
+	private HashMap<Vector, MaterialData> rotateCCW() {
 		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
 		for (Entry<Vector, MaterialData> e : vectors.entrySet()) {
 			Vector newVec = e.getKey().clone();
