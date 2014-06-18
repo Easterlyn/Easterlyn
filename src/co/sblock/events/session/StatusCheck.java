@@ -30,13 +30,15 @@ public class StatusCheck implements Runnable {
 
 		try {
 			JSONObject data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
-					new URL("http://status.mojang.com/check?service=session.minecraft.net").openStream())));
+					new URL("http://status.mojang.com/check?service=session.minecraft.net")
+							.openStream())));
 			session = !((String) data.get("session.minecraft.net")).equals("green");
-//			data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
-//					new URL("http://status.mojang.com/check?service=auth.minecraft.net").openStream())));
-//			login = !((String) data.get("auth.minecraft.net")).equals("green");
+			// data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
+			// new URL("http://status.mojang.com/check?service=auth.minecraft.net").openStream())));
+			// login = !((String) data.get("auth.minecraft.net")).equals("green");
 		} catch (IOException | ParseException e) {
-			Log.getLogger("Session").warning("Unable to connect to http://status.mojang.com/check - status unavailable.");
+			Log.getLogger("Session").warning(
+					"Unable to connect to http://status.mojang.com/check - status unavailable.");
 			return;
 		}
 
@@ -53,7 +55,8 @@ public class StatusCheck implements Runnable {
 			}
 		}
 		if (Sblock.getInstance().isEnabled()) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new StatusSync(status));
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
+					new StatusSync(status));
 		}
 	}
 }

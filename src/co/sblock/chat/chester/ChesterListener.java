@@ -32,7 +32,8 @@ public class ChesterListener implements Listener {
 	private List<Channel> pendingResponses;
 
 	public ChesterListener() {
-		triggers = Bukkit.getPluginManager().getPlugin("Chester").getConfig().getStringList("triggerwords");
+		triggers = Bukkit.getPluginManager().getPlugin("Chester").getConfig()
+				.getStringList("triggerwords");
 		pattern = Pattern.compile(RegexUtils.ignoreCaseRegex(triggers.toArray(new String[0])));
 		whitespacePattern = Pattern.compile(createRegex());
 		Log.getLog("ChesterListener").info("Compiled regex: " + pattern.toString());
@@ -49,12 +50,13 @@ public class ChesterListener implements Listener {
 	@EventHandler
 	public void onChesterLog(ChesterLogEvent event) {
 		User user = User.getUser(event.getPlayer().getUniqueId());
-		if (user == null ||user.getCurrent() == null || user.isMute() || user.isSuppressing()) {
+		if (user == null || user.getCurrent() == null || user.isMute() || user.isSuppressing()) {
 			event.setCancelled(true);
 			return;
 		}
 
-		Message sentMessage = new Message(User.getUser(event.getPlayer().getUniqueId()), event.getMessage());
+		Message sentMessage = new Message(User.getUser(event.getPlayer().getUniqueId()),
+				event.getMessage());
 
 		if (!sentMessage.validate(false)
 				|| sentMessage.getChannel().getAccess() == AccessLevel.PRIVATE
@@ -78,7 +80,8 @@ public class ChesterListener implements Listener {
 			return;
 		}
 
-		// Because Chester keeps logging blank lines, freeze all logging that actually contains triggers.
+		// Because Chester keeps logging blank lines, freeze all logging that actually contains
+		// triggers.
 		event.setCancelled(true);
 
 		// Stops indirect triggers, e.g. "HALlway"
@@ -99,7 +102,8 @@ public class ChesterListener implements Listener {
 
 		// Allows Hal to highlight players
 		Message m = new Message("Lil Hal", ChatColor.RED
-				+ ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', event.getMessage())));
+				+ ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',
+						event.getMessage())));
 		m.setChannel(pendingResponses.get(0));
 		m.addColor(ChatColor.RED);
 		if (m.validate(false)) {
@@ -110,6 +114,7 @@ public class ChesterListener implements Listener {
 	}
 
 	public static List<String> getTriggers() {
-		return Bukkit.getPluginManager().getPlugin("Chester").getConfig().getStringList("triggerwords");
+		return Bukkit.getPluginManager().getPlugin("Chester").getConfig()
+				.getStringList("triggerwords");
 	}
 }

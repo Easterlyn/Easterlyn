@@ -159,7 +159,9 @@ public class Message {
 
 		// Trim whitespace created by formatting codes, etc.
 		message = RegexUtils.trimExtraWhitespace(message);
-		if (message.length() > 1 && RegexUtils.appearsEmpty(message.substring(0 , 2).equals("#>") ? message.substring(2) : message)) {
+		if (message.length() > 1
+				&& RegexUtils.appearsEmpty(message.substring(0, 2).equals("#>") ? message
+						.substring(2) : message)) {
 			return;
 		}
 
@@ -168,7 +170,8 @@ public class Message {
 		if (sender == null) {
 			channelPrefixing = channelPrefixing.replaceFirst("<nonhuman>", name);
 		}
-		MessageElement rawMsg = new MessageElement(channelPrefixing, colors.toArray(new ChatColor[0]));
+		MessageElement rawMsg = new MessageElement(channelPrefixing,
+				colors.toArray(new ChatColor[0]));
 
 		// Send console chat message
 		if (channel.getType() != ChannelType.REGION) {
@@ -189,7 +192,8 @@ public class Message {
 			}
 			if (sender != null && sender.equals(u)) {
 				// No self-highlight.
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + " " + message);
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName()
+						+ " " + message);
 			} else {
 				u.rawHighlight(message, channel.getNick(u));
 			}
@@ -197,14 +201,17 @@ public class Message {
 	}
 
 	private String wrapLinks(MessageElement rawMsg, String message) {
-		Matcher match = Pattern.compile("(https?://)?(([\\w]+\\.)+([a-zA-Z]{2,4}))((#|/).*\\b)?").matcher(message);
+		Matcher match = Pattern.compile("(https?://)?(([\\w]+\\.)+([a-zA-Z]{2,4}))((#|/).*\\b)?")
+				.matcher(message);
 		int lastEnd = 0;
 		String lastColor = new String();
 		while (match.find()) {
-			rawMsg.addExtra(processMessageSegment(lastColor + message.substring(lastEnd, match.start())));
+			rawMsg.addExtra(processMessageSegment(lastColor
+					+ message.substring(lastEnd, match.start())));
 			lastColor = ChatColor.getLastColors(rawMsg.toString());
 			String url = match.group();
-			// If URL does not start with http:// or https:// the client will crash. Client autofills this for normal links.
+			// If URL does not start with http:// or https:// the client will crash. Client
+			// autofills this for normal links.
 			if (!match.group().matches("https?://.*")) {
 				url = "http://" + url;
 			}

@@ -17,10 +17,11 @@ public class MeteoriteComponent extends EntityFallingBlock {
 
 	private boolean explode;
 	private boolean bore;
+
 	@SuppressWarnings("deprecation")
 	public MeteoriteComponent(Location l, Material material, boolean explode, boolean bore) {
-		super(((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(),
-						l.getBlockY(), l.getBlockZ(), net.minecraft.server.v1_7_R3.Block.e(material.getId()), 0);
+		super(((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(),
+				net.minecraft.server.v1_7_R3.Block.e(material.getId()), 0);
 		this.explode = explode;
 		this.bore = bore;
 		this.b = 1;

@@ -10,15 +10,16 @@ import org.bukkit.command.CommandSender;
  * @author Jikoo
  */
 public enum Call {
-	PLAYER_SAVE("INSERT INTO PlayerData(name, class, aspect, mPlanet, dPlanet, towerNum, sleepState, "
-			+ "currentChannel, isMute, channels, ip, timePlayed, previousLocation, programs, uuid, "
-			+ "client, server, progression) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-			+ "ON DUPLICATE KEY UPDATE class=VALUES(class), aspect=VALUES(aspect), mPlanet=VALUES(mPlanet), "
-			+ "dPlanet=VALUES(dPlanet), towerNum=VALUES(towerNum), sleepState=VALUES(sleepState), "
-			+ "currentChannel=VALUES(currentChannel), isMute=VALUES(isMute), channels=VALUES(channels), "
-			+ "ip=VALUES(ip), timePlayed=VALUES(timePlayed), previousLocation=VALUES(previousLocation), "
-			+ "programs=VALUES(programs), client=VALUES(client), server=VALUES(server), name=VALUES(name), "
-			+ "progression=VALUES(progression)"),
+	PLAYER_SAVE(
+			"INSERT INTO PlayerData(name, class, aspect, mPlanet, dPlanet, towerNum, sleepState, "
+					+ "currentChannel, isMute, channels, ip, timePlayed, previousLocation, programs, uuid, "
+					+ "client, server, progression) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+					+ "ON DUPLICATE KEY UPDATE class=VALUES(class), aspect=VALUES(aspect), mPlanet=VALUES(mPlanet), "
+					+ "dPlanet=VALUES(dPlanet), towerNum=VALUES(towerNum), sleepState=VALUES(sleepState), "
+					+ "currentChannel=VALUES(currentChannel), isMute=VALUES(isMute), channels=VALUES(channels), "
+					+ "ip=VALUES(ip), timePlayed=VALUES(timePlayed), previousLocation=VALUES(previousLocation), "
+					+ "programs=VALUES(programs), client=VALUES(client), server=VALUES(server), name=VALUES(name), "
+					+ "progression=VALUES(progression)"),
 	PLAYER_LOAD_UUID("SELECT * FROM PlayerData WHERE uuid = ?"),
 	PLAYER_LOAD_NAME("SELECT * FROM PlayerData WHERE name = ?"),
 	PLAYER_DELETE("DELETE FROM PlayerData WHERE name = ?"),
@@ -28,8 +29,9 @@ public enum Call {
 			+ "modList=VALUES(modList), banList=VALUES(banList), approvedList=VALUES(approvedList)"),
 	CHANNEL_LOADALL("SELECT * FROM ChatChannels"),
 	CHANNEL_DELETE("DELETE FROM ChatChannels WHERE name = ?"),
-	MACHINE_SAVE("INSERT INTO Machines(location, type, owner, face, data) VALUES (?, ?, ?, ?, ?) "
-			+ "ON DUPLICATE KEY UPDATE type=VALUES(type), owner=VALUES(owner), face=VALUES(face), data=VALUES(data)"),
+	MACHINE_SAVE(
+			"INSERT INTO Machines(location, type, owner, face, data) VALUES (?, ?, ?, ?, ?) "
+					+ "ON DUPLICATE KEY UPDATE type=VALUES(type), owner=VALUES(owner), face=VALUES(face), data=VALUES(data)"),
 	MACHINE_LOADALL("SELECT * FROM Machines"),
 	MACHINE_DELETE("DELETE FROM Machines WHERE location = ?"),
 	TOWER_SAVE("INSERT INTO TowerLocs(towerID, location) VALUES (?, ?) "

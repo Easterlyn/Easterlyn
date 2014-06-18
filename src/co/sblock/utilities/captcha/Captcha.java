@@ -85,8 +85,7 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Converts a Captchacard into an ItemStack. Also used for Punchcards and
-	 * Cruxite Dowels.
+	 * Converts a Captchacard into an ItemStack. Also used for Punchcards and Cruxite Dowels.
 	 * 
 	 * @param card the Captchacard ItemStack
 	 * 
@@ -129,8 +128,8 @@ public class Captcha extends Module {
 			is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
 					Integer.valueOf(data[3]), Short.valueOf(data[2]));
 		} catch (NumberFormatException e) {
-			is = new ItemStack(Material.getMaterial(data[1]),
-					Integer.valueOf(data[3]), Short.valueOf(data[2]));
+			is = new ItemStack(Material.getMaterial(data[1]), Integer.valueOf(data[3]),
+					Short.valueOf(data[2]));
 		}
 		im = is.getItemMeta();
 		if (!data[0].equals(is.getType().toString())) {
@@ -152,8 +151,8 @@ public class Captcha extends Module {
 						im.addEnchant(Enchantment.getById(Integer.parseInt(ench[0])),
 								Integer.parseInt(ench[1]), true);
 					} catch (NumberFormatException e) {
-						im.addEnchant(Enchantment.getByName(ench[0]),
-								Integer.parseInt(ench[1]), true);
+						im.addEnchant(Enchantment.getByName(ench[0]), Integer.parseInt(ench[1]),
+								true);
 					}
 				}
 			} else if (s.charAt(0) == '>') {
@@ -229,7 +228,6 @@ public class Captcha extends Module {
 		return isCard(is) && is.getItemMeta().getDisplayName().equals("Captchacard");
 	}
 
-
 	/**
 	 * Check if an ItemStack is a valid Punchcard.
 	 * 
@@ -261,16 +259,18 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a card
 	 */
 	public static boolean isCard(ItemStack is) {
-		return is != null && is.getType() == Material.PAPER && is.hasItemMeta()
-				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
-				&& (is.getItemMeta().getDisplayName().equals("Captchacard")
-						|| is.getItemMeta().getDisplayName().equals("Punchcard"));
+		return is != null
+				&& is.getType() == Material.PAPER
+				&& is.hasItemMeta()
+				&& is.getItemMeta().hasDisplayName()
+				&& is.getItemMeta().hasLore()
+				&& (is.getItemMeta().getDisplayName().equals("Captchacard") || is.getItemMeta()
+						.getDisplayName().equals("Punchcard"));
 	}
 
 	/**
-	 * Creates a Punchcard from one or two cards.
-	 * If card2 is null, creates a clone of card1.
-	 * card2 must be a Punchcard or null.
+	 * Creates a Punchcard from one or two cards. If card2 is null, creates a clone of card1. card2
+	 * must be a Punchcard or null.
 	 * 
 	 * @param card1 the first card
 	 * @param card2 the second card, or null to clone card1
@@ -334,9 +334,11 @@ public class Captcha extends Module {
 		// attempt to add to other inventory if first inv was too full
 		if (leftover > 0) {
 			if (event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())) {
-				leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
+				leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory()
+						.addItem(captcha));
 			} else {
-				leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
+				leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory()
+						.addItem(captcha));
 			}
 		}
 
@@ -382,9 +384,11 @@ public class Captcha extends Module {
 		}
 		captcha = itemToCaptcha(event.getCurrentItem());
 		event.setResult(Result.DENY);
-		event.getView().getBottomInventory().setItem(event.getHotbarButton(), InventoryUtils.decrement(hotbar, 1));
+		event.getView().getBottomInventory()
+				.setItem(event.getHotbarButton(), InventoryUtils.decrement(hotbar, 1));
 
-		int leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
+		int leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory()
+				.addItem(captcha));
 		event.setCurrentItem(null);
 		if (leftover > 0) {
 			InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));

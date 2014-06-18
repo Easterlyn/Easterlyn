@@ -14,9 +14,9 @@ import co.sblock.chat.channel.ChannelType;
 /**
  * A small helper class containing all methods that access the ChatChannels table.
  * <p>
- * The ChatChannels table is created by the following call:
- * CREATE TABLE ChatChannels (name varchar(16) UNIQUE KEY, channelType varchar(6),
- * access varchar(7), owner varchar(255), modList text, banList text, approvedList text);
+ * The ChatChannels table is created by the following call: CREATE TABLE ChatChannels (name
+ * varchar(16) UNIQUE KEY, channelType varchar(6), access varchar(7), owner varchar(255), modList
+ * text, banList text, approvedList text);
  * 
  * @author Jikoo
  */
@@ -90,8 +90,8 @@ public class ChatChannels {
 			ChannelManager cm = SblockChat.getChat().getChannelManager();
 
 			while (rs.next()) {
-				cm.loadChannel(rs.getString("name"),
-						AccessLevel.valueOf(rs.getString("access")), UUID.fromString(rs.getString("owner")),
+				cm.loadChannel(rs.getString("name"), AccessLevel.valueOf(rs.getString("access")),
+						UUID.fromString(rs.getString("owner")),
 						ChannelType.valueOf(rs.getString("channelType")));
 				Channel c = SblockChat.getChat().getChannelManager()
 						.getChannel(rs.getString("name"));
@@ -131,8 +131,7 @@ public class ChatChannels {
 	}
 
 	/**
-	 * Create a PreparedStatement with which to query the SQL database. Delete a
-	 * Channel by name.
+	 * Create a PreparedStatement with which to query the SQL database. Delete a Channel by name.
 	 * 
 	 * @param channelName the name of the Channel to delete
 	 */

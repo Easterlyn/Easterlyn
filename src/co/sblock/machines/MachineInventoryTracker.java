@@ -67,7 +67,8 @@ public class MachineInventoryTracker {
 		}
 	}
 
-	public void openMachineInventory(Player player, Machine m, InventoryType it, org.bukkit.inventory.ItemStack... items) {
+	public void openMachineInventory(Player player, Machine m, InventoryType it,
+			org.bukkit.inventory.ItemStack... items) {
 		// Opens a real anvil window for the Player in question
 		WrapperPlayServerOpenWindow packet = new WrapperPlayServerOpenWindow();
 		packet.setInventoryType(it);
@@ -110,9 +111,8 @@ public class MachineInventoryTracker {
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (int i = 0; i < items.length; i++) {
 			if (i % 3 == 0 && items.length - i > 2) {
-				list.a(new MerchantRecipe(CraftItemStack.asNMSCopy(items[i]),
-						CraftItemStack.asNMSCopy(items[i+1]),
-						CraftItemStack.asNMSCopy(items[i+2])));
+				list.a(new MerchantRecipe(CraftItemStack.asNMSCopy(items[i]), CraftItemStack
+						.asNMSCopy(items[i + 1]), CraftItemStack.asNMSCopy(items[i + 2])));
 			}
 		}
 
@@ -133,14 +133,11 @@ public class MachineInventoryTracker {
 			trades.setData(out.array());
 			ProtocolLibrary.getProtocolManager().sendServerPacket(player, trades.getHandle());
 
-			
-
 		} catch (IllegalArgumentException | SecurityException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
 
-	
 	public class MerchantContainer extends ContainerMerchant {
 
 		public MerchantContainer(EntityPlayer player) {
@@ -185,7 +182,8 @@ public class MachineInventoryTracker {
 	public class AnvilContainer extends ContainerAnvil {
 
 		public AnvilContainer(EntityHuman entity, Location l) {
-			super(entity.inventory, ((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), entity);
+			super(entity.inventory, ((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l
+					.getBlockY(), l.getBlockZ(), entity);
 		}
 
 		@Override

@@ -49,7 +49,7 @@ public enum Status {
 		return announcement != null;
 	}
 
-	/** 
+	/**
 	 * Gets the message to broadcast initially.
 	 * 
 	 * @return String
@@ -67,7 +67,7 @@ public enum Status {
 		return allClear != null;
 	}
 
-	/** 
+	/**
 	 * Gets the message to broadcast when over.
 	 * 
 	 * @return String
@@ -85,7 +85,7 @@ public enum Status {
 		return MOTD != null;
 	}
 
-	/** 
+	/**
 	 * Gets the message to set as server list MOTD.
 	 * 
 	 * @return String

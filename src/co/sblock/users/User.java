@@ -85,7 +85,6 @@ public class User {
 	/** A map of the Effects applied to the Player and their strength. */
 	private HashMap<PassiveEffect, Integer> passiveEffects;
 
-
 	/* CHAT USER DATA BELOW */
 	/** The name of the Player's current focused Channel */
 	private String current;
@@ -95,7 +94,7 @@ public class User {
 
 	/** Booleans affecting channel message reception. */
 	private AtomicBoolean globalMute, suppress;
-	
+
 	/**
 	 * Creates a SblockUser object for a Player.
 	 * 
@@ -117,7 +116,7 @@ public class User {
 		mPlanet = MediumPlanet.LOWAS;
 		dPlanet = DreamPlanet.PROSPIT;
 		progression = ProgressionState.NONE;
-		tower = (byte)(8 * Math.random());
+		tower = (byte) (8 * Math.random());
 		isServer = false;
 		allowFlight = false;
 		this.updateFlight();
@@ -295,9 +294,10 @@ public class User {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().contains("Circle")
-						|| getPlayer().getGameMode().equals(GameMode.CREATIVE)
-						|| isServer || Spectators.getSpectators().isSpectator(playerID));
+				allowFlight = getPlayer() != null
+						&& (getPlayer().getWorld().getName().contains("Circle")
+								|| getPlayer().getGameMode().equals(GameMode.CREATIVE) || isServer || Spectators
+								.getSpectators().isSpectator(playerID));
 				if (getOfflinePlayer().isOnline()) {
 					getPlayer().setAllowFlight(allowFlight);
 					getPlayer().setFlying(allowFlight);
@@ -361,7 +361,8 @@ public class User {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		return dateFormat.format(new Date(getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK) * 50L));
+		return dateFormat.format(new Date(getPlayer().getStatistic(
+				org.bukkit.Statistic.PLAY_ONE_TICK) * 50L));
 	}
 
 	/**
@@ -447,13 +448,15 @@ public class User {
 	public void updateCurrentRegion(Region newR) {
 		if (currentRegion != null && newR == currentRegion) {
 			if (!listening.contains("#" + currentRegion.toString())) {
-				Channel c = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
+				Channel c = ChannelManager.getChannelManager().getChannel(
+						"#" + currentRegion.toString());
 				this.addListening(c);
 			}
 			return;
 		}
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (current == null || currentRegion != null && current.equals("#" + currentRegion.toString())) {
+		if (current == null || currentRegion != null
+				&& current.equals("#" + currentRegion.toString())) {
 			current = newC.getName();
 		}
 		if (currentRegion != null) {
@@ -519,12 +522,14 @@ public class User {
 			return;
 		}
 		if (!u.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())) {
-			p.sendMessage(ChatColor.RED + u.getPlayerName() + " does not have the Sburb Client installed!");
+			p.sendMessage(ChatColor.RED + u.getPlayerName()
+					+ " does not have the Sburb Client installed!");
 			return;
 		}
 		Machine m = SblockMachines.getMachines().getManager().getComputer(client);
 		if (m == null) {
-			p.sendMessage(ChatColor.RED + u.getPlayerName() + " has not placed their computer in their house!");
+			p.sendMessage(ChatColor.RED + u.getPlayerName()
+					+ " has not placed their computer in their house!");
 			return;
 		}
 		this.serverDisableTeleport = p.getLocation();
@@ -598,7 +603,7 @@ public class User {
 	public UUID getClient() {
 		return this.client;
 	}
-	
+
 	/**
 	 * Gets the user's current Passive Effects
 	 * 
@@ -607,7 +612,7 @@ public class User {
 	public HashMap<PassiveEffect, Integer> getPassiveEffects() {
 		return this.passiveEffects;
 	}
-	
+
 	/**
 	 * Set the user's current Passive Effects. Will overlay existing map.
 	 * 
@@ -617,7 +622,7 @@ public class User {
 		removeAllPassiveEffects();
 		this.passiveEffects = effects;
 	}
-	
+
 	/**
 	 * Removes all PassiveEffects from the user and cancels the Effect
 	 */
@@ -627,23 +632,22 @@ public class User {
 		}
 		this.passiveEffects.clear();
 	}
-	
+
 	/**
-	 * Add a new effect to the user's current Passive Effects.
-	 * If the effect is already present, increases the strength by 1.
+	 * Add a new effect to the user's current Passive Effects. If the effect is already present,
+	 * increases the strength by 1.
 	 * 
 	 * @param effect the PassiveEffect to add
 	 */
 	public void addPassiveEffect(PassiveEffect effect) {
 		if (this.passiveEffects.containsKey(effect)) {
 			this.passiveEffects.put(effect, this.passiveEffects.get(effect) + 1);
-		}
-		else {
+		} else {
 			this.passiveEffects.put(effect, 1);
 		}
 		PassiveEffect.applyEffect(getPlayer(), effect, passiveEffects.get(effect));
 	}
-	
+
 	/**
 	 * Set the user's current Passive Effects. Will overlay existing map.
 	 * 
@@ -655,8 +659,7 @@ public class User {
 				PassiveEffect.removeEffect(getPlayer(), effect);
 				this.passiveEffects.put(effect, this.passiveEffects.get(effect) - reduction);
 				PassiveEffect.applyEffect(getPlayer(), effect, passiveEffects.get(effect));
-			}
-			else {
+			} else {
 				this.passiveEffects.remove(effect);
 				PassiveEffect.removeEffect(getPlayer(), effect);
 			}
@@ -706,13 +709,14 @@ public class User {
 			lastEnd = match.end();
 		}
 		if (lastEnd < message.length()) {
-		msg.append(message.substring(lastEnd));
+			msg.append(message.substring(lastEnd));
 		}
 		message = msg.toString();
 
 		if (lastEnd > 0) {
 			// Matches were found, commence highlight format changes.
-			message = message.replaceFirst("\\[(" + ChatColor.COLOR_CHAR + ".{1,17})\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
+			message = message.replaceFirst("\\[(" + ChatColor.COLOR_CHAR + ".{1,17})\\]",
+					ChatColor.AQUA + "!!$1" + ChatColor.AQUA + "!!");
 			// Funtimes sound effects here
 			switch ((int) (Math.random() * 20)) {
 			case 0:
@@ -888,7 +892,8 @@ public class User {
 			}
 			if (matches.length() > 0) {
 				matches.replace(matches.length() - 3, matches.length() - 1, "");
-				StringBuilder msg = new StringBuilder(base.toString().replace("<>", matches.toString()));
+				StringBuilder msg = new StringBuilder(base.toString().replace("<>",
+						matches.toString()));
 				int comma = msg.toString().lastIndexOf(',');
 				if (comma != -1) {
 					u.sendMessage(msg.replace(comma, comma + 1, " and").toString());
@@ -896,7 +901,8 @@ public class User {
 			}
 		}
 
-		Bukkit.getConsoleSender().sendMessage(this.getPlayerName() + " began pestering " + StringUtils.join(channels, ' '));
+		Bukkit.getConsoleSender().sendMessage(
+				this.getPlayerName() + " began pestering " + StringUtils.join(channels, ' '));
 	}
 
 	/**
@@ -1004,15 +1010,16 @@ public class User {
 		ChatColor sys = ChatColor.DARK_AQUA;
 		ChatColor txt = ChatColor.YELLOW;
 		String div = sys + ", " + txt;
-		
-		String s = sys + "-----------------------------------------\n" + 
-				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
-				this.mPlanet + div + this.dPlanet.getDisplayName() + div + " Tower: " + this.tower + div + " Flight: " + this.allowFlight + "\n" + 
-				" Mute: " + this.globalMute.get() + div + " Current: " + this.current + div + this.listening.toString() + "\n" +
-				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
-				" IP: " + this.userIP + "\n" +
-				" Playtime: " + this.getTimePlayed() + div + " Last Login: Online now!\n" +
-				sys + "-----------------------------------------";
+
+		String s = sys + "-----------------------------------------\n" + txt
+				+ this.getPlayer().getName() + div + this.classType.getDisplayName() + " of "
+				+ this.aspect.getDisplayName() + "\n" + this.mPlanet + div
+				+ this.dPlanet.getDisplayName() + div + " Tower: " + this.tower + div + " Flight: "
+				+ this.allowFlight + "\n" + " Mute: " + this.globalMute.get() + div + " Current: "
+				+ this.current + div + this.listening.toString() + "\n" + " Region: "
+				+ this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString()
+				+ "\n" + " IP: " + this.userIP + "\n" + " Playtime: " + this.getTimePlayed() + div
+				+ " Last Login: Online now!\n" + sys + "-----------------------------------------";
 		return s;
 	}
 

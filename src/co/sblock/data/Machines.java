@@ -11,8 +11,8 @@ import co.sblock.machines.type.Machine;
 /**
  * A small helper class containing all methods that access the Machines table.
  * <p>
- * The Machines table is created by the following call:
- * CREATE TABLE Machines (location varchar(255) UNIQUE KEY, type varchar(3), owner varchar(255), face tinyint), data varchar(255);
+ * The Machines table is created by the following call: CREATE TABLE Machines (location varchar(255)
+ * UNIQUE KEY, type varchar(3), owner varchar(255), face tinyint), data varchar(255);
  * 
  * @author Jikoo
  */
@@ -32,7 +32,8 @@ public class Machines {
 				pst.setString(1, m.getLocationString());
 				pst.setString(2, m.getType().getAbbreviation());
 			} catch (NullPointerException e) {
-				SblockData.getLogger().warning("A Machine appears to have invalid data, skipping save.");
+				SblockData.getLogger().warning(
+						"A Machine appears to have invalid data, skipping save.");
 				return;
 			}
 			pst.setString(3, m.getOwner());
@@ -54,14 +55,15 @@ public class Machines {
 	}
 
 	/**
-	 * Create a PreparedStatement with which to query the SQL database. Delete a
-	 * specified Machine's data from database.
+	 * Create a PreparedStatement with which to query the SQL database. Delete a specified Machine's
+	 * data from database.
 	 * 
 	 * @param m the Machine to delete data of
 	 */
 	public static void deleteMachine(Machine m) {
 		try {
-			PreparedStatement pst = SblockData.getDB().connection().prepareStatement(Call.MACHINE_DELETE.toString());
+			PreparedStatement pst = SblockData.getDB().connection()
+					.prepareStatement(Call.MACHINE_DELETE.toString());
 			pst.setString(1, m.getLocationString());
 
 			new AsyncCall(pst).schedule();

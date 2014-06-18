@@ -38,7 +38,8 @@ public class PGO extends Machine {
 	public void assemble(BlockPlaceEvent event) {
 		Material placedOn = event.getBlockAgainst().getType();
 		if (isValid(placedOn)) {
-			this.blocks.put(key, new MaterialData(event.getBlockAgainst().getType(), event.getBlockAgainst().getData()));
+			this.blocks.put(key, new MaterialData(event.getBlockAgainst().getType(), event
+					.getBlockAgainst().getData()));
 		}
 		// Future features: Make wall signs etc. valid and copy text
 		this.assemble();
@@ -97,7 +98,7 @@ public class PGO extends Machine {
 		case GOLD_BLOCK:
 		case GOLD_ORE:
 		case GRASS:
-//		case GRAVEL:
+			// case GRAVEL:
 		case HARD_CLAY:
 		case HAY_BLOCK:
 		case HUGE_MUSHROOM_1:
@@ -131,7 +132,7 @@ public class PGO extends Machine {
 		case QUARTZ_STAIRS:
 		case REDSTONE_BLOCK:
 		case REDSTONE_ORE:
-//		case SAND:
+			// case SAND:
 		case SANDSTONE:
 		case SANDSTONE_STAIRS:
 		case SMOOTH_BRICK:

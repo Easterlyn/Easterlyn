@@ -7,8 +7,8 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
 
 /**
- * A Command wrapper used to register commands automatically without needing
- * to enter them in the plugin.yml
+ * A Command wrapper used to register commands automatically without needing to enter them in the
+ * plugin.yml
  * 
  * @author Jikoo
  */
@@ -24,7 +24,8 @@ public class CustomCommand extends Command implements PluginIdentifiableCommand 
 	@Override
 	public boolean execute(CommandSender sender, String label, String[] args) {
 		try {
-			return Bukkit.getPluginManager().getPlugin("Sblock").onCommand(sender, this, label, args);
+			return Bukkit.getPluginManager().getPlugin("Sblock")
+					.onCommand(sender, this, label, args);
 		} catch (NullPointerException e) {
 			// Sblock has not enabled properly.
 			return false;

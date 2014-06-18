@@ -23,7 +23,9 @@ public class PlayerInteractEntityListener implements Listener {
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
-			event.getPlayer().sendMessage(ChatColor.RED + "You huff and you puff, but all you get is a bit hyperventilated.");
+			event.getPlayer().sendMessage(
+					ChatColor.RED
+							+ "You huff and you puff, but all you get is a bit hyperventilated.");
 			event.setCancelled(true);
 			return;
 		}

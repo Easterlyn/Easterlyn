@@ -43,11 +43,11 @@ public class ColorDef {
 	public static final ChatColor ASPECT_SPACE = ChatColor.BLACK;
 	public static final ChatColor ASPECT_TIME = ChatColor.RED;
 	public static final ChatColor ASPECT_VOID = ChatColor.DARK_BLUE;
-	
-	public static final ChatColor RAINBOW[] = {
-		ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW,
-		ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.AQUA, ChatColor.DARK_AQUA,
-		ChatColor.BLUE, ChatColor.DARK_BLUE, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE};
+
+	public static final ChatColor RAINBOW[] = { ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD,
+			ChatColor.YELLOW, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.AQUA,
+			ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.DARK_BLUE, ChatColor.LIGHT_PURPLE,
+			ChatColor.DARK_PURPLE };
 
 	public static final String HAL = ChatColor.WHITE + "[" + ChatColor.RED + "#" + ChatColor.WHITE
 			+ "] <" + ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + "> " + ChatColor.RED;

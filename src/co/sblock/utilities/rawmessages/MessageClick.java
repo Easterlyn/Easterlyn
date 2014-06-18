@@ -8,7 +8,9 @@ package co.sblock.utilities.rawmessages;
 public class MessageClick {
 
 	public enum ClickEffect {
-		OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND;
+		OPEN_URL,
+		RUN_COMMAND,
+		SUGGEST_COMMAND;
 	}
 
 	private ClickEffect effect;
@@ -24,7 +26,8 @@ public class MessageClick {
 	}
 
 	public String toString() {
-		return new StringBuilder(",\"clickEvent\":{\"action\":\"").append(effect.name().toLowerCase())
-				.append("\",\"value\":\"").append(data).append("\"}").toString();
+		return new StringBuilder(",\"clickEvent\":{\"action\":\"")
+				.append(effect.name().toLowerCase()).append("\",\"value\":\"").append(data)
+				.append("\"}").toString();
 	}
 }

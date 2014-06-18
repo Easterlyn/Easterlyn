@@ -44,14 +44,14 @@ public class PunchDesignix extends Machine {
 	@SuppressWarnings("deprecation")
 	public PunchDesignix(Location l, String data, Direction d) {
 		super(l, data, d);
-		MaterialData m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
+		MaterialData m = new MaterialData(Material.QUARTZ_STAIRS, d.getRelativeDirection(
+				Direction.WEST).getUpperStairByte());
 		shape.addBlock(new Vector(0, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.EAST).getUpperStairByte());
+		m = new MaterialData(Material.QUARTZ_STAIRS, d.getRelativeDirection(Direction.EAST)
+				.getUpperStairByte());
 		shape.addBlock(new Vector(1, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.NORTH).getStairByte());
+		m = new MaterialData(Material.QUARTZ_STAIRS, d.getRelativeDirection(Direction.NORTH)
+				.getStairByte());
 		shape.addBlock(new Vector(0, 1, 0), m);
 		shape.addBlock(new Vector(1, 1, 0), m);
 		m = new MaterialData(Material.STEP, (byte) 15);
@@ -84,8 +84,9 @@ public class PunchDesignix extends Machine {
 			return true;
 		}
 		User user = User.getUser(event.getPlayer().getUniqueId());
-		if (user != null && (user.getProgression() != ProgressionState.NONE
-				|| Entry.getEntry().isEntering(user))) {
+		if (user != null
+				&& (user.getProgression() != ProgressionState.NONE || Entry.getEntry().isEntering(
+						user))) {
 			openInventory(event.getPlayer());
 		}
 		return true;
@@ -96,8 +97,10 @@ public class PunchDesignix extends Machine {
 	 */
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event) {
-		if (event.getSlot() == 2 && event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())
-				&& event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
+		if (event.getSlot() == 2
+				&& event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())
+				&& event.getCurrentItem() != null
+				&& event.getCurrentItem().getType() != Material.AIR) {
 			// Clicking an item in result slot
 
 			Inventory merchant = event.getInventory();
@@ -117,7 +120,8 @@ public class PunchDesignix extends Machine {
 
 			int crafts = 0;
 
-			// Clicking a villager result slot with vanilla client treats right clicks as left clicks.
+			// Clicking a villager result slot with vanilla client treats right clicks as left
+			// clicks.
 			if (event.getClick().name().contains("SHIFT")) {
 				// Shift-clicks are craft-max attempts.
 				if (Captcha.isPunch(merchant.getItem(0)) && Captcha.isCaptcha(merchant.getItem(1))) {
@@ -128,7 +132,8 @@ public class PunchDesignix extends Machine {
 				result.setAmount(crafts);
 
 				// Decrement number of crafts by number of items that failed to be added
-				crafts -= InventoryUtils.getAddFailures(event.getWhoClicked().getInventory().addItem(result));
+				crafts -= InventoryUtils.getAddFailures(event.getWhoClicked().getInventory()
+						.addItem(result));
 			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
 				// Single click. Attempting to pick up a single item (even if right click)
 				crafts = 1;
@@ -144,7 +149,8 @@ public class PunchDesignix extends Machine {
 			// This will be recalculated in the synchronous delayed inventory update task.
 			event.setCurrentItem(null);
 
-			// If second item is a captcha, first item is a punchcard being copied. Do not decrement.
+			// If second item is a captcha, first item is a punchcard being copied. Do not
+			// decrement.
 			if (!Captcha.isCaptcha(merchant.getItem(1))) {
 				merchant.setItem(0, InventoryUtils.decrement(merchant.getItem(0), crafts));
 			}
@@ -168,8 +174,8 @@ public class PunchDesignix extends Machine {
 	 * @return the least of the two, or, if slot2 is null, the amount in slot1
 	 */
 	private int getMaximumCrafts(ItemStack slot1, ItemStack slot2) {
-		return slot2 == null ? slot1.getAmount() 
-				: slot1.getAmount() > slot2.getAmount() ? slot1.getAmount() : slot2.getAmount();
+		return slot2 == null ? slot1.getAmount() : slot1.getAmount() > slot2.getAmount() ? slot1
+				.getAmount() : slot2.getAmount();
 	}
 
 	/**
@@ -184,7 +190,8 @@ public class PunchDesignix extends Machine {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);
 				if (player == null || !MachineInventoryTracker.getTracker().hasMachineOpen(player)) {
-					// Player has logged out or closed inventory. Inventories are per-player, ignore.
+					// Player has logged out or closed inventory. Inventories are per-player,
+					// ignore.
 					return;
 				}
 				Inventory open = player.getOpenInventory().getTopInventory();
@@ -209,7 +216,8 @@ public class PunchDesignix extends Machine {
 	 * @param player the Player
 	 */
 	public void openInventory(Player player) {
-		MachineInventoryTracker.getTracker().openMachineInventory(player, this, InventoryType.MERCHANT, getExampleRecipes());
+		MachineInventoryTracker.getTracker().openMachineInventory(player, this,
+				InventoryType.MERCHANT, getExampleRecipes());
 	}
 
 	/**
@@ -262,6 +270,6 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is3.setItemMeta(im);
 
-		return new ItemStack[] {is1, is2, is3};
+		return new ItemStack[] { is1, is2, is3 };
 	}
 }

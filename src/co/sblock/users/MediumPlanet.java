@@ -10,7 +10,10 @@ import org.bukkit.Location;
  */
 public enum MediumPlanet {
 
-	LOFAF, LOHAC, LOLAR, LOWAS;
+	LOFAF,
+	LOHAC,
+	LOLAR,
+	LOWAS;
 
 	/**
 	 * Gets the short name of a MediumPlanet.
@@ -75,7 +78,7 @@ public enum MediumPlanet {
 		case LOWAS:
 		default:
 			break;
-		
+
 		}
 		return l;
 	}

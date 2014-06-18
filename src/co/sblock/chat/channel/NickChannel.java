@@ -14,7 +14,7 @@ import co.sblock.users.User;
  */
 public class NickChannel extends Channel {
 
-	protected Map<User, String> nickList; 
+	protected Map<User, String> nickList;
 
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, UUID)
@@ -56,7 +56,8 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public String getNick(User sender) {
-		return nickList.containsKey(sender) ? nickList.get(sender) : sender.getPlayer().getDisplayName();
+		return nickList.containsKey(sender) ? nickList.get(sender) : sender.getPlayer()
+				.getDisplayName();
 	}
 
 	/**

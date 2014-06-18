@@ -39,7 +39,7 @@ public class FurnaceSmeltListener implements Listener {
 		ItemStack result = getMainItem(event.getSource().getType());
 
 		int amount = (int) (result.getAmount()
-				// This cast is actually necessary, prevents mid-calculation rounding.
+		// This cast is actually necessary, prevents mid-calculation rounding.
 				* ((double) (event.getSource().getType().getMaxDurability() - event.getSource()
 						.getDurability())) / event.getSource().getType().getMaxDurability());
 
@@ -57,7 +57,8 @@ public class FurnaceSmeltListener implements Listener {
 		} else {
 			furnace.getWorld().dropItemNaturally(furnace.getLocation(), result);
 		}
-		furnace.getInventory().setSmelting(InventoryUtils.decrement(furnace.getInventory().getSmelting(), 1));
+		furnace.getInventory().setSmelting(
+				InventoryUtils.decrement(furnace.getInventory().getSmelting(), 1));
 		furnace.update(true);
 	}
 

@@ -17,10 +17,15 @@ import co.sblock.utilities.regex.RegexUtils;
  */
 public enum MachineType {
 
-	ALCHEMITER("alc"), COMPUTER("cpu"), CRUXTRUDER("crx"),
-	PERFECT_BUILDING_OBJECT("pbo"), PERFECTLY_GENERIC_OBJECT("pgo"),
-	PUNCH_DESIGNIX("pd"), TOTEM_LATHE("tl"),
-	TRANSPORTALIZER("tp"), ANY("NO.");
+	ALCHEMITER("alc"),
+	COMPUTER("cpu"),
+	CRUXTRUDER("crx"),
+	PERFECT_BUILDING_OBJECT("pbo"),
+	PERFECTLY_GENERIC_OBJECT("pgo"),
+	PUNCH_DESIGNIX("pd"),
+	TOTEM_LATHE("tl"),
+	TRANSPORTALIZER("tp"),
+	ANY("NO.");
 
 	/** The shortened name of the MachineType. */
 	String type;

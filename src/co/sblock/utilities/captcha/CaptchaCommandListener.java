@@ -60,7 +60,8 @@ public class CaptchaCommandListener implements CommandListener {
 	@SblockCommand
 	public boolean captchadex(CommandSender sender, String[] args) {
 		if (sender.isOp())
-			((Player) sender).getInventory().addItem(Captchadex.createCaptchadexBook((Player) sender));
+			((Player) sender).getInventory().addItem(
+					Captchadex.createCaptchadexBook((Player) sender));
 		return true;
 	}
 

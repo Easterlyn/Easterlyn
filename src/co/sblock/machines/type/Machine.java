@@ -99,7 +99,8 @@ public abstract class Machine {
 	 * @return the Location String
 	 */
 	public String getLocationString() {
-		return key.getWorld().getName() + "," + key.getBlockX() + "," + key.getBlockY() + "," + key.getBlockZ();
+		return key.getWorld().getName() + "," + key.getBlockX() + "," + key.getBlockY() + ","
+				+ key.getBlockZ();
 	}
 
 	/**
@@ -146,14 +147,16 @@ public abstract class Machine {
 	 * Sets up the Machine Block configuration using a BlockPlaceEvent.
 	 * 
 	 * @param event the BlockPlaceEvent
-	 * @return 
+	 * @return
 	 */
 	public void assemble(BlockPlaceEvent event) {
 		for (Location l : blocks.keySet()) {
-			if (!l.equals(this.key) && (!l.getBlock().isEmpty()
-					|| MachineManager.getManager().isExploded(l.getBlock()))) {
+			if (!l.equals(this.key)
+					&& (!l.getBlock().isEmpty() || MachineManager.getManager().isExploded(
+							l.getBlock()))) {
 				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
+				event.getPlayer().sendMessage(
+						ChatColor.RED + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed();
 				return;
 			}
@@ -205,7 +208,8 @@ public abstract class Machine {
 				assemble();
 				for (Entry<Location, ItemStack[]> e : invents.entrySet()) {
 					try {
-						((InventoryHolder) e.getKey().getBlock().getState()).getInventory().setContents(e.getValue());
+						((InventoryHolder) e.getKey().getBlock().getState()).getInventory()
+								.setContents(e.getValue());
 					} catch (ClassCastException e1) {
 						for (ItemStack is : e.getValue()) {
 							key.getWorld().dropItem(key, is);
@@ -264,7 +268,8 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
-		if (!meetsAdditionalBreakConditions(event) && !event.getPlayer().hasPermission("group.denizen")) {
+		if (!meetsAdditionalBreakConditions(event)
+				&& !event.getPlayer().hasPermission("group.denizen")) {
 			return true;
 		}
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !getType().isFree()) {
@@ -363,7 +368,8 @@ public abstract class Machine {
 	public boolean handleInteract(PlayerInteractEvent event) {
 		for (Location l : this.blocks.keySet()) {
 			if (MachineManager.getManager().isExploded(l.getBlock())) {
-				event.getPlayer().sendMessage(ChatColor.RED + "This machine is too damaged to use!");
+				event.getPlayer()
+						.sendMessage(ChatColor.RED + "This machine is too damaged to use!");
 				return true;
 			}
 		}

@@ -22,7 +22,6 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.chat.SblockChat;
@@ -46,8 +45,7 @@ import co.sblock.utilities.rawmessages.RawAnnouncer;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
- * Sblock is the base of Sblock.co's custom plugin. All features are handled by
- * smaller modules.
+ * Sblock is the base of Sblock.co's custom plugin. All features are handled by smaller modules.
  * 
  * @author Jikoo, FireNG, Dublek
  */
@@ -91,21 +89,21 @@ public class Sblock extends JavaPlugin {
 		// must be at the beginning for thread saftey
 		instance = this;
 
-		//TODO: the fuck is this... make it better, reflection baaaaaad
+		// TODO: the fuck is this... make it better, reflection baaaaaad
 		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R3.CraftServer) {
 			try {
-				Field f = org.bukkit.craftbukkit.v1_7_R3.CraftServer.class.getDeclaredField("commandMap");
+				Field f = org.bukkit.craftbukkit.v1_7_R3.CraftServer.class
+						.getDeclaredField("commandMap");
 				f.setAccessible(true);
 				cmdMap = (SimpleCommandMap) f.get(Bukkit.getServer());
-			} catch (IllegalArgumentException | IllegalAccessException
-					| NoSuchFieldException | SecurityException e) {
+			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+					| SecurityException e) {
 				logger.criticalErr(e);
 			}
 		} else {
 			getLog().severe("Invalid server version, Sblock commands will fail to register.");
 		}
-		
-		
+
 		modules = new HashSet<>();
 		commandHandlers = new HashMap<>();
 		listenerInstances = new HashMap<>();
@@ -114,7 +112,7 @@ public class Sblock extends JavaPlugin {
 		createRecipes();
 
 		SblockData.getDB().enable();
-		
+
 		modules.add(new SblockChat().enable());
 		modules.add(new SblockUsers().enable());
 		modules.add(new SblockEvents().enable());
@@ -148,9 +146,12 @@ public class Sblock extends JavaPlugin {
 	public void registerCommands(CommandListener listener) {
 		for (Method method : listener.getClass().getMethods()) {
 			if (this.commandHandlers.containsKey(method)) {
-				getLog().severe("Duplicate handlers for command " + method.getName() + " found in "
-						+ this.commandHandlers.get(method.getName()).getDeclaringClass().getName()
-						+ " and " + listener.getClass().getName());
+				getLog().severe(
+						"Duplicate handlers for command "
+								+ method.getName()
+								+ " found in "
+								+ this.commandHandlers.get(method.getName()).getDeclaringClass()
+										.getName() + " and " + listener.getClass().getName());
 			} else if (isValidCommand(method)) {
 				this.commandHandlers.put(method.getName(), method);
 				Command cmd = createCommand(method);
@@ -165,8 +166,8 @@ public class Sblock extends JavaPlugin {
 	/**
 	 * Verifies that a SblockCommand is properly formed.
 	 * <p>
-	 * A properly formed SblockCommand accepts a CommandSender and String[] as
-	 * arguments and returns a boolean.
+	 * A properly formed SblockCommand accepts a CommandSender and String[] as arguments and returns
+	 * a boolean.
 	 * 
 	 * @param method the potential SblockCommand
 	 * 
@@ -183,10 +184,11 @@ public class Sblock extends JavaPlugin {
 				|| !String[].class.isAssignableFrom(method.getParameterTypes()[1])
 				|| boolean.class != method.getGenericReturnType()) {
 
-			logger.severe("Malformed SblockCommand: " + method.getName() + "\nExpected public boolean "
-				 + method.getDeclaringClass().getName() + "." + method.getName()
-				+ "(org.bukkit.command.CommandSender,java.lang.String[]) and recieved "
-				+ method.toString());
+			logger.severe("Malformed SblockCommand: " + method.getName()
+					+ "\nExpected public boolean " + method.getDeclaringClass().getName() + "."
+					+ method.getName()
+					+ "(org.bukkit.command.CommandSender,java.lang.String[]) and recieved "
+					+ method.toString());
 			return false;
 		}
 
@@ -208,33 +210,33 @@ public class Sblock extends JavaPlugin {
 		Command cmd = getServer().getPluginCommand(m.getName());
 		if (cmd != null && cmd.getName().equals(m.getName())) {
 			// Command has been registered by another plugin.
-			getLog().info("Overriding /" + m.getName() + " by "
-					+ ((PluginCommand) cmd).getExecutor().getClass().getName()
-					+ ". The original is available through " + cmd.getAliases().toString());
+			getLog().info(
+					"Overriding /" + m.getName() + " by "
+							+ ((PluginCommand) cmd).getExecutor().getClass().getName()
+							+ ". The original is available through " + cmd.getAliases().toString());
 			this.overriddenCommands.put((PluginCommand) cmd, ((PluginCommand) cmd).getExecutor());
 			((PluginCommand) cmd).setExecutor(this);
 		} else {
 			cmd = new CustomCommand(m.getName());
 		}
-		
-		
-		cmd.setDescription(ChatColor.YELLOW + 
-						   (m.getAnnotation(CommandDescription.class) != null ?
-								   ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value())
-								   :ChatColor.YELLOW + "A Sblock command."));
-		
-		cmd.setUsage(ChatColor.RED + 
-					 (m.getAnnotation(CommandUsage.class) != null ?
-							 ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value())
-							 :"/<command>"));
-		
-		cmd.setPermission(m.getAnnotation(CommandPermission.class) != null ?
-						  m.getAnnotation(CommandPermission.class).value()
-						  :null);
 
-		cmd.setPermissionMessage(m.getAnnotation(CommandDenial.class) != null ?
-				ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value())
-				:ChatColor.RED + "By the order of the Jarl, stop right there!");
+		cmd.setDescription(ChatColor.YELLOW
+				+ (m.getAnnotation(CommandDescription.class) != null ? ChatColor
+						.translateAlternateColorCodes('&', m
+								.getAnnotation(CommandDescription.class).value())
+						: ChatColor.YELLOW + "A Sblock command."));
+
+		cmd.setUsage(ChatColor.RED
+				+ (m.getAnnotation(CommandUsage.class) != null ? ChatColor
+						.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class)
+								.value()) : "/<command>"));
+
+		cmd.setPermission(m.getAnnotation(CommandPermission.class) != null ? m.getAnnotation(
+				CommandPermission.class).value() : null);
+
+		cmd.setPermissionMessage(m.getAnnotation(CommandDenial.class) != null ? ChatColor
+				.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value())
+				: ChatColor.RED + "By the order of the Jarl, stop right there!");
 
 		return cmd;
 	}
@@ -269,7 +271,8 @@ public class Sblock extends JavaPlugin {
 
 		// Smelting: Revert armor to crafting material, 1 coal if durability% too low
 		// Deprecated constructor required to ignore item durability
-		FurnaceRecipe furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
+		FurnaceRecipe furnace = new FurnaceRecipe(new ItemStack(Material.COAL),
+				Material.DIAMOND_AXE, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
 		furnace.setInput(Material.DIAMOND_BOOTS, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
@@ -341,11 +344,9 @@ public class Sblock extends JavaPlugin {
 	}
 
 	/**
-	 * Passes all registered commands to the CommandListener that registered
-	 * them.
+	 * Passes all registered commands to the CommandListener that registered them.
 	 * 
-	 * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command,
-	 *		String, String[])
+	 * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command, String, String[])
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -354,11 +355,13 @@ public class Sblock extends JavaPlugin {
 				if (this.overriddenCommands.get(command).onCommand(sender, command, label, args)) {
 					return true;
 				}
-				// Fall through to Sblock - most plugins return true with custom permission denial messages, etc.
+				// Fall through to Sblock - most plugins return true with custom permission denial
+				// messages, etc.
 			}
 		}
 		if (!this.commandHandlers.containsKey(command.getName())) {
-			this.getLogger().warning( "Command /" + command.getName() + " has no associated handler.");
+			this.getLogger().warning(
+					"Command /" + command.getName() + " has no associated handler.");
 			sender.sendMessage(ChatColor.RED
 					+ "An internal error has occurred. Please notify a member of staff of this issue as soon as possible.");
 			return true;
@@ -373,8 +376,8 @@ public class Sblock extends JavaPlugin {
 			return true;
 		}
 		try {
-			if (!(Boolean) handlerMethod.invoke(this.listenerInstances
-					.get(handlerMethod.getDeclaringClass()), sender, args)) {
+			if (!(Boolean) handlerMethod.invoke(
+					this.listenerInstances.get(handlerMethod.getDeclaringClass()), sender, args)) {
 				sender.sendMessage(command.getUsage());
 			}
 			return true;
@@ -384,7 +387,6 @@ public class Sblock extends JavaPlugin {
 		return false;
 	}
 
-	
 	/**
 	 * @return the Sblock custom logger
 	 */

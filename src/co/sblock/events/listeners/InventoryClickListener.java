@@ -51,7 +51,8 @@ public class InventoryClickListener implements Listener {
 
 		// Finds inventories other than chests opened by Machines
 		if (ih != null && ih instanceof BlockState) {
-			m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
+			m = SblockMachines.getMachines().getManager()
+					.getMachineByBlock(((BlockState) ih).getBlock());
 			if (m != null) {
 				event.setCancelled(m.handleClick(event));
 				return;
@@ -81,7 +82,8 @@ public class InventoryClickListener implements Listener {
 		case LEFT:
 		case RIGHT:
 			if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
-				if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+				if (event.getCurrentItem() == null
+						|| event.getCurrentItem().getType() == Material.AIR) {
 					return;
 				}
 				if (top) {
@@ -89,7 +91,8 @@ public class InventoryClickListener implements Listener {
 				} else {
 					itemRemoveBottom(event);
 				}
-			} else if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+			} else if (event.getCurrentItem() == null
+					|| event.getCurrentItem().getType() == Material.AIR) {
 				if (top) {
 					itemAddTop(event);
 				} else {
@@ -174,8 +177,10 @@ public class InventoryClickListener implements Listener {
 	@SuppressWarnings("deprecation")
 	private void itemAddTop(InventoryClickEvent event) {
 		// Cruxite items should not be tradeable.
-		if (event.getCursor() != null && event.getCursor().getItemMeta().hasDisplayName()
-				&& event.getCursor().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
+		if (event.getCursor() != null
+				&& event.getCursor().getItemMeta().hasDisplayName()
+				&& event.getCursor().getItemMeta().getDisplayName()
+						.startsWith(ChatColor.AQUA + "Cruxite ")) {
 			event.setCancelled(true);
 			return;
 		}
@@ -226,8 +231,10 @@ public class InventoryClickListener implements Listener {
 	@SuppressWarnings("deprecation")
 	private void itemSwapIntoTop(InventoryClickEvent event) {
 		// Cruxite items should not be tradeable.
-		if (event.getCursor() != null && event.getCursor().getItemMeta().hasDisplayName()
-				&& event.getCursor().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
+		if (event.getCursor() != null
+				&& event.getCursor().getItemMeta().hasDisplayName()
+				&& event.getCursor().getItemMeta().getDisplayName()
+						.startsWith(ChatColor.AQUA + "Cruxite ")) {
 			event.setCancelled(true);
 			return;
 		}
@@ -267,9 +274,10 @@ public class InventoryClickListener implements Listener {
 			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
-				event.getWhoClicked().openInventory(new Computer(event.getWhoClicked().getLocation(),
-						event.getWhoClicked().getUniqueId().toString(), true)
-								.getInventory(User.getUser(event.getWhoClicked().getUniqueId())));
+				event.getWhoClicked().openInventory(
+						new Computer(event.getWhoClicked().getLocation(), event.getWhoClicked()
+								.getUniqueId().toString(), true).getInventory(User.getUser(event
+								.getWhoClicked().getUniqueId())));
 			}
 			return;
 		}
@@ -277,23 +285,24 @@ public class InventoryClickListener implements Listener {
 
 	// add bottom
 	private void itemAddBottom(InventoryClickEvent event) {
-		
+
 	}
 
 	// move bottom to top
 	@SuppressWarnings("deprecation")
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
 		// Cruxite items should not be tradeable.
-		if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().hasDisplayName()
-				&& event.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
+		if (event.getCurrentItem() != null
+				&& event.getCurrentItem().getItemMeta().hasDisplayName()
+				&& event.getCurrentItem().getItemMeta().getDisplayName()
+						.startsWith(ChatColor.AQUA + "Cruxite ")) {
 			event.setCancelled(true);
 			return;
 		}
 
 		// Captchadex: convert single punchcard to item inside
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			if (Captcha.isPunch(event.getCurrentItem())
-					&& event.getCurrentItem().getAmount() == 1) {
+			if (Captcha.isPunch(event.getCurrentItem()) && event.getCurrentItem().getAmount() == 1) {
 				event.setCurrentItem(Captcha.captchaToItem(event.getCurrentItem()));
 			} else {
 				event.setResult(Result.DENY);
@@ -338,16 +347,16 @@ public class InventoryClickListener implements Listener {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 
 		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()
-				&& (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())
-						|| hotbar.equals(MachineType.COMPUTER.getUniqueDrop()))) {
+				&& (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop()) || hotbar
+						.equals(MachineType.COMPUTER.getUniqueDrop()))) {
 			event.setCancelled(true);
 			return;
 		}
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
-				&& (InventoryUtils.isUniqueItem(event.getCursor())
-						|| InventoryUtils.isUniqueItem(hotbar))) {
+				&& (InventoryUtils.isUniqueItem(event.getCursor()) || InventoryUtils
+						.isUniqueItem(hotbar))) {
 			event.setResult(Result.DENY);
 			return;
 		}

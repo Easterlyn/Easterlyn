@@ -86,11 +86,13 @@ public class Computer extends Machine implements InventoryHolder {
 			if (event.getCurrentItem().equals(ico.getIcon())) {
 				switch (ico) {
 				case BACK:
-					event.getWhoClicked().openInventory(getInventory(User.getUser(event.getWhoClicked().getUniqueId())));
+					event.getWhoClicked().openInventory(
+							getInventory(User.getUser(event.getWhoClicked().getUniqueId())));
 					break;
 				case BOONDOLLAR_SHOP:
 					// Keiko, shop name is all you, set to LOHACSE for now
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bossshop open LOHACSE " + event.getWhoClicked().getName());
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bossshop open LOHACSE "
+							+ event.getWhoClicked().getName());
 					break;
 				case SBURBCLIENT:
 					// if gamestate != none
@@ -102,8 +104,8 @@ public class Computer extends Machine implements InventoryHolder {
 				case CONFIRM:
 					User u = User.getUser(event.getWhoClicked().getUniqueId());
 					if (u == null) {
-						((Player) event.getWhoClicked()).sendMessage(
-								ChatColor.RED + "Your data appears to not have loaded properly. Please relog.");
+						((Player) event.getWhoClicked()).sendMessage(ChatColor.RED
+								+ "Your data appears to not have loaded properly. Please relog.");
 						break;
 					}
 					// All checks for starting server mode handled inside startServerMode()
@@ -133,17 +135,21 @@ public class Computer extends Machine implements InventoryHolder {
 		}
 		if (!event.getPlayer().getUniqueId().toString().equals(this.owner)) {
 			if (event.getPlayer().hasPermission("group.denizen")) {
-				event.getPlayer().sendMessage("Allowing admin override for interaction with Computer.");
+				event.getPlayer().sendMessage(
+						"Allowing admin override for interaction with Computer.");
 			} else {
 				return true;
 			}
 		}
-		if (event.getMaterial().name().contains("RECORD")) { // prevent non-program Icons from being registered
+		if (event.getMaterial().name().contains("RECORD")) { // prevent non-program Icons from being
+																// registered
 			event.setCancelled(true);
 			Icon ico = Icon.getIcon(event.getItem());
 			if (ico != null) {
-				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed "
-						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
+				event.getPlayer().sendMessage(
+						ChatColor.GREEN + "Installed "
+								+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN
+								+ "!");
 				event.getPlayer().setItemInHand(null);
 				User u = User.getUser(event.getPlayer().getUniqueId());
 				u.addProgram(ico.getProgramID());
@@ -152,7 +158,8 @@ public class Computer extends Machine implements InventoryHolder {
 				event.getPlayer().openInventory(getInventory());
 			}
 		}
-		event.getPlayer().openInventory(getInventory(User.getUser(event.getPlayer().getUniqueId())));
+		event.getPlayer()
+				.openInventory(getInventory(User.getUser(event.getPlayer().getUniqueId())));
 		return true;
 	}
 

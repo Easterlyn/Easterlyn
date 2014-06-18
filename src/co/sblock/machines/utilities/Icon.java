@@ -8,15 +8,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 /**
- * Enum for supplying ItemStacks that represent
- * "programs" installed on a user's Computer.
+ * Enum for supplying ItemStacks that represent "programs" installed on a user's Computer.
  * 
  * @author Jikoo
  */
 public enum Icon {
 
-	PESTERCHUM(1), SBURBCLIENT(5), SBURBSERVER(2),
-	BACK(0), CONFIRM(0), BOONDOLLAR_SHOP(0), ;
+	PESTERCHUM(1),
+	SBURBCLIENT(5),
+	SBURBSERVER(2),
+	BACK(0),
+	CONFIRM(0),
+	BOONDOLLAR_SHOP(0), ;
 
 	/** The program ID. */
 	private int number;
@@ -62,7 +65,7 @@ public enum Icon {
 		ItemStack is = new ItemStack(Material.DIRT);
 		ItemMeta im = is.getItemMeta();
 		ArrayList<String> lore = new ArrayList<String>();
-		switch(this) {
+		switch (this) {
 		case BACK:
 			is.setType(Material.REDSTONE_BLOCK);
 			im.setDisplayName(ChatColor.DARK_RED + "Back");

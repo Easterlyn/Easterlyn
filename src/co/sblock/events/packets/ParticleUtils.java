@@ -44,28 +44,31 @@ public class ParticleUtils {
 	public void addEntity(Entity entity, ParticleEffect effect) {
 		entities.put(entity, effect);
 		if (task == -1) {
-			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
-				@Override
-				public void run() {
-					Iterator<Entry<Entity, ParticleEffect>> iterator = entities.entrySet().iterator();
-					while (iterator.hasNext()) {
-						Entry<Entity, ParticleEffect> entry = iterator.next();
-						PACKET.setLocation(entry.getKey().getLocation());
-						PACKET.setParticleEffect(entry.getValue());
-						ProtocolLibrary.getProtocolManager().broadcastServerPacket(PACKET.getHandle(), entry.getKey().getLocation(), 48);
-						if (entry.getKey().isDead()) {
-							iterator.remove();
-							continue;
-						}
-					}
+			task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(),
+					new Runnable() {
+						@Override
+						public void run() {
+							Iterator<Entry<Entity, ParticleEffect>> iterator = entities.entrySet()
+									.iterator();
+							while (iterator.hasNext()) {
+								Entry<Entity, ParticleEffect> entry = iterator.next();
+								PACKET.setLocation(entry.getKey().getLocation());
+								PACKET.setParticleEffect(entry.getValue());
+								ProtocolLibrary.getProtocolManager().broadcastServerPacket(
+										PACKET.getHandle(), entry.getKey().getLocation(), 48);
+								if (entry.getKey().isDead()) {
+									iterator.remove();
+									continue;
+								}
+							}
 
-					if (entities.size() == 0) {
-						Bukkit.getScheduler().cancelTask(task);
-						task = -1;
-						return;
-					}
-				}
-			}, 0, 1);
+							if (entities.size() == 0) {
+								Bukkit.getScheduler().cancelTask(task);
+								task = -1;
+								return;
+							}
+						}
+					}, 0, 1);
 		}
 	}
 

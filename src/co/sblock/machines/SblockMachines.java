@@ -30,8 +30,10 @@ public class SblockMachines extends Module {
 		this.registerCommands(new MachineCommand());
 		SblockData.getDB().loadAllMachines();
 
-		// Recipe does nothing on its own - We'll cancel all smelts that do not happen within a TotemLate.
-		Bukkit.addRecipe(new FurnaceRecipe(new ItemStack(Material.NETHER_BRICK_ITEM), Material.NETHER_BRICK_ITEM));
+		// Recipe does nothing on its own - We'll cancel all smelts that do not happen within a
+		// TotemLate.
+		Bukkit.addRecipe(new FurnaceRecipe(new ItemStack(Material.NETHER_BRICK_ITEM),
+				Material.NETHER_BRICK_ITEM));
 	}
 
 	/**

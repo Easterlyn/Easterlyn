@@ -35,21 +35,22 @@ public class RawAnnouncer extends Module implements CommandListener {
 	@Override
 	protected void onEnable() {
 		announcements = this.constructAnnouncements();
-		
 
-		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(),
+				new Runnable() {
 
-			@Override
-			public void run() {
-				MessageElement msg = announcements.get((int) (Math.random() * announcements.size()));
-				Log.anonymousInfo(msg.getConsoleFriendly());
-				String announcement = msg.toString();
-				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-							"tellraw " + p.getName() + " " + announcement);
-				}
-			}
-		}, 0, 1200 * 15); // 15 minutes in between rawnouncments
+					@Override
+					public void run() {
+						MessageElement msg = announcements.get((int) (Math.random() * announcements
+								.size()));
+						Log.anonymousInfo(msg.getConsoleFriendly());
+						String announcement = msg.toString();
+						for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+									"tellraw " + p.getName() + " " + announcement);
+						}
+					}
+				}, 0, 1200 * 15); // 15 minutes in between rawnouncments
 
 		this.registerCommands(this);
 	}
@@ -63,61 +64,70 @@ public class RawAnnouncer extends Module implements CommandListener {
 		List<MessageElement> msgs = new ArrayList<MessageElement>();
 
 		msgs.add(new MessageHalement("Join us on our subreddit, ").addExtra(
-				new MessageElement("/r/Sblock", ChatColor.AQUA)
-						.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL,
-								"http://www.reddit.com/r/sblock"))
-						.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT,
-								ChatColor.GOLD + "Click here to go!")),
-				new MessageElement("!", ChatColor.RED)));
+				new MessageElement("/r/Sblock", ChatColor.AQUA).addClickEffect(
+						new MessageClick(MessageClick.ClickEffect.OPEN_URL,
+								"http://www.reddit.com/r/sblock")).addHoverEffect(
+						new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD
+								+ "Click here to go!")), new MessageElement("!", ChatColor.RED)));
 
 		msgs.add(new MessageHalement("If you're having difficulty with chat, ").addExtra(
-				new MessageElement("/sc ?", ChatColor.AQUA)
-						.addClickEffect(new MessageClick(MessageClick.ClickEffect.RUN_COMMAND, "/sc ?"))
-						.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT,
-								ChatColor.GOLD + "Click to run!")),
-				new MessageElement(" is your friend!", ChatColor.RED)));
+				new MessageElement("/sc ?", ChatColor.AQUA).addClickEffect(
+						new MessageClick(MessageClick.ClickEffect.RUN_COMMAND, "/sc ?"))
+						.addHoverEffect(
+								new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD
+										+ "Click to run!")), new MessageElement(" is your friend!",
+						ChatColor.RED)));
 
-		msgs.add(new MessageHalement("Remember, we are in ").addExtra(
-				new MessageElement("ALPHA", ChatColor.GOLD, ChatColor.BOLD)
-						.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT,
-								ChatColor.DARK_RED + "We reserve the right to fuck up badly.")),
-				new MessageElement("!", ChatColor.RED)));
+		msgs.add(new MessageHalement("Remember, we are in ").addExtra(new MessageElement("ALPHA",
+				ChatColor.GOLD, ChatColor.BOLD).addHoverEffect(new MessageHover(
+				MessageHover.HoverEffect.SHOW_TEXT, ChatColor.DARK_RED
+						+ "We reserve the right to fuck up badly.")), new MessageElement("!",
+				ChatColor.RED)));
 
 		msgs.add(new MessageHalement("Join us on ").addExtra(
-				new MessageElement("Mumble", ChatColor.AQUA)
-						.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL,
-								"http://mumble.sourceforge.net/"))
-						.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT,
-								ChatColor.GOLD + "Click here to download!")),
-				new MessageElement(" for voice chat! The server is ", ChatColor.RED),
-				new MessageElement("   sblock.co", ChatColor.AQUA),
-				new MessageElement(", port ", ChatColor.RED),
-				new MessageElement("25560", ChatColor.AQUA),
+				new MessageElement("Mumble", ChatColor.AQUA).addClickEffect(
+						new MessageClick(MessageClick.ClickEffect.OPEN_URL,
+								"http://mumble.sourceforge.net/")).addHoverEffect(
+						new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD
+								+ "Click here to download!")), new MessageElement(
+						" for voice chat! The server is ", ChatColor.RED), new MessageElement(
+						"   sblock.co", ChatColor.AQUA), new MessageElement(", port ",
+						ChatColor.RED), new MessageElement("25560", ChatColor.AQUA),
 				new MessageElement("!", ChatColor.RED)));
 
 		msgs.add(new MessageHalement("It appears that enchanting furnaces is very beneficial."
 				+ " You might consider giving it a try."));
 
-		msgs.add(new MessageHalement("Curious about your fellow players' classpects? Have a look at their ")
-				.addExtra(new MessageElement("/profile", ChatColor.AQUA)
-								.addClickEffect(new MessageClick(MessageClick.ClickEffect.RUN_COMMAND, "/profile"))
-								.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT,
-										ChatColor.GOLD + "Click to run!")),
+		msgs.add(new MessageHalement(
+				"Curious about your fellow players' classpects? Have a look at their ")
+				.addExtra(
+						new MessageElement("/profile", ChatColor.AQUA).addClickEffect(
+								new MessageClick(MessageClick.ClickEffect.RUN_COMMAND, "/profile"))
+								.addHoverEffect(
+										new MessageHover(MessageHover.HoverEffect.SHOW_TEXT,
+												ChatColor.GOLD + "Click to run!")),
 						new MessageElement("!", ChatColor.RED)));
 
-		msgs.add(new MessageHalement("It is your generosity that keeps Sblock alive. Please consider ").addExtra(
-				new MessageElement("donating", ChatColor.AQUA)
-						.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://adf.ly/NThbj"))
-						.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click here to go!")),
-				new MessageElement(" to help.", ChatColor.RED)));
+		msgs.add(new MessageHalement(
+				"It is your generosity that keeps Sblock alive. Please consider ").addExtra(
+				new MessageElement("donating", ChatColor.AQUA).addClickEffect(
+						new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://adf.ly/NThbj"))
+						.addHoverEffect(
+								new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD
+										+ "Click here to go!")), new MessageElement(" to help.",
+						ChatColor.RED)));
 
-		msgs.add(new MessageHalement("To sleep without dreaming, sneak while right clicking your bed!"));
+		msgs.add(new MessageHalement(
+				"To sleep without dreaming, sneak while right clicking your bed!"));
 
-		msgs.add(new MessageHalement("If you're using our resource pack, we suggest you ").addExtra(
-				new MessageElement("download", ChatColor.AQUA)
-				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://sblock.co/rpack/"))
-				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click to see all Sblock rpacks!")),
-		new MessageElement(" the sound pack as well.", ChatColor.RED)));
+		msgs.add(new MessageHalement("If you're using our resource pack, we suggest you ")
+				.addExtra(
+						new MessageElement("download", ChatColor.AQUA).addClickEffect(
+								new MessageClick(MessageClick.ClickEffect.OPEN_URL,
+										"http://sblock.co/rpack/")).addHoverEffect(
+								new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD
+										+ "Click to see all Sblock rpacks!")), new MessageElement(
+								" the sound pack as well.", ChatColor.RED)));
 
 		return msgs;
 	}
@@ -141,7 +151,8 @@ public class RawAnnouncer extends Module implements CommandListener {
 			try {
 				int msgNum = Integer.valueOf(args[0]);
 				if (msgNum > announcements.size()) {
-					s.sendMessage(ChatColor.RED.toString() + announcements.size() + " announcements exist currently.");
+					s.sendMessage(ChatColor.RED.toString() + announcements.size()
+							+ " announcements exist currently.");
 					msgNum = announcements.size();
 				}
 				msg = announcements.get(msgNum - 1);
@@ -157,7 +168,8 @@ public class RawAnnouncer extends Module implements CommandListener {
 		String announcement = msg.toString();
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			User.getUser(p.getUniqueId()).rawHighlight(announcement);
-			//Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + announcement);
+			// Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " +
+			// announcement);
 		}
 		return true;
 	}

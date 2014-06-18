@@ -1,8 +1,9 @@
 package co.sblock.chat.channel;
 
 public enum AccessLevel {
-	PUBLIC, PRIVATE;
-	
+	PUBLIC,
+	PRIVATE;
+
 	public static AccessLevel getAccess(String access) {
 		access = access.toUpperCase();
 		try {

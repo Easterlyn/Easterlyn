@@ -33,9 +33,9 @@ import co.sblock.utilities.inventory.InventoryUtils;
 /**
  * Machine for Entity teleportation.
  * <p>
- * Costs fuel based on distance: 1 unit of fuel per 50 blocks of direct line
- * travel rounded up. Gunpowder = 1 fuel, redstone = 2, blaze powder = 3,
- * glowstone = 4, blaze rod = 6, glowstone block = 16, redstone block = 18.
+ * Costs fuel based on distance: 1 unit of fuel per 50 blocks of direct line travel rounded up.
+ * Gunpowder = 1 fuel, redstone = 2, blaze powder = 3, glowstone = 4, blaze rod = 6, glowstone block
+ * = 16, redstone block = 18.
  * <p>
  * Does not store excess fuel, uses first valid fuel object(s) available.
  * 
@@ -45,13 +45,15 @@ public class Transportalizer extends Machine {
 
 	private long fuel;
 	private Hologram fuelHolo;
+
 	/**
 	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
 	public Transportalizer(Location l, String data, Direction d) {
 		super(l, data, d);
-		MaterialData m = new MaterialData(Material.HOPPER, d.getRelativeDirection(Direction.SOUTH).getChestByte());
+		MaterialData m = new MaterialData(Material.HOPPER, d.getRelativeDirection(Direction.SOUTH)
+				.getChestByte());
 		shape.addBlock(new Vector(0, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_BLOCK);
 		shape.addBlock(new Vector(-1, 0, 0), m);
@@ -116,7 +118,8 @@ public class Transportalizer extends Machine {
 	public void setData(String data) {
 		try {
 			fuel = Long.valueOf(data);
-			// HoloAPI doesn't accept line updates till all holograms are loaded at 10 seconds after start.
+			// HoloAPI doesn't accept line updates till all holograms are loaded at 10 seconds after
+			// start.
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 				@SuppressWarnings("deprecation")
 				@Override
@@ -126,7 +129,7 @@ public class Transportalizer extends Machine {
 					}
 				}
 			}, 200);
-		} catch (NumberFormatException e)  {
+		} catch (NumberFormatException e) {
 			fuel = 0;
 		}
 	}
@@ -150,12 +153,17 @@ public class Transportalizer extends Machine {
 							fuel += getValue(event.getSource().getItem(i).getType());
 							fuelHolo.updateLines(String.valueOf(fuel));
 							key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
-							event.getSource().setItem(i, InventoryUtils.decrement(event.getSource().getItem(i), 1));
+							event.getSource().setItem(i,
+									InventoryUtils.decrement(event.getSource().getItem(i), 1));
 							break;
 						} else {
-							key.getWorld().dropItem(key.clone().add(Shape.getRelativeVector(direction
-											.getRelativeDirection(Direction.SOUTH), new Vector(0.5, 0.5, -1.5))),
-									event.getSource().getItem(i));
+							key.getWorld()
+									.dropItem(
+											key.clone().add(
+													Shape.getRelativeVector(direction
+															.getRelativeDirection(Direction.SOUTH),
+															new Vector(0.5, 0.5, -1.5))),
+											event.getSource().getItem(i));
 							event.getSource().setItem(i, null);
 							break;
 						}
@@ -164,7 +172,7 @@ public class Transportalizer extends Machine {
 					// Machine was destroyed, probably with items in the hopper.
 				}
 			}
-			
+
 		});
 		return true;
 	}
@@ -242,19 +250,21 @@ public class Transportalizer extends Machine {
 		// Check for a sign in the proper location
 		Block signBlock = this.key.clone().add(new Vector(0, 2, 0)).getBlock();
 		if (!signBlock.getType().equals(Material.WALL_SIGN)) {
-			event.getPlayer().sendMessage(ChatColor.RED
-					+ "Please place a sign on your transportalizer between the buttons to use it."
-					+ "\nThe third row should contain your desired coordinates in x,y,x format."
-					+ "\nAll the other rows can contain whatever you like.");
+			event.getPlayer()
+					.sendMessage(
+							ChatColor.RED
+									+ "Please place a sign on your transportalizer between the buttons to use it."
+									+ "\nThe third row should contain your desired coordinates in x,y,x format."
+									+ "\nAll the other rows can contain whatever you like.");
 			return false;
 		}
 
 		// Check sign for proper format - sign lines are 0-3, third line is line 2
 		String line3 = ((Sign) signBlock.getState()).getLine(2);
 		if (!line3.matches("\\-?[0-9]+,[0-9]+,\\-?[0-9]+")) {
-			event.getPlayer().sendMessage(ChatColor.RED
-					+ "The third line of your transportalizer sign must contain "
-					+ "your desired destination in x,y,z format. Ex: 0,64,0");
+			event.getPlayer().sendMessage(
+					ChatColor.RED + "The third line of your transportalizer sign must contain "
+							+ "your desired destination in x,y,z format. Ex: 0,64,0");
 			return false;
 		}
 
@@ -265,14 +275,16 @@ public class Transportalizer extends Machine {
 		Location remote = new Location(event.getClickedBlock().getWorld(),
 				Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
 
-		// 
+		//
 		int cost = (int) (key.distance(remote) / 50 + 1);
 		// CHECK FUEL
 		if (fuel < cost) {
-			event.getPlayer().sendMessage(ChatColor.RED
-					+ "The Transportalizer begins humming through standard teleport procedure,"
-					+ " when all of a sudden it growls to a halt."
-					+ "\nPerhaps it requires more fuel?");
+			event.getPlayer()
+					.sendMessage(
+							ChatColor.RED
+									+ "The Transportalizer begins humming through standard teleport procedure,"
+									+ " when all of a sudden it growls to a halt."
+									+ "\nPerhaps it requires more fuel?");
 			key.getWorld().playSound(key, Sound.WOLF_GROWL, 16, 2);
 			return false;
 		}
@@ -301,8 +313,8 @@ public class Transportalizer extends Machine {
 				if (e.getLocation().getBlock().equals(remote.getBlock())) {
 					fuel -= cost;
 					fuelHolo.updateLines(String.valueOf(fuel));
-					e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(), pad.getZ() + .5,
-							e.getLocation().getYaw(), e.getLocation().getPitch()));
+					e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(),
+							pad.getZ() + .5, e.getLocation().getYaw(), e.getLocation().getPitch()));
 					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
 					pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
 					pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);

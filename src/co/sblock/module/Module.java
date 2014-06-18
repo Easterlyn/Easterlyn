@@ -11,13 +11,13 @@ import co.sblock.Sblock;
 import co.sblock.utilities.Log;
 
 /**
- * The base class for all plugin modules, allowing separate components of the
- * plugin to be managed separately.
+ * The base class for all plugin modules, allowing separate components of the plugin to be managed
+ * separately.
  * 
  * @author FireNG
  */
 public abstract class Module {
-	
+
 	/* The Set of Listeners registered by this Module. */
 	private Set<Listener> listeners = new HashSet<Listener>();
 
@@ -63,7 +63,7 @@ public abstract class Module {
 			this.onEnable();
 		} catch (Exception e) {
 			String message = "[SblockSuite] Unhandled exception in module " + getName()
-						   + ". Plugin failed to load.";
+					+ ". Plugin failed to load.";
 			throw new RuntimeException(message, e);
 		}
 		return this;
@@ -82,7 +82,7 @@ public abstract class Module {
 			}
 		} catch (Exception e) {
 			String message = "Unhandled exception in module " + getName()
-						   + ". Plugin failed to properly disable.";
+					+ ". Plugin failed to properly disable.";
 			throw new RuntimeException(message, e);
 		}
 		getLogger().info("Disabled module " + getName());
@@ -90,19 +90,17 @@ public abstract class Module {
 	}
 
 	/**
-	 * Gets a Logger that the plugin may use whose name is the same as this
-	 * Module's class name.
+	 * Gets a Logger that the plugin may use whose name is the same as this Module's class name.
 	 * 
 	 * @return the Log
 	 */
 	public final Log getLogger() {
 		return Log.getLog(getName());
 	}
-	
+
 	/**
-	 * A replacement for calling the reflective functions for logging purposes.
-	 * Reflective overhead is large, and there really is no excuse for throwing
-	 * away memory / runtime.
+	 * A replacement for calling the reflective functions for logging purposes. Reflective overhead
+	 * is large, and there really is no excuse for throwing away memory / runtime.
 	 * 
 	 * @return the name of the module
 	 */

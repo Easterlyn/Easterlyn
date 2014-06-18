@@ -23,12 +23,12 @@ import co.sblock.utilities.Broadcast;
 /**
  * A small helper class containing all methods that access the PlayerData table.
  * <p>
- * The PlayerData table is created by the following call:
- * CREATE TABLE PlayerData (name varchar(255), class varchar(6), aspect varchar(6),
- * mPlanet varchar(5), dPlanet varchar(7), towerNum tinyint, sleepState boolean,
- * currentChannel varchar(16), isMute boolean, nickname varchar(16), channels text, ip varchar(15),
- * timePlayed varchar(255), previousLocation varchar(255), programs varchar(255),
- * uuid varchar(255) UNIQUE KEY, client varchar(255), server varchar(255), progression varchar(16));
+ * The PlayerData table is created by the following call: CREATE TABLE PlayerData (name
+ * varchar(255), class varchar(6), aspect varchar(6), mPlanet varchar(5), dPlanet varchar(7),
+ * towerNum tinyint, sleepState boolean, currentChannel varchar(16), isMute boolean, nickname
+ * varchar(16), channels text, ip varchar(15), timePlayed varchar(255), previousLocation
+ * varchar(255), programs varchar(255), uuid varchar(255) UNIQUE KEY, client varchar(255), server
+ * varchar(255), progression varchar(16));
  * 
  * @author Jikoo
  */
@@ -41,14 +41,14 @@ public class PlayerData {
 	protected static void saveUserData(UUID userID) {
 		User user = UserManager.getUserManager().removeUser(userID);
 		if (user == null || !user.isLoaded()) {
-			SblockData.getLogger().warning("UUID " + userID.toString()
-					+ " does not appear to have userdata loaded, skipping save.");
+			SblockData.getLogger().warning(
+					"UUID " + userID.toString()
+							+ " does not appear to have userdata loaded, skipping save.");
 			return;
 		}
 		PreparedStatement pst = null;
 		try {
-			pst = SblockData.getDB().connection()
-					.prepareStatement(Call.PLAYER_SAVE.toString());
+			pst = SblockData.getDB().connection().prepareStatement(Call.PLAYER_SAVE.toString());
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getPlayerClass().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
@@ -132,7 +132,8 @@ public class PlayerData {
 	protected static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
-				User user = UserManager.getUserManager().getUser(UUID.fromString(rs.getString("uuid")));
+				User user = UserManager.getUserManager().getUser(
+						UUID.fromString(rs.getString("uuid")));
 				if (user == null || user.getPlayer() == null) {
 					UserManager.getUserManager().removeUser(user.getUUID());
 					return;
@@ -147,7 +148,8 @@ public class PlayerData {
 				}
 				user.updateFlight();
 				if (rs.getBoolean("isMute")) {
-					user.setMute(true);;
+					user.setMute(true);
+					;
 				}
 				if (rs.getString("channels") != null) {
 					user.loginAddListening(rs.getString("channels").split(","));
@@ -187,7 +189,7 @@ public class PlayerData {
 				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
 
 				User user = UserManager.getUserManager().getUser(p.getUniqueId());
-				user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
+				user.loginAddListening(new String[] { "#", "#" + user.getPlayerRegion().name() });
 				user.updateCurrentRegion(user.getPlayerRegion());
 				user.setLoaded();
 				UserManager.getUserManager().team(p);
@@ -214,7 +216,8 @@ public class PlayerData {
 		PreparedStatement pst = null;
 		String name = "Player";
 		try {
-			pst = SblockData.getDB().connection().prepareStatement("SELECT * FROM PlayerData WHERE ip=?");
+			pst = SblockData.getDB().connection()
+					.prepareStatement("SELECT * FROM PlayerData WHERE ip=?");
 
 			pst.setString(1, hostAddress);
 
@@ -240,7 +243,6 @@ public class PlayerData {
 			return "Player";
 		}
 	}
-
 
 	/**
 	 * Create a PreparedStatement from a Player's saved data.
@@ -276,25 +278,29 @@ public class PlayerData {
 		try {
 			while (rs.next()) {
 				sb.append(sys).append("-----------------------------------------\n").append(txt);
-				sb.append(rs.getString("name")).append(div).append(rs.getString("class")).append(" of ")
-						.append(rs.getString("aspect")).append('\n');
+				sb.append(rs.getString("name")).append(div).append(rs.getString("class"))
+						.append(" of ").append(rs.getString("aspect")).append('\n');
 				sb.append(rs.getString("mPlanet")).append(div).append(rs.getString("dPlanet"))
 						.append(div).append("Tower: ").append(rs.getShort("towerNum")).append(div)
 						.append("Sleeping: ").append(rs.getBoolean("sleepState")).append('\n');
-				sb.append(rs.getBoolean("isMute")).append(div).append(rs.getString("currentChannel"))
-						.append(div).append(rs.getString("channels")).append('\n');
+				sb.append(rs.getBoolean("isMute")).append(div)
+						.append(rs.getString("currentChannel")).append(div)
+						.append(rs.getString("channels")).append('\n');
 				sb.append("Region: OFFLINE").append(div).append("Prev Loc: ")
 						.append(rs.getString("previousLocation")).append('\n');
 				sb.append(rs.getString("ip")).append('\n');
-				sb.append("Time: ").append(rs.getString("timePlayed")).append(div).append("Last login: ")
+				sb.append("Time: ")
+						.append(rs.getString("timePlayed"))
+						.append(div)
+						.append("Last login: ")
 						.append(new SimpleDateFormat("HH:mm:ss 'on' dd/MM/YY").format(new Date(
 								Bukkit.getOfflinePlayer(UUID.fromString(rs.getString("uuid")))
-								.getLastPlayed()))).append('\n');
+										.getLastPlayed()))).append('\n');
 			}
 			sb.append(sys).append("-----------------------------------------\n");
 			if (!(sender instanceof Player) || ((Player) sender).isOnline()) {
-				sender.sendMessage(sb.length() > 0 ? sb.toString()
-						: "No player data found for " + rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1"));
+				sender.sendMessage(sb.length() > 0 ? sb.toString() : "No player data found for "
+						+ rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1"));
 			}
 		} catch (SQLException e) {
 			SblockData.getLogger().err(e);

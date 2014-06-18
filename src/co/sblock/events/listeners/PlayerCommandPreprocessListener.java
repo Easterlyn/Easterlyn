@@ -24,23 +24,25 @@ public class PlayerCommandPreprocessListener implements Listener {
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
-		if (!event.getPlayer().hasPermission("group.denizen") && 0 < colon && (colon < space || space < 0)) {
+		if (!event.getPlayer().hasPermission("group.denizen") && 0 < colon
+				&& (colon < space || space < 0)) {
 			event.setMessage("/" + event.getMessage().substring(colon));
 		}
 
 		String lowercase = event.getMessage().toLowerCase();
 		if (lowercase.startsWith("/sethome")
-				&& (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())
-				|| User.getUser(event.getPlayer().getUniqueId()).isServer())) {
+				&& (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId()) || User
+						.getUser(event.getPlayer().getUniqueId()).isServer())) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");
+			event.getPlayer().sendMessage(
+					ChatColor.RED + "You hear a fizzling noise as your spell fails.");
 			return;
 		}
 
 		// Essentials doesn't have a perm node that allows access to just /tps.
-		if ((lowercase.startsWith("/gc") || lowercase.startsWith("/lag") || lowercase.startsWith("/mem")
-				|| lowercase.startsWith("/uptime") || lowercase.startsWith("/entities"))
-				&& !event.getPlayer().hasPermission("group.helper")) {
+		if ((lowercase.startsWith("/gc") || lowercase.startsWith("/lag")
+				|| lowercase.startsWith("/mem") || lowercase.startsWith("/uptime") || lowercase
+					.startsWith("/entities")) && !event.getPlayer().hasPermission("group.helper")) {
 			event.setMessage("/tps");
 			return;
 		}

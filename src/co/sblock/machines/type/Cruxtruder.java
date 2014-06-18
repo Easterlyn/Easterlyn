@@ -59,7 +59,8 @@ public class Cruxtruder extends Machine {
 			} else {
 				return true;
 			}
-			event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), CruxiteDowel.getDowel());
+			event.getBlock().getWorld()
+					.dropItemNaturally(event.getBlock().getLocation(), CruxiteDowel.getDowel());
 		} else {
 			super.handleBreak(event);
 		}

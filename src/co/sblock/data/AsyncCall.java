@@ -85,6 +85,7 @@ public class AsyncCall {
 	 */
 	private class CallBack implements Runnable {
 		private ResultSet rs;
+
 		private CallBack(ResultSet rs) {
 			this.rs = rs;
 		}

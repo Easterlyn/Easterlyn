@@ -6,12 +6,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import co.sblock.Sblock;
-/* damnit adam add this shit to the git repo
-import co.sblock.events.packets.ParticleUtils;
-*
-* and this is useless until that's been fixed
-import co.sblock.events.packets.WrapperPlayServerWorldParticles.ParticleEffect;
-*/
+
+/*
+ * damnit adam add this shit to the git repo import co.sblock.events.packets.ParticleUtils;
+ * 
+ * and this is useless until that's been fixed import
+ * co.sblock.events.packets.WrapperPlayServerWorldParticles.ParticleEffect;
+ */
 
 /**
  * @author Dublek, Jikoo
@@ -70,8 +71,7 @@ public class Meteorite {
 	}
 
 	/**
-	 * Drop the Meteorite, or, if there is still time remaining on
-	 * the countdown, tick the timer.
+	 * Drop the Meteorite, or, if there is still time remaining on the countdown, tick the timer.
 	 */
 	@SuppressWarnings("deprecation")
 	public void dropMeteorite() {
@@ -94,20 +94,25 @@ public class Meteorite {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 					@Override
 					public void run() {
-						/* again, cant use this till you COMMIT YOUR DAMN CODE
-						ParticleUtils pu = ParticleUtils.getInstance();
-						*/
+						/*
+						 * again, cant use this till you COMMIT YOUR DAMN CODE ParticleUtils pu =
+						 * ParticleUtils.getInstance();
+						 */
 						for (Location location : sphereCoords) {
 							if (location.getBlock().getType() == mat) {
 								location.getBlock().setType(Material.AIR);
 							}
-							/* or this in fact
-							pu.addEntity(new MeteoriteComponent(location, mat, explosionBlockDamage,
-									boreMode).getBukkitEntity(), ParticleEffect.LAVA);
-							*/
+							/*
+							 * or this in fact pu.addEntity(new MeteoriteComponent(location, mat,
+							 * explosionBlockDamage, boreMode).getBukkitEntity(),
+							 * ParticleEffect.LAVA);
+							 */
 						}
-						MeteorMod.getInstance().getLogger().info(
-								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());
+						MeteorMod
+								.getInstance()
+								.getLogger()
+								.info("Meteor: " + skyTarget.getBlockX() + ", "
+										+ skyTarget.getBlockZ());
 					}
 				});
 			}
@@ -151,13 +156,14 @@ public class Meteorite {
 				});
 
 				// Schedule the meteorite to drop later
-				dropTask = Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-					@Override
-					public void run() {
-						dropMeteorite();
-						dropTask = -1;
-					}
-				}, hoverTicks);
+				dropTask = Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(),
+						new Runnable() {
+							@Override
+							public void run() {
+								dropMeteorite();
+								dropTask = -1;
+							}
+						}, hoverTicks);
 			}
 		});
 	}
@@ -229,23 +235,19 @@ public class Meteorite {
 		return dropTask;
 	}
 
-	public boolean isBoreMode()
-	{
+	public boolean isBoreMode() {
 		return boreMode;
 	}
 
-	public void setBoreMode(boolean boreMode)
-	{
+	public void setBoreMode(boolean boreMode) {
 		this.boreMode = boreMode;
 	}
 
-	public boolean isExplosionBlockDamage()
-	{
+	public boolean isExplosionBlockDamage() {
 		return explosionBlockDamage;
 	}
 
-	public void setExplosionBlockDamage(boolean explosionBlockDamage)
-	{
+	public void setExplosionBlockDamage(boolean explosionBlockDamage) {
 		this.explosionBlockDamage = explosionBlockDamage;
 	}
 }

@@ -33,7 +33,7 @@ import co.sblock.utilities.progression.Entry;
  * 
  * @author Dublek, Jikoo
  */
-public class TotemLathe extends Machine implements InventoryHolder	{
+public class TotemLathe extends Machine implements InventoryHolder {
 
 	/** The Furnace Block */
 	private Block furnaceBlock;
@@ -48,8 +48,8 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		shape.addBlock(new Vector(0, 0, 0), m);
 		shape.addBlock(new Vector(0, 1, 0), m);
 		shape.addBlock(new Vector(0, 2, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
+		m = new MaterialData(Material.QUARTZ_STAIRS, d.getRelativeDirection(Direction.WEST)
+				.getUpperStairByte());
 		shape.addBlock(new Vector(1, 0, 0), m);
 		m = new MaterialData(Material.STEP, (byte) 7);
 		shape.addBlock(new Vector(0, 3, 0), m);
@@ -59,8 +59,8 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		m = new MaterialData(Material.STEP, (byte) 15);
 		shape.addBlock(new Vector(2, 0, 0), m);
 		shape.addBlock(new Vector(3, 0, 0), m);
-		m = new MaterialData(Material.FURNACE,
-				d.getRelativeDirection(Direction.EAST).getChestByte());
+		m = new MaterialData(Material.FURNACE, d.getRelativeDirection(Direction.EAST)
+				.getChestByte());
 		shape.addBlock(new Vector(1, 1, 0), m);
 		m = new MaterialData(Material.DAYLIGHT_DETECTOR);
 		shape.addBlock(new Vector(2, 1, 0), m);
@@ -91,10 +91,10 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 			return true;
 		}
 		User user = User.getUser(event.getPlayer().getUniqueId());
-		if ((user != null && (user.getProgression() != ProgressionState.NONE
-				|| Entry.getEntry().isEntering(user)))
-				&& (event.getPlayer().hasPermission("group.denizen")
-						|| event.getPlayer().getUniqueId().toString().equals(getData()))) {
+		if ((user != null && (user.getProgression() != ProgressionState.NONE || Entry.getEntry()
+				.isEntering(user)))
+				&& (event.getPlayer().hasPermission("group.denizen") || event.getPlayer()
+						.getUniqueId().toString().equals(getData()))) {
 			event.getPlayer().openInventory(getInventory());
 		}
 		return true;
@@ -116,8 +116,8 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		if (fi.getResult() != null) {
 			result.setAmount(fi.getResult().getAmount() + 1);
 		}
-		if (fi.getResult() != null && (fi.getResult().getAmount() == 64 
-				|| fi.getResult().isSimilar(result))) {
+		if (fi.getResult() != null
+				&& (fi.getResult().getAmount() == 64 || fi.getResult().isSimilar(result))) {
 			return true;
 		} else {
 			fi.setResult(result);

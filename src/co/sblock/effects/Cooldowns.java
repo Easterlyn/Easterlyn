@@ -4,7 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
- * A utility for tracking time remaining until a <code>Player</code> can use an ability/ActiveEffect again.
+ * A utility for tracking time remaining until a <code>Player</code> can use an ability/ActiveEffect
+ * again.
  * 
  * @author Jikoo
  *
@@ -29,11 +30,10 @@ public class Cooldowns {
 	}
 
 	/**
-	 * Gets a HashMap of all cooldowns for a <code>Player</code>, or, if they
-	 * lacked an entry, creates a new one.
+	 * Gets a HashMap of all cooldowns for a <code>Player</code>, or, if they lacked an entry,
+	 * creates a new one.
 	 * 
-	 * @param name
-	 *			  the name of the <code>Player</code>
+	 * @param name the name of the <code>Player</code>
 	 * @return HashMap containing all cooldowns for a <code>Player</code>
 	 */
 	private HashMap<String, Long> getCooldownMap(String name) {
@@ -49,12 +49,9 @@ public class Cooldowns {
 	/**
 	 * Adds a cooldown for a <code>Player</code> of specified duration in milliseconds.
 	 * 
-	 * @param playerName
-	 *			  the name of the <code>Player</code>
-	 * @param cooldownName
-	 *			  the name of the cooldown
-	 * @param durationMillis
-	 *			  the length of the cooldown in milliseconds
+	 * @param playerName the name of the <code>Player</code>
+	 * @param cooldownName the name of the cooldown
+	 * @param durationMillis the length of the cooldown in milliseconds
 	 */
 	public void addCooldown(String playerName, String cooldownName, long durationMillis) {
 		HashMap<String, Long> playerCooldowns = this.getCooldownMap(playerName);
@@ -63,14 +60,11 @@ public class Cooldowns {
 	}
 
 	/**
-	 * Removes a cooldown for the specified <code>Player</code>. If the
-	 * <code>Player</code> has no remaining cooldowns on record, their entry is
-	 * entirely removed.
+	 * Removes a cooldown for the specified <code>Player</code>. If the <code>Player</code> has no
+	 * remaining cooldowns on record, their entry is entirely removed.
 	 * 
-	 * @param playerName
-	 *			  the name of the <code>Player</code>
-	 * @param cooldownName
-	 *			  the name of the cooldown
+	 * @param playerName the name of the <code>Player</code>
+	 * @param cooldownName the name of the cooldown
 	 */
 	public void clearCooldown(String playerName, String cooldownName) {
 		if (!cooldowns.containsKey(playerName)) {
@@ -80,13 +74,10 @@ public class Cooldowns {
 	}
 
 	/**
-	 * Helper method for clearing cooldowns to reduce checks done by cleanup
-	 * methods.
+	 * Helper method for clearing cooldowns to reduce checks done by cleanup methods.
 	 * 
-	 * @param playerName
-	 *			  the name of the <code>Player</code>
-	 * @param cooldownName
-	 *			  the name of the cooldown
+	 * @param playerName the name of the <code>Player</code>
+	 * @param cooldownName the name of the cooldown
 	 */
 	private void clearCooldownHelper(String playerName, String cooldownName) {
 		HashMap<String, Long> playerCooldowns = this.getCooldownMap(playerName);
@@ -99,13 +90,10 @@ public class Cooldowns {
 	}
 
 	/**
-	 * Fetches the time in milliseconds remaining for a <code>Player</code> on a
-	 * certain cooldown.
+	 * Fetches the time in milliseconds remaining for a <code>Player</code> on a certain cooldown.
 	 * 
-	 * @param name
-	 *			  the name of the Player
-	 * @param cooldownName
-	 *			  the name of the cooldown
+	 * @param name the name of the Player
+	 * @param cooldownName the name of the cooldown
 	 * @return the remaining milliseconds until specified ability can be re-used
 	 */
 	public long getRemainingMilliseconds(String name, String cooldownName) {

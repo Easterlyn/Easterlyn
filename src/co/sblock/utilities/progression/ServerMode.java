@@ -91,7 +91,8 @@ public class ServerMode implements InventoryHolder {
 	}
 
 	public boolean isWithinRange(User server, Block broken) {
-		Machine computer = SblockMachines.getMachines().getManager().getComputer(server.getClient());
+		Machine computer = SblockMachines.getMachines().getManager()
+				.getComputer(server.getClient());
 		return computer != null && computer.getKey().distanceSquared(broken.getLocation()) <= 625;
 	}
 

@@ -38,7 +38,9 @@ public class BlockPlaceListener implements Listener {
 			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "You decide against fussing with the internals of this machine.");
+			event.getPlayer().sendMessage(
+					ChatColor.RED
+							+ "You decide against fussing with the internals of this machine.");
 		}
 
 		// Server mode placement
@@ -66,9 +68,13 @@ public class BlockPlaceListener implements Listener {
 					break;
 				}
 				try {
-					SblockMachines.getMachines().getManager().addMachine(
-							event.getBlock().getLocation(), mt, event.getPlayer().getUniqueId().toString(),
-							Direction.getFacingDirection(event.getPlayer()), mt.getData(event)).assemble(event);
+					SblockMachines
+							.getMachines()
+							.getManager()
+							.addMachine(event.getBlock().getLocation(), mt,
+									event.getPlayer().getUniqueId().toString(),
+									Direction.getFacingDirection(event.getPlayer()),
+									mt.getData(event)).assemble(event);
 				} catch (NullPointerException e) {
 					SblockMachines.getMachines().getLogger().debug("Invalid machine placed.");
 					event.setBuild(false);

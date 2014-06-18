@@ -32,10 +32,12 @@ public class PlayerQuitListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		// Our very own custom quits!
-		event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED + " ollies outie");
+		event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED
+				+ " ollies outie");
 
 		// Update vote
-		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(),
+				event.getPlayer().getName());
 
 		// Remove free minecart if riding one
 		FreeCart.getInstance().remove(event.getPlayer());
@@ -47,7 +49,8 @@ public class PlayerQuitListener implements Listener {
 
 		// Stop scheduled sleep teleport
 		if (SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
-			Bukkit.getScheduler().cancelTask(SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()));
+			Bukkit.getScheduler().cancelTask(
+					SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()));
 		}
 
 		// Remove from list awaiting Captchadex inventory opening

@@ -32,8 +32,8 @@ public class TowerData {
 	 */
 	public void add(String planet, String location) {
 		String[] coords = location.split(",");
-		Location l = new Location(Bukkit.getWorld(planet.contains("Derse") ?
-				"OuterCircle" : "InnerCircle"), Double.parseDouble(coords[0]) + .5,
+		Location l = new Location(Bukkit.getWorld(planet.contains("Derse") ? "OuterCircle"
+				: "InnerCircle"), Double.parseDouble(coords[0]) + .5,
 				Double.parseDouble(coords[1]), Double.parseDouble(coords[2]) + .5);
 		if (planet.contains("Derse")) {
 			derse.put(Byte.valueOf(planet.substring(5)), l);

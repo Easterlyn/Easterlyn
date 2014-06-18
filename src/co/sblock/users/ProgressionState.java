@@ -6,5 +6,7 @@ package co.sblock.users;
  * @author Jikoo
  */
 public enum ProgressionState {
-	NONE, ENTRY, GODTIER;
+	NONE,
+	ENTRY,
+	GODTIER;
 }

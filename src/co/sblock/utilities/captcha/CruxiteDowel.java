@@ -78,7 +78,6 @@ public class CruxiteDowel {
 			cost += 85;
 		}
 
-
 		if (toCreate.getItemMeta().hasLore()) {
 			// if item contains special lore and !repairable, raise price
 			boolean willNeedRepair = toCreate.getItemMeta() instanceof Repairable;
@@ -119,7 +118,7 @@ public class CruxiteDowel {
 	private static HashMap<String, Integer> createBaseGrist() {
 		HashMap<String, Integer> materialValues = new HashMap<>();
 		for (Material m : Material.values()) {
-			switch(m) {
+			switch (m) {
 			case CLAY_BALL:
 			case DEAD_BUSH:
 			case DIRT:

@@ -48,8 +48,8 @@ public class SleepVote {
 	}
 
 	/**
-	 * Updates the percentage of players who have slept.
-	 * Intended for use when a player is logging in or out.
+	 * Updates the percentage of players who have slept. Intended for use when a player is logging
+	 * in or out.
 	 * 
 	 * @param world the world to update
 	 */
@@ -72,7 +72,8 @@ public class SleepVote {
 		StringBuilder sb = new StringBuilder();
 		int worldsize = world.getPlayers().size();
 		if (player != null) {
-			sb.append(ChatColor.GREEN).append(player).append(ChatColor.YELLOW).append(" has gone to bed. ");
+			sb.append(ChatColor.GREEN).append(player).append(ChatColor.YELLOW)
+					.append(" has gone to bed. ");
 		} else {
 			worldsize--;
 		}
@@ -82,8 +83,10 @@ public class SleepVote {
 			sb.append('\n').append("Time to get up, a new day awaits!");
 			world.setTime(0);
 			world.setStorm(false);
-			world.setWeatherDuration(world.getWeatherDuration() > 12000 ? world.getWeatherDuration() : 12000);
-			Bukkit.getConsoleSender().sendMessage("[SleepVote] " + world.getName() + " set to morning!");
+			world.setWeatherDuration(world.getWeatherDuration() > 12000 ? world
+					.getWeatherDuration() : 12000);
+			Bukkit.getConsoleSender().sendMessage(
+					"[SleepVote] " + world.getName() + " set to morning!");
 			votes.remove(world.getName());
 		} else if (player == null) {
 			// No spam on log in/out
