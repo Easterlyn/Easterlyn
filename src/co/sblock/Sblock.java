@@ -146,12 +146,13 @@ public class Sblock extends JavaPlugin {
 	public void registerCommands(CommandListener listener) {
 		for (Method method : listener.getClass().getMethods()) {
 			if (this.commandHandlers.containsKey(method)) {
-				getLog().severe(
-						"Duplicate handlers for command "
+				//@formatter:off
+				getLog().severe("Duplicate handlers for command "
 								+ method.getName()
 								+ " found in "
-								+ this.commandHandlers.get(method.getName()).getDeclaringClass()
-										.getName() + " and " + listener.getClass().getName());
+								+ commandHandlers.get(method.getName()).getDeclaringClass()
+										         .getName() + " and " + listener.getClass().getName());
+				//@formatter:on
 			} else if (isValidCommand(method)) {
 				this.commandHandlers.put(method.getName(), method);
 				Command cmd = createCommand(method);
@@ -220,24 +221,24 @@ public class Sblock extends JavaPlugin {
 			cmd = new CustomCommand(m.getName());
 		}
 
-		cmd.setDescription(ChatColor.YELLOW
-				+ (m.getAnnotation(CommandDescription.class) != null ? ChatColor
-						.translateAlternateColorCodes('&', m
-								.getAnnotation(CommandDescription.class).value())
-						: ChatColor.YELLOW + "A Sblock command."));
+		//@formatter:off
+		cmd.setDescription(ChatColor.YELLOW + (m.getAnnotation(CommandDescription.class) != null
+			? ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value())
+			: ChatColor.YELLOW + "A Sblock command."));
 
-		cmd.setUsage(ChatColor.RED
-				+ (m.getAnnotation(CommandUsage.class) != null ? ChatColor
-						.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class)
-								.value()) : "/<command>"));
+		cmd.setUsage(ChatColor.RED + (m.getAnnotation(CommandUsage.class) != null
+			? ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value())
+			: "/<command>"));
 
-		cmd.setPermission(m.getAnnotation(CommandPermission.class) != null ? m.getAnnotation(
-				CommandPermission.class).value() : null);
+		cmd.setPermission(m.getAnnotation(CommandPermission.class) != null
+			? m.getAnnotation(CommandPermission.class).value()
+			: null);
 
-		cmd.setPermissionMessage(m.getAnnotation(CommandDenial.class) != null ? ChatColor
-				.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value())
-				: ChatColor.RED + "By the order of the Jarl, stop right there!");
-
+		cmd.setPermissionMessage(m.getAnnotation(CommandDenial.class) != null
+			? ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value())
+			: ChatColor.RED + "By the order of the Jarl, stop right there!");
+		//@formatter:on
+		
 		return cmd;
 	}
 

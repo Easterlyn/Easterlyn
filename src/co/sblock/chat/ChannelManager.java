@@ -64,24 +64,22 @@ public class ChannelManager {
 		this.channelList.put(name, c);
 	}
 
+	//@formatter:off
 	public void createDefaultSet() {
 		channelList.put("#", new RegionChannel("#", AccessLevel.PUBLIC, null));
 		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null));
 		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null));
 		channelList.put("#rp2", new RPChannel("#rp2", AccessLevel.PUBLIC, null));
 		channelList.put("#EARTH", new RegionChannel("#EARTH", AccessLevel.PUBLIC, null));
-		channelList
-				.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null));
-		channelList
-				.put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null));
-		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC,
-				null));
+		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null));
+		channelList .put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null));
+		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, null));
 		channelList.put("#LOWAS", new RegionChannel("#LOWAS", AccessLevel.PUBLIC, null));
 		channelList.put("#LOLAR", new RegionChannel("#LOLAR", AccessLevel.PUBLIC, null));
 		channelList.put("#LOHAC", new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null));
 		channelList.put("#LOFAF", new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null));
-
 	}
+	//@formatter:on
 
 	public void dropChannel(String channelName) {
 		channelList.remove(channelName);
