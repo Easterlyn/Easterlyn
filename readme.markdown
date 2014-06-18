@@ -1,3 +1,9 @@
+# The incantations powering Sblock.co
+######fork me baybee
+
+
+
+
 Required .jars for compilation
 --------------
 * [Spigot](http://ci.md-5.net/job/Spigot/lastSuccessfulBuild/artifact/Spigot-Server/target/spigot.jar)

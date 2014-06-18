@@ -6,27 +6,31 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import co.sblock.Sblock;
+/* damnit adam add this shit to the git repo
 import co.sblock.events.packets.ParticleUtils;
+*
+* and this is useless until that's been fixed
 import co.sblock.events.packets.WrapperPlayServerWorldParticles.ParticleEffect;
+*/
 
 /**
  * @author Dublek, Jikoo
  */
 public class Meteorite {
 
-	/** The radius to drop the Meteorite within. */
+	/* The radius to drop the Meteorite within. */
 	private int radius;
-	/** The Location in the sky where the Meteorite will be spawned. */
+	/* The Location in the sky where the Meteorite will be spawned. */
 	private Location skyTarget;
-	/** Whether or not to do Block damage when the Meteorite lands. */
+	/* Whether or not to do Block damage when the Meteorite lands. */
 	private boolean explosionBlockDamage;
-	/** Whether or not the meteor should be in bore mode. */
+	/* Whether or not the meteor should be in bore mode. */
 	private boolean boreMode;
-	/** The Material to make the Meteorite be built of. */
+	/* The Material to make the Meteorite be built of. */
 	private Material mat;
-	/** The Locations of a Voxel sphere around the Meteorite's spawn Location. */
+	/* The Locations of a Voxel sphere around the Meteorite's spawn Location. */
 	private HashSet<Location> sphereCoords;
-	/** The Task ID for dropping a Meteorite. */
+	/* The Task ID for dropping a Meteorite. */
 	private int dropTask;
 
 	/**
@@ -57,11 +61,11 @@ public class Meteorite {
 			mat = Material.NETHERRACK;
 		}
 		if (bore == -1) {
-			boreMode = target.getBlockY() < highestBlock;
+			setBoreMode(target.getBlockY() < highestBlock);
 		} else {
-			boreMode = bore == 2 ? true : false;
+			setBoreMode(bore == 2 ? true : false);
 		}
-		explosionBlockDamage = explode;
+		setExplosionBlockDamage(explode);
 		dropTask = -1;
 	}
 
@@ -90,13 +94,17 @@ public class Meteorite {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 					@Override
 					public void run() {
+						/* again, cant use this till you COMMIT YOUR DAMN CODE
 						ParticleUtils pu = ParticleUtils.getInstance();
+						*/
 						for (Location location : sphereCoords) {
 							if (location.getBlock().getType() == mat) {
 								location.getBlock().setType(Material.AIR);
 							}
+							/* or this in fact
 							pu.addEntity(new MeteoriteComponent(location, mat, explosionBlockDamage,
 									boreMode).getBukkitEntity(), ParticleEffect.LAVA);
+							*/
 						}
 						MeteorMod.getInstance().getLogger().info(
 								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());
@@ -219,5 +227,25 @@ public class Meteorite {
 	 */
 	public int getDropTask() {
 		return dropTask;
+	}
+
+	public boolean isBoreMode()
+	{
+		return boreMode;
+	}
+
+	public void setBoreMode(boolean boreMode)
+	{
+		this.boreMode = boreMode;
+	}
+
+	public boolean isExplosionBlockDamage()
+	{
+		return explosionBlockDamage;
+	}
+
+	public void setExplosionBlockDamage(boolean explosionBlockDamage)
+	{
+		this.explosionBlockDamage = explosionBlockDamage;
 	}
 }

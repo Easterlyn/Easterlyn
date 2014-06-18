@@ -188,7 +188,7 @@ public class SblockData {
 
 	/**
 	 * @deprecated Make a custom call to the database. For testing purposes
-	 *             only! Make a new method for new features.
+	 *			   only! Make a new method for new features.
 	 * @param MySQLStatement the call to make
 	 * @param resultExpected true if a ResultSet is expected
 	 * 

@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * &#064;CommandUsage(&quot;/ban (player)&quot;)
  * &#064;SblockCommand(consoleFriendly = true)
  * public boolean ban(CommandSender sender, String[] args) {
- * 	// Ban code goes here...
+ *	// Ban code goes here...
  * }
  * </pre>
  * 

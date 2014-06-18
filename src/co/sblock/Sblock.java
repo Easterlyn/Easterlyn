@@ -22,6 +22,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.chat.SblockChat;
@@ -52,25 +53,25 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class Sblock extends JavaPlugin {
 
-	/** Sblock's Log */
+	/* Sblock's Log */
 	private static final Log logger = Log.getLog("Sblock");
 
-	/** The Sblock instance. */
+	/* The Sblock instance. */
 	private static Sblock instance;
 
-	/** The Set of Modules enabled. */
+	/* The Set of Modules enabled. */
 	private Set<Module> modules;
 
-	/** The Map of commands currently being managed and their respective Method. */
+	/* The Map of commands currently being managed and their respective Method. */
 	private Map<String, Method> commandHandlers;
 
-	/** The Map of registered CommandListeners. */
+	/* The Map of registered CommandListeners. */
 	private Map<Class<? extends CommandListener>, CommandListener> listenerInstances;
 
-	/** A List of overridden commands. Allows their aliases to function. */
+	/* A List of overridden commands. Allows their aliases to function. */
 	private Map<PluginCommand, CommandExecutor> overriddenCommands;
 
-	/** The CommandMap used to register commands for Modules. */
+	/* The CommandMap used to register commands for Modules. */
 	private SimpleCommandMap cmdMap;
 
 	/**
@@ -87,6 +88,10 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable() {
+		// must be at the beginning for thread saftey
+		instance = this;
+
+		//TODO: the fuck is this... make it better, reflection baaaaaad
 		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R3.CraftServer) {
 			try {
 				Field f = org.bukkit.craftbukkit.v1_7_R3.CraftServer.class.getDeclaredField("commandMap");
@@ -99,11 +104,12 @@ public class Sblock extends JavaPlugin {
 		} else {
 			getLog().severe("Invalid server version, Sblock commands will fail to register.");
 		}
-		instance = this;
-		this.modules = new HashSet<>();
-		this.commandHandlers = new HashMap<>();
-		this.listenerInstances = new HashMap<>();
-		this.overriddenCommands = new HashMap<>();
+		
+		
+		modules = new HashSet<>();
+		commandHandlers = new HashMap<>();
+		listenerInstances = new HashMap<>();
+		overriddenCommands = new HashMap<>();
 		saveDefaultConfig();
 		createRecipes();
 
@@ -210,31 +216,26 @@ public class Sblock extends JavaPlugin {
 		} else {
 			cmd = new CustomCommand(m.getName());
 		}
-		String s;
-		if (m.getAnnotation(CommandDescription.class) != null) {
-			s = ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value());
-		} else {
-			s = ChatColor.YELLOW + "A Sblock command.";
-		}
-		cmd.setDescription(s);
-		if (m.getAnnotation(CommandUsage.class) != null) {
-			s = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value());
-		} else {
-			s = ChatColor.RED + "/<command>";
-		}
-		cmd.setUsage(s);
-		if (m.getAnnotation(CommandPermission.class) != null) {
-			s = m.getAnnotation(CommandPermission.class).value();
-		} else {
-			s = null;
-		}
-		cmd.setPermission(s);
-		if (m.getAnnotation(CommandDenial.class) != null) {
-			s = ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value());
-		} else {
-			s = ChatColor.RED + "By the order of the Jarl, stop right there!";
-		}
-		cmd.setPermissionMessage(s);
+		
+		
+		cmd.setDescription(ChatColor.YELLOW + 
+						   (m.getAnnotation(CommandDescription.class) != null ?
+								   ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value())
+								   :ChatColor.YELLOW + "A Sblock command."));
+		
+		cmd.setUsage(ChatColor.RED + 
+					 (m.getAnnotation(CommandUsage.class) != null ?
+							 ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value())
+							 :"/<command>"));
+		
+		cmd.setPermission(m.getAnnotation(CommandPermission.class) != null ?
+						  m.getAnnotation(CommandPermission.class).value()
+						  :null);
+
+		cmd.setPermissionMessage(m.getAnnotation(CommandDenial.class) != null ?
+				ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value())
+				:ChatColor.RED + "By the order of the Jarl, stop right there!");
+
 		return cmd;
 	}
 
@@ -344,7 +345,7 @@ public class Sblock extends JavaPlugin {
 	 * them.
 	 * 
 	 * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command,
-	 *      String, String[])
+	 *		String, String[])
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -383,6 +384,10 @@ public class Sblock extends JavaPlugin {
 		return false;
 	}
 
+	
+	/**
+	 * @return the Sblock custom logger
+	 */
 	public static final Log getLog() {
 		return logger;
 	}

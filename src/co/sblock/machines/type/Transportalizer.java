@@ -118,6 +118,7 @@ public class Transportalizer extends Machine {
 			fuel = Long.valueOf(data);
 			// HoloAPI doesn't accept line updates till all holograms are loaded at 10 seconds after start.
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+				@SuppressWarnings("deprecation")
 				@Override
 				public void run() {
 					if (fuelHolo != null) {
@@ -137,6 +138,7 @@ public class Transportalizer extends Machine {
 	public boolean handleHopper(final org.bukkit.event.inventory.InventoryMoveItemEvent event) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				try {
@@ -211,6 +213,7 @@ public class Transportalizer extends Machine {
 	/**
 	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
 		if (super.handleInteract(event)) {

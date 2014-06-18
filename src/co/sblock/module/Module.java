@@ -17,7 +17,8 @@ import co.sblock.utilities.Log;
  * @author FireNG
  */
 public abstract class Module {
-	/** The Set of Listeners registered by this Module. */
+	
+	/* The Set of Listeners registered by this Module. */
 	private Set<Listener> listeners = new HashSet<Listener>();
 
 	/**
@@ -57,12 +58,13 @@ public abstract class Module {
 	 * @return the Module enabled
 	 */
 	public final Module enable() {
-		this.getLogger().info("Enabling module " + this.getClass().getSimpleName());
+		getLogger().info("Enabling module " + getName());
 		try {
 			this.onEnable();
 		} catch (Exception e) {
-			throw new RuntimeException("[SblockSuite] Unhandled exception in module "
-					+ this.getClass().getSimpleName() + ". Plugin failed to load.", e);
+			String message = "[SblockSuite] Unhandled exception in module " + getName()
+						   + ". Plugin failed to load.";
+			throw new RuntimeException(message, e);
 		}
 		return this;
 	}
@@ -73,17 +75,17 @@ public abstract class Module {
 	 * @return the Module disabled
 	 */
 	public final Module disable() {
-
 		try {
 			this.onDisable();
 			for (Listener listener : listeners) {
 				HandlerList.unregisterAll(listener);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("Unhandled exception in module "
-					+ this.getClass().getSimpleName() + ". Plugin failed to properly disable.", e);
+			String message = "Unhandled exception in module " + getName()
+						   + ". Plugin failed to properly disable.";
+			throw new RuntimeException(message, e);
 		}
-		this.getLogger().info("Disabled module " + this.getClass().getSimpleName());
+		getLogger().info("Disabled module " + getName());
 		return this;
 	}
 
@@ -94,6 +96,15 @@ public abstract class Module {
 	 * @return the Log
 	 */
 	public final Log getLogger() {
-		return new Log(this.getClass().getSimpleName(), null);
+		return Log.getLog(getName());
 	}
+	
+	/**
+	 * A replacement for calling the reflective functions for logging purposes.
+	 * Reflective overhead is large, and there really is no excuse for throwing
+	 * away memory / runtime.
+	 * 
+	 * @return the name of the module
+	 */
+	public abstract String getName();
 }
