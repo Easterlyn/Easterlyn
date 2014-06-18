@@ -316,6 +316,7 @@ public class CruxiteDowel {
 			case AIR:
 			case BEDROCK:
 			case INK_SACK: // Lapis is a dye
+			case BOOK_AND_QUILL:
 			case BURNING_FURNACE:
 			case CARROT: // plant
 			case COCOA: // plant
