@@ -3,7 +3,7 @@ package co.sblock.effects;
 import co.sblock.module.Module;
 
 public class SblockEffects extends Module {
-	
+
 	private static SblockEffects instance;
 	private EffectManager eM;
 	protected static boolean verbose = false;
@@ -18,13 +18,13 @@ public class SblockEffects extends Module {
 
 	@Override
 	public void onDisable() {
-		
+
 	}
-	
+
 	public EffectManager getEffectManager() {
 		return eM;
 	}
-	
+
 	public static SblockEffects getEffects() {
 		return instance;
 	}
