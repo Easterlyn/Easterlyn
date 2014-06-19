@@ -20,10 +20,17 @@ public class SblockEffects extends Module {
 	public void onDisable() {
 		
 	}
+	
 	public EffectManager getEffectManager() {
 		return eM;
 	}
+	
 	public static SblockEffects getEffects() {
 		return instance;
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "EffectsModule";
 	}
 }

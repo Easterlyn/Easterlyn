@@ -38,4 +38,9 @@ public class SblockUsers extends Module {
 		}
 	}
 
+	@Override
+	protected String getModuleName() {
+		return "SblockUserCore";
+	}
+
 }
