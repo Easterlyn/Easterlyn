@@ -94,6 +94,6 @@ public abstract class Module {
 	 * @return the Log
 	 */
 	public final Log getLogger() {
-		return new Log(this.getClass().getSimpleName(), null);
+		return Log.getLog(this.getClass().getSimpleName());
 	}
 }

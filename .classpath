@@ -3,5 +3,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Bukkit"/>
+	<classpathentry kind="lib" path="lib/Chester.jar"/>
+	<classpathentry kind="lib" path="lib/CreeperHeal-6.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/HoloAPI.jar"/>
+	<classpathentry kind="lib" path="lib/ProtocolLib-3.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/spigot.jar"/>
+	<classpathentry kind="lib" path="lib/Vault-1.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
