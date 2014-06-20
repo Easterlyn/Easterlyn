@@ -166,4 +166,9 @@ public class Spectators extends Module implements CommandListener {
 		}
 		return true;
 	}
+
+	@Override
+	protected String getModuleName() {
+		return "Spectators";
+	}
 }

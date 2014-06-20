@@ -390,4 +390,9 @@ public class Captcha extends Module {
 			InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
 		}
 	}
+
+	@Override
+	protected String getModuleName() {
+		return "CaptchaCards";
+	}
 }

@@ -17,7 +17,8 @@ import co.sblock.utilities.Log;
  * @author FireNG
  */
 public abstract class Module {
-	/** The Set of Listeners registered by this Module. */
+
+	/* The Set of Listeners registered by this Module. */
 	private Set<Listener> listeners = new HashSet<Listener>();
 
 	/**
@@ -29,6 +30,12 @@ public abstract class Module {
 	 * Called when the Module is disabled before handlers are unassigned.
 	 */
 	protected abstract void onDisable();
+
+	/**
+	 * To be used instead of the reflective class.getSimpleName() method
+	 * @return the name of this module
+	 */
+	protected abstract String getModuleName();
 
 	/**
 	 * Register events for one or more Listeners.
@@ -94,6 +101,6 @@ public abstract class Module {
 	 * @return the Log
 	 */
 	public final Log getLogger() {
-		return new Log(this.getClass().getSimpleName(), null);
+		return Log.getLog(getModuleName());
 	}
 }

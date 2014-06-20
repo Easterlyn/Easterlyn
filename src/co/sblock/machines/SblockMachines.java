@@ -66,4 +66,9 @@ public class SblockMachines extends Module {
 	public static SblockMachines getMachines() {
 		return instance;
 	}
+
+	@Override
+	protected String getModuleName() {
+		return "Machines";
+	}
 }

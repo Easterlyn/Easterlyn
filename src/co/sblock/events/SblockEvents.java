@@ -240,4 +240,9 @@ public class SblockEvents extends Module {
 	public static SblockEvents getEvents() {
 		return instance;
 	}
+
+	@Override
+	protected String getModuleName() {
+		return "EventsModule";
+	}
 }

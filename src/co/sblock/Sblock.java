@@ -52,25 +52,25 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class Sblock extends JavaPlugin {
 
-	/** Sblock's Log */
+	/* Sblock's Log */
 	private static final Log logger = Log.getLog("Sblock");
 
-	/** The Sblock instance. */
+	/* The Sblock instance. */
 	private static Sblock instance;
 
-	/** The Set of Modules enabled. */
+	/* The Set of Modules enabled. */
 	private Set<Module> modules;
 
-	/** The Map of commands currently being managed and their respective Method. */
+	/* The Map of commands currently being managed and their respective Method. */
 	private Map<String, Method> commandHandlers;
 
-	/** The Map of registered CommandListeners. */
+	/* The Map of registered CommandListeners. */
 	private Map<Class<? extends CommandListener>, CommandListener> listenerInstances;
 
-	/** A List of overridden commands. Allows their aliases to function. */
+	/* A List of overridden commands. Allows their aliases to function. */
 	private Map<PluginCommand, CommandExecutor> overriddenCommands;
 
-	/** The CommandMap used to register commands for Modules. */
+	/* The CommandMap used to register commands for Modules. */
 	private SimpleCommandMap cmdMap;
 
 	/**
