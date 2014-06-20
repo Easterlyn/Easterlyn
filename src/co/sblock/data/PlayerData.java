@@ -38,10 +38,10 @@ public class PlayerData {
 	 * 
 	 * @param userID the Player UUID to save data for
 	 */
-	protected static void saveUserData(UUID userID) {
+	public static void saveUserData(UUID userID) {
 		User user = UserManager.getUserManager().removeUser(userID);
 		if (user == null || !user.isLoaded()) {
-			SblockData.getLogger().warning("UUID " + userID.toString()
+			SblockData.getDB().getLogger().warning("UUID " + userID.toString()
 					+ " does not appear to have userdata loaded, skipping save.");
 			return;
 		}
@@ -85,7 +85,7 @@ public class PlayerData {
 				pst.executeUpdate();
 			}
 		} catch (Exception e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 			return;
 		}
 	}
@@ -95,7 +95,7 @@ public class PlayerData {
 	 * 
 	 * @param userID the UUID of the user to load data for
 	 */
-	protected static void loadUserData(UUID userID) {
+	public static void loadUserData(UUID userID) {
 		try {
 			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.PLAYER_LOAD_UUID.toString());
@@ -103,7 +103,7 @@ public class PlayerData {
 
 			new AsyncCall(pst, Call.PLAYER_LOAD_UUID).schedule();
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class PlayerData {
 	 * 
 	 * @param userID the UUID of the user to delete data for
 	 */
-	protected static void deleteUser(String name) {
+	public static void deleteUser(String name) {
 		try {
 			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.PLAYER_DELETE.toString());
@@ -120,7 +120,7 @@ public class PlayerData {
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class PlayerData {
 	 * 
 	 * @param rs the ResultSet to load from
 	 */
-	protected static void loadPlayer(ResultSet rs) {
+	public static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
 				User user = UserManager.getUserManager().getUser(UUID.fromString(rs.getString("uuid")));
@@ -193,12 +193,12 @@ public class PlayerData {
 				UserManager.getUserManager().team(p);
 			}
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				SblockData.getLogger().err(e);
+				SblockData.getDB().getLogger().err(e);
 			}
 		}
 	}
@@ -210,7 +210,7 @@ public class PlayerData {
 	 * 
 	 * @return the name of the SblockUser, "Player" if invalid
 	 */
-	protected static String getUserFromIP(String hostAddress) {
+	public static String getUserFromIP(String hostAddress) {
 		PreparedStatement pst = null;
 		String name = "Player";
 		try {
@@ -224,13 +224,13 @@ public class PlayerData {
 				name = rs.getString("name");
 			}
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					SblockData.getLogger().err(e);
+					SblockData.getDB().getLogger().err(e);
 				}
 			}
 		}
@@ -247,7 +247,7 @@ public class PlayerData {
 	 * 
 	 * @param sender the CommandSender requesting information
 	 */
-	protected static void startOfflineLookup(CommandSender sender, String name) {
+	public static void startOfflineLookup(CommandSender sender, String name) {
 		sender.sendMessage(ChatColor.GREEN + "Initiating offline lookup for " + name);
 		try {
 			Call c = Call.PLAYER_LOAD_NAME;
@@ -257,7 +257,7 @@ public class PlayerData {
 			c.setSender(sender);
 			new AsyncCall(pst, c).schedule();
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		}
 	}
 
@@ -267,7 +267,7 @@ public class PlayerData {
 	 * @param sender the CommandSender requesting information
 	 * @param rs the ResultSet to load from
 	 */
-	protected static void loadOfflineLookup(CommandSender sender, ResultSet rs) {
+	public static void loadOfflineLookup(CommandSender sender, ResultSet rs) {
 		ChatColor sys = ChatColor.DARK_AQUA;
 		ChatColor txt = ChatColor.YELLOW;
 		String div = sys + ", " + txt;
@@ -297,12 +297,12 @@ public class PlayerData {
 						: "No player data found for " + rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1"));
 			}
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				SblockData.getLogger().err(e);
+				SblockData.getDB().getLogger().err(e);
 			}
 		}
 	}

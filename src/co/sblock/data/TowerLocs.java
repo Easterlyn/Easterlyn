@@ -20,7 +20,7 @@ public class TowerLocs {
 	/**
 	 * Fills out TowerData from saved data.
 	 */
-	protected static void loadTowerData() {
+	public static void loadTowerData() {
 		PreparedStatement pst = null;
 		try {
 			pst = SblockData.getDB().connection().prepareStatement(Call.TOWER_LOAD.toString());
@@ -35,13 +35,13 @@ public class TowerLocs {
 				}
 			}
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					SblockData.getLogger().err(e);
+					SblockData.getDB().getLogger().err(e);
 				}
 			}
 		}
@@ -52,7 +52,7 @@ public class TowerLocs {
 	 * 
 	 * @param towers the TowerData to save
 	 */
-	protected static void saveTowerData(TowerData towers) {
+	public static void saveTowerData(TowerData towers) {
 		PreparedStatement pst = null;
 		for (byte i = 0; i < 8; i++) {
 			try {
@@ -63,13 +63,13 @@ public class TowerLocs {
 
 				pst.executeUpdate();
 			} catch (SQLException e) {
-				SblockData.getLogger().err(e);
+				SblockData.getDB().getLogger().err(e);
 			} finally {
 				if (pst != null) {
 					try {
 						pst.close();
 					} catch (SQLException e) {
-						SblockData.getLogger().err(e);
+						SblockData.getDB().getLogger().err(e);
 					}
 				}
 			}
@@ -81,13 +81,13 @@ public class TowerLocs {
 
 				pst.executeUpdate();
 			} catch (SQLException e) {
-				SblockData.getLogger().err(e);
+				SblockData.getDB().getLogger().err(e);
 			} finally {
 				if (pst != null) {
 					try {
 						pst.close();
 					} catch (SQLException e) {
-						SblockData.getLogger().err(e);
+						SblockData.getDB().getLogger().err(e);
 					}
 				}
 			}

@@ -20,7 +20,7 @@ public class BannedPlayers {
 	 * @param target the SblockUser to add a ban for
 	 * @param reason the reason the SblockUser was banned
 	 */
-	protected static void addBan(User target, String reason) {
+	public static void addBan(User target, String reason) {
 		Bukkit.getBanList(Type.NAME).addBan(target.getPlayerName(),
 				"<ip=" + target.getUserIP() + ">" + reason, null, "sban");
 		Bukkit.getBanList(Type.IP).addBan(target.getUserIP(),
@@ -32,7 +32,7 @@ public class BannedPlayers {
 	 * 
 	 * @param target the name or IP to match
 	 */
-	protected static void deleteBans(String target) {
+	public static void deleteBans(String target) {
 		BanList bans = Bukkit.getBanList(Type.IP);
 		BanList pbans = Bukkit.getBanList(Type.NAME);
 		if (bans.isBanned(target)) {
@@ -56,7 +56,7 @@ public class BannedPlayers {
 	 * 
 	 * @return the ban reason
 	 */
-	protected static String getBanReason(String name, String ip) {
+	public static String getBanReason(String name, String ip) {
 		if (!Bukkit.getBanList(Type.IP).isBanned(ip) && !Bukkit.getBanList(Type.NAME).isBanned(name)) {
 			return null;
 		}

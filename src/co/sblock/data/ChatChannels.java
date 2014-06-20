@@ -65,13 +65,13 @@ public class ChatChannels {
 
 			pst.executeUpdate();
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					SblockData.getLogger().err(e);
+					SblockData.getDB().getLogger().err(e);
 				}
 			}
 		}
@@ -118,13 +118,13 @@ public class ChatChannels {
 				}
 			}
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					SblockData.getLogger().err(e);
+					SblockData.getDB().getLogger().err(e);
 				}
 			}
 		}
@@ -144,7 +144,7 @@ public class ChatChannels {
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		}
 	}
 }
