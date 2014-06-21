@@ -46,20 +46,20 @@ import co.sblock.users.User;
  */
 public abstract class Machine {
 
-	/** The Location of the key Block of the Machine. */
+	/* The Location of the key Block of the Machine. */
 	protected Location key;
 
-	/** The owner and any other data stored for the Machine. */
+	/* The owner and any other data stored for the Machine. */
 	protected String owner, data;
 
-	/** Machine facing */
+	/* Machine facing */
 	protected Direction direction;
 
-	/** The Shape of the Machine */
-	protected Shape shape;
+	/* The Shape of the Machine */
+	protected transient Shape shape;
 
-	/** A Set of all Locations defined as part of the Machine. */
-	protected HashMap<Location, MaterialData> blocks;
+	/* A Map of all Locations defined as part of the Machine and the relevant MaterialData. */
+	protected transient HashMap<Location, MaterialData> blocks;
 
 	/**
 	 * @param key the Location of the key Block of this Machine
