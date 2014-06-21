@@ -408,8 +408,7 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		User victim = User.getUser(Bukkit.getPlayer(args[2]).getUniqueId());
-		victim.getPlayer().setDisplayName(args[3]);
+		Bukkit.getPlayer(args[2]).setDisplayName(args[3]);
 		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
 		for (User u : UserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg);
@@ -423,13 +422,12 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		User victim = User.getUser(p.getUniqueId());
 		String msg = ChatMsgs.onUserRmGlobalNick(args[2], p.getDisplayName());
 		for (User u : UserManager.getUserManager().getUserlist()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
-		p.setDisplayName(victim.getPlayerName());
+		p.setDisplayName(p.getName());
 	}
 
 	private void scGlobalMute(User user, String[] args) {
