@@ -48,8 +48,8 @@ public class SleepVote {
 	}
 
 	/**
-	 * Updates the percentage of players who have slept.
-	 * Intended for use when a player is logging in or out.
+	 * Updates the percentage of players who have slept when a player is logging out or changing
+	 * worlds.
 	 * 
 	 * @param world the world to update
 	 */
@@ -76,7 +76,7 @@ public class SleepVote {
 		} else {
 			worldsize--;
 		}
-		int percent = (int) 100 * votes.get(world.getName()).size() / worldsize;
+		int percent = worldsize == 0 ? 100 : (int) 100 * votes.get(world.getName()).size() / worldsize;
 		sb.append(ChatColor.YELLOW).append(percent).append("% of players have slept.");
 		if (percent >= 50) {
 			sb.append('\n').append("Time to get up, a new day awaits!");

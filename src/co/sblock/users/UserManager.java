@@ -13,6 +13,7 @@ import org.bukkit.scoreboard.Team;
 
 import co.sblock.chat.ColorDef;
 import co.sblock.data.SblockData;
+import co.sblock.users.User.UserSpawner;
 
 /**
  * Class that keeps track of players currently logged on to the game
@@ -32,7 +33,7 @@ public class UserManager {
 	public static User addUser(UUID userID) {
 		User u = users.get(userID);
 		if (u == null) {
-			u = new User(userID);
+			u = new UserSpawner().build(userID);
 			users.put(userID, u);
 		}
 		return u;

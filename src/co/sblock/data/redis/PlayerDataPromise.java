@@ -3,6 +3,8 @@ package co.sblock.data.redis;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import co.sblock.users.User;
 
 import com.tmathmeyer.jadis.async.Promise;
@@ -19,17 +21,17 @@ public class PlayerDataPromise implements Promise<User> {
 
 	@Override
 	public void getList(List<User> listOfUsers) {
-		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public void getMap(Map<String, User> MapOfUsers) {
-		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public void getObject(User user) {
-		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 
 }

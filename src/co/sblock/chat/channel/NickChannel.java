@@ -14,7 +14,7 @@ import co.sblock.users.User;
  */
 public class NickChannel extends Channel {
 
-	protected Map<User, String> nickList; 
+	protected transient Map<User, String> nickList; 
 
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, UUID)
