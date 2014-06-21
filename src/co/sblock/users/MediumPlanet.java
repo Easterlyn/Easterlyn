@@ -6,11 +6,27 @@ import org.bukkit.Location;
 /**
  * Represents each planet in the Medium.
  * 
- * @author FireNG, Jikoo
+ * @author FireNG, Jikoo, tmathmeyer
  */
 public enum MediumPlanet {
 
-	LOFAF, LOHAC, LOLAR, LOWAS;
+	LOFAF("Land of Frost and Frogs", new Location(Bukkit.getWorld("Medium"), 2756, 64, -2756)),
+	LOHAC("Land of Heat and Clockwork", new Location(Bukkit.getWorld("Medium"), 2756, 64, -2756)),
+	LOLAR("Land of Light and Rain", new Location(Bukkit.getWorld("Medium"), -2756, 64, 2756)),
+	LOWAS("Land of Wind and Shade", new Location(Bukkit.getWorld("Medium"), 2756, 64, 2756));
+
+	/* Planet Names */
+	private final String longName;
+	private final Location center;
+
+	/**
+	 * 
+	 * @param longName
+	 */
+	private MediumPlanet(String longName, Location center) {
+		this.longName = longName;
+		this.center = center;
+	}
 
 	/**
 	 * Gets the short name of a MediumPlanet.
@@ -27,18 +43,7 @@ public enum MediumPlanet {
 	 * @return the long name
 	 */
 	public String getLongName() {
-		switch (this) {
-		case LOFAF:
-			return "Land of Frost and Frogs";
-		case LOHAC:
-			return "Land of Heat and Clockwork";
-		case LOLAR:
-			return "Land of Light and Rain";
-		case LOWAS:
-			return "Land of Wind and Shade";
-		default:
-			return "Land of Fail and Downvotes";
-		}
+		return this.longName;
 	}
 
 	/**
@@ -62,21 +67,6 @@ public enum MediumPlanet {
 	 * @return the Location
 	 */
 	public Location getCenter() {
-		Location l = new Location(Bukkit.getWorld("Medium"), 2500 + 256, 64, 2500 + 256);
-		switch (this) {
-		case LOFAF:
-			l.setZ(-l.getZ());
-			break;
-		case LOHAC:
-			l.setZ(-l.getZ());
-		case LOLAR:
-			l.setX(-l.getX());
-			break;
-		case LOWAS:
-		default:
-			break;
-		
-		}
-		return l;
+		return center;
 	}
 }
