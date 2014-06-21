@@ -119,11 +119,10 @@ public class Transportalizer extends Machine {
 			fuel = Long.valueOf(data);
 			// HoloAPI doesn't accept line updates till all holograms are loaded at 10 seconds after start.
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-				@SuppressWarnings("deprecation")
 				@Override
 				public void run() {
 					if (fuelHolo != null) {
-						fuelHolo.updateLines(String.valueOf(fuel));
+						fuelHolo.updateLine(0, String.valueOf(fuel));
 					}
 				}
 			}, 200);
@@ -139,7 +138,6 @@ public class Transportalizer extends Machine {
 	public boolean handleHopper(final org.bukkit.event.inventory.InventoryMoveItemEvent event) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 
-			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				try {
@@ -149,7 +147,7 @@ public class Transportalizer extends Machine {
 						}
 						if (hasValue(event.getSource().getItem(i).getType())) {
 							fuel += getValue(event.getSource().getItem(i).getType());
-							fuelHolo.updateLines(String.valueOf(fuel));
+							fuelHolo.updateLine(0, String.valueOf(fuel));
 							key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
 							event.getSource().setItem(i, InventoryUtils.decrement(event.getSource().getItem(i), 1));
 							break;
@@ -214,7 +212,6 @@ public class Transportalizer extends Machine {
 	/**
 	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
 		if (super.handleInteract(event)) {
@@ -288,7 +285,7 @@ public class Transportalizer extends Machine {
 				if (e.getLocation().getBlock().equals(pad)) {
 					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
 					fuel -= cost;
-					fuelHolo.updateLines(String.valueOf(fuel));
+					fuelHolo.updateLine(0, String.valueOf(fuel));
 					remote.setPitch(e.getLocation().getPitch());
 					remote.setYaw(e.getLocation().getYaw());
 					e.teleport(remote);
@@ -301,7 +298,7 @@ public class Transportalizer extends Machine {
 			for (Entity e : key.getWorld().getEntities()) {
 				if (e.getLocation().getBlock().equals(remote.getBlock())) {
 					fuel -= cost;
-					fuelHolo.updateLines(String.valueOf(fuel));
+					fuelHolo.updateLine(0, String.valueOf(fuel));
 					e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(), pad.getZ() + .5,
 							e.getLocation().getYaw(), e.getLocation().getPitch()));
 					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
