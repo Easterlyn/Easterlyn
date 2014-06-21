@@ -48,8 +48,8 @@ public class SleepVote {
 	}
 
 	/**
-	 * Updates the percentage of players who have slept.
-	 * Intended for use when a player is logging in or out.
+	 * Updates the percentage of players who have slept when a player is logging out or changing
+	 * worlds.
 	 * 
 	 * @param world the world to update
 	 */
