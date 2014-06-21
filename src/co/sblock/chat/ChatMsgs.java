@@ -206,6 +206,10 @@ public class ChatMsgs {
 				+ ChatColor.AQUA + "/sc suppress" + ChatColor.RED + " to toggle.";
 	}
 
+	public static String errorEmptyMessage() {
+		return ChatColor.RED + "You cannot send empty messages!";
+	}
+
 	public static String errorDisbandDefault() {
 		return ChatColor.RED + "Hardcoded default channels cannot be disbanded.";
 	}

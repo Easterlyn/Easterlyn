@@ -161,7 +161,7 @@ public abstract class Machine {
 		this.assemble();
 		User u = User.getUser(event.getPlayer().getUniqueId());
 		if (u != null && u.isServer() && data.equals(u.getPlayerName())) {
-			this.data = u.getClient().toString();
+			this.owner = u.getClient().toString();
 		}
 		SblockData.getDB().saveMachine(this);
 	}

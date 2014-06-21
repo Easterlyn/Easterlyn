@@ -691,7 +691,7 @@ public class User {
 
 		String[] matches = new String[additionalMatches.length + 2];
 		matches[0] = p.getName();
-		matches[1] = p.getDisplayName();
+		matches[1] = ChatColor.stripColor(p.getDisplayName());
 		if (additionalMatches.length > 0) {
 			System.arraycopy(additionalMatches, 0, matches, 2, additionalMatches.length);
 		}

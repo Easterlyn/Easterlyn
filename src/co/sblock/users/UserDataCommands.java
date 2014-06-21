@@ -426,17 +426,17 @@ public class UserDataCommands implements CommandListener {
 
 	@CommandDescription("Run an eye over the server rules.")
 	@CommandUsage("/? Rules")
-	@SblockCommand
+	@SblockCommand(consoleFriendly = true)
 	public boolean rules(CommandSender sender, String[] args) {
-		((Player) sender).performCommand("? Rules");
+		Bukkit.dispatchCommand(sender, "? Rules");
 		return true;
 	}
 
 	@CommandDescription("See what's what.")
 	@CommandUsage("/?")
-	@SblockCommand
+	@SblockCommand(consoleFriendly = true)
 	public boolean help(CommandSender sender, String[] args) {
-		((Player) sender).performCommand(("? " + StringUtils.join(args, ' ')).trim());
+		Bukkit.dispatchCommand(sender, "? " + StringUtils.join(args, ' ').trim());
 		return true;
 	}
 }
