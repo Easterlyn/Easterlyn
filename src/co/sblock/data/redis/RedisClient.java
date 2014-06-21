@@ -11,7 +11,6 @@ import co.sblock.data.SblockData;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.TowerData;
 import co.sblock.users.User;
-import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 
 /**
