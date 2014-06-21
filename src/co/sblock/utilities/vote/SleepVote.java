@@ -76,7 +76,7 @@ public class SleepVote {
 		} else {
 			worldsize--;
 		}
-		int percent = (int) 100 * votes.get(world.getName()).size() / worldsize;
+		int percent = worldsize == 0 ? 100 : (int) 100 * votes.get(world.getName()).size() / worldsize;
 		sb.append(ChatColor.YELLOW).append(percent).append("% of players have slept.");
 		if (percent >= 50) {
 			sb.append('\n').append("Time to get up, a new day awaits!");
