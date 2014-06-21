@@ -112,11 +112,11 @@ public class PlayerData {
 	 * 
 	 * @param userID the UUID of the user to delete data for
 	 */
-	public static void deleteUser(String name) {
+	public static void deleteUser(UUID userID) {
 		try {
 			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.PLAYER_DELETE.toString());
-			pst.setString(1, name);
+			pst.setString(1, userID.toString());
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
@@ -147,7 +147,7 @@ public class PlayerData {
 				}
 				user.updateFlight();
 				if (rs.getBoolean("isMute")) {
-					user.setMute(true);;
+					user.setMute(true);
 				}
 				if (rs.getString("channels") != null) {
 					user.loginAddListening(rs.getString("channels").split(","));

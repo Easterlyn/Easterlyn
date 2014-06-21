@@ -94,8 +94,8 @@ public class SQLClient extends SblockData {
 	}
 
 	@Override
-	public void deleteUser(String name) {
-		PlayerData.deleteUser(name);
+	public void deleteUser(UUID userID) {
+		PlayerData.deleteUser(userID);
 	}
 
 	@Override

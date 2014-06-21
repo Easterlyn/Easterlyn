@@ -87,7 +87,7 @@ public abstract class SblockData {
 	 * 
 	 * @param name the name of the Player whose data is to be deleted
 	 */
-	public abstract void deleteUser(String name);
+	public abstract void deleteUser(UUID userID);
 
 	/**
 	 * Save Channel data to database.
