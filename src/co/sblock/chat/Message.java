@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
@@ -32,6 +33,7 @@ public class Message {
 	private String message;
 	private boolean escape;
 	private boolean thirdPerson;
+	private String target;
 	private Set<ChatColor> colors;
 
 	public Message(User sender, String message) {
@@ -46,7 +48,7 @@ public class Message {
 
 	private Message(String message) {
 
-		// TODO make this less order-specific, e.g. allow @# #>
+		// TODO make message format less order-specific, e.g. allow @# #>, not just #>@#
 		thirdPerson = message.startsWith("#>");
 		if (thirdPerson) {
 			message = message.substring(2);
@@ -56,6 +58,19 @@ public class Message {
 		if (!escape) {
 			message = message.substring(1);
 		}
+
+		int space = message.indexOf(' ');
+		// Check for @<channel> destination
+		if (message.charAt(0) == '@' && space > 1) {
+			target = message.substring(1, space);
+			message = message.substring(space);
+			channel = ChannelManager.getChannelManager().getChannel(target);
+		} else if (sender != null) {
+			channel = sender.getCurrent();
+		}
+
+		// Trim whitespace created by formatting codes, etc.
+		message = RegexUtils.trimExtraWhitespace(message);
 
 		this.message = message;
 
@@ -91,39 +106,31 @@ public class Message {
 			notify = false;
 		}
 
-		int space = message.indexOf(' ');
-		// Check for @<channel> destination
-		if (message.charAt(0) == '@' && space > 1) {
-			String target = message.substring(1, space);
-			message = message.substring(space);
-			// If channel was already set, probably being overridden by Chester.
-			if (channel == null) {
-				channel = ChannelManager.getChannelManager().getChannel(target);
-				if (channel == null) {
-					if (notify) {
-						sender.sendMessage(ChatMsgs.errorInvalidChannel(target));
-					}
-					return false;
-				}
-			}
-		} else if (sender != null) {
-			channel = sender.getCurrent();
-			if (channel == null) {
-				if (notify) {
+		if (channel == null) {
+			if (notify) {
+				if (target != null) {
+					sender.sendMessage(ChatMsgs.errorInvalidChannel(target));
+				} else {
 					sender.sendMessage(ChatMsgs.errorNoCurrent());
 				}
-				return false;
-			}
-		}
-
-		if (sender == null) {
-			if (name != null) {
-				return true;
 			}
 			return false;
 		}
 
-		// No sending messages to global chats while ignoring them
+		// No sending of blank messages.
+		if (RegexUtils.appearsEmpty(message)) {
+			if (notify) {
+				sender.sendMessage(ChatMsgs.errorEmptyMessage());
+			}
+			return false;
+		}
+
+		// No sender and no name, invalid message.
+		if (sender == null) {
+			return name != null;
+		}
+
+		// No sending messages to global chats while ignoring them.
 		if (channel.getType() == ChannelType.REGION && sender.isSuppressing()) {
 			if (notify) {
 				sender.sendMessage(ChatMsgs.errorSuppressingGlobal());
@@ -131,7 +138,7 @@ public class Message {
 			return false;
 		}
 
-		// Must be in target channel to send messages
+		// Must be in target channel to send messages.
 		if (!channel.getListening().contains(sender.getUUID())) {
 			if (notify) {
 				sender.sendMessage(ChatMsgs.errorNotListening(channel.getName()));
@@ -157,16 +164,17 @@ public class Message {
 			return;
 		}
 
-		// Trim whitespace created by formatting codes, etc.
-		message = RegexUtils.trimExtraWhitespace(message);
-		if (message.length() > 1 && RegexUtils.appearsEmpty(message.substring(0 , 2).equals("#>") ? message.substring(2) : message)) {
-			return;
-		}
-
 		// Get channel formatting
 		String channelPrefixing = channel.formatMessage(sender, thirdPerson);
 		if (sender == null) {
 			channelPrefixing = channelPrefixing.replaceFirst("<nonhuman>", name);
+		} else if (sender.getPlayer().hasPermission("sblockchat.color")) {
+			Player player = sender.getPlayer();
+			for (ChatColor c : ChatColor.values()) {
+				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
+					colors.add(c);
+				}
+			}
 		}
 		MessageElement rawMsg = new MessageElement(channelPrefixing, colors.toArray(new ChatColor[0]));
 
@@ -219,7 +227,6 @@ public class Message {
 
 	private MessageElement processMessageSegment(String substring) {
 		MessageElement msg;
-		// TODO allow links to not be unreadable by quirking here
 		// Could do this more cleanly with casting, but ifs will work for now.
 		if (sender != null && channel.getType() == ChannelType.RP) {
 			CanonNicks nick = CanonNicks.getNick(channel.getNick(sender));
