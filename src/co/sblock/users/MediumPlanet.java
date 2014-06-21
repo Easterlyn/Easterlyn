@@ -21,7 +21,8 @@ public enum MediumPlanet {
 
 	/**
 	 * 
-	 * @param longName
+	 * @param longName the name of the world
+	 * @param center the in-game center
 	 */
 	private MediumPlanet(String longName, Location center) {
 		this.longName = longName;
