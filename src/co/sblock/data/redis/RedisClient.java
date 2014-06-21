@@ -6,12 +6,14 @@ import java.util.UUID;
 import org.bukkit.command.CommandSender;
 
 import com.tmathmeyer.jadis.Jadis;
+import com.tmathmeyer.jadis.async.Promise;
 
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.SblockData;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.TowerData;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 
 /**
@@ -23,6 +25,7 @@ public class RedisClient extends SblockData{
 
 	private final Log logger = Log.getLog("SblockData - Redis");
 	private Jadis connection;
+	private final Promise<User> playerDataPromise = PlayerDataPromise.getPDP();
 	
 	@Override
 	public Log getLogger() {
@@ -52,14 +55,17 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void saveUserData(UUID userID) {
-		//User user = UserManager.getUserByUUID();
-		//connection.hset("Users", userID.toString(), user.getRedisSerialisation());
-		//TODO: implement serialisability
+		User user = UserManager.getUser(userID);
+		saveUserData(user);
+	}
+	
+	public void saveUserData(User u) {
+		connection.putMap("USERS", u.getUUID().toString(), u);
 	}
 
 	@Override
 	public void loadUserData(UUID userID) {
-		connection.getFromMap("USERS", userID.toString(), PlayerDataPromise.getPDP(), User.class);
+		connection.getFromMap("USERS", userID.toString(), playerDataPromise, User.class);
 	}
 
 	@Override
