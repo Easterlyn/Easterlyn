@@ -38,6 +38,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 
 /**
  * Framework for all Machine block assemblies.
@@ -159,7 +160,7 @@ public abstract class Machine {
 			}
 		}
 		this.assemble();
-		User u = User.getUser(event.getPlayer().getUniqueId());
+		User u = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (u != null && u.isServer() && data.equals(u.getPlayerName())) {
 			this.data = u.getClient().toString();
 		}

@@ -64,7 +64,7 @@ public class ChatCommands implements CommandListener {
 		Bukkit.getConsoleSender().sendMessage(message);
 		message = new EscapedElement(message).toString();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			User u = User.getUser(p.getUniqueId());
+			User u = UserManager.getUser(p.getUniqueId());
 			if (!u.isSuppressing()) {
 				u.rawHighlight(message);
 			}
@@ -141,7 +141,7 @@ public class ChatCommands implements CommandListener {
 	@CommandUsage("/sc")
 	@SblockCommand
 	public boolean sc(CommandSender sender, String[] args) {
-		User user = User.getUser(((Player) sender).getUniqueId());
+		User user = UserManager.getUser(((Player) sender).getUniqueId());
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatMsgs.helpDefault());
 			return true;
@@ -183,7 +183,7 @@ public class ChatCommands implements CommandListener {
 		if (args.length == 0) {
 			return false;
 		}
-		Message message = new Message(User.getUser(((Player) sender).getUniqueId()), "#>" + StringUtils.join(args, ' '));
+		Message message = new Message(UserManager.getUser(((Player) sender).getUniqueId()), "#>" + StringUtils.join(args, ' '));
 		message.validate(true);
 		message.send();
 		return true;
@@ -208,7 +208,7 @@ public class ChatCommands implements CommandListener {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		User user = User.getUser(p.getUniqueId());
+		User user = UserManager.getUser(p.getUniqueId());
 		user.setCurrent(c);
 		sender.sendMessage(ChatColor.GREEN + "Channel forced!");
 		return true;
@@ -391,7 +391,7 @@ public class ChatCommands implements CommandListener {
 				scGlobalRmNick(user, args);
 				return true;
 			} else if (args[1].equalsIgnoreCase("clearnicks")) {
-				for (User u : UserManager.getUserManager().getUserlist()) {
+				for (User u : UserManager.getUserlist()) {
 					if (!u.getPlayer().getDisplayName().equals(u.getPlayerName())) {
 						u.getPlayer().setDisplayName(u.getPlayerName());
 					}
@@ -408,10 +408,10 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		User victim = User.getUser(Bukkit.getPlayer(args[2]).getUniqueId());
+		User victim = UserManager.getUser(Bukkit.getPlayer(args[2]).getUniqueId());
 		victim.getPlayer().setDisplayName(args[3]);
 		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUserlist()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -423,9 +423,9 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		User victim = User.getUser(p.getUniqueId());
+		User victim = UserManager.getUser(p.getUniqueId());
 		String msg = ChatMsgs.onUserRmGlobalNick(args[2], p.getDisplayName());
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUserlist()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -438,10 +438,10 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		User victim = User.getUser(p.getUniqueId());
+		User victim = UserManager.getUser(p.getUniqueId());
 		victim.setMute(true);
 		String msg = ChatMsgs.onUserMute(args[2]);
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUserlist()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -453,10 +453,10 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		User victim = User.getUser(p.getUniqueId());
+		User victim = UserManager.getUser(p.getUniqueId());
 		victim.setMute(false);;
 		String msg = ChatMsgs.onUserUnmute(args[2]);
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUserlist()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -482,7 +482,7 @@ public class ChatCommands implements CommandListener {
 			StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW);
 			sb.append("Channel members: ");
 			for (UUID userID : c.getListening()) {
-				User u = UserManager.getUserManager().getUser(userID);
+				User u = UserManager.getUser(userID);
 				if (u.getCurrent().equals(c)) {
 					sb.append(ChatColor.GREEN);
 				} else {

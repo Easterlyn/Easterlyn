@@ -6,7 +6,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.type.Computer;
-import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.progression.ServerMode;
 
 /**
@@ -27,7 +27,7 @@ public class InventoryOpenListener implements Listener {
 		// Captchadex opening - events no longer need be cancelled.
 		SblockEvents.getEvents().openingCaptchadex.remove(event.getPlayer().getName());
 
-		if (User.getUser(event.getPlayer().getUniqueId()).isServer()
+		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()
 				&& event.getInventory().getHolder() != null
 				&& !(event.getInventory().getHolder() instanceof ServerMode)
 				&& !(event.getInventory().getHolder() instanceof Computer)) {

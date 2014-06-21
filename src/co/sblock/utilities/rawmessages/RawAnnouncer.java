@@ -18,7 +18,7 @@ import co.sblock.module.CommandPermission;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.Module;
 import co.sblock.module.SblockCommand;
-import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 
 /**
@@ -156,7 +156,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 		Log.anonymousInfo(msg.getConsoleFriendly());
 		String announcement = msg.toString();
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			User.getUser(p.getUniqueId()).rawHighlight(announcement);
+			UserManager.getUser(p.getUniqueId()).rawHighlight(announcement);
 			//Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + announcement);
 		}
 		return true;

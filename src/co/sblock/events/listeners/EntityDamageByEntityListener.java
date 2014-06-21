@@ -14,6 +14,7 @@ import co.sblock.effects.ActiveEffect;
 import co.sblock.effects.ActiveEffectType;
 import co.sblock.effects.EffectManager;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.meteors.MeteoriteComponent;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -59,7 +60,7 @@ public class EntityDamageByEntityListener implements Listener {
 			return;
 		}
 
-		User u = User.getUser(p.getUniqueId());
+		User u = UserManager.getUser(p.getUniqueId());
 		if (u != null && u.isServer()) {
 			event.setCancelled(true);
 			return;

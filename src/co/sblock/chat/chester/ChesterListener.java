@@ -17,6 +17,7 @@ import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.regex.RegexUtils;
 
@@ -48,13 +49,13 @@ public class ChesterListener implements Listener {
 
 	@EventHandler
 	public void onChesterLog(ChesterLogEvent event) {
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user == null ||user.getCurrent() == null || user.isMute() || user.isSuppressing()) {
 			event.setCancelled(true);
 			return;
 		}
 
-		Message sentMessage = new Message(User.getUser(event.getPlayer().getUniqueId()), event.getMessage());
+		Message sentMessage = new Message(UserManager.getUser(event.getPlayer().getUniqueId()), event.getMessage());
 
 		if (!sentMessage.validate(false)
 				|| sentMessage.getChannel().getAccess() == AccessLevel.PRIVATE

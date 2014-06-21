@@ -15,6 +15,7 @@ import co.sblock.chat.SblockChat;
 import co.sblock.data.SblockData;
 import co.sblock.users.Region;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 
 
@@ -121,13 +122,13 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (User.getUser(userID) == null) {
+		if (UserManager.getUser(userID) == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = User.getUser(userID);
+		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onChannelModAdd(user.getPlayerName(), this.name);
-		if (!this.isChannelMod(User.getUser(userID))) {
+		if (!this.isChannelMod(UserManager.getUser(userID))) {
 			this.modList.add(userID);
 			this.sendMessage(message);
 			if (!this.listening.contains(userID)) {
@@ -143,11 +144,11 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (User.getUser(userID) == null) {
+		if (UserManager.getUser(userID) == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = User.getUser(userID);
+		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onChannelModRm(user.getPlayerName(), this.name);
 		if (this.modList.contains(userID) && !this.isOwner(user)) {
 			this.modList.remove(userID);
@@ -177,11 +178,11 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (User.getUser(userID) == null) {
+		if (UserManager.getUser(userID) == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = User.getUser(userID);
+		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onUserKickAnnounce(user.getPlayerName(), this.name);
 		if (this.isOwner(user)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
@@ -209,11 +210,11 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (User.getUser(userID) == null) {
+		if (UserManager.getUser(userID) == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = User.getUser(userID);
+		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onUserBanAnnounce(Bukkit.getPlayer(userID).getName(), this.name);
 		if (this.isOwner(user)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
@@ -237,11 +238,11 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (User.getUser(userID) == null) {
+		if (UserManager.getUser(userID) == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = User.getUser(userID);
+		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onUserUnbanAnnounce(user.getPlayerName(), this.name);
 		if (banList.contains(userID)) {
 			this.banList.remove(userID);
@@ -269,7 +270,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			User targ = User.getUser(target);
+			User targ = UserManager.getUser(target);
 			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
 			if (this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -286,7 +287,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			User targ = User.getUser(target);
+			User targ = UserManager.getUser(target);
 			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
 			if (!this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -317,7 +318,7 @@ public abstract class Channel {
 		}
 		this.sendMessage(ChatMsgs.onChannelDisband(this.getName()));
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User.getUser(userID).removeListeningSilent(this);
+			UserManager.getUser(userID).removeListeningSilent(this);
 		}
 		SblockChat.getChat().getChannelManager().dropChannel(this.name);
 	}
@@ -330,7 +331,7 @@ public abstract class Channel {
 	 */
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User u = User.getUser(userID);
+			User u = UserManager.getUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;

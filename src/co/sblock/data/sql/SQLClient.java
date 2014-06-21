@@ -86,7 +86,7 @@ public class SQLClient extends SblockData {
 	@Override
 	public User loadUserData(UUID userID) {
 		PlayerData.loadUserData(userID);
-		return UserManager.getUserManager().addUser(userID);
+		return UserManager.addUser(userID);
 	}
 
 	public void startOfflineLookup(CommandSender sender, String name) {

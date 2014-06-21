@@ -14,7 +14,7 @@ import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.PBO;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.users.User;
+import co.sblock.users.UserManager;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -42,7 +42,7 @@ public class BlockPlaceListener implements Listener {
 		}
 
 		// Server mode placement
-		if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
+		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()) {
 			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {

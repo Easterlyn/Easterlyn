@@ -17,33 +17,24 @@ import co.sblock.data.SblockData;
 /**
  * Class that keeps track of players currently logged on to the game
  * 
- * @author FireNG, Jikoo
+ * @author FireNG, Jikoo, tmathmeyer
  */
 public class UserManager {
 
-	/* The UserManager instance. */
-	private static UserManager manager;
-
 	/* The Map of Player UUID and relevant SblockUsers currently online. */
-	private Map<UUID, User> users;
-
-	/* Constructor for UserManager. */
-	UserManager() {
-		manager = this;
-		this.users = new HashMap<>();
-	}
+	private static final Map<UUID, User> users = new HashMap<>();
 
 	/**
 	 * Adds a Player to the users list
 	 * 
 	 * @param player the name of the Player
 	 */
-	public User addUser(UUID userID) {
-		if (users.containsKey(userID)) {
-			return users.get(userID);
+	public static User addUser(UUID userID) {
+		User u = users.get(userID);
+		if (u == null) {
+			u = new User(userID);
+			users.put(userID, u);
 		}
-		User u = new User(userID);
-		users.put(userID, u);
 		return u;
 	}
 
@@ -53,7 +44,7 @@ public class UserManager {
 	 * @param player the name of the Player to remove
 	 * @return the SblockUser for the removed player, if any
 	 */
-	public User removeUser(UUID userID) {
+	public static User removeUser(UUID userID) {
 		return users.remove(userID);
 	}
 
@@ -65,7 +56,7 @@ public class UserManager {
 	 * @return the SblockUser associated with the given Player, or null if no
 	 *         Player with the given name is currently online.
 	 */
-	public User getUser(UUID userID) {
+	public static User getUser(UUID userID) {
 		if (users.containsKey(userID)) {
 			return users.get(userID);
 		}
@@ -80,8 +71,8 @@ public class UserManager {
 	 * 
 	 * @return the SblockUsers currently online
 	 */
-	public Collection<User> getUserlist() {
-		return this.users.values();
+	public static Collection<User> getUserlist() {
+		return users.values();
 	}
 
 	/**
@@ -89,7 +80,7 @@ public class UserManager {
 	 * 
 	 * @param p the Player
 	 */
-	public void team(Player p) {
+	public static void team(Player p) {
 		String teamName = null;
 		for (ChatColor c : ChatColor.values()) {
 			if (p.hasPermission("sblockchat." + c.name().toLowerCase())) {
@@ -126,18 +117,7 @@ public class UserManager {
 	/**
 	 * Fetches team prefixes.
 	 */
-	private String getTeamPrefix(String teamName) {
+	private static String getTeamPrefix(String teamName) {
 		return ChatColor.valueOf(teamName).toString();
-	}
-
-	/**
-	 * Gets the UserManager instance.
-	 * 
-	 * @return the UserManager instance
-	 */
-	public static UserManager getUserManager() {
-		if (manager == null)
-			manager = new UserManager();
-		return manager;
 	}
 }

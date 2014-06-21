@@ -39,7 +39,7 @@ public class PlayerData {
 	 * @param userID the Player UUID to save data for
 	 */
 	public static void saveUserData(UUID userID) {
-		User user = UserManager.getUserManager().removeUser(userID);
+		User user = UserManager.removeUser(userID);
 		if (user == null || !user.isLoaded()) {
 			SblockData.getDB().getLogger().warning("UUID " + userID.toString()
 					+ " does not appear to have userdata loaded, skipping save.");
@@ -132,9 +132,9 @@ public class PlayerData {
 	public static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
-				User user = UserManager.getUserManager().getUser(UUID.fromString(rs.getString("uuid")));
+				User user = UserManager.getUser(UUID.fromString(rs.getString("uuid")));
 				if (user == null || user.getPlayer() == null) {
-					UserManager.getUserManager().removeUser(user.getUUID());
+					UserManager.removeUser(user.getUUID());
 					return;
 				}
 				user.setAspect(rs.getString("aspect"));
@@ -174,7 +174,7 @@ public class PlayerData {
 				}
 				user.updateCurrentRegion(user.getPlayerRegion());
 				user.setLoaded();
-				UserManager.getUserManager().team(user.getPlayer());
+				UserManager.team(user.getPlayer());
 			} else {
 				String uuid = rs.getStatement().toString().replaceAll("com.*uuid = '(.*)'", "$1");
 				Player p = Bukkit.getPlayer(UUID.fromString(uuid));
@@ -186,11 +186,11 @@ public class PlayerData {
 						+ " is joining us for the first time! Please welcome them.");
 				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
 
-				User user = UserManager.getUserManager().getUser(p.getUniqueId());
+				User user = UserManager.getUser(p.getUniqueId());
 				user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
 				user.updateCurrentRegion(user.getPlayerRegion());
 				user.setLoaded();
-				UserManager.getUserManager().team(p);
+				UserManager.team(p);
 			}
 		} catch (SQLException e) {
 			SblockData.getDB().getLogger().err(e);

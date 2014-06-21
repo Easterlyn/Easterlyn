@@ -7,6 +7,7 @@ import co.sblock.events.SblockEvents;
 import co.sblock.users.DreamPlanet;
 import co.sblock.users.Region;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 
 /**
  * Causes a sleep teleport to occur.
@@ -30,7 +31,7 @@ public class SleepTeleport implements Runnable {
 	 */
 	@Override
 	public void run() {
-		User user = User.getUser(p.getUniqueId());
+		User user = UserManager.getUser(p.getUniqueId());
 		if (p != null && user != null) {
 			switch (Region.getLocationRegion(p.getLocation())) {
 			case EARTH:

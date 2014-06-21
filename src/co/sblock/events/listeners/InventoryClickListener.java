@@ -18,7 +18,7 @@ import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
-import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.Captchadex;
 import co.sblock.utilities.inventory.InventoryUtils;
@@ -263,13 +263,13 @@ public class InventoryClickListener implements Listener {
 	private void itemRemoveBottom(InventoryClickEvent event) {
 
 		// Server: Click computer icon -> open computer interface
-		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
+		if (UserManager.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
 			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
 				event.getWhoClicked().openInventory(new Computer(event.getWhoClicked().getLocation(),
 						event.getWhoClicked().getUniqueId().toString(), true)
-								.getInventory(User.getUser(event.getWhoClicked().getUniqueId())));
+								.getInventory(UserManager.getUser(event.getWhoClicked().getUniqueId())));
 			}
 			return;
 		}
@@ -302,7 +302,7 @@ public class InventoryClickListener implements Listener {
 		}
 
 		// Server mode: Do not move, delete.
-		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
+		if (UserManager.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
 			event.setResult(Result.DENY);
 			// Do not delete Computer icon.
 			if (!event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
@@ -323,7 +323,7 @@ public class InventoryClickListener implements Listener {
 	// switch bottom
 	private void itemSwapIntoBottom(InventoryClickEvent event) {
 		// Server: No picking up computer icon
-		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()
+		if (UserManager.getUser(event.getWhoClicked().getUniqueId()).isServer()
 				&& event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 			event.setCancelled(true);
 			return;
@@ -337,7 +337,7 @@ public class InventoryClickListener implements Listener {
 	private void itemSwapToHotbar(InventoryClickEvent event) {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 
-		if (User.getUser(event.getWhoClicked().getUniqueId()).isServer()
+		if (UserManager.getUser(event.getWhoClicked().getUniqueId()).isServer()
 				&& (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())
 						|| hotbar.equals(MachineType.COMPUTER.getUniqueDrop()))) {
 			event.setCancelled(true);

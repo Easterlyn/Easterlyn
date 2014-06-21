@@ -513,7 +513,7 @@ public class User {
 					+ "+\nAsk someone with " + ChatColor.AQUA + "/requestclient <player>");
 			return;
 		}
-		User u = getUser(client);
+		User u = UserManager.getUser(client);
 		if (u == null) {
 			p.sendMessage(ChatColor.RED + "You should wait for your client before progressing!");
 			return;
@@ -879,7 +879,7 @@ public class User {
 				.append(" began pestering <>").append(ChatColor.YELLOW).append(" at ")
 				.append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUserlist()) {
 			StringBuilder matches = new StringBuilder();
 			for (String s : this.listening) {
 				if (u.listening.contains(s)) {
@@ -1021,16 +1021,5 @@ public class User {
 			return ((User) object).getUUID().equals(playerID);
 		}
 		return false;
-	}
-
-	/**
-	 * Gets a User by UUID.
-	 * 
-	 * @param userName the name to match
-	 * 
-	 * @return the User specified or null if invalid.
-	 */
-	public static User getUser(UUID userID) {
-		return UserManager.getUserManager().getUser(userID);
 	}
 }
