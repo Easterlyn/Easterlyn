@@ -18,7 +18,6 @@ import co.sblock.data.TowerLocs;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.TowerData;
 import co.sblock.users.User;
-import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 
 /**
@@ -84,9 +83,8 @@ public class SQLClient extends SblockData {
 	}
 
 	@Override
-	public User loadUserData(UUID userID) {
+	public void loadUserData(UUID userID) {
 		PlayerData.loadUserData(userID);
-		return UserManager.addUser(userID);
 	}
 
 	public void startOfflineLookup(CommandSender sender, String name) {

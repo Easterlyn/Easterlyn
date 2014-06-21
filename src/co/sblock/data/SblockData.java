@@ -75,7 +75,7 @@ public abstract class SblockData {
 	 * 
 	 * @param name the name of the Payer to load data for
 	 */
-	public abstract User loadUserData(UUID userID);
+	public abstract void loadUserData(UUID userID);
 
 	/**
 	 * TODO: describe this with a real javadoc comment

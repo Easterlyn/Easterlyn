@@ -5,7 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
-import redis.clients.jedis.Jedis;
+import com.tmathmeyer.jadis.Jadis;
+
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.SblockData;
 import co.sblock.machines.type.Machine;
@@ -21,7 +22,7 @@ import co.sblock.utilities.Log;
 public class RedisClient extends SblockData{
 
 	private final Log logger = Log.getLog("SblockData - Redis");
-	private Jedis connection;
+	private Jadis connection;
 	
 	@Override
 	public Log getLogger() {
@@ -31,7 +32,7 @@ public class RedisClient extends SblockData{
 	@Override
 	public boolean enable() {
 		try {
-			connection = new Jedis("localhost");
+			connection = Jadis.getJadis("localhost");
 		} catch (Exception e) {
 			return false;
 		}
@@ -40,9 +41,7 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void disable() {
-		if (connection != null) {
-			connection.shutdown();
-		}
+		connection = null;
 	}
 
 	@Override
@@ -59,10 +58,8 @@ public class RedisClient extends SblockData{
 	}
 
 	@Override
-	public User loadUserData(UUID userID) {
-		//String serialisedUser = connection.hget("Users", userID.toString());
-		//return User.redisDeserialise(serialisedUser);
-		return null;
+	public void loadUserData(UUID userID) {
+		connection.getFromMap("USERS", userID.toString(), PlayerDataPromise.getPDP(), User.class);
 	}
 
 	@Override

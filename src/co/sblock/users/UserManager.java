@@ -60,9 +60,6 @@ public class UserManager {
 		if (users.containsKey(userID)) {
 			return users.get(userID);
 		}
-		if (Bukkit.getOfflinePlayer(userID).isOnline()) {
-			return SblockData.getDB().loadUserData(userID);
-		}
 		return null;
 	}
 
