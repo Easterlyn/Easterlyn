@@ -64,7 +64,7 @@ public abstract class Module {
 	 * @return the Module enabled
 	 */
 	public final Module enable() {
-		this.getLogger().info("Enabling module " + this.getClass().getSimpleName());
+		this.getLogger().info("Enabling module " + this.getModuleName());
 		try {
 			this.onEnable();
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public abstract class Module {
 			throw new RuntimeException("Unhandled exception in module "
 					+ this.getClass().getSimpleName() + ". Plugin failed to properly disable.", e);
 		}
-		this.getLogger().info("Disabled module " + this.getClass().getSimpleName());
+		this.getLogger().info("Disabled module " + this.getModuleName());
 		return this;
 	}
 
