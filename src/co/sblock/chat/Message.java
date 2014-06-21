@@ -39,6 +39,9 @@ public class Message {
 	public Message(User sender, String message) {
 		this(message);
 		this.sender = sender;
+		if (channel == null) {
+			channel = sender.getCurrent();
+		}
 	}
 
 	public Message(String name, String message) {
@@ -65,8 +68,6 @@ public class Message {
 			target = message.substring(1, space);
 			message = message.substring(space);
 			channel = ChannelManager.getChannelManager().getChannel(target);
-		} else if (sender != null) {
-			channel = sender.getCurrent();
 		}
 
 		// Trim whitespace created by formatting codes, etc.
