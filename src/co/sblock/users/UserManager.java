@@ -21,13 +21,13 @@ import co.sblock.data.SblockData;
  */
 public class UserManager {
 
-	/** The UserManager instance. */
+	/* The UserManager instance. */
 	private static UserManager manager;
 
-	/** The Map of Player UUID and relevant SblockUsers currently online. */
+	/* The Map of Player UUID and relevant SblockUsers currently online. */
 	private Map<UUID, User> users;
 
-	/** Constructor for UserManager. */
+	/* Constructor for UserManager. */
 	UserManager() {
 		manager = this;
 		this.users = new HashMap<>();

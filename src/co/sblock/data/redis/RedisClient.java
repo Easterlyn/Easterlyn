@@ -54,7 +54,7 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void saveUserData(UUID userID) {
-		User user = UserManager.getUserByUUID();
+		//User user = UserManager.getUserByUUID();
 		//connection.hset("Users", userID.toString(), user.getRedisSerialisation());
 		//TODO: implement serialisability
 	}

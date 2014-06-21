@@ -44,56 +44,56 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class User {
 
-	/** Player's UUID */
+	/* Player's UUID */
 	private UUID playerID;
 
-	/** The Player's IP address */
-	private String userIP;
+	/* The Player's IP address */
+	private transient String userIP;
 
-	/** Ensures that User data is not overwritten */
+	/* Ensures that User data is not overwritten */
 	private boolean loaded;
 
-	/** Keeps track of current Region for various purposes */
+	/* Keeps track of current Region for various purposes */
 	private Region currentRegion;
 
-	/** Used to calculate elapsed times. */
+	/* Used to calculate elapsed times. */
 	private SimpleDateFormat dateFormat;
 
 	/* SBLOCK USER DATA BELOW */
-	/** Classpect */
+	/* Classpect */
 	private UserClass classType;
 	private UserAspect aspect;
 	private MediumPlanet mPlanet;
 	private DreamPlanet dPlanet;
 	private ProgressionState progression;
 
-	/** The Player's tower number */
+	/* The Player's tower number */
 	private byte tower;
 
-	/** Locations to teleport Players to when conditions are met */
+	/* Locations to teleport Players to when conditions are met */
 	private Location previousLocation, serverDisableTeleport;
 
-	/** Programs installed to the player's computer */
+	/* Programs installed to the player's computer */
 	private HashSet<Integer> programs;
 
-	/** Checks made while the Player is logged in, not saved. */
+	/* Checks made while the Player is logged in, not saved. */
 	private boolean isServer, allowFlight;
 
-	/** The UUIDs of the Player's server and client players. */
+	/* The UUIDs of the Player's server and client players. */
 	private UUID server, client;
 
-	/** A map of the Effects applied to the Player and their strength. */
+	/* A map of the Effects applied to the Player and their strength. */
 	private HashMap<PassiveEffect, Integer> passiveEffects;
 
 
 	/* CHAT USER DATA BELOW */
-	/** The name of the Player's current focused Channel */
+	/* The name of the Player's current focused Channel */
 	private String current;
 
-	/** The channels the Player is listening to */
+	/* The channels the Player is listening to */
 	private HashSet<String> listening;
 
-	/** Booleans affecting channel message reception. */
+	/* Booleans affecting channel message reception. */
 	private AtomicBoolean globalMute, suppress;
 	
 	/**

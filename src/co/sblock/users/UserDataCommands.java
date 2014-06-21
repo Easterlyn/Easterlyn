@@ -394,7 +394,7 @@ public class UserDataCommands implements CommandListener {
 			if (p != null) {
 				User victim = User.getUser(p.getUniqueId());
 				SblockData.getDB().addBan(victim, reason.toString());
-				SblockData.getDB().deleteUser(victim.getPlayerName());
+				SblockData.getDB().deleteUser(victim.getUUID());
 				victim.getPlayer().kickPlayer(reason.toString());
 				Bukkit.dispatchCommand(sender, "lwc admin purge " + p.getUniqueId());
 			} else {
