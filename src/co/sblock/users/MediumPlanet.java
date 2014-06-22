@@ -11,7 +11,7 @@ import org.bukkit.Location;
 public enum MediumPlanet {
 
 	LOFAF("Land of Frost and Frogs", new Location(Bukkit.getWorld("Medium"), 2756, 64, -2756)),
-	LOHAC("Land of Heat and Clockwork", new Location(Bukkit.getWorld("Medium"), 2756, 64, -2756)),
+	LOHAC("Land of Heat and Clockwork", new Location(Bukkit.getWorld("Medium"), -2756, 64, -2756)),
 	LOLAR("Land of Light and Rain", new Location(Bukkit.getWorld("Medium"), -2756, 64, 2756)),
 	LOWAS("Land of Wind and Shade", new Location(Bukkit.getWorld("Medium"), 2756, 64, 2756));
 
