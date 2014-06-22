@@ -266,14 +266,14 @@ public class User {
 		 */
 		public User build(UUID userID)
 		{
-			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression, isServer, allowFlight,
+			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression, isServer, allowFlight, IPAddr,
 							previousLocation, currentChannel, passiveEffects, programs, listening, globalMute, suppress);
 		}
 
 	}
 
 	private User(UUID userID, boolean loaded, UserClass userClass, UserAspect aspect, MediumPlanet mplanet,
-				DreamPlanet dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight,
+				DreamPlanet dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight, String IP,
 				Location previousLocation, String currentChannel, Map<PassiveEffect, Integer> passiveEffects,
 				Set<Integer> programs, Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress) {
 		this.playerID = userID;
@@ -292,6 +292,7 @@ public class User {
 		this.listening = listening;
 		this.globalMute = globalMute;
 		this.suppress = supress;
+		this.userIP = IP;
 	}
 
 	/**
