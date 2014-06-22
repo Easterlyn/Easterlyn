@@ -67,9 +67,6 @@ public class User {
 	private DreamPlanet dPlanet;
 	private ProgressionState progression;
 
-	/* The Player's tower number */
-	private byte tower;
-
 	/* Locations to teleport Players to when conditions are met */
 	private Location previousLocation;
 	private transient Location serverDisableTeleport;
@@ -119,7 +116,6 @@ public class User {
 		mPlanet = MediumPlanet.LOWAS;
 		dPlanet = DreamPlanet.PROSPIT;
 		progression = ProgressionState.NONE;
-		tower = (byte)(8 * Math.random());
 		isServer = false;
 		allowFlight = false;
 		this.updateFlight();
@@ -259,24 +255,6 @@ public class User {
 	 */
 	public void setProgression(ProgressionState progression) {
 		this.progression = progression;
-	}
-
-	/**
-	 * Gets the tower number generated for the Player.
-	 * 
-	 * @return the number of the tower the player will "dream" to
-	 */
-	public byte getTower() {
-		return this.tower;
-	}
-
-	/**
-	 * Sets the tower number generated for the Player.
-	 * 
-	 * @param tower the number of the tower the Player will "dream" to
-	 */
-	public void setTower(byte tower) {
-		this.tower = tower;
 	}
 
 	/**
@@ -1009,7 +987,7 @@ public class User {
 		
 		String s = sys + "-----------------------------------------\n" + 
 				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
-				this.mPlanet + div + this.dPlanet.getDisplayName() + div + " Tower: " + this.tower + div + " Flight: " + this.allowFlight + "\n" + 
+				this.mPlanet + div + this.dPlanet.getDisplayName() + div + " Flight: " + this.allowFlight + "\n" + 
 				" Mute: " + this.globalMute.get() + div + " Current: " + this.current + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
 				" IP: " + this.userIP + "\n" +

@@ -21,7 +21,6 @@ import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
 import co.sblock.module.Module;
-import co.sblock.users.TowerData;
 import co.sblock.utilities.Broadcast;
 import co.sblock.utilities.minecarts.FreeCart;
 
@@ -34,9 +33,6 @@ public class SblockEvents extends Module {
 
 	/** The EventModule instance. */
 	private static SblockEvents instance;
-
-	/** The TowerData. */
-	private TowerData towers;
 
 	/** The Task ID of the RegionCheck task. */
 	private int regionTask;
@@ -68,9 +64,7 @@ public class SblockEvents extends Module {
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
 		openingCaptchadex = new HashSet<String>();
-		towers = new TowerData();
-		towers.load();
-		
+
 		this.registerEvents(new BlockBreakListener(), new BlockFadeListener(), new BlockGrowListener(),
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
@@ -116,8 +110,6 @@ public class SblockEvents extends Module {
 		Bukkit.getScheduler().cancelTask(regionTask);
 		Bukkit.getScheduler().cancelTask(sessionTask);
 		FreeCart.getInstance().cleanUp();
-		towers.save();
-		towers = null;
 		instance = null;
 	}
 
@@ -221,15 +213,6 @@ public class SblockEvents extends Module {
 	 */
 	public int initiateRegionChecks() {
 		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
-	}
-
-	/**
-	 * Gets the TowerData used for sleep teleports.
-	 * 
-	 * @return the TowerData
-	 */
-	public TowerData getTowerData() {
-		return towers;
 	}
 
 	/**

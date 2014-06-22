@@ -54,29 +54,28 @@ public class PlayerData {
 			pst.setString(3, user.getAspect().getDisplayName());
 			pst.setString(4, user.getMediumPlanet().getShortName());
 			pst.setString(5, user.getDreamPlanet().getDisplayName());
-			pst.setShort(6, user.getTower());
-			pst.setBoolean(7, user.canFly());
+			pst.setBoolean(6, user.canFly());
 			Channel c = user.getCurrent();
-			pst.setString(8, c != null ? c.getName() : "#" + user.getCurrentRegion().name());
-			pst.setBoolean(9, user.isMute());
+			pst.setString(7, c != null ? c.getName() : "#" + user.getCurrentRegion().name());
+			pst.setBoolean(8, user.isMute());
 			StringBuilder sb = new StringBuilder();
 			for (String s : user.getListening()) {
 				sb.append(s + ",");
 			}
-			pst.setString(10, sb.substring(0, sb.length() - 1));
-			pst.setString(11, user.getUserIP());
-			pst.setString(12, user.getTimePlayed());
+			pst.setString(9, sb.substring(0, sb.length() - 1));
+			pst.setString(10, user.getUserIP());
+			pst.setString(11, user.getTimePlayed());
 			String location = user.getPreviousLocationString();
 			if (location == null) {
 				user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				location = user.getPreviousLocationString();
 			}
-			pst.setString(13, location);
-			pst.setString(14, user.getProgramString());
-			pst.setString(15, user.getPlayer().getUniqueId().toString());
-			pst.setString(16, user.getClient() != null ? user.getClient().toString() : null);
-			pst.setString(17, user.getServer() != null ? user.getServer().toString() : null);
-			pst.setString(18, user.getProgression().name());
+			pst.setString(12, location);
+			pst.setString(13, user.getProgramString());
+			pst.setString(14, user.getPlayer().getUniqueId().toString());
+			pst.setString(15, user.getClient() != null ? user.getClient().toString() : null);
+			pst.setString(16, user.getServer() != null ? user.getServer().toString() : null);
+			pst.setString(17, user.getProgression().name());
 
 			if (Sblock.getInstance().isEnabled()) {
 				new AsyncCall(pst).schedule();
@@ -141,10 +140,6 @@ public class PlayerData {
 				user.setPlayerClass(rs.getString("class"));
 				user.setMediumPlanet(rs.getString("mPlanet"));
 				user.setDreamPlanet(rs.getString("dPlanet"));
-				short tower = rs.getShort("towerNum");
-				if (tower != -1) {
-					user.setTower((byte) tower);
-				}
 				user.updateFlight();
 				if (rs.getBoolean("isMute")) {
 					user.setMute(true);;

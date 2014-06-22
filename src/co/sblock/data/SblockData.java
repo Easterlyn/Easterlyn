@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.TowerData;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
@@ -201,22 +200,6 @@ public class SblockData {
 			logger.err(e);
 			return null;
 		}
-	}
-
-	/**
-	 * Fills out TowerData from saved data.
-	 */
-	public void loadTowerData() {
-		TowerLocs.loadTowerData();
-	}
-
-	/**
-	 * Save all TowerData.
-	 * 
-	 * @param towers the TowerData to save
-	 */
-	public void saveTowerData(TowerData towers) {
-		TowerLocs.saveTowerData(towers);
 	}
 
 	/**
