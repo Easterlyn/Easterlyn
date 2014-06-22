@@ -12,7 +12,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.chat.ColorDef;
-import co.sblock.data.SblockData;
 import co.sblock.users.User.UserSpawner;
 
 /**
@@ -26,11 +25,13 @@ public class UserManager {
 	private static final Map<UUID, User> users = new HashMap<>();
 
 	/**
-	 * Adds a Player to the users list
+	 * Adds a new user to the memstore,
+	 * though wont override it if there is already one
+	 * (in the case of multiple login-logouts)
 	 * 
 	 * @param player the name of the Player
 	 */
-	public static User addUser(UUID userID) {
+	public static User addNewUser(UUID userID) {
 		User u = users.get(userID);
 		if (u == null) {
 			u = new UserSpawner().build(userID);
@@ -69,7 +70,7 @@ public class UserManager {
 	 * 
 	 * @return the SblockUsers currently online
 	 */
-	public static Collection<User> getUserlist() {
+	public static Collection<User> getUsers() {
 		return users.values();
 	}
 

@@ -391,7 +391,7 @@ public class ChatCommands implements CommandListener {
 				scGlobalRmNick(user, args);
 				return true;
 			} else if (args[1].equalsIgnoreCase("clearnicks")) {
-				for (User u : UserManager.getUserlist()) {
+				for (User u : UserManager.getUsers()) {
 					if (!u.getPlayer().getDisplayName().equals(u.getPlayerName())) {
 						u.getPlayer().setDisplayName(u.getPlayerName());
 					}
@@ -410,7 +410,7 @@ public class ChatCommands implements CommandListener {
 		}
 		Bukkit.getPlayer(args[2]).setDisplayName(args[3]);
 		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
-		for (User u : UserManager.getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -423,7 +423,7 @@ public class ChatCommands implements CommandListener {
 			return;
 		}
 		String msg = ChatMsgs.onUserRmGlobalNick(args[2], p.getDisplayName());
-		for (User u : UserManager.getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -439,7 +439,7 @@ public class ChatCommands implements CommandListener {
 		User victim = UserManager.getUser(p.getUniqueId());
 		victim.setMute(true);
 		String msg = ChatMsgs.onUserMute(args[2]);
-		for (User u : UserManager.getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -454,7 +454,7 @@ public class ChatCommands implements CommandListener {
 		User victim = UserManager.getUser(p.getUniqueId());
 		victim.setMute(false);;
 		String msg = ChatMsgs.onUserUnmute(args[2]);
-		for (User u : UserManager.getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);

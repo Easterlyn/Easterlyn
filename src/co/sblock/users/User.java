@@ -1042,7 +1042,7 @@ public class User {
 				.append(" began pestering <>").append(ChatColor.YELLOW).append(" at ")
 				.append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues
-		for (User u : UserManager.getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			StringBuilder matches = new StringBuilder();
 			for (String s : this.listening) {
 				if (u.listening.contains(s)) {
