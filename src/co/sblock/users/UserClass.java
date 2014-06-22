@@ -6,8 +6,24 @@ package co.sblock.users;
  * @author FireNG, Jikoo
  */
 public enum UserClass {
-	BARD, HEIR, KNIGHT, MAGE, MAID, PAGE,
-	PRINCE, ROGUE, SEER, SYLPH, THIEF, WITCH;
+	BARD("Bard"),
+	HEIR("Heir"),
+	KNIGHT("Knight"),
+	MAGE("Mage"),
+	MAID("Maid"),
+	PAGE("Page"),
+	PRINCE("Prince"),
+	ROGUE("Rogue"),
+	SEER("Seer"),
+	SYLPH("Sylph"),
+	THIEF("Theif"),
+	WITCH("Witch");
+
+	private final String name;
+
+	private UserClass(String name) {
+		this.name = name;
+	}
 
 	/**
 	 * Gets the display name of the UserClass.
@@ -15,7 +31,7 @@ public enum UserClass {
 	 * @return The display name of this UserClass.
 	 */
 	public String getDisplayName() {
-		return this.name().charAt(0) + this.name().substring(1).toLowerCase();
+		return this.name;
 	}
 
 	/**

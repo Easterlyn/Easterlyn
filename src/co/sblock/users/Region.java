@@ -11,8 +11,34 @@ import co.sblock.chat.ColorDef;
  * @author Jikoo, Dublek
  */
 public enum Region {
-	EARTH, INNERCIRCLE, OUTERCIRCLE, FURTHESTRING,
-	MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF, UNKNOWN;
+	EARTH("earth", ColorDef.WORLD_EARTH, "http://sblock.co/rpack/Prospit.zip"),
+	OUTERCIRCLE("outercircle", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip"),
+	INNERCIRCLE("innercircle", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip"),
+	FURTHESTRING("furthestring", ColorDef.WORLD_FURTHESTRING, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip"),
+	MEDIUM("medium", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip"),
+	LOWAS("lowas", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip"),
+	LOLAR("lolar", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip"),
+	LOHAC("lohac", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip"),
+	LOFAF("lofaf", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip"),
+	UNKNOWN("unknown", ColorDef.WORLD_AETHER, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip");
+
+	/* INNER FIELDS */
+	private final String name;
+	private final String resourcePack;
+	private final ChatColor worldChatColor;
+
+	/**
+	 * 
+	 * @param name The name of the region
+	 * @param color the default chat color of the region
+	 * @param sourceURL the texture pack to be used in this region
+	 */
+	private Region(String name, ChatColor color, String sourceURL) {
+		this.name = name;
+		this.resourcePack = sourceURL;
+		this.worldChatColor = color;
+	}
+
 
 	/**
 	 * Gets the name of the Region.
@@ -20,7 +46,25 @@ public enum Region {
 	 * @return Region.name() in lower case
 	 */
 	public String getRegionName() {
-		return this.name().toLowerCase();
+		return name;
+	}
+
+	/**
+	 * @return the url of the resource pack to be used
+	 */
+	public String getResourcePackURL() {
+		return this.resourcePack;
+	}
+
+	/**
+	 * Gets the ChatColor that indicates users are in a specific Region.
+	 * 
+	 * @param r the Region to get the ChatColor of
+	 * 
+	 * @return the relevant ChatColor
+	 */
+	public ChatColor getRegionColor() {
+		return this.worldChatColor;
 	}
 
 	/**
@@ -39,36 +83,6 @@ public enum Region {
 				return Region.MEDIUM;
 			}
 			return Region.EARTH;
-		}
-	}
-
-	/**
-	 * Gets the ChatColor that indicates users are in a specific Region.
-	 * 
-	 * @param r the Region to get the ChatColor of
-	 * 
-	 * @return the relevant ChatColor
-	 */
-	public static ChatColor getRegionColor(Region r) {
-		switch (r) {
-		case EARTH:
-			return ColorDef.WORLD_EARTH;
-		case FURTHESTRING:
-			return ColorDef.WORLD_FURTHESTRING;
-		case INNERCIRCLE:
-			return ColorDef.WORLD_INNERCIRCLE;
-		case LOFAF:
-		case LOHAC:
-		case LOLAR:
-		case LOWAS:
-		case MEDIUM:
-			return ColorDef.WORLD_MEDIUM;
-		case OUTERCIRCLE:
-			return ColorDef.WORLD_OUTERCIRCLE;
-		case UNKNOWN:
-			return ColorDef.WORLD_AETHER;
-		default:
-			return ColorDef.DEFAULT;
 		}
 	}
 
@@ -99,25 +113,6 @@ public enum Region {
 			// Player is in an invalid world
 			// For the sake of region channels, default to earth.
 			return Region.EARTH;
-		}
-	}
-
-	public String getResourcePackURL() {
-		switch (this) {
-		case INNERCIRCLE:
-			return "http://sblock.co/rpack/Prospit.zip";
-		case OUTERCIRCLE:
-			return "http://sblock.co/rpack/Derse.zip";
-		case EARTH:
-		case FURTHESTRING:
-		case LOFAF:
-		case LOHAC:
-		case LOLAR:
-		case LOWAS:
-		case MEDIUM:
-		case UNKNOWN:
-		default:
-			return "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip";
 		}
 	}
 }

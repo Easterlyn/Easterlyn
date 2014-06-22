@@ -3,22 +3,26 @@ package co.sblock.users;
 /**
  * Represents a dream planet.
  * 
- * @author FireNG, Jikoo
+ * @author FireNG, Jikoo, tmathmeyer
  */
 public enum DreamPlanet {
 
-	NONE("Earth"), PROSPIT("InnerCircle"), DERSE("OuterCircle");
+	NONE("Earth", "None"),
+	PROSPIT("InnerCircle", "Prospit"),
+	DERSE("OuterCircle", "Derse");
 
-	/** The name of the World. */
-	private String worldName;
+	/* The names of the World. */
+	private final String worldName;
+	private final String displayName;
 
 	/**
 	 * Constructor for DreamPlanet.
 	 * 
 	 * @param worldName the name of the World used for this DreamPlanet.
 	 */
-	DreamPlanet(String worldName) {
+	private DreamPlanet(String worldName, String displayName) {
 		this.worldName = worldName;
+		this.displayName = displayName;
 	}
 
 	/**
@@ -27,7 +31,7 @@ public enum DreamPlanet {
 	 * @return The display name of this DreamPlanet.
 	 */
 	public String getDisplayName() {
-		return this.name().charAt(0) + this.name().substring(1).toLowerCase();
+		return this.displayName;
 	}
 
 	/**

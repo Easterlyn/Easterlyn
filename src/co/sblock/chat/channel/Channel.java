@@ -407,7 +407,7 @@ public abstract class Channel {
 
 			nick = this.getNick(sender);
 
-			region = Region.getRegionColor(sender.getCurrentRegion());
+			region = sender.getCurrentRegion().getRegionColor();
 		} else {
 			guildRank = ColorDef.RANK_HERO;
 			channelRank = ColorDef.CHATRANK_OWNER;
