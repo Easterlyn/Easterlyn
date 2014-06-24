@@ -11,7 +11,6 @@ import com.tmathmeyer.jadis.async.Promise;
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.SblockData;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.TowerData;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
@@ -110,18 +109,6 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void loadAllMachines() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void loadTowerData() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void saveTowerData(TowerData towers) {
 		// TODO Auto-generated method stub
 		
 	}

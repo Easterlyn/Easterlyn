@@ -44,11 +44,9 @@ public class SleepTeleport implements Runnable {
 					break;
 				}
 				SblockEvents.getEvents().teleports.add(p.getName());
-				if (p.getWorld().equals(user.getPreviousLocation().getWorld())
-						|| !user.getDreamPlanet().getWorldName()
+				if (!user.getDreamPlanet().getWorldName()
 								.equals(user.getPreviousLocation().getWorld().getName())) {
-					p.teleport(SblockEvents.getEvents().getTowerData()
-							.getLocation(user.getTower(), user.getDreamPlanet()));
+					p.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
 				} else {
 					p.teleport(user.getPreviousLocation());
 				}

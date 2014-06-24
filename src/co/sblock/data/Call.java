@@ -10,9 +10,9 @@ import org.bukkit.command.CommandSender;
  * @author Jikoo
  */
 public enum Call {
-	PLAYER_SAVE("INSERT INTO PlayerData(name, class, aspect, mPlanet, dPlanet, towerNum, sleepState, "
+	PLAYER_SAVE("INSERT INTO PlayerData(name, class, aspect, mPlanet, dPlanet, sleepState, "
 			+ "currentChannel, isMute, channels, ip, timePlayed, previousLocation, programs, uuid, "
-			+ "client, server, progression) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+			+ "client, server, progression) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 			+ "ON DUPLICATE KEY UPDATE class=VALUES(class), aspect=VALUES(aspect), mPlanet=VALUES(mPlanet), "
 			+ "dPlanet=VALUES(dPlanet), towerNum=VALUES(towerNum), sleepState=VALUES(sleepState), "
 			+ "currentChannel=VALUES(currentChannel), isMute=VALUES(isMute), channels=VALUES(channels), "
@@ -31,10 +31,7 @@ public enum Call {
 	MACHINE_SAVE("INSERT INTO Machines(location, type, owner, face, data) VALUES (?, ?, ?, ?, ?) "
 			+ "ON DUPLICATE KEY UPDATE type=VALUES(type), owner=VALUES(owner), face=VALUES(face), data=VALUES(data)"),
 	MACHINE_LOADALL("SELECT * FROM Machines"),
-	MACHINE_DELETE("DELETE FROM Machines WHERE location = ?"),
-	TOWER_SAVE("INSERT INTO TowerLocs(towerID, location) VALUES (?, ?) "
-			+ "ON DUPLICATE KEY UPDATE location=VALUES(location)"),
-	TOWER_LOAD("SELECT * FROM TowerLocs");
+	MACHINE_DELETE("DELETE FROM Machines WHERE location = ?");
 
 	/** The SQL query to make. */
 	private final String call;
