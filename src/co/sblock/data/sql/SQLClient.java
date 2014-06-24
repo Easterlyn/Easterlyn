@@ -14,9 +14,7 @@ import co.sblock.data.ChatChannels;
 import co.sblock.data.Machines;
 import co.sblock.data.PlayerData;
 import co.sblock.data.SblockData;
-import co.sblock.data.TowerLocs;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.TowerData;
 import co.sblock.users.User;
 import co.sblock.utilities.Log;
 
@@ -125,16 +123,6 @@ public class SQLClient extends SblockData {
 	@Override
 	public void loadAllMachines() {
 		Machines.loadAllMachines();
-	}
-
-	@Override
-	public void loadTowerData() {
-		TowerLocs.loadTowerData();
-	}
-
-	@Override
-	public void saveTowerData(TowerData towers) {
-		TowerLocs.saveTowerData(towers);
 	}
 
 	@Override

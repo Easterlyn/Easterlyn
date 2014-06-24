@@ -7,9 +7,7 @@ import org.bukkit.command.CommandSender;
 
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.redis.RedisClient;
-import co.sblock.data.sql.SQLClient;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.TowerData;
 import co.sblock.users.User;
 import co.sblock.utilities.Log;
 
@@ -127,18 +125,6 @@ public abstract class SblockData {
 	 * Creates and loads all Machines from saved data.
 	 */
 	public abstract void loadAllMachines();
-
-	/**
-	 * Fills out TowerData from saved data.
-	 */
-	public abstract void loadTowerData();
-
-	/**
-	 * Save all TowerData.
-	 * 
-	 * @param towers the TowerData to save
-	 */
-	public abstract void saveTowerData(TowerData towers);
 
 	/**
 	 * Get a User's name by the IP they last connected with.

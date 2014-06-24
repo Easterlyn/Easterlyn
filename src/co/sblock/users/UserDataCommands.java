@@ -13,7 +13,6 @@ import org.bukkit.util.Vector;
 
 import co.sblock.chat.ChatMsgs;
 import co.sblock.data.SblockData;
-import co.sblock.events.SblockEvents;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.module.CommandDenial;
 import co.sblock.module.CommandDescription;
@@ -116,31 +115,6 @@ public class UserDataCommands implements CommandListener {
 		} else
 			return false;
 		return true;
-	}
-
-	@CommandDenial
-	@CommandDescription("Set tower location.")
-	@CommandUsage("/settower <0-7>")
-	@CommandPermission("group.horrorterror")
-	@SblockCommand
-	public boolean settower(CommandSender sender, String[] number) {
-		if (number == null || number.length == 0) {
-			return false;
-		}
-		switch (Region.uValueOf(((Player)sender).getWorld().getName())) {
-		case INNERCIRCLE:
-		case OUTERCIRCLE:
-			try {
-				SblockEvents.getEvents().getTowerData()
-						.add(((Player)sender).getLocation(), Byte.valueOf(number[0]));
-			} catch (NumberFormatException e) {
-				sender.sendMessage(ChatColor.RED + number[0] + " is not a valid number! Remember, 0-7.");
-			}
-			return true;
-		default:
-			sender.sendMessage(ChatColor.RED + "You do not appear to be in a dream planet.");
-			return true;
-		}
 	}
 
 	@CommandDescription("Ask someone to be your Sburb server player!")

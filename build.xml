@@ -53,7 +53,7 @@
 
 		<jar destfile="${jar.file}" basedir="${class.dir}">
 			<manifest>
-				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar" />
+				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar lib/gson.jar" />
 			</manifest>
 		</jar>
 	</target>
