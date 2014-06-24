@@ -3,7 +3,7 @@ name: Sblock
 main: co.sblock.Sblock
 version: 2.0.0-DEV
 author: Sblock Co.
-authors: [Jikoo, Dublek, FireNG]
+authors: [Jikoo, Dublek, FireNG, tmathmeyer]
 description: Sblock's sexy mainframe
 depend: [ProtocolLib, HoloAPI]
 softdepend: [Chester, CreeperHeal]

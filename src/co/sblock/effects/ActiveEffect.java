@@ -135,14 +135,14 @@ Lightning Smite
 Weather Summoning
 Disease Hit (Poison and possibly Hunger)
 Explosions / Ghast Projectiles (consume gunpowder)
-Cupid�s Arrows: 
+Cupid's Arrows: 
 Lava Immunity (Consumes Experience)
 Ultimate Efficiency (items degrade 3x faster but dig 5x faster) 
 Seismic Toss (Iron Golem-style)
 Blaze Projectiles (Consumes Fire Charges)
 Bezerker Rage (pops up that little angry villager particle and boosts hand to hand combat, the ultimate equius technique)
 Frostbite (2-second immobility + causes damage, consumes snowballs)
-The Horrorterror (Summons squids, only activatable by uttering Cthulhu r�yleh phtagn in grimdark speak) (fucking useless ability, but amazing)
+The Horrorterror (Summons squids, only activatable by uttering Cthulhu r'yleh phtagn in grimdark speak) (fucking useless ability, but amazing)
 Block out the sun (summons a torrent of flaming arrows in exchange for all of your levels, say... 3 arrows per level?) (arrows not able to be picked up of course)
 Sandgun
 Soporifics (Causes nausea but increases hand to hand)

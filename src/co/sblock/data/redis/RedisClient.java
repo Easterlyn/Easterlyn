@@ -65,6 +65,7 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void loadUserData(UUID userID) {
+		Log.getLog("DATABASE").severe("WELL SHIT WHAYT HAPPENED");
 		connection.getFromMap("USERS", userID.toString(), playerDataPromise, User.class);
 	}
 

@@ -6,6 +6,8 @@ import java.util.Map;
 import org.apache.commons.lang.NotImplementedException;
 
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
+import co.sblock.utilities.Log;
 
 import com.tmathmeyer.jadis.async.Promise;
 
@@ -31,7 +33,8 @@ public class PlayerDataPromise implements Promise<User> {
 
 	@Override
 	public void getObject(User user) {
-		throw new NotImplementedException();
+		Log.getLog("an-thread").severe("PENIS IN YO MOUTH");
+		UserManager.addUser(user);
 	}
 
 }

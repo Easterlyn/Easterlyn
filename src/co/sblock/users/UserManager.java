@@ -39,6 +39,14 @@ public class UserManager {
 		}
 		return u;
 	}
+	
+	/**
+	 * @param u the user to add
+	 * @return whether there was already a user with this UUID in the map
+	 */
+	public static boolean addUser(User u) {
+		return users.put(u.getUUID(), u) == null;
+	}
 
 	/**
 	 * Removes a Player from the users list.
@@ -51,12 +59,11 @@ public class UserManager {
 	}
 
 	/**
-	 * Gets a SblockUserby Player name.
 	 * 
-	 * @param name the name of the Player to look up
+	 * @param userID the UUID of the Player to look up
 	 * 
 	 * @return the SblockUser associated with the given Player, or null if no
-	 *         Player with the given name is currently online.
+	 *         Player with the given ID is currently online.
 	 */
 	public static User getUser(UUID userID) {
 		if (users.containsKey(userID)) {

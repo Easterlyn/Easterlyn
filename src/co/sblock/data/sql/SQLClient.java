@@ -84,6 +84,7 @@ public class SQLClient extends SblockData {
 
 	@Override
 	public void loadUserData(UUID userID) {
+		Log.getLog("SQL-TRASH").severe("SQL IS ABSOLUTE GARBAGE");
 		PlayerData.loadUserData(userID);
 	}
 

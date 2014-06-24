@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.command.CommandSender;
 
 import co.sblock.chat.channel.Channel;
+import co.sblock.data.redis.RedisClient;
 import co.sblock.data.sql.SQLClient;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.TowerData;
@@ -25,8 +26,8 @@ public abstract class SblockData {
 	 * also provides an easy way to switch between redis / mysql, though this should (and will, later)
 	 * be controlled by a config file
 	 */
-	private static SblockData db = new SQLClient();
-	//private static final SblockData db = new RedisClient();
+	//private static SblockData db = new SQLClient();
+	private static final SblockData db = new RedisClient();
 
 	/**
 	 * SblockData singleton.
