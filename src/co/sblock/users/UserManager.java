@@ -12,7 +12,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.chat.ColorDef;
-import co.sblock.data.SblockData;
 import co.sblock.users.User.UserSpawner;
 
 /**

@@ -13,7 +13,6 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.SblockChat;
 import co.sblock.data.SblockData;
-import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;

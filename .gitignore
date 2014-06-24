@@ -181,3 +181,4 @@ pip-log.txt
 .DS_Store
 
 /bin
+src/config.yml
