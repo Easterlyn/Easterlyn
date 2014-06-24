@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Sblock" basedir="." default="jar">
+	<property name="source.dir" value="src" />
+	<property name="lib.dir" value="lib" />
+	<property name="class.dir" value="bin" />
+	<property name="jar.dir" value="dist" />
+	<property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
+
+	<path id="libraries.path">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="bundle.path">
+		<fileset dir="${lib.dir}">
+			<include name="jadis.jar" />
+			<include name="jedis.jar" />
+		</fileset>
+	</path>
+
+	<path id="yml.path">
+		<fileset dir="${source.dir}">
+			<include name="*.yml" />
+		</fileset>
+	</path>
+
+	<target name="clean" description="delete old files">
+		<delete dir="${class.dir}" />
+		<delete dir="${jar.dir}" />
+	</target>
+
+	<target name="compile" description="build class files" depends="clean">
+		<mkdir dir="${class.dir}" />
+		<javac srcdir="${source.dir}" destdir="${class.dir}" includeantruntime="false">
+			<classpath refid="libraries.path" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<mkdir dir="${class.dir}/${lib.dir}" />
+		<copy todir="${class.dir}/${lib.dir}" flatten="true">
+			<path refid="bundle.path" />
+		</copy>
+		<copy todir="${class.dir}" flatten="true">
+			<path refid="yml.path" />
+		</copy>
+
+		<manifestclasspath property="manifest.classpath" jarfile="${jar.file}">
+			<classpath refid="bundle.path" />
+		</manifestclasspath>
+
+		<jar destfile="${jar.file}" basedir="${class.dir}">
+			<manifest>
+				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run" depends="jar">
+		<java jar="${jar.dir}/${ant.project.name}.jar" fork="true" />
+	</target>
+
+</project>
