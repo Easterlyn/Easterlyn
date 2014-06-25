@@ -317,11 +317,11 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorChannelName());
 		} else if (ChannelType.getType(args[3]) == null) {
 			user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
-		} else if (AccessLevel.getAccess(args[2]) == null) {
+		} else if (AccessLevel.getAccessLevel(args[2]) == null) {
 			user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
 		} else {
 			ChannelManager.getChannelManager().createNewChannel(args[1],
-					AccessLevel.getAccess(args[2]), user.getUUID(), ChannelType.getType(args[3]));
+					AccessLevel.getAccessLevel(args[2]), user.getUUID(), ChannelType.getType(args[3]));
 			Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
 			user.sendMessage(ChatMsgs.onChannelCreation(c));
 		}

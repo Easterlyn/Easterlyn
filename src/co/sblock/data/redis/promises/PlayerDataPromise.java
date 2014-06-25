@@ -1,4 +1,4 @@
-package co.sblock.data.redis;
+package co.sblock.data.redis.promises;
 
 import java.util.List;
 import java.util.Map;
@@ -44,8 +44,8 @@ public class PlayerDataPromise implements Promise<User> {
 			Player p = Bukkit.getPlayer(id);
 			if (p != null) {
 				//player's first login
-				Broadcast.lilHal("It would seem that " + p.getName()
-						+ " is joining us for the first time! Please welcome them.");
+				Broadcast.lilHal("It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
+				// TODO: move this somewhere so that it does not throw an NPE and block saving on a test server
 				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
 				user = UserManager.getUser(p.getUniqueId());
 				user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});

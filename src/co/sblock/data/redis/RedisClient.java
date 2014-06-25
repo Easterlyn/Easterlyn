@@ -10,6 +10,7 @@ import com.tmathmeyer.jadis.async.Promise;
 
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.SblockData;
+import co.sblock.data.redis.promises.PlayerDataPromise;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
@@ -60,7 +61,6 @@ public class RedisClient extends SblockData{
 	}
 	
 	public void saveUserData(User u) {
-		Log.getLog("Silly").severe("FUCK THIS ALL");
 		connection.putMap("USERS", u.getUUID().toString(), u, exceptionLogger);
 	}
 
@@ -76,7 +76,8 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void deleteUser(UUID userID) {
-		//connection.hdel("Users", UserManager.getUserByID(userID).getUUID());
+		String[] uuids = {userID.toString()};
+		connection.delMap("Users", uuids);
 	}
 
 	@Override

@@ -25,15 +25,27 @@ import co.sblock.utilities.Log;
  */
 public abstract class Channel {
 
-	protected String name;
-	protected AccessLevel access;
-	protected UUID owner;
-	protected Set<UUID> approvedList;
-	protected Set<UUID> modList;
-	protected Set<UUID> muteList;
-	protected Set<UUID> banList;
-	protected Set<UUID> listening;
+	/*
+	 * Immutable Data regardign the channel
+	 */
+	protected final String name;
+	protected final AccessLevel access;
+	protected final Set<UUID> approvedList;
+	protected final Set<UUID> modList;
+	protected final Set<UUID> muteList;
+	protected final Set<UUID> banList;
+	protected final Set<UUID> listening;
 
+	/*
+	 * The owner is mutable (for some reason)
+	 */
+	protected UUID owner;
+
+	/**
+	 * @param name the name of the channel
+	 * @param a the access level of the channel
+	 * @param creator the owner of the channel
+	 */
 	public Channel(String name, AccessLevel a, UUID creator) {
 		this.name = name;
 		this.access = a;

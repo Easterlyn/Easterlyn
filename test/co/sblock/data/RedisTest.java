@@ -83,7 +83,7 @@ public class RedisTest {
 		}
 
 		@Override
-		public void getObject(User user) {
+		public void getObject(User user, String s) {
 			assertNotNull(user);
 			query.decrementAndGet();
 		}
