@@ -25,6 +25,7 @@ public class RedisClient extends SblockData{
 	private final Log logger = Log.getLog("SblockData - Redis");
 	private Jadis connection;
 	private final Promise<User> playerDataPromise = PlayerDataPromise.getPDP();
+	private final ExceptionLogger exceptionLogger = ExceptionLogger.getEL();
 	
 	@Override
 	public Log getLogger() {
@@ -59,12 +60,12 @@ public class RedisClient extends SblockData{
 	}
 	
 	public void saveUserData(User u) {
-		connection.putMap("USERS", u.getUUID().toString(), u);
+		Log.getLog("Silly").severe("FUCK THIS ALL");
+		connection.putMap("USERS", u.getUUID().toString(), u, exceptionLogger);
 	}
 
 	@Override
 	public void loadUserData(UUID userID) {
-		Log.getLog("DATABASE").severe("WELL SHIT WHAYT HAPPENED");
 		connection.getFromMap("USERS", userID.toString(), playerDataPromise, User.class);
 	}
 
