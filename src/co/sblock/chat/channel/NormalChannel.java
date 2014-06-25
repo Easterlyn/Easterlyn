@@ -8,9 +8,10 @@ import co.sblock.users.User;
 /**
  * Defines normal channel behavior.
  * 
- * @author Dublek
+ * @author Dublek, tmathmeyer
  */
 public class NormalChannel extends Channel {
+	
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, String)
 	 */

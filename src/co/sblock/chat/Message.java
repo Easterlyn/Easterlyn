@@ -238,7 +238,7 @@ public class Message {
 				msg = new MessageElement(nick.applyQuirk(substring), nick.getColor());
 			}
 		} else {
-			if (sender != null && channel.isChannelMod(sender)) {
+			if (sender != null && channel.isModerator(sender)) {
 				// Colors for channel mods!
 				substring = ChatColor.translateAlternateColorCodes('&', substring);
 			}

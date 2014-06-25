@@ -99,21 +99,21 @@ public class ChatChannels {
 				if (list != null) {
 					String[] modList = list.split(",");
 					for (int i = 0; i < modList.length; i++) {
-						c.loadMod(UUID.fromString(modList[i]));
+						c.addModerator(UUID.fromString(modList[i]));
 					}
 				}
 				list = rs.getString("banList");
 				if (list != null) {
 					String[] banList = list.split(",");
 					for (int i = 0; i < banList.length; i++) {
-						c.loadBan(UUID.fromString(banList[i]));
+						c.addBan(UUID.fromString(banList[i]));
 					}
 				}
 				list = rs.getString("approvedList");
 				if (list != null) {
 					String[] approvedList = list.split(",");
 					for (int i = 0; i < approvedList.length; i++) {
-						c.loadApproval(UUID.fromString(approvedList[i]));
+						c.addApproved(UUID.fromString(approvedList[i]));
 					}
 				}
 			}

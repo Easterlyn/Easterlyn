@@ -466,7 +466,7 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(c.toString());
 			return true;
 		}
-		if (!c.isChannelMod(user)) {
+		if (!c.isModerator(user)) {
 			user.sendMessage(ChatMsgs.onChannelCommandFail(c.getName()));
 			return true;
 		}
