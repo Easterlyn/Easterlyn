@@ -501,7 +501,7 @@ public class ChatCommands implements CommandListener {
 				c.approveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			} else if (args[1].equalsIgnoreCase("deapprove")) {
-				c.deapproveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+				c.disapproveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			}
 		}
