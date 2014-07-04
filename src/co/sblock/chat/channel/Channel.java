@@ -13,6 +13,7 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.SblockChat;
 import co.sblock.data.SblockData;
+import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
@@ -25,16 +26,97 @@ import co.sblock.utilities.Log;
  */
 public abstract class Channel {
 
+	/**
+	 * 
+	 * @author ted
+	 *
+	 * A wrapper for the Channels because frankly, they are managed in a rediculous, absurd way
+	 * this is just a temporary solution for serializing them until I get around to refactoring
+	 * that too.
+	 *
+	 */
+	public static class ChannelSerialiser {
+
+		private final ChannelType ct;
+		private final String name;
+		private final AccessLevel access;
+
+		private final Set<UUID> approvedPlayers;
+		private final Set<UUID> moderators;
+		private final Set<UUID> mutedPlayers;
+		private final Set<UUID> bannedPlayers;
+		private final Set<UUID> listeningPlayers;
+
+		private final UUID owner;
+
+
+		public ChannelSerialiser(ChannelType ct, String name, AccessLevel access, UUID owner,
+				Set<UUID> approvedPlayers,
+				Set<UUID> moderators,
+				Set<UUID> mutedPlayers,
+				Set<UUID> bannedPlayers,
+				Set<UUID> listeningPlayers) {
+			this.approvedPlayers = approvedPlayers;
+			this.moderators = moderators;
+			this.mutedPlayers = mutedPlayers;
+			this.bannedPlayers = bannedPlayers;
+			this.listeningPlayers = listeningPlayers;
+			this.ct = ct;
+			this.name = name;
+			this.access = access;
+			this.owner = owner;
+		}
+
+		public ChannelSerialiser(ChannelType ct, String name, AccessLevel access, UUID owner) {
+			this.approvedPlayers = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+			this.moderators = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+			this.mutedPlayers = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+			this.bannedPlayers = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+			this.listeningPlayers = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+			this.ct = ct;
+			this.name = name;
+			this.access = access;
+			this.owner = owner;
+		}
+
+		public Channel build() {
+			Channel chan;
+			switch(ct) {
+				case NICK:
+					chan = new NickChannel(name, access, owner);
+					break;
+				case NORMAL:
+					chan = new NormalChannel(name, access, owner);
+					break;
+				case REGION:
+					chan = new RegionChannel(name, access, owner);
+					break;
+				case RP:
+					chan = new RPChannel(name, access, owner);
+					break;
+				default:
+					throw new RuntimeException("if this gets called you have some SERIOUS issues");
+			}
+			chan.approvedList = approvedPlayers;
+			chan.modList = moderators;
+			chan.muteList = mutedPlayers;
+			chan.banList = bannedPlayers;
+			chan.listening = listeningPlayers;
+			return chan;
+		}
+
+	}
+
 	/*
 	 * Immutable Data regardign the channel
 	 */
-	protected final String name;
-	protected final AccessLevel access;
-	protected final Set<UUID> approvedList;
-	protected final Set<UUID> modList;
-	protected final Set<UUID> muteList;
-	protected final Set<UUID> banList;
-	protected final Set<UUID> listening;
+	protected String name;
+	protected AccessLevel access;
+	protected Set<UUID> approvedList;
+	protected Set<UUID> modList;
+	protected Set<UUID> muteList;
+	protected Set<UUID> banList;
+	protected Set<UUID> listening;
 
 	/*
 	 * The owner is mutable (for some reason)
@@ -104,7 +186,9 @@ public abstract class Channel {
 	public abstract boolean hasNick(User sender);
 
 	public abstract User getNickOwner(String nick);
-	
+
+	public abstract ChannelSerialiser toSerialiser();
+
 	public void setOwner(User sender, UUID newOwner) {
 		if (sender.equals(this.owner)) {
 			this.owner = newOwner;
@@ -419,7 +503,12 @@ public abstract class Channel {
 
 			nick = this.getNick(sender);
 
-			region = sender.getCurrentRegion().getRegionColor();
+			Region sRegion = sender.getCurrentRegion();
+			if (sRegion == null) {
+				region = ChatColor.GOLD;
+			} else {
+				region = sRegion.getRegionColor();
+			}
 		} else {
 			guildRank = ColorDef.RANK_HERO;
 			channelRank = ColorDef.CHATRANK_OWNER;
@@ -440,10 +529,13 @@ public abstract class Channel {
 				+ Bukkit.getOfflinePlayer(this.getOwner()).getName();
 	}
 
+	// this would probably get me fired
 	public boolean equals(Object o) {
 		if (o instanceof String) {
 			return this.name.equals(o);
 		}
 		return super.equals(o);
 	}
+
+	
 }

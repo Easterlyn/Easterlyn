@@ -42,4 +42,9 @@ public class RegionChannel extends NormalChannel {
 		}
 		Log.anonymousInfo(message);
 	}
+
+	@Override
+	public ChannelSerialiser toSerialiser() {
+		return new ChannelSerialiser(ChannelType.REGION, name, access, owner, approvedList, modList, muteList, banList, listening);
+	}
 }

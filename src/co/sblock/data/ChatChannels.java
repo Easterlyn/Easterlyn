@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import co.sblock.chat.SblockChat;
+import co.sblock.chat.channel.Channel.ChannelSerialiser;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.ChannelManager;
@@ -90,11 +91,15 @@ public class ChatChannels {
 			ChannelManager cm = SblockChat.getChat().getChannelManager();
 
 			while (rs.next()) {
-				cm.loadChannel(rs.getString("name"),
-						AccessLevel.valueOf(rs.getString("access")), UUID.fromString(rs.getString("owner")),
-						ChannelType.valueOf(rs.getString("channelType")));
-				Channel c = SblockChat.getChat().getChannelManager()
-						.getChannel(rs.getString("name"));
+				
+				ChannelSerialiser cs = new ChannelSerialiser(
+						ChannelType.valueOf(rs.getString("channelType")),
+						rs.getString("name"),
+						AccessLevel.valueOf(rs.getString("access")),
+						UUID.fromString(rs.getString("owner")));
+				Channel csb = cs.build();
+				cm.loadChannel(csb.getName(), csb);
+				Channel c = cm.getChannel(rs.getString("name"));
 				String list = rs.getString("modList");
 				if (list != null) {
 					String[] modList = list.split(",");

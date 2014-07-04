@@ -159,4 +159,10 @@ public abstract class SblockData {
 	 * @param target the name, IP, or UUID to unban
 	 */
 	public abstract void removeBan(String target);
+
+	/**
+	 * sets the database into a "finalize" mode, so that nothing can be pulled out,
+	 * or in the case of redis, the calls become synchronous
+	 */
+	public abstract void enterFinalizeMode();
 }

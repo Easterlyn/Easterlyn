@@ -67,4 +67,9 @@ public class NormalChannel extends Channel {
 	public User getNickOwner(String nick) {
 		return null;
 	}
+
+	@Override
+	public ChannelSerialiser toSerialiser() {
+		return new ChannelSerialiser(ChannelType.NORMAL, name, access, owner, approvedList, modList, muteList, banList, listening);
+	}
 }

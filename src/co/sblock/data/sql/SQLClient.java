@@ -148,4 +148,9 @@ public class SQLClient extends SblockData {
 	public Log getLogger() {
 		return logger;
 	}
+
+	@Override
+	public void enterFinalizeMode() {
+		// dont do anything
+	}
 }

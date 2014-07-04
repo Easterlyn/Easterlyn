@@ -9,7 +9,9 @@ import com.tmathmeyer.jadis.Jadis;
 import com.tmathmeyer.jadis.async.Promise;
 
 import co.sblock.chat.channel.Channel;
+import co.sblock.chat.channel.Channel.ChannelSerialiser;
 import co.sblock.data.SblockData;
+import co.sblock.data.redis.promises.ChannelDataPromise;
 import co.sblock.data.redis.promises.PlayerDataPromise;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.User;
@@ -26,6 +28,7 @@ public class RedisClient extends SblockData{
 	private final Log logger = Log.getLog("SblockData - Redis");
 	private Jadis connection;
 	private final Promise<User> playerDataPromise = PlayerDataPromise.getPDP();
+	private final Promise<ChannelSerialiser> channelDataPromise = ChannelDataPromise.getCDP();
 	private final ExceptionLogger exceptionLogger = ExceptionLogger.getEL();
 	
 	@Override
@@ -66,7 +69,7 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void loadUserData(UUID userID) {
-		connection.getFromMap("USERS", userID.toString(), playerDataPromise, User.class);
+		connection.getFromMap("USERS", userID.toString(), playerDataPromise, User.class, exceptionLogger);
 	}
 
 	@Override
@@ -77,26 +80,25 @@ public class RedisClient extends SblockData{
 	@Override
 	public void deleteUser(UUID userID) {
 		String[] uuids = {userID.toString()};
-		connection.delMap("Users", uuids);
+		connection.delMap("Users", exceptionLogger, uuids);
 	}
 
 	@Override
 	public void saveChannelData(Channel c) {
-		// TODO Auto-generated method stub
-		
+		connection.putMap("CHANNELS", c.getName(), c.toSerialiser(), exceptionLogger);
 	}
 
 	@Override
 	public void loadAllChannelData() {
-		// TODO Auto-generated method stub
-		
+		connection.getMap("CHANNELS", channelDataPromise, ChannelSerialiser.class, exceptionLogger);
 	}
 
 	@Override
 	public void deleteChannel(String channelName) {
-		// TODO Auto-generated method stub
-		
+		connection.delMap("CHANNELS", exceptionLogger, channelName);
 	}
+
+
 
 	@Override
 	public void saveMachine(Machine m) {
@@ -139,5 +141,10 @@ public class RedisClient extends SblockData{
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	@Override
+	public void enterFinalizeMode() {
+		connection.setNonAsync();
+	}
+
 }

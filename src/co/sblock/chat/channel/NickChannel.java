@@ -91,4 +91,9 @@ public class NickChannel extends Channel {
 	public Map<User, String> getNickList() {
 		return nickList;
 	}
+
+	@Override
+	public ChannelSerialiser toSerialiser() {
+		return new ChannelSerialiser(ChannelType.NICK, name, access, owner, approvedList, modList, muteList, banList, listening);
+	}
 }
