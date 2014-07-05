@@ -11,7 +11,6 @@ import com.tmathmeyer.jadis.async.Promise;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.Channel.ChannelSerialiser;
 import co.sblock.data.BannedPlayers;
-import co.sblock.data.PlayerData;
 import co.sblock.data.SblockData;
 import co.sblock.data.redis.promises.ChannelDataPromise;
 import co.sblock.data.redis.promises.MachineDataPromise;
@@ -119,8 +118,8 @@ public class RedisClient extends SblockData{
 	}
 
 	@Override
-	public String getUserFromIP(String hostAddress) {
-		return PlayerData.getUserFromIP(hostAddress);
+	public void getUserFromIP(String hostAddress, Promise<String> executor) {
+		connection.getMap("IPTABLE", executor, String.class, exceptionLogger);
 	}
 
 	@Override

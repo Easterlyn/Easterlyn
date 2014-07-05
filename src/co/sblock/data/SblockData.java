@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
+import com.tmathmeyer.jadis.async.Promise;
+
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.redis.RedisClient;
 import co.sblock.machines.type.Machine;
@@ -133,7 +135,7 @@ public abstract class SblockData {
 	 * 
 	 * @return the name of the User, "Player" if invalid
 	 */
-	public abstract String getUserFromIP(String hostAddress);
+	public abstract void getUserFromIP(String hostAddress, Promise<String> executor);
 
 	/**
 	 * Get the reason a User was banned.

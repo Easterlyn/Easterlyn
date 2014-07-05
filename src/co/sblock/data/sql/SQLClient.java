@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
+import com.tmathmeyer.jadis.async.Promise;
+
 import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.BannedPlayers;
@@ -125,8 +127,8 @@ public class SQLClient extends SblockData {
 	}
 
 	@Override
-	public String getUserFromIP(String hostAddress) {
-		return PlayerData.getUserFromIP(hostAddress);
+	public void getUserFromIP(String hostAddress, Promise<String> executor) {
+		executor.getObject(PlayerData.getUserFromIP(hostAddress), null);
 	}
 
 	@Override
