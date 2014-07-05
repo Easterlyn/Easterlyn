@@ -3,6 +3,7 @@ package co.sblock.data.redis.promises;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -41,5 +42,8 @@ public class ChannelDataPromise implements Promise<ChannelSerialiser> {
 		Channel c = cs.build();
 		ChannelManager.getChannelManager().loadChannel(c.getName(), c);
 	}
+
+	@Override
+	public void getSet(Set<ChannelSerialiser> set) { }
 
 }

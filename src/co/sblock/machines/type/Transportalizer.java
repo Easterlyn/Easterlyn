@@ -329,4 +329,9 @@ public class Transportalizer extends Machine {
 		fuelHolo.clearAllPlayerViews();
 		fuelHolo = null;
 	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.TRANSPORTALIZER);
+	}
 }

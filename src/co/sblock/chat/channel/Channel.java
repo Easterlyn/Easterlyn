@@ -49,7 +49,19 @@ public abstract class Channel {
 
 		private final UUID owner;
 
-
+		/**
+		 * oh boy, there are alot of params...
+		 * 
+		 * @param ct
+		 * @param name
+		 * @param access
+		 * @param owner
+		 * @param approvedPlayers
+		 * @param moderators
+		 * @param mutedPlayers
+		 * @param bannedPlayers
+		 * @param listeningPlayers
+		 */
 		public ChannelSerialiser(ChannelType ct, String name, AccessLevel access, UUID owner,
 				Set<UUID> approvedPlayers,
 				Set<UUID> moderators,

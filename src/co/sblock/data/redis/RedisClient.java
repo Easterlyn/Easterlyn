@@ -10,10 +10,14 @@ import com.tmathmeyer.jadis.async.Promise;
 
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.Channel.ChannelSerialiser;
+import co.sblock.data.BannedPlayers;
+import co.sblock.data.PlayerData;
 import co.sblock.data.SblockData;
 import co.sblock.data.redis.promises.ChannelDataPromise;
+import co.sblock.data.redis.promises.MachineDataPromise;
 import co.sblock.data.redis.promises.PlayerDataPromise;
 import co.sblock.machines.type.Machine;
+import co.sblock.machines.type.Machine.MachineSerialiser;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
@@ -29,6 +33,7 @@ public class RedisClient extends SblockData{
 	private Jadis connection;
 	private final Promise<User> playerDataPromise = PlayerDataPromise.getPDP();
 	private final Promise<ChannelSerialiser> channelDataPromise = ChannelDataPromise.getCDP();
+	private final Promise<MachineSerialiser> machineDataPromise = MachineDataPromise.getMDP();
 	private final ExceptionLogger exceptionLogger = ExceptionLogger.getEL();
 	
 	@Override
@@ -98,48 +103,39 @@ public class RedisClient extends SblockData{
 		connection.delMap("CHANNELS", exceptionLogger, channelName);
 	}
 
-
-
 	@Override
 	public void saveMachine(Machine m) {
-		// TODO Auto-generated method stub
-		
+		connection.addSet("MACHINES", m.getSerialiser(), MachineSerialiser.class);
 	}
 
 	@Override
 	public void deleteMachine(Machine m) {
-		// TODO Auto-generated method stub
-		
+		connection.remSet("MACHINES", exceptionLogger, m.getSerialiser());
 	}
 
 	@Override
 	public void loadAllMachines() {
-		// TODO Auto-generated method stub
-		
+		connection.getSet("MACHINES", machineDataPromise, MachineSerialiser.class, exceptionLogger);
 	}
 
 	@Override
 	public String getUserFromIP(String hostAddress) {
-		// TODO Auto-generated method stub
-		return null;
+		return PlayerData.getUserFromIP(hostAddress);
 	}
 
 	@Override
 	public String getBanReason(String user, String ip) {
-		// TODO Auto-generated method stub
-		return null;
+		return BannedPlayers.getBanReason(user, ip);
 	}
 
 	@Override
 	public void addBan(User target, String reason) {
-		// TODO Auto-generated method stub
-		
+		BannedPlayers.addBan(target, reason);
 	}
 
 	@Override
 	public void removeBan(String target) {
-		// TODO Auto-generated method stub
-		
+		BannedPlayers.deleteBans(target);
 	}
 
 	@Override

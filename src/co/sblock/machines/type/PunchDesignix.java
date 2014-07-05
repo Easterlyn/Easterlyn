@@ -265,4 +265,9 @@ public class PunchDesignix extends Machine {
 
 		return new ItemStack[] {is1, is2, is3};
 	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.PUNCH_DESIGNIX);
+	}
 }

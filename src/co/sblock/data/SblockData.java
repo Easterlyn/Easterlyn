@@ -137,6 +137,7 @@ public abstract class SblockData {
 
 	/**
 	 * Get the reason a User was banned.
+	 * TODO: remove this and all other ban methods from the database system
 	 * 
 	 * @param user the name of UUID of the banned User
 	 * @param ip the IP of the banned User

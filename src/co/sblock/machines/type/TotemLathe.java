@@ -197,4 +197,8 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		return i;
 	}
 
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.TOTEM_LATHE);
+	}
 }

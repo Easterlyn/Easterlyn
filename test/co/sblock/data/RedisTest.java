@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -86,6 +87,11 @@ public class RedisTest {
 		public void getObject(User user, String s) {
 			assertNotNull(user);
 			query.decrementAndGet();
+		}
+
+		@Override
+		public void getSet(Set<User> arg0) {
+			// TODO Auto-generated method stub
 		}
 	}
 

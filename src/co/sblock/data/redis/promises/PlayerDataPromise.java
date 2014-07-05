@@ -2,9 +2,9 @@ package co.sblock.data.redis.promises;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -26,14 +26,13 @@ public class PlayerDataPromise implements Promise<User> {
 	}
 
 	@Override
-	public void getList(List<User> listOfUsers) {
-		throw new NotImplementedException();
-	}
+	public void getList(List<User> listOfUsers) { }
 
 	@Override
-	public void getMap(Map<String, User> MapOfUsers) {
-		throw new NotImplementedException();
-	}
+	public void getMap(Map<String, User> MapOfUsers) { }
+
+	@Override
+	public void getSet(Set<User> set) { }
 
 	@Override
 	public void getObject(User user, String key) {

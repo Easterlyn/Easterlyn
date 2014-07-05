@@ -63,6 +63,62 @@ public abstract class Machine {
 	protected transient HashMap<Location, MaterialData> blocks;
 
 	/**
+	 * 
+	 * @author ted
+	 *
+	 * a static factory class for serialising the Machines
+	 */
+	public static class MachineSerialiser {
+		private final Location key;
+		private final String owner, data;
+		private final Direction direction;
+		private final MachineType mt;
+
+		public MachineSerialiser(Location key, String owner, Direction direction, String data, MachineType mt) {
+			this.mt = mt;
+			this.key = key;
+			this.data = data;
+			this.owner = owner;
+			this.direction = direction;
+		}
+
+		public Machine build() {
+			Machine m = null;
+			switch(mt) {
+				case ALCHEMITER:
+					m = new Alchemiter(key, owner, direction);
+					break;
+				case ANY:
+					throw new RuntimeException("so thats a problem");
+				case COMPUTER:
+					// should this default to true or false... its not saved anywhere :'(
+					m = new Computer(key, owner, true);
+					break;
+				case CRUXTRUDER:
+					m = new Cruxtruder(key, owner);
+					break;
+				case PERFECTLY_GENERIC_OBJECT:
+					m = new PGO(key, owner);
+					break;
+				case PERFECT_BUILDING_OBJECT:
+					m = new PBO(key, owner);
+					break;
+				case PUNCH_DESIGNIX:
+					m = new PunchDesignix(key, owner, direction);
+					break;
+				case TOTEM_LATHE:
+					m = new TotemLathe(key, owner, direction);
+					break;
+				case TRANSPORTALIZER:
+					m = new Transportalizer(key, owner, direction);
+					break;
+			}
+			m.setData(data);
+			return m;
+		}
+	}
+	
+	/**
 	 * @param key the Location of the key Block of this Machine
 	 * @param owner the UUID of the Machine's owner
 	 * @param direction the facing direction of the Machine
@@ -449,4 +505,6 @@ public abstract class Machine {
 	public void disable() {
 		// Most machines do not do anything when disabled.
 	}
+
+	public abstract MachineSerialiser getSerialiser();
 }
