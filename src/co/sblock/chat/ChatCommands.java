@@ -183,9 +183,7 @@ public class ChatCommands implements CommandListener {
 		if (args.length == 0) {
 			return false;
 		}
-		Message message = new Message(UserManager.getUser(((Player) sender).getUniqueId()), "#>" + StringUtils.join(args, ' '));
-		message.validate(true);
-		message.send();
+		((Player) sender).chat("#>" + StringUtils.join(args, ' '));
 		return true;
 	}
 

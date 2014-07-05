@@ -609,8 +609,10 @@ public class User {
 		if (!this.listening.contains(newC.getName())) {
 			this.addListening(newC);
 		}
+		if (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL())) {
+				getPlayer().setResourcePack(newR.getResourcePackURL());
+		}
 		currentRegion = newR;
-		getPlayer().setResourcePack(newR.getResourcePackURL());
 	}
 
 	/**

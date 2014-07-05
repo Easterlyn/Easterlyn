@@ -17,7 +17,6 @@ import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.threadsafe.SetGenerator;
 
-
 /**
  * Defines default channel behavior
  *
