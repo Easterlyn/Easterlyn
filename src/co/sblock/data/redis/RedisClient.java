@@ -66,9 +66,13 @@ public class RedisClient extends SblockData{
 		User user = UserManager.getUser(userID);
 		saveUserData(user);
 	}
-	
+	/**
+	 * Helper method for SaveUserData(UUID userID)
+	 * @param u the user to save
+	 */
 	public void saveUserData(User u) {
 		connection.putMap("USERS", u.getUUID().toString(), u, exceptionLogger);
+		connection.putMap("IPTABLE", u.getUserIP(), u, exceptionLogger);
 	}
 
 	@Override
