@@ -91,8 +91,9 @@ public abstract class Machine {
 				case ANY:
 					throw new RuntimeException("so thats a problem");
 				case COMPUTER:
-					// should this default to true or false... its not saved anywhere :'(
-					m = new Computer(key, owner, true);
+					// Computers saved with the MachineManager are always represented by a physical block
+					// therefore, default the value to false
+					m = new Computer(key, owner, false);
 					break;
 				case CRUXTRUDER:
 					m = new Cruxtruder(key, owner);

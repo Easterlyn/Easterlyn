@@ -72,7 +72,7 @@ public class RedisClient extends SblockData{
 	 */
 	public void saveUserData(User u) {
 		connection.putMap("USERS", u.getUUID().toString(), u, exceptionLogger);
-		connection.putMap("IPTABLE", u.getUserIP(), u, exceptionLogger);
+		connection.putMap("IPTABLE", u.getUserIP(), u.getPlayerName(), exceptionLogger);
 	}
 
 	@Override

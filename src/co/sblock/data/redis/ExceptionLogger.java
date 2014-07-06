@@ -20,8 +20,9 @@ public class ExceptionLogger implements CallBackLogger<Exception> {
 	}
 	
 	@Override
-	public void Log(Exception e) {
+	public void Log(Exception e, Class<?> clazz) {
 		Log.getLog("ExceptionLogger").criticalErr(e);
+		Log.getLog("ExceptionLogger").severe(clazz.getSimpleName());
 	}
 
 }
