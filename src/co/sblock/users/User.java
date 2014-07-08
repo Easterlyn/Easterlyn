@@ -857,9 +857,9 @@ public class User {
 		}
 
 		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
-				.append(this.getPlayerName()).append(ChatColor.YELLOW)
-				.append(" began pestering <>").append(ChatColor.YELLOW).append(" at ")
-				.append(new SimpleDateFormat("HH:mm").format(new Date()));
+				.append(this.getPlayer().getDisplayName()).append(ChatColor.YELLOW)
+				.append(" logs the fuck in and begins pestering <>").append(ChatColor.YELLOW)
+				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues
 		for (User u : UserManager.getUserManager().getUserlist()) {
 			StringBuilder matches = new StringBuilder();
