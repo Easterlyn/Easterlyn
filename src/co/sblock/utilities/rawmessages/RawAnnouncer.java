@@ -119,6 +119,18 @@ public class RawAnnouncer extends Module implements CommandListener {
 				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click to see all Sblock rpacks!")),
 		new MessageElement(" the sound pack as well.", ChatColor.RED)));
 
+		msgs.add(new MessageHalement("Interested in jamming with your fellow Sblock players? Join our ").addExtra(
+				new MessageElement("plug.dj room", ChatColor.AQUA)
+				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://plug.dj/sblock/"))
+				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click join!")),
+		new MessageElement(" to listen and play!", ChatColor.RED)));
+
+		msgs.add(new MessageHalement("Sblock UHC is in the works! Check out ").addExtra(
+				new MessageElement("the subreddit post", ChatColor.AQUA)
+				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://www.reddit.com/r/sblock/comments/29znh9/group_event_sblock_uhc/"))
+				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Check it out!")),
+		new MessageElement(" for more info! May the best team win.", ChatColor.RED)));
+
 		return msgs;
 	}
 
