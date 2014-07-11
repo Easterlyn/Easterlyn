@@ -39,12 +39,13 @@ public class RawAnnouncer extends Module implements CommandListener {
 
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				MessageElement msg = announcements.get((int) (Math.random() * announcements.size()));
 				Log.anonymousInfo(msg.getConsoleFriendly());
 				String announcement = msg.toString();
-				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 							"tellraw " + p.getName() + " " + announcement);
 				}
@@ -142,6 +143,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 		Bukkit.getScheduler().cancelTask(taskId);
 	}
 
+	@SuppressWarnings("deprecation")
 	@CommandDenial
 	@CommandDescription("Force a raw message announcement or talk as Hal.")
 	@CommandPermission("group.horrorterror")
@@ -167,7 +169,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 		}
 		Log.anonymousInfo(msg.getConsoleFriendly());
 		String announcement = msg.toString();
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
 			User.getUser(p.getUniqueId()).rawHighlight(announcement);
 			//Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + announcement);
 		}
