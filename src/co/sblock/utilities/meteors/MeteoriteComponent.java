@@ -22,7 +22,7 @@ public class MeteoriteComponent extends EntityFallingBlock {
 						l.getBlockY(), l.getBlockZ(), net.minecraft.server.v1_7_R4.Block.getById(material.getId()), 0);
 		this.explode = explode;
 		this.bore = bore;
-		this.dead = false;
+		this.ticksLived = 1;
 		this.dropItem = false;
 		((CraftWorld) l.getWorld()).getHandle().addEntity(this, SpawnReason.CUSTOM);
 	}
