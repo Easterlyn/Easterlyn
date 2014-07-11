@@ -27,7 +27,7 @@ public class VehicleEntityCollisionListener implements Listener {
 		}
 		if (FreeCart.getInstance().isCart((Minecart) event.getVehicle())) {
 			event.setCancelled(true);
-			if (event.getEntity().getType() != EntityType.MINECART) {
+			if (event.getEntity().getType() == EntityType.MINECART && event.getEntity().getPassenger() == null) {
 				event.getEntity().remove();
 			}
 		}
