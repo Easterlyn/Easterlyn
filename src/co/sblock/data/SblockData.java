@@ -212,35 +212,4 @@ public class SblockData {
 	public String getUserFromIP(String hostAddress) {
 		return PlayerData.getUserFromIP(hostAddress);
 	}
-
-	/**
-	 * Get the reason a User was banned.
-	 * 
-	 * @param user the name of UUID of the banned User
-	 * @param ip the IP of the banned User
-	 * 
-	 * @return the ban reason
-	 */
-	public String getBanReason(String user, String ip) {
-		return BannedPlayers.getBanReason(user, ip);
-	}
-
-	/**
-	 * Add a ban and reason to a User.
-	 * 
-	 * @param target the User to add a ban for
-	 * @param reason the reason the User was banned
-	 */
-	public void addBan(User target, String reason) {
-		BannedPlayers.addBan(target, reason);
-	}
-
-	/**
-	 * Remove a ban by name, IP, or UUID.
-	 * 
-	 * @param target the name, IP, or UUID to unban
-	 */
-	public void removeBan(String target) {
-		BannedPlayers.deleteBans(target);
-	}
 }
