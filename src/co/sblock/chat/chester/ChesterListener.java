@@ -59,6 +59,7 @@ public class ChesterListener implements Listener {
 		if (!sentMessage.validate(false)
 				|| sentMessage.getChannel().getAccess() == AccessLevel.PRIVATE
 				|| sentMessage.getChannel().getType() == ChannelType.RP
+				|| sentMessage.getChannel().getType() == ChannelType.NICK
 				|| sentMessage.getMessage().isEmpty()) {
 			event.setCancelled(true);
 			return;
