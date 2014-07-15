@@ -874,7 +874,11 @@ public class User {
 				int comma = msg.toString().lastIndexOf(',');
 				if (comma != -1) {
 					u.sendMessage(msg.replace(comma, comma + 1, " and").toString());
+				} else {
+					u.sendMessage(msg.toString());
 				}
+			} else {
+				u.sendMessage(base.toString().replace(" and begins pestering <>", ""));
 			}
 		}
 
