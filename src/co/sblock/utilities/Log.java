@@ -22,6 +22,16 @@ public class Log extends Logger {
 	}
 
 	/**
+	 * Fancy magic for getting a logger named as the class that called it.
+	 * @see http://stackoverflow.com/questions/421280/how-do-i-find-the-caller-of-a-method-using-stacktrace-or-reflection
+	 */
+	@SuppressWarnings("deprecation")
+	public static Log getLog() {
+		String name = sun.reflect.Reflection.getCallerClass(2).getName();
+		return new Log(name, null);
+	}
+
+	/**
 	 * Hackish debug logging that won't spam Prime server.
 	 * 
 	 * @param s the String to log
