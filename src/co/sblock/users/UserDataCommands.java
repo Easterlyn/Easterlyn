@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.BanList.Type;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -343,13 +345,12 @@ public class UserDataCommands implements CommandListener {
 
 	@CommandDenial
 	@CommandDescription("YOU CAN'T ESCAPE THE RED MILES.")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/sban <target>")
+	@CommandPermission("group.denizen")
+	@CommandUsage("/sban <target> [optional reason]")
 	@SblockCommand(consoleFriendly = true)
 	public boolean sban(CommandSender sender, String[] args) {
 		if (args == null || args.length == 0) {
-			sender.sendMessage(ChatColor.RED + "Specify a player.");
-			return true;
+			return false;
 		}
 		String target = args[0];
 		StringBuilder reason = new StringBuilder();
@@ -365,17 +366,42 @@ public class UserDataCommands implements CommandListener {
 			Broadcast.general(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
 			Player p = Bukkit.getPlayer(target);
-			if (p != null) {
+
+			if (p != null) { // This method is actually more efficient than getting an OfflinePlayer without a UUID
 				User victim = UserManager.getUser(p.getUniqueId());
-				SblockData.getDB().addBan(victim, reason.toString());
-				SblockData.getDB().deleteUser(victim.getUUID());
+				Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
+						"<ip=" + victim.getUserIP() + ">" + reason, null, "sban");
+				Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
+						"<name=" + victim.getPlayerName() + ">" + reason, null, "sban");
 				victim.getPlayer().kickPlayer(reason.toString());
-				Bukkit.dispatchCommand(sender, "lwc admin purge " + p.getUniqueId());
 			} else {
 				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, "sban");
 			}
 		}
-		Bukkit.dispatchCommand(sender, "lwc admin purge " + target);
+		return true;
+	}
+
+
+	@CommandDenial
+	@CommandDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/ultraban <target>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean ultraban(CommandSender sender, String[] args) {
+
+		if (!Bukkit.dispatchCommand(sender, "sban " + StringUtils.join(args, ' '))) {
+			// sban will return its own usage failure, no need to double message.
+			return true;
+		}
+
+		Player p = Bukkit.getPlayer(args[0]);
+		if (p != null) {
+			User victim = UserManager.getUser(p.getUniqueId());
+			SblockData.getDB().deleteUser(victim.getUUID());
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + p.getUniqueId());
+		}
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + args[0]);
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ps delete " + args[0]);
 		return true;
 	}
 
@@ -388,7 +414,20 @@ public class UserDataCommands implements CommandListener {
 		if (target == null || target.length == 0) {
 			return false;
 		}
-		SblockData.getDB().removeBan(target[0]);
+		BanList bans = Bukkit.getBanList(Type.IP);
+		BanList pbans = Bukkit.getBanList(Type.NAME);
+		if (bans.isBanned(target[0])) {
+			pbans.pardon(bans.getBanEntry(target[0]).getReason()
+					.replaceAll(".*<name=(\\w{1,16}+)>.*", "$1"));
+			bans.pardon(target[0]);
+		} else if (pbans.isBanned(target[0])) {
+			bans.pardon(pbans.getBanEntry(target[0]).getReason()
+					.replaceAll(".*<ip=(([0-9]{1,3}\\.){3}[0-9]{1,3})>.*", "$1"));
+			pbans.pardon(target[0]);
+		} else  {
+			sender.sendMessage(ChatColor.RED + "No bans were found for " + target[0]);
+			return true;
+		}
 		if (target[0].contains(".")) {
 			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]
 					+ " may be an IP.");

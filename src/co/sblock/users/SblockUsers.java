@@ -17,10 +17,11 @@ public class SblockUsers extends Module {
 	/**
 	 * @see co.sblock.Module#onEnable()
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onEnable() {
 		this.registerCommands(new UserDataCommands());
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
 			SblockData.getDB().loadUserData(p.getUniqueId());
 		}
 	}

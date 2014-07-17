@@ -87,9 +87,9 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable() {
-		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R3.CraftServer) {
+		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R4.CraftServer) {
 			try {
-				Field f = org.bukkit.craftbukkit.v1_7_R3.CraftServer.class.getDeclaredField("commandMap");
+				Field f = org.bukkit.craftbukkit.v1_7_R4.CraftServer.class.getDeclaredField("commandMap");
 				f.setAccessible(true);
 				cmdMap = (SimpleCommandMap) f.get(Bukkit.getServer());
 			} catch (IllegalArgumentException | IllegalAccessException

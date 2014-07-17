@@ -50,6 +50,7 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@CommandDenial("The aetherial realm eludes your grasp once more.")
 	@CommandDescription("For usage in console largely. Talks in #Aether.")
 	@CommandPermission("group.horrorterror")

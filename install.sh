@@ -1,6 +1,7 @@
 #! /bin/sh
 
 if [ -z "$*" ]; then
+	ant -f build.xml
 	echo "Please supply the FULL path to sblock"
 else
 	ant -f build.xml

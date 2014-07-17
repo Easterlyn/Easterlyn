@@ -39,12 +39,13 @@ public class RawAnnouncer extends Module implements CommandListener {
 
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				MessageElement msg = announcements.get((int) (Math.random() * announcements.size()));
 				Log.anonymousInfo(msg.getConsoleFriendly());
 				String announcement = msg.toString();
-				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 							"tellraw " + p.getName() + " " + announcement);
 				}
@@ -119,6 +120,18 @@ public class RawAnnouncer extends Module implements CommandListener {
 				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click to see all Sblock rpacks!")),
 		new MessageElement(" the sound pack as well.", ChatColor.RED)));
 
+		msgs.add(new MessageHalement("Interested in jamming with your fellow Sblock players? Join our ").addExtra(
+				new MessageElement("plug.dj room", ChatColor.AQUA)
+				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://plug.dj/sblock/"))
+				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click join!")),
+		new MessageElement(" to listen and play!", ChatColor.RED)));
+
+		msgs.add(new MessageHalement("Sblock UHC is in the works! Check out ").addExtra(
+				new MessageElement("the subreddit post", ChatColor.AQUA)
+				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://www.reddit.com/r/sblock/comments/29znh9/group_event_sblock_uhc/"))
+				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Check it out!")),
+		new MessageElement(" for more info! May the best team win.", ChatColor.RED)));
+
 		return msgs;
 	}
 
@@ -130,6 +143,7 @@ public class RawAnnouncer extends Module implements CommandListener {
 		Bukkit.getScheduler().cancelTask(taskId);
 	}
 
+	@SuppressWarnings("deprecation")
 	@CommandDenial
 	@CommandDescription("Force a raw message announcement or talk as Hal.")
 	@CommandPermission("group.horrorterror")
@@ -155,9 +169,8 @@ public class RawAnnouncer extends Module implements CommandListener {
 		}
 		Log.anonymousInfo(msg.getConsoleFriendly());
 		String announcement = msg.toString();
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
 			UserManager.getUser(p.getUniqueId()).rawHighlight(announcement);
-			//Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + announcement);
 		}
 		return true;
 	}

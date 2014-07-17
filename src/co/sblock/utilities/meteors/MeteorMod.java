@@ -1,12 +1,12 @@
 package co.sblock.utilities.meteors;
 
-import net.minecraft.server.v1_7_R3.Explosion;
+import net.minecraft.server.v1_7_R4.Explosion;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -73,7 +73,7 @@ public class MeteorMod extends Module implements Listener {
 		if (event.getEntityType() != EntityType.FALLING_BLOCK) {
 			return;
 		}
-		if (((org.bukkit.craftbukkit.v1_7_R3.entity.CraftEntity) event.getEntity()).getHandle() instanceof MeteoriteComponent) {
+		if (((org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity) event.getEntity()).getHandle() instanceof MeteoriteComponent) {
 			event.setCancelled(true);
 			explode(event.getBlock().getLocation(), event.getEntity());
 			event.getEntity().remove();

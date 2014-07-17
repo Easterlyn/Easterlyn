@@ -30,6 +30,10 @@ public class FreeCart {
 		carts.add(m);
 	}
 
+	public boolean isCart(Minecart cart) {
+		return carts.contains(cart);
+	}
+
 	public void remove(Player p) {
 		if (p.getVehicle() == null) {
 			return;

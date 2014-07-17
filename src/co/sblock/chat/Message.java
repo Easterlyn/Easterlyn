@@ -40,7 +40,7 @@ public class Message {
 	public Message(User sender, String message) {
 		this(message);
 		this.sender = sender;
-		if (channel == null) {
+		if (channel == null && target == null) {
 			channel = sender.getCurrent();
 		}
 	}
