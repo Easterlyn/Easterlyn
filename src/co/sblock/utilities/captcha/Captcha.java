@@ -10,7 +10,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -387,7 +386,7 @@ public class Captcha extends Module {
 
 		int leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
 		event.setCurrentItem(null);
-		if (leftover > 0 && event.getView().getTopInventory().getType() != InventoryType.CRAFTING) {
+		if (leftover > 0) {
 			leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
 		}
 		if (leftover > 0) {
