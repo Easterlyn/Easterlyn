@@ -11,7 +11,6 @@ import com.tmathmeyer.jadis.async.Promise;
 
 import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
-import co.sblock.data.BannedPlayers;
 import co.sblock.data.ChatChannels;
 import co.sblock.data.Machines;
 import co.sblock.data.PlayerData;
@@ -129,21 +128,6 @@ public class SQLClient extends SblockData {
 	@Override
 	public void getUserFromIP(String hostAddress, Promise<String> executor) {
 		executor.getObject(PlayerData.getUserFromIP(hostAddress), null);
-	}
-
-	@Override
-	public String getBanReason(String user, String ip) {
-		return BannedPlayers.getBanReason(user, ip);
-	}
-
-	@Override
-	public void addBan(User target, String reason) {
-		BannedPlayers.addBan(target, reason);
-	}
-
-	@Override
-	public void removeBan(String target) {
-		BannedPlayers.deleteBans(target);
 	}
 
 	@Override

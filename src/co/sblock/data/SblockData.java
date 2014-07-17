@@ -138,32 +138,6 @@ public abstract class SblockData {
 	public abstract void getUserFromIP(String hostAddress, Promise<String> executor);
 
 	/**
-	 * Get the reason a User was banned.
-	 * TODO: remove this and all other ban methods from the database system
-	 * 
-	 * @param user the name of UUID of the banned User
-	 * @param ip the IP of the banned User
-	 * 
-	 * @return the ban reason
-	 */
-	public abstract String getBanReason(String user, String ip);
-
-	/**
-	 * Add a ban and reason to a User.
-	 * 
-	 * @param target the User to add a ban for
-	 * @param reason the reason the User was banned
-	 */
-	public abstract void addBan(User target, String reason);
-
-	/**
-	 * Remove a ban by name, IP, or UUID.
-	 * 
-	 * @param target the name, IP, or UUID to unban
-	 */
-	public abstract void removeBan(String target);
-
-	/**
 	 * sets the database into a "finalize" mode, so that nothing can be pulled out,
 	 * or in the case of redis, the calls become synchronous
 	 */
