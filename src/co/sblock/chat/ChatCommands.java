@@ -13,6 +13,7 @@ import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NickChannel;
+import co.sblock.data.SblockData;
 import co.sblock.module.CommandDenial;
 import co.sblock.module.CommandDescription;
 import co.sblock.module.CommandListener;
@@ -37,6 +38,18 @@ public class ChatCommands implements CommandListener {
 	@SblockCommand
 	public boolean color(CommandSender sender, String[] args) {
 		sender.sendMessage(ColorDef.listColors());
+		return true;
+	}
+	
+	@CommandDescription("toggle the database implementation")
+	@CommandUsage("&c/database")
+	@SblockCommand
+	public boolean database(CommandSender sender, String[] args) {
+		if (sender.isOp()) {
+			sender.sendMessage("successfully toggled the implementation to " + SblockData.toggleDBImpl());
+		} else {
+			sender.sendMessage("not valid command");
+		}
 		return true;
 	}
 

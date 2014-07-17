@@ -9,8 +9,8 @@ import com.tmathmeyer.jadis.async.Promise;
 
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.redis.RedisClient;
+import co.sblock.data.sql.SQLClient;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.User;
 import co.sblock.utilities.Log;
 
 /**
@@ -20,14 +20,29 @@ import co.sblock.utilities.Log;
  */
 public abstract class SblockData {
 	
-	/*
-	 * The SblockData instance. avoid lazy loading... we should take the instantiation hit
-	 * on startup, not at some arbitrary point afterwards
-	 * also provides an easy way to switch between redis / mysql, though this should (and will, later)
-	 * be controlled by a config file
+	/**
+	 * 
+	 * @author ted
+	 * 
+	 * a wrapper for toggling between SQL/Redis
+	 *
 	 */
-	//private static SblockData db = new SQLClient();
-	private static final SblockData db = new RedisClient();
+	private static enum Implementation {
+		SQL(new SQLClient()),
+		REDIS(new RedisClient());
+		public final SblockData data;
+		private Implementation(SblockData data) {
+			this.data = data;
+		}
+		public Implementation other() {
+			if (this == SQL) {
+				return REDIS;
+			}
+			return SQL;
+		}
+	}
+
+	private static Implementation impl = Implementation.SQL;
 
 	/**
 	 * SblockData singleton.
@@ -35,7 +50,15 @@ public abstract class SblockData {
 	 * @return the SblockData instance
 	 */
 	public static SblockData getDB() {
-		return db;
+		return impl.data;
+	}
+
+	/**
+	 * switch the implementation
+	 */
+	public static String toggleDBImpl() {
+		impl = impl.other();
+		return impl.name();
 	}
 
 	/**
