@@ -1,6 +1,7 @@
 package co.sblock.events;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,39 +32,44 @@ import co.sblock.utilities.minecarts.FreeCart;
  */
 public class SblockEvents extends Module {
 
-	/** The EventModule instance. */
+	/* The EventModule instance. */
 	private static SblockEvents instance;
 
-	/** The Task ID of the RegionCheck task. */
+	/* The Task ID of the RegionCheck task. */
 	private int regionTask;
 
-	/** The Task ID of the SessionCheck task. */
+	/* The Task ID of the SessionCheck task. */
 	private int sessionTask;
 
-	/** The Minecraft servers' status */
+	/* The Minecraft servers' status */
 	private Status status;
 
-	/** The number of repeated status checks that have come back red. */
+	/* The number of repeated status checks that have come back red. */
 	private int statusResample = 0;
 
-	/** A Map of all scheduled tasks by Player. */
+	/* A Map of all scheduled tasks by Player. */
 	public Map<String, Integer> tasks;
 
-	/** A Set of the names of all Players queuing to sleep teleport. */
+	/* A Set of the names of all Players queuing to sleep teleport. */
 	public Set<String> teleports;
 
-	/** A Set of the names of all Players opening Captchadexes. */
+	/* A Set of the names of all Players opening Captchadexes. */
 	public Set<String> openingCaptchadex;
 
-	/**
-	 * @see Module#onEnable()
-	 */
+	/* The time at which SblockEvents was enabled (generally server start) */
+	private long start;
+
+	/* Boolean representing whether or not the server should restart next chance. */
+	private boolean restart;
+
 	@Override
 	protected void onEnable() {
 		instance = this;
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
 		openingCaptchadex = new HashSet<String>();
+		start = System.currentTimeMillis();
+		restart = false;
 
 		this.registerEvents(new BlockBreakListener(), new BlockFadeListener(), new BlockGrowListener(),
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
@@ -227,5 +233,24 @@ public class SblockEvents extends Module {
 	@Override
 	protected String getModuleName() {
 		return "EventsModule";
+	}
+
+	public void setSoftRestart(boolean restart) {
+		this.restart = restart;
+	}
+
+	public boolean getSoftRestart() {
+		return restart;
+	}
+
+	public boolean recalculateRestart() { // TODO task to trigger this check
+		if (!restart) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(System.currentTimeMillis());
+			// 20h * 60min * 60s * 1000ms = 72000000, 3600000 = 1h
+			restart = start - System.currentTimeMillis() > 72000000
+					|| start - System.currentTimeMillis() > 10800000 && calendar.get(Calendar.HOUR_OF_DAY) < 3;
+		}
+		return restart;
 	}
 }

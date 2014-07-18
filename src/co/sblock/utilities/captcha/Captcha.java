@@ -387,7 +387,10 @@ public class Captcha extends Module {
 		int leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
 		event.setCurrentItem(null);
 		if (leftover > 0) {
-			InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
+			leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
+		}
+		if (leftover > 0) {
+			event.getWhoClicked().getWorld().dropItem(event.getWhoClicked().getLocation(), captcha);
 		}
 	}
 

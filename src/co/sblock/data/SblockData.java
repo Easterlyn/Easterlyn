@@ -97,19 +97,19 @@ public abstract class SblockData {
 	/**
 	 * Initiate loading of a Player's stored data.
 	 * 
-	 * @param name the name of the Payer to load data for
+	 * @param name the name of the Player to load data for
 	 */
 	public abstract void loadUserData(UUID userID);
 
 	/**
-	 * TODO: describe this with a real javadoc comment
+	 * Initiate async lookup for a Player based on last known name.
 	 */
 	public abstract void startOfflineLookup(CommandSender sender, String name);
 
 	/**
 	 * Delete specified Player's data from database.
 	 * 
-	 * @param name the name of the Player whose data is to be deleted
+	 * @param userID the UUID of the Player whose data is to be deleted
 	 */
 	public abstract void deleteUser(UUID userID);
 

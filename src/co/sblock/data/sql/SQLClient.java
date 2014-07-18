@@ -31,7 +31,6 @@ public class SQLClient extends SblockData {
 
 	@Override
 	/*
-	 * TODO: clean this up (omg string concats)
 	 * @see co.sblock.data.SblockData#enable()
 	 */
 	public boolean enable() {

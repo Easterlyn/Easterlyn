@@ -30,6 +30,7 @@ public class PlayerQuitListener implements Listener {
 	 * 
 	 * @param event the PlayerQuitEvent
 	 */
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		// Our very own custom quits!
@@ -77,6 +78,11 @@ public class PlayerQuitListener implements Listener {
 		// Inform channels that the player is no longer listening to them
 		for (String s : user.getListening()) {
 			user.removeListeningQuit(s);
+		}
+
+		// Restart when last player out if required
+		if (Bukkit.getOnlinePlayers().length == 0 && SblockEvents.getEvents().recalculateRestart()) {
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 		}
 	}
 }

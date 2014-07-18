@@ -118,7 +118,7 @@ public abstract class Channel {
 	}
 
 	/*
-	 * Immutable Data regardign the channel
+	 * Immutable Data regarding the channel
 	 */
 	protected String name;
 	protected AccessLevel access;
@@ -129,7 +129,7 @@ public abstract class Channel {
 	protected Set<UUID> listening;
 
 	/*
-	 * The owner is mutable :'(
+	 * Ownership is supposed to be transferrable, Keiko just gave up too early D:
 	 */
 	protected UUID owner;
 
@@ -237,7 +237,7 @@ public abstract class Channel {
 	/* ADDERS / REMOVERS */
 	/**
 	 * TODO: enforce this
-	 * ONLY CALL FROM CHATUSER
+	 * ONLY CALL FROM USER
 	 *
 	 * @param userID the user UUID to add listening
 	 */
@@ -262,17 +262,12 @@ public abstract class Channel {
 	}
 
 	/**
-	 * change the owner of a channel. only the current owner should be allowed to do this
+	 * Change the owner of a channel. This should only be useable by admins/the current owner.
 	 *
-	 * @param sender the person attempting to change the channel's owner
 	 * @param newOwner the new owner
 	 */
-	public void setOwner(User sender, UUID newOwner) {
-		if (isOwner(sender)) {
-			this.owner = newOwner;
-		} else {
-			//TODO: throw an exception or have some sort of error message
-		}
+	public void setOwner(UUID newOwner) {
+		this.owner = newOwner;
 	}
 
 	/**

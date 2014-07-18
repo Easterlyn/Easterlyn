@@ -35,8 +35,8 @@ public class StatusCheck implements Runnable {
 			data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
 					new URL("http://status.mojang.com/check?service=session.minecraft.net").openStream())));
 			login = !((String) data.get("session.minecraft.net")).equals("green");
-		} catch (IOException | ParseException | ClassCastException e) {
-			// ClassCast happens occasionally when JSON appears to be parsed incorrectly.
+		} catch (IOException | ParseException | ClassCastException | NullPointerException e) {
+			// ClassCast/NPE happens occasionally when JSON appears to be parsed incorrectly.
 			// This check is run every minute, and 99.9% of the time we are casting correctly. I blame Mojang.
 			Log.getLogger("Session").warning("Unable to check http://status.mojang.com/check - status unavailable.");
 			return;
