@@ -16,7 +16,6 @@ import co.sblock.data.Machines;
 import co.sblock.data.PlayerData;
 import co.sblock.data.SblockData;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.User;
 import co.sblock.utilities.Log;
 
 /**
