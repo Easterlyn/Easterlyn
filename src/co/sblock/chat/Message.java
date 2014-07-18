@@ -14,6 +14,7 @@ import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.rawmessages.EscapedElement;
 import co.sblock.utilities.rawmessages.MessageClick;
 import co.sblock.utilities.rawmessages.MessageElement;
@@ -188,7 +189,7 @@ public class Message {
 		message = wrapLinks(rawMsg, message);
 
 		for (UUID uuid : channel.getListening()) {
-			User u = User.getUser(uuid);
+			User u = UserManager.getUser(uuid);
 			if (u == null) {
 				channel.removeListening(uuid);
 				continue;
@@ -237,7 +238,7 @@ public class Message {
 				msg = new MessageElement(nick.applyQuirk(substring), nick.getColor());
 			}
 		} else {
-			if (sender != null && channel.isChannelMod(sender)) {
+			if (sender != null && channel.isModerator(sender)) {
 				// Colors for channel mods!
 				substring = ChatColor.translateAlternateColorCodes('&', substring);
 			}

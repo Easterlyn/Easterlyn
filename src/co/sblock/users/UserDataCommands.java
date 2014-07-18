@@ -51,11 +51,11 @@ public class UserDataCommands implements CommandListener {
 				sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
 				return true;
 			}
-			user = User.getUser(((Player) sender).getUniqueId());
+			user = UserManager.getUser(((Player) sender).getUniqueId());
 		} else {
 			Player pTarget = Bukkit.getPlayer(target[0]);
 			if (pTarget != null) {
-				user = UserManager.getUserManager().getUser(pTarget.getUniqueId());
+				user = UserManager.getUser(pTarget.getUniqueId());
 			}
 		}
 		if (user == null) {
@@ -86,7 +86,7 @@ public class UserDataCommands implements CommandListener {
 			SblockData.getDB().startOfflineLookup(sender, target[0]);
 			return true;
 		}
-		User u = User.getUser(p.getUniqueId());
+		User u = UserManager.getUser(p.getUniqueId());
 		sender.sendMessage(u.toString());
 		return true;
 	}
@@ -100,7 +100,7 @@ public class UserDataCommands implements CommandListener {
 		if (args == null || args.length < 3) {
 			return false;
 		}
-		User user = UserManager.getUserManager().getUser(Bukkit.getPlayer(args[0]).getUniqueId());
+		User user = UserManager.getUser(Bukkit.getPlayer(args[0]).getUniqueId());
 		args[1] = args[1].toLowerCase();
 		if(args[1].equals("class"))
 			user.setPlayerClass(args[2]);
@@ -136,7 +136,7 @@ public class UserDataCommands implements CommandListener {
 			s.sendMessage(ChatColor.RED + "Unknown user!");
 			return true;
 		}
-		User u = User.getUser(p.getUniqueId());
+		User u = UserManager.getUser(p.getUniqueId());
 		if (u == null) {
 			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
 			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
@@ -183,7 +183,7 @@ public class UserDataCommands implements CommandListener {
 			s.sendMessage(ChatColor.RED + "Unknown user!");
 			return true;
 		}
-		User u = User.getUser(p.getUniqueId());
+		User u = UserManager.getUser(p.getUniqueId());
 		if (u == null) {
 			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
 			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
@@ -222,13 +222,13 @@ public class UserDataCommands implements CommandListener {
 			return true;
 		}
 		String req = requests.remove(s.getName());
-		User u = User.getUser(((Player) s).getUniqueId());
+		User u = UserManager.getUser(((Player) s).getUniqueId());
 		Player p1 = Bukkit.getPlayer(req.substring(1));
 		if (p1 == null) {
 			s.sendMessage(ChatColor.GOLD + req.substring(1) + ChatColor.RED + " appears to be offline! Request removed.");
 			return true;
 		}
-		User u1 = User.getUser(p1.getUniqueId());
+		User u1 = UserManager.getUser(p1.getUniqueId());
 		if (req.charAt(0) == 'c') {
 			u.setClient(u1.getUUID());
 			u1.setServer(u.getUUID());
@@ -274,7 +274,7 @@ public class UserDataCommands implements CommandListener {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		User u = User.getUser(p.getUniqueId());
+		User u = UserManager.getUser(p.getUniqueId());
 		if (!u.getAspect().name().equalsIgnoreCase(args[0])) {
 			return true;
 		}
@@ -366,8 +366,9 @@ public class UserDataCommands implements CommandListener {
 			Broadcast.general(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
 			Player p = Bukkit.getPlayer(target);
+
 			if (p != null) { // This method is actually more efficient than getting an OfflinePlayer without a UUID
-				User victim = User.getUser(p.getUniqueId());
+				User victim = UserManager.getUser(p.getUniqueId());
 				Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
 						"<ip=" + victim.getUserIP() + ">" + reason, null, "sban");
 				Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
@@ -395,8 +396,8 @@ public class UserDataCommands implements CommandListener {
 
 		Player p = Bukkit.getPlayer(args[0]);
 		if (p != null) {
-			User victim = User.getUser(p.getUniqueId());
-			SblockData.getDB().deleteUser(victim.getPlayerName());
+			User victim = UserManager.getUser(p.getUniqueId());
+			SblockData.getDB().deleteUser(victim.getUUID());
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + p.getUniqueId());
 		}
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + args[0]);

@@ -32,7 +32,7 @@ public class Machines {
 				pst.setString(1, m.getLocationString());
 				pst.setString(2, m.getType().getAbbreviation());
 			} catch (NullPointerException e) {
-				SblockData.getLogger().warning("A Machine appears to have invalid data, skipping save.");
+				SblockData.getDB().getLogger().warning("A Machine appears to have invalid data, skipping save.");
 				return;
 			}
 			pst.setString(3, m.getOwner());

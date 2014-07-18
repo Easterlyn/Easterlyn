@@ -28,6 +28,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
@@ -224,7 +225,7 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && user.getProgression() == ProgressionState.NONE) {
 			// Transportalizers can only be used by players who have completed Entry.
 			// Any entity, including pre-entry players, can be transported by a
@@ -327,5 +328,10 @@ public class Transportalizer extends Machine {
 		HoloAPI.getManager().clearFromFile(fuelHolo);
 		fuelHolo.clearAllPlayerViews();
 		fuelHolo = null;
+	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.TRANSPORTALIZER);
 	}
 }

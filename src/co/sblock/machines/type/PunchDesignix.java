@@ -24,6 +24,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.progression.Entry;
@@ -83,7 +84,7 @@ public class PunchDesignix extends Machine {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
 			openInventory(event.getPlayer());
@@ -263,5 +264,10 @@ public class PunchDesignix extends Machine {
 		is3.setItemMeta(im);
 
 		return new ItemStack[] {is1, is2, is3};
+	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.PUNCH_DESIGNIX);
 	}
 }

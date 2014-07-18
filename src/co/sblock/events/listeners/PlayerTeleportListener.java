@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import co.sblock.events.SblockEvents;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -31,7 +32,7 @@ public class PlayerTeleportListener implements Listener {
 				p.sendMessage(ChatColor.RED + "You cannot visit another world in spectator mode!");
 			}
 			if (SblockEvents.getEvents().teleports.remove(p.getName())) {
-				User user = User.getUser(p.getUniqueId());
+				User user = UserManager.getUser(p.getUniqueId());
 				user.setPreviousLocation(event.getFrom());
 				user.updateFlight();
 			}

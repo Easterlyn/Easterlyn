@@ -11,6 +11,7 @@ import co.sblock.effects.Cooldowns;
 import co.sblock.events.SblockEvents;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.minecarts.FreeCart;
 import co.sblock.utilities.progression.Entry;
@@ -57,7 +58,7 @@ public class PlayerQuitListener implements Listener {
 		Cooldowns.cleanup(event.getPlayer().getName());
 
 		// Remove Server status
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && user.isServer()) {
 			user.stopServerMode();
 		}

@@ -132,11 +132,11 @@ Something with beacon beams.
 Fill buckets with milk without needing a cow (Aurthor is your spirit animal)
 Pogo (jumps automatically on contact with the ground)
 Clonevision (other players appear to be wearing your head)
-Sodavison (other players appear to be wearing Sodapop�s head)
+Sodavison (other players appear to be wearing Sodapop's head)
 LEADERSHIP SKILLS: All chat messages are allcaps
 Grimdark: All chat messages are scrambled and black. give off nether portal particles.
 Wither
-Saladturtle�s Blessing: Guaranteed chicken spawn from thrown eggs
+Saladturtle's Blessing: Guaranteed chicken spawn from thrown eggs
 Johnny Appleseed: 25% chance to get apples from oak leaves. apples restore a little more hunger.
 Fred flintstone: always get flint from gravel. Flint and Steel is not damaged when used.
 Ninja: Nametag can't be seen through walls, even when not crouching.

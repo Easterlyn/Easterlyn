@@ -37,6 +37,7 @@ import co.sblock.machines.type.Machine;
 import co.sblock.users.MediumPlanet;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.hologram.EntryTimeTillTag;
 import co.sblock.utilities.meteors.Meteorite;
 
@@ -49,10 +50,15 @@ public class Entry {
 
 	private class EntryStorage {
 		public Meteorite meteorite;
-		public Material cruxtype;
+		private final Material cruxtype;
 		public EntryStorage(Meteorite meteorite, Material cruxtype) {
 			this.meteorite = meteorite;
 			this.cruxtype = cruxtype;
+		}
+
+		@SuppressWarnings("unused")
+		public Material getCruxtype() {
+			return cruxtype;
 		}
 	}
 
@@ -113,9 +119,9 @@ public class Entry {
 					long time = Long.parseLong(hologram.getLines()[0].replaceAll("\\%entry:([0-9]+)\\%", "$1"));
 
 					if (time <= System.currentTimeMillis()) {
-						User user = User.getUser(holograms.get(hologram));
+						User user = UserManager.getUser(holograms.get(hologram));
 						if (user != null && user.getProgression() == ProgressionState.NONE) {
-							fail(User.getUser(holograms.get(hologram)));
+							fail(UserManager.getUser(holograms.get(hologram)));
 						}
 					}
 				}
@@ -145,7 +151,7 @@ public class Entry {
 		}
 
 		// Kicks the server out of server mode
-		User server = User.getUser(user.getServer());
+		User server = UserManager.getUser(user.getServer());
 		if (server != null && server.isServer()) {
 			server.stopServerMode();
 		}

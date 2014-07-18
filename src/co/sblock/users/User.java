@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -44,8 +45,10 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class User {
 
+	
+	
 	/* Player's UUID */
-	private UUID playerID;
+	private final UUID playerID;
 
 	/* The Player's IP address */
 	private String userIP;
@@ -57,9 +60,11 @@ public class User {
 	private Region currentRegion;
 
 	/* Used to calculate elapsed times. */
-	private SimpleDateFormat dateFormat;
+	public static transient final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("DDD 'days' HH:mm:ss");
+	static {
+		DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 
-	/* SBLOCK USER DATA BELOW */
 	/* Classpect */
 	private UserClass classType;
 	private UserAspect aspect;
@@ -72,7 +77,7 @@ public class User {
 	private transient Location serverDisableTeleport;
 
 	/* Programs installed to the player's computer */
-	private HashSet<Integer> programs;
+	private Set<Integer> programs;
 
 	/* Checks made while the Player is logged in, not saved. */
 	private transient boolean isServer, allowFlight;
@@ -81,53 +86,215 @@ public class User {
 	private UUID server, client;
 
 	/* A map of the Effects applied to the Player and their strength. */
-	private transient HashMap<PassiveEffect, Integer> passiveEffects;
+	private transient Map<PassiveEffect, Integer> passiveEffects;
 
-
-	/* CHAT USER DATA BELOW */
 	/* The name of the Player's current focused Channel */
-	private String current;
+	private String currentChannel;
 
 	/* The channels the Player is listening to */
-	private HashSet<String> listening;
+	private Set<String> listening;
 
 	/* Booleans affecting channel message reception. */
 	private AtomicBoolean globalMute;
 	private transient AtomicBoolean suppress;
 	
 	/**
+	 * 
+	 * @author ted
+	 *
+	 * Factory pattern for creating Users
+	 * Must be a static class inside the User class for access to the private constructor
+	 */
+	public static class UserSpawner {
+		/* USER DEFAULTS */
+		/* these directly mimic the data of the player itself */
+		private String IPAddr = "localhost";
+		
+		private boolean loaded = false;
+		private boolean isServer = false;
+		private boolean allowFlight = false;
+		
+		private UserClass classType = UserClass.HEIR;
+		private UserAspect aspect = UserAspect.BREATH;
+		private MediumPlanet mPlanet = MediumPlanet.LOWAS;
+		private DreamPlanet dPlanet = DreamPlanet.PROSPIT;
+		private ProgressionState progression = ProgressionState.NONE;
+		
+		private Location previousLocation = null;
+		private Set<Integer> programs = new HashSet<>();
+		private Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
+		private String currentChannel = null;
+		private HashSet<String> listening = new HashSet<String>();
+		private AtomicBoolean globalMute = new AtomicBoolean();
+		private AtomicBoolean suppress = new AtomicBoolean();
+		
+		/**
+		 * @param iPAddr the iPAddr to set
+		 */
+		public UserSpawner setIPAddr(String iPAddr) {
+			IPAddr = iPAddr;
+			return this;
+		}
+		
+		/**
+		 * @param loaded the loaded to set
+		 */
+		public UserSpawner setLoaded(boolean loaded) {
+			this.loaded = loaded;
+			return this;
+		}
+		
+		/**
+		 * @param isServer the isServer to set
+		 */
+		public UserSpawner setServer(boolean isServer) {
+			this.isServer = isServer;
+			return this;
+		}
+		
+		/**
+		 * @param allowFlight the allowFlight to set
+		 */
+		public UserSpawner setAllowFlight(boolean allowFlight) {
+			this.allowFlight = allowFlight;
+			return this;
+		}
+		
+		/**
+		 * @param classType the classType to set
+		 */
+		public UserSpawner setClassType(UserClass classType) {
+			this.classType = classType;
+			return this;
+		}
+		
+		/**
+		 * @param aspect the aspect to set
+		 */
+		public UserSpawner setAspect(UserAspect aspect) {
+			this.aspect = aspect;
+			return this;
+		}
+		
+		/**
+		 * @param mPlanet the mPlanet to set
+		 */
+		public UserSpawner setmPlanet(MediumPlanet mPlanet) {
+			this.mPlanet = mPlanet;
+			return this;
+		}
+
+		/**
+		 * @param dPlanet the dPlanet to set
+		 */
+		public UserSpawner setdPlanet(DreamPlanet dPlanet) {
+			this.dPlanet = dPlanet;
+			return this;
+		}
+		
+		/**
+		 * @param progression the progression to set
+		 */
+		public UserSpawner setProgression(ProgressionState progression) {
+			this.progression = progression;
+			return this;
+		}
+		
+		/**
+		 * @param previousLocation the previousLocation to set
+		 */
+		public UserSpawner setPreviousLocation(Location previousLocation) {
+			this.previousLocation = previousLocation;
+			return this;
+		}
+		
+		/**
+		 * @param programs the programs to set
+		 */
+		public UserSpawner setPrograms(Set<Integer> programs) {
+			this.programs = programs;
+			return this;
+		}
+		
+		/**
+		 * @param passiveEffects the passiveEffects to set
+		 */
+		public UserSpawner setPassiveEffects(Map<PassiveEffect, Integer> passiveEffects) {
+			this.passiveEffects = passiveEffects;
+			return this;
+		}
+		
+		/**
+		 * @param currentChannel the currentChannel to set
+		 */
+		public UserSpawner setCurrentChannel(String currentChannel) {
+			this.currentChannel = currentChannel;
+			return this;
+		}
+		
+		/**
+		 * @param listening the listening to set
+		 */
+		public UserSpawner setListening(HashSet<String> listening) {
+			this.listening = listening;
+			return this;
+		}
+		
+		/**
+		 * @param globalMute the globalMute to set
+		 */
+		public UserSpawner setGlobalMute(AtomicBoolean globalMute) {
+			this.globalMute = globalMute;
+			return this;
+		}
+		
+		/**
+		 * @param suppress the suppress to set
+		 */
+		public UserSpawner setSuppress(AtomicBoolean suppress) {
+			this.suppress = suppress;
+			return this;
+		}
+
+		/**
+		 * 
+		 * @param userID the user id
+		 * @return a user with all the traits that have been added to the spawner
+		 */
+		public User build(UUID userID)
+		{
+			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression, isServer, allowFlight, IPAddr,
+							previousLocation, currentChannel, passiveEffects, programs, listening, globalMute, suppress);
+		}
+
+	}
+	
+	/**
 	 * Creates a SblockUser object for a Player.
 	 * 
 	 * @param playerName the name of the Player to create a SblockUser for
 	 */
-	public User(UUID playerID) {
-		// Generic user data
-		this.playerID = playerID;
-		this.setUserIP();
-		loaded = false;
-
-		dateFormat = new SimpleDateFormat("DDD 'days' HH:mm:ss");
-		// Time will not be properly displayed if not in UTC
-		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-		// SblockUser-set data
-		classType = UserClass.HEIR;
-		aspect = UserAspect.BREATH;
-		mPlanet = MediumPlanet.LOWAS;
-		dPlanet = DreamPlanet.PROSPIT;
-		progression = ProgressionState.NONE;
-		isServer = false;
-		allowFlight = false;
-		this.updateFlight();
-		previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
-		programs = new HashSet<>();
-		this.passiveEffects = new HashMap<>();
-
-		// ChatUser-set data
-		current = null;
-		listening = new HashSet<String>();
-		globalMute = new AtomicBoolean();
-		suppress = new AtomicBoolean();
+	private User(UUID userID, boolean loaded, UserClass userClass, UserAspect aspect, MediumPlanet mplanet,
+				DreamPlanet dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight, String IP,
+				Location previousLocation, String currentChannel, Map<PassiveEffect, Integer> passiveEffects,
+				Set<Integer> programs, Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress) {
+		this.playerID = userID;
+		this.loaded = loaded;
+		this.classType = userClass;
+		this.aspect = aspect;
+		this.mPlanet = mplanet;
+		this.dPlanet = dplanet;
+		this.progression = progstate;
+		this.isServer = isServer;
+		this.allowFlight = allowFlight;
+		this.previousLocation = previousLocation;
+		this.currentChannel = currentChannel;
+		this.programs = programs;
+		this.passiveEffects = passiveEffects;
+		this.listening = listening;
+		this.globalMute = globalMute;
+		this.suppress = supress;
+		this.userIP = IP;
 	}
 
 	/**
@@ -341,7 +508,7 @@ public class User {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		return dateFormat.format(new Date(getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK) * 50L));
+		return DATE_FORMATTER.format(new Date(getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK) * 50L));
 	}
 
 	/**
@@ -349,7 +516,7 @@ public class User {
 	 * 
 	 * @return the programs installed
 	 */
-	public HashSet<Integer> getPrograms() {
+	public Set<Integer> getPrograms() {
 		return this.programs;
 	}
 
@@ -433,8 +600,8 @@ public class User {
 			return;
 		}
 		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (current == null || currentRegion != null && current.equals("#" + currentRegion.toString())) {
-			current = newC.getName();
+		if (currentChannel == null || currentRegion != null && currentChannel.equals("#" + currentRegion.toString())) {
+			currentChannel = newC.getName();
 		}
 		if (currentRegion != null) {
 			this.removeListening("#" + currentRegion.toString());
@@ -495,7 +662,7 @@ public class User {
 					+ "+\nAsk someone with " + ChatColor.AQUA + "/requestclient <player>");
 			return;
 		}
-		User u = getUser(client);
+		User u = UserManager.getUser(client);
 		if (u == null) {
 			p.sendMessage(ChatColor.RED + "You should wait for your client before progressing!");
 			return;
@@ -586,7 +753,7 @@ public class User {
 	 * 
 	 * @return the map of passive effects and their strengths
 	 */
-	public HashMap<PassiveEffect, Integer> getPassiveEffects() {
+	public Map<PassiveEffect, Integer> getPassiveEffects() {
 		return this.passiveEffects;
 	}
 	
@@ -769,7 +936,7 @@ public class User {
 			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c.getName()));
 			return;
 		}
-		current = c.getName();
+		currentChannel = c.getName();
 		if (!this.listening.contains(c.getName())) {
 			this.addListening(c);
 		} else {
@@ -793,7 +960,7 @@ public class User {
 	 * @return Channel
 	 */
 	public Channel getCurrent() {
-		return ChannelManager.getChannelManager().getChannel(this.current);
+		return ChannelManager.getChannelManager().getChannel(this.currentChannel);
 	}
 
 	/**
@@ -861,7 +1028,7 @@ public class User {
 				.append(" logs the fuck in and begins pestering <>").append(ChatColor.YELLOW)
 				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			StringBuilder matches = new StringBuilder();
 			for (String s : this.listening) {
 				if (u.listening.contains(s)) {
@@ -901,8 +1068,8 @@ public class User {
 			c.removeNick(this, false);
 			c.sendMessage(ChatMsgs.onChannelLeave(this, c));
 			c.removeListening(this.playerID);
-			if (this.current != null && cName.equals(this.current)) {
-				this.current = null;
+			if (this.currentChannel != null && cName.equals(this.currentChannel)) {
+				this.currentChannel = null;
 			}
 		} else {
 			this.sendMessage(ChatMsgs.errorNotListening(cName));
@@ -917,8 +1084,8 @@ public class User {
 	public void removeListeningSilent(Channel channel) {
 		channel.removeNick(this, false);
 		this.listening.remove(channel.getName());
-		if (this.current != null && this.current.equals(channel.getName())) {
-			this.current = null;
+		if (this.currentChannel != null && this.currentChannel.equals(channel.getName())) {
+			this.currentChannel = null;
 		}
 		channel.removeListening(this.getUUID());
 	}
@@ -994,7 +1161,7 @@ public class User {
 		String s = sys + "-----------------------------------------\n" + 
 				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
 				this.mPlanet + div + this.dPlanet.getDisplayName() + div + " Flight: " + this.allowFlight + "\n" + 
-				" Mute: " + this.globalMute.get() + div + " Current: " + this.current + div + this.listening.toString() + "\n" +
+				" Mute: " + this.globalMute.get() + div + " Current: " + this.currentChannel + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
 				" IP: " + this.userIP + "\n" +
 				" Playtime: " + this.getTimePlayed() + div + " Last Login: Online now!\n" +
@@ -1007,16 +1174,5 @@ public class User {
 			return ((User) object).getUUID().equals(playerID);
 		}
 		return false;
-	}
-
-	/**
-	 * Gets a User by UUID.
-	 * 
-	 * @param userName the name to match
-	 * 
-	 * @return the User specified or null if invalid.
-	 */
-	public static User getUser(UUID userID) {
-		return UserManager.getUserManager().getUser(userID);
 	}
 }

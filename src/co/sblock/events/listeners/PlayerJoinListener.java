@@ -27,7 +27,7 @@ public class PlayerJoinListener implements Listener {
 
 		SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
 
-		User u = UserManager.getUserManager().addUser(event.getPlayer().getUniqueId());
+		User u = UserManager.addNewUser(event.getPlayer().getUniqueId());
 		u.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
 		EffectManager.applyPassiveEffects(u);
 	}

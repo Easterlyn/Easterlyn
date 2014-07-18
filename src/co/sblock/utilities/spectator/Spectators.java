@@ -17,7 +17,7 @@ import co.sblock.module.CommandListener;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.Module;
 import co.sblock.module.SblockCommand;
-import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.inventory.InventoryManager;
 
 /**
@@ -132,7 +132,7 @@ public class Spectators extends Module implements CommandListener {
 	public void removeSpectator(Player p) {
 		Entry e = spectators.remove(p.getUniqueId());
 		p.teleport(e.getLocation());
-		User.getUser(p.getUniqueId()).updateFlight();
+		UserManager.getUser(p.getUniqueId()).updateFlight();
 		p.setNoDamageTicks(0);
 		p.setFallDistance(e.getFall());
 		InventoryManager.restoreInventory(p);
@@ -153,7 +153,7 @@ public class Spectators extends Module implements CommandListener {
 	@CommandUsage("/spectate")
 	@SblockCommand
 	public boolean spectate(CommandSender s, String[] args) {
-		if (User.getUser(((Player) s).getUniqueId()).isServer()) {
+		if (UserManager.getUser(((Player) s).getUniqueId()).isServer()) {
 			s.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
 			return true;
 		}

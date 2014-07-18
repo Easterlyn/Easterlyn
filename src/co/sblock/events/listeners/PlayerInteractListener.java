@@ -24,7 +24,7 @@ import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.Region;
-import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.Captchadex;
 import co.sblock.utilities.progression.ServerMode;
@@ -46,10 +46,10 @@ public class PlayerInteractListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
+		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()) {
 			// No interaction with any blocks while out of range.
 			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
-					User.getUser(event.getPlayer().getUniqueId()), event.getClickedBlock())) {
+					UserManager.getUser(event.getPlayer().getUniqueId()), event.getClickedBlock())) {
 				event.getPlayer().sendMessage(ChatColor.RED + "Block out of range!");
 				event.setCancelled(true);
 				return;
@@ -67,7 +67,7 @@ public class PlayerInteractListener implements Listener {
 					// Right click air: Open computer
 					event.getPlayer().openInventory(new Computer(event.getPlayer().getLocation(),
 							event.getPlayer().getUniqueId().toString(), true)
-									.getInventory(User.getUser(event.getPlayer().getUniqueId())));
+									.getInventory(UserManager.getUser(event.getPlayer().getUniqueId())));
 				}
 			}
 			return;

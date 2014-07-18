@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -25,7 +26,7 @@ public class FoodLevelChangeListener implements Listener {
 			event.setCancelled(true);
 		}
 
-		User user = User.getUser(event.getEntity().getUniqueId());
+		User user = UserManager.getUser(event.getEntity().getUniqueId());
 		if (user != null && user.isServer()) {
 			event.setCancelled(true);
 			return;

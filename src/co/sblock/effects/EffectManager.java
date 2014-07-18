@@ -2,6 +2,7 @@ package co.sblock.effects;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -131,7 +132,7 @@ public class EffectManager {
 	 * @param user the SblockUSer to apply PassiveEffects to
 	 */
 	public static void applyPassiveEffects(User user) {
-		HashMap<PassiveEffect, Integer> effects = user.getPassiveEffects();
+		Map<PassiveEffect, Integer> effects = user.getPassiveEffects();
 		for (PassiveEffect pE : effects.keySet()) {
 			PassiveEffect.applyEffect(user.getPlayer(), pE, effects.get(pE));
 		}

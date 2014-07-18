@@ -20,10 +20,7 @@ public class SblockUsers extends Module {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onEnable() {
-		// Initialize the player manager
-		UserManager.getUserManager();
 		this.registerCommands(new UserDataCommands());
-
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			SblockData.getDB().loadUserData(p.getUniqueId());
 		}
@@ -34,7 +31,7 @@ public class SblockUsers extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		for (User u : UserManager.getUserManager().getUserlist().toArray(new User[0])) {
+		for (User u : UserManager.getUsers().toArray(new User[0])) {
 			SblockData.getDB().saveUserData(u.getUUID());
 		}
 	}

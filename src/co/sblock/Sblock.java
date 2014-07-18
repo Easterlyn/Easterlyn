@@ -125,6 +125,7 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
+		SblockData.getDB().enterFinalizeMode();
 		this.unregisterAllCommands();
 		HandlerList.unregisterAll(this);
 		for (Module module : this.modules) {

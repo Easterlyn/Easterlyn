@@ -13,6 +13,7 @@ import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NickChannel;
+import co.sblock.data.SblockData;
 import co.sblock.module.CommandDenial;
 import co.sblock.module.CommandDescription;
 import co.sblock.module.CommandListener;
@@ -37,6 +38,18 @@ public class ChatCommands implements CommandListener {
 	@SblockCommand
 	public boolean color(CommandSender sender, String[] args) {
 		sender.sendMessage(ColorDef.listColors());
+		return true;
+	}
+	
+	@CommandDescription("toggle the database implementation")
+	@CommandUsage("&c/database")
+	@SblockCommand
+	public boolean database(CommandSender sender, String[] args) {
+		if (sender.isOp()) {
+			sender.sendMessage("successfully toggled the implementation to " + SblockData.toggleDBImpl());
+		} else {
+			sender.sendMessage("not valid command");
+		}
 		return true;
 	}
 
@@ -65,7 +78,7 @@ public class ChatCommands implements CommandListener {
 		Bukkit.getConsoleSender().sendMessage(message);
 		message = new EscapedElement(message).toString();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			User u = User.getUser(p.getUniqueId());
+			User u = UserManager.getUser(p.getUniqueId());
 			if (!u.isSuppressing()) {
 				u.rawHighlight(message);
 			}
@@ -142,7 +155,7 @@ public class ChatCommands implements CommandListener {
 	@CommandUsage("/sc")
 	@SblockCommand
 	public boolean sc(CommandSender sender, String[] args) {
-		User user = User.getUser(((Player) sender).getUniqueId());
+		User user = UserManager.getUser(((Player) sender).getUniqueId());
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatMsgs.helpDefault());
 			return true;
@@ -207,7 +220,7 @@ public class ChatCommands implements CommandListener {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		User user = User.getUser(p.getUniqueId());
+		User user = UserManager.getUser(p.getUniqueId());
 		user.setCurrent(c);
 		sender.sendMessage(ChatColor.GREEN + "Channel forced!");
 		return true;
@@ -316,11 +329,11 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorChannelName());
 		} else if (ChannelType.getType(args[3]) == null) {
 			user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
-		} else if (AccessLevel.getAccess(args[2]) == null) {
+		} else if (AccessLevel.getAccessLevel(args[2]) == null) {
 			user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
 		} else {
 			ChannelManager.getChannelManager().createNewChannel(args[1],
-					AccessLevel.getAccess(args[2]), user.getUUID(), ChannelType.getType(args[3]));
+					AccessLevel.getAccessLevel(args[2]), user.getUUID(), ChannelType.getType(args[3]));
 			Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
 			user.sendMessage(ChatMsgs.onChannelCreation(c));
 		}
@@ -390,7 +403,7 @@ public class ChatCommands implements CommandListener {
 				scGlobalRmNick(user, args);
 				return true;
 			} else if (args[1].equalsIgnoreCase("clearnicks")) {
-				for (User u : UserManager.getUserManager().getUserlist()) {
+				for (User u : UserManager.getUsers()) {
 					if (!u.getPlayer().getDisplayName().equals(u.getPlayerName())) {
 						u.getPlayer().setDisplayName(u.getPlayerName());
 					}
@@ -409,7 +422,7 @@ public class ChatCommands implements CommandListener {
 		}
 		Bukkit.getPlayer(args[2]).setDisplayName(args[3]);
 		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -422,7 +435,7 @@ public class ChatCommands implements CommandListener {
 			return;
 		}
 		String msg = ChatMsgs.onUserRmGlobalNick(args[2], p.getDisplayName());
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -435,10 +448,10 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		User victim = User.getUser(p.getUniqueId());
+		User victim = UserManager.getUser(p.getUniqueId());
 		victim.setMute(true);
 		String msg = ChatMsgs.onUserMute(args[2]);
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -450,10 +463,10 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		User victim = User.getUser(p.getUniqueId());
+		User victim = UserManager.getUser(p.getUniqueId());
 		victim.setMute(false);;
 		String msg = ChatMsgs.onUserUnmute(args[2]);
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -465,7 +478,7 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(c.toString());
 			return true;
 		}
-		if (!c.isChannelMod(user)) {
+		if (!c.isModerator(user)) {
 			user.sendMessage(ChatMsgs.onChannelCommandFail(c.getName()));
 			return true;
 		}
@@ -479,7 +492,7 @@ public class ChatCommands implements CommandListener {
 			StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW);
 			sb.append("Channel members: ");
 			for (UUID userID : c.getListening()) {
-				User u = UserManager.getUserManager().getUser(userID);
+				User u = UserManager.getUser(userID);
 				if (u.getCurrent().equals(c)) {
 					sb.append(ChatColor.GREEN);
 				} else {
@@ -500,7 +513,7 @@ public class ChatCommands implements CommandListener {
 				c.approveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			} else if (args[1].equalsIgnoreCase("deapprove")) {
-				c.deapproveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+				c.disapproveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			}
 		}

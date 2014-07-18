@@ -8,11 +8,11 @@ import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
-import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.channel.NormalChannel;
 import co.sblock.chat.channel.RPChannel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.data.SblockData;
+import co.sblock.chat.channel.Channel.ChannelSerialiser;
 
 
 public class ChannelManager {
@@ -40,26 +40,12 @@ public class ChannelManager {
 	}
 
 	public void createNewChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
-		this.loadChannel(name, access, creator, channelType);
+		Channel c = new ChannelSerialiser(channelType, name, access, creator).build();
+		this.loadChannel(name, c);
 		SblockChat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
 	}
 
-	public void loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
-		Channel c = null;
-		switch (channelType) {
-		case RP:
-			c = new RPChannel(name, access, creator);
-			break;
-		case NICK:
-			c = new NickChannel(name, access, creator);
-			break;
-		case REGION:
-			c = new RegionChannel(name, access, creator);
-			break;
-		default:
-			c = new NormalChannel(name, access, creator);
-			break;
-		}
+	public void loadChannel(String name, Channel c) {
 		this.channelList.put(name, c);
 	}
 

@@ -81,7 +81,7 @@ public class MeteorCommandListener implements CommandListener {
 	public boolean crotchrocket(CommandSender sender, String[] args) {
 		final Player player = (Player) sender;
 		player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);
-
+		
 		final Firework firework = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
 		FireworkMeta fm = firework.getFireworkMeta();
 		fm.setPower(4);

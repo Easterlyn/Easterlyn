@@ -116,7 +116,7 @@ publish
 # Others
 [Bb]in
 [Oo]bj
-sql
+
 TestResults
 *.Cache
 ClientBin
@@ -180,3 +180,4 @@ pip-log.txt
 .DS_Store
 
 /bin
+src/config.yml

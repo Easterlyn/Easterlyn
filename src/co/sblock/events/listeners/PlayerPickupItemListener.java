@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import co.sblock.effects.EffectManager;
 import co.sblock.effects.PassiveEffect;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -31,7 +32,7 @@ public class PlayerPickupItemListener implements Listener {
 		}
 
 		// valid SblockUser required for all events below this point
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user == null) {
 			return;
 		}
