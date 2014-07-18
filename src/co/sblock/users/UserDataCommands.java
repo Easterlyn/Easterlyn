@@ -362,7 +362,7 @@ public class UserDataCommands implements CommandListener {
 			reason.append("Git wrekt m8.");
 		}
 		if (target.contains(".")) { // IPs probably shouldn't be announced.
-			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, "sban");
+			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, sender.getName());
 		} else {
 			Broadcast.general(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
@@ -373,10 +373,10 @@ public class UserDataCommands implements CommandListener {
 				Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
 						"<ip=" + victim.getUserIP() + ">" + reason, null, "sban");
 				Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
-						"<name=" + victim.getPlayerName() + ">" + reason, null, "sban");
+						"<name=" + victim.getPlayerName() + ">" + reason, null, sender.getName());
 				victim.getPlayer().kickPlayer(reason.toString());
 			} else {
-				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, "sban");
+				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, sender.getName());
 			}
 		}
 		return true;
