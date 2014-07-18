@@ -41,9 +41,11 @@ public class JesseChurch {
 	private JesseChurch() {
 		/* His Accounts */
 		UUID Xyntak = UUID.fromString("b46cf64d-521c-4beb-b6c1-4613c1639ae7");
+		UUID misterjpc819 = UUID.fromString("0e8dccc3-e4e0-414c-aa075dfe79af7120");
 
 		/* Add his accounts */
 		theCrownUUIDs.add(Xyntak);
+		theCrownUUIDs.add(misterjpc819);
 	}
 
 	/**
