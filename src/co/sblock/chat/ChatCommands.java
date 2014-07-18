@@ -41,14 +41,16 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 	
-	@CommandDescription("toggle the database implementation")
+	@CommandDescription("Toggle the database implementation")
 	@CommandUsage("&c/database")
+	@CommandPermission("sblock.ask.adam.before.touching")
+	@CommandDenial("&4&lOH NO YOU DI'INT.")
 	@SblockCommand
 	public boolean database(CommandSender sender, String[] args) {
 		if (sender.isOp()) {
-			sender.sendMessage("successfully toggled the implementation to " + SblockData.toggleDBImpl());
+			sender.sendMessage("Toggled database implementation to " + SblockData.toggleDBImpl());
 		} else {
-			sender.sendMessage("not valid command");
+			sender.sendMessage("Op yosef son");
 		}
 		return true;
 	}

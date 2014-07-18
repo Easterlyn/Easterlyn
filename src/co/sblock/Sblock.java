@@ -335,10 +335,11 @@ public class Sblock extends JavaPlugin {
 	 */
 	public void unregisterAllCommands() {
 		for (Method m : this.commandHandlers.values()) {
-			try {
-				Bukkit.getPluginCommand(m.getName()).setExecutor(null);
-			} catch (NullPointerException e) {
-				cmdMap.getCommand(m.getName()).unregister(cmdMap);
+			Command cmd = cmdMap.getCommand(m.getName());
+			if (!overriddenCommands.containsKey(cmd)) {
+				cmd.unregister(cmdMap);
+			} else {
+				((PluginCommand) cmd).setExecutor(overriddenCommands.remove(cmd));
 			}
 		}
 	}
