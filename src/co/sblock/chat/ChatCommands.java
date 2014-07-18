@@ -55,7 +55,7 @@ public class ChatCommands implements CommandListener {
 
 	@CommandDenial("&0&lYOU SEE NOTHING.")
 	@CommandDescription("The voice of the god Anaash. Can be recolored for plaintext messaging.")
-	@CommandPermission("group.horrorterror")
+	@CommandPermission("group.denizen")
 	@CommandUsage("/an <text>")
 	@SblockCommand(consoleFriendly = true)
 	public boolean an(CommandSender sender, String[] text) {

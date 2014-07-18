@@ -3,10 +3,11 @@ package co.sblock;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -59,7 +60,7 @@ public class Sblock extends JavaPlugin {
 	private static Sblock instance;
 
 	/* The Set of Modules enabled. */
-	private Set<Module> modules;
+	private List<Module> modules;
 
 	/* The Map of commands currently being managed and their respective Method. */
 	private Map<String, Method> commandHandlers;
@@ -100,7 +101,7 @@ public class Sblock extends JavaPlugin {
 			getLog().severe("Invalid server version, Sblock commands will fail to register.");
 		}
 		instance = this;
-		this.modules = new HashSet<>();
+		this.modules = new ArrayList<>();
 		this.commandHandlers = new HashMap<>();
 		this.listenerInstances = new HashMap<>();
 		this.overriddenCommands = new HashMap<>();
@@ -108,7 +109,7 @@ public class Sblock extends JavaPlugin {
 		createRecipes();
 
 		SblockData.getDB().enable();
-		
+
 		modules.add(new SblockChat().enable());
 		modules.add(new SblockUsers().enable());
 		modules.add(new SblockEvents().enable());
@@ -128,6 +129,8 @@ public class Sblock extends JavaPlugin {
 		SblockData.getDB().enterFinalizeMode();
 		this.unregisterAllCommands();
 		HandlerList.unregisterAll(this);
+		// Disable in reverse order - should better respect modules that require others to function
+		Collections.reverse(modules);
 		for (Module module : this.modules) {
 			module.disable();
 		}
@@ -335,7 +338,7 @@ public class Sblock extends JavaPlugin {
 			try {
 				Bukkit.getPluginCommand(m.getName()).setExecutor(null);
 			} catch (NullPointerException e) {
-				getLog().fine("Command " + m.getName() + " was registered interally.");
+				cmdMap.getCommand(m.getName()).unregister(cmdMap);
 			}
 		}
 	}

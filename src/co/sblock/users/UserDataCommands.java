@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 
 import co.sblock.chat.ChatMsgs;
 import co.sblock.data.SblockData;
+import co.sblock.events.SblockEvents;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.module.CommandDenial;
 import co.sblock.module.CommandDescription;
@@ -450,6 +451,20 @@ public class UserDataCommands implements CommandListener {
 	@SblockCommand(consoleFriendly = true)
 	public boolean help(CommandSender sender, String[] args) {
 		Bukkit.dispatchCommand(sender, "? " + StringUtils.join(args, ' ').trim());
+		return true;
+	}
+
+	@SuppressWarnings("deprecation")
+	@CommandDenial
+	@CommandDescription("Fixes all issues except crappy code.")
+	@CommandPermission("group.horrorterror")
+	@SblockCommand(consoleFriendly = true)
+	public boolean softrestart(CommandSender sender, String[] target) {
+		if (Bukkit.getOnlinePlayers().length == 0) {
+			Bukkit.dispatchCommand(sender, "restart");
+			return true;
+		}
+		SblockEvents.getEvents().setSoftRestart(true);
 		return true;
 	}
 }
