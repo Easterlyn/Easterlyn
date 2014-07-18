@@ -15,6 +15,7 @@ import co.sblock.machines.type.PBO;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.users.UserManager;
+import co.sblock.utilities.jesse.JesseChurch;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -31,6 +32,11 @@ public class BlockPlaceListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
+
+		if (JesseChurch.theOneAndOnly().isAnActOfGod(event)) {
+			JesseChurch.hisRoyalHighness().dealWithJesse(event);
+			return; // "and nothing beside remained" --Percy Shelly
+		}
 
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
 		if (m != null) {
