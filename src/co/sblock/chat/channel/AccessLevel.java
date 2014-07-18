@@ -2,7 +2,7 @@ package co.sblock.chat.channel;
 
 /**
  *  the access level of a channel (determines who can join without an invitation)
- * @author Jikoo (assumed), Dublek (assumed), tmathmeyer
+ * @author Dublek, tmathmeyer
  */
 public enum AccessLevel {
 	PUBLIC, PRIVATE;
@@ -14,7 +14,7 @@ public enum AccessLevel {
 	 */
 	public static AccessLevel getAccessLevel(String level) {
 		try {
-			return AccessLevel.valueOf(level);
+			return AccessLevel.valueOf(level.toUpperCase());
 		} catch (Exception e) {
 			return null;
 		}

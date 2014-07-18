@@ -44,7 +44,6 @@ public class PlayerDataPromise implements Promise<User> {
 			if (p != null) {
 				//player's first login
 				Broadcast.lilHal("It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
-				// TODO: move this somewhere so that it does not throw an NPE and block saving on a test server
 				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
 				user = UserManager.getUser(p.getUniqueId());
 				user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});

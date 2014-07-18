@@ -467,4 +467,18 @@ public class UserDataCommands implements CommandListener {
 		SblockEvents.getEvents().setSoftRestart(true);
 		return true;
 	}
+
+	@CommandDescription("Toggle the database implementation")
+	@CommandUsage("&c/database")
+	@CommandPermission("sblock.ask.adam.before.touching")
+	@CommandDenial("&4&lOH NO YOU DI'INT.")
+	@SblockCommand
+	public boolean database(CommandSender sender, String[] args) {
+		if (sender.isOp()) {
+			sender.sendMessage("Toggled database implementation to " + SblockData.toggleDBImpl());
+		} else {
+			sender.sendMessage("Op yosef son");
+		}
+		return true;
+	}
 }
