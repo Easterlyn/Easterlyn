@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.machines.SblockMachines;
@@ -52,12 +53,13 @@ public class BlockPlaceListener implements Listener {
 			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {
-				// Should ideally never run out this way.
-				event.getItemInHand().setAmount(2);
+				final int slot = event.getPlayer().getInventory().getHeldItemSlot();
+				final ItemStack placed = event.getItemInHand().clone();
 				final Player player = event.getPlayer();
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 					@Override
 					public void run() {
+						player.getInventory().setItem(slot, placed);
 						player.updateInventory();
 					}
 				});
