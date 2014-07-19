@@ -39,9 +39,8 @@ public class PBO extends Machine {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void assemble(BlockPlaceEvent event) {
-		event.getBlockPlaced().setTypeIdAndData(event.getBlockAgainst().getTypeId(), event.getBlockAgainst().getData(), false);
-		event.setCancelled(true);
-		event.getPlayer().updateInventory();
+		this.blocks.put(key, new MaterialData(event.getBlockAgainst().getType(), event.getBlockAgainst().getData()));
+		this.assemble();
 	}
 
 	/**
