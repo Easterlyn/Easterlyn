@@ -3,9 +3,14 @@ package co.sblock.utilities.jesse;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import co.sblock.Sblock;
 import co.sblock.utilities.threadsafe.SetGenerator;
 
 /**
@@ -80,7 +85,29 @@ public class JesseChurch {
 			p.setOp(false); // the god of havoc can be dangerous when OP
 		}
 
-		//fuck with his blocks (not yet)
+		p.setGameMode(GameMode.SURVIVAL);
+
+		letTheSandsOfTimeRunQuickly(event.getBlock());
 	}
-	
+
+	/** 
+	 * I think all of the "fuck with jesse" methods should be names like some sort of spell
+	 * @param b the block to fuck with
+	 */
+	public void letTheSandsOfTimeRunQuickly(final Block b) {
+		new BukkitRunnable(){
+
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(5000);
+				} catch (Exception e) {
+					// well shit, looks like those sands are gonna run EXTRA fast today
+				}
+				b.setType(Material.GRASS); // age, significantly
+			}
+
+		}.runTaskLater(Sblock.getInstance(), 100);
+	}
+
 }
