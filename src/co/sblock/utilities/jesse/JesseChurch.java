@@ -8,7 +8,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import co.sblock.Sblock;
 import co.sblock.utilities.threadsafe.SetGenerator;
 
 /**
@@ -93,7 +95,7 @@ public class JesseChurch {
 	 * @param b the block to fuck with
 	 */
 	public void letTheSandsOfTimeRunQuickly(final Block b) {
-		new Thread(new Runnable(){
+		new BukkitRunnable(){
 
 			@Override
 			public void run() {
@@ -105,7 +107,7 @@ public class JesseChurch {
 				b.setType(Material.GRASS); // age, significantly
 			}
 
-		}).start();
+		}.runTaskLater(Sblock.getInstance(), 100);
 	}
-	
+
 }
