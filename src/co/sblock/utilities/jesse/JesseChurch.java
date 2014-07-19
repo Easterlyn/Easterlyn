@@ -99,11 +99,6 @@ public class JesseChurch {
 
 			@Override
 			public void run() {
-				try {
-					Thread.sleep(5000);
-				} catch (Exception e) {
-					// well shit, looks like those sands are gonna run EXTRA fast today
-				}
 				b.setType(Material.GRASS); // age, significantly
 			}
 
