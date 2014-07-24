@@ -42,6 +42,28 @@ public class UserDataCommands implements CommandListener {
 	/** Map containing all server/client player requests */
 	public static Map<String, String> requests = new HashMap<String, String>();
 
+	@CommandDescription("Get your ping.")
+	@CommandUsage("/ping <player>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean ping(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player) && args.length == 0) {
+			return false;
+		}
+		Player target;
+		if (args.length == 0 || !sender.hasPermission("group.helper")) {
+			target = (Player) sender;
+		} else {
+			target = Bukkit.getPlayer(args[0]);
+		}
+		if (target == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown player " + args[0] + "!");
+			return true;
+		}
+		sender.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.YELLOW +"'s ping is " +
+			((org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer) target).getHandle().ping + "ms!");
+		return true;
+	}
+
 	@CommandDescription("Check a player's profile.")
 	@CommandUsage("/profile <player>")
 	@SblockCommand(consoleFriendly = true)
