@@ -40,7 +40,8 @@ public class SQLClient extends SblockData {
 			connection = DriverManager.getConnection("jdbc:mysql://"
 					+ Sblock.getInstance().getConfig().getString("host") + ":"
 					+ Sblock.getInstance().getConfig().getString("port") + "/"
-					+ Sblock.getInstance().getConfig().getString("database"),
+					+ Sblock.getInstance().getConfig().getString("database")
+					+ "?autoReconnect=true",
 					Sblock.getInstance().getConfig().getString("username"),
 					Sblock.getInstance().getConfig().getString("password"));
 			logger.fine("Connection established.");
