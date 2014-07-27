@@ -43,7 +43,6 @@ public class PlayerInteractListener implements Listener {
 	 * 
 	 * @param event the PlayerInteractEvent
 	 */
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()) {

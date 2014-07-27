@@ -39,7 +39,6 @@ public class RawAnnouncer extends Module implements CommandListener {
 
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 
-			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				MessageElement msg = announcements.get((int) (Math.random() * announcements.size()));
@@ -126,12 +125,6 @@ public class RawAnnouncer extends Module implements CommandListener {
 				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click join!")),
 		new MessageElement(" to listen and play!", ChatColor.RED)));
 
-		msgs.add(new MessageHalement("Sblock UHC is in the works! Check out ").addExtra(
-				new MessageElement("the subreddit post", ChatColor.AQUA)
-				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://www.reddit.com/r/sblock/comments/29znh9/group_event_sblock_uhc/"))
-				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Check it out!")),
-		new MessageElement(" for more info! May the best team win.", ChatColor.RED)));
-
 		return msgs;
 	}
 
@@ -143,7 +136,6 @@ public class RawAnnouncer extends Module implements CommandListener {
 		Bukkit.getScheduler().cancelTask(taskId);
 	}
 
-	@SuppressWarnings("deprecation")
 	@CommandDenial
 	@CommandDescription("Force a raw message announcement or talk as Hal.")
 	@CommandPermission("group.horrorterror")

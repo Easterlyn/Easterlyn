@@ -281,7 +281,6 @@ public class InventoryClickListener implements Listener {
 	}
 
 	// move bottom to top
-	@SuppressWarnings("deprecation")
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
 		// Cruxite items should not be tradeable.
 		if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().hasDisplayName()

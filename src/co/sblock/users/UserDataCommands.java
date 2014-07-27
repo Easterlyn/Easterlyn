@@ -476,13 +476,12 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
 	@CommandDenial
 	@CommandDescription("Fixes all issues except crappy code.")
 	@CommandPermission("group.horrorterror")
 	@SblockCommand(consoleFriendly = true)
 	public boolean softrestart(CommandSender sender, String[] target) {
-		if (Bukkit.getOnlinePlayers().length == 0) {
+		if (Bukkit.getOnlinePlayers().size() == 0) {
 			Bukkit.dispatchCommand(sender, "restart");
 			return true;
 		}

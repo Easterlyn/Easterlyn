@@ -30,7 +30,6 @@ public class BlockPlaceListener implements Listener {
 	 * 
 	 * @param event the BlockPlaceEvent
 	 */
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 
