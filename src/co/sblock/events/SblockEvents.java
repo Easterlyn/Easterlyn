@@ -75,6 +75,8 @@ public class SblockEvents extends Module {
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
 
+				new CraftItemListener(),
+
 				new EntityDamageByEntityListener(), new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
 				
@@ -91,7 +93,8 @@ public class SblockEvents extends Module {
 				new PlayerItemHeldListener(),
 				new PlayerJoinListener(), new PlayerLoginListener(),
 				new PlayerPickupItemListener(), new PlayerQuitListener(),
-				new PlayerTeleportListener(), new ServerListPingListener(),
+				new PlayerTeleportListener(), new PrepareItemEnchantListener(),
+				new ServerListPingListener(),
 
 				new SignChangeListener(),
 
