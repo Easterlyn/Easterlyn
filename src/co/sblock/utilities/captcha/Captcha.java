@@ -174,7 +174,7 @@ public class Captcha extends Module {
 	 * @return ItemStack
 	 */
 	private static ItemStack blankCaptchaCard() {
-		ItemStack iS = new ItemStack(Material.PAPER);
+		ItemStack iS = new ItemStack(Material.BOOK);
 		ItemMeta iM = iS.getItemMeta();
 		iM.setDisplayName("Captchacard");
 		ArrayList<String> lore = new ArrayList<String>();
@@ -249,8 +249,7 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a single Punchcard
 	 */
 	public static boolean isSinglePunch(ItemStack is) {
-		return isCard(is) && is.getItemMeta().getDisplayName().equals("Punchcard")
-				&& is.getAmount() == 1;
+		return isPunch(is) && is.getAmount() == 1;
 	}
 
 	/**
@@ -261,8 +260,8 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a card
 	 */
 	public static boolean isCard(ItemStack is) {
-		return is != null && is.getType() == Material.PAPER && is.hasItemMeta()
-				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
+		return is != null && (is.getType() == Material.PAPER || is.getType() == Material.BOOK)
+				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
 				&& (is.getItemMeta().getDisplayName().equals("Captchacard")
 						|| is.getItemMeta().getDisplayName().equals("Punchcard"));
 	}
@@ -281,7 +280,7 @@ public class Captcha extends Module {
 		if (!isCard(card1) || (card2 != null && !isPunch(card2))) {
 			return null;
 		}
-		ItemStack result = new ItemStack(Material.PAPER);
+		ItemStack result = new ItemStack(Material.BOOK);
 		ArrayList<String> lore = new ArrayList<>();
 		lore.addAll(card1.getItemMeta().getLore());
 		if (card2 != null) {
@@ -354,7 +353,7 @@ public class Captcha extends Module {
 	 * @return
 	 */
 	public static ItemStack createLoreCard(String lore) {
-		ItemStack card = new ItemStack(Material.PAPER);
+		ItemStack card = new ItemStack(Material.BOOK);
 		ItemMeta im = card.getItemMeta();
 		ArrayList<String> loreList = new ArrayList<>();
 		loreList.add("Lorecard");

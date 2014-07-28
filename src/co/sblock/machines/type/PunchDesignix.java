@@ -228,7 +228,7 @@ public class PunchDesignix extends Machine {
 	 * @return
 	 */
 	private static ItemStack[] createExampleRecipes() {
-		ItemStack is1 = new ItemStack(Material.PAPER);
+		ItemStack is1 = new ItemStack(Material.BOOK);
 		ItemMeta im = is1.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 1 options:");
 		ArrayList<String> lore = new ArrayList<>();
@@ -238,7 +238,7 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is1.setItemMeta(im);
 
-		ItemStack is2 = new ItemStack(Material.PAPER);
+		ItemStack is2 = new ItemStack(Material.BOOK);
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 2 options:");
 		lore = new ArrayList<>();
@@ -248,7 +248,7 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is2.setItemMeta(im);
 
-		ItemStack is3 = new ItemStack(Material.PAPER);
+		ItemStack is3 = new ItemStack(Material.BOOK);
 		im = is3.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Punchcard Result:");
 		lore = new ArrayList<>();
