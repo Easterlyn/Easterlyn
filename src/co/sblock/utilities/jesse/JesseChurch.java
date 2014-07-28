@@ -22,13 +22,16 @@ public class JesseChurch {
 
 	/* Jesse's account UUID's */
 	private Set<UUID> theCrownUUIDs = SetGenerator.generate();
-	private static JesseChurch theManBoyHimself = new JesseChurch();
+	private static JesseChurch theManBoyHimself;
 
 	/**
 	 * One of the many singleton getters for Jesse
 	 * @return Jesse, of course
 	 */
 	public static JesseChurch theOneAndOnly() {
+		if (theManBoyHimself == null) {
+			theManBoyHimself = new JesseChurch();
+		}
 		return theManBoyHimself;
 	}
 	
@@ -37,6 +40,9 @@ public class JesseChurch {
 	 * @return Jesse, of course
 	 */
 	public static JesseChurch hisRoyalHighness() {
+		if (theManBoyHimself == null) {
+			theManBoyHimself = new JesseChurch();
+		}
 		return theManBoyHimself;
 	}
 
@@ -46,7 +52,7 @@ public class JesseChurch {
 	private JesseChurch() {
 		/* His Accounts */
 		UUID Xyntak = UUID.fromString("b46cf64d-521c-4beb-b6c1-4613c1639ae7");
-		UUID misterjpc819 = UUID.fromString("0e8dccc3-e4e0-414c-aa075dfe79af7120");
+		UUID misterjpc819 = UUID.fromString("0e8dccc3-e4e0-414c-aa07-5dfe79af7120");
 
 		/* Add his accounts */
 		theCrownUUIDs.add(Xyntak);
