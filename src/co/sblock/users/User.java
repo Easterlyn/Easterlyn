@@ -264,7 +264,8 @@ public class User {
 		public User build(UUID userID)
 		{
 			if (Bukkit.getOfflinePlayer(userID).isOnline()) {
-				setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString());
+				// IP comes out as /123.456.789.0, leading slash must be removed to properly IP ban.
+				setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString().substring(1));
 			}
 			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression, isServer, allowFlight, IPAddr,
 							previousLocation, currentChannel, passiveEffects, programs, listening, globalMute, suppress);
