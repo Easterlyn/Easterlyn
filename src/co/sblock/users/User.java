@@ -108,7 +108,7 @@ public class User {
 	public static class UserSpawner {
 		/* USER DEFAULTS */
 		/* these directly mimic the data of the player itself */
-		private String IPAddr = "localhost";
+		private String IPAddr = "offline";
 		
 		private boolean loaded = false;
 		private boolean isServer = false;
@@ -263,6 +263,9 @@ public class User {
 		 */
 		public User build(UUID userID)
 		{
+			if (Bukkit.getOfflinePlayer(userID).isOnline()) {
+				setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString());
+			}
 			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression, isServer, allowFlight, IPAddr,
 							previousLocation, currentChannel, passiveEffects, programs, listening, globalMute, suppress);
 		}
@@ -288,6 +291,9 @@ public class User {
 		this.isServer = isServer;
 		this.allowFlight = allowFlight;
 		this.previousLocation = previousLocation;
+		if (previousLocation == null) {
+			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+		}
 		this.currentChannel = currentChannel;
 		this.programs = programs;
 		this.passiveEffects = passiveEffects;
