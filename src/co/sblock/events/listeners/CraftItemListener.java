@@ -23,8 +23,8 @@ public class CraftItemListener implements Listener {
 	 * @param event the CraftItemEvent
 	 */
 	@EventHandler
-	public void onPrepareItemCraft(CraftItemEvent event) {
-		for (ItemStack is : event.getInventory().getContents()) {
+	public void onCraftItem(CraftItemEvent event) {
+		for (ItemStack is : event.getInventory().getMatrix()) {
 			if (is == null) {
 				continue;
 			}
