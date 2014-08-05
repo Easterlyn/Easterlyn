@@ -105,7 +105,7 @@ public class Alchemiter extends Machine {
 	}
 
 	/**
-	 * Open a PunchDesignix inventory for a Player.
+	 * Open a Alchemiter inventory for a Player.
 	 * 
 	 * @param player the Player
 	 */
