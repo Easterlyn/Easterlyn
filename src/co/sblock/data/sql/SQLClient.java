@@ -134,7 +134,7 @@ public class SQLClient extends SblockData {
 
 	@Override
 	public void getUserFromIP(String hostAddress, Promise<String> executor) {
-		PlayerData.getUserFromIP(hostAddress);
+		executor.getObject(PlayerData.getUserFromIP(hostAddress), null);
 	}
 
 	@Override

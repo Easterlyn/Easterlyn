@@ -56,7 +56,6 @@ public class Entry {
 			this.cruxtype = cruxtype;
 		}
 
-		@SuppressWarnings("unused")
 		public Material getCruxtype() {
 			return cruxtype;
 		}

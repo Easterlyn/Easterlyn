@@ -378,7 +378,7 @@ public class UserDataCommands implements CommandListener {
 		String target = args[0];
 		StringBuilder reason = new StringBuilder();
 		for (int i = 1; i < args.length; i++) {
-			reason.append(args[i]).append(' ');
+			reason.append(ChatColor.translateAlternateColorCodes('&', args[i])).append(' ');
 		}
 		if (args.length == 1) {
 			reason.append("Git wrekt m8.");
@@ -393,7 +393,7 @@ public class UserDataCommands implements CommandListener {
 			if (p != null) { // This method is actually more efficient than getting an OfflinePlayer without a UUID
 				User victim = UserManager.getUser(p.getUniqueId());
 				Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
-						"<ip=" + victim.getUserIP() + ">" + reason, null, "sban");
+						"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());
 				Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
 						"<name=" + victim.getPlayerName() + ">" + reason, null, sender.getName());
 				victim.getPlayer().kickPlayer(reason.toString());
@@ -403,7 +403,6 @@ public class UserDataCommands implements CommandListener {
 		}
 		return true;
 	}
-
 
 	@CommandDenial
 	@CommandDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.")

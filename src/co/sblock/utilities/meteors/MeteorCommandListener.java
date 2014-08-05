@@ -98,6 +98,7 @@ public class MeteorCommandListener implements CommandListener {
 			@Override
 			public void run() {
 				packet.setLocation(firework.getLocation());
+				firework.setVelocity(new Vector(0, 2, 0));
 				ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
 			}
 		}, 0, 1L);
