@@ -27,6 +27,7 @@ import co.sblock.users.Region;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.Captchadex;
+import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.spectator.Spectators;
 import co.sblock.utilities.vote.SleepVote;
@@ -78,6 +79,22 @@ public class PlayerInteractListener implements Listener {
 				event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
 			}
 			return;
+		}
+		
+		//Entry Trigger Items
+		for (Material m : Entry.getEntry().getMaterialList()) {
+			if (event.getItem().getType().equals(m)) {
+				if (event.getItem().getItemMeta().hasDisplayName() 
+						&& event.getItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
+					if (Entry.getEntry().isEntering(UserManager.getUser(event.getPlayer().getUniqueId()))) {
+						if(m.equals(Entry.getEntry().getData().get(UserManager.getUser(event.getPlayer().getUniqueId())).getCruxtype())) {
+							Entry.getEntry().succeed(UserManager.getUser(event.getPlayer().getUniqueId()));
+						}	
+					}
+					event.getPlayer().setItemInHand(null);
+					return;
+				}
+			}
 		}
 
 		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {

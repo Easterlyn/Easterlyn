@@ -48,7 +48,7 @@ import co.sblock.utilities.meteors.Meteorite;
  */
 public class Entry {
 
-	private class EntryStorage {
+	public class EntryStorage {
 		public Meteorite meteorite;
 		private final Material cruxtype;
 		public EntryStorage(Meteorite meteorite, Material cruxtype) {
@@ -249,6 +249,9 @@ public class Entry {
 				Material.EGG, Material.SAPLING, Material.SUGAR_CANE, Material.QUARTZ,
 				Material.BLAZE_ROD };
 	}
+	public Material[] getMaterialList() {
+		return materials;
+	}
 
 	private Location getEntryLocation(MediumPlanet m) {
 		double angle = Math.random() * Math.PI * 2;
@@ -265,5 +268,9 @@ public class Entry {
 		return !l.getBlock().getType().isSolid()
 				&& !l.clone().add(new Vector(0, 1, 0)).getBlock().getType().isSolid()
 				&& l.clone().add(new Vector(0, -1, 0)).getBlock().getType().isSolid();
+	}
+	
+	public HashMap<UUID, EntryStorage> getData() {
+		return data;
 	}
 }
