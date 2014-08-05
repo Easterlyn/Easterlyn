@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -101,6 +102,29 @@ public class Captcha extends Module {
 	}
 
 	/**
+	 * Create a punchcard from a captchacard.
+	 * <p>
+	 * For testing purposes only, good luck patching punched holes.
+	 * 
+	 * @param is the punchcard ItemStack
+	 * 
+	 * @return the unpunched captchacard
+	 */
+	public static ItemStack captchaToPunch(ItemStack is) {
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName("Punchcard");
+		List<String> newlore = new ArrayList<>();
+		// If the captcha doesn't have lore, we've already got problems, not catching this NPE
+		newlore.add(im.getLore().get(0));
+		for (int i = 1; i < im.getLore().size(); i++) {
+			newlore.add(ChatColor.MAGIC + im.getLore().get(i));
+		}
+		im.setLore(newlore);
+		is.setItemMeta(im);
+		return is;
+	}
+
+	/**
 	 * Converts a Captchdex entry into an ItemStack.
 	 * 
 	 * @param data the Captchadex page split at '\n' ItemStack
@@ -124,6 +148,11 @@ public class Captcha extends Module {
 		}
 		if (data[0].equals("Blank")) {
 			return MachineType.PERFECTLY_GENERIC_OBJECT.getUniqueDrop();
+		}
+		for (int j = 1; j < data.length; j++) {
+			if (data[j].startsWith(ChatColor.MAGIC.toString())) {
+				data[j] = data[j].substring(2);
+			}
 		}
 		try {
 			is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),

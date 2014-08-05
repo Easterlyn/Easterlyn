@@ -45,7 +45,7 @@ public class CaptchaCommandListener implements CommandListener {
 			ItemStack item = p.getItemInHand();
 			if (Captcha.isUsedCaptcha(item)) {
 				p.getInventory().clear(p.getInventory().getHeldItemSlot());
-				p.getInventory().addItem(Captchadex.punchCard(item));
+				p.getInventory().addItem(Captcha.captchaToPunch(item));
 				return true;
 			}
 			sender.sendMessage(ChatColor.RED + "Item is not a captchacard!");
