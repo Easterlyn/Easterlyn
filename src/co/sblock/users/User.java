@@ -17,10 +17,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
@@ -35,6 +37,7 @@ import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.inventory.InventoryManager;
+import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.regex.RegexUtils;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -45,8 +48,6 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class User {
 
-	
-	
 	/* Player's UUID */
 	private final UUID playerID;
 
@@ -97,7 +98,7 @@ public class User {
 	/* Booleans affecting channel message reception. */
 	private AtomicBoolean globalMute;
 	private transient AtomicBoolean suppress;
-	
+
 	/**
 	 * 
 	 * @author ted
@@ -109,17 +110,17 @@ public class User {
 		/* USER DEFAULTS */
 		/* these directly mimic the data of the player itself */
 		private String IPAddr = "offline";
-		
+
 		private boolean loaded = false;
 		private boolean isServer = false;
 		private boolean allowFlight = false;
-		
+
 		private UserClass classType = UserClass.HEIR;
 		private UserAspect aspect = UserAspect.BREATH;
 		private MediumPlanet mPlanet = MediumPlanet.LOWAS;
 		private DreamPlanet dPlanet = DreamPlanet.PROSPIT;
 		private ProgressionState progression = ProgressionState.NONE;
-		
+
 		private Location previousLocation = null;
 		private Set<Integer> programs = new HashSet<>();
 		private Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
@@ -127,7 +128,7 @@ public class User {
 		private HashSet<String> listening = new HashSet<String>();
 		private AtomicBoolean globalMute = new AtomicBoolean();
 		private AtomicBoolean suppress = new AtomicBoolean();
-		
+
 		/**
 		 * @param iPAddr the iPAddr to set
 		 */
@@ -135,7 +136,7 @@ public class User {
 			IPAddr = iPAddr;
 			return this;
 		}
-		
+
 		/**
 		 * @param loaded the loaded to set
 		 */
@@ -143,7 +144,7 @@ public class User {
 			this.loaded = loaded;
 			return this;
 		}
-		
+
 		/**
 		 * @param isServer the isServer to set
 		 */
@@ -151,7 +152,7 @@ public class User {
 			this.isServer = isServer;
 			return this;
 		}
-		
+
 		/**
 		 * @param allowFlight the allowFlight to set
 		 */
@@ -159,7 +160,7 @@ public class User {
 			this.allowFlight = allowFlight;
 			return this;
 		}
-		
+
 		/**
 		 * @param classType the classType to set
 		 */
@@ -167,7 +168,7 @@ public class User {
 			this.classType = classType;
 			return this;
 		}
-		
+
 		/**
 		 * @param aspect the aspect to set
 		 */
@@ -175,7 +176,7 @@ public class User {
 			this.aspect = aspect;
 			return this;
 		}
-		
+
 		/**
 		 * @param mPlanet the mPlanet to set
 		 */
@@ -191,7 +192,7 @@ public class User {
 			this.dPlanet = dPlanet;
 			return this;
 		}
-		
+
 		/**
 		 * @param progression the progression to set
 		 */
@@ -199,7 +200,7 @@ public class User {
 			this.progression = progression;
 			return this;
 		}
-		
+
 		/**
 		 * @param previousLocation the previousLocation to set
 		 */
@@ -207,7 +208,7 @@ public class User {
 			this.previousLocation = previousLocation;
 			return this;
 		}
-		
+
 		/**
 		 * @param programs the programs to set
 		 */
@@ -215,7 +216,7 @@ public class User {
 			this.programs = programs;
 			return this;
 		}
-		
+
 		/**
 		 * @param passiveEffects the passiveEffects to set
 		 */
@@ -223,7 +224,7 @@ public class User {
 			this.passiveEffects = passiveEffects;
 			return this;
 		}
-		
+
 		/**
 		 * @param currentChannel the currentChannel to set
 		 */
@@ -231,7 +232,7 @@ public class User {
 			this.currentChannel = currentChannel;
 			return this;
 		}
-		
+
 		/**
 		 * @param listening the listening to set
 		 */
@@ -239,7 +240,7 @@ public class User {
 			this.listening = listening;
 			return this;
 		}
-		
+
 		/**
 		 * @param globalMute the globalMute to set
 		 */
@@ -247,7 +248,7 @@ public class User {
 			this.globalMute = globalMute;
 			return this;
 		}
-		
+
 		/**
 		 * @param suppress the suppress to set
 		 */
@@ -261,18 +262,19 @@ public class User {
 		 * @param userID the user id
 		 * @return a user with all the traits that have been added to the spawner
 		 */
-		public User build(UUID userID)
-		{
+		public User build(UUID userID) {
 			if (Bukkit.getOfflinePlayer(userID).isOnline()) {
 				// IP comes out as /123.456.789.0, leading slash must be removed to properly IP ban.
-				setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString().substring(1));
+				setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString()
+						.substring(1));
 			}
-			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression, isServer, allowFlight, IPAddr,
-							previousLocation, currentChannel, passiveEffects, programs, listening, globalMute, suppress);
+			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression,
+					isServer, allowFlight, IPAddr, previousLocation, currentChannel,
+					passiveEffects, programs, listening, globalMute, suppress);
 		}
 
 	}
-	
+
 	/**
 	 * Creates a SblockUser object for a Player.
 	 * 
@@ -694,6 +696,13 @@ public class User {
 		p.setNoDamageTicks(Integer.MAX_VALUE);
 		InventoryManager.storeAndClearInventory(p);
 		p.getInventory().addItem(MachineType.COMPUTER.getUniqueDrop());
+		p.getInventory().addItem(MachineType.CRUXTRUDER.getUniqueDrop());
+		p.getInventory().addItem(MachineType.PUNCH_DESIGNIX.getUniqueDrop());
+		p.getInventory().addItem(MachineType.TOTEM_LATHE.getUniqueDrop());
+		p.getInventory().addItem(MachineType.ALCHEMITER.getUniqueDrop());
+		for (Material mat : ServerMode.getInstance().getApprovedSet()) {
+			p.getInventory().addItem(new ItemStack(mat));
+		}
 		p.sendMessage(ChatColor.GREEN + "Server mode enabled!");
 	}
 

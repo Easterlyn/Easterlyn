@@ -2,12 +2,10 @@ package co.sblock.utilities.progression;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.machines.SblockMachines;
@@ -19,10 +17,9 @@ import co.sblock.users.User;
  * 
  * @author Jikoo
  */
-public class ServerMode implements InventoryHolder {
+public class ServerMode {
 
 	private static ServerMode instance;
-	private Inventory inv;
 
 	private Map<Material, Integer> approved;
 
@@ -76,6 +73,10 @@ public class ServerMode implements InventoryHolder {
 		return approved.containsKey(m);
 	}
 
+	public Set<Material> getApprovedSet() {
+		return approved.keySet();
+	}
+
 	public ItemStack cycleData(ItemStack is) {
 		if (!approved.containsKey(is.getType())) {
 			return is;
@@ -93,16 +94,6 @@ public class ServerMode implements InventoryHolder {
 	public boolean isWithinRange(User server, Block broken) {
 		Machine computer = SblockMachines.getMachines().getManager().getComputer(server.getClient());
 		return computer != null && computer.getKey().distanceSquared(broken.getLocation()) <= 625;
-	}
-
-	public Inventory getInventory() {
-		if (inv == null) {
-			inv = Bukkit.createInventory(this, 45, "Server Supplies");
-			for (Material m : approved.keySet()) {
-				inv.addItem(new ItemStack(m));
-			}
-		}
-		return inv;
 	}
 
 	public static ServerMode getInstance() {

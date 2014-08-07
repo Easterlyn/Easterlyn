@@ -22,7 +22,6 @@ import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.Captchadex;
 import co.sblock.utilities.inventory.InventoryUtils;
-import co.sblock.utilities.progression.ServerMode;
 
 /**
  * Listener for InventoryClickEvents.
@@ -140,16 +139,9 @@ public class InventoryClickListener implements Listener {
 			event.setResult(Result.DENY);
 			return;
 		}
-
-		// Server mode: No gathering to cursor.
-		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
-			event.setResult(Result.DENY);
-			return;
-		}
 	}
 
 	// remove top
-	@SuppressWarnings("deprecation")
 	private void itemRemoveTop(InventoryClickEvent event) {
 		// Captchadex
 		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
@@ -158,14 +150,6 @@ public class InventoryClickListener implements Listener {
 			} else {
 				event.setResult(Result.DENY);
 			}
-			return;
-		}
-
-		// Server mode: Do not remove, clone to cursor.
-		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
-			event.setResult(Result.DENY);
-			event.setCursor(event.getCurrentItem().clone());
-			((Player) event.getWhoClicked()).updateInventory();
 			return;
 		}
 	}
@@ -191,14 +175,6 @@ public class InventoryClickListener implements Listener {
 			return;
 		}
 
-		// Server mode: Do not add, delete.
-		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
-			event.setResult(Result.DENY);
-			event.setCursor(null);
-			((Player) event.getWhoClicked()).updateInventory();
-			return;
-		}
-
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
 				&& InventoryUtils.isUniqueItem(event.getCursor())) {
@@ -213,17 +189,9 @@ public class InventoryClickListener implements Listener {
 			event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
 			return;
 		}
-
-		// Server mode: Do not move, clone and add.
-		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
-			event.setResult(Result.DENY);
-			event.getWhoClicked().getInventory().addItem(event.getCurrentItem().clone());
-			return;
-		}
 	}
 
 	// switch top
-	@SuppressWarnings("deprecation")
 	private void itemSwapIntoTop(InventoryClickEvent event) {
 		// Cruxite items should not be tradeable.
 		if (event.getCursor() != null && event.getCursor().getItemMeta().hasDisplayName()
@@ -237,14 +205,6 @@ public class InventoryClickListener implements Listener {
 			event.setResult(Result.DENY);
 			// Could instead verify swap in is single punchcard,
 			// but not really worth the bother - rare scenario.
-			return;
-		}
-
-		// Server mode: Do not swap, delete.
-		if (event.getView().getTopInventory().getHolder() instanceof ServerMode) {
-			event.setResult(Result.DENY);
-			event.setCursor(null);
-			((Player) event.getWhoClicked()).updateInventory();
 			return;
 		}
 
@@ -296,17 +256,6 @@ public class InventoryClickListener implements Listener {
 				event.setCurrentItem(Captcha.captchaToItem(event.getCurrentItem()));
 			} else {
 				event.setResult(Result.DENY);
-			}
-			return;
-		}
-
-		// Server mode: Do not move, delete.
-		if (UserManager.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
-			event.setResult(Result.DENY);
-			// Do not delete Computer icon.
-			if (!event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
-				event.setCurrentItem(null);
-				((Player) event.getWhoClicked()).updateInventory();
 			}
 			return;
 		}

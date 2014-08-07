@@ -7,7 +7,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.type.Computer;
 import co.sblock.users.UserManager;
-import co.sblock.utilities.progression.ServerMode;
 
 /**
  * Listener for InventoryOpenEvents.
@@ -29,10 +28,8 @@ public class InventoryOpenListener implements Listener {
 
 		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()
 				&& event.getInventory().getHolder() != null
-				&& !(event.getInventory().getHolder() instanceof ServerMode)
 				&& !(event.getInventory().getHolder() instanceof Computer)) {
 			event.setCancelled(true);
-			event.getPlayer().openInventory(ServerMode.getInstance().getInventory());
 		}
 	}
 }
