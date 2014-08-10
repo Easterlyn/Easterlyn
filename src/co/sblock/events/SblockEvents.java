@@ -213,7 +213,7 @@ public class SblockEvents extends Module {
 	 * @return the BukkitTask ID
 	 */
 	public void initiateRegionChecks() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
+		new RegionCheck().runTaskTimer(Sblock.getInstance(), 100L, 100L);
 	}
 
 	/**

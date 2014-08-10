@@ -22,18 +22,20 @@ public enum Region {
 	UNKNOWN("Earth", "#Aether", ColorDef.WORLD_AETHER, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false);
 
 	/* INNER FIELDS */
+	private final String worldName;
 	private final String channelName;
 	private final String resourcePack;
 	private final ChatColor worldChatColor;
-	private final String worldName;
 	private final boolean isMedium;
 	private final boolean isDream;
 
 	/**
-	 * 
-	 * @param channelName The name of the region
+	 * @param worldName The name of the world
+	 * @param channelName The name of the region's channel
 	 * @param color the default chat color of the region
-	 * @param sourceURL the texture pack to be used in this region
+	 * @param sourceURL the resource pack to be used in this region
+	 * @param isMedium true if the planet is in the Medium
+	 * @param isDream true if the planet is a dream planet
 	 */
 	private Region(String worldName, String channelName, ChatColor color, String sourceURL, boolean isMedium, boolean isDream) {
 		this.worldName = worldName;

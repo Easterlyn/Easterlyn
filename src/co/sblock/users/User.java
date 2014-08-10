@@ -614,18 +614,18 @@ public class User {
 	 */
 	public void updateCurrentRegion(Region newR) {
 		if (currentRegion != null && newR == currentRegion) {
-			if (!listening.contains("#" + currentRegion.toString())) {
-				Channel c = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
+			if (!listening.contains(currentRegion.getChannelName())) {
+				Channel c = ChannelManager.getChannelManager().getChannel(currentRegion.getChannelName());
 				this.addListening(c);
 			}
 			return;
 		}
-		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (currentChannel == null || currentRegion != null && currentChannel.equals("#" + currentRegion.toString())) {
+		Channel newC = ChannelManager.getChannelManager().getChannel(newR.getChannelName());
+		if (currentChannel == null || currentRegion != null && currentChannel.equals(currentRegion.getChannelName())) {
 			currentChannel = newC.getName();
 		}
 		if (currentRegion != null) {
-			this.removeListening("#" + currentRegion.toString());
+			this.removeListening(currentRegion.getChannelName());
 		}
 		if (!this.listening.contains(newC.getName())) {
 			this.addListening(newC);
