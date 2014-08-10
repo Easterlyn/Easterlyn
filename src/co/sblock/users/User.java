@@ -69,8 +69,7 @@ public class User {
 	/* Classpect */
 	private UserClass classType;
 	private UserAspect aspect;
-	private MediumPlanet mPlanet;
-	private DreamPlanet dPlanet;
+	private Region mPlanet, dPlanet;
 	private ProgressionState progression;
 
 	/* Locations to teleport Players to when conditions are met */
@@ -117,8 +116,8 @@ public class User {
 
 		private UserClass classType = UserClass.HEIR;
 		private UserAspect aspect = UserAspect.BREATH;
-		private MediumPlanet mPlanet = MediumPlanet.LOWAS;
-		private DreamPlanet dPlanet = DreamPlanet.PROSPIT;
+		private Region mPlanet = Region.LOWAS;
+		private Region dPlanet = Region.INNERCIRCLE;
 		private ProgressionState progression = ProgressionState.NONE;
 
 		private Location previousLocation = null;
@@ -180,7 +179,10 @@ public class User {
 		/**
 		 * @param mPlanet the mPlanet to set
 		 */
-		public UserSpawner setmPlanet(MediumPlanet mPlanet) {
+		public UserSpawner setmPlanet(Region mPlanet) {
+			if (!mPlanet.isMedium()) {
+				throw new RuntimeException("Invalid medium planet: received " + mPlanet.name());
+			}
 			this.mPlanet = mPlanet;
 			return this;
 		}
@@ -188,7 +190,10 @@ public class User {
 		/**
 		 * @param dPlanet the dPlanet to set
 		 */
-		public UserSpawner setdPlanet(DreamPlanet dPlanet) {
+		public UserSpawner setdPlanet(Region dPlanet) {
+			if (!dPlanet.isDream()) {
+				throw new RuntimeException("Invalid dream planet: received " + dPlanet.name() + ", expected (INNER|OUTER)CIRCLE.");
+			}
 			this.dPlanet = dPlanet;
 			return this;
 		}
@@ -280,8 +285,8 @@ public class User {
 	 * 
 	 * @param playerName the name of the Player to create a SblockUser for
 	 */
-	private User(UUID userID, boolean loaded, UserClass userClass, UserAspect aspect, MediumPlanet mplanet,
-				DreamPlanet dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight, String IP,
+	private User(UUID userID, boolean loaded, UserClass userClass, UserAspect aspect, Region mplanet,
+				Region dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight, String IP,
 				Location previousLocation, String currentChannel, Map<PassiveEffect, Integer> passiveEffects,
 				Set<Integer> programs, Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress) {
 		this.playerID = userID;
@@ -325,8 +330,7 @@ public class User {
 	}
 
 	/**
-	 * Gets the OfflinePlayer. Please note: getOfflinePlayer cannot be called on the main thread as
-	 * it is blocking.
+	 * Gets the OfflinePlayer.
 	 * 
 	 * @return the OfflinePlayer
 	 */
@@ -384,7 +388,7 @@ public class User {
 	 * 
 	 * @return the Player's MediumPlanet
 	 */
-	public MediumPlanet getMediumPlanet() {
+	public Region getMediumPlanet() {
 		return this.mPlanet;
 	}
 
@@ -394,7 +398,11 @@ public class User {
 	 * @param mPlanet the new MediumPlanet
 	 */
 	public void setMediumPlanet(String mPlanet) {
-		this.mPlanet = MediumPlanet.getPlanet(mPlanet);
+		Region planet = Region.uValueOf(mPlanet);
+		if (!planet.isMedium()) {
+			throw new RuntimeException("Invalid medium planet: received " + planet.name());
+		}
+		this.mPlanet = planet;
 	}
 
 	/**
@@ -402,7 +410,7 @@ public class User {
 	 * 
 	 * @return the Player's DreamPlanet
 	 */
-	public DreamPlanet getDreamPlanet() {
+	public Region getDreamPlanet() {
 		return this.dPlanet;
 	}
 
@@ -412,7 +420,11 @@ public class User {
 	 * @param dPlanet the new DreamPlanet
 	 */
 	public void setDreamPlanet(String dPlanet) {
-		this.dPlanet = DreamPlanet.getPlanet(dPlanet);
+		Region planet = Region.uValueOf(dPlanet);
+		if (!planet.isDream()) {
+			throw new RuntimeException("Invalid dream planet: received " + planet.name() + ", expected (INNER|OUTER)CIRCLE.");
+		}
+		this.dPlanet = planet;
 	}
 
 	/**
@@ -1176,7 +1188,7 @@ public class User {
 		
 		String s = sys + "-----------------------------------------\n" + 
 				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
-				this.mPlanet + div + this.dPlanet.getDisplayName() + div + " Flight: " + this.allowFlight + "\n" + 
+				this.mPlanet + div + this.dPlanet.getWorldName() + div + " Flight: " + this.allowFlight + "\n" + 
 				" Mute: " + this.globalMute.get() + div + " Current: " + this.currentChannel + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
 				" IP: " + this.userIP + "\n" +

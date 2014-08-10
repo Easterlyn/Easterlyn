@@ -148,10 +148,14 @@ public class PlayerInteractListener implements Listener {
 					// getFace does not seem to work in most cases - adam test and fix
 				}
 
+				
 				switch (Region.uValueOf(b.getWorld().getName())) {
 				case EARTH:
-				case MEDIUM:
 				case INNERCIRCLE:
+				case LOFAF:
+				case LOHAC:
+				case LOLAR:
+				case LOWAS:
 				case OUTERCIRCLE:
 					SblockEvents.getEvents().fakeSleepDream(event.getPlayer(), head);
 					event.setCancelled(true);

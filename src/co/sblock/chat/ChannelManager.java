@@ -1,6 +1,7 @@
 package co.sblock.chat;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -75,8 +76,17 @@ public class ChannelManager {
 	}
 
 	public Channel getChannel(String channelname) {
-		if (channelname == null || !channelList.containsKey(channelname)) {
+		if (channelname == null) {
 			// ConcurrentHashMap tends to NPE instead of returning null. Manual fix!
+			return null;
+		}
+		if (!channelList.containsKey(channelname)) {
+			// Ignore case when matching.
+			for (Entry<String, Channel> entry : channelList.entrySet()) {
+				if (entry.getKey().equalsIgnoreCase(channelname)) {
+					return entry.getValue();
+				}
+			}
 			return null;
 		}
 		return channelList.get(channelname);

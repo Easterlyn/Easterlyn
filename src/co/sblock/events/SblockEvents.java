@@ -35,12 +35,6 @@ public class SblockEvents extends Module {
 	/* The EventModule instance. */
 	private static SblockEvents instance;
 
-	/* The Task ID of the RegionCheck task. */
-	private int regionTask;
-
-	/* The Task ID of the SessionCheck task. */
-	private int sessionTask;
-
 	/* The Minecraft servers' status */
 	private Status status;
 
@@ -107,8 +101,8 @@ public class SblockEvents extends Module {
 		}
 
 		status = Status.NEITHER;
-		regionTask = initiateRegionChecks();
-		sessionTask = initiateSessionChecks();
+		initiateRegionChecks();
+		initiateSessionChecks();
 	}
 
 	/**
@@ -116,8 +110,6 @@ public class SblockEvents extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		Bukkit.getScheduler().cancelTask(regionTask);
-		Bukkit.getScheduler().cancelTask(sessionTask);
 		FreeCart.getInstance().cleanUp();
 		instance = null;
 	}
@@ -174,8 +166,8 @@ public class SblockEvents extends Module {
 	 * @return the BukkitTask ID
 	 */
 	@SuppressWarnings("deprecation")
-	private int initiateSessionChecks() {
-		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 100L, 1200L);
+	private void initiateSessionChecks() {
+		Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 100L, 1200L);
 	}
 
 	/**
@@ -220,8 +212,8 @@ public class SblockEvents extends Module {
 	 * 
 	 * @return the BukkitTask ID
 	 */
-	public int initiateRegionChecks() {
-		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
+	public void initiateRegionChecks() {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
 	}
 
 	/**

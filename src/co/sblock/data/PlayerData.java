@@ -52,8 +52,8 @@ public class PlayerData {
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getPlayerClass().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
-			pst.setString(4, user.getMediumPlanet().getShortName());
-			pst.setString(5, user.getDreamPlanet().getDisplayName());
+			pst.setString(4, user.getMediumPlanet().name());
+			pst.setString(5, user.getDreamPlanet().name());
 			pst.setBoolean(6, user.canFly());
 			Channel c = user.getCurrent();
 			pst.setString(7, c != null ? c.getName() : "#" + user.getCurrentRegion().name());

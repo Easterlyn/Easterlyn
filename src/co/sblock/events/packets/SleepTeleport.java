@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import co.sblock.events.SblockEvents;
-import co.sblock.users.DreamPlanet;
 import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
@@ -35,14 +34,10 @@ public class SleepTeleport implements Runnable {
 		if (p != null && user != null) {
 			switch (Region.getLocationRegion(p.getLocation())) {
 			case EARTH:
-			case MEDIUM:
 			case LOFAF:
 			case LOHAC:
 			case LOLAR:
 			case LOWAS:
-				if (user.getDreamPlanet() == DreamPlanet.NONE) {
-					break;
-				}
 				SblockEvents.getEvents().teleports.add(p.getName());
 				if (!user.getDreamPlanet().getWorldName()
 								.equals(user.getPreviousLocation().getWorld().getName())) {
