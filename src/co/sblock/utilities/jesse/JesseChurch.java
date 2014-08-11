@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import co.sblock.utilities.threadsafe.SetGenerator;
 
 /**
- * 
+ *
  * @author JESSE CHURCH
  *
  */
@@ -29,7 +29,7 @@ public class JesseChurch {
 	public static JesseChurch theOneAndOnly() {
 		return theManBoyHimself;
 	}
-	
+
 	/**
 	 * One of the many singleton getters for Jesse
 	 * @return Jesse, of course
@@ -53,7 +53,7 @@ public class JesseChurch {
 
 	/**
 	 * We Must Know!
-	 * 
+	 *
 	 * @param event the event that may or may not have been a divine intervention
 	 * @return whether it truly was a miracle
 	 */
@@ -63,7 +63,7 @@ public class JesseChurch {
 
 	/**
 	 * Let loose the paparazzi!!
-	 * 
+	 *
 	 * @param u the player
 	 * @return errmahgerd its a jessica!
 	 */
@@ -73,7 +73,7 @@ public class JesseChurch {
 
 	/**
 	 * where the magic happens
-	 * 
+	 *
 	 * @param event the event to fuck with
 	 */
 	public void dealWithJesse(BlockPlaceEvent event) {
@@ -88,7 +88,7 @@ public class JesseChurch {
 		letTheSandsOfTimeRunQuickly(event.getBlock());
 	}
 
-	/** 
+	/**
 	 * I think all of the "fuck with jesse" methods should be names like some sort of spell
 	 * @param b the block to fuck with
 	 */
@@ -107,5 +107,15 @@ public class JesseChurch {
 
 		}).start();
 	}
-	
+
+	public void thingsJesseSays (){
+		String[] quotes = {
+			"I said it was spreading like crazy and keiko said like my herpes",
+			"well...we wanna start a griefing team...",
+			"you cant do karate for shit\nthats what i do",
+			"just tell me why the fuck my server isnt working",
+			"ok well you need a calc to when doing your math shit",
+			"Could you please make a custom client for minecraft 1.8.1 for griefing?"
+		};
+	}
 }
