@@ -40,7 +40,8 @@ public class SQLClient extends SblockData {
 			connection = DriverManager.getConnection("jdbc:mysql://"
 					+ Sblock.getInstance().getConfig().getString("host") + ":"
 					+ Sblock.getInstance().getConfig().getString("port") + "/"
-					+ Sblock.getInstance().getConfig().getString("database"),
+					+ Sblock.getInstance().getConfig().getString("database")
+					+ "?autoReconnect=true",
 					Sblock.getInstance().getConfig().getString("username"),
 					Sblock.getInstance().getConfig().getString("password"));
 			logger.fine("Connection established.");
@@ -71,6 +72,14 @@ public class SQLClient extends SblockData {
 
 	@Override
 	protected Connection connection() {
+		try {
+			if (connection == null || connection.isClosed()) {
+				enable();
+			}
+		} catch (SQLException e) {
+			// Yep, we're screwed.
+			enable();
+		}
 		return connection;
 	}
 

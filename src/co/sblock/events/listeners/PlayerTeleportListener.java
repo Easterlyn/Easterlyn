@@ -1,12 +1,15 @@
 package co.sblock.events.listeners;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import co.sblock.events.SblockEvents;
+import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.spectator.Spectators;
@@ -37,5 +40,27 @@ public class PlayerTeleportListener implements Listener {
 				user.updateFlight();
 			}
 		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerTeleportHasOccurred(PlayerTeleportEvent event) {
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
+		// Update region
+		Region target;
+		if (event.getPlayer().getWorld().getName().equals("Derspit")) {
+			target = getTargetDreamPlanet(user, event.getFrom());
+		} else {
+			target = Region.getLocationRegion(event.getPlayer().getLocation());
+		}
+		user.updateCurrentRegion(target);
+	}
+
+	private Region getTargetDreamPlanet(User user, Location from) {
+		Region fromRegion = Region.getLocationRegion(from);
+		if (!fromRegion.isMedium()) {
+			return user.getDreamPlanet();
+		}
+		// future flight to dream planets
+		return user.getDreamPlanet();
 	}
 }

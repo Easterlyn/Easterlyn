@@ -105,7 +105,7 @@ public class Alchemiter extends Machine {
 	}
 
 	/**
-	 * Open a PunchDesignix inventory for a Player.
+	 * Open a Alchemiter inventory for a Player.
 	 * 
 	 * @param player the Player
 	 */
@@ -156,7 +156,6 @@ public class Alchemiter extends Machine {
 	 */
 	public void updateInventory(final UUID id) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-			@SuppressWarnings("deprecation")
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);

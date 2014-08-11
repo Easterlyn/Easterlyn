@@ -42,6 +42,28 @@ public class UserDataCommands implements CommandListener {
 	/** Map containing all server/client player requests */
 	public static Map<String, String> requests = new HashMap<String, String>();
 
+	@CommandDescription("Get your ping.")
+	@CommandUsage("/ping <player>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean ping(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player) && args.length == 0) {
+			return false;
+		}
+		Player target;
+		if (args.length == 0 || !sender.hasPermission("group.helper")) {
+			target = (Player) sender;
+		} else {
+			target = Bukkit.getPlayer(args[0]);
+		}
+		if (target == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown player " + args[0] + "!");
+			return true;
+		}
+		sender.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.YELLOW +"'s ping is " +
+			((org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer) target).getHandle().ping + "ms!");
+		return true;
+	}
+
 	@CommandDescription("Check a player's profile.")
 	@CommandUsage("/profile <player>")
 	@SblockCommand(consoleFriendly = true)
@@ -66,8 +88,8 @@ public class UserDataCommands implements CommandListener {
 		sender.sendMessage(PROFILE_COLOR + "-----------------------------------------\n"
 				+ ChatColor.YELLOW + user.getPlayerName() + ": " + user.getPlayerClass().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
 				+ PROFILE_COLOR    + "-----------------------------------------\n"
-				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().getDisplayName() + "\n"
-				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().getShortName());
+				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().getWorldName() + "\n"
+				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().name());
 		return true;
 	}
 
@@ -356,13 +378,13 @@ public class UserDataCommands implements CommandListener {
 		String target = args[0];
 		StringBuilder reason = new StringBuilder();
 		for (int i = 1; i < args.length; i++) {
-			reason.append(args[i]).append(' ');
+			reason.append(ChatColor.translateAlternateColorCodes('&', args[i])).append(' ');
 		}
 		if (args.length == 1) {
 			reason.append("Git wrekt m8.");
 		}
 		if (target.contains(".")) { // IPs probably shouldn't be announced.
-			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, "sban");
+			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, sender.getName());
 		} else {
 			Broadcast.general(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
@@ -371,17 +393,16 @@ public class UserDataCommands implements CommandListener {
 			if (p != null) { // This method is actually more efficient than getting an OfflinePlayer without a UUID
 				User victim = UserManager.getUser(p.getUniqueId());
 				Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
-						"<ip=" + victim.getUserIP() + ">" + reason, null, "sban");
+						"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());
 				Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
-						"<name=" + victim.getPlayerName() + ">" + reason, null, "sban");
+						"<name=" + victim.getPlayerName() + ">" + reason, null, sender.getName());
 				victim.getPlayer().kickPlayer(reason.toString());
 			} else {
-				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, "sban");
+				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, sender.getName());
 			}
 		}
 		return true;
 	}
-
 
 	@CommandDenial
 	@CommandDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.")
@@ -454,13 +475,12 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
 	@CommandDenial
 	@CommandDescription("Fixes all issues except crappy code.")
 	@CommandPermission("group.horrorterror")
 	@SblockCommand(consoleFriendly = true)
 	public boolean softrestart(CommandSender sender, String[] target) {
-		if (Bukkit.getOnlinePlayers().length == 0) {
+		if (Bukkit.getOnlinePlayers().size() == 0) {
 			Bukkit.dispatchCommand(sender, "restart");
 			return true;
 		}

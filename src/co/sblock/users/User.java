@@ -17,10 +17,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
@@ -35,6 +37,7 @@ import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.inventory.InventoryManager;
+import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.regex.RegexUtils;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -45,8 +48,6 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class User {
 
-	
-	
 	/* Player's UUID */
 	private final UUID playerID;
 
@@ -68,8 +69,7 @@ public class User {
 	/* Classpect */
 	private UserClass classType;
 	private UserAspect aspect;
-	private MediumPlanet mPlanet;
-	private DreamPlanet dPlanet;
+	private Region mPlanet, dPlanet;
 	private ProgressionState progression;
 
 	/* Locations to teleport Players to when conditions are met */
@@ -97,7 +97,7 @@ public class User {
 	/* Booleans affecting channel message reception. */
 	private AtomicBoolean globalMute;
 	private transient AtomicBoolean suppress;
-	
+
 	/**
 	 * 
 	 * @author ted
@@ -108,18 +108,18 @@ public class User {
 	public static class UserSpawner {
 		/* USER DEFAULTS */
 		/* these directly mimic the data of the player itself */
-		private String IPAddr = "localhost";
-		
+		private String IPAddr = "offline";
+
 		private boolean loaded = false;
 		private boolean isServer = false;
 		private boolean allowFlight = false;
-		
+
 		private UserClass classType = UserClass.HEIR;
 		private UserAspect aspect = UserAspect.BREATH;
-		private MediumPlanet mPlanet = MediumPlanet.LOWAS;
-		private DreamPlanet dPlanet = DreamPlanet.PROSPIT;
+		private Region mPlanet = Region.LOWAS;
+		private Region dPlanet = Region.INNERCIRCLE;
 		private ProgressionState progression = ProgressionState.NONE;
-		
+
 		private Location previousLocation = null;
 		private Set<Integer> programs = new HashSet<>();
 		private Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
@@ -127,7 +127,7 @@ public class User {
 		private HashSet<String> listening = new HashSet<String>();
 		private AtomicBoolean globalMute = new AtomicBoolean();
 		private AtomicBoolean suppress = new AtomicBoolean();
-		
+
 		/**
 		 * @param iPAddr the iPAddr to set
 		 */
@@ -135,7 +135,7 @@ public class User {
 			IPAddr = iPAddr;
 			return this;
 		}
-		
+
 		/**
 		 * @param loaded the loaded to set
 		 */
@@ -143,7 +143,7 @@ public class User {
 			this.loaded = loaded;
 			return this;
 		}
-		
+
 		/**
 		 * @param isServer the isServer to set
 		 */
@@ -151,7 +151,7 @@ public class User {
 			this.isServer = isServer;
 			return this;
 		}
-		
+
 		/**
 		 * @param allowFlight the allowFlight to set
 		 */
@@ -159,7 +159,7 @@ public class User {
 			this.allowFlight = allowFlight;
 			return this;
 		}
-		
+
 		/**
 		 * @param classType the classType to set
 		 */
@@ -167,7 +167,7 @@ public class User {
 			this.classType = classType;
 			return this;
 		}
-		
+
 		/**
 		 * @param aspect the aspect to set
 		 */
@@ -175,11 +175,14 @@ public class User {
 			this.aspect = aspect;
 			return this;
 		}
-		
+
 		/**
 		 * @param mPlanet the mPlanet to set
 		 */
-		public UserSpawner setmPlanet(MediumPlanet mPlanet) {
+		public UserSpawner setmPlanet(Region mPlanet) {
+			if (!mPlanet.isMedium()) {
+				throw new RuntimeException("Invalid medium planet: received " + mPlanet.name());
+			}
 			this.mPlanet = mPlanet;
 			return this;
 		}
@@ -187,11 +190,14 @@ public class User {
 		/**
 		 * @param dPlanet the dPlanet to set
 		 */
-		public UserSpawner setdPlanet(DreamPlanet dPlanet) {
+		public UserSpawner setdPlanet(Region dPlanet) {
+			if (!dPlanet.isDream()) {
+				throw new RuntimeException("Invalid dream planet: received " + dPlanet.name() + ", expected (INNER|OUTER)CIRCLE.");
+			}
 			this.dPlanet = dPlanet;
 			return this;
 		}
-		
+
 		/**
 		 * @param progression the progression to set
 		 */
@@ -199,7 +205,7 @@ public class User {
 			this.progression = progression;
 			return this;
 		}
-		
+
 		/**
 		 * @param previousLocation the previousLocation to set
 		 */
@@ -207,7 +213,7 @@ public class User {
 			this.previousLocation = previousLocation;
 			return this;
 		}
-		
+
 		/**
 		 * @param programs the programs to set
 		 */
@@ -215,7 +221,7 @@ public class User {
 			this.programs = programs;
 			return this;
 		}
-		
+
 		/**
 		 * @param passiveEffects the passiveEffects to set
 		 */
@@ -223,7 +229,7 @@ public class User {
 			this.passiveEffects = passiveEffects;
 			return this;
 		}
-		
+
 		/**
 		 * @param currentChannel the currentChannel to set
 		 */
@@ -231,7 +237,7 @@ public class User {
 			this.currentChannel = currentChannel;
 			return this;
 		}
-		
+
 		/**
 		 * @param listening the listening to set
 		 */
@@ -239,7 +245,7 @@ public class User {
 			this.listening = listening;
 			return this;
 		}
-		
+
 		/**
 		 * @param globalMute the globalMute to set
 		 */
@@ -247,7 +253,7 @@ public class User {
 			this.globalMute = globalMute;
 			return this;
 		}
-		
+
 		/**
 		 * @param suppress the suppress to set
 		 */
@@ -261,21 +267,26 @@ public class User {
 		 * @param userID the user id
 		 * @return a user with all the traits that have been added to the spawner
 		 */
-		public User build(UUID userID)
-		{
-			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression, isServer, allowFlight, IPAddr,
-							previousLocation, currentChannel, passiveEffects, programs, listening, globalMute, suppress);
+		public User build(UUID userID) {
+			if (Bukkit.getOfflinePlayer(userID).isOnline()) {
+				// IP comes out as /123.456.789.0, leading slash must be removed to properly IP ban.
+				setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString()
+						.substring(1));
+			}
+			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression,
+					isServer, allowFlight, IPAddr, previousLocation, currentChannel,
+					passiveEffects, programs, listening, globalMute, suppress);
 		}
 
 	}
-	
+
 	/**
 	 * Creates a SblockUser object for a Player.
 	 * 
 	 * @param playerName the name of the Player to create a SblockUser for
 	 */
-	private User(UUID userID, boolean loaded, UserClass userClass, UserAspect aspect, MediumPlanet mplanet,
-				DreamPlanet dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight, String IP,
+	private User(UUID userID, boolean loaded, UserClass userClass, UserAspect aspect, Region mplanet,
+				Region dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight, String IP,
 				Location previousLocation, String currentChannel, Map<PassiveEffect, Integer> passiveEffects,
 				Set<Integer> programs, Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress) {
 		this.playerID = userID;
@@ -288,6 +299,9 @@ public class User {
 		this.isServer = isServer;
 		this.allowFlight = allowFlight;
 		this.previousLocation = previousLocation;
+		if (previousLocation == null) {
+			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+		}
 		this.currentChannel = currentChannel;
 		this.programs = programs;
 		this.passiveEffects = passiveEffects;
@@ -316,8 +330,7 @@ public class User {
 	}
 
 	/**
-	 * Gets the OfflinePlayer. Please note: getOfflinePlayer cannot be called on the main thread as
-	 * it is blocking.
+	 * Gets the OfflinePlayer.
 	 * 
 	 * @return the OfflinePlayer
 	 */
@@ -375,7 +388,7 @@ public class User {
 	 * 
 	 * @return the Player's MediumPlanet
 	 */
-	public MediumPlanet getMediumPlanet() {
+	public Region getMediumPlanet() {
 		return this.mPlanet;
 	}
 
@@ -385,7 +398,11 @@ public class User {
 	 * @param mPlanet the new MediumPlanet
 	 */
 	public void setMediumPlanet(String mPlanet) {
-		this.mPlanet = MediumPlanet.getPlanet(mPlanet);
+		Region planet = Region.uValueOf(mPlanet);
+		if (!planet.isMedium()) {
+			throw new RuntimeException("Invalid medium planet: received " + planet.name());
+		}
+		this.mPlanet = planet;
 	}
 
 	/**
@@ -393,7 +410,7 @@ public class User {
 	 * 
 	 * @return the Player's DreamPlanet
 	 */
-	public DreamPlanet getDreamPlanet() {
+	public Region getDreamPlanet() {
 		return this.dPlanet;
 	}
 
@@ -403,7 +420,11 @@ public class User {
 	 * @param dPlanet the new DreamPlanet
 	 */
 	public void setDreamPlanet(String dPlanet) {
-		this.dPlanet = DreamPlanet.getPlanet(dPlanet);
+		Region planet = Region.uValueOf(dPlanet);
+		if (!planet.isDream()) {
+			throw new RuntimeException("Invalid dream planet: received " + planet.name() + ", expected (INNER|OUTER)CIRCLE.");
+		}
+		this.dPlanet = planet;
 	}
 
 	/**
@@ -593,21 +614,20 @@ public class User {
 	 */
 	public void updateCurrentRegion(Region newR) {
 		if (currentRegion != null && newR == currentRegion) {
-			if (!listening.contains("#" + currentRegion.toString())) {
-				Channel c = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
+			if (!listening.contains(currentRegion.getChannelName())) {
+				Channel c = ChannelManager.getChannelManager().getChannel(currentRegion.getChannelName());
 				this.addListening(c);
 			}
 			return;
 		}
-		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (currentChannel == null || currentRegion != null && currentChannel.equals("#" + currentRegion.toString())) {
-			currentChannel = newC.getName();
+		if (currentChannel == null || currentRegion != null && currentChannel.equals(currentRegion.getChannelName())) {
+			currentChannel = newR.getChannelName();
 		}
 		if (currentRegion != null) {
-			this.removeListening("#" + currentRegion.toString());
+			this.removeListening(currentRegion.getChannelName());
 		}
-		if (!this.listening.contains(newC.getName())) {
-			this.addListening(newC);
+		if (!this.listening.contains(newR.getChannelName())) {
+			this.addListening(ChannelManager.getChannelManager().getChannel(newR.getChannelName()));
 		}
 		if (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL())) {
 				getPlayer().setResourcePack(newR.getResourcePackURL());
@@ -687,6 +707,13 @@ public class User {
 		p.setNoDamageTicks(Integer.MAX_VALUE);
 		InventoryManager.storeAndClearInventory(p);
 		p.getInventory().addItem(MachineType.COMPUTER.getUniqueDrop());
+		p.getInventory().addItem(MachineType.CRUXTRUDER.getUniqueDrop());
+		p.getInventory().addItem(MachineType.PUNCH_DESIGNIX.getUniqueDrop());
+		p.getInventory().addItem(MachineType.TOTEM_LATHE.getUniqueDrop());
+		p.getInventory().addItem(MachineType.ALCHEMITER.getUniqueDrop());
+		for (Material mat : ServerMode.getInstance().getApprovedSet()) {
+			p.getInventory().addItem(new ItemStack(mat));
+		}
 		p.sendMessage(ChatColor.GREEN + "Server mode enabled!");
 	}
 
@@ -1160,7 +1187,7 @@ public class User {
 		
 		String s = sys + "-----------------------------------------\n" + 
 				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
-				this.mPlanet + div + this.dPlanet.getDisplayName() + div + " Flight: " + this.allowFlight + "\n" + 
+				this.mPlanet + div + this.dPlanet.getWorldName() + div + " Flight: " + this.allowFlight + "\n" + 
 				" Mute: " + this.globalMute.get() + div + " Current: " + this.currentChannel + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
 				" IP: " + this.userIP + "\n" +

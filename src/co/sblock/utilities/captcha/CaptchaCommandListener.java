@@ -1,6 +1,7 @@
 package co.sblock.utilities.captcha;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -44,7 +45,7 @@ public class CaptchaCommandListener implements CommandListener {
 			ItemStack item = p.getItemInHand();
 			if (Captcha.isUsedCaptcha(item)) {
 				p.getInventory().clear(p.getInventory().getHeldItemSlot());
-				p.getInventory().addItem(Captchadex.punchCard(item));
+				p.getInventory().addItem(Captcha.captchaToPunch(item));
 				return true;
 			}
 			sender.sendMessage(ChatColor.RED + "Item is not a captchacard!");
@@ -64,19 +65,20 @@ public class CaptchaCommandListener implements CommandListener {
 		return true;
 	}
 
-	@CommandDescription("Converts captchacards from itemID format.")
+	@CommandDescription("Converts captchacards from paper to plastic.")
 	@CommandUsage("Run /convert with a Captchacard in hand.")
 	@SblockCommand
 	public boolean convert(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
-		if (!Captcha.isUsedCaptcha(player.getItemInHand())) {
-			return false;
+		int conversions = 0;
+		for (ItemStack is : player.getInventory().getContents()) {
+			if (is == null || is.getType() != Material.PAPER || !Captcha.isCard(is)) {
+				continue;
+			}
+			conversions++;
+			is.setType(Material.BOOK);
 		}
-		int amount = player.getItemInHand().getAmount();
-		ItemStack newCard = Captcha.itemToCaptcha(Captcha.captchaToItem(player.getItemInHand()));
-		newCard.setAmount(amount);
-		player.setItemInHand(newCard);
-		player.sendMessage(ChatColor.GREEN + "Captchacard converted!");
+		player.sendMessage(ChatColor.GREEN.toString() + conversions + " captchacards converted!");
 		return true;
 	}
 }

@@ -30,7 +30,6 @@ public class PlayerQuitListener implements Listener {
 	 * 
 	 * @param event the PlayerQuitEvent
 	 */
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		// Our very own custom quits!
@@ -81,7 +80,7 @@ public class PlayerQuitListener implements Listener {
 		}
 
 		// Restart when last player out if required
-		if (Bukkit.getOnlinePlayers().length == 0 && SblockEvents.getEvents().recalculateRestart()) {
+		if (Bukkit.getOnlinePlayers().size() == 0 && SblockEvents.getEvents().recalculateRestart()) {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 		}
 	}

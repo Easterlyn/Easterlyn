@@ -17,7 +17,6 @@ public class SblockUsers extends Module {
 	/**
 	 * @see co.sblock.Module#onEnable()
 	 */
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onEnable() {
 		this.registerCommands(new UserDataCommands());

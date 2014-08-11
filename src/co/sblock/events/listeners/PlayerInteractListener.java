@@ -23,10 +23,10 @@ import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
-import co.sblock.users.Region;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.Captchadex;
+import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.spectator.Spectators;
 import co.sblock.utilities.vote.SleepVote;
@@ -43,7 +43,6 @@ public class PlayerInteractListener implements Listener {
 	 * 
 	 * @param event the PlayerInteractEvent
 	 */
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()) {
@@ -79,6 +78,22 @@ public class PlayerInteractListener implements Listener {
 				event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
 			}
 			return;
+		}
+
+		//Entry Trigger Items
+		if (event.getItem() != null) {
+			for (Material m : Entry.getEntry().getMaterialList()) {
+				if (event.getItem().getType() == m && event.getItem().getItemMeta().hasDisplayName() 
+						&& event.getItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
+					if (Entry.getEntry().isEntering(UserManager.getUser(event.getPlayer().getUniqueId()))) {
+						if (m == Entry.getEntry().getData().get(UserManager.getUser(event.getPlayer().getUniqueId())).getCruxtype()) {
+							Entry.getEntry().succeed(UserManager.getUser(event.getPlayer().getUniqueId()));
+						}
+					}
+					event.getPlayer().setItemInHand(null);
+					return;
+				}
+			}
 		}
 
 		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
@@ -132,10 +147,13 @@ public class PlayerInteractListener implements Listener {
 					// getFace does not seem to work in most cases - adam test and fix
 				}
 
-				switch (Region.uValueOf(b.getWorld().getName())) {
+				switch (UserManager.getUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
 				case EARTH:
-				case MEDIUM:
 				case INNERCIRCLE:
+				case LOFAF:
+				case LOHAC:
+				case LOLAR:
+				case LOWAS:
 				case OUTERCIRCLE:
 					SblockEvents.getEvents().fakeSleepDream(event.getPlayer(), head);
 					event.setCancelled(true);

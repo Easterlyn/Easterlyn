@@ -42,7 +42,8 @@ public class CruxiteDowel {
 	public static boolean isDowel(ItemStack is) {
 		return is != null && is.getType() == Material.NETHER_BRICK_ITEM && is.hasItemMeta()
 				&& is.getItemMeta().hasDisplayName()
-				&& is.getItemMeta().getDisplayName().equals(ChatColor.WHITE + "Cruxite Dowel");
+				&& (is.getItemMeta().getDisplayName().equals(ChatColor.WHITE + "Cruxite Dowel")
+				|| is.getItemMeta().getDisplayName().equals(ChatColor.WHITE + "Cruxite Totem"));
 	}
 
 	public static boolean isUsedDowel(ItemStack is) {
@@ -53,6 +54,7 @@ public class CruxiteDowel {
 		ItemStack dowel = getDowel();
 		ItemMeta im = dowel.getItemMeta();
 		im.setLore(is.getItemMeta().getLore());
+		im.setDisplayName(ChatColor.WHITE + "Cruxite Totem");
 		dowel.setItemMeta(im);
 		return dowel;
 	}

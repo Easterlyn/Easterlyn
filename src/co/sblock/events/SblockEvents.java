@@ -18,6 +18,7 @@ import co.sblock.events.listeners.*;
 import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.WrapperPlayServerAnimation;
 import co.sblock.events.packets.WrapperPlayServerBed;
+import co.sblock.events.region.DerspitTimeUpdater;
 import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
@@ -34,12 +35,6 @@ public class SblockEvents extends Module {
 
 	/* The EventModule instance. */
 	private static SblockEvents instance;
-
-	/* The Task ID of the RegionCheck task. */
-	private int regionTask;
-
-	/* The Task ID of the SessionCheck task. */
-	private int sessionTask;
 
 	/* The Minecraft servers' status */
 	private Status status;
@@ -75,6 +70,8 @@ public class SblockEvents extends Module {
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
 
+				new CraftItemListener(),
+
 				new EntityDamageByEntityListener(), new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
 				
@@ -91,7 +88,8 @@ public class SblockEvents extends Module {
 				new PlayerItemHeldListener(),
 				new PlayerJoinListener(), new PlayerLoginListener(),
 				new PlayerPickupItemListener(), new PlayerQuitListener(),
-				new PlayerTeleportListener(), new ServerListPingListener(),
+				new PlayerTeleportListener(), new PrepareItemEnchantListener(),
+				new ServerListPingListener(),
 
 				new SignChangeListener(),
 
@@ -104,8 +102,9 @@ public class SblockEvents extends Module {
 		}
 
 		status = Status.NEITHER;
-		regionTask = initiateRegionChecks();
-		sessionTask = initiateSessionChecks();
+		initiateRegionChecks();
+		initiateSessionChecks();
+		initiateDerspitTimeUpdater();
 	}
 
 	/**
@@ -113,8 +112,6 @@ public class SblockEvents extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		Bukkit.getScheduler().cancelTask(regionTask);
-		Bukkit.getScheduler().cancelTask(sessionTask);
 		FreeCart.getInstance().cleanUp();
 		instance = null;
 	}
@@ -166,13 +163,10 @@ public class SblockEvents extends Module {
 	}
 
 	/**
-	 * Schedules the SessionCheck to update the Status every minute.
-	 * 
-	 * @return the BukkitTask ID
+	 * Schedules a SessionCheck to update the Status every minute.
 	 */
-	@SuppressWarnings("deprecation")
-	private int initiateSessionChecks() {
-		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 100L, 1200L);
+	private void initiateSessionChecks() {
+		new StatusCheck().runTaskTimerAsynchronously(Sblock.getInstance(), 100L, 1200L);
 	}
 
 	/**
@@ -183,12 +177,11 @@ public class SblockEvents extends Module {
 	 * 
 	 * @param status the Status
 	 */
-	@SuppressWarnings("deprecation")
 	public void changeStatus(Status status) {
 		if (status.hasAnnouncement() && statusResample < 5) {
 			// less spam - must return red status 5 times in a row to announce.
 			statusResample++;
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(Sblock.getInstance(), new StatusCheck());
+			new StatusCheck().runTaskAsynchronously(Sblock.getInstance());
 			return;
 		}
 		String announcement = null;
@@ -214,11 +207,13 @@ public class SblockEvents extends Module {
 	/**
 	 * Schedules the RegionCheck to update the Region for each Player online
 	 * every 5 seconds of game time (100 ticks).
-	 * 
-	 * @return the BukkitTask ID
 	 */
-	public int initiateRegionChecks() {
-		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
+	public void initiateRegionChecks() {
+		new RegionCheck().runTaskTimer(Sblock.getInstance(), 100L, 100L);
+	}
+
+	public void initiateDerspitTimeUpdater() {
+		new DerspitTimeUpdater().runTaskTimer(Sblock.getInstance(), 0L, 1000L);
 	}
 
 	/**

@@ -34,8 +34,8 @@ import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 import co.sblock.machines.MachineManager;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.MediumPlanet;
 import co.sblock.users.ProgressionState;
+import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.hologram.EntryTimeTillTag;
@@ -48,7 +48,7 @@ import co.sblock.utilities.meteors.Meteorite;
  */
 public class Entry {
 
-	private class EntryStorage {
+	public class EntryStorage {
 		public Meteorite meteorite;
 		private final Material cruxtype;
 		public EntryStorage(Meteorite meteorite, Material cruxtype) {
@@ -56,7 +56,6 @@ public class Entry {
 			this.cruxtype = cruxtype;
 		}
 
-		@SuppressWarnings("unused")
 		public Material getCruxtype() {
 			return cruxtype;
 		}
@@ -250,21 +249,28 @@ public class Entry {
 				Material.EGG, Material.SAPLING, Material.SUGAR_CANE, Material.QUARTZ,
 				Material.BLAZE_ROD };
 	}
+	public Material[] getMaterialList() {
+		return materials;
+	}
 
-	private Location getEntryLocation(MediumPlanet m) {
+	private Location getEntryLocation(Region mPlanet) {
 		double angle = Math.random() * Math.PI * 2;
-		Location l = m.getCenter();
-		l.setX(l.getX() + Math.cos(angle) * 2600);
-		l.setZ(l.getZ() + Math.sin(angle) * 2600);
+		Location l = Bukkit.getWorld(mPlanet.getWorldName())
+				.getHighestBlockAt((int) (Math.cos(angle) * 2600), (int) (Math.sin(angle) * 2600))
+				.getLocation().add(new Vector(0, 1, 0));
 		if (isSafeLocation(l)) {
 			return l;
 		}
-		return getEntryLocation(m);
+		return getEntryLocation(mPlanet);
 	}
 
 	private boolean isSafeLocation(Location l) {
 		return !l.getBlock().getType().isSolid()
 				&& !l.clone().add(new Vector(0, 1, 0)).getBlock().getType().isSolid()
 				&& l.clone().add(new Vector(0, -1, 0)).getBlock().getType().isSolid();
+	}
+	
+	public HashMap<UUID, EntryStorage> getData() {
+		return data;
 	}
 }

@@ -17,7 +17,7 @@ public enum UserAspect {
 	HOPE("Hope", ColorDef.ASPECT_HOPE),
 	LIFE("Life", ColorDef.ASPECT_LIFE),
 	LIGHT("Light", ColorDef.ASPECT_LIGHT),
-	MIND("Ming", ColorDef.ASPECT_MIND),
+	MIND("Mind", ColorDef.ASPECT_MIND),
 	RAGE("Rage", ColorDef.ASPECT_RAGE),
 	SPACE("Space", ColorDef.ASPECT_SPACE),
 	TIME("Time", ColorDef.ASPECT_TIME),

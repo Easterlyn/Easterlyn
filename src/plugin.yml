@@ -9,6 +9,9 @@ depend: [ProtocolLib, HoloAPI]
 softdepend: [Chester, CreeperHeal]
 
 permissions:
+ sblock.ask.adam.before.touching:
+  description: If something requires this permission, you probably shouldn't be touching it.
+  default: false
  sblock.guildleader:
   description: Default false - not all horrorterrors are guild leaders.
   default: false
