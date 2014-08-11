@@ -12,8 +12,8 @@ import co.sblock.chat.ColorDef;
  */
 public enum Region {
 	EARTH("Earth", "#EARTH", ColorDef.WORLD_EARTH, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
-	OUTERCIRCLE("Derspit", "#DERSPIT", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip", false, true),
-	INNERCIRCLE("Derspit", "#DERSPIT", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Prospit.zip", false, true),
+	OUTERCIRCLE("Derse", "#DERSPIT", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip", false, true),
+	INNERCIRCLE("Prospit", "#DERSPIT", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Prospit.zip", false, true),
 	FURTHESTRING("FurthestRing", "#FURTHESTRING", ColorDef.WORLD_FURTHESTRING, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
 	LOWAS("LOWAS", "#LOWAS", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
 	LOLAR("LOLAR", "#LOLAR", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),

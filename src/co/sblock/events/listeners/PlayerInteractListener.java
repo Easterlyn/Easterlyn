@@ -23,7 +23,6 @@ import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
-import co.sblock.users.Region;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.Captchadex;
@@ -80,16 +79,16 @@ public class PlayerInteractListener implements Listener {
 			}
 			return;
 		}
-		
+
 		//Entry Trigger Items
-		for (Material m : Entry.getEntry().getMaterialList()) {
-			if (event.getItem().getType().equals(m)) {
-				if (event.getItem().getItemMeta().hasDisplayName() 
+		if (event.getItem() != null) {
+			for (Material m : Entry.getEntry().getMaterialList()) {
+				if (event.getItem().getType() == m && event.getItem().getItemMeta().hasDisplayName() 
 						&& event.getItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
 					if (Entry.getEntry().isEntering(UserManager.getUser(event.getPlayer().getUniqueId()))) {
-						if(m.equals(Entry.getEntry().getData().get(UserManager.getUser(event.getPlayer().getUniqueId())).getCruxtype())) {
+						if (m == Entry.getEntry().getData().get(UserManager.getUser(event.getPlayer().getUniqueId())).getCruxtype()) {
 							Entry.getEntry().succeed(UserManager.getUser(event.getPlayer().getUniqueId()));
-						}	
+						}
 					}
 					event.getPlayer().setItemInHand(null);
 					return;
@@ -148,8 +147,7 @@ public class PlayerInteractListener implements Listener {
 					// getFace does not seem to work in most cases - adam test and fix
 				}
 
-				
-				switch (Region.uValueOf(b.getWorld().getName())) {
+				switch (UserManager.getUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
 				case EARTH:
 				case INNERCIRCLE:
 				case LOFAF:

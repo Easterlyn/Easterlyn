@@ -26,6 +26,10 @@ public class PlayerChangedWorldListener implements Listener {
 
 		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
 
+		if (event.getFrom().getName().equals("Derspit")) {
+			event.getPlayer().resetPlayerTime();
+		}
+
 		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
 		// Scan for and apply passive effects

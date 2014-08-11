@@ -620,15 +620,14 @@ public class User {
 			}
 			return;
 		}
-		Channel newC = ChannelManager.getChannelManager().getChannel(newR.getChannelName());
 		if (currentChannel == null || currentRegion != null && currentChannel.equals(currentRegion.getChannelName())) {
-			currentChannel = newC.getName();
+			currentChannel = newR.getChannelName();
 		}
 		if (currentRegion != null) {
 			this.removeListening(currentRegion.getChannelName());
 		}
-		if (!this.listening.contains(newC.getName())) {
-			this.addListening(newC);
+		if (!this.listening.contains(newR.getChannelName())) {
+			this.addListening(ChannelManager.getChannelManager().getChannel(newR.getChannelName()));
 		}
 		if (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL())) {
 				getPlayer().setResourcePack(newR.getResourcePackURL());

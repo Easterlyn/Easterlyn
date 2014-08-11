@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,7 +19,7 @@ import co.sblock.utilities.Log;
  * 
  * @author Jikoo
  */
-public class StatusCheck implements Runnable {
+public class StatusCheck extends BukkitRunnable {
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
