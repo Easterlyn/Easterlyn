@@ -1,7 +1,6 @@
 package co.sblock.events.listeners;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -48,15 +47,15 @@ public class PlayerTeleportListener implements Listener {
 		// Update region
 		Region target;
 		if (event.getPlayer().getWorld().getName().equals("Derspit")) {
-			target = getTargetDreamPlanet(user, event.getFrom());
+			target = getTargetDreamPlanet(user, event.getFrom().getWorld().getName());
 		} else {
-			target = Region.getLocationRegion(event.getPlayer().getLocation());
+			target = Region.uValueOf(event.getTo().getWorld().getName());
 		}
 		user.updateCurrentRegion(target);
 	}
 
-	private Region getTargetDreamPlanet(User user, Location from) {
-		Region fromRegion = Region.getLocationRegion(from);
+	private Region getTargetDreamPlanet(User user, String from) {
+		Region fromRegion = Region.uValueOf(from);
 		if (!fromRegion.isMedium()) {
 			return user.getDreamPlanet();
 		}

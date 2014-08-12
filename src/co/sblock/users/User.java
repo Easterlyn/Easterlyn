@@ -595,7 +595,13 @@ public class User {
 	 * @return the Region that the Player is in
 	 */
 	public Region getPlayerRegion() {
-		return Region.getLocationRegion(this.getPlayer().getLocation());
+		String world = this.getPlayer().getWorld().getName();
+		Region r = Region.uValueOf(world);
+		// TODO fix: store in db, users may not be asleep post-Entry
+		if (r == Region.UNKNOWN && world.equals("Derspit")) {
+			r = this.getDreamPlanet();
+		}
+		return r;
 	}
 
 	/**

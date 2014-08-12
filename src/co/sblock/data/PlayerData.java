@@ -24,11 +24,11 @@ import co.sblock.utilities.Broadcast;
  * A small helper class containing all methods that access the PlayerData table.
  * <p>
  * The PlayerData table is created by the following call:
- * CREATE TABLE PlayerData (name varchar(255), class varchar(6), aspect varchar(6),
- * mPlanet varchar(5), dPlanet varchar(7), towerNum tinyint, sleepState boolean,
- * currentChannel varchar(16), isMute boolean, nickname varchar(16), channels text, ip varchar(15),
- * timePlayed varchar(255), previousLocation varchar(255), programs varchar(255),
- * uuid varchar(255) UNIQUE KEY, client varchar(255), server varchar(255), progression varchar(16));
+ * CREATE TABLE PlayerData (name varchar(255), class varchar(6), aspect varchar(6), mPlanet
+ * varchar(5), dPlanet varchar(11), sleepState boolean, currentChannel varchar(16), isMute boolean,
+ * nickname varchar(16), channels text, ip varchar(15), timePlayed varchar(255), previousLocation
+ * varchar(255), programs varchar(255), uuid varchar(255) UNIQUE KEY, client varchar(255), server
+ * varchar(255), progression varchar(16));
  * 
  * @author Jikoo
  */
@@ -273,8 +273,7 @@ public class PlayerData {
 				sb.append(sys).append("-----------------------------------------\n").append(txt);
 				sb.append(rs.getString("name")).append(div).append(rs.getString("class")).append(" of ")
 						.append(rs.getString("aspect")).append('\n');
-				sb.append(rs.getString("mPlanet")).append(div).append(rs.getString("dPlanet"))
-						.append(div).append("Tower: ").append(rs.getShort("towerNum")).append(div)
+				sb.append(rs.getString("mPlanet")).append(div).append(rs.getString("dPlanet")).append(div)
 						.append("Sleeping: ").append(rs.getBoolean("sleepState")).append('\n');
 				sb.append(rs.getBoolean("isMute")).append(div).append(rs.getString("currentChannel"))
 						.append(div).append(rs.getString("channels")).append('\n');
