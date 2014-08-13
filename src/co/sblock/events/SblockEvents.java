@@ -72,7 +72,7 @@ public class SblockEvents extends Module {
 
 				new CraftItemListener(),
 
-				new EntityDamageByEntityListener(), new EntityExplodeListener(),
+				new EntityDamageByEntityListener(), new EntityDamageListener(), new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
 				
 				new FurnaceBurnListener(), new FurnaceSmeltListener(),
