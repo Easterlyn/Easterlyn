@@ -1,5 +1,6 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
 
@@ -23,7 +25,7 @@ public class CraftItemListener implements Listener {
 	 * @param event the CraftItemEvent
 	 */
 	@EventHandler
-	public void onCraftItem(CraftItemEvent event) {
+	public void onCraftItem(final CraftItemEvent event) {
 		for (ItemStack is : event.getInventory().getMatrix()) {
 			if (is == null) {
 				continue;
@@ -42,8 +44,19 @@ public class CraftItemListener implements Listener {
 						clicked.sendMessage(ChatColor.RED + "You can't use a "
 								+ is.getItemMeta().getDisplayName() + ChatColor.RED + " for that!");
 					}
+					return;
 				}
 			}
+		}
+
+		if (event.getClick().isShiftClick()) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+
+				@Override
+				public void run() {
+					((Player) event.getWhoClicked()).updateInventory();
+				}
+			});
 		}
 	}
 }
