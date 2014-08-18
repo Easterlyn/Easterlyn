@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 public enum Call {
 	PLAYER_SAVE("INSERT INTO PlayerData(name, class, aspect, mPlanet, dPlanet, sleepState, "
 			+ "currentChannel, isMute, channels, ip, timePlayed, previousLocation, programs, uuid, "
-			+ "client, server, progression) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+			+ "client, server, progression) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 			+ "ON DUPLICATE KEY UPDATE class=VALUES(class), aspect=VALUES(aspect), mPlanet=VALUES(mPlanet), "
 			+ "dPlanet=VALUES(dPlanet), sleepState=VALUES(sleepState), currentChannel=VALUES(currentChannel), "
 			+ "isMute=VALUES(isMute), channels=VALUES(channels), ip=VALUES(ip), timePlayed=VALUES(timePlayed), "
