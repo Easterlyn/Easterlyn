@@ -33,7 +33,7 @@ public class ServerListPingListener implements Listener {
 			String MOTD = SblockEvents.getEvents().getStatus().getMOTDChange();
 			event.setMotd(MOTD);
 		} else {
-			String addr = event.getAddress().getHostName();
+			String addr = event.getAddress().getHostAddress();
 			SblockData.getDB().getUserFromIP(addr, this.getMOTDSettingExecutor(event, event.getMotd()));
 		}
 	}
