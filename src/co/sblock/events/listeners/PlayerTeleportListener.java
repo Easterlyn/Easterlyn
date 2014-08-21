@@ -45,11 +45,17 @@ public class PlayerTeleportListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerTeleportHasOccurred(final PlayerTeleportEvent event) {
+		if (!event.getTo().getWorld().equals(event.getFrom().getWorld())) {
+			return;
+		}
 		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
 				User user = UserManager.getUser(event.getPlayer().getUniqueId());
+				if (!user.isLoaded()) {
+					return;
+				}
 				// Update region
 				Region target;
 				if (event.getPlayer().getWorld().getName().equals("Derspit")) {

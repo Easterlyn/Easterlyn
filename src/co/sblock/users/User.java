@@ -124,7 +124,7 @@ public class User {
 		private Set<Integer> programs = new HashSet<>();
 		private Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
 		private String currentChannel = null;
-		private HashSet<String> listening = new HashSet<String>();
+		private HashSet<String> listening = new HashSet<>();
 		private AtomicBoolean globalMute = new AtomicBoolean();
 		private AtomicBoolean suppress = new AtomicBoolean();
 

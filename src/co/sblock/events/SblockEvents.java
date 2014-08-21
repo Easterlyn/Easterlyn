@@ -66,6 +66,9 @@ public class SblockEvents extends Module {
 		start = System.currentTimeMillis();
 		restart = false;
 
+		status = Status.NEITHER;
+		initiateSessionChecks();
+
 		this.registerEvents(new BlockBreakListener(), new BlockFadeListener(), new BlockGrowListener(),
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
@@ -101,9 +104,7 @@ public class SblockEvents extends Module {
 			this.registerEvents(new CHBlockHealListener());
 		}
 
-		status = Status.NEITHER;
 		initiateRegionChecks();
-		initiateSessionChecks();
 		initiateDerspitTimeUpdater();
 	}
 
