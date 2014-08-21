@@ -99,6 +99,7 @@ public class SblockEvents extends Module {
 				new VehicleBlockCollisionListener(), new VehicleDestroyListener(), new VehicleExitListener());
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
+		ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new AsyncPacketAdapter());
 
 		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")) {
 			this.registerEvents(new CHBlockHealListener());
