@@ -45,7 +45,7 @@ public class PlayerTeleportListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerTeleportHasOccurred(final PlayerTeleportEvent event) {
-		if (!event.getTo().getWorld().equals(event.getFrom().getWorld())) {
+		if (event.getTo().getWorld().equals(event.getFrom().getWorld())) {
 			return;
 		}
 		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
