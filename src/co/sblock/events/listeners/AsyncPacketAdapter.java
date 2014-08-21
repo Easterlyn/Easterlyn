@@ -1,5 +1,6 @@
 package co.sblock.events.listeners;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,8 @@ import co.sblock.events.SblockEvents;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerOptions;
+import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
@@ -26,7 +29,8 @@ import com.tmathmeyer.jadis.async.Promise;
 public class AsyncPacketAdapter extends PacketAdapter {
 
 	public AsyncPacketAdapter() {
-		super(Sblock.getInstance(), PacketType.Status.Server.OUT_SERVER_INFO);
+		super(Sblock.getInstance(), ListenerPriority.NORMAL,
+				Arrays.asList(PacketType.Status.Server.OUT_SERVER_INFO), ListenerOptions.ASYNC);
 	}
 
 	@Override
@@ -38,7 +42,6 @@ public class AsyncPacketAdapter extends PacketAdapter {
 		if (serverping.getVersionProtocol() == 9999) {
 			return;
 		}
-		event.setCancelled(true);
 
 		// Causes client to see our custom message, cause woo! N.B. Does result in ping breaking and outdated client displaying.
 		serverping.setVersionProtocol(9999);
@@ -60,6 +63,7 @@ public class AsyncPacketAdapter extends PacketAdapter {
 			event.getAsyncMarker().incrementProcessingDelay();
 		}
 		SblockData.getDB().getUserFromIP(addr, getMOTDSettingExecutor(event, serverping));
+		event.getPacket().getServerPings().write(0, serverping);
 		// Signal completion of handling packet
 		ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(event);
 	}

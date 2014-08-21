@@ -635,6 +635,11 @@ public class User {
 		if (!this.listening.contains(newR.getChannelName())) {
 			this.addListening(ChannelManager.getChannelManager().getChannel(newR.getChannelName()));
 		}
+		if (newR.isDream()) {
+			this.getPlayer().setPlayerTime(newR == Region.OUTERCIRCLE ? 18000L : 6000L, false);
+		} else {
+			this.getPlayer().resetPlayerTime();
+		}
 		if (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL())) {
 				getPlayer().setResourcePack(newR.getResourcePackURL());
 		}

@@ -18,7 +18,6 @@ import co.sblock.events.listeners.*;
 import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.WrapperPlayServerAnimation;
 import co.sblock.events.packets.WrapperPlayServerBed;
-import co.sblock.events.region.DerspitTimeUpdater;
 import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
@@ -99,14 +98,13 @@ public class SblockEvents extends Module {
 				new VehicleBlockCollisionListener(), new VehicleDestroyListener(), new VehicleExitListener());
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
-		ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new AsyncPacketAdapter());
+		ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new AsyncPacketAdapter()).start(4);
 
 		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")) {
 			this.registerEvents(new CHBlockHealListener());
 		}
 
 		initiateRegionChecks();
-		initiateDerspitTimeUpdater();
 	}
 
 	/**
@@ -212,10 +210,6 @@ public class SblockEvents extends Module {
 	 */
 	public void initiateRegionChecks() {
 		new RegionCheck().runTaskTimer(Sblock.getInstance(), 100L, 100L);
-	}
-
-	public void initiateDerspitTimeUpdater() {
-		new DerspitTimeUpdater().runTaskTimer(Sblock.getInstance(), 0L, 1000L);
 	}
 
 	/**
