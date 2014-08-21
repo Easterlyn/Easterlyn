@@ -28,6 +28,7 @@ public class PacketListener extends PacketAdapter {
 
 	public PacketListener() {
 		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.CHAT,
+				// TODO PacketType.Play.Client.TAB_COMPLETE,
 				PacketType.Status.Server.OUT_SERVER_INFO);
 	}
 
@@ -46,7 +47,9 @@ public class PacketListener extends PacketAdapter {
 				event.setCancelled(true);
 				SblockEvents.getEvents().fakeWakeUp(event.getPlayer());
 			}
-		} else if (event.getPacket().getType().equals(PacketType.Play.Client.CHAT)) {
+			return;
+		}
+		if (event.getPacket().getType().equals(PacketType.Play.Client.CHAT)) {
 			if (ChesterListener.getTriggers() == null) {
 				return;
 			}
@@ -55,9 +58,12 @@ public class PacketListener extends PacketAdapter {
 				if (message.equalsIgnoreCase(trigger)) {
 					event.getPlayer().sendMessage(ColorDef.HAL + "What?");
 					event.setCancelled(true);
+					return;
 				}
 			}
+			return;
 		}
+		// TODO prevent /about and /version tab completion
 	}
 
 	/* (non-Javadoc)
@@ -72,6 +78,7 @@ public class PacketListener extends PacketAdapter {
 		if (serverping.getVersionProtocol() == 9999) {
 			return;
 		}
+		event.setCancelled(true);
 
 		// Causes client to see our custom message, cause woo! N.B. Does result in ping breaking and outdated client displaying.
 		serverping.setVersionProtocol(9999);
@@ -80,11 +87,12 @@ public class PacketListener extends PacketAdapter {
 		int percent = serverping.getPlayersOnline() * 100 / serverping.getPlayersMaximum();
 		ChatColor percentColor = percent > 75 ? ChatColor.RED : percent > 50 ? ChatColor.YELLOW : ChatColor.GREEN;
 
-		String versionName = ChatColor.GOLD + "Sblock Alpha 1.7.10 " + percentColor + serverping.getPlayersOnline()
-				+ ChatColor.DARK_GRAY + "/" + ChatColor.GREEN + serverping.getPlayersMaximum();
+		String versionName = ChatColor.GOLD + "Sblock Alpha" + ChatColor.DARK_GRAY + ": "
+				+ ChatColor.GRAY + "1.7.10" + ChatColor.DARK_GRAY + " - " + percentColor
+				+ serverping.getPlayersOnline() + ChatColor.DARK_GRAY + "/" + ChatColor.GREEN
+				+ serverping.getPlayersMaximum();
 		serverping.setVersionName(versionName);
 
-		event.setCancelled(true);
 
 		Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), new Runnable() {
 			@Override
@@ -106,7 +114,11 @@ public class PacketListener extends PacketAdapter {
 
 			@Override
 			public void getObject(String playerName, String unused) {
-				serverping.setMotD(Bukkit.getMotd().replaceAll("Player", playerName));
+				if (!playerName.equals("Player")) {
+					SblockEvents.getEvents().getLogger().info(playerName + " pinged the server from "
+							+ event.getPlayer().getAddress().getAddress().toString().substring(1));
+					serverping.setMotD(Bukkit.getMotd().replaceAll("Player", playerName));
+				}
 				WrapperStatusServerOutServerInfo packet = new WrapperStatusServerOutServerInfo();
 				packet.setServerPing(serverping);
 				packet.sendPacket(event.getPlayer());

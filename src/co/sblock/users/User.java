@@ -598,7 +598,7 @@ public class User {
 		String world = this.getPlayer().getWorld().getName();
 		Region r = Region.uValueOf(world);
 		// TODO fix: store in db, users may not be asleep post-Entry
-		if (r == Region.UNKNOWN && world.equals("Derspit")) {
+		if (r.isDream()) {
 			r = this.getDreamPlanet();
 		}
 		return r;
@@ -629,7 +629,7 @@ public class User {
 		if (currentChannel == null || currentRegion != null && currentChannel.equals(currentRegion.getChannelName())) {
 			currentChannel = newR.getChannelName();
 		}
-		if (currentRegion != null) {
+		if (currentRegion != null && !currentRegion.getChannelName().equals(newR.getChannelName())) {
 			this.removeListening(currentRegion.getChannelName());
 		}
 		if (!this.listening.contains(newR.getChannelName())) {

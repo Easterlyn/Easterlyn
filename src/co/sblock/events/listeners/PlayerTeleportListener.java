@@ -1,5 +1,6 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import co.sblock.Sblock;
 import co.sblock.events.SblockEvents;
 import co.sblock.users.Region;
 import co.sblock.users.User;
@@ -41,17 +43,23 @@ public class PlayerTeleportListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerTeleportHasOccurred(PlayerTeleportEvent event) {
-		User user = UserManager.getUser(event.getPlayer().getUniqueId());
-		// Update region
-		Region target;
-		if (event.getPlayer().getWorld().getName().equals("Derspit")) {
-			target = getTargetDreamPlanet(user, event.getFrom().getWorld().getName());
-		} else {
-			target = Region.uValueOf(event.getTo().getWorld().getName());
-		}
-		user.updateCurrentRegion(target);
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerTeleportHasOccurred(final PlayerTeleportEvent event) {
+		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				User user = UserManager.getUser(event.getPlayer().getUniqueId());
+				// Update region
+				Region target;
+				if (event.getPlayer().getWorld().getName().equals("Derspit")) {
+					target = getTargetDreamPlanet(user, event.getFrom().getWorld().getName());
+				} else {
+					target = Region.uValueOf(event.getTo().getWorld().getName());
+				}
+				user.updateCurrentRegion(target);
+			}
+		});
 	}
 
 	private Region getTargetDreamPlanet(User user, String from) {

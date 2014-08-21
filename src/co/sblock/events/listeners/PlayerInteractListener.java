@@ -121,12 +121,13 @@ public class PlayerInteractListener implements Listener {
 			}
 
 			if (b.getType().equals(Material.BED_BLOCK)) {
+				if (b.getWorld().getEnvironment() == Environment.NETHER || b.getWorld().getEnvironment() == Environment.THE_END) {
+					// Vanilla bed explosions!
+					return;
+				}
 				// Sleep voting
 				if (event.getPlayer().isSneaking()) {
-					if (b.getWorld().getEnvironment() == Environment.NETHER || b.getWorld().getEnvironment() == Environment.THE_END) {
-						// World is nether/end
-						event.getPlayer().sendMessage("You cannot sleep in this world!");
-					} else if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
+					if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
 						SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					} else {

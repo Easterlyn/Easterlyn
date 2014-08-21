@@ -285,7 +285,7 @@ public class PlayerData {
 								Bukkit.getOfflinePlayer(UUID.fromString(rs.getString("uuid")))
 								.getLastPlayed()))).append('\n');
 			}
-			sb.append(sys).append("-----------------------------------------\n");
+			sb.append(sys).append("-----------------------------------------");
 			if (!(sender instanceof Player) || ((Player) sender).isOnline()) {
 				sender.sendMessage(sb.length() > 0 ? sb.toString()
 						: "No player data found for " + rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1"));

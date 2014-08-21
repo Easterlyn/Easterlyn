@@ -109,12 +109,15 @@ public enum Region {
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			// Compatibility for old dream planet saving
 			if (s.equalsIgnoreCase("Prospit")) {
-				return Region.INNERCIRCLE;
+				return INNERCIRCLE;
 			}
 			if (s.equalsIgnoreCase("Derse")) {
-				return Region.OUTERCIRCLE;
+				return OUTERCIRCLE;
 			}
-			return Region.UNKNOWN;
+			if (s.equalsIgnoreCase("Derspit")) {
+				return Math.random() >= .5 ? OUTERCIRCLE : INNERCIRCLE;
+			}
+			return UNKNOWN;
 		}
 	}
 }
