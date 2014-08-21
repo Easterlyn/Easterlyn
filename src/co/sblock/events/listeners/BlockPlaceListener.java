@@ -35,7 +35,7 @@ public class BlockPlaceListener implements Listener {
 
 		if (JesseChurch.theOneAndOnly().isAnActOfGod(event)) {
 			JesseChurch.hisRoyalHighness().dealWithJesse(event);
-			return; // "and nothing beside remained" --Percy Shelly
+			// "and nothing beside remained" --Percy Shelly
 		}
 
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());

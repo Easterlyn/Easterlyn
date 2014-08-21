@@ -196,7 +196,8 @@ public abstract class Machine {
 	 * @return boolean
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		return this.getType().isFree() || event.getPlayer().hasPermission("group.denizen")
+		return this.getType().isFree() || this.getType().getCost() < 0
+				|| event.getPlayer().hasPermission("group.denizen")
 				|| owner.equals(event.getPlayer().getUniqueId().toString());
 	}
 
