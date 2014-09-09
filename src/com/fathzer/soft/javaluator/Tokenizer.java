@@ -17,13 +17,13 @@ import java.util.regex.Pattern;
 
 /** A String tokenizer that accepts delimiters that are greater than one character.
  * @author Jean-Marc Astesana
- * @see <a href="../../../license.html">License information</a>
+ * @see <a href="../../../../../javaulator-license.html">License information</a>
  */
 public class Tokenizer {
 	private Pattern pattern;
 	private String tokenDelimiters;
 	private boolean trimTokens;
-	
+
 	/** Constructor.
 	 * <br>By default, this tokenizer trims all the tokens.
 	 * @param delimiters the delimiters of the tokenizer, usually, the operators symbols, the brackets and the function argument separator are used as delimiter in the string.
@@ -40,7 +40,7 @@ public class Tokenizer {
 		}
 		trimTokens = true;
 	}
-	
+
 	/** Tests whether this tokens trims the tokens returned by {@link #tokenize(String)} method. 
 	 * @return true if tokens are trimmed.
 	 */
@@ -79,6 +79,34 @@ public class Tokenizer {
 			public int compare(String o1, String o2) {
 				return -o1.compareTo(o2);
 			}
+			@Override
+			public Comparator<String> reversed() {
+				throw new UnsupportedOperationException();
+			}
+			@Override
+			public Comparator<String> thenComparing(Comparator<? super String> arg0) {
+				throw new UnsupportedOperationException();
+			}
+			@Override
+			public <U extends Comparable<? super U>> Comparator<String> thenComparing(Function<? super String, ? extends U> arg0) {
+				throw new UnsupportedOperationException();
+			}
+			@Override
+			public <U> Comparator<String> thenComparing(Function<? super String, ? extends U> arg0, Comparator<? super U> arg1) {
+				throw new UnsupportedOperationException();
+			}
+			@Override
+			public Comparator<String> thenComparingDouble(ToDoubleFunction<? super String> arg0) {
+				throw new UnsupportedOperationException();
+			}
+			@Override
+			public Comparator<String> thenComparingInt(ToIntFunction<? super String> arg0) {
+				throw new UnsupportedOperationException();
+			}
+			@Override
+			public Comparator<String> thenComparingLong(ToLongFunction<? super String> arg0) {
+				throw new UnsupportedOperationException();
+			}
 		});
 		// Build a string that will contain the regular expression
 		StringBuilder result = new StringBuilder();
@@ -95,7 +123,7 @@ public class Tokenizer {
 		result.append(')');
 		return Pattern.compile(result.toString());
 	}
-	
+
 	private void addToTokens (List<String> tokens, String token) {
 		if (trimTokens) {
 			token = token.trim();
@@ -172,6 +200,10 @@ public class Tokenizer {
 		}
 		@Override
 		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+		@Override
+		public void forEachRemaining(Consumer<? super String> arg0) {
 			throw new UnsupportedOperationException();
 		}
 	}
