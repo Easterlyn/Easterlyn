@@ -10,6 +10,7 @@ public class SblockChat extends Module {
 	private static SblockChat instance;
 	private ChannelManager cm = new ChannelManager();
 	private ChatCommands clistener = new ChatCommands();
+	private ChesterListener chester;
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
 
 	@Override
@@ -20,8 +21,8 @@ public class SblockChat extends Module {
 		this.cm.createDefaultSet();
 
 		if (Bukkit.getPluginManager().isPluginEnabled("Chester")) {
-			ChesterListener cl = new ChesterListener();
-			this.registerEvents(cl);
+			chester = new ChesterListener();
+			this.registerEvents(chester);
 		}
 	}
 
@@ -32,6 +33,13 @@ public class SblockChat extends Module {
 
 	public ChannelManager getChannelManager() {
 		return cm;
+	}
+
+	public ChesterListener getChester() {
+		if (chester != null) {
+			return chester;
+		}
+		throw new RuntimeException("Chester is not enabled!");
 	}
 
 	public static SblockChat getChat() {

@@ -2,21 +2,15 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/Chester.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/CreeperHeal-6.7.6.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://nitnelave.github.io/CreeperHeal/apidoc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/ProtocolLib-3.4.0.jar">
+	<classpathentry exported="true" kind="lib" path="lib/ProtocolLib-Spigot-3.6.0-SNAPSHOT.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://aadnk.github.io/ProtocolLib/Javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/Vault-1.4.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://mythcraft.duckdns.org/javadoc/vault/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/HoloAPI-448.jar">
@@ -39,5 +33,6 @@
 			<attribute name="javadoc_location" value="http://jd.bukkit.org/dev/apidocs/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
