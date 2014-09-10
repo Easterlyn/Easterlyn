@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import co.sblock.effects.EffectManager;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captchadex;
 
 /**
@@ -30,7 +31,7 @@ public class InventoryCloseListener implements Listener {
 
 		MachineInventoryTracker.getTracker().closeMachine(event);
 
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user == null) {
 			return; // Player is probably logging out
 		}

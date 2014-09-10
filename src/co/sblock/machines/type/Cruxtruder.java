@@ -11,6 +11,7 @@ import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.progression.Entry;
 
@@ -49,13 +50,8 @@ public class Cruxtruder extends Machine {
 	 * @see co.sblock.Machines.Type.Machine#handleBreak(BlockBreakEvent)
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
-		if ((event.getPlayer().hasPermission("group.denizen")
-				|| getData().equals(event.getPlayer().getUniqueId().toString()))
-				&& this.key.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
-			User user = User.getUser(event.getPlayer().getUniqueId());
-			if (user == null) {
-				return true;
-			}
+		if (this.key.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
+			User user = UserManager.getUser(event.getPlayer().getUniqueId());
 			if (Entry.getEntry().canStart(user)) {
 				Entry.getEntry().startEntry(user, event.getBlock().getLocation());
 			}
@@ -85,5 +81,10 @@ public class Cruxtruder extends Machine {
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
 		return false;
+	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.CRUXTRUDER);
 	}
 }

@@ -2,15 +2,15 @@ package co.sblock.chat;
 
 import org.bukkit.Bukkit;
 
-import co.sblock.Module;
 import co.sblock.chat.chester.ChesterListener;
+import co.sblock.module.Module;
 
 public class SblockChat extends Module {
 
 	private static SblockChat instance;
 	private ChannelManager cm = new ChannelManager();
 	private ChatCommands clistener = new ChatCommands();
-	private static boolean computersRequired = false;	//Hardcoded override, will be set to true come Entry
+	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
 
 	@Override
 	protected void onEnable() {
@@ -38,7 +38,12 @@ public class SblockChat extends Module {
 		return instance;
 	}
 	
-	public static boolean getComputerRequired()	{
+	public static boolean getComputerRequired() {
 		return computersRequired;
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "ChatModule";
 	}
 }

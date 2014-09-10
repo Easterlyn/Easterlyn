@@ -3,10 +3,14 @@ package co.sblock.machines;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import co.sblock.CommandListener;
-import co.sblock.SblockCommand;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.SblockCommand;
 
 /**
  * @author Jikoo
@@ -23,7 +27,11 @@ public class MachineCommand implements CommandListener {
 	 * 
 	 * @return true
 	 */
-	@SblockCommand(description = "Machine get", usage = "/sm get|icon <type>", permission = "group.denizen")
+	@CommandDenial
+	@CommandDescription("Machinations")
+	@CommandPermission("group.denizen")
+	@CommandUsage("/sm get|icon <type>")
+	@SblockCommand
 	public boolean sm(CommandSender sender, String[] args) {
 		if (args == null || args.length < 2) {
 			return false;

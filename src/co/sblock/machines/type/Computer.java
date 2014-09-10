@@ -19,6 +19,7 @@ import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 
 /**
  * Computers for players! Inventory-based selection system.
@@ -86,7 +87,7 @@ public class Computer extends Machine implements InventoryHolder {
 			if (event.getCurrentItem().equals(ico.getIcon())) {
 				switch (ico) {
 				case BACK:
-					event.getWhoClicked().openInventory(getInventory(User.getUser(event.getWhoClicked().getUniqueId())));
+					event.getWhoClicked().openInventory(getInventory(UserManager.getUser(event.getWhoClicked().getUniqueId())));
 					break;
 				case BOONDOLLAR_SHOP:
 					// Keiko, shop name is all you, set to LOHACSE for now
@@ -100,7 +101,7 @@ public class Computer extends Machine implements InventoryHolder {
 					event.getWhoClicked().openInventory(getServerConfirmation());
 					break;
 				case CONFIRM:
-					User u = User.getUser(event.getWhoClicked().getUniqueId());
+					User u = UserManager.getUser(event.getWhoClicked().getUniqueId());
 					if (u == null) {
 						((Player) event.getWhoClicked()).sendMessage(
 								ChatColor.RED + "Your data appears to not have loaded properly. Please relog.");
@@ -145,14 +146,14 @@ public class Computer extends Machine implements InventoryHolder {
 				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed "
 						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 				event.getPlayer().setItemInHand(null);
-				User u = User.getUser(event.getPlayer().getUniqueId());
+				User u = UserManager.getUser(event.getPlayer().getUniqueId());
 				u.addProgram(ico.getProgramID());
 				return true;
 			} else {
 				event.getPlayer().openInventory(getInventory());
 			}
 		}
-		event.getPlayer().openInventory(getInventory(User.getUser(event.getPlayer().getUniqueId())));
+		event.getPlayer().openInventory(getInventory(UserManager.getUser(event.getPlayer().getUniqueId())));
 		return true;
 	}
 
@@ -185,5 +186,10 @@ public class Computer extends Machine implements InventoryHolder {
 		i.setItem(0, Icon.CONFIRM.getIcon());
 		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
 		return i;
+	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.COMPUTER);
 	}
 }

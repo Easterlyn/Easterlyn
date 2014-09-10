@@ -140,20 +140,4 @@ public class Captchadex {
 		pc.setItemMeta(im);
 		return pc;
 	}
-
-	/**
-	 * Create a punchcard from a captchacard.
-	 * <p>
-	 * For testing purposes only, good luck patching punched holes.
-	 * 
-	 * @param is the punchcard ItemStack
-	 * 
-	 * @return the unpunched captchacard
-	 */
-	public static ItemStack punchCard(ItemStack is) {
-		ItemMeta im = is.getItemMeta();
-		im.setDisplayName("Punchcard");
-		is.setItemMeta(im);
-		return is;
-	}
 }

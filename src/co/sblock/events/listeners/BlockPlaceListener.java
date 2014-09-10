@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.machines.SblockMachines;
@@ -14,7 +15,8 @@ import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.PBO;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.users.User;
+import co.sblock.users.UserManager;
+import co.sblock.utilities.jesse.JesseChurch;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -28,9 +30,13 @@ public class BlockPlaceListener implements Listener {
 	 * 
 	 * @param event the BlockPlaceEvent
 	 */
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
+
+		if (JesseChurch.theOneAndOnly().isAnActOfGod(event)) {
+			JesseChurch.hisRoyalHighness().dealWithJesse(event);
+			return; // "and nothing beside remained" --Percy Shelly
+		}
 
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
 		if (m != null) {
@@ -42,16 +48,17 @@ public class BlockPlaceListener implements Listener {
 		}
 
 		// Server mode placement
-		if (User.getUser(event.getPlayer().getUniqueId()).isServer()) {
+		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()) {
 			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {
-				// Should ideally never run out this way.
-				event.getItemInHand().setAmount(2);
+				final int slot = event.getPlayer().getInventory().getHeldItemSlot();
+				final ItemStack placed = event.getItemInHand().clone();
 				final Player player = event.getPlayer();
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 					@Override
 					public void run() {
+						player.getInventory().setItem(slot, placed);
 						player.updateInventory();
 					}
 				});

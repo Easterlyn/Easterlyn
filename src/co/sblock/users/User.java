@@ -1,10 +1,10 @@
 package co.sblock.users;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -12,14 +12,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
@@ -27,7 +30,6 @@ import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.ChannelManager;
-import co.sblock.chat.channel.ChannelType;
 import co.sblock.data.SblockData;
 import co.sblock.effects.PassiveEffect;
 import co.sblock.machines.SblockMachines;
@@ -35,6 +37,7 @@ import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.inventory.InventoryManager;
+import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.regex.RegexUtils;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -45,99 +48,267 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class User {
 
-	/** Player's UUID */
-	private UUID playerID;
+	/* Player's UUID */
+	private final UUID playerID;
 
-	/** Play time tracking information */
-	private long login, timePlayed;
-
-	/** The Player's IP address */
+	/* The Player's IP address */
 	private String userIP;
 
-	/** Ensures that User data is not overwritten */
-	private boolean loaded;
-	
-	/** Keeps track of current Region for various purposes */
+	/* Ensures that User data is not overwritten */
+	private transient boolean loaded;
+
+	/* Keeps track of current Region for various purposes */
 	private Region currentRegion;
 
-	/** Used to calculate elapsed times. */
-	private SimpleDateFormat dateFormat;
+	/* Used to calculate elapsed times. */
+	public static transient final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("DDD 'days' HH:mm:ss");
+	static {
+		DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 
-	/* SBLOCK USER DATA BELOW */
-	/** Classpect */
+	/* Classpect */
 	private UserClass classType;
 	private UserAspect aspect;
-	private MediumPlanet mPlanet;
-	private DreamPlanet dPlanet;
+	private Region mPlanet, dPlanet;
 	private ProgressionState progression;
-	
 
-	/** The Player's tower number */
-	private byte tower;
+	/* Locations to teleport Players to when conditions are met */
+	private Location previousLocation;
+	private transient Location serverDisableTeleport;
 
-	/** Locations to teleport Players to when conditions are met */
-	private Location previousLocation, serverDisableTeleport;
+	/* Programs installed to the player's computer */
+	private Set<Integer> programs;
 
-	/** Programs installed to the player's computer */
-	private HashSet<Integer> programs;
+	/* Checks made while the Player is logged in, not saved. */
+	private transient boolean isServer, allowFlight;
 
-	/** Checks made while the Player is logged in, not saved. */
-	private boolean isServer, allowFlight;
-
-	/** The UUIDs of the Player's server and client players. */
+	/* The UUIDs of the Player's server and client players. */
 	private UUID server, client;
 
-	/** A map of the Effects applied to the Player and their strength. */
-	private HashMap<PassiveEffect, Integer> passiveEffects;
+	/* A map of the Effects applied to the Player and their strength. */
+	private transient Map<PassiveEffect, Integer> passiveEffects;
 
+	/* The name of the Player's current focused Channel */
+	private String currentChannel;
 
-	/* CHAT USER DATA BELOW */
-	/** The name of the Player's current focused Channel */
-	private String current;
+	/* The channels the Player is listening to */
+	private Set<String> listening;
 
-	/** The channels the Player is listening to */
-	private HashSet<String> listening;
+	/* Booleans affecting channel message reception. */
+	private AtomicBoolean globalMute;
+	private transient AtomicBoolean suppress;
 
-	/** Booleans affecting channel message reception. */
-	private AtomicBoolean globalMute, suppress;
-	
+	/**
+	 * 
+	 * @author ted
+	 *
+	 * Factory pattern for creating Users
+	 * Must be a static class inside the User class for access to the private constructor
+	 */
+	public static class UserSpawner {
+		/* USER DEFAULTS */
+		/* these directly mimic the data of the player itself */
+		private String IPAddr = "offline";
+
+		private boolean loaded = false;
+		private boolean isServer = false;
+		private boolean allowFlight = false;
+
+		private UserClass classType = UserClass.HEIR;
+		private UserAspect aspect = UserAspect.BREATH;
+		private Region mPlanet = Region.LOWAS;
+		private Region dPlanet = Region.INNERCIRCLE;
+		private ProgressionState progression = ProgressionState.NONE;
+
+		private Location previousLocation = null;
+		private Set<Integer> programs = new HashSet<>();
+		private Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
+		private String currentChannel = null;
+		private HashSet<String> listening = new HashSet<String>();
+		private AtomicBoolean globalMute = new AtomicBoolean();
+		private AtomicBoolean suppress = new AtomicBoolean();
+
+		/**
+		 * @param iPAddr the iPAddr to set
+		 */
+		public UserSpawner setIPAddr(String iPAddr) {
+			IPAddr = iPAddr;
+			return this;
+		}
+
+		/**
+		 * @param loaded the loaded to set
+		 */
+		public UserSpawner setLoaded(boolean loaded) {
+			this.loaded = loaded;
+			return this;
+		}
+
+		/**
+		 * @param isServer the isServer to set
+		 */
+		public UserSpawner setServer(boolean isServer) {
+			this.isServer = isServer;
+			return this;
+		}
+
+		/**
+		 * @param allowFlight the allowFlight to set
+		 */
+		public UserSpawner setAllowFlight(boolean allowFlight) {
+			this.allowFlight = allowFlight;
+			return this;
+		}
+
+		/**
+		 * @param classType the classType to set
+		 */
+		public UserSpawner setClassType(UserClass classType) {
+			this.classType = classType;
+			return this;
+		}
+
+		/**
+		 * @param aspect the aspect to set
+		 */
+		public UserSpawner setAspect(UserAspect aspect) {
+			this.aspect = aspect;
+			return this;
+		}
+
+		/**
+		 * @param mPlanet the mPlanet to set
+		 */
+		public UserSpawner setmPlanet(Region mPlanet) {
+			if (!mPlanet.isMedium()) {
+				throw new RuntimeException("Invalid medium planet: received " + mPlanet.name());
+			}
+			this.mPlanet = mPlanet;
+			return this;
+		}
+
+		/**
+		 * @param dPlanet the dPlanet to set
+		 */
+		public UserSpawner setdPlanet(Region dPlanet) {
+			if (!dPlanet.isDream()) {
+				throw new RuntimeException("Invalid dream planet: received " + dPlanet.name() + ", expected (INNER|OUTER)CIRCLE.");
+			}
+			this.dPlanet = dPlanet;
+			return this;
+		}
+
+		/**
+		 * @param progression the progression to set
+		 */
+		public UserSpawner setProgression(ProgressionState progression) {
+			this.progression = progression;
+			return this;
+		}
+
+		/**
+		 * @param previousLocation the previousLocation to set
+		 */
+		public UserSpawner setPreviousLocation(Location previousLocation) {
+			this.previousLocation = previousLocation;
+			return this;
+		}
+
+		/**
+		 * @param programs the programs to set
+		 */
+		public UserSpawner setPrograms(Set<Integer> programs) {
+			this.programs = programs;
+			return this;
+		}
+
+		/**
+		 * @param passiveEffects the passiveEffects to set
+		 */
+		public UserSpawner setPassiveEffects(Map<PassiveEffect, Integer> passiveEffects) {
+			this.passiveEffects = passiveEffects;
+			return this;
+		}
+
+		/**
+		 * @param currentChannel the currentChannel to set
+		 */
+		public UserSpawner setCurrentChannel(String currentChannel) {
+			this.currentChannel = currentChannel;
+			return this;
+		}
+
+		/**
+		 * @param listening the listening to set
+		 */
+		public UserSpawner setListening(HashSet<String> listening) {
+			this.listening = listening;
+			return this;
+		}
+
+		/**
+		 * @param globalMute the globalMute to set
+		 */
+		public UserSpawner setGlobalMute(AtomicBoolean globalMute) {
+			this.globalMute = globalMute;
+			return this;
+		}
+
+		/**
+		 * @param suppress the suppress to set
+		 */
+		public UserSpawner setSuppress(AtomicBoolean suppress) {
+			this.suppress = suppress;
+			return this;
+		}
+
+		/**
+		 * 
+		 * @param userID the user id
+		 * @return a user with all the traits that have been added to the spawner
+		 */
+		public User build(UUID userID) {
+			if (Bukkit.getOfflinePlayer(userID).isOnline()) {
+				// IP comes out as /123.456.789.0, leading slash must be removed to properly IP ban.
+				setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString()
+						.substring(1));
+			}
+			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression,
+					isServer, allowFlight, IPAddr, previousLocation, currentChannel,
+					passiveEffects, programs, listening, globalMute, suppress);
+		}
+
+	}
+
 	/**
 	 * Creates a SblockUser object for a Player.
 	 * 
 	 * @param playerName the name of the Player to create a SblockUser for
 	 */
-	public User(UUID playerID) {
-		// Generic user data
-		this.playerID = playerID;
-		login = System.nanoTime();
-		timePlayed = 0;
-		this.setUserIP();
-		loaded = false;
-
-		dateFormat = new SimpleDateFormat("DDD 'days' HH:mm:ss");
-		// Time will not be properly displayed if not in UTC
-		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-		// SblockUser-set data
-		classType = UserClass.HEIR;
-		aspect = UserAspect.BREATH;
-		mPlanet = MediumPlanet.LOWAS;
-		dPlanet = DreamPlanet.PROSPIT;
-		progression = ProgressionState.NONE;
-		tower = (byte)(8 * Math.random());
-		isServer = false;
-		allowFlight = false;
-		this.updateFlight();
-		previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
-		programs = new HashSet<>();
-		
-		this.passiveEffects = new HashMap<>();
-
-		// ChatUser-set data
-		current = null;
-		listening = new HashSet<String>();
-		globalMute = new AtomicBoolean();
-		suppress = new AtomicBoolean();
+	private User(UUID userID, boolean loaded, UserClass userClass, UserAspect aspect, Region mplanet,
+				Region dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight, String IP,
+				Location previousLocation, String currentChannel, Map<PassiveEffect, Integer> passiveEffects,
+				Set<Integer> programs, Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress) {
+		this.playerID = userID;
+		this.loaded = loaded;
+		this.classType = userClass;
+		this.aspect = aspect;
+		this.mPlanet = mplanet;
+		this.dPlanet = dplanet;
+		this.progression = progstate;
+		this.isServer = isServer;
+		this.allowFlight = allowFlight;
+		this.previousLocation = previousLocation;
+		if (previousLocation == null) {
+			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+		}
+		this.currentChannel = currentChannel;
+		this.programs = programs;
+		this.passiveEffects = passiveEffects;
+		this.listening = listening;
+		this.globalMute = globalMute;
+		this.suppress = supress;
+		this.userIP = IP;
 	}
 
 	/**
@@ -159,8 +330,7 @@ public class User {
 	}
 
 	/**
-	 * Gets the OfflinePlayer. Please note: getOfflinePlayer cannot be called on the main thread as
-	 * it is blocking.
+	 * Gets the OfflinePlayer.
 	 * 
 	 * @return the OfflinePlayer
 	 */
@@ -218,7 +388,7 @@ public class User {
 	 * 
 	 * @return the Player's MediumPlanet
 	 */
-	public MediumPlanet getMediumPlanet() {
+	public Region getMediumPlanet() {
 		return this.mPlanet;
 	}
 
@@ -228,7 +398,11 @@ public class User {
 	 * @param mPlanet the new MediumPlanet
 	 */
 	public void setMediumPlanet(String mPlanet) {
-		this.mPlanet = MediumPlanet.getPlanet(mPlanet);
+		Region planet = Region.uValueOf(mPlanet);
+		if (!planet.isMedium()) {
+			throw new RuntimeException("Invalid medium planet: received " + planet.name());
+		}
+		this.mPlanet = planet;
 	}
 
 	/**
@@ -236,7 +410,7 @@ public class User {
 	 * 
 	 * @return the Player's DreamPlanet
 	 */
-	public DreamPlanet getDreamPlanet() {
+	public Region getDreamPlanet() {
 		return this.dPlanet;
 	}
 
@@ -246,7 +420,11 @@ public class User {
 	 * @param dPlanet the new DreamPlanet
 	 */
 	public void setDreamPlanet(String dPlanet) {
-		this.dPlanet = DreamPlanet.getPlanet(dPlanet);
+		Region planet = Region.uValueOf(dPlanet);
+		if (!planet.isDream()) {
+			throw new RuntimeException("Invalid dream planet: received " + planet.name() + ", expected (INNER|OUTER)CIRCLE.");
+		}
+		this.dPlanet = planet;
 	}
 
 	/**
@@ -265,24 +443,6 @@ public class User {
 	 */
 	public void setProgression(ProgressionState progression) {
 		this.progression = progression;
-	}
-
-	/**
-	 * Gets the tower number generated for the Player.
-	 * 
-	 * @return the number of the tower the player will "dream" to
-	 */
-	public byte getTower() {
-		return this.tower;
-	}
-
-	/**
-	 * Sets the tower number generated for the Player.
-	 * 
-	 * @param tower the number of the tower the Player will "dream" to
-	 */
-	public void setTower(byte tower) {
-		this.tower = tower;
 	}
 
 	/**
@@ -364,28 +524,12 @@ public class User {
 	}
 
 	/**
-	 * Sets the Player's total time ingame from a String. For use in DatabaseManager only.
-	 * 
-	 * @param s String
-	 */
-	public void setTimePlayed(String s) {
-		if (s != null) {
-			try {
-				timePlayed = dateFormat.parse(s).getTime();
-			} catch (ParseException e) {
-				// String ain't right D:
-			}
-		}
-	}
-
-	/**
 	 * The String representation of the Player's total time ingame.
 	 * 
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		//return dateFormat.format(new Date(getPlayer().getStatistic(Statistic.PLAY_ONE_TICK) * 50L));
-		return dateFormat.format(new Date(this.timePlayed + System.nanoTime() - this.login));
+		return DATE_FORMATTER.format(new Date(getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK) * 50L));
 	}
 
 	/**
@@ -393,7 +537,7 @@ public class User {
 	 * 
 	 * @return the programs installed
 	 */
-	public HashSet<Integer> getPrograms() {
+	public Set<Integer> getPrograms() {
 		return this.programs;
 	}
 
@@ -470,21 +614,23 @@ public class User {
 	 */
 	public void updateCurrentRegion(Region newR) {
 		if (currentRegion != null && newR == currentRegion) {
-			if (!listening.contains("#" + currentRegion.toString())) {
-				Channel c = ChannelManager.getChannelManager().getChannel("#" + currentRegion.toString());
+			if (!listening.contains(currentRegion.getChannelName())) {
+				Channel c = ChannelManager.getChannelManager().getChannel(currentRegion.getChannelName());
 				this.addListening(c);
 			}
 			return;
 		}
-		Channel newC = ChannelManager.getChannelManager().getChannel("#" + newR.toString());
-		if (current == null || currentRegion != null && current.equals("#" + currentRegion.toString())) {
-			current = newC.getName();
+		if (currentChannel == null || currentRegion != null && currentChannel.equals(currentRegion.getChannelName())) {
+			currentChannel = newR.getChannelName();
 		}
 		if (currentRegion != null) {
-			this.removeListening("#" + currentRegion.toString());
+			this.removeListening(currentRegion.getChannelName());
 		}
-		if (!this.listening.contains(newC.getName())) {
-			this.addListening(newC);
+		if (!this.listening.contains(newR.getChannelName())) {
+			this.addListening(ChannelManager.getChannelManager().getChannel(newR.getChannelName()));
+		}
+		if (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL())) {
+				getPlayer().setResourcePack(newR.getResourcePackURL());
 		}
 		currentRegion = newR;
 	}
@@ -536,7 +682,7 @@ public class User {
 					+ "+\nAsk someone with " + ChatColor.AQUA + "/requestclient <player>");
 			return;
 		}
-		User u = getUser(client);
+		User u = UserManager.getUser(client);
 		if (u == null) {
 			p.sendMessage(ChatColor.RED + "You should wait for your client before progressing!");
 			return;
@@ -561,6 +707,13 @@ public class User {
 		p.setNoDamageTicks(Integer.MAX_VALUE);
 		InventoryManager.storeAndClearInventory(p);
 		p.getInventory().addItem(MachineType.COMPUTER.getUniqueDrop());
+		p.getInventory().addItem(MachineType.CRUXTRUDER.getUniqueDrop());
+		p.getInventory().addItem(MachineType.PUNCH_DESIGNIX.getUniqueDrop());
+		p.getInventory().addItem(MachineType.TOTEM_LATHE.getUniqueDrop());
+		p.getInventory().addItem(MachineType.ALCHEMITER.getUniqueDrop());
+		for (Material mat : ServerMode.getInstance().getApprovedSet()) {
+			p.getInventory().addItem(new ItemStack(mat));
+		}
 		p.sendMessage(ChatColor.GREEN + "Server mode enabled!");
 	}
 
@@ -627,7 +780,7 @@ public class User {
 	 * 
 	 * @return the map of passive effects and their strengths
 	 */
-	public HashMap<PassiveEffect, Integer> getPassiveEffects() {
+	public Map<PassiveEffect, Integer> getPassiveEffects() {
 		return this.passiveEffects;
 	}
 	
@@ -690,9 +843,8 @@ public class User {
 	 * Send a message to this Player.
 	 * 
 	 * @param message the message to send to the player
-	 * @param type the type of chat for handling purposes
 	 */
-	public void sendMessage(String message, boolean highlight, String... additionalMatches) {
+	public void sendMessage(String message) {
 		Player p = this.getPlayer();
 
 		// Check to make sure user is online
@@ -701,51 +853,60 @@ public class User {
 			return;
 		}
 
-		// final output, sends message to user
-		if (highlight) {
-			// Checking for highlights within the message commences
+		p.sendMessage(message);
+	}
 
-			String[] matches = new String[additionalMatches.length + 1];
-				matches[0] = p.getName();
-			if (additionalMatches.length > 0) {
-				System.arraycopy(additionalMatches, 0, matches, 1, additionalMatches.length);
-			}
-			StringBuilder msg = new StringBuilder();
-			Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(matches)).matcher(message);
-			int lastEnd = 0;
-			// For every match, prepend aqua chat color and append previous color
-			while (match.find()) {
-				msg.append(message.substring(lastEnd, match.start()));
-				String last = ChatColor.getLastColors(msg.toString());
-				msg.append(ChatColor.AQUA).append(match.group()).append(last);
-				lastEnd = match.end();
-			}
-			if (lastEnd < message.length()) {
-			msg.append(message.substring(lastEnd));
-			}
-			message = msg.toString();
+	/**
+	 * Sends a raw message that will attempt to highlight the user.
+	 * 
+	 * @param message
+	 * @param additionalMatches
+	 */
+	public void rawHighlight(String message, String... additionalMatches) {
+		Player p = this.getPlayer();
 
-			if (lastEnd > 0) {
-				// Matches were found, commence highlight format changes.
-				message = message.replaceFirst("\\[(.{1,18})\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
-				// Funtimes sound effects here
-				switch ((int) (Math.random() * 20)) {
-				case 0:
-					p.playSound(p.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
-					break;
-				case 1:
-					p.playSound(p.getLocation(), Sound.WITHER_SPAWN, 1, 2);
-					break;
-				case 2:
-				case 3:
-					p.playSound(p.getLocation(), Sound.ANVIL_LAND, 1, 1);
-					break;
-				default:
-					p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 2);
-				}
+		String[] matches = new String[additionalMatches.length + 2];
+		matches[0] = p.getName();
+		matches[1] = ChatColor.stripColor(p.getDisplayName());
+		if (additionalMatches.length > 0) {
+			System.arraycopy(additionalMatches, 0, matches, 2, additionalMatches.length);
+		}
+		StringBuilder msg = new StringBuilder();
+		Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(matches)).matcher(message);
+		int lastEnd = 0;
+		// For every match, prepend aqua chat color and append previous color
+		while (match.find()) {
+			msg.append(message.substring(lastEnd, match.start()));
+			String last = ChatColor.getLastColors(msg.toString());
+			msg.append(ChatColor.AQUA).append(match.group()).append(last);
+			lastEnd = match.end();
+		}
+		if (lastEnd < message.length()) {
+		msg.append(message.substring(lastEnd));
+		}
+		message = msg.toString();
+
+		if (lastEnd > 0) {
+			// Matches were found, commence highlight format changes.
+			message = message.replaceFirst("\\[(" + ChatColor.COLOR_CHAR + ".{1,17})\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
+			// Funtimes sound effects here
+			switch ((int) (Math.random() * 20)) {
+			case 0:
+				p.playSound(p.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
+				break;
+			case 1:
+				p.playSound(p.getLocation(), Sound.WITHER_SPAWN, 1, 2);
+				break;
+			case 2:
+			case 3:
+				p.playSound(p.getLocation(), Sound.ANVIL_LAND, 1, 1);
+				break;
+			default:
+				p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 2);
 			}
 		}
-		p.sendMessage(message);
+
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + message);
 	}
 
 	/**
@@ -791,22 +952,22 @@ public class User {
 	 */
 	public void setCurrent(Channel c) {
 		if (c == null) {
-			this.sendMessage(ChatMsgs.errorInvalidChannel("null"), false);
+			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
 			return;
 		}
 		if (c.isBanned(this)) {
-			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), c.getName()), false);
+			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), c.getName()));
 			return;
 		}
 		if (c.getAccess().equals(AccessLevel.PRIVATE) && !c.isApproved(this)) {
-			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c.getName()), false);
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(c.getName()));
 			return;
 		}
-		current = c.getName();
+		currentChannel = c.getName();
 		if (!this.listening.contains(c.getName())) {
 			this.addListening(c);
 		} else {
-			this.sendMessage(ChatMsgs.onChannelSetCurrent(c.getName()), false);
+			this.sendMessage(ChatMsgs.onChannelSetCurrent(c.getName()));
 		}
 	}
 
@@ -826,7 +987,7 @@ public class User {
 	 * @return Channel
 	 */
 	public Channel getCurrent() {
-		return ChannelManager.getChannelManager().getChannel(this.current);
+		return ChannelManager.getChannelManager().getChannel(this.currentChannel);
 	}
 
 	/**
@@ -841,11 +1002,11 @@ public class User {
 			return false;
 		}
 		if (channel.isBanned(this)) {
-			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()), false);
+			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()));
 			return false;
 		}
 		if (channel.getAccess().equals(AccessLevel.PRIVATE) && !channel.isApproved(this)) {
-			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(channel.getName()), false);
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(channel.getName()));
 			return false;
 		}
 		if (!this.listening.contains(channel)) {
@@ -854,10 +1015,10 @@ public class User {
 		if (!channel.getListening().contains(this.playerID)) {
 			channel.addListening(this.playerID);
 			this.listening.add(channel.getName());
-			channel.sendToAll(this, ChatMsgs.onChannelJoin(this, channel), false);
+			channel.sendMessage(ChatMsgs.onChannelJoin(this, channel));
 			return true;
 		} else {
-			this.sendMessage(ChatMsgs.errorAlreadyListening(channel.getName()), false);
+			this.sendMessage(ChatMsgs.errorAlreadyListening(channel.getName()));
 			return false;
 		}
 	}
@@ -890,11 +1051,11 @@ public class User {
 		}
 
 		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
-				.append(this.getPlayerName()).append(ChatColor.YELLOW)
-				.append(" began pestering <>").append(ChatColor.YELLOW).append(" at ")
-				.append(new SimpleDateFormat("HH:mm").format(new Date()));
+				.append(this.getPlayer().getDisplayName()).append(ChatColor.YELLOW)
+				.append(" logs the fuck in and begins pestering <>").append(ChatColor.YELLOW)
+				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues
-		for (User u : UserManager.getUserManager().getUserlist()) {
+		for (User u : UserManager.getUsers()) {
 			StringBuilder matches = new StringBuilder();
 			for (String s : this.listening) {
 				if (u.listening.contains(s)) {
@@ -906,10 +1067,16 @@ public class User {
 				StringBuilder msg = new StringBuilder(base.toString().replace("<>", matches.toString()));
 				int comma = msg.toString().lastIndexOf(',');
 				if (comma != -1) {
-					u.sendMessage(msg.replace(comma, comma + 1, " and").toString(), false);
+					u.sendMessage(msg.replace(comma, comma + 1, " and").toString());
+				} else {
+					u.sendMessage(msg.toString());
 				}
+			} else {
+				u.sendMessage(base.toString().replace(" and begins pestering <>", ""));
 			}
 		}
+
+		Bukkit.getConsoleSender().sendMessage(this.getPlayerName() + " began pestering " + StringUtils.join(channels, ' '));
 	}
 
 	/**
@@ -920,18 +1087,19 @@ public class User {
 	public void removeListening(String cName) {
 		Channel c = ChannelManager.getChannelManager().getChannel(cName);
 		if (c == null) {
-			this.sendMessage(ChatMsgs.errorInvalidChannel(cName), false);
+			this.sendMessage(ChatMsgs.errorInvalidChannel(cName));
 			this.listening.remove(cName);
 			return;
 		}
 		if (this.listening.remove(cName)) {
-				c.sendToAll(this, ChatMsgs.onChannelLeave(this, c), false);
-				c.removeListening(this.playerID);
-			if (this.current != null && cName.equals(this.current)) {
-				this.current = null;
+			c.removeNick(this, false);
+			c.sendMessage(ChatMsgs.onChannelLeave(this, c));
+			c.removeListening(this.playerID);
+			if (this.currentChannel != null && cName.equals(this.currentChannel)) {
+				this.currentChannel = null;
 			}
 		} else {
-			this.sendMessage(ChatMsgs.errorNotListening(cName), false);
+			this.sendMessage(ChatMsgs.errorNotListening(cName));
 		}
 	}
 
@@ -941,9 +1109,10 @@ public class User {
 	 * @param channel the Channel to remove
 	 */
 	public void removeListeningSilent(Channel channel) {
+		channel.removeNick(this, false);
 		this.listening.remove(channel.getName());
-		if (this.current != null && this.current.equals(channel.getName())) {
-			this.current = null;
+		if (this.currentChannel != null && this.currentChannel.equals(channel.getName())) {
+			this.currentChannel = null;
 		}
 		channel.removeListening(this.getUUID());
 	}
@@ -1007,73 +1176,6 @@ public class User {
 	}
 
 	/**
-	 * Method for handling all Player chat.
-	 * 
-	 * @param msg the message being sent
-	 * @param forceThirdPerson true if the message is to be prepended with a modifier
-	 */
-	public void chat(String msg, boolean forceThirdPerson) {
-
-		// Check if the user can speak
-		if (this.globalMute.get()) {
-			this.sendMessage(ChatMsgs.isMute(), false);
-			return;
-		}
-
-		// default to current channel receiving message
-		Channel sendto = ChannelManager.getChannelManager().getChannel(this.current);
-
-		// check if chat is directed at another channel
-		int space = msg.indexOf(' ');
-		if (msg.charAt(0) == '@' && space > 1) {
-			// Check for alternate channel destination. Failing that, warn user.
-			String newChannel = msg.substring(1, space);
-			if (ChannelManager.getChannelManager().isValidChannel(newChannel)) {
-				sendto = ChannelManager.getChannelManager().getChannel(newChannel);
-				if (sendto.getAccess().equals(AccessLevel.PRIVATE) && !sendto.isApproved(this)) {
-					// User not approved in channel
-					this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(sendto.getName()), false);
-					return;
-				} else {
-					// should reach this point for public channels and approved users
-					msg = msg.substring(space + 1);
-					if (msg.length() == 0) {
-						// Do not display blank messages for @<channel> with no message
-						return;
-					}
-				}
-			} else {
-				// Invalid channel specified
-				this.sendMessage(ChatMsgs.errorInvalidChannel(newChannel), false);
-				return;
-			}
-		} else if (sendto == null) {
-			this.sendMessage(ChatMsgs.errorNoCurrent(), false);
-			return;
-		}
-
-		if (sendto.getType() == ChannelType.REGION && this.suppress.get()) {
-			this.sendMessage(ChatMsgs.errorSuppressingGlobal(), false);
-		} else if (sendto.getType() == ChannelType.RP && !sendto.hasNick(this)) {
-			this.sendMessage(ChatMsgs.errorNickRequired(sendto.getName()), false);
-			return;
-		}
-
-		// Trim whitespace created by formatting codes, etc.
-		msg = RegexUtils.trimExtraWhitespace(msg);
-		if (msg.length() > 1 && RegexUtils.appearsEmpty(msg.substring(0 , 2).equals("#>") ? msg.substring(2) : msg)) {
-			return;
-		}
-
-		// Chat is being done via /me
-		if (forceThirdPerson) {
-			msg = "#>" + msg;
-		}
-
-		sendto.sendToAll(this, msg, true);
-	}
-
-	/**
 	 * Important SblockUser data formatted to be easily readable when printed.
 	 * 
 	 * @return a representation of the most important data stored by this SblockUser
@@ -1085,23 +1187,19 @@ public class User {
 		
 		String s = sys + "-----------------------------------------\n" + 
 				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
-				this.mPlanet + div + this.dPlanet.getDisplayName() + div + " Tower: " + this.tower + div + " Flight: " + this.allowFlight + "\n" + 
-				" Mute: " + this.globalMute.get() + div + " Current: " + this.current + div + this.listening.toString() + "\n" +
+				this.mPlanet + div + this.dPlanet.getWorldName() + div + " Flight: " + this.allowFlight + "\n" + 
+				" Mute: " + this.globalMute.get() + div + " Current: " + this.currentChannel + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
 				" IP: " + this.userIP + "\n" +
-				" Playtime: " + this.getTimePlayed() + div + " Last Login: " + new SimpleDateFormat("hh:mm 'on' dd/MM/YY").format(new Date(this.login)) + "\n" +
+				" Playtime: " + this.getTimePlayed() + div + " Last Login: Online now!\n" +
 				sys + "-----------------------------------------";
 		return s;
 	}
 
-	/**
-	 * Gets a User by UUID.
-	 * 
-	 * @param userName the name to match
-	 * 
-	 * @return the User specified or null if invalid.
-	 */
-	public static User getUser(UUID userID) {
-		return UserManager.getUserManager().getUser(userID);
+	public boolean equals(Object object) {
+		if (object instanceof User) {
+			return ((User) object).getUUID().equals(playerID);
+		}
+		return false;
 	}
 }

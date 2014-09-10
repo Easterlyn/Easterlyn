@@ -11,35 +11,64 @@ import co.sblock.chat.ColorDef;
  * @author Jikoo, Dublek
  */
 public enum Region {
-	EARTH, INNERCIRCLE, OUTERCIRCLE, FURTHESTRING,
-	MEDIUM, LOWAS, LOLAR, LOHAC, LOFAF, UNKNOWN;
+	EARTH("Earth", "#EARTH", ColorDef.WORLD_EARTH, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
+	OUTERCIRCLE("Derse", "#DERSPIT", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip", false, true),
+	INNERCIRCLE("Prospit", "#DERSPIT", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Prospit.zip", false, true),
+	FURTHESTRING("FurthestRing", "#FURTHESTRING", ColorDef.WORLD_FURTHESTRING, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
+	LOWAS("LOWAS", "#LOWAS", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOLAR("LOLAR", "#LOLAR", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOHAC("LOHAC", "#LOHAC", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOFAF("LOFAF", "#LOFAF", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	UNKNOWN("Earth", "#Aether", ColorDef.WORLD_AETHER, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false);
+
+	/* INNER FIELDS */
+	private final String worldName;
+	private final String channelName;
+	private final String resourcePack;
+	private final ChatColor worldChatColor;
+	private final boolean isMedium;
+	private final boolean isDream;
 
 	/**
-	 * Gets the name of the Region.
-	 * 
-	 * @return Region.name() in lower case
+	 * @param worldName The name of the world
+	 * @param channelName The name of the region's channel
+	 * @param color the default chat color of the region
+	 * @param sourceURL the resource pack to be used in this region
+	 * @param isMedium true if the planet is in the Medium
+	 * @param isDream true if the planet is a dream planet
 	 */
-	public String getRegionName() {
-		return this.name().toLowerCase();
+	private Region(String worldName, String channelName, ChatColor color, String sourceURL, boolean isMedium, boolean isDream) {
+		this.worldName = worldName;
+		this.channelName = channelName;
+		this.resourcePack = sourceURL;
+		this.worldChatColor = color;
+		this.isMedium = isMedium;
+		this.isDream = isDream;
 	}
 
 	/**
-	 * Case-insensitive alternative to valueOf.
+	 * Gets the name of the World.
 	 * 
-	 * @param s the String to match
-	 * 
-	 * @return the Region that matches, Region.Earth if invalid.
+	 * @return the World name
 	 */
-	public static Region uValueOf(String s) {
-		s = s.toUpperCase();
-		try {
-			return (Region.valueOf(s));
-		} catch (IllegalArgumentException e) {
-			if (s.contains("MEDIUM")) {
-				return Region.MEDIUM;
-			}
-			return Region.EARTH;
-		}
+	public String getWorldName() {
+		return this.worldName;
+	}
+
+	/**
+	 * Gets the name of the Region's Channel.
+	 * 
+	 * @return Region.name() in lower case
+	 */
+	public String getChannelName() {
+		return channelName;
+	}
+
+	/**
+	 * @return the url of the resource pack to be used
+	 */
+	public String getResourcePackURL() {
+		return this.resourcePack;
 	}
 
 	/**
@@ -49,24 +78,44 @@ public enum Region {
 	 * 
 	 * @return the relevant ChatColor
 	 */
-	public static ChatColor getRegionColor(Region r) {
-		switch (r) {
-		case EARTH:
-			return ColorDef.WORLD_EARTH;
-		case FURTHESTRING:
-			return ColorDef.WORLD_FURTHESTRING;
-		case INNERCIRCLE:
-			return ColorDef.WORLD_INNERCIRCLE;
-		case LOFAF:
-		case LOHAC:
-		case LOLAR:
-		case LOWAS:
-		case MEDIUM:
-			return ColorDef.WORLD_MEDIUM;
-		case OUTERCIRCLE:
-			return ColorDef.WORLD_OUTERCIRCLE;
-		default:
-			return ColorDef.DEFAULT;
+	public ChatColor getRegionColor() {
+		return this.worldChatColor;
+	}
+
+	/**
+	 * @return true if the planet is in the Medium
+	 */
+	public boolean isMedium() {
+		return isMedium;
+	}
+
+	/**
+	 * @return true if the planet is a dream planet
+	 */
+	public boolean isDream() {
+		return isDream;
+	}
+
+	/**
+	 * Case-insensitive alternative to valueOf.
+	 * 
+	 * @param s the String to match
+	 * 
+	 * @return the Region that matches, Region.UNKNOWN if invalid.
+	 */
+	public static Region uValueOf(String s) {
+		s = s.toUpperCase();
+		try {
+			return (Region.valueOf(s));
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			// Compatibility for old dream planet saving
+			if (s.equalsIgnoreCase("Prospit")) {
+				return Region.INNERCIRCLE;
+			}
+			if (s.equalsIgnoreCase("Derse")) {
+				return Region.OUTERCIRCLE;
+			}
+			return Region.UNKNOWN;
 		}
 	}
 
@@ -78,25 +127,7 @@ public enum Region {
 	 * @return the relevant Region
 	 */
 	public static Region getLocationRegion(Location l) {
-		try {
-			Region r = Region.uValueOf(l.getWorld().getName());
-			if (r.equals(Region.MEDIUM)) {
-				boolean plusX = (l.getBlockX() >= 0);
-				boolean plusZ = (l.getBlockZ() >= 0);
-				if (plusX && plusZ)
-					r = Region.LOWAS;
-				else if (!plusX && plusZ)
-					r = Region.LOLAR;
-				else if (!plusX && !plusZ)
-					r = Region.LOHAC;
-				else if (plusX && !plusZ)
-					r = Region.LOFAF;
-			}
-			return r;
-		} catch (IllegalStateException e) {
-			// Player is in an invalid world
-			// For the sake of region channels, default to earth.
-			return Region.EARTH;
-		}
+		String name = l.getWorld().getName().replace("_nether", "").replace("_the_end", "");
+		return Region.uValueOf(name);
 	}
 }

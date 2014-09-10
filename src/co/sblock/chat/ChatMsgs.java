@@ -172,7 +172,7 @@ public class ChatMsgs {
 
 	public static String errorNickRequired(String channelName) {
 		return ChatColor.GOLD + channelName + ChatColor.RED
-				+ " is a roleplaying channel. Talking requires a nick! Use "
+				+ " is a roleplay channel, a nick is required. Use "
 				+ ChatColor.AQUA + "/sc nick set";
 	}
 
@@ -189,6 +189,10 @@ public class ChatMsgs {
 		return ChatColor.RED + "Channel names must start with '#' and cannot exceed 16 characters!";
 	}
 
+	public static String errorChannelExists() {
+		return ChatColor.RED + "A channel by that name already exists!";
+	}
+
 	public static String errorRegionChannelJoin() {
 		return ChatColor.RED + "You cannot join a region channel!";
 	}
@@ -200,6 +204,10 @@ public class ChatMsgs {
 	public static String errorSuppressingGlobal() {
 		return ChatColor.RED + "You cannot talk in a global channel while suppressing!\nUse "
 				+ ChatColor.AQUA + "/sc suppress" + ChatColor.RED + " to toggle.";
+	}
+
+	public static String errorEmptyMessage() {
+		return ChatColor.RED + "You cannot send empty messages!";
 	}
 
 	public static String errorDisbandDefault() {
@@ -292,9 +300,5 @@ public class ChatMsgs {
 	public static String helpSCNick() {
 		return ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
 			+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.";
-	}
-
-	public static String permissionDenied() {
-		return ChatColor.RED + "[Lil Hal] I'm sorry Dirk, I'm afraid I can't do that.";
 	}
 }

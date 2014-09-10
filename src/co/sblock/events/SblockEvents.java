@@ -1,6 +1,7 @@
 package co.sblock.events;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,17 +13,18 @@ import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.ProtocolLibrary;
 
-import co.sblock.Module;
 import co.sblock.Sblock;
 import co.sblock.events.listeners.*;
 import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.WrapperPlayServerAnimation;
 import co.sblock.events.packets.WrapperPlayServerBed;
+import co.sblock.events.region.DerspitTimeUpdater;
 import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
-import co.sblock.users.TowerData;
+import co.sblock.module.Module;
 import co.sblock.utilities.Broadcast;
+import co.sblock.utilities.minecarts.FreeCart;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -31,48 +33,44 @@ import co.sblock.utilities.Broadcast;
  */
 public class SblockEvents extends Module {
 
-	/** The EventModule instance. */
+	/* The EventModule instance. */
 	private static SblockEvents instance;
 
-	/** The TowerData. */
-	private TowerData towers;
-
-	/** The Task ID of the RegionCheck task. */
-	private int regionTask;
-
-	/** The Task ID of the SessionCheck task. */
-	private int sessionTask;
-
-	/** The Minecraft servers' status */
+	/* The Minecraft servers' status */
 	private Status status;
 
-	/** The number of repeated status checks that have come back red. */
+	/* The number of repeated status checks that have come back red. */
 	private int statusResample = 0;
 
-	/** A Map of all scheduled tasks by Player. */
+	/* A Map of all scheduled tasks by Player. */
 	public Map<String, Integer> tasks;
 
-	/** A Set of the names of all Players queuing to sleep teleport. */
+	/* A Set of the names of all Players queuing to sleep teleport. */
 	public Set<String> teleports;
 
-	/** A Set of the names of all Players opening Captchadexes. */
+	/* A Set of the names of all Players opening Captchadexes. */
 	public Set<String> openingCaptchadex;
 
-	/**
-	 * @see Module#onEnable()
-	 */
+	/* The time at which SblockEvents was enabled (generally server start) */
+	private long start;
+
+	/* Boolean representing whether or not the server should restart next chance. */
+	private boolean restart;
+
 	@Override
 	protected void onEnable() {
 		instance = this;
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
 		openingCaptchadex = new HashSet<String>();
-		towers = new TowerData();
-		towers.load();
-		
+		start = System.currentTimeMillis();
+		restart = false;
+
 		this.registerEvents(new BlockBreakListener(), new BlockFadeListener(), new BlockGrowListener(),
 				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
 				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
+
+				new CraftItemListener(),
 
 				new EntityDamageByEntityListener(), new EntityExplodeListener(),
 				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
@@ -90,9 +88,12 @@ public class SblockEvents extends Module {
 				new PlayerItemHeldListener(),
 				new PlayerJoinListener(), new PlayerLoginListener(),
 				new PlayerPickupItemListener(), new PlayerQuitListener(),
-				new PlayerTeleportListener(), new ServerListPingListener(),
+				new PlayerTeleportListener(), new PrepareItemEnchantListener(),
+				new ServerListPingListener(),
 
-				new SignChangeListener(), new VehicleBlockCollisionListener());
+				new SignChangeListener(),
+
+				new VehicleBlockCollisionListener(), new VehicleDestroyListener(), new VehicleExitListener());
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 
@@ -101,8 +102,9 @@ public class SblockEvents extends Module {
 		}
 
 		status = Status.NEITHER;
-		regionTask = initiateRegionChecks();
-		sessionTask = initiateSessionChecks();
+		initiateRegionChecks();
+		initiateSessionChecks();
+		initiateDerspitTimeUpdater();
 	}
 
 	/**
@@ -110,10 +112,7 @@ public class SblockEvents extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		Bukkit.getScheduler().cancelTask(regionTask);
-		Bukkit.getScheduler().cancelTask(sessionTask);
-		towers.save();
-		towers = null;
+		FreeCart.getInstance().cleanUp();
 		instance = null;
 	}
 
@@ -164,13 +163,10 @@ public class SblockEvents extends Module {
 	}
 
 	/**
-	 * Schedules the SessionCheck to update the Status every minute.
-	 * 
-	 * @return the BukkitTask ID
+	 * Schedules a SessionCheck to update the Status every minute.
 	 */
-	@SuppressWarnings("deprecation")
-	private int initiateSessionChecks() {
-		return Bukkit.getScheduler().scheduleAsyncRepeatingTask(Sblock.getInstance(), new StatusCheck(), 100L, 1200L);
+	private void initiateSessionChecks() {
+		new StatusCheck().runTaskTimerAsynchronously(Sblock.getInstance(), 100L, 1200L);
 	}
 
 	/**
@@ -181,12 +177,11 @@ public class SblockEvents extends Module {
 	 * 
 	 * @param status the Status
 	 */
-	@SuppressWarnings("deprecation")
 	public void changeStatus(Status status) {
 		if (status.hasAnnouncement() && statusResample < 5) {
 			// less spam - must return red status 5 times in a row to announce.
 			statusResample++;
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(Sblock.getInstance(), new StatusCheck());
+			new StatusCheck().runTaskAsynchronously(Sblock.getInstance());
 			return;
 		}
 		String announcement = null;
@@ -212,20 +207,13 @@ public class SblockEvents extends Module {
 	/**
 	 * Schedules the RegionCheck to update the Region for each Player online
 	 * every 5 seconds of game time (100 ticks).
-	 * 
-	 * @return the BukkitTask ID
 	 */
-	public int initiateRegionChecks() {
-		return Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new RegionCheck(), 0L, 100L);
+	public void initiateRegionChecks() {
+		new RegionCheck().runTaskTimer(Sblock.getInstance(), 100L, 100L);
 	}
 
-	/**
-	 * Gets the TowerData used for sleep teleports.
-	 * 
-	 * @return the TowerData
-	 */
-	public TowerData getTowerData() {
-		return towers;
+	public void initiateDerspitTimeUpdater() {
+		new DerspitTimeUpdater().runTaskTimer(Sblock.getInstance(), 0L, 1000L);
 	}
 
 	/**
@@ -235,5 +223,29 @@ public class SblockEvents extends Module {
 	 */
 	public static SblockEvents getEvents() {
 		return instance;
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "EventsModule";
+	}
+
+	public void setSoftRestart(boolean restart) {
+		this.restart = restart;
+	}
+
+	public boolean getSoftRestart() {
+		return restart;
+	}
+
+	public boolean recalculateRestart() { // TODO task to trigger this check
+		if (!restart) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(System.currentTimeMillis());
+			// 20h * 60min * 60s * 1000ms = 72000000, 3600000 = 1h
+			restart = start - System.currentTimeMillis() > 72000000
+					|| start - System.currentTimeMillis() > 10800000 && calendar.get(Calendar.HOUR_OF_DAY) < 3;
+		}
+		return restart;
 	}
 }

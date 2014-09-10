@@ -7,11 +7,36 @@ import co.sblock.chat.ColorDef;
 /**
  * Represents each character aspect.
  * 
- * @author FireNG, Jikoo
+ * @author FireNG, Jikoo, tmathmeyer
  */
 public enum UserAspect {
-	BLOOD, BREATH, DOOM, HEART, HOPE, LIFE,
-	LIGHT, MIND, RAGE, SPACE, TIME, VOID;
+	BLOOD("Blood", ColorDef.ASPECT_BLOOD),
+	BREATH("Breath", ColorDef.ASPECT_BREATH),
+	DOOM("Doom", ColorDef.ASPECT_DOOM),
+	HEART("Heart", ColorDef.ASPECT_HEART),
+	HOPE("Hope", ColorDef.ASPECT_HOPE),
+	LIFE("Life", ColorDef.ASPECT_LIFE),
+	LIGHT("Light", ColorDef.ASPECT_LIGHT),
+	MIND("Mind", ColorDef.ASPECT_MIND),
+	RAGE("Rage", ColorDef.ASPECT_RAGE),
+	SPACE("Space", ColorDef.ASPECT_SPACE),
+	TIME("Time", ColorDef.ASPECT_TIME),
+	VOID("Void", ColorDef.ASPECT_VOID);
+
+	/*
+	 * final state variables
+	 */
+	private final String name;
+	private final ChatColor chatColor;
+
+	/**
+	 * @param name the name of the aspect
+	 * @param color the Color of the Aspect
+	 */
+	private UserAspect(String name, ChatColor color) {
+		this.name = name;
+		this.chatColor = color;
+	}
 
 	/**
 	 * Gets the display name of the PlayerAspect.
@@ -19,38 +44,14 @@ public enum UserAspect {
 	 * @return The display name of this PlayerAspect.
 	 */
 	public String getDisplayName() {
-		return this.name().charAt(0) + this.name().substring(1).toLowerCase();
+		return this.name;
 	}
 
+	/**
+	 * @return the color for this aspect
+	 */
 	public ChatColor getColor() {
-		switch (this) {
-		case BLOOD:
-			return ColorDef.ASPECT_BLOOD;
-		case BREATH:
-			return ColorDef.ASPECT_BREATH;
-		case DOOM:
-			return ColorDef.ASPECT_DOOM;
-		case HEART:
-			return ColorDef.ASPECT_HEART;
-		case HOPE:
-			return ColorDef.ASPECT_HOPE;
-		case LIFE:
-			return ColorDef.ASPECT_LIFE;
-		case LIGHT:
-			return ColorDef.ASPECT_LIGHT;
-		case MIND:
-			return ColorDef.ASPECT_MIND;
-		case RAGE:
-			return ColorDef.ASPECT_RAGE;
-		case SPACE:
-			return ColorDef.ASPECT_SPACE;
-		case TIME:
-			return ColorDef.ASPECT_TIME;
-		case VOID:
-			return ColorDef.ASPECT_VOID;
-		default:
-			return ColorDef.RANK_HERO;
-		}
+		return this.chatColor;
 	}
 
 	/**

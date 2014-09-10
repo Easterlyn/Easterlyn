@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -14,8 +15,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import co.sblock.Module;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.module.Module;
 import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
@@ -101,6 +102,29 @@ public class Captcha extends Module {
 	}
 
 	/**
+	 * Create a punchcard from a captchacard.
+	 * <p>
+	 * For testing purposes only, good luck patching punched holes.
+	 * 
+	 * @param is the punchcard ItemStack
+	 * 
+	 * @return the unpunched captchacard
+	 */
+	public static ItemStack captchaToPunch(ItemStack is) {
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName("Punchcard");
+		List<String> newlore = new ArrayList<>();
+		// If the captcha doesn't have lore, we've already got problems, not catching this NPE
+		newlore.add(im.getLore().get(0));
+		for (int i = 1; i < im.getLore().size(); i++) {
+			newlore.add(ChatColor.MAGIC + im.getLore().get(i));
+		}
+		im.setLore(newlore);
+		is.setItemMeta(im);
+		return is;
+	}
+
+	/**
 	 * Converts a Captchdex entry into an ItemStack.
 	 * 
 	 * @param data the Captchadex page split at '\n' ItemStack
@@ -124,6 +148,11 @@ public class Captcha extends Module {
 		}
 		if (data[0].equals("Blank")) {
 			return MachineType.PERFECTLY_GENERIC_OBJECT.getUniqueDrop();
+		}
+		for (int j = 1; j < data.length; j++) {
+			if (data[j].startsWith(ChatColor.MAGIC.toString())) {
+				data[j] = data[j].substring(2);
+			}
 		}
 		try {
 			is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
@@ -174,7 +203,7 @@ public class Captcha extends Module {
 	 * @return ItemStack
 	 */
 	private static ItemStack blankCaptchaCard() {
-		ItemStack iS = new ItemStack(Material.PAPER);
+		ItemStack iS = new ItemStack(Material.BOOK);
 		ItemMeta iM = iS.getItemMeta();
 		iM.setDisplayName("Captchacard");
 		ArrayList<String> lore = new ArrayList<String>();
@@ -249,8 +278,7 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a single Punchcard
 	 */
 	public static boolean isSinglePunch(ItemStack is) {
-		return isCard(is) && is.getItemMeta().getDisplayName().equals("Punchcard")
-				&& is.getAmount() == 1;
+		return isPunch(is) && is.getAmount() == 1;
 	}
 
 	/**
@@ -261,8 +289,8 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a card
 	 */
 	public static boolean isCard(ItemStack is) {
-		return is != null && is.getType() == Material.PAPER && is.hasItemMeta()
-				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
+		return is != null && (is.getType() == Material.PAPER || is.getType() == Material.BOOK)
+				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
 				&& (is.getItemMeta().getDisplayName().equals("Captchacard")
 						|| is.getItemMeta().getDisplayName().equals("Punchcard"));
 	}
@@ -281,7 +309,7 @@ public class Captcha extends Module {
 		if (!isCard(card1) || (card2 != null && !isPunch(card2))) {
 			return null;
 		}
-		ItemStack result = new ItemStack(Material.PAPER);
+		ItemStack result = new ItemStack(Material.BOOK);
 		ArrayList<String> lore = new ArrayList<>();
 		lore.addAll(card1.getItemMeta().getLore());
 		if (card2 != null) {
@@ -354,7 +382,7 @@ public class Captcha extends Module {
 	 * @return
 	 */
 	public static ItemStack createLoreCard(String lore) {
-		ItemStack card = new ItemStack(Material.PAPER);
+		ItemStack card = new ItemStack(Material.BOOK);
 		ItemMeta im = card.getItemMeta();
 		ArrayList<String> loreList = new ArrayList<>();
 		loreList.add("Lorecard");
@@ -387,7 +415,15 @@ public class Captcha extends Module {
 		int leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
 		event.setCurrentItem(null);
 		if (leftover > 0) {
-			InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
+			leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
 		}
+		if (leftover > 0) {
+			event.getWhoClicked().getWorld().dropItem(event.getWhoClicked().getLocation(), captcha);
+		}
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "CaptchaCards";
 	}
 }

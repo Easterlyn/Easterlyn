@@ -5,8 +5,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 import co.sblock.effects.EffectManager;
-import co.sblock.users.Region;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.vote.SleepVote;
 
 /**
@@ -26,10 +26,11 @@ public class PlayerChangedWorldListener implements Listener {
 
 		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
 
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		if (event.getFrom().getName().equals("Derspit")) {
+			event.getPlayer().resetPlayerTime();
+		}
 
-		// Update region
-		user.updateCurrentRegion(Region.getLocationRegion(event.getPlayer().getLocation()));
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
 		// Scan for and apply passive effects
 		user.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));

@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -28,7 +29,7 @@ public class PlayerInteractEntityListener implements Listener {
 			return;
 		}
 
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && user.isServer()) {
 			event.setCancelled(true);
 			return;

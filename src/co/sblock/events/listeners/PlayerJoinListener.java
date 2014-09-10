@@ -1,6 +1,5 @@
 package co.sblock.events.listeners;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -24,11 +23,11 @@ public class PlayerJoinListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		event.setJoinMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.GREEN + " logs the fuck in");
+		event.setJoinMessage(null);
 
 		SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
 
-		User u = UserManager.getUserManager().addUser(event.getPlayer().getUniqueId());
+		User u = UserManager.addNewUser(event.getPlayer().getUniqueId());
 		u.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
 		EffectManager.applyPassiveEffects(u);
 	}

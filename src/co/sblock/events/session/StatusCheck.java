@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,7 +19,7 @@ import co.sblock.utilities.Log;
  * 
  * @author Jikoo
  */
-public class StatusCheck implements Runnable {
+public class StatusCheck extends BukkitRunnable {
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
@@ -33,10 +34,12 @@ public class StatusCheck implements Runnable {
 					new URL("http://status.mojang.com/check?service=session.minecraft.net").openStream())));
 			session = !((String) data.get("session.minecraft.net")).equals("green");
 			data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
-					new URL("http://status.mojang.com/check?service=login.minecraft.net").openStream())));
-			login = !((String) data.get("login.minecraft.net")).equals("green");
-		} catch (IOException | ParseException e) {
-			Log.getLogger("Session").warning("Unable to connect to http://status.mojang.com/check - status unavailable.");
+					new URL("http://status.mojang.com/check?service=session.minecraft.net").openStream())));
+			login = !((String) data.get("session.minecraft.net")).equals("green");
+		} catch (IOException | ParseException | ClassCastException | NullPointerException e) {
+			// ClassCast/NPE happens occasionally when JSON appears to be parsed incorrectly.
+			// This check is run every minute, and 99.9% of the time we are casting correctly. I blame Mojang.
+			Log.getLogger("Session").warning("Unable to check http://status.mojang.com/check - status unavailable.");
 			return;
 		}
 

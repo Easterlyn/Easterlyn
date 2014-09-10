@@ -60,6 +60,7 @@ public class PGO extends Machine {
 
 	/**
 	 * Verifies that a PGO is allowed to be turned into the specified Material.
+	 * Holy poopsicles
 	 * 
 	 * @param type Material
 	 * 
@@ -159,5 +160,10 @@ public class PGO extends Machine {
 		default:
 			return false;
 		}
+	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.PERFECTLY_GENERIC_OBJECT);
 	}
 }

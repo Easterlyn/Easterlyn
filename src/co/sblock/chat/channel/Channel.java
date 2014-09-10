@@ -1,9 +1,7 @@
 package co.sblock.chat.channel;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,286 +13,494 @@ import co.sblock.chat.SblockChat;
 import co.sblock.data.SblockData;
 import co.sblock.users.Region;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
-
+import co.sblock.utilities.threadsafe.SetGenerator;
 
 /**
  * Defines default channel behavior
- * 
- * @author Dublek, Jikoo
+ *
+ * @author Dublek, Jikoo, tmathmeyer
  */
 public abstract class Channel {
 
+	/**
+	 * 
+	 * @author ted
+	 *
+	 * A wrapper for the Channels because frankly, they are managed in a rediculous, absurd way
+	 * this is just a temporary solution for serializing them until I get around to refactoring
+	 * that too.
+	 *
+	 */
+	public static class ChannelSerialiser {
+
+		private final ChannelType ct;
+		private final String name;
+		private final AccessLevel access;
+
+		private final Set<UUID> approvedPlayers;
+		private final Set<UUID> moderators;
+		private final Set<UUID> mutedPlayers;
+		private final Set<UUID> bannedPlayers;
+		private final Set<UUID> listeningPlayers;
+
+		private final UUID owner;
+
+		/**
+		 * oh boy, there are alot of params...
+		 * 
+		 * @param ct
+		 * @param name
+		 * @param access
+		 * @param owner
+		 * @param approvedPlayers
+		 * @param moderators
+		 * @param mutedPlayers
+		 * @param bannedPlayers
+		 * @param listeningPlayers
+		 */
+		public ChannelSerialiser(ChannelType ct, String name, AccessLevel access, UUID owner,
+				Set<UUID> approvedPlayers,
+				Set<UUID> moderators,
+				Set<UUID> mutedPlayers,
+				Set<UUID> bannedPlayers,
+				Set<UUID> listeningPlayers) {
+			this.approvedPlayers = approvedPlayers;
+			this.moderators = moderators;
+			this.mutedPlayers = mutedPlayers;
+			this.bannedPlayers = bannedPlayers;
+			this.listeningPlayers = listeningPlayers;
+			this.ct = ct;
+			this.name = name;
+			this.access = access;
+			this.owner = owner;
+		}
+
+		public ChannelSerialiser(ChannelType ct, String name, AccessLevel access, UUID owner) {
+			this.approvedPlayers = SetGenerator.generate();
+			this.moderators = SetGenerator.generate();
+			this.mutedPlayers = SetGenerator.generate();
+			this.bannedPlayers = SetGenerator.generate();
+			this.listeningPlayers = SetGenerator.generate();
+			this.ct = ct;
+			this.name = name;
+			this.access = access;
+			this.owner = owner;
+		}
+
+		public Channel build() {
+			Channel chan;
+			switch(ct) {
+				case NICK:
+					chan = new NickChannel(name, access, owner);
+					break;
+				case NORMAL:
+					chan = new NormalChannel(name, access, owner);
+					break;
+				case REGION:
+					chan = new RegionChannel(name, access, owner);
+					break;
+				case RP:
+					chan = new RPChannel(name, access, owner);
+					break;
+				default:
+					throw new RuntimeException("if this gets called you have some SERIOUS issues");
+			}
+			chan.approvedList = approvedPlayers;
+			chan.modList = moderators;
+			chan.muteList = mutedPlayers;
+			chan.banList = bannedPlayers;
+			chan.listening = listeningPlayers;
+			return chan;
+		}
+
+	}
+
+	/*
+	 * Immutable Data regarding the channel
+	 */
 	protected String name;
 	protected AccessLevel access;
-	protected UUID owner;
 	protected Set<UUID> approvedList;
 	protected Set<UUID> modList;
 	protected Set<UUID> muteList;
 	protected Set<UUID> banList;
 	protected Set<UUID> listening;
-	
-	
+
+	/*
+	 * Ownership is supposed to be transferrable, Keiko just gave up too early D:
+	 */
+	protected UUID owner;
+
+	/**
+	 * @param name the name of the channel
+	 * @param a the access level of the channel
+	 * @param creator the owner of the channel
+	 */
 	public Channel(String name, AccessLevel a, UUID creator) {
 		this.name = name;
 		this.access = a;
 		this.owner = creator;
-		approvedList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
-		modList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		approvedList = SetGenerator.generate();
+		modList = SetGenerator.generate();
+		muteList = SetGenerator.generate();
+		banList = SetGenerator.generate();
+		listening = SetGenerator.generate();
 		if (creator != null) {
-			this.modList.add(creator);
-		}
-		muteList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
-		banList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
-		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());;
-		if (creator != null) {
+			modList.add(creator);
 			SblockData.getDB().saveChannelData(this);
 		}
 	}
 
+
+
+	/* GETTERS */
+	/**
+	 * @return the channel's name
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * @return this channel's access level
+	 */
 	public AccessLevel getAccess() {
 		return this.access;
 	}
 
+	/**
+	 * @return all UUID's of users listening to this channel
+	 */
 	public Set<UUID> getListening() {
 		return this.listening;
 	}
 
-	public abstract ChannelType getType();
-	
 	/**
-	 * ONLY CALL FROM CHATUSER
-	 * 
+	 * @return all UUID's of the mods of this channel
+	 */
+	public Set<UUID> getModList() {
+		return this.modList;
+	}
+
+	/**
+	 * @return all UUID's of the players banned from this channel
+	 */
+	public Set<UUID> getBanList() {
+		return banList;
+	}
+
+	/**
+	 * @return the UUID of the channel owner
+	 */
+	public UUID getOwner() {
+		return this.owner;
+	}
+
+
+
+
+	/* TESTERS */
+	/**
+	 * @param user a user
+	 * @return if this user is an owner (created channel / set by previous owner, or is a 'denizen')
+	 */
+	public boolean isOwner(User user) {
+		return user.getUUID().equals(owner) || user.getPlayer().hasPermission("group.denizen");
+	}
+
+	public abstract ChannelSerialiser toSerialiser();
+
+	/**
+	 * @param user a user
+	 * @return whether this user has permission to moderate the channel
+	 */
+	public boolean isModerator(User user) {
+		return isOwner(user) || user.getPlayer().hasPermission("group.felt") || modList.contains(user.getUUID());
+	}
+
+	/**
+	 * the user must be in the banlist AND not an op (aka 'denizen')
+	 *
+	 * @param user a user
+	 * @return whether this user is banned
+	 */
+	public boolean isBanned(User user) {
+		return banList.contains(user.getUUID()) && !user.getPlayer().hasPermission("group.denizen");
+	}
+
+
+
+
+
+	/* ADDERS / REMOVERS */
+	/**
+	 * TODO: enforce this
+	 * ONLY CALL FROM USER
+	 *
 	 * @param userID the user UUID to add listening
 	 */
 	public void addListening(UUID userID) {
 		this.listening.add(userID);
 	}
-	
+
+	/**
+	 * @param userID the user to add to the approval list
+	 */
+	public void addApproved(UUID userID) {
+		this.approvedList.add(userID);
+	}
+
+	/**
+	 * Method used by database to load a ban silently.
+	 *
+	 * @param user the UUID to add as a ban
+	 */
+	public void addBan(UUID userID) {
+		this.banList.add(userID);
+	}
+
+	/**
+	 * Change the owner of a channel. This should only be useable by admins/the current owner.
+	 *
+	 * @param newOwner the new owner
+	 */
+	public void setOwner(UUID newOwner) {
+		this.owner = newOwner;
+	}
+
+	/**
+	 * Method used by database to load a moderator silently.
+	 *
+	 * @param user the name to add as a moderator
+	 */
+	public void addModerator(UUID id) {
+		modList.add(id);
+	}
+
+	/**
+	 * @param sender the person attempting to apply moderator status to another
+	 * @param userID the ID of the person who may become a mod
+	 */
+	public void addMod(User sender, UUID userID) {
+		User user = UserManager.getUser(userID);
+		if (user == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
+			return;
+		}
+		if (!isModerator(sender)) {
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			return;
+		}
+		String message = ChatMsgs.onChannelModAdd(user.getPlayerName(), this.name);
+		if (!this.isModerator(UserManager.getUser(userID))) {
+			this.modList.add(userID);
+			this.sendMessage(message);
+			if (!this.listening.contains(userID)) {
+				user.sendMessage(message);
+			}
+		} else {
+			sender.sendMessage(message);
+		}
+	}
+
+	/**
+	 * @param sender the person attempting to remove moderator status from another
+	 * @param userID the ID of the person who may lose mod status
+	 */
+	public void removeMod(User sender, UUID userID) {
+		User user = UserManager.getUser(userID);
+		if (user == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
+			return;
+		}
+		if (!this.isModerator(sender)) {
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			return;
+		}
+		String message = ChatMsgs.onChannelModRm(user.getPlayerName(), this.name);
+		if (this.modList.contains(userID) && !this.isOwner(user)) {
+			this.modList.remove(userID);
+			this.sendMessage(message);
+			if (!this.listening.contains(userID)) {
+				user.sendMessage(message);
+			}
+		} else {
+			sender.sendMessage(message);
+		}
+	}
+
 	/**
 	 * ONLY CALL FROM CHATUSER
-	 * 
+	 *
 	 * @param user the UUID to remove from listening.
 	 */
 	public void removeListening(UUID userID) {
 		this.listening.remove(userID);
 	}
 
+	/**
+	 *
+	 * @param sender the sender
+	 * @param nick the nick
+	 */
 	public abstract void setNick(User sender, String nick);
 
-	public abstract void removeNick(User sender);
-
-	public abstract String getNick(User sender);
-
-	public abstract boolean hasNick(User sender);
-
-	public abstract User getNickOwner(String nick);
-	
-	public void setOwner(User sender, UUID newOwner) {
-		if (sender.equals(this.owner)) {
-			this.owner = newOwner;
-		}
-	}
-
-	public UUID getOwner() {
-		return this.owner;
-	}
-
-	public boolean isOwner(User sender) {
-		return sender.getUUID().equals(owner) || sender.getPlayer().hasPermission("group.denizen");
-	}
+	/**
+	 *
+	 * @param sender the sender
+	 * @param warn whether to warn the user
+	 */
+	public abstract void removeNick(User sender, boolean warn);
 
 	/**
-	 * Method used by database to load a moderator silently.
-	 * 
-	 * @param user the name to add as a moderator
+	 *
+	 * @param sender the sender
+	 * @return the nick of the sender
 	 */
-	public void loadMod(UUID id) {
-		this.modList.add(id);
-	}
+	public abstract String getNick(User sender);
 
-	public void addMod(User sender, UUID userID) {
-		if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
-			return;
-		}
-		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
-			return;
-		}
-		User user = User.getUser(userID);
-		String message = ChatMsgs.onChannelModAdd(user.getPlayerName(), this.name);
-		if (!this.isChannelMod(User.getUser(userID))) {
-			this.modList.add(userID);
-			this.sendToAll(sender, message, false);
-			if (!this.listening.contains(userID)) {
-				user.sendMessage(message, true);
-			}
-		} else {
-			sender.sendMessage(message, false);
-		}
-	}
+	/**
+	 *
+	 * @param sender the sender
+	 * @return whether the sender has had a nick set
+	 */
+	public abstract boolean hasNick(User sender);
 
-	public void removeMod(User sender, UUID userID) {
-		if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
-			return;
-		}
-		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
-			return;
-		}
-		User user = User.getUser(userID);
-		String message = ChatMsgs.onChannelModRm(user.getPlayerName(), this.name);
-		if (this.modList.contains(userID) && !this.isOwner(user)) {
-			this.modList.remove(userID);
-			this.sendToAll(sender, message, false);
-			if (!this.listening.contains(userID)) {
-				user.sendMessage(message, true);
-			}
-		} else {
-			sender.sendMessage(message, false);
-		}
-	}
+	/**
+	 *
+	 * @param nick the nickname to reverse lookup
+	 * @return the owner of the provided nickname
+	 */
+	public abstract User getNickOwner(String nick);
 
-	public Set<UUID> getModList() {
-		return this.modList;
-	}
+	/**
+	 * @return the type of this channel
+	 */
+	public abstract ChannelType getType();
 
-	public boolean isChannelMod(User sender) {
-		return isMod(sender) || sender.getPlayer().hasPermission("group.felt");
-	}
 
-	public boolean isMod(User sender) {
-		return modList.contains(sender.getUUID()) || sender.getPlayer().hasPermission("group.denizen");
-	}
 
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * TODO: implement a permission level system to say who is ranked above who (probably an enum)
+	 *
+	 * @param sender the user attempting to kick
+	 * @param userID the user who might be kicked
+	 */
 	public void kickUser(User sender, UUID userID) {
-		if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+		User user = UserManager.getUser(userID);
+		if (!this.isModerator(sender)) {
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
+		if (user == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = User.getUser(userID);
 		String message = ChatMsgs.onUserKickAnnounce(user.getPlayerName(), this.name);
 		if (this.isOwner(user)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 		} else if (listening.contains(user.getPlayerName())) {
-			this.sendToAll(sender, message, false);
+			this.sendMessage(message);
 			this.listening.remove(user.getUUID());
 			user.removeListening(this.getName());
 		} else {
-			sender.sendMessage(message, false);
+			sender.sendMessage(message);
 		}
 
 	}
-	
-	/**
-	 * Method used by database to load a ban silently.
-	 * 
-	 * @param user the UUID to add as a ban
-	 */
-	public void loadBan(UUID userID) {
-		this.banList.add(userID);
-	}
+
+
 
 	public void banUser(User sender, UUID userID) {
-		if (!this.isChannelMod(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+		if (!this.isModerator(sender)) {
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
+		if (UserManager.getUser(userID) == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = User.getUser(userID);
+		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onUserBanAnnounce(Bukkit.getPlayer(userID).getName(), this.name);
 		if (this.isOwner(user)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 		} else if (!this.isBanned(user)) {
 			if (modList.contains(userID)) {
 				modList.remove(userID);
 			}
 			this.approvedList.remove(userID);
 			this.banList.add(userID);
-			this.sendToAll(sender, message, false);
+			this.sendMessage(message);
 			if (listening.contains(userID)) {
 				user.removeListening(this.getName());
 			}
 		} else {
-			sender.sendMessage(message, false);
+			sender.sendMessage(message);
 		}
 	}
 
 	public void unbanUser(User sender, UUID userID) {
 		if (!this.isOwner(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (User.getUser(userID) == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()), false);
+		if (UserManager.getUser(userID) == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = User.getUser(userID);
+		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onUserUnbanAnnounce(user.getPlayerName(), this.name);
 		if (banList.contains(userID)) {
 			this.banList.remove(userID);
-			user.sendMessage(message, true);
-			this.sendToAll(sender, message, false);
+			user.sendMessage(message);
+			this.sendMessage(message);
 		} else {
-			sender.sendMessage(message, false);
+			sender.sendMessage(message);
 		}
-	}
-
-	public Set<UUID> getBanList() {
-		return banList;
-	}
-
-	public boolean isBanned(User user) {
-		return banList.contains(user.getUUID());
-	}
-
-	public void loadApproval(UUID userID) {
-		this.approvedList.add(userID);
 	}
 
 	public void approveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
-			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			User targ = User.getUser(target);
+			User targ = UserManager.getUser(target);
 			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
 			if (this.isApproved(targ)) {
-				sender.sendMessage(message, false);
+				sender.sendMessage(message);
 				return;
 			}
 			approvedList.add(target);
-			this.sendToAll(sender, message, false);
-			targ.sendMessage(message, true);
+			this.sendMessage(message);
+			targ.sendMessage(message);
 		}
 	}
 
-	public void deapproveUser(User sender, UUID target) {
+	public void disapproveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
-			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			User targ = User.getUser(target);
+			User targ = UserManager.getUser(target);
 			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
 			if (!this.isApproved(targ)) {
-				sender.sendMessage(message, false);
+				sender.sendMessage(message);
 				return;
 			}
 			approvedList.remove(target);
-			this.sendToAll(sender, message, false);
+			this.sendMessage(message);
 			targ.removeListeningSilent(this);
 		}
 	}
@@ -304,113 +510,127 @@ public abstract class Channel {
 	}
 
 	public boolean isApproved(User user) {
-		return approvedList.contains(user.getUUID()) || isChannelMod(user);
+		return approvedList.contains(user.getUUID()) || isModerator(user);
 	}
 
 	public void disband(User sender) {
 		if (this.owner == null) {
-			sender.sendMessage(ChatMsgs.errorDisbandDefault(), false);
+			sender.sendMessage(ChatMsgs.errorDisbandDefault());
 			return;
 		}
 		if (!this.isOwner(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name), false);
+			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		this.sendToAll(sender, ChatMsgs.onChannelDisband(this.getName()), false);
+		this.sendMessage(ChatMsgs.onChannelDisband(this.getName()));
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User.getUser(userID).removeListeningSilent(this);
+			UserManager.getUser(userID).removeListeningSilent(this);
 		}
 		SblockChat.getChat().getChannelManager().dropChannel(this.name);
 	}
 
-	public void sendToAll(User sender, String message, boolean format) {
-		if (format) {
-			message = this.formatMessage(sender, message);
-		}
+	/**
+	 * For sending a channel message, not for chat! Chat should be handled by getting a Message from
+	 * ChannelManager.
+	 *
+	 * @param message the message to send the channel.
+	 */
+	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User u = User.getUser(userID);
+			User u = UserManager.getUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;
 			}
-			u.sendMessage(message, !userID.equals(sender.getUUID()), u.getPlayer().getDisplayName(),
-					this.getNick(u));
+			u.sendMessage(message);
 		}
 		Log.anonymousInfo(message);
 	}
 
 	/**
 	 * Gets chat channel name prefix.
-	 * 
+	 *
 	 * @param sender the User sending the message
-	 * 
+	 *
 	 * @return the channel prefix
 	 */
-	public String formatMessage(User sender, String message) {
+	public String formatMessage(User sender, boolean isThirdPerson) {
 
-		Player player = sender.getPlayer();
-
-		ChatColor guildRank = ColorDef.RANK_HERO;
-		if (player.hasPermission("sblock.guildleader")) {
-			guildRank = sender.getAspect().getColor();
-		}
-
+		ChatColor guildRank;
 		ChatColor channelRank;
-		if (this.isOwner(sender)) {
-			channelRank = ColorDef.CHATRANK_OWNER;
-		} else if (this.isChannelMod(sender)) {
-			channelRank = ColorDef.CHATRANK_MOD;
-		} else {
-			channelRank = ColorDef.CHATRANK_MEMBER;
-		}
-
 		ChatColor globalRank = null;
-		for (ChatColor c : ChatColor.values()) {
-			if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
-				globalRank = c;
-				break;
+		ChatColor region;
+		String nick;
+		String prepend = new String();
+
+		if (sender != null) {
+			Player player = sender.getPlayer();
+
+			// Guild leader color
+			if (player.hasPermission("sblock.guildleader")) {
+				guildRank = sender.getAspect().getColor();
+			} else {
+				guildRank = ColorDef.RANK_HERO;
 			}
-		}
-		if (globalRank != null) {
-			// Do nothing, we've got a fancy override going on
-		} else if (sender.getPlayer().hasPermission("group.horrorterror"))
+
+			// Chat rank color
+			if (this.isOwner(sender)) {
+				channelRank = ColorDef.CHATRANK_OWNER;
+			} else if (this.isModerator(sender)) {
+				channelRank = ColorDef.CHATRANK_MOD;
+			} else {
+				channelRank = ColorDef.CHATRANK_MEMBER;
+			}
+
+			// Message coloring provided by additional perms
+			for (ChatColor c : ChatColor.values()) {
+				if (player.hasPermission("sblockchat.color")
+						&& player.hasPermission("sblockchat." + c.name().toLowerCase())) {
+					prepend += c;
+					break;
+				}
+			}
+
+			// Name color fetched from scoreboard, if team invalid perm-based instead.
+			try {
+				globalRank = ChatColor.valueOf(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getName());
+			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
+				if (sender.getPlayer().hasPermission("group.horrorterror"))
+					globalRank = ColorDef.RANK_HORRORTERROR;
+				else if (sender.getPlayer().hasPermission("group.denizen"))
+					globalRank = ColorDef.RANK_DENIZEN;
+				else if (sender.getPlayer().hasPermission("group.felt"))
+					globalRank = ColorDef.RANK_FELT;
+				else if (sender.getPlayer().hasPermission("group.helper"))
+					globalRank = ColorDef.RANK_HELPER;
+				else if (sender.getPlayer().hasPermission("group.godtier"))
+					globalRank = ColorDef.RANK_GODTIER;
+				else if (sender.getPlayer().hasPermission("group.donator"))
+					globalRank = ColorDef.RANK_DONATOR;
+				else {
+					globalRank = ColorDef.RANK_HERO;
+				}
+			}
+
+			nick = this.getNick(sender);
+
+			Region sRegion = sender.getCurrentRegion();
+			if (sRegion == null) {
+				region = ChatColor.GOLD;
+			} else {
+				region = sRegion.getRegionColor();
+			}
+		} else {
+			guildRank = ColorDef.RANK_HERO;
+			channelRank = ColorDef.CHATRANK_OWNER;
 			globalRank = ColorDef.RANK_HORRORTERROR;
-		else if (sender.getPlayer().hasPermission("group.denizen"))
-			globalRank = ColorDef.RANK_DENIZEN;
-		else if (sender.getPlayer().hasPermission("group.felt"))
-			globalRank = ColorDef.RANK_FELT;
-		else if (sender.getPlayer().hasPermission("group.helper"))
-			globalRank = ColorDef.RANK_HELPER;
-		else if (sender.getPlayer().hasPermission("group.godtier"))
-			globalRank = ColorDef.RANK_GODTIER;
-		else if (sender.getPlayer().hasPermission("group.donator"))
-			globalRank = ColorDef.RANK_DONATOR;
-		else {
-			globalRank = ColorDef.RANK_HERO;
+			region = ColorDef.WORLD_AETHER;
+			nick = "<nonhuman>";
 		}
-
-		// check for third person modifier (#>)
-		boolean isThirdPerson = message.startsWith("#>");
-
-		// strip third person modifier from chat
-		if (isThirdPerson) {
-			message = message.substring(2);
-		}
-
-		if (this.getType() == ChannelType.RP) {
-			globalRank = CanonNicks.getNick(this.getNick(sender)).getColor();
-			// apply quirk to message
-			message = CanonNicks.getNick(this.getNick(sender)).applyQuirk(message);
-		} else if (this.isChannelMod(sender)) {
-			// color formatting - applies only to channel mods.
-			message = ChatColor.translateAlternateColorCodes('&', message);
-		}
-
-		ChatColor region = Region.getRegionColor(sender.getCurrentRegion());
 
 		return guildRank+ "[" + channelRank + this.name + guildRank + "]" + region
-				+ (isThirdPerson ? "> " : " <") + globalRank + this.getNick(sender)
-				+ (isThirdPerson ? " " : region + "> ") + ChatColor.WHITE + message;
+				+ (isThirdPerson ? "> " : " <") + globalRank + nick
+				+ (isThirdPerson ? "" : region + ">") + ChatColor.WHITE + ' ' + prepend;
 	}
 
 	public String toString() {
@@ -420,4 +640,13 @@ public abstract class Channel {
 				+ Bukkit.getOfflinePlayer(this.getOwner()).getName();
 	}
 
+	// this would probably get me fired
+	public boolean equals(Object o) {
+		if (o instanceof String) {
+			return this.name.equals(o);
+		}
+		return super.equals(o);
+	}
+
+	
 }

@@ -39,8 +39,6 @@ local.properties
 # PDT-specific
 .buildpath
 
-*.jar
-
 #################
 ## IntelliJ IDEA
 #################
@@ -118,7 +116,7 @@ publish
 # Others
 [Bb]in
 [Oo]bj
-sql
+
 TestResults
 *.Cache
 ClientBin
@@ -182,3 +180,4 @@ pip-log.txt
 .DS_Store
 
 /bin
+src/config.yml

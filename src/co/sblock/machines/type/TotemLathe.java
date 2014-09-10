@@ -24,6 +24,7 @@ import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.progression.Entry;
@@ -90,7 +91,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if ((user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user)))
 				&& (event.getPlayer().hasPermission("group.denizen")
@@ -196,4 +197,8 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		return i;
 	}
 
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.TOTEM_LATHE);
+	}
 }

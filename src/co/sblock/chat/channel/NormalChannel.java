@@ -8,9 +8,10 @@ import co.sblock.users.User;
 /**
  * Defines normal channel behavior.
  * 
- * @author Dublek
+ * @author Dublek, tmathmeyer
  */
 public class NormalChannel extends Channel {
+	
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, String)
 	 */
@@ -31,15 +32,17 @@ public class NormalChannel extends Channel {
 	 */
 	@Override
 	public void setNick(User sender, String nick) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 	}
 
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#removeNick(ChatUser)
 	 */
 	@Override
-	public void removeNick(User sender) {
-		sender.sendMessage(ChatMsgs.unsupportedOperation(this.name), false);
+	public void removeNick(User sender, boolean warn) {
+		if (warn) {
+			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
+		}
 	}
 
 	/**
@@ -64,5 +67,10 @@ public class NormalChannel extends Channel {
 	@Override
 	public User getNickOwner(String nick) {
 		return null;
+	}
+
+	@Override
+	public ChannelSerialiser toSerialiser() {
+		return new ChannelSerialiser(ChannelType.NORMAL, name, access, owner, approvedList, modList, muteList, banList, listening);
 	}
 }

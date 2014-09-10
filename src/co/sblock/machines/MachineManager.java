@@ -16,14 +16,12 @@ import org.bukkit.entity.Player;
 import co.sblock.data.SblockData;
 import co.sblock.effects.PassiveEffect;
 import co.sblock.machines.type.Alchemiter;
-import co.sblock.machines.type.Bank;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Cruxtruder;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.PGO;
 import co.sblock.machines.type.PunchDesignix;
 import co.sblock.machines.type.TotemLathe;
-import co.sblock.machines.type.Transmaterializer;
 import co.sblock.machines.type.Transportalizer;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
@@ -64,9 +62,6 @@ public class MachineManager {
 		case ALCHEMITER:
 			machine = new Alchemiter(l, owner, d);
 			break;
-		case BANK:
-			machine = new Bank(l, owner);
-			break;
 		case COMPUTER:
 			machine = new Computer(l, owner, false);
 			break;
@@ -81,9 +76,6 @@ public class MachineManager {
 			break;
 		case TOTEM_LATHE:
 			machine = new TotemLathe(l, owner, d);
-			break;
-		case TRANSMATERIALIZER:
-			machine = new Transmaterializer(l, owner, d);
 			break;
 		case TRANSPORTALIZER:
 			machine = new Transportalizer(l, owner, d);

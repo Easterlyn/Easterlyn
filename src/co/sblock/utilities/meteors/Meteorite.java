@@ -5,9 +5,9 @@ import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-
 import co.sblock.Sblock;
+import co.sblock.events.packets.ParticleUtils;
+import co.sblock.events.packets.WrapperPlayServerWorldParticles.ParticleEffect;
 
 /**
  * @author Dublek, Jikoo
@@ -90,12 +90,13 @@ public class Meteorite {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 					@Override
 					public void run() {
-						MeteorMod mm = MeteorMod.getInstance();
+						ParticleUtils pu = ParticleUtils.getInstance();
 						for (Location location : sphereCoords) {
 							if (location.getBlock().getType() == mat) {
 								location.getBlock().setType(Material.AIR);
 							}
-							mm.addEntity((Entity) new MeteoriteComponent(location, mat, explosionBlockDamage, boreMode).getBukkitEntity());
+							pu.addEntity(new MeteoriteComponent(location, mat, explosionBlockDamage,
+									boreMode).getBukkitEntity(), ParticleEffect.LAVA);
 						}
 						MeteorMod.getInstance().getLogger().info(
 								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());

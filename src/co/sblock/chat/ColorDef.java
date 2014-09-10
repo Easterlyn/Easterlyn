@@ -24,6 +24,7 @@ public class ColorDef {
 	public static final ChatColor CHATRANK_MOD = ChatColor.AQUA;
 	public static final ChatColor CHATRANK_MEMBER = ChatColor.GOLD;
 
+	public static final ChatColor WORLD_AETHER = ChatColor.WHITE;
 	public static final ChatColor WORLD_EARTH = ChatColor.DARK_GREEN;
 	public static final ChatColor WORLD_INNERCIRCLE = ChatColor.YELLOW;
 	public static final ChatColor WORLD_OUTERCIRCLE = ChatColor.DARK_PURPLE;
@@ -51,14 +52,11 @@ public class ColorDef {
 	public static final String HAL = ChatColor.WHITE + "[" + ChatColor.RED + "#" + ChatColor.WHITE
 			+ "] <" + ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + "> " + ChatColor.RED;
 
-	public static final String HAL_ME = ChatColor.WHITE + "[" + ChatColor.RED + "#" + ChatColor.WHITE
-			+ "]> " + ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + " " + ChatColor.RED;
-
 	public static String listColors() {
 		StringBuilder sb = new StringBuilder();
 		for (ChatColor c : ChatColor.values()) {
-			sb.append(c).append('\u0026').append(c.getChar()).append('\u0020');
-			sb.append(c.name().toLowerCase()).append(ChatColor.RESET).append('\u0020');
+			sb.append(c).append('&').append(c.getChar()).append(' ');
+			sb.append(c.name().toLowerCase()).append(ChatColor.RESET).append(' ');
 		}
 		return sb.toString();
 	}

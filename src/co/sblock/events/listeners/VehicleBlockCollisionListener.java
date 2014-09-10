@@ -1,14 +1,16 @@
 package co.sblock.events.listeners;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Dispenser;
-import org.bukkit.block.Dropper;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+
+import co.sblock.utilities.minecarts.FreeCart;
 
 /**
  * Listener for VehicleBlockCollisionEvents.
@@ -23,25 +25,22 @@ public class VehicleBlockCollisionListener implements Listener {
 	 * @param event the VehicleBlockCollisionEvent
 	 */
 	@EventHandler
-	public void onVehicleBlockCollisionEvent(VehicleBlockCollisionEvent event) {
+	public void onVehicleBlockCollision(VehicleBlockCollisionEvent event) {
 		if (event.getVehicle().getType() != EntityType.MINECART) {
 			return;
 		}
-		if ( event.getBlock().getType() == Material.DISPENSER) {
-			Block b = event.getBlock();
-			Dispenser disp = (Dispenser)b.getState();
-			disp.getInventory().addItem(new ItemStack(Material.MINECART));
-			event.getVehicle().eject();
-			event.getVehicle().remove();
+		FreeCart.getInstance().remove((Minecart) event.getVehicle());
+		if (event.getVehicle().isDead()) {
+			// Was a FreeCart cart.
 			return;
 		}
-		if ( event.getBlock().getType() == Material.DROPPER) {
-			Block b = event.getBlock();
-			Dropper drop = (Dropper)b.getState();
-			if (drop.getInventory().firstEmpty() == -1) {
-				return; // We only use infinite dispensers, not hoppers.
+		if (event.getBlock().getType() == Material.DISPENSER || event.getBlock().getType() == Material.DROPPER) {
+			BlockState b = event.getBlock().getState();
+			if (((InventoryHolder) b).getInventory().firstEmpty() == -1) {
+				return;
 			}
-			drop.getInventory().addItem(new ItemStack(Material.MINECART));
+			((InventoryHolder) b).getInventory().addItem(new ItemStack(Material.MINECART));
+			b.update(true);
 			event.getVehicle().eject();
 			event.getVehicle().remove();
 			return;

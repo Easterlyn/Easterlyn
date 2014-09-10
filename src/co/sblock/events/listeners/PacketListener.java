@@ -5,6 +5,8 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
 import co.sblock.Sblock;
+import co.sblock.chat.ColorDef;
+import co.sblock.chat.chester.ChesterListener;
 import co.sblock.events.SblockEvents;
 
 /**
@@ -13,7 +15,7 @@ import co.sblock.events.SblockEvents;
 public class PacketListener extends PacketAdapter {
 
 	public PacketListener() {
-		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION);
+		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.CHAT);
 	}
 
 	/**
@@ -30,6 +32,17 @@ public class PacketListener extends PacketAdapter {
 					&& SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
 				event.setCancelled(true);
 				SblockEvents.getEvents().fakeWakeUp(event.getPlayer());
+			}
+		} else if (event.getPacket().getType().equals(PacketType.Play.Client.CHAT)) {
+			if (ChesterListener.getTriggers() == null) {
+				return;
+			}
+			String message = event.getPacket().getStrings().read(0);
+			for (String trigger : ChesterListener.getTriggers()) {
+				if (message.equalsIgnoreCase(trigger)) {
+					event.getPlayer().sendMessage(ColorDef.HAL + "What?");
+					event.setCancelled(true);
+				}
 			}
 		}
 	}

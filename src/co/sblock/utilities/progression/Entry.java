@@ -34,9 +34,10 @@ import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 import co.sblock.machines.MachineManager;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.MediumPlanet;
 import co.sblock.users.ProgressionState;
+import co.sblock.users.Region;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.hologram.EntryTimeTillTag;
 import co.sblock.utilities.meteors.Meteorite;
 
@@ -47,22 +48,18 @@ import co.sblock.utilities.meteors.Meteorite;
  */
 public class Entry {
 
-	private class EntryStorage {
+	public class EntryStorage {
 		public Meteorite meteorite;
-		private Material cruxtype;
+		private final Material cruxtype;
 		public EntryStorage(Meteorite meteorite, Material cruxtype) {
 			this.meteorite = meteorite;
-			this.setCruxtype(cruxtype);
+			this.cruxtype = cruxtype;
 		}
-        @SuppressWarnings("unused")
-        public Material getCruxtype()
-        {
-            return cruxtype;
-        }
-        public void setCruxtype(Material cruxtype)
-        {
-            this.cruxtype = cruxtype;
-        }
+
+		public Material getCruxtype() {
+			return cruxtype;
+		}
+
 	}
 
 	private static Entry instance;
@@ -122,9 +119,9 @@ public class Entry {
 					long time = Long.parseLong(hologram.getLines()[0].replaceAll("\\%entry:([0-9]+)\\%", "$1"));
 
 					if (time <= System.currentTimeMillis()) {
-						User user = User.getUser(holograms.get(hologram));
+						User user = UserManager.getUser(holograms.get(hologram));
 						if (user != null && user.getProgression() == ProgressionState.NONE) {
-							fail(User.getUser(holograms.get(hologram)));
+							fail(UserManager.getUser(holograms.get(hologram)));
 						}
 					}
 				}
@@ -154,7 +151,7 @@ public class Entry {
 		}
 
 		// Kicks the server out of server mode
-		User server = User.getUser(user.getServer());
+		User server = UserManager.getUser(user.getServer());
 		if (server != null && server.isServer()) {
 			server.stopServerMode();
 		}
@@ -253,21 +250,28 @@ public class Entry {
 				Material.EGG, Material.SAPLING, Material.SUGAR_CANE, Material.QUARTZ,
 				Material.BLAZE_ROD };
 	}
+	public Material[] getMaterialList() {
+		return materials;
+	}
 
-	private Location getEntryLocation(MediumPlanet m) {
+	private Location getEntryLocation(Region mPlanet) {
 		double angle = Math.random() * Math.PI * 2;
-		Location l = m.getCenter();
-		l.setX(l.getX() + Math.cos(angle) * 2600);
-		l.setZ(l.getZ() + Math.sin(angle) * 2600);
+		Location l = Bukkit.getWorld(mPlanet.getWorldName())
+				.getHighestBlockAt((int) (Math.cos(angle) * 2600), (int) (Math.sin(angle) * 2600))
+				.getLocation().add(new Vector(0, 1, 0));
 		if (isSafeLocation(l)) {
 			return l;
 		}
-		return getEntryLocation(m);
+		return getEntryLocation(mPlanet);
 	}
 
 	private boolean isSafeLocation(Location l) {
 		return !l.getBlock().getType().isSolid()
 				&& !l.clone().add(new Vector(0, 1, 0)).getBlock().getType().isSolid()
 				&& l.clone().add(new Vector(0, -1, 0)).getBlock().getType().isSolid();
+	}
+	
+	public HashMap<UUID, EntryStorage> getData() {
+		return data;
 	}
 }

@@ -14,7 +14,7 @@ import co.sblock.users.User;
  */
 public class NickChannel extends Channel {
 
-	protected Map<User, String> nickList; 
+	protected transient Map<User, String> nickList; 
 
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, UUID)
@@ -22,7 +22,6 @@ public class NickChannel extends Channel {
 	public NickChannel(String name, AccessLevel a, UUID creator) {
 		super(name, a, creator);
 		nickList = new ConcurrentHashMap<>();
-
 	}
 
 	@Override
@@ -36,17 +35,19 @@ public class NickChannel extends Channel {
 	@Override
 	public void setNick(User sender, String nick) {
 		nickList.put(sender, nick);
-		this.sendToAll(sender, ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this.name), false);
+		this.sendMessage(ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this.name));
 	}
 
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#removeNick(ChatUser)
 	 */
 	@Override
-	public void removeNick(User sender) {
+	public void removeNick(User sender, boolean warn) {
 		if (nickList.containsKey(sender)) {
 			String old = nickList.remove(sender);
-			this.sendToAll(sender, ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name), false);
+			if (warn) {
+				this.sendMessage(ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name));
+			}
 		}
 	}
 
@@ -89,5 +90,10 @@ public class NickChannel extends Channel {
 	 */
 	public Map<User, String> getNickList() {
 		return nickList;
+	}
+
+	@Override
+	public ChannelSerialiser toSerialiser() {
+		return new ChannelSerialiser(ChannelType.NICK, name, access, owner, approvedList, modList, muteList, banList, listening);
 	}
 }

@@ -3,8 +3,8 @@ package co.sblock.users;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import co.sblock.Module;
 import co.sblock.data.SblockData;
+import co.sblock.module.Module;
 
 /**
  * This module holds player information and provides methods for other modules
@@ -19,17 +19,10 @@ public class SblockUsers extends Module {
 	 */
 	@Override
 	protected void onEnable() {
-		getLogger().fine("Enabling UserData Module");
-		// Initialize the player manager
-		UserManager.getUserManager();
 		this.registerCommands(new UserDataCommands());
-
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
 			SblockData.getDB().loadUserData(p.getUniqueId());
 		}
-
-		getLogger().fine("[SblockUserData] UserData Module enabled");
-
 	}
 
 	/**
@@ -37,9 +30,14 @@ public class SblockUsers extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		for (User u : UserManager.getUserManager().getUserlist().toArray(new User[0])) {
+		for (User u : UserManager.getUsers().toArray(new User[0])) {
 			SblockData.getDB().saveUserData(u.getUUID());
 		}
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "SblockUserCore";
 	}
 
 }

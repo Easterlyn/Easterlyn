@@ -17,9 +17,9 @@ import co.sblock.utilities.regex.RegexUtils;
  */
 public enum MachineType {
 
-	ALCHEMITER("alc"), BANK("bnk"), COMPUTER("cpu"), CRUXTRUDER("crx"),
+	ALCHEMITER("alc"), COMPUTER("cpu"), CRUXTRUDER("crx"),
 	PERFECT_BUILDING_OBJECT("pbo"), PERFECTLY_GENERIC_OBJECT("pgo"),
-	PUNCH_DESIGNIX("pd"), TOTEM_LATHE("tl"), TRANSMATERIALIZER("tm"),
+	PUNCH_DESIGNIX("pd"), TOTEM_LATHE("tl"),
 	TRANSPORTALIZER("tp"), ANY("NO.");
 
 	/** The shortened name of the MachineType. */
@@ -87,8 +87,6 @@ public enum MachineType {
 			is.setType(Material.QUARTZ_BLOCK);
 			is.setDurability((short) 2);
 			break;
-		case BANK:
-		case TRANSMATERIALIZER:
 		case TRANSPORTALIZER:
 			is.setType(Material.CHEST);
 			break;
@@ -139,8 +137,6 @@ public enum MachineType {
 
 	public int getCost() {
 		switch (this) {
-		case BANK:
-		case TRANSMATERIALIZER:
 		case TRANSPORTALIZER:
 		default:
 			return -1;

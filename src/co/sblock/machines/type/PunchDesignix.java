@@ -24,6 +24,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.progression.Entry;
@@ -83,7 +84,7 @@ public class PunchDesignix extends Machine {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
 			openInventory(event.getPlayer());
@@ -179,7 +180,6 @@ public class PunchDesignix extends Machine {
 	 */
 	public void updateInventory(final UUID id) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-			@SuppressWarnings("deprecation")
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);
@@ -228,7 +228,7 @@ public class PunchDesignix extends Machine {
 	 * @return
 	 */
 	private static ItemStack[] createExampleRecipes() {
-		ItemStack is1 = new ItemStack(Material.PAPER);
+		ItemStack is1 = new ItemStack(Material.BOOK);
 		ItemMeta im = is1.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 1 options:");
 		ArrayList<String> lore = new ArrayList<>();
@@ -238,7 +238,7 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is1.setItemMeta(im);
 
-		ItemStack is2 = new ItemStack(Material.PAPER);
+		ItemStack is2 = new ItemStack(Material.BOOK);
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 2 options:");
 		lore = new ArrayList<>();
@@ -248,7 +248,7 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is2.setItemMeta(im);
 
-		ItemStack is3 = new ItemStack(Material.PAPER);
+		ItemStack is3 = new ItemStack(Material.BOOK);
 		im = is3.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Punchcard Result:");
 		lore = new ArrayList<>();
@@ -263,5 +263,10 @@ public class PunchDesignix extends Machine {
 		is3.setItemMeta(im);
 
 		return new ItemStack[] {is1, is2, is3};
+	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.PUNCH_DESIGNIX);
 	}
 }

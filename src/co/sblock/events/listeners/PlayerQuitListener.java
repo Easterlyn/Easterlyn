@@ -11,7 +11,9 @@ import co.sblock.effects.Cooldowns;
 import co.sblock.events.SblockEvents;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.inventory.InventoryManager;
+import co.sblock.utilities.minecarts.FreeCart;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.spectator.Spectators;
 import co.sblock.utilities.vote.SleepVote;
@@ -36,6 +38,9 @@ public class PlayerQuitListener implements Listener {
 		// Update vote
 		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
 
+		// Remove free minecart if riding one
+		FreeCart.getInstance().remove(event.getPlayer());
+
 		// Remove Spectator status
 		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
 			Spectators.getSpectators().removeSpectator(event.getPlayer());
@@ -53,7 +58,7 @@ public class PlayerQuitListener implements Listener {
 		Cooldowns.cleanup(event.getPlayer().getName());
 
 		// Remove Server status
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && user.isServer()) {
 			user.stopServerMode();
 		}
@@ -72,6 +77,11 @@ public class PlayerQuitListener implements Listener {
 		// Inform channels that the player is no longer listening to them
 		for (String s : user.getListening()) {
 			user.removeListeningQuit(s);
+		}
+
+		// Restart when last player out if required
+		if (Bukkit.getOnlinePlayers().size() == 0 && SblockEvents.getEvents().recalculateRestart()) {
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 		}
 	}
 }

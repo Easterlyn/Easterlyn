@@ -66,13 +66,13 @@ public class AsyncCall {
 						pst.executeUpdate();
 					}
 				} catch (SQLException e) {
-					SblockData.getLogger().err(e);
+					SblockData.getDB().getLogger().err(e);
 				} finally {
 					if (!callback) {
 						try {
 							pst.close();
 						} catch (SQLException e) {
-							SblockData.getLogger().err(e);
+							SblockData.getDB().getLogger().err(e);
 						}
 					}
 				}

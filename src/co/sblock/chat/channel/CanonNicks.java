@@ -41,7 +41,7 @@ public enum CanonNicks {
 	AUTORESPONDER2("Lil Hal", "timaeusTestified", "4", "pestering"),
 	LILHALJUNIOR("Lil Hal Junior", "timaeusTestified", "6", "pestering"),
 	JANE("Jane", "gutsyGumshoe", "b", "pestering"),
-	CROCKERJANE("Jane", "gutsyGumshoe", "b", "pestering"),
+	CROCKERJANE(ChatColor.AQUA + "Jane", "gutsyGumshoe", "4", "pestering"),
 
 	DAMARA("Damara", null, "4", "trolling"),
 	RUFIOH("Rufioh", null, "6", "trolling"),
@@ -50,7 +50,7 @@ public enum CanonNicks {
 	MEULIN("Meulin", null, "2", "trolling"),
 	PORRIM("Porrim", null, "2", "trolling"),
 	LATULA("Latula", null, "3", "trolling"),
-	ARENEA("Aranea", null, "9", "trolling"),
+	ARANEA("Aranea", null, "9", "trolling"),
 	HORUSS("Horuss", null, "1", "trolling"),
 	KURLOZ("Kurloz", null, "5", "trolling"),
 	CRONUS("Cronus", null, "5", "trolling"),
@@ -59,14 +59,12 @@ public enum CanonNicks {
 	CALLIOPE("Calliope", "uranianUmbra", "7", "cheering"),
 	CALIBORN("Caliborn", "undyingUmbrage", "8", "jeering"),
 	SERKITFEATURE(ChatColor.GREEN + "L" + ChatColor.MAGIC + "o" + ChatColor.GREEN + "rd English",
-			"", "a", "paying attention to");
-
+			null, "a", "paying attention to");
 
 	private String name;
 	private String chumHandle;
 	private ChatColor color;
 	private String pester;
-
 
 	private CanonNicks(String name, String chumHandle, String colorCode, String pester) {
 		this.name = name;
@@ -115,7 +113,7 @@ public enum CanonNicks {
 		case CALLIOPE:
 			return this.color + s.toLowerCase().replace("u", "U");
 		case CROCKERJANE:
-			return ChatColor.DARK_RED + s;
+			break;
 		case CRONUS: // fix ISSUE wvITH ALLCAPS
 			return this.color + s.replaceAll("[vV]", "vw")
 					.replaceAll("([^vV]|\\b)([wW])", "$1wv").replace("B", "8");
@@ -209,7 +207,7 @@ public enum CanonNicks {
 					.replaceAll("([;:])([dDbBpPL\\Q)(][\\E])", ">$1$2")
 					.replaceAll(">([:;])\\(", ">$1[").replaceAll(">([:;])\\)", ">$1]")
 					.replaceAll("\\.{1,2}", "").replaceAll("\\.{4}", "...");
-		case ARENEA:
+		case ARANEA:
 		case VRISKA:
 			return this.color + s.replaceAll(":*([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2")
 					.replaceAll("([\\.!?])+", "$1$1$1$1$1$1$1$1");
@@ -253,7 +251,7 @@ public enum CanonNicks {
 			return CanonNicks.valueOf(nick.toUpperCase());
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			for (CanonNicks n : CanonNicks.values()) {
-				if (nick.equals(n.name)) {
+				if (nick.equals(n.color + n.name) || nick.equals(n.name)) {
 					return n;
 				}
 			}

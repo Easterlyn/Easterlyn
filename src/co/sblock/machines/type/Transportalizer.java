@@ -28,6 +28,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
@@ -122,7 +123,7 @@ public class Transportalizer extends Machine {
                 @Override
 				public void run() {
 					if (fuelHolo != null) {
-						fuelHolo.updateLines(String.valueOf(fuel));
+						fuelHolo.updateLine(0, String.valueOf(fuel));
 					}
 				}
 			}, 200);
@@ -148,7 +149,7 @@ public class Transportalizer extends Machine {
 						}
 						if (hasValue(event.getSource().getItem(i).getType())) {
 							fuel += getValue(event.getSource().getItem(i).getType());
-							fuelHolo.updateLines(String.valueOf(fuel));
+							fuelHolo.updateLine(0, String.valueOf(fuel));
 							key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
 							event.getSource().setItem(i, InventoryUtils.decrement(event.getSource().getItem(i), 1));
 							break;
@@ -227,7 +228,7 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && user.getProgression() == ProgressionState.NONE) {
 			// Transportalizers can only be used by players who have completed Entry.
 			// Any entity, including pre-entry players, can be transported by a
@@ -287,7 +288,7 @@ public class Transportalizer extends Machine {
 				if (e.getLocation().getBlock().equals(pad)) {
 					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
 					fuel -= cost;
-					fuelHolo.updateLines(String.valueOf(fuel));
+					fuelHolo.updateLine(0, String.valueOf(fuel));
 					remote.setPitch(e.getLocation().getPitch());
 					remote.setYaw(e.getLocation().getYaw());
 					e.teleport(remote);
@@ -300,7 +301,7 @@ public class Transportalizer extends Machine {
 			for (Entity e : key.getWorld().getEntities()) {
 				if (e.getLocation().getBlock().equals(remote.getBlock())) {
 					fuel -= cost;
-					fuelHolo.updateLines(String.valueOf(fuel));
+					fuelHolo.updateLine(0, String.valueOf(fuel));
 					e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(), pad.getZ() + .5,
 							e.getLocation().getYaw(), e.getLocation().getPitch()));
 					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
@@ -330,5 +331,10 @@ public class Transportalizer extends Machine {
 		HoloAPI.getManager().clearFromFile(fuelHolo);
 		fuelHolo.clearAllPlayerViews();
 		fuelHolo = null;
+	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.TRANSPORTALIZER);
 	}
 }

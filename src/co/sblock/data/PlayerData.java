@@ -38,10 +38,10 @@ public class PlayerData {
 	 * 
 	 * @param userID the Player UUID to save data for
 	 */
-	protected static void saveUserData(UUID userID) {
-		User user = UserManager.getUserManager().removeUser(userID);
+	public static void saveUserData(UUID userID) {
+		User user = UserManager.removeUser(userID);
 		if (user == null || !user.isLoaded()) {
-			SblockData.getLogger().warning("UUID " + userID.toString()
+			SblockData.getDB().getLogger().warning("UUID " + userID.toString()
 					+ " does not appear to have userdata loaded, skipping save.");
 			return;
 		}
@@ -52,31 +52,30 @@ public class PlayerData {
 			pst.setString(1, user.getPlayerName());
 			pst.setString(2, user.getPlayerClass().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
-			pst.setString(4, user.getMediumPlanet().getShortName());
-			pst.setString(5, user.getDreamPlanet().getDisplayName());
-			pst.setShort(6, user.getTower());
-			pst.setBoolean(7, user.canFly());
+			pst.setString(4, user.getMediumPlanet().name());
+			pst.setString(5, user.getDreamPlanet().name());
+			pst.setBoolean(6, user.canFly());
 			Channel c = user.getCurrent();
-			pst.setString(8, c != null ? c.getName() : "#" + user.getCurrentRegion().name());
-			pst.setBoolean(9, user.isMute());
+			pst.setString(7, c != null ? c.getName() : "#" + user.getCurrentRegion().name());
+			pst.setBoolean(8, user.isMute());
 			StringBuilder sb = new StringBuilder();
 			for (String s : user.getListening()) {
 				sb.append(s + ",");
 			}
-			pst.setString(10, sb.substring(0, sb.length() - 1));
-			pst.setString(11, user.getUserIP());
-			pst.setString(12, user.getTimePlayed());
+			pst.setString(9, sb.substring(0, sb.length() - 1));
+			pst.setString(10, user.getUserIP());
+			pst.setString(11, user.getTimePlayed());
 			String location = user.getPreviousLocationString();
 			if (location == null) {
 				user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				location = user.getPreviousLocationString();
 			}
-			pst.setString(13, location);
-			pst.setString(14, user.getProgramString());
-			pst.setString(15, user.getPlayer().getUniqueId().toString());
-			pst.setString(16, user.getClient() != null ? user.getClient().toString() : null);
-			pst.setString(17, user.getServer() != null ? user.getServer().toString() : null);
-			pst.setString(18, user.getProgression().name());
+			pst.setString(12, location);
+			pst.setString(13, user.getProgramString());
+			pst.setString(14, user.getPlayer().getUniqueId().toString());
+			pst.setString(15, user.getClient() != null ? user.getClient().toString() : null);
+			pst.setString(16, user.getServer() != null ? user.getServer().toString() : null);
+			pst.setString(17, user.getProgression().name());
 
 			if (Sblock.getInstance().isEnabled()) {
 				new AsyncCall(pst).schedule();
@@ -85,7 +84,7 @@ public class PlayerData {
 				pst.executeUpdate();
 			}
 		} catch (Exception e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 			return;
 		}
 	}
@@ -95,7 +94,7 @@ public class PlayerData {
 	 * 
 	 * @param userID the UUID of the user to load data for
 	 */
-	protected static void loadUserData(UUID userID) {
+	public static void loadUserData(UUID userID) {
 		try {
 			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.PLAYER_LOAD_UUID.toString());
@@ -103,7 +102,7 @@ public class PlayerData {
 
 			new AsyncCall(pst, Call.PLAYER_LOAD_UUID).schedule();
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		}
 	}
 
@@ -112,15 +111,15 @@ public class PlayerData {
 	 * 
 	 * @param userID the UUID of the user to delete data for
 	 */
-	protected static void deleteUser(String name) {
+	public static void deleteUser(UUID userID) {
 		try {
 			PreparedStatement pst = SblockData.getDB().connection()
 					.prepareStatement(Call.PLAYER_DELETE.toString());
-			pst.setString(1, name);
+			pst.setString(1, userID.toString());
 
 			new AsyncCall(pst).schedule();
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		}
 	}
 
@@ -129,25 +128,21 @@ public class PlayerData {
 	 * 
 	 * @param rs the ResultSet to load from
 	 */
-	protected static void loadPlayer(ResultSet rs) {
+	public static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
-				User user = UserManager.getUserManager().getUser(UUID.fromString(rs.getString("uuid")));
+				User user = UserManager.getUser(UUID.fromString(rs.getString("uuid")));
 				if (user == null || user.getPlayer() == null) {
-					UserManager.getUserManager().removeUser(user.getUUID());
+					UserManager.removeUser(user.getUUID());
 					return;
 				}
 				user.setAspect(rs.getString("aspect"));
 				user.setPlayerClass(rs.getString("class"));
 				user.setMediumPlanet(rs.getString("mPlanet"));
 				user.setDreamPlanet(rs.getString("dPlanet"));
-				short tower = rs.getShort("towerNum");
-				if (tower != -1) {
-					user.setTower((byte) tower);
-				}
 				user.updateFlight();
 				if (rs.getBoolean("isMute")) {
-					user.setMute(true);;
+					user.setMute(true);
 				}
 				if (rs.getString("channels") != null) {
 					user.loginAddListening(rs.getString("channels").split(","));
@@ -157,11 +152,11 @@ public class PlayerData {
 				} else {
 					user.setPreviousLocation(Bukkit.getWorld("Earth").getSpawnLocation());
 				}
-				user.setCurrent(rs.getString("currentChannel"));
-				if (user.getCurrent() == null || user.getListening().size() == 0) {
+				if (rs.getString("currentChannel") != null) {
+					user.setCurrent(rs.getString("currentChannel"));
+				} else {
 					user.setCurrent("#");
 				}
-				user.setTimePlayed(rs.getString("timePlayed"));
 				user.setPrograms(rs.getString("programs"));
 				if (rs.getString("client") != null) {
 					user.setClient(UUID.fromString(rs.getString("client")));
@@ -174,7 +169,7 @@ public class PlayerData {
 				}
 				user.updateCurrentRegion(user.getPlayerRegion());
 				user.setLoaded();
-				UserManager.getUserManager().team(user.getPlayer());
+				UserManager.team(user.getPlayer());
 			} else {
 				String uuid = rs.getStatement().toString().replaceAll("com.*uuid = '(.*)'", "$1");
 				Player p = Bukkit.getPlayer(UUID.fromString(uuid));
@@ -186,18 +181,19 @@ public class PlayerData {
 						+ " is joining us for the first time! Please welcome them.");
 				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
 
-				User user = UserManager.getUserManager().getUser(p.getUniqueId());
+				User user = UserManager.getUser(p.getUniqueId());
 				user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
 				user.updateCurrentRegion(user.getPlayerRegion());
 				user.setLoaded();
+				UserManager.team(p);
 			}
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				SblockData.getLogger().err(e);
+				SblockData.getDB().getLogger().err(e);
 			}
 		}
 	}
@@ -209,7 +205,7 @@ public class PlayerData {
 	 * 
 	 * @return the name of the SblockUser, "Player" if invalid
 	 */
-	protected static String getUserFromIP(String hostAddress) {
+	public static String getUserFromIP(String hostAddress) {
 		PreparedStatement pst = null;
 		String name = "Player";
 		try {
@@ -223,13 +219,13 @@ public class PlayerData {
 				name = rs.getString("name");
 			}
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			if (pst != null) {
 				try {
 					pst.close();
 				} catch (SQLException e) {
-					SblockData.getLogger().err(e);
+					SblockData.getDB().getLogger().err(e);
 				}
 			}
 		}
@@ -246,7 +242,7 @@ public class PlayerData {
 	 * 
 	 * @param sender the CommandSender requesting information
 	 */
-	protected static void startOfflineLookup(CommandSender sender, String name) {
+	public static void startOfflineLookup(CommandSender sender, String name) {
 		sender.sendMessage(ChatColor.GREEN + "Initiating offline lookup for " + name);
 		try {
 			Call c = Call.PLAYER_LOAD_NAME;
@@ -256,7 +252,7 @@ public class PlayerData {
 			c.setSender(sender);
 			new AsyncCall(pst, c).schedule();
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		}
 	}
 
@@ -266,7 +262,7 @@ public class PlayerData {
 	 * @param sender the CommandSender requesting information
 	 * @param rs the ResultSet to load from
 	 */
-	protected static void loadOfflineLookup(CommandSender sender, ResultSet rs) {
+	public static void loadOfflineLookup(CommandSender sender, ResultSet rs) {
 		ChatColor sys = ChatColor.DARK_AQUA;
 		ChatColor txt = ChatColor.YELLOW;
 		String div = sys + ", " + txt;
@@ -286,10 +282,9 @@ public class PlayerData {
 						.append(rs.getString("previousLocation")).append('\n');
 				sb.append(rs.getString("ip")).append('\n');
 				sb.append("Time: ").append(rs.getString("timePlayed")).append(div).append("Last login: ")
-						.append(new SimpleDateFormat("HH:mm:ss 'on' dd:MM:YY").format(new Date(
+						.append(new SimpleDateFormat("HH:mm:ss 'on' dd/MM/YY").format(new Date(
 								Bukkit.getOfflinePlayer(UUID.fromString(rs.getString("uuid")))
 								.getLastPlayed()))).append('\n');
-				// TODO getOfflinePlayer cannot be called on main thread
 			}
 			sb.append(sys).append("-----------------------------------------\n");
 			if (!(sender instanceof Player) || ((Player) sender).isOnline()) {
@@ -297,12 +292,12 @@ public class PlayerData {
 						: "No player data found for " + rs.getStatement().toString().replaceAll("com.*name='(.*)'", "$1"));
 			}
 		} catch (SQLException e) {
-			SblockData.getLogger().err(e);
+			SblockData.getDB().getLogger().err(e);
 		} finally {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				SblockData.getLogger().err(e);
+				SblockData.getDB().getLogger().err(e);
 			}
 		}
 	}

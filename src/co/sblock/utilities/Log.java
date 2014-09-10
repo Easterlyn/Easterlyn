@@ -13,9 +13,22 @@ import org.bukkit.Bukkit;
  */
 public class Log extends Logger {
 
-	public Log(String name, String localization) {
+	private final String BRACKETED_NAME;
+
+	private Log(String name, String localization) {
 		super(name, localization);
+		BRACKETED_NAME = "[" + name + "] ";
 		LogManager.getLogManager().addLogger(this);
+	}
+
+	/**
+	 * Fancy magic for getting a logger named as the class that called it.
+	 * @see http://stackoverflow.com/questions/421280/how-do-i-find-the-caller-of-a-method-using-stacktrace-or-reflection
+	 */
+	@SuppressWarnings("deprecation")
+	public static Log getLog() {
+		String name = sun.reflect.Reflection.getCallerClass(2).getName();
+		return new Log(name, null);
 	}
 
 	/**
@@ -37,7 +50,7 @@ public class Log extends Logger {
 	 * @param msg the String to log
 	 */
 	public void info(String msg) {
-		Bukkit.getConsoleSender().sendMessage("[" + this.getName() + "] " + msg);
+		Bukkit.getConsoleSender().sendMessage(BRACKETED_NAME + msg);
 	}
 
 	/**
@@ -46,7 +59,7 @@ public class Log extends Logger {
 	 * @param msg the String to log
 	 */
 	public void warning(String msg) {
-		super.warning("[" + this.getName() + "] " + msg);
+		super.warning(BRACKETED_NAME + msg);
 	}
 
 	/**
@@ -55,7 +68,7 @@ public class Log extends Logger {
 	 * @param msg the String to log
 	 */
 	public void severe(String msg) {
-		super.warning("[" + this.getName() + "] " + msg);
+		super.warning(BRACKETED_NAME + msg);
 	}
 
 	/**
@@ -98,15 +111,6 @@ public class Log extends Logger {
 			}
 		}
 		severe("Error report:\n" + trace.toString() + "\nEnd of error report.");
-	}
-
-	/**
-	 * Fine level logging with no prepended name.
-	 * 
-	 * @param msg the String to log
-	 */
-	public static void anonymousFine(Object msg) {
-		getLogger("Minecraft").fine(msg.toString());
 	}
 
 	/**

@@ -3,6 +3,7 @@ package co.sblock.chat.channel;
 import java.util.UUID;
 
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 
 public class RegionChannel extends NormalChannel {
@@ -25,27 +26,25 @@ public class RegionChannel extends NormalChannel {
 	/**
 	 * Allows null senders and chat suppression for global channels.
 	 * 
-	 * @see co.sblock.chat.channel.Channel#sendToAll(User, String, boolean)
+	 * @see co.sblock.chat.channel.Channel#sendMessage(User, String, boolean)
 	 */
 	@Override
-	public void sendToAll(User sender, String message, boolean format) {
-		if (format) {
-			message = this.formatMessage(sender, message);
-		}
+	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User u = User.getUser(userID);
+			User u = UserManager.getUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;
 			}
 			if (!u.isSuppressing()) {
-				u.sendMessage(message, sender != null && !userID.equals(sender.getUUID()),
-						u.getPlayer().getDisplayName(), this.getNick(u));
+				u.sendMessage(message);
 			}
 		}
-		if (sender != null) {
-			// Chester logs even if events are cancelled, chat appears in console.
-			Log.anonymousInfo(message);
-		}
+		Log.anonymousInfo(message);
+	}
+
+	@Override
+	public ChannelSerialiser toSerialiser() {
+		return new ChannelSerialiser(ChannelType.REGION, name, access, owner, approvedList, modList, muteList, banList, listening);
 	}
 }

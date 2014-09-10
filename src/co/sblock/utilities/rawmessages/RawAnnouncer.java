@@ -10,10 +10,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import co.sblock.CommandListener;
-import co.sblock.Module;
 import co.sblock.Sblock;
-import co.sblock.SblockCommand;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.Module;
+import co.sblock.module.SblockCommand;
+import co.sblock.users.UserManager;
+import co.sblock.utilities.Log;
 
 /**
  * @author Jikoo
@@ -36,9 +42,9 @@ public class RawAnnouncer extends Module implements CommandListener {
 			@Override
 			public void run() {
 				MessageElement msg = announcements.get((int) (Math.random() * announcements.size()));
-				getLogger().info(msg.getConsoleFriendly());
+				Log.anonymousInfo(msg.getConsoleFriendly());
 				String announcement = msg.toString();
-				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 							"tellraw " + p.getName() + " " + announcement);
 				}
@@ -105,10 +111,19 @@ public class RawAnnouncer extends Module implements CommandListener {
 						.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click here to go!")),
 				new MessageElement(" to help.", ChatColor.RED)));
 
-		msgs.add(new MessageHalement("Sleeping now is more beneficial. Try holding shift while right clicking your bed!"));
+		msgs.add(new MessageHalement("To sleep without dreaming, sneak while right clicking your bed!"));
 
-		msgs.add(new MessageHalement("Please ").addExtra(new MessageElement("/convert", ChatColor.AQUA),
-				new MessageElement(" all your captchas to the new format!", ChatColor.RED)));
+		msgs.add(new MessageHalement("If you're using our resource pack, we suggest you ").addExtra(
+				new MessageElement("download", ChatColor.AQUA)
+				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://sblock.co/rpack/"))
+				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click to see all Sblock rpacks!")),
+		new MessageElement(" the sound pack as well.", ChatColor.RED)));
+
+		msgs.add(new MessageHalement("Interested in jamming with your fellow Sblock players? Join our ").addExtra(
+				new MessageElement("plug.dj room", ChatColor.AQUA)
+				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://plug.dj/sblock/"))
+				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click join!")),
+		new MessageElement(" to listen and play!", ChatColor.RED)));
 
 		return msgs;
 	}
@@ -121,8 +136,11 @@ public class RawAnnouncer extends Module implements CommandListener {
 		Bukkit.getScheduler().cancelTask(taskId);
 	}
 
-	@SblockCommand(consoleFriendly = true, description = "Force a raw message announcement or talk as Hal.",
-			usage = "/hal", permission = "group.horrorterror")
+	@CommandDenial
+	@CommandDescription("Force a raw message announcement or talk as Hal.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/hal [0-8|text]")
+	@SblockCommand(consoleFriendly = true)
 	public boolean hal(CommandSender s, String[] args) {
 		MessageElement msg;
 		if (args.length == 1) {
@@ -141,11 +159,16 @@ public class RawAnnouncer extends Module implements CommandListener {
 		} else {
 			msg = announcements.get((int) (Math.random() * announcements.size()));
 		}
-		getLogger().info(msg.getConsoleFriendly());
+		Log.anonymousInfo(msg.getConsoleFriendly());
 		String announcement = msg.toString();
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + announcement);
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			UserManager.getUser(p.getUniqueId()).rawHighlight(announcement);
 		}
 		return true;
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "RawAnnouncer";
 	}
 }

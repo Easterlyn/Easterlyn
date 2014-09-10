@@ -24,6 +24,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.experience.Experience;
@@ -95,7 +96,7 @@ public class Alchemiter extends Machine {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		User user = User.getUser(event.getPlayer().getUniqueId());
+		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
 			openInventory(event.getPlayer());
@@ -104,7 +105,7 @@ public class Alchemiter extends Machine {
 	}
 
 	/**
-	 * Open a PunchDesignix inventory for a Player.
+	 * Open a Alchemiter inventory for a Player.
 	 * 
 	 * @param player the Player
 	 */
@@ -155,7 +156,6 @@ public class Alchemiter extends Machine {
 	 */
 	public void updateInventory(final UUID id) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-			@SuppressWarnings("deprecation")
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);
@@ -200,5 +200,10 @@ public class Alchemiter extends Machine {
 				player.updateInventory();
 			}
 		});
+	}
+
+	@Override
+	public MachineSerialiser getSerialiser() {
+		return new MachineSerialiser(key, owner, direction, data, MachineType.ALCHEMITER);
 	}
 }

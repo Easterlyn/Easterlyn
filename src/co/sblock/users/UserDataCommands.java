@@ -3,16 +3,28 @@ package co.sblock.users;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.BanList.Type;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
-import co.sblock.CommandListener;
-import co.sblock.SblockCommand;
 import co.sblock.chat.ChatMsgs;
+import co.sblock.data.SblockData;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.utilities.Icon;
+import co.sblock.module.CommandDenial;
+import co.sblock.module.CommandDescription;
+import co.sblock.module.CommandListener;
+import co.sblock.module.CommandPermission;
+import co.sblock.module.CommandUsage;
+import co.sblock.module.SblockCommand;
+import co.sblock.utilities.Broadcast;
+import co.sblock.utilities.minecarts.FreeCart;
 
 /**
  * Class for holding commands associated with the UserData module.
@@ -30,15 +42,31 @@ public class UserDataCommands implements CommandListener {
 	/** Map containing all server/client player requests */
 	public static Map<String, String> requests = new HashMap<String, String>();
 
-	/**
-	 * Gets the profile of a SblockUser.
-	 * 
-	 * @param sender the CommandSender
-	 * @param target the SblockUser to look up
-	 * 
-	 * @return true if command was used correctly
-	 */
-	@SblockCommand(consoleFriendly = true, description = "Check a player's profile.", usage = "")
+	@CommandDescription("Get your ping.")
+	@CommandUsage("/ping <player>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean ping(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player) && args.length == 0) {
+			return false;
+		}
+		Player target;
+		if (args.length == 0 || !sender.hasPermission("group.helper")) {
+			target = (Player) sender;
+		} else {
+			target = Bukkit.getPlayer(args[0]);
+		}
+		if (target == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown player " + args[0] + "!");
+			return true;
+		}
+		sender.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.YELLOW +"'s ping is " +
+			((org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer) target).getHandle().ping + "ms!");
+		return true;
+	}
+
+	@CommandDescription("Check a player's profile.")
+	@CommandUsage("/profile <player>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean profile(CommandSender sender, String[] target) {
 		User user = null;
 		if (target == null || target.length == 0) {
@@ -46,11 +74,11 @@ public class UserDataCommands implements CommandListener {
 				sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
 				return true;
 			}
-			user = User.getUser(((Player) sender).getUniqueId());
+			user = UserManager.getUser(((Player) sender).getUniqueId());
 		} else {
 			Player pTarget = Bukkit.getPlayer(target[0]);
 			if (pTarget != null) {
-				user = UserManager.getUserManager().getUser(pTarget.getUniqueId());
+				user = UserManager.getUser(pTarget.getUniqueId());
 			}
 		}
 		if (user == null) {
@@ -60,28 +88,42 @@ public class UserDataCommands implements CommandListener {
 		sender.sendMessage(PROFILE_COLOR + "-----------------------------------------\n"
 				+ ChatColor.YELLOW + user.getPlayerName() + ": " + user.getPlayerClass().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
 				+ PROFILE_COLOR    + "-----------------------------------------\n"
-				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().getDisplayName() + "\n"
-				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().getShortName());
+				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().getWorldName() + "\n"
+				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().name());
 		return true;
 	}
-	
-	/**
-	 * Set SblockUser data.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the String[] of arguments where 0 is player name, 1 is data
-	 *        being changed, and 2 is the new value
-	 * 
-	 * @return true if command was used correctly
-	 */
-	@SblockCommand(consoleFriendly = true, description = "Set player data",
-			usage = "setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>",
-			permission = "group.horrorterror")
+
+	@CommandDescription("Check data stored for a player")
+	@CommandUsage("/whois <exact player>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean whois(CommandSender sender, String[] target) {
+		if (target == null || target.length == 0) {
+			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
+		}
+		if (sender instanceof Player && !sender.hasPermission("group.denizen")) {
+			((Player) sender).performCommand("profile " + target[0]);
+			return true;
+		}
+		Player p = Bukkit.getPlayer(target[0]);
+		if (p == null) {
+			SblockData.getDB().startOfflineLookup(sender, target[0]);
+			return true;
+		}
+		User u = UserManager.getUser(p.getUniqueId());
+		sender.sendMessage(u.toString());
+		return true;
+	}
+
+	@CommandDenial
+	@CommandDescription("Set player data manually.")
+	@CommandUsage("setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>")
+	@CommandPermission("group.horrorterror")
+	@SblockCommand(consoleFriendly = true)
 	public boolean setplayer(CommandSender sender, String[] args) {
 		if (args == null || args.length < 3) {
 			return false;
 		}
-		User user = UserManager.getUserManager().getUser(Bukkit.getPlayer(args[0]).getUniqueId());
+		User user = UserManager.getUser(Bukkit.getPlayer(args[0]).getUniqueId());
 		args[1] = args[1].toLowerCase();
 		if(args[1].equals("class"))
 			user.setPlayerClass(args[2]);
@@ -99,46 +141,10 @@ public class UserDataCommands implements CommandListener {
 			return false;
 		return true;
 	}
-	
-	/**
-	 * Set specified tower Location to CommandSender's current Location.
-	 * 
-	 * @param sender the CommandSender
-	 * @param number the tower number to set
-	 * 
-	 * @return true if command was used correctly
-	 */
-	@SblockCommand(description = "Set tower location.", usage = "/settower <0-7>",
-			permission = "group.horrorterror")
-	public boolean settower(CommandSender sender, String[] number) {
-		if (number == null || number.length == 0) {
-			return false;
-		}
-		switch (Region.uValueOf(((Player)sender).getWorld().getName())) {
-		case INNERCIRCLE:
-		case OUTERCIRCLE:
-			try {
-				SblockEvents.getEvents().getTowerData()
-						.add(((Player)sender).getLocation(), Byte.valueOf(number[0]));
-			} catch (NumberFormatException e) {
-				sender.sendMessage(ChatColor.RED + number[0] + " is not a valid number! Remember, 0-7.");
-			}
-			return true;
-		default:
-			sender.sendMessage(ChatColor.RED + "You do not appear to be in a dream planet.");
-			return true;
-		}
-	}
 
-	/**
-	 * Send a request for a server player.
-	 * 
-	 * @param s the CommandSender
-	 * @param args the name of the player to send a request to
-	 * 
-	 * @return true
-	 */
-	@SblockCommand(description = "Ask someone to be your Sburb Server player!", usage = "/requestserver <player>")
+	@CommandDescription("Ask someone to be your Sburb server player!")
+	@CommandUsage("/requestserver <player>")
+	@SblockCommand
 	public boolean requestserver(CommandSender s, String[] args) {
 		if (args.length == 0) {
 			s.sendMessage(ChatColor.RED + "Who ya gonna call?");
@@ -153,7 +159,7 @@ public class UserDataCommands implements CommandListener {
 			s.sendMessage(ChatColor.RED + "Unknown user!");
 			return true;
 		}
-		User u = User.getUser(p.getUniqueId());
+		User u = UserManager.getUser(p.getUniqueId());
 		if (u == null) {
 			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
 			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
@@ -183,15 +189,9 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
-	/**
-	 * Send a request for a client player.
-	 * 
-	 * @param s the CommandSender
-	 * @param args the name of the player to send a request to
-	 * 
-	 * @return true
-	 */
-	@SblockCommand(description = "Ask someone to be your Sburb Client player!", usage = "/requestclient <player>")
+	@CommandDescription("Ask someone to be your Sburb client player!")
+	@CommandUsage("/requestclient <player>")
+	@SblockCommand
 	public boolean requestclient(CommandSender s, String[] args) {
 		if (args.length == 0) {
 			s.sendMessage(ChatColor.RED + "Who ya gonna call?");
@@ -206,7 +206,7 @@ public class UserDataCommands implements CommandListener {
 			s.sendMessage(ChatColor.RED + "Unknown user!");
 			return true;
 		}
-		User u = User.getUser(p.getUniqueId());
+		User u = UserManager.getUser(p.getUniqueId());
 		if (u == null) {
 			s.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
 			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
@@ -236,28 +236,22 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
-	/**
-	 * Accept a pending server or client request.
-	 * 
-	 * @param s the CommandSender
-	 * @param args ignored
-	 * 
-	 * @return true
-	 */
-	@SblockCommand(description = "Accept an open request!", usage = "/acceptrequest")
+	@CommandDescription("Accept an open request!")
+	@CommandUsage("/acceptrequest")
+	@SblockCommand
 	public boolean acceptrequest(CommandSender s, String[] args) {
 		if (!requests.containsKey(s.getName())) {
 			s.sendMessage(ChatColor.RED + "You should get someone to /requestserver or /requestclient before attempting to accept!");
 			return true;
 		}
 		String req = requests.remove(s.getName());
-		User u = User.getUser(((Player) s).getUniqueId());
+		User u = UserManager.getUser(((Player) s).getUniqueId());
 		Player p1 = Bukkit.getPlayer(req.substring(1));
 		if (p1 == null) {
 			s.sendMessage(ChatColor.GOLD + req.substring(1) + ChatColor.RED + " appears to be offline! Request removed.");
 			return true;
 		}
-		User u1 = User.getUser(p1.getUniqueId());
+		User u1 = UserManager.getUser(p1.getUniqueId());
 		if (req.charAt(0) == 'c') {
 			u.setClient(u1.getUUID());
 			u1.setServer(u.getUUID());
@@ -270,15 +264,9 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
-	/**
-	 * Decline a pending server or client request.
-	 * 
-	 * @param s the CommandSender
-	 * @param args ignored
-	 * 
-	 * @return true
-	 */
-	@SblockCommand(description = "Say \"no\" to peer pressure!", usage = "/declinerequest")
+	@CommandDescription("Say \"no\" to peer pressure!")
+	@CommandUsage("/declinerequest")
+	@SblockCommand
 	public boolean declinerequest(CommandSender s, String[] args) {
 		if (!requests.containsKey(s.getName())) {
 			s.sendMessage(ChatColor.RED + "You vigorously decline... no one."
@@ -295,16 +283,11 @@ public class UserDataCommands implements CommandListener {
 		
 	}
 
-	/**
-	 * A simple command warp wrapper to prevent users from using tower warps to other aspects.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the String[] of arguments where 0 is aspect/warp, 1 is player name
-	 * 
-	 * @return true if command was used correctly
-	 */
-	@SblockCommand(consoleFriendly = true, description = "Warps player if aspect matches warp name.",
-			usage = "aspectwarp <warp> <player>", permission = "group.denizen")
+	@CommandDenial
+	@CommandDescription("Warps player if aspect matches warp name.")
+	@CommandPermission("group.felt")
+	@CommandUsage("aspectwarp <warp> <player>")
+	@SblockCommand(consoleFriendly = true)
 	public boolean aspectwarp(CommandSender sender, String[] args) {
 		if (args == null || args.length < 2) {
 			return false;
@@ -314,7 +297,7 @@ public class UserDataCommands implements CommandListener {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		User u = User.getUser(p.getUniqueId());
+		User u = UserManager.getUser(p.getUniqueId());
 		if (!u.getAspect().name().equalsIgnoreCase(args[0])) {
 			return true;
 		}
@@ -322,23 +305,199 @@ public class UserDataCommands implements CommandListener {
 		return true;
 	}
 
+	@CommandDenial
+	@CommandDescription("Teleports a player with no confirmation to either party involved. Intended for commandsigns.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("silenttp <player> <x> <y> <z> [pitch] [yaw]")
+	@SblockCommand(consoleFriendly = true)
+	public boolean silenttp(CommandSender sender, String[] args) {
+		if (args == null || args.length < 4) {
+			return false;
+		}
+		Player pTarget = Bukkit.getPlayer(args[0]);
+		if (pTarget == null) {
+			// silently eat player get failure in case CommandSign messes up, have seen it happen.
+			return true;
+		}
+		try {
+			Location tpdest = new Location(pTarget.getWorld(), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
+			if (args.length >= 6) {
+				tpdest.setPitch(Float.valueOf(args[4]));
+				tpdest.setYaw(Float.valueOf(args[5]));
+			}
+			pTarget.teleport(tpdest);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
 	/**
 	 * Alias for spawn command to prevent confusion of new users.
 	 */
-	@SblockCommand(description = "Teleport to this world's spawn.", usage = "/mvs")
+	@CommandDescription("Teleport to this world's spawn.")
+	@CommandUsage("/mvs")
+	@SblockCommand
 	public boolean spawn(CommandSender sender, String[] args) {
 		((Player) sender).performCommand("mvs");
 		return true;
 	}
 
-	/**
-	 * Updates all players' scoreboard teams.
-	 */
-	@SblockCommand(description = "Updates scoreboard teams for tab/overhead colors.",
-			usage = "/updateteams", permission = "group.horrorterror")
-	public boolean updateteams(CommandSender sender, String[] args) {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			UserManager.getUserManager().team(p);
+	@CommandDenial
+	@CommandDescription("Spawns a temporary minecart with specified velocity vector at location, then mounts player.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("tempcart <player> <locX> <locY> <locZ> <vecX> <vecZ>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean tempcart(CommandSender sender, String[] args) {
+		if (args == null || args.length < 6) {
+			return false;
+		}
+		Player pTarget = Bukkit.getPlayer(args[0]);
+		if (pTarget == null) {
+			return true;
+		}
+		try {
+			Location cartDest = new Location(pTarget.getWorld(), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
+			Vector cartVector = new Vector(Double.valueOf(args[4]), 0, Double.valueOf(args[5]));
+			FreeCart.getInstance().spawnCart(pTarget, cartDest, cartVector);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
+	@CommandDenial
+	@CommandDescription("YOU CAN'T ESCAPE THE RED MILES.")
+	@CommandPermission("group.denizen")
+	@CommandUsage("/sban <target> [optional reason]")
+	@SblockCommand(consoleFriendly = true)
+	public boolean sban(CommandSender sender, String[] args) {
+		if (args == null || args.length == 0) {
+			return false;
+		}
+		String target = args[0];
+		StringBuilder reason = new StringBuilder();
+		for (int i = 1; i < args.length; i++) {
+			reason.append(ChatColor.translateAlternateColorCodes('&', args[i])).append(' ');
+		}
+		if (args.length == 1) {
+			reason.append("Git wrekt m8.");
+		}
+		if (target.contains(".")) { // IPs probably shouldn't be announced.
+			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, sender.getName());
+		} else {
+			Broadcast.general(ChatColor.DARK_RED + target
+					+ " has been wiped from the face of the multiverse. " + reason.toString());
+			Player p = Bukkit.getPlayer(target);
+
+			if (p != null) { // This method is actually more efficient than getting an OfflinePlayer without a UUID
+				User victim = UserManager.getUser(p.getUniqueId());
+				Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
+						"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());
+				Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
+						"<name=" + victim.getPlayerName() + ">" + reason, null, sender.getName());
+				victim.getPlayer().kickPlayer(reason.toString());
+			} else {
+				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, sender.getName());
+			}
+		}
+		return true;
+	}
+
+	@CommandDenial
+	@CommandDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/ultraban <target>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean ultraban(CommandSender sender, String[] args) {
+
+		if (!Bukkit.dispatchCommand(sender, "sban " + StringUtils.join(args, ' '))) {
+			// sban will return its own usage failure, no need to double message.
+			return true;
+		}
+
+		Player p = Bukkit.getPlayer(args[0]);
+		if (p != null) {
+			User victim = UserManager.getUser(p.getUniqueId());
+			SblockData.getDB().deleteUser(victim.getUUID());
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + p.getUniqueId());
+		}
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + args[0]);
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ps delete " + args[0]);
+		return true;
+	}
+
+	@CommandDenial
+	@CommandDescription("DO THE WINDY THING.")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/unsban <UUID|name|IP>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean unsban(CommandSender sender, String[] target) {
+		if (target == null || target.length == 0) {
+			return false;
+		}
+		BanList bans = Bukkit.getBanList(Type.IP);
+		BanList pbans = Bukkit.getBanList(Type.NAME);
+		if (bans.isBanned(target[0])) {
+			pbans.pardon(bans.getBanEntry(target[0]).getReason()
+					.replaceAll(".*<name=(\\w{1,16}+)>.*", "$1"));
+			bans.pardon(target[0]);
+		} else if (pbans.isBanned(target[0])) {
+			bans.pardon(pbans.getBanEntry(target[0]).getReason()
+					.replaceAll(".*<ip=(([0-9]{1,3}\\.){3}[0-9]{1,3})>.*", "$1"));
+			pbans.pardon(target[0]);
+		} else  {
+			sender.sendMessage(ChatColor.RED + "No bans were found for " + target[0]);
+			return true;
+		}
+		if (target[0].contains(".")) {
+			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + target[0]
+					+ " may be an IP.");
+		} else {
+			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
+		}
+		return true;
+	}
+
+	@CommandDescription("Run an eye over the server rules.")
+	@CommandUsage("/? Rules")
+	@SblockCommand(consoleFriendly = true)
+	public boolean rules(CommandSender sender, String[] args) {
+		Bukkit.dispatchCommand(sender, "? Rules");
+		return true;
+	}
+
+	@CommandDescription("See what's what.")
+	@CommandUsage("/?")
+	@SblockCommand(consoleFriendly = true)
+	public boolean help(CommandSender sender, String[] args) {
+		Bukkit.dispatchCommand(sender, "? " + StringUtils.join(args, ' ').trim());
+		return true;
+	}
+
+	@CommandDenial
+	@CommandDescription("Fixes all issues except crappy code.")
+	@CommandPermission("group.horrorterror")
+	@SblockCommand(consoleFriendly = true)
+	public boolean softrestart(CommandSender sender, String[] target) {
+		if (Bukkit.getOnlinePlayers().size() == 0) {
+			Bukkit.dispatchCommand(sender, "restart");
+			return true;
+		}
+		SblockEvents.getEvents().setSoftRestart(true);
+		return true;
+	}
+
+	@CommandDescription("Toggle the database implementation")
+	@CommandUsage("&c/database")
+	@CommandPermission("sblock.ask.adam.before.touching")
+	@CommandDenial("&4&lOH NO YOU DI'INT.")
+	@SblockCommand
+	public boolean database(CommandSender sender, String[] args) {
+		if (sender.isOp()) {
+			sender.sendMessage("Toggled database implementation to " + SblockData.toggleDBImpl());
+		} else {
+			sender.sendMessage("Op yosef son");
 		}
 		return true;
 	}

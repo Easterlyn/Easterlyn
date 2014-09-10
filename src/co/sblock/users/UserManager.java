@@ -6,44 +6,46 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.chat.ColorDef;
-import co.sblock.data.SblockData;
+import co.sblock.users.User.UserSpawner;
 
 /**
  * Class that keeps track of players currently logged on to the game
  * 
- * @author FireNG, Jikoo
+ * @author FireNG, Jikoo, tmathmeyer
  */
 public class UserManager {
 
-	/** The UserManager instance. */
-	private static UserManager manager;
-
-	/** The Map of Player UUID and relevant SblockUsers currently online. */
-	private Map<UUID, User> users;
-
-	/** Constructor for UserManager. */
-	UserManager() {
-		manager = this;
-		this.users = new HashMap<>();
-	}
+	/* The Map of Player UUID and relevant SblockUsers currently online. */
+	private static final Map<UUID, User> users = new HashMap<>();
 
 	/**
-	 * Adds a Player to the users list
+	 * Adds a new user to the memstore,
+	 * though wont override it if there is already one
+	 * (in the case of multiple login-logouts)
 	 * 
 	 * @param player the name of the Player
 	 */
-	public User addUser(UUID userID) {
-		if (users.containsKey(userID)) {
-			return users.get(userID);
+	public static User addNewUser(UUID userID) {
+		User u = users.get(userID);
+		if (u == null) {
+			u = new UserSpawner().build(userID);
+			users.put(userID, u);
 		}
-		User u = new User(userID);
-		users.put(userID, u);
 		return u;
+	}
+	
+	/**
+	 * @param u the user to add
+	 * @return whether there was already a user with this UUID in the map
+	 */
+	public static boolean addUser(User u) {
+		return users.put(u.getUUID(), u) == null;
 	}
 
 	/**
@@ -52,24 +54,20 @@ public class UserManager {
 	 * @param player the name of the Player to remove
 	 * @return the SblockUser for the removed player, if any
 	 */
-	public User removeUser(UUID userID) {
+	public static User removeUser(UUID userID) {
 		return users.remove(userID);
 	}
 
 	/**
-	 * Gets a SblockUserby Player name.
 	 * 
-	 * @param name the name of the Player to look up
+	 * @param userID the UUID of the Player to look up
 	 * 
 	 * @return the SblockUser associated with the given Player, or null if no
-	 *         Player with the given name is currently online.
+	 *         Player with the given ID is currently online.
 	 */
-	public User getUser(UUID userID) {
+	public static User getUser(UUID userID) {
 		if (users.containsKey(userID)) {
 			return users.get(userID);
-		}
-		if (Bukkit.getPlayer(userID) != null) {
-			return SblockData.getDB().loadUserData(userID);
 		}
 		return null;
 	}
@@ -79,8 +77,8 @@ public class UserManager {
 	 * 
 	 * @return the SblockUsers currently online
 	 */
-	public Collection<User> getUserlist() {
-		return this.users.values();
+	public static Collection<User> getUsers() {
+		return users.values();
 	}
 
 	/**
@@ -88,22 +86,30 @@ public class UserManager {
 	 * 
 	 * @param p the Player
 	 */
-	public void team(Player p) {
-		String teamName;
-		if (p.hasPermission("group.horrorterror")) {
-			teamName = "horrorterror";
+	public static void team(Player p) {
+		String teamName = null;
+		for (ChatColor c : ChatColor.values()) {
+			if (p.hasPermission("sblockchat." + c.name().toLowerCase())) {
+				teamName = c.name();
+				break;
+			}
+		}
+		if (teamName != null) {
+			// Do nothing, we've got a fancy override going on
+		} else if (p.hasPermission("group.horrorterror")) {
+			teamName = ColorDef.RANK_HORRORTERROR.name();
 		} else if (p.hasPermission("group.denizen")) {
-			teamName = "denizen";
+			teamName = ColorDef.RANK_DENIZEN.name();
 		} else if (p.hasPermission("group.felt")) {
-			teamName = "felt";
+			teamName = ColorDef.RANK_FELT.name();
 		} else if (p.hasPermission("group.helper")) {
-			teamName = "helper";
+			teamName = ColorDef.RANK_HELPER.name();
 		} else if (p.hasPermission("group.donator")) {
-			teamName = "donator";
+			teamName = ColorDef.RANK_DONATOR.name();
 		} else if (p.hasPermission("group.godtier")) {
-			teamName = "godtier";
+			teamName = ColorDef.RANK_GODTIER.name();
 		} else {
-			teamName = "hero";
+			teamName = ColorDef.RANK_HERO.name();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 		Team team = board.getTeam(teamName);
@@ -117,29 +123,7 @@ public class UserManager {
 	/**
 	 * Fetches team prefixes.
 	 */
-	private String getTeamPrefix(String teamName) {
-		if (teamName.equals("horrorterror")) {
-			return ColorDef.RANK_HORRORTERROR.toString();
-		} else if (teamName.equals("denizen")) {
-			return ColorDef.RANK_DENIZEN.toString();
-		} else if (teamName.equals("felt")) {
-			return ColorDef.RANK_FELT.toString();
-		} else if (teamName.equals("helper")) {
-			return ColorDef.RANK_HELPER.toString();
-		} else if (teamName.equals("godtier")) {
-			return ColorDef.RANK_GODTIER.toString();
-		}
-		return ColorDef.RANK_HERO.toString();
-	}
-
-	/**
-	 * Gets the UserManager instance.
-	 * 
-	 * @return the UserManager instance
-	 */
-	public static UserManager getUserManager() {
-		if (manager == null)
-			manager = new UserManager();
-		return manager;
+	private static String getTeamPrefix(String teamName) {
+		return ChatColor.valueOf(teamName).toString();
 	}
 }
