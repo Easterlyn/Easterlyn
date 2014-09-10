@@ -28,6 +28,7 @@ import co.sblock.module.CommandPermission;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.SblockCommand;
 import co.sblock.utilities.Broadcast;
+import co.sblock.utilities.CollectionUtils;
 import co.sblock.utilities.minecarts.FreeCart;
 
 /**
@@ -456,7 +457,7 @@ public class UserDataCommands implements CommandListener {
 	@CommandPermission("group.horrorterror")
 	@SblockCommand(consoleFriendly = true)
 	public boolean softrestart(CommandSender sender, String[] target) {
-		if (Bukkit.getOnlinePlayers().size() == 0) {
+		if (CollectionUtils.sizeofCollection(Bukkit.getOnlinePlayers()) == 0) {
 			Bukkit.dispatchCommand(sender, "restart");
 			return true;
 		}

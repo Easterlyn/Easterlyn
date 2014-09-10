@@ -12,6 +12,7 @@ import co.sblock.events.SblockEvents;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
+import co.sblock.utilities.CollectionUtils;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.minecarts.FreeCart;
 import co.sblock.utilities.progression.Entry;
@@ -80,7 +81,7 @@ public class PlayerQuitListener implements Listener {
 		}
 
 		// Restart when last player out if required
-		if (Bukkit.getOnlinePlayers().size() == 0 && SblockEvents.getEvents().recalculateRestart()) {
+		if (CollectionUtils.sizeofCollection(Bukkit.getOnlinePlayers()) == 0 && SblockEvents.getEvents().recalculateRestart()) {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 		}
 	}
