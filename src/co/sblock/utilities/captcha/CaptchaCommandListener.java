@@ -75,7 +75,7 @@ public class CaptchaCommandListener implements CommandListener {
 			if (is == null || is.getType() != Material.PAPER || !Captcha.isCard(is)) {
 				continue;
 			}
-			conversions++;
+			conversions += is.getAmount();
 			is.setType(Material.BOOK);
 		}
 		player.sendMessage(ChatColor.GREEN.toString() + conversions + " captchacards converted!");

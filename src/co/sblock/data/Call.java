@@ -14,11 +14,10 @@ public enum Call {
 			+ "currentChannel, isMute, channels, ip, timePlayed, previousLocation, programs, uuid, "
 			+ "client, server, progression) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 			+ "ON DUPLICATE KEY UPDATE class=VALUES(class), aspect=VALUES(aspect), mPlanet=VALUES(mPlanet), "
-			+ "dPlanet=VALUES(dPlanet), towerNum=VALUES(towerNum), sleepState=VALUES(sleepState), "
-			+ "currentChannel=VALUES(currentChannel), isMute=VALUES(isMute), channels=VALUES(channels), "
-			+ "ip=VALUES(ip), timePlayed=VALUES(timePlayed), previousLocation=VALUES(previousLocation), "
-			+ "programs=VALUES(programs), client=VALUES(client), server=VALUES(server), name=VALUES(name), "
-			+ "progression=VALUES(progression)"),
+			+ "dPlanet=VALUES(dPlanet), sleepState=VALUES(sleepState), currentChannel=VALUES(currentChannel), "
+			+ "isMute=VALUES(isMute), channels=VALUES(channels), ip=VALUES(ip), timePlayed=VALUES(timePlayed), "
+			+ "previousLocation=VALUES(previousLocation), programs=VALUES(programs), client=VALUES(client), "
+			+ "server=VALUES(server), name=VALUES(name), progression=VALUES(progression)"),
 	PLAYER_LOAD_UUID("SELECT * FROM PlayerData WHERE uuid = ?"),
 	PLAYER_LOAD_NAME("SELECT * FROM PlayerData WHERE name = ?"),
 	PLAYER_DELETE("DELETE FROM PlayerData WHERE name = ?"),

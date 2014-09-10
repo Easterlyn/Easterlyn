@@ -3,7 +3,6 @@ package co.sblock.utilities.jesse;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -91,9 +90,9 @@ public class JesseChurch {
 			p.setOp(false); // the god of havoc can be dangerous when OP
 		}
 
-		p.setGameMode(GameMode.SURVIVAL);
+//		p.setGameMode(GameMode.SURVIVAL);
 
-		letTheSandsOfTimeRunQuickly(event.getBlock());
+//		letTheSandsOfTimeRunQuickly(event.getBlock());
 	}
 
 	/**

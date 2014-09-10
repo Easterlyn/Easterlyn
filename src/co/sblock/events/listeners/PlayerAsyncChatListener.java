@@ -60,5 +60,19 @@ public class PlayerAsyncChatListener implements Listener {
 		event.setMessage(message.getMessage());
 		message.send();
 		event.setFormat("[" + message.getChannel().getName() + "] <%1$s> %2$s");
+
+		if (event.getMessage().toLowerCase().startsWith("halc ") || event.getMessage().toLowerCase().startsWith("halculate ")) {
+			com.fathzer.soft.javaluator.DoubleEvaluator eval = new com.fathzer.soft.javaluator.DoubleEvaluator();
+			String substring = event.getMessage().substring(event.getMessage().indexOf(' '));
+			Message hal = new Message("Lil Hal", "");
+			try {
+				 hal.setMessage(substring + " = " + eval.evaluate(substring));
+			} catch (IllegalArgumentException e) {
+				hal.setMessage("Sorry, I can't read that equation!");
+			}
+			hal.addColor(ChatColor.RED);
+			hal.setChannel(message.getChannel());
+			hal.send();
+		}
 	}
 }

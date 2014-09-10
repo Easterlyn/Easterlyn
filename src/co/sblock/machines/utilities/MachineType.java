@@ -124,9 +124,8 @@ public enum MachineType {
 	public boolean isFree() {
 		switch (this) {
 		case ALCHEMITER:
+		case COMPUTER:
 		case CRUXTRUDER:
-		case PERFECTLY_GENERIC_OBJECT:
-		case PERFECT_BUILDING_OBJECT:
 		case PUNCH_DESIGNIX:
 		case TOTEM_LATHE:
 			return true;
@@ -138,6 +137,7 @@ public enum MachineType {
 	public int getCost() {
 		switch (this) {
 		case TRANSPORTALIZER:
+			return Integer.MAX_VALUE;
 		default:
 			return -1;
 		}

@@ -18,14 +18,8 @@ public enum Status {
 			"Minecraft's session servers aren't responding! You might not be able to log in."),
 	NEITHER(null, null, null);
 
-	/** The message to broadcast initially. */
-	private String announcement;
-
-	/** The message to broadcast when over. */
-	private String allClear;
-
-	/** The server list MOTD to set. */
-	private String MOTD;
+	/* The messages to broadcast under certain conditions */
+	private String announcement, allClear, motd;
 
 	/**
 	 * Constructor for Status.
@@ -37,7 +31,7 @@ public enum Status {
 	private Status(String announcement, String allclear, String MOTD) {
 		this.announcement = announcement;
 		this.allClear = allclear;
-		this.MOTD = MOTD;
+		this.motd = MOTD;
 	}
 
 	/**
@@ -82,7 +76,7 @@ public enum Status {
 	 * @return true if the message is not null
 	 */
 	public boolean hasMOTDChange() {
-		return MOTD != null;
+		return motd != null;
 	}
 
 	/** 
@@ -91,6 +85,6 @@ public enum Status {
 	 * @return String
 	 */
 	public String getMOTDChange() {
-		return ChatColor.RED + "[Lil Hal] " + MOTD;
+		return ChatColor.RED + "[Lil Hal] " + motd;
 	}
 }

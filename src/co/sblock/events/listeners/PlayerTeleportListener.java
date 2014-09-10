@@ -1,13 +1,14 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import co.sblock.Sblock;
 import co.sblock.events.SblockEvents;
 import co.sblock.users.Region;
 import co.sblock.users.User;
@@ -42,21 +43,33 @@ public class PlayerTeleportListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerTeleportHasOccurred(PlayerTeleportEvent event) {
-		User user = UserManager.getUser(event.getPlayer().getUniqueId());
-		// Update region
-		Region target;
-		if (event.getPlayer().getWorld().getName().equals("Derspit")) {
-			target = getTargetDreamPlanet(user, event.getFrom());
-		} else {
-			target = Region.getLocationRegion(event.getPlayer().getLocation());
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerTeleportHasOccurred(final PlayerTeleportEvent event) {
+		if (event.getTo().getWorld().equals(event.getFrom().getWorld())) {
+			return;
 		}
-		user.updateCurrentRegion(target);
+		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				User user = UserManager.getUser(event.getPlayer().getUniqueId());
+				if (!user.isLoaded()) {
+					return;
+				}
+				// Update region
+				Region target;
+				if (event.getPlayer().getWorld().getName().equals("Derspit")) {
+					target = getTargetDreamPlanet(user, event.getFrom().getWorld().getName());
+				} else {
+					target = Region.uValueOf(event.getTo().getWorld().getName());
+				}
+				user.updateCurrentRegion(target);
+			}
+		});
 	}
 
-	private Region getTargetDreamPlanet(User user, Location from) {
-		Region fromRegion = Region.getLocationRegion(from);
+	private Region getTargetDreamPlanet(User user, String from) {
+		Region fromRegion = Region.uValueOf(from);
 		if (!fromRegion.isMedium()) {
 			return user.getDreamPlanet();
 		}

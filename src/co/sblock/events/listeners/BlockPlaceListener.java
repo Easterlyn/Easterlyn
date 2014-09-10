@@ -30,12 +30,12 @@ public class BlockPlaceListener implements Listener {
 	 * 
 	 * @param event the BlockPlaceEvent
 	 */
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 
 		if (JesseChurch.theOneAndOnly().isAnActOfGod(event)) {
 			JesseChurch.hisRoyalHighness().dealWithJesse(event);
-			return; // "and nothing beside remained" --Percy Shelly
+			// "and nothing beside remained" --Percy Shelly
 		}
 
 		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());

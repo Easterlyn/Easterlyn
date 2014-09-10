@@ -124,7 +124,7 @@ public class User {
 		private Set<Integer> programs = new HashSet<>();
 		private Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
 		private String currentChannel = null;
-		private HashSet<String> listening = new HashSet<String>();
+		private HashSet<String> listening = new HashSet<>();
 		private AtomicBoolean globalMute = new AtomicBoolean();
 		private AtomicBoolean suppress = new AtomicBoolean();
 
@@ -595,7 +595,13 @@ public class User {
 	 * @return the Region that the Player is in
 	 */
 	public Region getPlayerRegion() {
-		return Region.getLocationRegion(this.getPlayer().getLocation());
+		String world = this.getPlayer().getWorld().getName();
+		Region r = Region.uValueOf(world);
+		// TODO fix: store in db, users may not be asleep post-Entry
+		if (r.isDream()) {
+			r = this.getDreamPlanet();
+		}
+		return r;
 	}
 
 	/**
@@ -623,13 +629,19 @@ public class User {
 		if (currentChannel == null || currentRegion != null && currentChannel.equals(currentRegion.getChannelName())) {
 			currentChannel = newR.getChannelName();
 		}
-		if (currentRegion != null) {
+		if (currentRegion != null && !currentRegion.getChannelName().equals(newR.getChannelName())) {
 			this.removeListening(currentRegion.getChannelName());
 		}
 		if (!this.listening.contains(newR.getChannelName())) {
 			this.addListening(ChannelManager.getChannelManager().getChannel(newR.getChannelName()));
 		}
-		if (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL())) {
+		if (newR.isDream()) {
+			this.getPlayer().setPlayerTime(newR == Region.OUTERCIRCLE ? 18000L : 6000L, false);
+		} else {
+			this.getPlayer().resetPlayerTime();
+		}
+		if (((org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer) getPlayer()).getHandle().playerConnection.networkManager.getVersion() < 47
+				&& (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL()))) {
 				getPlayer().setResourcePack(newR.getResourcePackURL());
 		}
 		currentRegion = newR;

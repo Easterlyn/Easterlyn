@@ -50,7 +50,7 @@ public class ChesterListener implements Listener {
 	@EventHandler
 	public void onChesterLog(ChesterLogEvent event) {
 		User user = UserManager.getUser(event.getPlayer().getUniqueId());
-		if (user == null ||user.getCurrent() == null || user.isMute() || user.isSuppressing()) {
+		if (user == null || user.getCurrent() == null || user.isMute() || user.isSuppressing()) {
 			event.setCancelled(true);
 			return;
 		}

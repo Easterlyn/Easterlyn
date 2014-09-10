@@ -1,6 +1,7 @@
 package co.sblock.events.packets;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import co.sblock.events.SblockEvents;
@@ -32,35 +33,25 @@ public class SleepTeleport implements Runnable {
 	public void run() {
 		User user = UserManager.getUser(p.getUniqueId());
 		if (p != null && user != null) {
-			switch (Region.getLocationRegion(p.getLocation())) {
-			case EARTH:
-			case LOFAF:
-			case LOHAC:
-			case LOLAR:
-			case LOWAS:
-				SblockEvents.getEvents().teleports.add(p.getName());
-				if (!user.getDreamPlanet().getWorldName()
-								.equals(user.getPreviousLocation().getWorld().getName())) {
+			Location location = p.getLocation();
+			SblockEvents.getEvents().teleports.add(p.getName());
+			if (user.getPreviousLocation().getWorld().getName().equals(p.getWorld().getName())) {
+				if (user.getCurrentRegion().isDream()) {
+					p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
+				} else {
+					p.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
+				}
+			} else {
+				if (Region.uValueOf(user.getPreviousLocation().getWorld().getName()).isDream() && user.getCurrentRegion().isDream()) {
+					p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
+				} else if (!Region.uValueOf(user.getPreviousLocation().getWorld().getName()).isDream() && !user.getCurrentRegion().isDream()) {
 					p.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
 				} else {
 					p.teleport(user.getPreviousLocation());
 				}
-				break;
-			case OUTERCIRCLE:
-			case INNERCIRCLE:
-				SblockEvents.getEvents().teleports.add(p.getName());
-				if (p.getWorld().equals(user.getPreviousLocation().getWorld())) {
-					p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
-				} else {
-					p.teleport(user.getPreviousLocation());
-				}
-				break;
-			default:
-				break;
 			}
-
+			user.setPreviousLocation(location);
 			SblockEvents.getEvents().fakeWakeUp(p);
-
 		}
 		SblockEvents.getEvents().tasks.remove(p.getName());
 	}

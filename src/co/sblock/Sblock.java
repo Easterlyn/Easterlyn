@@ -345,6 +345,15 @@ public class Sblock extends JavaPlugin {
 	}
 
 	/**
+	 * Gets the CommandMap containing all registered commands.
+	 * 
+	 * @return
+	 */
+	public SimpleCommandMap getCommandMap() {
+		return cmdMap;
+	}
+
+	/**
 	 * Passes all registered commands to the CommandListener that registered
 	 * them.
 	 * 

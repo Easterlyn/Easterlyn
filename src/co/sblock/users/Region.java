@@ -1,7 +1,6 @@
 package co.sblock.users;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 
 import co.sblock.chat.ColorDef;
 
@@ -12,8 +11,8 @@ import co.sblock.chat.ColorDef;
  */
 public enum Region {
 	EARTH("Earth", "#EARTH", ColorDef.WORLD_EARTH, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
-	OUTERCIRCLE("Derse", "#DERSPIT", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip", false, true),
-	INNERCIRCLE("Prospit", "#DERSPIT", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Prospit.zip", false, true),
+	OUTERCIRCLE("Derspit", "#DERSPIT", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip", false, true),
+	INNERCIRCLE("Derspit", "#DERSPIT", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Prospit.zip", false, true),
 	FURTHESTRING("FurthestRing", "#FURTHESTRING", ColorDef.WORLD_FURTHESTRING, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
 	LOWAS("LOWAS", "#LOWAS", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
 	LOLAR("LOLAR", "#LOLAR", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
@@ -104,30 +103,21 @@ public enum Region {
 	 * @return the Region that matches, Region.UNKNOWN if invalid.
 	 */
 	public static Region uValueOf(String s) {
-		s = s.toUpperCase();
+		s = s.toUpperCase().replace("_NETHER", "").replace("_THE_END", "");
 		try {
 			return (Region.valueOf(s));
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			// Compatibility for old dream planet saving
 			if (s.equalsIgnoreCase("Prospit")) {
-				return Region.INNERCIRCLE;
+				return INNERCIRCLE;
 			}
 			if (s.equalsIgnoreCase("Derse")) {
-				return Region.OUTERCIRCLE;
+				return OUTERCIRCLE;
 			}
-			return Region.UNKNOWN;
+			if (s.equalsIgnoreCase("Derspit")) {
+				return Math.random() >= .5 ? OUTERCIRCLE : INNERCIRCLE;
+			}
+			return UNKNOWN;
 		}
-	}
-
-	/**
-	 * Gets the Region that a Location is within.
-	 * 
-	 * @param l the Location to get the Region of
-	 * 
-	 * @return the relevant Region
-	 */
-	public static Region getLocationRegion(Location l) {
-		String name = l.getWorld().getName().replace("_nether", "").replace("_the_end", "");
-		return Region.uValueOf(name);
 	}
 }

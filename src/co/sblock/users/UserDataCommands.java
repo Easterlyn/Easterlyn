@@ -1,6 +1,7 @@
 package co.sblock.users;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,10 +10,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.BanList.Type;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.data.SblockData;
 import co.sblock.events.SblockEvents;
@@ -88,7 +92,7 @@ public class UserDataCommands implements CommandListener {
 		sender.sendMessage(PROFILE_COLOR + "-----------------------------------------\n"
 				+ ChatColor.YELLOW + user.getPlayerName() + ": " + user.getPlayerClass().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
 				+ PROFILE_COLOR    + "-----------------------------------------\n"
-				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().getWorldName() + "\n"
+				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().name() + "\n"
 				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().name());
 		return true;
 	}
@@ -498,6 +502,102 @@ public class UserDataCommands implements CommandListener {
 			sender.sendMessage("Toggled database implementation to " + SblockData.toggleDBImpl());
 		} else {
 			sender.sendMessage("Op yosef son");
+		}
+		return true;
+	}
+
+	@CommandDescription("Prints out information about the specified command.")
+	@CommandUsage("&c/cmdinfo <command>")
+	@CommandPermission("group.felt")
+	@CommandDenial
+	@SblockCommand(consoleFriendly = true)
+	public boolean cmdinfo(CommandSender sender, String[] args) {
+		Command command;
+		if (args.length > 0) {
+			command = Sblock.getInstance().getCommandMap().getCommand(args[0]);
+		} else {
+			command = Sblock.getInstance().getCommandMap().getCommand("cmdinfo");
+		}
+		if (command == null) {
+			return false;
+		}
+		sender.sendMessage(ChatColor.DARK_AQUA + "Primary command: " + ChatColor.YELLOW + command.getName());
+		sender.sendMessage(ChatColor.DARK_AQUA + "Description: " + ChatColor.YELLOW + command.getDescription());
+		sender.sendMessage(ChatColor.DARK_AQUA + "Usage: " + ChatColor.YELLOW + command.getUsage());
+		sender.sendMessage(ChatColor.DARK_AQUA + "Permission: " + ChatColor.YELLOW + command.getPermission());
+		if (command.getAliases().size() > 0) {
+			sender.sendMessage(ChatColor.DARK_AQUA + "Aliases: " + ChatColor.YELLOW + command.getAliases());
+		}
+		if (command instanceof PluginIdentifiableCommand) {
+			sender.sendMessage(ChatColor.DARK_AQUA + "Owning plugin: " + ChatColor.YELLOW + ((PluginIdentifiableCommand) command).getPlugin().getName());
+		} else {
+			sender.sendMessage(ChatColor.DARK_AQUA + "Command is most likely vanilla.");
+			sender.sendMessage(ChatColor.DARK_AQUA + "Class: " + ChatColor.YELLOW + command.getClass().getName());
+		}
+		return true;
+	}
+
+	@CommandDescription("Searches commands for matches.")
+	@CommandUsage("&c/cmdsearch [-adpu] <text to search>\nFlags: a = aliases, d = description, p = permission, u = usage")
+	@CommandPermission("group.felt")
+	@CommandDenial
+	@SblockCommand(consoleFriendly = true)
+	public boolean cmdsearch(CommandSender sender, String[] args) {
+		// No search params given
+		if (args.length == 0 || args.length == 1 && args[0].length() == 1 && args[0].charAt(0) == '-') {
+			return false;
+		}
+		boolean aliases = false, description = false, permissions = false, usage = false;
+		if (args[0].charAt(0) == '-') {
+			for (int i = 1; i < args[0].length(); i++) {
+				//check flags for validity
+				char flag = args[0].charAt(i);
+				if (flag == 'a') {
+					aliases = true;
+				} else if (flag == 'd') {
+					description = true;
+				} else if (flag == 'p') {
+					permissions = true;
+				} else if (flag == 'u') {
+					usage = true;
+				} else {
+					sender.sendMessage(ChatColor.DARK_RED + "Invalid flag: " + flag);
+					return false;
+				}
+			}
+		}
+		String toMatch = StringUtils.join(args, ' ', args[0].charAt(0) == '-' ? 2 : 1, args.length).toLowerCase();
+		boolean space = toMatch.contains(" ");
+		if (space && !description && !usage) {
+			sender.sendMessage("Searches with spaces must search descriptions or usage!");
+		}
+		// Removes duplicates before listing
+		HashSet<String> matchingCommands = new HashSet<>();
+		search: for (Command command : Sblock.getInstance().getCommandMap().getCommands()) {
+			if ((!space && command.getName().toLowerCase().contains(toMatch))
+					|| !space && permissions && command.getPermission().toLowerCase().contains(toMatch)
+					|| description && command.getDescription().toLowerCase().contains(toMatch)
+					|| usage && command.getUsage().toLowerCase().contains(toMatch)) {
+				matchingCommands.add(command.getName());
+				continue;
+			}
+			if (!space && aliases) {
+				for (String alias : command.getAliases()) {
+					if (alias.toLowerCase().contains(toMatch)) {
+						matchingCommands.add(command.getName());
+						continue search;
+					}
+				}
+			}
+		}
+		StringBuilder matches = new StringBuilder();
+		for (String name : matchingCommands) {
+				matches.append(ChatColor.YELLOW).append(name).append(ChatColor.DARK_AQUA).append(", ");
+		}
+		if (matches.length() > 0) {
+			sender.sendMessage(ChatColor.DARK_AQUA + "Matching commands: " + matches.substring(0, matches.length() - 4));
+		} else {
+			sender.sendMessage(ChatColor.DARK_AQUA + "No matches found for \"" + ChatColor.YELLOW + toMatch + ChatColor.DARK_AQUA + '"');
 		}
 		return true;
 	}

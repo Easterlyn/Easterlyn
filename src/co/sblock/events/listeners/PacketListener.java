@@ -15,7 +15,8 @@ import co.sblock.events.SblockEvents;
 public class PacketListener extends PacketAdapter {
 
 	public PacketListener() {
-		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.CHAT);
+		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.CHAT//,
+				/* TODO PacketType.Play.Client.TAB_COMPLETE*/);
 	}
 
 	/**
@@ -33,7 +34,9 @@ public class PacketListener extends PacketAdapter {
 				event.setCancelled(true);
 				SblockEvents.getEvents().fakeWakeUp(event.getPlayer());
 			}
-		} else if (event.getPacket().getType().equals(PacketType.Play.Client.CHAT)) {
+			return;
+		}
+		if (event.getPacket().getType().equals(PacketType.Play.Client.CHAT)) {
 			if (ChesterListener.getTriggers() == null) {
 				return;
 			}
@@ -42,8 +45,11 @@ public class PacketListener extends PacketAdapter {
 				if (message.equalsIgnoreCase(trigger)) {
 					event.getPlayer().sendMessage(ColorDef.HAL + "What?");
 					event.setCancelled(true);
+					return;
 				}
 			}
+			return;
 		}
+		// TODO prevent /about and /version tab completion
 	}
 }

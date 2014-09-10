@@ -3,6 +3,10 @@
 #############
 
 testenv/
+
+# Due to the current DMCA I'm not going to add my patched Spigot binary to the repo.
+lib/spigot-*-patched.jar
+
 # We don't want passwords to end up public, so keep config.yml out
 # Too annoying. The config.yml will only be modified after it's written.
 *.jardesc
