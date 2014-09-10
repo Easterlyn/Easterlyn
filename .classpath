@@ -25,6 +25,6 @@
 	<classpathentry kind="lib" path="lib/spigot-api-1582.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/javaluator.jar"/>
-	<classpathentry kind="lib" path="/home/ted/git/Sblock/lib/spigot-20140909a-patched.jar"/>
+	<classpathentry kind="lib" path="lib/spigot-20140909a-patched.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
