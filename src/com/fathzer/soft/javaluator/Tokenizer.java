@@ -7,11 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,34 +73,6 @@ public class Tokenizer {
 			@Override
 			public int compare(String o1, String o2) {
 				return -o1.compareTo(o2);
-			}
-			@Override
-			public Comparator<String> reversed() {
-				throw new UnsupportedOperationException();
-			}
-			@Override
-			public Comparator<String> thenComparing(Comparator<? super String> arg0) {
-				throw new UnsupportedOperationException();
-			}
-			@Override
-			public <U extends Comparable<? super U>> Comparator<String> thenComparing(Function<? super String, ? extends U> arg0) {
-				throw new UnsupportedOperationException();
-			}
-			@Override
-			public <U> Comparator<String> thenComparing(Function<? super String, ? extends U> arg0, Comparator<? super U> arg1) {
-				throw new UnsupportedOperationException();
-			}
-			@Override
-			public Comparator<String> thenComparingDouble(ToDoubleFunction<? super String> arg0) {
-				throw new UnsupportedOperationException();
-			}
-			@Override
-			public Comparator<String> thenComparingInt(ToIntFunction<? super String> arg0) {
-				throw new UnsupportedOperationException();
-			}
-			@Override
-			public Comparator<String> thenComparingLong(ToLongFunction<? super String> arg0) {
-				throw new UnsupportedOperationException();
 			}
 		});
 		// Build a string that will contain the regular expression
@@ -200,10 +167,6 @@ public class Tokenizer {
 		}
 		@Override
 		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public void forEachRemaining(Consumer<? super String> arg0) {
 			throw new UnsupportedOperationException();
 		}
 	}
