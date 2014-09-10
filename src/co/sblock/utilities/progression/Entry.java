@@ -59,6 +59,7 @@ public class Entry {
 		public Material getCruxtype() {
 			return cruxtype;
 		}
+
 	}
 
 	private static Entry instance;
