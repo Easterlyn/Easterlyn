@@ -65,7 +65,7 @@ public class Message {
 
 		int space = message.indexOf(' ');
 		// Check for @<channel> destination
-		if (message.charAt(0) == '@' && space > 1) {
+		if (space > 1 && message.charAt(0) == '@') {
 			target = message.substring(1, space);
 			message = message.substring(space);
 			channel = ChannelManager.getChannelManager().getChannel(target);
