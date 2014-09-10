@@ -105,8 +105,7 @@ public class UserDataCommands implements CommandListener {
 			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
 		}
 		if (sender instanceof Player && !sender.hasPermission("group.denizen")) {
-			((Player) sender).performCommand("profile " + target[0]);
-			return true;
+			return profile(sender, target);
 		}
 		Player p = Bukkit.getPlayer(target[0]);
 		if (p == null) {
@@ -336,17 +335,6 @@ public class UserDataCommands implements CommandListener {
 		}
 	}
 
-	/**
-	 * Alias for spawn command to prevent confusion of new users.
-	 */
-	@CommandDescription("Teleport to this world's spawn.")
-	@CommandUsage("/mvs")
-	@SblockCommand
-	public boolean spawn(CommandSender sender, String[] args) {
-		((Player) sender).performCommand("mvs");
-		return true;
-	}
-
 	@CommandDenial
 	@CommandDescription("Spawns a temporary minecart with specified velocity vector at location, then mounts player.")
 	@CommandPermission("group.horrorterror")
@@ -460,22 +448,6 @@ public class UserDataCommands implements CommandListener {
 		} else {
 			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
 		}
-		return true;
-	}
-
-	@CommandDescription("Run an eye over the server rules.")
-	@CommandUsage("/? Rules")
-	@SblockCommand(consoleFriendly = true)
-	public boolean rules(CommandSender sender, String[] args) {
-		Bukkit.dispatchCommand(sender, "? Rules");
-		return true;
-	}
-
-	@CommandDescription("See what's what.")
-	@CommandUsage("/?")
-	@SblockCommand(consoleFriendly = true)
-	public boolean help(CommandSender sender, String[] args) {
-		Bukkit.dispatchCommand(sender, "? " + StringUtils.join(args, ' ').trim());
 		return true;
 	}
 
