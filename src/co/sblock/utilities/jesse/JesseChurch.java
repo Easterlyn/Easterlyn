@@ -89,10 +89,6 @@ public class JesseChurch {
 		if (p.isOp()) {
 			p.setOp(false); // the god of havoc can be dangerous when OP
 		}
-
-//		p.setGameMode(GameMode.SURVIVAL);
-
-//		letTheSandsOfTimeRunQuickly(event.getBlock());
 	}
 
 	/**
@@ -111,6 +107,7 @@ public class JesseChurch {
 	}
 
 	public void thingsJesseSays (){
+		@SuppressWarnings("unused")
 		String[] quotes = {
 			"I said it was spreading like crazy and keiko said like my herpes",
 			"well...we wanna start a griefing team...",
