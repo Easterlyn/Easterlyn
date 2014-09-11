@@ -14,6 +14,7 @@
 
 	<path id="bundle.path">
 		<fileset dir="${lib.dir}">
+			<include name="javaluator.jar" />
 			<include name="jadis.jar" />
 			<include name="jedis.jar" />
 		</fileset>
@@ -53,7 +54,7 @@
 
 		<jar destfile="${jar.file}" basedir="${class.dir}">
 			<manifest>
-				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar lib/gson.jar" />
+				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar lib/gson.jar lib/javaluator.jar" />
 			</manifest>
 		</jar>
 	</target>

@@ -300,7 +300,11 @@ public class User {
 		this.allowFlight = allowFlight;
 		this.previousLocation = previousLocation;
 		if (previousLocation == null) {
-			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+			try {
+				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+			} catch (NullPointerException e) {
+				this.previousLocation = new Location(Bukkit.getWorld("world"), 0, 70, 0);
+			}
 		}
 		this.currentChannel = currentChannel;
 		this.programs = programs;
