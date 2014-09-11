@@ -16,6 +16,8 @@
 		<fileset dir="${lib.dir}">
 			<include name="jadis.jar" />
 			<include name="jedis.jar" />
+			<include name="javaluator.jar"/>
+			<include name="gson-2.2.4.jar"/>
 		</fileset>
 	</path>
 
@@ -53,7 +55,7 @@
 
 		<jar destfile="${jar.file}" basedir="${class.dir}">
 			<manifest>
-				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar lib/gson.jar lib/javaulator.jar" />
+				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar lib/gson-2.2.4.jar lib/javaluator.jar" />
 			</manifest>
 		</jar>
 	</target>

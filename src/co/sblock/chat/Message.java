@@ -59,7 +59,7 @@ public class Message {
 		}
 
 		escape = message.length() > 0 && message.charAt(0) != '\\';
-		if (!escape) {
+		if (message.length() > 0 && !escape) {
 			message = message.substring(1);
 		}
 

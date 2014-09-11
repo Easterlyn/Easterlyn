@@ -45,7 +45,7 @@ public class SblockChat extends Module {
 	public static SblockChat getChat() {
 		return instance;
 	}
-	
+
 	public static boolean getComputerRequired() {
 		return computersRequired;
 	}

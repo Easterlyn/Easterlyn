@@ -66,7 +66,7 @@ public class PlayerAsyncChatListener implements Listener {
 			String substring = event.getMessage().substring(event.getMessage().indexOf(' '));
 			Message hal = new Message("Lil Hal", "");
 			try {
-				 hal.setMessage(substring + " = " + eval.evaluate(substring));
+				 hal.setMessage(substring.trim() + " = " + eval.evaluate(substring));
 			} catch (IllegalArgumentException e) {
 				hal.setMessage("Sorry, I can't read that equation!");
 			}
