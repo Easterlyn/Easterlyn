@@ -59,13 +59,13 @@ public class Message {
 		}
 
 		escape = message.length() > 0 && message.charAt(0) != '\\';
-		if (!escape) {
+		if (message.length() > 0 && !escape) {
 			message = message.substring(1);
 		}
 
 		int space = message.indexOf(' ');
 		// Check for @<channel> destination
-		if (message.charAt(0) == '@' && space > 1) {
+		if (space > 1 && message.charAt(0) == '@') {
 			target = message.substring(1, space);
 			message = message.substring(space);
 			channel = ChannelManager.getChannelManager().getChannel(target);
