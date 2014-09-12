@@ -63,7 +63,10 @@ public class RedisClient extends SblockData{
 	@Override
 	public void saveUserData(UUID userID) {
 		User user = UserManager.getUser(userID);
-		saveUserData(user);
+		if (user != null)
+		{
+			saveUserData(user);
+		}
 	}
 	/**
 	 * Helper method for SaveUserData(UUID userID)
