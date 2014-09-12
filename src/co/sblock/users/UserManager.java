@@ -16,6 +16,7 @@ import co.sblock.chat.ColorDef;
 import co.sblock.effects.EffectManager;
 import co.sblock.users.User.UserSpawner;
 import co.sblock.utilities.Broadcast;
+import co.sblock.utilities.SpawnLocationInformation;
 
 /**
  * Class that keeps track of players currently logged on to the game
@@ -134,12 +135,11 @@ public class UserManager {
 	 * 
 	 * @param p the player to build the user around
 	 */
-	public static void doFirstLogin(Player p)
+	public static User doFirstLogin(Player p)
 	{
 		//player's first login
 		Broadcast.lilHal("It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
-		// TODO: fix hardcode
-		p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
+		p.teleport(SpawnLocationInformation.getSpawnLocation());
 		
 		
 		
@@ -154,5 +154,8 @@ public class UserManager {
 		
 		user.setLoaded();
 		UserManager.team(p);
+		
+		return user;
 	}
+	
 }

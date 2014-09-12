@@ -1216,9 +1216,19 @@ public class User {
 		return s;
 	}
 
-	public boolean equals(Object object) {
+	public boolean equals(Object object)
+	{
+		if (object == this)
+		{
+			return true;
+		}
+		if (object == null)
+		{
+			return false;
+		}
 		if (object instanceof User) {
-			return ((User) object).getUUID().equals(playerID);
+			User u = (User) object;
+			u.getUUID().equals(getUUID());
 		}
 		return false;
 	}
