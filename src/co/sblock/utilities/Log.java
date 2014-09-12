@@ -99,7 +99,7 @@ public class Log extends Logger {
 	 * 
 	 * @param e the Exception to log
 	 */
-	public void criticalErr(Exception e) {
+	public void criticalErr(Throwable e) {
 		StringBuilder trace = new StringBuilder(e.toString());
 		for (StackTraceElement ste : e.getStackTrace()) {
 			trace.append("\n\tat " + ste.toString());
