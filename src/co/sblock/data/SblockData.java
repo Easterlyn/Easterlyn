@@ -42,7 +42,7 @@ public abstract class SblockData {
 		}
 	}
 
-	private static Implementation impl = Implementation.SQL;
+	private static Implementation impl = Implementation.REDIS;
 
 	/**
 	 * SblockData singleton.

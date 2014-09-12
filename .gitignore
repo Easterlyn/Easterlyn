@@ -72,6 +72,7 @@ Sblock.iml
 *.obj
 *.pch
 *.pdb
+*.rdb
 *.pgc
 *.pgd
 *.rsp
