@@ -107,17 +107,17 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void saveMachine(Machine m) {
-		connection.addSet("MACHINES", m.getSerialiser(), MachineSerialiser.class);
+		connection.addSet("MACHINES", m.getSerialiser(), exceptionLogger);
 	}
 
 	@Override
 	public void deleteMachine(Machine m) {
-		connection.remSet("MACHINES", exceptionLogger, m.getSerialiser());
+		connection.remFSet("MACHINES", m.getSerialiser(), exceptionLogger);
 	}
 
 	@Override
 	public void loadAllMachines() {
-		connection.getSet("MACHINES", machineDataPromise, MachineSerialiser.class, exceptionLogger);
+		connection.getASet("MACHINES", machineDataPromise, MachineSerialiser.class, exceptionLogger);
 	}
 
 	@Override
