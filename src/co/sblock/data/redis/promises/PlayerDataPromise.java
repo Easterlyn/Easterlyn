@@ -38,6 +38,7 @@ public class PlayerDataPromise implements Promise<User> {
 	@Override
 	public void getObject(User user, String key) {
 		if (user != null) {
+			user.initAfterDeserialization();
 			UserManager.addUser(user);
 		} else {
 			UUID id = UUID.fromString(key);

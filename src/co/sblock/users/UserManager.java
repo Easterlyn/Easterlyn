@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -140,8 +139,6 @@ public class UserManager {
 		//player's first login
 		Broadcast.lilHal("It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
 		p.teleport(SpawnLocationInformation.getSpawnLocation());
-		
-		
 		
 		User user = new UserSpawner().build(p.getUniqueId());
 		user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});

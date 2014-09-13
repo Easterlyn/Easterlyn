@@ -73,7 +73,8 @@ public class User {
 	private ProgressionState progression;
 
 	/* Locations to teleport Players to when conditions are met */
-	private Location previousLocation;
+	private SerialisableLocation location;
+	private transient Location previousLocation;
 	private transient Location serverDisableTeleport;
 
 	/* Programs installed to the player's computer */
@@ -86,7 +87,7 @@ public class User {
 	private UUID server, client;
 
 	/* A map of the Effects applied to the Player and their strength. */
-	private transient Map<PassiveEffect, Integer> passiveEffects;
+	private transient Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
 
 	/* The name of the Player's current focused Channel */
 	private String currentChannel;
@@ -818,10 +819,13 @@ public class User {
 	 * Removes all PassiveEffects from the user and cancels the Effect
 	 */
 	public void removeAllPassiveEffects() {
-		for (PassiveEffect effect : passiveEffects.keySet()) {
-			PassiveEffect.removeEffect(getPlayer(), effect);
+		if (passiveEffects != null)
+		{
+			for (PassiveEffect effect : passiveEffects.keySet()) {
+				PassiveEffect.removeEffect(getPlayer(), effect);
+			}
+			this.passiveEffects.clear();
 		}
-		this.passiveEffects.clear();
 	}
 	
 	/**
@@ -1231,5 +1235,15 @@ public class User {
 			u.getUUID().equals(getUUID());
 		}
 		return false;
+	}
+	
+	public void setUpForSerialization()
+	{
+		location = new SerialisableLocation(previousLocation);
+	}
+	
+	public void initAfterDeserialization()
+	{
+		previousLocation = location.asLocation();
 	}
 }

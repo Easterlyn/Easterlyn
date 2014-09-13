@@ -33,7 +33,7 @@
 
 	<target name="compile" description="build class files" depends="clean">
 		<mkdir dir="${class.dir}" />
-		<javac srcdir="${source.dir}" destdir="${class.dir}" includeantruntime="false">
+		<javac srcdir="${source.dir}" destdir="${class.dir}" includeantruntime="false" debug="true">
 			<classpath refid="libraries.path" />
 		</javac>
 	</target>

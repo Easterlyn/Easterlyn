@@ -338,8 +338,7 @@ public class MockWorld implements World{
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "magical land";
 	}
 
 	@Override
