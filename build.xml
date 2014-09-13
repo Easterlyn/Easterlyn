@@ -17,6 +17,8 @@
 			<include name="javaluator.jar" />
 			<include name="jadis.jar" />
 			<include name="jedis.jar" />
+			<include name="javaluator.jar"/>
+			<include name="gson-2.2.4.jar"/>
 		</fileset>
 	</path>
 
