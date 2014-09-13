@@ -1,6 +1,7 @@
 package co.sblock.data.redis;
 
 import com.tmathmeyer.jadis.async.CallBackLogger;
+
 import co.sblock.utilities.Log;
 
 /**
@@ -22,7 +23,6 @@ public class ExceptionLogger implements CallBackLogger<Exception> {
 	@Override
 	public void Log(Exception e, Class<?> clazz) {
 		Log.getLog("ExceptionLogger").criticalErr(e);
-		Log.getLog("ExceptionLogger").severe(e.getMessage());
 		Log.getLog("ExceptionLogger").severe(clazz.getSimpleName());
 	}
 
