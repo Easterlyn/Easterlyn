@@ -84,9 +84,5 @@ public class PlayerQuitListener implements Listener {
 		if (CollectionUtils.sizeofCollection(Bukkit.getOnlinePlayers()) == 0 && SblockEvents.getEvents().recalculateRestart()) {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 		}
-		
-		
-		//TODO: this is a race condition... sorry
-		UserManager.removeUser(event.getPlayer().getUniqueId());
 	}
 }
