@@ -39,7 +39,7 @@ public class PlayerData {
 	 * @param userID the Player UUID to save data for
 	 */
 	public static void saveUserData(UUID userID) {
-		User user = UserManager.removeUser(userID);
+		User user = UserManager.getUser(userID);
 		if (user == null || !user.isLoaded()) {
 			SblockData.getDB().getLogger().warning("UUID " + userID.toString()
 					+ " does not appear to have userdata loaded, skipping save.");
@@ -131,7 +131,7 @@ public class PlayerData {
 	public static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
-				User user = UserManager.getUser(UUID.fromString(rs.getString("uuid")));
+				User user = UserManager.addNewUser(UUID.fromString(rs.getString("uuid")));
 				if (user == null || user.getPlayer() == null) {
 					UserManager.removeUser(user.getUUID());
 					return;
