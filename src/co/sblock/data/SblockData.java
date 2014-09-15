@@ -85,7 +85,7 @@ public abstract class SblockData {
 	 * 
 	 * @return the Connection
 	 */
-	protected abstract Connection connection();
+	public abstract Connection connection();
 
 	/**
 	 * Initiate user data saving for a Player by name.

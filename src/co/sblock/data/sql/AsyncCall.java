@@ -1,4 +1,4 @@
-package co.sblock.data;
+package co.sblock.data.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 
 import co.sblock.Sblock;
+import co.sblock.data.SblockData;
 
 /**
  * A wrapper for making asynchronous SQL calls.

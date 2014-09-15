@@ -18,7 +18,7 @@ import co.sblock.machines.utilities.MachineType;
 public class PBO extends Machine {
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#Machine(Location, String)
 	 */
 	public PBO(Location l, String data) {
 		super(l, data);
@@ -26,7 +26,7 @@ public class PBO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockBreakEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockBreakEvent)
 	 */
 	@Override
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
@@ -34,7 +34,7 @@ public class PBO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#assemble(BlockPlaceEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#assemble(BlockPlaceEvent)
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
@@ -44,7 +44,7 @@ public class PBO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.data.sql.Machines.Type.Machine#getType()
 	 */
 	@Override
 	public MachineType getType() {
@@ -52,7 +52,7 @@ public class PBO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {

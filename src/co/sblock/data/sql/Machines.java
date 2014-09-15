@@ -1,9 +1,10 @@
-package co.sblock.data;
+package co.sblock.data.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import co.sblock.data.SblockData;
 import co.sblock.machines.MachineManager;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Machine;

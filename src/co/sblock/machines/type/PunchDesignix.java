@@ -40,7 +40,7 @@ public class PunchDesignix extends Machine {
 	private static ItemStack[] exampleRecipes;
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String, Direction)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
 	public PunchDesignix(Location l, String data, Direction d) {
@@ -66,7 +66,7 @@ public class PunchDesignix extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.data.sql.Machines.Type.Machine#getType()
 	 */
 	@Override
 	public MachineType getType() {
@@ -74,7 +74,7 @@ public class PunchDesignix extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
@@ -93,7 +93,7 @@ public class PunchDesignix extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event) {

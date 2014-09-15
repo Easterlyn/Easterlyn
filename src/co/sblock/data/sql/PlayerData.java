@@ -1,4 +1,4 @@
-package co.sblock.data;
+package co.sblock.data.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
+import co.sblock.data.SblockData;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
