@@ -1,4 +1,4 @@
-package co.sblock.data;
+package co.sblock.data.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +11,7 @@ import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.channel.ChannelType;
+import co.sblock.data.SblockData;
 
 /**
  * A small helper class containing all methods that access the ChatChannels table.

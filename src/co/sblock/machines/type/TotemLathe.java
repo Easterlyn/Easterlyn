@@ -40,7 +40,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	private Block furnaceBlock;
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String, Direction)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
 	public TotemLathe(Location l, String data, Direction d) {
@@ -73,7 +73,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.data.sql.Machines.Type.Machine#getType()
 	 */
 	@Override
 	public MachineType getType() {
@@ -81,7 +81,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
@@ -143,7 +143,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
 		updateFurnaceInventory();

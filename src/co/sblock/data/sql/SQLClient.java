@@ -11,9 +11,6 @@ import com.tmathmeyer.jadis.async.Promise;
 
 import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
-import co.sblock.data.ChatChannels;
-import co.sblock.data.Machines;
-import co.sblock.data.PlayerData;
 import co.sblock.data.SblockData;
 import co.sblock.machines.type.Machine;
 import co.sblock.utilities.Log;
@@ -71,7 +68,7 @@ public class SQLClient extends SblockData {
 	}
 
 	@Override
-	protected Connection connection() {
+	public Connection connection() {
 		try {
 			if (connection == null || connection.isClosed()) {
 				enable();

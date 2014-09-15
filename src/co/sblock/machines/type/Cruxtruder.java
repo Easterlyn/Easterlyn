@@ -23,7 +23,7 @@ import co.sblock.utilities.progression.Entry;
 public class Cruxtruder extends Machine {
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#Machine(Location, String)
 	 */
 	@SuppressWarnings("deprecation")
 	public Cruxtruder(Location l, String data) {
@@ -47,7 +47,7 @@ public class Cruxtruder extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleBreak(BlockBreakEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleBreak(BlockBreakEvent)
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
 		if (this.key.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
@@ -68,7 +68,7 @@ public class Cruxtruder extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.data.sql.Machines.Type.Machine#getType()
 	 */
 	@Override
 	public MachineType getType() {
@@ -76,7 +76,7 @@ public class Cruxtruder extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {

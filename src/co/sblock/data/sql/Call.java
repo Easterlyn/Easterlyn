@@ -1,4 +1,4 @@
-package co.sblock.data;
+package co.sblock.data.sql;
 
 import java.sql.ResultSet;
 

@@ -6,7 +6,6 @@ import co.sblock.utilities.Broadcast;
 public class MockBroadcast extends Broadcast
 {
 	protected MockBroadcast() {
-		super();
 		INSTANCE = this;
 	}
 	

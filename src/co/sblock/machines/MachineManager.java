@@ -335,7 +335,7 @@ public class MachineManager {
 	 * <p>
 	 * For use in assembling a new Computer - Players are only allowed one.
 	 * 
-	 * @see co.sblock.Machines.Type.Computer#assemble(org.bukkit.event.block.BlockPlaceEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Computer#assemble(org.bukkit.event.block.BlockPlaceEvent)
 	 * 
 	 * @param p the Player
 	 * @param key the location of the Computer just assembled

@@ -210,7 +210,7 @@ public class Transportalizer extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {

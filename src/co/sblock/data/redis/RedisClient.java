@@ -55,7 +55,7 @@ public class RedisClient extends SblockData{
 	}
 
 	@Override
-	protected Connection connection() {
+	public Connection connection() {
 		// TODO this needs to go, but that requires centralising all database code (ie, out of those classes)
 		return null;
 	}

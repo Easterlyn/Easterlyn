@@ -31,7 +31,7 @@ public class Computer extends Machine implements InventoryHolder {
 	/**
 	 * Creates a Computer. If virtual is true, computer is not to actually be built.
 	 * 
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#Machine(Location, String)
 	 */
 	public Computer(Location l, String owner, boolean virtual) {
 		super(l, owner);
@@ -44,7 +44,7 @@ public class Computer extends Machine implements InventoryHolder {
 	/**
 	 * Players can only have one computer, and servers cannot place them for the client.
 	 * 
-	 * @see co.sblock.Machines.Type.Machine#assemble()
+	 * @see co.sblock.data.sql.Machines.Type.Machine#assemble()
 	 */
 	@Override
 	public void assemble(BlockPlaceEvent event) {
@@ -63,14 +63,14 @@ public class Computer extends Machine implements InventoryHolder {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.data.sql.Machines.Type.Machine#getType()
 	 */
 	public MachineType getType() {
 		return MachineType.COMPUTER;
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
 		if (!event.getWhoClicked().getName().equals(this.owner)
@@ -123,7 +123,7 @@ public class Computer extends Machine implements InventoryHolder {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.data.sql.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	public boolean handleInteract(PlayerInteractEvent event) {
 		if (super.handleInteract(event)) {
