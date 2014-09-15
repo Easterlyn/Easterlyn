@@ -321,6 +321,7 @@ public class CruxiteDowel {
 			case BOOK_AND_QUILL:
 			case BURNING_FURNACE:
 			case CARROT: // plant
+			case CAKE_BLOCK: // No infinite food
 			case COCOA: // plant
 			case COMMAND:
 			case COMMAND_MINECART:
