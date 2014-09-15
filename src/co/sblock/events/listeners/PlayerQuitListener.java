@@ -72,7 +72,7 @@ public class PlayerQuitListener implements Listener {
 		}
 
 		// Fail Entry if in progress
-		if (user.getProgression() == ProgressionState.NONE) {
+		if (user.getProgression() == ProgressionState.ENTRY_UNDERWAY) {
 			Entry.getEntry().fail(user);
 		}
 

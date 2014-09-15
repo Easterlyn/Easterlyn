@@ -89,6 +89,8 @@ public class Entry {
 			return;
 		}
 
+		user.setProgression(ProgressionState.ENTRY_UNDERWAY);
+
 //		// Center hologram inside the space above the block
 //		final Location holoLoc = cruxtruder.clone().add(new Vector(0.5, 0, 0.5));
 //		// 4:13 = 253 seconds, 2 second display of 0:00
@@ -128,6 +130,9 @@ public class Entry {
 	}
 
 	private void finish(User user) {
+		if (!isEntering(user)) {
+			return;
+		}
 
 		// Drop the Meteor created.
 		Meteorite meteorite = data.remove(user.getUUID()).meteorite;

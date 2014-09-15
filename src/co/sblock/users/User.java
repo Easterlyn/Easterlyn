@@ -650,7 +650,7 @@ public class User {
 			this.getPlayer().resetPlayerTime();
 		}
 		if (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL())) {
-				getPlayer().setResourcePack(newR.getResourcePackURL());
+			getPlayer().setResourcePack(newR.getResourcePackURL());
 		}
 		currentRegion = newR;
 	}
