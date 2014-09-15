@@ -5,9 +5,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import co.sblock.data.SblockData;
-import co.sblock.effects.EffectManager;
-import co.sblock.users.User;
-import co.sblock.users.UserManager;
 
 /**
  * Listener for PlayerJoinEvents.
@@ -24,11 +21,6 @@ public class PlayerJoinListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
-
 		SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
-
-		User u = UserManager.addNewUser(event.getPlayer().getUniqueId());
-		u.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
-		EffectManager.applyPassiveEffects(u);
 	}
 }

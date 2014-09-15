@@ -73,7 +73,8 @@ public class User {
 	private ProgressionState progression;
 
 	/* Locations to teleport Players to when conditions are met */
-	private Location previousLocation;
+	private SerialisableLocation location;
+	private transient Location previousLocation;
 	private transient Location serverDisableTeleport;
 
 	/* Programs installed to the player's computer */
@@ -86,7 +87,7 @@ public class User {
 	private UUID server, client;
 
 	/* A map of the Effects applied to the Player and their strength. */
-	private transient Map<PassiveEffect, Integer> passiveEffects;
+	private transient Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
 
 	/* The name of the Player's current focused Channel */
 	private String currentChannel;
@@ -268,10 +269,14 @@ public class User {
 		 * @return a user with all the traits that have been added to the spawner
 		 */
 		public User build(UUID userID) {
-			if (Bukkit.getOfflinePlayer(userID).isOnline()) {
-				// IP comes out as /123.456.789.0, leading slash must be removed to properly IP ban.
-				setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString()
-						.substring(1));
+			try {
+				if (Bukkit.getOfflinePlayer(userID).isOnline()) {
+					// IP comes out as /123.456.789.0, leading slash must be removed to properly IP ban.
+					setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString()
+							.substring(1));
+				}
+			} catch(Exception e) {
+				
 			}
 			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression,
 					isServer, allowFlight, IPAddr, previousLocation, currentChannel,
@@ -300,7 +305,11 @@ public class User {
 		this.allowFlight = allowFlight;
 		this.previousLocation = previousLocation;
 		if (previousLocation == null) {
-			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+			try {
+				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+			} catch (NullPointerException e) {
+				
+			}
 		}
 		this.currentChannel = currentChannel;
 		this.programs = programs;
@@ -810,10 +819,13 @@ public class User {
 	 * Removes all PassiveEffects from the user and cancels the Effect
 	 */
 	public void removeAllPassiveEffects() {
-		for (PassiveEffect effect : passiveEffects.keySet()) {
-			PassiveEffect.removeEffect(getPlayer(), effect);
+		if (passiveEffects != null)
+		{
+			for (PassiveEffect effect : passiveEffects.keySet()) {
+				PassiveEffect.removeEffect(getPlayer(), effect);
+			}
+			this.passiveEffects.clear();
 		}
-		this.passiveEffects.clear();
 	}
 	
 	/**
@@ -1208,10 +1220,30 @@ public class User {
 		return s;
 	}
 
-	public boolean equals(Object object) {
+	public boolean equals(Object object)
+	{
+		if (object == this)
+		{
+			return true;
+		}
+		if (object == null)
+		{
+			return false;
+		}
 		if (object instanceof User) {
-			return ((User) object).getUUID().equals(playerID);
+			User u = (User) object;
+			u.getUUID().equals(getUUID());
 		}
 		return false;
+	}
+	
+	public void setUpForSerialization()
+	{
+		location = new SerialisableLocation(previousLocation);
+	}
+	
+	public void initAfterDeserialization()
+	{
+		previousLocation = location.asLocation();
 	}
 }

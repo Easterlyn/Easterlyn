@@ -63,13 +63,17 @@ public class RedisClient extends SblockData{
 	@Override
 	public void saveUserData(UUID userID) {
 		User user = UserManager.getUser(userID);
-		saveUserData(user);
+		if (user != null)
+		{
+			saveUserData(user);
+		}
 	}
 	/**
 	 * Helper method for SaveUserData(UUID userID)
 	 * @param u the user to save
 	 */
 	public void saveUserData(User u) {
+		u.setUpForSerialization();
 		connection.putMap("USERS", u.getUUID().toString(), u, exceptionLogger);
 		connection.putMap("IPTABLE", u.getUserIP(), u.getPlayerName(), exceptionLogger);
 	}
@@ -107,17 +111,17 @@ public class RedisClient extends SblockData{
 
 	@Override
 	public void saveMachine(Machine m) {
-		connection.addSet("MACHINES", m.getSerialiser(), MachineSerialiser.class);
+		connection.addSet("MACHINES", m.getSerialiser(), exceptionLogger);
 	}
 
 	@Override
 	public void deleteMachine(Machine m) {
-		connection.remSet("MACHINES", exceptionLogger, m.getSerialiser());
+		connection.remFSet("MACHINES", m.getSerialiser(), exceptionLogger);
 	}
 
 	@Override
 	public void loadAllMachines() {
-		connection.getSet("MACHINES", machineDataPromise, MachineSerialiser.class, exceptionLogger);
+		connection.getASet("MACHINES", machineDataPromise, MachineSerialiser.class, exceptionLogger);
 	}
 
 	@Override

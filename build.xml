@@ -14,6 +14,7 @@
 
 	<path id="bundle.path">
 		<fileset dir="${lib.dir}">
+			<include name="javaluator.jar" />
 			<include name="jadis.jar" />
 			<include name="jedis.jar" />
 			<include name="javaluator.jar"/>
@@ -34,7 +35,7 @@
 
 	<target name="compile" description="build class files" depends="clean">
 		<mkdir dir="${class.dir}" />
-		<javac srcdir="${source.dir}" destdir="${class.dir}" includeantruntime="false">
+		<javac srcdir="${source.dir}" destdir="${class.dir}" includeantruntime="false" debug="true">
 			<classpath refid="libraries.path" />
 		</javac>
 	</target>
@@ -55,7 +56,7 @@
 
 		<jar destfile="${jar.file}" basedir="${class.dir}">
 			<manifest>
-				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar lib/gson-2.2.4.jar lib/javaluator.jar" />
+				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar lib/gson.jar lib/javaluator.jar" />
 			</manifest>
 		</jar>
 	</target>

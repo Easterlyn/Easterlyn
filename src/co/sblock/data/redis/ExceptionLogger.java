@@ -1,6 +1,7 @@
 package co.sblock.data.redis;
 
 import com.tmathmeyer.jadis.async.CallBackLogger;
+
 import co.sblock.utilities.Log;
 
 /**
