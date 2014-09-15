@@ -12,7 +12,10 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.chat.ColorDef;
+import co.sblock.effects.EffectManager;
 import co.sblock.users.User.UserSpawner;
+import co.sblock.utilities.Broadcast;
+import co.sblock.utilities.SpawnLocationInformation;
 
 /**
  * Class that keeps track of players currently logged on to the game
@@ -126,4 +129,30 @@ public class UserManager {
 	private static String getTeamPrefix(String teamName) {
 		return ChatColor.valueOf(teamName).toString();
 	}
+
+	/**
+	 * 
+	 * @param p the player to build the user around
+	 */
+	public static User doFirstLogin(Player p)
+	{
+		//player's first login
+		Broadcast.lilHal("It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
+		p.teleport(SpawnLocationInformation.getSpawnLocation());
+		
+		User user = new UserSpawner().build(p.getUniqueId());
+		user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
+		// TODO: oh god plz
+		user.updateCurrentRegion(user.getPlayerRegion());
+		
+		addUser(user);
+		user.setAllPassiveEffects(EffectManager.passiveScan(p));
+		EffectManager.applyPassiveEffects(user);
+		
+		user.setLoaded();
+		UserManager.team(p);
+		
+		return user;
+	}
+	
 }

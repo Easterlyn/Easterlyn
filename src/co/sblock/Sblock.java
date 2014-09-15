@@ -91,21 +91,7 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable() {
-		try {
-			Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { URL.class });
-			method.setAccessible(true);
-			ClassLoader loader = this.getClassLoader();
-			for (File file : new File("plugins/lib").listFiles()) {
-				if (file.getName().endsWith(".jar")) {
-					URL url = file.toURI().toURL();
-					method.invoke(loader, new Object[] { url });
-					getLog().info("Loaded library " + file.getName());
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		
 		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_7_R4.CraftServer) {
 			try {
 				Field f = org.bukkit.craftbukkit.v1_7_R4.CraftServer.class.getDeclaredField("commandMap");
