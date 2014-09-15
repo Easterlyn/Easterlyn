@@ -649,8 +649,7 @@ public class User {
 		} else {
 			this.getPlayer().resetPlayerTime();
 		}
-		if (((org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer) getPlayer()).getHandle().playerConnection.networkManager.getVersion() < 47
-				&& (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL()))) {
+		if (currentRegion == null || !currentRegion.getResourcePackURL().equals(newR.getResourcePackURL())) {
 				getPlayer().setResourcePack(newR.getResourcePackURL());
 		}
 		currentRegion = newR;
