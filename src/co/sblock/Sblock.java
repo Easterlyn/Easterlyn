@@ -335,6 +335,9 @@ public class Sblock extends JavaPlugin {
 	public void unregisterAllCommands() {
 		for (Method m : this.commandHandlers.values()) {
 			Command cmd = cmdMap.getCommand(m.getName());
+			if (cmd == null) {
+				continue;
+			}
 			if (!overriddenCommands.containsKey(cmd)) {
 				cmd.unregister(cmdMap);
 			} else {
