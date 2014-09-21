@@ -16,7 +16,7 @@ public enum UserClass {
 	ROGUE("Rogue"),
 	SEER("Seer"),
 	SYLPH("Sylph"),
-	THIEF("Theif"),
+	THIEF("Thief"),
 	WITCH("Witch");
 
 	private final String name;
