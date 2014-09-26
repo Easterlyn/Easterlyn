@@ -17,7 +17,7 @@ import co.sblock.events.SblockEvents;
  */
 public class PacketListener extends PacketAdapter {
 
-	private final Pattern plugin = Pattern.compile("/(about|ver(sion)?)\\s");
+	private final Pattern plugin = Pattern.compile("/(bukkit:)?(about|ver(sion)?)\\s");
 	public PacketListener() {
 		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.CHAT,
 				PacketType.Play.Client.TAB_COMPLETE);
@@ -59,7 +59,7 @@ public class PacketListener extends PacketAdapter {
 				event.setCancelled(true);
 				PacketContainer packet = new PacketContainer(PacketType.Play.Server.TAB_COMPLETE);
 				packet.getModifier().writeDefaults();
-				packet.getStringArrays().write(0, new String[] {"HOO HOO HEE HEE"});
+				packet.getStringArrays().write(0, new String[] {"HOO", "HOO", "HEE", "HEE"});
 			}
 		}
 	}
