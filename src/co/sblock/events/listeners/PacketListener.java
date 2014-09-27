@@ -4,7 +4,6 @@ import java.util.regex.Pattern;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
 import co.sblock.Sblock;
@@ -57,9 +56,6 @@ public class PacketListener extends PacketAdapter {
 		if (event.getPacket().getType() == PacketType.Play.Client.TAB_COMPLETE) {
 			if (plugin.matcher(event.getPacket().getStrings().read(0)).find()) {
 				event.setCancelled(true);
-				PacketContainer packet = new PacketContainer(PacketType.Play.Server.TAB_COMPLETE);
-				packet.getModifier().writeDefaults();
-				packet.getStringArrays().write(0, new String[] {"HOO", "HOO", "HEE", "HEE"});
 			}
 		}
 	}
