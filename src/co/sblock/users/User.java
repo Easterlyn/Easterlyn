@@ -97,7 +97,7 @@ public class User {
 
 	/* Booleans affecting channel message reception. */
 	private AtomicBoolean globalMute;
-	private transient AtomicBoolean suppress;
+	private transient AtomicBoolean suppress = new AtomicBoolean();
 
 	/**
 	 * 
@@ -966,7 +966,7 @@ public class User {
 	 * @return true if the Player is suppressing global channels.
 	 */
 	public boolean isSuppressing() {
-		return this.suppress.get();
+		return suppress.get();
 	}
 
 	/**
