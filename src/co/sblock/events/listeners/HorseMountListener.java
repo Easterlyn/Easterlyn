@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
@@ -13,30 +14,33 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
-import co.sblock.utilities.Log;
 
 public class HorseMountListener implements Listener
 {
 	@EventHandler
     public void onVehicleEnter(VehicleEnterEvent event) {
-        Log.getLog().info("Vehicle entered!");
-        Entity type = event.getEntered();
+        Entity type = event.getVehicle();
         if (type != null && type.getType() == EntityType.HORSE)
         {
-        	FireTracker.registerAndStartFire((Horse)type);
+        	Horse horse = (Horse)type;
+        	ItemStack saddle = horse.getInventory().getSaddle();
+        	if (saddle != null && saddle.containsEnchantment(Enchantment.FIRE_ASPECT))
+        	{
+        		FireTracker.registerAndStartFire(horse);
+        	}
         }
     }
 	
 	@EventHandler
     public void onVehicleExit(VehicleExitEvent event) {
-		Entity type = event.getExited();
+		Entity type = event.getVehicle();
         if (type != null && type.getType() == EntityType.HORSE)
         {
         	FireTracker.stopFireEffect((Horse)type);
         }
-		Log.getLog().info("Vehicle exited!");
     }
 	
 	static class HorseFireAnimator implements Runnable
@@ -58,10 +62,13 @@ public class HorseMountListener implements Listener
 		@Override
 		public void run()
 		{
+			if (horse.isDead())
+			{
+				FireTracker.stopFireEffect(horse);
+			}
 			if (running)
 			{
 				horse.getWorld().playEffect(horse.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
-				Log.getLog().info("flamessss");
 			}
 			else
 			{
@@ -69,7 +76,8 @@ public class HorseMountListener implements Listener
 			}
 		}
 
-		public void setID(int threadID2) {
+		public void setID(int threadID2)
+		{
 			threadID = threadID2;
 		}
 		
@@ -89,7 +97,15 @@ public class HorseMountListener implements Listener
 		
 		public static void stopFireEffect(Horse horse)
 		{
-			blazingSaddles.get(horse.getUniqueId()).stop();
+			stop(blazingSaddles.get(horse.getUniqueId()));
+		}
+		
+		private static void stop(HorseFireAnimator hfm)
+		{
+			if (hfm != null)
+			{
+				hfm.stop();
+			}
 		}
 	}
 }

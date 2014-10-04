@@ -95,7 +95,6 @@ public class SblockEvents extends Module {
 
 				new SignChangeListener(),
 				
-				new SaddleEnchantListener(),
 				new HorseMountListener(),
 
 				new VehicleBlockCollisionListener(), new VehicleDestroyListener(), new VehicleExitListener());
