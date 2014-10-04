@@ -52,7 +52,6 @@ public class Message {
 
 	private Message(String message) {
 
-		// TODO make message format less order-specific, e.g. allow @# #>, not just #>@#
 		thirdPerson = message.startsWith("#>");
 		if (thirdPerson) {
 			message = message.substring(2);
@@ -207,18 +206,18 @@ public class Message {
 	}
 
 	private String wrapLinks(MessageElement rawMsg, String message) {
-		Matcher match = Pattern.compile("(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)[\\S]*)?\\b").matcher(message);
+		Matcher match = Pattern.compile("((https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?)(\\s|\\z)").matcher(message);
 		int lastEnd = 0;
 		String lastColor = new String();
 		while (match.find()) {
 			rawMsg.addExtra(processMessageSegment(lastColor + message.substring(lastEnd, match.start())));
 			lastColor = ChatColor.getLastColors(rawMsg.toString());
-			String url = match.group();
+			String url = match.group(1);
 			// If URL does not start with http:// or https:// the client will crash. Client autofills this for normal links.
 			if (!match.group().matches("https?://.*")) {
 				url = "http://" + url;
 			}
-			rawMsg.addExtra(new EscapedElement("[" + match.group(2) + "]", ChatColor.BLUE)
+			rawMsg.addExtra(new EscapedElement("[" + match.group(3) + "]" + match.group(8), ChatColor.BLUE)
 					.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, url))
 					.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, url)));
 			lastEnd = match.end();
@@ -240,6 +239,13 @@ public class Message {
 		} else {
 			if (sender != null && channel.isModerator(sender)) {
 				// Colors for channel mods!
+				// TODO new MessageElement per new color to prevent color reset on wrap
+//				Matcher matcher = Pattern.compile("&[0-9A-FK-NRa-fk-nr]").matcher(substring);
+//				int lastEnd = 0;
+//				while (matcher.find()) {
+//					
+//				}
+
 				substring = ChatColor.translateAlternateColorCodes('&', substring);
 			}
 			if (escape) {
