@@ -1,5 +1,7 @@
 package co.sblock.events.listeners;
 
+import java.util.regex.Pattern;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -14,9 +16,10 @@ import co.sblock.events.SblockEvents;
  */
 public class PacketListener extends PacketAdapter {
 
+	private final Pattern plugin = Pattern.compile("/(bukkit:)?(about|ver(sion)?)\\s");
 	public PacketListener() {
-		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.CHAT//,
-				/* TODO PacketType.Play.Client.TAB_COMPLETE*/);
+		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Client.CHAT,
+				PacketType.Play.Client.TAB_COMPLETE);
 	}
 
 	/**
@@ -28,7 +31,7 @@ public class PacketListener extends PacketAdapter {
 	 */
 	@Override
 	public void onPacketReceiving(PacketEvent event) {
-		if (event.getPacket().getType().equals(PacketType.Play.Client.ENTITY_ACTION)) {
+		if (event.getPacket().getType() == PacketType.Play.Client.ENTITY_ACTION) {
 			if (event.getPacket().getIntegers().read(1) == 3
 					&& SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
 				event.setCancelled(true);
@@ -36,7 +39,7 @@ public class PacketListener extends PacketAdapter {
 			}
 			return;
 		}
-		if (event.getPacket().getType().equals(PacketType.Play.Client.CHAT)) {
+		if (event.getPacket().getType() == PacketType.Play.Client.CHAT) {
 			if (ChesterListener.getTriggers() == null) {
 				return;
 			}
@@ -50,6 +53,10 @@ public class PacketListener extends PacketAdapter {
 			}
 			return;
 		}
-		// TODO prevent /about and /version tab completion
+		if (event.getPacket().getType() == PacketType.Play.Client.TAB_COMPLETE) {
+			if (plugin.matcher(event.getPacket().getStrings().read(0)).find()) {
+				event.setCancelled(true);
+			}
+		}
 	}
 }

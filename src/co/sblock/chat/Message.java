@@ -207,7 +207,7 @@ public class Message {
 	}
 
 	private String wrapLinks(MessageElement rawMsg, String message) {
-		Matcher match = Pattern.compile("(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)[\\S]*)?").matcher(message);
+		Matcher match = Pattern.compile("(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)[\\S]*)?\\b").matcher(message);
 		int lastEnd = 0;
 		String lastColor = new String();
 		while (match.find()) {

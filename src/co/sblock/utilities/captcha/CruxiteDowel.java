@@ -120,6 +120,13 @@ public class CruxiteDowel {
 
 	private static HashMap<String, Integer> createBaseGrist() {
 		HashMap<String, Integer> materialValues = new HashMap<>();
+		materialValues.put("PRISMARINE_SHARD", 9);
+		materialValues.put("PRISMARINE_CRYSTALS", 35);
+		materialValues.put("MUTTON", 8);
+		materialValues.put("RABBIT", 5);
+		materialValues.put("RABBIT_FOOT", 12);
+		materialValues.put("RABBIT_HIDE", 2);
+
 		for (Material m : Material.values()) {
 			switch(m) {
 			case CLAY_BALL:
@@ -265,7 +272,6 @@ public class CruxiteDowel {
 				break;
 			case PISTON_BASE:
 			case OBSIDIAN:
-			case EMERALD:
 			case REDSTONE_ORE:
 				materialValues.put(m.name(), 81);
 				break;
@@ -321,16 +327,20 @@ public class CruxiteDowel {
 			case BOOK_AND_QUILL:
 			case BURNING_FURNACE:
 			case CARROT: // plant
+			case CAKE_BLOCK: // No infinite food
 			case COCOA: // plant
 			case COMMAND:
 			case COMMAND_MINECART:
 			case CROPS: // plant
+			case EMERALD: // Money
+			case EMERALD_BLOCK: // Money
 			case EMERALD_ORE: // Can't be captcha'd
 			case ENDER_PORTAL:
 			case ENDER_PORTAL_FRAME:
 			case EXP_BOTTLE: // Can't be captcha'd
 			case FIRE:
 			case GLOWING_REDSTONE_ORE:
+			case LAPIS_BLOCK: // Money
 			case LAPIS_ORE: // Can't be captcha'd
 			case LAVA:
 			case MELON_STEM: // plant

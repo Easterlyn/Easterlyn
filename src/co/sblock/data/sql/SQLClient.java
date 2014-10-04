@@ -38,12 +38,12 @@ public class SQLClient extends SblockData {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"
-					+ Sblock.getInstance().getConfig().getString("host") + ":"
-					+ Sblock.getInstance().getConfig().getString("port") + "/"
-					+ Sblock.getInstance().getConfig().getString("database")
+					+ Sblock.getInstance().getConfig().getString("host", "localhost") + ":"
+					+ Sblock.getInstance().getConfig().getString("port", "3306") + "/"
+					+ Sblock.getInstance().getConfig().getString("database", "sblock")
 					+ "?autoReconnect=true",
-					Sblock.getInstance().getConfig().getString("username"),
-					Sblock.getInstance().getConfig().getString("password"));
+					Sblock.getInstance().getConfig().getString("username", "root"),
+					Sblock.getInstance().getConfig().getString("password", ""));
 			logger.fine("Connection established.");
 		} catch (ClassNotFoundException e) {
 			logger.severe("Database driver not found. Plugin functionality will be limited.");

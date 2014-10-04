@@ -51,7 +51,7 @@ public class AsyncPacketAdapter extends PacketAdapter {
 		ChatColor percentColor = percent > 75 ? ChatColor.RED : percent > 50 ? ChatColor.YELLOW : ChatColor.GREEN;
 
 		String versionName = ChatColor.GOLD + "Sblock Alpha" + ChatColor.DARK_GRAY + ": "
-				+ ChatColor.GRAY + "1.7.10" + ChatColor.DARK_GRAY + " - " + percentColor
+				+ ChatColor.GRAY + "1.7.10, 1.8" + ChatColor.DARK_GRAY + " - " + percentColor
 				+ serverping.getPlayersOnline() + ChatColor.DARK_GRAY + "/" + ChatColor.GREEN
 				+ serverping.getPlayersMaximum();
 		serverping.setVersionName(versionName);

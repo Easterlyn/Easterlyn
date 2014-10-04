@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,7 +17,6 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
-import co.sblock.utilities.Broadcast;
 
 /**
  * A small helper class containing all methods that access the PlayerData table.
@@ -39,7 +37,7 @@ public class PlayerData {
 	 * @param userID the Player UUID to save data for
 	 */
 	public static void saveUserData(UUID userID) {
-		User user = UserManager.removeUser(userID);
+		User user = UserManager.getUser(userID);
 		if (user == null || !user.isLoaded()) {
 			SblockData.getDB().getLogger().warning("UUID " + userID.toString()
 					+ " does not appear to have userdata loaded, skipping save.");
@@ -131,7 +129,7 @@ public class PlayerData {
 	public static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
-				User user = UserManager.getUser(UUID.fromString(rs.getString("uuid")));
+				User user = UserManager.addNewUser(UUID.fromString(rs.getString("uuid")));
 				if (user == null || user.getPlayer() == null) {
 					UserManager.removeUser(user.getUUID());
 					return;
@@ -173,19 +171,7 @@ public class PlayerData {
 			} else {
 				String uuid = rs.getStatement().toString().replaceAll("com.*uuid = '(.*)'", "$1");
 				Player p = Bukkit.getPlayer(UUID.fromString(uuid));
-				if (p == null) {
-					// Player is not logged in any more
-					return;
-				}
-				Broadcast.lilHal("It would seem that " + p.getName()
-						+ " is joining us for the first time! Please welcome them.");
-				p.teleport(new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F));
-
-				User user = UserManager.getUser(p.getUniqueId());
-				user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
-				user.updateCurrentRegion(user.getPlayerRegion());
-				user.setLoaded();
-				UserManager.team(p);
+				UserManager.doFirstLogin(p);
 			}
 		} catch (SQLException e) {
 			SblockData.getDB().getLogger().err(e);

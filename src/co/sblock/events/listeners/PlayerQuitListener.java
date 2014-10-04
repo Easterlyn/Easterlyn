@@ -35,7 +35,7 @@ public class PlayerQuitListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		// Save user data
 		SblockData.getDB().saveUserData(event.getPlayer().getUniqueId());
-		
+
 		// Our very own custom quits!
 		event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED + " ollies outie");
 
@@ -61,19 +61,20 @@ public class PlayerQuitListener implements Listener {
 		// Clean up any expired cooldown entries for the player
 		Cooldowns.cleanup(event.getPlayer().getName());
 
+		// Restore inventory if still preserved
+		InventoryManager.restoreInventory(event.getPlayer());
+
+		User user = UserManager.removeUser(event.getPlayer().getUniqueId());
+
 		// Remove Server status
-		User user = UserManager.getUser(event.getPlayer().getUniqueId());
-		if (user != null && user.isServer()) {
+		if (user.isServer()) {
 			user.stopServerMode();
 		}
 
 		// Fail Entry if in progress
-		if (user != null && user.getProgression() == ProgressionState.NONE) {
+		if (user.getProgression() == ProgressionState.ENTRY_UNDERWAY) {
 			Entry.getEntry().fail(user);
 		}
-
-		// Restore inventory if still preserved
-		InventoryManager.restoreInventory(event.getPlayer());
 
 		// Inform channels that the player is no longer listening to them
 		for (String s : user.getListening()) {
