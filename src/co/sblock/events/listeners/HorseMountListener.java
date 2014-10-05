@@ -27,7 +27,7 @@ public class HorseMountListener implements Listener
         {
         	Horse horse = (Horse)type;
         	ItemStack saddle = horse.getInventory().getSaddle();
-        	if (saddle != null && saddle.containsEnchantment(Enchantment.FIRE_ASPECT))
+        	if (saddle != null && saddle.containsEnchantment(Enchantment.ARROW_FIRE))
         	{
         		FireTracker.registerAndStartFire(horse);
         	}
