@@ -48,6 +48,10 @@ public class PlayerTeleportListener implements Listener {
 		if (event.getTo().getWorld().equals(event.getFrom().getWorld())) {
 			return;
 		}
+
+		// People keep doing stupid stuff like /home while falling from spawn
+		event.getPlayer().setFallDistance(0);
+
 		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
 
 			@Override

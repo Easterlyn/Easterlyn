@@ -64,6 +64,8 @@ public class PlayerQuitListener implements Listener {
 		// Restore inventory if still preserved
 		InventoryManager.restoreInventory(event.getPlayer());
 
+		UserManager.unteam(event.getPlayer());
+
 		User user = UserManager.removeUser(event.getPlayer().getUniqueId());
 
 		// Remove Server status

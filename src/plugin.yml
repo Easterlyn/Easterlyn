@@ -9,6 +9,9 @@ depend: [ProtocolLib]
 softdepend: [Chester, CreeperHeal]
 
 permissions:
+ sblock.blaze:
+  description: Permission for Blazing Saddles
+  default: op
  sblock.ask.adam.before.touching:
   description: If something requires this permission, you probably shouldn't be touching it.
   default: false

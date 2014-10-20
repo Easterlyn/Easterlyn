@@ -90,44 +90,44 @@ public class UserManager {
 	 * @param p the Player
 	 */
 	public static void team(Player p) {
-		String teamName = null;
+		String teamPrefix = null;
 		for (ChatColor c : ChatColor.values()) {
 			if (p.hasPermission("sblockchat." + c.name().toLowerCase())) {
-				teamName = c.name();
+				teamPrefix = c.name();
 				break;
 			}
 		}
-		if (teamName != null) {
+		if (teamPrefix != null) {
 			// Do nothing, we've got a fancy override going on
 		} else if (p.hasPermission("group.horrorterror")) {
-			teamName = ColorDef.RANK_HORRORTERROR.name();
+			teamPrefix = ColorDef.RANK_HORRORTERROR.name();
 		} else if (p.hasPermission("group.denizen")) {
-			teamName = ColorDef.RANK_DENIZEN.name();
+			teamPrefix = ColorDef.RANK_DENIZEN.name();
 		} else if (p.hasPermission("group.felt")) {
-			teamName = ColorDef.RANK_FELT.name();
+			teamPrefix = ColorDef.RANK_FELT.name();
 		} else if (p.hasPermission("group.helper")) {
-			teamName = ColorDef.RANK_HELPER.name();
+			teamPrefix = ColorDef.RANK_HELPER.name();
 		} else if (p.hasPermission("group.donator")) {
-			teamName = ColorDef.RANK_DONATOR.name();
+			teamPrefix = ColorDef.RANK_DONATOR.name();
 		} else if (p.hasPermission("group.godtier")) {
-			teamName = ColorDef.RANK_GODTIER.name();
+			teamPrefix = ColorDef.RANK_GODTIER.name();
 		} else {
-			teamName = ColorDef.RANK_HERO.name();
+			teamPrefix = ColorDef.RANK_HERO.name();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-		Team team = board.getTeam(teamName);
+		Team team = board.getTeam(p.getName());
 		if (team == null) {
-			team = board.registerNewTeam(teamName);
-			team.setPrefix(getTeamPrefix(teamName));
+			team = board.registerNewTeam(p.getName());
 		}
+		team.setPrefix(teamPrefix);
 		team.addPlayer(p);
 	}
 
-	/**
-	 * Fetches team prefixes.
-	 */
-	private static String getTeamPrefix(String teamName) {
-		return ChatColor.valueOf(teamName).toString();
+	public static void unteam(Player p) {
+		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(p.getName());
+		if (team != null) {
+			team.unregister();
+		}
 	}
 
 	/**

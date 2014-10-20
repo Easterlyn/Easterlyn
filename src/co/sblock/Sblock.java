@@ -269,6 +269,7 @@ public class Sblock extends JavaPlugin {
 		shaped.shape("YX", "XY");
 		getServer().addRecipe(shaped);
 
+		// General: 8 gravel, 1 bucket water -> 4 clay
 		// Smelting: Revert armor to crafting material, 1 coal if durability% too low
 		// Deprecated constructor required to ignore item durability
 		FurnaceRecipe furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);

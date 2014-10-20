@@ -558,7 +558,7 @@ public abstract class Channel {
 
 		ChatColor guildRank;
 		ChatColor channelRank;
-		ChatColor globalRank = null;
+		String globalRank = null;
 		ChatColor region;
 		String nick;
 		String prepend = new String();
@@ -593,22 +593,22 @@ public abstract class Channel {
 
 			// Name color fetched from scoreboard, if team invalid perm-based instead.
 			try {
-				globalRank = ChatColor.valueOf(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getName());
+				globalRank = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getDisplayName();
 			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
 				if (sender.getPlayer().hasPermission("group.horrorterror"))
-					globalRank = ColorDef.RANK_HORRORTERROR;
+					globalRank = ColorDef.RANK_HORRORTERROR.toString();
 				else if (sender.getPlayer().hasPermission("group.denizen"))
-					globalRank = ColorDef.RANK_DENIZEN;
+					globalRank = ColorDef.RANK_DENIZEN.toString();
 				else if (sender.getPlayer().hasPermission("group.felt"))
-					globalRank = ColorDef.RANK_FELT;
+					globalRank = ColorDef.RANK_FELT.toString();
 				else if (sender.getPlayer().hasPermission("group.helper"))
-					globalRank = ColorDef.RANK_HELPER;
+					globalRank = ColorDef.RANK_HELPER.toString();
 				else if (sender.getPlayer().hasPermission("group.godtier"))
-					globalRank = ColorDef.RANK_GODTIER;
+					globalRank = ColorDef.RANK_GODTIER.toString();
 				else if (sender.getPlayer().hasPermission("group.donator"))
-					globalRank = ColorDef.RANK_DONATOR;
+					globalRank = ColorDef.RANK_DONATOR.toString();
 				else {
-					globalRank = ColorDef.RANK_HERO;
+					globalRank = ColorDef.RANK_HERO.toString();
 				}
 			}
 
@@ -623,7 +623,7 @@ public abstract class Channel {
 		} else {
 			guildRank = ColorDef.RANK_HERO;
 			channelRank = ColorDef.CHATRANK_OWNER;
-			globalRank = ColorDef.RANK_HORRORTERROR;
+			globalRank = ColorDef.RANK_HORRORTERROR.toString();
 			region = ColorDef.WORLD_AETHER;
 			nick = "<nonhuman>";
 		}

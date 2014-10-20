@@ -405,11 +405,14 @@ public class CruxiteDowel {
 						newMin += getRecipeCost(is.getType()) * e.getValue();
 					}
 				}
-			} else {
+			} else  if (r instanceof ShapelessRecipe) {
 				newMin = 0;
 				for (ItemStack is : ((ShapelessRecipe) r).getIngredientList()) {
 					newMin += getRecipeCost(is.getType());
 				}
+			} else {
+				// Recipe is injected custom recipe, e.g. banner pattern recipe
+				newMin = Integer.MAX_VALUE;
 			}
 			if (newMin < minimum) {
 				minimum = newMin;
