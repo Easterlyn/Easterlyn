@@ -270,6 +270,7 @@ public class Sblock extends JavaPlugin {
 		getServer().addRecipe(shaped);
 
 		// General: 8 gravel, 1 bucket water -> 4 clay
+		shaped = new ShapedRecipe(new ItemStack(Material.CLAY, 4));
 		shaped.shape("XXX", "XYX", "XXX").setIngredient('X', Material.GRAVEL).setIngredient('Y', Material.WATER_BUCKET);
 		getServer().addRecipe(shaped);
 
