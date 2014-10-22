@@ -193,6 +193,7 @@ public class CruxiteDowel {
 				break;
 			case COOKED_FISH:
 			case NETHER_WARTS:
+			case NETHER_STALK: // Same thing as warts in 1.8 inventories
 				materialValues.put(m.name(), 9);
 				break;
 			case ENDER_STONE:
@@ -347,7 +348,6 @@ public class CruxiteDowel {
 			case MOB_SPAWNER:
 			case MONSTER_EGG:
 			case MONSTER_EGGS:
-			case NETHER_STALK: // plant
 			case PISTON_EXTENSION:
 			case PISTON_MOVING_PIECE:
 			case PORTAL:
