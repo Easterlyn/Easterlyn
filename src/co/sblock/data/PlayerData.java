@@ -167,7 +167,6 @@ public class PlayerData {
 				}
 				user.updateCurrentRegion(user.getPlayerRegion());
 				user.setLoaded();
-				UserManager.team(user.getPlayer());
 			} else {
 				String uuid = rs.getStatement().toString().replaceAll("com.*uuid = '(.*)'", "$1");
 				Player p = Bukkit.getPlayer(UUID.fromString(uuid));

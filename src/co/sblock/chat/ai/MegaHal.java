@@ -46,10 +46,10 @@ public class MegaHal {
 		Log.getLog("MegaHal").info("Compiled whitespace regex: " + whitespacePattern.toString());
 		pendingMessages = SetGenerator.generate();
 
-		loadHal();
-
 		save = new HalLogSavingTask();
 		save.runTaskTimer(Sblock.getInstance(), 600L, 600L);
+
+		loadHal();
 	}
 
 	private String createExactRegex(String regexBase) {
@@ -88,13 +88,16 @@ public class MegaHal {
 	}
 
 	public boolean isOnlyTrigger(String message) {
-		return whitespacePattern.matcher(message).find();
+		return exactPattern.matcher(message).find();
 	}
 
 	public void log(String message) {
 		message = ChatColor.stripColor(message);
 		// TODO strip more stuff we don't want
-		if (message.isEmpty() || message.startsWith("((") || message.contains("benzrf")) {
+		// Most strips are purely for the sake of handling conversion from Chester's logs and will be removed post-release
+		if (message.isEmpty() || message.startsWith("((") || message.contains("benzrf")
+				|| message.matches("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$")
+				|| isTrigger(message)) {
 			return;
 		}
 		pendingMessages.add(message);

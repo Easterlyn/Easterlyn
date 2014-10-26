@@ -93,26 +93,26 @@ public class UserManager {
 		String teamPrefix = null;
 		for (ChatColor c : ChatColor.values()) {
 			if (p.hasPermission("sblockchat." + c.name().toLowerCase())) {
-				teamPrefix = c.name();
+				teamPrefix = c.toString();
 				break;
 			}
 		}
 		if (teamPrefix != null) {
 			// Do nothing, we've got a fancy override going on
 		} else if (p.hasPermission("group.horrorterror")) {
-			teamPrefix = ColorDef.RANK_HORRORTERROR.name();
+			teamPrefix = ColorDef.RANK_HORRORTERROR.toString();
 		} else if (p.hasPermission("group.denizen")) {
-			teamPrefix = ColorDef.RANK_DENIZEN.name();
+			teamPrefix = ColorDef.RANK_DENIZEN.toString();
 		} else if (p.hasPermission("group.felt")) {
-			teamPrefix = ColorDef.RANK_FELT.name();
+			teamPrefix = ColorDef.RANK_FELT.toString();
 		} else if (p.hasPermission("group.helper")) {
-			teamPrefix = ColorDef.RANK_HELPER.name();
+			teamPrefix = ColorDef.RANK_HELPER.toString();
 		} else if (p.hasPermission("group.donator")) {
-			teamPrefix = ColorDef.RANK_DONATOR.name();
+			teamPrefix = ColorDef.RANK_DONATOR.toString();
 		} else if (p.hasPermission("group.godtier")) {
-			teamPrefix = ColorDef.RANK_GODTIER.name();
+			teamPrefix = ColorDef.RANK_GODTIER.toString();
 		} else {
-			teamPrefix = ColorDef.RANK_HERO.name();
+			teamPrefix = ColorDef.RANK_HERO.toString();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 		Team team = board.getTeam(p.getName());
@@ -150,7 +150,6 @@ public class UserManager {
 		EffectManager.applyPassiveEffects(user);
 
 		user.setLoaded();
-		UserManager.team(p);
 
 		return user;
 	}

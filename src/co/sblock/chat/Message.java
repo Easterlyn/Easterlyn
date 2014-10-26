@@ -58,9 +58,9 @@ public class Message {
 			message = message.substring(2);
 		}
 
-		escape = message.length() > 1 && message.charAt(0) != '\\' && message.charAt(1) != '\\';
+		escape = message.length() > 2 && message.charAt(0) != '\\' && message.charAt(1) != '\\';
 		if (message.length() > 0 && !escape) {
-			message = message.substring(1);
+			message = message.substring(2);
 		}
 
 		int space = message.indexOf(' ');
@@ -258,6 +258,7 @@ public class Message {
 //				}
 
 				substring = ChatColor.translateAlternateColorCodes('&', substring);
+				msg = escape ? new EscapedElement(substring) : new MessageElement(substring);
 			} else {
 				msg = escape ? new EscapedElement(substring) : new MessageElement(substring);
 			}
