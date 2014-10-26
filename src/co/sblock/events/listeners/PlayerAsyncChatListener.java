@@ -58,7 +58,8 @@ public class PlayerAsyncChatListener implements Listener {
 			event.setCancelled(false);
 		}
 		// Clear @channels, though /me and escaping will remain
-		event.setMessage(message.getMessage());
+		message.prepare();
+		event.setMessage(message.getConsoleMessage());
 		message.send();
 		event.setFormat("[" + message.getChannel().getName() + "] <%1$s> %2$s");
 
@@ -77,6 +78,7 @@ public class PlayerAsyncChatListener implements Listener {
 			}
 			hal.addColor(ChatColor.RED);
 			hal.setChannel(message.getChannel());
+			hal.prepare();
 			hal.send();
 			return;
 		}

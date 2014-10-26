@@ -29,13 +29,9 @@ import co.sblock.utilities.regex.RegexUtils;
 public class Message {
 
 	private User sender;
-	private String name;
 	private Channel channel;
-	private String message;
-	private String consoleFriendly;
-	private boolean escape;
-	private boolean thirdPerson;
-	private String target;
+	private String name, message, consoleFriendly, target;
+	private boolean escape, thirdPerson, containsLinks;
 	private Set<ChatColor> colors;
 
 	public Message(User sender, String message) {
@@ -58,9 +54,14 @@ public class Message {
 			message = message.substring(2);
 		}
 
-		escape = message.length() > 2 && message.charAt(0) != '\\' && message.charAt(1) != '\\';
+		// TODO convert to new format once old has been converted and ignored by Hal
+//		escape = message.length() > 2 && message.charAt(0) != '\\' && message.charAt(1) != '\\';
+//		if (message.length() > 0 && !escape) {
+//			message = message.substring(2);
+//		}
+		escape = message.length() > 1 && message.charAt(0) != '\\';
 		if (message.length() > 0 && !escape) {
-			message = message.substring(2);
+			message = message.substring(1);
 		}
 
 		int space = message.indexOf(' ');
@@ -106,6 +107,36 @@ public class Message {
 
 	public void addColor(ChatColor color) {
 		colors.add(color);
+	}
+
+	public boolean escape() {
+		return escape;
+	}
+
+	public boolean containsLinks() {
+		return containsLinks;
+	}
+
+	public void prepare() {
+		// Get channel formatting
+		String channelPrefixing = channel.formatMessage(sender, thirdPerson);
+		if (sender != null && sender.getPlayer().hasPermission("sblockchat.color")) {
+			Player player = sender.getPlayer();
+			for (ChatColor c : ChatColor.values()) {
+				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
+					colors.add(c);
+				}
+			}
+		}
+		MessageElement rawMsg = new MessageElement(channelPrefixing, colors.toArray(new ChatColor[0]));
+
+		// Send console chat message
+		if (channel.getType() != ChannelType.REGION) {
+			Bukkit.getConsoleSender().sendMessage(channelPrefixing + getConsoleMessage());
+		}
+
+		// Create raw message and wrap links Minecraft would recognize
+		message = wrapLinks(rawMsg, message);
 	}
 
 	public boolean validate(boolean notify) {
@@ -171,27 +202,9 @@ public class Message {
 			return;
 		}
 
-		// Get channel formatting
-		String channelPrefixing = channel.formatMessage(sender, thirdPerson);
 		if (sender == null) {
-			channelPrefixing = channelPrefixing.replaceFirst("<nonhuman>", name);
-		} else if (sender.getPlayer().hasPermission("sblockchat.color")) {
-			Player player = sender.getPlayer();
-			for (ChatColor c : ChatColor.values()) {
-				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
-					colors.add(c);
-				}
-			}
+			message = message.replaceFirst("<nonhuman>", name);
 		}
-		MessageElement rawMsg = new MessageElement(channelPrefixing, colors.toArray(new ChatColor[0]));
-
-		// Send console chat message
-		if (channel.getType() != ChannelType.REGION) {
-			Bukkit.getConsoleSender().sendMessage(channelPrefixing + getConsoleMessage());
-		}
-
-		// Create raw message and wrap links Minecraft would recognize
-		message = wrapLinks(rawMsg, message);
 
 		for (UUID uuid : channel.getListening()) {
 			User u = UserManager.getUser(uuid);
@@ -216,6 +229,7 @@ public class Message {
 		int lastEnd = 0;
 		String lastColor = new String();
 		while (match.find()) {
+			containsLinks = true;
 			rawMsg.addExtra(processMessageSegment(lastColor + message.substring(lastEnd, match.start())));
 			lastColor = ChatColor.getLastColors(rawMsg.toString());
 			String url = match.group(1);

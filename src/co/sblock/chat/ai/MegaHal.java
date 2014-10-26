@@ -75,11 +75,7 @@ public class MegaHal {
 			}
 			triggerResponse(msg.getChannel(), msg.getConsoleMessage());
 		} else {
-			if (msg.getChannel().getType() == ChannelType.RP || msg.getChannel().getType() == ChannelType.NICK
-					|| msg.getChannel().getAccess() == AccessLevel.PRIVATE) {
-				return;
-			}
-			log(msg.getConsoleMessage());
+			log(msg);
 		}
 	}
 
@@ -89,6 +85,14 @@ public class MegaHal {
 
 	public boolean isOnlyTrigger(String message) {
 		return exactPattern.matcher(message).find();
+	}
+
+	public void log(Message message) {
+		if (message.containsLinks() || !message.escape() || message.getChannel().getAccess() == AccessLevel.PRIVATE
+				|| message.getChannel().getType() == ChannelType.NICK || message.getChannel().getType() == ChannelType.RP) {
+			return;
+		}
+		log(message.getConsoleMessage());
 	}
 
 	public void log(String message) {
@@ -176,7 +180,7 @@ public class MegaHal {
 		File halFile = new File(Sblock.getInstance().getDataFolder(), "hal.log");
 		if (halFile.exists()) {
 			try {
-				List<String> halLogs = FileUtils.readLines(chester);
+				List<String> halLogs = FileUtils.readLines(halFile);
 				for (String string : halLogs) {
 					hal.add(string);
 				}
