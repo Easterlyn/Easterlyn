@@ -119,6 +119,8 @@ public class MegaHal {
 				String word = selectRandomWord(message);
 				Message msg = new Message("Lil Hal", word == null ? hal.getSentence(): hal.getSentence(word));
 				msg.setChannel(channel);
+				msg.addColor(ChatColor.RED);
+				msg.prepare();
 				msg.send();
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());
@@ -166,8 +168,11 @@ public class MegaHal {
 				try {
 					FileUtils.copyFile(chester, chesterBackup);
 					List<String> chesterLogs = FileUtils.readLines(chester);
+					Message message = new Message("Conversion", "");
 					for (String string : chesterLogs) {
-						log(string);
+						message.setMessage(string);
+						message.prepare();
+						log(message);
 					}
 					saveLogs();
 				} catch (IOException e) {

@@ -31,7 +31,7 @@ public class Message {
 	private User sender;
 	private Channel channel;
 	private String name, message, consoleFriendly, target;
-	private boolean escape, thirdPerson, containsLinks;
+	private boolean escape, thirdPerson, containsLinks, isPrepared;
 	private Set<ChatColor> colors;
 
 	public Message(User sender, String message) {
@@ -56,7 +56,7 @@ public class Message {
 
 		// TODO convert to new format once old has been converted and ignored by Hal
 //		escape = message.length() > 2 && message.charAt(0) != '\\' && message.charAt(1) != '\\';
-//		if (message.length() > 0 && !escape) {
+//		if (!escape) {
 //			message = message.substring(2);
 //		}
 		escape = message.length() > 1 && message.charAt(0) != '\\';
@@ -79,6 +79,7 @@ public class Message {
 		this.consoleFriendly = message;
 
 		this.colors = new HashSet<>();
+		this.isPrepared = false;
 	}
 
 	public User getSender() {
@@ -91,6 +92,7 @@ public class Message {
 
 	public void setChannel(Channel channel) {
 		this.channel = channel;
+		this.isPrepared = false;
 	}
 
 	public String getMessage() {
@@ -103,10 +105,13 @@ public class Message {
 
 	public void setMessage(String message) {
 		this.message = message;
+		this.consoleFriendly = message;
+		this.isPrepared = false;
 	}
 
 	public void addColor(ChatColor color) {
 		colors.add(color);
+		this.isPrepared = false;
 	}
 
 	public boolean escape() {
@@ -136,7 +141,9 @@ public class Message {
 		}
 
 		// Create raw message and wrap links Minecraft would recognize
-		message = wrapLinks(rawMsg, message);
+		message = wrapLinks(rawMsg, consoleFriendly);
+
+		isPrepared = true;
 	}
 
 	public boolean validate(boolean notify) {
@@ -200,6 +207,10 @@ public class Message {
 		// Check if the message is valid
 		if (sender == null && name == null || channel == null) {
 			return;
+		}
+
+		if (!isPrepared) {
+			prepare();
 		}
 
 		if (sender == null) {
