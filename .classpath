@@ -21,5 +21,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/javaluator.jar"/>
 	<classpathentry kind="lib" path="lib/spigot-20141001a-patched.jar"/>
+	<classpathentry kind="lib" path="lib/JMegaHal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

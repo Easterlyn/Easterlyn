@@ -1,8 +1,6 @@
 package co.sblock.chat;
 
-import org.bukkit.Bukkit;
-
-import co.sblock.chat.chester.ChesterListener;
+import co.sblock.chat.ai.MegaHal;
 import co.sblock.module.Module;
 
 public class SblockChat extends Module {
@@ -10,20 +8,17 @@ public class SblockChat extends Module {
 	private static SblockChat instance;
 	private ChannelManager cm = new ChannelManager();
 	private ChatCommands clistener = new ChatCommands();
-	private ChesterListener chester;
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
+	private MegaHal hal;
 
 	@Override
 	protected void onEnable() {
 		instance = this;
 		this.registerCommands(clistener);
-		cm.loadAllChannels();
+		this.cm.loadAllChannels();
 		this.cm.createDefaultSet();
 
-		if (Bukkit.getPluginManager().isPluginEnabled("Chester")) {
-			chester = new ChesterListener();
-			this.registerEvents(chester);
-		}
+		this.hal = new MegaHal();
 	}
 
 	@Override
@@ -35,11 +30,8 @@ public class SblockChat extends Module {
 		return cm;
 	}
 
-	public ChesterListener getChester() {
-		if (chester != null) {
-			return chester;
-		}
-		throw new RuntimeException("Chester is not enabled!");
+	public MegaHal getHal() {
+		return hal;
 	}
 
 	public static SblockChat getChat() {

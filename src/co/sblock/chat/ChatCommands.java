@@ -212,6 +212,26 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
+	@CommandDenial
+	@CommandDescription("Trigger a Lil Hal response")
+	@CommandPermission("group.helper")
+	@CommandUsage("/megahal [channel] [seedword]")
+	@SblockCommand(consoleFriendly = true)
+	public boolean megahal(CommandSender sender, String[] args) {
+		Channel target;
+		if (args.length >= 1) {
+			target = ChannelManager.getChannelManager().getChannel(args[0]);
+			if (target == null) {
+				sender.sendMessage(ChatColor.RED + "Invalid channel: " + args[0]);
+				return true;
+			}
+		} else {
+			target = ChannelManager.getChannelManager().getChannel("#");
+		}
+		SblockChat.getChat().getHal().triggerResponse(target, args.length > 1 ? args[1] : null);
+		return true;
+	}
+
 	private boolean scC(User user, String[] args) {
 		if (args.length == 1) {
 			user.sendMessage(ChatMsgs.helpSCC());

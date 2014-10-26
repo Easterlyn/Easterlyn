@@ -32,6 +32,7 @@ public class Message {
 	private String name;
 	private Channel channel;
 	private String message;
+	private String consoleFriendly;
 	private boolean escape;
 	private boolean thirdPerson;
 	private String target;
@@ -57,7 +58,7 @@ public class Message {
 			message = message.substring(2);
 		}
 
-		escape = message.length() > 0 && message.charAt(0) != '\\';
+		escape = message.length() > 1 && message.charAt(0) != '\\' && message.charAt(1) != '\\';
 		if (message.length() > 0 && !escape) {
 			message = message.substring(1);
 		}
@@ -74,6 +75,7 @@ public class Message {
 		message = RegexUtils.trimExtraWhitespace(message);
 
 		this.message = message;
+		this.consoleFriendly = message;
 
 		this.colors = new HashSet<>();
 	}
@@ -92,6 +94,10 @@ public class Message {
 
 	public String getMessage() {
 		return message;
+	}
+
+	public String getConsoleMessage() {
+		return consoleFriendly;
 	}
 
 	public void setMessage(String message) {
@@ -181,7 +187,7 @@ public class Message {
 
 		// Send console chat message
 		if (channel.getType() != ChannelType.REGION) {
-			Bukkit.getConsoleSender().sendMessage(channelPrefixing + message);
+			Bukkit.getConsoleSender().sendMessage(channelPrefixing + getConsoleMessage());
 		}
 
 		// Create raw message and wrap links Minecraft would recognize
@@ -227,7 +233,7 @@ public class Message {
 	}
 
 	private MessageElement processMessageSegment(String substring) {
-		MessageElement msg;
+		MessageElement msg = null;;
 		// Could do this more cleanly with casting, but ifs will work for now.
 		if (sender != null && channel.getType() == ChannelType.RP) {
 			CanonNicks nick = CanonNicks.getNick(channel.getNick(sender));
@@ -242,16 +248,18 @@ public class Message {
 				// TODO new MessageElement per new color to prevent color reset on wrap
 //				Matcher matcher = Pattern.compile("&[0-9A-FK-NRa-fk-nr]").matcher(substring);
 //				int lastEnd = 0;
+//				MessageElement latestMsg = null;
 //				while (matcher.find()) {
-//					
+//					if (msg == null) {
+//						msg = escape ? new EscapedElement(substring.substring(0, matcher.start()))
+//								: new MessageElement(substring.substring(0, matcher.start()));
+//						
+//					}
 //				}
 
 				substring = ChatColor.translateAlternateColorCodes('&', substring);
-			}
-			if (escape) {
-				msg = new EscapedElement(substring, colors.toArray(new ChatColor[0]));
 			} else {
-				msg = new MessageElement(substring, colors.toArray(new ChatColor[0]));
+				msg = escape ? new EscapedElement(substring) : new MessageElement(substring);
 			}
 		}
 		return msg;

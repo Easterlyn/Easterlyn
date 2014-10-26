@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.chat.Message;
+import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.data.SblockData;
 import co.sblock.users.UserManager;
@@ -68,11 +69,18 @@ public class PlayerAsyncChatListener implements Listener {
 			try {
 				 hal.setMessage(substring.trim() + " = " + eval.evaluate(substring));
 			} catch (IllegalArgumentException e) {
-				hal.setMessage("Sorry, I can't read that equation!");
+				if (substring.matches("\\A\\s*[Mm]([Yy]|[Aa][Hh]?) ([Dd][Ii][Cc]?[Kk]|[Cc][Oo][Cc][Kk]|[Pp][Ee][Nn][Ii][Ss])\\s*\\Z")) {
+					hal.setMessage("Sorry, your equation is too tiny for me to read.");
+				} else {
+					hal.setMessage("Sorry, I can't read that equation!");
+				}
 			}
 			hal.addColor(ChatColor.RED);
 			hal.setChannel(message.getChannel());
 			hal.send();
+			return;
 		}
+
+		SblockChat.getChat().getHal().handleMessage(message);
 	}
 }
