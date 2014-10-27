@@ -30,7 +30,7 @@ public class Message {
 
 	private User sender;
 	private Channel channel;
-	private String name, message, consoleFriendly, target;
+	private String name, originalMessage, cleanedMessage, finalMessage, target, channelPrefixing;
 	private boolean escape, thirdPerson, containsLinks, isPrepared;
 	private Set<ChatColor> colors;
 
@@ -48,6 +48,34 @@ public class Message {
 	}
 
 	private Message(String message) {
+		setMessage(message);
+		this.colors = new HashSet<>();
+	}
+
+	public User getSender() {
+		return sender;
+	}
+
+	public Channel getChannel() {
+		return channel;
+	}
+
+	public void setChannel(Channel channel) {
+		this.channel = channel;
+		setMessage(originalMessage);
+	}
+
+	public String getMessage() {
+		return finalMessage;
+	}
+
+	public String getConsoleMessage() {
+		return cleanedMessage;
+	}
+
+	public void setMessage(String message) {
+
+		this.originalMessage = message;
 
 		thirdPerson = message.startsWith("#>");
 		if (thirdPerson) {
@@ -75,43 +103,17 @@ public class Message {
 		// Trim whitespace created by formatting codes, etc.
 		message = RegexUtils.trimExtraWhitespace(message);
 
-		this.message = message;
-		this.consoleFriendly = message;
-
-		this.colors = new HashSet<>();
+		this.finalMessage = message;
+		this.cleanedMessage = message;
 		this.isPrepared = false;
-	}
 
-	public User getSender() {
-		return sender;
-	}
-
-	public Channel getChannel() {
-		return channel;
-	}
-
-	public void setChannel(Channel channel) {
-		this.channel = channel;
-		this.isPrepared = false;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public String getConsoleMessage() {
-		return consoleFriendly;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-		this.consoleFriendly = message;
-		this.isPrepared = false;
+		prepare();
 	}
 
 	public void addColor(ChatColor color) {
 		colors.add(color);
 		this.isPrepared = false;
+		setMessage(originalMessage);
 	}
 
 	public boolean escape() {
@@ -119,12 +121,16 @@ public class Message {
 	}
 
 	public boolean containsLinks() {
+		prepare();
 		return containsLinks;
 	}
 
 	public void prepare() {
+		if (isPrepared || channel == null) {
+			return;
+		}
 		// Get channel formatting
-		String channelPrefixing = channel.formatMessage(sender, thirdPerson);
+		channelPrefixing = channel.formatMessage(sender, thirdPerson);
 		if (sender != null && sender.getPlayer().hasPermission("sblockchat.color")) {
 			Player player = sender.getPlayer();
 			for (ChatColor c : ChatColor.values()) {
@@ -133,15 +139,16 @@ public class Message {
 				}
 			}
 		}
-		MessageElement rawMsg = new MessageElement(channelPrefixing, colors.toArray(new ChatColor[0]));
 
-		// Send console chat message
-		if (channel.getType() != ChannelType.REGION) {
-			Bukkit.getConsoleSender().sendMessage(channelPrefixing + getConsoleMessage());
+		if (sender == null) {
+			channelPrefixing = channelPrefixing.replaceFirst("<nonhuman>", name);
 		}
 
+		MessageElement rawMsg = new MessageElement(channelPrefixing, colors.toArray(new ChatColor[0]));
+
+		containsLinks = false;
 		// Create raw message and wrap links Minecraft would recognize
-		message = wrapLinks(rawMsg, consoleFriendly);
+		finalMessage = wrapLinks(rawMsg, cleanedMessage);
 
 		isPrepared = true;
 	}
@@ -163,7 +170,7 @@ public class Message {
 		}
 
 		// No sending of blank messages.
-		if (RegexUtils.appearsEmpty(message)) {
+		if (RegexUtils.appearsEmpty(finalMessage)) {
 			if (notify) {
 				sender.sendMessage(ChatMsgs.errorEmptyMessage());
 			}
@@ -214,7 +221,11 @@ public class Message {
 		}
 
 		if (sender == null) {
-			message = message.replaceFirst("<nonhuman>", name);
+			finalMessage = finalMessage.replaceFirst("<nonhuman>", name);
+		}
+
+		if (sender == null || channel.getType() != ChannelType.REGION) {
+			Bukkit.getConsoleSender().sendMessage(channelPrefixing + cleanedMessage);
 		}
 
 		for (UUID uuid : channel.getListening()) {
@@ -228,9 +239,9 @@ public class Message {
 			}
 			if (sender != null && sender.equals(u)) {
 				// No self-highlight.
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + " " + message);
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + " " + finalMessage);
 			} else {
-				u.rawHighlight(message, channel.getNick(u));
+				u.rawHighlight(finalMessage, channel.getNick(u));
 			}
 		}
 	}

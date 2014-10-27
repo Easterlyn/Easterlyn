@@ -1,9 +1,11 @@
 package co.sblock.chat.ai;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -17,12 +19,12 @@ import org.jibble.jmegahal.JMegaHal;
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.Message;
+import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.regex.RegexUtils;
-import co.sblock.utilities.threadsafe.SetGenerator;
 
 /**
  * Sblock's JMegaHal implementation - Chester is just too buggy and difficult to customize.
@@ -39,12 +41,13 @@ public class MegaHal {
 	public MegaHal() {
 		hal = new JMegaHal();
 
+		
 		String regexBase = RegexUtils.ignoreCaseRegex("hal", "dirk");
 		exactPattern = Pattern.compile(createExactRegex(regexBase));
 		Log.getLog("MegaHal").info("Compiled exact regex: " + exactPattern.toString());
 		whitespacePattern = Pattern.compile(createWhitespaceRegex(regexBase));
 		Log.getLog("MegaHal").info("Compiled whitespace regex: " + whitespacePattern.toString());
-		pendingMessages = SetGenerator.generate();
+		pendingMessages = Collections.synchronizedSet(new LinkedHashSet<String>());
 
 		save = new HalLogSavingTask();
 		save.runTaskTimer(Sblock.getInstance(), 600L, 600L);
@@ -120,7 +123,6 @@ public class MegaHal {
 				Message msg = new Message("Lil Hal", word == null ? hal.getSentence(): hal.getSentence(word));
 				msg.setChannel(channel);
 				msg.addColor(ChatColor.RED);
-				msg.prepare();
 				msg.send();
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());
@@ -146,12 +148,12 @@ public class MegaHal {
 
 	public void saveLogs() {
 		File halFile = new File(Sblock.getInstance().getDataFolder(), "hal.log");
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(halFile));
+		try (PrintWriter writer = new PrintWriter(new FileWriter(halFile, true))) {
 			for (String s : pendingMessages) {
-				writer.write(s + '\n');
+				writer.println(s);
 			}
 			writer.close();
+			pendingMessages.clear();
 		} catch (IOException e) {
 			Log.getLog("MegaHal").err(e);
 		}
@@ -168,9 +170,10 @@ public class MegaHal {
 				try {
 					FileUtils.copyFile(chester, chesterBackup);
 					List<String> chesterLogs = FileUtils.readLines(chester);
-					Message message = new Message("Conversion", "");
+					Channel hash = SblockChat.getChat().getChannelManager().getChannel("#");
 					for (String string : chesterLogs) {
-						message.setMessage(string);
+						Message message = new Message("Conversion", string);
+						message.setChannel(hash);
 						message.prepare();
 						log(message);
 					}
