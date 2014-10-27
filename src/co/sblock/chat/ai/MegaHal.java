@@ -7,11 +7,14 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jibble.jmegahal.JMegaHal;
@@ -36,18 +39,20 @@ public class MegaHal {
 	private Pattern exactPattern, whitespacePattern;
 	private JMegaHal hal;
 	private Set<String> pendingMessages;
+	private Map<String, Long> ratelimit;
 	private HalLogSavingTask save;
 
 	public MegaHal() {
 		hal = new JMegaHal();
 
-		
 		String regexBase = RegexUtils.ignoreCaseRegex("hal", "dirk");
 		exactPattern = Pattern.compile(createExactRegex(regexBase));
 		Log.getLog("MegaHal").info("Compiled exact regex: " + exactPattern.toString());
 		whitespacePattern = Pattern.compile(createWhitespaceRegex(regexBase));
 		Log.getLog("MegaHal").info("Compiled whitespace regex: " + whitespacePattern.toString());
 		pendingMessages = Collections.synchronizedSet(new LinkedHashSet<String>());
+
+		ratelimit = new ConcurrentHashMap<>();
 
 		save = new HalLogSavingTask();
 		save.runTaskTimer(Sblock.getInstance(), 600L, 600L);
@@ -75,6 +80,21 @@ public class MegaHal {
 				// Set sender on fire or some shit
 				msg.getSender().sendMessage(ColorDef.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
 				return;
+			}
+			if (msg.getSender() == null || msg.getChannel().getAccess() == AccessLevel.PRIVATE
+					|| msg.getChannel().getType() == ChannelType.NICK || msg.getChannel().getType() == ChannelType.RP) {
+				return;
+			}
+			String channel = msg.getChannel().getName();
+			if (!channel.equals("#halchat")) {
+				if (ratelimit.containsKey(channel) && ratelimit.get(msg.getChannel().getName()) > System.currentTimeMillis()) {
+					// Still on cooldown, warn a bitch
+					msg.getSender().getPlayer().sendMessage(ColorDef.HAL.replaceFirst("#", channel) + "If you want to spam with me, run /sc c #halchat");
+					Bukkit.getConsoleSender().sendMessage("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
+					return;
+				} else {
+					ratelimit.put(channel, System.currentTimeMillis() + 1500L);
+				}
 			}
 			triggerResponse(msg.getChannel(), msg.getConsoleMessage());
 		} else {
@@ -120,7 +140,7 @@ public class MegaHal {
 			@Override
 			public void run() {
 				String word = selectRandomWord(message);
-				Message msg = new Message("Lil Hal", word == null ? hal.getSentence(): hal.getSentence(word));
+				Message msg = new Message("Lil Hal", word == null ? hal.getSentence() : hal.getSentence(word));
 				msg.setChannel(channel);
 				msg.addColor(ChatColor.RED);
 				msg.send();
@@ -129,6 +149,9 @@ public class MegaHal {
 	}
 
 	private String selectRandomWord(String message) {
+		if (message == null) {
+			return null;
+		}
 		String[] words = message.split(" ");
 		String word = words[(int) (Math.random() * words.length)];
 		// Fewer non-word matches
