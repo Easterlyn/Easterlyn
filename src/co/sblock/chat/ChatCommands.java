@@ -232,6 +232,15 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
+	@CommandDescription("Halculate an equation")
+	@CommandUsage("/halc 1+1")
+	@SblockCommand(consoleFriendly = true)
+	public boolean halc(CommandSender sender, String[] args) {
+		sender.sendMessage(ChatColor.RED + "Evhaluation: " + ChatColor.GRAY
+				+ SblockChat.getChat().getHalculator().evhaluate(StringUtils.join(args, ' ')));
+		return true;
+	}
+
 	private boolean scC(User user, String[] args) {
 		if (args.length == 1) {
 			user.sendMessage(ChatMsgs.helpSCC());

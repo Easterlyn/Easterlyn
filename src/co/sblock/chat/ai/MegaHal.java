@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class MegaHal {
 	private Set<String> pendingMessages;
 	private Map<String, Long> ratelimit;
 	private HalLogSavingTask save;
+	private Set<Pattern> ignoreMatches;
 
 	public MegaHal() {
 		hal = new JMegaHal();
@@ -56,6 +58,10 @@ public class MegaHal {
 
 		save = new HalLogSavingTask();
 		save.runTaskTimer(Sblock.getInstance(), 600L, 600L);
+
+		ignoreMatches = new HashSet<>();
+		ignoreMatches.add(Pattern.compile("^.*[Bb]([Ee]|[Aa])[Nn][Zz]([Uu]|[Ee])?[Rr][Ff]([Ll][Ee][Ss]?)?.*$"));
+		ignoreMatches.add(Pattern.compile("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$"));
 
 		loadHal();
 	}
@@ -121,10 +127,12 @@ public class MegaHal {
 	public void log(String message) {
 		message = ChatColor.stripColor(message);
 		// TODO strip more stuff we don't want
-		// Most strips are purely for the sake of handling conversion from Chester's logs and will be removed post-release
-		if (message.isEmpty() || message.startsWith("((") || message.contains("benzrf")
-				|| message.matches("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$")
-				|| isTrigger(message)) {
+		for (Pattern pattern : ignoreMatches) {
+			if (pattern.matcher(message).find()) {
+				return;
+			}
+		}
+		if (message.isEmpty() || message.startsWith("((") || isTrigger(message)) {
 			return;
 		}
 		pendingMessages.add(message);

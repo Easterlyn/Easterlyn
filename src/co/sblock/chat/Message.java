@@ -82,14 +82,9 @@ public class Message {
 			message = message.substring(2);
 		}
 
-		// TODO convert to new format once old has been converted and ignored by Hal
-//		escape = message.length() > 2 && message.charAt(0) != '\\' && message.charAt(1) != '\\';
-//		if (!escape) {
-//			message = message.substring(2);
-//		}
-		escape = message.length() > 1 && message.charAt(0) != '\\';
-		if (message.length() > 0 && !escape) {
-			message = message.substring(1);
+		escape = message.length() < 2 || message.charAt(0) != '\\' || message.charAt(1) != '\\';
+		if (!escape) {
+			message = message.substring(2);
 		}
 
 		int space = message.indexOf(' ');
@@ -126,7 +121,7 @@ public class Message {
 	}
 
 	public void prepare() {
-		if (isPrepared || channel == null) {
+		if (isPrepared || channel == null || sender == null && name == null) {
 			return;
 		}
 		// Get channel formatting
@@ -220,6 +215,10 @@ public class Message {
 			prepare();
 		}
 
+		if (!isPrepared) {
+			SblockChat.getChat().getLogger().severe("Message could not be prepared");
+		}
+
 		if (sender == null) {
 			finalMessage = finalMessage.replaceFirst("<nonhuman>", name);
 		}
@@ -229,7 +228,22 @@ public class Message {
 		}
 
 		for (UUID uuid : channel.getListening()) {
-			User u = UserManager.getUser(uuid);
+			User u;
+			if (Bukkit.getPlayer(uuid) == null) {
+				u = UserManager.removeUser(uuid);
+				if (u == null) {
+					continue;
+				}
+				for (String channelName : u.getListening()) {
+					Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+					if (channel != null) {
+						channel.removeListening(uuid);
+					}
+				}
+				continue;
+			} else {
+				u = UserManager.getUser(uuid);
+			}
 			if (u == null) {
 				channel.removeListening(uuid);
 				continue;

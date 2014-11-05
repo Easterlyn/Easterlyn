@@ -62,19 +62,11 @@ public class PlayerAsyncChatListener implements Listener {
 		event.setMessage(message.getConsoleMessage());
 		event.setFormat("[" + message.getChannel().getName() + "] <%1$s> %2$s");
 
-		if (event.getMessage().toLowerCase().startsWith("halc ") || event.getMessage().toLowerCase().startsWith("halculate ")) {
-			com.fathzer.soft.javaluator.DoubleEvaluator eval = new com.fathzer.soft.javaluator.DoubleEvaluator();
-			String substring = event.getMessage().substring(event.getMessage().indexOf(' '));
+		String msg = event.getMessage().toLowerCase();
+		if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
+			msg = msg.substring(msg.indexOf(' ')).trim();
 			Message hal = new Message("Lil Hal", "");
-			try {
-				 hal.setMessage(substring.trim() + " = " + eval.evaluate(substring));
-			} catch (IllegalArgumentException e) {
-				if (substring.matches("\\A\\s*[Mm]([Yy]|[Aa][Hh]?) ([Dd][Ii][Cc]?[Kk]|[Cc][Oo][Cc][Kk]|[Pp][Ee][Nn][Ii][Ss])\\s*\\Z")) {
-					hal.setMessage("Sorry, your equation is too tiny for me to read.");
-				} else {
-					hal.setMessage("Sorry, I can't read that equation!");
-				}
-			}
+			hal.setMessage(SblockChat.getChat().getHalculator().evhaluate(msg));
 			hal.addColor(ChatColor.RED);
 			hal.setChannel(message.getChannel());
 			hal.send();

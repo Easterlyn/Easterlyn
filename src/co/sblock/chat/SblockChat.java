@@ -1,5 +1,6 @@
 package co.sblock.chat;
 
+import co.sblock.chat.ai.Halculator;
 import co.sblock.chat.ai.MegaHal;
 import co.sblock.module.Module;
 
@@ -9,7 +10,8 @@ public class SblockChat extends Module {
 	private ChannelManager cm = new ChannelManager();
 	private ChatCommands clistener = new ChatCommands();
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
-	private MegaHal hal;
+	private MegaHal megaHal;
+	private Halculator halculator;
 
 	@Override
 	protected void onEnable() {
@@ -18,13 +20,14 @@ public class SblockChat extends Module {
 		this.cm.loadAllChannels();
 		this.cm.createDefaultSet();
 
-		this.hal = new MegaHal();
+		this.megaHal = new MegaHal();
+		this.halculator = new Halculator();
 	}
 
 	@Override
 	protected void onDisable() {
 		cm.saveAllChannels();
-		hal.saveLogs();
+		megaHal.saveLogs();
 	}
 
 	public ChannelManager getChannelManager() {
@@ -32,7 +35,14 @@ public class SblockChat extends Module {
 	}
 
 	public MegaHal getHal() {
-		return hal;
+		return megaHal;
+	}
+
+	/**
+	 * @return the halculator
+	 */
+	public Halculator getHalculator() {
+		return halculator;
 	}
 
 	public static SblockChat getChat() {
