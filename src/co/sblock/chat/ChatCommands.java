@@ -34,7 +34,7 @@ public class ChatCommands implements CommandListener {
 
 	@CommandDescription("List all colors.")
 	@CommandUsage("&c/color")
-	@SblockCommand
+	@SblockCommand(consoleFriendly = true)
 	public boolean color(CommandSender sender, String[] args) {
 		sender.sendMessage(ColorDef.listColors());
 		return true;

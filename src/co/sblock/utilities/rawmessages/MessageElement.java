@@ -3,6 +3,7 @@ package co.sblock.utilities.rawmessages;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 
 /**
@@ -15,14 +16,16 @@ import org.bukkit.ChatColor;
  */
 public class MessageElement {
 	private String text;
+	private String consoleText;
 	String color = new String();
 	private StringBuilder formats = new StringBuilder();
 	private MessageClick clickEffect = null;
 	private MessageHover hoverEffect = null;
-	private LinkedList<MessageElement> messageElements= null;
+	private LinkedList<String> messageElements= null;
 
 	public MessageElement(String text) {
 		this.text = text;
+		this.consoleText = text;
 	}
 
 	public MessageElement(String text, ChatColor... colors) {
@@ -52,11 +55,23 @@ public class MessageElement {
 
 	public MessageElement addExtra(MessageElement... elements) {
 		if (messageElements == null) {
-			messageElements = new LinkedList<MessageElement>();
+			messageElements = new LinkedList<>();
 		}
 		for (int i = 0; i < elements.length; i++) {
-			messageElements.add(elements[i]);
+			messageElements.add(elements[i].toString());
+			consoleText += elements[i].getConsoleFriendly();
 		}
+		return this;
+	}
+
+	public MessageElement addRawJson(String raw, String consoleFriendly) {
+		Validate.notNull(raw, "Raw JSON String cannot be null!");
+		Validate.notNull(consoleFriendly, "Console friendly interpretation of JSON cannot be null!");
+		if (messageElements == null) {
+			messageElements = new LinkedList<>();
+		}
+		messageElements.add(raw);
+		consoleText += consoleFriendly;
 		return this;
 	}
 
@@ -75,14 +90,7 @@ public class MessageElement {
 	}
 
 	public String getConsoleFriendly() {
-		StringBuilder sb = new StringBuilder(this.getText());
-		if (messageElements == null) {
-			return sb.toString();
-		}
-		for (int i = 0; i < messageElements.size(); i++) {
-			sb.append(messageElements.get(i).getConsoleFriendly());
-		}
-		return sb.toString();
+		return consoleText;
 	}
 
 	public String toString() {

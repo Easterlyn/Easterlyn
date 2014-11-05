@@ -4,7 +4,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Message;
 import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.ChannelType;
@@ -65,11 +67,17 @@ public class PlayerAsyncChatListener implements Listener {
 		String msg = event.getMessage().toLowerCase();
 		if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
 			msg = msg.substring(msg.indexOf(' ')).trim();
-			Message hal = new Message("Lil Hal", "");
+			final Message hal = new Message("Lil Hal", "");
 			hal.setMessage(SblockChat.getChat().getHalculator().evhaluate(msg));
 			hal.addColor(ChatColor.RED);
 			hal.setChannel(message.getChannel());
-			hal.send();
+			// Delay reply to prevent global channels logging reply before original message
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					hal.send();
+				}
+			}.runTaskLaterAsynchronously(Sblock.getInstance(), 0L);
 			return;
 		}
 

@@ -911,7 +911,7 @@ public class User {
 
 		if (lastEnd > 0) {
 			// Matches were found, commence highlight format changes.
-			message = message.replaceFirst("\\[(" + ChatColor.COLOR_CHAR + ".{1,17})\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
+			message = message.replaceFirst("\\[(" + ChatColor.COLOR_CHAR + ".*?)\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
 			// Funtimes sound effects here
 			switch ((int) (Math.random() * 20)) {
 			case 0:

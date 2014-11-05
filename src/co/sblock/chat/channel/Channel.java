@@ -15,6 +15,9 @@ import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
+import co.sblock.utilities.rawmessages.MessageClick;
+import co.sblock.utilities.rawmessages.MessageElement;
+import co.sblock.utilities.rawmessages.MessageHover;
 import co.sblock.utilities.threadsafe.SetGenerator;
 
 /**
@@ -554,17 +557,23 @@ public abstract class Channel {
 	 *
 	 * @return the channel prefix
 	 */
-	public String formatMessage(User sender, boolean isThirdPerson) {
+	public String[] getChannelPrefixing(User sender, boolean isThirdPerson) {
 
 		ChatColor guildRank;
 		ChatColor channelRank;
 		String globalRank = null;
 		ChatColor region;
 		String nick;
+		String displayName;
 		String prepend = new String();
+
+		String[] prefixes = new String[2];
 
 		if (sender != null) {
 			Player player = sender.getPlayer();
+
+			// Used for /m and profile displaying, may vary from channel nick
+			displayName = player.getDisplayName();
 
 			// Guild leader color
 			if (player.hasPermission("sblock.guildleader")) {
@@ -620,6 +629,21 @@ public abstract class Channel {
 			} else {
 				region = sRegion.getRegionColor();
 			}
+			prefixes[1] = new MessageElement("[", guildRank) + ","
+					+ new MessageElement(this.name, channelRank).addClickEffect(
+							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "@" + this.name + ' ')) + ","
+					+ new MessageElement("]", guildRank) + "," + new MessageElement(isThirdPerson ? "> " : " <", region) + ","
+					+ new MessageElement(globalRank + nick).addClickEffect(
+							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "/m " + displayName + ' '))
+							.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_ITEM,
+									"{id:minecraft:diamond,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
+									+ "+------" + ChatColor.RESET + " " + globalRank + nick + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
+									+ "------+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getPlayerClass().getDisplayName()
+									+ ChatColor.YELLOW + " of " + ChatColor.DARK_AQUA + sender.getAspect().getDisplayName()
+									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream planet: " + ChatColor.DARK_AQUA + sender.getDreamPlanet().name()
+									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium planet: " + ChatColor.DARK_AQUA + sender.getMediumPlanet().getWorldName()
+									+ "\\\"]}}}")) + ","
+					+ new MessageElement(isThirdPerson ? " " : "> ", region) + "," + new MessageElement(prepend, ChatColor.WHITE);
 		} else {
 			guildRank = ColorDef.RANK_HERO;
 			channelRank = ColorDef.CHATRANK_OWNER;
@@ -627,10 +651,14 @@ public abstract class Channel {
 			region = ColorDef.WORLD_AETHER;
 			nick = "<nonhuman>";
 		}
-
-		return guildRank+ "[" + channelRank + this.name + guildRank + "]" + region
+		prefixes[0] = guildRank + "[" + channelRank + this.name + guildRank + "]" + region
 				+ (isThirdPerson ? "> " : " <") + globalRank + nick
 				+ (isThirdPerson ? "" : region + ">") + ChatColor.WHITE + ' ' + prepend;
+		if (prefixes[1] == null) {
+			prefixes[1] = prefixes[0];
+		}
+
+		return prefixes;
 	}
 
 	public String toString() {

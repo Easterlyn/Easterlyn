@@ -192,40 +192,46 @@ public class MegaHal {
 
 	public void loadHal() {
 
-		File chester = new File("plugins/Chester/brain.chester");
-		if (chester.exists()) {
-			File chesterBackup = new File("plugins/Chester/brain.backup");
-			if (chesterBackup.exists()) {
-				Log.getLog("MegaHal").warning("Chester backup already exists, please manually fix yo shit.");
-			} else {
-				try {
-					FileUtils.copyFile(chester, chesterBackup);
-					List<String> chesterLogs = FileUtils.readLines(chester);
-					Channel hash = SblockChat.getChat().getChannelManager().getChannel("#");
-					for (String string : chesterLogs) {
-						Message message = new Message("Conversion", string);
-						message.setChannel(hash);
-						message.prepare();
-						log(message);
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				File chester = new File("plugins/Chester/brain.chester");
+				if (chester.exists()) {
+					File chesterBackup = new File("plugins/Chester/brain.backup");
+					if (chesterBackup.exists()) {
+						Log.getLog("MegaHal").warning("Chester backup already exists, please manually fix yo shit.");
+					} else {
+						try {
+							FileUtils.copyFile(chester, chesterBackup);
+							List<String> chesterLogs = FileUtils.readLines(chester);
+							Channel hash = SblockChat.getChat().getChannelManager().getChannel("#");
+							for (String string : chesterLogs) {
+								Message message = new Message("Conversion", string);
+								message.setChannel(hash);
+								message.prepare();
+								log(message);
+							}
+							saveLogs();
+						} catch (IOException e) {
+							Log.getLog("MegaHal").err(e);
+						}
+						chester.delete();
 					}
-					saveLogs();
-				} catch (IOException e) {
-					Log.getLog("MegaHal").err(e);
 				}
-				chester.delete();
-			}
-		}
-
-		File halFile = new File(Sblock.getInstance().getDataFolder(), "hal.log");
-		if (halFile.exists()) {
-			try {
-				List<String> halLogs = FileUtils.readLines(halFile);
-				for (String string : halLogs) {
-					hal.add(string);
+		
+				File halFile = new File(Sblock.getInstance().getDataFolder(), "hal.log");
+				if (halFile.exists()) {
+					try {
+						List<String> halLogs = FileUtils.readLines(halFile);
+						for (String string : halLogs) {
+							hal.add(string);
+						}
+					} catch (IOException e) {
+						Log.getLog("MegaHal").err(e);
+					}
 				}
-			} catch (IOException e) {
-				Log.getLog("MegaHal").err(e);
+				Log.getLog("MegaHal").info("Finished loading Hal logs.");
 			}
-		}
+		}.runTaskAsynchronously(Sblock.getInstance());
 	}
 }

@@ -30,7 +30,8 @@ public class Message {
 
 	private User sender;
 	private Channel channel;
-	private String name, originalMessage, cleanedMessage, finalMessage, target, channelPrefixing;
+	private String name, originalMessage, cleanedMessage, finalMessage, target;
+	private String[] channelPrefixing;
 	private boolean escape, thirdPerson, containsLinks, isPrepared;
 	private Set<ChatColor> colors;
 
@@ -125,7 +126,7 @@ public class Message {
 			return;
 		}
 		// Get channel formatting
-		channelPrefixing = channel.formatMessage(sender, thirdPerson);
+		channelPrefixing = channel.getChannelPrefixing(sender, thirdPerson);
 		if (sender != null && sender.getPlayer().hasPermission("sblockchat.color")) {
 			Player player = sender.getPlayer();
 			for (ChatColor c : ChatColor.values()) {
@@ -135,11 +136,13 @@ public class Message {
 			}
 		}
 
+		MessageElement rawMsg;
 		if (sender == null) {
-			channelPrefixing = channelPrefixing.replaceFirst("<nonhuman>", name);
+			channelPrefixing[0] = channelPrefixing[0].replaceFirst("<nonhuman>", name);
+			rawMsg = new MessageElement(channelPrefixing[0], colors.toArray(new ChatColor[0]));
+		} else {
+			rawMsg = new MessageElement("", colors.toArray(new ChatColor[0])).addRawJson(channelPrefixing[1], channelPrefixing[0]);
 		}
-
-		MessageElement rawMsg = new MessageElement(channelPrefixing, colors.toArray(new ChatColor[0]));
 
 		containsLinks = false;
 		// Create raw message and wrap links Minecraft would recognize
@@ -224,7 +227,7 @@ public class Message {
 		}
 
 		if (sender == null || channel.getType() != ChannelType.REGION) {
-			Bukkit.getConsoleSender().sendMessage(channelPrefixing + cleanedMessage);
+			Bukkit.getConsoleSender().sendMessage(channelPrefixing[0] + cleanedMessage);
 		}
 
 		for (UUID uuid : channel.getListening()) {
