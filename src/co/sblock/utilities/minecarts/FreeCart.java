@@ -33,7 +33,7 @@ public class FreeCart {
 				return;
 			}
 		}
-		cooldowns.put(p.getUniqueId(), System.currentTimeMillis() + 200);
+		cooldowns.put(p.getUniqueId(), System.currentTimeMillis() + 2000);
 		Minecart m = (Minecart) location.getWorld().spawnEntity(location, EntityType.MINECART);
 		m.setPassenger(p);
 		m.setVelocity(startspeed);

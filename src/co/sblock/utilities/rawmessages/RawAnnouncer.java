@@ -98,13 +98,6 @@ public class RawAnnouncer extends Module implements CommandListener {
 		msgs.add(new MessageHalement("It appears that enchanting furnaces is very beneficial."
 				+ " You might consider giving it a try."));
 
-		msgs.add(new MessageHalement("Curious about your fellow players' classpects? Have a look at their ")
-				.addExtra(new MessageElement("/profile", ChatColor.AQUA)
-								.addClickEffect(new MessageClick(MessageClick.ClickEffect.RUN_COMMAND, "/profile"))
-								.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT,
-										ChatColor.GOLD + "Click to run!")),
-						new MessageElement("!", ChatColor.RED)));
-
 		msgs.add(new MessageHalement("It is your generosity that keeps Sblock alive. Please consider ").addExtra(
 				new MessageElement("donating", ChatColor.AQUA)
 						.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://adf.ly/NThbj"))
