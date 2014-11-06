@@ -77,7 +77,7 @@ public class PlayerAsyncChatListener implements Listener {
 				public void run() {
 					hal.send();
 				}
-			}.runTaskLaterAsynchronously(Sblock.getInstance(), 0L);
+			}.runTaskLaterAsynchronously(Sblock.getInstance(), 1L);
 			return;
 		}
 
