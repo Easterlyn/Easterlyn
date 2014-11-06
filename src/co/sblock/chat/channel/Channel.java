@@ -634,10 +634,10 @@ public abstract class Channel {
 							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "@" + this.name + ' ')) + ","
 					+ new MessageElement("]", guildRank) + "," + new MessageElement(isThirdPerson ? "> " : " <", region) + ","
 					+ new MessageElement(globalRank + nick).addClickEffect(
-							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "/m " + displayName + ' '))
+							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "/m " + player.getName() + ' '))
 							.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_ITEM,
 									"{id:minecraft:diamond,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
-									+ "+----" + ChatColor.RESET + " " + globalRank + nick + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
+									+ "+----" + ChatColor.RESET + " " + globalRank + displayName + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
 									+ "----+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getPlayerClass().getDisplayName()
 									+ ChatColor.YELLOW + " of " + ChatColor.DARK_AQUA + sender.getAspect().getDisplayName()
 									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream planet: " + ChatColor.DARK_AQUA + sender.getDreamPlanet().getDisplayName()
