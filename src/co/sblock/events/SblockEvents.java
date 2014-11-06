@@ -1,7 +1,6 @@
 package co.sblock.events;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -50,20 +49,12 @@ public class SblockEvents extends Module {
 	/* A Set of the names of all Players opening Captchadexes. */
 	public Set<String> openingCaptchadex;
 
-	/* The time at which SblockEvents was enabled (generally server start) */
-	private long start;
-
-	/* Boolean representing whether or not the server should restart next chance. */
-	private boolean restart;
-
 	@Override
 	protected void onEnable() {
 		instance = this;
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
 		openingCaptchadex = new HashSet<String>();
-		start = System.currentTimeMillis();
-		restart = false;
 
 		status = Status.NEITHER;
 		initiateSessionChecks();
@@ -227,24 +218,5 @@ public class SblockEvents extends Module {
 	@Override
 	protected String getModuleName() {
 		return "EventsModule";
-	}
-
-	public void setSoftRestart(boolean restart) {
-		this.restart = restart;
-	}
-
-	public boolean getSoftRestart() {
-		return restart;
-	}
-
-	public boolean recalculateRestart() { // TODO task to trigger this check
-		if (!restart) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(System.currentTimeMillis());
-			// 20h * 60min * 60s * 1000ms = 72000000, 3600000 = 1h
-			restart = start - System.currentTimeMillis() > 72000000
-					|| start - System.currentTimeMillis() > 10800000 && calendar.get(Calendar.HOUR_OF_DAY) < 3;
-		}
-		return restart;
 	}
 }

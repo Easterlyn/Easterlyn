@@ -150,12 +150,12 @@ public class PlayerInteractListener implements Listener {
 
 				switch (UserManager.getUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
 				case EARTH:
-				case INNERCIRCLE:
+				case PROSPIT:
 				case LOFAF:
 				case LOHAC:
 				case LOLAR:
 				case LOWAS:
-				case OUTERCIRCLE:
+				case DERSE:
 					SblockEvents.getEvents().fakeSleepDream(event.getPlayer(), head);
 					event.setCancelled(true);
 					return;

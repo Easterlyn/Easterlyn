@@ -118,7 +118,7 @@ public class User {
 		private UserClass classType = UserClass.HEIR;
 		private UserAspect aspect = UserAspect.BREATH;
 		private Region mPlanet = Region.LOWAS;
-		private Region dPlanet = Region.INNERCIRCLE;
+		private Region dPlanet = Region.PROSPIT;
 		private ProgressionState progression = ProgressionState.NONE;
 
 		private Location previousLocation = null;
@@ -645,7 +645,7 @@ public class User {
 			this.addListening(ChannelManager.getChannelManager().getChannel(newR.getChannelName()));
 		}
 		if (newR.isDream()) {
-			this.getPlayer().setPlayerTime(newR == Region.OUTERCIRCLE ? 18000L : 6000L, false);
+			this.getPlayer().setPlayerTime(newR == Region.DERSE ? 18000L : 6000L, false);
 		} else {
 			this.getPlayer().resetPlayerTime();
 		}

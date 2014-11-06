@@ -19,7 +19,6 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.data.SblockData;
-import co.sblock.events.SblockEvents;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.module.CommandDenial;
 import co.sblock.module.CommandDescription;
@@ -28,7 +27,6 @@ import co.sblock.module.CommandPermission;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.SblockCommand;
 import co.sblock.utilities.Broadcast;
-import co.sblock.utilities.CollectionUtils;
 import co.sblock.utilities.minecarts.FreeCart;
 
 /**
@@ -40,9 +38,6 @@ import co.sblock.utilities.minecarts.FreeCart;
  * @author FireNG, Jikoo
  */
 public class UserDataCommands implements CommandListener {
-
-	/** The standard profile color. */
-	public static final ChatColor PROFILE_COLOR = ChatColor.DARK_AQUA;
 
 	/** Map containing all server/client player requests */
 	public static Map<String, String> requests = new HashMap<String, String>();
@@ -90,11 +85,12 @@ public class UserDataCommands implements CommandListener {
 			sender.sendMessage(ChatColor.YELLOW + "User not found.");
 			return true;
 		}
-		sender.sendMessage(PROFILE_COLOR + "-----------------------------------------\n"
-				+ ChatColor.YELLOW + user.getPlayerName() + ": " + user.getPlayerClass().getDisplayName() + " of " + user.getAspect().getDisplayName() + "\n"
-				+ PROFILE_COLOR    + "-----------------------------------------\n"
-				+ "Dream planet: " + ChatColor.YELLOW + user.getDreamPlanet().name() + "\n"
-				+ PROFILE_COLOR + "Medium planet: " + ChatColor.YELLOW + user.getMediumPlanet().name());
+		sender.sendMessage(ChatColor.YELLOW.toString() + ChatColor.STRIKETHROUGH + "+------" + ChatColor.DARK_AQUA + " "
+				+ user.getPlayerName() + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH + "------+\n"
+				+ ChatColor.DARK_AQUA + user.getPlayerClass().getDisplayName() + ChatColor.YELLOW
+				+ " of " + ChatColor.DARK_AQUA + user.getAspect().getDisplayName() + "\n"
+				+ ChatColor.YELLOW + "Dream planet: " + ChatColor.DARK_AQUA + user.getDreamPlanet().getDisplayName() + "\n"
+				+ ChatColor.YELLOW + "Medium planet: " + ChatColor.DARK_AQUA + user.getMediumPlanet().getDisplayName());
 		return true;
 	}
 
@@ -449,19 +445,6 @@ public class UserDataCommands implements CommandListener {
 		} else {
 			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + target[0] + " has been unbanned.");
 		}
-		return true;
-	}
-
-	@CommandDenial
-	@CommandDescription("Fixes all issues except crappy code.")
-	@CommandPermission("group.horrorterror")
-	@SblockCommand(consoleFriendly = true)
-	public boolean softrestart(CommandSender sender, String[] target) {
-		if (CollectionUtils.sizeofCollection(Bukkit.getOnlinePlayers()) == 0) {
-			Bukkit.dispatchCommand(sender, "restart");
-			return true;
-		}
-		SblockEvents.getEvents().setSoftRestart(true);
 		return true;
 	}
 

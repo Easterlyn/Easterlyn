@@ -637,11 +637,11 @@ public abstract class Channel {
 							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "/m " + displayName + ' '))
 							.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_ITEM,
 									"{id:minecraft:diamond,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
-									+ "+------" + ChatColor.RESET + " " + globalRank + nick + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
-									+ "------+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getPlayerClass().getDisplayName()
+									+ "+----" + ChatColor.RESET + " " + globalRank + nick + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
+									+ "----+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getPlayerClass().getDisplayName()
 									+ ChatColor.YELLOW + " of " + ChatColor.DARK_AQUA + sender.getAspect().getDisplayName()
-									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream planet: " + ChatColor.DARK_AQUA + sender.getDreamPlanet().name()
-									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium planet: " + ChatColor.DARK_AQUA + sender.getMediumPlanet().getWorldName()
+									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream planet: " + ChatColor.DARK_AQUA + sender.getDreamPlanet().getDisplayName()
+									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium planet: " + ChatColor.DARK_AQUA + sender.getMediumPlanet().getDisplayName()
 									+ "\\\"]}}}")) + ","
 					+ new MessageElement(isThirdPerson ? " " : "> ", region) + "," + new MessageElement(prepend, ChatColor.WHITE);
 		} else {

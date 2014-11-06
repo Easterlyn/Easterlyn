@@ -12,7 +12,6 @@ import co.sblock.events.SblockEvents;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
-import co.sblock.utilities.CollectionUtils;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.minecarts.FreeCart;
 import co.sblock.utilities.progression.Entry;
@@ -82,11 +81,6 @@ public class PlayerQuitListener implements Listener {
 		// Inform channels that the player is no longer listening to them
 		for (String s : user.getListening()) {
 			user.removeListeningQuit(s);
-		}
-
-		// Restart when last player out if required
-		if (CollectionUtils.sizeofCollection(Bukkit.getOnlinePlayers()) == 0 && SblockEvents.getEvents().recalculateRestart()) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
 		}
 	}
 }

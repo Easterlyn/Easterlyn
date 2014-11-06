@@ -10,17 +10,18 @@ import co.sblock.chat.ColorDef;
  * @author Jikoo, Dublek
  */
 public enum Region {
-	EARTH("Earth", "#EARTH", ColorDef.WORLD_EARTH, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
-	OUTERCIRCLE("Derspit", "#DERSPIT", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip", false, true),
-	INNERCIRCLE("Derspit", "#DERSPIT", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Prospit.zip", false, true),
-	FURTHESTRING("FurthestRing", "#FURTHESTRING", ColorDef.WORLD_FURTHESTRING, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
-	LOWAS("LOWAS", "#LOWAS", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
-	LOLAR("LOLAR", "#LOLAR", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
-	LOHAC("LOHAC", "#LOHAC", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
-	LOFAF("LOFAF", "#LOFAF", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
-	UNKNOWN("Earth", "#Aether", ColorDef.WORLD_AETHER, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false);
+	EARTH("Earth", "Earth", "#EARTH", ColorDef.WORLD_EARTH, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
+	DERSE("Derse", "Derspit", "#DERSPIT", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip", false, true),
+	PROSPIT("Prospit", "Derspit", "#DERSPIT", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Prospit.zip", false, true),
+	FURTHESTRING("FurthestRing", "FurthestRing", "#FURTHESTRING", ColorDef.WORLD_FURTHESTRING, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
+	LOWAS("LOWAS", "LOWAS", "#LOWAS", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOLAR("LOLAR", "LOLAR", "#LOLAR", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOHAC("LOHAC", "LOHAC", "#LOHAC", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOFAF("LOFAF", "LOFAF", "#LOFAF", ColorDef.WORLD_MEDIUM, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	UNKNOWN("Second Earth", "Earth", "#Aether", ColorDef.WORLD_AETHER, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false);
 
 	/* INNER FIELDS */
+	private final String displayName;
 	private final String worldName;
 	private final String channelName;
 	private final String resourcePack;
@@ -36,13 +37,21 @@ public enum Region {
 	 * @param isMedium true if the planet is in the Medium
 	 * @param isDream true if the planet is a dream planet
 	 */
-	private Region(String worldName, String channelName, ChatColor color, String sourceURL, boolean isMedium, boolean isDream) {
+	private Region(String displayName, String worldName, String channelName, ChatColor color, String sourceURL, boolean isMedium, boolean isDream) {
+		this.displayName = displayName;
 		this.worldName = worldName;
 		this.channelName = channelName;
 		this.resourcePack = sourceURL;
 		this.worldChatColor = color;
 		this.isMedium = isMedium;
 		this.isDream = isDream;
+	}
+
+	/**
+	 * @return the displayName
+	 */
+	public String getDisplayName() {
+		return displayName;
 	}
 
 	/**
@@ -108,14 +117,14 @@ public enum Region {
 			return (Region.valueOf(s));
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			// Compatibility for old dream planet saving
-			if (s.equalsIgnoreCase("Prospit")) {
-				return INNERCIRCLE;
+			if (s.equalsIgnoreCase("INNERCIRCLE")) {
+				return PROSPIT;
 			}
-			if (s.equalsIgnoreCase("Derse")) {
-				return OUTERCIRCLE;
+			if (s.equalsIgnoreCase("OUTERCIRCLE")) {
+				return DERSE;
 			}
 			if (s.equalsIgnoreCase("Derspit")) {
-				return Math.random() >= .5 ? OUTERCIRCLE : INNERCIRCLE;
+				return Math.random() >= .5 ? DERSE : PROSPIT;
 			}
 			return UNKNOWN;
 		}
