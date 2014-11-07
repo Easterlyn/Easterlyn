@@ -245,6 +245,19 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
+	@CommandDenial()
+	@CommandDescription("In essence a /tellraw @a that can be used in console")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/tellallraw <raw json string>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean tellallraw(CommandSender sender, String[] args) {
+		String json = StringUtils.join(args, ' ');
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Bukkit.dispatchCommand(sender, "tellraw " + p.getName() + " "+ json);
+		}
+		return true;
+	}
+
 	private boolean scC(User user, String[] args) {
 		if (args.length == 1) {
 			user.sendMessage(ChatMsgs.helpSCC());
