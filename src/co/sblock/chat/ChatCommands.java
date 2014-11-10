@@ -245,7 +245,7 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@CommandDenial()
+	@CommandDenial
 	@CommandDescription("In essence a /tellraw @a that can be used in console")
 	@CommandPermission("group.horrorterror")
 	@CommandUsage("/tellallraw <raw json string>")
@@ -254,6 +254,34 @@ public class ChatCommands implements CommandListener {
 		String json = StringUtils.join(args, ' ');
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Bukkit.dispatchCommand(sender, "tellraw " + p.getName() + " "+ json);
+		}
+		return true;
+	}
+
+	@CommandDenial
+	@CommandDescription("In essence a /tellraw @a that can be used in console")
+	@CommandPermission("group.horrorterror")
+	@CommandUsage("/rssupdate <feed name> <url> <title>")
+	@SblockCommand(consoleFriendly = true)
+	public boolean rssupdate(CommandSender sender, String[] args) {
+		if (args.length < 3) {
+			return false;
+		}
+		String json = " {\"text\":\"\",\"extra\":[{\"text\":\"[\",\"color\":\"white\"},"
+				+ "{\"text\":\"#\",\"color\":\"red\"},{\"text\":\"] <\",\"color\":\"white\"},"
+				+ "{\"text\":\"{NAME}\",\"color\":\"yellow\",\"hoverEvent\":{\"action\":\"show_text\","
+				+ "\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"RSS feed\",\"color\":\"yellow\"}]}}},"
+				+ "{\"text\":\"> \",\"color\":\"white\"},{\"text\":\"Update: \",\"color\":\"yellow\"},"
+				+ "{\"text\":\"{TITLE}\",\"color\":\"blue\",\"underlined\":\"true\",\"clickEvent\":"
+				+ "{\"action\":\"open_url\",\"value\":\"{LINK}\"},\"hoverEvent\":{\"action\":\"show_text\","
+				+ "\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click to go: \",\"color\":\"dark_aqua\"},"
+				+ "{\"text\":\"{LINK}\",\"color\":\"blue\",\"underlined\":\"true\"}]}}}]}";
+
+		json = json.replaceAll("{NAME}", args[0]).replaceAll("{LINK}", args[1])
+				.replaceAll("{TITLE}", StringUtils.join(args, ' ', 2, args.length - 1));
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Bukkit.dispatchCommand(sender, "tellraw " + p.getName() + json);
 		}
 		return true;
 	}
