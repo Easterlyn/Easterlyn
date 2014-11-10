@@ -228,7 +228,7 @@ public class ChatCommands implements CommandListener {
 		} else {
 			target = ChannelManager.getChannelManager().getChannel("#");
 		}
-		SblockChat.getChat().getHal().triggerResponse(target, args.length > 1 ? args[1] : null);
+		SblockChat.getChat().getHal().triggerUnfilteredResponse(target, args.length > 1 ? StringUtils.join(args, ' ', 1, args.length) : null);
 		return true;
 	}
 
@@ -277,8 +277,8 @@ public class ChatCommands implements CommandListener {
 				+ "\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click to go: \",\"color\":\"dark_aqua\"},"
 				+ "{\"text\":\"{LINK}\",\"color\":\"blue\",\"underlined\":\"true\"}]}}}]}";
 
-		json = json.replaceAll("{NAME}", args[0]).replaceAll("{LINK}", args[1])
-				.replaceAll("{TITLE}", StringUtils.join(args, ' ', 2, args.length - 1));
+		json = json.replaceAll("\\{NAME\\}", args[0]).replaceAll("\\{LINK\\}", args[1])
+				.replaceAll("\\{TITLE\\}", StringUtils.join(args, ' ', 2, args.length));
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Bukkit.dispatchCommand(sender, "tellraw " + p.getName() + json);

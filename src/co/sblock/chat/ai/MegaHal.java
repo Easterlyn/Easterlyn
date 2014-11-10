@@ -156,6 +156,18 @@ public class MegaHal {
 		}.runTaskAsynchronously(Sblock.getInstance());
 	}
 
+	public void triggerUnfilteredResponse(final Channel channel, final String message) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Message msg = new Message("Lil Hal", message == null ? hal.getSentence() : hal.getSentence(message));
+				msg.setChannel(channel);
+				msg.addColor(ChatColor.RED);
+				msg.send();
+			}
+		}.runTaskAsynchronously(Sblock.getInstance());
+	}
+
 	private String selectRandomWord(String message) {
 		if (message == null) {
 			return null;
