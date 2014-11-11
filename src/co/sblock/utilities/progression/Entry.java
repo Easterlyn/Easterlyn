@@ -205,7 +205,7 @@ public class Entry {
 					lore.add(ChatColor.YELLOW + "Place in a free space to build!");
 					im.setLore(lore);
 					house.setItemMeta(im);
-					target.getWorld().dropItem(target, house);
+					target.getWorld().dropItem(target, house).setPickupDelay(0);
 					for (Entity e : target.getWorld().getEntitiesByClasses(Zombie.class, Skeleton.class, Creeper.class, Slime.class)) {
 						if (((LivingEntity) e).getLocation().distanceSquared(target) < 2048) {
 							e.remove();

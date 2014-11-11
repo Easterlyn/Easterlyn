@@ -746,7 +746,7 @@ public class User {
 			Player clientPlayer = Bukkit.getPlayer(client);
 			for (ItemStack is : getPlayer().getInventory()) {
 				if (Captcha.isPunch(is)) {
-					clientPlayer.getWorld().dropItem(clientPlayer.getLocation(), is);
+					clientPlayer.getWorld().dropItem(clientPlayer.getLocation(), is).setPickupDelay(0);
 					break;
 				}
 			}
