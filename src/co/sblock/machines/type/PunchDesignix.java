@@ -40,11 +40,11 @@ public class PunchDesignix extends Machine {
 	private static ItemStack[] exampleRecipes;
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String, Direction)
+	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
-	public PunchDesignix(Location l, String data, Direction d) {
-		super(l, data, d);
+	public PunchDesignix(Location l, String owner, Direction d) {
+		super(l, owner, d);
 		MaterialData m = new MaterialData(Material.QUARTZ_STAIRS,
 				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
 		shape.addBlock(new Vector(0, 0, 0), m);
@@ -66,7 +66,7 @@ public class PunchDesignix extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.machines.type.Machine#getType()
 	 */
 	@Override
 	public MachineType getType() {
@@ -74,7 +74,7 @@ public class PunchDesignix extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
@@ -93,7 +93,7 @@ public class PunchDesignix extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
+	 * @see co.sblock.machines.type.Machine#handleClick(InventoryClickEvent)
 	 */
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event) {

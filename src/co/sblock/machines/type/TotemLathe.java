@@ -40,11 +40,11 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	private Block furnaceBlock;
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String, Direction)
+	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
-	public TotemLathe(Location l, String data, Direction d) {
-		super(l, data, d);
+	public TotemLathe(Location l, String owner, Direction d) {
+		super(l, owner, d);
 		MaterialData m = new MaterialData(Material.QUARTZ_BLOCK, (byte) 2);
 		shape.addBlock(new Vector(0, 0, 0), m);
 		shape.addBlock(new Vector(0, 1, 0), m);
@@ -73,7 +73,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.machines.type.Machine#getType()
 	 */
 	@Override
 	public MachineType getType() {
@@ -81,7 +81,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
@@ -95,7 +95,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		if ((user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user)))
 				&& (event.getPlayer().hasPermission("group.denizen")
-						|| event.getPlayer().getUniqueId().toString().equals(getData()))) {
+						|| event.getPlayer().getUniqueId().toString().equals(getOwner()))) {
 			event.getPlayer().openInventory(getInventory());
 		}
 		return true;
@@ -143,7 +143,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleClick(InventoryClickEvent)
+	 * @see co.sblock.machines.type.Machine#handleClick(InventoryClickEvent)
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
 		updateFurnaceInventory();

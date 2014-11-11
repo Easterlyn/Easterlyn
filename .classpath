@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="lib/javaluator.jar"/>
 	<classpathentry kind="lib" path="lib/spigot-20141001a-patched.jar"/>
 	<classpathentry kind="lib" path="lib/JMegaHal.jar"/>
+	<classpathentry kind="lib" path="lib/HolographicDisplays.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

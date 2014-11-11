@@ -15,7 +15,7 @@ import co.sblock.module.SblockCommand;
 /**
  * @author Jikoo
  */
-public class MachineCommand implements CommandListener {
+public class MachineCommands implements CommandListener {
 
 	/**
 	 * Command for getting a Machine ItemStack.
@@ -67,5 +67,4 @@ public class MachineCommand implements CommandListener {
 		}
 		return true;
 	}
-
 }

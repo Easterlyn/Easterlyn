@@ -17,22 +17,22 @@ import co.sblock.machines.utilities.MachineType;
 public class PGO extends Machine {
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String)
+	 * @see co.sblock.machines.type.Machine#Machine(Location, String)
 	 */
-	public PGO(Location l, String data) {
-		super(l, data);
+	public PGO(Location l, String owner) {
+		super(l, owner);
 		this.blocks = shape.getBuildLocations(direction);
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
+	 * @see co.sblock.machines.type.Machine#getType()
 	 */
 	public MachineType getType() {
 		return MachineType.PERFECTLY_GENERIC_OBJECT;
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#assemble(BlockPlaceEvent)
+	 * @see co.sblock.machines.type.Machine#assemble(BlockPlaceEvent)
 	 */
 	@SuppressWarnings("deprecation")
 	public void assemble(BlockPlaceEvent event) {
@@ -45,14 +45,14 @@ public class PGO extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockPlaceEvent)
+	 * @see co.sblock.machines.type.Machine#meetsAdditionalBreakConditions(BlockPlaceEvent)
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return true;
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	public boolean handleInteract(PlayerInteractEvent event) {
 		return false;
@@ -60,7 +60,6 @@ public class PGO extends Machine {
 
 	/**
 	 * Verifies that a PGO is allowed to be turned into the specified Material.
-	 * Holy poopsicles
 	 * 
 	 * @param type Material
 	 * 

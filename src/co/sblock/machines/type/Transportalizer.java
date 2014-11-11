@@ -1,5 +1,7 @@
 package co.sblock.machines.type;
 
+import java.util.Map.Entry;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -15,6 +17,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
+
+import com.gmail.filoghost.holograms.api.Hologram;
+import com.gmail.filoghost.holograms.api.HolographicDisplaysAPI;
 
 import co.sblock.Sblock;
 import co.sblock.machines.utilities.MachineType;
@@ -39,12 +44,13 @@ import co.sblock.utilities.inventory.InventoryUtils;
 public class Transportalizer extends Machine {
 
 	private long fuel;
+	private Hologram hologram;
 	/**
 	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
 	 */
 	@SuppressWarnings("deprecation")
-	public Transportalizer(Location l, String data, Direction d) {
-		super(l, data, d);
+	public Transportalizer(Location l, String owner, Direction d) {
+		super(l, owner, d);
 		MaterialData m = new MaterialData(Material.HOPPER, d.getRelativeDirection(Direction.SOUTH).getChestByte());
 		shape.addBlock(new Vector(0, 0, 0), m);
 		m = new MaterialData(Material.QUARTZ_BLOCK);
@@ -76,14 +82,14 @@ public class Transportalizer extends Machine {
 		blocks = shape.getBuildLocations(getFacingDirection());
 
 		fuel = 0;
-//		Location holoLoc = null;
-//		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
-//			if (e.getValue().getType() == Material.STAINED_GLASS) {
-//				holoLoc = e.getKey().clone().add(0.5, 0, 0.5);
-//				break;
-//			}
-//		}
-		// TODO hologram
+		Location holoLoc = null;
+		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
+			if (e.getValue().getItemType() == Material.STAINED_GLASS) {
+				holoLoc = e.getKey().clone().add(0.5, 0, 0.5);
+				break;
+			}
+		}
+		hologram = HolographicDisplaysAPI.createHologram(Sblock.getInstance(), holoLoc, String.valueOf(fuel));
 	}
 
 	/**
@@ -109,7 +115,7 @@ public class Transportalizer extends Machine {
 	public void setData(String data) {
 		try {
 			fuel = Long.valueOf(data);
-			// TODO update hologram
+			hologram.setLine(0, String.valueOf(fuel));
 		} catch (NumberFormatException e)  {
 			fuel = 0;
 		}
@@ -131,7 +137,7 @@ public class Transportalizer extends Machine {
 						}
 						if (hasValue(event.getSource().getItem(i).getType())) {
 							fuel += getValue(event.getSource().getItem(i).getType());
-							// TODO update hologram
+							hologram.setLine(0, String.valueOf(fuel));
 							key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
 							event.getSource().setItem(i, InventoryUtils.decrement(event.getSource().getItem(i), 1));
 							break;
@@ -194,7 +200,7 @@ public class Transportalizer extends Machine {
 	}
 
 	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
+	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
@@ -264,32 +270,25 @@ public class Transportalizer extends Machine {
 
 		// TELEPORT
 		Block pad = event.getClickedBlock().getRelative(BlockFace.DOWN);
+		Location source;
+		Location target;
 		if (pad.getState().getData().getData() == 5) {
-			for (Entity e : key.getWorld().getEntities()) {
-				if (e.getLocation().getBlock().equals(pad)) {
-					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
-					fuel -= cost;
-					// TODO update hologram
-					remote.setPitch(e.getLocation().getPitch());
-					remote.setYaw(e.getLocation().getYaw());
-					e.teleport(remote);
-					pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
-					pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);
-					return false;
-				}
-			}
+			source = pad.getLocation();
+			target = remote;
 		} else {
-			for (Entity e : key.getWorld().getEntities()) {
-				if (e.getLocation().getBlock().equals(remote.getBlock())) {
-					fuel -= cost;
-					// TODO update hologram
-					e.teleport(new Location(pad.getWorld(), pad.getX() + .5, pad.getY(), pad.getZ() + .5,
-							e.getLocation().getYaw(), e.getLocation().getPitch()));
-					key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
-					pad.getWorld().playEffect(pad.getLocation(), Effect.ENDER_SIGNAL, 4);
-					pad.getWorld().playEffect(remote, Effect.ENDER_SIGNAL, 4);
-					return false;
-				}
+			source = remote;
+			target = pad.getLocation();
+		}
+		for (Entity e : key.getWorld().getEntities()) {
+			if (e.getLocation().getBlock().equals(source.getBlock())) {
+				fuel -= cost;
+				hologram.setLine(0, String.valueOf(fuel));
+				e.teleport(new Location(target.getWorld(), target.getX() + .5, target.getY(), target.getZ() + .5,
+						e.getLocation().getYaw(), e.getLocation().getPitch()));
+				key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
+				source.getWorld().playEffect(source, Effect.ENDER_SIGNAL, 4);
+				source.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 4);
+				return false;
 			}
 		}
 		return false;
@@ -308,7 +307,7 @@ public class Transportalizer extends Machine {
 	 */
 	@Override
 	public void disable() {
-		// TODO remove hologram
+		hologram.delete();
 	}
 
 	@Override

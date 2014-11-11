@@ -27,7 +27,7 @@ public class SblockMachines extends Module {
 	protected void onEnable() {
 		instance = this;
 		manager = new MachineManager();
-		this.registerCommands(new MachineCommand());
+		this.registerCommands(new MachineCommands());
 		SblockData.getDB().loadAllMachines();
 
 		// Recipe does nothing on its own - We'll cancel all smelts that do not happen within a TotemLate.
