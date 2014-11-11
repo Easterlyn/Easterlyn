@@ -36,6 +36,7 @@ import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.regex.RegexUtils;
@@ -741,6 +742,15 @@ public class User {
 	 * Disable server mode.
 	 */
 	public void stopServerMode() {
+		if (Bukkit.getOfflinePlayer(client).isOnline()) {
+			Player clientPlayer = Bukkit.getPlayer(client);
+			for (ItemStack is : getPlayer().getInventory()) {
+				if (Captcha.isPunch(is)) {
+					clientPlayer.getWorld().dropItem(clientPlayer.getLocation(), is);
+					break;
+				}
+			}
+		}
 		this.isServer = false;
 		this.updateFlight();
 		Player p = this.getPlayer();

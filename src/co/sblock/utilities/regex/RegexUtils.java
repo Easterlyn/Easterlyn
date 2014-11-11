@@ -114,6 +114,6 @@ public class RegexUtils {
 	}
 
 	public static String getFriendlyName(Material m) {
-		return getFriendlyName(m.name().toLowerCase());
+		return getFriendlyName(m.name().toLowerCase().replaceAll("_(on|off|item)", ""));
 	}
 }

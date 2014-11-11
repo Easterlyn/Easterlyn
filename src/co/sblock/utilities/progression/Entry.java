@@ -24,7 +24,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.ProtocolLibrary;
-
 import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
@@ -36,7 +35,9 @@ import co.sblock.users.ProgressionState;
 import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
+import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.meteors.Meteorite;
+import co.sblock.utilities.regex.RegexUtils;
 
 /**
  * Class containing functions controlling the Entry sequence.
@@ -100,7 +101,19 @@ public class Entry {
 		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true, -1);
 		// 254 seconds * 20 ticks per second = 5080
 		meteorite.hoverMeteorite(5080);
-		data.put(user.getUUID(), new EntryStorage(meteorite, materials[(int) (materials.length *  Math.random())]));
+		Material material = materials[(int) (materials.length *  Math.random())];
+		ItemStack is = new ItemStack(material);
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(ChatColor.AQUA + "Cruxite " + RegexUtils.getFriendlyName(material));
+		is.setItemMeta(im);
+		is = Captcha.captchaToPunch(Captcha.itemToCaptcha(is));
+		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline() && UserManager.getUser(user.getServer()).isServer()) {
+			Bukkit.getPlayer(user.getServer()).getInventory().addItem(is);
+		} else {
+			Player player = user.getPlayer();
+			player.getWorld().dropItem(player.getLocation(), is);
+		}
+		data.put(user.getUUID(), new EntryStorage(meteorite, material));
 	}
 
 	private void finish(User user) {
@@ -126,7 +139,6 @@ public class Entry {
 		if (user == null) {
 			return;
 		}
-
 
 		finish(user);
 		if (user.getProgression() != ProgressionState.NONE) {
