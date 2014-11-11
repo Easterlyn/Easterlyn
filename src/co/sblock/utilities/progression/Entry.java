@@ -25,6 +25,8 @@ import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.ProtocolLibrary;
 
+import com.google.common.collect.HashBiMap;
+
 import co.sblock.Sblock;
 import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 import co.sblock.machines.MachineManager;
@@ -60,27 +62,25 @@ public class Entry {
 	private static Entry instance;
 
 	private final Material[] materials;
-//	private HashBiMap<Hologram, UUID> holograms;
+	private HashBiMap<EntryTimer, UUID> holograms;
 	private HashMap<UUID, EntryStorage> data;
 
 	public Entry() {
 		materials = createMaterialList();
-//		holograms = HashBiMap.create();
+		holograms = HashBiMap.create();
 		data = new HashMap<>();
-//		HoloAPI.getTagFormatter().addFormat(Pattern.compile("\\%entry:([0-9]+)\\%"), new EntryTimeTillTag());
 	}
 	public boolean canStart(User user) {
-//		if (!holograms.values().contains(user.getUUID()) && user.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())
-//				&& user.getProgression() == ProgressionState.NONE) {
-//			return true;
-//		}
+		if (!holograms.values().contains(user.getUUID()) && user.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())
+				&& user.getProgression() == ProgressionState.NONE) {
+			return true;
+		}
 		// User has started or finished Entry already or not installed the SburbClient.
 		return false;
 	}
 
 	public boolean isEntering(User user) {
-//		return holograms.containsValue(user.getUUID());
-		return false;
+		return holograms.containsValue(user.getUUID());
 	}
 
 
@@ -91,42 +91,16 @@ public class Entry {
 
 		user.setProgression(ProgressionState.ENTRY_UNDERWAY);
 
-//		// Center hologram inside the space above the block
-//		final Location holoLoc = cruxtruder.clone().add(new Vector(0.5, 0, 0.5));
-//		// 4:13 = 253 seconds, 2 second display of 0:00
-//		// Set to 254 seconds because 1ms delay and rounding causes the display to start at 4:13
-//		holograms.put(HoloAPI.getManager().createSimpleHologram(holoLoc, 260,
-//				"%entry:" + (System.currentTimeMillis() + 254000) + "%"), user.getUUID());
-//		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true, -1);
-//		// 254 seconds * 20 ticks per second = 5080
-//		meteorite.hoverMeteorite(5080);
-//		data.put(user.getUUID(), new EntryStorage(meteorite, materials[(int) (materials.length *  Math.random())]));
-//
-//		if (task != -1) {
-//			return;
-//		}
-//
-//		task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
-//			@Override
-//			public void run() {
-//				for (Hologram hologram : holograms.keySet().toArray(new Hologram[0])) {
-//					hologram.updateDisplay();
-//					long time = Long.parseLong(hologram.getLines()[0].replaceAll("\\%entry:([0-9]+)\\%", "$1"));
-//
-//					if (time <= System.currentTimeMillis()) {
-//						User user = UserManager.getUser(holograms.get(hologram));
-//						if (user != null && user.getProgression() == ProgressionState.NONE) {
-//							fail(UserManager.getUser(holograms.get(hologram)));
-//						}
-//					}
-//				}
-//
-//				if (holograms.size() == 0) {
-//					Bukkit.getScheduler().cancelTask(task);
-//					task = -1;
-//				}
-//			}
-//		}, 20, 20);
+		// Center hologram inside the space above the block
+		final Location holoLoc = cruxtruder.clone().add(new Vector(0.5, 0, 0.5));
+		// 4:13 = 253 seconds, 2 second display of 0:00
+		EntryTimer task = new EntryTimer(holoLoc, user.getUUID());
+		task.runTaskTimer(Sblock.getInstance(), 20L, 20L);
+		holograms.put(task, user.getUUID());
+		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true, -1);
+		// 254 seconds * 20 ticks per second = 5080
+		meteorite.hoverMeteorite(5080);
+		data.put(user.getUUID(), new EntryStorage(meteorite, materials[(int) (materials.length *  Math.random())]));
 	}
 
 	private void finish(User user) {
@@ -148,6 +122,12 @@ public class Entry {
 	}
 
 	public void fail(User user) {
+
+		if (user == null) {
+			return;
+		}
+
+
 		finish(user);
 		if (user.getProgression() != ProgressionState.NONE) {
 			return;
