@@ -2,7 +2,6 @@ package co.sblock.machines.type;
 
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -12,9 +11,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
@@ -28,7 +30,6 @@ import co.sblock.machines.utilities.Shape;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
-import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
  * Machine for Entity teleportation.
@@ -61,7 +62,7 @@ public class Transportalizer extends Machine {
 		shape.addBlock(new Vector(-1, 2, 1), m);
 		shape.addBlock(new Vector(0, 2, 1), m);
 		shape.addBlock(new Vector(1, 2, 1), m);
-		m = new MaterialData(Material.DISPENSER, (byte) 1);
+		m = new MaterialData(Material.QUARTZ_STAIRS, d.getUpperStairByte());
 		shape.addBlock(new Vector(0, 0, 1), m);
 		m = new MaterialData(Material.STAINED_GLASS);
 		shape.addBlock(new Vector(0, 1, 1), m);
@@ -85,7 +86,7 @@ public class Transportalizer extends Machine {
 		Location holoLoc = null;
 		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
 			if (e.getValue().getItemType() == Material.STAINED_GLASS) {
-				holoLoc = e.getKey().clone().add(0.5, 0, 0.5);
+				holoLoc = e.getKey().clone().add(0.5, 0.5, 0.5);
 				break;
 			}
 		}
@@ -116,45 +117,27 @@ public class Transportalizer extends Machine {
 		try {
 			fuel = Long.valueOf(data);
 			hologram.setLine(0, String.valueOf(fuel));
+			hologram.update();
 		} catch (NumberFormatException e)  {
 			fuel = 0;
 		}
 	}
 
 	/**
-	 * @see co.sblock.machines.type.Machine#handleHopper(InventoryMoveItemEvent)
+	 * @see co.sblock.machines.type.Machine#handleHopperPickupItem(org.bukkit.event.inventory.InventoryPickupItemEvent)
 	 */
 	@Override
-	public boolean handleHopper(final org.bukkit.event.inventory.InventoryMoveItemEvent event) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					for (int i = 0; i < event.getSource().getSize(); i++) {
-						if (event.getSource().getItem(i) == null) {
-							continue;
-						}
-						if (hasValue(event.getSource().getItem(i).getType())) {
-							fuel += getValue(event.getSource().getItem(i).getType());
-							hologram.setLine(0, String.valueOf(fuel));
-							key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
-							event.getSource().setItem(i, InventoryUtils.decrement(event.getSource().getItem(i), 1));
-							break;
-						} else {
-							key.getWorld().dropItem(key.clone().add(Shape.getRelativeVector(direction
-											.getRelativeDirection(Direction.SOUTH), new Vector(0.5, 0.5, -1.5))),
-									event.getSource().getItem(i));
-							event.getSource().setItem(i, null);
-							break;
-						}
-					}
-				} catch (Exception e) {
-					// Machine was destroyed, probably with items in the hopper.
-				}
-			}
-			
-		});
+	public boolean handleHopperPickupItem(InventoryPickupItemEvent event) {
+		ItemStack inserted = ((Item) event.getItem()).getItemStack();
+		if (hasValue(inserted.getType())) {
+			fuel += getValue(inserted.getType()) * inserted.getAmount();
+			hologram.setLine(0, String.valueOf(fuel));
+			hologram.update();
+			key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
+			event.getItem().remove();
+		} else {
+			event.getItem().teleport(key.clone().add(Shape.getRelativeVector(direction.getRelativeDirection(Direction.SOUTH), new Vector(0.5, 0.5, -1.5))));
+		}
 		return true;
 	}
 
@@ -251,10 +234,9 @@ public class Transportalizer extends Machine {
 		String[] locString = line3.split(",");
 		int y = Integer.parseInt(locString[1]);
 		y = y > 0 ? y < 256 ? y : 255 : 63;
-		Location remote = new Location(event.getClickedBlock().getWorld(),
-				Double.parseDouble(locString[0]) + .5, y, Double.parseDouble(locString[2]) + .5);
+		Location remote = new Location(event.getClickedBlock().getWorld(), Integer.parseInt(locString[0]), y, Integer.parseInt(locString[2]));
 
-		// 
+		// 50 fuel per block of distance, rounded up.
 		int cost = (int) (key.distance(remote) / 50 + 1);
 		// CHECK FUEL
 		if (fuel < cost) {
@@ -262,7 +244,7 @@ public class Transportalizer extends Machine {
 					+ "The Transportalizer begins humming through standard teleport procedure,"
 					+ " when all of a sudden it growls to a halt."
 					+ "\nPerhaps it requires more fuel?");
-			key.getWorld().playSound(key, Sound.WOLF_GROWL, 16, 2);
+			key.getWorld().playSound(key, Sound.WOLF_GROWL, 16, 0);
 			return false;
 		}
 

@@ -28,7 +28,7 @@ public class Cruxtruder extends Machine {
 	@SuppressWarnings("deprecation")
 	public Cruxtruder(Location l, String owner) {
 		super(l, owner);
-		MaterialData m = new MaterialData(Material.DIAMOND_BLOCK);
+		MaterialData m = new MaterialData(169); // Sea Lantern
 		shape.addBlock(new Vector(0, 0, 0), m);
 		shape.addBlock(new Vector(0, 1, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.NORTH.getStairByte());

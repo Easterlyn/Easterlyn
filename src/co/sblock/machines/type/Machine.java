@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -436,7 +437,18 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleHopper(InventoryMoveItemEvent event) {
+	public boolean handleHopperMoveItem(InventoryMoveItemEvent event) {
+		return true;
+	}
+
+	/**
+	 * Handles hoppers in the Machine picking up items.
+	 * 
+	 * @param event the InventoryPickupItemEvent
+	 * 
+	 * @return true if the event should be cancelled
+	 */
+	public boolean handleHopperPickupItem(InventoryPickupItemEvent event) {
 		return true;
 	}
 

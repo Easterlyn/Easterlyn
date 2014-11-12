@@ -28,7 +28,7 @@ public class EntryTimer extends BukkitRunnable {
 	public EntryTimer(Location holoLoc, UUID uuid) {
 		format = new SimpleDateFormat("m:ss");
 		format.setTimeZone(TimeZone.getTimeZone("UTC"));
-		timeRemaining = 253;
+		timeRemaining = 253000;
 		hologram = HolographicDisplaysAPI.createHologram(Sblock.getInstance(), holoLoc, "4:13");
 		this.uuid = uuid;
 	}
@@ -36,13 +36,14 @@ public class EntryTimer extends BukkitRunnable {
 	@Override
 	public void run() {
 		hologram.setLine(0, format.format(timeRemaining > 0 ? timeRemaining : 0));
+		hologram.update();
 		if (timeRemaining == 0) {
 			Entry.getEntry().fail(UserManager.getUser(uuid));
 		}
 		if (timeRemaining < -1) {
 			cancel();
 		}
-		timeRemaining -= 1;
+		timeRemaining -= 1000;
 	}
 
 	@Override

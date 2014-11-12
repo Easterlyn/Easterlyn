@@ -57,7 +57,6 @@ public class Entry {
 		public Material getCruxtype() {
 			return cruxtype;
 		}
-
 	}
 
 	private static Entry instance;
@@ -93,7 +92,7 @@ public class Entry {
 		user.setProgression(ProgressionState.ENTRY_UNDERWAY);
 
 		// Center hologram inside the space above the block
-		final Location holoLoc = cruxtruder.clone().add(new Vector(0.5, 0, 0.5));
+		final Location holoLoc = cruxtruder.clone().add(new Vector(0.5, 0.4, 0.5));
 		// 4:13 = 253 seconds, 2 second display of 0:00
 		EntryTimer task = new EntryTimer(holoLoc, user.getUUID());
 		task.runTaskTimer(Sblock.getInstance(), 20L, 20L);
