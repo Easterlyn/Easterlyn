@@ -1078,9 +1078,13 @@ public class User {
 			Channel c = ChannelManager.getChannelManager().getChannel(s);
 			if (c != null && !c.isBanned(this)
 					&& (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
-				this.listening.add((String) s);
+				this.listening.add(s);
 				c.addListening(this.playerID);
 			}
+		}
+		if (this.getPlayer().hasPermission("group.felt") && !this.listening.contains("@")) {
+			this.listening.add("@");
+			ChannelManager.getChannelManager().getChannel("@").addListening(this.playerID);
 		}
 
 		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
