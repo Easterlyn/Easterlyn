@@ -23,6 +23,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.sblock.chat.SblockChat;
@@ -259,6 +260,14 @@ public class Sblock extends JavaPlugin {
 		shaped.shape("XXX", "XXX", "XXX");
 		shaped.setIngredient('X', Material.LAPIS_BLOCK);
 		getServer().addRecipe(shaped);
+
+		// Dye 8 wool at a time just like stained glass
+		for (byte i = 0; i < 16; i++) {
+			shaped = new ShapedRecipe(new ItemStack(Material.WOOL, 8, i));
+			shaped.shape("XXX", "XYX", "XXX");
+			shaped.setIngredient('X', Material.WOOL).setIngredient('Y', new MaterialData(Material.INK_SACK, i));
+			getServer().addRecipe(shaped);
+		}
 
 		// General: Packed ice = 2 snow 2 ice
 		shaped = new ShapedRecipe(new ItemStack(Material.PACKED_ICE));
