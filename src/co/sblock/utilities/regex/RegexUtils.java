@@ -4,7 +4,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Skeleton;
@@ -110,10 +109,5 @@ public class RegexUtils {
 			sb.append("Wither ");
 		}
 		return sb.append(getFriendlyName(e.getType().name().toLowerCase())).toString();
-		
-	}
-
-	public static String getFriendlyName(Material m) {
-		return getFriendlyName(m.name().toLowerCase().replaceAll("_(on|off|item)", ""));
 	}
 }

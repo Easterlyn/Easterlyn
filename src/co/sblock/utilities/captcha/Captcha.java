@@ -2,7 +2,6 @@ package co.sblock.utilities.captcha;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -65,19 +64,20 @@ public class Captcha extends Module {
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta iM = item.getItemMeta();
 		ArrayList<String> cardLore = new ArrayList<String>();
-		cardLore.add(iM.hasDisplayName() ? iM.getDisplayName() : item.getType().name());
-		cardLore.add(String.valueOf(item.getType().name()));
-		cardLore.add(String.valueOf(item.getDurability()));
-		cardLore.add(String.valueOf(item.getAmount()));
-		// Enchantments
-		for (Entry<Enchantment, Integer> e : iM.getEnchants().entrySet()) {
-			cardLore.add(':' + e.getKey().getName() + ';' + e.getValue());
+		cardLore.add(ChatColor.DARK_AQUA.toString() + item.getAmount() + " "
+				+ (iM.hasDisplayName() ? iM.getDisplayName() : InventoryUtils.getMaterialDataName(item.getData())));
+		if (item.getType().getMaxDurability() > 0) {
+			cardLore.add("Durability: " + ChatColor.DARK_AQUA + (item.getType().getMaxDurability() - item.getDurability())
+					+ ChatColor.YELLOW + "/" + ChatColor.DARK_AQUA + item.getType().getMaxDurability());
 		}
-		// Lore
-		if (iM.hasLore()) {
-			for (String s : iM.getLore()) {
-				cardLore.add(">" + s);
+		String serialization = InventoryUtils.serializeIntoFormattingCodes(item);
+		int start = 0;
+		for (int i = 1024; start < serialization.length(); i += 1024) {
+			if (i > serialization.length()) {
+				i = serialization.length();
 			}
+			cardLore.add(serialization.substring(start, i));
+			start = i;
 		}
 		cardMeta.setDisplayName("Captchacard");
 		cardMeta.setLore(cardLore);
@@ -154,6 +154,21 @@ public class Captcha extends Module {
 				data[j] = data[j].substring(2);
 			}
 		}
+		if (data[0].startsWith(ChatColor.DARK_AQUA.toString())) {
+			// New serialization format
+			StringBuilder serialized = null;
+			for (int i = 1; i < data.length; i++) {
+				if (serialized == null && ChatColor.stripColor(data[i]).isEmpty()) {
+					serialized = new StringBuilder(data[i]);
+					continue;
+				}
+				if (serialized == null) {
+					continue;
+				}
+				serialized.append(data[i]);
+			}
+			return InventoryUtils.deserializeFromFormattingCodes(serialized.toString());
+		}
 		try {
 			is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
 					Integer.valueOf(data[3]), Short.valueOf(data[2]));
@@ -172,6 +187,9 @@ public class Captcha extends Module {
 		}
 		List<String> itemLore = new ArrayList<String>();
 		for (String s : data) {
+			if (s.isEmpty()) {
+				continue;
+			}
 			if (s.charAt(0) == ':') {
 				// Enchantments line format
 				String[] enchs = s.substring(1).split(":");

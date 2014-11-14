@@ -257,6 +257,7 @@ public class CruxiteDowel {
 			case GOLD_RECORD:
 			case GREEN_RECORD:
 			case IRON_ORE:
+			case POTION: // Flat high price to account for regen etc.
 				materialValues.put(m.name(), 50);
 				break;
 			case RECORD_10:
@@ -311,8 +312,6 @@ public class CruxiteDowel {
 				materialValues.put(m.name(), 750);
 				break;
 			case DIAMOND_BARDING:
-			case DRAGON_EGG:
-			case NETHER_STAR:
 				materialValues.put(m.name(), 1000);
 				break;
 			case CHAINMAIL_LEGGINGS:
@@ -320,6 +319,10 @@ public class CruxiteDowel {
 				break;
 			case CHAINMAIL_CHESTPLATE:
 				materialValues.put(m.name(), 1200);
+				break;
+			case DRAGON_EGG:
+			case NETHER_STAR:
+				materialValues.put(m.name(), 16000);
 				break;
 			// UNOBTAINABLE
 			case AIR:
@@ -352,7 +355,6 @@ public class CruxiteDowel {
 			case PISTON_MOVING_PIECE:
 			case PORTAL:
 			case POTATO: // plant
-			case POTION: // Can't be captcha'd
 			case PUMPKIN_STEM: // plant
 			case SKULL:
 			case SKULL_ITEM: // Can't be captcha'd

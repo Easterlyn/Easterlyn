@@ -36,8 +36,8 @@ import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
+import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.meteors.Meteorite;
-import co.sblock.utilities.regex.RegexUtils;
 
 /**
  * Class containing functions controlling the Entry sequence.
@@ -103,7 +103,7 @@ public class Entry {
 		Material material = materials[(int) (materials.length *  Math.random())];
 		ItemStack is = new ItemStack(material);
 		ItemMeta im = is.getItemMeta();
-		im.setDisplayName(ChatColor.AQUA + "Cruxite " + RegexUtils.getFriendlyName(material));
+		im.setDisplayName(ChatColor.AQUA + "Cruxite " + InventoryUtils.getMaterialDataName(is.getData()));
 		is.setItemMeta(im);
 		is = Captcha.captchaToPunch(Captcha.itemToCaptcha(is));
 		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline() && UserManager.getUser(user.getServer()).isServer()) {
