@@ -80,6 +80,7 @@ public class CaptchaCommandListener implements CommandListener {
 			}
 			ItemStack captchas = Captcha.itemToCaptcha(Captcha.captchaToItem(is));
 			captchas.setAmount(is.getAmount());
+			conversions += is.getAmount();
 			player.getInventory().setItem(i, captchas);
 		}
 		player.sendMessage(ChatColor.GREEN.toString() + conversions + " captchacards converted!");
