@@ -1,7 +1,6 @@
 package co.sblock.utilities.captcha;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -71,12 +70,17 @@ public class CaptchaCommandListener implements CommandListener {
 	public boolean convert(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
 		int conversions = 0;
-		for (ItemStack is : player.getInventory().getContents()) {
-			if (is == null || is.getType() != Material.PAPER || !Captcha.isCard(is)) {
+		for (int i = 0; i < player.getInventory().getSize(); i++) {
+			ItemStack is = player.getInventory().getItem(i);
+			if (!Captcha.isUsedCaptcha(is)) {
 				continue;
 			}
-			conversions += is.getAmount();
-			is.setType(Material.BOOK);
+			if (is.getItemMeta().getLore().get(0).startsWith(ChatColor.DARK_AQUA.toString())) {
+				continue;
+			}
+			ItemStack captchas = Captcha.itemToCaptcha(Captcha.captchaToItem(is));
+			captchas.setAmount(is.getAmount());
+			player.getInventory().setItem(i, captchas);
 		}
 		player.sendMessage(ChatColor.GREEN.toString() + conversions + " captchacards converted!");
 		return true;
