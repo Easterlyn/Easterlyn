@@ -103,7 +103,7 @@ public class Entry {
 		Material material = materials[(int) (materials.length *  Math.random())];
 		ItemStack is = new ItemStack(material);
 		ItemMeta im = is.getItemMeta();
-		im.setDisplayName(ChatColor.AQUA + "Cruxite " + InventoryUtils.getMaterialDataName(is.getData()));
+		im.setDisplayName(ChatColor.AQUA + "Cruxite " + InventoryUtils.getMaterialDataName(is.getType(), is.getDurability()));
 		is.setItemMeta(im);
 		is = Captcha.captchaToPunch(Captcha.itemToCaptcha(is));
 		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline() && UserManager.getUser(user.getServer()).isServer()) {

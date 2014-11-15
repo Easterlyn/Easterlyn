@@ -65,7 +65,7 @@ public class Captcha extends Module {
 		ItemMeta iM = item.getItemMeta();
 		ArrayList<String> cardLore = new ArrayList<String>();
 		cardLore.add(ChatColor.DARK_AQUA.toString() + item.getAmount() + " "
-				+ (iM.hasDisplayName() ? iM.getDisplayName() : InventoryUtils.getMaterialDataName(item.getData())));
+				+ (iM.hasDisplayName() ? iM.getDisplayName() : InventoryUtils.getMaterialDataName(item.getType(), item.getDurability())));
 		if (item.getType().getMaxDurability() > 0) {
 			cardLore.add("Durability: " + ChatColor.DARK_AQUA + (item.getType().getMaxDurability() - item.getDurability())
 					+ ChatColor.YELLOW + "/" + ChatColor.DARK_AQUA + item.getType().getMaxDurability());

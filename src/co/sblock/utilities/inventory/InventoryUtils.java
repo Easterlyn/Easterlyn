@@ -24,7 +24,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -56,7 +55,7 @@ public class InventoryUtils {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
-				if (line.isEmpty()) {
+				if (line.isEmpty() || line.startsWith("//")) {
 					continue;
 				}
 				String[] column = line.split("\t");
@@ -69,11 +68,11 @@ public class InventoryUtils {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static String getMaterialDataName(MaterialData m) {
-		if (getItems().containsKey(m.getItemTypeId() + ":" + m.getData())) {
-			return items.get(m.getItemTypeId() + ":" + m.getData());
+	public static String getMaterialDataName(Material m, short durability) {
+		if (getItems().containsKey(m.getId() + ":" + durability)) {
+			return items.get(m.getId() + ":" + durability);
 		}
-		return items.get(m.getItemTypeId() + ":" + 0);
+		return items.get(m.getId() + ":" + 0);
 	}
 
 	public static String serializeItemStack(ItemStack is) {
