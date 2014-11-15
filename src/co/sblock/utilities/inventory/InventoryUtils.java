@@ -148,6 +148,7 @@ public class InventoryUtils {
 		ItemStack cleanedItem = new ItemStack(is.getType());
 		// Why Bukkit doesn't have a constructor ItemStack(MaterialData) I don't know.
 		cleanedItem.setData(is.getData());
+		cleanedItem.setDurability(is.getDurability());
 		cleanedItem.setAmount(is.getAmount());
 
 		if (!is.hasItemMeta()) {
