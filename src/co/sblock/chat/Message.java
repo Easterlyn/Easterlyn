@@ -99,6 +99,10 @@ public class Message {
 		// Trim whitespace created by formatting codes, etc.
 		message = RegexUtils.trimExtraWhitespace(message);
 
+		if (message.length() > 1 && message.charAt(0) == '>') {
+			colors.add(ChatColor.GREEN);
+		}
+
 		this.finalMessage = message;
 		this.cleanedMessage = message;
 		this.isPrepared = false;
