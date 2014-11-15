@@ -72,6 +72,9 @@ public class InventoryUtils {
 		if (getItems().containsKey(m.getId() + ":" + durability)) {
 			return items.get(m.getId() + ":" + durability);
 		}
+		if (m == Material.POTION) {
+			return "Potion";
+		}
 		return items.get(m.getId() + ":" + 0);
 	}
 
