@@ -76,8 +76,8 @@ public class SblockEvents extends Module {
 				new PlayerInteractListener(),
 				new PlayerJoinListener(), new PlayerLoginListener(),
 				new PlayerPickupItemListener(), new PlayerQuitListener(),
-				new PlayerTeleportListener(), new PrepareItemEnchantListener(),
-				new ServerListPingListener(),
+				new PlayerShearEntityListener(), new PlayerTeleportListener(),
+				new PrepareItemEnchantListener(), new ServerListPingListener(),
 
 				new SignChangeListener(),
 				
