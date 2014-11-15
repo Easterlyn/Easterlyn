@@ -27,6 +27,7 @@ import co.sblock.module.CommandPermission;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.SblockCommand;
 import co.sblock.utilities.Broadcast;
+import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.minecarts.FreeCart;
 
 /**
@@ -555,6 +556,19 @@ public class UserDataCommands implements CommandListener {
 		} else {
 			sender.sendMessage(ChatColor.DARK_AQUA + "No matches found for \"" + ChatColor.YELLOW + toMatch + ChatColor.DARK_AQUA + '"');
 		}
+		return true;
+	}
+
+
+	@CommandDescription("Clear some NBT tags off an item. Preserves most meta.")
+	@CommandUsage("&cRun /cleannbt while holding an item")
+	@CommandPermission("group.felt")
+	@CommandDenial
+	@SblockCommand
+	public boolean cleannbt(CommandSender sender, String[] args) {
+		Player player = (Player) sender;
+		player.setItemInHand(InventoryUtils.cleanNBT(player.getItemInHand()));
+		player.sendMessage(ChatColor.GREEN + "NBT cleared!");
 		return true;
 	}
 }

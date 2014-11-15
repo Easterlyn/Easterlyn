@@ -11,14 +11,27 @@ import java.util.HashSet;
 import java.util.Map;
 
 import net.minecraft.util.com.google.common.io.BaseEncoding;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.sun.corba.se.impl.orbutil.HexOutputStream;
+
 import co.sblock.Sblock;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.captcha.Captcha;
@@ -123,6 +136,98 @@ public class InventoryUtils {
 	public static ItemStack deserializeFromFormattingCodes(String s) {
 		s = s.replace(String.valueOf(ChatColor.COLOR_CHAR), "").toUpperCase();
 		return deserializeItemStack(BaseEncoding.base16().decode(s));
+	}
+
+	public static ItemStack cleanNBT(ItemStack is) {
+		if (is == null) {
+			return null;
+		}
+
+		ItemStack cleanedItem = new ItemStack(is.getType());
+		// Why Bukkit doesn't have a constructor ItemStack(MaterialData) I don't know.
+		cleanedItem.setData(is.getData());
+		cleanedItem.setAmount(is.getAmount());
+
+		if (!is.hasItemMeta()) {
+			return cleanedItem;
+		}
+		ItemMeta im = is.getItemMeta();
+
+		// Book and quill/Written books
+		if (im instanceof BookMeta) {
+			BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
+			BookMeta bm = (BookMeta) im;
+			if (bm.hasPages()) {
+				meta.addPage(bm.getPages().toArray(new String[0]));
+			}
+			if (bm.hasAuthor()) {
+				meta.setAuthor(bm.getAuthor());
+			}
+			if (bm.hasTitle()) {
+				meta.setTitle(bm.getTitle());
+			}
+			cleanedItem.setItemMeta(meta);
+		}
+
+		// Enchanted books
+		if (im instanceof EnchantmentStorageMeta) {
+			EnchantmentStorageMeta meta = (EnchantmentStorageMeta) Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
+			for (Map.Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta) im).getStoredEnchants().entrySet()) {
+				meta.addStoredEnchant(entry.getKey(), entry.getValue(), true);
+			}
+			cleanedItem.setItemMeta(meta);
+		}
+
+		// Leather armor color
+		if (im instanceof LeatherArmorMeta) {
+			LeatherArmorMeta meta = (LeatherArmorMeta) Bukkit.getItemFactory().getItemMeta(Material.LEATHER_CHESTPLATE);
+			meta.setColor(((LeatherArmorMeta) im).getColor());
+			cleanedItem.setItemMeta(meta);
+		}
+
+		// Fireworks/Firework stars
+		if (im instanceof FireworkMeta && ((FireworkMeta) im).getEffectsSize() > 0) {
+			FireworkMeta meta = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(Material.FIREWORK);
+			meta.addEffects(((FireworkMeta) im).getEffects());
+			cleanedItem.setItemMeta(meta);
+		}
+
+		// MapMeta is handled by data value
+
+		// Potions
+		if (im instanceof PotionMeta && ((PotionMeta) im).hasCustomEffects()) {
+			PotionMeta meta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.POTION);
+			for (PotionEffect effect : ((PotionMeta) im).getCustomEffects()) {
+				meta.addCustomEffect(effect, true);
+			}
+			cleanedItem.setItemMeta(meta);
+		}
+
+		// Skulls
+		if (im instanceof SkullMeta && ((SkullMeta) im).hasOwner()) {
+			SkullMeta meta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+			meta.setOwner(((SkullMeta) im).getOwner());
+		}
+
+		// Normal meta
+		ItemMeta meta = cleanedItem.getItemMeta();
+
+		if (im.hasDisplayName()) {
+			meta.setDisplayName(im.getDisplayName());
+		}
+
+		if (im.hasEnchants()) {
+			for (Map.Entry<Enchantment, Integer> entry : im.getEnchants().entrySet()) {
+				meta.addEnchant(entry.getKey(), entry.getValue(), true);
+			}
+		}
+
+		if (im.hasLore()) {
+			meta.setLore(im.getLore());
+		}
+
+		cleanedItem.setItemMeta(meta);
+		return cleanedItem;
 	}
 
 	public static HashSet<ItemStack> getUniqueItems() {
