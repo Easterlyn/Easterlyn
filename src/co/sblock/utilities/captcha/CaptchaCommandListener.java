@@ -53,17 +53,6 @@ public class CaptchaCommandListener implements CommandListener {
 		return false;
 	}
 
-	@CommandDenial
-	@CommandDescription("Gives player a captchadex.")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/captchadex")
-	@SblockCommand
-	public boolean captchadex(CommandSender sender, String[] args) {
-		if (sender.isOp())
-			((Player) sender).getInventory().addItem(Captchadex.createCaptchadexBook((Player) sender));
-		return true;
-	}
-
 	@CommandDescription("Converts captchacards from paper to plastic.")
 	@CommandUsage("Run /convert with a Captchacard in hand.")
 	@SblockCommand

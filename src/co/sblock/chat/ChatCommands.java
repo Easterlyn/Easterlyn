@@ -21,7 +21,6 @@ import co.sblock.module.CommandUsage;
 import co.sblock.module.SblockCommand;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
-import co.sblock.utilities.Broadcast;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.rawmessages.EscapedElement;
 
@@ -46,7 +45,7 @@ public class ChatCommands implements CommandListener {
 	@CommandUsage("/an <text>")
 	@SblockCommand(consoleFriendly = true)
 	public boolean an(CommandSender sender, String[] text) {
-		Broadcast.general(ChatColor.BLACK + ChatColor.BOLD.toString() + ChatColor.translateAlternateColorCodes('&', StringUtils.join(text, ' ').toUpperCase()));
+		Bukkit.broadcastMessage(ChatColor.BLACK + ChatColor.BOLD.toString() + ChatColor.translateAlternateColorCodes('&', StringUtils.join(text, ' ').toUpperCase()));
 		return true;
 	}
 
@@ -91,7 +90,7 @@ public class ChatCommands implements CommandListener {
 				i++;
 			}
 		}
-		Broadcast.general(lelOut.substring(0, lelOut.length() - 1 > 0 ? lelOut.length() - 1 : 0));
+		Bukkit.broadcastMessage(lelOut.substring(0, lelOut.length() - 1 > 0 ? lelOut.length() - 1 : 0));
 		return true;
 	}
 
@@ -114,7 +113,7 @@ public class ChatCommands implements CommandListener {
 				i++;
 			}
 		}
-		Broadcast.general(leOut.substring(0, leOut.length() - 1 > 0 ? leOut.length() - 1 : 0));
+		Bukkit.broadcastMessage(leOut.substring(0, leOut.length() - 1 > 0 ? leOut.length() - 1 : 0));
 		return true;
 	}
 
@@ -133,7 +132,7 @@ public class ChatCommands implements CommandListener {
 		for (String s : text) {
 			o.append(s).append(' ');
 		}
-		Broadcast.general(o.substring(0, o.length() - 1 > 0 ? o.length() - 1 : 0));
+		Bukkit.broadcastMessage(o.substring(0, o.length() - 1 > 0 ? o.length() - 1 : 0));
 		return true;
 	}
 

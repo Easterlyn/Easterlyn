@@ -8,7 +8,6 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
@@ -21,7 +20,6 @@ import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.captcha.Captchadex;
 import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
@@ -143,17 +141,7 @@ public class InventoryClickListener implements Listener {
 	}
 
 	// remove top
-	private void itemRemoveTop(InventoryClickEvent event) {
-		// Captchadex
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			if (event.getClick() == ClickType.LEFT) {
-				event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
-			} else {
-				event.setResult(Result.DENY);
-			}
-			return;
-		}
-	}
+	private void itemRemoveTop(InventoryClickEvent event) {}
 
 	// add top
 	@SuppressWarnings("deprecation")
@@ -184,13 +172,7 @@ public class InventoryClickListener implements Listener {
 	}
 
 	// move top to bottom
-	private void itemShiftTopToBottom(InventoryClickEvent event) {
-		// Captchadex
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			event.setCurrentItem(Captchadex.itemToPunchcard(event.getCurrentItem()));
-			return;
-		}
-	}
+	private void itemShiftTopToBottom(InventoryClickEvent event) {}
 
 	// switch top
 	private void itemSwapIntoTop(InventoryClickEvent event) {

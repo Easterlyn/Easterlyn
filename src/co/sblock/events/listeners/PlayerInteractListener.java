@@ -25,7 +25,6 @@ import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.captcha.Captchadex;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.spectator.Spectators;
@@ -169,14 +168,6 @@ public class PlayerInteractListener implements Listener {
 				// Other inventory/action. Do not proceed to captcha.
 				return;
 			}
-		}
-
-		// Captchadex
-		if (Captchadex.isCaptchadex(event.getPlayer())) {
-			// It is possible to change active hotbar slots or drop items before inventories open.
-			SblockEvents.getEvents().openingCaptchadex.add(event.getPlayer().getName());
-			event.getPlayer().openInventory(Captchadex.loadCaptchadex(event.getItem()));
-			return;
 		}
 
 		// Uncaptcha

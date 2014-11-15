@@ -14,7 +14,6 @@ import org.bukkit.scoreboard.Team;
 import co.sblock.chat.ColorDef;
 import co.sblock.effects.EffectManager;
 import co.sblock.users.User.UserSpawner;
-import co.sblock.utilities.Broadcast;
 import co.sblock.utilities.SpawnLocationInformation;
 
 /**
@@ -137,7 +136,7 @@ public class UserManager {
 	public static User doFirstLogin(Player p)
 	{
 		//player's first login
-		Broadcast.lilHal("It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
+		Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
 		p.teleport(SpawnLocationInformation.getSpawnLocation());
 
 		User user = new UserSpawner().build(p.getUniqueId());

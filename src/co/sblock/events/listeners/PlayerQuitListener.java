@@ -54,9 +54,6 @@ public class PlayerQuitListener implements Listener {
 			Bukkit.getScheduler().cancelTask(SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()));
 		}
 
-		// Remove from list awaiting Captchadex inventory opening
-		SblockEvents.getEvents().openingCaptchadex.remove(event.getPlayer().getName());
-
 		// Clean up any expired cooldown entries for the player
 		Cooldowns.cleanup(event.getPlayer().getName());
 

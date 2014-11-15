@@ -9,7 +9,6 @@ import co.sblock.effects.EffectManager;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
-import co.sblock.utilities.captcha.Captchadex;
 
 /**
  * Listener for InventoryCloseEvents.
@@ -25,10 +24,6 @@ public class InventoryCloseListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (event.getInventory().getName().equals("Captchadex")) {
-			Captchadex.saveCaptchadex(event.getInventory(), event.getPlayer().getItemInHand());
-		}
-
 		MachineInventoryTracker.getTracker().closeMachine(event);
 
 		User user = UserManager.getUser(event.getPlayer().getUniqueId());

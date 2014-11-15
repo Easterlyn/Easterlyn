@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import com.comphenix.protocol.ProtocolLibrary;
 
 import co.sblock.Sblock;
+import co.sblock.chat.ColorDef;
 import co.sblock.events.listeners.*;
 import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.WrapperPlayServerAnimation;
@@ -21,7 +22,6 @@ import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
 import co.sblock.module.Module;
-import co.sblock.utilities.Broadcast;
 import co.sblock.utilities.minecarts.FreeCart;
 
 /**
@@ -46,15 +46,11 @@ public class SblockEvents extends Module {
 	/* A Set of the names of all Players queuing to sleep teleport. */
 	public Set<String> teleports;
 
-	/* A Set of the names of all Players opening Captchadexes. */
-	public Set<String> openingCaptchadex;
-
 	@Override
 	protected void onEnable() {
 		instance = this;
 		tasks = new HashMap<String, Integer>();
 		teleports = new HashSet<String>();
-		openingCaptchadex = new HashSet<String>();
 
 		status = Status.NEITHER;
 		initiateSessionChecks();
@@ -76,9 +72,8 @@ public class SblockEvents extends Module {
 
 				new PlayerAsyncChatListener(), new PlayerChangedWorldListener(),
 				new PlayerCommandPreprocessListener(), new PlayerDeathListener(),
-				new PlayerDropItemListener(), new PlayerEditBookListener(),
-				new PlayerInteractEntityListener(), new PlayerInteractListener(),
-				new PlayerItemHeldListener(),
+				new PlayerDropItemListener(), new PlayerInteractEntityListener(),
+				new PlayerInteractListener(),
 				new PlayerJoinListener(), new PlayerLoginListener(),
 				new PlayerPickupItemListener(), new PlayerQuitListener(),
 				new PlayerTeleportListener(), new PrepareItemEnchantListener(),
@@ -185,7 +180,7 @@ public class SblockEvents extends Module {
 			announcement = status.getAnnouncement();
 		}
 		if (announcement != null) {
-			Broadcast.lilHal(announcement);
+			Bukkit.broadcastMessage(ColorDef.HAL + announcement);
 			statusResample = 0;
 		}
 		this.status = status;

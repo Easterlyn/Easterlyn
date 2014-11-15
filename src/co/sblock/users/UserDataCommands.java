@@ -26,7 +26,6 @@ import co.sblock.module.CommandListener;
 import co.sblock.module.CommandPermission;
 import co.sblock.module.CommandUsage;
 import co.sblock.module.SblockCommand;
-import co.sblock.utilities.Broadcast;
 import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.minecarts.FreeCart;
 
@@ -376,7 +375,7 @@ public class UserDataCommands implements CommandListener {
 		if (target.contains(".")) { // IPs probably shouldn't be announced.
 			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, sender.getName());
 		} else {
-			Broadcast.general(ChatColor.DARK_RED + target
+			Bukkit.broadcastMessage(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
 			Player p = Bukkit.getPlayer(target);
 

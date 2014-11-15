@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 
 import co.sblock.effects.EffectManager;
 import co.sblock.effects.PassiveEffect;
-import co.sblock.events.SblockEvents;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.spectator.Spectators;
@@ -38,12 +37,6 @@ public class PlayerDropItemListener implements Listener {
 		if (event.getItemDrop().getItemStack().getItemMeta().hasDisplayName()
 				&& event.getItemDrop().getItemStack().getItemMeta().getDisplayName()
 						.startsWith(ChatColor.AQUA + "Cruxite ")) {
-			event.setCancelled(true);
-			return;
-		}
-
-		// No dropping Captchadex if it's opening.
-		if (SblockEvents.getEvents().openingCaptchadex.contains(event.getPlayer().getName())) {
 			event.setCancelled(true);
 			return;
 		}

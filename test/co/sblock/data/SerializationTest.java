@@ -19,7 +19,6 @@ public class SerializationTest {
 	@Test
 	public void test()
 	{
-		new MockBroadcast();
 		new MockSpawnLocationInformation();
 		
 		
