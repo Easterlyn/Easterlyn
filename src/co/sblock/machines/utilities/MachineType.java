@@ -17,10 +17,10 @@ import co.sblock.utilities.regex.RegexUtils;
  */
 public enum MachineType {
 
-	ALCHEMITER("alc"), COMPUTER("cpu"), CRUXTRUDER("crx"),
-	PERFECT_BUILDING_OBJECT("pbo"), PERFECTLY_GENERIC_OBJECT("pgo"),
-	PUNCH_DESIGNIX("pd"), TOTEM_LATHE("tl"),
-	TRANSPORTALIZER("tp"), ANY("NO.");
+	ALCHEMITER("ALC"), COMPUTER("CPU"), CRUXTRUDER("CRX"),
+	PERFECT_BUILDING_OBJECT("PBO"), PERFECTLY_GENERIC_OBJECT("PGO"),
+	PUNCH_DESIGNIX("PD"), TOTEM_LATHE("TL"),
+	TRANSPORTALIZER("TP"), ANY("NO.");
 
 	/** The shortened name of the MachineType. */
 	String type;
@@ -51,8 +51,9 @@ public enum MachineType {
 	 * @return the MachineType or null if invalid
 	 */
 	public static MachineType getType(String type) {
+		type = type.toUpperCase();
 		for (MachineType m : MachineType.values()) {
-			if (m.getAbbreviation().equals(type) || m.name().equals(type.toUpperCase())) {
+			if (m.getAbbreviation().equals(type) || m.name().equals(type)) {
 				return m;
 			}
 		}

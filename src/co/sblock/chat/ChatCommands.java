@@ -147,9 +147,9 @@ public class ChatCommands implements CommandListener {
 		}
 
 		args[0] = args[0].toLowerCase();
-		if (args[0].equals("c")) {
+		if (args[0].equals("c") || args[0].equals("channel")) {
 			return scC(user, args);
-		} else if (args[0].equals("l")) {
+		} else if (args[0].equals("l") || args[0].equals("listen")) {
 			return scL(user, args);
 		} else if (args[0].equals("leave")) {
 			return scLeave(user, args);
@@ -296,7 +296,7 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
 			return true;
 		}
-		if (c.getType().equals(ChannelType.REGION) && !user.isListening(c)) {
+		if (c.getType() == ChannelType.REGION && !user.isListening(c)) {
 			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
 			return true;
 		}
@@ -314,7 +314,7 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
 			return true;
 		}
-		if (c.getType().equals(ChannelType.REGION)) {
+		if (c.getType() == ChannelType.REGION) {
 			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
 			return true;
 		}
@@ -333,7 +333,7 @@ public class ChatCommands implements CommandListener {
 			user.removeListening(args[1]);
 			return true;
 		}
-		if (c.getType().equals(ChannelType.REGION)) {
+		if (c.getType() == ChannelType.REGION) {
 			user.sendMessage(ChatMsgs.errorRegionChannelLeave());
 			return true;
 		}
@@ -358,7 +358,7 @@ public class ChatCommands implements CommandListener {
 			ChatColor cc;
 			if (user.isListening(c)) {
 				cc = ChatColor.YELLOW;
-			} else if (c.getAccess().equals(AccessLevel.PUBLIC)) {
+			} else if (c.getAccess() == AccessLevel.PUBLIC) {
 				cc = ChatColor.GREEN;
 			} else {
 				cc = ChatColor.RED;
@@ -480,7 +480,7 @@ public class ChatCommands implements CommandListener {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		Bukkit.getPlayer(args[2]).setDisplayName(args[3]);
+		p.setDisplayName(args[3]);
 		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
 		for (User u : UserManager.getUsers()) {
 			u.sendMessage(msg);

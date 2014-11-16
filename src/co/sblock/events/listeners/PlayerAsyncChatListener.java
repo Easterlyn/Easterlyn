@@ -37,10 +37,6 @@ public class PlayerAsyncChatListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		event.setCancelled(true);
-		if (event.getMessage().equalsIgnoreCase("test")) {
-			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
-			return;
-		}
 		// Clear recipients so as to not duplicate messages for global chat
 		event.getRecipients().clear();
 		Message message = new Message(UserManager.getUser(event.getPlayer().getUniqueId()), event.getMessage());
@@ -53,6 +49,11 @@ public class PlayerAsyncChatListener implements Listener {
 		}
 		// Ensure message can be sent
 		if (!message.validate(true)) {
+			return;
+		}
+		// Test
+		if (message.getConsoleMessage().equalsIgnoreCase("test")) {
+			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
 			return;
 		}
 		// Uncancel global chat to play nice with IRC plugins/Dynmap

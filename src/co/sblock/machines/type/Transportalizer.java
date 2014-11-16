@@ -207,13 +207,13 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 
-		if (!event.getClickedBlock().getType().equals(Material.WOOD_BUTTON)) {
+		if (event.getClickedBlock().getType() != Material.WOOD_BUTTON) {
 			return false;
 		}
 
 		// Check for a sign in the proper location
 		Block signBlock = this.key.clone().add(new Vector(0, 2, 0)).getBlock();
-		if (!signBlock.getType().equals(Material.WALL_SIGN)) {
+		if (signBlock.getType() != Material.WALL_SIGN) {
 			event.getPlayer().sendMessage(ChatColor.RED
 					+ "Please place a sign on your transportalizer between the buttons to use it."
 					+ "\nThe third row should contain your desired coordinates in x,y,x format."

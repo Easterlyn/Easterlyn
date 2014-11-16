@@ -67,8 +67,8 @@ public class SblockEvents extends Module {
 				new FurnaceBurnListener(), new FurnaceSmeltListener(),
 
 				new InventoryClickListener(), new InventoryCloseListener(),
-				new InventoryDragListener(), new InventoryMoveItemListener(),
-				new InventoryOpenListener(), new InventoryPickupItemListener(),
+				new InventoryMoveItemListener(), new InventoryOpenListener(),
+				new InventoryPickupItemListener(),
 
 				new PlayerAsyncChatListener(), new PlayerChangedWorldListener(),
 				new PlayerCommandPreprocessListener(), new PlayerDeathListener(),

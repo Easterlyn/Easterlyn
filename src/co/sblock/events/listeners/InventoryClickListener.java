@@ -132,35 +132,17 @@ public class InventoryClickListener implements Listener {
 
 	// doubleclick gather
 	private void itemGather(InventoryClickEvent event) {
-		// Captchadex
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			// Screw it, this is too complex with Bukkit's limited API
-			event.setResult(Result.DENY);
-			return;
-		}
 	}
 
 	// remove top
 	private void itemRemoveTop(InventoryClickEvent event) {}
 
 	// add top
-	@SuppressWarnings("deprecation")
 	private void itemAddTop(InventoryClickEvent event) {
 		// Cruxite items should not be tradeable.
 		if (event.getCursor() != null && event.getCursor().getItemMeta().hasDisplayName()
 				&& event.getCursor().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
 			event.setCancelled(true);
-			return;
-		}
-
-		// Captchadex
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			if (!Captcha.isPunch(event.getCursor()) || event.getCursor().getAmount() > 1) {
-				event.setResult(Result.DENY);
-				return;
-			}
-			event.setCursor(Captcha.captchaToItem(event.getCursor()));
-			((Player) event.getWhoClicked()).updateInventory();
 			return;
 		}
 
@@ -183,14 +165,6 @@ public class InventoryClickListener implements Listener {
 			return;
 		}
 
-		// Captchadex
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			event.setResult(Result.DENY);
-			// Could instead verify swap in is single punchcard,
-			// but not really worth the bother - rare scenario.
-			return;
-		}
-
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
 				&& InventoryUtils.isUniqueItem(event.getCursor())) {
@@ -207,7 +181,7 @@ public class InventoryClickListener implements Listener {
 
 		// Server: Click computer icon -> open computer interface
 		if (UserManager.getUser(event.getWhoClicked().getUniqueId()).isServer()) {
-			if (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+			if (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
 				event.getWhoClicked().openInventory(new Computer(event.getWhoClicked().getLocation(),
@@ -229,17 +203,6 @@ public class InventoryClickListener implements Listener {
 		if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().hasDisplayName()
 				&& event.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
 			event.setCancelled(true);
-			return;
-		}
-
-		// Captchadex: convert single punchcard to item inside
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			if (Captcha.isPunch(event.getCurrentItem())
-					&& event.getCurrentItem().getAmount() == 1) {
-				event.setCurrentItem(Captcha.captchaToItem(event.getCurrentItem()));
-			} else {
-				event.setResult(Result.DENY);
-			}
 			return;
 		}
 
@@ -269,8 +232,8 @@ public class InventoryClickListener implements Listener {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 
 		if (UserManager.getUser(event.getWhoClicked().getUniqueId()).isServer()
-				&& (event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())
-						|| hotbar.equals(MachineType.COMPUTER.getUniqueDrop()))) {
+				&& (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())
+						|| hotbar.isSimilar(MachineType.COMPUTER.getUniqueDrop()))) {
 			event.setCancelled(true);
 			return;
 		}
@@ -281,15 +244,6 @@ public class InventoryClickListener implements Listener {
 						|| InventoryUtils.isUniqueItem(hotbar))) {
 			event.setResult(Result.DENY);
 			return;
-		}
-
-		if (event.getView().getTopInventory().getTitle().equals("Captchadex")) {
-			// General cancellation: Books cannot be captcha'd. Faster than detecting Captchadex.
-			if (hotbar.getType() == Material.WRITTEN_BOOK
-					|| event.getCurrentItem().getType() == Material.WRITTEN_BOOK) {
-				event.setCancelled(true);
-				return;
-			}
 		}
 
 		// TODO ENTRY
