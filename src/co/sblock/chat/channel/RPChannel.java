@@ -13,14 +13,14 @@ import co.sblock.users.User;
 public class RPChannel extends NickChannel {
 	
 	/**
-	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, UUID)
+	 * @see co.sblock.chat.channel.Channel#Channel(String, AccessLevel, UUID)
 	 */
 	public RPChannel(String name, AccessLevel a, UUID creator) {
 		super(name, a, creator);
 	}
 
 	/**
-	 * @see co.sblock.Chat.Channel.Channel#getType()
+	 * @see co.sblock.chat.channel.Channel#getType()
 	 */
 	@Override
 	public ChannelType getType() {
@@ -28,7 +28,7 @@ public class RPChannel extends NickChannel {
 	}
 
 	/**
-	 * @see co.sblock.Chat.Channel.Channel#setNick(ChatUser, String)
+	 * @see co.sblock.chat.channel.Channel#setNick(ChatUser, String)
 	 */
 	@Override
 	public void setNick(User sender, String nick) {

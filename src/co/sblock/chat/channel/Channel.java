@@ -130,10 +130,6 @@ public abstract class Channel {
 	protected Set<UUID> muteList;
 	protected Set<UUID> banList;
 	protected Set<UUID> listening;
-
-	/*
-	 * Ownership is supposed to be transferrable, Keiko just gave up too early D:
-	 */
 	protected UUID owner;
 
 	/**
@@ -212,8 +208,6 @@ public abstract class Channel {
 	public boolean isOwner(User user) {
 		return user.getUUID().equals(owner) || user.getPlayer().hasPermission("group.denizen");
 	}
-
-	public abstract ChannelSerialiser toSerialiser();
 
 	/**
 	 * @param user a user
@@ -636,7 +630,8 @@ public abstract class Channel {
 					+ new MessageElement(globalRank + nick).addClickEffect(
 							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "/m " + player.getName() + ' '))
 							.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_ITEM,
-									"{id:minecraft:diamond,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
+									// TODO change id back to minecraft:diamond when 1.8 is fully out
+									"{id:264,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
 									+ "+--" + ChatColor.RESET + " " + globalRank + displayName + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
 									+ "--+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getPlayerClass().getDisplayName()
 									+ ChatColor.YELLOW + " of " + ChatColor.DARK_AQUA + sender.getAspect().getDisplayName()
@@ -668,13 +663,5 @@ public abstract class Channel {
 				+ Bukkit.getOfflinePlayer(this.getOwner()).getName();
 	}
 
-	// this would probably get me fired
-	public boolean equals(Object o) {
-		if (o instanceof String) {
-			return this.name.equals(o);
-		}
-		return super.equals(o);
-	}
-
-	
+	public abstract ChannelSerialiser toSerialiser();
 }
