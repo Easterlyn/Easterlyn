@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -261,11 +262,27 @@ public class Sblock extends JavaPlugin {
 		shaped.setIngredient('X', Material.LAPIS_BLOCK);
 		getServer().addRecipe(shaped);
 
-		// Dye 8 wool at a time just like stained glass
-		for (byte i = 0; i < 16; i++) {
-			shaped = new ShapedRecipe(new ItemStack(Material.WOOL, 8, i));
+		// Dye 8 wool at a time just like stained glass, allows for re-dying
+		for (DyeColor dye : DyeColor.values()) {
+			shaped = new ShapedRecipe(new ItemStack(Material.WOOL, 8, dye.getWoolData()));
 			shaped.shape("XXX", "XYX", "XXX");
-			shaped.setIngredient('X', Material.WOOL).setIngredient('Y', new MaterialData(Material.INK_SACK, i));
+			shaped.setIngredient('X', Material.WOOL, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
+			getServer().addRecipe(shaped);
+		}
+
+		// Re-dye stained clay
+		for (DyeColor dye : DyeColor.values()) {
+			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_CLAY, 8, dye.getWoolData()));
+			shaped.shape("XXX", "XYX", "XXX");
+			shaped.setIngredient('X', Material.STAINED_CLAY, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
+			getServer().addRecipe(shaped);
+		}
+
+		// Re-dye stained glass
+		for (DyeColor dye : DyeColor.values()) {
+			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_GLASS, 8, dye.getWoolData()));
+			shaped.shape("XXX", "XYX", "XXX");
+			shaped.setIngredient('X', Material.STAINED_GLASS, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
 			getServer().addRecipe(shaped);
 		}
 

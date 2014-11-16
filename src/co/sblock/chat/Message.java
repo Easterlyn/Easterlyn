@@ -49,8 +49,8 @@ public class Message {
 	}
 
 	private Message(String message) {
-		setMessage(message);
 		this.colors = new HashSet<>();
+		setMessage(message);
 	}
 
 	public User getSender() {
