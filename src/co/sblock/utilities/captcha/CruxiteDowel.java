@@ -126,6 +126,7 @@ public class CruxiteDowel {
 		materialValues.put("RABBIT", 5);
 		materialValues.put("RABBIT_FOOT", 12);
 		materialValues.put("RABBIT_HIDE", 2);
+		materialValues.put("BANNER", 35);
 
 		for (Material m : Material.values()) {
 			switch(m) {
@@ -288,6 +289,7 @@ public class CruxiteDowel {
 			case LAVA_BUCKET:
 			case MILK_BUCKET:
 			case WATER_BUCKET:
+			case WEB:
 				materialValues.put(m.name(), 138);
 				break;
 			case DIAMOND:
@@ -364,7 +366,6 @@ public class CruxiteDowel {
 			case STATIONARY_LAVA:
 			case STATIONARY_WATER:
 			case WATER:
-			case WEB:
 			case WRITTEN_BOOK: // Can't be captcha'd
 				materialValues.put(m.name(), Integer.MAX_VALUE);
 			default:

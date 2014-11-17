@@ -632,11 +632,11 @@ public abstract class Channel {
 							.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_ITEM,
 									// TODO change id back to minecraft:diamond when 1.8 is fully out
 									"{id:264,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
-									+ "+--" + ChatColor.RESET + " " + globalRank + displayName + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
-									+ "--+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getPlayerClass().getDisplayName()
+									+ "+---" + ChatColor.RESET + " " + globalRank + displayName + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
+									+ "---+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getPlayerClass().getDisplayName()
 									+ ChatColor.YELLOW + " of " + ChatColor.DARK_AQUA + sender.getAspect().getDisplayName()
-									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream: " + ChatColor.DARK_AQUA + sender.getDreamPlanet().getDisplayName()
-									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium: " + ChatColor.DARK_AQUA + sender.getMediumPlanet().getDisplayName()
+									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream = " + ChatColor.DARK_AQUA + sender.getDreamPlanet().getDisplayName()
+									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium = " + ChatColor.DARK_AQUA + sender.getMediumPlanet().getDisplayName()
 									+ "\\\"]}}}")) + ","
 					+ new MessageElement(isThirdPerson ? " " : "> ", region) + "," + new MessageElement(ChatColor.WHITE + prepend);
 		} else {

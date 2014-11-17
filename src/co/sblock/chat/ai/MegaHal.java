@@ -124,7 +124,7 @@ public class MegaHal {
 		log(message.getConsoleMessage());
 	}
 
-	public void log(String message) {
+	public synchronized void log(String message) {
 		message = ChatColor.stripColor(message);
 		// TODO strip more stuff we don't want
 		for (Pattern pattern : ignoreMatches) {
@@ -143,7 +143,7 @@ public class MegaHal {
 		hal.add(message);
 	}
 
-	public void triggerResponse(final Channel channel, final String message) {
+	public synchronized void triggerResponse(final Channel channel, final String message) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -156,7 +156,7 @@ public class MegaHal {
 		}.runTaskAsynchronously(Sblock.getInstance());
 	}
 
-	public void triggerUnfilteredResponse(final Channel channel, final String message) {
+	public synchronized void triggerUnfilteredResponse(final Channel channel, final String message) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
