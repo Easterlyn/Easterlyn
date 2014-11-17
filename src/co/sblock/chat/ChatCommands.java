@@ -227,7 +227,7 @@ public class ChatCommands implements CommandListener {
 		} else {
 			target = ChannelManager.getChannelManager().getChannel("#");
 		}
-		SblockChat.getChat().getHal().triggerUnfilteredResponse(target, args.length > 1 ? StringUtils.join(args, ' ', 1, args.length) : null);
+		SblockChat.getChat().getHal().triggerResponse(target, args.length > 1 ? StringUtils.join(args, ' ', 1, args.length) : null, false);
 		return true;
 	}
 

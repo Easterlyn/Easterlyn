@@ -99,7 +99,8 @@ public class Message {
 		// Trim whitespace created by formatting codes, etc.
 		message = RegexUtils.trimExtraWhitespace(message);
 
-		if (message.length() > 1 && message.charAt(0) == '>') {
+		// 5 characters required to greentext to prevent smilies from being green
+		if (message.length() > 4 && message.charAt(0) == '>') {
 			colors.add(ChatColor.GREEN);
 		}
 

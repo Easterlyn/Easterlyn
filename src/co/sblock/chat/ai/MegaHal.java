@@ -102,7 +102,7 @@ public class MegaHal {
 					ratelimit.put(channel, System.currentTimeMillis() + 1500L);
 				}
 			}
-			triggerResponse(msg.getChannel(), msg.getConsoleMessage());
+			triggerResponse(msg.getChannel(), msg.getConsoleMessage(), true);
 		} else {
 			log(msg);
 		}
@@ -135,6 +135,7 @@ public class MegaHal {
 		if (message.isEmpty() || message.startsWith("((") || isTrigger(message)) {
 			return;
 		}
+		message = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', message));
 		pendingMessages.add(message);
 		if (save.getTaskId() == -1) {
 			Log.getLog("MegaHal").warning("Log saving task was stopped! Restarting...");
@@ -143,24 +144,17 @@ public class MegaHal {
 		hal.add(message);
 	}
 
-	public synchronized void triggerResponse(final Channel channel, final String message) {
+	public synchronized void triggerResponse(final Channel channel, final String message, final boolean filter) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				String word = selectRandomWord(message);
+				String word;
+				if (filter) {
+					word = selectRandomWord(message);
+				} else {
+					word = message;
+				}
 				Message msg = new Message("Lil Hal", word == null ? hal.getSentence() : hal.getSentence(word));
-				msg.setChannel(channel);
-				msg.addColor(ChatColor.RED);
-				msg.send();
-			}
-		}.runTaskAsynchronously(Sblock.getInstance());
-	}
-
-	public synchronized void triggerUnfilteredResponse(final Channel channel, final String message) {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				Message msg = new Message("Lil Hal", message == null ? hal.getSentence() : hal.getSentence(message));
 				msg.setChannel(channel);
 				msg.addColor(ChatColor.RED);
 				msg.send();
