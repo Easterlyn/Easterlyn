@@ -55,7 +55,7 @@ public class InventoryUtils {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
-				if (line.isEmpty() || line.startsWith("//")) {
+				if (line.isEmpty()) {
 					continue;
 				}
 				String[] column = line.split("\t");
