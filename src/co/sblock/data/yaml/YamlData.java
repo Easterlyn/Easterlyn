@@ -22,7 +22,6 @@ import co.sblock.machines.MachineManager;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
-import co.sblock.users.BukkitSerializer;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Region;
 import co.sblock.users.User;
