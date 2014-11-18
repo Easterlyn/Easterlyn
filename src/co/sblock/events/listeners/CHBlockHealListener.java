@@ -28,6 +28,7 @@ public class CHBlockHealListener implements Listener {
 			event.setCancelled(true);
 		}
 		if (mgr.isExploded(event.getBlock().getBlock())) {
+			mgr.setRestored(event.getBlock().getBlock());
 			return;
 		}
 		if (mgr.isMachine(event.getBlock().getBlock())) {
