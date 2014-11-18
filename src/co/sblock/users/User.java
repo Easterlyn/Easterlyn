@@ -1048,7 +1048,7 @@ public class User {
 	 * Factory pattern for creating Users
 	 * Must be a static class inside the User class for access to the private constructor
 	 */
-	static class UserBuilder {
+	public static class UserBuilder {
 		/* USER DEFAULTS */
 		/* these directly mimic the data of the player itself */
 		private Region currentRegion = Region.EARTH;
