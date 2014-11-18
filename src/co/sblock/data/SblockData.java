@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender;
 
 import co.sblock.chat.channel.Channel;
 import co.sblock.data.sql.SQLClient;
+import co.sblock.data.yaml.YamlData;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.YamlData;
 import co.sblock.utilities.Log;
 
 /**
