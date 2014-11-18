@@ -49,253 +49,53 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class User {
 
-	/* Player's UUID */
-	private final UUID playerID;
-
-	/* The Player's IP address */
-	private String userIP;
-
-	/* Ensures that User data is not overwritten */
-	private transient boolean loaded;
-
-	/* Keeps track of current Region for various purposes */
-	private Region currentRegion;
-
-	/* Used to calculate elapsed times. */
-	public static transient final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("DDD 'days' HH:mm:ss");
+	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("DDD 'days' HH:mm:ss");
 	static {
 		DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
+
+	/* Player's UUID */
+	private final UUID uuid;
+	private final String userIP;
+	private Region currentRegion;
 
 	/* Classpect */
 	private UserClass classType;
 	private UserAspect aspect;
 	private Region mPlanet, dPlanet;
+
+	/* Various data Sblock tracks for progression purposes */
 	private ProgressionState progression;
+	private UUID server, client;
+	private Set<Integer> programs;
+	private boolean isServer, allowFlight;
+
+	/* Chat data*/
+	private String currentChannel;
+	private final Set<String> listening;
+	private AtomicBoolean globalMute, suppress;
 
 	/* Locations to teleport Players to when conditions are met */
-	private SerialisableLocation location;
-	private transient Location previousLocation;
-	private transient Location serverDisableTeleport;
+	private Location previousLocation;
+	private Location serverDisableTeleport;
 
-	/* Programs installed to the player's computer */
-	private Set<Integer> programs;
+	/* Effects data. */
+	private final Map<PassiveEffect, Integer> passiveEffects;
 
-	/* Checks made while the Player is logged in, not saved. */
-	private transient boolean isServer, allowFlight;
-
-	/* The UUIDs of the Player's server and client players. */
-	private UUID server, client;
-
-	/* A map of the Effects applied to the Player and their strength. */
-	private transient Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
-
-	/* The name of the Player's current focused Channel */
-	private String currentChannel;
-
-	/* The channels the Player is listening to */
-	private Set<String> listening;
-
-	/* Booleans affecting channel message reception. */
-	private AtomicBoolean globalMute;
-	private transient AtomicBoolean suppress = new AtomicBoolean();
-
-	/**
-	 * 
-	 * @author ted
-	 *
-	 * Factory pattern for creating Users
-	 * Must be a static class inside the User class for access to the private constructor
-	 */
-	public static class UserSpawner {
-		/* USER DEFAULTS */
-		/* these directly mimic the data of the player itself */
-		private String IPAddr = "offline";
-
-		private boolean loaded = false;
-		private boolean isServer = false;
-		private boolean allowFlight = false;
-
-		private UserClass classType = UserClass.HEIR;
-		private UserAspect aspect = UserAspect.BREATH;
-		private Region mPlanet = Region.LOWAS;
-		private Region dPlanet = Region.PROSPIT;
-		private ProgressionState progression = ProgressionState.NONE;
-
-		private Location previousLocation = null;
-		private Set<Integer> programs = new HashSet<>();
-		private Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
-		private String currentChannel = null;
-		private HashSet<String> listening = new HashSet<>();
-		private AtomicBoolean globalMute = new AtomicBoolean();
-		private AtomicBoolean suppress = new AtomicBoolean();
-
-		/**
-		 * @param iPAddr the iPAddr to set
-		 */
-		public UserSpawner setIPAddr(String iPAddr) {
-			IPAddr = iPAddr;
-			return this;
-		}
-
-		/**
-		 * @param loaded the loaded to set
-		 */
-		public UserSpawner setLoaded(boolean loaded) {
-			this.loaded = loaded;
-			return this;
-		}
-
-		/**
-		 * @param isServer the isServer to set
-		 */
-		public UserSpawner setServer(boolean isServer) {
-			this.isServer = isServer;
-			return this;
-		}
-
-		/**
-		 * @param allowFlight the allowFlight to set
-		 */
-		public UserSpawner setAllowFlight(boolean allowFlight) {
-			this.allowFlight = allowFlight;
-			return this;
-		}
-
-		/**
-		 * @param classType the classType to set
-		 */
-		public UserSpawner setClassType(UserClass classType) {
-			this.classType = classType;
-			return this;
-		}
-
-		/**
-		 * @param aspect the aspect to set
-		 */
-		public UserSpawner setAspect(UserAspect aspect) {
-			this.aspect = aspect;
-			return this;
-		}
-
-		/**
-		 * @param mPlanet the mPlanet to set
-		 */
-		public UserSpawner setmPlanet(Region mPlanet) {
-			if (!mPlanet.isMedium()) {
-				throw new RuntimeException("Invalid medium planet: received " + mPlanet.name());
-			}
-			this.mPlanet = mPlanet;
-			return this;
-		}
-
-		/**
-		 * @param dPlanet the dPlanet to set
-		 */
-		public UserSpawner setdPlanet(Region dPlanet) {
-			if (!dPlanet.isDream()) {
-				throw new RuntimeException("Invalid dream planet: received " + dPlanet.name() + ", expected (INNER|OUTER)CIRCLE.");
-			}
-			this.dPlanet = dPlanet;
-			return this;
-		}
-
-		/**
-		 * @param progression the progression to set
-		 */
-		public UserSpawner setProgression(ProgressionState progression) {
-			this.progression = progression;
-			return this;
-		}
-
-		/**
-		 * @param previousLocation the previousLocation to set
-		 */
-		public UserSpawner setPreviousLocation(Location previousLocation) {
-			this.previousLocation = previousLocation;
-			return this;
-		}
-
-		/**
-		 * @param programs the programs to set
-		 */
-		public UserSpawner setPrograms(Set<Integer> programs) {
-			this.programs = programs;
-			return this;
-		}
-
-		/**
-		 * @param passiveEffects the passiveEffects to set
-		 */
-		public UserSpawner setPassiveEffects(Map<PassiveEffect, Integer> passiveEffects) {
-			this.passiveEffects = passiveEffects;
-			return this;
-		}
-
-		/**
-		 * @param currentChannel the currentChannel to set
-		 */
-		public UserSpawner setCurrentChannel(String currentChannel) {
-			this.currentChannel = currentChannel;
-			return this;
-		}
-
-		/**
-		 * @param listening the listening to set
-		 */
-		public UserSpawner setListening(HashSet<String> listening) {
-			this.listening = listening;
-			return this;
-		}
-
-		/**
-		 * @param globalMute the globalMute to set
-		 */
-		public UserSpawner setGlobalMute(AtomicBoolean globalMute) {
-			this.globalMute = globalMute;
-			return this;
-		}
-
-		/**
-		 * @param suppress the suppress to set
-		 */
-		public UserSpawner setSuppress(AtomicBoolean suppress) {
-			this.suppress = suppress;
-			return this;
-		}
-
-		/**
-		 * 
-		 * @param userID the user id
-		 * @return a user with all the traits that have been added to the spawner
-		 */
-		public User build(UUID userID) {
-			try {
-				if (Bukkit.getOfflinePlayer(userID).isOnline()) {
-					// IP comes out as /123.456.789.0, leading slash must be removed to properly IP ban.
-					setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString()
-							.substring(1));
-				}
-			} catch(Exception e) {
-				
-			}
-			return new User(userID, loaded, classType, aspect, mPlanet, dPlanet, progression,
-					isServer, allowFlight, IPAddr, previousLocation, currentChannel,
-					passiveEffects, programs, listening, globalMute, suppress);
-		}
-
-	}
+	/* Ensures that User data is not overwritten */
+	private boolean loaded;
 
 	/**
 	 * Creates a SblockUser object for a Player.
 	 * 
 	 * @param playerName the name of the Player to create a SblockUser for
 	 */
-	private User(UUID userID, boolean loaded, UserClass userClass, UserAspect aspect, Region mplanet,
-				Region dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight, String IP,
-				Location previousLocation, String currentChannel, Map<PassiveEffect, Integer> passiveEffects,
-				Set<Integer> programs, Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress) {
-		this.playerID = userID;
+	private User(UUID userID, Region currentRegion, boolean loaded, UserClass userClass, UserAspect aspect,
+			Region mplanet, Region dplanet, ProgressionState progstate, boolean isServer, boolean allowFlight,
+			String IP, Location previousLocation, String currentChannel, Map<PassiveEffect, Integer> passiveEffects,
+			Set<Integer> programs, Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress,
+			UUID server, UUID client) {
+		this.uuid = userID;
 		this.loaded = loaded;
 		this.classType = userClass;
 		this.aspect = aspect;
@@ -318,7 +118,11 @@ public class User {
 		this.listening = listening;
 		this.globalMute = globalMute;
 		this.suppress = supress;
-		this.userIP = IP;
+		if (this.getPlayer() != null) {
+			this.userIP = this.getPlayer().getAddress().getAddress().getHostAddress();
+		} else {
+			this.userIP = IP;
+		}
 	}
 
 	/**
@@ -327,7 +131,7 @@ public class User {
 	 * @return the UUID
 	 */
 	public UUID getUUID() {
-		return this.playerID;
+		return this.uuid;
 	}
 
 	/**
@@ -336,7 +140,7 @@ public class User {
 	 * @return the Player
 	 */
 	public Player getPlayer() {
-		return Bukkit.getPlayer(playerID);
+		return Bukkit.getPlayer(uuid);
 	}
 
 	/**
@@ -345,7 +149,7 @@ public class User {
 	 * @return the OfflinePlayer
 	 */
 	public OfflinePlayer getOfflinePlayer() {
-		return Bukkit.getOfflinePlayer(playerID);
+		return Bukkit.getOfflinePlayer(uuid);
 	}
 
 	/**
@@ -362,7 +166,7 @@ public class User {
 	 * 
 	 * @return the UserClass, default Heir
 	 */
-	public UserClass getPlayerClass() {
+	public UserClass getUserClass() {
 		return this.classType;
 	}
 
@@ -408,7 +212,7 @@ public class User {
 	 * @param mPlanet the new MediumPlanet
 	 */
 	public void setMediumPlanet(String mPlanet) {
-		Region planet = Region.uValueOf(mPlanet);
+		Region planet = Region.getRegion(mPlanet);
 		if (!planet.isMedium()) {
 			throw new RuntimeException("Invalid medium planet: received " + planet.name());
 		}
@@ -430,7 +234,7 @@ public class User {
 	 * @param dPlanet the new DreamPlanet
 	 */
 	public void setDreamPlanet(String dPlanet) {
-		Region planet = Region.uValueOf(dPlanet);
+		Region planet = Region.getRegion(dPlanet);
 		if (!planet.isDream()) {
 			throw new RuntimeException("Invalid dream planet: received " + planet.name() + ", expected (INNER|OUTER)CIRCLE.");
 		}
@@ -475,7 +279,7 @@ public class User {
 			public void run() {
 				allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().contains("Circle")
 						|| getPlayer().getGameMode().equals(GameMode.CREATIVE)
-						|| isServer || Spectators.getSpectators().isSpectator(playerID));
+						|| isServer || Spectators.getSpectators().isSpectator(uuid));
 				if (getOfflinePlayer().isOnline()) {
 					getPlayer().setAllowFlight(allowFlight);
 					getPlayer().setFlying(allowFlight);
@@ -606,7 +410,7 @@ public class User {
 	 */
 	public Region getPlayerRegion() {
 		String world = this.getPlayer().getWorld().getName();
-		Region r = Region.uValueOf(world);
+		Region r = Region.getRegion(world);
 		// TODO fix: store in db, users may not be asleep post-Entry
 		if (r.isDream()) {
 			r = this.getDreamPlanet();
@@ -657,15 +461,6 @@ public class User {
 	}
 
 	/**
-	 * Sets the SblockUser's IP if the Player is online.
-	 */
-	public void setUserIP() {
-		if (this.getPlayer() != null) {
-			this.userIP = this.getPlayer().getAddress().getAddress().getHostAddress();
-		}
-	}
-
-	/**
 	 * Ensure that data is not overwritten if load is completed after quit.
 	 */
 	public void setLoaded() {
@@ -695,7 +490,7 @@ public class User {
 	 */
 	public void startServerMode() {
 		Player p = this.getPlayer();
-		if (Spectators.getSpectators().isSpectator(playerID)) {
+		if (Spectators.getSpectators().isSpectator(uuid)) {
 			Spectators.getSpectators().removeSpectator(p);
 		}
 		if (this.client == null) {
@@ -821,20 +616,19 @@ public class User {
 	 */
 	public void setAllPassiveEffects(HashMap<PassiveEffect, Integer> effects) {
 		removeAllPassiveEffects();
-		this.passiveEffects = effects;
+		for (Map.Entry<PassiveEffect, Integer> entry : effects.entrySet()) {
+			this.passiveEffects.put(entry.getKey(), entry.getValue());
+		}
 	}
 	
 	/**
 	 * Removes all PassiveEffects from the user and cancels the Effect
 	 */
 	public void removeAllPassiveEffects() {
-		if (passiveEffects != null)
-		{
-			for (PassiveEffect effect : passiveEffects.keySet()) {
-				PassiveEffect.removeEffect(getPlayer(), effect);
-			}
-			this.passiveEffects.clear();
+		for (PassiveEffect effect : passiveEffects.keySet()) {
+			PassiveEffect.removeEffect(getPlayer(), effect);
 		}
+		this.passiveEffects.clear();
 	}
 	
 	/**
@@ -882,7 +676,7 @@ public class User {
 
 		// Check to make sure user is online
 		if (p == null) {
-			SblockData.getDB().saveUserData(playerID);
+			SblockData.getDB().saveUserData(uuid);
 			return;
 		}
 
@@ -1045,8 +839,8 @@ public class User {
 		if (!this.listening.contains(channel)) {
 			this.listening.add(channel.getName());
 		}
-		if (!channel.getListening().contains(this.playerID)) {
-			channel.addListening(this.playerID);
+		if (!channel.getListening().contains(this.uuid)) {
+			channel.addListening(this.uuid);
 			this.listening.add(channel.getName());
 			channel.sendMessage(ChatMsgs.onChannelJoin(this, channel));
 			return true;
@@ -1079,12 +873,12 @@ public class User {
 			if (c != null && !c.isBanned(this)
 					&& (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
 				this.listening.add(s);
-				c.addListening(this.playerID);
+				c.addListening(this.uuid);
 			}
 		}
 		if (this.getPlayer().hasPermission("group.felt") && !this.listening.contains("@")) {
 			this.listening.add("@");
-			ChannelManager.getChannelManager().getChannel("@").addListening(this.playerID);
+			ChannelManager.getChannelManager().getChannel("@").addListening(this.uuid);
 		}
 
 		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
@@ -1131,7 +925,7 @@ public class User {
 		if (this.listening.remove(cName)) {
 			c.removeNick(this, false);
 			c.sendMessage(ChatMsgs.onChannelLeave(this, c));
-			c.removeListening(this.playerID);
+			c.removeListening(this.uuid);
 			if (this.currentChannel != null && cName.equals(this.currentChannel)) {
 				this.currentChannel = null;
 			}
@@ -1162,7 +956,7 @@ public class User {
 	public void removeListeningQuit(String cName) {
 		Channel c = ChannelManager.getChannelManager().getChannel(cName);
 		if (c != null) {
-			c.removeListening(this.playerID);
+			c.removeListening(this.uuid);
 		} else {
 			this.listening.remove(cName);
 		}
@@ -1233,14 +1027,11 @@ public class User {
 		return s;
 	}
 
-	public boolean equals(Object object)
-	{
-		if (object == this)
-		{
+	public boolean equals(Object object) {
+		if (object == this) {
 			return true;
 		}
-		if (object == null)
-		{
+		if (object == null) {
 			return false;
 		}
 		if (object instanceof User) {
@@ -1249,14 +1040,208 @@ public class User {
 		}
 		return false;
 	}
-	
-	public void setUpForSerialization()
-	{
-		location = new SerialisableLocation(previousLocation);
-	}
-	
-	public void initAfterDeserialization()
-	{
-		previousLocation = location.asLocation();
+
+	/**
+	 * 
+	 * @author ted
+	 *
+	 * Factory pattern for creating Users
+	 * Must be a static class inside the User class for access to the private constructor
+	 */
+	static class UserBuilder {
+		/* USER DEFAULTS */
+		/* these directly mimic the data of the player itself */
+		private Region currentRegion = Region.EARTH;
+		private String IPAddr = "offline";
+
+		private boolean loaded = false;
+		private boolean isServer = false;
+		private boolean allowFlight = false;
+
+		private UserClass classType = UserClass.HEIR;
+		private UserAspect aspect = UserAspect.BREATH;
+		private Region mPlanet = Region.LOWAS;
+		private Region dPlanet = Region.PROSPIT;
+		private ProgressionState progression = ProgressionState.NONE;
+
+		private Location previousLocation = null;
+		private Set<Integer> programs = new HashSet<>();
+		private Map<PassiveEffect, Integer> passiveEffects = new HashMap<>();
+		private String currentChannel = null;
+		private HashSet<String> listening = new HashSet<>();
+		private AtomicBoolean globalMute = new AtomicBoolean();
+		private AtomicBoolean suppress = new AtomicBoolean();
+		private UUID server = null;
+		private UUID client = null;
+
+		/**
+		 * @param region the region to set as current
+		 */
+		public UserBuilder setCurrentRegion(Region region) {
+			this.currentRegion = region;
+			return this;
+		}
+
+		/**
+		 * @param iPAddr the iPAddr to set
+		 */
+		public UserBuilder setIPAddr(String iPAddr) {
+			IPAddr = iPAddr;
+			return this;
+		}
+
+		/**
+		 * @param loaded the loaded to set
+		 */
+		public UserBuilder setLoaded(boolean loaded) {
+			this.loaded = loaded;
+			return this;
+		}
+
+		/**
+		 * @param allowFlight the allowFlight to set
+		 */
+		public UserBuilder setAllowFlight(boolean allowFlight) {
+			this.allowFlight = allowFlight;
+			return this;
+		}
+
+		/**
+		 * @param classType the classType to set
+		 */
+		public UserBuilder setUserClass(UserClass classType) {
+			this.classType = classType;
+			return this;
+		}
+
+		/**
+		 * @param aspect the aspect to set
+		 */
+		public UserBuilder setAspect(UserAspect aspect) {
+			this.aspect = aspect;
+			return this;
+		}
+
+		/**
+		 * @param mPlanet the mPlanet to set
+		 */
+		public UserBuilder setMediumPlanet(Region mPlanet) {
+			if (!mPlanet.isMedium()) {
+				throw new RuntimeException("Invalid medium planet: received " + mPlanet.name());
+			}
+			this.mPlanet = mPlanet;
+			return this;
+		}
+
+		/**
+		 * @param dPlanet the dPlanet to set
+		 */
+		public UserBuilder setDreamPlanet(Region dPlanet) {
+			if (!dPlanet.isDream()) {
+				throw new RuntimeException("Invalid dream planet: received " + dPlanet.name() + ", expected (INNER|OUTER)CIRCLE.");
+			}
+			this.dPlanet = dPlanet;
+			return this;
+		}
+
+		/**
+		 * @param progression the progression to set
+		 */
+		public UserBuilder setProgression(ProgressionState progression) {
+			this.progression = progression;
+			return this;
+		}
+
+		/**
+		 * @param previousLocation the previousLocation to set
+		 */
+		public UserBuilder setPreviousLocation(Location previousLocation) {
+			this.previousLocation = previousLocation;
+			return this;
+		}
+
+		/**
+		 * @param programs the programs to set
+		 */
+		public UserBuilder setPrograms(Set<Integer> programs) {
+			this.programs = programs;
+			return this;
+		}
+
+		/**
+		 * @param passiveEffects the passiveEffects to set
+		 */
+		public UserBuilder setPassiveEffects(Map<PassiveEffect, Integer> passiveEffects) {
+			this.passiveEffects = passiveEffects;
+			return this;
+		}
+
+		/**
+		 * @param currentChannel the currentChannel to set
+		 */
+		public UserBuilder setCurrentChannel(String currentChannel) {
+			this.currentChannel = currentChannel;
+			return this;
+		}
+
+		/**
+		 * @param listening the listening to set
+		 */
+		public UserBuilder setListening(HashSet<String> listening) {
+			this.listening = listening;
+			return this;
+		}
+
+		/**
+		 * @param globalMute the globalMute to set
+		 */
+		public UserBuilder setGlobalMute(AtomicBoolean globalMute) {
+			this.globalMute = globalMute;
+			return this;
+		}
+
+		/**
+		 * @param suppress the suppress to set
+		 */
+		public UserBuilder setSuppress(AtomicBoolean suppress) {
+			this.suppress = suppress;
+			return this;
+		}
+
+		/**
+		 * @param server the UUID of this User's server
+		 */
+		public UserBuilder setServer(UUID server) {
+			this.server = server;
+			return this;
+		}
+
+		/**
+		 * @param client the UUID of this User's client
+		 */
+		public UserBuilder setClient(UUID client) {
+			this.client = client;
+			return this;
+		}
+
+		/**
+		 * 
+		 * @param userID the user id
+		 * @return a user with all the traits that have been added to the spawner
+		 */
+		public User build(UUID userID) {
+			try {
+				if (Bukkit.getOfflinePlayer(userID).isOnline()) {
+					// IP comes out as /123.456.789.0, leading slash must be removed to properly IP ban.
+					setIPAddr(Bukkit.getPlayer(userID).getAddress().getAddress().toString()
+							.substring(1));
+				}
+			} catch(Exception e) {
+				
+			}
+			return new User(userID, currentRegion, loaded, classType, aspect, mPlanet, dPlanet,
+					progression, isServer, allowFlight, IPAddr, previousLocation, currentChannel,
+					passiveEffects, programs, listening, globalMute, suppress, server, client);
+		}
 	}
 }

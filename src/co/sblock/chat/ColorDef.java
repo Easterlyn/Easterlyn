@@ -28,8 +28,11 @@ public class ColorDef {
 	public static final ChatColor WORLD_EARTH = ChatColor.DARK_GREEN;
 	public static final ChatColor WORLD_INNERCIRCLE = ChatColor.YELLOW;
 	public static final ChatColor WORLD_OUTERCIRCLE = ChatColor.DARK_PURPLE;
-	public static final ChatColor WORLD_MEDIUM = ChatColor.GRAY;
 	public static final ChatColor WORLD_FURTHESTRING = ChatColor.BLACK;
+	public static final ChatColor WORLD_LOFAF = ChatColor.GRAY;
+	public static final ChatColor WORLD_LOHAC = ChatColor.RED;
+	public static final ChatColor WORLD_LOLAR = ChatColor.AQUA;
+	public static final ChatColor WORLD_LOWAS = ChatColor.DARK_GRAY;
 
 	public static final ChatColor ASPECT_BLOOD = ChatColor.DARK_RED;
 	public static final ChatColor ASPECT_BREATH = ChatColor.AQUA;

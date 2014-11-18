@@ -42,9 +42,4 @@ public class RPChannel extends NickChannel {
 			sender.sendMessage(ChatMsgs.errorNickInUse(name.getName()));
 		}
 	}
-
-	@Override
-	public ChannelSerialiser toSerialiser() {
-		return new ChannelSerialiser(ChannelType.RP, name, access, owner, approvedList, modList, muteList, banList, listening);
-	}
 }

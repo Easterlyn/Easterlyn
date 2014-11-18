@@ -1,9 +1,6 @@
 package co.sblock.events.listeners;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,7 +16,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
-import com.tmathmeyer.jadis.async.Promise;
 
 /**
  * 
@@ -62,32 +58,13 @@ public class AsyncPacketAdapter extends PacketAdapter {
 			// Signal delay of packet sending
 			event.getAsyncMarker().incrementProcessingDelay();
 		}
-		SblockData.getDB().getUserFromIP(addr, getMOTDSettingExecutor(event, serverping));
+		String playerName = SblockData.getDB().getUserFromIP(addr);
+		if (!playerName.equals("Player")) {
+			SblockEvents.getEvents().getLogger().info(playerName + " pinged the server from " + addr);
+			serverping.setMotD(Bukkit.getMotd().replaceAll("Player", playerName));
+		}
 		event.getPacket().getServerPings().write(0, serverping);
 		// Signal completion of handling packet
 		ProtocolLibrary.getProtocolManager().getAsynchronousManager().signalPacketTransmission(event);
-	}
-
-	private final Promise<String> getMOTDSettingExecutor(final PacketEvent event, final WrappedServerPing serverping) {
-		return new Promise<String>() {
-
-			@Override
-			public void getList(List<String> list) { }
-
-			@Override
-			public void getMap(Map<String, String> map) { }
-
-			@Override
-			public void getObject(String playerName, String unused) {
-				if (!playerName.equals("Player")) {
-					SblockEvents.getEvents().getLogger().info(playerName + " pinged the server from "
-							+ event.getPlayer().getAddress().getAddress().toString().substring(1));
-					serverping.setMotD(Bukkit.getMotd().replaceAll("Player", playerName));
-				}
-			}
-
-			@Override
-			public void getSet(Set<String> set) { }
-		};
 	}
 }

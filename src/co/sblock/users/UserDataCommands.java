@@ -87,7 +87,7 @@ public class UserDataCommands implements CommandListener {
 		}
 		sender.sendMessage(ChatColor.YELLOW.toString() + ChatColor.STRIKETHROUGH + "+------" + ChatColor.DARK_AQUA + " "
 				+ user.getPlayerName() + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH + "------+\n"
-				+ ChatColor.DARK_AQUA + user.getPlayerClass().getDisplayName() + ChatColor.YELLOW
+				+ ChatColor.DARK_AQUA + user.getUserClass().getDisplayName() + ChatColor.YELLOW
 				+ " of " + ChatColor.DARK_AQUA + user.getAspect().getDisplayName() + "\n"
 				+ ChatColor.YELLOW + "Dream planet: " + ChatColor.DARK_AQUA + user.getDreamPlanet().getDisplayName() + "\n"
 				+ ChatColor.YELLOW + "Medium planet: " + ChatColor.DARK_AQUA + user.getMediumPlanet().getDisplayName());

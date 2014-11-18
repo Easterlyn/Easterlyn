@@ -1,5 +1,7 @@
 package co.sblock;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -127,7 +129,6 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
-		SblockData.getDB().enterFinalizeMode();
 		this.unregisterAllCommands();
 		HandlerList.unregisterAll(this);
 		// Disable in reverse order - should better respect modules that require others to function
@@ -428,6 +429,14 @@ public class Sblock extends JavaPlugin {
 			logger.err(e);
 		}
 		return false;
+	}
+
+	public File getUserDataFolder() throws IOException {
+		File file = new File(getDataFolder(), "UserData");
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		return file;
 	}
 
 	public static final Log getLog() {

@@ -42,9 +42,9 @@ public class SleepTeleport implements Runnable {
 					p.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
 				}
 			} else {
-				if (Region.uValueOf(user.getPreviousLocation().getWorld().getName()).isDream() && user.getCurrentRegion().isDream()) {
+				if (Region.getRegion(user.getPreviousLocation().getWorld().getName()).isDream() && user.getCurrentRegion().isDream()) {
 					p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
-				} else if (!Region.uValueOf(user.getPreviousLocation().getWorld().getName()).isDream() && !user.getCurrentRegion().isDream()) {
+				} else if (!Region.getRegion(user.getPreviousLocation().getWorld().getName()).isDream() && !user.getCurrentRegion().isDream()) {
 					p.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
 				} else {
 					p.teleport(user.getPreviousLocation());

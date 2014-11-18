@@ -23,102 +23,9 @@ import co.sblock.utilities.threadsafe.SetGenerator;
 /**
  * Defines default channel behavior
  *
- * @author Dublek, Jikoo, tmathmeyer
+ * @author Dublek, Jikoo
  */
 public abstract class Channel {
-
-	/**
-	 * 
-	 * @author ted
-	 *
-	 * A wrapper for the Channels because frankly, they are managed in a rediculous, absurd way
-	 * this is just a temporary solution for serializing them until I get around to refactoring
-	 * that too.
-	 *
-	 */
-	public static class ChannelSerialiser {
-
-		private final ChannelType ct;
-		private final String name;
-		private final AccessLevel access;
-
-		private final Set<UUID> approvedPlayers;
-		private final Set<UUID> moderators;
-		private final Set<UUID> mutedPlayers;
-		private final Set<UUID> bannedPlayers;
-		private final Set<UUID> listeningPlayers;
-
-		private final UUID owner;
-
-		/**
-		 * oh boy, there are alot of params...
-		 * 
-		 * @param ct
-		 * @param name
-		 * @param access
-		 * @param owner
-		 * @param approvedPlayers
-		 * @param moderators
-		 * @param mutedPlayers
-		 * @param bannedPlayers
-		 * @param listeningPlayers
-		 */
-		public ChannelSerialiser(ChannelType ct, String name, AccessLevel access, UUID owner,
-				Set<UUID> approvedPlayers,
-				Set<UUID> moderators,
-				Set<UUID> mutedPlayers,
-				Set<UUID> bannedPlayers,
-				Set<UUID> listeningPlayers) {
-			this.approvedPlayers = approvedPlayers;
-			this.moderators = moderators;
-			this.mutedPlayers = mutedPlayers;
-			this.bannedPlayers = bannedPlayers;
-			this.listeningPlayers = listeningPlayers;
-			this.ct = ct;
-			this.name = name;
-			this.access = access;
-			this.owner = owner;
-		}
-
-		public ChannelSerialiser(ChannelType ct, String name, AccessLevel access, UUID owner) {
-			this.approvedPlayers = SetGenerator.generate();
-			this.moderators = SetGenerator.generate();
-			this.mutedPlayers = SetGenerator.generate();
-			this.bannedPlayers = SetGenerator.generate();
-			this.listeningPlayers = SetGenerator.generate();
-			this.ct = ct;
-			this.name = name;
-			this.access = access;
-			this.owner = owner;
-		}
-
-		public Channel build() {
-			Channel chan;
-			switch(ct) {
-				case NICK:
-					chan = new NickChannel(name, access, owner);
-					break;
-				case NORMAL:
-					chan = new NormalChannel(name, access, owner);
-					break;
-				case REGION:
-					chan = new RegionChannel(name, access, owner);
-					break;
-				case RP:
-					chan = new RPChannel(name, access, owner);
-					break;
-				default:
-					throw new RuntimeException("if this gets called you have some SERIOUS issues");
-			}
-			chan.approvedList = approvedPlayers;
-			chan.modList = moderators;
-			chan.muteList = mutedPlayers;
-			chan.banList = bannedPlayers;
-			chan.listening = listeningPlayers;
-			return chan;
-		}
-
-	}
 
 	/*
 	 * Immutable Data regarding the channel
@@ -621,8 +528,9 @@ public abstract class Channel {
 			if (sRegion == null) {
 				region = ChatColor.GOLD;
 			} else {
-				region = sRegion.getRegionColor();
+				region = sRegion.getColor();
 			}
+			// TODO rank/guildrank in hover
 			prefixes[1] = new MessageElement("[", guildRank) + ","
 					+ new MessageElement(this.name, channelRank).addClickEffect(
 							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "@" + this.name + ' ')) + ","
@@ -633,10 +541,12 @@ public abstract class Channel {
 									// TODO change id back to minecraft:diamond when 1.8 is fully out
 									"{id:264,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
 									+ "+---" + ChatColor.RESET + " " + globalRank + displayName + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
-									+ "---+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getPlayerClass().getDisplayName()
-									+ ChatColor.YELLOW + " of " + ChatColor.DARK_AQUA + sender.getAspect().getDisplayName()
-									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream = " + ChatColor.DARK_AQUA + sender.getDreamPlanet().getDisplayName()
-									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium = " + ChatColor.DARK_AQUA + sender.getMediumPlanet().getDisplayName()
+									+ "---+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getUserClass().getDisplayName()
+									+ ChatColor.YELLOW + " of " + sender.getAspect().getColor() + sender.getAspect().getDisplayName()
+									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream = "
+									+ sender.getDreamPlanet().getColor() + sender.getDreamPlanet().getDisplayName()
+									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium = "
+									+ sender.getMediumPlanet().getColor() + sender.getMediumPlanet().getDisplayName()
 									+ "\\\"]}}}")) + ","
 					+ new MessageElement(isThirdPerson ? " " : "> ", region) + "," + new MessageElement(ChatColor.WHITE + prepend);
 		} else {
@@ -662,6 +572,4 @@ public abstract class Channel {
 				+ "\n" + ChatColor.GREEN + "Owner: " + ChatColor.GOLD
 				+ Bukkit.getOfflinePlayer(this.getOwner()).getName();
 	}
-
-	public abstract ChannelSerialiser toSerialiser();
 }

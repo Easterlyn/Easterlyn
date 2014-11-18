@@ -5,12 +5,10 @@ import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
-import com.tmathmeyer.jadis.async.Promise;
-
 import co.sblock.chat.channel.Channel;
-import co.sblock.data.redis.RedisClient;
 import co.sblock.data.sql.SQLClient;
 import co.sblock.machines.type.Machine;
+import co.sblock.users.YamlData;
 import co.sblock.utilities.Log;
 
 /**
@@ -29,14 +27,14 @@ public abstract class SblockData {
 	 */
 	private static enum Implementation {
 		SQL(new SQLClient()),
-		REDIS(new RedisClient());
+		FLATFILE(new YamlData());
 		public final SblockData data;
 		private Implementation(SblockData data) {
 			this.data = data;
 		}
 		public Implementation other() {
 			if (this == SQL) {
-				return REDIS;
+				return FLATFILE;
 			}
 			return SQL;
 		}
@@ -158,11 +156,5 @@ public abstract class SblockData {
 	 * 
 	 * @return the name of the User, "Player" if invalid
 	 */
-	public abstract void getUserFromIP(String hostAddress, Promise<String> executor);
-
-	/**
-	 * sets the database into a "finalize" mode, so that nothing can be pulled out,
-	 * or in the case of redis, the calls become synchronous
-	 */
-	public abstract void enterFinalizeMode();
+	public abstract String getUserFromIP(String hostAddress);
 }

@@ -1,20 +1,20 @@
 package co.sblock.users;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.chat.ColorDef;
 import co.sblock.effects.EffectManager;
-import co.sblock.users.User.UserSpawner;
-import co.sblock.utilities.SpawnLocationInformation;
+import co.sblock.users.User.UserBuilder;
 
 /**
  * Class that keeps track of players currently logged on to the game
@@ -24,30 +24,32 @@ import co.sblock.utilities.SpawnLocationInformation;
 public class UserManager {
 
 	/* The Map of Player UUID and relevant SblockUsers currently online. */
-	private static final Map<UUID, User> users = new HashMap<>();
+	private static final Map<UUID, User> users = new ConcurrentHashMap<>();
 
 	/**
-	 * Adds a new user to the memstore,
-	 * though wont override it if there is already one
-	 * (in the case of multiple login-logouts)
+	 * Get a User object for the UUID given.
 	 * 
 	 * @param player the name of the Player
 	 */
-	public static User addNewUser(UUID userID) {
-		User u = users.get(userID);
-		if (u == null) {
-			u = new UserSpawner().build(userID);
-			users.put(userID, u);
+	public static User addUser(UUID userID) {
+		User user = null;
+		if (users.containsKey(userID)) {
+			user = users.get(userID);
 		}
-		return u;
+		if (user == null || !user.isLoaded()) {
+			user = new UserBuilder().build(userID);
+			users.put(userID, user);
+		}
+		return user;
 	}
-	
+
 	/**
-	 * @param u the user to add
-	 * @return whether there was already a user with this UUID in the map
+	 * Adds the given User.
+	 * 
+	 * @param user the User to add
 	 */
-	public static boolean addUser(User u) {
-		return users.put(u.getUUID(), u) == null;
+	public static void addUser(User user) {
+		users.put(user.getUUID(), user);
 	}
 
 	/**
@@ -137,14 +139,13 @@ public class UserManager {
 	{
 		//player's first login
 		Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
-		p.teleport(SpawnLocationInformation.getSpawnLocation());
+		p.teleport(getSpawnLocation());
 
-		User user = new UserSpawner().build(p.getUniqueId());
+		User user = addUser(p.getUniqueId());
 		user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
 		// TODO: oh god plz
 		user.updateCurrentRegion(user.getPlayerRegion());
 
-		addUser(user);
 		user.setAllPassiveEffects(EffectManager.passiveScan(p));
 		EffectManager.applyPassiveEffects(user);
 
@@ -153,4 +154,7 @@ public class UserManager {
 		return user;
 	}
 
+	public static Location getSpawnLocation() {
+		return new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F);
+	}
 }

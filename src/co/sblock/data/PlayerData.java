@@ -48,7 +48,7 @@ public class PlayerData {
 			pst = SblockData.getDB().connection()
 					.prepareStatement(Call.PLAYER_SAVE.toString());
 			pst.setString(1, user.getPlayerName());
-			pst.setString(2, user.getPlayerClass().getDisplayName());
+			pst.setString(2, user.getUserClass().getDisplayName());
 			pst.setString(3, user.getAspect().getDisplayName());
 			pst.setString(4, user.getMediumPlanet().name());
 			pst.setString(5, user.getDreamPlanet().name());
@@ -129,7 +129,7 @@ public class PlayerData {
 	public static void loadPlayer(ResultSet rs) {
 		try {
 			if (rs.next()) {
-				User user = UserManager.addNewUser(UUID.fromString(rs.getString("uuid")));
+				User user = UserManager.addUser(UUID.fromString(rs.getString("uuid")));
 				if (user == null || user.getPlayer() == null) {
 					UserManager.removeUser(user.getUUID());
 					return;
