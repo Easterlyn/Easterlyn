@@ -13,6 +13,7 @@ public enum UserClass {
 	MAGE("Mage"),
 	MAID("Maid"),
 	MUSE("Muse"),
+	ORACLE("Oracle"),
 	PAGE("Page"),
 	PRINCE("Prince"),
 	ROGUE("Rogue"),
