@@ -2,10 +2,12 @@ package co.sblock.chat.ai;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,27 +45,27 @@ public class MegaHal {
 	private Map<String, Long> ratelimit;
 	private HalLogSavingTask save;
 	private Set<Pattern> ignoreMatches;
+	private int fileNum;
 
 	public MegaHal() {
 		hal = new JMegaHal();
+		fileNum = 0;
 
 		String regexBase = RegexUtils.ignoreCaseRegex("hal", "dirk");
 		exactPattern = Pattern.compile(createExactRegex(regexBase));
-		Log.getLog("MegaHal").info("Compiled exact regex: " + exactPattern.toString());
 		whitespacePattern = Pattern.compile(createWhitespaceRegex(regexBase));
-		Log.getLog("MegaHal").info("Compiled whitespace regex: " + whitespacePattern.toString());
 		pendingMessages = Collections.synchronizedSet(new LinkedHashSet<String>());
 
 		ratelimit = new ConcurrentHashMap<>();
-
-		save = new HalLogSavingTask();
-		save.runTaskTimer(Sblock.getInstance(), 600L, 600L);
 
 		ignoreMatches = new HashSet<>();
 		ignoreMatches.add(Pattern.compile("^.*[Bb]([Ee]|[Aa])[Nn][Zz]([Uu]|[Ee])?[Rr][Ff]([Ll][Ee][Ss]?)?.*$"));
 		ignoreMatches.add(Pattern.compile("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$"));
 
 		loadHal();
+
+		save = new HalLogSavingTask();
+		save.runTaskTimer(Sblock.getInstance(), 6000L, 6000L);
 	}
 
 	private String createExactRegex(String regexBase) {
@@ -125,21 +127,20 @@ public class MegaHal {
 	}
 
 	public synchronized void log(String message) {
-		message = ChatColor.stripColor(message);
+		message = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', message));
+		if (message.isEmpty() || message.length() < 15 || message.startsWith("((") || isTrigger(message)) {
+			return;
+		}
 		// TODO strip more stuff we don't want
 		for (Pattern pattern : ignoreMatches) {
 			if (pattern.matcher(message).find()) {
 				return;
 			}
 		}
-		if (message.isEmpty() || message.startsWith("((") || isTrigger(message)) {
-			return;
-		}
-		message = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', message));
 		pendingMessages.add(message);
 		if (save.getTaskId() == -1) {
 			Log.getLog("MegaHal").warning("Log saving task was stopped! Restarting...");
-			save.runTaskTimer(Sblock.getInstance(), 0L, 600L);
+			save.runTaskTimer(Sblock.getInstance(), 0L, 6000L);
 		}
 		hal.add(message);
 	}
@@ -184,15 +185,40 @@ public class MegaHal {
 	}
 
 	public void saveLogs() {
-		File halFile = new File(Sblock.getInstance().getDataFolder(), "hal.log");
-		try (PrintWriter writer = new PrintWriter(new FileWriter(halFile, true))) {
-			for (String s : pendingMessages) {
-				writer.println(s);
+		// Shitty recursion to convert initial file
+		try (PrintWriter writer = new PrintWriter(new FileWriter(getFirstAvailableHalFile(), true))) {
+//			for (String s : pendingMessages) {
+//				writer.println(s);
+//			}
+			Iterator<String> iterator = pendingMessages.iterator();
+			for (int i = 0; i < 100 && iterator.hasNext(); i++) {
+				writer.println(iterator.next());
+				iterator.remove();
 			}
 			writer.close();
-			pendingMessages.clear();
+//			pendingMessages.clear();
 		} catch (IOException e) {
 			Log.getLog("MegaHal").err(e);
+		}
+		if (pendingMessages.size() > 0) {
+			saveLogs();
+		}
+	}
+
+	private File getFirstAvailableHalFile() {
+		File folder = new File("plugins/Sblock/MegaHal");
+		if (!folder.exists()) {
+			folder.mkdir();
+			return new File(folder, "hal-0.log");
+		}
+		while (true) {
+			File log = new File(folder, "hal-" + fileNum + ".log");
+			if (log.exists() && log.length() > 1048000L) { // ~1M
+				fileNum++;
+				Log.getLog("MegaHal").info("Hal log too large, rolling to " + fileNum);
+				continue;
+			}
+			return log;
 		}
 	}
 
@@ -201,40 +227,43 @@ public class MegaHal {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				File chester = new File("plugins/Chester/brain.chester");
-				if (chester.exists()) {
-					File chesterBackup = new File("plugins/Chester/brain.backup");
-					if (chesterBackup.exists()) {
-						Log.getLog("MegaHal").warning("Chester backup already exists, please manually fix yo shit.");
-					} else {
+				File logDir = new File("plugins/Sblock/MegaHal");
+				if (logDir.exists()) {
+					File[] logs = logDir.listFiles(new FilenameFilter() {
+						@Override
+						public boolean accept(File dir, String name) {
+							return name.matches("hal-[0-9]+\\.log");
+						}
+					});
+					for (File file : logs) {
 						try {
-							FileUtils.copyFile(chester, chesterBackup);
-							List<String> chesterLogs = FileUtils.readLines(chester);
-							Channel hash = SblockChat.getChat().getChannelManager().getChannel("#");
-							for (String string : chesterLogs) {
-								Message message = new Message("Conversion", string);
-								message.setChannel(hash);
-								message.prepare();
-								log(message);
+							List<String> halLogs = FileUtils.readLines(file);
+							for (String string : halLogs) {
+								hal.add(string);
 							}
-							saveLogs();
 						} catch (IOException e) {
 							Log.getLog("MegaHal").err(e);
 						}
-						chester.delete();
 					}
 				}
-		
-				File halFile = new File(Sblock.getInstance().getDataFolder(), "hal.log");
-				if (halFile.exists()) {
+				File oldHalFile = new File(Sblock.getInstance().getDataFolder(), "hal.log");
+				if (oldHalFile.exists()) {
+					File halBackup = new File("plugins/Sblock/hal.backup");
 					try {
-						List<String> halLogs = FileUtils.readLines(halFile);
+						FileUtils.copyFile(oldHalFile, halBackup);
+						List<String> halLogs = FileUtils.readLines(oldHalFile);
+						Channel hash = SblockChat.getChat().getChannelManager().getChannel("#");
 						for (String string : halLogs) {
-							hal.add(string);
+							Message message = new Message("Conversion", string);
+							message.setChannel(hash);
+							message.prepare();
+							log(message);
 						}
+						saveLogs();
 					} catch (IOException e) {
 						Log.getLog("MegaHal").err(e);
 					}
+					oldHalFile.delete();
 				}
 				Log.getLog("MegaHal").info("Finished loading Hal logs.");
 			}

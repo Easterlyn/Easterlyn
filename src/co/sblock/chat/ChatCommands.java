@@ -147,7 +147,7 @@ public class ChatCommands implements CommandListener {
 		}
 
 		args[0] = args[0].toLowerCase();
-		if (args[0].equals("c") || args[0].equals("channel")) {
+		if (args[0].equals("c") || args[0].equals("f") || args[0].equals("focus")) {
 			return scC(user, args);
 		} else if (args[0].equals("l") || args[0].equals("listen")) {
 			return scL(user, args);
