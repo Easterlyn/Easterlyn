@@ -1,4 +1,4 @@
-package co.sblock.users;
+package co.sblock.data.yaml;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,11 @@ import co.sblock.machines.MachineManager;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.users.ProgressionState;
+import co.sblock.users.Region;
 import co.sblock.users.User;
+import co.sblock.users.UserAspect;
+import co.sblock.users.UserClass;
 import co.sblock.users.User.UserBuilder;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
@@ -49,6 +53,7 @@ public class YamlData extends SblockData {
 
 	@Override
 	public void saveUserData(UUID uuid) {
+		
 		File file;
 		try {
 			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
