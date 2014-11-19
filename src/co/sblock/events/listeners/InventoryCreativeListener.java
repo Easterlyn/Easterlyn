@@ -11,6 +11,8 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
+import com.lastabyss.carbon.Carbon;
+
 /**
  * Listener for InventoryCreativeEvents. Used to clean input items from creative clients, preventing
  * server/client crashes.
@@ -19,14 +21,20 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
  */
 public class InventoryCreativeListener implements Listener {
 
+	private final Material[] blacklist = new Material[] {Carbon.injector().barrierMat, Material.BEDROCK,
+			Material.COMMAND, Material.COMMAND_MINECART, Material.ENDER_PORTAL, Material.MOB_SPAWNER};
+
 	/**
 	 * EventHandler for InventoryCreativeEvents. Triggered when a creative client spawns an item.
+	 * <p>
+	 * The click fired is always left, cursor is always the item being created/placed, current is
+	 * always the item being replaced. This holds true even for item drops, pick block, etc.
 	 * 
 	 * @param event the InventoryCreativeEvent
 	 */
 	@EventHandler
 	public void onInventoryCreative(InventoryCreativeEvent event) {
-		if (event.getWhoClicked().hasPermission("group.denizen")) {
+		if (event.getWhoClicked().hasPermission("group.felt")) {
 			return;
 		}
 
@@ -34,13 +42,17 @@ public class InventoryCreativeListener implements Listener {
 			return;
 		}
 
-		if (event.getCursor().getType().name() == "BANNER") {
+		if (event.getCursor().getType() == Carbon.injector().bannerItemMat) {
 			// Banners actually come with NBT tags when using pick-block. We'll just avoid them for now.
 			return;
 		}
 
-		// TODO blacklist certain server-heavy items such as end portal
-		// TODO block pick-block on similar items
+		// Blacklist
+		for (Material m : blacklist) {
+			if (event.getCursor().getType() == m) {
+				event.setCancelled(true);
+			}
+		}
 
 		// By not using the original ItemStack, we remove all lore and attributes spawned.
 		ItemStack cleanedItem = new ItemStack(event.getCursor().getType());
@@ -48,10 +60,9 @@ public class InventoryCreativeListener implements Listener {
 		cleanedItem.setData(event.getCursor().getData());
 
 		// No invalid durabilities.
-		if (event.getCursor().getDurability() < 1) {
-			cleanedItem.setDurability((short) 1);
-		} else if (event.getCursor().getDurability() < event.getCursor().getType()
-				.getMaxDurability()) {
+		if (event.getCursor().getDurability() < 0) {
+			cleanedItem.setDurability((short) 0);
+		} else {
 			cleanedItem.setDurability(event.getCursor().getDurability());
 		}
 

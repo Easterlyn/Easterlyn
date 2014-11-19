@@ -186,7 +186,8 @@ public class MegaHal {
 
 	public void saveLogs() {
 		// Shitty recursion to convert initial file
-		try (PrintWriter writer = new PrintWriter(new FileWriter(getFirstAvailableHalFile(), true))) {
+		try (FileWriter filewriter = new FileWriter(getFirstAvailableHalFile(), true);
+				PrintWriter writer = new PrintWriter(filewriter)) {
 //			for (String s : pendingMessages) {
 //				writer.println(s);
 //			}
