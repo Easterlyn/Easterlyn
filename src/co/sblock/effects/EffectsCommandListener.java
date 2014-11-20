@@ -219,7 +219,7 @@ public class EffectsCommandListener implements CommandListener {
 				player.sendMessage(ChatColor.RED + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
 				return true;
 			}
-			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length));
+			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 2, args.length));
 			String removed = lore.set(line - 1, added);
 			meta.setLore(lore);
 			hand.setItemMeta(meta);
@@ -253,7 +253,7 @@ public class EffectsCommandListener implements CommandListener {
 				player.sendMessage(ChatColor.RED + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
 				return true;
 			}
-			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length));
+			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 2, args.length));
 			int size = lore.size();
 			for (int i = 0; i < size; i++) {
 				if (line - 1 <= i) {
