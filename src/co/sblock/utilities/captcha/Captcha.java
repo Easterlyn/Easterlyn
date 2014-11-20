@@ -3,6 +3,8 @@ package co.sblock.utilities.captcha;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.util.com.google.common.io.BaseEncoding;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -104,20 +106,26 @@ public class Captcha extends Module {
 	/**
 	 * Create a punchcard from a captchacard.
 	 * <p>
-	 * For testing purposes only, good luck patching punched holes.
+	 * Good luck patching punched holes.
 	 * 
 	 * @param is the punchcard ItemStack
 	 * 
 	 * @return the unpunched captchacard
 	 */
 	public static ItemStack captchaToPunch(ItemStack is) {
+		is = convert(is);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName("Punchcard");
 		List<String> newlore = new ArrayList<>();
-		// If the captcha doesn't have lore, we've already got problems, not catching this NPE
-		newlore.add(im.getLore().get(0));
+		// If the captcha doesn't have the correct lore, we've got issues already.
+		String lore0 = im.getLore().get(0);
+		int space = lore0.indexOf(' ') + 1;
+		String line = lore0.substring(0, space);
+		String encoded = BaseEncoding.base16().encode(lore0.substring(space).getBytes());
+		line += encoded.substring(encoded.length() > 8 ? encoded.length() - 8 : 0, encoded.length());
+		newlore.add(line);
 		for (int i = 1; i < im.getLore().size(); i++) {
-			newlore.add(ChatColor.MAGIC + im.getLore().get(i));
+			newlore.add(im.getLore().get(i));
 		}
 		im.setLore(newlore);
 		is.setItemMeta(im);
@@ -438,6 +446,36 @@ public class Captcha extends Module {
 		if (leftover > 0) {
 			event.getWhoClicked().getWorld().dropItem(event.getWhoClicked().getLocation(), captcha);
 		}
+	}
+
+	protected static int convert(Player player) {
+		int conversions = 0;
+		for (int i = 0; i < player.getInventory().getSize(); i++) {
+			ItemStack is = player.getInventory().getItem(i);
+			if (!Captcha.isUsedCaptcha(is)) {
+				continue;
+			}
+			if (is.getItemMeta().getLore().get(0).startsWith(ChatColor.DARK_AQUA.toString())) {
+				continue;
+			}
+			ItemStack captchas = Captcha.itemToCaptcha(Captcha.captchaToItem(is));
+			captchas.setAmount(is.getAmount());
+			conversions += is.getAmount();
+			player.getInventory().setItem(i, captchas);
+		}
+		return conversions;
+	}
+
+	private static ItemStack convert(ItemStack is) {
+		if (!Captcha.isUsedCaptcha(is)) {
+			return is;
+		}
+		if (is.getItemMeta().getLore().get(0).startsWith(ChatColor.DARK_AQUA.toString())) {
+			return is;
+		}
+		ItemStack captchas = Captcha.itemToCaptcha(Captcha.captchaToItem(is));
+		captchas.setAmount(is.getAmount());
+		return captchas;
 	}
 
 	@Override

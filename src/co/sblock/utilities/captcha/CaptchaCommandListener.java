@@ -58,21 +58,12 @@ public class CaptchaCommandListener implements CommandListener {
 	@SblockCommand
 	public boolean convert(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
-		int conversions = 0;
-		for (int i = 0; i < player.getInventory().getSize(); i++) {
-			ItemStack is = player.getInventory().getItem(i);
-			if (!Captcha.isUsedCaptcha(is)) {
-				continue;
-			}
-			if (is.getItemMeta().getLore().get(0).startsWith(ChatColor.DARK_AQUA.toString())) {
-				continue;
-			}
-			ItemStack captchas = Captcha.itemToCaptcha(Captcha.captchaToItem(is));
-			captchas.setAmount(is.getAmount());
-			conversions += is.getAmount();
-			player.getInventory().setItem(i, captchas);
+		int conversions = Captcha.convert(player);
+		if (conversions > 0) {
+			player.sendMessage(ChatColor.GREEN.toString() + conversions + " captchacards converted!");
+		} else {
+			player.sendMessage(ChatColor.RED + "No old captchacards found!");
 		}
-		player.sendMessage(ChatColor.GREEN.toString() + conversions + " captchacards converted!");
 		return true;
 	}
 }
