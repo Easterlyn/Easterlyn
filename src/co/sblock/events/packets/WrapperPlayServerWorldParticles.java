@@ -40,7 +40,7 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
 		LARGE_EXPLODE("largeexplode"),
 		FIREWORKS_SPARK("fireworksSpark"),
 		BUBBLE("bubble"),
-		SUSPEND("suspend"),
+		SUSPEND("suspended"),
 		DEPTH_SUSPEND("depthSuspend"),
 		TOWN_AURA("townaura"),
 		CRIT("crit"),
@@ -70,7 +70,13 @@ public class WrapperPlayServerWorldParticles extends AbstractPacket {
 		ANGRY_VILLAGER("angryVillager"),
 		HAPPY_VILLAGER("happerVillager"),
 		ICONCRACK("iconcrack_"),
-		TILECRACK("tilecrack_");
+		TILECRACK("tilecrack_"),
+		BLOCKDUST("blockdust_"),
+		WAKE("wake"),
+		SMOKE("smoke"),
+		BARRIER("barrier"),
+		DROPLET("droplet"),
+		MOB_APPEARANCE("mobappearance");
        
 	    private final String name;
 	    

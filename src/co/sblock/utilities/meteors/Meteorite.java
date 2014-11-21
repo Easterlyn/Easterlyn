@@ -3,11 +3,13 @@ package co.sblock.utilities.meteors;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+
 import co.sblock.Sblock;
+import co.sblock.events.packets.ParticleEffectWrapper;
 import co.sblock.events.packets.ParticleUtils;
-import co.sblock.events.packets.WrapperPlayServerWorldParticles.ParticleEffect;
 
 /**
  * @author Dublek, Jikoo
@@ -95,8 +97,8 @@ public class Meteorite {
 							if (location.getBlock().getType() == mat) {
 								location.getBlock().setType(Material.AIR);
 							}
-							pu.addEntity(new MeteoriteComponent(location, mat, explosionBlockDamage,
-									boreMode).getBukkitEntity(), ParticleEffect.LAVA);
+							pu.addEntity(new MeteoriteComponent(location, mat, explosionBlockDamage, boreMode).getBukkitEntity(),
+									new ParticleEffectWrapper(Effect.LAVA_POP, 1));
 						}
 						MeteorMod.getInstance().getLogger().info(
 								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());

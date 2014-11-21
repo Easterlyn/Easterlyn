@@ -1,11 +1,13 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
+import co.sblock.events.packets.ParticleUtils;
 import co.sblock.utilities.minecarts.FreeCart;
 
 /**
@@ -22,8 +24,14 @@ public class VehicleExitListener implements Listener {
 	 */
 	@EventHandler
 	public void onVehicleExit(VehicleExitEvent event) {
-		if (event.getVehicle().getType() == EntityType.MINECART) {
+		Entity entity = event.getVehicle();
+		if (entity.getType() == EntityType.HORSE) {
+			ParticleUtils.getInstance().removeAllEffects(entity);
+			return;
+		}
+		if (entity.getType() == EntityType.MINECART) {
 			FreeCart.getInstance().remove((Minecart) event.getVehicle());
+			return;
 		}
 	}
 }

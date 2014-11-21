@@ -104,7 +104,7 @@ public class MachineInventoryTracker {
 
 		this.openMachines.put(player, m);
 
-		if (!(container instanceof MerchantContainer)) {
+		if (!(container instanceof MerchantContainer) || p.playerConnection.networkManager.getVersion() > 5) { // TODO figure out 1.8 MC|TrList
 			return;
 		}
 		MerchantRecipeList list = new MerchantRecipeList();
