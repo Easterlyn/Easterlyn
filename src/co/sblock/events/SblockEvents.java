@@ -9,6 +9,8 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.reflections.Reflections;
 
 import com.comphenix.protocol.ProtocolLibrary;
 
@@ -55,36 +57,16 @@ public class SblockEvents extends Module {
 		status = Status.NEITHER;
 		initiateSessionChecks();
 
-		this.registerEvents(new BlockBreakListener(), new BlockFadeListener(), new BlockGrowListener(),
-				new BlockIgniteListener(), new BlockPhysicsListener(), new BlockPistonExtendListener(),
-				new BlockPistonRetractListener(), new BlockPlaceListener(), new BlockSpreadListener(),
-
-				new CraftItemListener(),
-
-				new EntityDamageByEntityListener(), new EntityDamageListener(), new EntityExplodeListener(),
-				new EntityRegainHealthListener(), new FoodLevelChangeListener(),
-				
-				new FurnaceBurnListener(), new FurnaceSmeltListener(),
-
-				new InventoryClickListener(), new InventoryCloseListener(),
-				new InventoryCreativeListener(), new InventoryMoveItemListener(),
-				new InventoryOpenListener(), new InventoryPickupItemListener(),
-
-				new PlayerAsyncChatListener(), new PlayerChangedWorldListener(),
-				new PlayerCommandPreprocessListener(), new PlayerDeathListener(),
-				new PlayerDropItemListener(), new PlayerInteractEntityListener(),
-				new PlayerInteractListener(),
-				new PlayerJoinListener(), new PlayerLoginListener(),
-				new PlayerPickupItemListener(), new PlayerQuitListener(),
-				new PlayerShearEntityListener(), new PlayerTeleportListener(),
-				new PrepareItemEnchantListener(), new ServerListPingListener(),
-
-				new SignChangeListener(),
-				
-				new HorseMountListener(),
-				new SaddleEnchantmentListener(),
-
-				new VehicleBlockCollisionListener(), new VehicleDestroyListener(), new VehicleExitListener());
+		Reflections reflections = new Reflections("co.sblock.events.listeners");
+		Set<Class<? extends Listener>> listeners = reflections.getSubTypesOf(Listener.class);
+		for (Class<? extends Listener> listener : listeners) {
+			try {
+				this.registerEvents(listener.newInstance());
+			} catch (InstantiationException | IllegalAccessException e) {
+				getLogger().severe("Unable to register events for " + listener.getName() + "!");
+				e.printStackTrace();
+			}
+		}
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 		ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new AsyncPacketAdapter()).start(4);

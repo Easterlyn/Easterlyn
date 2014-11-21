@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="lib/spigot-20141001a-patched.jar"/>
 	<classpathentry kind="lib" path="lib/JMegaHal.jar"/>
 	<classpathentry kind="lib" path="lib/HolographicDisplays.jar"/>
+	<classpathentry kind="lib" path="lib/reflections-0.9.9-RC1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
