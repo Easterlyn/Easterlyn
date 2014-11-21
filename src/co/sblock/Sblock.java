@@ -3,23 +3,18 @@ package co.sblock;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
+import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.FurnaceRecipe;
@@ -29,18 +24,13 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import org.reflections.Reflections;
+
 import co.sblock.chat.SblockChat;
 import co.sblock.data.SblockData;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.SblockMachines;
-import co.sblock.module.CommandDenial;
-import co.sblock.module.CommandDescription;
-import co.sblock.module.CommandListener;
-import co.sblock.module.CommandPermission;
-import co.sblock.module.CommandUsage;
-import co.sblock.module.CustomCommand;
 import co.sblock.module.Module;
-import co.sblock.module.SblockCommand;
 import co.sblock.effects.SblockEffects;
 import co.sblock.users.SblockUsers;
 import co.sblock.utilities.Log;
@@ -65,15 +55,6 @@ public class Sblock extends JavaPlugin {
 
 	/* The Set of Modules enabled. */
 	private List<Module> modules;
-
-	/* The Map of commands currently being managed and their respective Method. */
-	private Map<String, Method> commandHandlers;
-
-	/* The Map of registered CommandListeners. */
-	private Map<Class<? extends CommandListener>, CommandListener> listenerInstances;
-
-	/* A List of overridden commands. Allows their aliases to function. */
-	private Map<PluginCommand, CommandExecutor> overriddenCommands;
 
 	/* The CommandMap used to register commands for Modules. */
 	private SimpleCommandMap cmdMap;
@@ -106,9 +87,6 @@ public class Sblock extends JavaPlugin {
 		}
 		instance = this;
 		this.modules = new ArrayList<>();
-		this.commandHandlers = new HashMap<>();
-		this.listenerInstances = new HashMap<>();
-		this.overriddenCommands = new HashMap<>();
 		createRecipes();
 
 		SblockData.getDB().enable();
@@ -122,6 +100,8 @@ public class Sblock extends JavaPlugin {
 		modules.add(new MeteorMod().enable());
 		modules.add(new RawAnnouncer().enable());
 		modules.add(new Spectators().enable());
+
+		registerAllCommands();
 	}
 
 	/**
@@ -129,7 +109,6 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
-		this.unregisterAllCommands();
 		HandlerList.unregisterAll(this);
 		// Disable in reverse order - should better respect modules that require others to function
 		Collections.reverse(modules);
@@ -140,108 +119,34 @@ public class Sblock extends JavaPlugin {
 		instance = null;
 	}
 
-	/**
-	 * Register all commands for a CommandListener.
-	 * 
-	 * @param listener the CommandListener to register commands for
-	 */
-	public void registerCommands(CommandListener listener) {
-		for (Method method : listener.getClass().getMethods()) {
-			if (this.commandHandlers.containsKey(method)) {
-				getLog().severe("Duplicate handlers for command " + method.getName() + " found in "
-						+ this.commandHandlers.get(method.getName()).getDeclaringClass().getName()
-						+ " and " + listener.getClass().getName());
-			} else if (isValidCommand(method)) {
-				this.commandHandlers.put(method.getName(), method);
-				Command cmd = createCommand(method);
-				if (cmd instanceof CustomCommand) {
-					cmdMap.register(this.getDescription().getName(), createCommand(method));
+	public void registerAllCommands() {
+		try {
+			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
+			field.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			HashMap<String, Command> cmdMapMap = (HashMap<String, Command>) field.get(cmdMap);
+			Reflections reflections = new Reflections("co.sblock.commands");
+			Set<Class<? extends co.sblock.commands.SblockCommand>> commands = reflections.getSubTypesOf(co.sblock.commands.SblockCommand.class);
+			for (Class<? extends co.sblock.commands.SblockCommand> command : commands) {
+				try {
+					co.sblock.commands.SblockCommand cmd = command.newInstance();
+					if (cmdMapMap.containsKey(cmd.getName())) {
+						Command overwritten = cmdMapMap.remove(cmd.getName());
+						getLog().info("Overriding " + cmd.getName() + " by "
+						+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
+						+ ". Available aliases: " + overwritten.getAliases().toString());
+						// TODO perhaps re-alias just in case
+					}
+					cmdMap.register(this.getDescription().getName(), cmd);
+				} catch (InstantiationException | IllegalAccessException e) {
+					getLog().severe("Unable to register command " + command.getName());
+					e.printStackTrace();
 				}
 			}
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			getLog().severe("Unable to modify SimpleCommandMap.knownCommands! No commands will be registered!");
+			e.printStackTrace();
 		}
-		this.listenerInstances.put(listener.getClass(), listener);
-	}
-
-	/**
-	 * Verifies that a SblockCommand is properly formed.
-	 * <p>
-	 * A properly formed SblockCommand accepts a CommandSender and String[] as
-	 * arguments and returns a boolean.
-	 * 
-	 * @param method the potential SblockCommand
-	 * 
-	 * @return true if the method is a SblockCommand
-	 */
-	private boolean isValidCommand(Method method) {
-		if (method.getAnnotation(SblockCommand.class) == null) {
-			// Method is not a SblockCommand, fail silently.
-			return false;
-		}
-
-		if (method.getParameterTypes().length < 2
-				|| !CommandSender.class.isAssignableFrom(method.getParameterTypes()[0])
-				|| !String[].class.isAssignableFrom(method.getParameterTypes()[1])
-				|| boolean.class != method.getGenericReturnType()) {
-
-			logger.severe("Malformed SblockCommand: " + method.getName() + "\nExpected public boolean "
-				 + method.getDeclaringClass().getName() + "." + method.getName()
-				+ "(org.bukkit.command.CommandSender,java.lang.String[]) and recieved "
-				+ method.toString());
-			return false;
-		}
-
-		if (!method.getName().toLowerCase().equals(method.getName())) {
-			logger.severe("Malformed SblockCommand: " + method.getDeclaringClass().getName() + "."
-					+ method.getName() + "\nMethod name must be entirely lower case.");
-		}
-		return true;
-	}
-
-	/**
-	 * Creates a CustomCommand that can be added to a CommandMap.
-	 * 
-	 * @param m the Method which will be used by the command
-	 * 
-	 * @return the CustomCommand created
-	 */
-	private Command createCommand(Method m) {
-		Command cmd = getServer().getPluginCommand(m.getName());
-		if (cmd != null && cmd.getName().equals(m.getName())) {
-			// Command has been registered by another plugin.
-			getLog().info("Overriding /" + m.getName() + " by "
-					+ ((PluginCommand) cmd).getExecutor().getClass().getName()
-					+ ". The original is available through " + cmd.getAliases().toString());
-			this.overriddenCommands.put((PluginCommand) cmd, ((PluginCommand) cmd).getExecutor());
-			((PluginCommand) cmd).setExecutor(this);
-		} else {
-			cmd = new CustomCommand(m.getName());
-		}
-		String s;
-		if (m.getAnnotation(CommandDescription.class) != null) {
-			s = ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDescription.class).value());
-		} else {
-			s = ChatColor.YELLOW + "A Sblock command.";
-		}
-		cmd.setDescription(s);
-		if (m.getAnnotation(CommandUsage.class) != null) {
-			s = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandUsage.class).value());
-		} else {
-			s = ChatColor.RED + "/<command>";
-		}
-		cmd.setUsage(s);
-		if (m.getAnnotation(CommandPermission.class) != null) {
-			s = m.getAnnotation(CommandPermission.class).value();
-		} else {
-			s = null;
-		}
-		cmd.setPermission(s);
-		if (m.getAnnotation(CommandDenial.class) != null) {
-			s = ChatColor.translateAlternateColorCodes('&', m.getAnnotation(CommandDenial.class).value());
-		} else {
-			s = ChatColor.RED + "By the order of the Jarl, stop right there!";
-		}
-		cmd.setPermissionMessage(s);
-		return cmd;
 	}
 
 	/**
@@ -362,23 +267,6 @@ public class Sblock extends JavaPlugin {
 	}
 
 	/**
-	 * Unregister all registered commands.
-	 */
-	public void unregisterAllCommands() {
-		for (Method m : this.commandHandlers.values()) {
-			Command cmd = cmdMap.getCommand(m.getName());
-			if (cmd == null) {
-				continue;
-			}
-			if (!overriddenCommands.containsKey(cmd)) {
-				cmd.unregister(cmdMap);
-			} else {
-				((PluginCommand) cmd).setExecutor(overriddenCommands.remove(cmd));
-			}
-		}
-	}
-
-	/**
 	 * Gets the CommandMap containing all registered commands.
 	 * 
 	 * @return
@@ -388,47 +276,13 @@ public class Sblock extends JavaPlugin {
 	}
 
 	/**
-	 * Passes all registered commands to the CommandListener that registered
-	 * them.
+	 * Executes the given command.
 	 * 
-	 * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command,
-	 *      String, String[])
+	 * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command, String, String[])
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (!this.commandHandlers.containsKey(label)) {
-			if (this.overriddenCommands.containsKey(command)) {
-				if (this.overriddenCommands.get(command).onCommand(sender, command, label, args)) {
-					return true;
-				}
-				// Fall through to Sblock - most plugins return true with custom permission denial messages, etc.
-			}
-		}
-		if (!this.commandHandlers.containsKey(command.getName())) {
-			this.getLogger().warning( "Command /" + command.getName() + " has no associated handler.");
-			sender.sendMessage(ChatColor.RED
-					+ "An internal error has occurred. Please notify a member of staff of this issue as soon as possible.");
-			return true;
-		}
-		Method handlerMethod = this.commandHandlers.get(command.getName());
-		if (sender instanceof ConsoleCommandSender
-				&& !handlerMethod.getAnnotation(SblockCommand.class).consoleFriendly()) {
-			sender.sendMessage("This command cannot be issued from the console.");
-			return true;
-		}
-		if (!command.testPermission(sender)) {
-			return true;
-		}
-		try {
-			if (!(Boolean) handlerMethod.invoke(this.listenerInstances
-					.get(handlerMethod.getDeclaringClass()), sender, args)) {
-				sender.sendMessage(command.getUsage());
-			}
-			return true;
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			logger.err(e);
-		}
-		return false;
+		return command.execute(sender, label, args);
 	}
 
 	public File getUserDataFolder() throws IOException {

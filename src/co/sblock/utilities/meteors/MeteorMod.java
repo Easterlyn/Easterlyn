@@ -22,19 +22,13 @@ public class MeteorMod extends Module implements Listener {
 	/** The MeteorMod instance. */
 	private static MeteorMod instance;
 
-	/** The MeteorCommandListener. */
-	private MeteorCommandListener meteorListener;
-
 	/**
 	 * @see Module#onEnable()
 	 */
 	@Override
 	public void onEnable() {
 		instance = this;
-		this.meteorListener = new MeteorCommandListener();
-		this.registerCommands(this.meteorListener);
 		this.registerEvents(this);
-		// startReckoning(20*20);
 	}
 
 	/**
@@ -43,15 +37,6 @@ public class MeteorMod extends Module implements Listener {
 	@Override
 	public void onDisable() {
 		// stopReckoning();
-	}
-
-	/**
-	 * Gets the MeteorCommandListener. For creating meteors or crotchrockets easily.
-	 * 
-	 * @return the MeteorCommandListener
-	 */
-	public MeteorCommandListener getCommandListener() {
-		return this.meteorListener;
 	}
 
 	/**

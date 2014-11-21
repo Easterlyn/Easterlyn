@@ -1,38 +1,32 @@
-package co.sblock.machines;
+package co.sblock.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.utilities.MachineType;
-import co.sblock.module.CommandDenial;
-import co.sblock.module.CommandDescription;
-import co.sblock.module.CommandListener;
-import co.sblock.module.CommandPermission;
-import co.sblock.module.CommandUsage;
-import co.sblock.module.SblockCommand;
 
 /**
+ * SblockCommand for getting machine key objects and icons.
+ * 
  * @author Jikoo
  */
-public class MachineCommands implements CommandListener {
+public class MachineCommand extends SblockCommand {
 
-	/**
-	 * Command for getting a Machine ItemStack.
-	 * <p>
-	 * Admin only.
-	 * 
-	 * @param sender the CommandSender
-	 * @param args the String to interpret into MachineType
-	 * 
-	 * @return true
-	 */
-	@CommandDenial
-	@CommandDescription("Machinations")
-	@CommandPermission("group.denizen")
-	@CommandUsage("/sm get|icon <type>")
-	@SblockCommand
-	public boolean sm(CommandSender sender, String[] args) {
+	public MachineCommand() {
+		super("sm");
+		this.setDescription("Machinations.");
+		this.setUsage("/sm get|icon <type>");
+		this.setPermission("group.denizen");
+	}
+
+	@Override
+	public boolean execute(CommandSender sender, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage("Console support not offered at this time.");
+			return true;
+		}
 		if (args == null || args.length < 2) {
 			return false;
 		}
@@ -67,4 +61,6 @@ public class MachineCommands implements CommandListener {
 		}
 		return true;
 	}
+
+	// TODO tab completion
 }

@@ -50,15 +50,6 @@ public abstract class Module {
 	}
 
 	/**
-	 * Registers all of the Commands handled in the given CommandListener.
-	 * 
-	 * @param listener the Listener to register.
-	 */
-	protected final void registerCommands(CommandListener listener) {
-		Sblock.getInstance().registerCommands(listener);
-	}
-
-	/**
 	 * Enables the Module.
 	 * 
 	 * @return the Module enabled

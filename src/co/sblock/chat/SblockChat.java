@@ -8,7 +8,6 @@ public class SblockChat extends Module {
 
 	private static SblockChat instance;
 	private ChannelManager cm = new ChannelManager();
-	private ChatCommands clistener = new ChatCommands();
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
 	private MegaHal megaHal;
 	private Halculator halculator;
@@ -16,7 +15,6 @@ public class SblockChat extends Module {
 	@Override
 	protected void onEnable() {
 		instance = this;
-		this.registerCommands(clistener);
 		this.cm.loadAllChannels();
 		this.cm.createDefaultSet();
 

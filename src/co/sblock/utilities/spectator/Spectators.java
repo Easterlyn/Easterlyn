@@ -6,17 +6,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
-import co.sblock.module.CommandDescription;
-import co.sblock.module.CommandListener;
-import co.sblock.module.CommandUsage;
 import co.sblock.module.Module;
-import co.sblock.module.SblockCommand;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.inventory.InventoryManager;
 
@@ -26,7 +20,7 @@ import co.sblock.utilities.inventory.InventoryManager;
  * 
  * @author Jikoo
  */
-public class Spectators extends Module implements CommandListener {
+public class Spectators extends Module {
 
 	/**
 	 * Minimal class for storing a player's location and fall distance prior to
@@ -67,7 +61,6 @@ public class Spectators extends Module implements CommandListener {
 	protected void onEnable() {
 		instance = this;
 		spectators = new HashMap<>();
-		this.registerCommands(this);
 	}
 
 	/**
@@ -139,32 +132,6 @@ public class Spectators extends Module implements CommandListener {
 		for (PotionEffect potion : e.getPotionEffects()) {
 			p.addPotionEffect(potion);
 		}
-	}
-
-	/**
-	 * Command used ingame to toggle spectator status.
-	 * 
-	 * @param s the CommandSender
-	 * @param args any additional command arguments
-	 * 
-	 * @return true
-	 */
-	@CommandDescription("Player: Become the ghost (toggles spectator mode)")
-	@CommandUsage("/spectate")
-	@SblockCommand
-	public boolean spectate(CommandSender s, String[] args) {
-		if (UserManager.getUser(((Player) s).getUniqueId()).isServer()) {
-			s.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
-			return true;
-		}
-		if (this.spectators.containsKey(((Player) s).getUniqueId())) {
-			s.sendMessage(ChatColor.GREEN + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
-			this.removeSpectator((Player) s);
-		} else {
-			s.sendMessage(ChatColor.GREEN + "You feel a tingling sensation about your extremities as you hover up slightly.");
-			this.addSpectator((Player) s);
-		}
-		return true;
 	}
 
 	@Override

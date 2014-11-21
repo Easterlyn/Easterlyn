@@ -7,12 +7,10 @@ public class SblockEffects extends Module {
 	private static SblockEffects instance;
 	private EffectManager eM;
 	protected static boolean verbose = false;
-	private EffectsCommandListener eCL = new EffectsCommandListener();
 
 	@Override
 	public void onEnable() {
 		instance = this;
-		this.registerCommands(eCL);
 		eM = new EffectManager();
 	}
 

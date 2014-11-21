@@ -1,4 +1,4 @@
-package co.sblock.chat;
+package co.sblock.commands;
 
 import java.util.UUID;
 
@@ -8,138 +8,36 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.chat.ChannelManager;
+import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NickChannel;
-import co.sblock.module.CommandDenial;
-import co.sblock.module.CommandDescription;
-import co.sblock.module.CommandListener;
-import co.sblock.module.CommandPermission;
-import co.sblock.module.CommandUsage;
-import co.sblock.module.SblockCommand;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.rawmessages.EscapedElement;
 
 /**
- * Command handler for all Chat-related commands.
+ * SblockCommand for most manipulation of chat features.
  * 
- * @author Dublek, Jikoo
+ * @author Jikoo
  */
-public class ChatCommands implements CommandListener {
+public class SblockChatCommand extends SblockCommand {
 
-	@CommandDescription("List all colors.")
-	@CommandUsage("&c/color")
-	@SblockCommand(consoleFriendly = true)
-	public boolean color(CommandSender sender, String[] args) {
-		sender.sendMessage(ColorDef.listColors());
-		return true;
+	public SblockChatCommand() {
+		super("sc");
+		this.setDescription("SblockChat's main command");
+		this.setUsage("/sc");
 	}
 
-	@CommandDenial("&0&lYOU SEE NOTHING.")
-	@CommandDescription("The voice of the god Anaash. Can be recolored for plaintext messaging.")
-	@CommandPermission("group.denizen")
-	@CommandUsage("/an <text>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean an(CommandSender sender, String[] text) {
-		Bukkit.broadcastMessage(ChatColor.BLACK + ChatColor.BOLD.toString() + ChatColor.translateAlternateColorCodes('&', StringUtils.join(text, ' ').toUpperCase()));
-		return true;
-	}
-
-	@CommandDenial("The aetherial realm eludes your grasp once more.")
-	@CommandDescription("For usage in console largely. Talks in #Aether.")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/aether <text>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean aether(CommandSender sender, String[] text) {
-		String message = ChatColor.WHITE + "[" + ChatColor.GOLD + "#Aether" + ChatColor.WHITE + "]" + ChatColor.WHITE;
-		if (!text[0].equals(">")) {
-			message += " ";
-		}
-		message += StringUtils.join(text, ' ');
-		Bukkit.getConsoleSender().sendMessage(message);
-		message = new EscapedElement(message).toString();
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			User u = UserManager.getUser(p.getUniqueId());
-			if (!u.isSuppressing()) {
-				u.rawHighlight(message);
-			}
-		}
-		return true;
-	}
-
-	@CommandDenial("&0Lul.")
-	@CommandDescription("/le, now with 250% more &kbrain pain.")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/lel <text>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean lel(CommandSender sender, String[] text) {
-		StringBuilder msg = new StringBuilder();
-		for (int i = 0; i < text.length; i++) {
-			msg.append(text[i].toUpperCase()).append(' ');
-		}
-		StringBuilder lelOut = new StringBuilder();
-		for (int i = 0; i < msg.length();) {
-			for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
-				if (i >= msg.length())
-					break;
-				lelOut.append(ColorDef.RAINBOW[j]).append(ChatColor.MAGIC).append(msg.charAt(i));
-				i++;
-			}
-		}
-		Bukkit.broadcastMessage(lelOut.substring(0, lelOut.length() - 1 > 0 ? lelOut.length() - 1 : 0));
-		return true;
-	}
-
-	@CommandDenial("&0Le no. Le /le is reserved for le fancy people.")
-	@CommandDescription("&4He's already here!")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/le <text>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean le(CommandSender sender, String[] text) {
-		StringBuilder msg = new StringBuilder();
-		for (int i = 0; i < text.length; i++) {
-			msg.append(text[i].toUpperCase()).append(' ');
-		}
-		StringBuilder leOut = new StringBuilder();
-		for (int i = 0; i < msg.length();) {
-			for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
-				if (i >= msg.length())
-					break;
-				leOut.append(ColorDef.RAINBOW[j]).append(msg.charAt(i));
-				i++;
-			}
-		}
-		Bukkit.broadcastMessage(leOut.substring(0, leOut.length() - 1 > 0 ? leOut.length() - 1 : 0));
-		return true;
-	}
-
-	@CommandDenial("&l[o] You try to be the white text guy, but fail to be the white text guy. "
-					+ "No one can be the white text guy except for the white text guy.")
-	@CommandDescription("> Be the white text guy")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/o <text>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean o(CommandSender sender, String text[]) {
-		if (text == null || text.length == 0) {
-			sender.sendMessage(ChatColor.BOLD + "[o] If you're going to speak for me, please proceed.");
+	@Override
+	public boolean execute(CommandSender sender, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		StringBuilder o = new StringBuilder(ChatColor.BOLD.toString()).append("[o] ");
-		for (String s : text) {
-			o.append(s).append(' ');
-		}
-		Bukkit.broadcastMessage(o.substring(0, o.length() - 1 > 0 ? o.length() - 1 : 0));
-		return true;
-	}
-
-	@CommandDescription("SblockChat's main command")
-	@CommandUsage("/sc")
-	@SblockCommand
-	public boolean sc(CommandSender sender, String[] args) {
 		User user = UserManager.getUser(((Player) sender).getUniqueId());
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatMsgs.helpDefault());
@@ -175,116 +73,7 @@ public class ChatCommands implements CommandListener {
 		return true;
 	}
 
-	@CommandDescription("#>does an action")
-	@CommandUsage("YOU FOOKIN WOT M8? /me (@channel) <message>")
-	@SblockCommand
-	public boolean me(CommandSender sender, String[] args) {
-		if (args.length == 0) {
-			return false;
-		}
-		((Player) sender).chat("#>" + StringUtils.join(args, ' '));
-		return true;
-	}
-
-	@CommandDenial
-	@CommandDescription("Help people find their way")
-	@CommandPermission("group.felt")
-	@CommandUsage("/forcechannel <channel> <player>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean forcechannel(CommandSender sender, String[] args) {
-		if (args.length < 2) {
-			return false;
-		}
-		Channel c = ChannelManager.getChannelManager().getChannel(args[0]);
-		if (c == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
-			return true;
-		}
-		Player p = Bukkit.getPlayer(args[1]);
-		if (p == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
-			return true;
-		}
-		User user = UserManager.getUser(p.getUniqueId());
-		user.setCurrent(c);
-		sender.sendMessage(ChatColor.GREEN + "Channel forced!");
-		return true;
-	}
-
-	@CommandDenial
-	@CommandDescription("Trigger a Lil Hal response")
-	@CommandPermission("group.helper")
-	@CommandUsage("/megahal [channel] [seedword]")
-	@SblockCommand(consoleFriendly = true)
-	public boolean megahal(CommandSender sender, String[] args) {
-		Channel target;
-		if (args.length >= 1) {
-			target = ChannelManager.getChannelManager().getChannel(args[0]);
-			if (target == null) {
-				sender.sendMessage(ChatColor.RED + "Invalid channel: " + args[0]);
-				return true;
-			}
-		} else {
-			target = ChannelManager.getChannelManager().getChannel("#");
-		}
-		SblockChat.getChat().getHal().triggerResponse(target, args.length > 1 ? StringUtils.join(args, ' ', 1, args.length) : null, false);
-		return true;
-	}
-
-	@CommandDescription("Halculate an equation")
-	@CommandUsage("/halc 1+1")
-	@SblockCommand(consoleFriendly = true)
-	public boolean halc(CommandSender sender, String[] args) {
-		if (args.length == 0) {
-			sender.sendMessage("Please enter an equation! Ex. /halc (1+1)^(2/3) + 10");
-		} else {
-			sender.sendMessage(ChatColor.RED + "Evhaluation: " + ChatColor.GRAY
-					+ SblockChat.getChat().getHalculator().evhaluate(StringUtils.join(args, ' ')));
-		}
-		return true;
-	}
-
-	@CommandDenial
-	@CommandDescription("In essence a /tellraw @a that can be used in console")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/tellallraw <raw json string>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean tellallraw(CommandSender sender, String[] args) {
-		String json = StringUtils.join(args, ' ');
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			Bukkit.dispatchCommand(sender, "tellraw " + p.getName() + " "+ json);
-		}
-		return true;
-	}
-
-	@CommandDenial
-	@CommandDescription("In essence a /tellraw @a that can be used in console")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/rssupdate <feed name> <url> <title>")
-	@SblockCommand(consoleFriendly = true)
-	public boolean rssupdate(CommandSender sender, String[] args) {
-		if (args.length < 3) {
-			return false;
-		}
-		String json = " {\"text\":\"\",\"extra\":[{\"text\":\"[\",\"color\":\"white\"},"
-				+ "{\"text\":\"#\",\"color\":\"red\"},{\"text\":\"] <\",\"color\":\"white\"},"
-				+ "{\"text\":\"{NAME}\",\"color\":\"yellow\",\"hoverEvent\":{\"action\":\"show_text\","
-				+ "\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"RSS feed\",\"color\":\"yellow\"}]}}},"
-				+ "{\"text\":\"> \",\"color\":\"white\"},{\"text\":\"Update: \",\"color\":\"yellow\"},"
-				+ "{\"text\":\"{TITLE}\",\"color\":\"blue\",\"underlined\":\"true\",\"clickEvent\":"
-				+ "{\"action\":\"open_url\",\"value\":\"{LINK}\"},\"hoverEvent\":{\"action\":\"show_text\","
-				+ "\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click to go: \",\"color\":\"dark_aqua\"},"
-				+ "{\"text\":\"{LINK}\",\"color\":\"blue\",\"underlined\":\"true\"}]}}}]}";
-
-		json = json.replaceAll("\\{NAME\\}", args[0].replaceAll("\\", "\\\\").replaceAll("\"", "\\\""))
-				.replaceAll("\\{LINK\\}", args[1].replaceAll("\\", "\\\\").replaceAll("\"", "\\\""))
-				.replaceAll("\\{TITLE\\}", StringUtils.join(args, ' ', 2, args.length).replaceAll("\\", "\\\\").replaceAll("\"", "\\\""));
-
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			Bukkit.dispatchCommand(sender, "tellraw " + p.getName() + json);
-		}
-		return true;
-	}
+	// TODO tab complete
 
 	private boolean scC(User user, String[] args) {
 		if (args.length == 1) {

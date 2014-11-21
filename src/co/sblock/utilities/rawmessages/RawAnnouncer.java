@@ -3,41 +3,32 @@ package co.sblock.utilities.rawmessages;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
-import co.sblock.module.CommandDenial;
-import co.sblock.module.CommandDescription;
-import co.sblock.module.CommandListener;
-import co.sblock.module.CommandPermission;
-import co.sblock.module.CommandUsage;
 import co.sblock.module.Module;
-import co.sblock.module.SblockCommand;
-import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 
 /**
  * @author Jikoo
  */
-public class RawAnnouncer extends Module implements CommandListener {
+public class RawAnnouncer extends Module {
 
-	private int taskId;
 	private List<MessageElement> announcements;
+	private static RawAnnouncer instance;
 
 	/**
 	 * @see co.sblock.Module#onEnable()
 	 */
 	@Override
 	protected void onEnable() {
-		announcements = this.constructAnnouncements();
-		
+		instance = this;
 
-		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+		announcements = this.constructAnnouncements();
+
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
@@ -50,8 +41,6 @@ public class RawAnnouncer extends Module implements CommandListener {
 				}
 			}
 		}, 0, 1200 * 15); // 15 minutes in between rawnouncments
-
-		this.registerCommands(this);
 	}
 
 	/**
@@ -110,58 +99,32 @@ public class RawAnnouncer extends Module implements CommandListener {
 				new MessageElement("download", ChatColor.AQUA)
 				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://sblock.co/rpack/"))
 				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click to see all Sblock rpacks!")),
-		new MessageElement(" the sound pack as well.", ChatColor.RED)));
+				new MessageElement(" the sound pack as well.", ChatColor.RED)));
 
 		msgs.add(new MessageHalement("Interested in jamming with your fellow Sblock players? Join our ").addExtra(
 				new MessageElement("plug.dj room", ChatColor.AQUA)
 				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://plug.dj/sblock/"))
 				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click join!")),
-		new MessageElement(" to listen and play!", ChatColor.RED)));
+				new MessageElement(" to listen and play!", ChatColor.RED)));
 
 		return msgs;
 	}
 
-	/**
-	 * @see co.sblock.Module#onDisable()
-	 */
-	@Override
-	protected void onDisable() {
-		Bukkit.getScheduler().cancelTask(taskId);
+	public List<MessageElement> getMessages() {
+		return announcements;
 	}
 
-	@CommandDenial
-	@CommandDescription("Force a raw message announcement or talk as Hal.")
-	@CommandPermission("group.horrorterror")
-	@CommandUsage("/hal [0-8|text]")
-	@SblockCommand(consoleFriendly = true)
-	public boolean hal(CommandSender s, String[] args) {
-		MessageElement msg;
-		if (args.length == 1) {
-			try {
-				int msgNum = Integer.valueOf(args[0]);
-				if (msgNum > announcements.size()) {
-					s.sendMessage(ChatColor.RED.toString() + announcements.size() + " announcements exist currently.");
-					msgNum = announcements.size();
-				}
-				msg = announcements.get(msgNum - 1);
-			} catch (NumberFormatException e) {
-				msg = new MessageHalement(args[0]);
-			}
-		} else if (args.length > 0) {
-			msg = new MessageHalement(StringUtils.join(args, ' '));
-		} else {
-			msg = announcements.get((int) (Math.random() * announcements.size()));
-		}
-		Log.anonymousInfo(msg.getConsoleFriendly());
-		String announcement = msg.toString();
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			UserManager.getUser(p.getUniqueId()).rawHighlight(announcement);
-		}
-		return true;
+	@Override
+	protected void onDisable() {
+		instance = null;
 	}
 
 	@Override
 	protected String getModuleName() {
 		return "RawAnnouncer";
+	}
+
+	public static RawAnnouncer getAnnouncer() {
+		return instance;
 	}
 }

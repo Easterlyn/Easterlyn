@@ -25,9 +25,6 @@ import co.sblock.utilities.inventory.InventoryUtils;
  */
 public class Captcha extends Module {
 
-	/** The CaptchaCommandListener. */
-	private CaptchaCommandListener clistener = new CaptchaCommandListener();
-
 	/**
 	 * @see Module#onEnable()
 	 */
@@ -38,8 +35,6 @@ public class Captcha extends Module {
 
 		// Add captcha recipe
 		this.captchaCardRecipe();
-
-		this.registerCommands(clistener);
 	}
 
 	/**
@@ -448,7 +443,7 @@ public class Captcha extends Module {
 		}
 	}
 
-	protected static int convert(Player player) {
+	public static int convert(Player player) {
 		int conversions = 0;
 		for (int i = 0; i < player.getInventory().getSize(); i++) {
 			ItemStack is = player.getInventory().getItem(i);

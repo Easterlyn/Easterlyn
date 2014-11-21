@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
-import co.sblock.utilities.meteors.MeteorMod;
+import co.sblock.Sblock;
 
 public enum ActiveEffect {
 
@@ -99,7 +99,7 @@ public enum ActiveEffect {
 			p.setVelocity(v.multiply(strength + 2));
 			break;
 		case CROTCHROCKET:
-			MeteorMod.getInstance().getCommandListener().crotchrocket(p, null);
+			Sblock.getInstance().getCommandMap().getCommand("crotchrocket").execute(p, "crotchrocket", new String[0]);
 			break;
 		default:
 			break;

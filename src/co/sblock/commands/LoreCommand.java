@@ -1,4 +1,4 @@
-package co.sblock.effects;
+package co.sblock.commands;
 
 import java.util.ArrayList;
 
@@ -13,21 +13,26 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import co.sblock.module.CommandDenial;
-import co.sblock.module.CommandDescription;
-import co.sblock.module.CommandListener;
-import co.sblock.module.CommandPermission;
-import co.sblock.module.CommandUsage;
-import co.sblock.module.SblockCommand;
+/**
+ * SblockCommand for manipulating item lore and some other meta-related cases.
+ * 
+ * @author Jikoo
+ */
+public class LoreCommand extends SblockCommand {
 
-public class EffectsCommandListener implements CommandListener {
+	public LoreCommand() {
+		super("lore");
+		this.setDescription("Sblock's lore manipulation command.");
+		this.setUsage("/lore <owner|author|title|name|delete [number|previous args]|clearmeta|add|[set|insert] [number]> <args>");
+		this.setPermission("group.felt");
+	}
 
-	@CommandDenial
-	@CommandDescription("Sblock's lore manipulation command")
-	@CommandPermission("group.felt")
-	@CommandUsage("/lore <owner|author|title|name|delete [number|previous args]|clearmeta|add|[set|insert] [number]> <args>")
-	@SblockCommand
-	public boolean lore(CommandSender sender, String[] args) {
+	@Override
+	public boolean execute(CommandSender sender, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage("Console support not offered at this time.");
+			return true;
+		}
 		if (args.length < 2) {
 			return false;
 		}
@@ -70,6 +75,8 @@ public class EffectsCommandListener implements CommandListener {
 		}
 		return false;
 	}
+
+	// TODO tab completion
 
 	private boolean owner(Player player, ItemStack hand, String[] args) {
 		if (hand.getType() != Material.SKULL_ITEM && hand.getDurability() != 3) {
