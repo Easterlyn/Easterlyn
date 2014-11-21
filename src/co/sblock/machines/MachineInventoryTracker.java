@@ -104,7 +104,7 @@ public class MachineInventoryTracker {
 
 		this.openMachines.put(player, m);
 
-		if (!(container instanceof MerchantContainer) || p.playerConnection.networkManager.getVersion() > 5) { // TODO figure out 1.8 MC|TrList
+		if (!(container instanceof MerchantContainer)) {
 			return;
 		}
 		MerchantRecipeList list = new MerchantRecipeList();
@@ -124,7 +124,7 @@ public class MachineInventoryTracker {
 
 		try {
 
-			PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
+			PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer(), p.playerConnection.networkManager.getVersion());
 			out.writeInt(packet.getWindowId());
 			list.a(out);
 
@@ -133,14 +133,11 @@ public class MachineInventoryTracker {
 			trades.setData(out.array());
 			ProtocolLibrary.getProtocolManager().sendServerPacket(player, trades.getHandle());
 
-			
-
 		} catch (IllegalArgumentException | SecurityException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
 
-	
 	public class MerchantContainer extends ContainerMerchant {
 
 		public MerchantContainer(EntityPlayer player) {
