@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +19,12 @@ import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import org.jibble.jmegahal.JMegaHal;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.Message;
-import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -185,19 +184,12 @@ public class MegaHal {
 	}
 
 	public void saveLogs() {
-		// Shitty recursion to convert initial file
 		try (FileWriter filewriter = new FileWriter(getFirstAvailableHalFile(), true);
 				PrintWriter writer = new PrintWriter(filewriter)) {
-//			for (String s : pendingMessages) {
-//				writer.println(s);
-//			}
-			Iterator<String> iterator = pendingMessages.iterator();
-			for (int i = 0; i < 100 && iterator.hasNext(); i++) {
-				writer.println(iterator.next());
-				iterator.remove();
+			for (String s : pendingMessages) {
+				writer.println(s);
 			}
-			writer.close();
-//			pendingMessages.clear();
+			pendingMessages.clear();
 		} catch (IOException e) {
 			Log.getLog("MegaHal").err(e);
 		}
@@ -246,25 +238,6 @@ public class MegaHal {
 							Log.getLog("MegaHal").err(e);
 						}
 					}
-				}
-				File oldHalFile = new File(Sblock.getInstance().getDataFolder(), "hal.log");
-				if (oldHalFile.exists()) {
-					File halBackup = new File("plugins/Sblock/hal.backup");
-					try {
-						FileUtils.copyFile(oldHalFile, halBackup);
-						List<String> halLogs = FileUtils.readLines(oldHalFile);
-						Channel hash = SblockChat.getChat().getChannelManager().getChannel("#");
-						for (String string : halLogs) {
-							Message message = new Message("Conversion", string);
-							message.setChannel(hash);
-							message.prepare();
-							log(message);
-						}
-						saveLogs();
-					} catch (IOException e) {
-						Log.getLog("MegaHal").err(e);
-					}
-					oldHalFile.delete();
 				}
 				Log.getLog("MegaHal").info("Finished loading Hal logs.");
 			}
