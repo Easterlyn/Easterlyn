@@ -61,8 +61,12 @@ public class SblockEvents extends Module {
 		Reflections reflections = new Reflections("co.sblock.events.listeners");
 		Set<Class<? extends Listener>> listeners = reflections.getSubTypesOf(Listener.class);
 		for (Class<? extends Listener> listener : listeners) {
+			if (listener.equals(CHBlockHealListener.class) && !Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")) {
+				getLogger().info("CreeperHeal not found, skipping listener.");
+				continue;
+			}
 			try {
-				this.registerEvents(listener.newInstance());
+				Bukkit.getPluginManager().registerEvents(listener.newInstance(), Sblock.getInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
 				getLogger().severe("Unable to register events for " + listener.getName() + "!");
 				e.printStackTrace();
@@ -71,10 +75,6 @@ public class SblockEvents extends Module {
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 		ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new AsyncPacketAdapter()).start(4);
-
-		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")) {
-			this.registerEvents(new CHBlockHealListener());
-		}
 
 		initiateRegionChecks();
 	}

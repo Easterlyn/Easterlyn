@@ -6,7 +6,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -23,10 +25,10 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import org.reflections.Reflections;
 
 import co.sblock.chat.SblockChat;
+import co.sblock.commands.SblockCommand;
 import co.sblock.data.SblockData;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.SblockMachines;
@@ -109,6 +111,7 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
+		unregisterAllCommands();
 		HandlerList.unregisterAll(this);
 		// Disable in reverse order - should better respect modules that require others to function
 		Collections.reverse(modules);
@@ -124,18 +127,17 @@ public class Sblock extends JavaPlugin {
 			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")
-			HashMap<String, Command> cmdMapMap = (HashMap<String, Command>) field.get(cmdMap);
+			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
 			Reflections reflections = new Reflections("co.sblock.commands");
-			Set<Class<? extends co.sblock.commands.SblockCommand>> commands = reflections.getSubTypesOf(co.sblock.commands.SblockCommand.class);
-			for (Class<? extends co.sblock.commands.SblockCommand> command : commands) {
+			Set<Class<? extends SblockCommand>> commands = reflections.getSubTypesOf(SblockCommand.class);
+			for (Class<? extends SblockCommand> command : commands) {
 				try {
-					co.sblock.commands.SblockCommand cmd = command.newInstance();
-					if (cmdMapMap.containsKey(cmd.getName())) {
-						Command overwritten = cmdMapMap.remove(cmd.getName());
+					SblockCommand cmd = command.newInstance();
+					if (cmdMapKnownCommands.containsKey(cmd.getName())) {
+						Command overwritten = cmdMapKnownCommands.remove(cmd.getName());
 						getLog().info("Overriding " + cmd.getName() + " by "
 						+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
 						+ ". Available aliases: " + overwritten.getAliases().toString());
-						// TODO perhaps re-alias just in case
 					}
 					cmdMap.register(this.getDescription().getName(), cmd);
 				} catch (InstantiationException | IllegalAccessException e) {
@@ -145,6 +147,24 @@ public class Sblock extends JavaPlugin {
 			}
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			getLog().severe("Unable to modify SimpleCommandMap.knownCommands! No commands will be registered!");
+			e.printStackTrace();
+		}
+	}
+
+	private void unregisterAllCommands() {
+		try {
+			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
+			field.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
+			for (Iterator<Map.Entry<String, Command>> iterator = cmdMapKnownCommands.entrySet().iterator(); iterator.hasNext();) {
+				Map.Entry<String, Command> entry = iterator.next();
+				if (entry.getValue() instanceof SblockCommand) {
+					iterator.remove();
+				}
+			}
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			getLog().severe("Unable to modify SimpleCommandMap.knownCommands! Commands cannot be unregistered!");
 			e.printStackTrace();
 		}
 	}

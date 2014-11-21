@@ -8,8 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
@@ -28,7 +26,6 @@ public class MeteorMod extends Module implements Listener {
 	@Override
 	public void onEnable() {
 		instance = this;
-		this.registerEvents(this);
 	}
 
 	/**
@@ -36,7 +33,7 @@ public class MeteorMod extends Module implements Listener {
 	 */
 	@Override
 	public void onDisable() {
-		// stopReckoning();
+		instance = null;
 	}
 
 	/**
@@ -49,18 +46,16 @@ public class MeteorMod extends Module implements Listener {
 	}
 
 	/**
-	 * The EventHandler for EntityChangeBlockEvents to handle Meteorite FallingBlock landings.
+	 * Deals with EntityChangeBlockEvents to keep all related NMS/OBC access in one area.
 	 * 
 	 * @param event the EntityChangeBlockEvent
 	 */
-	@EventHandler
-	public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
-		if (event.getEntityType() != EntityType.FALLING_BLOCK) {
-			return;
-		}
-		if (((org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity) event.getEntity()).getHandle() instanceof MeteoriteComponent) {
+	public void handlePotentialMeteorite(EntityChangeBlockEvent event) {
+		net.minecraft.server.v1_7_R4.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
+		if (nmsEntity instanceof MeteoriteComponent) {
 			event.setCancelled(true);
-			explode(event.getBlock().getLocation(), event.getEntity());
+			MeteorMod.getInstance().explode(event.getBlock().getLocation(), event.getEntity(),
+					false, ((MeteoriteComponent) nmsEntity).shouldExplode());
 			event.getEntity().remove();
 			event.getBlock().setType(Material.AIR);
 			return;
@@ -72,12 +67,11 @@ public class MeteorMod extends Module implements Listener {
 	 * 
 	 * @param loc the Location to explode at
 	 */
-	public void explode(Location loc, Entity explodeAs) {
+	public void explode(Location loc, Entity explodeAs, boolean setFires, boolean terrainDamage) {
 		Explosion explosion = new Explosion(((CraftWorld) loc.getWorld()).getHandle(),
 				((CraftEntity) explodeAs).getHandle(), loc.getX(), loc.getY(), loc.getZ(), 4F);
-		// Explosion.a = doFireDamage, set fire to terrain
-		explosion.a = false;
-		explosion.b = ((MeteoriteComponent) ((CraftEntity) explodeAs).getHandle()).shouldExplode();
+		explosion.a = setFires;
+		explosion.b = terrainDamage;
 		explosion.a();
 		explosion.a(true);
 		loc.getWorld().playEffect(loc, Effect.EXPLOSION_HUGE, 4);

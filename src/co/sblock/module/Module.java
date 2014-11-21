@@ -1,13 +1,5 @@
 package co.sblock.module;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-
-import co.sblock.Sblock;
 import co.sblock.utilities.Log;
 
 /**
@@ -17,9 +9,6 @@ import co.sblock.utilities.Log;
  * @author FireNG
  */
 public abstract class Module {
-
-	/* The Set of Listeners registered by this Module. */
-	private Set<Listener> listeners = new HashSet<Listener>();
 
 	/**
 	 * Called when the Module is enabled.
@@ -36,18 +25,6 @@ public abstract class Module {
 	 * @return the name of this module
 	 */
 	protected abstract String getModuleName();
-
-	/**
-	 * Register events for one or more Listeners.
-	 * 
-	 * @param listeners Listener[]
-	 */
-	protected final void registerEvents(Listener... listeners) {
-		for (Listener listener : listeners) {
-			Bukkit.getPluginManager().registerEvents(listener, Sblock.getInstance());
-			this.listeners.add(listener);
-		}
-	}
 
 	/**
 	 * Enables the Module.
@@ -71,16 +48,6 @@ public abstract class Module {
 	 * @return the Module disabled
 	 */
 	public final Module disable() {
-
-		try {
-			this.onDisable();
-			for (Listener listener : listeners) {
-				HandlerList.unregisterAll(listener);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Unhandled exception in module "
-					+ this.getClass().getSimpleName() + ". Plugin failed to properly disable.", e);
-		}
 		this.getLogger().info("Disabled module " + this.getModuleName());
 		return this;
 	}
