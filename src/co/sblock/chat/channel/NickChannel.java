@@ -81,7 +81,7 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public boolean hasNick(User sender) {
-		return nickList.containsKey(sender);
+		return nickList.containsKey(sender.getUUID());
 	}
 
 	/**
