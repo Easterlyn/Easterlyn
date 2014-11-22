@@ -60,8 +60,8 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public void removeNick(User sender, boolean warn) {
-		if (nickList.containsKey(sender)) {
-			String old = nickList.remove(sender);
+		if (nickList.containsKey(sender.getUUID())) {
+			String old = nickList.remove(sender.getUUID());
 			if (warn) {
 				this.sendMessage(ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name));
 			}
@@ -73,7 +73,7 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public String getNick(User sender) {
-		return nickList.containsKey(sender) ? nickList.get(sender) : sender.getPlayer().getDisplayName();
+		return nickList.containsKey(sender.getUUID()) ? nickList.get(sender.getUUID()) : sender.getPlayer().getDisplayName();
 	}
 
 	/**
