@@ -1,6 +1,5 @@
 package co.sblock.events.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,7 +50,7 @@ public class PlayerQuitListener implements Listener {
 
 		// Stop scheduled sleep teleport
 		if (SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
-			Bukkit.getScheduler().cancelTask(SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()));
+			SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()).cancel();
 		}
 
 		// Clean up any expired cooldown entries for the player

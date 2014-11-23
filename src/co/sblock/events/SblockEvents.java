@@ -2,15 +2,15 @@ package co.sblock.events;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-
+import org.bukkit.scheduler.BukkitTask;
 import org.reflections.Reflections;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -44,16 +44,12 @@ public class SblockEvents extends Module {
 	private int statusResample = 0;
 
 	/* A Map of all scheduled tasks by Player. */
-	public Map<String, Integer> tasks;
-
-	/* A Set of the names of all Players queuing to sleep teleport. */
-	public Set<String> teleports;
+	public Map<UUID, BukkitTask> tasks;
 
 	@Override
 	protected void onEnable() {
 		instance = this;
-		tasks = new HashMap<String, Integer>();
-		teleports = new HashSet<String>();
+		tasks = new HashMap<>();
 
 		status = Status.NEITHER;
 		initiateSessionChecks();
@@ -108,8 +104,7 @@ public class SblockEvents extends Module {
 		} catch (InvocationTargetException e) {
 			getLogger().err(e);
 		}
-		tasks.put(p.getName(), Bukkit.getScheduler().scheduleSyncDelayedTask(
-				Sblock.getInstance(), new SleepTeleport(p), 100L));
+		tasks.put(p.getUniqueId(), new SleepTeleport(p.getUniqueId()).runTaskLater(Sblock.getInstance(), 100L));
 	}
 
 	/**
@@ -128,9 +123,9 @@ public class SblockEvents extends Module {
 			getLogger().err(e);
 		}
 
-		Integer taskID = tasks.remove(p.getName());
-		if (taskID != null) {
-			Bukkit.getScheduler().cancelTask(taskID);
+		BukkitTask task = tasks.remove(p.getUniqueId());
+		if (task != null) {
+			task.cancel();;
 		}
 	}
 

@@ -1,8 +1,11 @@
 package co.sblock.events.packets;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.events.SblockEvents;
 import co.sblock.users.Region;
@@ -14,45 +17,46 @@ import co.sblock.users.UserManager;
  * 
  * @author Jikoo
  */
-public class SleepTeleport implements Runnable {
-
-	/** The Player to teleport. */
-	private Player p;
+public class SleepTeleport extends BukkitRunnable {
+	private UUID uuid;
 
 	/**
 	 * @param p the Player to teleport
 	 */
-	public SleepTeleport(Player p) {
-		this.p = p;
+	public SleepTeleport(UUID uuid) {
+		this.uuid = uuid;
 	}
 
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
 	@Override
 	public void run() {
-		User user = UserManager.getUser(p.getUniqueId());
-		if (p != null && user != null) {
-			Location location = p.getLocation();
-			SblockEvents.getEvents().teleports.add(p.getName());
-			if (user.getPreviousLocation().getWorld().getName().equals(p.getWorld().getName())) {
-				if (user.getCurrentRegion().isDream()) {
-					p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
-				} else {
-					p.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
-				}
-			} else {
-				if (Region.getRegion(user.getPreviousLocation().getWorld().getName()).isDream() && user.getCurrentRegion().isDream()) {
-					p.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
-				} else if (!Region.getRegion(user.getPreviousLocation().getWorld().getName()).isDream() && !user.getCurrentRegion().isDream()) {
-					p.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
-				} else {
-					p.teleport(user.getPreviousLocation());
-				}
-			}
-			user.setPreviousLocation(location);
-			SblockEvents.getEvents().fakeWakeUp(p);
+		Player player = Bukkit.getPlayer(uuid);
+		if (player == null) {
+			return;
 		}
-		SblockEvents.getEvents().tasks.remove(p.getName());
+		User user = UserManager.getUser(player.getUniqueId());
+		if (user == null) {
+			return;
+		}
+		if (!SblockEvents.getEvents().tasks.containsKey(player.getUniqueId())) {
+			return;
+		}
+		Location location = player.getLocation();
+		if (user.getPreviousLocation().getWorld().getName().equals(player.getWorld().getName())) {
+			if (user.getCurrentRegion().isDream()) {
+				player.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
+			} else {
+				player.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
+			}
+		} else {
+			if (Region.getRegion(user.getPreviousLocation().getWorld().getName()).isDream() && user.getCurrentRegion().isDream()) {
+				player.teleport(Bukkit.getWorld("Earth").getSpawnLocation());
+			} else if (!Region.getRegion(user.getPreviousLocation().getWorld().getName()).isDream() && !user.getCurrentRegion().isDream()) {
+				player.teleport(Bukkit.getWorld(user.getDreamPlanet().getWorldName()).getSpawnLocation());
+			} else {
+				player.teleport(user.getPreviousLocation());
+			}
+		}
+		user.setPreviousLocation(location);
+		SblockEvents.getEvents().fakeWakeUp(player);
 	}
 }

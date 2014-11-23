@@ -33,7 +33,7 @@ public class PacketListener extends PacketAdapter {
 	public void onPacketReceiving(PacketEvent event) {
 		if (event.getPacket().getType() == PacketType.Play.Client.ENTITY_ACTION) {
 			if (event.getPacket().getIntegers().read(1) == 3
-					&& SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
+					&& SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getUniqueId())) {
 				event.setCancelled(true);
 				SblockEvents.getEvents().fakeWakeUp(event.getPlayer());
 			}
