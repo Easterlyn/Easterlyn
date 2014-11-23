@@ -56,7 +56,7 @@ public class CommandInformationCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (args.length == 0 || args.length > 1) {
+		if (!sender.hasPermission(this.getPermission()) || args.length == 0 || args.length > 1) {
 			return ImmutableList.of();
 		}
 		args[0] = args[0].toLowerCase();

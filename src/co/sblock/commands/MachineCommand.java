@@ -1,7 +1,12 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Icon;
@@ -62,5 +67,44 @@ public class MachineCommand extends SblockCommand {
 		return true;
 	}
 
-	// TODO tab completion
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (!(sender instanceof Player)) {
+			return ImmutableList.of("NoConsoleSupport");
+		}
+		if (!sender.hasPermission(this.getPermission()) || args.length < 1 || args.length > 2) {
+			return ImmutableList.of();
+		}
+		ArrayList<String> matches = new ArrayList<>();
+		args[0] = args[0].toLowerCase();
+		if (args.length == 1) {
+			String argument = "get";
+			if (argument.startsWith(args[0])) {
+				matches.add(argument);
+			}
+			argument = "icon";
+			if (argument.startsWith(args[0])) {
+				matches.add(argument);
+			}
+			return matches;
+		}
+		args[1] = args[1].toUpperCase();
+		if (args[0].equals("get")) {
+			for (MachineType type : MachineType.values()) {
+				if (type.name().startsWith(args[1])) {
+					matches.add(type.name());
+				}
+			}
+			return matches;
+		}
+		if (args[0].equals("icon")) {
+			for (Icon i : Icon.values()) {
+				if (i.getInstaller() != null && i.name().startsWith(args[1])) {
+					matches.add(i.name());
+				}
+			}
+			return matches;
+		}
+		return matches;
+	}
 }

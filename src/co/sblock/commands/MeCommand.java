@@ -1,8 +1,17 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
+
+import com.google.common.collect.ImmutableList;
+
+import co.sblock.users.User;
+import co.sblock.users.UserManager;
 
 /**
  * SblockCommand for performing an emote.
@@ -30,5 +39,23 @@ public class MeCommand extends SblockCommand {
 		return true;
 	}
 
-	// TODO if arg == 0 && char at 0 is @ tab complete with channels
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (!(sender instanceof Player)) {
+			return ImmutableList.of("NoConsoleSupport");
+		}
+ 		if (args.length != 1 || !args[0].isEmpty() && args[0].charAt(0) != '@') {
+			return super.tabComplete(sender, alias, args);
+		}
+		User user = UserManager.getUser(((Player) sender).getUniqueId());
+		ArrayList<String> matches = new ArrayList<>();
+		String toMatch = args[0].substring(1);
+		for (String s : user.getListening()) {
+			if (StringUtil.startsWithIgnoreCase(s, toMatch)) {
+				matches.add('@' + s);
+			}
+		}
+		return matches;
+	}
 }

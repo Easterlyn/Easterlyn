@@ -55,7 +55,7 @@ public class ForceChannelCommand extends SblockCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-		if (args.length == 0 || args.length > 2) {
+		if (!sender.hasPermission(this.getPermission()) || args.length == 0 || args.length > 2) {
 			return ImmutableList.of();
 		}
 		if (args.length == 2) {

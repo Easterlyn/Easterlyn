@@ -8,6 +8,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
 
+import com.google.common.collect.ImmutableList;
+
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.Channel;
@@ -45,7 +47,10 @@ public class MegaHalCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (args.length != 1) {
+ 		if (!sender.hasPermission(this.getPermission()) || args.length > 2) {
+			return ImmutableList.of();
+		}
+		if (args.length == 2) {
 			return super.tabComplete(sender, alias, args);
 		} else {
 			ArrayList<String> matches = new ArrayList<>();

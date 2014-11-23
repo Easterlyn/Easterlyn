@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.chat.SblockChat;
 
 /**
- * 
+ * SblockCommand for using the halculate function just for yourself.
  * 
  * @author Jikoo
  */

@@ -48,6 +48,9 @@ public class AspectWarpCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
+		if (!sender.hasPermission(this.getPermission())) {
+			return ImmutableList.of();
+		}
 		if (args.length == 2) {
 			return super.tabComplete(sender, alias, args);
 		}

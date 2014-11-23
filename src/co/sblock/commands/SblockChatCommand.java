@@ -34,6 +34,8 @@ public class SblockChatCommand extends SblockCommand {
 	private final String[] primaryArgs;
 	private final String[] nickArgs;
 	private final String[] channelTypes;
+	private final String[] channelMod;
+	private final String[] channelOwner;
 
 	public SblockChatCommand() {
 		super("sc");
@@ -42,6 +44,8 @@ public class SblockChatCommand extends SblockCommand {
 		primaryArgs = new String[] {"c", "l", "listen", "leave", "list", "listall", "new", "nick", "suppress"};
 		nickArgs = new String[] {"list", "set", "remove"};
 		channelTypes = new String[] {"NORMAL", "NICK", "RP"};
+		channelMod = new String[] {"info", "getlisteners", "kick", "ban", "approve", "deapprove"};
+		channelOwner = new String[] {"mod", "unban", "disband"};
 	}
 
 	@Override
@@ -175,12 +179,64 @@ public class SblockChatCommand extends SblockCommand {
 		}
 		if (args[0].equals("channel")) {
 			if (!user.getCurrent().isModerator(user)) {
-				matches.add("info");
+				if (args.length == 2) {
+					matches.add("info");
+				}
 				return matches;
 			}
-			// TODO finish channel
+			if (args.length > 4) {
+				return ImmutableList.of();
+			}
+			args[1] = args[1].toLowerCase();
+			if (args.length == 2) {
+				for (String argument : channelMod) {
+					if (argument.startsWith(args[1])) {
+						matches.add(argument);
+					}
+				}
+				if (!user.getCurrent().isOwner(user)) {
+					return matches;
+				}
+				for (String argument : channelOwner) {
+					if (argument.startsWith(args[1])) {
+						matches.add(argument);
+					}
+				}
+				return matches;
+			}
+			if (args.length == 3) {
+				for (int i = 2; i < channelMod.length; i++) {
+					if (channelMod[i].equals(args[1])) {
+						return super.tabComplete(sender, alias, args);
+					}
+				}
+				if (!user.getCurrent().isOwner(user)) {
+					return ImmutableList.of();
+				}
+				if (args[1].equals("mod")) {
+					String argument = "add";
+					if (argument.startsWith(args[0])) {
+						matches.add(argument);
+					}
+					argument = "remove";
+					if (argument.startsWith(args[0])) {
+						matches.add(argument);
+					}
+					return matches;
+				}
+				if (args[1].equals("unban")) {
+					return super.tabComplete(sender, alias, args);
+				}
+				return ImmutableList.of();
+			}
+			args[2] = args[2].toLowerCase();
+			if (args.length == 4 && args[1].equals("mod")
+					&& (args[2].equals("add") || args[2].equals("remove"))
+					&& user.getCurrent().isOwner(user)) {
+				return super.tabComplete(sender, alias, args);
+			}
+			return ImmutableList.of();
 		}
-		// TODO global? Maybe.
 		return ImmutableList.of();
 	}
 
