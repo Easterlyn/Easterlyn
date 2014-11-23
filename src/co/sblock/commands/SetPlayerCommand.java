@@ -66,7 +66,7 @@ public class SetPlayerCommand extends SblockCommand {
 		if (args.length == 2) {
 			for (String argument : primaryArgs) {
 				if (argument.startsWith(args[1])) {
-					matches.add(args[1]);
+					matches.add(argument);
 				}
 			}
 			return matches;
