@@ -37,8 +37,7 @@ public class HalculatorCommand extends SblockCommand {
 	}
 
 	@Override
-	public List<String> tabComplete(CommandSender arg0, String arg1, String[] arg2) {
-		// No tab completion.
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
 		return ImmutableList.of();
 	}
 }

@@ -1,10 +1,17 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.BanList.Type;
 import org.bukkit.command.CommandSender;
+import org.bukkit.util.StringUtil;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * SblockCommand for undoing a dual IP and UUID ban.
@@ -46,5 +53,25 @@ public class UnSuperBanCommand extends SblockCommand {
 			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + args[0] + " has been unbanned.");
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (args.length > 1 || !sender.hasPermission(this.getPermission())) {
+			return ImmutableList.of();
+		}
+		ArrayList<String> matches = new ArrayList<>();
+		for (BanEntry ban : Bukkit.getBanList(Type.NAME).getBanEntries()) {
+			if (StringUtil.startsWithIgnoreCase(ban.getTarget(), ban.getTarget())) {
+				matches.add(ban.getTarget());
+			}
+		}
+		for (BanEntry ban : Bukkit.getBanList(Type.IP).getBanEntries()) {
+			if (StringUtil.startsWithIgnoreCase(ban.getTarget(), ban.getTarget())) {
+				matches.add(ban.getTarget());
+			}
+		}
+		return matches;
 	}
 }

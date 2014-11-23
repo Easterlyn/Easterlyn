@@ -570,6 +570,6 @@ public abstract class Channel {
 		return ChatColor.GOLD + this.getName() + ChatColor.GREEN + ": Access: " + ChatColor.GOLD
 				+ this.getAccess() + ChatColor.GREEN + " Type: " + ChatColor.GOLD + this.getType()
 				+ "\n" + ChatColor.GREEN + "Owner: " + ChatColor.GOLD
-				+ Bukkit.getOfflinePlayer(this.getOwner()).getName();
+				+ (this.owner != null ? Bukkit.getOfflinePlayer(this.getOwner()).getName() : "Sblock default");
 	}
 }

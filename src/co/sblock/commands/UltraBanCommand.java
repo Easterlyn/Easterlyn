@@ -1,9 +1,13 @@
 package co.sblock.commands;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.data.SblockData;
 import co.sblock.users.User;
@@ -39,5 +43,14 @@ public class UltraBanCommand extends SblockCommand {
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + args[0]);
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ps delete " + args[0]);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (args.length < 2) {
+			return super.tabComplete(sender, alias, args);
+		}
+		return ImmutableList.of();
 	}
 }

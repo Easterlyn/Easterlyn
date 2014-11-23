@@ -1,9 +1,15 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
@@ -26,9 +32,6 @@ public class ForceChannelCommand extends SblockCommand {
 		this.setPermissionMessage("Try /sc c <channel>");
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.commands.SblockCommand#execute(org.bukkit.command.CommandSender, java.lang.String, java.lang.String[])
-	 */
 	@Override
 	public boolean execute(CommandSender sender, String label, String[] args) {
 		if (args.length < 2) {
@@ -50,5 +53,21 @@ public class ForceChannelCommand extends SblockCommand {
 		return true;
 	}
 
-	// TODO tab complete channels for arg 0
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		if (args.length == 0 || args.length > 2) {
+			return ImmutableList.of();
+		}
+		if (args.length == 2) {
+			return super.tabComplete(sender, alias, args);
+		} else {
+			ArrayList<String> matches = new ArrayList<>();
+			for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
+				if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
+					matches.add(channel);
+				}
+			}
+			return matches;
+		}
+	}
 }

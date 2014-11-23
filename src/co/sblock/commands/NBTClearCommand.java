@@ -1,10 +1,13 @@
 package co.sblock.commands;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.utilities.inventory.InventoryUtils;
 
@@ -33,5 +36,10 @@ public class NBTClearCommand extends SblockCommand {
 		player.setItemInHand(InventoryUtils.cleanNBT(player.getItemInHand()));
 		player.sendMessage(ChatColor.GREEN + "NBT cleared!");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		return ImmutableList.of();
 	}
 }

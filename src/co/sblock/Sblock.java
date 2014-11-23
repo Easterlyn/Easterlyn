@@ -27,6 +27,8 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
+import com.google.common.collect.ImmutableList;
+
 import co.sblock.chat.SblockChat;
 import co.sblock.commands.SblockCommand;
 import co.sblock.data.SblockData;
@@ -293,6 +295,17 @@ public class Sblock extends JavaPlugin {
 	 */
 	public SimpleCommandMap getCommandMap() {
 		return cmdMap;
+	}
+
+	/**
+	 * Gets a Set of the names of all registered commands.
+	 */
+	public List<String> getAllCommandAliases() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Field field = cmdMap.getClass().getDeclaredField("knownCommands");
+		field.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
+		return ImmutableList.copyOf(cmdMapKnownCommands.keySet());
 	}
 
 	/**

@@ -1,11 +1,14 @@
 package co.sblock.commands;
 
+import java.util.List;
+
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
@@ -52,5 +55,10 @@ public class HalCommand extends SblockCommand {
 			UserManager.getUser(p.getUniqueId()).rawHighlight(announcement);
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		return ImmutableList.of();
 	}
 }

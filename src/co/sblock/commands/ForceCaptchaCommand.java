@@ -1,8 +1,12 @@
 package co.sblock.commands;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.utilities.captcha.Captcha;
 
@@ -32,5 +36,10 @@ public class ForceCaptchaCommand extends SblockCommand {
 		p.getInventory().remove(item);
 		p.getInventory().addItem(Captcha.itemToCaptcha(item));
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		return ImmutableList.of();
 	}
 }

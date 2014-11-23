@@ -1,9 +1,14 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 
@@ -46,5 +51,25 @@ public class CommandInformationCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.DARK_AQUA + "Class: " + ChatColor.YELLOW + command.getClass().getName());
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (args.length == 0 || args.length > 1) {
+			return ImmutableList.of();
+		}
+		args[0] = args[0].toLowerCase();
+		List<String> matches = new ArrayList<>();
+		try {
+			for (String command : Sblock.getInstance().getAllCommandAliases()) {
+				if (command.startsWith(args[0])) {
+					matches.add(command);
+				}
+			}
+			return matches;
+		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+			return ImmutableList.of();
+		}
 	}
 }

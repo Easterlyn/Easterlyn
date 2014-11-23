@@ -32,7 +32,7 @@ public class ColourCommand extends SblockCommand {
 	}
 
 	@Override
-	public List<String> tabComplete(CommandSender sender, String label, String[] args) {
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
 		return ImmutableList.of();
 	}
 }

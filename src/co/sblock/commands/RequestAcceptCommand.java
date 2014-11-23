@@ -1,9 +1,13 @@
 package co.sblock.commands;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.users.SblockUsers;
 import co.sblock.users.User;
@@ -50,5 +54,10 @@ public class RequestAcceptCommand extends SblockCommand {
 		sender.sendMessage(ChatColor.YELLOW + "Accepted " + ChatColor.GREEN + u1.getPlayerName() + ChatColor.YELLOW + "'s request!");
 		u1.getPlayer().sendMessage(ChatColor.GREEN + sender.getName() + ChatColor.YELLOW + " accepted your request!");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		return ImmutableList.of();
 	}
 }

@@ -1,5 +1,7 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -7,6 +9,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
@@ -26,10 +31,17 @@ import co.sblock.utilities.Log;
  */
 public class SblockChatCommand extends SblockCommand {
 
+	private final String[] primaryArgs;
+	private final String[] nickArgs;
+	private final String[] channelTypes;
+
 	public SblockChatCommand() {
 		super("sc");
 		this.setDescription("SblockChat's main command");
 		this.setUsage("/sc");
+		primaryArgs = new String[] {"c", "l", "listen", "leave", "list", "listall", "new", "nick", "suppress"};
+		nickArgs = new String[] {"list", "set", "remove"};
+		channelTypes = new String[] {"NORMAL", "NICK", "RP"};
 	}
 
 	@Override
@@ -45,7 +57,7 @@ public class SblockChatCommand extends SblockCommand {
 		}
 
 		args[0] = args[0].toLowerCase();
-		if (args[0].equals("c") || args[0].equals("f") || args[0].equals("focus")) {
+		if (args[0].equals("c")) {
 			return scC(user, args);
 		} else if (args[0].equals("l") || args[0].equals("listen")) {
 			return scL(user, args);
@@ -73,7 +85,104 @@ public class SblockChatCommand extends SblockCommand {
 		return true;
 	}
 
-	// TODO tab complete
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (!(sender instanceof Player) || args.length == 0) {
+			return ImmutableList.of();
+		}
+		args[0] = args[0].toLowerCase();
+		ArrayList<String> matches = new ArrayList<>();
+		User user = UserManager.getUser(((Player) sender).getUniqueId());
+		if (args.length == 1) {
+			for (String subcommand : primaryArgs) {
+				if (subcommand.startsWith(args[0])) {
+					matches.add(subcommand);
+				}
+			}
+			String string = "channel";
+			if (user.getCurrent().isModerator(user) && string.startsWith(args[0])) {
+				matches.add(string);
+			}
+			return matches;
+		}
+		if (args[0].equals("c") || args[0].equals("l") || args[0].equals("listen")) {
+			if (args.length == 2) {
+				for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
+					if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
+						matches.add(channel);
+					}
+				}
+				return matches;
+			}
+			return ImmutableList.of();
+		}
+		if (args[0].equals("leave")) {
+			if (args.length == 2) {
+				for (String channel : user.getListening()) {
+					if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
+						matches.add(channel);
+					}
+				}
+				return matches;
+			}
+			return ImmutableList.of();
+		}
+		if (args[0].equals("nick")) {
+			args[1] = args[1].toLowerCase();
+			if (args.length == 2) {
+				for (String subcommand : nickArgs) {
+					if (subcommand.startsWith(args[1])) {
+						matches.add(subcommand);
+					}
+				}
+				return matches;
+			}
+			if (args.length == 3 && args[1].equals("set") && user.getCurrent().getType() == ChannelType.RP) {
+				args[2] = args[2].toUpperCase();
+				for (CanonNicks nick : CanonNicks.values()) {
+					if (nick != CanonNicks.SERKITFEATURE && nick.name().startsWith(args[2])) {
+						matches.add(nick.name());
+					}
+				}
+				return matches;
+			}
+			return ImmutableList.of();
+		}
+		if (args[0].equals("new")) {
+			if (args.length == 2) {
+				matches.add("#<channelname>");
+				return matches;
+			}
+			if (args.length == 3) {
+				args[2] = args[2].toUpperCase();
+				for (AccessLevel access : AccessLevel.values()) {
+					if (access.name().startsWith(args[2])) {
+						matches.add(access.name());
+					}
+				}
+				return matches;
+			}
+			if (args.length == 4) {
+				args[3] = args[3].toUpperCase();
+				for (String type : channelTypes) {
+					if (type.startsWith(args[3])) {
+						matches.add(type);
+					}
+				}
+				return matches;
+			}
+			return ImmutableList.of();
+		}
+		if (args[0].equals("channel")) {
+			if (!user.getCurrent().isModerator(user)) {
+				matches.add("info");
+				return matches;
+			}
+			// TODO finish channel
+		}
+		// TODO global? Maybe.
+		return ImmutableList.of();
+	}
 
 	private boolean scC(User user, String[] args) {
 		if (args.length == 1) {
@@ -185,6 +294,7 @@ public class SblockChatCommand extends SblockCommand {
 					AccessLevel.getAccessLevel(args[2]), user.getUUID(), ChannelType.getType(args[3]));
 			Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
 			user.sendMessage(ChatMsgs.onChannelCreation(c));
+			user.setCurrent(c);
 		}
 		return true;
 	}

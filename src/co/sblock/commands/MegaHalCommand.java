@@ -1,8 +1,12 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.util.StringUtil;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.SblockChat;
@@ -38,5 +42,19 @@ public class MegaHalCommand extends SblockCommand {
 		return true;
 	}
 
-	// TODO tab complete channel for 0, perhaps amusing ones for 1?
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (args.length != 1) {
+			return super.tabComplete(sender, alias, args);
+		} else {
+			ArrayList<String> matches = new ArrayList<>();
+			for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
+				if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
+					matches.add(channel);
+				}
+			}
+			return matches;
+		}
+	}
 }

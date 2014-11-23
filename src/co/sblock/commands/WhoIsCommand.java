@@ -1,9 +1,13 @@
 package co.sblock.commands;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.data.SblockData;
@@ -39,5 +43,14 @@ public class WhoIsCommand extends SblockCommand {
 		User u = UserManager.getUser(p.getUniqueId());
 		sender.sendMessage(u.toString());
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		if (args.length != 1) {
+			return ImmutableList.of();
+		} else {
+			return super.tabComplete(sender, alias, args);
+		}
 	}
 }

@@ -72,5 +72,5 @@ public class RequestServerCommand extends SblockCommand {
 		return true;
 	}
 
-	// TODO tab completion only for valid targets?
+	// TODO only tab complete arg0, tab complete only users with server installed, only if sender has client
 }

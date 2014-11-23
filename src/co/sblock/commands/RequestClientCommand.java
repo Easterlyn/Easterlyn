@@ -71,4 +71,6 @@ public class RequestClientCommand extends SblockCommand {
 				+ ChatColor.AQUA + "/declinerequest");
 		return true;
 	}
+
+	// TODO only tab complete arg0, tab complete only users with client installed, only if sender has server
 }

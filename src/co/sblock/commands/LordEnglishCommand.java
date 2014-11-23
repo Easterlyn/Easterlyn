@@ -38,5 +38,4 @@ public class LordEnglishCommand extends SblockCommand {
 		Bukkit.broadcastMessage(leOut.substring(0, leOut.length() - 1 > 0 ? leOut.length() - 1 : 0));
 		return true;
 	}
-
 }

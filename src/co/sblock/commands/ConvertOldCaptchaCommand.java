@@ -1,8 +1,12 @@
 package co.sblock.commands;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.utilities.captcha.Captcha;
 
@@ -33,5 +37,10 @@ public class ConvertOldCaptchaCommand extends SblockCommand {
 			player.sendMessage(ChatColor.RED + "No old captchacards found!");
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		return ImmutableList.of();
 	}
 }

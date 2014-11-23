@@ -1,9 +1,13 @@
 package co.sblock.commands;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * SblockCommand for getting a player's ping.
@@ -37,5 +41,14 @@ public class PingCommand extends SblockCommand {
 		sender.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.YELLOW +"'s ping is " +
 			((org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer) target).getHandle().ping + "ms!");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		if (args.length != 1 || !sender.hasPermission("group.helper")) {
+			return ImmutableList.of();
+		} else {
+			return super.tabComplete(sender, alias, args);
+		}
 	}
 }

@@ -6,9 +6,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Message;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
-import co.sblock.utilities.rawmessages.EscapedElement;
 
 /**
  * SblockCommand for /aether, the command executed to make IRC chat mimic normal channels.
@@ -27,18 +28,19 @@ public class AetherCommand extends SblockCommand {
 
 	@Override
 	public boolean execute(CommandSender sender, String label, String[] args) {
-		// TODO Wrap links and shit so client can click 'em
-		String message = ChatColor.WHITE + "[" + ChatColor.GOLD + "#Aether" + ChatColor.WHITE + "]" + ChatColor.WHITE;
-		if (!args[0].equals(">")) {
-			message += " ";
+		if (args.length < 2) {
+			sender.sendMessage(ChatColor.RED + "Hey Planar, stop faking empty IRC messages.");
+			return true;
 		}
-		message += StringUtils.join(args, ' ');
-		Bukkit.getConsoleSender().sendMessage(message);
-		message = new EscapedElement(message).toString();
+		Message message = new Message(ChatColor.WHITE + args[0].replaceAll("<.*?>", "$1"), StringUtils.join(args, ' ', 1, args.length));
+		message.setChannel(ChannelManager.getChannelManager().getChannel("#Aether"));
+		// Rather than call message.send() and limit recipients to #Aether, this is supposed to be global.
+		// TODO allow Hal features
+		Bukkit.getConsoleSender().sendMessage("[#Aether] " + message.getConsoleMessage());
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			User u = UserManager.getUser(p.getUniqueId());
 			if (!u.isSuppressing()) {
-				u.rawHighlight(message);
+				u.rawHighlight(message.getMessage());
 			}
 		}
 		return true;

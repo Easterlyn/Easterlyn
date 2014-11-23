@@ -1,5 +1,7 @@
 package co.sblock.commands;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.command.CommandSender;
@@ -13,6 +15,7 @@ import co.sblock.Sblock;
 import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.collect.ImmutableList;
 
 /**
  * SblockCommand for riding a firework in style.
@@ -63,5 +66,10 @@ public class CrotchRocketCommand extends SblockCommand {
 			}
 		}, 40L);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		return ImmutableList.of();
 	}
 }

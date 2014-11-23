@@ -1,6 +1,7 @@
 package co.sblock.commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -13,6 +14,8 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * SblockCommand for manipulating item lore and some other meta-related cases.
  * 
@@ -20,15 +23,20 @@ import org.bukkit.inventory.meta.SkullMeta;
  */
 public class LoreCommand extends SblockCommand {
 
+	private final String[] primaryArgs;
+
 	public LoreCommand() {
 		super("lore");
 		this.setDescription("Sblock's lore manipulation command.");
 		this.setUsage("/lore <owner|author|title|name|delete [number|previous args]|clearmeta|add|[set|insert] [number]> <args>");
 		this.setPermission("group.felt");
+		// Don't forget to update delete tab completion if more pre-delete args are added.
+		primaryArgs = new String[] {"owner", "author", "title", "name", "delete", "clearmeta", "add", "set", "insert"};
 	}
 
 	@Override
 	public boolean execute(CommandSender sender, String label, String[] args) {
+		// TODO better help, leather color
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
@@ -76,7 +84,40 @@ public class LoreCommand extends SblockCommand {
 		return false;
 	}
 
-	// TODO tab completion
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (!sender.hasPermission(this.getPermission()) || args.length == 0) {
+			return ImmutableList.of();
+		}
+		if (args.length > 2) {
+			return super.tabComplete(sender, alias, args);
+		}
+		args[0] = args[0].toLowerCase();
+		ArrayList<String> matches = new ArrayList<>();
+		if (args.length == 2) {
+			if (args[0].equals("delete")) {
+				for (int i = 0; i < 4; i++) { // This will need changing if more args are added
+					if (primaryArgs[i].startsWith(args[1].toLowerCase())) {
+						matches.add(primaryArgs[i]);
+					}
+				}
+			}
+			if (args[0].equals("delete") || args[0].equals("set") || args.equals("insert") && args[1].isEmpty()) {
+				matches.add("#");
+				return matches;
+			}
+			return super.tabComplete(sender, alias, args);
+		}
+		if (args.length == 1) {
+			for (String argument : primaryArgs) {
+				if (argument.startsWith(args[0])) {
+					matches.add(argument);
+				}
+			}
+		}
+		return matches;
+	}
 
 	private boolean owner(Player player, ItemStack hand, String[] args) {
 		if (hand.getType() != Material.SKULL_ITEM && hand.getDurability() != 3) {
