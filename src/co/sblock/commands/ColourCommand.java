@@ -1,5 +1,6 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
@@ -13,12 +14,15 @@ import co.sblock.chat.ColorDef;
  * 
  * @author Jikoo
  */
-public class ColorCommand extends SblockCommand {
+public class ColourCommand extends SblockCommand {
 
-	public ColorCommand() {
-		super("color");
+	public ColourCommand() {
+		super("colour");
 		this.setDescription("List all colors.");
-		this.setUsage("&c/color");
+		this.setUsage("&c/colour");
+		ArrayList<String> aliases = new ArrayList<>();
+		aliases.add("color");
+		this.setAliases(aliases);
 	}
 
 	@Override
@@ -28,8 +32,7 @@ public class ColorCommand extends SblockCommand {
 	}
 
 	@Override
-	public List<String> tabComplete(CommandSender arg0, String arg1, String[] arg2) {
-		// No tab completion.
+	public List<String> tabComplete(CommandSender sender, String label, String[] args) {
 		return ImmutableList.of();
 	}
 }
