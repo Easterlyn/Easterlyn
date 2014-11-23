@@ -3,6 +3,7 @@ package co.sblock.events.listeners;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -10,9 +11,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import co.sblock.Sblock;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Computer;
@@ -47,7 +53,7 @@ public class InventoryClickListener implements Listener {
 			}
 		}
 
-		// Finds inventories other than chests opened by Machines
+		// Finds inventories of physical blocks opened by Machines
 		if (ih != null && ih instanceof BlockState) {
 			m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
 			if (m != null) {
@@ -131,8 +137,7 @@ public class InventoryClickListener implements Listener {
 	}
 
 	// doubleclick gather
-	private void itemGather(InventoryClickEvent event) {
-	}
+	private void itemGather(InventoryClickEvent event) {}
 
 	// remove top
 	private void itemRemoveTop(InventoryClickEvent event) {}
@@ -193,9 +198,7 @@ public class InventoryClickListener implements Listener {
 	}
 
 	// add bottom
-	private void itemAddBottom(InventoryClickEvent event) {
-		
-	}
+	private void itemAddBottom(InventoryClickEvent event) {}
 
 	// move bottom to top
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
@@ -250,5 +253,60 @@ public class InventoryClickListener implements Listener {
 
 		// Captcha: attempt to captcha item in clicked slot
 		Captcha.handleCaptcha(event);
+	}
+
+	/**
+	 * EventHandler for inventory clicks that are guaranteed to have occurred.
+	 * 
+	 * @param event
+	 */
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onInventoryClickHasOccurred(InventoryClickEvent event) {
+		final Inventory toTest = event.getInventory();
+
+		if (toTest.getType() != InventoryType.ANVIL
+				|| !((Player) event.getWhoClicked()).hasPermission("sblock.blaze")) {
+			return;
+		}
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				doCombine((AnvilInventory) toTest);
+			}
+		}.runTask(Sblock.getInstance());
+	}
+
+	private void doCombine(AnvilInventory toTest) {
+		ItemStack firstSlot = toTest.getItem(0);
+		ItemStack secondSlot = toTest.getItem(1);
+
+		if (firstSlot == null || secondSlot == null || firstSlot.getType() != Material.SADDLE
+				|| secondSlot.getType() != Material.ENCHANTED_BOOK) {
+			return;
+		}
+
+		ItemStack maybeSaddle = tryCombineBookSaddle(secondSlot, firstSlot);
+
+		if (maybeSaddle != null) {
+			toTest.setItem(2, maybeSaddle);
+		}
+	}
+
+	private ItemStack tryCombineBookSaddle(ItemStack book, ItemStack saddle) {
+		int fireAspectLevel = 0;
+
+		if (book.getItemMeta() instanceof EnchantmentStorageMeta) {
+			EnchantmentStorageMeta esm = (EnchantmentStorageMeta) book.getItemMeta();
+
+			fireAspectLevel = esm.getStoredEnchantLevel(Enchantment.ARROW_FIRE);
+		}
+
+		if (fireAspectLevel > 0) {
+			ItemStack blazingSaddle = new ItemStack(Material.SADDLE, 1);
+			blazingSaddle.addUnsafeEnchantment(Enchantment.ARROW_FIRE, 1);
+			return blazingSaddle;
+		}
+		return null;
 	}
 }
