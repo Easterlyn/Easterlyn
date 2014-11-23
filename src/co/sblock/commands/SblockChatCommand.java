@@ -108,7 +108,7 @@ public class SblockChatCommand extends SblockCommand {
 		if (args[0].equals("c") || args[0].equals("l") || args[0].equals("listen")) {
 			if (args.length == 2) {
 				for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
-					if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
+					if (StringUtil.startsWithIgnoreCase(channel, args[1])) {
 						matches.add(channel);
 					}
 				}
@@ -119,7 +119,7 @@ public class SblockChatCommand extends SblockCommand {
 		if (args[0].equals("leave")) {
 			if (args.length == 2) {
 				for (String channel : user.getListening()) {
-					if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
+					if (StringUtil.startsWithIgnoreCase(channel, args[1])) {
 						matches.add(channel);
 					}
 				}

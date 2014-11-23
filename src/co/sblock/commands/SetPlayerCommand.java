@@ -78,6 +78,7 @@ public class SetPlayerCommand extends SblockCommand {
 					matches.add(userclass.name());
 				}
 			}
+			return matches;
 		}
 		if (args[1].equals("aspect") && args.length == 3) {
 			args[2] = args[2].toUpperCase();
@@ -86,6 +87,7 @@ public class SetPlayerCommand extends SblockCommand {
 					matches.add(aspect.name());
 				}
 			}
+			return matches;
 		}
 		if (args[1].equals("land") && args.length == 3) {
 			args[2] = args[2].toUpperCase();
@@ -94,6 +96,7 @@ public class SetPlayerCommand extends SblockCommand {
 					matches.add(land);
 				}
 			}
+			return matches;
 		}
 		if (args[1].equals("dream") && args.length == 3) {
 			args[2] = args[2].toUpperCase();
@@ -102,6 +105,7 @@ public class SetPlayerCommand extends SblockCommand {
 					matches.add(dream);
 				}
 			}
+			return matches;
 		}
 		if (args[1].equals("progression") && args.length == 3) {
 			args[2] = args[2].toUpperCase();
@@ -110,6 +114,7 @@ public class SetPlayerCommand extends SblockCommand {
 					matches.add(state.name());
 				}
 			}
+			return matches;
 		}
 		return ImmutableList.of();
 	}
