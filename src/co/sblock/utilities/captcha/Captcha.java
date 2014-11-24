@@ -53,21 +53,31 @@ public class Captcha extends Module {
 	 * @return the Captchacard representing by this ItemStack
 	 */
 	public static ItemStack itemToCaptcha(ItemStack item) {
-		if (isCard(item)) {
-			// prevents Captchadex funkiness
-			return item;
-		}
 		ItemStack card = blankCaptchaCard();
 		ItemMeta cardMeta = card.getItemMeta();
-		ItemMeta iM = item.getItemMeta();
+		ItemMeta meta = item.getItemMeta();
 		ArrayList<String> cardLore = new ArrayList<String>();
-		cardLore.add(ChatColor.DARK_AQUA.toString() + item.getAmount() + " "
-				+ (iM.hasDisplayName() ? iM.getDisplayName() : InventoryUtils.getMaterialDataName(item.getType(), item.getDurability())));
+		StringBuilder name = new StringBuilder().append(ChatColor.DARK_AQUA).append(item.getAmount()).append(' ');
+		if (meta.hasDisplayName() && !InventoryUtils.isMisleadinglyNamed(meta.getDisplayName(), item.getType(), item.getDurability())) {
+			if (isCaptcha(item)) {
+				name.append("Captcha of ").append(meta.getLore().get(0));
+			} else {
+				name.append(meta.getDisplayName());
+			}
+		} else {
+			name.append(InventoryUtils.getMaterialDataName(item.getType(), item.getDurability()));
+		}
+		cardLore.add(name.toString());
 		if (item.getType().getMaxDurability() > 0) {
 			cardLore.add("Durability: " + ChatColor.DARK_AQUA + (item.getType().getMaxDurability() - item.getDurability())
 					+ ChatColor.YELLOW + "/" + ChatColor.DARK_AQUA + item.getType().getMaxDurability());
 		}
-		String serialization = InventoryUtils.serializeIntoFormattingCodes(item);
+		StringBuilder serialization = new StringBuilder();
+		if (CruxiteDowel.expCost(item) == Integer.MAX_VALUE) {
+			cardLore.add(ChatColor.DARK_RED + "Unpunchable");
+			serialization.append(ChatColor.MAGIC);
+		}
+		serialization.append(InventoryUtils.serializeIntoFormattingCodes(item));
 		int start = 0;
 		for (int i = 1024; start < serialization.length(); i += 1024) {
 			if (i > serialization.length()) {
@@ -109,6 +119,12 @@ public class Captcha extends Module {
 	 */
 	public static ItemStack captchaToPunch(ItemStack is) {
 		is = convert(is);
+		for (String lore : is.getItemMeta().getLore()) {
+			if (lore.startsWith(ChatColor.MAGIC.toString())) {
+				// New "secret" unpunchable demarkation is serialized hex prepended by magic
+				return is;
+			}
+		}
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName("Punchcard");
 		List<String> newlore = new ArrayList<>();
@@ -155,6 +171,7 @@ public class Captcha extends Module {
 		for (int j = 1; j < data.length; j++) {
 			if (data[j].startsWith(ChatColor.MAGIC.toString())) {
 				data[j] = data[j].substring(2);
+				break;
 			}
 		}
 		if (data[0].startsWith(ChatColor.DARK_AQUA.toString())) {
@@ -330,20 +347,19 @@ public class Captcha extends Module {
 		if (!isCard(card1) || (card2 != null && !isPunch(card2))) {
 			return null;
 		}
-		ItemStack result = new ItemStack(Material.BOOK);
+		ItemStack item = captchaToItem(card1);
 		ArrayList<String> lore = new ArrayList<>();
-		lore.addAll(card1.getItemMeta().getLore());
+		lore.addAll(item.getItemMeta().getLore());
 		if (card2 != null) {
-			for (String s : card2.getItemMeta().getLore()) {
-				if (s.length() > 1 && s.charAt(0) == '>') {
-					lore.add(s);
-				}
-			}
+			lore.addAll(captchaToItem(card2).getItemMeta().getLore());
 		}
-		ItemMeta im = result.getItemMeta();
+		ItemMeta im = item.getItemMeta();
 		im.setLore(lore);
-		im.setDisplayName("Punchcard");
-		result.setItemMeta(im);
+		item.setItemMeta(im);
+		ItemStack result = captchaToPunch(itemToCaptcha(item));
+		if (result.getItemMeta().getDisplayName().equals("Captchacard")) {
+			return null;
+		}
 		return result;
 	}
 
@@ -359,9 +375,9 @@ public class Captcha extends Module {
 		if (!isBlankCaptcha(event.getCurrentItem())) {
 			return;
 		}
+		boolean usedCaptcha = isUsedCaptcha(event.getCursor());
 		ItemStack captcha = null;
-		if (CruxiteDowel.expCost(event.getCursor()) == Integer.MAX_VALUE
-				|| InventoryUtils.isUniqueItem(event.getCursor())) {
+		if (InventoryUtils.isUniqueItem(event.getCursor()) && !usedCaptcha) {
 			// Invalid captcha objects
 			if (!event.getCursor().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Computers can (and should) be alchemized.
@@ -370,6 +386,10 @@ public class Captcha extends Module {
 				captcha = createLoreCard("Computer");
 			}
 		}
+//		if (usedCaptcha && event.getCursor().getItemMeta().getLore().get(0).contains("Captcha of " + ChatColor.AQUA)) {
+//			// Double captchas are fine, triple captchas hurt client. An octuple may have enough lines to crash the server. I'd rather not find out.
+//			return;
+//		}
 		Player p = (Player) event.getWhoClicked();
 		if (captcha == null) {
 			captcha = itemToCaptcha(event.getCursor());
@@ -416,11 +436,13 @@ public class Captcha extends Module {
 
 	private static void hotbarCaptcha(InventoryClickEvent event) {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
-		ItemStack captcha;
+		ItemStack captcha = null;
+		boolean usedCaptcha = isUsedCaptcha(event.getCurrentItem());
 		if (!isBlankCaptcha(hotbar) || event.getCurrentItem() == null
 				|| event.getCurrentItem().getType() == Material.AIR
+				|| isBlankCaptcha(event.getCurrentItem())
 				|| CruxiteDowel.expCost(event.getCurrentItem()) == Integer.MAX_VALUE
-				|| InventoryUtils.isUniqueItem(event.getCurrentItem())) {
+				|| InventoryUtils.isUniqueItem(event.getCurrentItem()) && !usedCaptcha) {
 			// Invalid captcha objects
 			if (!event.getCursor().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Computers can (and should) be alchemized.
@@ -429,7 +451,13 @@ public class Captcha extends Module {
 				captcha = createLoreCard("Computer");
 			}
 		}
-		captcha = itemToCaptcha(event.getCurrentItem());
+//		if (usedCaptcha && event.getCurrentItem().getItemMeta().getLore().get(0).contains("Captcha of " + ChatColor.AQUA)) {
+//			// Double captchas are fine, triple captchas hurt client
+//			return;
+//		}
+		if (captcha == null) {
+			captcha = itemToCaptcha(event.getCurrentItem());
+		}
 		event.setResult(Result.DENY);
 		event.getView().getBottomInventory().setItem(event.getHotbarButton(), InventoryUtils.decrement(hotbar, 1));
 

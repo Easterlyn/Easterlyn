@@ -61,6 +61,9 @@ public class CruxiteDowel {
 
 	public static int expCost(ItemStack toCreate) {
 		int cost = getGrist().get(toCreate.getType().name());
+		if (Captcha.isCaptcha(toCreate)) {
+			cost = Integer.MAX_VALUE;
+		}
 		if (cost == Integer.MAX_VALUE) {
 			// Item cannot be made with grist, we're done here.
 			return cost;

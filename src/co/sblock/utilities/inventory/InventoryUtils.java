@@ -29,6 +29,7 @@ import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import com.google.common.collect.HashMultimap;
 import com.sun.corba.se.impl.orbutil.HexOutputStream;
 
 import co.sblock.Sblock;
@@ -44,6 +45,7 @@ import co.sblock.utilities.captcha.CruxiteDowel;
 public class InventoryUtils {
 
 	private static HashMap<String, String> items;
+	private static HashMultimap<String, String> itemsReverse;
 	private static HashSet<ItemStack> uniques;
 
 	private static HashMap<String, String> getItems() {
@@ -52,6 +54,7 @@ public class InventoryUtils {
 		}
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(Sblock.getInstance().getResource("items.tsv")))) {
 			items = new HashMap<>();
+			itemsReverse = HashMultimap.create();
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
@@ -59,7 +62,9 @@ public class InventoryUtils {
 					continue;
 				}
 				String[] column = line.split("\t");
-				items.put(column[0] + ":" + column[1], column[2]);
+				String id = column[0] + ":" + column[1];
+				items.put(id, column[2]);
+				itemsReverse.put(column[2], id);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load items from items.tsv!", e);
@@ -76,6 +81,20 @@ public class InventoryUtils {
 			return "Potion";
 		}
 		return items.get(m.getId() + ":" + 0);
+	}
+
+	@SuppressWarnings("deprecation")
+	public static boolean isMisleadinglyNamed(String name, Material m, short durability) {
+		getItems();
+		String id = m.getId() + ":" + durability;
+		boolean match = false;
+		for (String storedId : itemsReverse.get(name)) {
+			if (storedId.equals(id)) {
+				return false;
+			}
+			match = true;
+		}
+		return match;
 	}
 
 	public static String serializeItemStack(ItemStack is) {
