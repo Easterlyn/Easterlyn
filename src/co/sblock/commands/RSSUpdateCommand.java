@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 public class RSSUpdateCommand extends SblockCommand {
 
 	public RSSUpdateCommand() {
-		super("rrsupdate");
+		super("rssupdate");
 		this.setDescription("A /tellraw that's a lot easier than escaping crap for bash commands.");
 		this.setUsage("/rssupdate <feed name> <url> <title>");
 		this.setPermission("group.horrorterror");
