@@ -32,7 +32,7 @@ public class WhoIsCommand extends SblockCommand {
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
 		}
-		if (sender instanceof Player && !sender.hasPermission("group.denizen")) {
+		if (sender instanceof Player && !sender.hasPermission("group.felt")) {
 			return Sblock.getInstance().getCommandMap().getCommand("profile").execute(sender, label, args);
 		}
 		Player p = Bukkit.getPlayer(args[0]);
