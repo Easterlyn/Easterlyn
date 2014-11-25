@@ -20,9 +20,9 @@ public class ColorDef {
 	public static final ChatColor RANK_DONATOR = ChatColor.DARK_GREEN;
 	public static final ChatColor RANK_HERO = ChatColor.WHITE;
 
-	public static final ChatColor CHATRANK_OWNER = ChatColor.RED;
-	public static final ChatColor CHATRANK_MOD = ChatColor.AQUA;
-	public static final ChatColor CHATRANK_MEMBER = ChatColor.GOLD;
+	public static final ChatColor CHANNEL_OWNER = ChatColor.RED;
+	public static final ChatColor CHANNEL_MOD = ChatColor.AQUA;
+	public static final ChatColor CHANNEL_MEMBER = ChatColor.GOLD;
 
 	public static final ChatColor WORLD_AETHER = ChatColor.WHITE;
 	public static final ChatColor WORLD_EARTH = ChatColor.DARK_GREEN;

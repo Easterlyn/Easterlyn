@@ -18,7 +18,7 @@ public class ColourCommand extends SblockCommand {
 
 	public ColourCommand() {
 		super("colour");
-		this.setDescription("List all colors.");
+		this.setDescription("List all colours.");
 		this.setUsage("&c/colour");
 		ArrayList<String> aliases = new ArrayList<>();
 		aliases.add("color");

@@ -105,11 +105,11 @@ public class MeteorCommand extends SblockCommand {
 		if (argCompleting.equals("e:") || argCompleting.equals("b:")) {
 			String arg = "true";
 			if (arg.startsWith(current)) {
-				matches.add(arg);
+				matches.add(argCompleting + arg);
 			}
 			arg = "false";
 			if (arg.startsWith(current)) {
-				matches.add(arg);
+				matches.add(argCompleting + arg);
 			}
 			return matches;
 		}
@@ -117,7 +117,7 @@ public class MeteorCommand extends SblockCommand {
 			current = current.toUpperCase();
 			for (Material material : Material.values()) {
 				if (material.name().startsWith(current)) {
-					matches.add(material.name());
+					matches.add(argCompleting + material.name());
 				}
 			}
 			return matches;

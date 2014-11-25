@@ -368,52 +368,64 @@ public class Captcha extends Module {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void handleCaptcha(InventoryClickEvent event) {
-		if (event.getAction().name().contains("HOTBAR")) {
-			hotbarCaptcha(event);
+		boolean hotbar = event.getAction().name().contains("HOTBAR");
+		ItemStack blankCaptcha;
+		ItemStack toCaptcha;
+		if (hotbar) {
+			blankCaptcha = event.getCurrentItem();
+			toCaptcha = event.getCursor();
+		} else {
+			blankCaptcha = event.getView().getBottomInventory().getItem(event.getHotbarButton());
+			toCaptcha = event.getCurrentItem();
+		}
+		if (!isBlankCaptcha(blankCaptcha) || toCaptcha == null || toCaptcha.getType() == Material.AIR) {
 			return;
 		}
-		if (!isBlankCaptcha(event.getCurrentItem())) {
-			return;
-		}
-		boolean usedCaptcha = isUsedCaptcha(event.getCursor());
+		boolean usedCaptcha = isUsedCaptcha(toCaptcha);
 		ItemStack captcha = null;
-		if (InventoryUtils.isUniqueItem(event.getCursor()) && !usedCaptcha) {
+		if (CruxiteDowel.expCost(toCaptcha) == Integer.MAX_VALUE
+				|| InventoryUtils.isUniqueItem(toCaptcha) && !usedCaptcha) {
 			// Invalid captcha objects
-			if (!event.getCursor().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
+			if (toCaptcha.isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Computers can (and should) be alchemized.
-				return;
-			} else {
 				captcha = createLoreCard("Computer");
+			} else {
+				return;
 			}
 		}
-//		if (usedCaptcha && event.getCursor().getItemMeta().getLore().get(0).contains("Captcha of " + ChatColor.AQUA)) {
-//			// Double captchas are fine, triple captchas hurt client. An octuple may have enough lines to crash the server. I'd rather not find out.
-//			return;
-//		}
+		if (usedCaptcha && toCaptcha.getItemMeta().getLore().get(0).contains("Captcha of " + ChatColor.AQUA)) {
+			// Double captchas are fine, triple captchas hurt client
+			return;
+		}
 		Player p = (Player) event.getWhoClicked();
 		if (captcha == null) {
-			captcha = itemToCaptcha(event.getCursor());
+			captcha = itemToCaptcha(toCaptcha);
 		}
 		event.setResult(Result.DENY);
-		event.setCurrentItem(InventoryUtils.decrement(event.getCurrentItem(), 1));
 
-		// attempt to add to inventory that contained the captchacards
-		int leftover = InventoryUtils.getAddFailures(event.getClickedInventory().addItem(captcha));
-
-		// attempt to add to other inventory if first inv was too full
-		if (leftover > 0) {
-			if (event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())) {
-				leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
-			} else {
-				leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
-			}
+		// Decrement captcha stack
+		if (hotbar) {
+			event.getView().getBottomInventory().setItem(event.getHotbarButton(), InventoryUtils.decrement(blankCaptcha, 1));
+			event.setCurrentItem(null);
+		} else {
+			event.setCurrentItem(InventoryUtils.decrement(blankCaptcha, 1));
+			event.setCursor(null);
 		}
 
-		// If both are full, set cursor to captcha
+		// Add to bottom inventory first
+		int leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
 		if (leftover > 0) {
-			event.setCursor(captcha);
-		} else {
-			event.setCursor(null);
+			// Add to top, bottom was full.
+			leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
+		}
+		if (leftover > 0) {
+			if (hotbar) {
+				// Drop rather than delete (Items can be picked up before event completes, thanks Bukkit.)
+				event.getWhoClicked().getWorld().dropItem(event.getWhoClicked().getLocation(), captcha);
+			} else {
+				// Set cursor to captcha
+				event.setCursor(captcha);
+			}
 		}
 		p.updateInventory();
 	}
@@ -432,43 +444,6 @@ public class Captcha extends Module {
 		im.setDisplayName("Captchacard");
 		card.setItemMeta(im);
 		return card;
-	}
-
-	private static void hotbarCaptcha(InventoryClickEvent event) {
-		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
-		ItemStack captcha = null;
-		boolean usedCaptcha = isUsedCaptcha(event.getCurrentItem());
-		if (!isBlankCaptcha(hotbar) || event.getCurrentItem() == null
-				|| event.getCurrentItem().getType() == Material.AIR
-				|| isBlankCaptcha(event.getCurrentItem())
-				|| CruxiteDowel.expCost(event.getCurrentItem()) == Integer.MAX_VALUE
-				|| InventoryUtils.isUniqueItem(event.getCurrentItem()) && !usedCaptcha) {
-			// Invalid captcha objects
-			if (!event.getCursor().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
-				// Computers can (and should) be alchemized.
-				return;
-			} else {
-				captcha = createLoreCard("Computer");
-			}
-		}
-//		if (usedCaptcha && event.getCurrentItem().getItemMeta().getLore().get(0).contains("Captcha of " + ChatColor.AQUA)) {
-//			// Double captchas are fine, triple captchas hurt client
-//			return;
-//		}
-		if (captcha == null) {
-			captcha = itemToCaptcha(event.getCurrentItem());
-		}
-		event.setResult(Result.DENY);
-		event.getView().getBottomInventory().setItem(event.getHotbarButton(), InventoryUtils.decrement(hotbar, 1));
-
-		int leftover = InventoryUtils.getAddFailures(event.getView().getBottomInventory().addItem(captcha));
-		event.setCurrentItem(null);
-		if (leftover > 0) {
-			leftover = InventoryUtils.getAddFailures(event.getView().getTopInventory().addItem(captcha));
-		}
-		if (leftover > 0) {
-			event.getWhoClicked().getWorld().dropItem(event.getWhoClicked().getLocation(), captcha);
-		}
 	}
 
 	public static int convert(Player player) {

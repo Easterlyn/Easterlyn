@@ -485,11 +485,11 @@ public abstract class Channel {
 
 			// Chat rank color
 			if (this.isOwner(sender)) {
-				channelRank = ColorDef.CHATRANK_OWNER;
+				channelRank = ColorDef.CHANNEL_OWNER;
 			} else if (this.isModerator(sender)) {
-				channelRank = ColorDef.CHATRANK_MOD;
+				channelRank = ColorDef.CHANNEL_MOD;
 			} else {
-				channelRank = ColorDef.CHATRANK_MEMBER;
+				channelRank = ColorDef.CHANNEL_MEMBER;
 			}
 
 			// Message coloring provided by additional perms
@@ -551,7 +551,7 @@ public abstract class Channel {
 					+ new MessageElement(isThirdPerson ? " " : "> ", region) + "," + new MessageElement(ChatColor.WHITE + prepend);
 		} else {
 			guildRank = ColorDef.RANK_HERO;
-			channelRank = ColorDef.CHATRANK_OWNER;
+			channelRank = ColorDef.CHANNEL_OWNER;
 			globalRank = ColorDef.RANK_HORRORTERROR.toString();
 			region = ColorDef.WORLD_AETHER;
 			nick = "<nonhuman>";
