@@ -363,37 +363,33 @@ public class Captcha extends Module {
 		return result;
 	}
 
-	/**
-	 * @param event
-	 */
 	@SuppressWarnings("deprecation")
 	public static void handleCaptcha(InventoryClickEvent event) {
 		boolean hotbar = event.getAction().name().contains("HOTBAR");
 		ItemStack blankCaptcha;
 		ItemStack toCaptcha;
 		if (hotbar) {
-			blankCaptcha = event.getCurrentItem();
-			toCaptcha = event.getCursor();
-		} else {
 			blankCaptcha = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 			toCaptcha = event.getCurrentItem();
+		} else {
+			blankCaptcha = event.getCurrentItem();
+			toCaptcha = event.getCursor();
 		}
 		if (!isBlankCaptcha(blankCaptcha) || toCaptcha == null || toCaptcha.getType() == Material.AIR) {
 			return;
 		}
-		boolean usedCaptcha = isUsedCaptcha(toCaptcha);
 		ItemStack captcha = null;
-		if (CruxiteDowel.expCost(toCaptcha) == Integer.MAX_VALUE
-				|| InventoryUtils.isUniqueItem(toCaptcha) && !usedCaptcha) {
-			// Invalid captcha objects
-			if (toCaptcha.isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
-				// Computers can (and should) be alchemized.
-				captcha = createLoreCard("Computer");
-			} else {
-				return;
+		if (toCaptcha.isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
+			// Computers can (and should) be alchemized.
+			captcha = createLoreCard("Computer");
+		} else {
+			for (ItemStack is : InventoryUtils.getUniqueItems()) {
+				if (is.isSimilar(toCaptcha)) {
+					return;
+				}
 			}
 		}
-		if (usedCaptcha && toCaptcha.getItemMeta().getLore().get(0).contains("Captcha of " + ChatColor.AQUA)) {
+		if (isUsedCaptcha(toCaptcha) && toCaptcha.getItemMeta().getLore().get(0).matches("^(..-?[0-9]+ Captcha of )+..-?[0-9]+ \\w+$")) {
 			// Double captchas are fine, triple captchas hurt client
 			return;
 		}
