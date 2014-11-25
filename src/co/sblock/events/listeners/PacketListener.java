@@ -51,6 +51,9 @@ public class PacketListener extends PacketAdapter {
 			return;
 		}
 		if (event.getPacket().getType() == PacketType.Play.Client.TAB_COMPLETE) {
+			if (event.getPlayer().hasPermission("group.denizen")) {
+				return;
+			}
 			if (plugin.matcher(event.getPacket().getStrings().read(0)).find()) {
 				event.setCancelled(true);
 			}
