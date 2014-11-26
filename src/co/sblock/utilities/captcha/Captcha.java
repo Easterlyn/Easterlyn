@@ -41,9 +41,7 @@ public class Captcha extends Module {
 	 * @see Module#onDisable()
 	 */
 	@Override
-	protected void onDisable() {
-
-	}
+	protected void onDisable() { }
 
 	/**
 	 * Converts an ItemStack into a Captchacard.
@@ -375,7 +373,7 @@ public class Captcha extends Module {
 			blankCaptcha = event.getCurrentItem();
 			toCaptcha = event.getCursor();
 		}
-		if (!isBlankCaptcha(blankCaptcha) || toCaptcha == null || toCaptcha.getType() == Material.AIR) {
+		if (!isBlankCaptcha(blankCaptcha) || toCaptcha == null || toCaptcha.getType() == Material.AIR || isBlankCaptcha(toCaptcha)) {
 			return;
 		}
 		ItemStack captcha = null;
@@ -389,7 +387,7 @@ public class Captcha extends Module {
 				}
 			}
 		}
-		if (isUsedCaptcha(toCaptcha) && toCaptcha.getItemMeta().getLore().get(0).matches("^(..-?[0-9]+ Captcha of )+..-?[0-9]+ \\w+$")) {
+		if (isUsedCaptcha(toCaptcha) && toCaptcha.getItemMeta().getLore().get(0).matches("^(..-?[0-9]+ Captcha of )+..-?[0-9]+ .+$")) {
 			// Double captchas are fine, triple captchas hurt client
 			return;
 		}
