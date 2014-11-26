@@ -6,7 +6,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.data.SblockData;
 import co.sblock.users.UserManager;
 
 /**
@@ -24,7 +23,8 @@ public class PlayerJoinListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(final PlayerJoinEvent event) {
 		event.setJoinMessage(null);
-		SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
+		// TODO check message beforehand and don't announce channels if muted
+		UserManager.loadUser(event.getPlayer().getUniqueId());
 
 		new BukkitRunnable() {
 

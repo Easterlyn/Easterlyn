@@ -1,10 +1,17 @@
 package co.sblock.chat;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import co.sblock.Sblock;
 import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
@@ -15,7 +22,6 @@ import co.sblock.chat.channel.RPChannel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.data.SblockData;
 
-
 public class ChannelManager {
 
 	private ConcurrentHashMap<String, Channel> channelList;
@@ -24,20 +30,110 @@ public class ChannelManager {
 		channelList = new ConcurrentHashMap<>();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void loadAllChannels() {
-		SblockData.getDB().loadAllChannelData();
-	}
-
-	public void saveAllChannels() {
-		for (Channel c : channelList.values()) {
-			if (c.getOwner() != null) {
-				SblockData.getDB().saveChannelData(c);
+		File file;
+		try {
+			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
+			if (!file.exists()) {
+				SblockData.getDB().loadAllChannelData();
+				file.createNewFile();
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to load channel data!", e);
+		}
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		for (String channelName : yaml.getKeys(false)) {
+			Channel channel = ChannelManager.getChannelManager().loadChannel(channelName.replace("ThisIsNotAComment", "#"),
+					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
+					UUID.fromString(yaml.getString(channelName + ".owner")),
+					ChannelType.valueOf(yaml.getString(channelName + ".type")));
+			for (String uuid : ((Set<String>) yaml.get(channelName + ".mods"))) {
+				channel.addModerator(UUID.fromString(uuid));
+			}
+			for (String uuid : ((Set<String>) yaml.get(channelName + ".bans"))) {
+				channel.addBan(UUID.fromString(uuid));
+			}
+			for (String uuid : ((Set<String>) yaml.get(channelName + ".approved"))) {
+				channel.addApproved(UUID.fromString(uuid));
 			}
 		}
 	}
 
-	public void saveChannel(Channel c) {
-		SblockData.getDB().saveChannelData(c);
+	public void saveAllChannels() {
+		File file;
+		try {
+			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to save all channel data!", e);
+		}
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		for (Channel channel : channelList.values()) {
+			String name = channel.getName().replace("#", "ThisIsNotAComment");
+			yaml.set(name + ".owner", channel.getOwner().toString());
+			yaml.set(name + ".type", channel.getType().name());
+			yaml.set(name + ".access", channel.getAccess().name());
+			HashSet<String> set = new HashSet<>();
+			for (UUID uuid : channel.getModList()) {
+				set.add(uuid.toString());
+			}
+			yaml.set(name + ".mods", set);
+			set.clear();
+			for (UUID uuid : channel.getBanList()) {
+				set.add(uuid.toString());
+			}
+			yaml.set(name + ".bans", set);
+			set.clear();
+			for (UUID uuid : channel.getApprovedUsers()) {
+				set.add(uuid.toString());
+			}
+			yaml.set(name + ".approved", set);
+		}
+		try {
+			yaml.save(file);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to save all channel data!", e);
+		}
+	}
+
+	public void saveChannel(Channel channel) {
+		File file;
+		try {
+			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to save data for channel " + channel.getName(), e);
+		}
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		String name = channel.getName().replace("#", "ThisIsNotAComment");
+		yaml.set(name + ".owner", channel.getOwner().toString());
+		yaml.set(name + ".type", channel.getType().name());
+		yaml.set(name + ".access", channel.getAccess().name());
+		HashSet<String> set = new HashSet<>();
+		for (UUID uuid : channel.getModList()) {
+			set.add(uuid.toString());
+		}
+		yaml.set(name + ".mods", set);
+		set.clear();
+		for (UUID uuid : channel.getBanList()) {
+			set.add(uuid.toString());
+		}
+		yaml.set(name + ".bans", set);
+		set.clear();
+		for (UUID uuid : channel.getApprovedUsers()) {
+			set.add(uuid.toString());
+		}
+		yaml.set(name + ".approved", set);
+		try {
+			yaml.save(file);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to save data for channel " + channel.getName(), e);
+		}
 	}
 
 	public void createNewChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
@@ -61,7 +157,6 @@ public class ChannelManager {
 		default:
 			channel = new NormalChannel(name, access, creator);
 			break;
-		
 		}
 		this.channelList.put(name, channel);
 		return channel;
@@ -87,7 +182,18 @@ public class ChannelManager {
 
 	public void dropChannel(String channelName) {
 		channelList.remove(channelName);
-		SblockData.getDB().deleteChannel(channelName);
+		File file;
+		file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
+		if (!file.exists()) {
+			return;
+		}
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		yaml.set(channelName.replace("#", "ThisIsNotAComment"), null);
+		try {
+			yaml.save(file);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to delete channel " + channelName, e);
+		}
 	}
 
 	public Map<String, Channel> getChannelList() {
@@ -96,7 +202,6 @@ public class ChannelManager {
 
 	public Channel getChannel(String channelname) {
 		if (channelname == null) {
-			// ConcurrentHashMap tends to NPE instead of returning null. Manual fix!
 			return null;
 		}
 		if (!channelList.containsKey(channelname)) {

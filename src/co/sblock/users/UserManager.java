@@ -1,18 +1,26 @@
 package co.sblock.users;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
+import co.sblock.data.SblockData;
+import co.sblock.data.yaml.BukkitSerializer;
 import co.sblock.effects.EffectManager;
 import co.sblock.users.User.UserBuilder;
 
@@ -53,14 +61,108 @@ public class UserManager {
 		user.setLoaded();
 	}
 
+	@SuppressWarnings("unchecked")
+	public static void loadUser(UUID uuid) {
+		UserBuilder builder = new UserBuilder();
+		File file;
+		try {
+			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
+			if (!file.exists()) {
+				SblockData.getDB().loadUserData(uuid);
+				//getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
+				// Do first login
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to load data for " + uuid, e);
+		}
+		Player player = Bukkit.getPlayer(uuid);
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		player.setDisplayName(yaml.getString("nickname"));
+		builder.setIPAddr(yaml.getString("ip"));
+		builder.setPreviousLocationFromString(yaml.getString("previousLocation"));
+		//yaml.getString("previousRegion");
+		builder.setUserClass(UserClass.getClass(yaml.getString("classpect.class")));
+		builder.setAspect(UserAspect.getAspect(yaml.getString("classpect.aspect")));
+		Region dream = Region.getRegion(yaml.getString("classpect.dream"));
+		builder.setDreamPlanet(dream);
+		Region current = Region.getRegion(player.getWorld().getName());
+		if (current.isDream()) {
+			current = dream;
+		}
+		builder.setCurrentRegion(current);
+		builder.setMediumPlanet(Region.getRegion(yaml.getString("classpect.medium")));
+		builder.setProgression(ProgressionState.valueOf(yaml.getString("progression.progression")));
+		builder.setPrograms((HashSet<Integer>) yaml.get("progression.programs"));
+		if (yaml.getString("progression.server") != null) {
+			builder.setServer(UUID.fromString(yaml.getString("progression.server")));
+		}
+		if (yaml.getString("progression.client") != null) {
+			builder.setClient(UUID.fromString(yaml.getString("progression.client")));
+		}
+		builder.setCurrentChannel(yaml.getString("chat.current"));
+		builder.setListening((HashSet<String>) yaml.get("chat.listening"));
+		builder.setGlobalMute(new AtomicBoolean(yaml.getBoolean("chat.muted")));
+		builder.setSuppress(new AtomicBoolean(yaml.getBoolean("chat.suppressing")));
+		//(Set<String>) yaml.get("chat.ignoring");
+		User user = builder.build(uuid);
+		user.updateFlight();
+		user.updateCurrentRegion(current);
+		user.loginAddListening(user.getListening().toArray(new String[0])); // TODO change method when db rework is over
+		addUser(user);
+	}
+
 	/**
 	 * Removes a Player from the users list.
 	 * 
 	 * @param player the name of the Player to remove
 	 * @return the SblockUser for the removed player, if any
 	 */
-	public static User removeUser(UUID userID) {
-		return users.remove(userID);
+	public static User unloadUser(UUID userID) {
+		User user = users.remove(userID);
+		if (!user.isLoaded()) {
+			return user;
+		}
+		File file;
+		try {
+			file = new File(Sblock.getInstance().getUserDataFolder(), user.getUUID().toString() + ".yml");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to save data for " + user.getUUID().toString(), e);
+		}
+		Player player = Bukkit.getPlayer(user.getUUID());
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		yaml.set("name", user.getPlayerName());
+		yaml.set("ip", user.getUserIP());
+		if (player != null) {
+			yaml.set("nickname", player.getDisplayName());
+			yaml.set("location", BukkitSerializer.locationToString(player.getLocation()));
+		}
+		yaml.set("region", user.getCurrentRegion().getDisplayName());
+		yaml.set("previousLocation", BukkitSerializer.locationToString(user.getPreviousLocation()));
+		yaml.set("previousRegion", null);
+		yaml.set("flying", user.canFly());
+		yaml.set("classpect.class", user.getUserClass().getDisplayName());
+		yaml.set("classpect.aspect", user.getAspect().getDisplayName());
+		yaml.set("classpect.dream", user.getDreamPlanet().getDisplayName());
+		yaml.set("classpect.medium", user.getMediumPlanet().getDisplayName());
+		yaml.set("progression.progression", user.getProgression().name());
+		yaml.set("progression.programs", user.getPrograms());
+		yaml.set("progression.server", user.getServer() != null ? user.getServer().toString() : null);
+		yaml.set("progression.client", user.getClient() != null ? user.getClient().toString() : null);
+		yaml.set("chat.current", user.getCurrent() != null ? user.getCurrent().getName() : "#");
+		yaml.set("chat.listening", user.getListening());
+		yaml.set("chat.muted", user.isMute());
+		yaml.set("chat.suppressing", user.isSuppressing());
+		yaml.set("chat.ignoring", null);
+		yaml.set("chat.highlights", null);
+		try {
+			yaml.save(file);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to save data for " + user.getPlayerName(), e);
+		}
+		return user;
 	}
 
 	/**

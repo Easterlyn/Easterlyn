@@ -89,7 +89,7 @@ public class RawAnnouncer extends Module {
 
 		msgs.add(new MessageHalement("It is your generosity that keeps Sblock alive. Please consider ").addExtra(
 				new MessageElement("donating", ChatColor.AQUA)
-						.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://adf.ly/NThbj"))
+						.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=Z327Z7E2SBVV2&lc=US&item_name=Sblock&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"))
 						.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click here to go!")),
 				new MessageElement(" to help.", ChatColor.RED)));
 

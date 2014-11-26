@@ -238,7 +238,7 @@ public class Message {
 		for (UUID uuid : channel.getListening()) {
 			User u;
 			if (Bukkit.getPlayer(uuid) == null) {
-				u = UserManager.removeUser(uuid);
+				u = UserManager.unloadUser(uuid);
 				if (u == null) {
 					continue;
 				}

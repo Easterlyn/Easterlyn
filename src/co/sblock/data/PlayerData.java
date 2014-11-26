@@ -131,7 +131,7 @@ public class PlayerData {
 			if (rs.next()) {
 				User user = UserManager.addUser(UUID.fromString(rs.getString("uuid")));
 				if (user == null || user.getPlayer() == null) {
-					UserManager.removeUser(user.getUUID());
+					UserManager.unloadUser(user.getUUID());
 					return;
 				}
 				user.setAspect(rs.getString("aspect"));

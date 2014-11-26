@@ -190,27 +190,34 @@ public class Sblock extends JavaPlugin {
 		shaped.setIngredient('X', Material.LAPIS_BLOCK);
 		getServer().addRecipe(shaped);
 
-		// Dye 8 wool at a time just like stained glass, allows for re-dying
 		for (DyeColor dye : DyeColor.values()) {
+			// Dye 8 wool at a time just like stained glass, allows for re-dyeing
 			shaped = new ShapedRecipe(new ItemStack(Material.WOOL, 8, dye.getWoolData()));
 			shaped.shape("XXX", "XYX", "XXX");
 			shaped.setIngredient('X', Material.WOOL, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
 			getServer().addRecipe(shaped);
-		}
 
-		// Re-dye stained clay
-		for (DyeColor dye : DyeColor.values()) {
+			// Re-dye stained clay
 			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_CLAY, 8, dye.getWoolData()));
 			shaped.shape("XXX", "XYX", "XXX");
 			shaped.setIngredient('X', Material.STAINED_CLAY, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
 			getServer().addRecipe(shaped);
-		}
 
-		// Re-dye stained glass
-		for (DyeColor dye : DyeColor.values()) {
+			// Re-dye stained glass
 			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_GLASS, 8, dye.getWoolData()));
 			shaped.shape("XXX", "XYX", "XXX");
 			shaped.setIngredient('X', Material.STAINED_GLASS, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
+			getServer().addRecipe(shaped);
+
+			// Allow dyeing of panes and re-dyeing of stained panes
+			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_GLASS_PANE, 8, dye.getWoolData()));
+			shaped.shape("XXX", "XYX", "XXX");
+			shaped.setIngredient('X', Material.THIN_GLASS).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
+			getServer().addRecipe(shaped);
+
+			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_GLASS_PANE, 8, dye.getWoolData()));
+			shaped.shape("XXX", "XYX", "XXX");
+			shaped.setIngredient('X', Material.STAINED_GLASS_PANE, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
 			getServer().addRecipe(shaped);
 		}
 

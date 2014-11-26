@@ -62,7 +62,7 @@ public class PlayerQuitListener implements Listener {
 		// Delete team for exiting player to avoid clutter
 		UserManager.unteam(event.getPlayer());
 
-		User user = UserManager.removeUser(event.getPlayer().getUniqueId());
+		User user = UserManager.unloadUser(event.getPlayer().getUniqueId());
 
 		// Remove Server status
 		if (user.isServer()) {
