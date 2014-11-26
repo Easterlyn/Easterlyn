@@ -40,7 +40,7 @@ public class RSSUpdateCommand extends SblockCommand {
 
 		json = json.replaceAll("\\{NAME\\}", args[0].replaceAll("\\\\", "\\\\").replaceAll("\"", "\\\""))
 				.replaceAll("\\{LINK\\}", args[1].replaceAll("\\\\", "\\\\").replaceAll("\"", "\\\""))
-				.replaceAll("\\{TITLE\\}", StringUtils.join(args, ' ', 2, args.length).replaceAll("\\", "\\\\").replaceAll("\"", "\\\""));
+				.replaceAll("\\{TITLE\\}", StringUtils.join(args, ' ', 2, args.length).replaceAll("\\\\", "\\\\").replaceAll("\"", "\\\""));
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Bukkit.dispatchCommand(sender, "tellraw " + p.getName() + json);

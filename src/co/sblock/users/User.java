@@ -307,7 +307,7 @@ public class User {
 	 * 
 	 * @param s
 	 */
-	public void setPreviousLocationFromString(String s) {
+	public void setPreviousLocationFromString(String s) { // TODO remove when DB rework is done
 		String[] loc = s.split(",");
 		World w = Bukkit.getWorld(loc[0]);
 		if (w != null) {
@@ -1158,6 +1158,17 @@ public class User {
 		public UserBuilder setPreviousLocation(Location previousLocation) {
 			this.previousLocation = previousLocation;
 			return this;
+		}
+
+		public void setPreviousLocationFromString(String s) {
+			String[] loc = s.split(",");
+			World w = Bukkit.getWorld(loc[0]);
+			if (w != null) {
+				this.previousLocation = new Location(w, Double.parseDouble(loc[1]) + .5,
+						Double.parseDouble(loc[2]) + .5, Double.parseDouble(loc[3]) + .5);
+			} else {
+				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+			}
 		}
 
 		/**

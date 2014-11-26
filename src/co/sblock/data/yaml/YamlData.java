@@ -53,7 +53,6 @@ public class YamlData extends SblockData {
 
 	@Override
 	public void saveUserData(UUID uuid) {
-		
 		File file;
 		try {
 			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
@@ -84,13 +83,14 @@ public class YamlData extends SblockData {
 		yaml.set("classpect.medium", user.getMediumPlanet().getDisplayName());
 		yaml.set("progression.progression", user.getProgression().name());
 		yaml.set("progression.programs", user.getPrograms());
-		yaml.set("progression.server", user.getServer().toString());
-		yaml.set("progression.client", user.getClient().toString());
-		yaml.set("chat.current", user.getCurrent().getName());
+		yaml.set("progression.server", user.getServer() != null ? user.getServer().toString() : null);
+		yaml.set("progression.client", user.getClient() != null ? user.getClient().toString() : null);
+		yaml.set("chat.current", user.getCurrent() != null ? user.getCurrent().getName() : "#");
 		yaml.set("chat.listening", user.getListening());
 		yaml.set("chat.muted", user.isMute());
 		yaml.set("chat.suppressing", user.isSuppressing());
 		yaml.set("chat.ignoring", null);
+		yaml.set("chat.highlights", null);
 		try {
 			yaml.save(file);
 		} catch (IOException e) {
@@ -106,6 +106,7 @@ public class YamlData extends SblockData {
 		try {
 			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
 			if (!file.exists()) {
+				getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
 				// Do first login
 			}
 		} catch (IOException e) {
@@ -115,7 +116,7 @@ public class YamlData extends SblockData {
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		player.setDisplayName(yaml.getString("nickname"));
 		builder.setIPAddr(yaml.getString("ip"));
-		builder.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
+		builder.setPreviousLocationFromString(yaml.getString("previousLocation"));
 		//yaml.getString("previousRegion");
 		builder.setUserClass(UserClass.getClass(yaml.getString("classpect.class")));
 		builder.setAspect(UserAspect.getAspect(yaml.getString("classpect.aspect")));
@@ -143,6 +144,7 @@ public class YamlData extends SblockData {
 		User user = builder.build(uuid);
 		user.updateFlight();
 		user.updateCurrentRegion(current);
+		user.loginAddListening(user.getListening().toArray(new String[0])); // TODO change method when db rework is over
 		UserManager.addUser(user);
 	}
 
@@ -169,6 +171,7 @@ public class YamlData extends SblockData {
 
 	@Override
 	public void saveChannelData(Channel channel) {
+		getLogger().info("saving channel");
 		File file;
 		try {
 			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
@@ -180,12 +183,24 @@ public class YamlData extends SblockData {
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		String name = channel.getName().replace("#", "ThisIsNotAComment");
-		yaml.set(name + ".owner", channel.getOwner());
+		yaml.set(name + ".owner", channel.getOwner().toString());
 		yaml.set(name + ".type", channel.getType().name());
 		yaml.set(name + ".access", channel.getAccess().name());
-		yaml.set(name + ".mods", channel.getModList());
-		yaml.set(name + ".bans", channel.getBanList());
-		yaml.set(name + ".approved", channel.getApprovedUsers());
+		HashSet<String> set = new HashSet<>();
+		for (UUID uuid : channel.getModList()) {
+			set.add(uuid.toString());
+		}
+		yaml.set(name + ".mods", set);
+		set.clear();
+		for (UUID uuid : channel.getBanList()) {
+			set.add(uuid.toString());
+		}
+		yaml.set(name + ".bans", set);
+		set.clear();
+		for (UUID uuid : channel.getApprovedUsers()) {
+			set.add(uuid.toString());
+		}
+		yaml.set(name + ".approved", set);
 		try {
 			yaml.save(file);
 		} catch (IOException e) {
@@ -211,14 +226,14 @@ public class YamlData extends SblockData {
 					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
 					UUID.fromString(yaml.getString(channelName + ".owner")),
 					ChannelType.valueOf(yaml.getString(channelName + ".type")));
-			for (UUID uuid : ((HashSet<UUID>) yaml.get(channelName + ".mods"))) {
-				channel.addModerator(uuid);
+			for (String uuid : ((HashSet<String>) yaml.get(channelName + ".mods"))) {
+				channel.addModerator(UUID.fromString(uuid));
 			}
-			for (UUID uuid : ((HashSet<UUID>) yaml.get(channelName + ".bans"))) {
-				channel.addBan(uuid);
+			for (String uuid : ((HashSet<String>) yaml.get(channelName + ".bans"))) {
+				channel.addBan(UUID.fromString(uuid));
 			}
-			for (UUID uuid : ((HashSet<UUID>) yaml.get(channelName + ".approved"))) {
-				channel.addApproved(uuid);
+			for (String uuid : ((HashSet<String>) yaml.get(channelName + ".approved"))) {
+				channel.addApproved(UUID.fromString(uuid));
 			}
 		}
 	}

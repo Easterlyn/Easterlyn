@@ -24,7 +24,9 @@ public class SblockChat extends Module {
 
 	@Override
 	protected void onDisable() {
+		getLogger().info("Saving channels");
 		cm.saveAllChannels();
+		getLogger().info("Saved channels");
 		megaHal.saveLogs();
 	}
 

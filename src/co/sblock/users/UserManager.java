@@ -50,6 +50,7 @@ public class UserManager {
 	 */
 	public static void addUser(User user) {
 		users.put(user.getUUID(), user);
+		user.setLoaded();
 	}
 
 	/**

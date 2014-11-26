@@ -321,7 +321,7 @@ public class Sblock extends JavaPlugin {
 	public File getUserDataFolder() throws IOException {
 		File file = new File(getDataFolder(), "UserData");
 		if (!file.exists()) {
-			file.createNewFile();
+			file.mkdir();
 		}
 		return file;
 	}
