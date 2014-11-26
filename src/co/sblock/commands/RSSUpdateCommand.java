@@ -38,8 +38,8 @@ public class RSSUpdateCommand extends SblockCommand {
 				+ "\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click to go: \",\"color\":\"dark_aqua\"},"
 				+ "{\"text\":\"{LINK}\",\"color\":\"blue\",\"underlined\":\"true\"}]}}}]}";
 
-		json = json.replaceAll("\\{NAME\\}", args[0].replaceAll("\\", "\\\\").replaceAll("\"", "\\\""))
-				.replaceAll("\\{LINK\\}", args[1].replaceAll("\\", "\\\\").replaceAll("\"", "\\\""))
+		json = json.replaceAll("\\{NAME\\}", args[0].replaceAll("\\\\", "\\\\").replaceAll("\"", "\\\""))
+				.replaceAll("\\{LINK\\}", args[1].replaceAll("\\\\", "\\\\").replaceAll("\"", "\\\""))
 				.replaceAll("\\{TITLE\\}", StringUtils.join(args, ' ', 2, args.length).replaceAll("\\", "\\\\").replaceAll("\"", "\\\""));
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
