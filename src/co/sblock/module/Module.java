@@ -36,8 +36,8 @@ public abstract class Module {
 		try {
 			this.onEnable();
 		} catch (Exception e) {
-			throw new RuntimeException("[SblockSuite] Unhandled exception in module "
-					+ this.getClass().getSimpleName() + ". Plugin failed to load.", e);
+			getLogger().severe("[SblockSuite] Unhandled exception in module " + this.getClass().getSimpleName() + ". Module failed to enable.");
+			getLogger().criticalErr(e);
 		}
 		return this;
 	}
@@ -49,6 +49,12 @@ public abstract class Module {
 	 */
 	public final Module disable() {
 		this.getLogger().info("Disabled module " + this.getModuleName());
+		try {
+			this.onDisable();
+		} catch (Exception e) {
+			getLogger().severe("[SblockSuite] Unhandled exception in module " + this.getClass().getSimpleName() + ". Module failed to disable.");
+			getLogger().criticalErr(e);
+		}
 		return this;
 	}
 
