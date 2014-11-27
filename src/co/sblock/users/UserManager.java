@@ -2,7 +2,6 @@ package co.sblock.users;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,13 +19,12 @@ import org.bukkit.scoreboard.Team;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
-import co.sblock.effects.EffectManager;
 import co.sblock.users.User.UserBuilder;
 
 /**
  * Class that keeps track of players currently logged on to the game
  * 
- * @author FireNG, Jikoo, tmathmeyer
+ * @author FireNG, Jikoo
  */
 public class UserManager {
 
@@ -62,21 +60,39 @@ public class UserManager {
 
 	@SuppressWarnings("unchecked")
 	public static void loadUser(UUID uuid) {
-		UserBuilder builder = new UserBuilder();
 		File file;
 		try {
 			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
 			if (!file.exists()) {
-				//getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
-				// TODO Do first login
+				Player player = Bukkit.getPlayer(uuid);
+				if (player == null) {
+					SblockUsers.getSblockUsers().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
+					return;
+				}
+				Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
+						+ " is joining us for the first time! Please welcome them.");
+				player.teleport(getSpawnLocation());
+
+				UserBuilder builder = new UserBuilder();
+				User user = builder.build(uuid);
+				HashSet<String> defaults = new HashSet<>();
+				defaults.add("#");
+				defaults.add(Region.EARTH.getChannelName());
+				user.loginAddListening(defaults);
+				user.updateCurrentRegion(Region.EARTH);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load data for " + uuid, e);
 		}
+		UserBuilder builder = new UserBuilder();
 		Player player = Bukkit.getPlayer(uuid);
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		player.setDisplayName(yaml.getString("nickname"));
-		builder.setIPAddr(yaml.getString("ip"));
+		if (player != null) {
+			player.setDisplayName(yaml.getString("nickname"));
+			builder.setIPAddr(player.getAddress().getHostString());
+		} else {
+			builder.setIPAddr(yaml.getString("ip"));
+		}
 		builder.setPreviousLocationFromString(yaml.getString("previousLocation"));
 		//yaml.getString("previousRegion");
 		builder.setUserClass(UserClass.getClass(yaml.getString("classpect.class")));
@@ -120,6 +136,12 @@ public class UserManager {
 		if (!user.isLoaded()) {
 			return user;
 		}
+		saveUser(user);
+		return user;
+	}
+
+	private static void saveUser(User user) {
+
 		File file;
 		try {
 			file = new File(Sblock.getInstance().getUserDataFolder(), user.getUUID().toString() + ".yml");
@@ -131,7 +153,7 @@ public class UserManager {
 		}
 		Player player = Bukkit.getPlayer(user.getUUID());
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		yaml.set("name", user.getPlayerName());
+		yaml.set("name", player != null ? user.getPlayerName() : Bukkit.getOfflinePlayer(user.getUUID()).getName());
 		yaml.set("ip", user.getUserIP());
 		if (player != null) {
 			yaml.set("nickname", player.getDisplayName());
@@ -160,7 +182,6 @@ public class UserManager {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to save data for " + user.getPlayerName(), e);
 		}
-		return user;
 	}
 
 	/**
@@ -230,29 +251,6 @@ public class UserManager {
 		if (team != null) {
 			team.unregister();
 		}
-	}
-
-	/**
-	 * 
-	 * @param p the player to build the user around
-	 */
-	public static User doFirstLogin(Player p)
-	{
-		//player's first login
-		Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + p.getName() + " is joining us for the first time! Please welcome them.");
-		p.teleport(getSpawnLocation());
-
-		User user = addUser(p.getUniqueId());
-		user.loginAddListening(new HashSet<String>(Arrays.asList(new String[]{"#" , "#" + user.getPlayerRegion().name()}))); // TODO hiiiiideous
-		// TODO: oh god plz
-		user.updateCurrentRegion(user.getPlayerRegion());
-
-		user.setAllPassiveEffects(EffectManager.passiveScan(p));
-		EffectManager.applyPassiveEffects(user);
-
-		user.setLoaded();
-
-		return user;
 	}
 
 	public static Location getSpawnLocation() {

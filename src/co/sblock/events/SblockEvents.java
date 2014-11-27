@@ -126,10 +126,7 @@ public class SblockEvents extends Module {
 	 */
 	public void addCachedIP(String ip, String name) {
 		if (ipcache.containsKey(ip)) {
-			if (ipcache.get(ip).equals(name)) {
-				return;
-			}
-			// LinkedHashMaps replace the existing element, preserving order. We want the new IP to be last.
+			// LinkedHashMaps replace the existing element, preserving order. We want latest logins last.
 			ipcache.remove(ip);
 		}
 		ipcache.put(ip, name);

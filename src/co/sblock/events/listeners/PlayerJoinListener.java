@@ -27,7 +27,7 @@ public class PlayerJoinListener implements Listener {
 		// TODO check message beforehand and don't announce channels if muted
 		UserManager.loadUser(event.getPlayer().getUniqueId());
 
-		SblockEvents.getEvents().addCachedIP(event.getPlayer().getName(), event.getPlayer().getAddress().getHostString());
+		SblockEvents.getEvents().addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
 
 		new BukkitRunnable() {
 			@Override

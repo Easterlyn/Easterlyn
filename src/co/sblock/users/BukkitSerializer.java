@@ -11,7 +11,7 @@ import org.bukkit.Location;
 public class BukkitSerializer {
 
 	public static String locationToString(Location location) {
-		return location.getWorld() + "," +  location.getX() + "," +  location.getY() + "," +  location.getZ();
+		return location.getWorld().getName() + "," +  location.getX() + "," +  location.getY() + "," +  location.getZ();
 	}
 
 	public static Location locationFromString(String location) {

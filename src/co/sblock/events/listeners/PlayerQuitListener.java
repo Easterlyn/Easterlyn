@@ -1,5 +1,7 @@
 package co.sblock.events.listeners;
 
+import java.util.Iterator;
+
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -71,8 +73,10 @@ public class PlayerQuitListener implements Listener {
 		}
 
 		// Inform channels that the player is no longer listening to them
-		for (String s : user.getListening()) {
-			user.removeListeningQuit(s);
+		for (Iterator<String> iterator = user.getListening().iterator(); iterator.hasNext();) {
+			if (!user.removeListeningQuit(iterator.next())) {
+				iterator.remove();
+			}
 		}
 	}
 }

@@ -42,7 +42,7 @@ public class ChannelManager {
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		for (String channelName : yaml.getKeys(false)) {
-			Channel channel = ChannelManager.getChannelManager().loadChannel(channelName.replace("ThisIsNotAComment", "#"),
+			Channel channel = ChannelManager.getChannelManager().loadChannel(channelName,
 					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
 					UUID.fromString(yaml.getString(channelName + ".owner")),
 					ChannelType.valueOf(yaml.getString(channelName + ".type")));
@@ -70,7 +70,7 @@ public class ChannelManager {
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		for (Channel channel : channelList.values()) {
-			String name = channel.getName().replace("#", "ThisIsNotAComment");
+			String name = channel.getName();
 			yaml.set(name + ".owner", channel.getOwner().toString());
 			yaml.set(name + ".type", channel.getType().name());
 			yaml.set(name + ".access", channel.getAccess().name());
@@ -79,12 +79,12 @@ public class ChannelManager {
 				set.add(uuid.toString());
 			}
 			yaml.set(name + ".mods", set);
-			set.clear();
+			set = new HashSet<>();
 			for (UUID uuid : channel.getBanList()) {
 				set.add(uuid.toString());
 			}
 			yaml.set(name + ".bans", set);
-			set.clear();
+			set = new HashSet<>();
 			for (UUID uuid : channel.getApprovedUsers()) {
 				set.add(uuid.toString());
 			}
@@ -108,7 +108,7 @@ public class ChannelManager {
 			throw new RuntimeException("Unable to save data for channel " + channel.getName(), e);
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		String name = channel.getName().replace("#", "ThisIsNotAComment");
+		String name = channel.getName();
 		yaml.set(name + ".owner", channel.getOwner().toString());
 		yaml.set(name + ".type", channel.getType().name());
 		yaml.set(name + ".access", channel.getAccess().name());
@@ -117,12 +117,12 @@ public class ChannelManager {
 			set.add(uuid.toString());
 		}
 		yaml.set(name + ".mods", set);
-		set.clear();
+		set = new HashSet<>();
 		for (UUID uuid : channel.getBanList()) {
 			set.add(uuid.toString());
 		}
 		yaml.set(name + ".bans", set);
-		set.clear();
+		set = new HashSet<>();
 		for (UUID uuid : channel.getApprovedUsers()) {
 			set.add(uuid.toString());
 		}
@@ -186,7 +186,7 @@ public class ChannelManager {
 			return;
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		yaml.set(channelName.replace("#", "ThisIsNotAComment"), null);
+		yaml.set(channelName, null);
 		try {
 			yaml.save(file);
 		} catch (IOException e) {

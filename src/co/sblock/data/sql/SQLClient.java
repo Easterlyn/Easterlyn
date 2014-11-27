@@ -122,6 +122,7 @@ public class SQLClient {
 						channel.addApproved(UUID.fromString(approvedList[i]));
 					}
 				}
+				getLogger().info("Loaded " + channel.toString());
 			}
 		} catch (SQLException e) {
 			getLogger().err(e);
@@ -140,6 +141,8 @@ public class SQLClient {
 			while (rs.next()) {
 				machines.loadMachine(rs.getString("location"), rs.getString("type"),
 						rs.getString("owner"), rs.getByte("face"), rs.getString("data"));
+				System.out.println("Loaded machine " + rs.getString("location") + " " + rs.getString("type")
+						+ " " + rs.getString("owner") + " " + rs.getByte("face") + " " + rs.getString("data"));
 			}
 		} catch (SQLException e) {
 			SblockMachines.getInstance().getLogger().err(e);
@@ -167,7 +170,9 @@ public class SQLClient {
 					builder.setCurrentChannel("#");
 				}
 				User user = builder.build(UUID.fromString(rs.getString("uuid")));
+				System.out.println("Loaded " + user.getUUID().toString());
 				UserManager.addUser(user);
+				UserManager.unloadUser(user.getUUID());
 			}
 		} catch (SQLException e) {
 			getLogger().err(e);

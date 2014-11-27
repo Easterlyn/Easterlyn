@@ -117,11 +117,7 @@ public class User {
 		this.listening = listening;
 		this.globalMute = globalMute;
 		this.suppress = supress;
-		if (this.getPlayer() != null) {
-			this.userIP = this.getPlayer().getAddress().getAddress().getHostAddress();
-		} else {
-			this.userIP = IP;
-		}
+		this.userIP = IP;
 	}
 
 	/**
@@ -302,38 +298,12 @@ public class User {
 	}
 
 	/**
-	 * Sets the Player's previous Location from a String. Only for use in DatabaseManager.
-	 * 
-	 * @param s
-	 */
-	public void setPreviousLocationFromString(String s) { // TODO remove when DB rework is done
-		String[] loc = s.split(",");
-		World w = Bukkit.getWorld(loc[0]);
-		if (w != null) {
-			this.previousLocation = new Location(w, Double.parseDouble(loc[1]) + .5,
-					Double.parseDouble(loc[2]) + .5, Double.parseDouble(loc[3]) + .5);
-		} else {
-			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
-		}
-	}
-
-	/**
 	 * Gets the Location of the Player prior to sleep teleportation.
 	 * 
 	 * @return the previousLocation
 	 */
 	public Location getPreviousLocation() {
 		return this.previousLocation;
-	}
-
-	/**
-	 * The String representation of the Player's Location prior to last sleep teleport.
-	 * 
-	 * @return String
-	 */
-	public String getPreviousLocationString() {
-		return this.previousLocation.getWorld().getName() + "," + this.previousLocation.getBlockX()
-				+ "," + this.previousLocation.getBlockY() + "," + this.previousLocation.getBlockZ();
 	}
 
 	/**
@@ -423,7 +393,7 @@ public class User {
 	 * @return the Region the Player is in.
 	 */
 	public Region getCurrentRegion() {
-		return currentRegion;
+		return currentRegion != null ? currentRegion : Region.UNKNOWN;
 	}
 
 	/**
@@ -952,13 +922,13 @@ public class User {
 	 * 
 	 * @param cName the name of the Channel to inform
 	 */
-	public void removeListeningQuit(String cName) {
+	public boolean removeListeningQuit(String cName) {
 		Channel c = ChannelManager.getChannelManager().getChannel(cName);
 		if (c != null) {
 			c.removeListening(this.uuid);
-		} else {
-			this.listening.remove(cName);
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -1019,7 +989,7 @@ public class User {
 				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
 				this.mPlanet + div + this.dPlanet.getWorldName() + div + " Flight: " + this.allowFlight + "\n" + 
 				" Mute: " + this.globalMute.get() + div + " Current: " + this.currentChannel + div + this.listening.toString() + "\n" +
-				" Region: " + this.currentRegion + div + " Prev loc: " + this.getPreviousLocationString() + "\n" +
+				" Region: " + this.currentRegion + div + " Prev loc: " + BukkitSerializer.locationToString(getPreviousLocation()) + "\n" +
 				" IP: " + this.userIP + "\n" +
 				" Playtime: " + this.getTimePlayed() + div + " Last Login: Online now!\n" +
 				sys + "-----------------------------------------";

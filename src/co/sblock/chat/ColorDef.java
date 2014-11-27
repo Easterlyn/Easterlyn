@@ -43,7 +43,7 @@ public class ColorDef {
 	public static final ChatColor ASPECT_LIGHT = ChatColor.YELLOW;
 	public static final ChatColor ASPECT_MIND = ChatColor.DARK_AQUA;
 	public static final ChatColor ASPECT_RAGE = ChatColor.DARK_PURPLE;
-	public static final ChatColor ASPECT_SPACE = ChatColor.BLACK;
+	public static final ChatColor ASPECT_SPACE = ChatColor.DARK_GRAY;
 	public static final ChatColor ASPECT_TIME = ChatColor.RED;
 	public static final ChatColor ASPECT_VOID = ChatColor.DARK_BLUE;
 	
