@@ -89,9 +89,8 @@ public class Sblock extends JavaPlugin {
 			getLog().severe("Invalid server version, Sblock commands will fail to register.");
 		}
 		instance = this;
-		this.modules = new ArrayList<>();
-		createRecipes();
 
+		this.modules = new ArrayList<>();
 		modules.add(new SblockChat().enable());
 		modules.add(new SblockUsers().enable());
 		modules.add(new SblockEvents().enable());
@@ -102,6 +101,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new RawAnnouncer().enable());
 		modules.add(new Spectators().enable());
 
+		createRecipes();
 		registerAllCommands();
 	}
 
