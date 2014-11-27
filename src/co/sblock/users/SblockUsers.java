@@ -39,7 +39,7 @@ public class SblockUsers extends Module {
 	@Override
 	protected void onDisable() {
 		for (User u : UserManager.getUsers().toArray(new User[0])) {
-			UserManager.unloadUser(u.getUUID());
+			UserManager.saveUser(UserManager.unloadUser(u.getUUID()));
 		}
 		instance = null;
 	}

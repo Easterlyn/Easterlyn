@@ -246,6 +246,7 @@ public class Message {
 				if (u == null) {
 					continue;
 				}
+				UserManager.saveUser(u);
 				for (String channelName : u.getListening()) {
 					Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
 					if (channel != null) {

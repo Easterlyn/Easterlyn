@@ -119,9 +119,11 @@ public class UserManager {
 		builder.setSuppress(new AtomicBoolean(yaml.getBoolean("chat.suppressing")));
 		//(Set<String>) yaml.get("chat.ignoring");
 		User user = builder.build(uuid);
-		user.updateFlight();
-		user.updateCurrentRegion(current);
-		user.loginAddListening(user.getListening());
+		if (player != null) {
+			user.updateFlight();
+			user.updateCurrentRegion(current);
+			user.loginAddListening(user.getListening());
+		}
 		addUser(user);
 	}
 
@@ -133,14 +135,13 @@ public class UserManager {
 	 */
 	public static User unloadUser(UUID userID) {
 		User user = users.remove(userID);
-		if (!user.isLoaded()) {
-			return user;
-		}
-		saveUser(user);
 		return user;
 	}
 
-	private static void saveUser(User user) {
+	public static void saveUser(User user) {
+		if (!user.isLoaded()) {
+			return;
+		}
 
 		File file;
 		try {

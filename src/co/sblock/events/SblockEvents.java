@@ -93,7 +93,7 @@ public class SblockEvents extends Module {
 		try {
 			File file = new File(Sblock.getInstance().getDataFolder(), "ipcache.yml");
 			if (!file.exists()) {
-					file.createNewFile();
+				file.createNewFile();
 			}
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 			yaml.set("cache", ipcache);

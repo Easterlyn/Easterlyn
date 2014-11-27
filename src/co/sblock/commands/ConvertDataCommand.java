@@ -9,7 +9,7 @@ import co.sblock.data.sql.SQLClient;
 import com.google.common.collect.ImmutableList;
 
 /**
- * 
+ * Command for importing all players.
  * 
  * @author Jikoo
  */
@@ -28,8 +28,6 @@ public class ConvertDataCommand extends SblockCommand {
 
 	public boolean execute(CommandSender sender, String label, String[] args) {
 		database.loadAllPlayers();
-		database.loadAllChannelData();
-		database.loadAllMachines();
 		return true;
 	}
 

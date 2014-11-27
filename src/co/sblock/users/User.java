@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -645,7 +646,7 @@ public class User {
 
 		// Check to make sure user is online
 		if (p == null) {
-			UserManager.unloadUser(uuid);
+			UserManager.saveUser(UserManager.unloadUser(uuid));
 			return;
 		}
 
@@ -837,12 +838,13 @@ public class User {
 	 * @param channels
 	 */
 	public void loginAddListening(Set<String> channels) {
-		for (String s : channels) {
-			Channel c = ChannelManager.getChannelManager().getChannel(s);
-			if (c != null && !c.isBanned(this)
-					&& (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
-				this.listening.add(s);
+		for (Iterator<String> iterator = channels.iterator(); iterator.hasNext();) {
+			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());
+			if (c != null && !c.isBanned(this) && (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
+				this.listening.add(c.getName());
 				c.addListening(this.uuid);
+			} else {
+				iterator.remove();
 			}
 		}
 		if (this.getPlayer().hasPermission("group.felt") && !this.listening.contains("@")) {

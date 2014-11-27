@@ -61,6 +61,7 @@ public class PlayerQuitListener implements Listener {
 		UserManager.unteam(event.getPlayer());
 
 		User user = UserManager.unloadUser(event.getPlayer().getUniqueId());
+		UserManager.saveUser(user);
 
 		// Remove Server status
 		if (user.isServer()) {
