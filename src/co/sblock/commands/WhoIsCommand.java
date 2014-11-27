@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.data.SblockData;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 
@@ -37,7 +36,7 @@ public class WhoIsCommand extends SblockCommand {
 		}
 		Player p = Bukkit.getPlayer(args[0]);
 		if (p == null) {
-			SblockData.getDB().startOfflineLookup(sender, args[0]);
+			// TODO SblockData.getDB().startOfflineLookup(sender, args[0]);
 			return true;
 		}
 		User u = UserManager.getUser(p.getUniqueId());

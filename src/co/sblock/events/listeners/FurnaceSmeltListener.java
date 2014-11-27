@@ -26,7 +26,7 @@ public class FurnaceSmeltListener implements Listener {
 	@EventHandler(priority = org.bukkit.event.EventPriority.HIGH)
 	public void onFurnaceSmelt(FurnaceSmeltEvent event) {
 
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+		Machine m = SblockMachines.getInstance().getMachineByBlock(event.getBlock());
 		if (m != null) {
 			event.setCancelled(m.handleFurnaceSmelt(event));
 			return;

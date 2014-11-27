@@ -92,7 +92,7 @@ public class ServerMode {
 	}
 
 	public boolean isWithinRange(User server, Block broken) {
-		Machine computer = SblockMachines.getMachines().getManager().getComputer(server.getClient());
+		Machine computer = SblockMachines.getInstance().getComputer(server.getClient());
 		return computer != null && computer.getKey().distanceSquared(broken.getLocation()) <= 625;
 	}
 

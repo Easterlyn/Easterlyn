@@ -28,7 +28,7 @@ import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
 import co.sblock.events.packets.WrapperPlayServerWorldParticles;
-import co.sblock.machines.MachineManager;
+import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.ProgressionState;
@@ -148,7 +148,7 @@ public class Entry {
 		user.getPrograms().remove(Icon.SBURBCLIENT.getProgramID());
 
 		// Removes all free machines placed by the User or their server
-		for (Machine m : MachineManager.getManager().getMachines(user.getUUID())) {
+		for (Machine m : SblockMachines.getInstance().getMachines(user.getUUID())) {
 			if (m.getType().isFree()) {
 				m.remove();
 			}

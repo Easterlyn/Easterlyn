@@ -2,6 +2,7 @@ package co.sblock.users;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,8 +20,6 @@ import org.bukkit.scoreboard.Team;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
-import co.sblock.data.SblockData;
-import co.sblock.data.yaml.BukkitSerializer;
 import co.sblock.effects.EffectManager;
 import co.sblock.users.User.UserBuilder;
 
@@ -68,9 +67,8 @@ public class UserManager {
 		try {
 			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
 			if (!file.exists()) {
-				SblockData.getDB().loadUserData(uuid);
 				//getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
-				// Do first login
+				// TODO Do first login
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load data for " + uuid, e);
@@ -107,7 +105,7 @@ public class UserManager {
 		User user = builder.build(uuid);
 		user.updateFlight();
 		user.updateCurrentRegion(current);
-		user.loginAddListening(user.getListening().toArray(new String[0])); // TODO change method when db rework is over
+		user.loginAddListening(user.getListening());
 		addUser(user);
 	}
 
@@ -245,7 +243,7 @@ public class UserManager {
 		p.teleport(getSpawnLocation());
 
 		User user = addUser(p.getUniqueId());
-		user.loginAddListening(new String[]{"#" , "#" + user.getPlayerRegion().name()});
+		user.loginAddListening(new HashSet<String>(Arrays.asList(new String[]{"#" , "#" + user.getPlayerRegion().name()}))); // TODO hiiiiideous
 		// TODO: oh god plz
 		user.updateCurrentRegion(user.getPlayerRegion());
 

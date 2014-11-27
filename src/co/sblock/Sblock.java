@@ -31,7 +31,6 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.SblockChat;
 import co.sblock.commands.SblockCommand;
-import co.sblock.data.SblockData;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.SblockMachines;
 import co.sblock.module.Module;
@@ -93,8 +92,6 @@ public class Sblock extends JavaPlugin {
 		this.modules = new ArrayList<>();
 		createRecipes();
 
-		SblockData.getDB().enable();
-
 		modules.add(new SblockChat().enable());
 		modules.add(new SblockUsers().enable());
 		modules.add(new SblockEvents().enable());
@@ -120,7 +117,6 @@ public class Sblock extends JavaPlugin {
 		for (Module module : this.modules) {
 			module.disable();
 		}
-		SblockData.getDB().disable();
 		instance = null;
 	}
 

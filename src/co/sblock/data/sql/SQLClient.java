@@ -2,18 +2,27 @@ package co.sblock.data.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.UUID;
-
-import org.bukkit.command.CommandSender;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import co.sblock.Sblock;
+import co.sblock.chat.ChannelManager;
+import co.sblock.chat.SblockChat;
+import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
-import co.sblock.data.ChatChannels;
-import co.sblock.data.Machines;
-import co.sblock.data.PlayerData;
-import co.sblock.data.SblockData;
-import co.sblock.machines.type.Machine;
+import co.sblock.chat.channel.ChannelType;
+import co.sblock.machines.SblockMachines;
+import co.sblock.users.Region;
+import co.sblock.users.User;
+import co.sblock.users.UserAspect;
+import co.sblock.users.User.UserBuilder;
+import co.sblock.users.UserClass;
+import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 
 /**
@@ -21,13 +30,12 @@ import co.sblock.utilities.Log;
  * 
  * @author Jikoo, FireNG, tmathmeyer
  */
-public class SQLClient extends SblockData {
+public class SQLClient {
 
 	/* The SQL Connection used by the SblockData. */
 	private Connection connection;
 	private final Log logger = Log.getLog("SblockData-SQL");
 
-	@Override
 	/*
 	 * @see co.sblock.data.SblockData#enable()
 	 */
@@ -58,7 +66,6 @@ public class SQLClient extends SblockData {
 		return true;
 	}
 
-	@Override
 	public void disable() {
 		try {
 			connection.close();
@@ -68,7 +75,6 @@ public class SQLClient extends SblockData {
 		connection = null;
 	}
 
-	@Override
 	protected Connection connection() {
 		try {
 			if (connection == null || connection.isClosed()) {
@@ -81,62 +87,107 @@ public class SQLClient extends SblockData {
 		return connection;
 	}
 
-	@Override
-	public void saveUserData(UUID userID) {
-		PlayerData.saveUserData(userID);
-	}
-
-	@Override
-	public void loadUserData(UUID userID) {
-		PlayerData.loadUserData(userID);
-	}
-
-	public void startOfflineLookup(CommandSender sender, String name) {
-		PlayerData.startOfflineLookup(sender, name);
-	}
-
-	@Override
-	public void deleteUser(UUID userID) {
-		PlayerData.deleteUser(userID);
-	}
-
-	@Override
-	public void saveChannelData(Channel c) {
-		ChatChannels.saveChannelData(c);
-	}
-
-	@Override
+	/**
+	 * Creates and loads all Channels from saved data.
+	 */
 	public void loadAllChannelData() {
-		ChatChannels.loadAllChannelData();
+		try (PreparedStatement pst = connection().prepareStatement(Call.CHANNEL_LOADALL.toString());
+				ResultSet rs = pst.executeQuery()) {
+
+			ChannelManager cm = SblockChat.getChat().getChannelManager();
+
+			while (rs.next()) {
+				Channel channel = cm.loadChannel(rs.getString("name"),
+						AccessLevel.valueOf(rs.getString("access")),
+						UUID.fromString(rs.getString("owner")),
+						ChannelType.valueOf(rs.getString("channelType")));
+				String list = rs.getString("modList");
+				if (list != null) {
+					String[] modList = list.split(",");
+					for (int i = 0; i < modList.length; i++) {
+						channel.addModerator(UUID.fromString(modList[i]));
+					}
+				}
+				list = rs.getString("banList");
+				if (list != null) {
+					String[] banList = list.split(",");
+					for (int i = 0; i < banList.length; i++) {
+						channel.addBan(UUID.fromString(banList[i]));
+					}
+				}
+				list = rs.getString("approvedList");
+				if (list != null) {
+					String[] approvedList = list.split(",");
+					for (int i = 0; i < approvedList.length; i++) {
+						channel.addApproved(UUID.fromString(approvedList[i]));
+					}
+				}
+			}
+		} catch (SQLException e) {
+			getLogger().err(e);
+		}
 	}
 
-	@Override
-	public void deleteChannel(String channelName) {
-		ChatChannels.deleteChannel(channelName);
-	}
-
-	@Override
-	public void saveMachine(Machine m) {
-		Machines.saveMachine(m);
-	}
-
-	@Override
-	public void deleteMachine(Machine m) {
-		Machines.deleteMachine(m);
-	}
-
-	@Override
+	/**
+	 * Creates and loads all Machines from saved data.
+	 */
 	public void loadAllMachines() {
-		Machines.loadAllMachines();
+		try (PreparedStatement pst = connection().prepareStatement(Call.MACHINE_LOADALL.toString())) {
+
+			ResultSet rs = pst.executeQuery();
+			SblockMachines machines = SblockMachines.getInstance();
+
+			while (rs.next()) {
+				machines.loadMachine(rs.getString("location"), rs.getString("type"),
+						rs.getString("owner"), rs.getByte("face"), rs.getString("data"));
+			}
+		} catch (SQLException e) {
+			SblockMachines.getInstance().getLogger().err(e);
+		}
 	}
 
-	@Override
-	public String getUserFromIP(String hostAddress) {
-		return PlayerData.getUserFromIP(hostAddress);
+	/**
+	 * Load a Player's data from a ResultSet.
+	 * 
+	 * @param rs the ResultSet to load from
+	 */
+	public void loadAllPlayers() {
+		try (PreparedStatement pst = connection().prepareStatement(Call.PLAYER_LOAD_ALL.toString());
+			ResultSet rs = pst.executeQuery()) {
+			while (rs.next()) {
+				UserBuilder builder = new UserBuilder();
+				builder.setAspect(UserAspect.getAspect(rs.getString("aspect"))).setUserClass(UserClass.getClass(rs.getString("class")));
+				builder.setMediumPlanet(Region.getRegion(rs.getString("mPlanet"))).setDreamPlanet(Region.getRegion(rs.getString("dPlanet")));
+				builder.setGlobalMute(new AtomicBoolean(rs.getBoolean("isMute")));
+				builder.setListening(new HashSet<String>(Arrays.asList(rs.getString("channels").split(","))));
+				builder.setPreviousLocationFromString(rs.getString("previousLocation"));
+				if (rs.getString("currentChannel") != null) {
+					builder.setCurrentChannel(rs.getString("currentChannel"));
+				} else {
+					builder.setCurrentChannel("#");
+				}
+				User user = builder.build(UUID.fromString(rs.getString("uuid")));
+				UserManager.addUser(user);
+			}
+		} catch (SQLException e) {
+			getLogger().err(e);
+		}
 	}
 
-	@Override
 	public Log getLogger() {
 		return logger;
+	}
+	public enum Call {
+		PLAYER_LOAD_ALL("SELECT * FROM PlayerData"),
+		CHANNEL_LOADALL("SELECT * FROM ChatChannels"),
+		MACHINE_LOADALL("SELECT * FROM Machines");
+
+		private final String call;
+		private Call(String call) {
+			this.call = call;
+		}
+		public String toString() {
+			return this.call;
+		}
 	}
 }

@@ -37,7 +37,7 @@ public class SleepTeleport extends BukkitRunnable {
 		if (user == null) {
 			return;
 		}
-		if (!SblockEvents.getEvents().tasks.containsKey(player.getUniqueId())) {
+		if (!SblockEvents.getEvents().getTasks().containsKey(player.getUniqueId())) {
 			return;
 		}
 		Location location = player.getLocation();

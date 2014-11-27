@@ -22,7 +22,7 @@ public class BlockGrowListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockGrow(BlockGrowEvent event) {
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+		Machine m = SblockMachines.getInstance().getMachineByBlock(event.getBlock());
 		if (m != null) {
 			event.setCancelled(m.handleGrow(event));
 		}

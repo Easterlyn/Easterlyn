@@ -23,7 +23,7 @@ public class BlockPistonExtendListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPush(BlockPistonExtendEvent event) {
 		for (Block b : event.getBlocks()) {
-			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
+			Machine m = SblockMachines.getInstance().getMachineByBlock(b);
 			if (m != null) {
 				event.setCancelled(m.handlePush(event));
 				return;

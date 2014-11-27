@@ -1,14 +1,13 @@
 package co.sblock.chat.channel;
 
 /**
- *  the access level of a channel (determines who can join without an invitation)
- * @author Dublek, tmathmeyer
+ * The access level of a channel (determines who can join without an invitation)
+ * @author Dublek
  */
 public enum AccessLevel {
 	PUBLIC, PRIVATE;
 
 	/**
-	 * TODO: make it throw a custom exception for better error handling
 	 * @param level the access level
 	 * @return the access level
 	 */

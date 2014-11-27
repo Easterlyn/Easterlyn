@@ -48,7 +48,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	@Override
 	public void assemble(BlockPlaceEvent event) {
-		if (SblockMachines.getMachines().getManager().hasComputer(event.getPlayer(), key)) {
+		if (SblockMachines.getInstance().hasComputer(event.getPlayer(), key)) {
 			if (event.getPlayer().hasPermission("group.horrorterror")) {
 				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
 				return;

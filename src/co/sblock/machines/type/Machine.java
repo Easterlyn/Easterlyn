@@ -32,8 +32,6 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
-import co.sblock.data.SblockData;
-import co.sblock.machines.MachineManager;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
@@ -119,7 +117,7 @@ public abstract class Machine {
 			return m;
 		}
 	}
-	
+
 	/**
 	 * @param key the Location of the key Block of this Machine
 	 * @param owner the UUID of the Machine's owner
@@ -211,7 +209,7 @@ public abstract class Machine {
 	public void assemble(BlockPlaceEvent event) {
 		for (Location l : blocks.keySet()) {
 			if (!l.equals(this.key) && (!l.getBlock().isEmpty()
-					|| MachineManager.getManager().isExploded(l.getBlock()))) {
+					|| SblockMachines.getInstance().isExploded(l.getBlock()))) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed();
@@ -223,7 +221,7 @@ public abstract class Machine {
 		if (u != null && u.isServer() && data.equals(u.getPlayerName())) {
 			this.owner = u.getClient().toString();
 		}
-		SblockData.getDB().saveMachine(this);
+		SblockMachines.getInstance().saveMachine(this);
 	}
 
 	/**
@@ -285,7 +283,7 @@ public abstract class Machine {
 			l.getBlock().setType(Material.AIR);
 		}
 		getKey().getBlock().setType(Material.AIR);
-		SblockMachines.getMachines().getManager().removeMachineListing(getKey());
+		SblockMachines.getInstance().deleteMachine(getKey());
 	}
 
 	/**
@@ -422,7 +420,7 @@ public abstract class Machine {
 	 */
 	public boolean handleInteract(PlayerInteractEvent event) {
 		for (Location l : this.blocks.keySet()) {
-			if (MachineManager.getManager().isExploded(l.getBlock())) {
+			if (SblockMachines.getInstance().isExploded(l.getBlock())) {
 				event.getPlayer().sendMessage(ChatColor.RED + "This machine is too damaged to use!");
 				return true;
 			}
@@ -508,7 +506,7 @@ public abstract class Machine {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			public void run() {
 				disable();
-				SblockMachines.getMachines().getManager().removeMachineListing(key);
+				SblockMachines.getInstance().deleteMachine(key);
 			}
 		});
 	}

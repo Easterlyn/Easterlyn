@@ -55,7 +55,7 @@ public class PlayerInteractListener implements Listener {
 			// Breaking and placing blocks is acceptable, instabreak blocks in approved list.
 			if (event.getAction() == Action.LEFT_CLICK_BLOCK
 					&& ServerMode.getInstance().isApproved(event.getClickedBlock().getType())
-					&& !SblockMachines.getMachines().getManager().isMachine(event.getClickedBlock())) {
+					&& !SblockMachines.getInstance().isMachine(event.getClickedBlock())) {
 				event.getClickedBlock().setType(Material.AIR);
 			} else if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getItem() != null) {
 				if (ServerMode.getInstance().isApproved(event.getMaterial())) {
@@ -113,7 +113,7 @@ public class PlayerInteractListener implements Listener {
 			Block b = event.getClickedBlock();
 
 			// Machines
-			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
+			Machine m = SblockMachines.getInstance().getMachineByBlock(b);
 			if (m != null) {
 				event.setCancelled(m.handleInteract(event));
 				return;

@@ -10,7 +10,6 @@ import co.sblock.Sblock;
 import co.sblock.chat.Message;
 import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.ChannelType;
-import co.sblock.data.SblockData;
 import co.sblock.users.UserManager;
 
 /**
@@ -44,7 +43,7 @@ public class PlayerAsyncChatListener implements Listener {
 			event.getPlayer().sendMessage(ChatColor.BOLD
 					+ "[o] Your Sblock playerdata appears to not be loaded."
 					+ "\nI'll take care of that for you, but make sure your /profile is correct.");
-			SblockData.getDB().loadUserData(event.getPlayer().getUniqueId());
+			UserManager.loadUser(event.getPlayer().getUniqueId());
 			return;
 		}
 		// Ensure message can be sent
@@ -52,7 +51,7 @@ public class PlayerAsyncChatListener implements Listener {
 			return;
 		}
 		// Test
-		if (message.getConsoleMessage().equalsIgnoreCase("test")) {
+		if (message.getCleanedMessage().equalsIgnoreCase("test")) {
 			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
 			return;
 		}
@@ -62,7 +61,7 @@ public class PlayerAsyncChatListener implements Listener {
 		}
 		// Clear @channels, though /me and escaping will remain
 		message.send();
-		event.setMessage(message.getConsoleMessage());
+		event.setMessage(message.getCleanedMessage());
 		event.setFormat("[" + message.getChannel().getName() + "] <%1$s> %2$s");
 
 		String msg = event.getMessage().toLowerCase();

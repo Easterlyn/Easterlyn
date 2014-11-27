@@ -7,10 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.SblockChat;
-import co.sblock.data.SblockData;
 import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
@@ -55,7 +55,7 @@ public abstract class Channel {
 		listening = SetGenerator.generate();
 		if (creator != null) {
 			modList.add(creator);
-			SblockData.getDB().saveChannelData(this);
+			ChannelManager.getChannelManager().saveChannel(this);
 		}
 	}
 
@@ -284,20 +284,8 @@ public abstract class Channel {
 	 */
 	public abstract ChannelType getType();
 
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
-	 * TODO: implement a permission level system to say who is ranked above who (probably an enum)
+	 * 
 	 *
 	 * @param sender the user attempting to kick
 	 * @param userID the user who might be kicked

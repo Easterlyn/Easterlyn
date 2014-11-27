@@ -32,7 +32,7 @@ public class BlockPlaceListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+		Machine m = SblockMachines.getInstance().getMachineByBlock(event.getBlock());
 		if (m != null) {
 			// Block registered as part of a machine. Most likely removed by explosion or similar.
 			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
@@ -67,11 +67,11 @@ public class BlockPlaceListener implements Listener {
 					break;
 				}
 				try {
-					SblockMachines.getMachines().getManager().addMachine(
+					SblockMachines.getInstance().addMachine(
 							event.getBlock().getLocation(), mt, event.getPlayer().getUniqueId().toString(),
 							Direction.getFacingDirection(event.getPlayer()), mt.getData(event)).assemble(event);
 				} catch (NullPointerException e) {
-					SblockMachines.getMachines().getLogger().debug("Invalid machine placed.");
+					SblockMachines.getInstance().getLogger().debug("Invalid machine placed.");
 					event.setBuild(false);
 					event.setCancelled(true);
 				}

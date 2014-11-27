@@ -36,7 +36,7 @@ public class AetherCommand extends SblockCommand {
 		message.setChannel(ChannelManager.getChannelManager().getChannel("#Aether"));
 		// Rather than call message.send() and limit recipients to #Aether, this is supposed to be global.
 		// TODO allow Hal features
-		Bukkit.getConsoleSender().sendMessage("[#Aether] " + message.getConsoleMessage());
+		Bukkit.getConsoleSender().sendMessage(message.getConsoleMessage());
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			User u = UserManager.getUser(p.getUniqueId());
 			if (!u.isSuppressing()) {

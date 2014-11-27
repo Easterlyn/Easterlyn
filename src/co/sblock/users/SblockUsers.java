@@ -6,7 +6,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import co.sblock.data.SblockData;
 import co.sblock.module.Module;
 
 /**
@@ -30,7 +29,7 @@ public class SblockUsers extends Module {
 		instance = this;
 		requests = new HashMap<String, String>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			SblockData.getDB().loadUserData(p.getUniqueId());
+			UserManager.loadUser(p.getUniqueId());
 		}
 	}
 
@@ -40,7 +39,7 @@ public class SblockUsers extends Module {
 	@Override
 	protected void onDisable() {
 		for (User u : UserManager.getUsers().toArray(new User[0])) {
-			SblockData.getDB().saveUserData(u.getUUID());
+			UserManager.unloadUser(u.getUUID());
 		}
 		instance = null;
 	}
@@ -62,5 +61,4 @@ public class SblockUsers extends Module {
 	public static SblockUsers getSblockUsers() {
 		return instance;
 	}
-
 }

@@ -70,8 +70,12 @@ public class Message {
 		return finalMessage;
 	}
 
-	public String getConsoleMessage() {
+	public String getCleanedMessage() {
 		return cleanedMessage;
+	}
+
+	public String getConsoleMessage() {
+		return channelPrefixing[0] + cleanedMessage;
 	}
 
 	public void setMessage(String message) {

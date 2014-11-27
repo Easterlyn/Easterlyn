@@ -21,7 +21,7 @@ public class BlockSpreadListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockSpread(BlockSpreadEvent event) {
-		Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(event.getBlock());
+		Machine m = SblockMachines.getInstance().getMachineByBlock(event.getBlock());
 		if (m != null) {
 			event.setCancelled(m.handleSpread(event));
 		}

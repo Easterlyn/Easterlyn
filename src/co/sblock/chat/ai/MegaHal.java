@@ -82,8 +82,8 @@ public class MegaHal {
 	}
 
 	public void handleMessage(Message msg) {
-		if (isTrigger(msg.getConsoleMessage())) {
-			if (isOnlyTrigger(msg.getConsoleMessage())) {
+		if (isTrigger(msg.getCleanedMessage())) {
+			if (isOnlyTrigger(msg.getCleanedMessage())) {
 				// Set sender on fire or some shit
 				msg.getSender().sendMessage(ColorDef.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
 				return;
@@ -103,7 +103,7 @@ public class MegaHal {
 					ratelimit.put(channel, System.currentTimeMillis() + 1500L);
 				}
 			}
-			triggerResponse(msg.getChannel(), msg.getConsoleMessage(), true);
+			triggerResponse(msg.getChannel(), msg.getCleanedMessage(), true);
 		} else {
 			log(msg);
 		}
@@ -122,7 +122,7 @@ public class MegaHal {
 				|| message.getChannel().getType() == ChannelType.NICK || message.getChannel().getType() == ChannelType.RP) {
 			return;
 		}
-		log(message.getConsoleMessage());
+		log(message.getCleanedMessage());
 	}
 
 	public synchronized void log(String message) {

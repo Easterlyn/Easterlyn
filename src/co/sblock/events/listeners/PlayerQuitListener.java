@@ -5,7 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import co.sblock.data.SblockData;
 import co.sblock.effects.Cooldowns;
 import co.sblock.events.SblockEvents;
 import co.sblock.users.ProgressionState;
@@ -31,9 +30,6 @@ public class PlayerQuitListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		// Save user data
-		SblockData.getDB().saveUserData(event.getPlayer().getUniqueId());
-
 		// Our very own custom quits!
 		event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED + " ollies outie");
 
@@ -49,8 +45,8 @@ public class PlayerQuitListener implements Listener {
 		}
 
 		// Stop scheduled sleep teleport
-		if (SblockEvents.getEvents().tasks.containsKey(event.getPlayer().getName())) {
-			SblockEvents.getEvents().tasks.remove(event.getPlayer().getName()).cancel();
+		if (SblockEvents.getEvents().getTasks().containsKey(event.getPlayer().getName())) {
+			SblockEvents.getEvents().getTasks().remove(event.getPlayer().getName()).cancel();
 		}
 
 		// Clean up any expired cooldown entries for the player

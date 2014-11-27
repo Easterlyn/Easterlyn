@@ -1,5 +1,7 @@
 package co.sblock.commands;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,7 +11,8 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.data.SblockData;
+import co.sblock.Sblock;
+import co.sblock.users.SblockUsers;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 
@@ -37,7 +40,15 @@ public class UltraBanCommand extends SblockCommand {
 		Player p = Bukkit.getPlayer(args[0]);
 		if (p != null) {
 			User victim = UserManager.getUser(p.getUniqueId());
-			SblockData.getDB().deleteUser(victim.getUUID());
+			File file;
+			try {
+				file = new File(Sblock.getInstance().getUserDataFolder(), victim.getUUID().toString() + ".yml");
+				if (file.exists()) {
+					file.delete();
+				}
+			} catch (IOException e) {
+				SblockUsers.getSblockUsers().getLogger().warning("Unable to delete data for " + victim.getUUID());
+			}
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + p.getUniqueId());
 		}
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + args[0]);

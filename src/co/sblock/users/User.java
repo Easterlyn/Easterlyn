@@ -30,7 +30,6 @@ import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.ChannelManager;
-import co.sblock.data.SblockData;
 import co.sblock.effects.PassiveEffect;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Icon;
@@ -507,13 +506,13 @@ public class User {
 			p.sendMessage(ChatColor.RED + u.getPlayerName() + " does not have the Sburb Client installed!");
 			return;
 		}
-		Machine m = SblockMachines.getMachines().getManager().getComputer(client);
+		Machine m = SblockMachines.getInstance().getComputer(client);
 		if (m == null) {
 			p.sendMessage(ChatColor.RED + u.getPlayerName() + " has not placed their computer in their house!");
 			return;
 		}
 		this.serverDisableTeleport = p.getLocation();
-		if (!SblockMachines.getMachines().getManager().isByComputer(u.getPlayer(), 25)) {
+		if (!SblockMachines.getInstance().isByComputer(u.getPlayer(), 25)) {
 			p.teleport(m.getKey());
 		} else {
 			p.teleport(u.getPlayer());
@@ -676,7 +675,7 @@ public class User {
 
 		// Check to make sure user is online
 		if (p == null) {
-			SblockData.getDB().saveUserData(uuid);
+			UserManager.unloadUser(uuid);
 			return;
 		}
 
@@ -867,7 +866,7 @@ public class User {
 	 * 
 	 * @param channels
 	 */
-	public void loginAddListening(String[] channels) {
+	public void loginAddListening(Set<String> channels) {
 		for (String s : channels) {
 			Channel c = ChannelManager.getChannelManager().getChannel(s);
 			if (c != null && !c.isBanned(this)
@@ -1003,7 +1002,7 @@ public class User {
 			// Overrides the computer limitation for pre-Entry shenanigans
 			return true;
 		}
-		return SblockMachines.getMachines().getManager().isByComputer(this.getPlayer(), 10);
+		return SblockMachines.getInstance().isByComputer(this.getPlayer(), 10);
 	}
 
 	/**

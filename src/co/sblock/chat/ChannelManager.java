@@ -20,7 +20,6 @@ import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.channel.NormalChannel;
 import co.sblock.chat.channel.RPChannel;
 import co.sblock.chat.channel.RegionChannel;
-import co.sblock.data.SblockData;
 
 public class ChannelManager {
 
@@ -36,7 +35,6 @@ public class ChannelManager {
 		try {
 			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
 			if (!file.exists()) {
-				SblockData.getDB().loadAllChannelData();
 				file.createNewFile();
 			}
 		} catch (IOException e) {

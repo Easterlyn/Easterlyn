@@ -25,7 +25,7 @@ public class InventoryPickupItemListener implements Listener {
 	public void onInventoryMoveItem(InventoryPickupItemEvent event) {
 		InventoryHolder ih = event.getInventory().getHolder();
 		if (ih != null && ih instanceof BlockState) {
-			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
+			Machine m = SblockMachines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
 			if (m != null) {
 				event.setCancelled(m.handleHopperPickupItem(event));
 				return;

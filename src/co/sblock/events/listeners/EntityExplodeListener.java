@@ -10,7 +10,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 import com.nitnelave.CreeperHeal.config.CreeperConfig;
 
-import co.sblock.machines.MachineManager;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Machine;
 
@@ -34,20 +33,20 @@ public class EntityExplodeListener implements Listener {
 
 			HashSet<Block> affected = new HashSet<>();
 			for (Block b : event.blockList()) {
-				Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
+				Machine m = SblockMachines.getInstance().getMachineByBlock(b);
 				if (m != null) {
 					affected.add(b);
 				}
 			}
 
-			MachineManager.getManager().addBlock(affected.toArray(new Block[0]));
+			SblockMachines.getInstance().addBlock(affected.toArray(new Block[0]));
 
 			return;
 		}
 
 		// CreeperHeal is not set to heal whatever destroyed this machine. Prevent damage.
 		for (Block b : event.blockList().toArray(new Block[0])) {
-			Machine m = SblockMachines.getMachines().getManager().getMachineByBlock(b);
+			Machine m = SblockMachines.getInstance().getMachineByBlock(b);
 			if (m != null) {
 				event.blockList().remove(b);
 			}

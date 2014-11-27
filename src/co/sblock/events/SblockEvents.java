@@ -1,13 +1,19 @@
 package co.sblock.events;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
@@ -34,22 +40,24 @@ import co.sblock.utilities.minecarts.FreeCart;
  */
 public class SblockEvents extends Module {
 
-	/* The EventModule instance. */
 	private static SblockEvents instance;
-
-	/* The Minecraft servers' status */
 	private Status status;
-
-	/* The number of repeated status checks that have come back red. */
 	private int statusResample = 0;
+	private HashMap<UUID, BukkitTask> tasks;
+	private LinkedHashMap<String, String> ipcache;
 
-	/* A Map of all scheduled tasks by Player. */
-	public Map<UUID, BukkitTask> tasks;
-
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onEnable() {
 		instance = this;
 		tasks = new HashMap<>();
+
+		ipcache = new LinkedHashMap<>();
+		File file = new File(Sblock.getInstance().getDataFolder(), "ipcache.yml");
+		if (file.exists()) {
+			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+			ipcache.putAll((Map<String, String>) yaml.get("cache"));
+		}
 
 		status = Status.NEITHER;
 		initiateSessionChecks();
@@ -70,7 +78,6 @@ public class SblockEvents extends Module {
 		}
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
-		ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new AsyncPacketAdapter()).start(4);
 
 		initiateRegionChecks();
 	}
@@ -82,6 +89,58 @@ public class SblockEvents extends Module {
 	protected void onDisable() {
 		FreeCart.getInstance().cleanUp();
 		instance = null;
+
+		try {
+			File file = new File(Sblock.getInstance().getDataFolder(), "ipcache.yml");
+			if (!file.exists()) {
+					file.createNewFile();
+			}
+			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+			yaml.set("cache", ipcache);
+			yaml.save(file);
+		} catch (IOException e) {
+			getLogger().warning("Failed to save IP cache!");
+			getLogger().err(e);
+		}
+	}
+
+	/**
+	 * Gets the HashMap of all SleepTeleports scheduled for players by UUID.
+	 */
+	public HashMap<UUID, BukkitTask> getTasks() {
+		return tasks;
+	}
+
+	/**
+	 * Gets the player name stored for an IP.
+	 */
+	public String getIPName(String ip) {
+		if (ipcache.containsKey(ip)) {
+			return ipcache.get(ip);
+		}
+		return "Player";
+	}
+
+	/**
+	 * Cache a player name for an IP. Resets cache position for existing IPs.
+	 */
+	public void addCachedIP(String ip, String name) {
+		if (ipcache.containsKey(ip)) {
+			if (ipcache.get(ip).equals(name)) {
+				return;
+			}
+			// LinkedHashMaps replace the existing element, preserving order. We want the new IP to be last.
+			ipcache.remove(ip);
+		}
+		ipcache.put(ip, name);
+		// Clear oldest cached IPs
+		int surplus = ipcache.size() - 1500;
+		if (surplus < 1) {
+			return;
+		}
+		for (Iterator<Entry<String, String>> iterator = ipcache.entrySet().iterator(); surplus > 0; surplus--) {
+			iterator.remove();
+		}
 	}
 
 	/**

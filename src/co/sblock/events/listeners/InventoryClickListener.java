@@ -55,7 +55,7 @@ public class InventoryClickListener implements Listener {
 
 		// Finds inventories of physical blocks opened by Machines
 		if (ih != null && ih instanceof BlockState) {
-			m = SblockMachines.getMachines().getManager().getMachineByBlock(((BlockState) ih).getBlock());
+			m = SblockMachines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
 			if (m != null) {
 				event.setCancelled(m.handleClick(event));
 				return;

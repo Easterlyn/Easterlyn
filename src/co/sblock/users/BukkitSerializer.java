@@ -1,4 +1,4 @@
-package co.sblock.data.yaml;
+package co.sblock.users;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
