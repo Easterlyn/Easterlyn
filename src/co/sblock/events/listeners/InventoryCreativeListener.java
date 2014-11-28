@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
  */
 public class InventoryCreativeListener implements Listener {
 
-	private final Material[] blacklist = new Material[] {Material.BEDROCK, // TODO barrier
+	private final Material[] blacklist = new Material[] {Material.BARRIER, Material.BEDROCK,
 			Material.COMMAND, Material.COMMAND_MINECART, Material.ENDER_PORTAL, Material.MOB_SPAWNER};
 
 	/**
@@ -40,8 +40,7 @@ public class InventoryCreativeListener implements Listener {
 			return;
 		}
 
-		// BANNER
-		if (event.getCursor().getType().getId() == 425) {
+		if (event.getCursor().getType() == Material.BANNER) {
 			// Banners actually come with NBT tags when using pick-block. We'll just avoid them for now.
 			return;
 		}

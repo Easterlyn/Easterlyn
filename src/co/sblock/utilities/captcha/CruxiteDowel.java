@@ -123,13 +123,6 @@ public class CruxiteDowel {
 
 	private static HashMap<String, Integer> createBaseGrist() {
 		HashMap<String, Integer> materialValues = new HashMap<>();
-		materialValues.put("PRISMARINE_SHARD", 9);
-		materialValues.put("PRISMARINE_CRYSTALS", 35);
-		materialValues.put("MUTTON", 8);
-		materialValues.put("RABBIT", 5);
-		materialValues.put("RABBIT_FOOT", 12);
-		materialValues.put("RABBIT_HIDE", 2);
-		materialValues.put("BANNER", 35);
 
 		for (Material m : Material.values()) {
 			switch(m) {
@@ -151,6 +144,7 @@ public class CruxiteDowel {
 			case COBBLESTONE:
 			case NETHER_BRICK_ITEM:
 			case PAPER:
+			case RABBIT_HIDE:
 			case RED_MUSHROOM:
 			case RED_ROSE:
 			case SOUL_SAND:
@@ -178,6 +172,7 @@ public class CruxiteDowel {
 				break;
 			case CLAY_BRICK:
 			case FLINT:
+			case RABBIT:
 			case RAW_FISH:
 			case WOOL:
 				materialValues.put(m.name(), 5);
@@ -190,6 +185,7 @@ public class CruxiteDowel {
 			case COOKED_CHICKEN:
 			case LOG:
 			case LOG_2:
+			case MUTTON:
 			case RAW_BEEF:
 			case REDSTONE:
 			case STRING:
@@ -198,6 +194,7 @@ public class CruxiteDowel {
 			case COOKED_FISH:
 			case NETHER_WARTS:
 			case NETHER_STALK: // Same thing as warts in 1.8 inventories
+			case PRISMARINE_SHARD:
 				materialValues.put(m.name(), 9);
 				break;
 			case ENDER_STONE:
@@ -217,6 +214,7 @@ public class CruxiteDowel {
 			case COOKED_BEEF:
 			case GOLD_NUGGET:
 			case PUMPKIN:
+			case RABBIT_FOOT:
 			case SPIDER_EYE:
 				materialValues.put(m.name(), 12);
 				break;
@@ -245,7 +243,9 @@ public class CruxiteDowel {
 			case GRASS:
 				materialValues.put(m.name(), 30);
 				break;
+			case BANNER:
 			case GHAST_TEAR:
+			case PRISMARINE_CRYSTALS:
 				materialValues.put(m.name(), 35);
 				break;
 			case QUARTZ:
@@ -329,8 +329,9 @@ public class CruxiteDowel {
 			case NETHER_STAR:
 				materialValues.put(m.name(), 16000);
 				break;
-			// UNOBTAINABLE
+			// Unobtainable, don't bother searching recipes
 			case AIR:
+			case BARRIER:
 			case BEDROCK:
 			case INK_SACK: // Lapis is a dye
 			case BOOK_AND_QUILL:
