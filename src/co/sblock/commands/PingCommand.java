@@ -39,7 +39,7 @@ public class PingCommand extends SblockCommand {
 			return true;
 		}
 		sender.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.YELLOW +"'s ping is " +
-			((org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer) target).getHandle().ping + "ms!");
+			((org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer) target).getHandle().ping + "ms!");
 		return true;
 	}
 
