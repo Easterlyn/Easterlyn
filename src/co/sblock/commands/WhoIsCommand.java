@@ -1,5 +1,6 @@
 package co.sblock.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -9,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.Sblock;
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
 
@@ -24,15 +24,40 @@ public class WhoIsCommand extends SblockCommand {
 		super("whois");
 		this.setDescription("Check data stored for a player.");
 		this.setUsage("/whois <exact player>");
+		ArrayList<String> aliases = new ArrayList<>();
+		aliases.add("profile");
+		this.setAliases(aliases);
 	}
 
 	@Override
 	public boolean execute(CommandSender sender, String label, String[] args) {
-		if (args == null || args.length == 0) {
+		if (!(sender instanceof Player) && args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
+			return true;
 		}
-		if (sender instanceof Player && !sender.hasPermission("group.felt")) {
-			return Sblock.getInstance().getCommandMap().getCommand("profile").execute(sender, label, args);
+		if (!sender.hasPermission("group.felt")) {
+			User user = null;
+			if (args.length == 0) {
+				user = UserManager.getUser(((Player) sender).getUniqueId());
+			} else {
+				Player pTarget = Bukkit.getPlayer(args[0]);
+				if (pTarget != null) {
+					user = UserManager.getUser(pTarget.getUniqueId());
+				} else {
+					sender.sendMessage(ChatColor.YELLOW + "User not found.");
+					return true;
+				}
+			}
+			StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH)
+					.append("+------").append(ChatColor.DARK_AQUA).append(' ').append(user.getPlayerName())
+					.append(' ').append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("------+\n");
+			sb.append(ChatColor.DARK_AQUA).append(user.getUserClass().getDisplayName()).append(ChatColor.YELLOW)
+					.append(" of ").append(ChatColor.DARK_AQUA).append(user.getAspect().getDisplayName()).append('\n');
+			sb.append(ChatColor.YELLOW).append("Dream planet: ").append(user.getDreamPlanet().getColor())
+					.append(user.getDreamPlanet().getDisplayName()).append('\n');
+			sb.append(ChatColor.YELLOW).append("Medium planet: ").append(user.getMediumPlanet().getColor())
+					.append(user.getMediumPlanet().getDisplayName());
+			return true;
 		}
 		Player p = Bukkit.getPlayer(args[0]);
 		if (p == null) {

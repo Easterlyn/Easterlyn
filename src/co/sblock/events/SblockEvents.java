@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -46,7 +45,6 @@ public class SblockEvents extends Module {
 	private HashMap<UUID, BukkitTask> tasks;
 	private LinkedHashMap<String, String> ipcache;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onEnable() {
 		instance = this;
@@ -56,7 +54,9 @@ public class SblockEvents extends Module {
 		File file = new File(Sblock.getInstance().getDataFolder(), "ipcache.yml");
 		if (file.exists()) {
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-			ipcache.putAll((Map<String, String>) yaml.get("cache"));
+			for (String ip : yaml.getKeys(false)) {
+				ipcache.put(ip.replace("_", "."), yaml.getString(ip));
+			}
 		}
 
 		status = Status.NEITHER;
@@ -96,7 +96,9 @@ public class SblockEvents extends Module {
 				file.createNewFile();
 			}
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-			yaml.set("cache", ipcache);
+			for (Entry<String, String> entry : ipcache.entrySet()) {
+				yaml.set(entry.getKey().replace(".", "_"), entry.getValue());
+			}
 			yaml.save(file);
 		} catch (IOException e) {
 			getLogger().warning("Failed to save IP cache!");

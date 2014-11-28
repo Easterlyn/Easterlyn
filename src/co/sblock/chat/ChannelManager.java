@@ -2,10 +2,9 @@ package co.sblock.chat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,7 +28,6 @@ public class ChannelManager {
 		channelList = new ConcurrentHashMap<>();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void loadAllChannels() {
 		File file;
 		try {
@@ -46,13 +44,13 @@ public class ChannelManager {
 					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
 					UUID.fromString(yaml.getString(channelName + ".owner")),
 					ChannelType.valueOf(yaml.getString(channelName + ".type")));
-			for (String uuid : ((Set<String>) yaml.get(channelName + ".mods"))) {
+			for (String uuid : yaml.getStringList(channelName + ".mods")) {
 				channel.addModerator(UUID.fromString(uuid));
 			}
-			for (String uuid : ((Set<String>) yaml.get(channelName + ".bans"))) {
+			for (String uuid : yaml.getStringList(channelName + ".bans")) {
 				channel.addBan(UUID.fromString(uuid));
 			}
-			for (String uuid : ((Set<String>) yaml.get(channelName + ".approved"))) {
+			for (String uuid : yaml.getStringList(channelName + ".approved")) {
 				channel.addApproved(UUID.fromString(uuid));
 			}
 		}
@@ -70,25 +68,29 @@ public class ChannelManager {
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		for (Channel channel : channelList.values()) {
+			if (channel.getOwner() == null) {
+				// Default channel
+				continue;
+			}
 			String name = channel.getName();
 			yaml.set(name + ".owner", channel.getOwner().toString());
 			yaml.set(name + ".type", channel.getType().name());
 			yaml.set(name + ".access", channel.getAccess().name());
-			HashSet<String> set = new HashSet<>();
+			ArrayList<String> list = new ArrayList<>();
 			for (UUID uuid : channel.getModList()) {
-				set.add(uuid.toString());
+				list.add(uuid.toString());
 			}
-			yaml.set(name + ".mods", set);
-			set = new HashSet<>();
+			yaml.set(name + ".mods", list);
+			list = new ArrayList<>();
 			for (UUID uuid : channel.getBanList()) {
-				set.add(uuid.toString());
+				list.add(uuid.toString());
 			}
-			yaml.set(name + ".bans", set);
-			set = new HashSet<>();
+			yaml.set(name + ".bans", list);
+			list = new ArrayList<>();
 			for (UUID uuid : channel.getApprovedUsers()) {
-				set.add(uuid.toString());
+				list.add(uuid.toString());
 			}
-			yaml.set(name + ".approved", set);
+			yaml.set(name + ".approved", list);
 		}
 		try {
 			yaml.save(file);
@@ -112,21 +114,21 @@ public class ChannelManager {
 		yaml.set(name + ".owner", channel.getOwner().toString());
 		yaml.set(name + ".type", channel.getType().name());
 		yaml.set(name + ".access", channel.getAccess().name());
-		HashSet<String> set = new HashSet<>();
+		ArrayList<String> list = new ArrayList<>();
 		for (UUID uuid : channel.getModList()) {
-			set.add(uuid.toString());
+			list.add(uuid.toString());
 		}
-		yaml.set(name + ".mods", set);
-		set = new HashSet<>();
+		yaml.set(name + ".mods", list);
+		list = new ArrayList<>();
 		for (UUID uuid : channel.getBanList()) {
-			set.add(uuid.toString());
+			list.add(uuid.toString());
 		}
-		yaml.set(name + ".bans", set);
-		set = new HashSet<>();
+		yaml.set(name + ".bans", list);
+		list = new ArrayList<>();
 		for (UUID uuid : channel.getApprovedUsers()) {
-			set.add(uuid.toString());
+			list.add(uuid.toString());
 		}
-		yaml.set(name + ".approved", set);
+		yaml.set(name + ".approved", list);
 		try {
 			yaml.save(file);
 		} catch (IOException e) {
@@ -175,6 +177,7 @@ public class ChannelManager {
 		channelList.put("#LOHAC", new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null));
 		channelList.put("#LOFAF", new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null));
 		channelList.put("#LOFAF", new RegionChannel("#Aether", AccessLevel.PUBLIC, null));
+		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null));
 		channelList.put("@", new NormalChannel("@", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6")));
 	}
 

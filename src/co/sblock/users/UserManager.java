@@ -14,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -59,7 +60,7 @@ public class UserManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void loadUser(UUID uuid) {
+	public static void loadUser(final UUID uuid) {
 		File file;
 		try {
 			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
@@ -88,7 +89,6 @@ public class UserManager {
 		Player player = Bukkit.getPlayer(uuid);
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		if (player != null) {
-			player.setDisplayName(yaml.getString("nickname"));
 			builder.setIPAddr(player.getAddress().getHostString());
 		} else {
 			builder.setIPAddr(yaml.getString("ip"));
@@ -122,7 +122,21 @@ public class UserManager {
 		if (player != null) {
 			user.updateFlight();
 			user.updateCurrentRegion(current);
-			user.loginAddListening(user.getListening());
+			final String nick = yaml.getString("nickname");
+
+			// Set display name on delay so it takes effect properly prior to listening announce
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					Player player = Bukkit.getPlayer(uuid);
+					User user = UserManager.getUser(uuid);
+					if (player == null || user == null) {
+						return;
+					}
+					player.setDisplayName(nick);
+					user.loginAddListening(user.getListening());
+				}
+			}.runTask(Sblock.getInstance());
 		}
 		addUser(user);
 	}

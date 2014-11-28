@@ -73,13 +73,13 @@ public class ChatMsgs {
 
 	public static String onUserBanAnnounce(String userName, String channelName) {
 		return ChatColor.YELLOW + userName + ChatColor.RED + " has been " + ChatColor.BOLD
-				+ "banned" + ChatColor.RESET + " from " + ChatColor.GOLD + channelName
+				+ "banned" + ChatColor.RED + " from " + ChatColor.GOLD + channelName
 				+ ChatColor.RED + "!";
 	}
 
 	public static String onUserUnbanAnnounce(String userName, String channelName) {
 		return ChatColor.YELLOW + userName + ChatColor.RED + " has been " + ChatColor.BOLD
-				+ "unbanned" + ChatColor.RESET + " from " + ChatColor.GOLD + channelName
+				+ "unbanned" + ChatColor.RED + " from " + ChatColor.GOLD + channelName
 				+ ChatColor.RED + "!";
 	}
 

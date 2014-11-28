@@ -215,11 +215,11 @@ public class SblockChatCommand extends SblockCommand {
 				}
 				if (args[1].equals("mod")) {
 					String argument = "add";
-					if (argument.startsWith(args[0])) {
+					if (argument.startsWith(args[2])) {
 						matches.add(argument);
 					}
 					argument = "remove";
-					if (argument.startsWith(args[0])) {
+					if (argument.startsWith(args[2])) {
 						matches.add(argument);
 					}
 					return matches;

@@ -230,11 +230,15 @@ public class Transportalizer extends Machine {
 			return false;
 		}
 
-		// Parse remote location. Do not allow invalid height.
+		// Parse remote location. Do not allow invalid height or coords. TODO warn?
 		String[] locString = line3.split(",");
+		int x = Integer.parseInt(locString[0]);
+		x = x > 25000 ? 25000 : x < -25000 ? -25000 : x;
 		int y = Integer.parseInt(locString[1]);
 		y = y > 0 ? y < 256 ? y : 255 : 63;
-		Location remote = new Location(event.getClickedBlock().getWorld(), Integer.parseInt(locString[0]), y, Integer.parseInt(locString[2]));
+		int z = Integer.parseInt(locString[2]);
+		z = z > 25000 ? 25000 : z < -25000 ? -25000 : z;
+		Location remote = new Location(event.getClickedBlock().getWorld(), x, y, z);
 
 		// 50 fuel per block of distance, rounded up.
 		int cost = (int) (key.distance(remote) / 50 + 1);
@@ -247,8 +251,6 @@ public class Transportalizer extends Machine {
 			key.getWorld().playSound(key, Sound.WOLF_GROWL, 16, 0);
 			return false;
 		}
-
-		key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
 
 		// TELEPORT
 		Block pad = event.getClickedBlock().getRelative(BlockFace.DOWN);
@@ -263,8 +265,11 @@ public class Transportalizer extends Machine {
 		}
 		for (Entity e : key.getWorld().getEntities()) {
 			if (e.getLocation().getBlock().equals(source.getBlock())) {
+				source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
+				target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
 				fuel -= cost;
 				hologram.setLine(0, String.valueOf(fuel));
+				hologram.update();
 				e.teleport(new Location(target.getWorld(), target.getX() + .5, target.getY(), target.getZ() + .5,
 						e.getLocation().getYaw(), e.getLocation().getPitch()));
 				key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);

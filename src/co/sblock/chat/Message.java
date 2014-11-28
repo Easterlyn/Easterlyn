@@ -189,6 +189,13 @@ public class Message {
 			return name != null;
 		}
 
+		if (sender.isMute()) {
+			if (notify) {
+				sender.sendMessage(ChatMsgs.isMute());
+			}
+			return false;
+		}
+
 		// No sending messages to global chats while ignoring them.
 		if (channel.getType() == ChannelType.REGION && sender.isSuppressing()) {
 			if (notify) {
