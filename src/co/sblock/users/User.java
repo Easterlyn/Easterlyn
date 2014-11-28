@@ -673,7 +673,9 @@ public class User {
 
 		if (lastEnd > 0) {
 			// Matches were found, commence highlight format changes.
-			message = message.replaceFirst("\\[(" + ChatColor.COLOR_CHAR + ".*?)\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
+			// This is stupid and unsafe - a json element prior to the channel names may have extra, which is now broken.
+			// TODO fix
+			//message = message.replaceFirst("\\[(" + ChatColor.COLOR_CHAR + ".*?)\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
 			// Funtimes sound effects here
 			switch ((int) (Math.random() * 20)) {
 			case 0:
