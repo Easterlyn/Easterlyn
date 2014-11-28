@@ -1,5 +1,6 @@
 package co.sblock.users;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,7 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -49,10 +49,7 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class User {
 
-	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("DDD 'days' HH:mm:ss");
-	static {
-		DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
-	}
+	public static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat("00");
 
 	/* Player's UUID */
 	private final UUID uuid;
@@ -313,7 +310,13 @@ public class User {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		return DATE_FORMATTER.format(new Date(getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK) * 50L));
+		long time = getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		long days = (time / (20 * 60 * 60)) % 24;
+		time -= days * 20 * 60 * 60 * 24;
+		long hours = (time / (20 * 60)) % 60;
+		time -= hours * 20 * 60 * 60;
+		long minutes = (time / 20 ) % 60;
+		return days + " days, " + DECIMAL_FORMATTER.format(hours) + ':' + DECIMAL_FORMATTER.format(minutes);
 	}
 
 	/**
@@ -986,10 +989,9 @@ public class User {
 		ChatColor sys = ChatColor.DARK_AQUA;
 		ChatColor txt = ChatColor.YELLOW;
 		String div = sys + ", " + txt;
-		
 		String s = sys + "-----------------------------------------\n" + 
-				txt + this.getPlayer().getName() + div + this.classType.getDisplayName() + " of " + this.aspect.getDisplayName() + "\n" + 
-				this.mPlanet + div + this.dPlanet.getWorldName() + div + " Flight: " + this.allowFlight + "\n" + 
+				txt + getPlayerName() + div + classType.getDisplayName() + " of " + aspect.getDisplayName()
+				+ "\n" + mPlanet + div + dPlanet.getWorldName() + div + " Flight: " + allowFlight + "\n" + 
 				" Mute: " + this.globalMute.get() + div + " Current: " + this.currentChannel + div + this.listening.toString() + "\n" +
 				" Region: " + this.currentRegion + div + " Prev loc: " + BukkitSerializer.locationToString(getPreviousLocation()) + "\n" +
 				" IP: " + this.userIP + "\n" +

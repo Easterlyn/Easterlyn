@@ -2,7 +2,9 @@ package co.sblock.users;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -12,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -173,6 +176,7 @@ public class UserManager {
 		if (player != null) {
 			yaml.set("nickname", player.getDisplayName());
 			yaml.set("location", BukkitSerializer.locationToString(player.getLocation()));
+			yaml.set("playtime", user.getTimePlayed());
 		}
 		yaml.set("region", user.getCurrentRegion().getDisplayName());
 		yaml.set("previousLocation", BukkitSerializer.locationToString(user.getPreviousLocation()));
@@ -197,6 +201,82 @@ public class UserManager {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to save data for " + user.getPlayerName(), e);
 		}
+	}
+
+	public static String getOfflineUserInfo(UUID uuid) {
+		File file;
+		try {
+			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
+			if (!file.exists()) {
+				return ChatColor.RED + "No data stored for that user.";
+			}
+		} catch (IOException e) {
+			SblockUsers.getSblockUsers().getLogger().err(e);
+			return ChatColor.RED + "Unable to load data! Please report this issue.";
+		}
+		StringBuilder sb = new StringBuilder();
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+		//+-- Name aka Nickname from IP --+
+		sb.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+--")
+				.append(ChatColor.DARK_AQUA).append(' ').append(player.getName())
+				.append(ChatColor.YELLOW).append(" aka ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("nickname", "no nick")).append(ChatColor.YELLOW)
+				.append(" from ").append(ChatColor.DARK_AQUA).append(yaml.getString("ip", "ip"))
+				.append(ChatColor.YELLOW).append(' ').append(ChatColor.STRIKETHROUGH)
+				.append("--+\n");
+
+		// Class of Aspect, dream, planet
+		sb.append(ChatColor.DARK_AQUA).append(yaml.getString("classpect.class", "class"))
+				.append(ChatColor.YELLOW).append(" of ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("classpect.aspect", "aspect")).append(ChatColor.YELLOW)
+				.append(", ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("classpect.dream", "dream")).append(ChatColor.YELLOW)
+				.append(", ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("classpect.medium", "medium")).append('\n');
+
+		// Loc: current location TODO, Region: region
+		sb.append(ChatColor.YELLOW).append("Loc: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("location", "unknown")).append(ChatColor.YELLOW)
+				.append('\n');
+
+		// Prev loc: loc prior to change to/from dreamplanet, Prev region: region of said location
+		sb.append("Prev loc: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("previousLocation", "prev loc")).append(ChatColor.YELLOW)
+				.append(", Prev region: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("previousRegion", "prev region")).append('\n');
+
+		// Progression: PROGRESSION, Programs: [TODO array]
+		sb.append(ChatColor.YELLOW).append("Progression: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("progression.progression", "none")).append(ChatColor.YELLOW)
+				.append(", Programs: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.get("progression.programs")).append('\n');
+
+		// Server: UUID, Client: UUID
+		sb.append(ChatColor.YELLOW).append("Server: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("progression.server", "none")).append(ChatColor.YELLOW)
+				.append(", Client: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("progression.client", "none")).append('\n');
+
+		// Pestering: current, Listening: [list]
+		sb.append(ChatColor.YELLOW).append("Pestering: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("chat.current", "none")).append(ChatColor.YELLOW)
+				.append(", Listening: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.get("chat.listening")).append('\n');
+
+		// Muted: boolean, Suppressing: boolean
+		sb.append(ChatColor.YELLOW).append("Muted: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getBoolean("chat.muted", false)).append(ChatColor.YELLOW)
+				.append(", Suppressing: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getBoolean("chat.suppressing", false)).append('\n');
+
+		// Last seen: date, Playtime: X days, XX:XX
+		sb.append(ChatColor.YELLOW).append("Last login: ").append(ChatColor.DARK_AQUA)
+				.append(new SimpleDateFormat("HH:mm 'on' dd/MM/YY").format(new Date(player.getLastPlayed())))
+				.append(ChatColor.YELLOW).append(", Time ingame: ").append(ChatColor.DARK_AQUA)
+				.append(yaml.getString("playtime", "unknown"));
+
+		return sb.toString();
 	}
 
 	/**
