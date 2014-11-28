@@ -18,8 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 import org.reflections.Reflections;
 
-import com.comphenix.protocol.ProtocolLibrary;
-
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
 import co.sblock.events.listeners.*;
@@ -76,8 +74,6 @@ public class SblockEvents extends Module {
 				e.printStackTrace();
 			}
 		}
-
-		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener());
 
 		initiateRegionChecks();
 	}

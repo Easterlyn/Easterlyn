@@ -122,6 +122,7 @@ public class Sblock extends JavaPlugin {
 
 	public void registerAllCommands() {
 		try {
+			// TODO wrap /version and override tab completion
 			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")

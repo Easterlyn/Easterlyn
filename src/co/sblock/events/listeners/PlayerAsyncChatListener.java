@@ -7,6 +7,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.chat.ColorDef;
 import co.sblock.chat.Message;
 import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.ChannelType;
@@ -53,6 +54,10 @@ public class PlayerAsyncChatListener implements Listener {
 		// Test
 		if (message.getCleanedMessage().equalsIgnoreCase("test")) {
 			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
+			return;
+		}
+		if (message.getCleanedMessage().equalsIgnoreCase("hal") || message.getCleanedMessage().equalsIgnoreCase("dirk")) {
+			event.getPlayer().sendMessage(ColorDef.HAL + "What?");
 			return;
 		}
 		// Uncancel global chat to play nice with IRC plugins/Dynmap
