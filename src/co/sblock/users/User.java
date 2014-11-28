@@ -1134,6 +1134,10 @@ public class User {
 		}
 
 		public void setPreviousLocationFromString(String s) {
+			if (s == null) {
+				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+				return;
+			}
 			String[] loc = s.split(",");
 			World w = Bukkit.getWorld(loc[0]);
 			if (w != null) {

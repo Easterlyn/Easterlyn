@@ -73,8 +73,6 @@ public class UserManager {
 					SblockUsers.getSblockUsers().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
 					return;
 				}
-				Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
-						+ " is joining us for the first time! Please welcome them.");
 				player.teleport(getSpawnLocation());
 
 				UserBuilder builder = new UserBuilder();
@@ -84,6 +82,11 @@ public class UserManager {
 				defaults.add(Region.EARTH.getChannelName());
 				user.loginAddListening(defaults);
 				user.updateCurrentRegion(Region.EARTH);
+				UserManager.addUser(user);
+
+				Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
+						+ " is joining us for the first time! Please welcome them.");
+				return;
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load data for " + uuid, e);
