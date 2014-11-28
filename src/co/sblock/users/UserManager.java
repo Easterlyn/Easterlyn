@@ -249,7 +249,7 @@ public class UserManager {
 				.append(", Prev region: ").append(ChatColor.DARK_AQUA)
 				.append(yaml.getString("previousRegion", "prev region")).append('\n');
 
-		// Progression: PROGRESSION, Programs: [TODO array]
+		// Progression: PROGRESSION, Programs: [list]
 		sb.append(ChatColor.YELLOW).append("Progression: ").append(ChatColor.DARK_AQUA)
 				.append(yaml.getString("progression.progression", "none")).append(ChatColor.YELLOW)
 				.append(", Programs: ").append(ChatColor.DARK_AQUA)

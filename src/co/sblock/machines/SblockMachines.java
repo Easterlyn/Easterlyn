@@ -196,24 +196,6 @@ public class SblockMachines extends Module {
 	}
 
 	/**
-	 * Load a machine from the database.
-	 * <p>
-	 * This method has no error handling. Don't screw up.
-	 * 
-	 * @param location the Location String
-	 * @param machineType the MachineType String
-	 * @param owner the owner of the Machine
-	 * @param direction the facing direction
-	 */
-	public void loadMachine(String location, String machineType, String owner, byte direction, String data) { // TODO remove once yaml
-		String[] l = location.split(",");
-		addMachine(new Location(Bukkit.getWorld(l[0]), Integer.parseInt(l[1]),
-				Integer.parseInt(l[2]), Integer.parseInt(l[3])),
-				MachineType.getType(machineType), owner, Direction.getDirection(direction), data);
-		
-	}
-
-	/**
 	 * Checks a Location to see if there is a Machine there.
 	 * 
 	 * @param l the Location to check

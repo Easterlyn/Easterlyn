@@ -377,21 +377,6 @@ public class User {
 	}
 
 	/**
-	 * Gets the Player's current Region
-	 * 
-	 * @return the Region that the Player is in
-	 */
-	public Region getPlayerRegion() {
-		String world = this.getPlayer().getWorld().getName();
-		Region r = Region.getRegion(world);
-		// TODO fix: store in db, users may not be asleep post-Entry
-		if (r.isDream()) {
-			r = this.getDreamPlanet();
-		}
-		return r;
-	}
-
-	/**
 	 * Gets the Player's current Region.
 	 * 
 	 * @return the Region the Player is in.
