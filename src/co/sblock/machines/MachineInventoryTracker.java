@@ -2,10 +2,10 @@ package co.sblock.machines;
 
 import io.netty.buffer.Unpooled;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.server.v1_8_R1.ChatComponentText;
 import net.minecraft.server.v1_8_R1.Container;
 import net.minecraft.server.v1_8_R1.ContainerMerchant;
 import net.minecraft.server.v1_8_R1.EntityHuman;
@@ -16,6 +16,8 @@ import net.minecraft.server.v1_8_R1.ItemStack;
 import net.minecraft.server.v1_8_R1.MerchantRecipe;
 import net.minecraft.server.v1_8_R1.MerchantRecipeList;
 import net.minecraft.server.v1_8_R1.PacketDataSerializer;
+import net.minecraft.server.v1_8_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_8_R1.PacketPlayOutOpenWindow;
 
 import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
@@ -23,13 +25,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 
-import co.sblock.events.packets.WrapperPlayServerCustomPayload;
-import co.sblock.events.packets.WrapperPlayServerOpenWindow;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.regex.RegexUtils;
-
-import com.comphenix.protocol.ProtocolLibrary;
 
 /**
  * brb going insane because of NBT
@@ -67,37 +65,16 @@ public class MachineInventoryTracker {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void openMachineInventory(Player player, Machine m, InventoryType it, org.bukkit.inventory.ItemStack... items) {
-		// Opens a real anvil window for the Player in question
-		WrapperPlayServerOpenWindow packet = new WrapperPlayServerOpenWindow();
-		packet.setInventoryType(it);
-		packet.setWindowTitle(RegexUtils.getFriendlyName(m.getType().name()));
-		packet.setTitleExact(true);
-
+	public void openVillagerInventory(Player player, Machine m, InventoryType it, org.bukkit.inventory.ItemStack... items) {
 		EntityPlayer p = ((CraftPlayer) player).getHandle();
 
-		// tick container counter - otherwise server will be confused by slot numbers
-		packet.setWindowId((byte) p.nextContainerCounter());
-
-		Container container;
-		switch (it) {
-		case MERCHANT:
-			container = new MerchantContainer(p);
-			break;
-		default:
-			return;
-		}
-
+		int containerCounter = p.nextContainerCounter();
+		Container container = new MerchantContainer(p);
 		p.activeContainer = container;
-		p.activeContainer.windowId = packet.getWindowId();
+		container.windowId = containerCounter;
 		container.addSlotListener(p);
-
-		try {
-			ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet.getHandle());
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-			return;
-		}
+		p.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, "minecraft:villager",
+				new ChatComponentText(RegexUtils.getFriendlyName(m.getType().name())), 3));
 
 		this.openMachines.put(player, m);
 
@@ -119,24 +96,14 @@ public class MachineInventoryTracker {
 			return;
 		}
 
-		try {
+		PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
+		out.writeInt(containerCounter);
+		list.a(out);
+		p.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", out));
 
-			PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
-			out.writeInt(packet.getWindowId());
-			list.a(out);
-
-			WrapperPlayServerCustomPayload trades = new WrapperPlayServerCustomPayload();
-			trades.setChannel("MC|TrList");
-			trades.setData(out.array());
-			ProtocolLibrary.getProtocolManager().sendServerPacket(player, trades.getHandle());
-
-		} catch (IllegalArgumentException | SecurityException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public class MerchantContainer extends ContainerMerchant {
-
 		public MerchantContainer(EntityPlayer player) {
 			super(player.inventory, new FakeMerchant(player), player.world);
 			this.checkReachable = false;
@@ -172,7 +139,7 @@ public class MachineInventoryTracker {
 
 		@Override
 		public IChatBaseComponent getScoreboardDisplayName() {
-			return null;
+			return new ChatComponentText("Machine");
 		}
 
 		@Override

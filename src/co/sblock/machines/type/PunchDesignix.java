@@ -209,7 +209,7 @@ public class PunchDesignix extends Machine {
 	 * @param player the Player
 	 */
 	public void openInventory(Player player) {
-		MachineInventoryTracker.getTracker().openMachineInventory(player, this, InventoryType.MERCHANT, getExampleRecipes());
+		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, InventoryType.MERCHANT, getExampleRecipes());
 	}
 
 	/**
