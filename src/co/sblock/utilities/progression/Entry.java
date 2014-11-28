@@ -23,11 +23,9 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
-import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
@@ -172,26 +170,26 @@ public class Entry {
 		firework.setFireworkMeta(fm);
 		firework.setPassenger(player);
 
-		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
-
-			@Override
-			public void run() {
-				WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
-				packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
-				packet.setNumberOfParticles(5);
-				packet.setLocation(firework.getLocation());
-				packet.setOffset(new Vector(0.5, 0.5, 0.5));
-
-				ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
-			}
-		}, 0, 1L);
+//		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
+//				packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
+//				packet.setNumberOfParticles(5);
+//				packet.setLocation(firework.getLocation());
+//				packet.setOffset(new Vector(0.5, 0.5, 0.5));
+//
+//				// TODO particle utility ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
+//			}
+//		}, 0, 1L);
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
 				try {
-					Bukkit.getScheduler().cancelTask(particleTask);
+					// Bukkit.getScheduler().cancelTask(particleTask);
 					firework.remove();
 					Location target = getEntryLocation(user.getMediumPlanet());
 					player.teleport(target);

@@ -12,9 +12,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
-import co.sblock.events.packets.WrapperPlayServerWorldParticles;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -42,18 +40,19 @@ public class CrotchRocketCommand extends SblockCommand {
 		firework.setFireworkMeta(fm);
 		firework.setPassenger(player);
 
-		final WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
-		packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
-		packet.setNumberOfParticles(5);
-		packet.setOffset(new Vector(0.5, 0.5, 0.5));
+		// Particle data
+//		final WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
+//		packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
+//		packet.setNumberOfParticles(5);
+//		packet.setOffset(new Vector(0.5, 0.5, 0.5));
 
 		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
-				packet.setLocation(firework.getLocation());
+				//packet.setLocation(firework.getLocation());
 				firework.setVelocity(new Vector(0, 2, 0));
-				ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
+				// TODO particle utility ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
 			}
 		}, 0, 1L);
 
