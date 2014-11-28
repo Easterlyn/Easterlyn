@@ -1,25 +1,24 @@
 package co.sblock.machines;
 
+import io.netty.buffer.Unpooled;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_7_R4.Container;
-import net.minecraft.server.v1_7_R4.ContainerAnvil;
-import net.minecraft.server.v1_7_R4.ContainerMerchant;
-import net.minecraft.server.v1_7_R4.EntityHuman;
-import net.minecraft.server.v1_7_R4.EntityPlayer;
-import net.minecraft.server.v1_7_R4.IMerchant;
-import net.minecraft.server.v1_7_R4.ItemStack;
-import net.minecraft.server.v1_7_R4.MerchantRecipe;
-import net.minecraft.server.v1_7_R4.MerchantRecipeList;
-import net.minecraft.server.v1_7_R4.PacketDataSerializer;
-import net.minecraft.util.io.netty.buffer.Unpooled;
+import net.minecraft.server.v1_8_R1.Container;
+import net.minecraft.server.v1_8_R1.ContainerMerchant;
+import net.minecraft.server.v1_8_R1.EntityHuman;
+import net.minecraft.server.v1_8_R1.EntityPlayer;
+import net.minecraft.server.v1_8_R1.IChatBaseComponent;
+import net.minecraft.server.v1_8_R1.IMerchant;
+import net.minecraft.server.v1_8_R1.ItemStack;
+import net.minecraft.server.v1_8_R1.MerchantRecipe;
+import net.minecraft.server.v1_8_R1.MerchantRecipeList;
+import net.minecraft.server.v1_8_R1.PacketDataSerializer;
 
-import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemStack;
-import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -67,6 +66,7 @@ public class MachineInventoryTracker {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void openMachineInventory(Player player, Machine m, InventoryType it, org.bukkit.inventory.ItemStack... items) {
 		// Opens a real anvil window for the Player in question
 		WrapperPlayServerOpenWindow packet = new WrapperPlayServerOpenWindow();
@@ -81,9 +81,6 @@ public class MachineInventoryTracker {
 
 		Container container;
 		switch (it) {
-		case ANVIL:
-			container = new AnvilContainer(p, m.getKey());
-			break;
 		case MERCHANT:
 			container = new MerchantContainer(p);
 			break;
@@ -110,7 +107,7 @@ public class MachineInventoryTracker {
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (int i = 0; i < items.length; i++) {
 			if (i % 3 == 0 && items.length - i > 2) {
-				list.a(new MerchantRecipe(CraftItemStack.asNMSCopy(items[i]),
+				list.add(new MerchantRecipe(CraftItemStack.asNMSCopy(items[i]),
 						CraftItemStack.asNMSCopy(items[i+1]),
 						CraftItemStack.asNMSCopy(items[i+2])));
 			}
@@ -124,7 +121,7 @@ public class MachineInventoryTracker {
 
 		try {
 
-			PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer(), p.playerConnection.networkManager.getVersion());
+			PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
 			out.writeInt(packet.getWindowId());
 			list.a(out);
 
@@ -159,11 +156,6 @@ public class MachineInventoryTracker {
 		}
 
 		@Override
-		public EntityHuman b() {
-			return customer;
-		}
-
-		@Override
 		public MerchantRecipeList getOffers(EntityHuman paramEntityHuman) {
 			return new MerchantRecipeList();
 		}
@@ -177,17 +169,15 @@ public class MachineInventoryTracker {
 		public void a_(ItemStack paramItemStack) {
 			// reduces remaining trades and makes yes/no noises
 		}
-	}
 
-	public class AnvilContainer extends ContainerAnvil {
-
-		public AnvilContainer(EntityHuman entity, Location l) {
-			super(entity.inventory, ((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), entity);
+		@Override
+		public IChatBaseComponent getScoreboardDisplayName() {
+			return null;
 		}
 
 		@Override
-		public boolean a(EntityHuman entityhuman) {
-			return true;
+		public EntityHuman u_() {
+			return customer;
 		}
 	}
 
