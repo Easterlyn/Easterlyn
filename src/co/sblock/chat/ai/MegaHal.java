@@ -14,12 +14,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import net.minecraft.util.org.apache.commons.io.FileUtils;
-
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import org.jibble.jmegahal.JMegaHal;
 
 import co.sblock.Sblock;
