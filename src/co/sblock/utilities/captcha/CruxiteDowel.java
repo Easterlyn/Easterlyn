@@ -389,7 +389,6 @@ public class CruxiteDowel {
 		if (grist.containsKey(m.name())) {
 			return grist.get(m.name());
 		}
-		System.out.println("Filling " + m.name());
 		int minimum = Integer.MAX_VALUE;
 		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(m))) {
 			int newMin;
