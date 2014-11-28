@@ -3,7 +3,7 @@ package co.sblock.events.listeners;
 import java.util.HashMap;
 
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
