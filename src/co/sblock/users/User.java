@@ -311,12 +311,12 @@ public class User {
 	 */
 	public String getTimePlayed() {
 		long time = getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
-		long days = (time / (20 * 60 * 60)) % 24;
-		time -= days * 20 * 60 * 60 * 24;
-		long hours = (time / (20 * 60)) % 60;
-		time -= hours * 20 * 60 * 60;
-		long minutes = (time / 20 ) % 60;
-		return days + " days, " + DECIMAL_FORMATTER.format(hours) + ':' + DECIMAL_FORMATTER.format(minutes);
+		long days = time / (24 * 60 * 60 * 20);
+		time -= days * 24 * 60 * 60 * 20;
+		long hours = time / (60 * 60 * 20);
+		time -= hours * 60 * 60 * 20;
+		time = time / (60 * 20);
+		return days + " days, " + DECIMAL_FORMATTER.format(hours) + ':' + DECIMAL_FORMATTER.format(time);
 	}
 
 	/**
