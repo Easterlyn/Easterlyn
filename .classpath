@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="lib" path="lib/Carbon.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/CreeperHeal-6.7.6.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://nitnelave.github.io/CreeperHeal/apidoc/"/>

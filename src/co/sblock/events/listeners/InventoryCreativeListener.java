@@ -11,8 +11,6 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
-import com.lastabyss.carbon.Carbon;
-
 /**
  * Listener for InventoryCreativeEvents. Used to clean input items from creative clients, preventing
  * server/client crashes.
@@ -21,7 +19,7 @@ import com.lastabyss.carbon.Carbon;
  */
 public class InventoryCreativeListener implements Listener {
 
-	private final Material[] blacklist = new Material[] {Carbon.injector().barrierMat, Material.BEDROCK,
+	private final Material[] blacklist = new Material[] {Material.BEDROCK, // TODO barrier
 			Material.COMMAND, Material.COMMAND_MINECART, Material.ENDER_PORTAL, Material.MOB_SPAWNER};
 
 	/**
@@ -42,7 +40,8 @@ public class InventoryCreativeListener implements Listener {
 			return;
 		}
 
-		if (event.getCursor().getType() == Carbon.injector().bannerItemMat) {
+		// BANNER
+		if (event.getCursor().getType().getId() == 425) {
 			// Banners actually come with NBT tags when using pick-block. We'll just avoid them for now.
 			return;
 		}
