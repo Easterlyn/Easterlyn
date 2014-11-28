@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import net.minecraft.util.com.google.common.io.BaseEncoding;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -30,6 +28,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.io.BaseEncoding;
 import com.sun.corba.se.impl.orbutil.HexOutputStream;
 
 import co.sblock.Sblock;

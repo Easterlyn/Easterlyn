@@ -3,8 +3,6 @@ package co.sblock.utilities.captcha;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.util.com.google.common.io.BaseEncoding;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,6 +13,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import com.google.common.io.BaseEncoding;
 
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.module.Module;
