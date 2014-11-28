@@ -26,5 +26,9 @@ public class ServerListPingListener implements Listener {
 			String MOTD = SblockEvents.getEvents().getStatus().getMOTDChange();
 			event.setMotd(MOTD);
 		}
+		String addr = event.getAddress().getHostAddress();
+		String playerName = SblockEvents.getEvents().getIPName(addr);
+		SblockEvents.getEvents().getLogger().info(playerName + " pinged the server from " + addr);
+		event.setMotd(event.getMotd().replace("Player", playerName));
 	}
 }
