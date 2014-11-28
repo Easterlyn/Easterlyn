@@ -5,8 +5,7 @@ version: 2.0.0-DEV
 author: Sblock Co.
 authors: [Jikoo, Dublek, FireNG, tmathmeyer]
 description: Sblock's sexy mainframe
-depend: [ProtocolLib, HolographicDisplays]
-softdepend: [Chester, CreeperHeal]
+softdepend: [CreeperHeal]
 
 permissions:
  sblock.blaze:
