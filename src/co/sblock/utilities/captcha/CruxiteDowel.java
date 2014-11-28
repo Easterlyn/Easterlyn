@@ -389,6 +389,7 @@ public class CruxiteDowel {
 		if (grist.containsKey(m.name())) {
 			return grist.get(m.name());
 		}
+		System.out.println("Filling " + m.name());
 		int minimum = Integer.MAX_VALUE;
 		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(m))) {
 			int newMin;
@@ -415,6 +416,10 @@ public class CruxiteDowel {
 			} else  if (r instanceof ShapelessRecipe) {
 				newMin = 0;
 				for (ItemStack is : ((ShapelessRecipe) r).getIngredientList()) {
+					if (is.getType() == r.getResult().getType()) {
+						newMin = Integer.MAX_VALUE;
+						break;
+					}
 					newMin += getRecipeCost(is.getType());
 				}
 			} else {
