@@ -27,7 +27,6 @@ import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.progression.ServerMode;
-import co.sblock.utilities.spectator.Spectators;
 import co.sblock.utilities.vote.SleepVote;
 
 /**
@@ -67,14 +66,6 @@ public class PlayerInteractListener implements Listener {
 							event.getPlayer().getUniqueId().toString(), true)
 									.getInventory(UserManager.getUser(event.getPlayer().getUniqueId())));
 				}
-			}
-			return;
-		}
-
-		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
-			event.setCancelled(true);
-			if (!event.hasBlock() || !event.getClickedBlock().getType().name().contains("PLATE")) {
-				event.getPlayer().sendMessage(ChatColor.RED + "You flail your incorporeal arms wildly. The world remains unimpressed.");
 			}
 			return;
 		}

@@ -6,13 +6,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
 
 import co.sblock.module.Module;
-import co.sblock.users.UserManager;
-import co.sblock.utilities.inventory.InventoryManager;
 
 /**
  * Module for managing players in a custom gamemode. Designed to allow players
@@ -22,37 +20,11 @@ import co.sblock.utilities.inventory.InventoryManager;
  */
 public class Spectators extends Module {
 
-	/**
-	 * Minimal class for storing a player's location and fall distance prior to
-	 * becoming a spectator.
-	 * 
-	 * @author Jikoo
-	 */
-	private class Entry {
-		private Location l;
-		private float fall;
-		private PotionEffect[] effects;
-		public Entry(Location l, float fall, PotionEffect[] effects) {
-			this.l = l;
-			this.fall = fall;
-			this.effects = effects;
-		}
-		public Location getLocation() {
-			return l;
-		}
-		public float getFall() {
-			return fall;
-		}
-		public PotionEffect[] getPotionEffects() {
-			return effects;
-		}
-	}
-
 	/** The Spectators instance. */
 	private static Spectators instance;
 
 	/** The List of Players in spectator mode */
-	private Map<UUID, Entry> spectators;
+	private Map<UUID, Location> spectators;
 
 	/**
 	 * @see co.sblock.Module#onEnable()
@@ -96,14 +68,9 @@ public class Spectators extends Module {
 	 * @param p the player to add
 	 */
 	public void addSpectator(Player p) {
-		spectators.put(p.getUniqueId(), new Entry(p.getLocation(), p.getFallDistance(),
-				p.getActivePotionEffects().toArray(new PotionEffect[0]).clone()) );
-		p.getActivePotionEffects().clear();
-		p.setAllowFlight(true);
-		p.setFlying(true);
-		p.setNoDamageTicks(Integer.MAX_VALUE);
+		spectators.put(p.getUniqueId(), p.getLocation());
 		p.closeInventory();
-		InventoryManager.storeAndClearInventory(p);
+		p.setGameMode(GameMode.SPECTATOR);
 	}
 
 	/**
@@ -123,15 +90,8 @@ public class Spectators extends Module {
 	 * @param p
 	 */
 	public void removeSpectator(Player p) {
-		Entry e = spectators.remove(p.getUniqueId());
-		p.teleport(e.getLocation());
-		UserManager.getUser(p.getUniqueId()).updateFlight();
-		p.setNoDamageTicks(0);
-		p.setFallDistance(e.getFall());
-		InventoryManager.restoreInventory(p);
-		for (PotionEffect potion : e.getPotionEffects()) {
-			p.addPotionEffect(potion);
-		}
+		p.teleport(spectators.remove(p.getUniqueId()));
+		p.setGameMode(GameMode.SURVIVAL);
 	}
 
 	@Override

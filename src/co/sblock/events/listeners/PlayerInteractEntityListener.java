@@ -1,13 +1,11 @@
 package co.sblock.events.listeners;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import co.sblock.users.User;
 import co.sblock.users.UserManager;
-import co.sblock.utilities.spectator.Spectators;
 
 /**
  * Listener for PlayerInteractEntityEvents.
@@ -23,12 +21,6 @@ public class PlayerInteractEntityListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
-			event.getPlayer().sendMessage(ChatColor.RED + "You huff and you puff, but all you get is a bit hyperventilated.");
-			event.setCancelled(true);
-			return;
-		}
-
 		User user = UserManager.getUser(event.getPlayer().getUniqueId());
 		if (user != null && user.isServer()) {
 			event.setCancelled(true);

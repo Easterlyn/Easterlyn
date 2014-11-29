@@ -3,6 +3,7 @@ package co.sblock.commands;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -39,6 +40,10 @@ public class SpectateCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.GREEN + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
 			Spectators.getSpectators().removeSpectator(player);
 		} else {
+			if (player.getGameMode() != GameMode.SURVIVAL) {
+				sender.sendMessage(ChatColor.RED + "You can only enter spectate mode from survival.");
+				return true;
+			}
 			sender.sendMessage(ChatColor.GREEN + "You feel a tingling sensation about your extremities as you hover up slightly.");
 			Spectators.getSpectators().addSpectator(player);
 		}
