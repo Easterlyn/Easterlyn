@@ -271,7 +271,8 @@ public class User {
 			@Override
 			public void run() {
 				allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().contains("Circle")
-						|| getPlayer().getGameMode().equals(GameMode.CREATIVE)
+						|| getPlayer().getGameMode() == GameMode.CREATIVE
+						|| getPlayer().getGameMode() == GameMode.SPECTATOR
 						|| isServer || Spectators.getSpectators().isSpectator(uuid));
 				if (getOfflinePlayer().isOnline()) {
 					getPlayer().setAllowFlight(allowFlight);
