@@ -32,13 +32,13 @@ public class Experience {
 	}
 
 	private static int getExpToNext(int level) {
-		if (level > 29) {
-			return 62 + (level - 30) * 7;
+		if (level > 30) {
+			return 9 * level - 158;
 		}
 		if (level > 15) {
-			return 17 + (level - 15) * 3;
+			return 5 * level - 38;
 		}
-		return 17;
+		return 2 * level + 7;
 	}
 
 	public static void changeExp(Player player, int exp) {
