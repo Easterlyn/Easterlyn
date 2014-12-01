@@ -32,7 +32,7 @@ public class AetherCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.RED + "Hey Planar, stop faking empty IRC messages.");
 			return true;
 		}
-		Message message = new Message(ChatColor.WHITE + args[0].replaceAll(".*<(.*?)>.*", "$1"), StringUtils.join(args, ' ', 1, args.length));
+		Message message = new Message(ChatColor.WHITE + args[0], StringUtils.join(args, ' ', 1, args.length));
 		message.setChannel(ChannelManager.getChannelManager().getChannel("#Aether"));
 		// Rather than call message.send() and limit recipients to #Aether, this is supposed to be global.
 		// TODO allow Hal features
