@@ -58,9 +58,4 @@ public class PBO extends Machine {
 	public boolean handleInteract(PlayerInteractEvent event) {
 		return false;
 	}
-
-	@Override
-	public MachineSerialiser getSerialiser() {
-		return new MachineSerialiser(key, owner, direction, data, MachineType.PERFECT_BUILDING_OBJECT);
-	}
 }

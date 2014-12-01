@@ -43,7 +43,7 @@ public class MachineCommand extends SblockCommand {
 				SblockMachines.getInstance().getLogger().fine("Invalid machine: " + args[1]);
 				StringBuilder sb = new StringBuilder("Valid types: ");
 				for (MachineType m : MachineType.values()) {
-					sb.append(m.name()).append(" (").append(m.getAbbreviation()).append(") ");
+					sb.append(m.name()).append(' ');
 				}
 				sender.sendMessage(sb.toString());
 			}

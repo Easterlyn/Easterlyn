@@ -201,9 +201,4 @@ public class Alchemiter extends Machine {
 			}
 		});
 	}
-
-	@Override
-	public MachineSerialiser getSerialiser() {
-		return new MachineSerialiser(key, owner, direction, data, MachineType.ALCHEMITER);
-	}
 }

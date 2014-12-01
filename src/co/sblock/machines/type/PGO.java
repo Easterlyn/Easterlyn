@@ -160,9 +160,4 @@ public class PGO extends Machine {
 			return false;
 		}
 	}
-
-	@Override
-	public MachineSerialiser getSerialiser() {
-		return new MachineSerialiser(key, owner, direction, data, MachineType.PERFECTLY_GENERIC_OBJECT);
-	}
 }

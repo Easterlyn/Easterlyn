@@ -17,31 +17,17 @@ import co.sblock.utilities.regex.RegexUtils;
  */
 public enum MachineType {
 
-	ALCHEMITER("ALC"), COMPUTER("CPU"), CRUXTRUDER("CRX"),
-	PERFECT_BUILDING_OBJECT("PBO"), PERFECTLY_GENERIC_OBJECT("PGO"),
-	PUNCH_DESIGNIX("PD"), TOTEM_LATHE("TL"),
-	TRANSPORTALIZER("TP"), ANY("NO.");
-
-	/** The shortened name of the MachineType. */
-	String type;
-
-	/**
-	 * Constructor for MachineType.
-	 * 
-	 * @param s the shortened name
-	 */
-	private MachineType(String s) {
-		type = s;
-	}
-
-	/**
-	 * Gets a shorter name for the MachineType.
-	 * 
-	 * @return the shortened name for the MachineType
-	 */
-	public String getAbbreviation() {
-		return type;
-	}
+	ALCHEMITER,
+	COMPILATION_AMALGAMATOR,
+	COMPOUNDING_UNIONIZER,
+	COMPUTER,
+	CRUXTRUDER,
+	PERFECT_BUILDING_OBJECT,
+	PERFECTLY_GENERIC_OBJECT,
+	PUNCH_DESIGNIX,
+	TOTEM_LATHE,
+	TRANSPORTALIZER,
+	ANY;
 
 	/**
 	 * Gets a MachineType by abbreviation or full name.
@@ -51,13 +37,11 @@ public enum MachineType {
 	 * @return the MachineType or null if invalid
 	 */
 	public static MachineType getType(String type) {
-		type = type.toUpperCase();
-		for (MachineType m : MachineType.values()) {
-			if (m.getAbbreviation().equals(type) || m.name().equals(type)) {
-				return m;
-			}
+		try {
+			return valueOf(type.toUpperCase());
+		} catch (Exception e) {
+			return null;
 		}
-		return null;
 	}
 
 	/**

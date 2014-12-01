@@ -187,9 +187,4 @@ public class Computer extends Machine implements InventoryHolder {
 		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
 		return i;
 	}
-
-	@Override
-	public MachineSerialiser getSerialiser() {
-		return new MachineSerialiser(key, owner, direction, data, MachineType.COMPUTER);
-	}
 }

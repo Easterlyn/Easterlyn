@@ -290,9 +290,4 @@ public class Transportalizer extends Machine {
 	public void disable() {
 //		hologram.delete();
 	}
-
-	@Override
-	public MachineSerialiser getSerialiser() {
-		return new MachineSerialiser(key, owner, direction, data, MachineType.TRANSPORTALIZER);
-	}
 }
