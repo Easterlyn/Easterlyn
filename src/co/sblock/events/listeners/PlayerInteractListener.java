@@ -1,5 +1,7 @@
 package co.sblock.events.listeners;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
 import co.sblock.events.SblockEvents;
+import co.sblock.fx.FXManager;
+import co.sblock.fx.SblockFX;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
@@ -84,6 +88,15 @@ public class PlayerInteractListener implements Listener {
 
 		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			return;
+		}
+
+
+		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+			// ActiveEffect application
+			HashMap<String, SblockFX> effects = FXManager.itemScan(event.getItem());
+			for (SblockFX fx : effects.values()) {
+				fx.applyEffect(UserManager.getUser(event.getPlayer().getUniqueId()), PlayerInteractEvent.class);
+			}
 		}
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {

@@ -9,29 +9,21 @@ import co.sblock.users.User;
 
 public class FXPshoooot extends SblockFX {
 	
-	private String name;
-	private Class<? extends Event> eventTrigger;
-	
-	private Integer multiplier;
-	
-	private long lastTriggered;
-	private long cooldown;
-	
-	private FXManager manager;
-	
+	@SuppressWarnings("unchecked")
 	public FXPshoooot() {
+		super(false, 0, PlayerInteractEvent.class);
 		name = "PSHOOOOT";
-		eventTrigger = PlayerInteractEvent.class;
-		multiplier = 1;
-		lastTriggered = 0;
-		cooldown = 0;
 	}
 
 	@Override
-	protected void getEffect(User u, Event e) {
+	protected void getEffect(User u) {
 		Player p = u.getPlayer();
 		Vector v = p.getLocation().getDirection();
 		p.setVelocity(v.multiply(multiplier + 2));
 	}
 
+	@Override
+	public void removeEffect(User u) {
+		return;		//N/A for this effect
+	}
 }
