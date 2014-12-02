@@ -41,7 +41,15 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 	}
 
 	@Override
-	public abstract boolean execute(CommandSender sender, String label, String[] args);
+	public boolean execute(CommandSender sender, String label, String[] args) {
+		if (this.getPermission() != null && !sender.hasPermission(this.getPermission())) {
+			sender.sendMessage(this.getPermissionMessage());
+			return true;
+		}
+		return onCommand(sender, label, args);
+	}
+
+	protected abstract boolean onCommand(CommandSender sender, String label, String[] args);
 
 	@Override
 	public Plugin getPlugin() {

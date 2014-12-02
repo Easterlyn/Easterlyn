@@ -37,7 +37,7 @@ public class WhoIsCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player) && args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Please specify a user to look up.");
 			return true;

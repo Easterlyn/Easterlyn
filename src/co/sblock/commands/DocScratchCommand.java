@@ -24,7 +24,7 @@ public class DocScratchCommand extends SblockCommand {
 	 * @see co.sblock.commands.SblockCommand#execute(org.bukkit.command.CommandSender, java.lang.String, java.lang.String[])
 	 */
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatColor.BOLD + "[o] If you're going to speak for me, please proceed.");
 			return true;

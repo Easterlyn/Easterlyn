@@ -27,7 +27,7 @@ public class RequestAcceptCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;

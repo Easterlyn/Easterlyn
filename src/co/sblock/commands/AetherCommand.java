@@ -27,7 +27,7 @@ public class AetherCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args.length < 2) {
 			sender.sendMessage(ChatColor.RED + "Hey Planar, stop faking empty IRC messages.");
 			return true;

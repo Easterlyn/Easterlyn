@@ -24,7 +24,7 @@ public class SilentTeleportCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args == null || args.length < 4) {
 			return false;
 		}

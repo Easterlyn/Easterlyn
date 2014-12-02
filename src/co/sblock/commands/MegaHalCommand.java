@@ -29,7 +29,7 @@ public class MegaHalCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Channel target;
 		if (args.length >= 1) {
 			target = ChannelManager.getChannelManager().getChannel(args[0]);

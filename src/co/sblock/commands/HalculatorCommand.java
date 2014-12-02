@@ -26,7 +26,7 @@ public class HalculatorCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args.length == 0) {
 			sender.sendMessage("Please enter an equation! Ex. /halc (1+1)^(2/3) + 10");
 		} else {

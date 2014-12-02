@@ -31,7 +31,7 @@ public class HalCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		MessageElement msg;
 		if (args.length == 1) {
 			try {

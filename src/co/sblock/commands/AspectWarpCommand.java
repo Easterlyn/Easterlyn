@@ -28,7 +28,7 @@ public class AspectWarpCommand extends SblockCommand {
 		this.setPermission("group.felt");
 	}
 
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args == null || args.length < 2) {
 			return false;
 		}

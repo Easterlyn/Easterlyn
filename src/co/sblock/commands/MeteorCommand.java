@@ -33,7 +33,7 @@ public class MeteorCommand extends SblockCommand {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Location target = null;
 		if (sender instanceof Player) {
 			Player p = (Player) sender;

@@ -27,7 +27,7 @@ public class CommandInformationCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Command command;
 		if (args.length > 0) {
 			command = Sblock.getInstance().getCommandMap().getCommand(args[0]);

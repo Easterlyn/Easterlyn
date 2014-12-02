@@ -21,7 +21,7 @@ public class LordEnglishCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		StringBuilder msg = new StringBuilder();
 		for (int i = 0; i < args.length; i++) {
 			msg.append(args[i].toUpperCase()).append(' ');

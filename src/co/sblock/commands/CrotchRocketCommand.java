@@ -30,7 +30,7 @@ public class CrotchRocketCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		final Player player = (Player) sender;
 		player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);
 

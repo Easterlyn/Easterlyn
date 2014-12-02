@@ -21,7 +21,7 @@ public class AnaashCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Bukkit.broadcastMessage(ChatColor.BLACK + ChatColor.BOLD.toString() + ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ').toUpperCase()));
 		return true;
 	}

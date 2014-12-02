@@ -31,7 +31,7 @@ public class UltraBanCommand extends SblockCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!Bukkit.dispatchCommand(sender, "sban " + StringUtils.join(args, ' '))) {
 			// sban will return its own usage failure, no need to double message.
 			return true;
