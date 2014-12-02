@@ -14,11 +14,10 @@
 
 	<path id="bundle.path">
 		<fileset dir="${lib.dir}">
-			<include name="javaluator.jar" />
-			<include name="jadis.jar" />
-			<include name="jedis.jar" />
 			<include name="javaluator.jar"/>
-			<include name="gson-2.2.4.jar"/>
+			<include name="JMegaHal.jar"/>
+			<include name="reflections-0.9.9-RC1.jar"/>
+			<include name="javassist.jar"/>
 		</fileset>
 	</path>
 
@@ -30,12 +29,12 @@
 
 	<target name="clean" description="delete old files">
 		<delete dir="${class.dir}" />
-		<delete dir="${jar.dir}" />
+		<delete dir="${jar.dir}/${ant.project.name}.jar" />
 	</target>
 
 	<target name="compile" description="build class files" depends="clean">
 		<mkdir dir="${class.dir}" />
-		<javac srcdir="${source.dir}" destdir="${class.dir}" includeantruntime="false" debug="true">
+		<javac srcdir="${source.dir}" destdir="${class.dir}" includeantruntime="false">
 			<classpath refid="libraries.path" />
 		</javac>
 	</target>
@@ -56,7 +55,7 @@
 
 		<jar destfile="${jar.file}" basedir="${class.dir}">
 			<manifest>
-				<attribute name="Class-Path" value="lib/jadis.jar lib/jedis.jar lib/gson.jar lib/javaluator.jar" />
+				<attribute name="Class-Path" value="lib/javaluator.jar lib/JMegaHal.jar lib/reflections-0.9.9-RC1.jar lib/javassist.jar" />
 			</manifest>
 		</jar>
 	</target>
