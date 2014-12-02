@@ -14,13 +14,13 @@ public class FXSpeed extends SblockFX {
 	
 	@SuppressWarnings("unchecked")
 	public FXSpeed() {
-		super(true, 0, PlayerPickupItemEvent.class, PlayerDropItemEvent.class, 
+		super(true, 500, 0, PlayerPickupItemEvent.class, PlayerDropItemEvent.class, 
 				InventoryCloseEvent.class, PlayerDeathEvent.class);
 		name = "SPEED";
 	}
 
 	@Override
-	protected void getEffect(User u) {
+	protected void getEffect(User u, Class<? extends Event> e) {
 		PotionEffect potEffect = new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, multiplier);
 		u.getPlayer().addPotionEffect(potEffect, true);		
 	}

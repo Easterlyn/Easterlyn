@@ -3,21 +3,15 @@ package co.sblock.fx;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.PluginIdentifiableCommand;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.reflections.Reflections;
 
 import co.sblock.Sblock;
-import co.sblock.commands.SblockCommand;
-import co.sblock.effects.PassiveEffect;
 import co.sblock.users.User;
 import co.sblock.utilities.captcha.Captcha;
 
@@ -40,6 +34,10 @@ public class FXManager {
 			}
 		}
 	}
+	
+	public static Map<String, Class<? extends SblockFX>> getValidEffects() {
+		return validEffects;
+	}
 
 	/**
 	 * Scans the entire inventory of a User for effects
@@ -48,7 +46,6 @@ public class FXManager {
 	 */
 	public static void fullEffectsScan(User u) {
 		Player p = u.getPlayer();
-		HashMap<String, SblockFX> effects = new HashMap<String, SblockFX>();
 		PlayerInventory pInv = p.getInventory();
 		ItemStack[] iS = pInv.getContents();
 		ItemStack[] iSA = pInv.getArmorContents();

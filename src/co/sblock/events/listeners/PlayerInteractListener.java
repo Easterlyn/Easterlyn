@@ -91,12 +91,10 @@ public class PlayerInteractListener implements Listener {
 		}
 
 
-		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-			// ActiveEffect application
-			HashMap<String, SblockFX> effects = FXManager.itemScan(event.getItem());
-			for (SblockFX fx : effects.values()) {
-				fx.applyEffect(UserManager.getUser(event.getPlayer().getUniqueId()), PlayerInteractEvent.class);
-			}
+		// Effect application
+		HashMap<String, SblockFX> effects = FXManager.itemScan(event.getItem());
+		for (SblockFX fx : effects.values()) {
+			fx.applyEffect(UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), PlayerInteractEvent.class);
 		}
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -169,7 +167,7 @@ public class PlayerInteractListener implements Listener {
 					event.getPlayer().getInventory().addItem(captcha);
 				} else {
 					event.getPlayer().getWorld().dropItem(event.getPlayer().getEyeLocation(), captcha)
-							.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
+					.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
 				}
 			} else {
 				event.getPlayer().setItemInHand(captcha);

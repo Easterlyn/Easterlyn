@@ -12,6 +12,8 @@ public abstract class SblockFX {
 	protected Class<? extends Event>[] eventTrigger;
 	//How much to multiply the strength of an effect from its base value
 	protected Integer multiplier;
+	//How much this effect costs
+	protected Integer cost;
 	//Is this effect "passive" (continuous background, like a potion effect)
 	protected boolean isPassive;
 	
@@ -21,9 +23,10 @@ public abstract class SblockFX {
 	protected long cooldown;
 	
 	@SuppressWarnings("unchecked")
-	public SblockFX(boolean isPassive, long cooldown, Class<? extends Event>... eventTrigger) {
+	public SblockFX(boolean isPassive, Integer cost, long cooldown, Class<? extends Event>... eventTrigger) {
 		this.eventTrigger = eventTrigger;
 		this.multiplier = 1;
+		this.cost = cost;
 		this.isPassive = isPassive;
 		this.nextUsage = 0;
 		this.cooldown = cooldown;
@@ -52,6 +55,14 @@ public abstract class SblockFX {
 	 */
 	public Integer getMultiplier() {
 		return multiplier;
+	}
+	/**
+	 * Gets the cost of the effect for alchemy purposes
+	 * 
+	 * @return The cost of the effect
+	 */
+	public Integer getCost() {
+		return cost;
 	}
 	/**
 	 * Gets whether the effect is "passive"
@@ -99,7 +110,7 @@ public abstract class SblockFX {
 		execute = (e == null);
 		if(execute && System.currentTimeMillis() > nextUsage) {
 			nextUsage = System.currentTimeMillis() + cooldown;
-			getEffect(u);
+			getEffect(u, e);
 		}
 	}
 	
@@ -109,7 +120,7 @@ public abstract class SblockFX {
 	 * 
 	 * @param u The user who owns this Effect
 	 */
-	protected abstract void getEffect(User u);
+	protected abstract void getEffect(User u, Class<? extends Event> e);
 	
 	/**
 	 * For "passive" effects, will remove the effect from the user

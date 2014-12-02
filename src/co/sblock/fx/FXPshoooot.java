@@ -11,12 +11,12 @@ public class FXPshoooot extends SblockFX {
 	
 	@SuppressWarnings("unchecked")
 	public FXPshoooot() {
-		super(false, 0, PlayerInteractEvent.class);
+		super(false, 350, 0, PlayerInteractEvent.class);
 		name = "PSHOOOOT";
 	}
 
 	@Override
-	protected void getEffect(User u) {
+	protected void getEffect(User u, Class<? extends Event> e) {
 		Player p = u.getPlayer();
 		Vector v = p.getLocation().getDirection();
 		p.setVelocity(v.multiply(multiplier + 2));

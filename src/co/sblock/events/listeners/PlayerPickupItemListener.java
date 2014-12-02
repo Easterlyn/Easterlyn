@@ -1,10 +1,14 @@
 package co.sblock.events.listeners;
 
+import java.util.HashMap;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import co.sblock.users.OfflineUser;
+import co.sblock.fx.FXManager;
+import co.sblock.fx.SblockFX;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -36,6 +40,11 @@ public class PlayerPickupItemListener implements Listener {
 		if (user.isServer()) {
 			event.setCancelled(true);
 			return;
+		}
+
+		HashMap<String, SblockFX> effects = FXManager.itemScan(event.getItem().getItemStack());
+		for (SblockFX fx : effects.values()) {
+			fx.applyEffect(UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), PlayerPickupItemEvent.class);
 		}
 	}
 }

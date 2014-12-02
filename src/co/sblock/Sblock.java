@@ -35,6 +35,7 @@ import co.sblock.events.SblockEvents;
 import co.sblock.machines.SblockMachines;
 import co.sblock.module.Module;
 import co.sblock.users.UserManager;
+import co.sblock.fx.FXModule;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.meteors.MeteorMod;
@@ -93,6 +94,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new SblockChat().enable());
 		modules.add(new UserManager().enable());
 		modules.add(new SblockEvents().enable());
+		modules.add(new FXModule().enable());
 		modules.add(new SblockMachines().enable());
 		modules.add(new Captcha().enable());
 		modules.add(new MeteorMod().enable());
