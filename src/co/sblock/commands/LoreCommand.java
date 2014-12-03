@@ -28,7 +28,14 @@ public class LoreCommand extends SblockCommand {
 	public LoreCommand() {
 		super("lore");
 		this.setDescription("Sblock's lore manipulation command.");
-		this.setUsage("/lore <owner|author|title|name|delete [number|previous args]|clearmeta|add|[set|insert] [number]> <args>");
+		this.setUsage("/lore owner: Set a skull's owner.\n"
+				+ "/lore author|title: Set a book's data.\n"
+				+ "/lore name: Set an item's name.\n"
+				+ "/lore delete ownder|author|title|name|<number>: Reset a single element.\n"
+				+ "/lore clearmeta: Wipe all meta. Includes enchantments and such.\n"
+				+ "/lore add: Add a new line of lore.\n"
+				+ "/lore set|insert <number>: Set or insert a line at the specidified index.\n"
+				+ "All /lore number parameters are 1-indexed.");
 		this.setPermission("group.felt");
 		// Don't forget to update delete tab completion if more pre-delete args are added.
 		primaryArgs = new String[] {"owner", "author", "title", "name", "delete", "clearmeta", "add", "set", "insert"};
