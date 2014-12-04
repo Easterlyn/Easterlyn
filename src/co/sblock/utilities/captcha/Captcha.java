@@ -116,6 +116,12 @@ public class Captcha extends Module {
 	 * @return the unpunched captchacard
 	 */
 	public static ItemStack captchaToPunch(ItemStack is) {
+		if (isBlankCaptcha(is)) {
+			ItemMeta im = is.getItemMeta();
+			im.setDisplayName("Punchcard");
+			is.setItemMeta(im);
+			return is;
+		}
 		is = convert(is);
 		for (String lore : is.getItemMeta().getLore()) {
 			if (lore.startsWith(ChatColor.MAGIC.toString())) {
@@ -342,8 +348,14 @@ public class Captcha extends Module {
 	 * @return the ItemStack created or null if invalid cards are provided
 	 */
 	public static ItemStack createCombinedPunch(ItemStack card1, ItemStack card2) {
-		if (!isCard(card1) || (card2 != null && !isPunch(card2))) {
+		if (!isCard(card1)) {
 			return null;
+		}
+		if (isCaptcha(card1)) {
+			if (card2 != null) {
+				return null;
+			}
+			return captchaToPunch(card1);
 		}
 		ItemStack item = captchaToItem(card1);
 		ArrayList<String> lore = new ArrayList<>();
