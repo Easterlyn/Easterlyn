@@ -28,6 +28,10 @@ public class ServerListPingListener implements Listener {
 		}
 		String addr = event.getAddress().getHostAddress();
 		String playerName = SblockEvents.getEvents().getIPName(addr);
+		if (playerName.equals("Player")) {
+			// No thank you, spam from server monitors.
+			return;
+		}
 		SblockEvents.getEvents().getLogger().info(playerName + " pinged the server from " + addr);
 		event.setMotd(event.getMotd().replace("Player", playerName));
 	}
