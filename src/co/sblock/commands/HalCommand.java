@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.rawmessages.MessageElement;
 import co.sblock.utilities.rawmessages.MessageHalement;
@@ -36,23 +36,23 @@ public class HalCommand extends SblockCommand {
 		if (args.length == 1) {
 			try {
 				int msgNum = Integer.valueOf(args[0]);
-				if (msgNum > RawAnnouncer.getAnnouncer().getMessages().size()) {
-					sender.sendMessage(ChatColor.RED.toString() + RawAnnouncer.getAnnouncer().getMessages().size() + " announcements exist currently.");
-					msgNum = RawAnnouncer.getAnnouncer().getMessages().size();
+				if (msgNum > RawAnnouncer.getInstance().getMessages().size()) {
+					sender.sendMessage(ChatColor.RED.toString() + RawAnnouncer.getInstance().getMessages().size() + " announcements exist currently.");
+					msgNum = RawAnnouncer.getInstance().getMessages().size();
 				}
-				msg = RawAnnouncer.getAnnouncer().getMessages().get(msgNum - 1);
+				msg = RawAnnouncer.getInstance().getMessages().get(msgNum - 1);
 			} catch (NumberFormatException e) {
 				msg = new MessageHalement(args[0]);
 			}
 		} else if (args.length > 0) {
 			msg = new MessageHalement(StringUtils.join(args, ' '));
 		} else {
-			msg = RawAnnouncer.getAnnouncer().getMessages().get((int) (Math.random() * RawAnnouncer.getAnnouncer().getMessages().size()));
+			msg = RawAnnouncer.getInstance().getMessages().get((int) (Math.random() * RawAnnouncer.getInstance().getMessages().size()));
 		}
 		Log.anonymousInfo(msg.getConsoleFriendly());
 		String announcement = msg.toString();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			UserManager.getGuaranteedUser(p.getUniqueId()).rawHighlight(announcement);
+			Users.getGuaranteedUser(p.getUniqueId()).rawHighlight(announcement);
 		}
 		return true;
 	}

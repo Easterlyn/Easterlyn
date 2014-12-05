@@ -24,7 +24,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.experience.Experience;
@@ -96,7 +96,7 @@ public class Alchemiter extends Machine {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
 			openInventory(event.getPlayer());

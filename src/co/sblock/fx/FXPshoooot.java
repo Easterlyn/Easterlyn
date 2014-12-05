@@ -1,7 +1,5 @@
 package co.sblock.fx;
 
-import java.util.ArrayList;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -10,8 +8,6 @@ import org.bukkit.util.Vector;
 import co.sblock.users.OnlineUser;
 
 public class FXPshoooot extends SblockFX {
-
-	ArrayList<String> names = new ArrayList<String>();
 
 	@SuppressWarnings("unchecked")
 	public FXPshoooot() {

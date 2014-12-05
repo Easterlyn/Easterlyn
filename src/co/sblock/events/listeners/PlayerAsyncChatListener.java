@@ -9,9 +9,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.Message;
-import co.sblock.chat.SblockChat;
+import co.sblock.chat.Chat;
 import co.sblock.chat.channel.ChannelType;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Listener for PlayerAsyncChatEvents.
@@ -39,7 +39,7 @@ public class PlayerAsyncChatListener implements Listener {
 		event.setCancelled(true);
 		// Clear recipients so as to not duplicate messages for global chat
 		event.getRecipients().clear();
-		Message message = new Message(UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()), event.getMessage());
+		Message message = new Message(Users.getGuaranteedUser(event.getPlayer().getUniqueId()), event.getMessage());
 		// Ensure message can be sent
 		if (!message.validate(true)) {
 			return;
@@ -66,7 +66,7 @@ public class PlayerAsyncChatListener implements Listener {
 		if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
 			msg = msg.substring(msg.indexOf(' ')).trim();
 			final Message hal = new Message("Lil Hal", "");
-			hal.setMessage(SblockChat.getChat().getHalculator().evhaluate(msg));
+			hal.setMessage(Chat.getChat().getHalculator().evhaluate(msg));
 			hal.addColor(ChatColor.RED);
 			hal.setChannel(message.getChannel());
 			// Delay reply to prevent global channels logging reply before original message
@@ -79,6 +79,6 @@ public class PlayerAsyncChatListener implements Listener {
 			return;
 		}
 
-		SblockChat.getChat().getHal().handleMessage(message);
+		Chat.getChat().getHal().handleMessage(message);
 	}
 }

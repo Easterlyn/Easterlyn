@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.chat.SblockChat;
+import co.sblock.chat.Chat;
 
 /**
  * SblockCommand for using the halculate function just for yourself.
@@ -31,7 +31,7 @@ public class HalculatorCommand extends SblockCommand {
 			sender.sendMessage("Please enter an equation! Ex. /halc (1+1)^(2/3) + 10");
 		} else {
 			sender.sendMessage(ChatColor.RED + "Evhaluation: " + ChatColor.GRAY
-					+ SblockChat.getChat().getHalculator().evhaluate(StringUtils.join(args, ' ')));
+					+ Chat.getChat().getHalculator().evhaluate(StringUtils.join(args, ' ')));
 		}
 		return true;
 	}

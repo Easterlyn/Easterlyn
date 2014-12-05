@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand featuring a SuperBan along with several protection removal commands.
@@ -38,7 +38,7 @@ public class UltraBanCommand extends SblockCommand {
 
 		Player p = Bukkit.getPlayer(args[0]);
 		if (p != null) {
-			OfflineUser victim = UserManager.getGuaranteedUser(p.getUniqueId());
+			OfflineUser victim = Users.getGuaranteedUser(p.getUniqueId());
 			File file;
 			try {
 				file = new File(Sblock.getInstance().getUserDataFolder(), victim.getUUID().toString() + ".yml");
@@ -46,7 +46,7 @@ public class UltraBanCommand extends SblockCommand {
 					file.delete();
 				}
 			} catch (IOException e) {
-				UserManager.getUserManager().getLogger().warning("Unable to delete data for " + victim.getUUID());
+				Users.getInstance().getLogger().warning("Unable to delete data for " + victim.getUUID());
 			}
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + p.getUniqueId());
 		}

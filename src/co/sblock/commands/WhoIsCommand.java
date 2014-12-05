@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand for checking a User's stored data.
@@ -55,9 +55,9 @@ public class WhoIsCommand extends SblockCommand {
 					@Override
 					public void run() {
 						if (sender.hasPermission("group.felt")) {
-							sender.sendMessage(UserManager.getGuaranteedUser(player.getUniqueId()).getWhois());
+							sender.sendMessage(Users.getGuaranteedUser(player.getUniqueId()).getWhois());
 						} else {
-							sender.sendMessage(UserManager.getGuaranteedUser(player.getUniqueId()).getProfile());
+							sender.sendMessage(Users.getGuaranteedUser(player.getUniqueId()).getProfile());
 						}
 					}
 				}.runTask(Sblock.getInstance());

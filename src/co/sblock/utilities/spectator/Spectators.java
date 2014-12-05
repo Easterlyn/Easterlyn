@@ -49,15 +49,6 @@ public class Spectators extends Module {
 		}
 	}
 
-	/**
-	 * Gets the Spectators instance.
-	 * 
-	 * @return the Spectators instance.
-	 */
-	public static Spectators getSpectators() {
-		return instance;
-	}
-
 	public Set<UUID> spectators() {
 		return spectators.keySet();
 	}
@@ -97,5 +88,14 @@ public class Spectators extends Module {
 	@Override
 	protected String getModuleName() {
 		return "Spectators";
+	}
+
+	/**
+	 * Gets the Spectators instance.
+	 * 
+	 * @return the Spectators instance.
+	 */
+	public static Spectators getInstance() {
+		return instance;
 	}
 }

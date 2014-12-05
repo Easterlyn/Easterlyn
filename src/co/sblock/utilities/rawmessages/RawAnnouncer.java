@@ -124,7 +124,7 @@ public class RawAnnouncer extends Module {
 		return "RawAnnouncer";
 	}
 
-	public static RawAnnouncer getAnnouncer() {
+	public static RawAnnouncer getInstance() {
 		return instance;
 	}
 }

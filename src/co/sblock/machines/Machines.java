@@ -38,10 +38,10 @@ import co.sblock.users.OfflineUser;
 /**
  * @author Jikoo
  */
-public class SblockMachines extends Module {
+public class Machines extends Module {
 
 	/** The MachineModule instance. */
-	private static SblockMachines instance;
+	private static Machines instance;
 
 	/** A Map of Machine key Locations to corresponding Machine. */
 	private Map<Location, Machine> machineKeys;
@@ -495,7 +495,7 @@ public class SblockMachines extends Module {
 
 	@Override
 	protected String getModuleName() {
-		return "Machines";
+		return "Sblock Machines";
 	}
 
 	/**
@@ -503,7 +503,7 @@ public class SblockMachines extends Module {
 	 * 
 	 * @return the MachineModule
 	 */
-	public static SblockMachines getInstance() {
+	public static Machines getInstance() {
 		return instance;
 	}
 }

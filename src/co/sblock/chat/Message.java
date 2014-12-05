@@ -14,7 +14,7 @@ import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.rawmessages.EscapedElement;
 import co.sblock.utilities.rawmessages.MessageClick;
 import co.sblock.utilities.rawmessages.MessageElement;
@@ -189,7 +189,7 @@ public class Message {
 			return name != null;
 		}
 
-		if (sender.isMute()) {
+		if (sender.getMute()) {
 			if (notify) {
 				sender.sendMessage(ChatMsgs.isMute());
 			}
@@ -197,7 +197,7 @@ public class Message {
 		}
 
 		// No sending messages to global chats while ignoring them.
-		if (channel.getType() == ChannelType.REGION && sender.isSuppressing()) {
+		if (channel.getType() == ChannelType.REGION && sender.getSuppression()) {
 			if (notify) {
 				sender.sendMessage(ChatMsgs.errorSuppressingGlobal());
 			}
@@ -235,7 +235,7 @@ public class Message {
 		}
 
 		if (!isPrepared) {
-			SblockChat.getChat().getLogger().severe("Message could not be prepared");
+			Chat.getChat().getLogger().severe("Message could not be prepared");
 		}
 
 		if (sender == null) {
@@ -247,12 +247,12 @@ public class Message {
 		}
 
 		for (UUID uuid : channel.getListening()) {
-			OfflineUser u = UserManager.getGuaranteedUser(uuid);
+			OfflineUser u = Users.getGuaranteedUser(uuid);
 			if (u == null) {
 				channel.removeListening(uuid);
 				continue;
 			}
-			if (channel.getType() == ChannelType.REGION && u.isSuppressing()) {
+			if (channel.getType() == ChannelType.REGION && u.getSuppression()) {
 				continue;
 			}
 			if (sender != null && sender.equals(u)) {

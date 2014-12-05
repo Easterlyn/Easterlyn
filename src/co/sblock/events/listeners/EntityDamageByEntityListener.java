@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.meteors.MeteoriteComponent;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -49,13 +49,13 @@ public class EntityDamageByEntityListener implements Listener {
 
 		Player p = (Player) event.getDamager();
 
-		if (Spectators.getSpectators().isSpectator(p.getUniqueId())) {
+		if (Spectators.getInstance().isSpectator(p.getUniqueId())) {
 			p.sendMessage(ChatColor.RED + "You waggle your fingers wildly, but your target remains unmussed.");
 			event.setCancelled(true);
 			return;
 		}
 
-		OfflineUser u = UserManager.getGuaranteedUser(p.getUniqueId());
+		OfflineUser u = Users.getGuaranteedUser(p.getUniqueId());
 		if (u != null && u.isServer()) {
 			event.setCancelled(true);
 			return;

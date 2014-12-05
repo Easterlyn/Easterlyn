@@ -26,13 +26,13 @@ import org.bukkit.util.Vector;
 import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Region;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.meteors.Meteorite;
@@ -104,7 +104,7 @@ public class Entry {
 		im.setDisplayName(ChatColor.AQUA + "Cruxite " + InventoryUtils.getMaterialDataName(is.getType(), is.getDurability()));
 		is.setItemMeta(im);
 		is = Captcha.captchaToPunch(Captcha.itemToCaptcha(is));
-		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline() && UserManager.getGuaranteedUser(user.getServer()).isServer()) {
+		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline() && Users.getGuaranteedUser(user.getServer()).isServer()) {
 			Bukkit.getPlayer(user.getServer()).getInventory().addItem(is);
 		} else {
 			Player player = user.getPlayer();
@@ -125,7 +125,7 @@ public class Entry {
 		}
 
 		// Kicks the server out of server mode
-		OfflineUser server = UserManager.getGuaranteedUser(user.getServer());
+		OfflineUser server = Users.getGuaranteedUser(user.getServer());
 		if (server != null && server.isServer()) {
 			server.stopServerMode();
 		}
@@ -146,7 +146,7 @@ public class Entry {
 		user.getPrograms().remove(Icon.SBURBCLIENT.getProgramID());
 
 		// Removes all free machines placed by the User or their server
-		for (Machine m : SblockMachines.getInstance().getMachines(user.getUUID())) {
+		for (Machine m : Machines.getInstance().getMachines(user.getUUID())) {
 			if (m.getType().isFree()) {
 				m.remove();
 			}

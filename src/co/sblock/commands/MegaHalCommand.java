@@ -11,7 +11,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
-import co.sblock.chat.SblockChat;
+import co.sblock.chat.Chat;
 import co.sblock.chat.channel.Channel;
 
 /**
@@ -40,7 +40,7 @@ public class MegaHalCommand extends SblockCommand {
 		} else {
 			target = ChannelManager.getChannelManager().getChannel("#");
 		}
-		SblockChat.getChat().getHal().triggerResponse(target, args.length > 1 ? StringUtils.join(args, ' ', 1, args.length) : null, false);
+		Chat.getChat().getHal().triggerResponse(target, args.length > 1 ? StringUtils.join(args, ' ', 1, args.length) : null, false);
 		return true;
 	}
 

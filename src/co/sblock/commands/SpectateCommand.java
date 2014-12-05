@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -32,20 +32,20 @@ public class SpectateCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		if (UserManager.getGuaranteedUser(player.getUniqueId()).isServer()) {
+		if (Users.getGuaranteedUser(player.getUniqueId()).isServer()) {
 			sender.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
 			return true;
 		}
-		if (Spectators.getSpectators().isSpectator(player.getUniqueId())) {
+		if (Spectators.getInstance().isSpectator(player.getUniqueId())) {
 			sender.sendMessage(ChatColor.GREEN + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
-			Spectators.getSpectators().removeSpectator(player);
+			Spectators.getInstance().removeSpectator(player);
 		} else {
 			if (player.getGameMode() != GameMode.SURVIVAL) {
 				sender.sendMessage(ChatColor.RED + "You can only enter spectate mode from survival.");
 				return true;
 			}
 			sender.sendMessage(ChatColor.GREEN + "You feel a tingling sensation about your extremities as you hover up slightly.");
-			Spectators.getSpectators().addSpectator(player);
+			Spectators.getInstance().addSpectator(player);
 		}
 		return true;
 	}

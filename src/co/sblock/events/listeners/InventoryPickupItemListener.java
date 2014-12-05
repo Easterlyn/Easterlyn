@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 
 /**
@@ -25,7 +25,7 @@ public class InventoryPickupItemListener implements Listener {
 	public void onInventoryMoveItem(InventoryPickupItemEvent event) {
 		InventoryHolder ih = event.getInventory().getHolder();
 		if (ih != null && ih instanceof BlockState) {
-			Machine m = SblockMachines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
+			Machine m = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
 			if (m != null) {
 				event.setCancelled(m.handleHopperPickupItem(event));
 				return;

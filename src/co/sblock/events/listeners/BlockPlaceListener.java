@@ -10,12 +10,12 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.PBO;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -32,7 +32,7 @@ public class BlockPlaceListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 
-		Machine m = SblockMachines.getInstance().getMachineByBlock(event.getBlock());
+		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());
 		if (m != null) {
 			// Block registered as part of a machine. Most likely removed by explosion or similar.
 			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
@@ -42,7 +42,7 @@ public class BlockPlaceListener implements Listener {
 		}
 
 		// Server mode placement
-		if (UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer()) {
+		if (Users.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer()) {
 			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {
@@ -67,11 +67,11 @@ public class BlockPlaceListener implements Listener {
 					break;
 				}
 				try {
-					SblockMachines.getInstance().addMachine(
+					Machines.getInstance().addMachine(
 							event.getBlock().getLocation(), mt, event.getPlayer().getUniqueId().toString(),
 							Direction.getFacingDirection(event.getPlayer()), mt.getData(event)).assemble(event);
 				} catch (NullPointerException e) {
-					SblockMachines.getInstance().getLogger().debug("Invalid machine placed.");
+					Machines.getInstance().getLogger().debug("Invalid machine placed.");
 					event.setBuild(false);
 					event.setCancelled(true);
 				}

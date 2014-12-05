@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -30,8 +30,8 @@ public class PlayerCommandPreprocessListener implements Listener {
 
 		String lowercase = event.getMessage().toLowerCase();
 		if (lowercase.startsWith("/sethome")
-				&& (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())
-				|| UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer())) {
+				&& (Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())
+				|| Users.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");
 			return;

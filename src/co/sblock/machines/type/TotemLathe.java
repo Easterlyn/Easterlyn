@@ -24,7 +24,7 @@ import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.progression.Entry;
@@ -91,7 +91,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if ((user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user)))
 				&& (event.getPlayer().hasPermission("group.denizen")

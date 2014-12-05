@@ -11,7 +11,7 @@ import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.progression.Entry;
 
@@ -51,7 +51,7 @@ public class Cruxtruder extends Machine {
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
 		if (this.key.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
-			OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+			OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 			if (Entry.getEntry().canStart(user)) {
 				Entry.getEntry().startEntry(user, event.getBlock().getLocation());
 			}

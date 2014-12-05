@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand for accepting a pending server or client request.
@@ -31,18 +31,18 @@ public class RequestAcceptCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		if (!UserManager.getUserManager().getRequests().containsKey(sender.getName())) {
+		if (!Users.getInstance().getRequests().containsKey(sender.getName())) {
 			sender.sendMessage(ChatColor.RED + "You should get someone to /requestserver or /requestclient before attempting to accept!");
 			return true;
 		}
-		String req = UserManager.getUserManager().getRequests().remove(sender.getName());
-		OfflineUser u = UserManager.getGuaranteedUser(((Player) sender).getUniqueId());
+		String req = Users.getInstance().getRequests().remove(sender.getName());
+		OfflineUser u = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		Player p1 = Bukkit.getPlayer(req.substring(1));
 		if (p1 == null) {
 			sender.sendMessage(ChatColor.GOLD + req.substring(1) + ChatColor.RED + " appears to be offline! Request removed.");
 			return true;
 		}
-		OfflineUser u1 = UserManager.getGuaranteedUser(p1.getUniqueId());
+		OfflineUser u1 = Users.getGuaranteedUser(p1.getUniqueId());
 		if (req.charAt(0) == 'c') {
 			u.setClient(u1.getUUID());
 			u1.setServer(u.getUUID());

@@ -1,6 +1,6 @@
 package co.sblock.events.session;
 
-import co.sblock.events.SblockEvents;
+import co.sblock.events.Events;
 
 /**
  * Changes Status synchronously to prevent concurrent file modification.
@@ -18,7 +18,7 @@ public class StatusSync implements Runnable {
 	 */
 	@Override
 	public void run() {
-		SblockEvents.getEvents().changeStatus(s);
+		Events.getInstance().changeStatus(s);
 	}
 
 }

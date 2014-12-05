@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.machines.utilities.Icon;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand for requesting that a User set themselves as another's server.
@@ -41,7 +41,7 @@ public class RequestServerCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.RED + "Unknown user!");
 			return true;
 		}
-		OfflineUser u = UserManager.getGuaranteedUser(p.getUniqueId());
+		OfflineUser u = Users.getGuaranteedUser(p.getUniqueId());
 		if (u == null) {
 			sender.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
 			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");
@@ -57,13 +57,13 @@ public class RequestServerCommand extends SblockCommand {
 					+ " does not have the Sburb Server installed!");
 			return true;
 		}
-		if (UserManager.getUserManager().getRequests().containsKey(u.getPlayerName())) {
+		if (Users.getInstance().getRequests().containsKey(u.getPlayerName())) {
 			sender.sendMessage(ChatColor.GOLD + u.getPlayerName() + ChatColor.RED
 					+ " has a pending request to handle already!");
 			return true;
 		}
 		sender.sendMessage(ChatColor.YELLOW + "Request sent to " + ChatColor.GREEN + p.getName());
-		UserManager.getUserManager().getRequests().put(u.getPlayerName(), "c" + sender.getName());
+		Users.getInstance().getRequests().put(u.getPlayerName(), "c" + sender.getName());
 		u.getPlayer().sendMessage(ChatColor.GREEN + sender.getName() + ChatColor.YELLOW
 				+ " has requested that you be their server!" + ChatColor.AQUA
 				+ "\n/acceptrequest" + ChatColor.YELLOW + " or "

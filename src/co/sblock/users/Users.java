@@ -25,9 +25,9 @@ import co.sblock.module.Module;
  * 
  * @author FireNG, Jikoo
  */
-public class UserManager  extends Module {
+public class Users extends Module {
 
-	private static UserManager instance;
+	private static Users instance;
 
 	/** Map containing all server/client player requests */
 	private Map<String, String> requests;
@@ -37,14 +37,14 @@ public class UserManager  extends Module {
 		instance = this;
 		requests = new HashMap<String, String>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			UserManager.getGuaranteedUser(p.getUniqueId());
+			Users.getGuaranteedUser(p.getUniqueId());
 		}
 	}
 
 	@Override
 	protected void onDisable() {
-		for (OfflineUser u : UserManager.getUsers().toArray(new OfflineUser[0])) {
-			UserManager.saveUser(UserManager.unloadUser(u.getUUID()));
+		for (OfflineUser u : Users.getUsers().toArray(new OfflineUser[0])) {
+			Users.saveUser(Users.unloadUser(u.getUUID()));
 		}
 		instance = null;
 	}
@@ -63,7 +63,7 @@ public class UserManager  extends Module {
 		return requests;
 	}
 
-	public static UserManager getUserManager() {
+	public static Users getInstance() {
 		return instance;
 	}
 
@@ -144,9 +144,9 @@ public class UserManager  extends Module {
 		yaml.set("region", user.getCurrentRegion().getDisplayName());
 		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(user.getPreviousLocation()));
 		yaml.set("previousRegion", null);
-		yaml.set("flying", user.canFly());
+		yaml.set("flying", user.getFlight());
 		yaml.set("classpect.class", user.getUserClass().getDisplayName());
-		yaml.set("classpect.aspect", user.getAspect().getDisplayName());
+		yaml.set("classpect.aspect", user.getUserAspect().getDisplayName());
 		yaml.set("classpect.dream", user.getDreamPlanet().getDisplayName());
 		yaml.set("classpect.medium", user.getMediumPlanet().getDisplayName());
 		yaml.set("progression.progression", user.getProgression().name());
@@ -155,8 +155,8 @@ public class UserManager  extends Module {
 		yaml.set("progression.client", user.getClient() != null ? user.getClient().toString() : null);
 		yaml.set("chat.current", user.getCurrentChannel() != null ? user.getCurrentChannel().getName() : "#");
 		yaml.set("chat.listening", user.getListening());
-		yaml.set("chat.muted", user.isMute());
-		yaml.set("chat.suppressing", user.isSuppressing());
+		yaml.set("chat.muted", user.getMute());
+		yaml.set("chat.suppressing", user.getSuppression());
 		yaml.set("chat.ignoring", null);
 		yaml.set("chat.highlights", null);
 		try {

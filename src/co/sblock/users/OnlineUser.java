@@ -25,11 +25,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.SblockChat;
+import co.sblock.chat.Chat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.fx.SblockFX;
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.utilities.MachineType;
@@ -71,7 +71,7 @@ public class OnlineUser extends OfflineUser {
 						|| player != null && (getCurrentRegion().isDream()
 								|| player.getGameMode() == GameMode.CREATIVE
 								|| player.getGameMode() == GameMode.SPECTATOR || isServer
-								|| Spectators.getSpectators().isSpectator(getUUID()));
+								|| Spectators.getInstance().isSpectator(getUUID()));
 				if (player != null) {
 					player.setAllowFlight(allowFlight);
 					player.setFlying(allowFlight);
@@ -100,7 +100,7 @@ public class OnlineUser extends OfflineUser {
 				allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().contains("Circle")
 						|| getPlayer().getGameMode() == GameMode.CREATIVE
 						|| getPlayer().getGameMode() == GameMode.SPECTATOR
-						|| isServer || Spectators.getSpectators().isSpectator(getUUID()));
+						|| isServer || Spectators.getInstance().isSpectator(getUUID()));
 				if (getPlayer() != null) {
 					getPlayer().setAllowFlight(allowFlight);
 					getPlayer().setFlying(allowFlight);
@@ -152,15 +152,15 @@ public class OnlineUser extends OfflineUser {
 	@Override
 	public void startServerMode() {
 		Player p = this.getPlayer();
-		if (Spectators.getSpectators().isSpectator(getUUID())) {
-			Spectators.getSpectators().removeSpectator(p);
+		if (Spectators.getInstance().isSpectator(getUUID())) {
+			Spectators.getInstance().removeSpectator(p);
 		}
 		if (getClient() == null) {
 			p.sendMessage(ChatColor.RED + "You must have a client to enter server mode!"
 					+ "+\nAsk someone with " + ChatColor.AQUA + "/requestclient <player>");
 			return;
 		}
-		OnlineUser u = UserManager.getOnlineUser(getClient());
+		OnlineUser u = Users.getOnlineUser(getClient());
 		if (u == null) {
 			p.sendMessage(ChatColor.RED + "You should wait for your client before progressing!");
 			return;
@@ -169,13 +169,13 @@ public class OnlineUser extends OfflineUser {
 			p.sendMessage(ChatColor.RED + u.getPlayerName() + " does not have the Sburb Client installed!");
 			return;
 		}
-		Machine m = SblockMachines.getInstance().getComputer(getClient());
+		Machine m = Machines.getInstance().getComputer(getClient());
 		if (m == null) {
 			p.sendMessage(ChatColor.RED + u.getPlayerName() + " has not placed their computer in their house!");
 			return;
 		}
 		this.serverDisableTeleport = p.getLocation();
-		if (!SblockMachines.getInstance().isByComputer(u.getPlayer(), 25)) {
+		if (!Machines.getInstance().isByComputer(u.getPlayer(), 25)) {
 			p.teleport(m.getKey());
 		} else {
 			p.teleport(u.getPlayer());
@@ -341,7 +341,7 @@ public class OnlineUser extends OfflineUser {
 				.append(" logs the fuck in and begins pestering <>").append(ChatColor.YELLOW)
 				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues
-		for (OfflineUser u : UserManager.getUsers()) {
+		for (OfflineUser u : Users.getUsers()) {
 			StringBuilder matches = new StringBuilder();
 			for (String s : this.getListening()) {
 				if (u.getListening().contains(s)) {
@@ -387,11 +387,11 @@ public class OnlineUser extends OfflineUser {
 
 	@Override
 	public boolean getComputerAccess() {
-		if (!SblockChat.getComputerRequired()) {
+		if (!Chat.getComputerRequired()) {
 			// Overrides the computer limitation for pre-Entry shenanigans
 			return true;
 		}
-		return SblockMachines.getInstance().isByComputer(this.getPlayer(), 10);
+		return Machines.getInstance().isByComputer(this.getPlayer(), 10);
 	}
 
 	/**

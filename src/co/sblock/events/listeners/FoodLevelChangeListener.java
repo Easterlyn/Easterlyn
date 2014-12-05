@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -22,11 +22,11 @@ public class FoodLevelChangeListener implements Listener {
 	 */
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
-		if (Spectators.getSpectators().isSpectator(event.getEntity().getUniqueId())) {
+		if (Spectators.getInstance().isSpectator(event.getEntity().getUniqueId())) {
 			event.setCancelled(true);
 		}
 
-		OfflineUser user = UserManager.getGuaranteedUser(event.getEntity().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(event.getEntity().getUniqueId());
 		if (user != null && user.isServer()) {
 			event.setCancelled(true);
 			return;

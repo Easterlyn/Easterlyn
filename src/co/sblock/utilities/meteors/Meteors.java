@@ -16,9 +16,9 @@ import co.sblock.module.Module;
 /**
  * @author Dublek, Jikoo
  */
-public class MeteorMod extends Module implements Listener {
+public class Meteors extends Module implements Listener {
 	/** The MeteorMod instance. */
-	private static MeteorMod instance;
+	private static Meteors instance;
 
 	/**
 	 * @see Module#onEnable()
@@ -41,7 +41,7 @@ public class MeteorMod extends Module implements Listener {
 	 * 
 	 * @return the MeteorMod instance
 	 */
-	public static MeteorMod getInstance() {
+	public static Meteors getInstance() {
 		return instance;
 	}
 
@@ -54,7 +54,7 @@ public class MeteorMod extends Module implements Listener {
 		net.minecraft.server.v1_8_R1.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
 		if (nmsEntity instanceof MeteoriteComponent) {
 			event.setCancelled(true);
-			MeteorMod.getInstance().explode(event.getBlock().getLocation(), event.getEntity(),
+			Meteors.getInstance().explode(event.getBlock().getLocation(), event.getEntity(),
 					false, ((MeteoriteComponent) nmsEntity).shouldExplode());
 			event.getEntity().remove();
 			event.getBlock().setType(Material.AIR);

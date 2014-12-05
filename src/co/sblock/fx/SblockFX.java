@@ -1,6 +1,6 @@
 package co.sblock.fx;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.bukkit.event.Event;
 
@@ -11,7 +11,7 @@ public abstract class SblockFX {
 	// The canonical name of the effect
 	protected String canonicalName;
 	// Other names that may be used ingame
-	protected ArrayList<String> commonNames;
+	protected HashSet<String> commonNames;
 	// The event that can trigger this effect to occur
 	protected Class<? extends Event>[] eventTrigger;
 	// How much to multiply the strength of an effect from its base value
@@ -34,6 +34,7 @@ public abstract class SblockFX {
 		this.isPassive = isPassive;
 		this.nextUsage = 0;
 		this.cooldown = cooldown;
+		this.commonNames = new HashSet<>();
 	}
 
 	/**
@@ -59,7 +60,7 @@ public abstract class SblockFX {
 	 * 
 	 * @return The ArrayList of all common names
 	 */
-	public ArrayList<String> getCommonNames() {
+	public HashSet<String> getCommonNames() {
 		return commonNames;
 	}
 

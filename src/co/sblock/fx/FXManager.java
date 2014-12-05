@@ -11,16 +11,19 @@ import org.bukkit.inventory.PlayerInventory;
 import org.reflections.Reflections;
 
 import co.sblock.Sblock;
+import co.sblock.module.Module;
 import co.sblock.users.OnlineUser;
 import co.sblock.utilities.captcha.Captcha;
 
-public class FXManager {
+public class FXManager extends Module {
 
-	private static Map<String, Class<? extends SblockFX>> validEffects; 
+	private static FXManager instance;
+	private Map<String, Class<? extends SblockFX>> validEffects; 
 
-	public FXManager() {
+	@Override
+	protected void onEnable() {
+		instance = this;
 		validEffects = new HashMap<String, Class<? extends SblockFX>>();
-
 		Reflections reflections = new Reflections("co.sblock.fx");
 		Set<Class<? extends SblockFX>> effects = reflections.getSubTypesOf(SblockFX.class);
 		for (Class<? extends SblockFX> effect : effects) {
@@ -35,7 +38,13 @@ public class FXManager {
 		}
 	}
 
-	public static Map<String, Class<? extends SblockFX>> getValidEffects() {
+	@Override
+	protected void onDisable() {
+		instance = null;
+		validEffects = null;
+	}
+
+	public Map<String, Class<? extends SblockFX>> getValidEffects() {
 		return validEffects;
 	}
 
@@ -44,7 +53,7 @@ public class FXManager {
 	 * 
 	 * @param u the User to scan
 	 */
-	public static void fullEffectsScan(OnlineUser u) {
+	public void fullEffectsScan(OnlineUser u) {
 		Player p = u.getPlayer();
 		PlayerInventory pInv = p.getInventory();
 		ItemStack[] iS = pInv.getContents();
@@ -81,7 +90,7 @@ public class FXManager {
 						}
 					}
 				} catch (InstantiationException | IllegalAccessException e) {
-					Sblock.getLog().severe("Keiko you fuck fix your effectsScan");
+					Sblock.getLog().severe("Keiko you fuck fix your fullEffectsScan");
 					e.printStackTrace();
 				}
 			}
@@ -94,7 +103,7 @@ public class FXManager {
 	 * 
 	 * @param iS the ItemStack to scan
 	 */
-	public static HashMap<String, SblockFX> itemScan(ItemStack iS) {
+	public HashMap<String, SblockFX> itemScan(ItemStack iS) {
 		ArrayList<String> playerLore = new ArrayList<String>();
 		HashMap<String, SblockFX> output = new HashMap<String, SblockFX>();
 
@@ -117,11 +126,20 @@ public class FXManager {
 						}
 					}
 				} catch (InstantiationException | IllegalAccessException e) {
-					Sblock.getLog().severe("Keiko you fuck fix your effectsScan");
+					Sblock.getLog().severe("Keiko you fuck fix your itemScan");
 					e.printStackTrace();
 				}
 			}
 		}
 		return output;
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "Sblock FX";
+	}
+
+	public static FXManager getInstance() {
+		return instance;
 	}
 }

@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import co.sblock.events.SblockEvents;
+import co.sblock.events.Events;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.minecarts.FreeCart;
 import co.sblock.utilities.progression.Entry;
@@ -41,23 +41,23 @@ public class PlayerQuitListener implements Listener {
 		FreeCart.getInstance().remove(event.getPlayer());
 
 		// Remove Spectator status
-		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
-			Spectators.getSpectators().removeSpectator(event.getPlayer());
+		if (Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())) {
+			Spectators.getInstance().removeSpectator(event.getPlayer());
 		}
 
 		// Stop scheduled sleep teleport
-		if (SblockEvents.getEvents().getTasks().containsKey(event.getPlayer().getName())) {
-			SblockEvents.getEvents().getTasks().remove(event.getPlayer().getName()).cancel();
+		if (Events.getInstance().getTasks().containsKey(event.getPlayer().getName())) {
+			Events.getInstance().getTasks().remove(event.getPlayer().getName()).cancel();
 		}
 
 		// Restore inventory if still preserved
 		InventoryManager.restoreInventory(event.getPlayer());
 
 		// Delete team for exiting player to avoid clutter
-		UserManager.unteam(event.getPlayer());
+		Users.unteam(event.getPlayer());
 
-		OfflineUser user = UserManager.unloadUser(event.getPlayer().getUniqueId());
-		UserManager.saveUser(user);
+		OfflineUser user = Users.unloadUser(event.getPlayer().getUniqueId());
+		Users.saveUser(user);
 
 		// Remove Server status
 		if (user.isServer()) {

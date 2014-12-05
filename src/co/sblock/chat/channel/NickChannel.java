@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import co.sblock.chat.ChatMsgs;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Defines nick channel behavior
@@ -93,7 +93,7 @@ public class NickChannel extends Channel {
 		if (nickList.containsValue(nick)) {
 			for (UUID u : nickList.keySet()) {
 				if (nickList.get(u).equalsIgnoreCase(nick)) {
-					owner = UserManager.getGuaranteedUser(u);
+					owner = Users.getGuaranteedUser(u);
 					break;
 				}
 			}

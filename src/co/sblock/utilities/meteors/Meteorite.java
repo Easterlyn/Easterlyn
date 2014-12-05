@@ -100,7 +100,7 @@ public class Meteorite {
 							pu.addEntity(new MeteoriteComponent(location, mat, explosionBlockDamage, boreMode).getBukkitEntity(),
 									new ParticleEffectWrapper(Effect.LAVA_POP, 1));
 						}
-						MeteorMod.getInstance().getLogger().info(
+						Meteors.getInstance().getLogger().info(
 								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());
 					}
 				});

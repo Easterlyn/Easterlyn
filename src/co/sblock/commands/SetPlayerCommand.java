@@ -10,7 +10,7 @@ import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.UserAspect;
 import co.sblock.users.UserClass;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,12 +36,12 @@ public class SetPlayerCommand extends SblockCommand {
 		if (args == null || args.length < 3) {
 			return false;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(Bukkit.getPlayer(args[0]).getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(Bukkit.getPlayer(args[0]).getUniqueId());
 		args[1] = args[1].toLowerCase();
 		if(args[1].equals("class"))
-			user.setPlayerClass(args[2]);
+			user.setUserClass(args[2]);
 		else if(args[1].equals("aspect"))
-			user.setAspect(args[2]);
+			user.setUserAspect(args[2]);
 		else if(args[1].replaceAll("m(edium_?)?planet", "land").equals("land"))
 			user.setMediumPlanet(args[2]);
 		else if(args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream"))

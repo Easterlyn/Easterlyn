@@ -11,7 +11,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand for performing an emote.
@@ -48,7 +48,7 @@ public class MeCommand extends SblockCommand {
  		if (args.length != 1 || !args[0].isEmpty() && args[0].charAt(0) != '@') {
 			return super.tabComplete(sender, alias, args);
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(((Player) sender).getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		ArrayList<String> matches = new ArrayList<>();
 		String toMatch = args[0].substring(1);
 		for (String s : user.getListening()) {

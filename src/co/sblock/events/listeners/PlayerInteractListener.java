@@ -15,15 +15,15 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
-import co.sblock.events.SblockEvents;
+import co.sblock.events.Events;
 import co.sblock.fx.FXManager;
 import co.sblock.fx.SblockFX;
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.progression.ServerMode;
@@ -43,7 +43,7 @@ public class PlayerInteractListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user.isServer()) {
 			// No interaction with any blocks while out of range.
 			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
@@ -55,7 +55,7 @@ public class PlayerInteractListener implements Listener {
 			// Breaking and placing blocks is acceptable, instabreak blocks in approved list.
 			if (event.getAction() == Action.LEFT_CLICK_BLOCK
 					&& ServerMode.getInstance().isApproved(event.getClickedBlock().getType())
-					&& !SblockMachines.getInstance().isMachine(event.getClickedBlock())) {
+					&& !Machines.getInstance().isMachine(event.getClickedBlock())) {
 				event.getClickedBlock().setType(Material.AIR);
 			} else if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getItem() != null) {
 				if (ServerMode.getInstance().isApproved(event.getMaterial())) {
@@ -92,16 +92,16 @@ public class PlayerInteractListener implements Listener {
 
 
 		// Effect application
-		HashMap<String, SblockFX> effects = FXManager.itemScan(event.getItem());
+		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getItem());
 		for (SblockFX fx : effects.values()) {
-			fx.applyEffect(UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), PlayerInteractEvent.class);
+			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), PlayerInteractEvent.class);
 		}
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
 
 			// Machines
-			Machine m = SblockMachines.getInstance().getMachineByBlock(b);
+			Machine m = Machines.getInstance().getMachineByBlock(b);
 			if (m != null) {
 				event.setCancelled(m.handleInteract(event));
 				return;
@@ -135,7 +135,7 @@ public class PlayerInteractListener implements Listener {
 					// getFace does not seem to work in most cases - adam test and fix
 				}
 
-				switch (UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
+				switch (Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
 				case EARTH:
 				case PROSPIT:
 				case LOFAF:
@@ -143,7 +143,7 @@ public class PlayerInteractListener implements Listener {
 				case LOLAR:
 				case LOWAS:
 				case DERSE:
-					SblockEvents.getEvents().fakeSleepDream(event.getPlayer(), head);
+					Events.getInstance().fakeSleepDream(event.getPlayer(), head);
 					event.setCancelled(true);
 					return;
 				default:

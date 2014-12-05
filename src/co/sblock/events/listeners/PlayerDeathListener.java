@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.minecarts.FreeCart;
 
 /**
@@ -34,7 +34,7 @@ public class PlayerDeathListener implements Listener {
 				+ event.getEntity().getLocation().getBlockY() +"y, "
 				+ event.getEntity().getLocation().getBlockZ() +"z");
 		
-		UserManager.getGuaranteedUser(event.getEntity().getUniqueId()).getOnlineUser().removeAllEffects();
+		Users.getGuaranteedUser(event.getEntity().getUniqueId()).getOnlineUser().removeAllEffects();
 
 		// Fun future feature for when I get bored
 //		Player killer = event.getEntity().getKiller();

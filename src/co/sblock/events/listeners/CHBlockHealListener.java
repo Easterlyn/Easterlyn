@@ -3,7 +3,7 @@ package co.sblock.events.listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 
 import com.nitnelave.CreeperHeal.events.CHBlockHealEvent;
 
@@ -21,7 +21,7 @@ public class CHBlockHealListener implements Listener {
 	 */
 	@EventHandler
 	public void onCHBlockHeal(CHBlockHealEvent event) {
-		SblockMachines machines = SblockMachines.getInstance();
+		Machines machines = Machines.getInstance();
 		if (!machines.shouldRestore(event.getBlock().getBlock())) {
 			machines.setRestored(event.getBlock().getBlock());
 			event.setCancelled(true);

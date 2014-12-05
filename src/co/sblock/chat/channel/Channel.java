@@ -10,10 +10,10 @@ import org.bukkit.entity.Player;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.ColorDef;
-import co.sblock.chat.SblockChat;
+import co.sblock.chat.Chat;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.rawmessages.MessageClick;
 import co.sblock.utilities.rawmessages.MessageElement;
@@ -192,7 +192,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -218,7 +218,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -295,7 +295,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -317,7 +317,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -345,7 +345,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -365,7 +365,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			OfflineUser targ = UserManager.getGuaranteedUser(target);
+			OfflineUser targ = Users.getGuaranteedUser(target);
 			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
 			if (this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -382,7 +382,7 @@ public abstract class Channel {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			OfflineUser targ = UserManager.getGuaranteedUser(target);
+			OfflineUser targ = Users.getGuaranteedUser(target);
 			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
 			if (!this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -413,9 +413,9 @@ public abstract class Channel {
 		}
 		this.sendMessage(ChatMsgs.onChannelDisband(this.getName()));
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			UserManager.getGuaranteedUser(userID).removeListeningSilent(this);
+			Users.getGuaranteedUser(userID).removeListeningSilent(this);
 		}
-		SblockChat.getChat().getChannelManager().dropChannel(this.name);
+		Chat.getChat().getChannelManager().dropChannel(this.name);
 	}
 
 	/**
@@ -426,7 +426,7 @@ public abstract class Channel {
 	 */
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			OfflineUser u = UserManager.getGuaranteedUser(userID);
+			OfflineUser u = Users.getGuaranteedUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;
@@ -463,7 +463,7 @@ public abstract class Channel {
 
 			// Guild leader color
 			if (player.hasPermission("sblock.guildleader")) {
-				guildRank = sender.getAspect().getColor();
+				guildRank = sender.getUserAspect().getColor();
 			} else {
 				guildRank = ColorDef.RANK_HERO;
 			}
@@ -526,7 +526,7 @@ public abstract class Channel {
 									"{id:minecraft:diamond,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
 									+ "+---" + ChatColor.RESET + " " + globalRank + displayName + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
 									+ "---+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getUserClass().getDisplayName()
-									+ ChatColor.YELLOW + " of " + sender.getAspect().getColor() + sender.getAspect().getDisplayName()
+									+ ChatColor.YELLOW + " of " + sender.getUserAspect().getColor() + sender.getUserAspect().getDisplayName()
 									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream: "
 									+ sender.getDreamPlanet().getColor() + sender.getDreamPlanet().getDisplayName()
 									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium: "

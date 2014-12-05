@@ -23,7 +23,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Machine for Entity teleportation.
@@ -193,7 +193,7 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 
-		OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user != null && user.getProgression() == ProgressionState.NONE) {
 			// Transportalizers can only be used by players who have completed Entry.
 			// Any entity, including pre-entry players, can be transported by a

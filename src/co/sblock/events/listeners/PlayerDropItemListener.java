@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import co.sblock.fx.FXManager;
 import co.sblock.fx.SblockFX;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -27,7 +27,7 @@ public class PlayerDropItemListener implements Listener {
 	 */
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event) {
-		if (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())) {
+		if (Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "Inventory? Spectral beings don't have those, don't be silly.");
 			return;
@@ -42,7 +42,7 @@ public class PlayerDropItemListener implements Listener {
 		}
 
 		// valid SblockUser required for all events below this point
-		OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user == null) {
 			return;
 		}
@@ -52,7 +52,7 @@ public class PlayerDropItemListener implements Listener {
 			return;
 		}
 
-		HashMap<String, SblockFX> effects = FXManager.itemScan(event.getItemDrop().getItemStack());
+		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getItemDrop().getItemStack());
 		for (SblockFX fx : effects.values()) {
 			user.getOnlineUser().reduceEffect(fx, 1);
 		}

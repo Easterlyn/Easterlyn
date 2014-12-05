@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand for a dual ip and UUID ban.
@@ -55,7 +55,7 @@ public class SuperBanCommand extends SblockCommand {
 					new BukkitRunnable() {
 						@Override
 						public void run() {
-							OfflineUser victim = UserManager.getGuaranteedUser(player.getUniqueId());
+							OfflineUser victim = Users.getGuaranteedUser(player.getUniqueId());
 							Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
 									"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());
 							Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),

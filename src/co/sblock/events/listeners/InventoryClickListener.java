@@ -20,11 +20,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.machines.MachineInventoryTracker;
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
 
@@ -55,7 +55,7 @@ public class InventoryClickListener implements Listener {
 
 		// Finds inventories of physical blocks opened by Machines
 		if (ih != null && ih instanceof BlockState) {
-			m = SblockMachines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
+			m = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
 			if (m != null) {
 				event.setCancelled(m.handleClick(event));
 				return;
@@ -185,13 +185,13 @@ public class InventoryClickListener implements Listener {
 	private void itemRemoveBottom(InventoryClickEvent event) {
 
 		// Server: Click computer icon -> open computer interface
-		if (UserManager.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()) {
+		if (Users.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()) {
 			if (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
 				event.getWhoClicked().openInventory(new Computer(event.getWhoClicked().getLocation(),
 						event.getWhoClicked().getUniqueId().toString(), true)
-								.getInventory(UserManager.getGuaranteedUser(event.getWhoClicked().getUniqueId())));
+								.getInventory(Users.getGuaranteedUser(event.getWhoClicked().getUniqueId())));
 			}
 			return;
 		}
@@ -220,7 +220,7 @@ public class InventoryClickListener implements Listener {
 	// switch bottom
 	private void itemSwapIntoBottom(InventoryClickEvent event) {
 		// Server: No picking up computer icon
-		if (UserManager.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()
+		if (Users.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()
 				&& event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 			event.setCancelled(true);
 			return;
@@ -234,7 +234,7 @@ public class InventoryClickListener implements Listener {
 	private void itemSwapToHotbar(InventoryClickEvent event) {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 
-		if (UserManager.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()
+		if (Users.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()
 				&& (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())
 						|| hotbar.isSimilar(MachineType.COMPUTER.getUniqueDrop()))) {
 			event.setCancelled(true);

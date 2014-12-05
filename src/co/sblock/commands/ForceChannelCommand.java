@@ -15,7 +15,7 @@ import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.channel.Channel;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand for forcing a User to change current channel.
@@ -47,7 +47,7 @@ public class ForceChannelCommand extends SblockCommand {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(p.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(p.getUniqueId());
 		user.setCurrentChannel(c);
 		sender.sendMessage(ChatColor.GREEN + "Channel forced!");
 		return true;

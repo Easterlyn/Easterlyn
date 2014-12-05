@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.utilities.MachineType;
 
@@ -40,7 +40,7 @@ public class MachineCommand extends SblockCommand {
 				((Player) sender).getInventory().addItem(MachineType.getType(args[1]).getUniqueDrop());
 				sender.sendMessage("Machine get!");
 			} catch (Exception e) {
-				SblockMachines.getInstance().getLogger().fine("Invalid machine: " + args[1]);
+				Machines.getInstance().getLogger().fine("Invalid machine: " + args[1]);
 				StringBuilder sb = new StringBuilder("Valid types: ");
 				for (MachineType m : MachineType.values()) {
 					sb.append(m.name()).append(' ');
@@ -54,7 +54,7 @@ public class MachineCommand extends SblockCommand {
 				((Player) sender).getInventory().addItem(Icon.valueOf(args[1]).getInstaller());
 				sender.sendMessage("Installer get!");
 			} catch (Exception e) {
-				SblockMachines.getInstance().getLogger().fine("Invalid machine: " + args[1]);
+				Machines.getInstance().getLogger().fine("Invalid machine: " + args[1]);
 				StringBuilder sb = new StringBuilder("Valid types: ");
 				for (Icon i : Icon.values()) {
 					if (i.getInstaller() != null) {

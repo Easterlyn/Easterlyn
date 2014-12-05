@@ -172,7 +172,7 @@ public class OfflineUser {
 	 * 
 	 * @param userClassName the new UserClass
 	 */
-	public void setPlayerClass(String userClassName) {
+	public void setUserClass(String userClassName) {
 		this.userClass = UserClass.getClass(userClassName);
 	}
 
@@ -181,7 +181,7 @@ public class OfflineUser {
 	 * 
 	 * @return the UserAspect
 	 */
-	public UserAspect getAspect() {
+	public UserAspect getUserAspect() {
 		return this.userAspect;
 	}
 
@@ -190,7 +190,7 @@ public class OfflineUser {
 	 * 
 	 * @param userAspectName the new UserAspect
 	 */
-	public void setAspect(String userAspectName) {
+	public void setUserAspect(String userAspectName) {
 		this.userAspect = UserAspect.getAspect(userAspectName);
 	}
 
@@ -261,7 +261,7 @@ public class OfflineUser {
 	 * 
 	 * @return true if flight should be enabled
 	 */
-	public boolean canFly() {
+	public boolean getFlight() {
 		return this.allowFlight;
 	}
 
@@ -443,7 +443,7 @@ public class OfflineUser {
 	 * 
 	 * @return true if the User is muted
 	 */
-	public boolean isMute() {
+	public boolean getMute() {
 		return this.globalMute.get();
 	}
 
@@ -452,7 +452,7 @@ public class OfflineUser {
 	 * 
 	 * @param b true if the User is to suppress global channels
 	 */
-	public void setSuppressing(boolean b) {
+	public void setSuppression(boolean b) {
 		this.suppress.lazySet(b);
 	}
 
@@ -461,7 +461,7 @@ public class OfflineUser {
 	 * 
 	 * @return true if the Player is suppressing global channels.
 	 */
-	public boolean isSuppressing() {
+	public boolean getSuppression() {
 		return suppress.get();
 	}
 
@@ -601,8 +601,8 @@ public class OfflineUser {
 				.append(ChatColor.DARK_AQUA).append(' ').append(getPlayerName()).append(' ')
 				.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("---+\n")
 				.append(ChatColor.YELLOW).append(getUserClass().getDisplayName())
-				.append(ChatColor.DARK_AQUA).append(" of ").append(getAspect().getColor())
-				.append(getAspect().getDisplayName()).append('\n').append(ChatColor.DARK_AQUA)
+				.append(ChatColor.DARK_AQUA).append(" of ").append(getUserAspect().getColor())
+				.append(getUserAspect().getDisplayName()).append('\n').append(ChatColor.DARK_AQUA)
 				.append("Medium: ").append(getMediumPlanet().getColor()).append('\n')
 				.append(ChatColor.DARK_AQUA).append("Dream: ").append(getDreamPlanet().getColor())
 				.append(getDreamPlanet().getDisplayName()).toString();
@@ -627,7 +627,7 @@ public class OfflineUser {
 		// Class of Aspect, dream, planet
 		sb.append(ChatColor.DARK_AQUA).append(getUserClass().getDisplayName())
 				.append(ChatColor.YELLOW).append(" of ").append(ChatColor.DARK_AQUA)
-				.append(getAspect().getDisplayName()).append(ChatColor.YELLOW).append(", ")
+				.append(getUserAspect().getDisplayName()).append(ChatColor.YELLOW).append(", ")
 				.append(ChatColor.DARK_AQUA).append(getDreamPlanet().getDisplayName())
 				.append(ChatColor.YELLOW).append(", ").append(ChatColor.DARK_AQUA)
 				.append(getMediumPlanet().getDisplayName()).append('\n');
@@ -663,9 +663,9 @@ public class OfflineUser {
 				.append(getListening()).append('\n');
 
 		// Muted: boolean, Suppressing: boolean
-		sb.append(ChatColor.YELLOW).append("Muted: ").append(ChatColor.DARK_AQUA).append(isMute())
+		sb.append(ChatColor.YELLOW).append("Muted: ").append(ChatColor.DARK_AQUA).append(getMute())
 				.append(ChatColor.YELLOW).append(", Suppressing: ").append(ChatColor.DARK_AQUA)
-				.append(isSuppressing()).append('\n');
+				.append(getSuppression()).append('\n');
 
 		// Last seen: date, Playtime: X days, XX:XX
 		sb.append(ChatColor.YELLOW).append("Last login: ").append(ChatColor.DARK_AQUA)
@@ -695,7 +695,7 @@ public class OfflineUser {
 	}
 
 	public OnlineUser getOnlineUser() {
-		OnlineUser user = UserManager.getOnlineUser(getUUID());
+		OnlineUser user = Users.getOnlineUser(getUUID());
 		if (user == null) {
 			return new OnlineUser(uuid, displayName, currentRegion, userClass, userAspect, medium, dream,
 					progression, allowFlight, Bukkit.getPlayer(uuid).getAddress().getHostString(),
@@ -713,16 +713,16 @@ public class OfflineUser {
 			if (!file.exists()) {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player == null) {
-					UserManager.getUserManager().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
+					Users.getInstance().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
 					return new OfflineUser(uuid, "null");
 				}
-				player.teleport(UserManager.getSpawnLocation());
+				player.teleport(Users.getSpawnLocation());
 
 				OnlineUser user = new OfflineUser(uuid, player.getAddress().getHostString()).getOnlineUser();
 				user.getListening().add(Region.EARTH.getChannelName());
 				user.loginAddListening(user.getListening());
 				user.updateCurrentRegion(Region.EARTH);
-				UserManager.addUser(user);
+				Users.addUser(user);
 
 				Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
 						+ " is joining us for the first time! Please welcome them.");
@@ -735,14 +735,14 @@ public class OfflineUser {
 		OfflineUser user = new OfflineUser(uuid, yaml.getString("ip", "null"));
 		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
 		//yaml.getString("previousRegion");
-		user.setPlayerClass(yaml.getString("classpect.class", "HEIR"));
-		user.setAspect(yaml.getString("classpect.aspect", "BREATH"));
+		user.setUserClass(yaml.getString("classpect.class", "HEIR"));
+		user.setUserAspect(yaml.getString("classpect.aspect", "BREATH"));
 		user.setMediumPlanet(yaml.getString("classpect.medium", "LOWAS"));
 		Region dream = Region.getRegion(yaml.getString("classpect.dream", "PROSPIT"));
 		user.setDreamPlanet(dream.name());
 		Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("previousLocation"));
 		if (currentLoc == null) {
-			currentLoc = UserManager.getSpawnLocation();
+			currentLoc = Users.getSpawnLocation();
 		}
 		Region current = Region.getRegion(currentLoc.getWorld().getName());
 		if (current.isDream()) {
@@ -760,7 +760,7 @@ public class OfflineUser {
 		user.setCurrentChannel(yaml.getString("chat.current", "#"));
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
 		user.setMute(yaml.getBoolean("chat.muted"));
-		user.setSuppressing(yaml.getBoolean("chat.suppressing"));
+		user.setSuppression(yaml.getBoolean("chat.suppressing"));
 		//(Set<String>) yaml.get("chat.ignoring");
 		return user;
 	}

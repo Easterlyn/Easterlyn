@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Message;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand for /aether, the command executed to make IRC chat mimic normal channels.
@@ -38,8 +38,8 @@ public class AetherCommand extends SblockCommand {
 		// TODO allow Hal features
 		Bukkit.getConsoleSender().sendMessage(message.getConsoleMessage());
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			OfflineUser u = UserManager.getGuaranteedUser(p.getUniqueId());
-			if (!u.isSuppressing()) {
+			OfflineUser u = Users.getGuaranteedUser(p.getUniqueId());
+			if (!u.getSuppression()) {
 				u.rawHighlight(message.getMessage());
 			}
 		}

@@ -7,10 +7,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import co.sblock.events.SblockEvents;
+import co.sblock.events.Events;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Causes a sleep teleport to occur.
@@ -33,11 +33,11 @@ public class SleepTeleport extends BukkitRunnable {
 		if (player == null) {
 			return;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
 		if (user == null) {
 			return;
 		}
-		if (!SblockEvents.getEvents().getTasks().containsKey(player.getUniqueId())) {
+		if (!Events.getInstance().getTasks().containsKey(player.getUniqueId())) {
 			return;
 		}
 		Location location = player.getLocation();
@@ -57,6 +57,6 @@ public class SleepTeleport extends BukkitRunnable {
 			}
 		}
 		user.setPreviousLocation(location);
-		SblockEvents.getEvents().fakeWakeUp(player);
+		Events.getInstance().fakeWakeUp(player);
 	}
 }

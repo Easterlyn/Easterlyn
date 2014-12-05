@@ -3,7 +3,7 @@ package co.sblock.chat.channel;
 import java.util.UUID;
 
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 
 public class RegionChannel extends NormalChannel {
@@ -31,12 +31,12 @@ public class RegionChannel extends NormalChannel {
 	@Override
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			OfflineUser u = UserManager.getGuaranteedUser(userID);
+			OfflineUser u = Users.getGuaranteedUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;
 			}
-			if (!u.isSuppressing()) {
+			if (!u.getSuppression()) {
 				u.sendMessage(message);
 			}
 		}

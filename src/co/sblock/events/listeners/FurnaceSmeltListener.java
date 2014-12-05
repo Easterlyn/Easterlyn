@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.utilities.inventory.InventoryUtils;
 
@@ -26,7 +26,7 @@ public class FurnaceSmeltListener implements Listener {
 	@EventHandler(priority = org.bukkit.event.EventPriority.HIGH)
 	public void onFurnaceSmelt(FurnaceSmeltEvent event) {
 
-		Machine m = SblockMachines.getInstance().getMachineByBlock(event.getBlock());
+		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());
 		if (m != null) {
 			event.setCancelled(m.handleFurnaceSmelt(event));
 			return;

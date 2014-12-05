@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
 
-import co.sblock.events.SblockEvents;
+import co.sblock.events.Events;
 
 /**
  * Listener for ServerListPingEvents.
@@ -22,17 +22,17 @@ public class ServerListPingListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onServerListPing(ServerListPingEvent event) {
-		if (SblockEvents.getEvents().getStatus().hasMOTDChange()) {
-			String MOTD = SblockEvents.getEvents().getStatus().getMOTDChange();
+		if (Events.getInstance().getStatus().hasMOTDChange()) {
+			String MOTD = Events.getInstance().getStatus().getMOTDChange();
 			event.setMotd(MOTD);
 		}
 		String addr = event.getAddress().getHostAddress();
-		String playerName = SblockEvents.getEvents().getIPName(addr);
+		String playerName = Events.getInstance().getIPName(addr);
 		if (playerName.equals("Player")) {
 			// No thank you, spam from server monitors.
 			return;
 		}
-		SblockEvents.getEvents().getLogger().info(playerName + " pinged the server from " + addr);
+		Events.getInstance().getLogger().info(playerName + " pinged the server from " + addr);
 		event.setMotd(event.getMotd().replace("Player", playerName));
 	}
 }

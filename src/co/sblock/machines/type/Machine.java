@@ -32,12 +32,12 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Framework for all Machine block assemblies.
@@ -152,7 +152,7 @@ public abstract class Machine {
 	public void assemble(BlockPlaceEvent event) {
 		for (Location l : blocks.keySet()) {
 			if (!l.equals(this.key) && (!l.getBlock().isEmpty()
-					|| SblockMachines.getInstance().isExploded(l.getBlock()))) {
+					|| Machines.getInstance().isExploded(l.getBlock()))) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed();
@@ -160,11 +160,11 @@ public abstract class Machine {
 			}
 		}
 		this.assemble();
-		OfflineUser u = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser u = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (u != null && u.isServer() && owner.equals(u.getUUID().toString())) {
 			this.owner = u.getClient().toString();
 		}
-		SblockMachines.getInstance().saveMachine(this);
+		Machines.getInstance().saveMachine(this);
 	}
 
 	/**
@@ -226,7 +226,7 @@ public abstract class Machine {
 			l.getBlock().setType(Material.AIR);
 		}
 		getKey().getBlock().setType(Material.AIR);
-		SblockMachines.getInstance().deleteMachine(getKey());
+		Machines.getInstance().deleteMachine(getKey());
 	}
 
 	/**
@@ -363,7 +363,7 @@ public abstract class Machine {
 	 */
 	public boolean handleInteract(PlayerInteractEvent event) {
 		for (Location l : this.blocks.keySet()) {
-			if (SblockMachines.getInstance().isExploded(l.getBlock())) {
+			if (Machines.getInstance().isExploded(l.getBlock())) {
 				event.getPlayer().sendMessage(ChatColor.RED + "This machine is too damaged to use!");
 				return true;
 			}
@@ -449,7 +449,7 @@ public abstract class Machine {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			public void run() {
 				disable();
-				SblockMachines.getInstance().deleteMachine(key);
+				Machines.getInstance().deleteMachine(key);
 			}
 		});
 	}

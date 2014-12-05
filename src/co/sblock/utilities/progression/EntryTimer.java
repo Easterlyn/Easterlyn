@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * 
@@ -34,7 +34,7 @@ public class EntryTimer extends BukkitRunnable {
 //		hologram.setLine(0, format.format(timeRemaining > 0 ? timeRemaining : 0));
 //		hologram.update();
 		if (timeRemaining == 0) {
-			Entry.getEntry().fail(UserManager.getGuaranteedUser(uuid));
+			Entry.getEntry().fail(Users.getGuaranteedUser(uuid));
 		}
 		if (timeRemaining < -1) {
 			cancel();

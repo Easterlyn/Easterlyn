@@ -27,7 +27,7 @@ public class FXFlowers extends SblockFX {
 		Block standingIn = loc.getBlock();
 		Block standingOn = standingIn.getRelative(BlockFace.DOWN);
 
-		HashMap<String, SblockFX> inHand = FXManager.itemScan(p.getItemInHand());
+		HashMap<String, SblockFX> inHand = FXManager.getInstance().itemScan(p.getItemInHand());
 		if (!inHand.containsKey(this.canonicalName) || standingIn.getType() != Material.AIR
 				|| (standingOn.getType() != Material.DIRT && standingOn.getType() != Material.GRASS)) {
 			return;

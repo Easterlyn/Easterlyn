@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import co.sblock.fx.FXManager;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.OnlineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Listener for InventoryCloseEvents.
@@ -25,8 +25,8 @@ public class InventoryCloseListener implements Listener {
 	public void onInventoryClose(InventoryCloseEvent event) {
 		MachineInventoryTracker.getTracker().closeMachine(event);
 
-		OnlineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser();
+		OnlineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser();
 		user.removeAllEffects();
-		FXManager.fullEffectsScan(user);
+		FXManager.getInstance().fullEffectsScan(user);
 	}
 }

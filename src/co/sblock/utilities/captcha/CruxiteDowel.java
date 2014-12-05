@@ -92,7 +92,7 @@ public class CruxiteDowel {
 				
 				SblockFX effect;
 				try {
-					effect = FXManager.getValidEffects().get(lore).newInstance();
+					effect = FXManager.getInstance().getValidEffects().get(lore).newInstance();
 					if(effect != null) {
 						loreCost = effect.getCost();
 					}

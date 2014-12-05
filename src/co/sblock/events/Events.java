@@ -32,9 +32,9 @@ import co.sblock.utilities.minecarts.FreeCart;
  * 
  * @author Jikoo
  */
-public class SblockEvents extends Module {
+public class Events extends Module {
 
-	private static SblockEvents instance;
+	private static Events instance;
 	private Status status;
 	private int statusResample = 0;
 	private HashMap<UUID, BukkitTask> tasks;
@@ -216,12 +216,12 @@ public class SblockEvents extends Module {
 	 * 
 	 * @return the EventModule instance.
 	 */
-	public static SblockEvents getEvents() {
+	public static Events getInstance() {
 		return instance;
 	}
 
 	@Override
 	protected String getModuleName() {
-		return "EventsModule";
+		return "Sblock Events";
 	}
 }

@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import co.sblock.Sblock;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Listener for PlayerTeleportEvents.
@@ -38,7 +38,7 @@ public class PlayerTeleportListener implements Listener {
 
 			@Override
 			public void run() {
-				OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+				OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 				// Update region
 				Region target;
 				if (event.getPlayer().getWorld().getName().equals("Derspit")) {

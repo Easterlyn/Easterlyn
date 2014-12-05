@@ -6,7 +6,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 import co.sblock.fx.FXManager;
 import co.sblock.users.OnlineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.vote.SleepVote;
 
 /**
@@ -30,9 +30,9 @@ public class PlayerChangedWorldListener implements Listener {
 			event.getPlayer().resetPlayerTime();
 		}
 
-		OnlineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser();
+		OnlineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser();
 
 		user.removeAllEffects();
-		FXManager.fullEffectsScan(user);
+		FXManager.getInstance().fullEffectsScan(user);
 	}
 }

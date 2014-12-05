@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.UserAspect;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * SblockCommand for warping a User only if their aspect matches the target warp.
@@ -37,8 +37,8 @@ public class AspectWarpCommand extends SblockCommand {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		OfflineUser u = UserManager.getGuaranteedUser(p.getUniqueId());
-		if (!u.getAspect().name().equalsIgnoreCase(args[0])) {
+		OfflineUser u = Users.getGuaranteedUser(p.getUniqueId());
+		if (!u.getUserAspect().name().equalsIgnoreCase(args[0])) {
 			return true;
 		}
 		sender.getServer().dispatchCommand(sender, "warp " + args[0] + " " + args[1]);

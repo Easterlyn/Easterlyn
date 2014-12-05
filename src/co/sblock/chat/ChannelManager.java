@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import co.sblock.Sblock;
-import co.sblock.chat.SblockChat;
+import co.sblock.chat.Chat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -138,7 +138,7 @@ public class ChannelManager {
 
 	public void createNewChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
 		this.loadChannel(name, access, creator, channelType);
-		SblockChat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
+		Chat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
 	}
 
 	public Channel loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
@@ -222,6 +222,6 @@ public class ChannelManager {
 	}
 
 	public static ChannelManager getChannelManager() {
-		return SblockChat.getChat().getChannelManager();
+		return Chat.getChat().getChannelManager();
 	}
 }

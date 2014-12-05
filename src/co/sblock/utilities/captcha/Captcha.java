@@ -41,7 +41,7 @@ public class Captcha extends Module {
 	 * @see Module#onDisable()
 	 */
 	@Override
-	protected void onDisable() { }
+	protected void onDisable() {}
 
 	/**
 	 * Converts an ItemStack into a Captchacard.
@@ -484,6 +484,6 @@ public class Captcha extends Module {
 
 	@Override
 	protected String getModuleName() {
-		return "CaptchaCards";
+		return "Sblock Captcha";
 	}
 }

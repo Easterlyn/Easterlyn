@@ -21,7 +21,7 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 
 /**
@@ -54,7 +54,7 @@ public class SblockChatCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		OfflineUser user = UserManager.getGuaranteedUser(((Player) sender).getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatMsgs.helpDefault());
 			return true;
@@ -76,7 +76,7 @@ public class SblockChatCommand extends SblockCommand {
 		} else if (args[0].equals("nick")) {
 			return scNick(user, args);
 		} else if (args[0].equals("suppress")) {
-			user.setSuppressing(!user.isSuppressing());
+			user.setSuppression(!user.getSuppression());
 			user.sendMessage(ChatColor.GREEN + "Suppression toggled!");
 			return true;
 		} else if (args[0].equals("channel")) {
@@ -96,7 +96,7 @@ public class SblockChatCommand extends SblockCommand {
 		}
 		args[0] = args[0].toLowerCase();
 		ArrayList<String> matches = new ArrayList<>();
-		OfflineUser user = UserManager.getGuaranteedUser(((Player) sender).getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		if (args.length == 1) {
 			for (String subcommand : primaryArgs) {
 				if (subcommand.startsWith(args[0])) {
@@ -418,7 +418,7 @@ public class SblockChatCommand extends SblockCommand {
 				scGlobalRmNick(user, args);
 				return true;
 			} else if (args[1].equalsIgnoreCase("clearnicks")) {
-				for (OfflineUser u : UserManager.getUsers()) {
+				for (OfflineUser u : Users.getUsers()) {
 					if (!u.getPlayer().getDisplayName().equals(u.getPlayerName())) {
 						u.getPlayer().setDisplayName(u.getPlayerName());
 					}
@@ -437,7 +437,7 @@ public class SblockChatCommand extends SblockCommand {
 		}
 		p.setDisplayName(args[3]);
 		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
-		for (OfflineUser u : UserManager.getUsers()) {
+		for (OfflineUser u : Users.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -450,7 +450,7 @@ public class SblockChatCommand extends SblockCommand {
 			return;
 		}
 		String msg = ChatMsgs.onUserRmGlobalNick(args[2], p.getDisplayName());
-		for (OfflineUser u : UserManager.getUsers()) {
+		for (OfflineUser u : Users.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -463,10 +463,10 @@ public class SblockChatCommand extends SblockCommand {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		OfflineUser victim = UserManager.getGuaranteedUser(p.getUniqueId());
+		OfflineUser victim = Users.getGuaranteedUser(p.getUniqueId());
 		victim.setMute(true);
 		String msg = ChatMsgs.onUserMute(args[2]);
-		for (OfflineUser u : UserManager.getUsers()) {
+		for (OfflineUser u : Users.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -478,10 +478,10 @@ public class SblockChatCommand extends SblockCommand {
 			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
 			return;
 		}
-		OfflineUser victim = UserManager.getGuaranteedUser(p.getUniqueId());
+		OfflineUser victim = Users.getGuaranteedUser(p.getUniqueId());
 		victim.setMute(false);;
 		String msg = ChatMsgs.onUserUnmute(args[2]);
-		for (OfflineUser u : UserManager.getUsers()) {
+		for (OfflineUser u : Users.getUsers()) {
 			u.sendMessage(msg);
 		}
 		Log.anonymousInfo(msg);
@@ -507,7 +507,7 @@ public class SblockChatCommand extends SblockCommand {
 			StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW);
 			sb.append("Channel members: ");
 			for (UUID userID : c.getListening()) {
-				OfflineUser u = UserManager.getGuaranteedUser(userID);
+				OfflineUser u = Users.getGuaranteedUser(userID);
 				if (u.getCurrentChannel().equals(c)) {
 					sb.append(ChatColor.GREEN);
 				} else {

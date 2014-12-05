@@ -4,9 +4,9 @@ import co.sblock.chat.ai.Halculator;
 import co.sblock.chat.ai.MegaHal;
 import co.sblock.module.Module;
 
-public class SblockChat extends Module {
+public class Chat extends Module {
 
-	private static SblockChat instance;
+	private static Chat instance;
 	private ChannelManager cm = new ChannelManager();
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
 	private MegaHal megaHal;
@@ -43,7 +43,7 @@ public class SblockChat extends Module {
 		return halculator;
 	}
 
-	public static SblockChat getChat() {
+	public static Chat getChat() {
 		return instance;
 	}
 
@@ -53,6 +53,6 @@ public class SblockChat extends Module {
 
 	@Override
 	protected String getModuleName() {
-		return "ChatModule";
+		return "Sblock Chat";
 	}
 }

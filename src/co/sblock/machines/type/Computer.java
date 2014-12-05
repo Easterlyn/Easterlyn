@@ -15,11 +15,11 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-import co.sblock.machines.SblockMachines;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.UserManager;
+import co.sblock.users.Users;
 
 /**
  * Computers for players! Inventory-based selection system.
@@ -48,7 +48,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	@Override
 	public void assemble(BlockPlaceEvent event) {
-		if (SblockMachines.getInstance().hasComputer(event.getPlayer(), key)) {
+		if (Machines.getInstance().hasComputer(event.getPlayer(), key)) {
 			if (event.getPlayer().hasPermission("group.horrorterror")) {
 				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
 				return;
@@ -87,7 +87,7 @@ public class Computer extends Machine implements InventoryHolder {
 			if (event.getCurrentItem().equals(ico.getIcon())) {
 				switch (ico) {
 				case BACK:
-					event.getWhoClicked().openInventory(getInventory(UserManager.getGuaranteedUser(event.getWhoClicked().getUniqueId())));
+					event.getWhoClicked().openInventory(getInventory(Users.getGuaranteedUser(event.getWhoClicked().getUniqueId())));
 					break;
 				case BOONDOLLAR_SHOP:
 					// Keiko, shop name is all you, set to LOHACSE for now
@@ -101,7 +101,7 @@ public class Computer extends Machine implements InventoryHolder {
 					event.getWhoClicked().openInventory(getServerConfirmation());
 					break;
 				case CONFIRM:
-					OfflineUser u = UserManager.getGuaranteedUser(event.getWhoClicked().getUniqueId());
+					OfflineUser u = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
 					if (u == null) {
 						((Player) event.getWhoClicked()).sendMessage(
 								ChatColor.RED + "Your data appears to not have loaded properly. Please relog.");
@@ -146,14 +146,14 @@ public class Computer extends Machine implements InventoryHolder {
 				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed "
 						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 				event.getPlayer().setItemInHand(null);
-				OfflineUser u = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+				OfflineUser u = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 				u.addProgram(ico.getProgramID());
 				return true;
 			} else {
 				event.getPlayer().openInventory(getInventory());
 			}
 		}
-		event.getPlayer().openInventory(getInventory(UserManager.getGuaranteedUser(event.getPlayer().getUniqueId())));
+		event.getPlayer().openInventory(getInventory(Users.getGuaranteedUser(event.getPlayer().getUniqueId())));
 		return true;
 	}
 

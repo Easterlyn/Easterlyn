@@ -29,16 +29,16 @@ import org.reflections.Reflections;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.chat.SblockChat;
+import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
-import co.sblock.events.SblockEvents;
-import co.sblock.machines.SblockMachines;
+import co.sblock.events.Events;
+import co.sblock.machines.Machines;
 import co.sblock.module.Module;
-import co.sblock.users.UserManager;
-import co.sblock.fx.FXModule;
+import co.sblock.users.Users;
+import co.sblock.fx.FXManager;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.meteors.MeteorMod;
+import co.sblock.utilities.meteors.Meteors;
 import co.sblock.utilities.rawmessages.RawAnnouncer;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -91,13 +91,13 @@ public class Sblock extends JavaPlugin {
 		instance = this;
 
 		this.modules = new ArrayList<>();
-		modules.add(new SblockChat().enable());
-		modules.add(new UserManager().enable());
-		modules.add(new SblockEvents().enable());
-		modules.add(new FXModule().enable());
-		modules.add(new SblockMachines().enable());
+		modules.add(new Chat().enable());
+		modules.add(new Users().enable());
+		modules.add(new Events().enable());
+		modules.add(new FXManager().enable());
+		modules.add(new Machines().enable());
 		modules.add(new Captcha().enable());
-		modules.add(new MeteorMod().enable());
+		modules.add(new Meteors().enable());
 		modules.add(new RawAnnouncer().enable());
 		modules.add(new Spectators().enable());
 

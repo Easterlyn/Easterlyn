@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-import co.sblock.utilities.meteors.MeteorMod;
+import co.sblock.utilities.meteors.Meteors;
 
 /**
  * Listener for EntityChangeBlockEvents.
@@ -24,6 +24,6 @@ public class EntityChangeBlockListener implements Listener {
 		if (event.getEntityType() != EntityType.FALLING_BLOCK) {
 			return;
 		}
-		MeteorMod.getInstance().handlePotentialMeteorite(event);
+		Meteors.getInstance().handlePotentialMeteorite(event);
 	}
 }
