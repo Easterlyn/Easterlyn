@@ -3,6 +3,7 @@ package co.sblock.users;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,13 +18,54 @@ import org.bukkit.scoreboard.Team;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
+import co.sblock.module.Module;
 
 /**
  * Class that keeps track of players currently logged on to the game.
  * 
  * @author FireNG, Jikoo
  */
-public class UserManager {
+public class UserManager  extends Module {
+
+	private static UserManager instance;
+
+	/** Map containing all server/client player requests */
+	private Map<String, String> requests;
+
+	@Override
+	protected void onEnable() {
+		instance = this;
+		requests = new HashMap<String, String>();
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			UserManager.getGuaranteedUser(p.getUniqueId());
+		}
+	}
+
+	@Override
+	protected void onDisable() {
+		for (OfflineUser u : UserManager.getUsers().toArray(new OfflineUser[0])) {
+			UserManager.saveUser(UserManager.unloadUser(u.getUUID()));
+		}
+		instance = null;
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "Sblock UserManager";
+	}
+
+	/**
+	 * Gets a Map of all pending requests.
+	 * 
+	 * @return a Map of all pending requests
+	 */
+	public Map<String, String> getRequests() {
+		return requests;
+	}
+
+	public static UserManager getUserManager() {
+		return instance;
+	}
 
 	/* The Map of Player UUID and relevant SblockUsers currently online. */
 	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
@@ -111,7 +153,7 @@ public class UserManager {
 		yaml.set("progression.programs", user.getPrograms());
 		yaml.set("progression.server", user.getServer() != null ? user.getServer().toString() : null);
 		yaml.set("progression.client", user.getClient() != null ? user.getClient().toString() : null);
-		yaml.set("chat.current", user.getCurrent() != null ? user.getCurrent().getName() : "#");
+		yaml.set("chat.current", user.getCurrentChannel() != null ? user.getCurrentChannel().getName() : "#");
 		yaml.set("chat.listening", user.getListening());
 		yaml.set("chat.muted", user.isMute());
 		yaml.set("chat.suppressing", user.isSuppressing());

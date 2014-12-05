@@ -470,7 +470,7 @@ public class OfflineUser {
 	 * 
 	 * @param c the Channel to set as current
 	 */
-	public void setCurrent(Channel c) {
+	public void setCurrentChannel(Channel c) {
 		if (!c.isApproved(this) || c.isBanned(this)) {
 			return;
 		}
@@ -482,9 +482,9 @@ public class OfflineUser {
 	 * 
 	 * @param c the Channel to set as current
 	 */
-	public void setCurrent(String s) {
+	public void setCurrentChannel(String s) {
 		Channel c = ChannelManager.getChannelManager().getChannel(s);
-		this.setCurrent(c);
+		this.setCurrentChannel(c);
 	}
 
 	/**
@@ -492,7 +492,7 @@ public class OfflineUser {
 	 * 
 	 * @return Channel
 	 */
-	public Channel getCurrent() {
+	public Channel getCurrentChannel() {
 		return ChannelManager.getChannelManager().getChannel(this.currentChannel);
 	}
 
@@ -658,7 +658,7 @@ public class OfflineUser {
 
 		// Pestering: current, Listening: [list]
 		sb.append(ChatColor.YELLOW).append("Pestering: ").append(ChatColor.DARK_AQUA)
-				.append(getCurrent() != null ? getCurrent().getName() : "null")
+				.append(getCurrentChannel() != null ? getCurrentChannel().getName() : "null")
 				.append(ChatColor.YELLOW).append(", Listening: ").append(ChatColor.DARK_AQUA)
 				.append(getListening()).append('\n');
 
@@ -713,7 +713,7 @@ public class OfflineUser {
 			if (!file.exists()) {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player == null) {
-					SblockUsers.getSblockUsers().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
+					UserManager.getUserManager().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
 					return new OfflineUser(uuid, "null");
 				}
 				player.teleport(UserManager.getSpawnLocation());
@@ -757,7 +757,7 @@ public class OfflineUser {
 		if (yaml.getString("progression.client") != null) {
 			user.setClient(UUID.fromString(yaml.getString("progression.client")));
 		}
-		user.setCurrent(yaml.getString("chat.current", "#"));
+		user.setCurrentChannel(yaml.getString("chat.current", "#"));
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
 		user.setMute(yaml.getBoolean("chat.muted"));
 		user.setSuppressing(yaml.getBoolean("chat.suppressing"));

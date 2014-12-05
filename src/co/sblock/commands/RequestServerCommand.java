@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import co.sblock.machines.utilities.Icon;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.SblockUsers;
 import co.sblock.users.UserManager;
 
 /**
@@ -58,13 +57,13 @@ public class RequestServerCommand extends SblockCommand {
 					+ " does not have the Sburb Server installed!");
 			return true;
 		}
-		if (SblockUsers.getSblockUsers().getRequests().containsKey(u.getPlayerName())) {
+		if (UserManager.getUserManager().getRequests().containsKey(u.getPlayerName())) {
 			sender.sendMessage(ChatColor.GOLD + u.getPlayerName() + ChatColor.RED
 					+ " has a pending request to handle already!");
 			return true;
 		}
 		sender.sendMessage(ChatColor.YELLOW + "Request sent to " + ChatColor.GREEN + p.getName());
-		SblockUsers.getSblockUsers().getRequests().put(u.getPlayerName(), "c" + sender.getName());
+		UserManager.getUserManager().getRequests().put(u.getPlayerName(), "c" + sender.getName());
 		u.getPlayer().sendMessage(ChatColor.GREEN + sender.getName() + ChatColor.YELLOW
 				+ " has requested that you be their server!" + ChatColor.AQUA
 				+ "\n/acceptrequest" + ChatColor.YELLOW + " or "

@@ -48,7 +48,7 @@ public class ForceChannelCommand extends SblockCommand {
 			return true;
 		}
 		OfflineUser user = UserManager.getGuaranteedUser(p.getUniqueId());
-		user.setCurrent(c);
+		user.setCurrentChannel(c);
 		sender.sendMessage(ChatColor.GREEN + "Channel forced!");
 		return true;
 	}

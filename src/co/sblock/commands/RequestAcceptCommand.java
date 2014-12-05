@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.users.OfflineUser;
-import co.sblock.users.SblockUsers;
 import co.sblock.users.UserManager;
 
 /**
@@ -32,11 +31,11 @@ public class RequestAcceptCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		if (!SblockUsers.getSblockUsers().getRequests().containsKey(sender.getName())) {
+		if (!UserManager.getUserManager().getRequests().containsKey(sender.getName())) {
 			sender.sendMessage(ChatColor.RED + "You should get someone to /requestserver or /requestclient before attempting to accept!");
 			return true;
 		}
-		String req = SblockUsers.getSblockUsers().getRequests().remove(sender.getName());
+		String req = UserManager.getUserManager().getRequests().remove(sender.getName());
 		OfflineUser u = UserManager.getGuaranteedUser(((Player) sender).getUniqueId());
 		Player p1 = Bukkit.getPlayer(req.substring(1));
 		if (p1 == null) {

@@ -7,9 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.collect.ImmutableList;
+import co.sblock.users.UserManager;
 
-import co.sblock.users.SblockUsers;
+import com.google.common.collect.ImmutableList;
 
 /**
  * 
@@ -30,11 +30,11 @@ public class RequestDeclineCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		if (!SblockUsers.getSblockUsers().getRequests().containsKey(sender.getName())) {
+		if (!UserManager.getUserManager().getRequests().containsKey(sender.getName())) {
 			sender.sendMessage(ChatColor.RED + "You vigorously decline... no one."
 					+ "\nPerhaps you should get someone to /requestserver or /requestclient first?");
 		}
-		String name = SblockUsers.getSblockUsers().getRequests().remove(sender.getName()).substring(1);
+		String name = UserManager.getUserManager().getRequests().remove(sender.getName()).substring(1);
 		Player p = Bukkit.getPlayer(name);
 		if (p != null) {
 			p.sendMessage(ChatColor.GOLD + sender.getName() + ChatColor.RED + " has declined your request!");

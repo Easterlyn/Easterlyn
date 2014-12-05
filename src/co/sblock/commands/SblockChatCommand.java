@@ -104,7 +104,7 @@ public class SblockChatCommand extends SblockCommand {
 				}
 			}
 			String string = "channel";
-			if (user.getCurrent().isModerator(user) && string.startsWith(args[0])) {
+			if (user.getCurrentChannel().isModerator(user) && string.startsWith(args[0])) {
 				matches.add(string);
 			}
 			return matches;
@@ -141,7 +141,7 @@ public class SblockChatCommand extends SblockCommand {
 				}
 				return matches;
 			}
-			if (args.length == 3 && args[1].equals("set") && user.getCurrent().getType() == ChannelType.RP) {
+			if (args.length == 3 && args[1].equals("set") && user.getCurrentChannel().getType() == ChannelType.RP) {
 				args[2] = args[2].toUpperCase();
 				for (CanonNicks nick : CanonNicks.values()) {
 					if (nick != CanonNicks.SERKITFEATURE && nick.name().startsWith(args[2])) {
@@ -178,7 +178,7 @@ public class SblockChatCommand extends SblockCommand {
 			return ImmutableList.of();
 		}
 		if (args[0].equals("channel")) {
-			if (!user.getCurrent().isModerator(user)) {
+			if (!user.getCurrentChannel().isModerator(user)) {
 				if (args.length == 2) {
 					matches.add("info");
 				}
@@ -194,7 +194,7 @@ public class SblockChatCommand extends SblockCommand {
 						matches.add(argument);
 					}
 				}
-				if (!user.getCurrent().isOwner(user)) {
+				if (!user.getCurrentChannel().isOwner(user)) {
 					return matches;
 				}
 				for (String argument : channelOwner) {
@@ -210,7 +210,7 @@ public class SblockChatCommand extends SblockCommand {
 						return super.tabComplete(sender, alias, args);
 					}
 				}
-				if (!user.getCurrent().isOwner(user)) {
+				if (!user.getCurrentChannel().isOwner(user)) {
 					return ImmutableList.of();
 				}
 				if (args[1].equals("mod")) {
@@ -232,7 +232,7 @@ public class SblockChatCommand extends SblockCommand {
 			args[2] = args[2].toLowerCase();
 			if (args.length == 4 && args[1].equals("mod")
 					&& (args[2].equals("add") || args[2].equals("remove"))
-					&& user.getCurrent().isOwner(user)) {
+					&& user.getCurrentChannel().isOwner(user)) {
 				return super.tabComplete(sender, alias, args);
 			}
 			return ImmutableList.of();
@@ -254,7 +254,7 @@ public class SblockChatCommand extends SblockCommand {
 			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
 			return true;
 		}
-		user.setCurrent(c);
+		user.setCurrentChannel(c);
 		return true;
 	}
 
@@ -350,13 +350,13 @@ public class SblockChatCommand extends SblockCommand {
 					AccessLevel.getAccessLevel(args[2]), user.getUUID(), ChannelType.getType(args[3]));
 			Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
 			user.sendMessage(ChatMsgs.onChannelCreation(c));
-			user.setCurrent(c);
+			user.setCurrentChannel(c);
 		}
 		return true;
 	}
 
 	private boolean scNick(OfflineUser user, String[] args) {
-		Channel c = user.getCurrent();
+		Channel c = user.getCurrentChannel();
 		if (c == null) {
 			user.sendMessage(ChatMsgs.errorNoCurrent());
 			return true;
@@ -488,7 +488,7 @@ public class SblockChatCommand extends SblockCommand {
 	}
 
 	private boolean scChannel(OfflineUser user, String[] args) {
-		Channel c = user.getCurrent();
+		Channel c = user.getCurrentChannel();
 		if (args.length == 2 && args[1].equalsIgnoreCase("info")) {
 			user.sendMessage(c.toString());
 			return true;
@@ -508,7 +508,7 @@ public class SblockChatCommand extends SblockCommand {
 			sb.append("Channel members: ");
 			for (UUID userID : c.getListening()) {
 				OfflineUser u = UserManager.getGuaranteedUser(userID);
-				if (u.getCurrent().equals(c)) {
+				if (u.getCurrentChannel().equals(c)) {
 					sb.append(ChatColor.GREEN);
 				} else {
 					sb.append(ChatColor.YELLOW);

@@ -39,7 +39,7 @@ public class Message {
 		this(message);
 		this.sender = sender;
 		if (channel == null && target == null && sender != null) {
-			channel = sender.getCurrent();
+			channel = sender.getCurrentChannel();
 		}
 	}
 

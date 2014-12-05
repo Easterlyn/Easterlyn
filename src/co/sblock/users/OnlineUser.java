@@ -267,7 +267,7 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	@Override
-	public void setCurrent(Channel c) {
+	public void setCurrentChannel(Channel c) {
 		if (c == null) {
 			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
 			return;
@@ -372,7 +372,7 @@ public class OnlineUser extends OfflineUser {
 			c.removeNick(this, false);
 			c.sendMessage(ChatMsgs.onChannelLeave(this, c));
 			c.removeListening(this.getUUID());
-			if (this.currentChannel != null && channelName.equals(this.getCurrent().getName())) {
+			if (this.currentChannel != null && channelName.equals(this.getCurrentChannel().getName())) {
 				this.currentChannel = null;
 			}
 		} else {
