@@ -10,9 +10,9 @@ import org.bukkit.util.Vector;
 import co.sblock.users.OnlineUser;
 
 public class FXPshoooot extends SblockFX {
-	
+
 	ArrayList<String> names = new ArrayList<String>();
-	
+
 	@SuppressWarnings("unchecked")
 	public FXPshoooot() {
 		super("PSHOOOOT", false, 350, 0, PlayerInteractEvent.class);
@@ -28,6 +28,6 @@ public class FXPshoooot extends SblockFX {
 
 	@Override
 	public void removeEffect(OnlineUser u) {
-		return;		//N/A for this effect
+		return;
 	}
 }

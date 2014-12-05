@@ -10,14 +10,10 @@ public class FXModule extends Module {
 	}
 
 	@Override
-	protected void onDisable() {
-
-	}
+	protected void onDisable() {}
 
 	@Override
 	protected String getModuleName() {
-
 		return "FXModule";
 	}
-
 }

@@ -2,7 +2,7 @@ package co.sblock.fx;
 
 import org.bukkit.event.Event;
 
-import co.sblock.users.User;
+import co.sblock.users.OnlineUser;
 
 public class FXComputer extends SblockFX {
 
@@ -12,13 +12,12 @@ public class FXComputer extends SblockFX {
 	}
 
 	@Override
-	protected void getEffect(User u, Class<? extends Event> e) {
+	protected void getEffect(OnlineUser u, Class<? extends Event> e) {
 		return;
 	}
 
 	@Override
-	public void removeEffect(User u) {
+	public void removeEffect(OnlineUser u) {
 		return;
 	}
-
 }

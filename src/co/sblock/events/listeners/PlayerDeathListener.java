@@ -34,7 +34,7 @@ public class PlayerDeathListener implements Listener {
 				+ event.getEntity().getLocation().getBlockY() +"y, "
 				+ event.getEntity().getLocation().getBlockZ() +"z");
 		
-		UserManager.getUser(event.getEntity().getUniqueId()).removeAllEffects();
+		UserManager.getGuaranteedUser(event.getEntity().getUniqueId()).getOnlineUser().removeAllEffects();
 
 		// Fun future feature for when I get bored
 //		Player killer = event.getEntity().getKiller();

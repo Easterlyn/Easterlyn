@@ -2,7 +2,9 @@ package co.sblock.users;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,6 +28,7 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.SblockChat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
+import co.sblock.fx.SblockFX;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
@@ -44,6 +47,7 @@ import co.sblock.utilities.spectator.Spectators;
 public class OnlineUser extends OfflineUser {
 
 	private Location serverDisableTeleport;
+	private final Map<String, SblockFX> effectsList;
 
 	protected OnlineUser(UUID userID, String displayName, Region currentRegion, UserClass userClass,
 			UserAspect aspect, Region mplanet, Region dplanet, ProgressionState progstate,
@@ -53,6 +57,7 @@ public class OnlineUser extends OfflineUser {
 		super(userID, displayName, currentRegion, userClass, aspect, mplanet, dplanet, progstate,
 				allowFlight, IP, previousLocation, currentChannel, programs, listening, globalMute,
 				supress, server, client);
+		effectsList = new HashMap<>();
 		this.updateCurrentRegion(currentRegion);
 		this.delayedJoin(displayName, listening);
 	}
@@ -387,6 +392,80 @@ public class OnlineUser extends OfflineUser {
 			return true;
 		}
 		return SblockMachines.getInstance().isByComputer(this.getPlayer(), 10);
+	}
+
+	/**
+	 * Gets the user's current Effects
+	 * 
+	 * @return the Map of effects
+	 */
+	public Map<String, SblockFX> getEffects() {
+		return this.effectsList;
+	}
+
+	/**
+	 * Set the user's current Effects. Will overlay existing map.
+	 * 
+	 * @param effects the map of all Effects to add
+	 */
+	public void setAllEffects(HashMap<String, SblockFX> effects) {
+		removeAllEffects();
+		for (SblockFX entry : effects.values()) {
+			this.effectsList.put(entry.getCanonicalName(), entry);
+			if (entry.isPassive()) {
+				entry.applyEffect(this, null);
+			}
+		}
+
+	}
+
+	/**
+	 * Removes all Effects from the user and cancels the Effect
+	 */
+	public void removeAllEffects() {
+		for (SblockFX effect : effectsList.values()) {
+			effect.removeEffect(this);
+		}
+		this.effectsList.clear();
+	}
+
+	/**
+	 * Add a new effect to the user's current Effects. If the effect is already present, increases
+	 * the strength by 1.
+	 * 
+	 * @param effect the Effect to add
+	 */
+	public void addEffect(SblockFX effect) {
+		if (this.effectsList.containsKey(effect.getCanonicalName())) {
+			effect.setMultiplier(this.effectsList.get(effect.getCanonicalName()).getMultiplier()
+					+ effect.getMultiplier());
+			this.effectsList.put(effect.getCanonicalName(), effect);
+		} else {
+			this.effectsList.put(effect.getCanonicalName(), effect);
+		}
+		if (effect.isPassive()) {
+			effect.applyEffect(this, null);
+		}
+	}
+
+	/**
+	 * Reduces the multiplier on an effect
+	 * 
+	 * @param effect The effect to change
+	 * @param reduction The amount to reduce the multiplier by
+	 */
+	public void reduceEffect(SblockFX effect, Integer reduction) {
+		if (this.effectsList.containsKey(effect.getCanonicalName())) {
+			if (this.effectsList.get(effect.getCanonicalName()).getMultiplier() - reduction > 0) {
+				effect.setMultiplier(effect.getMultiplier() - reduction);
+				if (effect.isPassive()) {
+					effect.applyEffect(this, null);
+				}
+			} else {
+				this.effectsList.remove(effect.getCanonicalName());
+				effect.removeEffect(this);
+			}
+		}
 	}
 
 	@Override

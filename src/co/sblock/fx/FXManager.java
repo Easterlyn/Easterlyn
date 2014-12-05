@@ -1,6 +1,5 @@
 package co.sblock.fx;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,16 +68,15 @@ public class FXManager {
 				playerLore.addAll(i.getItemMeta().getLore());
 			}
 		}
-		for (String s : playerLore) { //Removes all invalid lore
-			for(Class<? extends SblockFX> valid : validEffects.values()) {
+		for (String s : playerLore) { // Removes all invalid lore
+			for (Class<? extends SblockFX> valid : validEffects.values()) {
 				try {
 					SblockFX newEffect = valid.newInstance();
 					if (newEffect.isValidName(s)) {
-						if(output.containsKey(newEffect.getCanonicalName())) {
+						if (output.containsKey(newEffect.getCanonicalName())) {
 							output.get(newEffect.getCanonicalName()).setMultiplier(
 									output.get(newEffect.getCanonicalName()).getMultiplier() + 1);
-						}
-						else {
+						} else {
 							output.put(newEffect.getCanonicalName(), newEffect);
 						}
 					}
@@ -90,6 +88,7 @@ public class FXManager {
 		}
 		u.setAllEffects(output);
 	}
+
 	/**
 	 * Scans a specific ItemStack for all valid Effects
 	 * 
@@ -105,11 +104,11 @@ public class FXManager {
 			}
 		}
 		for (String s : playerLore) {
-			for(Class<? extends SblockFX> valid : validEffects.values()) {
+			for (Class<? extends SblockFX> valid : validEffects.values()) {
 				try {
 					SblockFX newEffect = valid.newInstance();
 					if (newEffect.isValidName(s)) {
-						if(output.containsKey(newEffect.getCanonicalName())) {
+						if (output.containsKey(newEffect.getCanonicalName())) {
 							output.get(newEffect.getCanonicalName()).setMultiplier(
 									output.get(newEffect.getCanonicalName()).getMultiplier() + 1);
 						}
@@ -124,5 +123,5 @@ public class FXManager {
 			}
 		}
 		return output;
-	}	
+	}
 }

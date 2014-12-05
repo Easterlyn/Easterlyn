@@ -8,22 +8,21 @@ import co.sblock.users.OnlineUser;
 
 public abstract class SblockFX {
 
-	//The canonical name of the effect
+	// The canonical name of the effect
 	protected String canonicalName;
-	//Other names that may be used ingame
+	// Other names that may be used ingame
 	protected ArrayList<String> commonNames;
-	//The event that can trigger this effect to occur
+	// The event that can trigger this effect to occur
 	protected Class<? extends Event>[] eventTrigger;
-	//How much to multiply the strength of an effect from its base value
+	// How much to multiply the strength of an effect from its base value
 	protected Integer multiplier;
-	//How much this effect costs
+	// How much this effect costs
 	protected Integer cost;
-	//Is this effect "passive" (continuous background, like a potion effect)
+	// Is this effect "passive" (continuous background, like a potion effect)
 	protected boolean isPassive;
-
-	//The system time in milliseconds when the effect can be used next
+	// The system time in milliseconds when the effect can be used next
 	protected long nextUsage;
-	//The time in milliseconds to wait before the effect can be triggered again
+	// The time in milliseconds to wait before the effect can be triggered again
 	protected long cooldown;
 
 	@SuppressWarnings("unchecked")
@@ -71,9 +70,10 @@ public abstract class SblockFX {
 	 * @return True if name is valid for this Effect
 	 */
 	public boolean isValidName(String testName) {
-		if(testName.equalsIgnoreCase(canonicalName)) return true;
-		for(String name : commonNames) {
-			if(testName.equalsIgnoreCase(name)) {
+		if (testName.equalsIgnoreCase(canonicalName))
+			return true;
+		for (String name : commonNames) {
+			if (testName.equalsIgnoreCase(name)) {
 				return true;
 			}
 		}
@@ -135,38 +135,37 @@ public abstract class SblockFX {
 	}
 
 	/**
-	 * Checks to see if this Effect can be triggered from the event that called it.
-	 * If so, makes sure the cooldown has expired.
-	 * Note: e is null if applied by FXManager
+	 * Checks to see if this Effect can be triggered from the event that called it. If so, makes
+	 * sure the cooldown has expired. Note: e is null if applied by FXManager
 	 * 
 	 * @param u The user who owns this Effect
 	 * @param e The event that triggered this Effect
 	 */
 	public void applyEffect(OnlineUser u, Class<? extends Event> e) {
 		boolean execute = false;
-		if(e != null) {
-			for(Class<? extends Event> event : eventTrigger) {
-				if(e.getClass().isAssignableFrom(event)) {
+		if (e != null) {
+			for (Class<? extends Event> event : eventTrigger) {
+				if (e.getClass().isAssignableFrom(event)) {
 					execute = true;
 					break;
-				}	
+				}
 			}
 		}
 		execute = (e == null);
-		if(execute && System.currentTimeMillis() > nextUsage) {
+		if (execute && System.currentTimeMillis() > nextUsage) {
 			nextUsage = System.currentTimeMillis() + cooldown;
 			getEffect(u, e);
 		}
 	}
 
 	/**
-	 * The actual description and application of the effect.
-	 * This should only be called from applyEffect() !
+	 * The actual description and application of the effect. This should only be called from
+	 * applyEffect()!
 	 * 
 	 * @param u The user who owns this Effect
 	 */
 	protected abstract void getEffect(OnlineUser u, Class<? extends Event> e);
-	
+
 	/**
 	 * For "passive" effects, will remove the effect from the user
 	 * 
