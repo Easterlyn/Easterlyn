@@ -65,23 +65,6 @@ public abstract class SblockFX {
 	}
 
 	/**
-	 * Returns if the tested name should be allowed to apply/trigger the Effect
-	 * 
-	 * @param testName The name to compare against known names
-	 * @return True if name is valid for this Effect
-	 */
-	public boolean isValidName(String testName) {
-		if (testName.equalsIgnoreCase(canonicalName))
-			return true;
-		for (String name : commonNames) {
-			if (testName.equalsIgnoreCase(name)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Sets the strength multiplier for the Effect
 	 * 
 	 * @param mult The new multiplier

@@ -15,6 +15,11 @@ import co.sblock.module.Module;
 import co.sblock.users.OnlineUser;
 import co.sblock.utilities.captcha.Captcha;
 
+/**
+ * Module for managing all SblockEffects, relevant cooldowns, etc.
+ * 
+ * @author Dublek, Jikoo
+ */
 public class FXManager extends Module {
 
 	private static FXManager instance;
@@ -30,6 +35,9 @@ public class FXManager extends Module {
 			try {
 				SblockFX instance = effect.newInstance();
 				validEffects.put(instance.getCanonicalName(), effect);
+				for (String name : instance.getCommonNames()) {
+					validEffects.put(name, effect);
+				}
 			} catch (IllegalAccessException | IllegalArgumentException | SecurityException
 					| InstantiationException e) {
 				Sblock.getLog().severe("Keiko you fuck fix your FXManager");
@@ -77,22 +85,29 @@ public class FXManager extends Module {
 				playerLore.addAll(i.getItemMeta().getLore());
 			}
 		}
-		for (String s : playerLore) { // Removes all invalid lore
-			for (Class<? extends SblockFX> valid : validEffects.values()) {
-				try {
-					SblockFX newEffect = valid.newInstance();
-					if (newEffect.isValidName(s)) {
-						if (output.containsKey(newEffect.getCanonicalName())) {
-							output.get(newEffect.getCanonicalName()).setMultiplier(
-									output.get(newEffect.getCanonicalName()).getMultiplier() + 1);
-						} else {
-							output.put(newEffect.getCanonicalName(), newEffect);
-						}
-					}
-				} catch (InstantiationException | IllegalAccessException e) {
-					Sblock.getLog().severe("Keiko you fuck fix your fullEffectsScan");
-					e.printStackTrace();
+		for (String line : playerLore) { // Removes all invalid lore
+			boolean valid = false;
+			for (String validName : validEffects.keySet()) {
+				if (line.equalsIgnoreCase(validName)) {
+					line = validName;
+					valid = true;
+					break;
 				}
+			}
+			if (!valid) {
+				continue;
+			}
+			try {
+				SblockFX newEffect = validEffects.get(line).newInstance();
+				if (output.containsKey(newEffect.getCanonicalName())) {
+					output.get(newEffect.getCanonicalName()).setMultiplier(
+							output.get(newEffect.getCanonicalName()).getMultiplier() + 1);
+				} else {
+					output.put(newEffect.getCanonicalName(), newEffect);
+				}
+			} catch (InstantiationException | IllegalAccessException e) {
+				Sblock.getLog().severe("Keiko you fuck fix your fullEffectsScan");
+				e.printStackTrace();
 			}
 		}
 		u.setAllEffects(output);
@@ -112,23 +127,30 @@ public class FXManager extends Module {
 				playerLore.addAll(iS.getItemMeta().getLore());
 			}
 		}
-		for (String s : playerLore) {
-			for (Class<? extends SblockFX> valid : validEffects.values()) {
-				try {
-					SblockFX newEffect = valid.newInstance();
-					if (newEffect.isValidName(s)) {
-						if (output.containsKey(newEffect.getCanonicalName())) {
-							output.get(newEffect.getCanonicalName()).setMultiplier(
-									output.get(newEffect.getCanonicalName()).getMultiplier() + 1);
-						}
-						else {
-							output.put(newEffect.getCanonicalName(), newEffect);
-						}
-					}
-				} catch (InstantiationException | IllegalAccessException e) {
-					Sblock.getLog().severe("Keiko you fuck fix your itemScan");
-					e.printStackTrace();
+		for (String line : playerLore) {
+			boolean valid = false;
+			for (String validName : validEffects.keySet()) {
+				if (line.equalsIgnoreCase(validName)) {
+					line = validName;
+					valid = true;
+					break;
 				}
+			}
+			if (!valid) {
+				continue;
+			}
+			try {
+				SblockFX newEffect = validEffects.get(line).newInstance();
+					if (output.containsKey(newEffect.getCanonicalName())) {
+						output.get(newEffect.getCanonicalName()).setMultiplier(
+								output.get(newEffect.getCanonicalName()).getMultiplier() + 1);
+					}
+					else {
+						output.put(newEffect.getCanonicalName(), newEffect);
+					}
+			} catch (InstantiationException | IllegalAccessException e) {
+				Sblock.getLog().severe("Keiko you fuck fix your itemScan");
+				e.printStackTrace();
 			}
 		}
 		return output;
