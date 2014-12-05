@@ -4,9 +4,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
-import co.sblock.effects.EffectManager;
-import co.sblock.users.User;
-import co.sblock.users.UserManager;
 import co.sblock.utilities.vote.SleepVote;
 
 /**
@@ -29,11 +26,5 @@ public class PlayerChangedWorldListener implements Listener {
 		if (event.getFrom().getName().equals("Derspit")) {
 			event.getPlayer().resetPlayerTime();
 		}
-
-		User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-		// Scan for and apply passive effects
-		user.setAllPassiveEffects(EffectManager.passiveScan(event.getPlayer()));
-		EffectManager.applyPassiveEffects(user);
 	}
 }

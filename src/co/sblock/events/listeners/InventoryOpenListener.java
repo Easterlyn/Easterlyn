@@ -21,7 +21,7 @@ public class InventoryOpenListener implements Listener {
 	 */
 	@EventHandler
 	public void onInventoryOpen(InventoryOpenEvent event) {
-		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()
+		if (UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer()
 				&& event.getInventory().getHolder() != null
 				&& !(event.getInventory().getHolder() instanceof Computer)) {
 			event.setCancelled(true);

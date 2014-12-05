@@ -10,7 +10,7 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 
 /**
@@ -48,7 +48,7 @@ public class MeCommand extends SblockCommand {
  		if (args.length != 1 || !args[0].isEmpty() && args[0].charAt(0) != '@') {
 			return super.tabComplete(sender, alias, args);
 		}
-		User user = UserManager.getUser(((Player) sender).getUniqueId());
+		OfflineUser user = UserManager.getGuaranteedUser(((Player) sender).getUniqueId());
 		ArrayList<String> matches = new ArrayList<>();
 		String toMatch = args[0].substring(1);
 		for (String s : user.getListening()) {

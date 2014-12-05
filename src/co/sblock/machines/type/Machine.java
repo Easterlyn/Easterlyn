@@ -36,7 +36,7 @@ import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 
 /**
@@ -160,8 +160,8 @@ public abstract class Machine {
 			}
 		}
 		this.assemble();
-		User u = UserManager.getUser(event.getPlayer().getUniqueId());
-		if (u != null && u.isServer() && data.equals(u.getPlayerName())) {
+		OfflineUser u = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+		if (u != null && u.isServer() && owner.equals(u.getUUID().toString())) {
 			this.owner = u.getClient().toString();
 		}
 		SblockMachines.getInstance().saveMachine(this);

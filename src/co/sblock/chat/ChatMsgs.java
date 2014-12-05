@@ -8,7 +8,7 @@ import org.bukkit.ChatColor;
 import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 
 /**
  * A container for all messages sent to <code>Player</code>s from various Chat subsections.
@@ -17,7 +17,7 @@ import co.sblock.users.User;
  */
 public class ChatMsgs {
 
-	public static String onChannelJoin(User user, Channel channel) {
+	public static String onChannelJoin(OfflineUser user, Channel channel) {
 		String name = user.getPlayer().getDisplayName();
 		String message = "pestering";
 		ChatColor nameC = ChatColor.GREEN;
@@ -35,7 +35,7 @@ public class ChatMsgs {
 				+ new SimpleDateFormat("HH:mm").format(new Date());
 	}
 
-	public static String onChannelLeave(User user, Channel channel) {
+	public static String onChannelLeave(OfflineUser user, Channel channel) {
 		return ChatMsgs.onChannelJoin(user, channel).replaceAll("began", "ceased");
 	}
 

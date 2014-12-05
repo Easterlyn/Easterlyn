@@ -34,7 +34,7 @@ public class EntryTimer extends BukkitRunnable {
 //		hologram.setLine(0, format.format(timeRemaining > 0 ? timeRemaining : 0));
 //		hologram.update();
 		if (timeRemaining == 0) {
-			Entry.getEntry().fail(UserManager.getUser(uuid));
+			Entry.getEntry().fail(UserManager.getGuaranteedUser(uuid));
 		}
 		if (timeRemaining < -1) {
 			cancel();

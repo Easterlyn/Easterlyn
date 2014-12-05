@@ -45,10 +45,10 @@ public class PlayerLoginListener implements Listener {
 			String reason = null;
 			if (Bukkit.getBanList(Type.NAME).isBanned(event.getPlayer().getName())) {
 				reason = Bukkit.getBanList(Type.NAME).getBanEntry(event.getPlayer().getName()).getReason()
-						.replaceAll("<ip=([0-9]{1,3}\\.){3}[0-9]{1,3}>", "");
+						.replaceAll("<ip=.*?>", "");
 			} else {
 				reason = Bukkit.getBanList(Type.IP).getBanEntry(event.getAddress().getHostAddress()).getReason()
-						.replaceAll("<uuid=[\\w-]+?>", "").replaceAll("<name=[\\w-]{1,16}+>", "");
+						.replaceAll("<(uuid|name)=[\\w-]+?>", "");
 			}
 			if (reason != null) {
 				event.setKickMessage(reason);

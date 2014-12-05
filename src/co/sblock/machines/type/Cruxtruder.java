@@ -9,8 +9,8 @@ import org.bukkit.util.Vector;
 
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.progression.Entry;
@@ -28,7 +28,7 @@ public class Cruxtruder extends Machine {
 	@SuppressWarnings("deprecation")
 	public Cruxtruder(Location l, String owner) {
 		super(l, owner);
-		MaterialData m = new MaterialData(169); // Sea Lantern
+		MaterialData m = new MaterialData(Material.SEA_LANTERN);
 		shape.addBlock(new Vector(0, 0, 0), m);
 		shape.addBlock(new Vector(0, 1, 0), m);
 		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.NORTH.getStairByte());
@@ -51,7 +51,7 @@ public class Cruxtruder extends Machine {
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
 		if (this.key.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
-			User user = UserManager.getUser(event.getPlayer().getUniqueId());
+			OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
 			if (Entry.getEntry().canStart(user)) {
 				Entry.getEntry().startEntry(user, event.getBlock().getLocation());
 			}

@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,7 +21,6 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
-import co.sblock.effects.PassiveEffect;
 import co.sblock.machines.type.Alchemiter;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Cruxtruder;
@@ -34,7 +33,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.module.Module;
 import co.sblock.users.BukkitSerializer;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 
 /**
  * @author Jikoo
@@ -415,10 +414,7 @@ public class SblockMachines extends Module {
 	 * 
 	 * @return true if the Player is within 10 meters of a Computer.
 	 */
-	public static boolean hasComputerAccess(User user) {
-		if (user.getPassiveEffects().containsKey(PassiveEffect.COMPUTER)) {
-			return true;
-		}
+	public static boolean hasComputerAccess(OfflineUser user) {
 		return getInstance().isByComputer(user.getPlayer(), 10);
 	}
 

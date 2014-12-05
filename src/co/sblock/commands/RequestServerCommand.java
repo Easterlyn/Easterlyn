@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import co.sblock.machines.utilities.Icon;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.SblockUsers;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 
 /**
@@ -42,7 +42,7 @@ public class RequestServerCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.RED + "Unknown user!");
 			return true;
 		}
-		User u = UserManager.getUser(p.getUniqueId());
+		OfflineUser u = UserManager.getGuaranteedUser(p.getUniqueId());
 		if (u == null) {
 			sender.sendMessage(ChatColor.RED + p.getName() + " needs to relog before you can do that!");
 			p.sendMessage(ChatColor.RED + "Your data appears to not have been loaded. Please log out and back in!");

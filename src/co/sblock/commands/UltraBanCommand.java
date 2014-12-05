@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.SblockUsers;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 
 /**
@@ -39,7 +39,7 @@ public class UltraBanCommand extends SblockCommand {
 
 		Player p = Bukkit.getPlayer(args[0]);
 		if (p != null) {
-			User victim = UserManager.getUser(p.getUniqueId());
+			OfflineUser victim = UserManager.getGuaranteedUser(p.getUniqueId());
 			File file;
 			try {
 				file = new File(Sblock.getInstance().getUserDataFolder(), victim.getUUID().toString() + ".yml");

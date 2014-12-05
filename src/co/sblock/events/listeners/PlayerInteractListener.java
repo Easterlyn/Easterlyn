@@ -1,7 +1,5 @@
 package co.sblock.events.listeners;
 
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,14 +13,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
-import co.sblock.effects.ActiveEffect;
-import co.sblock.effects.ActiveEffectType;
-import co.sblock.effects.EffectManager;
 import co.sblock.events.SblockEvents;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.progression.Entry;
@@ -43,10 +39,11 @@ public class PlayerInteractListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()) {
+		OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
+		if (user.isServer()) {
 			// No interaction with any blocks while out of range.
 			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
-					UserManager.getUser(event.getPlayer().getUniqueId()), event.getClickedBlock())) {
+					user, event.getClickedBlock())) {
 				event.getPlayer().sendMessage(ChatColor.RED + "Block out of range!");
 				event.setCancelled(true);
 				return;
@@ -63,8 +60,7 @@ public class PlayerInteractListener implements Listener {
 				} else if (event.getItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 					// Right click air: Open computer
 					event.getPlayer().openInventory(new Computer(event.getPlayer().getLocation(),
-							event.getPlayer().getUniqueId().toString(), true)
-									.getInventory(UserManager.getUser(event.getPlayer().getUniqueId())));
+							event.getPlayer().getUniqueId().toString(), true).getInventory(user));
 				}
 			}
 			return;
@@ -75,9 +71,9 @@ public class PlayerInteractListener implements Listener {
 			for (Material m : Entry.getEntry().getMaterialList()) {
 				if (event.getItem().getType() == m && event.getItem().getItemMeta().hasDisplayName() 
 						&& event.getItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
-					if (Entry.getEntry().isEntering(UserManager.getUser(event.getPlayer().getUniqueId()))) {
-						if (m == Entry.getEntry().getData().get(UserManager.getUser(event.getPlayer().getUniqueId())).getCruxtype()) {
-							Entry.getEntry().succeed(UserManager.getUser(event.getPlayer().getUniqueId()));
+					if (Entry.getEntry().isEntering(user)) {
+						if (m == Entry.getEntry().getData().get(user).getCruxtype()) {
+							Entry.getEntry().succeed(user);
 						}
 					}
 					event.getPlayer().setItemInHand(null);
@@ -88,16 +84,6 @@ public class PlayerInteractListener implements Listener {
 
 		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			return;
-		}
-
-		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-			// ActiveEffect application
-			HashMap<ActiveEffect, Integer> effects = EffectManager.activeScan(event.getPlayer());
-			for (ActiveEffect aE : effects.keySet()) {
-				if (aE.getActiveEffectType() == ActiveEffectType.RIGHT_CLICK) {
-					ActiveEffect.applyRightClickEffect(event.getPlayer(), aE, effects.get(aE));
-				}
-			}
 		}
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -138,7 +124,7 @@ public class PlayerInteractListener implements Listener {
 					// getFace does not seem to work in most cases - adam test and fix
 				}
 
-				switch (UserManager.getUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
+				switch (UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
 				case EARTH:
 				case PROSPIT:
 				case LOFAF:

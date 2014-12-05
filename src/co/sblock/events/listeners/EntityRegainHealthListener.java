@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -35,7 +35,7 @@ public class EntityRegainHealthListener implements Listener {
 			return;
 		}
 
-		User user = UserManager.getUser(p.getUniqueId());
+		OfflineUser user = UserManager.getGuaranteedUser(p.getUniqueId());
 		if (user != null && user.isServer()) {
 			event.setCancelled(true);
 			return;

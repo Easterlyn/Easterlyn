@@ -52,7 +52,7 @@ public class HalCommand extends SblockCommand {
 		Log.anonymousInfo(msg.getConsoleFriendly());
 		String announcement = msg.toString();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			UserManager.getUser(p.getUniqueId()).rawHighlight(announcement);
+			UserManager.getGuaranteedUser(p.getUniqueId()).rawHighlight(announcement);
 		}
 		return true;
 	}

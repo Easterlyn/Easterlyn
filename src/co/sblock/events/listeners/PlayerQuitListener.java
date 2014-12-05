@@ -7,10 +7,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import co.sblock.effects.Cooldowns;
 import co.sblock.events.SblockEvents;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.minecarts.FreeCart;
@@ -51,16 +50,13 @@ public class PlayerQuitListener implements Listener {
 			SblockEvents.getEvents().getTasks().remove(event.getPlayer().getName()).cancel();
 		}
 
-		// Clean up any expired cooldown entries for the player
-		Cooldowns.cleanup(event.getPlayer().getName());
-
 		// Restore inventory if still preserved
 		InventoryManager.restoreInventory(event.getPlayer());
 
 		// Delete team for exiting player to avoid clutter
 		UserManager.unteam(event.getPlayer());
 
-		User user = UserManager.unloadUser(event.getPlayer().getUniqueId());
+		OfflineUser user = UserManager.unloadUser(event.getPlayer().getUniqueId());
 		UserManager.saveUser(user);
 
 		// Remove Server status

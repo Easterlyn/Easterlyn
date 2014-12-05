@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import co.sblock.chat.channel.CanonNicks;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.rawmessages.EscapedElement;
 import co.sblock.utilities.rawmessages.MessageClick;
@@ -28,14 +28,14 @@ import co.sblock.utilities.regex.RegexUtils;
  */
 public class Message {
 
-	private User sender;
+	private OfflineUser sender;
 	private Channel channel;
 	private String name, originalMessage, cleanedMessage, finalMessage, target;
 	private String[] channelPrefixing;
 	private boolean escape, thirdPerson, containsLinks, isPrepared;
 	private Set<ChatColor> colors;
 
-	public Message(User sender, String message) {
+	public Message(OfflineUser sender, String message) {
 		this(message);
 		this.sender = sender;
 		if (channel == null && target == null && sender != null) {
@@ -53,7 +53,7 @@ public class Message {
 		setMessage(message);
 	}
 
-	public User getSender() {
+	public OfflineUser getSender() {
 		return sender;
 	}
 
@@ -247,23 +247,7 @@ public class Message {
 		}
 
 		for (UUID uuid : channel.getListening()) {
-			User u;
-			if (Bukkit.getPlayer(uuid) == null) {
-				u = UserManager.unloadUser(uuid);
-				if (u == null) {
-					continue;
-				}
-				UserManager.saveUser(u);
-				for (String channelName : u.getListening()) {
-					Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
-					if (channel != null) {
-						channel.removeListening(uuid);
-					}
-				}
-				continue;
-			} else {
-				u = UserManager.getUser(uuid);
-			}
+			OfflineUser u = UserManager.getGuaranteedUser(uuid);
 			if (u == null) {
 				channel.removeListening(uuid);
 				continue;

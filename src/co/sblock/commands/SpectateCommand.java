@@ -32,7 +32,7 @@ public class SpectateCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		if (UserManager.getUser(player.getUniqueId()).isServer()) {
+		if (UserManager.getGuaranteedUser(player.getUniqueId()).isServer()) {
 			sender.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
 			return true;
 		}

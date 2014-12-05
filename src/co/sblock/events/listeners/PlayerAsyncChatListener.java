@@ -39,14 +39,7 @@ public class PlayerAsyncChatListener implements Listener {
 		event.setCancelled(true);
 		// Clear recipients so as to not duplicate messages for global chat
 		event.getRecipients().clear();
-		Message message = new Message(UserManager.getUser(event.getPlayer().getUniqueId()), event.getMessage());
-		if (message.getSender() == null) {
-			event.getPlayer().sendMessage(ChatColor.BOLD
-					+ "[o] Your Sblock playerdata appears to not be loaded."
-					+ "\nI'll take care of that for you, but make sure your /profile is correct.");
-			UserManager.loadUser(event.getPlayer().getUniqueId());
-			return;
-		}
+		Message message = new Message(UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()), event.getMessage());
 		// Ensure message can be sent
 		if (!message.validate(true)) {
 			return;

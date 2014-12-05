@@ -19,7 +19,7 @@ public class PlayerChatTabCompleteListener implements Listener {
 		if (event.getChatMessage().split(" ")[0].equals(event.getLastToken())
 				&& event.getLastToken().length() > 0 && event.getLastToken().charAt(0) == '@') {
 			String completing = event.getLastToken().substring(1);
-			for (String channel : UserManager.getUser(event.getPlayer().getUniqueId()).getListening()) {
+			for (String channel : UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).getListening()) {
 				if (StringUtil.startsWithIgnoreCase(channel, completing)) {
 					event.getTabCompletions().add("@" + channel);
 				}

@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import co.sblock.chat.ChatMsgs;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 
 /**
@@ -50,7 +50,7 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.chat.channel.Channel#setNick(ChatUser, String)
 	 */
 	@Override
-	public void setNick(User sender, String nick) {
+	public void setNick(OfflineUser sender, String nick) {
 		nickList.put(sender.getUUID(), nick);
 		this.sendMessage(ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this.name));
 	}
@@ -59,7 +59,7 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.chat.channel.Channel#removeNick(ChatUser)
 	 */
 	@Override
-	public void removeNick(User sender, boolean warn) {
+	public void removeNick(OfflineUser sender, boolean warn) {
 		if (nickList.containsKey(sender.getUUID())) {
 			String old = nickList.remove(sender.getUUID());
 			if (warn) {
@@ -72,7 +72,7 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.chat.channel.Channel#getNick(ChatUser)
 	 */
 	@Override
-	public String getNick(User sender) {
+	public String getNick(OfflineUser sender) {
 		return nickList.containsKey(sender.getUUID()) ? nickList.get(sender.getUUID()) : sender.getPlayer().getDisplayName();
 	}
 
@@ -80,7 +80,7 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.chat.channel.Channel#hasNick(ChatUser)
 	 */
 	@Override
-	public boolean hasNick(User sender) {
+	public boolean hasNick(OfflineUser sender) {
 		return nickList.containsKey(sender.getUUID());
 	}
 
@@ -88,12 +88,12 @@ public class NickChannel extends Channel {
 	 * @see co.sblock.chat.channel.Channel#getNickOwner(String)
 	 */
 	@Override
-	public User getNickOwner(String nick) {
-		User owner = null;
+	public OfflineUser getNickOwner(String nick) {
+		OfflineUser owner = null;
 		if (nickList.containsValue(nick)) {
 			for (UUID u : nickList.keySet()) {
 				if (nickList.get(u).equalsIgnoreCase(nick)) {
-					owner = UserManager.getUser(u);
+					owner = UserManager.getGuaranteedUser(u);
 					break;
 				}
 			}

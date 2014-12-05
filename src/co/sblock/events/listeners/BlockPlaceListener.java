@@ -42,7 +42,7 @@ public class BlockPlaceListener implements Listener {
 		}
 
 		// Server mode placement
-		if (UserManager.getUser(event.getPlayer().getUniqueId()).isServer()) {
+		if (UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer()) {
 			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {

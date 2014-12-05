@@ -3,7 +3,7 @@ package co.sblock.chat.channel;
 import java.util.UUID;
 
 import co.sblock.chat.ChatMsgs;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 
 /**
  * Defines RP channel behavior
@@ -31,7 +31,7 @@ public class RPChannel extends NickChannel {
 	 * @see co.sblock.chat.channel.Channel#setNick(ChatUser, String)
 	 */
 	@Override
-	public void setNick(User sender, String nick) {
+	public void setNick(OfflineUser sender, String nick) {
 		CanonNicks name = CanonNicks.getNick(nick);
 		if (name == null) {
 			sender.sendMessage(ChatMsgs.errorNickNotCanon(nick));

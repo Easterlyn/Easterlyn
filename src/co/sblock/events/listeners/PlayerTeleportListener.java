@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import co.sblock.Sblock;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 
 /**
@@ -38,10 +38,7 @@ public class PlayerTeleportListener implements Listener {
 
 			@Override
 			public void run() {
-				User user = UserManager.getUser(event.getPlayer().getUniqueId());
-				if (!user.isLoaded()) {
-					return;
-				}
+				OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
 				// Update region
 				Region target;
 				if (event.getPlayer().getWorld().getName().equals("Derspit")) {
@@ -54,7 +51,7 @@ public class PlayerTeleportListener implements Listener {
 		});
 	}
 
-	private Region getTargetDreamPlanet(User user, String from) {
+	private Region getTargetDreamPlanet(OfflineUser user, String from) {
 		Region fromRegion = Region.getRegion(from);
 		if (!fromRegion.isMedium()) {
 			return user.getDreamPlanet();

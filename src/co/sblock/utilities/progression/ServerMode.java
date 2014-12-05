@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.type.Machine;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 
 /**
  * 
@@ -91,7 +91,7 @@ public class ServerMode {
 		return is;
 	}
 
-	public boolean isWithinRange(User server, Block broken) {
+	public boolean isWithinRange(OfflineUser server, Block broken) {
 		Machine computer = SblockMachines.getInstance().getComputer(server.getClient());
 		return computer != null && computer.getKey().distanceSquared(broken.getLocation()) <= 625;
 	}

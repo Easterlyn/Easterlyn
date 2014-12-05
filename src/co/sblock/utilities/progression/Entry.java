@@ -29,9 +29,9 @@ import co.sblock.Sblock;
 import co.sblock.machines.SblockMachines;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Region;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
@@ -68,7 +68,7 @@ public class Entry {
 		holograms = HashBiMap.create();
 		data = new HashMap<>();
 	}
-	public boolean canStart(User user) {
+	public boolean canStart(OfflineUser user) {
 		if (!holograms.values().contains(user.getUUID()) && user.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())
 				&& user.getProgression() == ProgressionState.NONE) {
 			return true;
@@ -77,12 +77,12 @@ public class Entry {
 		return false;
 	}
 
-	public boolean isEntering(User user) {
+	public boolean isEntering(OfflineUser user) {
 		return holograms.containsValue(user.getUUID());
 	}
 
 
-	public void startEntry(User user, Location cruxtruder) {
+	public void startEntry(OfflineUser user, Location cruxtruder) {
 		if (!canStart(user)) {
 			return;
 		}
@@ -104,7 +104,7 @@ public class Entry {
 		im.setDisplayName(ChatColor.AQUA + "Cruxite " + InventoryUtils.getMaterialDataName(is.getType(), is.getDurability()));
 		is.setItemMeta(im);
 		is = Captcha.captchaToPunch(Captcha.itemToCaptcha(is));
-		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline() && UserManager.getUser(user.getServer()).isServer()) {
+		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline() && UserManager.getGuaranteedUser(user.getServer()).isServer()) {
 			Bukkit.getPlayer(user.getServer()).getInventory().addItem(is);
 		} else {
 			Player player = user.getPlayer();
@@ -113,7 +113,7 @@ public class Entry {
 		data.put(user.getUUID(), new EntryStorage(meteorite, material));
 	}
 
-	private void finish(User user) {
+	private void finish(OfflineUser user) {
 		if (!isEntering(user)) {
 			return;
 		}
@@ -125,13 +125,13 @@ public class Entry {
 		}
 
 		// Kicks the server out of server mode
-		User server = UserManager.getUser(user.getServer());
+		OfflineUser server = UserManager.getGuaranteedUser(user.getServer());
 		if (server != null && server.isServer()) {
 			server.stopServerMode();
 		}
 	}
 
-	public void fail(User user) {
+	public void fail(OfflineUser user) {
 
 		if (user == null) {
 			return;
@@ -153,7 +153,7 @@ public class Entry {
 		}
 	}
 
-	public void succeed(final User user) {
+	public void succeed(final OfflineUser user) {
 		finish(user);
 
 		user.setProgression(ProgressionState.ENTRY);

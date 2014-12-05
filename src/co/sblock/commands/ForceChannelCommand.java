@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.channel.Channel;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 
 /**
@@ -47,7 +47,7 @@ public class ForceChannelCommand extends SblockCommand {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		User user = UserManager.getUser(p.getUniqueId());
+		OfflineUser user = UserManager.getGuaranteedUser(p.getUniqueId());
 		user.setCurrent(c);
 		sender.sendMessage(ChatColor.GREEN + "Channel forced!");
 		return true;

@@ -21,8 +21,8 @@ import org.bukkit.util.Vector;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 
 /**
@@ -193,7 +193,7 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 
-		User user = UserManager.getUser(event.getPlayer().getUniqueId());
+		OfflineUser user = UserManager.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user != null && user.getProgression() == ProgressionState.NONE) {
 			// Transportalizers can only be used by players who have completed Entry.
 			// Any entity, including pre-entry players, can be transported by a

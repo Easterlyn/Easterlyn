@@ -11,8 +11,8 @@ import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.SblockChat;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.rawmessages.MessageClick;
@@ -112,7 +112,7 @@ public abstract class Channel {
 	 * @param user a user
 	 * @return if this user is an owner (created channel / set by previous owner, or is a 'denizen')
 	 */
-	public boolean isOwner(User user) {
+	public boolean isOwner(OfflineUser user) {
 		return user.getUUID().equals(owner) || user.getPlayer().hasPermission("group.denizen");
 	}
 
@@ -120,7 +120,7 @@ public abstract class Channel {
 	 * @param user a user
 	 * @return whether this user has permission to moderate the channel
 	 */
-	public boolean isModerator(User user) {
+	public boolean isModerator(OfflineUser user) {
 		return isOwner(user) || user.getPlayer().hasPermission("group.felt") || modList.contains(user.getUUID());
 	}
 
@@ -130,7 +130,7 @@ public abstract class Channel {
 	 * @param user a user
 	 * @return whether this user is banned
 	 */
-	public boolean isBanned(User user) {
+	public boolean isBanned(OfflineUser user) {
 		return banList.contains(user.getUUID()) && !user.getPlayer().hasPermission("group.denizen");
 	}
 
@@ -187,18 +187,18 @@ public abstract class Channel {
 	 * @param sender the person attempting to apply moderator status to another
 	 * @param userID the ID of the person who may become a mod
 	 */
-	public void addMod(User sender, UUID userID) {
-		User user = UserManager.getUser(userID);
-		if (user == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
-			return;
-		}
+	public void addMod(OfflineUser sender, UUID userID) {
 		if (!isModerator(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		String message = ChatMsgs.onChannelModAdd(user.getPlayerName(), this.name);
-		if (!this.isModerator(UserManager.getUser(userID))) {
+		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		if (user == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
+			return;
+		}
+		String message = ChatMsgs.onChannelModAdd(user.getDisplayName(), this.name);
+		if (!this.isModerator(user)) {
 			this.modList.add(userID);
 			this.sendMessage(message);
 			if (!this.listening.contains(userID)) {
@@ -213,17 +213,17 @@ public abstract class Channel {
 	 * @param sender the person attempting to remove moderator status from another
 	 * @param userID the ID of the person who may lose mod status
 	 */
-	public void removeMod(User sender, UUID userID) {
-		User user = UserManager.getUser(userID);
-		if (user == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
-			return;
-		}
+	public void removeMod(OfflineUser sender, UUID userID) {
 		if (!this.isModerator(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		String message = ChatMsgs.onChannelModRm(user.getPlayerName(), this.name);
+		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		if (user == null) {
+			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
+			return;
+		}
+		String message = ChatMsgs.onChannelModRm(user.getDisplayName(), this.name);
 		if (this.modList.contains(userID) && !this.isOwner(user)) {
 			this.modList.remove(userID);
 			this.sendMessage(message);
@@ -249,35 +249,35 @@ public abstract class Channel {
 	 * @param sender the sender
 	 * @param nick the nick
 	 */
-	public abstract void setNick(User sender, String nick);
+	public abstract void setNick(OfflineUser sender, String nick);
 
 	/**
 	 *
 	 * @param sender the sender
 	 * @param warn whether to warn the user
 	 */
-	public abstract void removeNick(User sender, boolean warn);
+	public abstract void removeNick(OfflineUser sender, boolean warn);
 
 	/**
 	 *
 	 * @param sender the sender
 	 * @return the nick of the sender
 	 */
-	public abstract String getNick(User sender);
+	public abstract String getNick(OfflineUser sender);
 
 	/**
 	 *
 	 * @param sender the sender
 	 * @return whether the sender has had a nick set
 	 */
-	public abstract boolean hasNick(User sender);
+	public abstract boolean hasNick(OfflineUser sender);
 
 	/**
 	 *
 	 * @param nick the nickname to reverse lookup
 	 * @return the owner of the provided nickname
 	 */
-	public abstract User getNickOwner(String nick);
+	public abstract OfflineUser getNickOwner(String nick);
 
 	/**
 	 * @return the type of this channel
@@ -290,12 +290,12 @@ public abstract class Channel {
 	 * @param sender the user attempting to kick
 	 * @param userID the user who might be kicked
 	 */
-	public void kickUser(User sender, UUID userID) {
-		User user = UserManager.getUser(userID);
+	public void kickUser(OfflineUser sender, UUID userID) {
 		if (!this.isModerator(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
+		OfflineUser user = UserManager.getGuaranteedUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -310,21 +310,18 @@ public abstract class Channel {
 		} else {
 			sender.sendMessage(message);
 		}
-
 	}
 
-
-
-	public void banUser(User sender, UUID userID) {
+	public void banUser(OfflineUser sender, UUID userID) {
 		if (!this.isModerator(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (UserManager.getUser(userID) == null) {
+		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onUserBanAnnounce(Bukkit.getPlayer(userID).getName(), this.name);
 		if (this.isOwner(user)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
@@ -343,16 +340,16 @@ public abstract class Channel {
 		}
 	}
 
-	public void unbanUser(User sender, UUID userID) {
+	public void unbanUser(OfflineUser sender, UUID userID) {
 		if (!this.isOwner(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		if (UserManager.getUser(userID) == null) {
+		OfflineUser user = UserManager.getGuaranteedUser(userID);
+		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		User user = UserManager.getUser(userID);
 		String message = ChatMsgs.onUserUnbanAnnounce(user.getPlayerName(), this.name);
 		if (banList.contains(userID)) {
 			this.banList.remove(userID);
@@ -363,12 +360,12 @@ public abstract class Channel {
 		}
 	}
 
-	public void approveUser(User sender, UUID target) {
+	public void approveUser(OfflineUser sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			User targ = UserManager.getUser(target);
+			OfflineUser targ = UserManager.getGuaranteedUser(target);
 			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
 			if (this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -380,12 +377,12 @@ public abstract class Channel {
 		}
 	}
 
-	public void disapproveUser(User sender, UUID target) {
+	public void disapproveUser(OfflineUser sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			User targ = UserManager.getUser(target);
+			OfflineUser targ = UserManager.getGuaranteedUser(target);
 			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
 			if (!this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -401,11 +398,11 @@ public abstract class Channel {
 		return approvedList;
 	}
 
-	public boolean isApproved(User user) {
-		return approvedList.contains(user.getUUID()) || isModerator(user);
+	public boolean isApproved(OfflineUser user) {
+		return access == AccessLevel.PUBLIC || approvedList.contains(user.getUUID()) || isModerator(user);
 	}
 
-	public void disband(User sender) {
+	public void disband(OfflineUser sender) {
 		if (this.owner == null) {
 			sender.sendMessage(ChatMsgs.errorDisbandDefault());
 			return;
@@ -416,7 +413,7 @@ public abstract class Channel {
 		}
 		this.sendMessage(ChatMsgs.onChannelDisband(this.getName()));
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			UserManager.getUser(userID).removeListeningSilent(this);
+			UserManager.getGuaranteedUser(userID).removeListeningSilent(this);
 		}
 		SblockChat.getChat().getChannelManager().dropChannel(this.name);
 	}
@@ -429,7 +426,7 @@ public abstract class Channel {
 	 */
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User u = UserManager.getUser(userID);
+			OfflineUser u = UserManager.getGuaranteedUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;
@@ -446,7 +443,7 @@ public abstract class Channel {
 	 *
 	 * @return the channel prefix
 	 */
-	public String[] getChannelPrefixing(User sender, boolean isThirdPerson) {
+	public String[] getChannelPrefixing(OfflineUser sender, boolean isThirdPerson) {
 
 		ChatColor guildRank;
 		ChatColor channelRank;

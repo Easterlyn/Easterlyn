@@ -2,54 +2,60 @@ package co.sblock.users;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
-import co.sblock.users.User.UserBuilder;
 
 /**
- * Class that keeps track of players currently logged on to the game
+ * Class that keeps track of players currently logged on to the game.
  * 
  * @author FireNG, Jikoo
  */
 public class UserManager {
 
 	/* The Map of Player UUID and relevant SblockUsers currently online. */
-	private static final Map<UUID, User> users = new ConcurrentHashMap<>();
+	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
 
 	/**
-	 * Get a User object for the UUID given.
+	 * User is not guaranteed to be online, but an OfflineUser will be fetched no matter what.
 	 * 
-	 * @param player the name of the Player
+	 * @param uuid
+	 * @return
 	 */
-	public static User addUser(UUID userID) {
-		User user = null;
-		if (users.containsKey(userID)) {
-			user = users.get(userID);
+	public static OfflineUser getGuaranteedUser(UUID uuid) {
+		if (users.containsKey(uuid)) {
+			return users.get(uuid);
 		}
-		if (user == null || !user.isLoaded()) {
-			user = new UserBuilder().build(userID);
-			users.put(userID, user);
+		OfflineUser user = OfflineUser.load(uuid);
+		if (user.isOnline()) {
+			user = user.getOnlineUser();
+			users.put(uuid, user);
+		} else {
+			return user;
 		}
 		return user;
+	}
+
+	protected static OnlineUser getOnlineUser(UUID uuid) {
+		if (users.containsKey(uuid)) {
+			OfflineUser user = users.get(uuid);
+			if (user instanceof OnlineUser) {
+				return (OnlineUser) user;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -57,94 +63,8 @@ public class UserManager {
 	 * 
 	 * @param user the User to add
 	 */
-	public static void addUser(User user) {
+	public static void addUser(OfflineUser user) {
 		users.put(user.getUUID(), user);
-		user.setLoaded();
-	}
-
-	@SuppressWarnings("unchecked")
-	public static void loadUser(final UUID uuid) {
-		File file;
-		try {
-			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
-			if (!file.exists()) {
-				Player player = Bukkit.getPlayer(uuid);
-				if (player == null) {
-					SblockUsers.getSblockUsers().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
-					return;
-				}
-				player.teleport(getSpawnLocation());
-
-				UserBuilder builder = new UserBuilder();
-				User user = builder.build(uuid);
-				HashSet<String> defaults = new HashSet<>();
-				defaults.add("#");
-				defaults.add(Region.EARTH.getChannelName());
-				user.loginAddListening(defaults);
-				user.updateCurrentRegion(Region.EARTH);
-				UserManager.addUser(user);
-
-				Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
-						+ " is joining us for the first time! Please welcome them.");
-				return;
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load data for " + uuid, e);
-		}
-		UserBuilder builder = new UserBuilder();
-		Player player = Bukkit.getPlayer(uuid);
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		if (player != null) {
-			builder.setIPAddr(player.getAddress().getHostString());
-		} else {
-			builder.setIPAddr(yaml.getString("ip"));
-		}
-		builder.setPreviousLocationFromString(yaml.getString("previousLocation"));
-		//yaml.getString("previousRegion");
-		builder.setUserClass(UserClass.getClass(yaml.getString("classpect.class")));
-		builder.setAspect(UserAspect.getAspect(yaml.getString("classpect.aspect")));
-		Region dream = Region.getRegion(yaml.getString("classpect.dream"));
-		builder.setDreamPlanet(dream);
-		Region current = Region.getRegion(player.getWorld().getName());
-		if (current.isDream()) {
-			current = dream;
-		}
-		builder.setCurrentRegion(current);
-		builder.setMediumPlanet(Region.getRegion(yaml.getString("classpect.medium")));
-		builder.setProgression(ProgressionState.valueOf(yaml.getString("progression.progression")));
-		builder.setPrograms((HashSet<Integer>) yaml.get("progression.programs"));
-		if (yaml.getString("progression.server") != null) {
-			builder.setServer(UUID.fromString(yaml.getString("progression.server")));
-		}
-		if (yaml.getString("progression.client") != null) {
-			builder.setClient(UUID.fromString(yaml.getString("progression.client")));
-		}
-		builder.setCurrentChannel(yaml.getString("chat.current"));
-		builder.setListening((HashSet<String>) yaml.get("chat.listening"));
-		builder.setGlobalMute(new AtomicBoolean(yaml.getBoolean("chat.muted")));
-		builder.setSuppress(new AtomicBoolean(yaml.getBoolean("chat.suppressing")));
-		//(Set<String>) yaml.get("chat.ignoring");
-		User user = builder.build(uuid);
-		if (player != null) {
-			user.updateFlight();
-			user.updateCurrentRegion(current);
-			final String nick = yaml.getString("nickname");
-
-			// Set display name on delay so it takes effect properly prior to listening announce
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					Player player = Bukkit.getPlayer(uuid);
-					User user = UserManager.getUser(uuid);
-					if (player == null || user == null) {
-						return;
-					}
-					player.setDisplayName(nick);
-					user.loginAddListening(user.getListening());
-				}
-			}.runTask(Sblock.getInstance());
-		}
-		addUser(user);
 	}
 
 	/**
@@ -153,16 +73,14 @@ public class UserManager {
 	 * @param player the name of the Player to remove
 	 * @return the SblockUser for the removed player, if any
 	 */
-	public static User unloadUser(UUID userID) {
-		User user = users.remove(userID);
-		return user;
+	public static OfflineUser unloadUser(UUID userID) {
+		if (!users.containsKey(userID)) {
+			return null;
+		}
+		return users.remove(userID);
 	}
 
-	public static void saveUser(User user) {
-		if (!user.isLoaded()) {
-			return;
-		}
-
+	public static void saveUser(OfflineUser user) {
 		File file;
 		try {
 			file = new File(Sblock.getInstance().getUserDataFolder(), user.getUUID().toString() + ".yml");
@@ -178,11 +96,11 @@ public class UserManager {
 		yaml.set("ip", user.getUserIP());
 		if (player != null) {
 			yaml.set("nickname", player.getDisplayName());
-			yaml.set("location", BukkitSerializer.locationToString(player.getLocation()));
+			yaml.set("location", BukkitSerializer.locationToBlockCenterString(player.getLocation()));
 			yaml.set("playtime", user.getTimePlayed());
 		}
 		yaml.set("region", user.getCurrentRegion().getDisplayName());
-		yaml.set("previousLocation", BukkitSerializer.locationToString(user.getPreviousLocation()));
+		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(user.getPreviousLocation()));
 		yaml.set("previousRegion", null);
 		yaml.set("flying", user.canFly());
 		yaml.set("classpect.class", user.getUserClass().getDisplayName());
@@ -206,102 +124,12 @@ public class UserManager {
 		}
 	}
 
-	public static String getOfflineUserInfo(UUID uuid) {
-		File file;
-		try {
-			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
-			if (!file.exists()) {
-				return ChatColor.RED + "No data stored for that user.";
-			}
-		} catch (IOException e) {
-			SblockUsers.getSblockUsers().getLogger().err(e);
-			return ChatColor.RED + "Unable to load data! Please report this issue.";
-		}
-		StringBuilder sb = new StringBuilder();
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-		//+-- Name aka Nickname from IP --+
-		sb.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+--")
-				.append(ChatColor.DARK_AQUA).append(' ').append(player.getName())
-				.append(ChatColor.YELLOW).append(" aka ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("nickname", "no nick")).append(ChatColor.YELLOW)
-				.append(" from ").append(ChatColor.DARK_AQUA).append(yaml.getString("ip", "ip"))
-				.append(ChatColor.YELLOW).append(' ').append(ChatColor.STRIKETHROUGH)
-				.append("--+\n");
-
-		// Class of Aspect, dream, planet
-		sb.append(ChatColor.DARK_AQUA).append(yaml.getString("classpect.class", "class"))
-				.append(ChatColor.YELLOW).append(" of ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("classpect.aspect", "aspect")).append(ChatColor.YELLOW)
-				.append(", ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("classpect.dream", "dream")).append(ChatColor.YELLOW)
-				.append(", ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("classpect.medium", "medium")).append('\n');
-
-		// Loc: current location TODO, Region: region
-		sb.append(ChatColor.YELLOW).append("Loc: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("location", "unknown")).append(ChatColor.YELLOW)
-				.append('\n');
-
-		// Prev loc: loc prior to change to/from dreamplanet, Prev region: region of said location
-		sb.append("Prev loc: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("previousLocation", "prev loc")).append(ChatColor.YELLOW)
-				.append(", Prev region: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("previousRegion", "prev region")).append('\n');
-
-		// Progression: PROGRESSION, Programs: [list]
-		sb.append(ChatColor.YELLOW).append("Progression: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("progression.progression", "none")).append(ChatColor.YELLOW)
-				.append(", Programs: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.get("progression.programs")).append('\n');
-
-		// Server: UUID, Client: UUID
-		sb.append(ChatColor.YELLOW).append("Server: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("progression.server", "none")).append(ChatColor.YELLOW)
-				.append(", Client: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("progression.client", "none")).append('\n');
-
-		// Pestering: current, Listening: [list]
-		sb.append(ChatColor.YELLOW).append("Pestering: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("chat.current", "none")).append(ChatColor.YELLOW)
-				.append(", Listening: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.get("chat.listening")).append('\n');
-
-		// Muted: boolean, Suppressing: boolean
-		sb.append(ChatColor.YELLOW).append("Muted: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getBoolean("chat.muted", false)).append(ChatColor.YELLOW)
-				.append(", Suppressing: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getBoolean("chat.suppressing", false)).append('\n');
-
-		// Last seen: date, Playtime: X days, XX:XX
-		sb.append(ChatColor.YELLOW).append("Last login: ").append(ChatColor.DARK_AQUA)
-				.append(new SimpleDateFormat("HH:mm 'on' dd/MM/YY").format(new Date(player.getLastPlayed())))
-				.append(ChatColor.YELLOW).append(", Time ingame: ").append(ChatColor.DARK_AQUA)
-				.append(yaml.getString("playtime", "unknown"));
-
-		return sb.toString();
-	}
-
 	/**
+	 * Gets a Collection of OfflineUsers currently loaded.
 	 * 
-	 * @param userID the UUID of the Player to look up
-	 * 
-	 * @return the SblockUser associated with the given Player, or null if no
-	 *         Player with the given ID is currently online.
+	 * @return the OfflineUsers
 	 */
-	public static User getUser(UUID userID) {
-		if (users.containsKey(userID)) {
-			return users.get(userID);
-		}
-		return null;
-	}
-
-	/**
-	 * Gets a Collection of SblockUsers currently online.
-	 * 
-	 * @return the SblockUsers currently online
-	 */
-	public static Collection<User> getUsers() {
+	public static Collection<OfflineUser> getUsers() {
 		return users.values();
 	}
 

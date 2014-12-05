@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.events.SblockEvents;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
-import co.sblock.users.User;
 import co.sblock.users.UserManager;
 
 /**
@@ -33,7 +33,7 @@ public class SleepTeleport extends BukkitRunnable {
 		if (player == null) {
 			return;
 		}
-		User user = UserManager.getUser(player.getUniqueId());
+		OfflineUser user = UserManager.getGuaranteedUser(player.getUniqueId());
 		if (user == null) {
 			return;
 		}

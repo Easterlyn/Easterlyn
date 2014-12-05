@@ -6,8 +6,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.User;
 import co.sblock.users.UserAspect;
 import co.sblock.users.UserClass;
 import co.sblock.users.UserManager;
@@ -36,7 +36,7 @@ public class SetPlayerCommand extends SblockCommand {
 		if (args == null || args.length < 3) {
 			return false;
 		}
-		User user = UserManager.getUser(Bukkit.getPlayer(args[0]).getUniqueId());
+		OfflineUser user = UserManager.getGuaranteedUser(Bukkit.getPlayer(args[0]).getUniqueId());
 		args[1] = args[1].toLowerCase();
 		if(args[1].equals("class"))
 			user.setPlayerClass(args[2]);

@@ -29,7 +29,7 @@ public class SblockUsers extends Module {
 		instance = this;
 		requests = new HashMap<String, String>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			UserManager.loadUser(p.getUniqueId());
+			UserManager.getGuaranteedUser(p.getUniqueId());
 		}
 	}
 
@@ -38,7 +38,7 @@ public class SblockUsers extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		for (User u : UserManager.getUsers().toArray(new User[0])) {
+		for (OfflineUser u : UserManager.getUsers().toArray(new OfflineUser[0])) {
 			UserManager.saveUser(UserManager.unloadUser(u.getUUID()));
 		}
 		instance = null;

@@ -31,7 +31,7 @@ public class PlayerCommandPreprocessListener implements Listener {
 		String lowercase = event.getMessage().toLowerCase();
 		if (lowercase.startsWith("/sethome")
 				&& (Spectators.getSpectators().isSpectator(event.getPlayer().getUniqueId())
-				|| UserManager.getUser(event.getPlayer().getUniqueId()).isServer())) {
+				|| UserManager.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");
 			return;

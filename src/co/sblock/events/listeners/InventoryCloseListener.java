@@ -1,14 +1,10 @@
 package co.sblock.events.listeners;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
-import co.sblock.effects.EffectManager;
 import co.sblock.machines.MachineInventoryTracker;
-import co.sblock.users.User;
-import co.sblock.users.UserManager;
 
 /**
  * Listener for InventoryCloseEvents.
@@ -25,12 +21,5 @@ public class InventoryCloseListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClose(InventoryCloseEvent event) {
 		MachineInventoryTracker.getTracker().closeMachine(event);
-
-		User user = UserManager.getUser(event.getPlayer().getUniqueId());
-		if (user == null) {
-			return; // Player is probably logging out
-		}
-		user.setAllPassiveEffects(EffectManager.passiveScan((Player) event.getPlayer()));
-		EffectManager.applyPassiveEffects(user);
 	}
 }

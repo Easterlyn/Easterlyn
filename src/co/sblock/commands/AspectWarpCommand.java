@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChatMsgs;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserAspect;
 import co.sblock.users.UserManager;
 
@@ -37,7 +37,7 @@ public class AspectWarpCommand extends SblockCommand {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		User u = UserManager.getUser(p.getUniqueId());
+		OfflineUser u = UserManager.getGuaranteedUser(p.getUniqueId());
 		if (!u.getAspect().name().equalsIgnoreCase(args[0])) {
 			return true;
 		}

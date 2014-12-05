@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Message;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 
 /**
@@ -38,7 +38,7 @@ public class AetherCommand extends SblockCommand {
 		// TODO allow Hal features
 		Bukkit.getConsoleSender().sendMessage(message.getConsoleMessage());
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			User u = UserManager.getUser(p.getUniqueId());
+			OfflineUser u = UserManager.getGuaranteedUser(p.getUniqueId());
 			if (!u.isSuppressing()) {
 				u.rawHighlight(message.getMessage());
 			}

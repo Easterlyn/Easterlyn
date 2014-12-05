@@ -1,7 +1,5 @@
 package co.sblock.events.listeners;
 
-import java.util.HashMap;
-
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
@@ -10,10 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import co.sblock.effects.ActiveEffect;
-import co.sblock.effects.ActiveEffectType;
-import co.sblock.effects.EffectManager;
-import co.sblock.users.User;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 import co.sblock.utilities.meteors.MeteoriteComponent;
 import co.sblock.utilities.spectator.Spectators;
@@ -60,21 +55,10 @@ public class EntityDamageByEntityListener implements Listener {
 			return;
 		}
 
-		User u = UserManager.getUser(p.getUniqueId());
+		OfflineUser u = UserManager.getGuaranteedUser(p.getUniqueId());
 		if (u != null && u.isServer()) {
 			event.setCancelled(true);
 			return;
-		}
-
-		if (event.getEntity() instanceof Player) {
-			Player target = (Player) event.getEntity();
-			HashMap<ActiveEffect, Integer> effects = EffectManager.activeScan(p);
-			if (effects.isEmpty()) return;
-			for (ActiveEffect aE : effects.keySet()) {
-				if (aE.getActiveEffectType() == ActiveEffectType.DAMAGE) {
-					ActiveEffect.applyDamageEffect(p, target, aE, effects.get(aE));
-				}
-			}
 		}
 	}
 }

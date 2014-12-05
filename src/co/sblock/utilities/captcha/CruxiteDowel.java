@@ -13,10 +13,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Repairable;
-
-import co.sblock.effects.ActiveEffect;
-import co.sblock.effects.PassiveEffect;
 
 /**
  * A class for handling all functions of cruxite dowels.
@@ -84,27 +80,27 @@ public class CruxiteDowel {
 		}
 
 
-		if (toCreate.getItemMeta().hasLore()) {
-			// if item contains special lore and !repairable, raise price
-			boolean willNeedRepair = toCreate.getItemMeta() instanceof Repairable;
-
-			for (String lore : toCreate.getItemMeta().getLore()) {
-				int loreCost = 0;
-				ActiveEffect active = ActiveEffect.getEffect(lore);
-				if (active != null) {
-					loreCost = active.getCost();
-				} else {
-					PassiveEffect passive = PassiveEffect.getEffect(lore);
-					if (passive != null) {
-						loreCost = passive.getCost();
-					}
-				}
-				if (!willNeedRepair) {
-					loreCost *= 1.5;
-				}
-				cost += loreCost;
-			}
-		}
+//		if (toCreate.getItemMeta().hasLore()) {
+//			// if item contains special lore and !repairable, raise price
+//			boolean willNeedRepair = toCreate.getItemMeta() instanceof Repairable;
+//
+//			for (String lore : toCreate.getItemMeta().getLore()) {
+//				int loreCost = 0;
+//				ActiveEffect active = ActiveEffect.getEffect(lore);
+//				if (active != null) {
+//					loreCost = active.getCost();
+//				} else {
+//					PassiveEffect passive = PassiveEffect.getEffect(lore);
+//					if (passive != null) {
+//						loreCost = passive.getCost();
+//					}
+//				}
+//				if (!willNeedRepair) {
+//					loreCost *= 1.5;
+//				}
+//				cost += loreCost;
+//			}
+//		}
 
 		// 2 exp/boondollar seems reasonable.
 		// Puts a stack of cobble at lvl 0-13, nether star at 0-42.

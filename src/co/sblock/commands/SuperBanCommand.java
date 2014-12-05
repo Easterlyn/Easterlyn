@@ -5,12 +5,14 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.BanList.Type;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.users.User;
+import co.sblock.Sblock;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.UserManager;
 
 /**
@@ -28,12 +30,12 @@ public class SuperBanCommand extends SblockCommand {
 	}
 
 	@Override
-	protected boolean onCommand(CommandSender sender, String label, String[] args) {
+	protected boolean onCommand(final CommandSender sender, final String label, final String[] args) {
 		if (args == null || args.length == 0) {
 			return false;
 		}
-		String target = args[0];
-		StringBuilder reason = new StringBuilder();
+		final String target = args[0];
+		final StringBuilder reason = new StringBuilder();
 		for (int i = 1; i < args.length; i++) {
 			reason.append(ChatColor.translateAlternateColorCodes('&', args[i])).append(' ');
 		}
@@ -45,18 +47,24 @@ public class SuperBanCommand extends SblockCommand {
 		} else {
 			Bukkit.broadcastMessage(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
-			Player p = Bukkit.getPlayer(target);
-
-			if (p != null) { // This method is actually more efficient than getting an OfflinePlayer without a UUID
-				User victim = UserManager.getUser(p.getUniqueId());
-				Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
-						"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());
-				Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
-						"<name=" + victim.getPlayerName() + ">" + reason, null, sender.getName());
-				victim.getPlayer().kickPlayer(reason.toString());
-			} else {
-				Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(target, reason.toString(), null, sender.getName());
-			}
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					@SuppressWarnings("deprecation")
+					final OfflinePlayer player = Bukkit.getOfflinePlayer(target);
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							OfflineUser victim = UserManager.getGuaranteedUser(player.getUniqueId());
+							Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
+									"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());
+							Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
+									"<name=" + victim.getPlayerName() + ">" + reason, null, sender.getName());
+							victim.getPlayer().kickPlayer(reason.toString());
+						}
+					}.runTask(Sblock.getInstance());
+				}
+			}.runTaskAsynchronously(Sblock.getInstance());
 		}
 		return true;
 	}
