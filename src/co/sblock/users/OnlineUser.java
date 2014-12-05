@@ -58,7 +58,6 @@ public class OnlineUser extends OfflineUser {
 				allowFlight, IP, previousLocation, currentChannel, programs, listening, globalMute,
 				supress, server, client);
 		effectsList = new HashMap<>();
-		this.updateCurrentRegion(currentRegion);
 		this.delayedJoin(displayName, listening);
 	}
 
@@ -77,6 +76,7 @@ public class OnlineUser extends OfflineUser {
 					player.setFlying(allowFlight);
 					player.setDisplayName(displayName);
 					loginAddListening(listening);
+					updateCurrentRegion(getCurrentRegion());
 				}
 			}
 		}.runTask(Sblock.getInstance());
@@ -118,6 +118,16 @@ public class OnlineUser extends OfflineUser {
 		time -= hours * 60 * 60 * 20;
 		time = time / (60 * 20);
 		return days + " days, " + DECIMAL_FORMATTER.format(hours) + ':' + DECIMAL_FORMATTER.format(time);
+	}
+
+	@Override
+	public Region getCurrentRegion() {
+		Region region = Region.getRegion(getPlayer().getWorld().getName());
+		if (region.isDream()) {
+			// TODO fix for godtier
+			return getDreamPlanet();
+		}
+		return region;
 	}
 
 	@Override

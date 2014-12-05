@@ -641,7 +641,7 @@ public class OfflineUser {
 		sb.append("Prev loc: ").append(ChatColor.DARK_AQUA)
 				.append(BukkitSerializer.locationToBlockCenterString(previousLocation))
 				.append(ChatColor.YELLOW).append(", Prev region: ").append(ChatColor.DARK_AQUA)
-				.append(Region.valueOf(previousLocation != null ? previousLocation.getWorld().getName()
+				.append(Region.getRegion(previousLocation != null ? previousLocation.getWorld().getName()
 						: "UNKNOWN")).append('\n');
 
 		// Progression: PROGRESSION, Programs: [list]
