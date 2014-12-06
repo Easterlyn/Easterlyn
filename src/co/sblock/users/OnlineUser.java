@@ -76,7 +76,10 @@ public class OnlineUser extends OfflineUser {
 					player.setFlying(allowFlight);
 					player.setDisplayName(displayName);
 					loginAddListening(listening);
-					updateCurrentRegion(getCurrentRegion());
+					Region region = getCurrentRegion();
+					updateCurrentRegion(region);
+					// On login, conditions for setting rpack are not met, must be done here
+					player.setResourcePack(region.getResourcePackURL());
 				}
 			}
 		}.runTask(Sblock.getInstance());
@@ -122,7 +125,11 @@ public class OnlineUser extends OfflineUser {
 
 	@Override
 	public Region getCurrentRegion() {
-		Region region = Region.getRegion(getPlayer().getWorld().getName());
+		Region region = super.getCurrentRegion();
+		if (region != Region.UNKNOWN) {
+			return region;
+		}
+		region = Region.getRegion(getPlayer().getWorld().getName());
 		if (region.isDream()) {
 			// TODO fix for godtier
 			return getDreamPlanet();
