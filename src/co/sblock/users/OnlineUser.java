@@ -125,14 +125,9 @@ public class OnlineUser extends OfflineUser {
 
 	@Override
 	public Region getCurrentRegion() {
-		Region region = super.getCurrentRegion();
-		if (region != Region.UNKNOWN) {
-			return region;
-		}
-		region = Region.getRegion(getPlayer().getWorld().getName());
+		Region region = Region.getRegion(getPlayer().getWorld().getName());
 		if (region.isDream()) {
-			// TODO fix for godtier
-			return getDreamPlanet();
+			return super.getCurrentRegion();
 		}
 		return region;
 	}

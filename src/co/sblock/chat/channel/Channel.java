@@ -110,10 +110,11 @@ public abstract class Channel {
 	/* TESTERS */
 	/**
 	 * @param user a user
-	 * @return if this user is an owner (created channel / set by previous owner, or is a 'denizen')
+	 * @return if this user is an owner (created channel / set by previous owner, or is a denizen)
 	 */
 	public boolean isOwner(OfflineUser user) {
-		return user.getUUID().equals(owner) || user.getPlayer().hasPermission("group.denizen");
+		return user.getUUID().equals(owner)
+				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("group.denizen");
 	}
 
 	/**
@@ -121,11 +122,12 @@ public abstract class Channel {
 	 * @return whether this user has permission to moderate the channel
 	 */
 	public boolean isModerator(OfflineUser user) {
-		return isOwner(user) || user.getPlayer().hasPermission("group.felt") || modList.contains(user.getUUID());
+		return isOwner(user) || modList.contains(user.getUUID())
+				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("group.felt");
 	}
 
 	/**
-	 * the user must be in the banlist AND not an op (aka 'denizen')
+	 * the user must be in the banlist AND not a denizen
 	 *
 	 * @param user a user
 	 * @return whether this user is banned

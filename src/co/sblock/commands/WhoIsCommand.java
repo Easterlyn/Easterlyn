@@ -39,16 +39,30 @@ public class WhoIsCommand extends SblockCommand {
 			return true;
 		}
 		final UUID uuid = sender instanceof Player ? ((Player) sender).getUniqueId() : null;
+		final OfflinePlayer targetPlayer;
+		final String target = args.length > 0 ? args[0] : sender.getName();
+		List<Player> players = Bukkit.matchPlayer(target);
+		if (players.size() > 0) {
+			targetPlayer = players.get(0);
+		} else {
+			targetPlayer = null;
+		}
 		new BukkitRunnable() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
-				@SuppressWarnings("deprecation")
-				final OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+				final OfflinePlayer player;
+				if (targetPlayer == null) {
+					player = Bukkit.getOfflinePlayer(args[0]);
+				} else {
+					player = targetPlayer;
+				}
 				if (uuid != null && Bukkit.getPlayer(uuid) == null) {
+					// Sender is no longer online
 					return;
 				}
 				if (player == null || !player.hasPlayedBefore()) {
-					sender.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED + " has never played on this server.");
+					sender.sendMessage(ChatColor.GOLD + target + ChatColor.RED + " has never played on this server.");
 					return;
 				}
 				new BukkitRunnable() {

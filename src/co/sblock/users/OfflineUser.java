@@ -616,13 +616,14 @@ public class OfflineUser {
 	 * @return the profile information
 	 */
 	public String getProfile() {
-		return new StringBuilder().append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+---")
-				.append(ChatColor.DARK_AQUA).append(' ').append(getPlayerName()).append(' ')
-				.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("---+\n")
-				.append(ChatColor.YELLOW).append(getUserClass().getDisplayName())
+		return new StringBuilder().append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH)
+				.append("+---").append(ChatColor.DARK_AQUA).append(' ').append(getPlayerName())
+				.append(' ').append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH)
+				.append("---+\n").append(ChatColor.YELLOW).append(getUserClass().getDisplayName())
 				.append(ChatColor.DARK_AQUA).append(" of ").append(getUserAspect().getColor())
 				.append(getUserAspect().getDisplayName()).append('\n').append(ChatColor.DARK_AQUA)
-				.append("Medium: ").append(getMediumPlanet().getColor()).append('\n')
+				.append("Medium: ").append(getMediumPlanet().getColor())
+				.append(getMediumPlanet().getDisplayName()).append('\n')
 				.append(ChatColor.DARK_AQUA).append("Dream: ").append(getDreamPlanet().getColor())
 				.append(getDreamPlanet().getDisplayName()).toString();
 	}
