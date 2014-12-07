@@ -25,6 +25,9 @@ public class Users extends Module {
 
 	private static Users instance;
 
+	/* The Map of Player UUID and relevant SblockUsers currently online. */
+	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
+
 	/** Map containing all server/client player requests */
 	private Map<String, String> requests;
 
@@ -33,14 +36,15 @@ public class Users extends Module {
 		instance = this;
 		requests = new HashMap<String, String>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			Users.getGuaranteedUser(p.getUniqueId());
+			getGuaranteedUser(p.getUniqueId());
 		}
 	}
 
 	@Override
 	protected void onDisable() {
 		for (OfflineUser u : Users.getUsers().toArray(new OfflineUser[0])) {
-			Users.unloadUser(u.getUUID()).save();
+			unloadUser(u.getUUID()).save();
+			unteam(u.getPlayerName());
 		}
 		instance = null;
 	}
@@ -62,9 +66,6 @@ public class Users extends Module {
 	public static Users getInstance() {
 		return instance;
 	}
-
-	/* The Map of Player UUID and relevant SblockUsers currently online. */
-	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
 
 	/**
 	 * User is not guaranteed to be online, but an OfflineUser will be fetched no matter what.
@@ -166,8 +167,8 @@ public class Users extends Module {
 		team.addPlayer(p);
 	}
 
-	public static void unteam(Player p) {
-		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(p.getName());
+	public static void unteam(String playerName) {
+		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(playerName);
 		if (team != null) {
 			team.unregister();
 		}

@@ -47,26 +47,35 @@ public class SuperBanCommand extends SblockCommand {
 		} else {
 			Bukkit.broadcastMessage(ChatColor.DARK_RED + target
 					+ " has been wiped from the face of the multiverse. " + reason.toString());
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					@SuppressWarnings("deprecation")
-					final OfflinePlayer player = Bukkit.getOfflinePlayer(target);
-					new BukkitRunnable() {
-						@Override
-						public void run() {
-							OfflineUser victim = Users.getGuaranteedUser(player.getUniqueId());
+			banByName(sender, target, reason.toString());
+		}
+		return true;
+	}
+
+	private void banByName(final CommandSender sender, final String target, final String reason) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				@SuppressWarnings("deprecation")
+				final OfflinePlayer player = Bukkit.getOfflinePlayer(target);
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						OfflineUser victim = Users.getGuaranteedUser(player.getUniqueId());
+						if (victim.getUserIP().matches("([0-9]{1,3}.){3}[0-9]{1,3}")) {
 							Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
 									"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());
 							Bukkit.getBanList(Type.IP).addBan(victim.getUserIP(),
-									"<name=" + victim.getPlayerName() + ">" + reason, null, sender.getName());
-							victim.getPlayer().kickPlayer(reason.toString());
+									"<uuid=" + victim.getUUID() + ">" + reason, null, sender.getName());
+						} else {
+							Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(), reason,
+									null, sender.getName());
 						}
-					}.runTask(Sblock.getInstance());
-				}
-			}.runTaskAsynchronously(Sblock.getInstance());
-		}
-		return true;
+						victim.getPlayer().kickPlayer(reason);
+					}
+				}.runTask(Sblock.getInstance());
+			}
+		}.runTaskAsynchronously(Sblock.getInstance());
 	}
 
 	@Override
