@@ -59,14 +59,14 @@ public class OfflineUser {
 	private final Set<String> listening;
 	private AtomicBoolean globalMute, suppress;
 
-	protected OfflineUser(UUID userID, String IP, String displayName, Location currentLocation,
+	protected OfflineUser(UUID userID, String displayName, String ip, Location currentLocation,
 			Region currentRegion, String timePlayed, UserClass userClass, UserAspect userAspect,
 			Region medium, Region dream, ProgressionState progstate, boolean allowFlight,
 			Location previousLocation, String currentChannel, Set<Integer> programs,
 			Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress, UUID server,
 			UUID client) {
 		this.uuid = userID;
-		this.userIP = IP;
+		this.userIP = ip;
 		this.displayName = displayName;
 		this.currentLocation = currentLocation;
 		this.currentRegion = currentRegion;
@@ -142,6 +142,15 @@ public class OfflineUser {
 	 */
 	public OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(uuid);
+	}
+
+	/**
+	 * Gets the User's IP.
+	 * 
+	 * @return the Player's IP
+	 */
+	public String getUserIP() {
+		return this.userIP;
 	}
 
 	/**
@@ -351,15 +360,6 @@ public class OfflineUser {
 	 */
 	public void addProgram(int i) {
 		this.programs.add(i);
-	}
-
-	/**
-	 * Gets the User's IP.
-	 * 
-	 * @return the Player's IP
-	 */
-	public String getUserIP() {
-		return this.userIP;
 	}
 
 	/**
@@ -812,6 +812,7 @@ public class OfflineUser {
 			current = dream;
 		}
 		user.setCurrentRegion(current);
+		user.timePlayed = yaml.getString("playtime", "Unknown");
 		user.setProgression(ProgressionState.valueOf(yaml.getString("progression.progression", "NONE")));
 		user.getPrograms().addAll((HashSet<Integer>) yaml.get("progression.programs"));
 		if (yaml.getString("progression.server") != null) {

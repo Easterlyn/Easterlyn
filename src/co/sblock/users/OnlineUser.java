@@ -49,12 +49,12 @@ public class OnlineUser extends OfflineUser {
 	private Location serverDisableTeleport;
 	private final Map<String, SblockFX> effectsList;
 
-	protected OnlineUser(UUID userID, String displayName, String IP, Location currentLocation,
+	protected OnlineUser(UUID userID, String displayName, String ip, Location currentLocation,
 			Region currentRegion, UserClass userClass, UserAspect aspect, Region mplanet,
 			Region dplanet, ProgressionState progstate, boolean allowFlight, Location previousLocation,
 			String currentChannel, Set<Integer> programs, Set<String> listening,
 			AtomicBoolean globalMute, AtomicBoolean supress, UUID server, UUID client) {
-		super(userID, displayName, IP, currentLocation, currentRegion, null, userClass, aspect,
+		super(userID, displayName, ip, currentLocation, currentRegion, null, userClass, aspect,
 				mplanet, dplanet, progstate, allowFlight, previousLocation, currentChannel,
 				programs, listening, globalMute, supress, server, client);
 		effectsList = new HashMap<>();
