@@ -1,7 +1,5 @@
 package co.sblock.users;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,12 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
 import co.sblock.module.Module;
 
@@ -44,7 +40,7 @@ public class Users extends Module {
 	@Override
 	protected void onDisable() {
 		for (OfflineUser u : Users.getUsers().toArray(new OfflineUser[0])) {
-			Users.saveUser(Users.unloadUser(u.getUUID()));
+			Users.unloadUser(u.getUUID()).save();
 		}
 		instance = null;
 	}
@@ -120,50 +116,6 @@ public class Users extends Module {
 			return null;
 		}
 		return users.remove(userID);
-	}
-
-	public static void saveUser(OfflineUser user) {
-		File file;
-		try {
-			file = new File(Sblock.getInstance().getUserDataFolder(), user.getUUID().toString() + ".yml");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save data for " + user.getUUID().toString(), e);
-		}
-		Player player = Bukkit.getPlayer(user.getUUID());
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		yaml.set("name", player != null ? user.getPlayerName() : Bukkit.getOfflinePlayer(user.getUUID()).getName());
-		yaml.set("ip", user.getUserIP());
-		if (player != null) {
-			yaml.set("nickname", player.getDisplayName());
-			yaml.set("location", BukkitSerializer.locationToBlockCenterString(player.getLocation()));
-			yaml.set("playtime", user.getTimePlayed());
-		}
-		yaml.set("region", user.getCurrentRegion().getDisplayName());
-		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(user.getPreviousLocation()));
-		yaml.set("previousRegion", null);
-		yaml.set("flying", user.getFlight());
-		yaml.set("classpect.class", user.getUserClass().getDisplayName());
-		yaml.set("classpect.aspect", user.getUserAspect().getDisplayName());
-		yaml.set("classpect.dream", user.getDreamPlanet().getDisplayName());
-		yaml.set("classpect.medium", user.getMediumPlanet().getDisplayName());
-		yaml.set("progression.progression", user.getProgression().name());
-		yaml.set("progression.programs", user.getPrograms());
-		yaml.set("progression.server", user.getServer() != null ? user.getServer().toString() : null);
-		yaml.set("progression.client", user.getClient() != null ? user.getClient().toString() : null);
-		yaml.set("chat.current", user.getCurrentChannel() != null ? user.getCurrentChannel().getName() : "#");
-		yaml.set("chat.listening", user.getListening());
-		yaml.set("chat.muted", user.getMute());
-		yaml.set("chat.suppressing", user.getSuppression());
-		yaml.set("chat.ignoring", null);
-		yaml.set("chat.highlights", null);
-		try {
-			yaml.save(file);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save data for " + user.getPlayerName(), e);
-		}
 	}
 
 	/**

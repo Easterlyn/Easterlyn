@@ -32,12 +32,14 @@ public class OfflineUser {
 
 	public static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat("00");
 
-	/* Player's UUID */
+	/* General player data */
 	private final UUID uuid;
 	private final String userIP;
 	private String displayName;
+	private Location currentLocation;
 	private Region currentRegion;
-	private String currentLocation; //TODO
+	private String timePlayed;
+	private Location previousLocation;
 
 	/* Classpect */
 	private UserClass userClass;
@@ -57,29 +59,30 @@ public class OfflineUser {
 	private final Set<String> listening;
 	private AtomicBoolean globalMute, suppress;
 
-	/* Locations to teleport Players to when conditions are met */
-	private Location previousLocation;
-
-	protected OfflineUser(UUID userID, String displayName, Region currentRegion, UserClass userClass,
-			UserAspect aspect, Region mplanet, Region dplanet, ProgressionState progstate,
-			boolean allowFlight, String IP, Location previousLocation,
-			String currentChannel, Set<Integer> programs, Set<String> listening,
-			AtomicBoolean globalMute, AtomicBoolean supress, UUID server, UUID client) {
+	protected OfflineUser(UUID userID, String IP, String displayName, Location currentLocation,
+			Region currentRegion, String timePlayed, UserClass userClass, UserAspect userAspect,
+			Region medium, Region dream, ProgressionState progstate, boolean allowFlight,
+			Location previousLocation, String currentChannel, Set<Integer> programs,
+			Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress, UUID server,
+			UUID client) {
 		this.uuid = userID;
+		this.userIP = IP;
 		this.displayName = displayName;
+		this.currentLocation = currentLocation;
+		this.currentRegion = currentRegion;
+		this.timePlayed = timePlayed;
 		this.userClass = userClass;
-		this.userAspect = aspect;
-		this.medium = mplanet;
-		this.dream = dplanet;
+		this.userAspect = userAspect;
+		this.medium = medium;
+		this.dream = dream;
 		this.progression = progstate;
 		this.isServer = false;
 		this.allowFlight = allowFlight;
 		this.previousLocation = previousLocation;
 		if (previousLocation == null) {
-			try {
+			World earth = Bukkit.getWorld("Earth");
+			if (earth != null) {
 				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
-			} catch (NullPointerException e) {
-				
 			}
 		}
 		this.currentChannel = currentChannel;
@@ -87,12 +90,12 @@ public class OfflineUser {
 		this.listening = listening;
 		this.globalMute = globalMute;
 		this.suppress = supress;
-		this.userIP = IP;
 	}
 
 	private OfflineUser(UUID uuid, String ip) {
 		this.uuid = uuid;
 		this.userIP = ip;
+		this.timePlayed = "Unknown";
 		this.userClass = UserClass.HEIR;
 		this.userAspect = UserAspect.BREATH;
 		this.medium = Region.LOWAS;
@@ -104,10 +107,11 @@ public class OfflineUser {
 		if (earth != null) {
 			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
 		}
-		this.currentChannel = "#";
+		this.currentChannel = "#EARTH";
 		this.programs = new HashSet<>();
 		this.listening = new HashSet<>();
 		this.listening.add("#");
+		this.listening.add("#EARTH");
 		this.globalMute = new AtomicBoolean(false);
 		this.suppress = new AtomicBoolean(false);
 	}
@@ -270,6 +274,35 @@ public class OfflineUser {
 	 */
 	public void updateFlight() {}
 
+	public Location getCurrentLocation() {
+		return currentLocation != null ? currentLocation : Users.getSpawnLocation();
+	}
+
+	/**
+	 * Gets the User's current Region.
+	 * 
+	 * @return the Region the Player is in.
+	 */
+	public Region getCurrentRegion() {
+		return currentRegion != null ? currentRegion : Region.UNKNOWN;
+	}
+
+	/**
+	 * Sets the User's current region. Does not update chat channels.
+	 * 
+	 * @param region
+	 */
+	protected void setCurrentRegion(Region region) {
+		currentRegion = region;
+	}
+
+	/**
+	 * Update current Region and change RegionChannel.
+	 * 
+	 * @param newR the Region being transitioned into
+	 */
+	public void updateCurrentRegion(Region newR) {} // TODO allow + channel management
+
 	/**
 	 * Sets the Player's previous location. Used for returning to and from dream planets.
 	 * 
@@ -290,7 +323,7 @@ public class OfflineUser {
 	 * @return the previous Location
 	 */
 	public Location getPreviousLocation() {
-		return this.previousLocation;
+		return previousLocation != null ? previousLocation : Users.getSpawnLocation();
 	}
 
 	/**
@@ -299,8 +332,7 @@ public class OfflineUser {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		// TODO
-		return "null";
+		return timePlayed;
 	}
 
 	/**
@@ -329,31 +361,6 @@ public class OfflineUser {
 	public String getUserIP() {
 		return this.userIP;
 	}
-
-	/**
-	 * Gets the User's current Region.
-	 * 
-	 * @return the Region the Player is in.
-	 */
-	public Region getCurrentRegion() {
-		return currentRegion != null ? currentRegion : Region.UNKNOWN;
-	}
-
-	/**
-	 * Sets the User's current region. Does not update chat channels.
-	 * 
-	 * @param region
-	 */
-	protected void setCurrentRegion(Region region) {
-		currentRegion = region;
-	}
-
-	/**
-	 * Update current Region and change RegionChannel.
-	 * 
-	 * @param newR the Region being transitioned into
-	 */
-	public void updateCurrentRegion(Region newR) {}
 
 	/**
 	 * Check if the User is in server mode.
@@ -546,9 +553,21 @@ public class OfflineUser {
 		channel.removeListening(this.getUUID());
 	}
 
-	public boolean removeListeningQuit(String next) {
-		// TODO Auto-generated method stub
-		return false;
+	/**
+	 * Removes the User from the specified Channel's list of online Users without an announcement.
+	 * Does not modify the User's listening list.
+	 * 
+	 * @param channelName the name of the Channel
+	 * 
+	 * @return true if the Channel is valid and had the User registered
+	 */
+	public boolean removeListeningQuit(String channelName) {
+		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+		if (channel == null || !channel.getListening().contains(this.getUUID())) {
+			return false;
+		}
+		channel.removeListening(this.getUUID());
+		return true;
 	}
 
 	/**
@@ -632,17 +651,17 @@ public class OfflineUser {
 				.append(ChatColor.YELLOW).append(", ").append(ChatColor.DARK_AQUA)
 				.append(getMediumPlanet().getDisplayName()).append('\n');
 
-		// Loc: current location TODO, Region: region
+		// Loc: current location, Region: region
 		sb.append(ChatColor.YELLOW).append("Loc: ").append(ChatColor.DARK_AQUA)
-//				.append(yaml.getString("location", "unknown")).append(ChatColor.YELLOW) // TODO
-				.append('\n');
+				.append(BukkitSerializer.locationToBlockCenterString(getCurrentLocation()))
+				.append(ChatColor.YELLOW).append(", Region: ").append(ChatColor.DARK_AQUA)
+				.append(getCurrentRegion().getDisplayName()).append('\n');
 
 		// Prev loc: loc prior to change to/from dreamplanet, Prev region: region of said location
-		sb.append("Prev loc: ").append(ChatColor.DARK_AQUA)
+		sb.append(ChatColor.YELLOW).append("Prev loc: ").append(ChatColor.DARK_AQUA)
 				.append(BukkitSerializer.locationToBlockCenterString(previousLocation))
 				.append(ChatColor.YELLOW).append(", Prev region: ").append(ChatColor.DARK_AQUA)
-				.append(Region.getRegion(previousLocation != null ? previousLocation.getWorld().getName()
-						: "UNKNOWN")).append('\n');
+				.append(Region.getRegion(getPreviousLocation().getWorld().getName())).append('\n');
 
 		// Progression: PROGRESSION, Programs: [list]
 		sb.append(ChatColor.YELLOW).append("Progression: ").append(ChatColor.DARK_AQUA)
@@ -697,12 +716,56 @@ public class OfflineUser {
 	public OnlineUser getOnlineUser() {
 		OnlineUser user = Users.getOnlineUser(getUUID());
 		if (user == null) {
-			return new OnlineUser(uuid, displayName, currentRegion, userClass, userAspect, medium, dream,
-					progression, allowFlight, Bukkit.getPlayer(uuid).getAddress().getHostString(),
-					previousLocation, currentChannel, programs, listening, globalMute, suppress,
-					server, client);
+			return new OnlineUser(uuid, displayName, Bukkit.getPlayer(uuid).getAddress()
+					.getHostString(), currentLocation, currentRegion, userClass, userAspect,
+					medium, dream, progression, allowFlight, previousLocation, currentChannel,
+					programs, listening, globalMute, suppress, server, client);
 		}
 		return null;
+	}
+
+	public void save() {
+		File file;
+		try {
+			file = new File(Sblock.getInstance().getUserDataFolder(), getUUID().toString() + ".yml");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to save data for " + getUUID().toString(), e);
+		}
+		Player player = Bukkit.getPlayer(getUUID());
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		yaml.set("name", player != null ? getPlayerName() : Bukkit.getOfflinePlayer(getUUID()).getName());
+		yaml.set("ip", getUserIP());
+		if (player != null) {
+			yaml.set("nickname", player.getDisplayName());
+			yaml.set("playtime", getTimePlayed());
+		}
+		yaml.set("location", BukkitSerializer.locationToBlockCenterString(getCurrentLocation()));
+		yaml.set("region", getCurrentRegion().getDisplayName());
+		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(getPreviousLocation()));
+		yaml.set("previousRegion", null);
+		yaml.set("flying", getFlight());
+		yaml.set("classpect.class", getUserClass().getDisplayName());
+		yaml.set("classpect.aspect", getUserAspect().getDisplayName());
+		yaml.set("classpect.dream", getDreamPlanet().getDisplayName());
+		yaml.set("classpect.medium", getMediumPlanet().getDisplayName());
+		yaml.set("progression.progression", getProgression().name());
+		yaml.set("progression.programs", getPrograms());
+		yaml.set("progression.server", getServer() != null ? getServer().toString() : null);
+		yaml.set("progression.client", getClient() != null ? getClient().toString() : null);
+		yaml.set("chat.current", getCurrentChannel() != null ? getCurrentChannel().getName() : "#");
+		yaml.set("chat.listening", getListening());
+		yaml.set("chat.muted", getMute());
+		yaml.set("chat.suppressing", getSuppression());
+		yaml.set("chat.ignoring", null);
+		yaml.set("chat.highlights", null);
+		try {
+			yaml.save(file);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to save data for " + getPlayerName(), e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
