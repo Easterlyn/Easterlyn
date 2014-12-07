@@ -37,6 +37,7 @@ public class Users extends Module {
 		requests = new HashMap<String, String>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			getGuaranteedUser(p.getUniqueId());
+			team(p);
 		}
 	}
 
