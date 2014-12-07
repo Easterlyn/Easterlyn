@@ -255,6 +255,17 @@ public class InventoryClickListener implements Listener {
 		Captcha.handleCaptcha(event);
 	}
 
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onInventoryClickLowestPriority(InventoryClickEvent event) {
+		ItemStack clicked = event.getCurrentItem();
+		if (event.getWhoClicked().hasPermission("group.felt")) {
+			return;
+		}
+		if (clicked != null && clicked.getAmount() < 0) {
+			event.setCurrentItem(null);
+		}
+	}
+
 	/**
 	 * EventHandler for inventory clicks that are guaranteed to have occurred.
 	 * 
