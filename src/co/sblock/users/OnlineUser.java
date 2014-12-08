@@ -124,6 +124,11 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	@Override
+	public Location getCurrentLocation() {
+		return getPlayer().getLocation();
+	}
+
+	@Override
 	public Region getCurrentRegion() {
 		Region region = Region.getRegion(getPlayer().getWorld().getName());
 		if (region.isDream()) {
@@ -135,6 +140,11 @@ public class OnlineUser extends OfflineUser {
 	@Override
 	public void updateCurrentRegion(Region newRegion) {
 		Region oldRegion = super.getCurrentRegion();
+		if (newRegion.isDream()) {
+			getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
+		} else {
+			getPlayer().resetPlayerTime();
+		}
 		if (oldRegion != null && newRegion == oldRegion) {
 			if (!getListening().contains(oldRegion.getChannelName())) {
 				Channel channel = ChannelManager.getChannelManager().getChannel(oldRegion.getChannelName());
@@ -150,11 +160,6 @@ public class OnlineUser extends OfflineUser {
 		}
 		if (!getListening().contains(newRegion.getChannelName())) {
 			addListening(ChannelManager.getChannelManager().getChannel(newRegion.getChannelName()));
-		}
-		if (newRegion.isDream()) {
-			getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
-		} else {
-			getPlayer().resetPlayerTime();
 		}
 		if (oldRegion == null || !oldRegion.getResourcePackURL().equals(newRegion.getResourcePackURL())) {
 			getPlayer().setResourcePack(newRegion.getResourcePackURL());

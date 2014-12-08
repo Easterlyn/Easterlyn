@@ -804,7 +804,7 @@ public class OfflineUser {
 		user.setMediumPlanet(yaml.getString("classpect.medium", "LOWAS"));
 		Region dream = Region.getRegion(yaml.getString("classpect.dream", "PROSPIT"));
 		user.setDreamPlanet(dream.name());
-		Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("previousLocation"));
+		Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("location"));
 		if (currentLoc == null) {
 			currentLoc = Users.getSpawnLocation();
 		}
