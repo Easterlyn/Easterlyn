@@ -360,6 +360,9 @@ public class OnlineUser extends OfflineUser {
 				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues
 		for (OfflineUser u : Users.getUsers()) {
+			if (!u.isOnline() || !(u instanceof OnlineUser)) {
+				continue;
+			}
 			StringBuilder matches = new StringBuilder();
 			for (String s : this.getListening()) {
 				if (u.getListening().contains(s)) {

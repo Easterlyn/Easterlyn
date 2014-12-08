@@ -97,9 +97,9 @@ public class CruxiteDowel {
 				}
 			}
 
-			// if item contains special lore and !repairable, raise price
+			// if item contains special lore and doesn't need repair, raise price
 			if (!(toCreate.getItemMeta() instanceof Repairable)) {
-				loreCost *= 1.5;
+				loreCost *= 4;
 			}
 			cost += loreCost;
 		}
