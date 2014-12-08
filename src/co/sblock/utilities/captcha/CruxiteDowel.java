@@ -16,7 +16,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
 import co.sblock.fx.FXManager;
-import co.sblock.fx.SblockFX;
 
 /**
  * A class for handling all functions of cruxite dowels.
@@ -84,27 +83,25 @@ public class CruxiteDowel {
 		}
 
 		if (toCreate.getItemMeta().hasLore()) {
-			// if item contains special lore and !repairable, raise price
-			boolean willNeedRepair = toCreate.getItemMeta() instanceof Repairable;
+
+			int loreCost = 0;
 
 			for (String lore : toCreate.getItemMeta().getLore()) {
-				int loreCost = 0;
-				
-				SblockFX effect;
+				if (!FXManager.getInstance().getValidEffects().containsKey(lore)) {
+					continue;
+				}
 				try {
-					effect = FXManager.getInstance().getValidEffects().get(lore).newInstance();
-					if(effect != null) {
-						loreCost = effect.getCost();
-					}
+					loreCost += FXManager.getInstance().getValidEffects().get(lore).newInstance().getCost();
 				} catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
-				
-				if (!willNeedRepair) {
-					loreCost *= 1.5;
-				}
-				cost += loreCost;
 			}
+
+			// if item contains special lore and !repairable, raise price
+			if (!(toCreate.getItemMeta() instanceof Repairable)) {
+				loreCost *= 1.5;
+			}
+			cost += loreCost;
 		}
 
 		// 2 exp/boondollar seems reasonable.
@@ -441,7 +438,8 @@ public class CruxiteDowel {
 		if (e == Enchantment.WATER_WORKER || e == Enchantment.PROTECTION_EXPLOSIONS
 				|| e == Enchantment.OXYGEN || e == Enchantment.FIRE_ASPECT
 				|| e == Enchantment.LOOT_BONUS_MOBS || e == Enchantment.LOOT_BONUS_BLOCKS
-				|| e == Enchantment.ARROW_FIRE || e == Enchantment.ARROW_KNOCKBACK) {
+				|| e == Enchantment.ARROW_FIRE || e == Enchantment.ARROW_KNOCKBACK
+				|| e == Enchantment.DEPTH_STRIDER) {
 			return 2;
 		}
 		if (e == Enchantment.THORNS || e == Enchantment.SILK_TOUCH
