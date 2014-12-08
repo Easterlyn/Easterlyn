@@ -72,7 +72,7 @@ public class Events extends Module {
 			}
 		}
 
-		initiateRegionChecks();
+		//initiateRegionChecks();
 	}
 
 	/**

@@ -26,10 +26,6 @@ public class PlayerChangedWorldListener implements Listener {
 
 		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
 
-		if (event.getFrom().getName().equals("Derspit")) {
-			event.getPlayer().resetPlayerTime();
-		}
-
 		OnlineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser();
 
 		user.removeAllEffects();

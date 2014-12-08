@@ -133,32 +133,33 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	@Override
-	public void updateCurrentRegion(Region newR) {
-		if (getCurrentRegion() != null && newR == getCurrentRegion()) {
-			if (!getListening().contains(getCurrentRegion().getChannelName())) {
-				Channel c = ChannelManager.getChannelManager().getChannel(getCurrentRegion().getChannelName());
-				addListening(c);
+	public void updateCurrentRegion(Region newRegion) {
+		Region oldRegion = super.getCurrentRegion();
+		if (oldRegion != null && newRegion == oldRegion) {
+			if (!getListening().contains(oldRegion.getChannelName())) {
+				Channel channel = ChannelManager.getChannelManager().getChannel(oldRegion.getChannelName());
+				addListening(channel);
 			}
 			return;
 		}
-		if (currentChannel == null || getCurrentRegion() != null && currentChannel.equals(getCurrentRegion().getChannelName())) {
-			currentChannel = newR.getChannelName();
+		if (currentChannel == null || oldRegion != null && currentChannel.equals(oldRegion.getChannelName())) {
+			currentChannel = newRegion.getChannelName();
 		}
-		if (getCurrentRegion() != null && !getCurrentRegion().getChannelName().equals(newR.getChannelName())) {
-			removeListening(getCurrentRegion().getChannelName());
+		if (oldRegion != null && !oldRegion.getChannelName().equals(newRegion.getChannelName())) {
+			removeListening(oldRegion.getChannelName());
 		}
-		if (!getListening().contains(newR.getChannelName())) {
-			addListening(ChannelManager.getChannelManager().getChannel(newR.getChannelName()));
+		if (!getListening().contains(newRegion.getChannelName())) {
+			addListening(ChannelManager.getChannelManager().getChannel(newRegion.getChannelName()));
 		}
-		if (newR.isDream()) {
-			getPlayer().setPlayerTime(newR == Region.DERSE ? 18000L : 6000L, false);
+		if (newRegion.isDream()) {
+			getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
 		} else {
 			getPlayer().resetPlayerTime();
 		}
-		if (getCurrentRegion() == null || !getCurrentRegion().getResourcePackURL().equals(newR.getResourcePackURL())) {
-			getPlayer().setResourcePack(newR.getResourcePackURL());
+		if (oldRegion == null || !oldRegion.getResourcePackURL().equals(newRegion.getResourcePackURL())) {
+			getPlayer().setResourcePack(newRegion.getResourcePackURL());
 		}
-		setCurrentRegion(newR);
+		setCurrentRegion(newRegion);
 	}
 
 	@Override
