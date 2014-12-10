@@ -30,17 +30,11 @@ public class SleepTeleport extends BukkitRunnable {
 	@Override
 	public void run() {
 		Player player = Bukkit.getPlayer(uuid);
-		if (player == null) {
+		if (player == null || !Events.getInstance().getTasks().containsKey(player.getUniqueId())) {
 			return;
 		}
 		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
-		if (user == null) {
-			return;
-		}
-		if (!Events.getInstance().getTasks().containsKey(player.getUniqueId())) {
-			return;
-		}
-		Location location = player.getLocation();
+		Location location = player.getLocation().clone();
 		if (user.getPreviousLocation().getWorld().getName().equals(player.getWorld().getName())) {
 			if (user.getCurrentRegion().isDream()) {
 				player.teleport(Bukkit.getWorld("Earth").getSpawnLocation());

@@ -318,11 +318,10 @@ public class OfflineUser {
 	 * @param l The Player's previous Location
 	 */
 	public void setPreviousLocation(Location l) {
+		l = l.clone();
 		l.setX(l.getBlockX() + .5);
 		l.setY(l.getBlockY());
 		l.setZ(l.getBlockZ() + .5);
-		l.setYaw(l.getYaw() - l.getYaw() % 64);
-		l.setPitch(0);
 		this.previousLocation = l;
 	}
 
