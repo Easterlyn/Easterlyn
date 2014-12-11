@@ -90,7 +90,6 @@ public class PlayerInteractListener implements Listener {
 			return;
 		}
 
-
 		// Effect application
 		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getItem());
 		for (SblockFX fx : effects.values()) {
@@ -188,15 +187,19 @@ public class PlayerInteractListener implements Listener {
 		case BOOKSHELF:
 			// Awww yiss BookShelf <3
 			return Bukkit.getPluginManager().isPluginEnabled("BookShelf");
-		case CAULDRON:
-			return Bukkit.getPluginManager().isPluginEnabled("BookSuite");
+		case ACACIA_DOOR:
+		case ACACIA_FENCE_GATE:
 		case ANVIL:
 		case BEACON:
 		case BED_BLOCK:
+		case BIRCH_DOOR:
+		case BIRCH_FENCE_GATE:
 		case BREWING_STAND:
 		case BURNING_FURNACE:
 		case CHEST:
 		case COMMAND:
+		case DARK_OAK_DOOR:
+		case DARK_OAK_FENCE_GATE:
 		case DAYLIGHT_DETECTOR:
 		case DIODE_BLOCK_OFF:
 		case DIODE_BLOCK_ON:
@@ -208,11 +211,15 @@ public class PlayerInteractListener implements Listener {
 		case FENCE_GATE:
 		case HOPPER:
 		case ITEM_FRAME:
+		case JUNGLE_DOOR:
+		case JUNGLE_FENCE_GATE:
 		case LEVER:
 		case NOTE_BLOCK:
 		case REDSTONE_COMPARATOR:
 		case REDSTONE_COMPARATOR_OFF:
 		case REDSTONE_COMPARATOR_ON:
+		case SPRUCE_DOOR:
+		case SPRUCE_FENCE_GATE:
 		case STONE_BUTTON:
 		case TRAPPED_CHEST:
 		case TRAP_DOOR:
