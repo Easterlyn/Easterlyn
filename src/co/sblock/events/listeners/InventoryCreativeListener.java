@@ -40,6 +40,7 @@ public class InventoryCreativeListener implements Listener {
 			return;
 		}
 
+		// TODO BannerMeta is a thing
 		if (event.getCursor().getType() == Material.BANNER) {
 			// Banners actually come with NBT tags when using pick-block. We'll just avoid them for now.
 			return;
