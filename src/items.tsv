@@ -139,8 +139,8 @@
 72	0	Wooden Pressure Plate	wooden_pressure_plate
 73	0	Redstone Ore	redstone_ore
 74	0	Glowing Redstone Ore	lit_redstone_ore
-75	0	Redstone Torch (off)	unlit_redstone_torch
-76	0	Redstone Torch (on)	redstone_torch
+75	0	Redstone Torch	unlit_redstone_torch
+76	0	Redstone Torch	redstone_torch
 77	0	Stone Button	stone_button
 78	0	Snow	snow_layer
 79	0	Ice	ice
@@ -157,8 +157,8 @@
 90	0	Nether Portal	portal
 91	0	Jack o'Lantern	lit_pumpkin
 92	0	Cake Block	cake
-93	0	Redstone Repeater Block (off)	unpowered_repeater
-94	0	Redstone Repeater Block (on)	powered_repeater
+93	0	Redstone Repeater Block	unpowered_repeater
+94	0	Redstone Repeater Block	powered_repeater
 95	0	White Stained Glass	stained_glass
 95	1	Orange Stained Glass	stained_glass
 95	2	Magenta Stained Glass	stained_glass
@@ -186,8 +186,8 @@
 98	1	Mossy Stone Bricks	stonebrick
 98	2	Cracked Stone Bricks	stonebrick
 98	3	Chiseled Stone Bricks	stonebrick
-99	0	Red Mushroom Cap	stonebrick
-100	0	Brown Mushroom Cap	stonebrick
+99	0	Brown Mushroom Cap	brown_mushroom_block
+100	0	Red Mushroom Cap	red_mushroom_block
 101	0	Iron Bars	iron_bars
 102	0	Glass Pane	glass_pane
 103	0	Melon Block	melon_block
@@ -210,8 +210,8 @@
 120	0	End Portal Frame	end_portal_frame
 121	0	End Stone	end_stone
 122	0	Dragon Egg	dragon_egg
-123	0	Redstone Lamp (inactive)	redstone_lamp
-124	0	Redstone Lamp (active)	lit_redstone_lamp
+123	0	Redstone Lamp	redstone_lamp
+124	0	Redstone Lamp 	lit_redstone_lamp
 125	0	Double Oak Wood Slab	double_wooden_slab
 125	1	Double Spruce Wood Slab	double_wooden_slab
 125	2	Double Birch Wood Slab	double_wooden_slab
@@ -245,10 +245,10 @@
 144	0	Mob Head	skull
 145	0	Anvil	anvil
 146	0	Trapped Chest	trapped_chest
-147	0	Weighted Pressure Plate (light)	light_weighted_pressure_plate
-148	0	Weighted Pressure Plate (heavy)	heavy_weighted_pressure_plate
-149	0	Redstone Comparator (inactive)	unpowered_comparator
-150	0	Redstone Comparator (active)	powered_comparator
+147	0	Light Weighted Pressure Plate	light_weighted_pressure_plate
+148	0	Heavy Weighted Pressure Plate	heavy_weighted_pressure_plate
+149	0	Redstone Comparator	unpowered_comparator
+150	0	Redstone Comparator	powered_comparator
 151	0	Daylight Sensor	daylight_detector
 152	0	Redstone Block	redstone_block
 153	0	Nether Quartz Ore	quartz_ore
@@ -622,11 +622,11 @@
 394	0	Poisonous Potato	poisonous_potato
 395	0	Empty Map	map
 396	0	Golden Carrot	golden_carrot
-397	0	Mob Head (Skeleton)	skull
-397	1	Mob Head (Wither Skeleton)	skull
-397	2	Mob Head (Zombie)	skull
-397	3	Mob Head (Human)	skull
-397	4	Mob Head (Creeper)	skull
+397	0	Skeleton Skull	skull
+397	1	Wither Skeleton Skull	skull
+397	2	Zombie Head	skull
+397	3	Player Head	skull
+397	4	Creeper Head	skull
 398	0	Carrot on a Stick	carrot_on_a_stick
 399	0	Nether Star	nether_star
 400	0	Pumpkin Pie	pumpkin_pie
