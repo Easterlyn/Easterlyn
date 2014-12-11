@@ -22,7 +22,7 @@ public class PlayerInteractEntityListener implements Listener {
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if (user != null && user.isServer()) {
+		if (user.isServer()) {
 			event.setCancelled(true);
 			return;
 		}

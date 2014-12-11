@@ -11,7 +11,6 @@ import co.sblock.fx.FXManager;
 import co.sblock.fx.SblockFX;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.spectator.Spectators;
 
 /**
  * Listener for PlayerDropItemEvents.
@@ -27,12 +26,6 @@ public class PlayerDropItemListener implements Listener {
 	 */
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event) {
-		if (Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())) {
-			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "Inventory? Spectral beings don't have those, don't be silly.");
-			return;
-		}
-
 		// Cruxite items should not be tradeable.
 		if (event.getItemDrop().getItemStack().getItemMeta().hasDisplayName()
 				&& event.getItemDrop().getItemStack().getItemMeta().getDisplayName()

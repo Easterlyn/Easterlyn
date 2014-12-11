@@ -10,7 +10,6 @@ import co.sblock.users.OfflineUser;
 import co.sblock.fx.FXManager;
 import co.sblock.fx.SblockFX;
 import co.sblock.users.Users;
-import co.sblock.utilities.spectator.Spectators;
 
 /**
  * Listener for PlayerPickupItemEvents.
@@ -26,11 +25,6 @@ public class PlayerPickupItemListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		if (Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())) {
-			event.setCancelled(true);
-			return;
-		}
-
 		// valid SblockUser required for all events below this point
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user == null) {

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.utilities.captcha.Captcha;
+import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
@@ -31,7 +32,7 @@ public class CraftItemListener implements Listener {
 				continue;
 			}
 			Player clicked = (Player) event.getWhoClicked();
-			if (Captcha.isCard(is)) {
+			if (Captcha.isCard(is) || CruxiteDowel.isDowel(is)) {
 				event.setCancelled(true);
 				clicked.sendMessage(ChatColor.RED + "Using captchas in crafting tends to lose valuables!");
 				clicked.updateInventory();
@@ -51,7 +52,6 @@ public class CraftItemListener implements Listener {
 
 		if (event.getClick().isShiftClick()) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-
 				@Override
 				public void run() {
 					((Player) event.getWhoClicked()).updateInventory();

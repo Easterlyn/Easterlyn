@@ -22,7 +22,7 @@ public class SignChangeListener implements Listener {
 	@EventHandler
 	public void onSignPlace(SignChangeEvent event) {
 		for (int i = 0; i < event.getLines().length; i++) {
-			event.setLine(i, ChatColor.translateAlternateColorCodes('\u0026', event.getLine(i)));
+			event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));
 		}
 	}
 }

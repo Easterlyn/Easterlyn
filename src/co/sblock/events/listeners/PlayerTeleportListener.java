@@ -27,15 +27,14 @@ public class PlayerTeleportListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerTeleportHasOccurred(final PlayerTeleportEvent event) {
+		// People keep doing stupid stuff like /home while falling from spawn
+		event.getPlayer().setFallDistance(0);
+
 		if (event.getTo().getWorld().equals(event.getFrom().getWorld())) {
 			return;
 		}
 
-		// People keep doing stupid stuff like /home while falling from spawn
-		event.getPlayer().setFallDistance(0);
-
 		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
-
 			@Override
 			public void run() {
 				OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());

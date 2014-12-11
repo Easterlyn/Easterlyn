@@ -37,7 +37,6 @@ public class PlayerCommandPreprocessListener implements Listener {
 			return;
 		}
 
-		// Essentials doesn't have a perm node that allows access to just /tps.
 		if ((lowercase.startsWith("/gc") || lowercase.startsWith("/lag") || lowercase.startsWith("/mem")
 				|| lowercase.startsWith("/uptime") || lowercase.startsWith("/entities"))
 				&& !event.getPlayer().hasPermission("group.helper")) {
