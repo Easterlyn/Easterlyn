@@ -522,7 +522,7 @@ public class OfflineUser {
 	 * 
 	 * @param channels
 	 */
-	public void loginAddListening(Set<String> channels) {
+	public void announceLoginChannelJoins(Set<String> channels) {
 		this.listening.addAll(channels);
 	}
 
@@ -783,7 +783,7 @@ public class OfflineUser {
 
 				OnlineUser user = new OfflineUser(uuid, player.getAddress().getHostString()).getOnlineUser();
 				user.getListening().add(Region.EARTH.getChannelName());
-				user.loginAddListening(user.getListening());
+				user.announceLoginChannelJoins(user.getListening());
 				user.updateCurrentRegion(Region.EARTH);
 				Users.addUser(user);
 

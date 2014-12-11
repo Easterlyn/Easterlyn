@@ -1,5 +1,6 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -7,6 +8,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.events.Events;
+import co.sblock.users.OnlineUser;
+import co.sblock.users.Region;
 import co.sblock.users.Users;
 
 /**
@@ -32,7 +35,18 @@ public class PlayerJoinListener implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				Users.team(event.getPlayer());
+				Player player = event.getPlayer();
+				if (player == null) {
+					return;
+				}
+				Users.team(player);
+				OnlineUser user = Users.getGuaranteedUser(player.getUniqueId()).getOnlineUser();
+				user.announceLoginChannelJoins(user.getListening());
+				Region region = user.getCurrentRegion();
+				user.updateCurrentRegion(region);
+				// On login, conditions for setting rpack are not met, must be done here
+				player.setResourcePack(region.getResourcePackURL());
+				user.updateFlight();
 			}
 		}.runTask(Sblock.getInstance());
 	}

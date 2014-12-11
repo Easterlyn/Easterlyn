@@ -58,31 +58,19 @@ public class OnlineUser extends OfflineUser {
 				mplanet, dplanet, progstate, allowFlight, previousLocation, currentChannel,
 				programs, listening, globalMute, supress, server, client);
 		effectsList = new HashMap<>();
-		this.delayedJoin(displayName, listening);
-	}
-
-	private void delayedJoin(final String displayName, final Set<String> listening) {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				Player player = getPlayer();
-				allowFlight = getProgression().value() > ProgressionState.GODTIER.value()
-						|| player != null && (getCurrentRegion().isDream()
-								|| player.getGameMode() == GameMode.CREATIVE
-								|| player.getGameMode() == GameMode.SPECTATOR || isServer
-								|| Spectators.getInstance().isSpectator(getUUID()));
-				if (player != null) {
-					player.setAllowFlight(allowFlight);
-					player.setFlying(allowFlight);
-					player.setDisplayName(displayName);
-					loginAddListening(listening);
-					Region region = getCurrentRegion();
-					updateCurrentRegion(region);
-					// On login, conditions for setting rpack are not met, must be done here
-					player.setResourcePack(region.getResourcePackURL());
-				}
+		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
+			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());
+			if (c != null && !c.isBanned(this) && (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
+				this.getListening().add(c.getName());
+				c.addListening(this.getUUID());
+			} else {
+				iterator.remove();
 			}
-		}.runTask(Sblock.getInstance());
+		}
+		if (this.getPlayer().hasPermission("group.felt") && !this.getListening().contains("@")) {
+			this.getListening().add("@");
+			ChannelManager.getChannelManager().getChannel("@").addListening(this.getUUID());
+		}
 	}
 
 	@Override
@@ -339,21 +327,7 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	@Override
-	public void loginAddListening(Set<String> channels) {
-		for (Iterator<String> iterator = channels.iterator(); iterator.hasNext();) {
-			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());
-			if (c != null && !c.isBanned(this) && (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
-				this.getListening().add(c.getName());
-				c.addListening(this.getUUID());
-			} else {
-				iterator.remove();
-			}
-		}
-		if (this.getPlayer().hasPermission("group.felt") && !this.getListening().contains("@")) {
-			this.getListening().add("@");
-			ChannelManager.getChannelManager().getChannel("@").addListening(this.getUUID());
-		}
-
+	public void announceLoginChannelJoins(Set<String> channels) {
 		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
 				.append(this.getPlayer().getDisplayName()).append(ChatColor.YELLOW)
 				.append(" logs the fuck in and begins pestering <>").append(ChatColor.YELLOW)
