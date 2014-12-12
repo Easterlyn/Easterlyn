@@ -522,9 +522,7 @@ public class OfflineUser {
 	 * 
 	 * @param channels
 	 */
-	public void announceLoginChannelJoins(Set<String> channels) {
-		this.listening.addAll(channels);
-	}
+	public void announceLoginChannelJoins() {}
 
 	/**
 	 * Remove a Channel from the Player's listening List.
@@ -781,10 +779,13 @@ public class OfflineUser {
 				}
 				player.teleport(Users.getSpawnLocation());
 
-				OnlineUser user = new OfflineUser(uuid, player.getAddress().getHostString()).getOnlineUser();
-				user.getListening().add(Region.EARTH.getChannelName());
-				user.announceLoginChannelJoins(user.getListening());
+				OfflineUser offline = new OfflineUser(uuid, player.getAddress().getHostString());
+				offline.setCurrentChannel(Region.EARTH.getChannelName());
+				offline.getListening().add("#");
+				OnlineUser user = offline.getOnlineUser();
+				user.announceLoginChannelJoins();
 				user.updateCurrentRegion(Region.EARTH);
+				player.setResourcePack(Region.EARTH.getResourcePackURL());
 				Users.addUser(user);
 
 				Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()

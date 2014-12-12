@@ -327,7 +327,7 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	@Override
-	public void announceLoginChannelJoins(Set<String> channels) {
+	public void announceLoginChannelJoins() {
 		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
 				.append(this.getPlayer().getDisplayName()).append(ChatColor.YELLOW)
 				.append(" logs the fuck in and begins pestering <>").append(ChatColor.YELLOW)
@@ -357,7 +357,7 @@ public class OnlineUser extends OfflineUser {
 			}
 		}
 
-		Bukkit.getConsoleSender().sendMessage(this.getPlayerName() + " began pestering " + StringUtils.join(channels, ' '));
+		Bukkit.getConsoleSender().sendMessage(this.getPlayerName() + " began pestering " + StringUtils.join(getListening(), ' '));
 	}
 
 	@Override
