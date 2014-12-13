@@ -41,7 +41,7 @@ public class PlayerJoinListener implements Listener {
 				}
 				Users.team(player);
 				OnlineUser user = Users.getGuaranteedUser(player.getUniqueId()).getOnlineUser();
-				user.announceLoginChannelJoins(user.getListening());
+				user.announceLoginChannelJoins();
 				Region region = user.getCurrentRegion();
 				user.updateCurrentRegion(region);
 				// On login, conditions for setting rpack are not met, must be done here
