@@ -67,6 +67,9 @@ public class OnlineUser extends OfflineUser {
 				iterator.remove();
 			}
 		}
+		if (displayName != null) {
+			this.getPlayer().setDisplayName(displayName);
+		}
 		if (this.getPlayer().hasPermission("group.felt") && !this.getListening().contains("@")) {
 			this.getListening().add("@");
 			ChannelManager.getChannelManager().getChannel("@").addListening(this.getUUID());
@@ -329,7 +332,7 @@ public class OnlineUser extends OfflineUser {
 	@Override
 	public void announceLoginChannelJoins() {
 		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
-				.append(this.getPlayer().getDisplayName()).append(ChatColor.YELLOW)
+				.append(this.getDisplayName()).append(ChatColor.YELLOW)
 				.append(" logs the fuck in and begins pestering <>").append(ChatColor.YELLOW)
 				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date()));
 		// Heavy loopage ensues

@@ -50,7 +50,7 @@ public class NormalChannel extends Channel {
 	 */
 	@Override
 	public String getNick(OfflineUser sender) {
-		return sender.getPlayer().getDisplayName();
+		return sender.getDisplayName();
 	}
 
 	/**

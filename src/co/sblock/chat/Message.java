@@ -248,7 +248,7 @@ public class Message {
 
 		for (UUID uuid : channel.getListening()) {
 			OfflineUser u = Users.getGuaranteedUser(uuid);
-			if (u == null) {
+			if (!u.isOnline()) {
 				channel.removeListening(uuid);
 				continue;
 			}
