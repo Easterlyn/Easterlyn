@@ -714,10 +714,10 @@ public class OfflineUser {
 	public OnlineUser getOnlineUser() {
 		OnlineUser user = Users.getOnlineUser(getUUID());
 		if (user == null) {
-			return new OnlineUser(uuid, displayName, Bukkit.getPlayer(uuid).getAddress()
-					.getHostString(), currentLocation, currentRegion, userClass, userAspect,
-					medium, dream, progression, allowFlight, previousLocation, currentChannel,
-					programs, listening, globalMute, suppress, server, client);
+			return new OnlineUser(getUUID(), getDisplayName(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
+					getCurrentLocation(), getCurrentRegion(), getUserClass(), getUserAspect(),
+					getMediumPlanet(), getDreamPlanet(), getProgression(), getFlight(), getPreviousLocation(),
+					currentChannel, getPrograms(), getListening(), globalMute, suppress, getServer(), getClient());
 		}
 		return null;
 	}
