@@ -104,7 +104,7 @@ public class RawAnnouncer extends Module {
 		msgs.add(new MessageHalement("Interested in jamming with your fellow Sblock players? Join our ").addExtra(
 				new MessageElement("plug.dj room", ChatColor.AQUA)
 				.addClickEffect(new MessageClick(MessageClick.ClickEffect.OPEN_URL, "http://plug.dj/sblock/"))
-				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click join!")),
+				.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_TEXT, ChatColor.GOLD + "Click to join!")),
 				new MessageElement(" to listen and play!", ChatColor.RED)));
 
 		return msgs;
