@@ -227,7 +227,11 @@ public class OnlineUser extends OfflineUser {
 
 	@Override
 	public void sendMessage(String message) {
-		this.getPlayer().sendMessage(message);
+		Player player = this.getPlayer();
+		if (player == null) {
+			return;
+		}
+		player.sendMessage(message);
 	}
 
 	@Override
