@@ -783,7 +783,6 @@ public class OfflineUser {
 				offline.setCurrentChannel(Region.EARTH.getChannelName());
 				offline.getListening().add("#");
 				OnlineUser user = offline.getOnlineUser();
-				user.announceLoginChannelJoins();
 				user.updateCurrentRegion(Region.EARTH);
 				player.setResourcePack(Region.EARTH.getResourcePackURL());
 				Users.addUser(user);

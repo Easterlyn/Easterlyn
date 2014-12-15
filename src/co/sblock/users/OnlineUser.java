@@ -251,7 +251,7 @@ public class OnlineUser extends OfflineUser {
 			lastEnd = match.end();
 		}
 		if (lastEnd < message.length()) {
-		msg.append(message.substring(lastEnd));
+			msg.append(message.substring(lastEnd));
 		}
 		message = msg.toString();
 
