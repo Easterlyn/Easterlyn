@@ -44,7 +44,7 @@ public class PlayerChangedWorldListener implements Listener {
 					player.setGameMode(GameMode.SPECTATOR);
 				}
 			}
-		}.runTaskLater(Sblock.getInstance(), 2);
+		}.runTaskLater(Sblock.getInstance(), 10);
 
 		OnlineUser user = Users.getGuaranteedUser(uuid).getOnlineUser();
 
