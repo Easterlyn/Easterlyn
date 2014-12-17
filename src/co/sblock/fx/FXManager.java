@@ -24,6 +24,7 @@ public class FXManager extends Module {
 
 	private static FXManager instance;
 	private Map<String, Class<? extends SblockFX>> validEffects; 
+	private InvisibilityManager invisibilityManager;
 
 	@Override
 	protected void onEnable() {
@@ -44,12 +45,13 @@ public class FXManager extends Module {
 				e.printStackTrace();
 			}
 		}
+		invisibilityManager = new InvisibilityManager();
 	}
 
 	@Override
 	protected void onDisable() {
-		instance = null;
 		validEffects = null;
+		instance = null;
 	}
 
 	public Map<String, Class<? extends SblockFX>> getValidEffects() {
@@ -154,6 +156,10 @@ public class FXManager extends Module {
 			}
 		}
 		return output;
+	}
+
+	public InvisibilityManager getInvisibilityManager() {
+		return invisibilityManager;
 	}
 
 	@Override

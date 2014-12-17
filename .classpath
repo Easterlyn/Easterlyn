@@ -9,12 +9,12 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/spigot-api-1.8-R0.1-SNAPSHOT-5.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://jd.bukkit.org/dev/apidocs/"/>
+			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/spigot/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/spigot-1.8.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://jd.bukkit.org/dev/apidocs/"/>
+			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/spigot/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
