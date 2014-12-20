@@ -76,17 +76,14 @@ public class Sblock extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable() {
-		if (Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_8_R1.CraftServer) {
-			try {
-				Field f = org.bukkit.craftbukkit.v1_8_R1.CraftServer.class.getDeclaredField("commandMap");
-				f.setAccessible(true);
-				cmdMap = (SimpleCommandMap) f.get(Bukkit.getServer());
-			} catch (IllegalArgumentException | IllegalAccessException
-					| NoSuchFieldException | SecurityException e) {
-				logger.criticalErr(e);
-			}
-		} else {
+		try {
+			Field f = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+			f.setAccessible(true);
+			cmdMap = (SimpleCommandMap) f.get(Bukkit.getServer());
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+				| SecurityException e) {
 			getLog().severe("Invalid server version, Sblock commands will fail to register.");
+			logger.criticalErr(e);
 		}
 		instance = this;
 
