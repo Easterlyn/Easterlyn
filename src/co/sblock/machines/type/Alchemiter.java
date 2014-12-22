@@ -10,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -110,7 +109,7 @@ public class Alchemiter extends Machine {
 	 * @param player the Player
 	 */
 	public void openInventory(Player player) {
-		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, InventoryType.MERCHANT);
+		MachineInventoryTracker.getTracker().openVillagerInventory(player, this);
 	}
 
 	/**

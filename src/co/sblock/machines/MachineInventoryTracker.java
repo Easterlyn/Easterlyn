@@ -23,7 +23,6 @@ import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
@@ -65,7 +64,7 @@ public class MachineInventoryTracker {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void openVillagerInventory(Player player, Machine m, InventoryType it, org.bukkit.inventory.ItemStack... items) {
+	public void openVillagerInventory(Player player, Machine m, org.bukkit.inventory.ItemStack... items) {
 		EntityPlayer p = ((CraftPlayer) player).getHandle();
 
 		int containerCounter = p.nextContainerCounter();
