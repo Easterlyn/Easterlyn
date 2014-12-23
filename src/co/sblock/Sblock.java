@@ -3,6 +3,8 @@ package co.sblock;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -77,13 +78,12 @@ public class Sblock extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		try {
-			Field f = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-			f.setAccessible(true);
-			cmdMap = (SimpleCommandMap) f.get(Bukkit.getServer());
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
-				| SecurityException e) {
-			getLog().severe("Invalid server version, Sblock commands will fail to register.");
-			logger.criticalErr(e);
+			Method getCommandMap = getServer().getClass().getMethod("getCommandMap");
+			cmdMap = (SimpleCommandMap) getCommandMap.invoke(getServer());
+		} catch (IllegalArgumentException | IllegalAccessException | SecurityException
+				| NoSuchMethodException | InvocationTargetException e) {
+			getLog().severe("Could not fetch SimpleCommandMap from CraftServer, Sblock commands will fail to register.");
+			getLog().criticalErr(e);
 		}
 		instance = this;
 
@@ -119,7 +119,6 @@ public class Sblock extends JavaPlugin {
 
 	public void registerAllCommands() {
 		try {
-			// TODO wrap /version and override tab completion
 			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")
@@ -138,7 +137,7 @@ public class Sblock extends JavaPlugin {
 					cmdMap.register(this.getDescription().getName(), cmd);
 				} catch (InstantiationException | IllegalAccessException e) {
 					getLog().severe("Unable to register command " + command.getName());
-					e.printStackTrace();
+					getLog().criticalErr(e);
 				}
 			}
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
@@ -161,7 +160,7 @@ public class Sblock extends JavaPlugin {
 			}
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			getLog().severe("Unable to modify SimpleCommandMap.knownCommands! Commands cannot be unregistered!");
-			e.printStackTrace();
+			getLog().criticalErr(e);
 		}
 	}
 
@@ -291,8 +290,6 @@ public class Sblock extends JavaPlugin {
 
 	/**
 	 * Gets the CommandMap containing all registered commands.
-	 * 
-	 * @return
 	 */
 	public SimpleCommandMap getCommandMap() {
 		return cmdMap;
@@ -309,11 +306,6 @@ public class Sblock extends JavaPlugin {
 		return ImmutableList.copyOf(cmdMapKnownCommands.keySet());
 	}
 
-	/**
-	 * Executes the given command.
-	 * 
-	 * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command, String, String[])
-	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		return command.execute(sender, label, args);
@@ -322,7 +314,7 @@ public class Sblock extends JavaPlugin {
 	public File getUserDataFolder() throws IOException {
 		File file = new File(getDataFolder(), "UserData");
 		if (!file.exists()) {
-			file.mkdir();
+			file.mkdirs();
 		}
 		return file;
 	}

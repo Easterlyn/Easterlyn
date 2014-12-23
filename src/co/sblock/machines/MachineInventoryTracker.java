@@ -65,21 +65,18 @@ public class MachineInventoryTracker {
 
 	@SuppressWarnings("unchecked")
 	public void openVillagerInventory(Player player, Machine m, org.bukkit.inventory.ItemStack... items) {
-		EntityPlayer p = ((CraftPlayer) player).getHandle();
+		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
-		int containerCounter = p.nextContainerCounter();
-		Container container = new MerchantContainer(p);
-		p.activeContainer = container;
+		int containerCounter = nmsPlayer.nextContainerCounter();
+		Container container = new MerchantContainer(nmsPlayer);
+		nmsPlayer.activeContainer = container;
 		container.windowId = containerCounter;
-		container.addSlotListener(p);
-		p.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, "minecraft:villager",
+		container.addSlotListener(nmsPlayer);
+		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, "minecraft:villager",
 				new ChatComponentText(RegexUtils.getFriendlyName(m.getType().name())), 3));
 
 		this.openMachines.put(player, m);
 
-		if (!(container instanceof MerchantContainer)) {
-			return;
-		}
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (int i = 0; i < items.length; i++) {
 			if (i % 3 == 0 && items.length - i > 2) {
@@ -98,7 +95,7 @@ public class MachineInventoryTracker {
 		PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
 		out.writeInt(containerCounter);
 		list.a(out);
-		p.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", out));
+		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", out));
 
 	}
 

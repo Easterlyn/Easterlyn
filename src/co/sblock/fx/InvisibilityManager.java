@@ -28,6 +28,25 @@ public class InvisibilityManager {
 		tasks = new HashMap<>();
 	}
 
+	/**
+	 * Update the Player specified's nametag on a second delay. Allows per-gamemode stuff to finish beforehand.
+	 * 
+	 * @param player the Player to update
+	 */
+	public void lazyVisibilityUpdate(Player player) {
+		final UUID uuid = player.getUniqueId();
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Player player = Bukkit.getPlayer(uuid);
+				if (player == null) {
+					return;
+				}
+				updateVisibility(player);
+			}
+		}.runTaskLater(Sblock.getInstance(), 20L);
+	}
+
 	public void updateVisibility(Player player) {
 		if (tasks.containsKey(player.getUniqueId())) {
 			tasks.remove(player.getUniqueId()).cancel();
