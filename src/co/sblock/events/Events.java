@@ -2,6 +2,7 @@ package co.sblock.events;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -17,10 +18,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 import org.reflections.Reflections;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.wrappers.BlockPosition;
+
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
 import co.sblock.events.listeners.*;
 import co.sblock.events.packets.SleepTeleport;
+import co.sblock.events.packets.WrapperPlayServerAnimation;
+import co.sblock.events.packets.WrapperPlayServerBed;
 import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
@@ -143,8 +149,16 @@ public class Events extends Module {
 	 * @param bed the Location of the bed to sleep in
 	 */
 	public void fakeSleepDream(Player p, Location bed) {
-		// TODO Sleep packet, 100L delay on SleepTeleport
-		tasks.put(p.getUniqueId(), new SleepTeleport(p.getUniqueId()).runTask(Sblock.getInstance()));
+		WrapperPlayServerBed packet = new WrapperPlayServerBed();
+		packet.setEntityId(p.getEntityId());
+		packet.setLocation(new BlockPosition(bed.getBlockX(), bed.getBlockY(), bed.getBlockZ()));
+
+		try {
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+		} catch (InvocationTargetException e) {
+			getLogger().err(e);
+		}
+		tasks.put(p.getUniqueId(), new SleepTeleport(p.getUniqueId()).runTaskLater(Sblock.getInstance(), 100L));
 	}
 
 	/**
@@ -153,7 +167,15 @@ public class Events extends Module {
 	 * @param p the Player
 	 */
 	public void fakeWakeUp(Player p) {
-		// TODO Send wake up packet
+		WrapperPlayServerAnimation packet = new WrapperPlayServerAnimation();
+		packet.setEntityId(p.getEntityId());
+		packet.setAnimation(2); // http://wiki.vg/Protocol#Animation_2
+
+		try {
+			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
+		} catch (InvocationTargetException e) {
+			getLogger().err(e);
+		}
 
 		BukkitTask task = tasks.remove(p.getUniqueId());
 		if (task != null) {
