@@ -1,5 +1,7 @@
 package co.sblock.machines.type;
 
+import java.util.Map.Entry;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -12,12 +14,17 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
+import co.sblock.Sblock;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
@@ -39,7 +46,7 @@ import co.sblock.users.Users;
 public class Transportalizer extends Machine {
 
 	private long fuel;
-//	private Hologram hologram;
+	private Hologram hologram;
 	/**
 	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
 	 */
@@ -77,14 +84,15 @@ public class Transportalizer extends Machine {
 		blocks = shape.getBuildLocations(getFacingDirection());
 
 		fuel = 0;
-//		Location holoLoc = null;
-//		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
-//			if (e.getValue().getItemType() == Material.STAINED_GLASS) {
-//				holoLoc = e.getKey().clone().add(0.5, 0.5, 0.5);
-//				break;
-//			}
-//		}
-//		hologram = HolographicDisplaysAPI.createHologram(Sblock.getInstance(), holoLoc, String.valueOf(fuel));
+		Location holoLoc = null;
+		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
+			if (e.getValue().getItemType() == Material.STAINED_GLASS) {
+				holoLoc = e.getKey().clone().add(0.5, 0.5, 0.5);
+				break;
+			}
+		}
+		hologram = HologramsAPI.createHologram(Sblock.getInstance(), holoLoc);
+		hologram.appendTextLine(String.valueOf(fuel));
 	}
 
 	/**
@@ -110,8 +118,8 @@ public class Transportalizer extends Machine {
 	public void setData(String data) {
 		try {
 			fuel = Long.valueOf(data);
-//			hologram.setLine(0, String.valueOf(fuel));
-//			hologram.update();
+			hologram.clearLines();
+			hologram.appendTextLine(String.valueOf(fuel));
 		} catch (NumberFormatException e)  {
 			fuel = 0;
 		}
@@ -125,14 +133,23 @@ public class Transportalizer extends Machine {
 		ItemStack inserted = ((Item) event.getItem()).getItemStack();
 		if (hasValue(inserted.getType())) {
 			fuel += getValue(inserted.getType()) * inserted.getAmount();
-//			hologram.setLine(0, String.valueOf(fuel));
-//			hologram.update();
+			hologram.clearLines();
+			hologram.appendTextLine(String.valueOf(fuel));
 			key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
 			event.getItem().remove();
 		} else {
 			event.getItem().teleport(key.clone().add(Shape.getRelativeVector(direction.getRelativeDirection(Direction.SOUTH), new Vector(0.5, 0.5, -1.5))));
 		}
 		return true;
+	}
+
+	/**
+	 * @see co.sblock.machines.type.Machine#handleHopperMoveItem(org.bukkit.event.inventory.InventoryMoveItemEvent)
+	 */
+	@Override
+	public boolean handleHopperMoveItem(InventoryMoveItemEvent event) {
+		// TODO allow pulling from chest or something like that
+		return super.handleHopperMoveItem(event);
 	}
 
 	/**
@@ -186,10 +203,9 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 
-		// Dispenser inventory really only exists for easy slow fuel consumption.
-		// Players should not be able to access it.
+		// Hopper inventory has to suck up items from the world, it should not be openable.
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK
-				&& event.getClickedBlock().getType() == Material.DISPENSER) {
+				&& event.getClickedBlock().getType() == Material.HOPPER) {
 			return true;
 		}
 
@@ -262,8 +278,8 @@ public class Transportalizer extends Machine {
 				source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
 				target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
 				fuel -= cost;
-//				hologram.setLine(0, String.valueOf(fuel));
-//				hologram.update();
+				hologram.clearLines();
+				hologram.appendTextLine(String.valueOf(fuel));
 				e.teleport(new Location(target.getWorld(), target.getX() + .5, target.getY(), target.getZ() + .5,
 						e.getLocation().getYaw(), e.getLocation().getPitch()));
 				key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
@@ -288,6 +304,6 @@ public class Transportalizer extends Machine {
 	 */
 	@Override
 	public void disable() {
-//		hologram.delete();
+		hologram.delete();
 	}
 }
