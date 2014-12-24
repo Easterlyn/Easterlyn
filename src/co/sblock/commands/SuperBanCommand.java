@@ -71,7 +71,9 @@ public class SuperBanCommand extends SblockCommand {
 							Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(), reason,
 									null, sender.getName());
 						}
-						victim.getPlayer().kickPlayer(reason);
+						if (victim.isOnline()) {
+							victim.getPlayer().kickPlayer(reason);
+						}
 					}
 				}.runTask(Sblock.getInstance());
 			}
