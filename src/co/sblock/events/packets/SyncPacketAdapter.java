@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers.PlayerAction;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
 
 import co.sblock.Sblock;
@@ -16,7 +17,7 @@ import co.sblock.events.Events;
 public class SyncPacketAdapter extends PacketAdapter {
 
 	public SyncPacketAdapter() {
-		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION, PacketType.Status.Server.OUT_SERVER_INFO);
+		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION);
 	}
 
 	/**
@@ -59,7 +60,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 	@Override
 	public void onPacketReceiving(PacketEvent event) {
 		if (event.getPacket().getType() == PacketType.Play.Client.ENTITY_ACTION) {
-			if (event.getPacket().getIntegers().read(1) == 2 // http://wiki.vg/Protocol#Entity_Action
+			if (event.getPacket().getPlayerActions().read(0) == PlayerAction.STOP_SLEEPING
 					&& Events.getInstance().getTasks().containsKey(event.getPlayer().getUniqueId())) {
 				event.setCancelled(true);
 				Events.getInstance().fakeWakeUp(event.getPlayer());
