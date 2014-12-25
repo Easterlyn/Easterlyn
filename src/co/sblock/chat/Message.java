@@ -97,6 +97,8 @@ public class Message {
 		if (space > 1 && message.charAt(0) == '@') {
 			target = message.substring(1, space);
 			message = message.substring(space);
+			// Strip @channel out of original message in case channel is set elsewhere
+			originalMessage = (thirdPerson ? "#>" : "") + (escape ? "" : "\\\\") + message;
 			channel = ChannelManager.getChannelManager().getChannel(target);
 		}
 
