@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,11 +24,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.io.BaseEncoding;
-import com.sun.corba.se.impl.orbutil.HexOutputStream;
 
 import co.sblock.Sblock;
 import co.sblock.machines.utilities.MachineType;
@@ -109,23 +106,8 @@ public class InventoryUtils {
 		}
 	}
 
-	public static String serializeBase64ItemStack(ItemStack is) {
-		return Base64Coder.encodeString(serializeItemStack(is));
-	}
-
 	public static String serializeIntoFormattingCodes(ItemStack is) {
-		String hex;
-		try (StringWriter writer = new StringWriter();
-				HexOutputStream hexOut = new HexOutputStream(writer);
-				BukkitObjectOutputStream bukkitOut = new BukkitObjectOutputStream(hexOut)) {
-			bukkitOut.writeObject(is);
-			bukkitOut.close();
-			hexOut.close();
-			hex = writer.toString();
-			writer.close();
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to serialize ItemStack!", e);
-		}
+		String hex = BaseEncoding.base16().encode(serializeItemStack(is).getBytes());
 		StringBuilder formatting = new StringBuilder();
 		for (char c : hex.toCharArray()) {
 			formatting.append(ChatColor.COLOR_CHAR).append(c);
@@ -147,10 +129,6 @@ public class InventoryUtils {
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException("Unable to deserialize ItemStack!", e);
 		}
-	}
-
-	public static ItemStack deserializeBase64ItemStack(String s) {
-		return deserializeItemStack(Base64Coder.decodeString(s));
 	}
 
 	public static ItemStack deserializeFromFormattingCodes(String s) {
