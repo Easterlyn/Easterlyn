@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -14,6 +15,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+
+import com.comphenix.protocol.ProtocolLibrary;
 
 import co.sblock.Sblock;
 
@@ -118,14 +122,13 @@ public class ParticleUtils {
 					continue;
 				}
 				Location location = entity.getLocation().add(0, .5, 0);
-				for (ParticleEffectWrapper effect : entry.getValue().getEffects()) {
-					entity.getWorld().playEffect(location, effect.getEffect(), effect.getParticles());
-					// TODO rework to directly sending packets, ProtocolLib seems to rate limit and the API is lacking
-					// This is measurably slower than spawning particles to all nearby players but offers support for vanishing and stuff
-//					for (Player player : ProtocolLibrary.getProtocolManager().getEntityTrackers(entity)) {
-//						player.playEffect(entity.getLocation(), effect.getEffect(), null);
-//					}
-				}
+				entry.getValue().getEffects().forEach(effect -> {
+					ProtocolLibrary.getProtocolManager().getEntityTrackers(entity).forEach(player -> {
+						player.spigot().playEffect(location, effect.getEffect(), effect.getMaterial(),
+								effect.getData(), effect.getOffsetX(), effect.getOffsetY(), effect.getOffsetZ(),
+								effect.getSpeed(), effect.getParticleQuantity(), effect.getDisplayRadius());
+					});
+				});
 			}
 
 			if (entities.size() == 0) {
