@@ -14,7 +14,7 @@ public class Halculator {
 	}
 
 	public String evhaluate(String input) {
-		input = input.toLowerCase();
+		input = input.toLowerCase().replace('x', '*');
 		try {
 			double ans = eval.evaluate(input);
 			String answer;
