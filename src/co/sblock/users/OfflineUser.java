@@ -34,7 +34,7 @@ public class OfflineUser {
 
 	/* General player data */
 	private final UUID uuid;
-	private final String userIP;
+	private String userIP;
 	private String displayName;
 	private Location currentLocation;
 	private Region currentRegion;
@@ -49,14 +49,14 @@ public class OfflineUser {
 	/* Various data Sblock tracks for progression purposes */
 	private ProgressionState progression;
 	private UUID server, client;
-	private final Set<Integer> programs;
+	private Set<Integer> programs;
 	boolean isServer;
 
 	boolean allowFlight;
 
 	/* Chat data*/
 	protected String currentChannel;
-	private final Set<String> listening;
+	private Set<String> listening;
 	private AtomicBoolean globalMute, suppress;
 
 	protected OfflineUser(UUID userID, String displayName, String ip, Location currentLocation,
@@ -826,6 +826,33 @@ public class OfflineUser {
 		user.setMute(yaml.getBoolean("chat.muted"));
 		user.setSuppression(yaml.getBoolean("chat.suppressing"));
 		//(Set<String>) yaml.get("chat.ignoring");
+		return user;
+	}
+
+	public static OfflineUser fromOnline(OnlineUser online) {
+		OfflineUser user = OfflineUser.load(online.getUUID());
+
+		user.setUserClass(online.getUserClass().name());
+		user.setUserAspect(online.getUserAspect().name());
+		user.setMediumPlanet(online.getMediumPlanet().name());
+		user.setDreamPlanet(online.getDreamPlanet().name());
+		user.setPreviousLocation(online.getPreviousLocation());
+		// User may have logged out and not been unloaded properly
+		if (user.isOnline()) {
+			user.displayName = online.getDisplayName();
+			user.currentLocation = online.getCurrentLocation();
+			user.setCurrentRegion(online.getCurrentRegion());
+			user.timePlayed = online.getTimePlayed();
+		}
+		user.setProgression(online.getProgression());
+		user.setServer(online.getServer());
+		user.setClient(online.getClient());
+		user.programs = online.getPrograms();
+		user.setCurrentChannel(online.getCurrentChannel());
+		user.listening = online.getListening();
+		user.setMute(online.getMute());
+		user.setSuppression(user.getSuppression());
+
 		return user;
 	}
 }

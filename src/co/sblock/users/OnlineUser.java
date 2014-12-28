@@ -474,4 +474,14 @@ public class OnlineUser extends OfflineUser {
 	public OnlineUser getOnlineUser() {
 		return this;
 	}
+
+	@Override
+	public void save() {
+		if (this.isOnline()) {
+			super.save();
+		} else {
+			Users.getInstance().getLogger().warning("Online user did not unload for " + getUUID());
+			OfflineUser.fromOnline(this).save();
+		}
+	}
 }
