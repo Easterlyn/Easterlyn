@@ -17,7 +17,7 @@ import co.sblock.events.Events;
 public class SyncPacketAdapter extends PacketAdapter {
 
 	public SyncPacketAdapter() {
-		super(Sblock.getInstance(), PacketType.Play.Client.ENTITY_ACTION);
+		super(Sblock.getInstance(), PacketType.Status.Server.OUT_SERVER_INFO, PacketType.Play.Client.ENTITY_ACTION);
 	}
 
 	/**
@@ -46,7 +46,6 @@ public class SyncPacketAdapter extends PacketAdapter {
 					+ serverping.getPlayersOnline() + ChatColor.DARK_GRAY + "/" + ChatColor.GREEN
 					+ serverping.getPlayersMaximum();
 			serverping.setVersionName(versionName);
-			event.getPacket().getServerPings().write(0, serverping);
 		}
 	}
 
