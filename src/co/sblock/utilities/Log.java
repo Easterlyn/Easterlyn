@@ -23,6 +23,8 @@ public class Log extends Logger {
 
 	/**
 	 * Fancy magic for getting a logger named as the class that called it.
+	 * If you're having trouble with the compiler causing an error instead of a deprecation warning, try
+	 * http://stackoverflow.com/questions/860187/access-restriction-on-class-due-to-restriction-on-required-library-rt-jar
 	 * @see http://stackoverflow.com/questions/421280/how-do-i-find-the-caller-of-a-method-using-stacktrace-or-reflection
 	 */
 	@SuppressWarnings("deprecation")

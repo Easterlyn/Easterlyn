@@ -97,9 +97,7 @@ public class InventoryUtils {
 		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 				BukkitObjectOutputStream bukkitOutputStream = new BukkitObjectOutputStream(outputStream)) {
 			bukkitOutputStream.writeObject(is);
-			bukkitOutputStream.close();
 			String encoded = outputStream.toString();
-			outputStream.close();
 			return encoded;
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to serialize ItemStack!", e);
@@ -123,8 +121,6 @@ public class InventoryUtils {
 		try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 				BukkitObjectInputStream bukkitInputStream = new BukkitObjectInputStream(inputStream)) {
 			ItemStack decoded = (ItemStack) bukkitInputStream.readObject();
-			bukkitInputStream.close();
-			inputStream.close();
 			return decoded;
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException("Unable to deserialize ItemStack!", e);
