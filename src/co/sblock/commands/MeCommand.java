@@ -41,6 +41,7 @@ public class MeCommand extends SblockCommand {
 				.setMessage(StringUtils.join(args, ' ')).setThirdPerson(true);
 		if (builder.canBuild(true)) {
 			builder.toMessage().send();
+			// TODO reimplement Hal
 		}
 		return true;
 	}

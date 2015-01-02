@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,6 +28,8 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.io.BaseEncoding;
+
+import com.sun.corba.se.impl.orbutil.HexOutputStream;
 
 import co.sblock.Sblock;
 import co.sblock.machines.utilities.MachineType;
@@ -105,7 +108,19 @@ public class InventoryUtils {
 	}
 
 	public static String serializeIntoFormattingCodes(ItemStack is) {
-		String hex = BaseEncoding.base16().encode(serializeItemStack(is).getBytes());
+		String hex;
+		// Using BaseEncoding to encode corrupts the stream header.
+		try (StringWriter writer = new StringWriter();
+				HexOutputStream hexOut = new HexOutputStream(writer);
+				BukkitObjectOutputStream bukkitOut = new BukkitObjectOutputStream(hexOut)) {
+			bukkitOut.writeObject(is);
+			bukkitOut.close();
+			hexOut.close();
+			hex = writer.toString();
+			writer.close();
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to serialize ItemStack!", e);
+		}
 		StringBuilder formatting = new StringBuilder();
 		for (char c : hex.toCharArray()) {
 			formatting.append(ChatColor.COLOR_CHAR).append(c);
