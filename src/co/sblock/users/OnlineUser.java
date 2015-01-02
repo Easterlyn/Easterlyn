@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -17,7 +15,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,7 +33,6 @@ import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.progression.ServerMode;
-import co.sblock.utilities.regex.RegexUtils;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -49,14 +45,15 @@ public class OnlineUser extends OfflineUser {
 	private Location serverDisableTeleport;
 	private final Map<String, SblockFX> effectsList;
 
-	protected OnlineUser(UUID userID, String displayName, String ip, Location currentLocation,
-			Region currentRegion, UserClass userClass, UserAspect aspect, Region mplanet,
-			Region dplanet, ProgressionState progstate, boolean allowFlight, Location previousLocation,
-			String currentChannel, Set<Integer> programs, Set<String> listening,
-			AtomicBoolean globalMute, AtomicBoolean supress, UUID server, UUID client) {
-		super(userID, displayName, ip, currentLocation, currentRegion, null, userClass, aspect,
-				mplanet, dplanet, progstate, allowFlight, previousLocation, currentChannel,
-				programs, listening, globalMute, supress, server, client);
+	protected OnlineUser(UUID userID, String ip, String displayName, Location currentLocation,
+			Region currentRegion, Location previousLocation, UserClass userClass,
+			UserAspect aspect, Region mplanet, Region dplanet, ProgressionState progstate,
+			UUID server, UUID client, Set<Integer> programs, boolean allowFlight,
+			String currentChannel, Set<String> listening, AtomicBoolean globalMute,
+			AtomicBoolean supress, AtomicBoolean highlight) {
+		super(userID, ip, displayName, currentLocation, currentRegion, null, previousLocation,
+				userClass, aspect, mplanet, dplanet, progstate, server, client, programs,
+				allowFlight, currentChannel, listening, globalMute, supress, highlight);
 		effectsList = new HashMap<>();
 		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
 			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());
@@ -232,56 +229,6 @@ public class OnlineUser extends OfflineUser {
 			return;
 		}
 		player.sendMessage(message);
-	}
-
-	@Override
-	public void rawHighlight(String message, String... additionalMatches) {
-		Player p = this.getPlayer();
-
-		String[] matches = new String[additionalMatches.length + 2];
-		matches[0] = p.getName();
-		matches[1] = ChatColor.stripColor(p.getDisplayName());
-		if (additionalMatches.length > 0) {
-			System.arraycopy(additionalMatches, 0, matches, 2, additionalMatches.length);
-		}
-		StringBuilder msg = new StringBuilder();
-		Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(matches)).matcher(message);
-		int lastEnd = 0;
-		// For every match, prepend aqua chat color and append previous color
-		while (match.find()) {
-			msg.append(message.substring(lastEnd, match.start()));
-			String last = ChatColor.getLastColors(msg.toString());
-			msg.append(ChatColor.AQUA).append(match.group()).append(last);
-			lastEnd = match.end();
-		}
-		if (lastEnd < message.length()) {
-			msg.append(message.substring(lastEnd));
-		}
-		message = msg.toString();
-
-		if (lastEnd > 0) {
-			// Matches were found, commence highlight format changes.
-			// This is stupid and unsafe - a json element prior to the channel names may have extra, which is now broken.
-			// TODO fix
-			//message = message.replaceFirst("\\[(" + ChatColor.COLOR_CHAR + ".*?)\\]", ChatColor.AQUA + "!!$1" + ChatColor.AQUA +"!!");
-			// Funtimes sound effects here
-			switch ((int) (Math.random() * 20)) {
-			case 0:
-				p.playSound(p.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
-				break;
-			case 1:
-				p.playSound(p.getLocation(), Sound.WITHER_SPAWN, 1, 2);
-				break;
-			case 2:
-			case 3:
-				p.playSound(p.getLocation(), Sound.ANVIL_LAND, 1, 1);
-				break;
-			default:
-				p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 2);
-			}
-		}
-
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + message);
 	}
 
 	@Override

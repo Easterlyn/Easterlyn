@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,6 +41,7 @@ public class OfflineUser {
 	private Region currentRegion;
 	private String timePlayed;
 	private Location previousLocation;
+	boolean allowFlight;
 
 	/* Classpect */
 	private UserClass userClass;
@@ -52,32 +54,23 @@ public class OfflineUser {
 	private Set<Integer> programs;
 	boolean isServer;
 
-	boolean allowFlight;
-
 	/* Chat data*/
 	protected String currentChannel;
 	private Set<String> listening;
-	private AtomicBoolean globalMute, suppress;
+	private AtomicBoolean globalMute, suppress, highlight;
 
-	protected OfflineUser(UUID userID, String displayName, String ip, Location currentLocation,
-			Region currentRegion, String timePlayed, UserClass userClass, UserAspect userAspect,
-			Region medium, Region dream, ProgressionState progstate, boolean allowFlight,
-			Location previousLocation, String currentChannel, Set<Integer> programs,
-			Set<String> listening, AtomicBoolean globalMute, AtomicBoolean supress, UUID server,
-			UUID client) {
+	protected OfflineUser(UUID userID, String ip, String displayName, Location currentLocation,
+			Region currentRegion, String timePlayed, Location previousLocation,
+			UserClass userClass, UserAspect userAspect, Region medium, Region dream,
+			ProgressionState progstate, UUID server, UUID client, Set<Integer> programs,
+			boolean allowFlight, String currentChannel, Set<String> listening,
+			AtomicBoolean globalMute, AtomicBoolean supress, AtomicBoolean highlight) {
 		this.uuid = userID;
 		this.userIP = ip;
 		this.displayName = displayName;
 		this.currentLocation = currentLocation;
 		this.currentRegion = currentRegion;
 		this.timePlayed = timePlayed;
-		this.userClass = userClass;
-		this.userAspect = userAspect;
-		this.medium = medium;
-		this.dream = dream;
-		this.progression = progstate;
-		this.isServer = false;
-		this.allowFlight = allowFlight;
 		this.previousLocation = previousLocation;
 		if (previousLocation == null) {
 			World earth = Bukkit.getWorld("Earth");
@@ -85,11 +78,21 @@ public class OfflineUser {
 				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
 			}
 		}
-		this.currentChannel = currentChannel;
+		this.allowFlight = allowFlight;
+		this.userClass = userClass;
+		this.userAspect = userAspect;
+		this.medium = medium;
+		this.dream = dream;
+		this.progression = progstate;
+		this.server = server;
+		this.client = client;
 		this.programs = programs;
+		this.isServer = false;
+		this.currentChannel = currentChannel;
 		this.listening = listening;
 		this.globalMute = globalMute;
 		this.suppress = supress;
+		this.highlight = highlight;
 	}
 
 	private OfflineUser(UUID uuid, String ip) {
@@ -114,6 +117,7 @@ public class OfflineUser {
 		this.listening.add("#EARTH");
 		this.globalMute = new AtomicBoolean(false);
 		this.suppress = new AtomicBoolean(false);
+		this.highlight = new AtomicBoolean(true);
 	}
 
 	/**
@@ -428,14 +432,6 @@ public class OfflineUser {
 	public void sendMessage(String message) {}
 
 	/**
-	 * Sends a raw message that will attempt to highlight the user.
-	 * 
-	 * @param message
-	 * @param additionalMatches
-	 */
-	public void rawHighlight(String message, String... additionalMatches) {}
-
-	/**
 	 * Sets the User's chat mute status.
 	 * 
 	 * @param b true if the User is muted
@@ -469,6 +465,36 @@ public class OfflineUser {
 	 */
 	public boolean getSuppression() {
 		return suppress.get();
+	}
+
+	/**
+	 * Sets the User's current chat highlight status.
+	 * 
+	 * @param b true if the User is to be highlighted
+	 */
+	public void setHighlight(boolean b) {
+		this.highlight.lazySet(b);
+	}
+
+	/**
+	 * Gets the User's highlight status.
+	 * 
+	 * @return true if the Player is to be highlighted.
+	 */
+	public boolean getHighlight() {
+		return this.highlight.get();
+	}
+
+	public Collection<String> getHighlights(Channel channel) {
+		HashSet<String> highlights = new HashSet<>();
+		if (this.getHighlight()) {
+			if (this.isOnline()) {
+				highlights.add(channel.getNick(this));
+			}
+			highlights.add(this.getPlayerName());
+			highlights.add(this.getDisplayName());
+		}
+		return highlights;
 	}
 
 	/**
@@ -714,10 +740,10 @@ public class OfflineUser {
 	public OnlineUser getOnlineUser() {
 		OnlineUser user = Users.getOnlineUser(getUUID());
 		if (user == null) {
-			return new OnlineUser(getUUID(), getDisplayName(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
-					getCurrentLocation(), getCurrentRegion(), getUserClass(), getUserAspect(),
-					getMediumPlanet(), getDreamPlanet(), getProgression(), getFlight(), getPreviousLocation(),
-					currentChannel, getPrograms(), getListening(), globalMute, suppress, getServer(), getClient());
+			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(), getDisplayName(),
+					getCurrentLocation(), getCurrentRegion(), getPreviousLocation(), getUserClass(), getUserAspect(),
+					getMediumPlanet(), getDreamPlanet(), getProgression(), getServer(), getClient(),  getPrograms(), getFlight(),
+					currentChannel,getListening(), globalMute, suppress, highlight);
 		}
 		return null;
 	}
@@ -757,6 +783,7 @@ public class OfflineUser {
 		yaml.set("chat.listening", getListening());
 		yaml.set("chat.muted", getMute());
 		yaml.set("chat.suppressing", getSuppression());
+		yaml.set("chat.highlight", getHighlight());
 		yaml.set("chat.ignoring", null);
 		yaml.set("chat.highlights", null);
 		try {
@@ -825,6 +852,7 @@ public class OfflineUser {
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
 		user.setMute(yaml.getBoolean("chat.muted"));
 		user.setSuppression(yaml.getBoolean("chat.suppressing"));
+		user.setHighlight(yaml.getBoolean("chat.highlight", true));
 		//(Set<String>) yaml.get("chat.ignoring");
 		return user;
 	}

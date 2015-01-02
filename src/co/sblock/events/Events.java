@@ -23,7 +23,7 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
-import co.sblock.events.listeners.*;
+import co.sblock.events.listeners.CHBlockHealListener;
 import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.SyncPacketAdapter;
 import co.sblock.events.packets.WrapperPlayServerAnimation;

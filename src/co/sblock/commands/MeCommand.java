@@ -10,6 +10,7 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.message.MessageBuilder;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
@@ -22,7 +23,7 @@ public class MeCommand extends SblockCommand {
 
 	public MeCommand() {
 		super("me");
-		this.setDescription("#>does an action");
+		this.setDescription("/me does an action");
 		this.setUsage("YOU FOOKIN WOT M8? /me (@channel) <message> Channel optional, defaults current.");
 	}
 
@@ -35,7 +36,12 @@ public class MeCommand extends SblockCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		((Player) sender).chat("#>" + StringUtils.join(args, ' '));
+		MessageBuilder builder = new MessageBuilder()
+				.setSender(Users.getGuaranteedUser(((Player) sender).getUniqueId()))
+				.setMessage(StringUtils.join(args, ' ')).setThirdPerson(true);
+		if (builder.canBuild(true)) {
+			builder.toMessage().send();
+		}
 		return true;
 	}
 

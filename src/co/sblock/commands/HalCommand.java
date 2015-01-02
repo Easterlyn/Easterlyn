@@ -10,10 +10,9 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.users.Users;
+import co.sblock.chat.ColorDef;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.rawmessages.MessageElement;
-import co.sblock.utilities.rawmessages.MessageHalement;
+import co.sblock.utilities.rawmessages.JSONUtil;
 import co.sblock.utilities.rawmessages.RawAnnouncer;
 
 /**
@@ -32,7 +31,7 @@ public class HalCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		MessageElement msg;
+		RawAnnouncer.AnnouncementMessage msg;
 		if (args.length == 1) {
 			try {
 				int msgNum = Integer.valueOf(args[0]);
@@ -42,17 +41,17 @@ public class HalCommand extends SblockCommand {
 				}
 				msg = RawAnnouncer.getInstance().getMessages().get(msgNum - 1);
 			} catch (NumberFormatException e) {
-				msg = new MessageHalement(args[0]);
+				msg = RawAnnouncer.getInstance().new AnnouncementMessage(JSONUtil.getWrappedJSON(JSONUtil.toJSONElements(ColorDef.HAL + args[0], true, null)), ColorDef.HAL + args[0]);
 			}
 		} else if (args.length > 0) {
-			msg = new MessageHalement(StringUtils.join(args, ' '));
+			String joined = ColorDef.HAL + StringUtils.join(args, ' ');
+			msg = RawAnnouncer.getInstance().new AnnouncementMessage(JSONUtil.getWrappedJSON(JSONUtil.toJSONElements(joined, true, null)), joined);
 		} else {
 			msg = RawAnnouncer.getInstance().getMessages().get((int) (Math.random() * RawAnnouncer.getInstance().getMessages().size()));
 		}
-		Log.anonymousInfo(msg.getConsoleFriendly());
-		String announcement = msg.toString();
+		Log.anonymousInfo(msg.getConsole());
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			Users.getGuaranteedUser(p.getUniqueId()).rawHighlight(announcement);
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + ' ' + msg.getJSON());
 		}
 		return true;
 	}

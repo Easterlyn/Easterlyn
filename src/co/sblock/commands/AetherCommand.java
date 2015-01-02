@@ -4,12 +4,10 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import co.sblock.chat.ChannelManager;
-import co.sblock.chat.Message;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.Users;
+import co.sblock.chat.message.Message;
+import co.sblock.chat.message.MessageBuilder;
 
 /**
  * SblockCommand for /aether, the command executed to make IRC chat mimic normal channels.
@@ -32,17 +30,12 @@ public class AetherCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.RED + "Hey Planar, stop faking empty IRC messages.");
 			return true;
 		}
-		Message message = new Message(ChatColor.WHITE + args[0], StringUtils.join(args, ' ', 1, args.length));
-		message.setChannel(ChannelManager.getChannelManager().getChannel("#Aether"));
-		// Rather than call message.send() and limit recipients to #Aether, this is supposed to be global.
+		Message message = new MessageBuilder().setSender(ChatColor.WHITE + args[0])
+				.setMessage(StringUtils.join(args, ' ', 1, args.length))
+				.setChannel(ChannelManager.getChannelManager().getChannel("#Aether")).toMessage();
+
+		message.send(Bukkit.getOnlinePlayers());
 		// TODO allow Hal features
-		Bukkit.getConsoleSender().sendMessage(message.getConsoleMessage());
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			OfflineUser u = Users.getGuaranteedUser(p.getUniqueId());
-			if (!u.getSuppression()) {
-				u.rawHighlight(message.getMessage());
-			}
-		}
 		return true;
 	}
 }

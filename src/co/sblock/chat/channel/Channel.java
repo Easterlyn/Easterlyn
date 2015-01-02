@@ -5,19 +5,13 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.ColorDef;
 import co.sblock.chat.Chat;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.Region;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.rawmessages.MessageClick;
-import co.sblock.utilities.rawmessages.MessageElement;
-import co.sblock.utilities.rawmessages.MessageHover;
 import co.sblock.utilities.threadsafe.SetGenerator;
 
 /**
@@ -113,8 +107,8 @@ public abstract class Channel {
 	 * @return if this user is an owner (created channel / set by previous owner, or is a denizen)
 	 */
 	public boolean isOwner(OfflineUser user) {
-		return user.getUUID().equals(owner)
-				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("group.denizen");
+		return user != null && (user.getUUID().equals(owner)
+				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("group.denizen"));
 	}
 
 	/**
@@ -122,8 +116,8 @@ public abstract class Channel {
 	 * @return whether this user has permission to moderate the channel
 	 */
 	public boolean isModerator(OfflineUser user) {
-		return isOwner(user) || modList.contains(user.getUUID())
-				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("group.felt");
+		return user != null && (isOwner(user) || modList.contains(user.getUUID())
+				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("group.felt"));
 	}
 
 	/**
@@ -133,7 +127,7 @@ public abstract class Channel {
 	 * @return whether this user is banned
 	 */
 	public boolean isBanned(OfflineUser user) {
-		return banList.contains(user.getUUID()) && !user.getPlayer().hasPermission("group.denizen");
+		return banList.contains(user.getUUID()) && !isOwner(user);
 	}
 
 
@@ -436,120 +430,6 @@ public abstract class Channel {
 			u.sendMessage(message);
 		}
 		Log.anonymousInfo(message);
-	}
-
-	/**
-	 * Gets chat channel name prefix.
-	 *
-	 * @param sender the User sending the message
-	 *
-	 * @return the channel prefix
-	 */
-	public String[] getChannelPrefixing(OfflineUser sender, boolean isThirdPerson) {
-
-		ChatColor guildRank;
-		ChatColor channelRank;
-		String globalRank = null;
-		ChatColor region;
-		String nick;
-		String displayName;
-		String prepend = new String();
-
-		String[] prefixes = new String[2];
-
-		if (sender != null) {
-			Player player = sender.getPlayer();
-
-			// Used for /m and profile displaying, may vary from channel nick
-			displayName = player.getDisplayName();
-
-			// Guild leader color
-			if (player.hasPermission("sblock.guildleader")) {
-				guildRank = sender.getUserAspect().getColor();
-			} else {
-				guildRank = ColorDef.RANK_HERO;
-			}
-
-			// Chat rank color
-			if (this.isOwner(sender)) {
-				channelRank = ColorDef.CHANNEL_OWNER;
-			} else if (this.isModerator(sender)) {
-				channelRank = ColorDef.CHANNEL_MOD;
-			} else {
-				channelRank = ColorDef.CHANNEL_MEMBER;
-			}
-
-			// Message coloring provided by additional perms
-			for (ChatColor c : ChatColor.values()) {
-				if (player.hasPermission("sblockchat.color")
-						&& player.hasPermission("sblockchat." + c.name().toLowerCase())) {
-					prepend += c;
-					break;
-				}
-			}
-
-			// Name color fetched from scoreboard, if team invalid perm-based instead.
-			try {
-				globalRank = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getPrefix();
-			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
-				if (sender.getPlayer().hasPermission("group.horrorterror"))
-					globalRank = ColorDef.RANK_HORRORTERROR.toString();
-				else if (sender.getPlayer().hasPermission("group.denizen"))
-					globalRank = ColorDef.RANK_DENIZEN.toString();
-				else if (sender.getPlayer().hasPermission("group.felt"))
-					globalRank = ColorDef.RANK_FELT.toString();
-				else if (sender.getPlayer().hasPermission("group.helper"))
-					globalRank = ColorDef.RANK_HELPER.toString();
-				else if (sender.getPlayer().hasPermission("group.godtier"))
-					globalRank = ColorDef.RANK_GODTIER.toString();
-				else if (sender.getPlayer().hasPermission("group.donator"))
-					globalRank = ColorDef.RANK_DONATOR.toString();
-				else {
-					globalRank = ColorDef.RANK_HERO.toString();
-				}
-			}
-
-			nick = this.getNick(sender);
-
-			Region sRegion = sender.getCurrentRegion();
-			if (sRegion == null) {
-				region = ChatColor.GOLD;
-			} else {
-				region = sRegion.getColor();
-			}
-			// TODO rank/guildrank in hover
-			prefixes[1] = new MessageElement("[", guildRank) + ","
-					+ new MessageElement(this.name, channelRank).addClickEffect(
-							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "@" + this.name + ' ')) + ","
-					+ new MessageElement("]", guildRank) + "," + new MessageElement(isThirdPerson ? "> " : " <", region) + ","
-					+ new MessageElement(globalRank + nick).addClickEffect(
-							new MessageClick(MessageClick.ClickEffect.SUGGEST_COMMAND, "/m " + player.getName() + ' '))
-							.addHoverEffect(new MessageHover(MessageHover.HoverEffect.SHOW_ITEM,
-									"{id:minecraft:diamond,tag:{display:{Name:\\\"" + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
-									+ "+---" + ChatColor.RESET + " " + globalRank + displayName + " " + ChatColor.YELLOW + ChatColor.STRIKETHROUGH
-									+ "---+\\\",Lore:[\\\"" + ChatColor.DARK_AQUA + sender.getUserClass().getDisplayName()
-									+ ChatColor.YELLOW + " of " + sender.getUserAspect().getColor() + sender.getUserAspect().getDisplayName()
-									+ "\\\",\\\"" + ChatColor.YELLOW + "Dream: "
-									+ sender.getDreamPlanet().getColor() + sender.getDreamPlanet().getDisplayName()
-									+ "\\\",\\\"" + ChatColor.YELLOW + "Medium: "
-									+ sender.getMediumPlanet().getColor() + sender.getMediumPlanet().getDisplayName()
-									+ "\\\"]}}}")) + ","
-					+ new MessageElement(isThirdPerson ? " " : "> ", region) + "," + new MessageElement(ChatColor.WHITE + prepend);
-		} else {
-			guildRank = ColorDef.RANK_HERO;
-			channelRank = ColorDef.CHANNEL_OWNER;
-			globalRank = ColorDef.RANK_HORRORTERROR.toString();
-			region = ColorDef.WORLD_AETHER;
-			nick = "<nonhuman>";
-		}
-		prefixes[0] = guildRank + "[" + channelRank + this.name + guildRank + "]" + region
-				+ (isThirdPerson ? "> " : " <") + globalRank + nick
-				+ (isThirdPerson ? "" : region + ">") + ChatColor.WHITE + ' ' + prepend;
-		if (prefixes[1] == null) {
-			prefixes[1] = prefixes[0];
-		}
-
-		return prefixes;
 	}
 
 	public String toString() {

@@ -5,27 +5,31 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jibble.jmegahal.JMegaHal;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
-import co.sblock.chat.Message;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
+import co.sblock.chat.message.Message;
+import co.sblock.chat.message.MessageBuilder;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.regex.RegexUtils;
 
@@ -56,6 +60,7 @@ public class MegaHal {
 		ratelimit = new ConcurrentHashMap<>();
 
 		ignoreMatches = new HashSet<>();
+		ignoreMatches.add(Pattern.compile(".*(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?.*"));
 		ignoreMatches.add(Pattern.compile("^.*[Bb]([Ee]|[Aa])[Nn][Zz]([Uu]|[Ee])?[Rr][Ff]([Ll][Ee][Ss]?)?.*$"));
 		ignoreMatches.add(Pattern.compile("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$"));
 
@@ -79,7 +84,7 @@ public class MegaHal {
 		return regex.toString();
 	}
 
-	public void handleMessage(Message msg) {
+	public void handleMessage(Message msg, Collection<Player> recipients) {
 		if (isTrigger(msg.getCleanedMessage())) {
 			if (isOnlyTrigger(msg.getCleanedMessage())) {
 				// Set sender on fire or some shit
@@ -101,7 +106,9 @@ public class MegaHal {
 					ratelimit.put(channel, System.currentTimeMillis() + 1500L);
 				}
 			}
-			triggerResponse(msg.getChannel(), msg.getCleanedMessage(), true);
+			HashSet<UUID> recipientUUIDs = new HashSet<>();
+			recipients.forEach(player -> recipientUUIDs.add(player.getUniqueId()));
+			triggerResponse(recipientUUIDs, msg.getChannel(), msg.getCleanedMessage(), true);
 		} else {
 			log(msg);
 		}
@@ -116,8 +123,9 @@ public class MegaHal {
 	}
 
 	public void log(Message message) {
-		if (message.containsLinks() || !message.escape() || message.getChannel().getAccess() == AccessLevel.PRIVATE
-				|| message.getChannel().getType() == ChannelType.NICK || message.getChannel().getType() == ChannelType.RP) {
+		if (message.getChannel().getAccess() == AccessLevel.PRIVATE
+				|| message.getChannel().getType() == ChannelType.NICK
+				|| message.getChannel().getType() == ChannelType.RP) {
 			return;
 		}
 		log(message.getCleanedMessage());
@@ -142,7 +150,11 @@ public class MegaHal {
 		hal.add(message);
 	}
 
-	public synchronized void triggerResponse(final Channel channel, final String message, final boolean filter) {
+	public void triggerResponse(final Channel channel, final String message, final boolean filter) {
+		triggerResponse(channel.getListening(), channel, message, filter);
+	}
+
+	public synchronized void triggerResponse(final Collection<UUID> recipients, final Channel channel, final String message, final boolean filter) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -152,10 +164,10 @@ public class MegaHal {
 				} else {
 					word = message;
 				}
-				Message msg = new Message("Lil Hal", word == null ? hal.getSentence() : hal.getSentence(word));
-				msg.setChannel(channel);
-				msg.addColor(ChatColor.RED);
-				msg.send();
+				Message msg = new MessageBuilder().setSender("Lil Hal")
+						.setMessage(ChatColor.RED + (word == null ? hal.getSentence() : hal.getSentence(word)))
+						.setChannel(channel).toMessage();
+				msg.send(recipients);
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());
 	}
