@@ -69,23 +69,24 @@ public class PlayerAsyncChatListener implements Listener {
 
 		final HashSet<Player> recipients = new HashSet<>(event.getRecipients());
 
-		// Clear and manually send messages to each player so we can wrap links, etc.
-		event.getRecipients().clear();
-		message.send(recipients);
-
 		// Region channels are the only ones that should be appearing in certain plugins that don't use log filters
-		if (message.getChannel().getType() != ChannelType.REGION) {
+		boolean doNotCancel = message.getChannel().getType() == ChannelType.REGION;
+		if (!doNotCancel) {
 			event.setCancelled(true);
 		}
+
+		// Clear and manually send messages to each player so we can wrap links, etc.
+		event.getRecipients().clear();
+		message.send(recipients, doNotCancel);
 
 		// Delay reply to prevent global channels logging reply before original message
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				String msg = event.getMessage().toLowerCase();
+				String msg = ChatColor.stripColor(event.getMessage().toLowerCase());
 				if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
 					msg = msg.substring(msg.indexOf(' ')).trim();
-					final Message hal = new MessageBuilder().setSender("Lil Hal")
+					final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
 							.setMessage(ChatColor.RED + Chat.getChat().getHalculator().evhaluate(msg))
 							.setChannel(message.getChannel()).toMessage();
 					hal.send(recipients);

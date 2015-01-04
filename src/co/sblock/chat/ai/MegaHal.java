@@ -164,7 +164,7 @@ public class MegaHal {
 				} else {
 					word = message;
 				}
-				Message msg = new MessageBuilder().setSender("Lil Hal")
+				Message msg = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
 						.setMessage(ChatColor.RED + (word == null ? hal.getSentence() : hal.getSentence(word)))
 						.setChannel(channel).toMessage();
 				msg.send(recipients);

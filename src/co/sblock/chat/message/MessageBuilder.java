@@ -56,7 +56,7 @@ public class MessageBuilder {
 			message = ChatColor.GREEN + message;
 		}
 
-		this.message = ChatColor.WHITE + message;
+		this.message = message;
 		return this;
 	}
 

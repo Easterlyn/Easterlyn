@@ -31,7 +31,7 @@ public class Message {
 	private final String name, unformattedMessage;
 	private final CanonNicks nick;
 	private final boolean thirdPerson;
-	private final String rawUnhighlightedMessage, channelHighlightElement, nameElement;
+	private final String channelHighlightElement, nameElement;
 
 	/**
 	 * @param sender
@@ -65,8 +65,6 @@ public class Message {
 		} else {
 			this.nick = null;
 		}
-
-		this.rawUnhighlightedMessage = JSONUtil.getWrappedJSON(getChannelPrefix(false), nameElement, JSONUtil.toJSONElements(message, true, nick));
 	}
 
 	public OfflineUser getSender() {
@@ -217,13 +215,25 @@ public class Message {
 	}
 
 	public void send() {
-		this.send(getChannel().getListening());
+		this.send(false);
+	}
+
+	public void send(boolean uncancelledRegionalChat) {
+		this.send(getChannel().getListening(), uncancelledRegionalChat);
 	}
 
 	public <T> void send(Collection<T> recipients) {
-		if (getChannel().getType() != ChannelType.REGION) {
+		this.send(recipients, false);
+	}
+
+	public <T> void send(Collection<T> recipients, boolean uncancelledRegionalChat) {
+		if (uncancelledRegionalChat) {
 			Bukkit.getConsoleSender().sendMessage(getConsoleMessage());
 		}
+		String focusedUnhighlighted = JSONUtil.getWrappedJSON(getChannelPrefix(false), nameElement,
+				JSONUtil.toJSONElements(ChatColor.WHITE + unformattedMessage, true, nick));
+		String unfocusedUnhighlighted = JSONUtil.getWrappedJSON(getChannelPrefix(false), nameElement,
+				JSONUtil.toJSONElements(ChatColor.GRAY + unformattedMessage, true, nick));
 		for (T object : recipients) {
 			UUID uuid;
 			Player player;
@@ -242,12 +252,17 @@ public class Message {
 			}
 			if (sender != null && (sender.equals(u) || !sender.getHighlight())) {
 				// No self-highlight.
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + ' ' + rawUnhighlightedMessage);
+				if (channel.equals(u.getCurrentChannel())) {
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + ' ' + focusedUnhighlighted);
+				} else {
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + ' ' + unfocusedUnhighlighted);
+				}
 				continue;
 			}
 
 			StringBuilder msg = new StringBuilder();
-			Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(u.getHighlights(getChannel()).toArray(new String[0]))).matcher(unformattedMessage);
+			Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(u.getHighlights(getChannel()).toArray(new String[0])))
+					.matcher((channel.equals(u.getCurrentChannel()) ? ChatColor.WHITE : ChatColor.GRAY) + unformattedMessage);
 			int lastEnd = 0;
 			// For every match, prepend aqua chat color and append previous color
 			while (match.find()) {
@@ -281,7 +296,11 @@ public class Message {
 				continue;
 			}
 
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + ' ' + rawUnhighlightedMessage);
+			if (channel.equals(u.getCurrentChannel())) {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + ' ' + focusedUnhighlighted);
+			} else {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + ' ' + unfocusedUnhighlighted);
+			}
 		}
 	}
 }
