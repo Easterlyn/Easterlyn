@@ -56,7 +56,7 @@ public class Message {
 		if (channel.getType() != ChannelType.RP && (sender != null && channel.isModerator(sender))) {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
-		unformattedMessage = message;
+		unformattedMessage = message.replace("\\", "\\\\").replace("\"", "\\\"");
 		this.channelHighlightElement = getChannelPrefix(true);
 		this.nameElement = getSenderElement();
 
