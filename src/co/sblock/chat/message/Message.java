@@ -227,7 +227,7 @@ public class Message {
 	}
 
 	public <T> void send(Collection<T> recipients, boolean uncancelledRegionalChat) {
-		if (uncancelledRegionalChat) {
+		if (!uncancelledRegionalChat) {
 			Bukkit.getConsoleSender().sendMessage(getConsoleMessage());
 		}
 		String focusedUnhighlighted = JSONUtil.getWrappedJSON(getChannelPrefix(false), nameElement,
