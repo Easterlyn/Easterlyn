@@ -260,21 +260,21 @@ public class Message {
 				continue;
 			}
 
+			String message = (channel.equals(u.getCurrentChannel()) ? ChatColor.WHITE : ChatColor.GRAY) + unformattedMessage;
 			StringBuilder msg = new StringBuilder();
-			Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(u.getHighlights(getChannel()).toArray(new String[0])))
-					.matcher((channel.equals(u.getCurrentChannel()) ? ChatColor.WHITE : ChatColor.GRAY) + unformattedMessage);
+			Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(u.getHighlights(getChannel()).toArray(new String[0]))).matcher(message);
 			int lastEnd = 0;
 			// For every match, prepend aqua chat color and append previous color
 			while (match.find()) {
-				msg.append(unformattedMessage.substring(lastEnd, match.start()));
+				msg.append(message.substring(lastEnd, match.start()));
 				String last = ChatColor.getLastColors(msg.toString());
 				msg.append(ChatColor.AQUA).append(match.group()).append(last);
 				lastEnd = match.end();
 			}
 
 			if (lastEnd > 0) {
-				if (lastEnd < unformattedMessage.length()) {
-					msg.append(unformattedMessage.substring(lastEnd));
+				if (lastEnd < message.length()) {
+					msg.append(message.substring(lastEnd));
 				}
 				// Funtimes sound effects here
 				switch ((int) (Math.random() * 20)) {
