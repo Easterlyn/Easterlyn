@@ -77,7 +77,7 @@ public class PlayerAsyncChatListener implements Listener {
 
 		// Clear and manually send messages to each player so we can wrap links, etc.
 		event.getRecipients().clear();
-		message.send(recipients, !doNotCancel);
+		message.send(recipients, doNotCancel);
 
 		// Delay reply to prevent global channels logging reply before original message
 		new BukkitRunnable() {
