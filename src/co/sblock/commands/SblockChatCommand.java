@@ -104,7 +104,7 @@ public class SblockChatCommand extends SblockCommand {
 				}
 			}
 			String string = "channel";
-			if (user.getCurrentChannel().isModerator(user) && string.startsWith(args[0])) {
+			if (user.getCurrentChannel() != null && user.getCurrentChannel().isModerator(user) && string.startsWith(args[0])) {
 				matches.add(string);
 			}
 			return matches;
