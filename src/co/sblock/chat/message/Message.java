@@ -53,18 +53,21 @@ public class Message {
 				}
 			}
 		}
+
 		if (channel.getType() != ChannelType.RP && (sender != null && channel.isModerator(sender))) {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
-		unformattedMessage = message.replace("\\", "\\\\").replace("\"", "\\\"");
-		this.channelHighlightElement = getChannelPrefix(true);
-		this.nameElement = getSenderElement();
 
 		if (sender != null && channel.getType() == ChannelType.RP) {
 			this.nick = CanonNicks.getNick(channel.getNick(sender));
+			message = nick.getColor() + message;
 		} else {
 			this.nick = null;
 		}
+
+		unformattedMessage = message.replace("\\", "\\\\").replace("\"", "\\\"");
+		this.channelHighlightElement = getChannelPrefix(true);
+		this.nameElement = getSenderElement();
 	}
 
 	public OfflineUser getSender() {
@@ -260,7 +263,12 @@ public class Message {
 				continue;
 			}
 
-			String message = (channel.equals(u.getCurrentChannel()) ? ChatColor.WHITE : ChatColor.GRAY) + unformattedMessage;
+			String message;
+			if (channel.equals(u.getCurrentChannel())) {
+				message = unformattedMessage;
+			} else {
+				message = ChatColor.GRAY + unformattedMessage;
+			}
 			StringBuilder msg = new StringBuilder();
 			Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(u.getHighlights(getChannel()).toArray(new String[0]))).matcher(message);
 			int lastEnd = 0;

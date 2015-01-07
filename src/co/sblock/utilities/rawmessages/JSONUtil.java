@@ -43,11 +43,19 @@ public class JSONUtil {
 		boolean first = true;
 		String colour = null;
 		String format = null;
+		boolean ignoreFirst = !parts[0].isEmpty() && ChatColor.getByChar(parts[0].charAt(0)) != null;
 		for (String part : parts) {
 			// If it starts with a colour, just ignore the empty String before it
-			if (part.isEmpty())
+			if (part.isEmpty()) {
 				continue;
-			String newStyle = getStyle(part.charAt(0));
+			}
+			String newStyle = null;
+			// If it doesn't start with a color, don't try to parse one.
+			if (!ignoreFirst) {
+				newStyle = getStyle(part.charAt(0));
+			} else {
+				ignoreFirst = false;
+			}
 			if (newStyle != null) {
 				part = part.substring(1);
 				if (newStyle.startsWith("\"c"))
