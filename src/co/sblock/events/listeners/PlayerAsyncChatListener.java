@@ -38,6 +38,14 @@ public class PlayerAsyncChatListener implements Listener {
 
 	private final ConcurrentHashMap<UUID, Message> messages = new ConcurrentHashMap<>();
 
+
+	/**
+	 * The first event handler for AsyncPlayerChatEvents.
+	 * 
+	 * LOW priority allows us to modify the event before chat loggers (IRC, etc.) pick it up.
+	 * 
+	 * @param event the AsyncPlayerChatEvent
+	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 	public void onPlayerChatLow(final AsyncPlayerChatEvent event) {
 		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
@@ -66,12 +74,18 @@ public class PlayerAsyncChatListener implements Listener {
 		event.setFormat(message.getConsoleFormat());
 
 		messages.put(event.getPlayer().getUniqueId(), message);
+		if (message.getChannel().getType() != ChannelType.REGION) {
+			event.setCancelled(true);
+		}
 	}
 
 	/**
-	 * The event handler for AsyncPlayerChatEvents.
+	 * The second event handler for AsyncPlayerChatEvents.
 	 * 
-	 * We listen at monitor because we cancel the actual chat and send JSON messages instead.
+	 * Because we send JSON messages, we actually have to remove all recipients from the event and
+	 * manually send each one the message. This MUST be done after all plugins have finished
+	 * modifying the event, so HIGHEST is not late enough - we are forced to ignore convention and
+	 * modify the event at MONITOR priority to preserve compatibility with GP's soft mute.
 	 * 
 	 * @param event the AsyncPlayerChatEvent
 	 */
@@ -80,6 +94,8 @@ public class PlayerAsyncChatListener implements Listener {
 		final Message message;
 		if (messages.containsKey(event.getPlayer().getUniqueId())) {
 			message = messages.remove(event.getPlayer().getUniqueId());
+			// Message was cancelled by us - other plugins should not be manipulating messages aside from recipients.
+			event.setCancelled(false);
 		} else {
 			message = null;
 			event.setCancelled(true);
