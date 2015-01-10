@@ -16,6 +16,7 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
+import co.sblock.utilities.Log;
 import co.sblock.utilities.rawmessages.JSONUtil;
 import co.sblock.utilities.regex.RegexUtils;
 
@@ -65,7 +66,7 @@ public class Message {
 			this.nick = null;
 		}
 
-		unformattedMessage = message.replace("\\", "\\\\").replace("\"", "\\\"");
+		this.unformattedMessage = message.replace("\\", "\\\\").replace("\"", "\\\"");
 		this.channelHighlightElement = getChannelPrefix(true);
 		this.nameElement = getSenderElement();
 	}
@@ -118,13 +119,13 @@ public class Message {
 		} else {
 			globalRank = ChatColor.WHITE;
 		}
-		new StringBuilder('[')
+		return new StringBuilder().append(ChatColor.WHITE).append('[')
 				.append(channel.isOwner(sender) ? ChatColor.RED : channel.isModerator(sender)
-						? ChatColor.AQUA : ChatColor.GOLD).append(']').append(region)
+						? ChatColor.AQUA : ChatColor.GOLD).append(channel.getName())
+				.append(ChatColor.WHITE).append(']').append(region)
 				.append(thirdPerson ? "> " : " <").append(globalRank).append("%1$s").append(region)
-				.append(thirdPerson ? " " : "> ").append(ChatColor.WHITE).append("%2$s");
-		return "[" + channel.getName() + "]" + (thirdPerson ? "> " : " <") + "%1$s"
-				+ (thirdPerson ? " " : "> ") + "%2$s";
+				.append(thirdPerson ? " " : "> ").append(ChatColor.WHITE).append("%2$s").toString();
+		// return ChatColor.WHITE + "%1s$: %2s$";
 	}
 
 	public boolean isThirdPerson() {
@@ -231,12 +232,13 @@ public class Message {
 
 	public <T> void send(Collection<T> recipients, boolean uncancelledRegionalChat) {
 		if (!uncancelledRegionalChat) {
-			Bukkit.getConsoleSender().sendMessage(getConsoleMessage());
+			Log.anonymousInfo(getConsoleMessage());
 		}
+		String message = unformattedMessage.replace("\\", "\\\\").replace("\"", "\\\"");
 		String focusedUnhighlighted = JSONUtil.getWrappedJSON(getChannelPrefix(false), nameElement,
-				JSONUtil.toJSONElements(ChatColor.WHITE + unformattedMessage, true, nick));
+				JSONUtil.toJSONElements(ChatColor.WHITE + message, true, nick));
 		String unfocusedUnhighlighted = JSONUtil.getWrappedJSON(getChannelPrefix(false), nameElement,
-				JSONUtil.toJSONElements(ChatColor.GRAY + unformattedMessage, true, nick));
+				JSONUtil.toJSONElements(ChatColor.GRAY + message, true, nick));
 		for (T object : recipients) {
 			UUID uuid;
 			Player player;
@@ -263,11 +265,10 @@ public class Message {
 				continue;
 			}
 
-			String message;
 			if (channel.equals(u.getCurrentChannel())) {
-				message = unformattedMessage;
+				message = unformattedMessage.replace("\\", "\\\\").replace("\"", "\\\"");
 			} else {
-				message = ChatColor.GRAY + unformattedMessage;
+				message = ChatColor.GRAY + unformattedMessage.replace("\\", "\\\\").replace("\"", "\\\"");
 			}
 			StringBuilder msg = new StringBuilder();
 			Matcher match = Pattern.compile(RegexUtils.ignoreCaseRegex(u.getHighlights(getChannel()).toArray(new String[0]))).matcher(message);

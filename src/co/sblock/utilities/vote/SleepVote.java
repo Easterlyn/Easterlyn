@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
+import co.sblock.utilities.Log;
 
 /**
  * Utility to allow players to stop storms and end night.
@@ -19,7 +20,8 @@ public class SleepVote {
 
 	private static SleepVote instance;
 
-	private HashMap<String, HashSet<String>> votes;
+	private final Log logger;
+	private final HashMap<String, HashSet<String>> votes;
 
 	/**
 	 * Vote singleton.
@@ -34,6 +36,7 @@ public class SleepVote {
 	}
 
 	public SleepVote() {
+		logger = Log.getLog("SleepVote");
 		votes = new HashMap<String, HashSet<String>>();
 	}
 
@@ -83,7 +86,7 @@ public class SleepVote {
 			world.setTime(0);
 			world.setStorm(false);
 			world.setWeatherDuration(world.getWeatherDuration() > 12000 ? world.getWeatherDuration() : 12000);
-			Bukkit.getConsoleSender().sendMessage("[SleepVote] " + world.getName() + " set to morning!");
+			logger.info(world.getName() + " set to morning!");
 			votes.remove(world.getName());
 		} else if (player == null) {
 			// No spam on log in/out

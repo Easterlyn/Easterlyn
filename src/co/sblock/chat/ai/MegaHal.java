@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -100,7 +99,7 @@ public class MegaHal {
 				if (ratelimit.containsKey(channel) && ratelimit.get(msg.getChannel().getName()) > System.currentTimeMillis()) {
 					// Still on cooldown, warn a bitch
 					msg.getSender().getPlayer().sendMessage(ColorDef.HAL.replaceFirst("#", channel) + "If you want to spam with me, run /sc c #halchat");
-					Bukkit.getConsoleSender().sendMessage("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
+					Log.getLog("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return;
 				} else {
 					ratelimit.put(channel, System.currentTimeMillis() + 1500L);

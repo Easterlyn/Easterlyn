@@ -30,6 +30,7 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.utilities.Log;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryManager;
 import co.sblock.utilities.progression.ServerMode;
@@ -311,7 +312,7 @@ public class OnlineUser extends OfflineUser {
 			}
 		}
 
-		Bukkit.getConsoleSender().sendMessage(this.getPlayerName() + " began pestering " + StringUtils.join(getListening(), ' '));
+		Log.anonymousInfo(base.toString().replace("<>", StringUtils.join(getListening(), ", ")));
 	}
 
 	@Override

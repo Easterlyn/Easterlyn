@@ -4,14 +4,14 @@ import java.nio.file.Paths;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-
 /**
  * A small utility to make logging more easy on a per-module basis.
  * 
  * @author Jikoo
  */
 public class Log extends Logger {
+
+	private static final Logger GAME_LOGGER = getLogger("Minecraft");
 
 	private final String BRACKETED_NAME;
 
@@ -52,7 +52,7 @@ public class Log extends Logger {
 	 * @param msg the String to log
 	 */
 	public void info(String msg) {
-		Bukkit.getConsoleSender().sendMessage(BRACKETED_NAME + msg);
+		super.info(BRACKETED_NAME + msg);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class Log extends Logger {
 	 * @param msg the String to log
 	 */
 	public static void anonymousInfo(String msg) {
-		Bukkit.getConsoleSender().sendMessage(msg);
+		GAME_LOGGER.info(msg);
 	}
 
 	public static Log getLog(String name) {
