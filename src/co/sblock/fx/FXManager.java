@@ -1,5 +1,6 @@
 package co.sblock.fx;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,9 @@ public class FXManager extends Module {
 		Reflections reflections = new Reflections("co.sblock.fx");
 		Set<Class<? extends SblockFX>> effects = reflections.getSubTypesOf(SblockFX.class);
 		for (Class<? extends SblockFX> effect : effects) {
+			if (Modifier.isAbstract(effect.getModifiers())) {
+				continue;
+			}
 			try {
 				SblockFX instance = effect.newInstance();
 				validEffects.put(instance.getCanonicalName(), effect);
