@@ -104,6 +104,9 @@ public class PlayerAsyncChatListener implements Listener {
 			return;
 		}
 
+		// GP's anti-spam also filters allcaps, which we bypass by forming the message earlier. Reset message for console.
+		event.setMessage(message.getMessage());
+
 		final HashSet<Player> recipients = new HashSet<>(event.getRecipients());
 
 		// Region channels are the only ones that should be appearing in certain plugins that don't use log filters
