@@ -93,7 +93,7 @@ public class PlayerInteractListener implements Listener {
 		// Effect application
 		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getItem());
 		for (SblockFX fx : effects.values()) {
-			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), PlayerInteractEvent.class);
+			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), event);
 		}
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {

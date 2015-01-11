@@ -25,11 +25,7 @@ public class PlayerPickupItemListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		// valid SblockUser required for all events below this point
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if (user == null) {
-			return;
-		}
 
 		if (user.isServer()) {
 			event.setCancelled(true);
@@ -38,7 +34,7 @@ public class PlayerPickupItemListener implements Listener {
 
 		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getItem().getItemStack());
 		for (SblockFX fx : effects.values()) {
-			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), PlayerPickupItemEvent.class);
+			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), event);
 		}
 	}
 }

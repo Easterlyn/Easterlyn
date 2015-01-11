@@ -25,13 +25,13 @@ public class FXJump extends SblockFX {
 	}
 
 	@Override
-	protected void getEffect(OnlineUser u, Class<? extends Event> e) {
-		PotionEffect potEffect = new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, multiplier);
-		u.getPlayer().addPotionEffect(potEffect, true);
+	protected void getEffect(OnlineUser user, Event event) {
+		PotionEffect potEffect = new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, getMultiplier());
+		user.getPlayer().addPotionEffect(potEffect, true);
 	}
 
 	@Override
-	public void removeEffect(OnlineUser u) {
-		u.getPlayer().removePotionEffect(PotionEffectType.JUMP);
+	public void removeEffect(OnlineUser user) {
+		user.getPlayer().removePotionEffect(PotionEffectType.JUMP);
 	}
 }

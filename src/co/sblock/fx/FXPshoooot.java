@@ -16,14 +16,12 @@ public class FXPshoooot extends SblockFX {
 	}
 
 	@Override
-	protected void getEffect(OnlineUser u, Class<? extends Event> e) {
-		Player p = u.getPlayer();
-		Vector v = p.getLocation().getDirection();
-		p.setVelocity(v.multiply(multiplier + 2));
+	protected void getEffect(OnlineUser user, Event event) {
+		Player player = user.getPlayer();
+		Vector vector = player.getLocation().getDirection();
+		player.setVelocity(vector.multiply(getMultiplier() + 2));
 	}
 
 	@Override
-	public void removeEffect(OnlineUser u) {
-		return;
-	}
+	public void removeEffect(OnlineUser user) {}
 }

@@ -21,14 +21,14 @@ public class FXFlowers extends SblockFX {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	protected void getEffect(OnlineUser u, Class<? extends Event> e) {
-		Player p = u.getPlayer();
+	protected void getEffect(OnlineUser user, Event event) {
+		Player p = user.getPlayer();
 		Location loc = p.getLocation();
 		Block standingIn = loc.getBlock();
 		Block standingOn = standingIn.getRelative(BlockFace.DOWN);
 
 		HashMap<String, SblockFX> inHand = FXManager.getInstance().itemScan(p.getItemInHand());
-		if (!inHand.containsKey(this.canonicalName) || standingIn.getType() != Material.AIR
+		if (!inHand.containsKey(this.getCanonicalName()) || standingIn.getType() != Material.AIR
 				|| (standingOn.getType() != Material.DIRT && standingOn.getType() != Material.GRASS)) {
 			return;
 		}
@@ -86,7 +86,5 @@ public class FXFlowers extends SblockFX {
 	}
 
 	@Override
-	public void removeEffect(OnlineUser u) {
-		return;
-	}
+	public void removeEffect(OnlineUser user) {}
 }

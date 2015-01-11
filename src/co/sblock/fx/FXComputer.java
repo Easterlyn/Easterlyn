@@ -12,12 +12,12 @@ public class FXComputer extends SblockFX {
 	}
 
 	@Override
-	protected void getEffect(OnlineUser u, Class<? extends Event> e) {
+	protected void getEffect(OnlineUser user, Event event) {
 		return;
 	}
 
 	@Override
-	public void removeEffect(OnlineUser u) {
+	public void removeEffect(OnlineUser user) {
 		return;
 	}
 }

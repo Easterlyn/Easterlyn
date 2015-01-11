@@ -9,21 +9,21 @@ import co.sblock.users.OnlineUser;
 public abstract class SblockFX {
 
 	// The canonical name of the effect
-	protected String canonicalName;
+	private String canonicalName;
 	// Other names that may be used ingame
-	protected HashSet<String> commonNames;
+	private HashSet<String> commonNames;
 	// The event that can trigger this effect to occur
-	protected Class<? extends Event>[] eventTrigger;
+	private Class<? extends Event>[] eventTrigger;
 	// How much to multiply the strength of an effect from its base value
-	protected Integer multiplier;
+	private Integer multiplier;
 	// How much this effect costs
-	protected Integer cost;
+	private Integer cost;
 	// Is this effect "passive" (continuous background, like a potion effect)
-	protected boolean isPassive;
+	private boolean isPassive;
 	// The system time in milliseconds when the effect can be used next
-	protected long nextUsage;
+	private long nextUsage;
 	// The time in milliseconds to wait before the effect can be triggered again
-	protected long cooldown;
+	private long cooldown;
 
 	@SuppressWarnings("unchecked")
 	public SblockFX(String name, boolean isPassive, Integer cost, long cooldown, Class<? extends Event>... eventTrigger) {
@@ -120,25 +120,25 @@ public abstract class SblockFX {
 
 	/**
 	 * Checks to see if this Effect can be triggered from the event that called it. If so, makes
-	 * sure the cooldown has expired. Note: e is null if applied by FXManager
+	 * sure the cooldown has expired. Note: e is null if a passive effect is re-applied by FXManager.
 	 * 
-	 * @param u The user who owns this Effect
-	 * @param e The event that triggered this Effect
+	 * @param user The user who owns this Effect
+	 * @param event The event that triggered this Effect
 	 */
-	public void applyEffect(OnlineUser u, Class<? extends Event> e) {
+	public final void applyEffect(OnlineUser user, Event event) {
 		boolean execute = false;
-		if (e != null) {
-			for (Class<? extends Event> event : eventTrigger) {
-				if (e.getClass().isAssignableFrom(event)) {
+		if (event != null) {
+			for (Class<? extends Event> eventClazz : eventTrigger) {
+				if (event.getClass().isAssignableFrom(eventClazz.getClass())) {
 					execute = true;
 					break;
 				}
 			}
 		}
-		execute = (e == null);
+		execute = (event == null);
 		if (execute && System.currentTimeMillis() > nextUsage) {
 			nextUsage = System.currentTimeMillis() + cooldown;
-			getEffect(u, e);
+			getEffect(user, event);
 		}
 	}
 
@@ -148,14 +148,14 @@ public abstract class SblockFX {
 	 * 
 	 * @param u The user who owns this Effect
 	 */
-	protected abstract void getEffect(OnlineUser u, Class<? extends Event> e);
+	protected abstract void getEffect(OnlineUser user, Event event);
 
 	/**
 	 * For "passive" effects, will remove the effect from the user
 	 * 
 	 * @param u The user who owns this effect
 	 */
-	public abstract void removeEffect(OnlineUser u);
+	public abstract void removeEffect(OnlineUser user);
 
 	public String toString() {
 		String output = "\nFXName: " + canonicalName + " Trigger: " + eventTrigger[0].getName() + 
