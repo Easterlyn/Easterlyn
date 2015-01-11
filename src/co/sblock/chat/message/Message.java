@@ -66,7 +66,7 @@ public class Message {
 			this.nick = null;
 		}
 
-		this.unformattedMessage = message.replace("\\", "\\\\").replace("\"", "\\\"");
+		this.unformattedMessage = message;
 		this.channelHighlightElement = getChannelPrefix(true);
 		this.nameElement = getSenderElement();
 	}
