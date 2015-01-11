@@ -129,13 +129,15 @@ public abstract class SblockFX {
 		boolean execute = false;
 		if (event != null) {
 			for (Class<? extends Event> eventClazz : eventTrigger) {
-				if (event.getClass().isAssignableFrom(eventClazz.getClass())) {
+				// Because of Bukkit's class loading, our stored class does not match the class of events fired often.
+				if (eventClazz.isAssignableFrom(event.getClass())
+						|| eventClazz.getName().equals(event.getClass().getName())) {
 					execute = true;
 					break;
 				}
 			}
 		}
-		execute = (event == null);
+		execute = execute || event == null;
 		if (execute && System.currentTimeMillis() > nextUsage) {
 			nextUsage = System.currentTimeMillis() + cooldown;
 			getEffect(user, event);

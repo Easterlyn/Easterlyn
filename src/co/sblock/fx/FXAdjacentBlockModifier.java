@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.events.event.SblockBreakEvent;
 import co.sblock.fx.SblockFX;
 import co.sblock.users.OnlineUser;
 
@@ -23,7 +24,7 @@ public abstract class FXAdjacentBlockModifier extends SblockFX {
 	private final BlockFace[] faces;
 	@SuppressWarnings("unchecked")
 	public FXAdjacentBlockModifier(String name, int cost, int cooldown) {
-		super(name, false, cost, cooldown, BlockBreakEvent.class);
+		super(name, false, cost, cooldown, BlockBreakEvent.class, SblockBreakEvent.class);
 		faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
 				BlockFace.EAST, BlockFace.WEST };
 	}
