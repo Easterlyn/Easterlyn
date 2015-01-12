@@ -62,6 +62,7 @@ public class MegaHal {
 		ignoreMatches.add(Pattern.compile(".*(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?.*"));
 		ignoreMatches.add(Pattern.compile("^.*[Bb]([Ee]|[Aa])[Nn][Zz]([Uu]|[Ee])?[Rr][Ff]([Ll][Ee][Ss]?)?.*$"));
 		ignoreMatches.add(Pattern.compile("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$"));
+		ignoreMatches.add(Pattern.compile("^[Ee][Vv][Hh][Aa][Ll]([Uu][Aa][Tt][Ee])? .*$"));
 
 		loadHal();
 
@@ -102,7 +103,7 @@ public class MegaHal {
 					Log.getLog("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return;
 				} else {
-					ratelimit.put(channel, System.currentTimeMillis() + 1500L);
+					ratelimit.put(channel, System.currentTimeMillis() + 2000L);
 				}
 			}
 			HashSet<UUID> recipientUUIDs = new HashSet<>();

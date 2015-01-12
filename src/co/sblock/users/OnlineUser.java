@@ -341,7 +341,7 @@ public class OnlineUser extends OfflineUser {
 			// Overrides the computer limitation for pre-Entry shenanigans
 			return true;
 		}
-		return Machines.getInstance().isByComputer(this.getPlayer(), 10);
+		return getEffects().containsKey("Computer") || Machines.getInstance().isByComputer(this.getPlayer(), 10);
 	}
 
 	/**
