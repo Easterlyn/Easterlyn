@@ -16,15 +16,11 @@ public class FXAdjacentWater extends FXAdjacentBlockModifier {
 		super("Liquid Cooled", 400, 0);
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void handleAdjacentBlock(Player player, Block block) {
-		if (block.getType() == Material.LAVA) {
-			if (handleBlockSet(player, block, Material.COBBLESTONE)) {
-				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 16, 1);
-			}
-			return;
-		}
-		if (block.getType() == Material.STATIONARY_LAVA) {
-			if (handleBlockSet(player, block, Material.OBSIDIAN)) {
+		if (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA) {
+			if ((block.getData() == 0 && handleBlockSet(player, block, Material.OBSIDIAN))
+					|| (block.getData() != 0 && handleBlockSet(player, block, Material.COBBLESTONE))) {
 				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 16, 1);
 			}
 			return;

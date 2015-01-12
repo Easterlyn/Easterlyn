@@ -11,7 +11,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.events.event.SblockBreakEvent;
-import co.sblock.fx.SblockFX;
 import co.sblock.users.OnlineUser;
 
 /**
