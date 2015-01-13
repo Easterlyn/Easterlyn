@@ -21,9 +21,9 @@ public class FXTunnelBore extends SblockFX {
 	@SuppressWarnings("unchecked")
 	public FXTunnelBore() {
 		super("Tunnel Bore", false, 2500, 0, BlockBreakEvent.class);
-		faces = new BlockFace[] { BlockFace.NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_EAST,
-				BlockFace.SOUTH_WEST, BlockFace.SOUTH, BlockFace.SOUTH_EAST, BlockFace.EAST,
-				BlockFace.WEST };
+		faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
+				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST,
+				BlockFace.SOUTH_WEST, BlockFace.SOUTH_EAST };
 	}
 
 	@Override
