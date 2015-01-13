@@ -85,14 +85,14 @@ public class MegaHal {
 	}
 
 	public void handleMessage(Message msg, Collection<Player> recipients) {
+		if (msg.getSender() == null || msg.getChannel().getType() == ChannelType.NICK
+				|| msg.getChannel().getType() == ChannelType.RP) {
+			return;
+		}
 		if (isTrigger(msg.getCleanedMessage())) {
 			if (isOnlyTrigger(msg.getCleanedMessage())) {
 				// Set sender on fire or some shit
 				msg.getSender().sendMessage(ColorDef.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
-				return;
-			}
-			if (msg.getSender() == null || msg.getChannel().getAccess() == AccessLevel.PRIVATE
-					|| msg.getChannel().getType() == ChannelType.NICK || msg.getChannel().getType() == ChannelType.RP) {
 				return;
 			}
 			String channel = msg.getChannel().getName();
@@ -103,13 +103,13 @@ public class MegaHal {
 					Log.getLog("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return;
 				} else {
-					ratelimit.put(channel, System.currentTimeMillis() + 2000L);
+					ratelimit.put(channel, System.currentTimeMillis() + 2500L);
 				}
 			}
 			HashSet<UUID> recipientUUIDs = new HashSet<>();
 			recipients.forEach(player -> recipientUUIDs.add(player.getUniqueId()));
 			triggerResponse(recipientUUIDs, msg.getChannel(), msg.getCleanedMessage(), true);
-		} else {
+		} else if (msg.getChannel().getAccess() != AccessLevel.PRIVATE) {
 			log(msg);
 		}
 	}
