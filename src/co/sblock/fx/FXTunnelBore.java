@@ -1,5 +1,7 @@
 package co.sblock.fx;
 
+import java.util.Collection;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -64,17 +66,18 @@ public class FXTunnelBore extends SblockFX {
 		if (block.getType() == Material.BARRIER || block.getType() == Material.BEDROCK
 				|| block.getType() == Material.COMMAND || block.getType() == Material.ENDER_PORTAL
 				|| block.getType() == Material.ENDER_PORTAL_FRAME
-				|| block.getType() == Material.PORTAL || block.isLiquid() || block.isEmpty()) {
+				|| block.getType() == Material.PORTAL || block.isEmpty()) {
 			return;
 		}
 
 		SblockBreakEvent event = new SblockBreakEvent(block, player);
 		Bukkit.getServer().getPluginManager().callEvent(event);
-		if (event.isCancelled()) {
+		if (event.isCancelled() || block.isLiquid()) {
 			return;
 		}
+		Collection<ItemStack> drops = BlockDrops.getDrops(player.getItemInHand(), block);
 		block.setType(Material.AIR);
-		for (ItemStack is : BlockDrops.getDrops(player.getItemInHand(), block)) {
+		for (ItemStack is : drops) {
 			block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), is);
 		}
 	}
