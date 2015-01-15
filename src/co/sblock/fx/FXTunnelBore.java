@@ -7,8 +7,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
+
 import co.sblock.events.event.SblockBreakEvent;
 import co.sblock.users.OnlineUser;
+import co.sblock.utilities.enchantments.BlockDrops;
 
 /**
  * Mine or dig a 3x3 area at once.
@@ -70,8 +73,10 @@ public class FXTunnelBore extends SblockFX {
 		if (event.isCancelled()) {
 			return;
 		}
-		block.breakNaturally(player.getItemInHand());
-		// TODO fortune is not applied.
+		block.setType(Material.AIR);
+		for (ItemStack is : BlockDrops.getDrops(player.getItemInHand(), block)) {
+			block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), is);
+		}
 	}
 
 	@Override
