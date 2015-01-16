@@ -11,11 +11,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 /**
- * 
+ * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
+ * account enchantments.
  * 
  * @author Jikoo
  */
 public class BlockDrops {
+
+	// TODO exp
 
 	public static Collection<ItemStack> getDrops(ItemStack tool, Block block) {
 		if (tool.containsEnchantment(Enchantment.SILK_TOUCH) && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
@@ -166,12 +169,12 @@ public class BlockDrops {
 			if (material.getItemType() == Material.LEAVES_2) {
 				treeType += 4;
 			}
-			if ((treeType == 0 || treeType == 5) && Math.random() < .005) {
-				// Oak and dark oak have a .5% chance of apple drops
+			if ((treeType == 0 || treeType == 5) && Math.random() < 1 / (200 - (20 * fortune))) {
+				// Oak and dark oak drop apples
 				drops.add(new ItemStack(Material.APPLE));
 			}
-			double dropRate = treeType == 3 ? fortune < 1 ? .025 : fortune == 1 ? .0278 : fortune < 3 ? .03125 : .0417
-					: fortune < 1 ? .06 : fortune == 1 ? .0625 : fortune < 3 ? .0833 : .01;
+			double dropRate = treeType == 3 ? fortune < 1 ? .025 : fortune == 1 ? .0278 : fortune == 2 ? .03125 : .0417
+					: fortune < 1 ? .06 : fortune == 1 ? .0625 : fortune == 2 ? .0833 : .01;
 			if (Math.random() < dropRate) {
 				drops.add(new ItemStack(Material.SAPLING, 1, (short) treeType));
 			}
