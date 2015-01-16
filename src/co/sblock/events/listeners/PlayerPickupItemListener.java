@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import co.sblock.users.OfflineUser;
-import co.sblock.fx.FXManager;
-import co.sblock.fx.SblockFX;
+import co.sblock.effects.FXManager;
+import co.sblock.effects.fx.SblockFX;
 import co.sblock.users.Users;
 
 /**

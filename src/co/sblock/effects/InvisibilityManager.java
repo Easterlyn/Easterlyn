@@ -1,4 +1,4 @@
-package co.sblock.fx;
+package co.sblock.effects;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

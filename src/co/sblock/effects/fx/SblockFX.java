@@ -1,4 +1,4 @@
-package co.sblock.fx;
+package co.sblock.effects.fx;
 
 import java.util.HashSet;
 

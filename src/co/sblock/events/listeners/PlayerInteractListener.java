@@ -16,9 +16,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
 import co.sblock.Sblock;
+import co.sblock.effects.FXManager;
+import co.sblock.effects.fx.SblockFX;
 import co.sblock.events.Events;
-import co.sblock.fx.FXManager;
-import co.sblock.fx.SblockFX;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;

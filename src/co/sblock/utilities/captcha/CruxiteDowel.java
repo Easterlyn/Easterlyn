@@ -15,7 +15,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
-import co.sblock.fx.FXManager;
+import co.sblock.effects.FXManager;
 
 /**
  * A class for handling all functions of cruxite dowels.

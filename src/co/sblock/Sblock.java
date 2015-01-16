@@ -27,18 +27,17 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import org.reflections.Reflections;
 
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
+import co.sblock.effects.FXManager;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
-import co.sblock.fx.FXManager;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.meteors.Meteors;

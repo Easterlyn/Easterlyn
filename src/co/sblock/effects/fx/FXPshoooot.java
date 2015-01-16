@@ -1,4 +1,4 @@
-package co.sblock.fx;
+package co.sblock.effects.fx;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

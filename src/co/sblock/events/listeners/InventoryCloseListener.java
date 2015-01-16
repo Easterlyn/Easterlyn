@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
-import co.sblock.fx.FXManager;
+import co.sblock.effects.FXManager;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;

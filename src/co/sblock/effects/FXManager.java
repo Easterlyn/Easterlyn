@@ -1,4 +1,4 @@
-package co.sblock.fx;
+package co.sblock.effects;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.reflections.Reflections;
 
 import co.sblock.Sblock;
+import co.sblock.effects.fx.SblockFX;
 import co.sblock.module.Module;
 import co.sblock.users.OnlineUser;
 import co.sblock.utilities.captcha.Captcha;

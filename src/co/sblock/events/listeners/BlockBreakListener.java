@@ -7,8 +7,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import co.sblock.fx.FXManager;
-import co.sblock.fx.SblockFX;
+import co.sblock.effects.FXManager;
+import co.sblock.effects.fx.SblockFX;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.OfflineUser;

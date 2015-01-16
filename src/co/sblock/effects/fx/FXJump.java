@@ -1,4 +1,4 @@
-package co.sblock.fx;
+package co.sblock.effects.fx;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.PlayerDeathEvent;

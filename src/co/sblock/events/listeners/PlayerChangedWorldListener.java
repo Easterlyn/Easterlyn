@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.fx.FXManager;
+import co.sblock.effects.FXManager;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;

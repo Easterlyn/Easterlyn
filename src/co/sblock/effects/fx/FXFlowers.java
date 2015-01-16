@@ -1,4 +1,4 @@
-package co.sblock.fx;
+package co.sblock.effects.fx;
 
 import java.util.HashMap;
 
@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import co.sblock.effects.FXManager;
 import co.sblock.users.OnlineUser;
 
 public class FXFlowers extends SblockFX {
