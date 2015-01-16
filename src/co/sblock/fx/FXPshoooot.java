@@ -11,7 +11,7 @@ public class FXPshoooot extends SblockFX {
 
 	@SuppressWarnings("unchecked")
 	public FXPshoooot() {
-		super("PSHOOOOT", false, 350, 0, PlayerInteractEvent.class);
+		super("PSHOOOOT", false, 350, 1000 * 3, PlayerInteractEvent.class);
 		addCommonName("PCHOOOOO");
 	}
 

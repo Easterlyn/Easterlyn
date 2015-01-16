@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
+import co.sblock.Sblock;
 import co.sblock.events.Events;
 import co.sblock.fx.FXManager;
 import co.sblock.fx.SblockFX;
@@ -23,6 +24,7 @@ import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.progression.Entry;
@@ -94,6 +96,10 @@ public class PlayerInteractListener implements Listener {
 		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getItem());
 		for (SblockFX fx : effects.values()) {
 			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), event);
+		}
+		if(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser().getProgression() == ProgressionState.GODTIER &&
+				event.getPlayer().isSneaking() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+			Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser().applyGodtierActiveEffect();
 		}
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {

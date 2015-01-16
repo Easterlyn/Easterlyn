@@ -25,6 +25,7 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Chat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
+import co.sblock.fx.FXManager;
 import co.sblock.fx.SblockFX;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
@@ -366,7 +367,6 @@ public class OnlineUser extends OfflineUser {
 				entry.applyEffect(this, null);
 			}
 		}
-
 	}
 
 	/**
@@ -415,6 +415,88 @@ public class OnlineUser extends OfflineUser {
 				this.effectsList.remove(effect.getCanonicalName());
 				effect.removeEffect(this);
 			}
+		}
+	}
+	
+	public void applyGodtierPassiveEffect() {
+		if(this.getProgression().value() >= ProgressionState.GODTIER.value()) {
+			SblockFX passive = null;
+			switch(this.getUserAspect()) {
+			case BLOOD:
+				break;
+			case BREATH:
+				break;
+			case DOOM:
+				break;
+			case HEART:
+				try {
+					passive = FXManager.getInstance().getValidEffects().get("ABSORPTION").newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					Sblock.getLog().info("Passive Heart Effect Exception");
+					e.printStackTrace();
+				}
+				break;
+			case HOPE:
+				break;
+			case LIFE:
+				break;
+			case LIGHT:
+				break;
+			case MIND:
+				break;
+			case RAGE:
+				break;
+			case SPACE:
+				break;
+			case TIME:
+				break;
+			case VOID:
+				break;
+			default:
+				break;
+			}
+			if(passive != null)	passive.applyEffect(this, null);
+		}
+	}
+	
+	public void applyGodtierActiveEffect() {
+		if(this.getProgression().value() >= ProgressionState.GODTIER.value()) {
+			SblockFX active = null;
+			switch(this.getUserAspect()) {
+			case BLOOD:
+				break;
+			case BREATH:
+				break;
+			case DOOM:
+				break;
+			case HEART:
+				try {
+					active = FXManager.getInstance().getValidEffects().get("FXGodtierHeartActive").newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					Sblock.getLog().info("Active Heart Effect Exception");
+					e.printStackTrace();
+				}
+				break;
+			case HOPE:
+				break;
+			case LIFE:
+				break;
+			case LIGHT:
+				break;
+			case MIND:
+				break;
+			case RAGE:
+				break;
+			case SPACE:
+				break;
+			case TIME:
+				break;
+			case VOID:
+				break;
+			default:
+				break;
+			}
+			if(active != null)	active.applyEffect(this, null);
 		}
 	}
 
