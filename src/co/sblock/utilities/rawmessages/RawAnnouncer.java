@@ -38,6 +38,9 @@ public class RawAnnouncer extends Module {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 			@Override
 			public void run() {
+				if (Bukkit.getOnlinePlayers().size() == 0) {
+					return;
+				}
 				AnnouncementMessage msg = announcements.get((int) (Math.random() * announcements.size()));
 				Log.anonymousInfo(msg.getConsole());
 				for (Player p : Bukkit.getOnlinePlayers()) {

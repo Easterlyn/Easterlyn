@@ -51,8 +51,10 @@ public class MessageBuilder {
 		// Trim whitespace created by formatting codes, etc.
 		message = RegexUtils.trimExtraWhitespace(message);
 
-		// 5 characters required to greentext to prevent smilies from being green
-		if (message.length() > 4 && message.charAt(0) == '>' && message.charAt(1) != ':') {
+		// Greentext must be at least 4 letters long and the second character must be a letter.
+		// E.G. >mfw people do it wrong
+		// instead of > lol le edgy meme
+		if (message.length() > 3 && message.charAt(0) == '>' && Character.isLetter(message.charAt(1))) {
 			message = ChatColor.GREEN + message;
 		}
 

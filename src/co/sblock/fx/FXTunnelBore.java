@@ -1,5 +1,7 @@
 package co.sblock.fx;
 
+import java.util.Collection;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -7,8 +9,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
+
 import co.sblock.events.event.SblockBreakEvent;
 import co.sblock.users.OnlineUser;
+import co.sblock.utilities.enchantments.BlockDrops;
 
 /**
  * Mine or dig a 3x3 area at once.
@@ -21,9 +26,9 @@ public class FXTunnelBore extends SblockFX {
 	@SuppressWarnings("unchecked")
 	public FXTunnelBore() {
 		super("Tunnel Bore", false, 2500, 0, BlockBreakEvent.class);
-		faces = new BlockFace[] { BlockFace.NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_EAST,
-				BlockFace.SOUTH_WEST, BlockFace.SOUTH, BlockFace.SOUTH_EAST, BlockFace.EAST,
-				BlockFace.WEST };
+		faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
+				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST,
+				BlockFace.SOUTH_WEST, BlockFace.SOUTH_EAST };
 	}
 
 	@Override
@@ -61,17 +66,20 @@ public class FXTunnelBore extends SblockFX {
 		if (block.getType() == Material.BARRIER || block.getType() == Material.BEDROCK
 				|| block.getType() == Material.COMMAND || block.getType() == Material.ENDER_PORTAL
 				|| block.getType() == Material.ENDER_PORTAL_FRAME
-				|| block.getType() == Material.PORTAL || block.isLiquid() || block.isEmpty()) {
+				|| block.getType() == Material.PORTAL || block.isEmpty()) {
 			return;
 		}
 
 		SblockBreakEvent event = new SblockBreakEvent(block, player);
 		Bukkit.getServer().getPluginManager().callEvent(event);
-		if (event.isCancelled()) {
+		if (event.isCancelled() || block.isLiquid()) {
 			return;
 		}
-		block.breakNaturally(player.getItemInHand());
-		// TODO fortune is not applied.
+		Collection<ItemStack> drops = BlockDrops.getDrops(player.getItemInHand(), block);
+		block.setType(Material.AIR);
+		for (ItemStack is : drops) {
+			block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), is);
+		}
 	}
 
 	@Override
