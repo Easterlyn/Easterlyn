@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
-import co.sblock.Sblock;
 import co.sblock.effects.FXManager;
 import co.sblock.effects.fx.SblockFX;
 import co.sblock.events.Events;

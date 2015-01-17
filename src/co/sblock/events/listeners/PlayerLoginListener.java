@@ -34,6 +34,7 @@ public class PlayerLoginListener implements Listener {
 			event.setResult(Result.KICK_BANNED);
 			event.setKickMessage("Your name contains invalid characters. Valid characters are [a-zA-Z_0-9]."
 					+ "\nPlease contact Mojang about this issue.");
+			return;
 		}
 		switch (event.getResult()) {
 		case ALLOWED:
