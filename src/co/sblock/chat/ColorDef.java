@@ -24,29 +24,6 @@ public class ColorDef {
 	public static final ChatColor CHANNEL_MOD = ChatColor.AQUA;
 	public static final ChatColor CHANNEL_MEMBER = ChatColor.GOLD;
 
-	public static final ChatColor WORLD_AETHER = ChatColor.WHITE;
-	public static final ChatColor WORLD_EARTH = ChatColor.DARK_GREEN;
-	public static final ChatColor WORLD_INNERCIRCLE = ChatColor.YELLOW;
-	public static final ChatColor WORLD_OUTERCIRCLE = ChatColor.DARK_PURPLE;
-	public static final ChatColor WORLD_FURTHESTRING = ChatColor.BLACK;
-	public static final ChatColor WORLD_LOFAF = ChatColor.WHITE;
-	public static final ChatColor WORLD_LOHAC = ChatColor.RED;
-	public static final ChatColor WORLD_LOLAR = ChatColor.AQUA;
-	public static final ChatColor WORLD_LOWAS = ChatColor.GRAY;
-
-	public static final ChatColor ASPECT_BLOOD = ChatColor.DARK_RED;
-	public static final ChatColor ASPECT_BREATH = ChatColor.AQUA;
-	public static final ChatColor ASPECT_DOOM = ChatColor.DARK_GREEN;
-	public static final ChatColor ASPECT_HEART = ChatColor.LIGHT_PURPLE;
-	public static final ChatColor ASPECT_HOPE = ChatColor.GOLD;
-	public static final ChatColor ASPECT_LIFE = ChatColor.GREEN;
-	public static final ChatColor ASPECT_LIGHT = ChatColor.YELLOW;
-	public static final ChatColor ASPECT_MIND = ChatColor.DARK_AQUA;
-	public static final ChatColor ASPECT_RAGE = ChatColor.DARK_PURPLE;
-	public static final ChatColor ASPECT_SPACE = ChatColor.DARK_GRAY;
-	public static final ChatColor ASPECT_TIME = ChatColor.RED;
-	public static final ChatColor ASPECT_VOID = ChatColor.DARK_BLUE;
-	
 	public static final ChatColor RAINBOW[] = {
 		ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW,
 		ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.AQUA, ChatColor.DARK_AQUA,

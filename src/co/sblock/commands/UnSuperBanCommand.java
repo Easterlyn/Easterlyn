@@ -11,6 +11,8 @@ import org.bukkit.BanList.Type;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
 
+import co.sblock.chat.ColorDef;
+
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -50,7 +52,7 @@ public class UnSuperBanCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + args[0]
 					+ " may be an IP.");
 		} else {
-			Bukkit.broadcastMessage(ChatColor.RED + "[Lil Hal] " + args[0] + " has been unbanned.");
+			Bukkit.broadcastMessage(ColorDef.HAL + args[0] + " has been unbanned.");
 		}
 		return true;
 	}

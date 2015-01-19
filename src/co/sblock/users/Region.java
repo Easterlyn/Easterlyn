@@ -2,25 +2,23 @@ package co.sblock.users;
 
 import org.bukkit.ChatColor;
 
-import co.sblock.chat.ColorDef;
-
 /**
  * Class that keeps track of players currently logged on to the game
  * 
  * @author Jikoo, Dublek
  */
 public enum Region {
-	EARTH("Earth", "Earth", "#EARTH", ColorDef.WORLD_EARTH, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
-	DERSE("Derse", "Derspit", "#DERSPIT", ColorDef.WORLD_OUTERCIRCLE, "http://sblock.co/rpack/Derse.zip", false, true),
-	PROSPIT("Prospit", "Derspit", "#DERSPIT", ColorDef.WORLD_INNERCIRCLE, "http://sblock.co/rpack/Prospit.zip", false, true),
-	FURTHESTRING("FurthestRing", "FurthestRing", "#FURTHESTRING", ColorDef.WORLD_FURTHESTRING, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
-	LOFAF("LOFAF", "LOFAF", "#LOFAF", ColorDef.WORLD_LOFAF, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
-	LOHAC("LOHAC", "LOHAC", "#LOHAC", ColorDef.WORLD_LOHAC, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
-	LOLAR("LOLAR", "LOLAR", "#LOLAR", ColorDef.WORLD_LOLAR, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
-	LOWAS("LOWAS", "LOWAS", "#LOWAS", ColorDef.WORLD_LOWAS, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
-	DUNGEON("Dungeon", "Dungeon", "#EARTH", ColorDef.WORLD_EARTH,  "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
-	KRINGLEFEST("KringleFest", "Dungeon", "#EARTH", ColorDef.WORLD_AETHER,  "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
-	UNKNOWN("Second Earth", "Earth", "#Aether", ColorDef.WORLD_AETHER, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false);
+	EARTH("Earth", "Earth", "#EARTH", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
+	DERSE("Derse", "Derspit", "#DERSPIT", ChatColor.DARK_PURPLE, "http://sblock.co/rpack/Derse.zip", false, true),
+	PROSPIT("Prospit", "Derspit", "#DERSPIT", ChatColor.YELLOW, "http://sblock.co/rpack/Prospit.zip", false, true),
+	FURTHESTRING("FurthestRing", "FurthestRing", "#FURTHESTRING", ChatColor.BLACK, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
+	LOFAF("LOFAF", "LOFAF", "#LOFAF", ChatColor.WHITE, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOHAC("LOHAC", "LOHAC", "#LOHAC", ChatColor.RED, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOLAR("LOLAR", "LOLAR", "#LOLAR", ChatColor.AQUA, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	LOWAS("LOWAS", "LOWAS", "#LOWAS", ChatColor.GRAY, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", true, false),
+	DUNGEON("Dungeon", "Dungeon", "#EARTH", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
+	KRINGLEFEST("KringleFest", "Dungeon", "#EARTH", ChatColor.WHITE, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false),
+	UNKNOWN("Second Earth", "Earth", "#Aether", ChatColor.DARK_GRAY, "http://sblock.co/rpack/Sblock_Modified_Faithful_NoSound.zip", false, false);
 
 	/* INNER FIELDS */
 	private final String displayName;

@@ -2,36 +2,36 @@ package co.sblock.users;
 
 import org.bukkit.ChatColor;
 
-import co.sblock.chat.ColorDef;
-
 /**
- * Represents each character aspect.
+ * Represents canon Aspects, including those of mythological roles.
+ * <p>
+ * Mythological roles cannot be obtained by players without usage of admin commands.
  * 
  * @author FireNG, Jikoo, tmathmeyer
  */
 public enum UserAspect {
-	BLOOD("Blood", ColorDef.ASPECT_BLOOD),
-	BREATH("Breath", ColorDef.ASPECT_BREATH),
-	DOOM("Doom", ColorDef.ASPECT_DOOM),
-	HEART("Heart", ColorDef.ASPECT_HEART),
-	HOPE("Hope", ColorDef.ASPECT_HOPE),
-	LIFE("Life", ColorDef.ASPECT_LIFE),
-	LIGHT("Light", ColorDef.ASPECT_LIGHT),
-	MIND("Mind", ColorDef.ASPECT_MIND),
-	RAGE("Rage", ColorDef.ASPECT_RAGE),
-	SPACE("Space", ColorDef.ASPECT_SPACE),
-	TIME("Time", ColorDef.ASPECT_TIME),
-	VOID("Void", ColorDef.ASPECT_VOID);
+	BLOOD("Blood", ChatColor.DARK_RED),
+	BREATH("Breath", ChatColor.AQUA),
+	DOOM("Doom", ChatColor.DARK_GREEN),
+	HEART("Heart", ChatColor.LIGHT_PURPLE),
+	HOPE("Hope", ChatColor.GOLD),
+	LIFE("Life", ChatColor.GREEN),
+	LIGHT("Light", ChatColor.YELLOW),
+	LIPS("Lips", ChatColor.LIGHT_PURPLE),
+	MIND("Mind", ChatColor.DARK_AQUA),
+	PISS("Piss", ChatColor.YELLOW),
+	RAGE("Rage", ChatColor.DARK_PURPLE),
+	SPACE("Space", ChatColor.DARK_GRAY),
+	TEARS("Tears", ChatColor.AQUA),
+	TIME("Time", ChatColor.RED),
+	VOID("Void", ChatColor.DARK_BLUE);
 
-	/*
-	 * final state variables
-	 */
 	private final String name;
 	private final ChatColor chatColor;
 
 	/**
-	 * @param name the name of the aspect
-	 * @param color the Color of the Aspect
+	 * @param name the name of the Aspect
+	 * @param color the color of the Aspect
 	 */
 	private UserAspect(String name, ChatColor color) {
 		this.name = name;

@@ -1,12 +1,16 @@
 package co.sblock.users;
 
 /**
- * Represents each character class.
+ * Represents canon Classes, including those of mythological roles.
+ * <p>
+ * Mythological roles cannot be obtained by players without usage of admin commands.
  * 
  * @author FireNG, Jikoo
  */
 public enum UserClass {
 	BARD("Bard"),
+	DOUCHE("Douche"),
+	GENT("Gent"),
 	HEIR("Heir"),
 	KNIGHT("Knight"),
 	LORD("Lord"),
@@ -20,6 +24,7 @@ public enum UserClass {
 	SEER("Seer"),
 	SYLPH("Sylph"),
 	THIEF("Thief"),
+	WASTE("Waste"),
 	WITCH("Witch");
 
 	private final String name;
