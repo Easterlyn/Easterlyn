@@ -20,7 +20,7 @@ public class ConvertOldCaptchaCommand extends SblockCommand {
 	public ConvertOldCaptchaCommand() {
 		super("convert");
 		this.setDescription("Converts captchacards from paper to plastic.");
-		this.setUsage("Run /convert with a Captchacard in hand.");
+		this.setUsage("Run /convert with old captchacards in your inventory.");
 	}
 
 	@Override

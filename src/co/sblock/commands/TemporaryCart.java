@@ -23,7 +23,7 @@ public class TemporaryCart extends SblockCommand {
 		super("tempcart");
 		this.setDescription("Spawns a temporary minecart with specified velocity vector at location, then mounts player.");
 		this.setUsage("/tempcart <player> <locX> <locY> <locZ> <vecX> <vecZ>");
-		this.setPermission("group.horrorterror");
+		this.setPermission("group.denizen");
 	}
 
 	@Override

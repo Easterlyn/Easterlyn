@@ -21,7 +21,7 @@ public class ForceCaptchaCommand extends SblockCommand {
 		super("forcecaptcha");
 		this.setDescription("Captchalogues item in hand, even if it can't ordinarily be captcha'd.");
 		this.setUsage("/forcecaptcha");
-		this.setPermission("group.horrorterror");
+		this.setPermission("group.denizen");
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");
 	}
 

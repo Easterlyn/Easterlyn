@@ -12,6 +12,8 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.events.packets.ParticleEffectWrapper;
+import co.sblock.events.packets.ParticleUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -40,19 +42,13 @@ public class CrotchRocketCommand extends SblockCommand {
 		firework.setFireworkMeta(fm);
 		firework.setPassenger(player);
 
-		// Particle data
-//		final WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
-//		packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
-//		packet.setNumberOfParticles(5);
-//		packet.setOffset(new Vector(0.5, 0.5, 0.5));
+		ParticleUtils.getInstance().addEntity(firework, new ParticleEffectWrapper(Effect.FIREWORKS_SPARK, 5));
 
-		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+		final int velocityCorrectionTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
-				//packet.setLocation(firework.getLocation());
 				firework.setVelocity(new Vector(0, 2, 0));
-				// TODO particle utility ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
 			}
 		}, 0, 1L);
 
@@ -60,7 +56,8 @@ public class CrotchRocketCommand extends SblockCommand {
 
 			@Override
 			public void run() {
-				Bukkit.getScheduler().cancelTask(particleTask);
+				ParticleUtils.getInstance().removeAllEffects(firework);
+				Bukkit.getScheduler().cancelTask(velocityCorrectionTask);
 				firework.remove();
 			}
 		}, 40L);

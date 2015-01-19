@@ -25,7 +25,7 @@ public class ParticleEffectWrapper {
 		this.radius = displayRadius;
 	}
 	public ParticleEffectWrapper(Effect effect, int particles) {
-		this(effect, null, null, .5F, .5F, .5F, 1F, particles, 1);
+		this(effect, null, null, .5F, .5F, .5F, 1F, particles, 32);
 	}
 	public Effect getEffect() {
 		return effect;

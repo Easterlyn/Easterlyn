@@ -49,7 +49,8 @@ public class LoreCommand extends SblockCommand {
 			return true;
 		}
 		if (args.length < 2) {
-			return false;
+			sender.sendMessage(getUsage());
+			return true;
 		}
 		args[0] = args[0].toLowerCase();
 		Player player = (Player) sender;
@@ -88,7 +89,8 @@ public class LoreCommand extends SblockCommand {
 			player.sendMessage("Meta cleared!");
 			return true;
 		}
-		return false;
+		sender.sendMessage(getUsage());
+		return true;
 	}
 
 	@Override
@@ -250,7 +252,7 @@ public class LoreCommand extends SblockCommand {
 		lore.add(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length)));
 		meta.setLore(lore);
 		hand.setItemMeta(meta);
-		player.sendMessage("Lore added!");
+		player.sendMessage(ChatColor.GREEN + "Added \"" + lore.get(lore.size() - 1) + ChatColor.GREEN + "\"");
 		return true;
 	}
 
@@ -309,6 +311,7 @@ public class LoreCommand extends SblockCommand {
 				return true;
 			}
 			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 2, args.length));
+			player.sendMessage(ChatColor.GREEN + "Inserted \"" + added + ChatColor.GREEN + "\" at " + line + "!");
 			int size = lore.size();
 			for (int i = 0; i < size; i++) {
 				if (line - 1 <= i) {
@@ -318,7 +321,6 @@ public class LoreCommand extends SblockCommand {
 			lore.add(added);
 			meta.setLore(lore);
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Inserted \"" + added + ChatColor.GREEN + "\" at " + line + "!");
 			return true;
 		} catch (NumberFormatException e) {
 			player.sendMessage(ChatColor.RED + "/lore insert <number> <arguments>");
