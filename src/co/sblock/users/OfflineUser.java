@@ -807,8 +807,8 @@ public class OfflineUser {
 				player.teleport(Users.getSpawnLocation());
 
 				OfflineUser offline = new OfflineUser(uuid, player.getAddress().getHostString());
-				offline.setCurrentChannel(Region.EARTH.getChannelName());
-				offline.getListening().add("#");
+				offline.setCurrentChannel("#"); // Reverse come Entry
+				offline.getListening().add(Region.EARTH.getChannelName());
 				OnlineUser user = offline.getOnlineUser();
 				user.updateCurrentRegion(Region.EARTH);
 				player.setResourcePack(Region.EARTH.getResourcePackURL());
