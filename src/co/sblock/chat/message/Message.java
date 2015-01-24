@@ -266,7 +266,7 @@ public class Message {
 			}
 
 			if (channel.equals(u.getCurrentChannel())) {
-				message = unformattedMessage.replace("\\", "\\\\").replace("\"", "\\\"");
+				message = ChatColor.WHITE + unformattedMessage.replace("\\", "\\\\").replace("\"", "\\\"");
 			} else {
 				message = ChatColor.GRAY + unformattedMessage.replace("\\", "\\\\").replace("\"", "\\\"");
 			}
