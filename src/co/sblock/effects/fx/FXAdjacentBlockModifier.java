@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -43,12 +44,16 @@ public abstract class FXAdjacentBlockModifier extends SblockFX {
 	protected abstract void handleAdjacentBlock(Player player, Block block);
 
 	protected boolean handleBlockSet(Player player, Block block, Material toMaterial) {
-		BlockPlaceEvent event = new BlockPlaceEvent(block, block.getState(), block, new ItemStack(toMaterial), player, true);
+		// Capture state and change block - prevents certain plugins assuming block being placed is of the replaced material
+		BlockState state = block.getState();
+		block.setType(toMaterial);
+		BlockPlaceEvent event = new BlockPlaceEvent(block, state, block, new ItemStack(toMaterial), player, true);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
+			// Revert block changes if cancelled
+			state.update(true, false);
 			return false;
 		}
-		block.setType(toMaterial);
 		return true;
 	}
 
