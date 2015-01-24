@@ -1,6 +1,5 @@
 package co.sblock.commands;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +19,7 @@ public class HalculatorCommand extends SblockCommand {
 
 	public HalculatorCommand() {
 		super("halculate");
-		this.setAliases(Arrays.asList("halc", "evhal", "evhaluate"));
+		this.setAliases("halc", "evhal", "evhaluate");
 		this.setDescription("Halculate an equation privately.");
 		this.setUsage("/halc 1+1");
 	}

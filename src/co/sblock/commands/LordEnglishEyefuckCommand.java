@@ -17,7 +17,6 @@ public class LordEnglishEyefuckCommand extends SblockCommand {
 		super("lel");
 		this.setDescription("&e/le, now with 250% more &kbrain pain&e.");
 		this.setUsage("/lel <text>");
-		this.setPermission("group.horrorterror");
 		this.setPermissionMessage("&0Lul.");
 	}
 

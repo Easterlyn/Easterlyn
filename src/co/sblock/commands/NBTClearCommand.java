@@ -1,6 +1,5 @@
 package co.sblock.commands;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -20,10 +19,9 @@ public class NBTClearCommand extends SblockCommand {
 
 	public NBTClearCommand() {
 		super("clearnbt");
-		this.setAliases(Arrays.asList("cleannbt"));
+		this.setAliases("cleannbt");
 		this.setDescription("Clear some NBT tags off an item. Preserves most meta.");
-		this.setUsage("Run /cleannbt while holding an item");
-		this.setPermission("group.felt");
+		this.setUsage("Run /clearnbt while holding an item");
 	}
 
 	@Override

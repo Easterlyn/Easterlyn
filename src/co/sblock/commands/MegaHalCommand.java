@@ -25,7 +25,6 @@ public class MegaHalCommand extends SblockCommand {
 		super("megahal");
 		this.setDescription("Trigger a Lil Hal response.");
 		this.setUsage("/megahal [channel] [seedword]");
-		this.setPermission("group.felt");
 	}
 
 	@Override

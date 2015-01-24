@@ -9,12 +9,63 @@ depend: [ProtocolLib, HolographicDisplays]
 softdepend: [CreeperHeal]
 
 permissions:
- sblock.blaze:
-  description: Permission for Blazing Saddles
+ sblock.horrorterror:
+  description: Stuff in here is largely for console use, rarely ever touched ingame.
   default: op
- sblock.notatwat:
-  description: Permission for usage of /spectate
-  default: true
+  children:
+   sblock.command.aether: true
+   sblock.command.o: true
+   sblock.command.le: true
+   sblock.command.lel: true
+   sblock.command.rssupdate: true
+   sblock.command.ultraban: true
+   sblock.denizen:
+    description: Admin stuff
+    default: false
+    children:
+     sblock.command.an: true
+     sblock.command.forcecaptcha: true
+     sblock.command.hal: true
+     sblock.command.sm: true
+     sblock.command.meteor: true
+     sblock.command.clearnbt: true
+     sblock.command.setplayer: true
+     sblock.command.silenttp: true
+     sblock.command.sban: true
+     sblock.command.tempcart: true
+     sblock.command.unsban: true
+     sblock.felt:
+      description: Moderator stuff
+      default: false
+      children:
+       sblock.command.aspectwarp: true
+       sblock.command.cmdinfo: true
+       sblock.command.crotchrocket: true
+       sblock.command.forcechannel: true
+       sblock.command.megahal: true
+       sblock.helper:
+        description: Powerless people stuff
+        default: false
+        children:
+         sblock.default:
+          description: Standard crap
+          default: true
+          sblock.command.colour: true
+          sblock.command.convert: true
+          sblock.command.halculate: true
+          sblock.command.me: true
+          sblock.command.ping: true
+          sblock.command.acceptrequest: true
+          sblock.command.declinerequest: true
+          sblock.command.requestclient: true
+          sblock.command.requestserver: true
+          sblock.command.sc: true
+          sblock.command.spectate: true
+          sblock.command.whois: true
+     sblock.donator:
+      default: false
+      children:
+       sblock.blaze: true
  sblock.ask.adam.before.touching:
   description: If something requires this permission, you probably shouldn't be touching it.
   default: false
@@ -22,49 +73,31 @@ permissions:
   description: Default false - not all horrorterrors are guild leaders.
   default: false
  sblockchat.color:
-  description: Autmatically colors message with name color.
+  description: Automatically colors message with name color.
   default: false
- sblockchat.black:
-  default: false
- sblockchat.dark_blue:
-  default: false
- sblockchat.dark_green:
-  default: false
- sblockchat.dark_aqua:
-  default: false
- sblockchat.dark_red:
-  default: false
- sblockchat.dark_purple:
-  default: false
- sblockchat.gold:
-  default: false
- sblockchat.gray:
-  default: false
- sblockchat.dark_gray:
-  default: false
- sblockchat.blue:
-  default: false
- sblockchat.green:
-  default: false
- sblockchat.aqua:
-  default: false
- sblockchat.red:
-  default: false
- sblockchat.light_purple:
-  default: false
- sblockchat.yellow:
-  default: false
- sblockchat.white:
-  default: false
- sblockchat.magic:
-  default: false
- sblockchat.bold:
-  default: false
- sblockchat.strikethrough:
-  default: false
- sblockchat.underline:
-  default: false
- sblockchat.italic:
-  default: false
- sblockchat.reset:
-  default: false
+ sblockchat.colors:
+  default: true
+  description: Name color permissions. Default all off so ops don't end up with weird colored names.
+  children:
+   sblockchat.black: false
+   sblockchat.dark_blue: false
+   sblockchat.dark_green: false
+   sblockchat.dark_aqua: false
+   sblockchat.dark_red: false
+   sblockchat.dark_purple: false
+   sblockchat.gold: false
+   sblockchat.gray: false
+   sblockchat.dark_gray: false
+   sblockchat.blue: false
+   sblockchat.green: false
+   sblockchat.aqua: false
+   sblockchat.red: false
+   sblockchat.light_purple: false
+   sblockchat.yellow: false
+   sblockchat.white: false
+   sblockchat.magic: false
+   sblockchat.bold: false
+   sblockchat.strikethrough: false
+   sblockchat.underline: false
+   sblockchat.italic: false
+   sblockchat.reset: false

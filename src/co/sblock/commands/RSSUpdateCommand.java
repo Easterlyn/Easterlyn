@@ -20,7 +20,6 @@ public class RSSUpdateCommand extends SblockCommand {
 		super("rssupdate");
 		this.setDescription("A /tellraw that's a lot easier than escaping crap for bash commands.");
 		this.setUsage("/rssupdate <feed name> <url> <title>");
-		this.setPermission("group.horrorterror");
 	}
 
 	@Override

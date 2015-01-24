@@ -23,7 +23,6 @@ public class CommandInformationCommand extends SblockCommand {
 		super("cmdinfo");
 		this.setDescription("Prints out information about the specified command.");
 		this.setUsage("/cmdinfo <command>");
-		this.setPermission("group.felt");
 	}
 
 	@Override

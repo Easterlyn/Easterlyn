@@ -36,7 +36,6 @@ public class LoreCommand extends SblockCommand {
 				+ "/lore add: Add a new line of lore.\n"
 				+ "/lore set|insert <number>: Set or insert a line at the specidified index.\n"
 				+ "All /lore number parameters are 1-indexed.");
-		this.setPermission("group.felt");
 		// Don't forget to update delete tab completion if more pre-delete args are added.
 		primaryArgs = new String[] {"owner", "author", "title", "name", "delete", "clearmeta", "add", "set", "insert"};
 	}

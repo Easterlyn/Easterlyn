@@ -139,7 +139,7 @@ public abstract class Machine {
 	 */
 	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
 		return this.getType().isFree() || this.getType().getCost() < 0
-				|| event.getPlayer().hasPermission("group.denizen")
+				|| event.getPlayer().hasPermission("sblock.denizen")
 				|| owner.equals(event.getPlayer().getUniqueId().toString());
 	}
 
@@ -265,7 +265,7 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event) {
-		if (!meetsAdditionalBreakConditions(event) && !event.getPlayer().hasPermission("group.denizen")) {
+		if (!meetsAdditionalBreakConditions(event) && !event.getPlayer().hasPermission("sblock.denizen")) {
 			return true;
 		}
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !getType().isFree()) {

@@ -339,7 +339,7 @@ public class SblockChatCommand extends SblockCommand {
 		}
 		if (args[1].length() > 16) {
 			user.sendMessage(ChatMsgs.errorChannelName());
-		} else if (args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("group.denizen")) {
+		} else if (args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("sblock.denizen")) {
 			user.sendMessage(ChatMsgs.errorChannelName());
 		} else if (ChannelType.getType(args[3]) == null) {
 			user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
@@ -401,7 +401,7 @@ public class SblockChatCommand extends SblockCommand {
 	}
 
 	private boolean scGlobal(OfflineUser user, String[] args) {
-		if (!user.getPlayer().hasPermission("group.denizen")) {
+		if (!user.getPlayer().hasPermission("sblock.denizen")) {
 			return false;
 		}
 		if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {

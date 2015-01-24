@@ -1,6 +1,5 @@
 package co.sblock.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
@@ -18,11 +17,9 @@ public class ColourCommand extends SblockCommand {
 
 	public ColourCommand() {
 		super("colour");
+		this.setAliases("color");
 		this.setDescription("List all colours.");
 		this.setUsage("&c/colour");
-		ArrayList<String> aliases = new ArrayList<>();
-		aliases.add("color");
-		this.setAliases(aliases);
 	}
 
 	@Override

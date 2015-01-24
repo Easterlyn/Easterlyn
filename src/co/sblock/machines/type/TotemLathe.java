@@ -94,7 +94,7 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if ((user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user)))
-				&& (event.getPlayer().hasPermission("group.denizen")
+				&& (event.getPlayer().hasPermission("sblock.denizen")
 						|| event.getPlayer().getUniqueId().toString().equals(getOwner()))) {
 			event.getPlayer().openInventory(getInventory());
 		}

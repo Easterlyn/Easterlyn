@@ -69,7 +69,7 @@ public class OnlineUser extends OfflineUser {
 		if (displayName != null) {
 			this.getPlayer().setDisplayName(displayName);
 		}
-		if (this.getPlayer().hasPermission("group.felt") && !this.getListening().contains("@")) {
+		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
 			this.getListening().add("@");
 			ChannelManager.getChannelManager().getChannel("@").addListening(this.getUUID());
 		}

@@ -49,7 +49,7 @@ public class Computer extends Machine implements InventoryHolder {
 	@Override
 	public void assemble(BlockPlaceEvent event) {
 		if (Machines.getInstance().hasComputer(event.getPlayer(), key)) {
-			if (event.getPlayer().hasPermission("group.horrorterror")) {
+			if (event.getPlayer().hasPermission("sblock.horrorterror")) {
 				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
 				return;
 			}
@@ -74,7 +74,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	public boolean handleClick(InventoryClickEvent event) {
 		if (!event.getWhoClicked().getUniqueId().toString().equals(this.owner)
-				&& !event.getWhoClicked().hasPermission("group.denizen")) {
+				&& !event.getWhoClicked().hasPermission("sblock.denizen")) {
 			event.setResult(Result.DENY);
 			return true;
 		}
@@ -133,7 +133,7 @@ public class Computer extends Machine implements InventoryHolder {
 			return true;
 		}
 		if (!event.getPlayer().getUniqueId().toString().equals(this.owner)) {
-			if (event.getPlayer().hasPermission("group.denizen")) {
+			if (event.getPlayer().hasPermission("sblock.denizen")) {
 				event.getPlayer().sendMessage("Allowing admin override for interaction with Computer.");
 			} else {
 				return true;

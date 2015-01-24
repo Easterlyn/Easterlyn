@@ -258,7 +258,7 @@ public class InventoryClickListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onInventoryClickLowestPriority(InventoryClickEvent event) {
 		ItemStack clicked = event.getCurrentItem();
-		if (event.getWhoClicked().hasPermission("group.felt")) {
+		if (event.getWhoClicked().hasPermission("sblock.felt")) {
 			return;
 		}
 		if (clicked != null && clicked.getAmount() < 0) {

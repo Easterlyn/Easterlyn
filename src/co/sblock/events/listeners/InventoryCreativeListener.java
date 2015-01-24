@@ -32,7 +32,7 @@ public class InventoryCreativeListener implements Listener {
 	 */
 	@EventHandler
 	public void onInventoryCreative(InventoryCreativeEvent event) {
-		if (event.getWhoClicked().hasPermission("group.felt")) {
+		if (event.getWhoClicked().hasPermission("sblock.felt")) {
 			return;
 		}
 

@@ -24,9 +24,9 @@ public class SuperBanCommand extends SblockCommand {
 
 	public SuperBanCommand() {
 		super("sban");
+		this.setAliases("ban");
 		this.setDescription("YOU CAN'T ESCAPE THE RED MILES.");
 		this.setUsage("/sban <target> [optional reason]");
-		this.setPermission("group.denizen");
 	}
 
 	@Override

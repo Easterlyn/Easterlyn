@@ -144,17 +144,17 @@ public class Users extends Module {
 		}
 		if (teamPrefix != null) {
 			// Do nothing, we've got a fancy override going on
-		} else if (p.hasPermission("group.horrorterror")) {
+		} else if (p.hasPermission("sblock.horrorterror")) {
 			teamPrefix = ColorDef.RANK_HORRORTERROR.toString();
-		} else if (p.hasPermission("group.denizen")) {
+		} else if (p.hasPermission("sblock.denizen")) {
 			teamPrefix = ColorDef.RANK_DENIZEN.toString();
-		} else if (p.hasPermission("group.felt")) {
+		} else if (p.hasPermission("sblock.felt")) {
 			teamPrefix = ColorDef.RANK_FELT.toString();
-		} else if (p.hasPermission("group.helper")) {
+		} else if (p.hasPermission("sblock.helper")) {
 			teamPrefix = ColorDef.RANK_HELPER.toString();
-		} else if (p.hasPermission("group.donator")) {
+		} else if (p.hasPermission("sblock.donator")) {
 			teamPrefix = ColorDef.RANK_DONATOR.toString();
-		} else if (p.hasPermission("group.godtier")) {
+		} else if (p.hasPermission("sblock.godtier")) {
 			teamPrefix = ColorDef.RANK_GODTIER.toString();
 		} else {
 			teamPrefix = ColorDef.RANK_HERO.toString();

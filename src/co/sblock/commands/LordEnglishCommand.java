@@ -16,7 +16,6 @@ public class LordEnglishCommand extends SblockCommand {
 		super("le");
 		this.setDescription("&4He's already here!");
 		this.setUsage("/le <text>");
-		this.setPermission("group.horrorterror");
 		this.setPermissionMessage("&0Le no. Le /le is reserved for le fancy people.");
 	}
 

@@ -28,7 +28,6 @@ public class ForceChannelCommand extends SblockCommand {
 		super("forcechannel");
 		this.setDescription("Help people find their way.");
 		this.setUsage("/forcechannel <channel> <player>");
-		this.setPermission("group.felt");
 		this.setPermissionMessage("Try /sc c <channel>");
 	}
 

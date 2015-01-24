@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,8 +20,7 @@ public class SilentTeleportCommand extends SblockCommand {
 	public SilentTeleportCommand() {
 		super("silenttp");
 		this.setDescription("Teleports a player with no confirmation to either party involved. Intended for commandsigns.");
-		this.setUsage("/silenttp <player> <x> <y> <z> [pitch] [yaw]");
-		this.setPermission("group.denizen");
+		this.setUsage("/silenttp <player> <x> <y> <z> [pitch] [yaw] [world]");
 	}
 
 	@Override
@@ -38,6 +38,13 @@ public class SilentTeleportCommand extends SblockCommand {
 			if (args.length >= 6) {
 				tpdest.setPitch(Float.valueOf(args[4]));
 				tpdest.setYaw(Float.valueOf(args[5]));
+			}
+			if (args.length >= 7) {
+				World wTarget = Bukkit.getWorld(args[6]);
+				if (wTarget == null) {
+					return true;
+				}
+				tpdest.setWorld(wTarget);
 			}
 			pTarget.teleport(tpdest);
 			return true;

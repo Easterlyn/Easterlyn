@@ -1,5 +1,7 @@
 package co.sblock.commands;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,7 +20,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 		super(name);
 		this.setDescription("A Sblock command.");
 		this.setUsage("/<command>");
-		this.setPermission(null);
+		this.setPermission("sblock.command." + name);
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");
 	}
 
@@ -38,6 +40,10 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 	public Command setPermissionMessage(String permissionMessage) {
 		permissionMessage = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', permissionMessage);
 		return super.setPermissionMessage(permissionMessage);
+	}
+
+	public Command setAliases(String... aliases) {
+		return this.setAliases(Arrays.asList(aliases));
 	}
 
 	@Override

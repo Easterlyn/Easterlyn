@@ -102,15 +102,15 @@ public class Message {
 			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
 				if (player.hasPermission("group.horrorterror"))
 					globalRank = ColorDef.RANK_HORRORTERROR;
-				else if (player.hasPermission("group.denizen"))
+				else if (player.hasPermission("sblock.denizen"))
 					globalRank = ColorDef.RANK_DENIZEN;
-				else if (player.hasPermission("group.felt"))
+				else if (player.hasPermission("sblock.felt"))
 					globalRank = ColorDef.RANK_FELT;
-				else if (player.hasPermission("group.helper"))
+				else if (player.hasPermission("sblock.helper"))
 					globalRank = ColorDef.RANK_HELPER;
-				else if (player.hasPermission("group.donator"))
+				else if (player.hasPermission("sblock.donator"))
 					globalRank = ColorDef.RANK_DONATOR;
-				else if (player.hasPermission("group.godtier"))
+				else if (player.hasPermission("sblock.godtier"))
 					globalRank = ColorDef.RANK_GODTIER;
 				else {
 					globalRank = ColorDef.RANK_HERO;
@@ -177,9 +177,9 @@ public class Message {
 			try {
 				globalRank = ChatColor.getByChar(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getPrefix().charAt(1));
 			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
-				if (player.hasPermission("group.horrorterror"))
+				if (player.hasPermission("sblock.horrorterror"))
 					globalRank = ColorDef.RANK_HORRORTERROR;
-				else if (player.hasPermission("group.denizen"))
+				else if (player.hasPermission("sblock.denizen"))
 					globalRank = ColorDef.RANK_DENIZEN;
 				else if (player.hasPermission("group.felt"))
 					globalRank = ColorDef.RANK_FELT;

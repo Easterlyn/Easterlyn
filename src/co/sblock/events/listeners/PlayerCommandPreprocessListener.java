@@ -1,10 +1,12 @@
 package co.sblock.events.listeners;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
+import co.sblock.Sblock;
 import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -24,24 +26,39 @@ public class PlayerCommandPreprocessListener implements Listener {
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
-		if (!event.getPlayer().hasPermission("group.denizen") && 0 < colon && (colon < space || space < 0)) {
+		if (!event.getPlayer().hasPermission("sblock.denizen") && 0 < colon && (colon < space || space < 0)) {
 			event.setMessage("/" + event.getMessage().substring(colon));
 		}
 
-		String lowercase = event.getMessage().toLowerCase();
-		if (lowercase.startsWith("/sethome")
-				&& (Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())
-				|| Users.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer())) {
+		String command = event.getMessage().toLowerCase().substring(1, space > 0 ? space : event.getMessage().length());
+
+		if ((Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())
+				|| Users.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer())
+				&& (isExecuting(command, "sethome") || isExecuting(command, "tpahere") || isExecuting(command, "tpaccept"))) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");
 			return;
 		}
 
-		if ((lowercase.startsWith("/gc") || lowercase.startsWith("/lag") || lowercase.startsWith("/mem")
-				|| lowercase.startsWith("/uptime") || lowercase.startsWith("/entities"))
-				&& !event.getPlayer().hasPermission("group.helper")) {
+		if (isExecuting(command, "gc") && !event.getPlayer().hasPermission("sblock.helper")) {
 			event.setMessage("/tps");
 			return;
 		}
+	}
+
+	private boolean isExecuting(String executed, String toCheck) {
+		Command command = Sblock.getInstance().getCommand(toCheck);
+		if (command ==  null) {
+			return false;
+		}
+		if (executed.equals(command.getName())) {
+			return true;
+		}
+		for (String alias : command.getAliases()) {
+			if (executed.equals(alias)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

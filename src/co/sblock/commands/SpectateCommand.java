@@ -23,7 +23,6 @@ public class SpectateCommand extends SblockCommand {
 		super("spectate");
 		this.setDescription("Player: Become the ghost (toggles spectator mode)");
 		this.setUsage("/spectate");
-		this.setPermission("sblock.notatwat");
 	}
 
 	@Override

@@ -24,9 +24,9 @@ public class UnSuperBanCommand extends SblockCommand {
 
 	public UnSuperBanCommand() {
 		super("unsban");
+		this.setAliases("unban", "pardon", "unbanip", "pardonip");
 		this.setDescription("DO THE WINDY THING.");
 		this.setUsage("/unsban <UUID|name|IP>");
-		this.setPermission("group.denizen");
 	}
 
 	@Override

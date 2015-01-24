@@ -26,7 +26,6 @@ public class UltraBanCommand extends SblockCommand {
 		super("ultraban");
 		this.setDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.");
 		this.setUsage("/ultraban <target>");
-		this.setPermission("group.horrorterror");
 	}
 
 	@Override

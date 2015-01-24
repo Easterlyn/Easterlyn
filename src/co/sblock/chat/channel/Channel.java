@@ -108,7 +108,7 @@ public abstract class Channel {
 	 */
 	public boolean isOwner(OfflineUser user) {
 		return user != null && (user.getUUID().equals(owner)
-				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("group.denizen"));
+				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("sblock.denizen"));
 	}
 
 	/**
@@ -117,7 +117,7 @@ public abstract class Channel {
 	 */
 	public boolean isModerator(OfflineUser user) {
 		return user != null && (isOwner(user) || modList.contains(user.getUUID())
-				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("group.felt"));
+				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("sblock.felt"));
 	}
 
 	/**

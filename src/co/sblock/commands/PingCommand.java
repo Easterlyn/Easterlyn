@@ -29,7 +29,7 @@ public class PingCommand extends SblockCommand {
 		}
 		// TODO couple samples over a short period
 		Player target;
-		if (args.length == 0 || !sender.hasPermission("group.helper")) {
+		if (args.length == 0 || !sender.hasPermission("sblock.helper")) {
 			target = (Player) sender;
 		} else {
 			target = Bukkit.getPlayer(args[0]);
@@ -45,7 +45,7 @@ public class PingCommand extends SblockCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-		if (args.length != 1 || !sender.hasPermission("group.helper")) {
+		if (args.length != 1 || !sender.hasPermission("sblock.helper")) {
 			return ImmutableList.of();
 		} else {
 			return super.tabComplete(sender, alias, args);

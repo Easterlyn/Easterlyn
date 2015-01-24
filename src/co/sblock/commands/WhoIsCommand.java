@@ -1,6 +1,5 @@
 package co.sblock.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,11 +24,9 @@ public class WhoIsCommand extends SblockCommand {
 
 	public WhoIsCommand() {
 		super("whois");
+		this.setAliases("profile");
 		this.setDescription("Check data stored for a player.");
 		this.setUsage("/whois <player>");
-		ArrayList<String> aliases = new ArrayList<>();
-		aliases.add("profile");
-		this.setAliases(aliases);
 	}
 
 	@Override
@@ -68,7 +65,7 @@ public class WhoIsCommand extends SblockCommand {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if (sender.hasPermission("group.felt")) {
+						if (sender.hasPermission("sblock.felt")) {
 							sender.sendMessage(Users.getGuaranteedUser(player.getUniqueId()).getWhois());
 						} else {
 							sender.sendMessage(Users.getGuaranteedUser(player.getUniqueId()).getProfile());
