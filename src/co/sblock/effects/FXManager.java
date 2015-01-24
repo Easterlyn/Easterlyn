@@ -32,7 +32,7 @@ public class FXManager extends Module {
 	protected void onEnable() {
 		instance = this;
 		validEffects = new HashMap<String, Class<? extends SblockFX>>();
-		Reflections reflections = new Reflections("co.sblock.fx");
+		Reflections reflections = new Reflections("co.sblock.effects.fx");
 		Set<Class<? extends SblockFX>> effects = reflections.getSubTypesOf(SblockFX.class);
 		for (Class<? extends SblockFX> effect : effects) {
 			if (Modifier.isAbstract(effect.getModifiers())) {
