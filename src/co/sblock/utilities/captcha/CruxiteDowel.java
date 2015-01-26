@@ -406,9 +406,14 @@ public class CruxiteDowel {
 				}
 				for (Entry<Character, Integer> e : materialQuantity.entrySet()) {
 					ItemStack is = ((ShapedRecipe) r).getIngredientMap().get(e.getKey());
-					if (is != null) {
-						newMin += getRecipeCost(is.getType()) * e.getValue();
+					if (is == null) {
+						continue;
 					}
+					if (is.getType() == r.getResult().getType()) {
+						newMin = Integer.MAX_VALUE;
+						break;
+					}
+					newMin += getRecipeCost(is.getType()) * e.getValue();
 				}
 			} else  if (r instanceof ShapelessRecipe) {
 				newMin = 0;
@@ -420,7 +425,7 @@ public class CruxiteDowel {
 					newMin += getRecipeCost(is.getType());
 				}
 			} else {
-				// Recipe is injected custom recipe, e.g. banner pattern recipe
+				// Recipe is injected custom recipe
 				newMin = Integer.MAX_VALUE;
 			}
 			if (newMin < minimum) {
