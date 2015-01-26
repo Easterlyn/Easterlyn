@@ -151,7 +151,7 @@ public class Sblock extends JavaPlugin {
 					}
 					cmdMap.register(this.getDescription().getName(), cmd);
 					Permission permission = getServer().getPluginManager().getPermission(cmd.getPermission());
-					permission.addParent(cmd.getPermissionLevel(), true);
+					permission.addParent(cmd.getPermissionLevel(), true).recalculatePermissibles();
 				} catch (InstantiationException | IllegalAccessException e) {
 					getLog().severe("Unable to register command " + command.getName());
 					getLog().criticalErr(e);

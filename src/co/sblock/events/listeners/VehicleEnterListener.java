@@ -17,8 +17,7 @@ import co.sblock.events.packets.ParticleEffectWrapper;
 public class VehicleEnterListener implements Listener {
 
 	public VehicleEnterListener() {
-		Permission permission = new Permission("sblock.blaze");
-		permission.addParent("sblock.donator", true);
+		new Permission("sblock.blaze").addParent("sblock.donator", true).recalculatePermissibles();
 	}
 
 	@EventHandler

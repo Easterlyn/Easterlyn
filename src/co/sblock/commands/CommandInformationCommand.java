@@ -35,7 +35,8 @@ public class CommandInformationCommand extends SblockCommand {
 			command = Sblock.getInstance().getCommandMap().getCommand("cmdinfo");
 		}
 		if (command == null) {
-			return false;
+			sender.sendMessage(ChatColor.RED + "Invalid command! /cmdinfo <command>");
+			return true;
 		}
 		sender.sendMessage(ChatColor.DARK_AQUA + "Primary command: " + ChatColor.YELLOW + command.getName());
 		sender.sendMessage(ChatColor.DARK_AQUA + "Description: " + ChatColor.YELLOW + command.getDescription());
@@ -56,8 +57,11 @@ public class CommandInformationCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (!sender.hasPermission(this.getPermission()) || args.length == 0 || args.length > 1) {
+		if (!sender.hasPermission(this.getPermission()) || args.length > 1) {
 			return ImmutableList.of();
+		}
+		if (args.length == 0) {
+			return super.tabComplete(sender, alias, args);
 		}
 		args[0] = args[0].toLowerCase();
 		List<String> matches = new ArrayList<>();
