@@ -4,7 +4,6 @@ import java.util.HashSet;
 
 import org.bukkit.event.Event;
 
-import co.sblock.Sblock;
 import co.sblock.users.OnlineUser;
 
 public abstract class SblockFX {
@@ -140,7 +139,7 @@ public abstract class SblockFX {
 		}
 		execute = execute || event == null;
 		if (execute && System.currentTimeMillis() > nextUsage) {
-			Sblock.getLog().info("Time: " + System.currentTimeMillis() + ", " + nextUsage + ", " + cooldown);
+			//Sblock.getLog().info("Time: " + System.currentTimeMillis() + ", " + nextUsage + ", " + cooldown);
 			nextUsage = System.currentTimeMillis() + cooldown;
 			getEffect(user, event);
 		}

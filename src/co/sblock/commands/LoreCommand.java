@@ -31,7 +31,7 @@ public class LoreCommand extends SblockCommand {
 		this.setUsage("/lore owner: Set a skull's owner.\n"
 				+ "/lore author|title: Set a book's data.\n"
 				+ "/lore name: Set an item's name.\n"
-				+ "/lore delete ownder|author|title|name|<number>: Reset a single element.\n"
+				+ "/lore delete owner|author|title|name|<number>: Reset a single element.\n"
 				+ "/lore clearmeta: Wipe all meta. Includes enchantments and such.\n"
 				+ "/lore add: Add a new line of lore.\n"
 				+ "/lore set|insert <number>: Set or insert a line at the specidified index.\n"

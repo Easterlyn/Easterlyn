@@ -19,53 +19,55 @@ permissions:
    sblock.command.lel: true
    sblock.command.rssupdate: true
    sblock.command.ultraban: true
-   sblock.denizen:
-    description: Admin stuff
-    default: false
-    children:
-     sblock.command.an: true
-     sblock.command.forcecaptcha: true
-     sblock.command.hal: true
-     sblock.command.sm: true
-     sblock.command.meteor: true
-     sblock.command.clearnbt: true
-     sblock.command.setplayer: true
-     sblock.command.silenttp: true
-     sblock.command.sban: true
-     sblock.command.tempcart: true
-     sblock.command.unsban: true
-     sblock.felt:
-      description: Moderator stuff
-      default: false
-      children:
-       sblock.command.aspectwarp: true
-       sblock.command.cmdinfo: true
-       sblock.command.crotchrocket: true
-       sblock.command.forcechannel: true
-       sblock.command.megahal: true
-       sblock.helper:
-        description: Powerless people stuff
-        default: false
-        children:
-         sblock.default:
-          description: Standard crap
-          default: true
-          sblock.command.colour: true
-          sblock.command.convert: true
-          sblock.command.halculate: true
-          sblock.command.me: true
-          sblock.command.ping: true
-          sblock.command.acceptrequest: true
-          sblock.command.declinerequest: true
-          sblock.command.requestclient: true
-          sblock.command.requestserver: true
-          sblock.command.sc: true
-          sblock.command.spectate: true
-          sblock.command.whois: true
-     sblock.donator:
-      default: false
-      children:
-       sblock.blaze: true
+ sblock.denizen:
+  description: Admin stuff
+  default: op
+  children:
+   sblock.command.an: true
+   sblock.command.forcecaptcha: true
+   sblock.command.hal: true
+   sblock.command.sm: true
+   sblock.command.meteor: true
+   sblock.command.clearnbt: true
+   sblock.command.setplayer: true
+   sblock.command.silenttp: true
+   sblock.command.sban: true
+   sblock.command.tempcart: true
+   sblock.command.unsban: true
+ sblock.felt:
+  description: Moderator stuff
+  default: op
+  children:
+   sblock.command.aspectwarp: true
+   sblock.command.cmdinfo: true
+   sblock.command.crotchrocket: true
+   sblock.command.forcechannel: true
+   sblock.command.megahal: true
+ sblock.helper:
+  description: Powerless people stuff
+  default: op
+ sblock.godtier:
+  description: Godly tier-ness
+  default: op
+ sblock.default:
+  description: Standard crap
+  default: true
+  sblock.command.colour: true
+  sblock.command.convert: true
+  sblock.command.halculate: true
+  sblock.command.me: true
+  sblock.command.ping: true
+  sblock.command.acceptrequest: true
+  sblock.command.declinerequest: true
+  sblock.command.requestclient: true
+  sblock.command.requestserver: true
+  sblock.command.sc: true
+  sblock.command.spectate: true
+  sblock.command.whois: true
+ sblock.donator:
+  default: op
+  children:
+   sblock.blaze: true
  sblock.ask.adam.before.touching:
   description: If something requires this permission, you probably shouldn't be touching it.
   default: false
