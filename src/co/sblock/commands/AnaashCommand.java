@@ -17,6 +17,7 @@ public class AnaashCommand extends SblockCommand {
 		this.setDescription("The voice of the god Anaash. Can be recolored for plaintext messaging.");
 		this.setUsage("/an <text>");
 		this.setPermissionMessage("&0&lYOU SEE NOTHING.");
+		this.setPermissionLevel("denizen");
 	}
 
 	@Override

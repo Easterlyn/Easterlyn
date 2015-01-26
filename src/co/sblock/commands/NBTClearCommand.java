@@ -22,6 +22,7 @@ public class NBTClearCommand extends SblockCommand {
 		this.setAliases("cleannbt");
 		this.setDescription("Clear some NBT tags off an item. Preserves most meta.");
 		this.setUsage("Run /clearnbt while holding an item");
+		this.setPermissionLevel("denizen");
 	}
 
 	@Override

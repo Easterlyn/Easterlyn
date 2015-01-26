@@ -9,11 +9,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.Permission;
 
 import co.sblock.events.packets.ParticleUtils;
 import co.sblock.events.packets.ParticleEffectWrapper;
 
 public class VehicleEnterListener implements Listener {
+
+	public VehicleEnterListener() {
+		Permission permission = new Permission("sblock.blaze");
+		permission.addParent("sblock.donator", true);
+	}
+
 	@EventHandler
 	public void onVehicleEnter(VehicleEnterEvent event) {
 		if (event.getVehicle().getType() != EntityType.HORSE || event.getEntered().getType() != EntityType.PLAYER

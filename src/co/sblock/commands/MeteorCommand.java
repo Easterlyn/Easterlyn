@@ -26,7 +26,7 @@ public class MeteorCommand extends SblockCommand {
 		super("meteor");
 		this.setDescription("Summon a meteor with parameters.");
 		this.setUsage("/meteor <p:player> <r:radius> <e:explode> <c:countdown> <m:material> <b:bore>");
-		this.setPermissionMessage("By the order of the Jarl, stop right there!");
+		this.setPermissionLevel("denizen");
 		primaryArgs = new String[] {"p:", "r:", "e:", "b:", "m:"};
 	}
 

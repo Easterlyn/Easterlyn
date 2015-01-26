@@ -16,30 +16,39 @@ import org.bukkit.plugin.Plugin;
  */
 public abstract class SblockCommand extends Command implements PluginIdentifiableCommand {
 
+	private String permissionLevel;
+
 	public SblockCommand(String name) {
 		super(name);
 		this.setDescription("A Sblock command.");
 		this.setUsage("/<command>");
 		this.setPermission("sblock.command." + name);
+		this.setPermissionLevel("default");
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");
 	}
 
 	@Override
 	public Command setUsage(String usage) {
-		usage = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', usage);
-		return super.setUsage(usage);
+		return super.setUsage(ChatColor.RED + ChatColor.translateAlternateColorCodes('&', usage));
 	}
 
 	@Override
 	public Command setDescription(String description) {
-		description = ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', description);
-		return super.setDescription(description);
+		return super.setDescription(ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', description));
+	}
+
+	public Command setPermissionLevel(String group) {
+		this.permissionLevel = "sblock." + group;
+		return this;
+	}
+
+	public String getPermissionLevel() {
+		return this.permissionLevel;
 	}
 
 	@Override
 	public Command setPermissionMessage(String permissionMessage) {
-		permissionMessage = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', permissionMessage);
-		return super.setPermissionMessage(permissionMessage);
+		return super.setPermissionMessage(ChatColor.RED + ChatColor.translateAlternateColorCodes('&', permissionMessage));
 	}
 
 	public Command setAliases(String... aliases) {

@@ -28,6 +28,7 @@ public class CrotchRocketCommand extends SblockCommand {
 		super("crotchrocket");
 		this.setDescription("Uncomfortably fun!");
 		this.setUsage("/crotchrocket");
+		this.setPermissionLevel("felt");
 	}
 
 	@Override

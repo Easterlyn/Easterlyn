@@ -20,6 +20,7 @@ public class AetherCommand extends SblockCommand {
 		super("aether");
 		this.setDescription("For usage in console largely. Talks in #Aether.");
 		this.setUsage("/aether <text>");
+		this.setPermissionLevel("horrorterror");
 		this.setPermissionMessage("The aetherial realm eludes your grasp once more.");
 	}
 

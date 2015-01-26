@@ -27,6 +27,7 @@ public class SetPlayerCommand extends SblockCommand {
 		super("setplayer");
 		this.setDescription("Set player data manually.");
 		this.setUsage("/setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>");
+		this.setPermissionLevel("denizen");
 		primaryArgs = new String[] {"class", "aspect", "land", "dream", "prevloc", "progression"};
 	}
 

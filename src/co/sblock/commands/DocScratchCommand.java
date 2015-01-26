@@ -15,6 +15,7 @@ public class DocScratchCommand extends SblockCommand {
 		super("o");
 		this.setDescription("&a> Be the white text guy");
 		this.setUsage("/o <text>");
+		this.setPermissionLevel("horrorterror");
 		this.setPermissionMessage("&f&l[o] You try to be the white text guy, but fail to be the white text guy. "
 					+ "No one can be the white text guy except for the white text guy.");
 	}

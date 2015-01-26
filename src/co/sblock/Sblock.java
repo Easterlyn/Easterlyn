@@ -26,7 +26,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.material.MaterialData;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import org.reflections.Reflections;
 
 import com.google.common.collect.ImmutableList;
@@ -58,10 +61,10 @@ public class Sblock extends JavaPlugin {
 	/* The Sblock instance. */
 	private static Sblock instance;
 
-	/* The Set of Modules enabled. */
+	/* The List of Modules enabled. */
 	private List<Module> modules;
 
-	/* The CommandMap used to register commands for Modules. */
+	/* A reference to Bukkit's internal CommandMap. */
 	private SimpleCommandMap cmdMap;
 
 	/**
@@ -85,7 +88,9 @@ public class Sblock extends JavaPlugin {
 		}
 		instance = this;
 
-		this.modules = new ArrayList<>();
+		createBasePermissions();
+
+		modules = new ArrayList<>();
 		modules.add(new Chat().enable());
 		modules.add(new Users().enable());
 		modules.add(new Events().enable());
@@ -112,7 +117,19 @@ public class Sblock extends JavaPlugin {
 		instance = null;
 	}
 
-	public void registerAllCommands() {
+	private boolean createBasePermissions() {
+		try {
+			for (String perm : new String[] {"default", "godtier", "donator", "helper", "felt", "denizen", "horrorterror"}) {
+				Permission permission = new Permission(perm, perm.equals("default") ? PermissionDefault.TRUE : PermissionDefault.OP);
+				getServer().getPluginManager().addPermission(permission);
+			}
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+		return true;
+	}
+
+	private void registerAllCommands() {
 		try {
 			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
 			field.setAccessible(true);
@@ -133,6 +150,8 @@ public class Sblock extends JavaPlugin {
 						+ ". Available aliases: " + overwritten.getAliases().toString());
 					}
 					cmdMap.register(this.getDescription().getName(), cmd);
+					Permission permission = getServer().getPluginManager().getPermission(cmd.getPermission());
+					permission.addParent(cmd.getPermissionLevel(), true);
 				} catch (InstantiationException | IllegalAccessException e) {
 					getLog().severe("Unable to register command " + command.getName());
 					getLog().criticalErr(e);
@@ -151,8 +170,7 @@ public class Sblock extends JavaPlugin {
 			@SuppressWarnings("unchecked")
 			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
 			for (Iterator<Map.Entry<String, Command>> iterator = cmdMapKnownCommands.entrySet().iterator(); iterator.hasNext();) {
-				Map.Entry<String, Command> entry = iterator.next();
-				if (entry.getValue() instanceof SblockCommand) {
+				if (iterator.next().getValue() instanceof SblockCommand) {
 					iterator.remove();
 				}
 			}

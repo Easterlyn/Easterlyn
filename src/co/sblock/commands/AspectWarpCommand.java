@@ -25,6 +25,7 @@ public class AspectWarpCommand extends SblockCommand {
 		super("aspectwarp");
 		this.setDescription("Warps player if aspect matches warp name.");
 		this.setUsage("/aspectwarp <warp> <player>");
+		this.setPermissionLevel("felt");
 	}
 
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {

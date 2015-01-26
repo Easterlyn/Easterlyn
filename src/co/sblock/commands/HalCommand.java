@@ -26,6 +26,7 @@ public class HalCommand extends SblockCommand {
 		super("hal");
 		this.setDescription("Force a raw message announcement or talk as Hal.");
 		this.setUsage("/hal [1-9|text]");
+		this.setPermissionLevel("denizen");
 	}
 
 	@Override

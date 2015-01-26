@@ -23,6 +23,7 @@ public class MachineCommand extends SblockCommand {
 		super("sm");
 		this.setDescription("Machinations.");
 		this.setUsage("/sm get|icon <type>");
+		this.setPermissionLevel("denizen");
 	}
 
 	@Override
