@@ -27,6 +27,7 @@ import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
+import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.progression.Entry;
 
 /**
@@ -118,25 +119,12 @@ public class TotemLathe extends Machine implements InventoryHolder	{
 			result.setAmount(fi.getResult().getAmount() + 1);
 		}
 		if (fi.getResult() != null && (fi.getResult().getAmount() == 64 
-				|| fi.getResult().isSimilar(result))) {
+				|| !fi.getResult().isSimilar(result))) {
 			return true;
-		} else {
-			fi.setResult(result);
 		}
-		ItemStack decrease = fi.getSmelting();
-		if (decrease.getAmount() > 1) {
-			decrease.setAmount(decrease.getAmount() - 1);
-		} else {
-			decrease = null;
-		}
-		fi.setSmelting(decrease);
-		decrease = fi.getFuel();
-		if (decrease.getAmount() > 1) {
-			decrease.setAmount(decrease.getAmount() - 1);
-		} else {
-			decrease = null;
-		}
-		fi.setFuel(decrease);
+		fi.setResult(result);
+		fi.setSmelting(InventoryUtils.decrement(fi.getSmelting(), 1));
+		fi.setFuel(InventoryUtils.decrement(fi.getFuel(), 1));
 
 		updateFurnaceInventory();
 		return true;
