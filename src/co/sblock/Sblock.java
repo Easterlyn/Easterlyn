@@ -120,7 +120,7 @@ public class Sblock extends JavaPlugin {
 	private boolean createBasePermissions() {
 		try {
 			for (String perm : new String[] {"default", "godtier", "donator", "helper", "felt", "denizen", "horrorterror"}) {
-				Permission permission = new Permission(perm, perm.equals("default") ? PermissionDefault.TRUE : PermissionDefault.OP);
+				Permission permission = new Permission("sblock." + perm, perm.equals("default") ? PermissionDefault.TRUE : PermissionDefault.OP);
 				getServer().getPluginManager().addPermission(permission);
 			}
 		} catch (IllegalArgumentException e) {
@@ -150,7 +150,7 @@ public class Sblock extends JavaPlugin {
 						+ ". Available aliases: " + overwritten.getAliases().toString());
 					}
 					cmdMap.register(this.getDescription().getName(), cmd);
-					Permission permission = getServer().getPluginManager().getPermission(cmd.getPermission());
+					Permission permission = new Permission(cmd.getPermission());
 					permission.addParent(cmd.getPermissionLevel(), true).recalculatePermissibles();
 				} catch (InstantiationException | IllegalAccessException e) {
 					getLog().severe("Unable to register command " + command.getName());
