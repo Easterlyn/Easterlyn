@@ -47,7 +47,7 @@ public class PlayerCommandPreprocessListener implements Listener {
 	}
 
 	private boolean isExecuting(String executed, String toCheck) {
-		Command command = Sblock.getInstance().getCommand(toCheck);
+		Command command = Sblock.getInstance().getCommandMap().getCommand(toCheck);
 		if (command ==  null) {
 			return false;
 		}
