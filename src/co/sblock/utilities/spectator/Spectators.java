@@ -13,18 +13,20 @@ import org.bukkit.entity.Player;
 import co.sblock.module.Module;
 
 /**
- * Module for managing players in a custom gamemode. Designed to allow players
+ * Module for managing players in spectator mode. Designed to allow players
  * to explore without giving any gamebreaking advantages.
  * 
  * @author Jikoo
  */
 public class Spectators extends Module {
 
-	/** The Spectators instance. */
+	/* The Spectators instance. */
 	private static Spectators instance;
 
-	/** The List of Players in spectator mode */
+	/* The List of Players in spectator mode */
 	private Map<UUID, Location> spectators;
+
+	private Map<UUID, Long> oreCooldown;
 
 	/**
 	 * @see co.sblock.Module#onEnable()
@@ -33,6 +35,7 @@ public class Spectators extends Module {
 	protected void onEnable() {
 		instance = this;
 		spectators = new HashMap<>();
+		oreCooldown = new HashMap<>();
 	}
 
 	/**
@@ -75,6 +78,13 @@ public class Spectators extends Module {
 		return spectators.containsKey(userID);
 	}
 
+	public boolean canMineOre(Player p) {
+		if (oreCooldown.containsKey(p.getUniqueId())) {
+			return System.currentTimeMillis() > oreCooldown.get(p.getUniqueId());
+		}
+		return true;
+	}
+
 	/**
 	 * Removes a player's spectator status.
 	 * 
@@ -83,6 +93,8 @@ public class Spectators extends Module {
 	public void removeSpectator(Player p) {
 		p.teleport(spectators.remove(p.getUniqueId()));
 		p.setGameMode(GameMode.SURVIVAL);
+		// 5 minutes, 5 * 60 * 1000 ms
+		oreCooldown.put(p.getUniqueId(), System.currentTimeMillis() + 300000);
 	}
 
 	@Override
