@@ -2,8 +2,7 @@ package co.sblock.events.listeners;
 
 import java.util.HashMap;
 
-import net.md_5.bungee.api.ChatColor;
-
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
