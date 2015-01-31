@@ -1,5 +1,10 @@
 package co.sblock.events.listeners;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.event.EventHandler;
@@ -16,6 +21,9 @@ import co.sblock.utilities.spectator.Spectators;
  * @author Jikoo
  */
 public class PlayerCommandPreprocessListener implements Listener {
+
+	private final SimpleDateFormat time =  new SimpleDateFormat("mm:ss");
+	private final HashMap<UUID, Long> tpacooldown = new HashMap<>();
 
 	/**
 	 * EventHandler for PlayerCommandPreprocessEvents.
@@ -38,6 +46,18 @@ public class PlayerCommandPreprocessListener implements Listener {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");
 			return;
+		}
+
+		if (!event.getPlayer().hasPermission("sblock.helper") && (isExecuting(command, "tpa") || isExecuting(command, "tpahere"))) {
+			if (tpacooldown.containsKey(event.getPlayer().getUniqueId())
+					&& tpacooldown.get(event.getPlayer().getUniqueId()) > System.currentTimeMillis()) {
+				event.getPlayer().sendMessage(ChatColor.RED + "You cannot send a teleport request for another " + ChatColor.GOLD
+						+ time.format(new Date(tpacooldown.get(event.getPlayer().getUniqueId()))) + ChatColor.RED + ".");
+				event.setCancelled(true);
+			} else {
+				// 10 minutes * 60 seconds * 1000 ms
+				tpacooldown.put(event.getPlayer().getUniqueId(), System.currentTimeMillis() + 600000L);
+			}
 		}
 
 		if (isExecuting(command, "gc") && !event.getPlayer().hasPermission("sblock.helper")) {
