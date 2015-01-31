@@ -51,8 +51,10 @@ public class PlayerCommandPreprocessListener implements Listener {
 		if (!event.getPlayer().hasPermission("sblock.helper") && (isExecuting(command, "tpa") || isExecuting(command, "tpahere"))) {
 			if (tpacooldown.containsKey(event.getPlayer().getUniqueId())
 					&& tpacooldown.get(event.getPlayer().getUniqueId()) > System.currentTimeMillis()) {
-				event.getPlayer().sendMessage(ChatColor.RED + "You cannot send a teleport request for another " + ChatColor.GOLD
-						+ time.format(new Date(tpacooldown.get(event.getPlayer().getUniqueId()))) + ChatColor.RED + ".");
+				event.getPlayer().sendMessage(
+						ChatColor.RED + "You cannot send a teleport request for another " + ChatColor.GOLD
+						+ time.format(new Date(tpacooldown.get(event.getPlayer().getUniqueId()) - System.currentTimeMillis()))
+						+ ChatColor.RED + ".");
 				event.setCancelled(true);
 			} else {
 				// 10 minutes * 60 seconds * 1000 ms
