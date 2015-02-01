@@ -26,6 +26,8 @@ import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
+import co.sblock.utilities.experience.Experience;
+import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.vote.SleepVote;
@@ -158,6 +160,19 @@ public class PlayerInteractListener implements Listener {
 			if (hasRightClickFunction(event.getClickedBlock())
 					&& !event.getPlayer().isSneaking()) {
 				// Other inventory/action. Do not proceed to captcha.
+				return;
+			}
+		}
+
+		// Bottle experience
+		if (event.getPlayer().getItemInHand() != null
+				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE) {
+			int exp = Experience.getExp(event.getPlayer());
+			if (exp > 11) {
+				Experience.changeExp(event.getPlayer(), -11);
+				InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1);
+				event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(),
+						new ItemStack(Material.EXP_BOTTLE, 1)).setPickupDelay(0);
 				return;
 			}
 		}
