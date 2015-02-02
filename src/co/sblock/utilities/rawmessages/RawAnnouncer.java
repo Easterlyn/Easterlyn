@@ -116,7 +116,7 @@ public class RawAnnouncer extends Module {
 				+ "{\"color\":\"red\",\"text\":\" to listen and play!\"}]}",
 				ColorDef.HAL + "Interested in jamming with your fellow Sblock players? Join http://plug.dj/sblock/ to listen and play!"));
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "As of March 1, unprotected areas will slowly be regenerated. Protect your stuff!\"},"
+		msgs.add(new AnnouncementMessage(HALEMENT + "As of March 1, unprotected areas will slowly be regenerated. Protect your stuff! \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"http://redd.it/2u938a\","
 					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://redd.it/2u938a\"},"
 					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}}]}",
