@@ -22,7 +22,7 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class PlayerCommandPreprocessListener implements Listener {
 
-	private final SimpleDateFormat time =  new SimpleDateFormat("mm:ss");
+	private final SimpleDateFormat time =  new SimpleDateFormat("m:ss");
 	private final HashMap<UUID, Long> tpacooldown = new HashMap<>();
 
 	/**
