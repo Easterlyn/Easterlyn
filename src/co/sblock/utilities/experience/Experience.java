@@ -48,17 +48,19 @@ public class Experience {
 			exp = 0;
 		}
 
-		player.setLevel(0);
-		player.setExp(0);
-
+		int level = 0;
+		int expRemaining = 0;
 		while (exp > 0) {
 			int expTillNext = getExpToNext(player.getLevel());
 			if (exp >= expTillNext) {
-				player.giveExp(expTillNext);
+				level++;
 			} else {
-				player.giveExp(exp);
+				expRemaining = exp;
 			}
 			exp -= expTillNext;
 		}
+
+		player.setLevel(level);
+		player.setExp(expRemaining);
 	}
 }
