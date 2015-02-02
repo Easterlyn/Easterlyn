@@ -28,9 +28,6 @@ import co.sblock.Sblock;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.ProgressionState;
-import co.sblock.users.Users;
 
 /**
  * Machine for Entity teleportation.
@@ -38,8 +35,6 @@ import co.sblock.users.Users;
  * Costs fuel based on distance: 1 unit of fuel per 50 blocks of direct line
  * travel rounded up. Gunpowder = 1 fuel, redstone = 2, blaze powder = 3,
  * glowstone = 4, blaze rod = 6, glowstone block = 16, redstone block = 18.
- * <p>
- * Does not store excess fuel, uses first valid fuel object(s) available.
  * 
  * @author Jikoo
  */
@@ -206,14 +201,6 @@ public class Transportalizer extends Machine {
 		// Hopper inventory has to suck up items from the world, it should not be openable.
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK
 				&& event.getClickedBlock().getType() == Material.HOPPER) {
-			return true;
-		}
-
-		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if (user != null && user.getProgression() == ProgressionState.NONE) {
-			// Transportalizers can only be used by players who have completed Entry.
-			// Any entity, including pre-entry players, can be transported by a
-			// post-entry player pressing the button.
 			return true;
 		}
 
