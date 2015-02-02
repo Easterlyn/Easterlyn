@@ -41,7 +41,7 @@ public class Experience {
 		return 2 * level + 7;
 	}
 
-	public static void changeExp(Player player, int exp) {
+	public static void changeExp(Player player, int exp) {// fast exp swap
 		exp += getExp(player);
 
 		if (exp < 0) {

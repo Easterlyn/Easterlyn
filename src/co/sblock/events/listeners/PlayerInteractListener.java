@@ -168,9 +168,9 @@ public class PlayerInteractListener implements Listener {
 		if (event.getPlayer().getItemInHand() != null
 				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE) {
 			int exp = Experience.getExp(event.getPlayer());
-			if (exp > 11) {
+			if (exp >= 11) {
 				Experience.changeExp(event.getPlayer(), -11);
-				InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1);
+				event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
 				event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(),
 						new ItemStack(Material.EXP_BOTTLE, 1)).setPickupDelay(0);
 				return;
