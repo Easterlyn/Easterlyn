@@ -508,7 +508,7 @@ public class SblockChatCommand extends SblockCommand {
 			sb.append("Channel members: ");
 			for (UUID userID : c.getListening()) {
 				OfflineUser u = Users.getGuaranteedUser(userID);
-				if (u.getCurrentChannel().equals(c)) {
+				if (c.equals(u.getCurrentChannel())) {
 					sb.append(ChatColor.GREEN);
 				} else {
 					sb.append(ChatColor.YELLOW);
