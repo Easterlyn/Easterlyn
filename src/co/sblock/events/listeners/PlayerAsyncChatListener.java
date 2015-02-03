@@ -116,7 +116,7 @@ public class PlayerAsyncChatListener implements Listener {
 		}
 
 		// Prevent IRC picking up soft muted messages
-		if (event.getRecipients().size() != message.getChannel().getListening().size()) {
+		if (event.getRecipients().size() < message.getChannel().getListening().size()) {
 			event.setFormat("[SoftMute] " + event.getFormat());
 		}
 
