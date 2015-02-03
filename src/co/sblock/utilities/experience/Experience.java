@@ -12,7 +12,7 @@ public class Experience {
 
 	/**
 	 * Calculates a player's total exp based on level and progress to next.
-	 * @see http://minecraft.gamepedia.com/Experience#Formulas_and_Tables
+	 * @see http://minecraft.gamepedia.com/Experience#Leveling_up
 	 * 
 	 * @param player the Player
 	 * 
@@ -23,14 +23,33 @@ public class Experience {
 				+ Math.round(getExpToNext(player.getLevel()) * player.getExp()));
 	}
 
+	/**
+	 * @see http://minecraft.gamepedia.com/Experience#Leveling_up
+	 * 
+	 * "One can determine how much experience has been collected to reach a level using the equations:
+	 * 
+	 *  Total Experience = [Level]2 + 6[Level] (at levels 0-15)
+	 *                     2.5[Level]2 - 40.5[Level] + 360 (at levels 16-30)
+	 *                     4.5[Level]2 - 162.5[Level] + 2220 (at level 31+)"
+	 */
 	private static int getLevelExp(int level) {
-		int exp = 0;
-		for (int i = 0; i < level; i++) {
-			exp += getExpToNext(i);
+		if (level > 30) {
+			return (int) (4.5 * level * level - 162.5 * level + 2220);
 		}
-		return exp;
+		if (level > 15) {
+			return (int) (2.5 * level * level - 40.5 * level + 360);
+		}
+		return level * level + 6 * level;
 	}
 
+	/**
+	 * @see http://minecraft.gamepedia.com/Experience#Leveling_up
+	 * 
+	 * "The formulas for figuring out how many experience orbs you need to get to the next level are as follows:
+	 *  Experience Required = 2[Current Level] + 7 (at levels 0-15)
+	 *                        5[Current Level] - 38 (at levels 16-30)
+	 *                        9[Current Level] - 158 (at level 31+)"
+	 */
 	private static int getExpToNext(int level) {
 		if (level > 30) {
 			return 9 * level - 158;
@@ -41,7 +60,13 @@ public class Experience {
 		return 2 * level + 7;
 	}
 
-	public static void changeExp(Player player, int exp) {// fast exp swap
+	/**
+	 * Change a Player's exp.
+	 * 
+	 * @param player the Player affected
+	 * @param exp the amount of experience to add or remove
+	 */
+	public static void changeExp(Player player, int exp) {
 		exp += getExp(player);
 
 		if (exp < 0) {
@@ -49,13 +74,13 @@ public class Experience {
 		}
 
 		int level = 0;
-		int expRemaining = 0;
+		float expRemaining = 0;
 		while (exp > 0) {
-			int expTillNext = getExpToNext(player.getLevel());
+			int expTillNext = getExpToNext(level);
 			if (exp >= expTillNext) {
 				level++;
 			} else {
-				expRemaining = exp;
+				expRemaining = exp / (float) expTillNext;
 			}
 			exp -= expTillNext;
 		}
