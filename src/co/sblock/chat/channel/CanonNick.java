@@ -136,8 +136,8 @@ public enum CanonNick {
 					.replaceAll("\\.+", "...").replaceAll("[\\W&&[^\\s\\.!\\?]]", "");
 		case EQUIUS:
 			return s.replaceAll("[xX]", "%")
-					.replaceAll("[lL](([uU][eE])|([eE][uU])|([oO]{2,}))", "100")
-					.replaceAll("(([uU][eE])|([eE][uU])|([oO]{2,}))[lL]", "001")
+					.replaceAll("[lL](([uU][eE])|([eE][uU]|[wW])|([oO]{2,}))", "100")
+					.replaceAll("(([uU][eE])|([eE][uU]|[wW])|([oO]{2,}))[lL]", "001")
 					.replaceAll("[sS]+[tT]+[rR]+[oO]+[nN]+[gG]+", "STRONG")
 					.replace("nay", "neigh").replaceAll("[nN][aA][yY]", "NEIGH");
 		case ERIDAN:
