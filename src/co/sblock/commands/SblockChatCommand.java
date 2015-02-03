@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.channel.AccessLevel;
-import co.sblock.chat.channel.CanonNicks;
+import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NickChannel;
@@ -143,8 +143,8 @@ public class SblockChatCommand extends SblockCommand {
 			}
 			if (args.length == 3 && args[1].equals("set") && user.getCurrentChannel().getType() == ChannelType.RP) {
 				args[2] = args[2].toUpperCase();
-				for (CanonNicks nick : CanonNicks.values()) {
-					if (nick != CanonNicks.SERKITFEATURE && nick.name().startsWith(args[2])) {
+				for (CanonNick nick : CanonNick.values()) {
+					if (nick != CanonNick.SERKITFEATURE && nick.name().startsWith(args[2])) {
 						matches.add(nick.name());
 					}
 				}
@@ -375,8 +375,8 @@ public class SblockChatCommand extends SblockCommand {
 				return true;
 			}
 			StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString()).append("Nicks: ");
-			for (CanonNicks n : CanonNicks.values()) {
-				if (n != CanonNicks.SERKITFEATURE) {
+			for (CanonNick n : CanonNick.values()) {
+				if (n != CanonNick.SERKITFEATURE) {
 					sb.append(ChatColor.AQUA).append(n.getName());
 					sb.append(ChatColor.YELLOW).append(", ");
 				}

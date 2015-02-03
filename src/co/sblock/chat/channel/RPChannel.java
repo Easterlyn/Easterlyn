@@ -32,7 +32,7 @@ public class RPChannel extends NickChannel {
 	 */
 	@Override
 	public void setNick(OfflineUser sender, String nick) {
-		CanonNicks name = CanonNicks.getNick(nick);
+		CanonNick name = CanonNick.getNick(nick);
 		if (name == null) {
 			sender.sendMessage(ChatMsgs.errorNickNotCanon(nick));
 			return;

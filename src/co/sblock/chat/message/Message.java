@@ -11,7 +11,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import co.sblock.chat.ColorDef;
-import co.sblock.chat.channel.CanonNicks;
+import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
@@ -30,38 +30,37 @@ public class Message {
 	private final OfflineUser sender;
 	private final Channel channel;
 	private final String name, unformattedMessage;
-	private final CanonNicks nick;
+	private final CanonNick nick;
 	private final boolean thirdPerson;
 	private final String channelHighlightElement, nameElement;
 
-	/**
-	 * @param sender
-	 * @param senderName
-	 * @param channel
-	 * @param message
-	 * @param thirdPerson
-	 */
 	Message(OfflineUser sender, String senderName, Channel channel, String message, boolean thirdPerson) {
 		this.sender = sender;
 		this.name = senderName;
 		this.channel = channel;
 		this.thirdPerson = thirdPerson;
+
+		// Prepend chat colors to every message if sender has permission
 		if (channel.getType() != ChannelType.RP && sender != null && sender.getPlayer().hasPermission("sblockchat.color")) {
 			Player player = sender.getPlayer();
 			for (ChatColor c : ChatColor.values()) {
 				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
 					message = c + message;
+					break;
 				}
 			}
 		}
 
-		if (channel.getType() != ChannelType.RP && (sender != null && channel.isModerator(sender))) {
+		// Anyone can use color codes in nick channels. Channel mods can use color codes in non-rp channels
+		if (channel.getType() != ChannelType.RP 
+				&& (channel.getType() == ChannelType.NICK || sender != null && channel.isModerator(sender))) {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
 
+		// Canon nicks for RP channels
 		if (sender != null && channel.getType() == ChannelType.RP) {
-			this.nick = CanonNicks.getNick(channel.getNick(sender));
-			message = nick.getColor() + message;
+			this.nick = CanonNick.getNick(channel.getNick(sender));
+			message = nick.getPrefix() + message;
 		} else {
 			this.nick = null;
 		}
@@ -125,7 +124,6 @@ public class Message {
 				.append(ChatColor.WHITE).append(']').append(region)
 				.append(thirdPerson ? "> " : " <").append(globalRank).append("%1$s").append(region)
 				.append(thirdPerson ? " " : "> ").append(ChatColor.WHITE).append("%2$s").toString();
-		// return ChatColor.WHITE + "%1s$: %2s$";
 	}
 
 	public boolean isThirdPerson() {

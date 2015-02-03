@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.bukkit.ChatColor;
 
-import co.sblock.chat.channel.CanonNicks;
+import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
@@ -24,9 +24,9 @@ public class ChatMsgs {
 		if (channel.hasNick(user)) {
 			name = channel.getNick(user);
 			if (channel.getType().equals(ChannelType.RP)) {
-				nameC = CanonNicks.getNick(name).getColor();
-				message = CanonNicks.getNick(name).getPester();
-				name = CanonNicks.getNick(name).getHandle();
+				nameC = CanonNick.getNick(name).getColor();
+				message = CanonNick.getNick(name).getPester();
+				name = CanonNick.getNick(name).getHandle();
 			}
 		}
 		return nameC + name + ChatColor.YELLOW + " began "

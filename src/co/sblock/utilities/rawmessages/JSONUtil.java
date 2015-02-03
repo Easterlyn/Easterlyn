@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 
-import co.sblock.chat.channel.CanonNicks;
+import co.sblock.chat.channel.CanonNick;
 
 /**
  * DarkSeraphim's ChatColor to JSON colored element converter modified with a couple Sblock features.
@@ -32,7 +32,7 @@ public class JSONUtil {
 
 	private static final StringBuilder JSON_BUILDER = new StringBuilder();
 
-	public static String toJSONElements(String message, boolean injectLinks, CanonNicks quirk) {
+	public static String toJSONElements(String message, boolean injectLinks, CanonNick quirk) {
 		if (message == null || message.isEmpty()) {
 			return null;
 		}
@@ -137,7 +137,7 @@ public class JSONUtil {
 	 * @param part the String to check for links
 	 * @return the modified String
 	 */
-	private static String injectLinks(String part, CanonNicks quirk) {
+	private static String injectLinks(String part, CanonNick quirk) {
 		if (COMPONENT_BUILDER.length() > 0) { // Reusing the style StringBuilder for that sweet sweet microoptimization.
 			COMPONENT_BUILDER.delete(0, COMPONENT_BUILDER.length());
 		}
@@ -170,7 +170,7 @@ public class JSONUtil {
 			lastEnd = match.end();
 		}
 		if (lastEnd == 0) {
-			return part + '\"';
+			return (quirk != null ? quirk.applyQuirk(part) : part) + '\"';
 		}
 		String substring = part.substring(lastEnd);
 		if (substring.isEmpty()) {
