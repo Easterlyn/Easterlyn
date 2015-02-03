@@ -115,6 +115,11 @@ public class PlayerAsyncChatListener implements Listener {
 			event.setCancelled(true);
 		}
 
+		// Prevent IRC picking up soft muted messages
+		if (event.getRecipients().size() != message.getChannel().getListening().size()) {
+			event.setFormat("[SoftMute] " + event.getFormat());
+		}
+
 		// Clear and manually send messages to each player so we can wrap links, etc.
 		event.getRecipients().clear();
 		message.send(recipients, doNotCancel);
