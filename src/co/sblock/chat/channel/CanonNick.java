@@ -172,10 +172,7 @@ public enum CanonNick {
 		case KARKAT:
 			return s.toUpperCase();
 		case KURLOZ:
-			if (s.length() == 0 || s.charAt(0) != '#') {
-				s = "";
-			}
-			return s;
+			return "...";
 		case LATULA:
 			return s.replace("A", "4").replace("E", "3").replace("I", "1");
 		case LILHALJUNIOR:
@@ -341,9 +338,9 @@ public enum CanonNick {
 	// translates to 16384-40959,  40783 last useful
 	private String ancestral(String s) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
+		for (int i = 0; i < s.length() && i < 20; i++) {
 			sb.append((char) (int) (Math.random() * 24399 + 16384));
-			if (Math.random() > 0.8) {
+			if (Math.random() > 0.7) {
 				sb.append('\u0020');
 			}
 		}

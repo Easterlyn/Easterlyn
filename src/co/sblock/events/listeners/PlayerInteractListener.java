@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -44,6 +45,7 @@ public class PlayerInteractListener implements Listener {
 	 * 
 	 * @param event the PlayerInteractEvent
 	 */
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
@@ -137,8 +139,26 @@ public class PlayerInteractListener implements Listener {
 				if (bed.isHeadOfBed()) {
 					head = b.getLocation();
 				} else {
-					head = b.getRelative(bed.getFacing()).getLocation();
-					// getFace does not seem to work in most cases - adam test and fix
+					// bed.getFacing does not return correctly in most cases.
+					BlockFace relative;
+					switch (bed.getData()) {
+					case 0:
+						relative = BlockFace.SOUTH;
+						break;
+					case 1:
+						relative = BlockFace.WEST;
+						break;
+					case 2:
+						relative = BlockFace.EAST;
+						break;
+					case 3:
+						relative = BlockFace.NORTH;
+						break;
+					default:
+						relative = BlockFace.SELF;
+						break;
+					}
+					head = b.getRelative(relative).getLocation();
 				}
 
 				switch (Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
@@ -162,11 +182,9 @@ public class PlayerInteractListener implements Listener {
 				// Other inventory/action. Do not proceed to captcha.
 				return;
 			}
-		}
-
-		// Bottle experience
-		if (event.getPlayer().getItemInHand() != null
+		} else if (event.getPlayer().getItemInHand() != null
 				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE) {
+			// Bottle experience by right clicking air
 			int exp = Experience.getExp(event.getPlayer());
 			if (exp >= 11) {
 				Experience.changeExp(event.getPlayer(), -11);

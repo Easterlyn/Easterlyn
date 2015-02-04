@@ -32,10 +32,10 @@ public class StatusCheck extends BukkitRunnable {
 		try {
 			JSONObject data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
 					new URL("http://status.mojang.com/check?service=session.minecraft.net").openStream())));
-			session = !((String) data.get("session.minecraft.net")).equals("green");
+			session = ((String) data.get("session.minecraft.net")).equals("red");
 			data = (JSONObject) parser.parse(new BufferedReader(new InputStreamReader(
 					new URL("http://status.mojang.com/check?service=session.minecraft.net").openStream())));
-			login = !((String) data.get("session.minecraft.net")).equals("green");
+			login = ((String) data.get("session.minecraft.net")).equals("red");
 		} catch (IOException | ParseException | ClassCastException | NullPointerException e) {
 			// ClassCast/NPE happens occasionally when JSON appears to be parsed incorrectly.
 			// This check is run every minute, and 99.9% of the time we are casting correctly. I blame Mojang.

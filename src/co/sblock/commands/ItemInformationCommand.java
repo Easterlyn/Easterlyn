@@ -2,6 +2,7 @@ package co.sblock.commands;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -35,7 +36,9 @@ public class ItemInformationCommand extends SblockCommand {
 			sender.sendMessage("NULL");
 			return true;
 		}
-		sender.sendMessage(InventoryUtils.serializeItemStack(hand));
+		String serialized = InventoryUtils.serializeItemStack(hand);
+		sender.sendMessage(serialized);
+		Bukkit.getConsoleSender().sendMessage(serialized);
 		return true;
 	}
 
