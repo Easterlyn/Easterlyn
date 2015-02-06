@@ -87,7 +87,6 @@ public enum CanonNick {
 //	Hearts Boxcars:
 //	Diamonds Droog://AKA Draconian Dignitary
 //	ALL OF THE FELT
-//	AutoResponder: Dirks quirk, red text
 //	ErisolSprite: Eridan and Sollux's quirk, green text
 //	Fefeta Sprite: Feferi/nepeta, roxy pink. (I'll do the full quirks for the sprites later)
 //	ARQuiusSprite: Not sure how to handle the glasses arrow, we'll think of something
@@ -215,7 +214,9 @@ public enum CanonNick {
 		case ARANEA:
 		case VRISKA:
 			return s.replaceAll(":*([;:])+([dDbBpPL\\Q)(][\\E])", ":::$1$2")
-					.replaceAll("([\\.!?])+", "$1$1$1$1$1$1$1$1");
+					.replaceAll("([\\.!?])+", "$1$1$1$1$1$1$1$1").replaceAll("[bB]", "8")
+					.replaceAll("[aA]([iI][tT]|[tT][eE])", "8")
+					.replaceAll("[aA][tT]([iI][nN][gG])\\b", "8$1");
 		case SERKITFEATURE:
 			return serkitFeature(s);
 		default:
@@ -239,11 +240,6 @@ public enum CanonNick {
 		return this.color + this.chumHandle;
 	}
 
-
-	/**
-	 * @param string
-	 * @return
-	 */
 	public static CanonNick getNick(String nick) {
 		try {
 			return CanonNick.valueOf(nick.toUpperCase());
