@@ -13,7 +13,7 @@ import co.sblock.chat.channel.CanonNick;
  * @author DarkSeraphim
  **/
 public class JSONUtil {
-	private static final StringBuilder JSON_WRAPPER = new StringBuilder("{\"text\":\"\",\"extra\":[");
+	private static final StringBuffer JSON_WRAPPER = new StringBuffer("{\"text\":\"\",\"extra\":[");
 
 	private static final int RETAIN = "{\"text\":\"\",\"extra\":[".length();
 
@@ -30,7 +30,7 @@ public class JSONUtil {
 		return JSON_WRAPPER.deleteCharAt(JSON_WRAPPER.length() - 1).append("]}").toString();
 	}
 
-	private static final StringBuilder JSON_BUILDER = new StringBuilder();
+	private static final StringBuffer JSON_BUILDER = new StringBuffer();
 
 	public static String toJSONElements(String message, boolean injectLinks, CanonNick quirk) {
 		if (message == null || message.isEmpty()) {
@@ -97,7 +97,7 @@ public class JSONUtil {
 		return JSON_BUILDER.toString();
 	}
 
-	private static final StringBuilder COMPONENT_BUILDER = new StringBuilder();
+	private static final StringBuffer COMPONENT_BUILDER = new StringBuffer();
 
 	private static String getStyle(char colour) {
 		if (COMPONENT_BUILDER.length() > 0) {
