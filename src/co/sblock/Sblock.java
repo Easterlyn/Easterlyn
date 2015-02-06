@@ -147,7 +147,15 @@ public class Sblock extends JavaPlugin {
 						Command overwritten = cmdMapKnownCommands.remove(cmd.getName());
 						getLog().info("Overriding " + cmd.getName() + " by "
 						+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
-						+ ". Available aliases: " + overwritten.getAliases().toString());
+						+ ". Aliases: " + overwritten.getAliases().toString());
+					}
+					for (String alias : cmd.getAliases()) {
+						if (cmdMapKnownCommands.containsKey(alias)) {
+							Command overwritten = cmdMapKnownCommands.remove(alias);
+							getLog().info("Overriding " + alias + " by "
+							+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
+							+ ". Aliases: " + overwritten.getAliases().toString());
+						}
 					}
 					cmdMap.register(this.getDescription().getName(), cmd);
 					Permission permission = new Permission(cmd.getPermission());

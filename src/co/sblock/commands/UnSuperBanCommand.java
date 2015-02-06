@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 public class UnSuperBanCommand extends SblockCommand {
 
 	public UnSuperBanCommand() {
-		super("unsban");
-		this.setAliases("unban", "pardon", "unbanip", "pardonip");
+		super("unban");
+		this.setAliases("unsban", "pardon", "unbanip", "pardonip");
 		this.setDescription("DO THE WINDY THING.");
 		this.setUsage("/unsban <UUID|name|IP>");
 		this.setPermissionLevel("denizen");

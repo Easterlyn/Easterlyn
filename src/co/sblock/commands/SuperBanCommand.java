@@ -23,8 +23,8 @@ import co.sblock.users.Users;
 public class SuperBanCommand extends SblockCommand {
 
 	public SuperBanCommand() {
-		super("sban");
-		this.setAliases("ban");
+		super("ban");
+		this.setAliases("sban", "banip");
 		this.setDescription("YOU CAN'T ESCAPE THE RED MILES.");
 		this.setUsage("/sban <target> [optional reason]");
 		this.setPermissionLevel("denizen");
