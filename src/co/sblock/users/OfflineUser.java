@@ -23,6 +23,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.channel.Channel;
+import co.sblock.chat.message.MessageBuilder;
 
 /**
  * Storage and access of all data saved for a User.
@@ -814,8 +815,11 @@ public class OfflineUser {
 				player.setResourcePack(Region.EARTH.getResourcePackURL());
 				Users.addUser(user);
 
-				Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
-						+ " is joining us for the first time! Please welcome them.");
+				if (!player.hasPlayedBefore()) {
+					// Our data file may have just been deleted - reset planned for Entry, etc.
+					Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
+							+ " is joining us for the first time! Please welcome them.");
+				}
 				return user;
 			}
 		} catch (IOException e) {
@@ -854,6 +858,18 @@ public class OfflineUser {
 		user.setSuppression(yaml.getBoolean("chat.suppressing"));
 		user.setHighlight(yaml.getBoolean("chat.highlight", true));
 		//(Set<String>) yaml.get("chat.ignoring");
+
+		String name = yaml.getString("name");
+		if (name != null && !name.equals(Bukkit.getOfflinePlayer(uuid).getName())) {
+			yaml.set("previousname", name);
+			MessageBuilder mb = new MessageBuilder();
+			mb.setSender(ChatColor.RED + "Lil Hal");
+			mb.setChannel(ChannelManager.getChannelManager().getChannel("#"));
+			mb.setMessage(Bukkit.getOfflinePlayer(uuid).getName() + " was previously known as " + name);
+			if (mb.canBuild(false)) {
+				mb.toMessage().send();
+			}
+		}
 		return user;
 	}
 
