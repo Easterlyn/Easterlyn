@@ -2,12 +2,10 @@ package co.sblock.commands;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import co.sblock.utilities.inventory.InventoryUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,9 +34,9 @@ public class ItemInformationCommand extends SblockCommand {
 			sender.sendMessage("NULL");
 			return true;
 		}
-		String serialized = InventoryUtils.serializeItemStack(hand);
-		sender.sendMessage(serialized);
-		Bukkit.getConsoleSender().sendMessage(serialized);
+		YamlConfiguration temp = new YamlConfiguration();
+		temp.set("item", hand);
+		sender.sendMessage((String) temp.get("item"));
 		return true;
 	}
 
