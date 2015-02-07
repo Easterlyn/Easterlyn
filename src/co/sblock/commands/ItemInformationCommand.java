@@ -36,7 +36,7 @@ public class ItemInformationCommand extends SblockCommand {
 		}
 		YamlConfiguration temp = new YamlConfiguration();
 		temp.set("item", hand);
-		sender.sendMessage((String) temp.get("item"));
+		sender.sendMessage(String.valueOf(temp.get("item")));
 		return true;
 	}
 
