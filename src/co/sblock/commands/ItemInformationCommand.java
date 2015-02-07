@@ -2,6 +2,8 @@ package co.sblock.commands;
 
 import java.util.List;
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -36,7 +38,7 @@ public class ItemInformationCommand extends SblockCommand {
 		}
 		YamlConfiguration temp = new YamlConfiguration();
 		temp.set("item", hand);
-		sender.sendMessage(String.valueOf(temp.get("item")));
+		sender.sendMessage(ChatColor.stripColor(String.valueOf(temp.get("item"))));
 		return true;
 	}
 

@@ -3,6 +3,7 @@ package co.sblock.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +20,7 @@ public class RenderMapCommand extends SblockCommand {
 	public RenderMapCommand() {
 		super("rendermap");
 		setPermissionLevel("helper");
-		setUsage("/rendermap [x] [z]");
+		setUsage("/rendermap [x] [z] [world]");
 	}
 
 	@SuppressWarnings("deprecation")
@@ -45,6 +46,14 @@ public class RenderMapCommand extends SblockCommand {
 			} catch (NumberFormatException e) {
 				sender.sendMessage(ChatColor.RED + "Invalid coordinates! Ex. /rendermap 0 0");
 				return true;
+			}
+			if (args.length > 2) {
+				World world = Bukkit.getWorld(args[2]);
+				if (world == null) {
+					sender.sendMessage(ChatColor.RED + "Invalid world! Ex. /rendermap 0 0 Earth_the_end");
+					return true;
+				}
+				view.setWorld(world);
 			}
 		} else {
 			x = player.getLocation().getBlockX();
