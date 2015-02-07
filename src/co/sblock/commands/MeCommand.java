@@ -10,7 +10,6 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.chat.message.MessageBuilder;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
@@ -36,13 +35,7 @@ public class MeCommand extends SblockCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		MessageBuilder builder = new MessageBuilder()
-				.setSender(Users.getGuaranteedUser(((Player) sender).getUniqueId()))
-				.setMessage(StringUtils.join(args, ' ')).setThirdPerson(true);
-		if (builder.canBuild(true)) {
-			builder.toMessage().send();
-			// TODO reimplement Hal
-		}
+		((Player) sender).chat("@#>me" + StringUtils.join(args, ' '));
 		return true;
 	}
 

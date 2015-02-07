@@ -48,7 +48,12 @@ public class PlayerAsyncChatListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 	public void onPlayerChatLow(final AsyncPlayerChatEvent event) {
+		boolean thirdPerson = event.getMessage().startsWith("@#>me");
 		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
+		if (thirdPerson) {
+			event.setMessage(event.getMessage().substring(5));
+			mb.setThirdPerson(true);
+		}
 		mb.setMessage(event.getMessage());
 		// Ensure message can be sent
 		if (!mb.canBuild(true)) {
