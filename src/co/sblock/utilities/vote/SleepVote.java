@@ -46,7 +46,7 @@ public class SleepVote {
 			resetVote(world);
 		}
 		if (votes.get(world.getName()).add(p.getName())) {
-			updateVotes(world, p.getName());
+			updateVotes(world, p.getDisplayName());
 		}
 	}
 
