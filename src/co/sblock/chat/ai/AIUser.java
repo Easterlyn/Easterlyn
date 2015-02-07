@@ -25,8 +25,9 @@ public class AIUser extends OfflineUser {
 	 * @param dream
 	 */
 	protected AIUser(String displayName, UserClass userClass, UserAspect userAspect, Region medium, Region dream) {
-		super(UUID.randomUUID(), "localhost", displayName, null, null, "N/A", null,
-				userClass, userAspect, medium, dream, ProgressionState.NONE, null, null, new HashSet<Integer>(), false,
-				"#", new HashSet<String>(), new AtomicBoolean(false), new AtomicBoolean(false), new AtomicBoolean(false));
+		super(UUID.randomUUID(), "localhost", displayName, null, null, "N/A", null, userClass,
+				userAspect, medium, dream, ProgressionState.NONE, null, null,
+				new HashSet<Integer>(), false, false, "#", new HashSet<String>(),
+				new AtomicBoolean(false), new AtomicBoolean(false), new AtomicBoolean(false));
 	}
 }

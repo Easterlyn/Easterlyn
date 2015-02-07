@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -22,7 +23,9 @@ public class SpectateCommand extends SblockCommand {
 	public SpectateCommand() {
 		super("spectate");
 		this.setDescription("Player: Become the ghost (toggles spectator mode)");
-		this.setUsage("/spectate");
+		this.setUsage("To toggle spectate mode, use no arguments.\n"
+				+ "To prevent players from spectating to you, use /spectate deny\n"
+				+ "To allow players to spectate to you, use /spectate allow");
 	}
 
 	@Override
@@ -32,7 +35,22 @@ public class SpectateCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		if (Users.getGuaranteedUser(player.getUniqueId()).isServer()) {
+		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		if (args.length > 0 && (args[0].equalsIgnoreCase("on") || args[0].equalsIgnoreCase("allow"))) {
+			user.setSpectatable(true);
+			sender.sendMessage(ChatColor.GREEN + "Other players are now allowed to spectate to you!");
+			return true;
+		}
+		if (args.length > 0 && (args[0].equalsIgnoreCase("off") || args[0].equalsIgnoreCase("deny"))) {
+			user.setSpectatable(false);
+			sender.sendMessage(ChatColor.GREEN + "Other players are no longer allowed to spectate to you!");
+			return true;
+		}
+		if (args.length > 0) {
+			sender.sendMessage(this.getUsage());
+			return true;
+		}
+		if (user.isServer()) {
 			sender.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
 			return true;
 		}

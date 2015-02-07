@@ -45,7 +45,7 @@ public class Users extends Module {
 	protected void onDisable() {
 		for (OfflineUser u : Users.getUsers().toArray(new OfflineUser[0])) {
 			unloadUser(u.getUUID()).save();
-			unteam(u.getPlayerName());
+			unteam(u.getUUID().toString().replace("-", "").substring(0, 16));
 		}
 		instance = null;
 	}
@@ -160,16 +160,20 @@ public class Users extends Module {
 			teamPrefix = ColorDef.RANK_HERO.toString();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-		Team team = board.getTeam(p.getName());
+		Team team = board.getTeam(p.getUniqueId().toString());
 		if (team == null) {
-			team = board.registerNewTeam(p.getName());
+			team = board.registerNewTeam(p.getUniqueId().toString().replace("-", "").substring(0, 16));
 		}
 		team.setPrefix(teamPrefix);
 		team.addPlayer(p);
 	}
 
-	public static void unteam(String playerName) {
-		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(playerName);
+	public static void unteam(Player player) {
+		unteam(player.getUniqueId().toString().replace("-", "").substring(0, 16));
+	}
+
+	private static void unteam(String teamName) {
+		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
 		if (team != null) {
 			team.unregister();
 		}

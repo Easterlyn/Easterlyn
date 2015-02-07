@@ -1,10 +1,14 @@
 package co.sblock.events.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import co.sblock.Sblock;
 import co.sblock.users.OfflineUser;
@@ -17,6 +21,36 @@ import co.sblock.users.Users;
  * @author Jikoo
  */
 public class PlayerTeleportListener implements Listener {
+
+	/**
+	 * The event handler for PlayerTeleportEvents.
+	 * <p>
+	 * This method is for events that are guaranteed to be completed.
+	 * 
+	 * @param event the PlayerTeleportEvent
+	 */
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if (event.getCause() != TeleportCause.SPECTATE || event.getPlayer().hasPermission("sblock.felt")) {
+			return;
+		}
+		for (Player player : event.getTo().getWorld().getPlayers()) {
+			if (!player.getLocation().equals(event.getTo())) {
+				continue;
+			}
+			if (player.getGameMode() == GameMode.SPECTATOR && player.getVehicle() != null
+					&& player.getVehicle() instanceof Player) {
+				player = (Player) player.getVehicle();
+			}
+			if (Users.getGuaranteedUser(player.getUniqueId()).getSpectatable()) {
+				return;
+			}
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.AQUA + player.getDisplayName() + ChatColor.YELLOW
+					+ " has disallowed spectating! You'll need to send a tpa.");
+			return;
+		}
+	}
 
 	/**
 	 * The event handler for PlayerTeleportEvents.

@@ -51,11 +51,11 @@ public class OnlineUser extends OfflineUser {
 			Region currentRegion, Location previousLocation, UserClass userClass,
 			UserAspect aspect, Region mplanet, Region dplanet, ProgressionState progstate,
 			UUID server, UUID client, Set<Integer> programs, boolean allowFlight,
-			String currentChannel, Set<String> listening, AtomicBoolean globalMute,
-			AtomicBoolean supress, AtomicBoolean highlight) {
+			boolean spectatable, String currentChannel, Set<String> listening,
+			AtomicBoolean globalMute, AtomicBoolean supress, AtomicBoolean highlight) {
 		super(userID, ip, displayName, currentLocation, currentRegion, null, previousLocation,
 				userClass, aspect, mplanet, dplanet, progstate, server, client, programs,
-				allowFlight, currentChannel, listening, globalMute, supress, highlight);
+				allowFlight, spectatable, currentChannel, listening, globalMute, supress, highlight);
 		effectsList = new HashMap<>();
 		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
 			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());

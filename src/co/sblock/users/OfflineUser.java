@@ -23,7 +23,6 @@ import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.message.MessageBuilder;
 
 /**
  * Storage and access of all data saved for a User.
@@ -42,7 +41,7 @@ public class OfflineUser {
 	private Region currentRegion;
 	private String timePlayed;
 	private Location previousLocation;
-	boolean allowFlight;
+	boolean allowFlight, spectatable;
 
 	/* Classpect */
 	private UserClass userClass;
@@ -64,7 +63,7 @@ public class OfflineUser {
 			Region currentRegion, String timePlayed, Location previousLocation,
 			UserClass userClass, UserAspect userAspect, Region medium, Region dream,
 			ProgressionState progstate, UUID server, UUID client, Set<Integer> programs,
-			boolean allowFlight, String currentChannel, Set<String> listening,
+			boolean allowFlight, boolean spectatable, String currentChannel, Set<String> listening,
 			AtomicBoolean globalMute, AtomicBoolean supress, AtomicBoolean highlight) {
 		this.uuid = userID;
 		this.userIP = ip;
@@ -80,6 +79,7 @@ public class OfflineUser {
 			}
 		}
 		this.allowFlight = allowFlight;
+		this.spectatable = spectatable;
 		this.userClass = userClass;
 		this.userAspect = userAspect;
 		this.medium = medium;
@@ -107,6 +107,7 @@ public class OfflineUser {
 		this.progression = ProgressionState.NONE;
 		this.isServer = false;
 		this.allowFlight = false;
+		this.spectatable = true;
 		World earth = Bukkit.getWorld("Earth");
 		if (earth != null) {
 			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
@@ -287,6 +288,24 @@ public class OfflineUser {
 	 * Updates the User's ability to fly.
 	 */
 	public void updateFlight() {}
+
+	/**
+	 * Set whether or not a user can be spectated to.
+	 * 
+	 * @param spectatable true if the user can be spectated
+	 */
+	public void setSpectatable(boolean spectatable) {
+		this.spectatable = spectatable;
+	}
+
+	/**
+	 * Get whether or not a user can be spectated to.
+	 * 
+	 * @return true if the user can be spectated to
+	 */
+	public boolean getSpectatable() {
+		return this.spectatable;
+	}
 
 	public Location getCurrentLocation() {
 		return currentLocation != null ? currentLocation : Users.getSpawnLocation();
@@ -741,10 +760,12 @@ public class OfflineUser {
 	public OnlineUser getOnlineUser() {
 		OnlineUser user = Users.getOnlineUser(getUUID());
 		if (user == null) {
-			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(), getDisplayName(),
-					getCurrentLocation(), getCurrentRegion(), getPreviousLocation(), getUserClass(), getUserAspect(),
-					getMediumPlanet(), getDreamPlanet(), getProgression(), getServer(), getClient(),  getPrograms(), getFlight(),
-					currentChannel,getListening(), globalMute, suppress, highlight);
+			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
+					getDisplayName(), getCurrentLocation(), getCurrentRegion(),
+					getPreviousLocation(), getUserClass(), getUserAspect(), getMediumPlanet(),
+					getDreamPlanet(), getProgression(), getServer(), getClient(), getPrograms(),
+					getFlight(), getSpectatable(), currentChannel, getListening(), globalMute,
+					suppress, highlight);
 		}
 		return null;
 	}
@@ -772,6 +793,7 @@ public class OfflineUser {
 		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(getPreviousLocation()));
 		yaml.set("previousRegion", null);
 		yaml.set("flying", getFlight());
+		yaml.set("spectatable", getSpectatable());
 		yaml.set("classpect.class", getUserClass().getDisplayName());
 		yaml.set("classpect.aspect", getUserAspect().getDisplayName());
 		yaml.set("classpect.dream", getDreamPlanet().getDisplayName());
@@ -828,6 +850,7 @@ public class OfflineUser {
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		OfflineUser user = new OfflineUser(uuid, yaml.getString("ip", "null"));
 		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
+		user.setSpectatable(yaml.getBoolean("spectatable", true));
 		//yaml.getString("previousRegion");
 		user.setUserClass(yaml.getString("classpect.class", "HEIR"));
 		user.setUserAspect(yaml.getString("classpect.aspect", "BREATH"));
@@ -862,13 +885,7 @@ public class OfflineUser {
 		String name = yaml.getString("name");
 		if (name != null && !name.equals(Bukkit.getOfflinePlayer(uuid).getName())) {
 			yaml.set("previousname", name);
-			MessageBuilder mb = new MessageBuilder();
-			mb.setSender(ChatColor.RED + "Lil Hal");
-			mb.setChannel(ChannelManager.getChannelManager().getChannel("#"));
-			mb.setMessage(Bukkit.getOfflinePlayer(uuid).getName() + " was previously known as " + name);
-			if (mb.canBuild(false)) {
-				mb.toMessage().send();
-			}
+			Bukkit.broadcastMessage(ColorDef.HAL + Bukkit.getOfflinePlayer(uuid).getName() + " was previously known as " + name);
 		}
 		return user;
 	}
@@ -881,6 +898,7 @@ public class OfflineUser {
 		user.setMediumPlanet(online.getMediumPlanet().name());
 		user.setDreamPlanet(online.getDreamPlanet().name());
 		user.setPreviousLocation(online.getPreviousLocation());
+		user.setSpectatable(online.getSpectatable());
 		// User may have logged out and not been unloaded properly
 		if (user.isOnline()) {
 			user.displayName = online.getDisplayName();
