@@ -166,7 +166,7 @@ public class ChannelManager {
 		channelList.put("#", new RegionChannel("#", AccessLevel.PUBLIC, null));
 		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null));
 		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null));
-		channelList.put("#rp2", new RPChannel("#rp2", AccessLevel.PUBLIC, null));
+		channelList.put("#fanrp", new NickChannel("#fanrp", AccessLevel.PUBLIC, null));
 		channelList.put("#EARTH", new RegionChannel("#EARTH", AccessLevel.PUBLIC, null));
 		channelList.put("#DERSPIT", new RegionChannel("#DERSPIT", AccessLevel.PUBLIC, null));
 		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null));
