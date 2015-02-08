@@ -72,6 +72,11 @@ public class PlayerAsyncChatListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
+		if (message.getChannel().getType() == ChannelType.REGION && rpMatch(message.getCleanedMessage())) {
+			event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /sc c!");
+			event.setCancelled(true);
+			return;
+		}
 		// Because we have a collection of UUIDs and not Players, nice compact lambda notation instead of a loop
 		event.getRecipients().removeIf(p -> !message.getChannel().getListening().contains(p.getUniqueId()));
 
@@ -145,5 +150,12 @@ public class PlayerAsyncChatListener implements Listener {
 				}
 			}
 		}.runTaskLaterAsynchronously(Sblock.getInstance(), 2L);
+	}
+
+	public boolean rpMatch(String message) {
+		if (message.matches("([hH][oO][nN][kK] ?)+")) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -2,7 +2,6 @@ package co.sblock.utilities.experience;
 
 import org.bukkit.entity.Player;
 
-
 /**
  * A utility for managing Player experience properly.
  * 
