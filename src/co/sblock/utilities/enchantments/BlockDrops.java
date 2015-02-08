@@ -141,7 +141,7 @@ public class BlockDrops {
 		case GLOWING_REDSTONE_ORE:
 		case REDSTONE_ORE:
 			// Only ore that is supposed to use addition-style fortune.
-			drops.add(doAdditionFortune(Material.DIAMOND, 1, 1, fortune));
+			drops.add(doAdditionFortune(Material.REDSTONE, 1, 1, fortune));
 			break;
 		case GLOWSTONE:
 			ItemStack dust = doAdditionFortune(Material.GLOWSTONE_DUST, 1, 4, fortune);
