@@ -1,5 +1,6 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -13,6 +14,7 @@ import org.bukkit.permissions.Permission;
 
 import co.sblock.events.packets.ParticleUtils;
 import co.sblock.events.packets.ParticleEffectWrapper;
+import co.sblock.users.Users;
 
 public class VehicleEnterListener implements Listener {
 
@@ -22,6 +24,11 @@ public class VehicleEnterListener implements Listener {
 
 	@EventHandler
 	public void onVehicleEnter(VehicleEnterEvent event) {
+		if (event.getVehicle() instanceof Player
+				&& !Users.getGuaranteedUser(event.getVehicle().getUniqueId()).getSpectatable()) {
+			event.getEntered().sendMessage(ChatColor.RED + "That player has spectating toggled off.");
+			event.setCancelled(true);
+		}
 		if (event.getVehicle().getType() != EntityType.HORSE || event.getEntered().getType() != EntityType.PLAYER
 				|| !((Player) event.getEntered()).hasPermission("sblock.blaze")) {
 			return;
