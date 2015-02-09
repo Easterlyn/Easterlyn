@@ -24,7 +24,7 @@ public class VehicleEnterListener implements Listener {
 
 	@EventHandler
 	public void onVehicleEnter(VehicleEnterEvent event) {
-		if (event.getVehicle() instanceof Player
+		if (event.getVehicle() instanceof Player && !event.getEntered().hasPermission("sblock.helper")
 				&& !Users.getGuaranteedUser(event.getVehicle().getUniqueId()).getSpectatable()) {
 			event.getEntered().sendMessage(ChatColor.RED + "That player has spectating toggled off.");
 			event.setCancelled(true);
