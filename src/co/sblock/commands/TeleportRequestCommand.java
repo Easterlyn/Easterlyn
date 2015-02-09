@@ -79,6 +79,10 @@ public class TeleportRequestCommand extends SblockCommand {
 			return;
 		}
 		Player target = matches.get(0);
+		if (target.getUniqueId().equals(sender.getUniqueId())) {
+			sender.sendMessage(ChatColor.YELLOW + "If I told you I just teleported you to yourself would you believe me?");
+			return;
+		}
 		if (pending.containsKey(target.getUniqueId()) && pending.get(target.getUniqueId()).getExpiry() > System.currentTimeMillis()) {
 			sender.sendMessage(ChatColor.GOLD + target.getDisplayName() +  ChatColor.RED + " has a pending request already.");
 			return;
