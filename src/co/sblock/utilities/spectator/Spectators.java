@@ -93,8 +93,8 @@ public class Spectators extends Module {
 	public void removeSpectator(Player p) {
 		p.teleport(spectators.remove(p.getUniqueId()));
 		p.setGameMode(GameMode.SURVIVAL);
-		// 5 minutes, 5 * 60 * 1000 ms
-		oreCooldown.put(p.getUniqueId(), System.currentTimeMillis() + 300000);
+		// 8 minutes, 8 * 60 * 1000 ms
+		oreCooldown.put(p.getUniqueId(), System.currentTimeMillis() + 480000);
 	}
 
 	@Override
