@@ -11,6 +11,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.users.Users;
+
 /**
  * Essentials' TPA just won't cut it.
  * 
@@ -83,12 +85,19 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.YELLOW + "If I told you I just teleported you to yourself would you believe me?");
 			return;
 		}
+		if (Users.getGuaranteedUser(target.getUniqueId()).getCurrentRegion() != Users.getGuaranteedUser(sender.getUniqueId()).getCurrentRegion()) {
+			// TODO re-check on accept?
+			sender.sendMessage(ChatColor.RED + "Teleports cannot be initiated across different planets!");
+			return;
+		}
 		if (pending.containsKey(target.getUniqueId()) && pending.get(target.getUniqueId()).getExpiry() > System.currentTimeMillis()) {
 			sender.sendMessage(ChatColor.GOLD + target.getDisplayName() +  ChatColor.RED + " has a pending request already.");
 			return;
 		}
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
-		tpacooldown.put(sender.getUniqueId(), System.currentTimeMillis() + 480000L);
+		if (!sender.hasPermission("group.helper")) {
+			tpacooldown.put(sender.getUniqueId(), System.currentTimeMillis() + 480000L);
+		}
 		sender.sendMessage(ChatColor.YELLOW + "Request sent!");
 		target.sendMessage(ChatColor.DARK_AQUA + sender.getDisplayName() + ChatColor.YELLOW + " is requesting to teleport " + (here ? "you to them." : "to you."));
 		target.sendMessage(ChatColor.YELLOW + "To accept, use " + ChatColor.AQUA + "/tpaccept"
