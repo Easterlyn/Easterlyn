@@ -93,7 +93,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		target.sendMessage(ChatColor.DARK_AQUA + sender.getDisplayName() + ChatColor.YELLOW + " is requesting to teleport " + (here ? "you to them." : "to you."));
 		target.sendMessage(ChatColor.YELLOW + "To accept, use " + ChatColor.AQUA + "/tpaccept"
 				+ ChatColor.YELLOW + ". To decline, use " + ChatColor.AQUA + "/tpdeny" + ChatColor.YELLOW + ".");
-		target.sendMessage(ChatColor.YELLOW + "This request will expire in 20 seconds.");
+		target.sendMessage(ChatColor.YELLOW + "This request will expire in 30 seconds.");
 	}
 
 	private void accept(Player sender) {
