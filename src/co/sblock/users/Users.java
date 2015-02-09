@@ -160,9 +160,10 @@ public class Users extends Module {
 			teamPrefix = ColorDef.RANK_HERO.toString();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-		Team team = board.getTeam(p.getUniqueId().toString());
+		String teamName = p.getUniqueId().toString().replace("-", "").substring(0, 16);
+		Team team = board.getTeam(teamName);
 		if (team == null) {
-			team = board.registerNewTeam(p.getUniqueId().toString().replace("-", "").substring(0, 16));
+			team = board.registerNewTeam(teamName);
 		}
 		team.setPrefix(teamPrefix);
 		team.addPlayer(p);
