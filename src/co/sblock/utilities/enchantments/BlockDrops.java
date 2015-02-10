@@ -18,22 +18,30 @@ import org.bukkit.material.MaterialData;
  */
 public class BlockDrops {
 
-	// TODO exp
-
 	public static Collection<ItemStack> getDrops(ItemStack tool, Block block) {
+		return getDrops(tool, block, 0);
+	}
+
+	public static Collection<ItemStack> getDrops(ItemStack tool, Block block, int fortuneBonus) {
 		if (tool.containsEnchantment(Enchantment.SILK_TOUCH) && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
 			Collection<ItemStack> drops = getSilkDrops(tool, block.getState().getData());
 			if (drops != null) {
 				return drops;
 			}
 		}
-		if (tool.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS) && tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) > 0) {
-			Collection<ItemStack> drops = getFortuneDrops(tool, block.getState().getData());
+		if (fortuneBonus > 0 || tool.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)
+				&& tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + fortuneBonus > 0) {
+			Collection<ItemStack> drops = getFortuneDrops(tool, block.getState().getData(), fortuneBonus);
 			if (drops != null) {
 				return drops;
 			}
 		}
 		return block.getDrops(tool);
+	}
+
+	public static int getExp(ItemStack tool, Block block) {
+		// TODO exp
+		return 0;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -115,36 +123,36 @@ public class BlockDrops {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static Collection<ItemStack> getFortuneDrops(ItemStack tool, MaterialData material) {
-		int fortune = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+	private static Collection<ItemStack> getFortuneDrops(ItemStack tool, MaterialData material, int fortuneBonus) {
+		int fortune = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + fortuneBonus;
 		ArrayList<ItemStack> drops = new ArrayList<>();
 		switch (material.getItemType()) {
 		case CARROT:
-			drops.add(doAdditionFortune(Material.CARROT_ITEM, 1, 4, fortune));
+			drops.add(doFortune(Material.CARROT_ITEM, 1, 4, fortune, false));
 			break;
 		case COAL_ORE:
-			drops.add(doMultiplicationFortune(Material.COAL, 1, 1, fortune));
+			drops.add(doFortune(Material.COAL, 1, 1, fortune, true));
 			break;
 		case CROPS:
 			drops.add(new ItemStack(Material.WHEAT));
-			ItemStack seeds = doAdditionFortune(Material.SEEDS, 0, 3, fortune);
+			ItemStack seeds = doFortune(Material.SEEDS, 0, 3, fortune, false);
 			if (seeds.getAmount() > 0) {
 				drops.add(seeds);
 			}
 			break;
 		case DIAMOND_ORE:
-			drops.add(doMultiplicationFortune(Material.DIAMOND, 1, 1, fortune));
+			drops.add(doFortune(Material.DIAMOND, 1, 1, fortune, true));
 			break;
 		case EMERALD_ORE:
-			drops.add(doMultiplicationFortune(Material.EMERALD, 1, 1, fortune));
+			drops.add(doFortune(Material.EMERALD, 1, 1, fortune, true));
 			break;
 		case GLOWING_REDSTONE_ORE:
 		case REDSTONE_ORE:
 			// Only ore that is supposed to use addition-style fortune.
-			drops.add(doAdditionFortune(Material.REDSTONE, 1, 1, fortune));
+			drops.add(doFortune(Material.REDSTONE, 1, 1, fortune, false));
 			break;
 		case GLOWSTONE:
-			ItemStack dust = doAdditionFortune(Material.GLOWSTONE_DUST, 1, 4, fortune);
+			ItemStack dust = doFortune(Material.GLOWSTONE_DUST, 1, 4, fortune, false);
 			if (dust.getAmount() > 4) {
 				dust.setAmount(4);
 			}
@@ -159,7 +167,7 @@ public class BlockDrops {
 			}
 			break;
 		case LAPIS_ORE:
-			ItemStack lapis = doMultiplicationFortune(Material.INK_SACK, 4, 8, fortune);
+			ItemStack lapis = doFortune(Material.INK_SACK, 4, 8, fortune, true);
 			lapis.setData(new MaterialData(Material.INK_SACK, DyeColor.BLUE.getDyeData()));
 			drops.add(lapis);
 			break;
@@ -180,26 +188,26 @@ public class BlockDrops {
 			}
 			break;
 		case MELON_BLOCK:
-			ItemStack melon = doAdditionFortune(Material.MELON, 1, 9, fortune);
+			ItemStack melon = doFortune(Material.MELON, 1, 9, fortune, false);
 			if (melon.getAmount() > 9) {
 				melon.setAmount(9);
 			}
 			drops.add(melon);
 			break;
 		case NETHER_WARTS:
-			drops.add(doAdditionFortune(Material.NETHER_STALK, 2, 4, fortune));
+			drops.add(doFortune(Material.NETHER_STALK, 2, 4, fortune, false));
 			break;
 		case POTATO:
-			drops.add(doAdditionFortune(Material.POTATO_ITEM, 1, 4, fortune));
+			drops.add(doFortune(Material.POTATO_ITEM, 1, 4, fortune, false));
 			if (Math.random() < .02) {
 				drops.add(new ItemStack(Material.POISONOUS_POTATO));
 			}
 			break;
 		case QUARTZ_ORE:
-			drops.add(doMultiplicationFortune(Material.QUARTZ, 1, 1, fortune));
+			drops.add(doFortune(Material.QUARTZ, 1, 1, fortune, true));
 			break;
 		case SEA_LANTERN:
-			ItemStack crystals = doAdditionFortune(Material.PRISMARINE_CRYSTALS, 1, 5, fortune);
+			ItemStack crystals = doFortune(Material.PRISMARINE_CRYSTALS, 1, 5, fortune, false);
 			if (crystals.getAmount() > 5) {
 				crystals.setAmount(5);
 			}
@@ -211,21 +219,15 @@ public class BlockDrops {
 		return drops;
 	}
 
-	private static ItemStack doAdditionFortune(Material drop, int min, int max, int fortune) {
-		// Max given is the maximum output. We need the maximum number of additional drops + 1
+	private static ItemStack doFortune(Material drop, int min, int max, int fortune, boolean multiply) {
 		max -= (min - 1);
-		return new ItemStack(drop, (int) (Math.random() * (max + fortune)) + min);
-	}
-
-	private static ItemStack doMultiplicationFortune(Material drop, int min, int max, int fortune) {
-		max -= (min - 1);
-		double fortuneChance = fortune == 1 ? .33 : fortune == 2 ? .25 : .2;
-		int fortuneMultiplier = 1;
-		for (; fortune > 0; --fortune) {
-			if (Math.random() < fortuneChance) {
-				++fortuneMultiplier;
-			}
+		int bonus = (int) (Math.random() * fortune + 1);
+		if (bonus < 1) {
+			bonus = 1;
 		}
-		return new ItemStack(drop, (int) ((Math.random() * max) + min) * fortuneMultiplier);
+		if (multiply) {
+			return new ItemStack(drop, (int) ((Math.random() * max) + min) * bonus);
+		}
+		return new ItemStack(drop, (int) (Math.random() * max) + min + bonus - 1);
 	}
 }
