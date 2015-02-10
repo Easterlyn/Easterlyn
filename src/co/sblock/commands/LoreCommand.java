@@ -59,6 +59,14 @@ public class LoreCommand extends SblockCommand {
 			player.sendMessage(ChatColor.RED + "You need an item in hand to use this command!");
 			return true;
 		}
+		if (!hand.hasItemMeta() && hand.getItemMeta() == null) {
+			ItemMeta meta = Bukkit.getItemFactory().getItemMeta(hand.getType());
+			if (meta == null) {
+				sender.sendMessage(ChatColor.RED + "This item does not support meta.");
+				return true;
+			}
+			hand.setItemMeta(meta);
+		}
 		if (args[0].equals("owner")) {
 			return owner(player, hand, args);
 		}
@@ -246,7 +254,7 @@ public class LoreCommand extends SblockCommand {
 	private boolean add(Player player, ItemStack hand, String[] args) {
 		ItemMeta meta = hand.getItemMeta();
 		ArrayList<String> lore = new ArrayList<String>();
-		if (meta != null && meta.hasLore()) {
+		if (meta.hasLore()) {
 			lore.addAll(meta.getLore());
 		}
 		lore.add(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length)));
