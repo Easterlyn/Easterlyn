@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.users.Region;
 import co.sblock.users.Users;
 
 /**
@@ -85,7 +86,9 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.YELLOW + "If I told you I just teleported you to yourself would you believe me?");
 			return;
 		}
-		if (Users.getGuaranteedUser(target.getUniqueId()).getCurrentRegion() != Users.getGuaranteedUser(sender.getUniqueId()).getCurrentRegion()) {
+		Region rTarget = Users.getGuaranteedUser(target.getUniqueId()).getCurrentRegion();
+		Region rSource = Users.getGuaranteedUser(sender.getUniqueId()).getCurrentRegion();
+		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
 			// TODO re-check on accept?
 			sender.sendMessage(ChatColor.RED + "Teleports cannot be initiated across different planets!");
 			return;

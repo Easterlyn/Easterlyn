@@ -55,7 +55,7 @@ public class LoreCommand extends SblockCommand {
 		args[0] = args[0].toLowerCase();
 		Player player = (Player) sender;
 		ItemStack hand = player.getItemInHand();
-		if (hand == null) {
+		if (hand == null || hand.getType() == Material.AIR) {
 			player.sendMessage(ChatColor.RED + "You need an item in hand to use this command!");
 			return true;
 		}
@@ -246,7 +246,7 @@ public class LoreCommand extends SblockCommand {
 	private boolean add(Player player, ItemStack hand, String[] args) {
 		ItemMeta meta = hand.getItemMeta();
 		ArrayList<String> lore = new ArrayList<String>();
-		if (meta.hasLore()) {
+		if (meta != null && meta.hasLore()) {
 			lore.addAll(meta.getLore());
 		}
 		lore.add(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length)));
