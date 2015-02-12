@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 
 /**
@@ -22,7 +23,7 @@ public class PlayerInteractEntityListener implements Listener {
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if (user.isServer()) {
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			event.setCancelled(true);
 			return;
 		}

@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 
 /**
@@ -27,7 +28,7 @@ public class EntityRegainHealthListener implements Listener {
 		}
 
 		OfflineUser user = Users.getGuaranteedUser(event.getEntity().getUniqueId());
-		if (user != null && user.isServer()) {
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			event.setCancelled(true);
 			return;
 		}

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -50,7 +51,7 @@ public class SpectateCommand extends SblockCommand {
 			sender.sendMessage(this.getUsage());
 			return true;
 		}
-		if (user.isServer()) {
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			sender.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
 			return true;
 		}

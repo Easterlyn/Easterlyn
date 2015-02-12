@@ -6,9 +6,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
-import co.sblock.users.OfflineUser;
 import co.sblock.effects.FXManager;
 import co.sblock.effects.fx.SblockFX;
+import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 
 /**
@@ -25,7 +26,11 @@ public class PlayerPickupItemListener implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser offUser = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		if (!(offUser instanceof OnlineUser)) {
+			return;
+		}
+		OnlineUser user = (OnlineUser) offUser;
 
 		if (user.isServer()) {
 			event.setCancelled(true);
@@ -34,7 +39,7 @@ public class PlayerPickupItemListener implements Listener {
 
 		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getItem().getItemStack());
 		for (SblockFX fx : effects.values()) {
-			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), event);
+			fx.applyEffect(user, event);
 		}
 	}
 }

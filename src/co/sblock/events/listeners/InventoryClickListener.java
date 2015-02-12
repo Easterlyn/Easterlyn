@@ -24,6 +24,8 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
@@ -185,7 +187,8 @@ public class InventoryClickListener implements Listener {
 	private void itemRemoveBottom(InventoryClickEvent event) {
 
 		// Server: Click computer icon -> open computer interface
-		if (Users.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()) {
+		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			if (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
@@ -220,7 +223,8 @@ public class InventoryClickListener implements Listener {
 	// switch bottom
 	private void itemSwapIntoBottom(InventoryClickEvent event) {
 		// Server: No picking up computer icon
-		if (Users.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()
+		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
 				&& event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 			event.setCancelled(true);
 			return;
@@ -234,7 +238,8 @@ public class InventoryClickListener implements Listener {
 	private void itemSwapToHotbar(InventoryClickEvent event) {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 
-		if (Users.getGuaranteedUser(event.getWhoClicked().getUniqueId()).isServer()
+		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
 				&& (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())
 						|| hotbar.isSimilar(MachineType.COMPUTER.getUniqueDrop()))) {
 			event.setCancelled(true);

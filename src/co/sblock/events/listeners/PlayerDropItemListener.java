@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import co.sblock.effects.FXManager;
 import co.sblock.effects.fx.SblockFX;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 
 /**
@@ -40,7 +41,7 @@ public class PlayerDropItemListener implements Listener {
 			return;
 		}
 
-		if (user.isServer()) {
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			event.setCancelled(true);
 			return;
 		}

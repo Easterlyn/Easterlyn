@@ -1,6 +1,5 @@
 package co.sblock.events.listeners;
 
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,8 +7,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.meteors.MeteoriteComponent;
+
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
 
 /**
  * Listener for EntityDamageByEntityEvents.
@@ -45,8 +47,8 @@ public class EntityDamageByEntityListener implements Listener {
 			return;
 		}
 
-		OfflineUser u = Users.getGuaranteedUser(event.getDamager().getUniqueId());
-		if (u != null && u.isServer()) {
+		OfflineUser user = Users.getGuaranteedUser(event.getDamager().getUniqueId());
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			event.setCancelled(true);
 			return;
 		}

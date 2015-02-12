@@ -7,6 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import co.sblock.Sblock;
+import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -32,8 +34,9 @@ public class PlayerCommandPreprocessListener implements Listener {
 
 		String command = event.getMessage().toLowerCase().substring(1, space > 0 ? space : event.getMessage().length());
 
-		if ((Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())
-				|| Users.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer())
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		if ((user instanceof OnlineUser && ((OnlineUser) user).isServer()
+				|| Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId()))
 				&& (isExecuting(command, "sethome"))) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");

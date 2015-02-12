@@ -27,9 +27,10 @@ import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
 import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.type.Machine;
+import co.sblock.machines.utilities.Icon;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
@@ -60,8 +61,8 @@ public class Entry {
 	private static Entry instance;
 
 	private final Material[] materials;
-	private HashBiMap<EntryTimer, UUID> holograms;
-	private HashMap<UUID, EntryStorage> data;
+	private final HashBiMap<EntryTimer, UUID> holograms;
+	private final HashMap<UUID, EntryStorage> data;
 
 	public Entry() {
 		materials = createMaterialList();
@@ -104,7 +105,9 @@ public class Entry {
 		im.setDisplayName(ChatColor.AQUA + "Cruxite " + InventoryUtils.getMaterialDataName(is.getType(), is.getDurability()));
 		is.setItemMeta(im);
 		is = Captcha.captchaToPunch(Captcha.itemToCaptcha(is));
-		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline() && Users.getGuaranteedUser(user.getServer()).isServer()) {
+		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline()
+				&& Users.getGuaranteedUser(user.getServer()) instanceof OnlineUser
+				&& ((OnlineUser) Users.getGuaranteedUser(user.getServer())).isServer()) {
 			Bukkit.getPlayer(user.getServer()).getInventory().addItem(is);
 		} else {
 			Player player = user.getPlayer();
@@ -126,8 +129,8 @@ public class Entry {
 
 		// Kicks the server out of server mode
 		OfflineUser server = Users.getGuaranteedUser(user.getServer());
-		if (server != null && server.isServer()) {
-			server.stopServerMode();
+		if (server instanceof OnlineUser && ((OnlineUser) server).isServer()) {
+			((OnlineUser) server).stopServerMode();
 		}
 	}
 

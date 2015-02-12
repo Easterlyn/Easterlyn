@@ -24,6 +24,7 @@ import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
@@ -49,7 +50,7 @@ public class PlayerInteractListener implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if (user.isServer()) {
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			// No interaction with any blocks while out of range.
 			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
 					user, event.getClickedBlock())) {

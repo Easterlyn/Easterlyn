@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,44 +32,26 @@ public class OfflineUser {
 
 	public static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat("00");
 
+	private final YamlConfiguration yaml;
+
 	/* General player data */
 	private final UUID uuid;
-	private String userIP;
-	private String displayName;
-	private Location currentLocation;
-	private Region currentRegion;
-	private String timePlayed;
+	private final String userIP;
 	private Location previousLocation;
-	boolean allowFlight, spectatable;
-
-	/* Classpect */
-	private UserClass userClass;
-	private UserAspect userAspect;
-	private Region medium, dream;
 
 	/* Various data Sblock tracks for progression purposes */
-	private ProgressionState progression;
-	private UUID server, client;
 	private Set<Integer> programs;
-	boolean isServer;
 
 	/* Chat data*/
 	protected String currentChannel;
 	private Set<String> listening;
-	private AtomicBoolean globalMute, suppress, highlight;
 
-	protected OfflineUser(UUID userID, String ip, String displayName, Location currentLocation,
+	protected OfflineUser(UUID userID, String ip, YamlConfiguration yaml, String displayName, Location currentLocation,
 			Region currentRegion, String timePlayed, Location previousLocation,
-			UserClass userClass, UserAspect userAspect, Region medium, Region dream,
-			ProgressionState progstate, UUID server, UUID client, Set<Integer> programs,
-			boolean allowFlight, boolean spectatable, String currentChannel, Set<String> listening,
-			AtomicBoolean globalMute, AtomicBoolean supress, AtomicBoolean highlight) {
+			Set<Integer> programs, String currentChannel, Set<String> listening) {
 		this.uuid = userID;
 		this.userIP = ip;
-		this.displayName = displayName;
-		this.currentLocation = currentLocation;
-		this.currentRegion = currentRegion;
-		this.timePlayed = timePlayed;
+		this.yaml = yaml;
 		this.previousLocation = previousLocation;
 		if (previousLocation == null) {
 			World earth = Bukkit.getWorld("Earth");
@@ -78,36 +59,15 @@ public class OfflineUser {
 				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
 			}
 		}
-		this.allowFlight = allowFlight;
-		this.spectatable = spectatable;
-		this.userClass = userClass;
-		this.userAspect = userAspect;
-		this.medium = medium;
-		this.dream = dream;
-		this.progression = progstate;
-		this.server = server;
-		this.client = client;
 		this.programs = programs;
-		this.isServer = false;
 		this.currentChannel = currentChannel;
 		this.listening = listening;
-		this.globalMute = globalMute;
-		this.suppress = supress;
-		this.highlight = highlight;
 	}
 
-	private OfflineUser(UUID uuid, String ip) {
+	private OfflineUser(UUID uuid, String ip, YamlConfiguration yaml) {
 		this.uuid = uuid;
 		this.userIP = ip;
-		this.timePlayed = "Unknown";
-		this.userClass = UserClass.HEIR;
-		this.userAspect = UserAspect.BREATH;
-		this.medium = Region.LOWAS;
-		this.dream = Region.PROSPIT;
-		this.progression = ProgressionState.NONE;
-		this.isServer = false;
-		this.allowFlight = false;
-		this.spectatable = true;
+		this.yaml = yaml;
 		World earth = Bukkit.getWorld("Earth");
 		if (earth != null) {
 			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
@@ -117,9 +77,6 @@ public class OfflineUser {
 		this.listening = new HashSet<>();
 		this.listening.add("#");
 		this.listening.add("#EARTH");
-		this.globalMute = new AtomicBoolean(false);
-		this.suppress = new AtomicBoolean(false);
-		this.highlight = new AtomicBoolean(true);
 	}
 
 	/**
@@ -174,7 +131,7 @@ public class OfflineUser {
 	 * @return a String of the Player's nickname
 	 */
 	public String getDisplayName() {
-		return this.displayName == null ? this.getPlayerName() : this.displayName;
+		return yaml.getString("nickname", getPlayerName());
 	}
 
 	/**
@@ -183,7 +140,7 @@ public class OfflineUser {
 	 * @return the UserClass, default Heir
 	 */
 	public UserClass getUserClass() {
-		return this.userClass;
+		return (UserClass) yaml.get("classpect.class", UserClass.HEIR);
 	}
 
 	/**
@@ -192,7 +149,7 @@ public class OfflineUser {
 	 * @param userClassName the new UserClass
 	 */
 	public void setUserClass(String userClassName) {
-		this.userClass = UserClass.getClass(userClassName);
+		yaml.set("classpect.class", UserClass.getClass(userClassName));
 	}
 
 	/**
@@ -201,7 +158,7 @@ public class OfflineUser {
 	 * @return the UserAspect
 	 */
 	public UserAspect getUserAspect() {
-		return this.userAspect;
+		return (UserAspect) yaml.get("classpect.aspect", UserAspect.BREATH);
 	}
 
 	/**
@@ -210,7 +167,7 @@ public class OfflineUser {
 	 * @param userAspectName the new UserAspect
 	 */
 	public void setUserAspect(String userAspectName) {
-		this.userAspect = UserAspect.getAspect(userAspectName);
+		yaml.set("classpect.aspect", UserAspect.getAspect(userAspectName));
 	}
 
 	/**
@@ -219,7 +176,7 @@ public class OfflineUser {
 	 * @return the medium Region
 	 */
 	public Region getMediumPlanet() {
-		return this.medium;
+		return (Region) yaml.get("classpect.medium", Region.LOWAS);
 	}
 
 	/**
@@ -232,7 +189,7 @@ public class OfflineUser {
 		if (!planet.isMedium()) {
 			throw new RuntimeException("Invalid medium planet: " + planet.name());
 		}
-		this.medium = planet;
+		yaml.set("classpect.medium", planet);
 	}
 
 	/**
@@ -241,7 +198,7 @@ public class OfflineUser {
 	 * @return the dream Region
 	 */
 	public Region getDreamPlanet() {
-		return this.dream;
+		return (Region) yaml.get("classpect.dream", Region.PROSPIT);
 	}
 
 	/**
@@ -254,7 +211,7 @@ public class OfflineUser {
 		if (!planet.isDream()) {
 			throw new RuntimeException("Invalid dream planet: " + planet.name());
 		}
-		this.dream = planet;
+		yaml.set("classpect.dream", planet);
 	}
 
 	/**
@@ -263,7 +220,7 @@ public class OfflineUser {
 	 * @return the ProgressionState
 	 */
 	public ProgressionState getProgression() {
-		return this.progression;
+		return (ProgressionState) yaml.get("progression.progression", ProgressionState.NONE);
 	}
 
 	/**
@@ -272,7 +229,7 @@ public class OfflineUser {
 	 * @param progression the new ProgressionState
 	 */
 	public void setProgression(ProgressionState progression) {
-		this.progression = progression;
+		yaml.set("progression.progression", progression);
 	}
 
 	/**
@@ -281,7 +238,7 @@ public class OfflineUser {
 	 * @return true if flight should be enabled
 	 */
 	public boolean getFlight() {
-		return this.allowFlight;
+		return yaml.getBoolean("flying", false);
 	}
 
 	/**
@@ -295,7 +252,7 @@ public class OfflineUser {
 	 * @param spectatable true if the user can be spectated
 	 */
 	public void setSpectatable(boolean spectatable) {
-		this.spectatable = spectatable;
+		yaml.set("spectatable", spectatable);
 	}
 
 	/**
@@ -304,11 +261,15 @@ public class OfflineUser {
 	 * @return true if the user can be spectated to
 	 */
 	public boolean getSpectatable() {
-		return this.spectatable;
+		return yaml.getBoolean("spectatable", true);
 	}
 
 	public Location getCurrentLocation() {
-		return currentLocation != null ? currentLocation : Users.getSpawnLocation();
+		String location = yaml.getString("location");
+		if (location == null) {
+			return Users.getSpawnLocation();
+		}
+		return BukkitSerializer.locationFromString(location);
 	}
 
 	/**
@@ -317,7 +278,7 @@ public class OfflineUser {
 	 * @return the Region the Player is in.
 	 */
 	public Region getCurrentRegion() {
-		return currentRegion != null ? currentRegion : Region.UNKNOWN;
+		return (Region) yaml.get("region", Region.UNKNOWN);
 	}
 
 	/**
@@ -326,7 +287,7 @@ public class OfflineUser {
 	 * @param region
 	 */
 	protected void setCurrentRegion(Region region) {
-		currentRegion = region;
+		yaml.set("region", region);
 	}
 
 	/**
@@ -364,7 +325,7 @@ public class OfflineUser {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		return timePlayed;
+		return yaml.getString("playtime", "Unknown");
 	}
 
 	/**
@@ -386,31 +347,12 @@ public class OfflineUser {
 	}
 
 	/**
-	 * Check if the User is in server mode.
-	 * 
-	 * @return true if the User is in server mode
-	 */
-	public boolean isServer() {
-		return this.isServer;
-	}
-
-	/**
-	 * Initiate server mode.
-	 */
-	public void startServerMode() {}
-
-	/**
-	 * Disable server mode.
-	 */
-	public void stopServerMode() {}
-
-	/**
 	 * Set the User's server player.
 	 * 
 	 * @param userID the UUID of the server
 	 */
 	public void setServer(UUID userID) {
-		this.server = userID;
+		yaml.set("progression.server", userID.toString());
 	}
 
 	/**
@@ -419,7 +361,10 @@ public class OfflineUser {
 	 * @return the saved server UUID
 	 */
 	public UUID getServer() {
-		return this.server;
+		if (yaml.getString("progression.server") != null) {
+			return UUID.fromString(yaml.getString("progression.server"));
+		}
+		return null;
 	}
 
 	/**
@@ -427,12 +372,8 @@ public class OfflineUser {
 	 * 
 	 * @param s the name of the Player to set as the client player.
 	 */
-	public boolean setClient(UUID userID) {
-		if (this.client == null) {
-			this.client = userID;
-			return true;
-		}
-		return false;
+	public void setClient(UUID userID) {
+		yaml.set("progression.client", userID.toString());
 	}
 
 	/**
@@ -441,7 +382,10 @@ public class OfflineUser {
 	 * @return the saved client player
 	 */
 	public UUID getClient() {
-		return this.client;
+		if (yaml.getString("progression.client") != null) {
+			return UUID.fromString(yaml.getString("progression.client"));
+		}
+		return null;
 	}
 
 	/**
@@ -454,10 +398,10 @@ public class OfflineUser {
 	/**
 	 * Sets the User's chat mute status.
 	 * 
-	 * @param b true if the User is muted
+	 * @param mute true if the User is muted
 	 */
-	public void setMute(boolean b) {
-		this.globalMute.set(b);
+	public synchronized void setMute(boolean mute) {
+		yaml.set("chat.muted", mute);
 	}
 
 	/**
@@ -465,17 +409,17 @@ public class OfflineUser {
 	 * 
 	 * @return true if the User is muted
 	 */
-	public boolean getMute() {
-		return this.globalMute.get();
+	public synchronized boolean getMute() {
+		return yaml.getBoolean("chat.muted", false);
 	}
 
 	/**
 	 * Sets the User's current chat suppression status.
 	 * 
-	 * @param b true if the User is to suppress global channels
+	 * @param suppress true if the User is to suppress global channels
 	 */
-	public void setSuppression(boolean b) {
-		this.suppress.lazySet(b);
+	public synchronized void setSuppression(boolean suppress) {
+		yaml.set("chat.suppressing", suppress);
 	}
 
 	/**
@@ -483,17 +427,17 @@ public class OfflineUser {
 	 * 
 	 * @return true if the Player is suppressing global channels.
 	 */
-	public boolean getSuppression() {
-		return suppress.get();
+	public synchronized boolean getSuppression() {
+		return yaml.getBoolean("chat.suppressing");
 	}
 
 	/**
 	 * Sets the User's current chat highlight status.
 	 * 
-	 * @param b true if the User is to be highlighted
+	 * @param highlight true if the User is to be highlighted
 	 */
-	public void setHighlight(boolean b) {
-		this.highlight.lazySet(b);
+	public synchronized void setHighlight(boolean highlight) {
+		yaml.set("chat.highlight", highlight);
 	}
 
 	/**
@@ -501,8 +445,8 @@ public class OfflineUser {
 	 * 
 	 * @return true if the Player is to be highlighted.
 	 */
-	public boolean getHighlight() {
-		return this.highlight.get();
+	public synchronized boolean getHighlight() {
+		return yaml.getBoolean("chat.highlight", true);
 	}
 
 	public Collection<String> getHighlights(Channel channel) {
@@ -739,6 +683,7 @@ public class OfflineUser {
 		return sb.toString();
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
 			return false;
@@ -760,14 +705,15 @@ public class OfflineUser {
 	public OnlineUser getOnlineUser() {
 		OnlineUser user = Users.getOnlineUser(getUUID());
 		if (user == null) {
-			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
+			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(), yaml,
 					getDisplayName(), getCurrentLocation(), getCurrentRegion(),
-					getPreviousLocation(), getUserClass(), getUserAspect(), getMediumPlanet(),
-					getDreamPlanet(), getProgression(), getServer(), getClient(), getPrograms(),
-					getFlight(), getSpectatable(), currentChannel, getListening(), globalMute,
-					suppress, highlight);
+					getPreviousLocation(), getPrograms(), currentChannel, getListening());
 		}
 		return null;
+	}
+
+	protected YamlConfiguration getYamlConfiguration() {
+		return yaml;
 	}
 
 	public void save() {
@@ -781,34 +727,17 @@ public class OfflineUser {
 			throw new RuntimeException("Unable to save data for " + getUUID().toString(), e);
 		}
 		Player player = Bukkit.getPlayer(getUUID());
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		yaml.set("name", player != null ? getPlayerName() : Bukkit.getOfflinePlayer(getUUID()).getName());
 		yaml.set("ip", getUserIP());
 		if (player != null) {
-			yaml.set("nickname", player.getDisplayName());
 			yaml.set("playtime", getTimePlayed());
 		}
-		yaml.set("location", BukkitSerializer.locationToBlockCenterString(getCurrentLocation()));
-		yaml.set("region", getCurrentRegion().getDisplayName());
 		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(getPreviousLocation()));
 		yaml.set("previousRegion", null);
-		yaml.set("flying", getFlight());
-		yaml.set("spectatable", getSpectatable());
-		yaml.set("classpect.class", getUserClass().getDisplayName());
-		yaml.set("classpect.aspect", getUserAspect().getDisplayName());
-		yaml.set("classpect.dream", getDreamPlanet().getDisplayName());
-		yaml.set("classpect.medium", getMediumPlanet().getDisplayName());
-		yaml.set("progression.progression", getProgression().name());
 		yaml.set("progression.programs", getPrograms());
-		yaml.set("progression.server", getServer() != null ? getServer().toString() : null);
-		yaml.set("progression.client", getClient() != null ? getClient().toString() : null);
 		yaml.set("chat.current", getCurrentChannel() != null ? getCurrentChannel().getName() : "#");
 		yaml.set("chat.listening", getListening());
-		yaml.set("chat.muted", getMute());
-		yaml.set("chat.suppressing", getSuppression());
-		yaml.set("chat.highlight", getHighlight());
 		yaml.set("chat.ignoring", null);
-		yaml.set("chat.highlights", null);
 		try {
 			yaml.save(file);
 		} catch (IOException e) {
@@ -825,11 +754,11 @@ public class OfflineUser {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player == null) {
 					Users.getInstance().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
-					return new OfflineUser(uuid, "null");
+					return new OfflineUser(uuid, "null", new YamlConfiguration());
 				}
 				player.teleport(Users.getSpawnLocation());
 
-				OfflineUser offline = new OfflineUser(uuid, player.getAddress().getHostString());
+				OfflineUser offline = new OfflineUser(uuid, player.getAddress().getHostString(), new YamlConfiguration());
 				offline.setCurrentChannel("#"); // Reverse come Entry
 				offline.getListening().add(Region.EARTH.getChannelName());
 				OnlineUser user = offline.getOnlineUser();
@@ -841,6 +770,8 @@ public class OfflineUser {
 					// Our data file may have just been deleted - reset planned for Entry, etc.
 					Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
 							+ " is joining us for the first time! Please welcome them.");
+				} else {
+					player.sendMessage(ColorDef.HAL + "We've reset classpect since you last played. Please re-select now!");
 				}
 				return user;
 			}
@@ -848,14 +779,15 @@ public class OfflineUser {
 			throw new RuntimeException("Unable to load data for " + uuid, e);
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		OfflineUser user = new OfflineUser(uuid, yaml.getString("ip", "null"));
+		OfflineUser user = new OfflineUser(uuid, yaml.getString("ip", "null"), yaml);
 		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
-		user.setSpectatable(yaml.getBoolean("spectatable", true));
 		//yaml.getString("previousRegion");
+		// try
 		user.setUserClass(yaml.getString("classpect.class", "HEIR"));
 		user.setUserAspect(yaml.getString("classpect.aspect", "BREATH"));
 		user.setMediumPlanet(yaml.getString("classpect.medium", "LOWAS"));
 		Region dream = Region.getRegion(yaml.getString("classpect.dream", "PROSPIT"));
+		// catch classcast
 		user.setDreamPlanet(dream.name());
 		Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("location"));
 		if (currentLoc == null) {
@@ -866,8 +798,9 @@ public class OfflineUser {
 			current = dream;
 		}
 		user.setCurrentRegion(current);
-		user.timePlayed = yaml.getString("playtime", "Unknown");
+		// try
 		user.setProgression(ProgressionState.valueOf(yaml.getString("progression.progression", "NONE")));
+		// catch classcast, get string
 		user.getPrograms().addAll((HashSet<Integer>) yaml.get("progression.programs"));
 		if (yaml.getString("progression.server") != null) {
 			user.setServer(UUID.fromString(yaml.getString("progression.server")));
@@ -877,9 +810,6 @@ public class OfflineUser {
 		}
 		user.setCurrentChannel(yaml.getString("chat.current", "#"));
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
-		user.setMute(yaml.getBoolean("chat.muted"));
-		user.setSuppression(yaml.getBoolean("chat.suppressing"));
-		user.setHighlight(yaml.getBoolean("chat.highlight", true));
 		//(Set<String>) yaml.get("chat.ignoring");
 
 		String name = yaml.getString("name");
@@ -898,13 +828,11 @@ public class OfflineUser {
 		user.setMediumPlanet(online.getMediumPlanet().name());
 		user.setDreamPlanet(online.getDreamPlanet().name());
 		user.setPreviousLocation(online.getPreviousLocation());
-		user.setSpectatable(online.getSpectatable());
 		// User may have logged out and not been unloaded properly
 		if (user.isOnline()) {
-			user.displayName = online.getDisplayName();
-			user.currentLocation = online.getCurrentLocation();
+			user.getYamlConfiguration().set("location", BukkitSerializer.locationToBlockCenterString(online.getCurrentLocation()));
+			user.getYamlConfiguration().set("nickname", online.getDisplayName());
 			user.setCurrentRegion(online.getCurrentRegion());
-			user.timePlayed = online.getTimePlayed();
 		}
 		user.setProgression(online.getProgression());
 		user.setServer(online.getServer());

@@ -13,6 +13,7 @@ import co.sblock.effects.fx.SblockFX;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.spectator.Spectators;
@@ -42,9 +43,9 @@ public class BlockBreakListener implements Listener {
 			event.setCancelled(m.handleBreak(event));
 		}
 
-		OfflineUser u = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if (u != null && u.isServer()) {
-			event.setCancelled(event.isCancelled() || !ServerMode.getInstance().isWithinRange(u, event.getBlock()));
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+			event.setCancelled(event.isCancelled() || !ServerMode.getInstance().isWithinRange(user, event.getBlock()));
 		}
 	}
 
