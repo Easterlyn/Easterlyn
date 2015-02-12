@@ -34,7 +34,7 @@ public class PlayerCommandPreprocessListener implements Listener {
 
 		if ((Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())
 				|| Users.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer())
-				&& (isExecuting(command, "sethome") || isExecuting(command, "tpahere") || isExecuting(command, "tpaccept"))) {
+				&& (isExecuting(command, "sethome"))) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");
 			return;

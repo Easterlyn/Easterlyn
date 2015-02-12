@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.users.Region;
 import co.sblock.users.Users;
+import co.sblock.utilities.spectator.Spectators;
 
 /**
  * Essentials' TPA just won't cut it.
@@ -30,6 +31,9 @@ public class TeleportRequestCommand extends SblockCommand {
 		this.setDescription("Handle a teleport request");
 		this.setUsage("/tpa name, /tpahere name, /tpaccept, /tpdecline");
 		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno");
+		// entry
+//		this.setPermissionLevel("hero");
+//		this.setPermissionMessage("You must complete classpect selection before you can teleport!");
 	}
 
 	@Override
@@ -86,11 +90,14 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.YELLOW + "If I told you I just teleported you to yourself would you believe me?");
 			return;
 		}
+		if (Spectators.getInstance().isSpectator(here ? sender.getUniqueId() : target.getUniqueId())) {
+			sender.sendMessage(ChatColor.RED + "Incorporeal players cannot be teleported to!");
+			return;
+		}
 		Region rTarget = Users.getGuaranteedUser(target.getUniqueId()).getCurrentRegion();
 		Region rSource = Users.getGuaranteedUser(sender.getUniqueId()).getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
-			// TODO re-check on accept?
-			sender.sendMessage(ChatColor.RED + "Teleports cannot be initiated across different planets!");
+			sender.sendMessage(ChatColor.RED + "Teleports cannot be initiated from different planets!");
 			return;
 		}
 		if (pending.containsKey(target.getUniqueId()) && pending.get(target.getUniqueId()).getExpiry() > System.currentTimeMillis()) {
@@ -120,11 +127,31 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.RED + "The issuer of the request seems to have logged off.");
 			return;
 		}
+		if (Spectators.getInstance().isSpectator(toArriveAt.getUniqueId())) {
+			String message = ChatColor.RED + "Incorporeal players cannot be teleported to!";
+			toTeleport.sendMessage(message);
+			toArriveAt.sendMessage(message);
+			return;
+		}
+		Region rTarget = Users.getGuaranteedUser(toArriveAt.getUniqueId()).getCurrentRegion();
+		Region rSource = Users.getGuaranteedUser(toTeleport.getUniqueId()).getCurrentRegion();
+		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
+			String message = ChatColor.RED + "Teleports cannot be initiated from different planets!";
+			toTeleport.sendMessage(message);
+			toArriveAt.sendMessage(message);
+			return;
+		}
 		toTeleport.teleport(toArriveAt);
 		toTeleport.sendMessage(ChatColor.YELLOW + "Teleporting to " + ChatColor.DARK_AQUA
 				+ toArriveAt.getDisplayName() + ChatColor.YELLOW + ".");
 		toArriveAt.sendMessage(ChatColor.YELLOW + "Teleported " + ChatColor.DARK_AQUA
 				+ toTeleport.getDisplayName() + ChatColor.YELLOW + " to you.");
+
+		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
+		// TODO perhaps rather than use /spectate deny, attempted spectating sends a tpa?
+		if (Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
+			tpacooldown.remove(request.getSource());
+		}
 	}
 
 	private void decline(Player sender) {

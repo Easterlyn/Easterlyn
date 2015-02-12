@@ -1,12 +1,16 @@
 package co.sblock.events.listeners;
 
 import java.util.Iterator;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import co.sblock.Sblock;
 import co.sblock.events.Events;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
@@ -58,7 +62,8 @@ public class PlayerQuitListener implements Listener {
 		// Delete team for exiting player to avoid clutter
 		Users.unteam(event.getPlayer());
 
-		OfflineUser user = Users.unloadUser(event.getPlayer().getUniqueId());
+		final UUID uuid = event.getPlayer().getUniqueId();
+		OfflineUser user = Users.getGuaranteedUser(uuid);
 		user.save();
 
 		// Remove Server status
@@ -77,5 +82,16 @@ public class PlayerQuitListener implements Listener {
 				iterator.remove();
 			}
 		}
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				// A player chatting during an unload will cause the recipient's OnlineUser to be re-created.
+				// To combat this, we attempt to unload the user after they should no longer be online.
+				if (Bukkit.getPlayer(uuid) == null) {
+					Users.unloadUser(uuid);
+				}
+			}
+		}.runTask(Sblock.getInstance());
 	}
 }

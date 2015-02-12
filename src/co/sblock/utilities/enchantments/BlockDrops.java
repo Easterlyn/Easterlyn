@@ -221,7 +221,7 @@ public class BlockDrops {
 
 	private static ItemStack doFortune(Material drop, int min, int max, int fortune, boolean multiply) {
 		max -= (min - 1);
-		int bonus = (int) (Math.random() * fortune + 1);
+		int bonus = (int) (Math.random() * (fortune + 2));
 		if (bonus < 1) {
 			bonus = 1;
 		}
