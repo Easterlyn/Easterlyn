@@ -17,9 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import org.jibble.jmegahal.JMegaHal;
 
 import co.sblock.Sblock;
@@ -39,12 +41,12 @@ import co.sblock.utilities.regex.RegexUtils;
  */
 public class MegaHal {
 
-	private Pattern exactPattern, whitespacePattern;
-	private JMegaHal hal;
-	private Set<String> pendingMessages;
-	private Map<String, Long> ratelimit;
-	private HalLogSavingTask save;
-	private Set<Pattern> ignoreMatches;
+	private final Pattern exactPattern, whitespacePattern;
+	private final JMegaHal hal;
+	private final Set<String> pendingMessages;
+	private final Map<String, Long> ratelimit;
+	private final HalLogSavingTask save;
+	private final Set<Pattern> ignoreMatches;
 	private int fileNum;
 
 	public MegaHal() {
@@ -133,7 +135,8 @@ public class MegaHal {
 
 	public synchronized void log(String message) {
 		message = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', message));
-		if (message.isEmpty() || message.length() < 15 || message.startsWith("((") || isTrigger(message)) {
+		if (message.isEmpty() || message.length() < 15 || message.startsWith("(")
+				|| message.contains("/") || isTrigger(message)) {
 			return;
 		}
 		// TODO strip more stuff we don't want
