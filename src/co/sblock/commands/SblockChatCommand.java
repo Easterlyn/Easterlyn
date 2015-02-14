@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -41,6 +42,7 @@ public class SblockChatCommand extends SblockCommand {
 		super("sc");
 		this.setDescription("SblockChat's main command");
 		this.setUsage("/sc");
+		setAliases("chat");
 		primaryArgs = new String[] {"c", "l", "listen", "leave", "list", "listall", "new", "nick", "suppress"};
 		nickArgs = new String[] {"list", "set", "remove"};
 		channelTypes = new String[] {"NORMAL", "NICK", "RP"};
@@ -89,6 +91,7 @@ public class SblockChatCommand extends SblockCommand {
 		return true;
 	}
 
+	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
 		if (!(sender instanceof Player) || args.length == 0) {
