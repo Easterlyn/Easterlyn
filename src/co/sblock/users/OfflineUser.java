@@ -2,7 +2,6 @@ package co.sblock.users;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -30,8 +29,6 @@ import co.sblock.chat.channel.Channel;
  */
 public class OfflineUser {
 
-	public static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat("00");
-
 	private final YamlConfiguration yaml;
 
 	/* General player data */
@@ -46,9 +43,9 @@ public class OfflineUser {
 	protected String currentChannel;
 	private Set<String> listening;
 
-	protected OfflineUser(UUID userID, String ip, YamlConfiguration yaml, String displayName, Location currentLocation,
-			Region currentRegion, String timePlayed, Location previousLocation,
-			Set<Integer> programs, String currentChannel, Set<String> listening) {
+	protected OfflineUser(UUID userID, String ip, YamlConfiguration yaml,
+			Location previousLocation, Set<Integer> programs, String currentChannel,
+			Set<String> listening) {
 		this.uuid = userID;
 		this.userIP = ip;
 		this.yaml = yaml;
@@ -72,11 +69,10 @@ public class OfflineUser {
 		if (earth != null) {
 			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
 		}
-		this.currentChannel = "#EARTH";
+		this.currentChannel = "#";
 		this.programs = new HashSet<>();
 		this.listening = new HashSet<>();
 		this.listening.add("#");
-		this.listening.add("#EARTH");
 	}
 
 	/**
@@ -626,10 +622,15 @@ public class OfflineUser {
 		sb.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+--")
 				.append(ChatColor.DARK_AQUA).append(' ').append(getPlayerName())
 				.append(ChatColor.YELLOW).append(" aka ").append(ChatColor.DARK_AQUA)
-				.append(getDisplayName()).append(ChatColor.YELLOW)
-				.append(" from ").append(ChatColor.DARK_AQUA).append(getUserIP())
-				.append(ChatColor.YELLOW).append(' ').append(ChatColor.STRIKETHROUGH)
-				.append("--+\n");
+				.append(getDisplayName()).append(ChatColor.YELLOW).append(" from ")
+				.append(ChatColor.DARK_AQUA).append(getUserIP()).append(ChatColor.YELLOW)
+				.append(' ').append(ChatColor.STRIKETHROUGH).append("--+\n");
+
+		// If stored, Previously known as: Name
+		if (yaml.getString("previousname") != null) {
+			sb.append(ChatColor.YELLOW).append("Previously known as: ").append(ChatColor.DARK_AQUA)
+					.append(yaml.getString("previousname")).append('\n');
+		}
 
 		// Class of Aspect, dream, planet
 		sb.append(ChatColor.DARK_AQUA).append(getUserClass().getDisplayName())
@@ -674,11 +675,13 @@ public class OfflineUser {
 				.append(ChatColor.YELLOW).append(", Suppressing: ").append(ChatColor.DARK_AQUA)
 				.append(getSuppression()).append('\n');
 
-		// Last seen: date, Playtime: X days, XX:XX
-		sb.append(ChatColor.YELLOW).append("Last login: ").append(ChatColor.DARK_AQUA)
-				.append(new SimpleDateFormat("HH:mm 'on' dd/MM/YY").format(new Date(
-						getOfflinePlayer().getLastPlayed()))).append(ChatColor.YELLOW)
-				.append(", Time ingame: ").append(ChatColor.DARK_AQUA).append(getTimePlayed());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm 'on' dd/MM/YY");
+		// Seen: date, Playtime: X days, XX:XX since XX:XX on XX/XX/XX
+		sb.append(ChatColor.YELLOW).append("Seen: ").append(ChatColor.DARK_AQUA)
+				.append(dateFormat.format(new Date(getOfflinePlayer().getLastPlayed())))
+				.append(ChatColor.YELLOW).append(", Ingame: ").append(ChatColor.DARK_AQUA)
+				.append(getTimePlayed()).append(" since ")
+				.append(dateFormat.format(getOfflinePlayer().getFirstPlayed()));
 
 		return sb.toString();
 	}
@@ -705,9 +708,9 @@ public class OfflineUser {
 	public OnlineUser getOnlineUser() {
 		OnlineUser user = Users.getOnlineUser(getUUID());
 		if (user == null) {
-			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(), yaml,
-					getDisplayName(), getCurrentLocation(), getCurrentRegion(),
-					getPreviousLocation(), getPrograms(), currentChannel, getListening());
+			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
+					yaml, getDisplayName(), getPreviousLocation(), getPrograms(), currentChannel,
+					getListening());
 		}
 		return null;
 	}

@@ -1,5 +1,6 @@
 package co.sblock.users;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,11 +51,10 @@ public class OnlineUser extends OfflineUser {
 	private Location serverDisableTeleport;
 	private boolean isServer;
 
-	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, String displayName, Location currentLocation,
-			Region currentRegion, Location previousLocation, Set<Integer> programs,
-			String currentChannel, Set<String> listening) {
-		super(userID, ip, yaml, displayName, currentLocation, currentRegion, null, previousLocation, programs,
-				currentChannel, listening);
+	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, String displayName,
+			Location previousLocation, Set<Integer> programs, String currentChannel,
+			Set<String> listening) {
+		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
 		effectsList = new HashMap<>();
 		isServer = false;
 		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
@@ -90,7 +90,7 @@ public class OnlineUser extends OfflineUser {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				boolean allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().contains("Circle")
+				boolean allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().equals("Derspit")
 						|| getPlayer().getGameMode() == GameMode.CREATIVE
 						|| getPlayer().getGameMode() == GameMode.SPECTATOR
 						|| isServer || Spectators.getInstance().isSpectator(getUUID()));
@@ -111,7 +111,8 @@ public class OnlineUser extends OfflineUser {
 		long hours = time / (60 * 60 * 20);
 		time -= hours * 60 * 60 * 20;
 		time = time / (60 * 20);
-		return days + " days, " + DECIMAL_FORMATTER.format(hours) + ':' + DECIMAL_FORMATTER.format(time);
+		DecimalFormat decimalFormat = new DecimalFormat("00");
+		return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
 	}
 
 	@Override
