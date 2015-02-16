@@ -90,6 +90,10 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.YELLOW + "If I told you I just teleported you to yourself would you believe me?");
 			return;
 		}
+		if (!target.hasPermission(getPermission())) {
+			sender.sendMessage(ChatColor.GOLD + target.getName() + ChatColor.RED + " cannot accept teleport requests!");
+			return;
+		}
 		if (Spectators.getInstance().isSpectator(here ? sender.getUniqueId() : target.getUniqueId())) {
 			sender.sendMessage(ChatColor.RED + "Incorporeal players cannot be teleported to!");
 			return;
@@ -169,10 +173,10 @@ public class TeleportRequestCommand extends SblockCommand {
 	}
 
 	private class TeleportRequest {
-		private UUID source;
-		private UUID target;
-		boolean here;
-		private long expiry;
+		private final UUID source;
+		private final UUID target;
+		private final boolean here;
+		private final long expiry;
 		public TeleportRequest(UUID source, UUID target, boolean here) {
 			this.source = source;
 			this.target = target;
