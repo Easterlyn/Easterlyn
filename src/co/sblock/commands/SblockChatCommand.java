@@ -10,17 +10,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.channel.AccessLevel;
-import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
-import co.sblock.chat.channel.NickChannel;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
@@ -33,7 +30,6 @@ import co.sblock.utilities.Log;
 public class SblockChatCommand extends SblockCommand {
 
 	private final String[] primaryArgs;
-	private final String[] nickArgs;
 	private final String[] channelTypes;
 	private final String[] channelMod;
 	private final String[] channelOwner;
@@ -43,8 +39,7 @@ public class SblockChatCommand extends SblockCommand {
 		this.setDescription("SblockChat's main command");
 		this.setUsage("/sc");
 		setAliases("chat");
-		primaryArgs = new String[] {"c", "l", "listen", "leave", "list", "listall", "new", "nick", "suppress"};
-		nickArgs = new String[] {"list", "set", "remove"};
+		primaryArgs = new String[] {"list", "listall", "new", "nick", "suppress"};
 		channelTypes = new String[] {"NORMAL", "NICK", "RP"};
 		channelMod = new String[] {"info", "getlisteners", "kick", "ban", "approve", "deapprove"};
 		channelOwner = new String[] {"mod", "unban", "disband"};
@@ -62,13 +57,21 @@ public class SblockChatCommand extends SblockCommand {
 			return true;
 		}
 
+		sender.sendMessage(ChatColor.RED + "/sc is being phased out! Please check /chat for the new commands!");
+
 		args[0] = args[0].toLowerCase();
 		if (args[0].equals("c")) {
-			return scC(user, args);
+			args[0] = "join";
+			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
+			return true;
 		} else if (args[0].equals("l") || args[0].equals("listen")) {
-			return scL(user, args);
+			args[0] = "listen";
+			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
+			return true;
 		} else if (args[0].equals("leave")) {
-			return scLeave(user, args);
+			args[0] = "leave";
+			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
+			return true;
 		} else if (args[0].equals("list")) {
 			return scList(user, args);
 		} else if (args[0].equals("listall")) {
@@ -76,10 +79,12 @@ public class SblockChatCommand extends SblockCommand {
 		} else if (args[0].equals("new")) {
 			return scNew(user, args);
 		} else if (args[0].equals("nick")) {
-			return scNick(user, args);
+			args[0] = "listen";
+			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
+			return true;
 		} else if (args[0].equals("suppress")) {
 			user.setSuppression(!user.getSuppression());
-			user.sendMessage(ChatColor.GREEN + "Suppression toggled!");
+			user.sendMessage(ChatColor.GREEN + "Suppression toggled " + (user.getSuppression() ? "on" : "off") + "!");
 			return true;
 		} else if (args[0].equals("channel")) {
 			return scChannel(user, args);
@@ -111,49 +116,6 @@ public class SblockChatCommand extends SblockCommand {
 				matches.add(string);
 			}
 			return matches;
-		}
-		if (args[0].equals("c") || args[0].equals("l") || args[0].equals("listen")) {
-			if (args.length == 2) {
-				for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
-					if (StringUtil.startsWithIgnoreCase(channel, args[1])) {
-						matches.add(channel);
-					}
-				}
-				return matches;
-			}
-			return ImmutableList.of();
-		}
-		if (args[0].equals("leave")) {
-			if (args.length == 2) {
-				for (String channel : user.getListening()) {
-					if (StringUtil.startsWithIgnoreCase(channel, args[1])) {
-						matches.add(channel);
-					}
-				}
-				return matches;
-			}
-			return ImmutableList.of();
-		}
-		if (args[0].equals("nick")) {
-			args[1] = args[1].toLowerCase();
-			if (args.length == 2) {
-				for (String subcommand : nickArgs) {
-					if (subcommand.startsWith(args[1])) {
-						matches.add(subcommand);
-					}
-				}
-				return matches;
-			}
-			if (args.length == 3 && args[1].equals("set") && user.getCurrentChannel().getType() == ChannelType.RP) {
-				args[2] = args[2].toUpperCase();
-				for (CanonNick nick : CanonNick.values()) {
-					if (nick != CanonNick.SERKITFEATURE && nick.name().startsWith(args[2])) {
-						matches.add(nick.name());
-					}
-				}
-				return matches;
-			}
-			return ImmutableList.of();
 		}
 		if (args[0].equals("new")) {
 			if (args.length == 2) {
@@ -243,62 +205,6 @@ public class SblockChatCommand extends SblockCommand {
 		return ImmutableList.of();
 	}
 
-	private boolean scC(OfflineUser user, String[] args) {
-		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCC());
-			return true;
-		}
-		Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
-		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
-			return true;
-		}
-		if (c.getType() == ChannelType.REGION && !user.isListening(c)) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
-			return true;
-		}
-		user.setCurrentChannel(c);
-		return true;
-	}
-
-	private boolean scL(OfflineUser user, String[] args) {
-		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCL());
-			return true;
-		}
-		Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
-		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
-			return true;
-		}
-		if (c.getType() == ChannelType.REGION) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
-			return true;
-		}
-		user.addListening(c);
-		return true;
-	}
-
-	private boolean scLeave(OfflineUser user, String[] args) {
-		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCLeave());
-			return true;
-		}
-		Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
-		if (c == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[1]));
-			user.removeListening(args[1]);
-			return true;
-		}
-		if (c.getType() == ChannelType.REGION) {
-			user.sendMessage(ChatMsgs.errorRegionChannelLeave());
-			return true;
-		}
-		user.removeListening(args[1]);
-		return true;
-		
-	}
-
 	private boolean scList(OfflineUser user, String[] args) {
 		StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW).append("Currently pestering: ");
 		for (String s : user.getListening()) {
@@ -356,51 +262,6 @@ public class SblockChatCommand extends SblockCommand {
 			user.setCurrentChannel(c);
 		}
 		return true;
-	}
-
-	private boolean scNick(OfflineUser user, String[] args) {
-		Channel c = user.getCurrentChannel();
-		if (c == null) {
-			user.sendMessage(ChatMsgs.errorNoCurrent());
-			return true;
-		}
-		if (args.length == 1) {
-			user.sendMessage(ChatMsgs.helpSCNick());
-			return true;
-		}
-		if (!(c instanceof NickChannel)) {
-			user.sendMessage(ChatMsgs.unsupportedOperation(c.getName()));
-			return true;
-		}
-		if (args[1].equalsIgnoreCase("list")) {
-			if (c.getType() == ChannelType.NICK) {
-				user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.");
-				return true;
-			}
-			StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString()).append("Nicks: ");
-			for (CanonNick n : CanonNick.values()) {
-				if (n != CanonNick.SERKITFEATURE) {
-					sb.append(ChatColor.AQUA).append(n.getName());
-					sb.append(ChatColor.YELLOW).append(", ");
-				}
-			}
-			user.sendMessage(sb.substring(0, sb.length() - 4).toString());
-			return true;
-		}
-		if (args.length == 2) {
-			user.sendMessage(ChatMsgs.helpSCNick());
-			return true;
-		}
-		if (args[1].equalsIgnoreCase("set")) {
-			c.setNick(user, StringUtils.join(args, ' ', 2, args.length));
-			return true;
-		} else if (args[1].equalsIgnoreCase("remove")) {
-			c.removeNick(user, true);
-			return true;
-		} else {
-			user.sendMessage(ChatMsgs.helpSCNick());
-			return true;
-		}
 	}
 
 	private boolean scGlobal(OfflineUser user, String[] args) {

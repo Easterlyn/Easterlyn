@@ -254,19 +254,18 @@ public class ChatMsgs {
 	}
 
 	public static String helpDefault() {
-		return ChatColor.AQUA + "/sc "
-				+ ChatColor.YELLOW + "subcommands:\n"
-				+ ChatColor.AQUA + "/sc c <channel>"
+		return ChatColor.YELLOW + "Chat-related commands:\n"
+				+ ChatColor.AQUA + "/join <channel>"
 				+ ChatColor.YELLOW + ": Talking will send messages to <channel>.\n"
-				+ ChatColor.AQUA + "/sc l <channel>"
-				+ ChatColor.YELLOW + ": Listen to <channel>.\n"
-				+ ChatColor.AQUA + "/sc leave <channel>"
+				+ ChatColor.AQUA + "/listen <channel>"
+				+ ChatColor.YELLOW + ": Recieve messages from <channel>.\n"
+				+ ChatColor.AQUA + "/leave <channel>"
 				+ ChatColor.YELLOW + ": Stop listening to <channel>.\n"
 				+ ChatColor.AQUA + "/sc list"
 				+ ChatColor.YELLOW + ": List all channels you are listening to.\n"
 				+ ChatColor.AQUA + "/sc listall"
 				+ ChatColor.YELLOW + ": List all channels.\n"
-				+ ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
+				+ ChatColor.AQUA + "/nick remove|list|<nick choice>"
 				+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.\n"
 				+ ChatColor.AQUA + "/sc suppress"
 				+ ChatColor.YELLOW + ": Toggle ignoring global channels.\n"
@@ -298,7 +297,7 @@ public class ChatMsgs {
 	}
 
 	public static String helpSCNick() {
-		return ChatColor.AQUA + "/sc nick <set|remove|list> (nick)"
+		return ChatColor.AQUA + "/nick remove|list|<nick choice>"
 			+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.";
 	}
 }
