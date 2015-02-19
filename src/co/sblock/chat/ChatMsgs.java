@@ -214,19 +214,6 @@ public class ChatMsgs {
 		return ChatColor.RED + "Hardcoded default channels cannot be disbanded.";
 	}
 
-	public static String helpGlobalMod() {
-		return ChatColor.AQUA + "/sc global "
-				+ ChatColor.YELLOW + "subcommands:\n"
-				+ ChatColor.AQUA + "mute <user>"
-				+ ChatColor.YELLOW + ": Mute a user in all channels\n"
-				+ ChatColor.AQUA + "unmute <user>"
-				+ ChatColor.YELLOW + ": Unmute a user in all channels\n"
-				+ ChatColor.AQUA + "setnick <user> <nick>"
-				+ ChatColor.YELLOW + ": Set a global nick for a player (Mostly for teh lulz)\n"
-				+ ChatColor.AQUA + "rmnick <user>"
-				+ ChatColor.YELLOW + ": Remove a global nick from a player";
-	}
-
 	public static String helpChannelOwner() {
 		return ChatColor.YELLOW + "Channel Owner "
 				+ ChatColor.AQUA + "/sc channel "
@@ -243,6 +230,8 @@ public class ChatMsgs {
 		return ChatColor.YELLOW + "Channel Mod "
 				+ ChatColor.AQUA + "/sc channel "
 				+ ChatColor.YELLOW + "subcommands:\n"
+				+ ChatColor.AQUA + "/channel new <name> <access> <type>"
+				+ ChatColor.YELLOW + ": Create a new channel.\n"
 				+ ChatColor.AQUA + "kick <user>"
 				+ ChatColor.YELLOW + ": Kick a user from the channel\n"
 				+ ChatColor.AQUA + "ban <user>"
@@ -261,43 +250,21 @@ public class ChatMsgs {
 				+ ChatColor.YELLOW + ": Recieve messages from <channel>.\n"
 				+ ChatColor.AQUA + "/leave <channel>"
 				+ ChatColor.YELLOW + ": Stop listening to <channel>.\n"
-				+ ChatColor.AQUA + "/sc list"
+				+ ChatColor.AQUA + "/channel list"
 				+ ChatColor.YELLOW + ": List all channels you are listening to.\n"
-				+ ChatColor.AQUA + "/sc listall"
+				+ ChatColor.AQUA + "/channel listall"
 				+ ChatColor.YELLOW + ": List all channels.\n"
 				+ ChatColor.AQUA + "/nick remove|list|<nick choice>"
 				+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.\n"
-				+ ChatColor.AQUA + "/sc suppress"
+				+ ChatColor.AQUA + "/suppress"
 				+ ChatColor.YELLOW + ": Toggle ignoring global channels.\n"
-				+ ChatColor.AQUA + "/sc new <name> <access> <type>"
-				+ ChatColor.YELLOW + ": Create a new channel.\n"
-				+ ChatColor.AQUA + "/sc channel"
-				+ ChatColor.YELLOW + ": Channel moderation commands.";
-	}
-
-	public static String helpSCC() {
-		return ChatColor.AQUA + "/sc c <channel>"
-				+ ChatColor.YELLOW + ": Talking will send messages to <channel>.";
-	}
-
-	public static String helpSCL() {
-		return ChatColor.AQUA + "/sc l <channel>"
-				+ ChatColor.YELLOW + ": Listen to <channel>.";
-	}
-
-	public static String helpSCLeave() {
-		return ChatColor.AQUA + "/sc leave <channel>"
-				+ ChatColor.YELLOW + ": Stop listening to <channel>.";
+				+ ChatColor.AQUA + "/channel"
+				+ ChatColor.YELLOW + ": Channel creation/moderation commands.";
 	}
 
 	public static String helpSCNew() {
 		return ChatColor.AQUA + "/sc new <name> <access> <type>" + ChatColor.YELLOW
 				+ ": Create a new channel.\nAccess must be either PUBLIC or PRIVATE\n"
 				+ "Type must be NORMAL, NICK, or RP";
-	}
-
-	public static String helpSCNick() {
-		return ChatColor.AQUA + "/nick remove|list|<nick choice>"
-			+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.";
 	}
 }

@@ -20,7 +20,6 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.Log;
 
 /**
  * SblockCommand for most manipulation of chat features.
@@ -51,12 +50,12 @@ public class SblockChatCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		if (args == null || args.length == 0) {
 			sender.sendMessage(ChatMsgs.helpDefault());
 			return true;
 		}
 
+		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		sender.sendMessage(ChatColor.RED + "/sc is being phased out! Please check /chat for the new commands!");
 
 		args[0] = args[0].toLowerCase();
@@ -79,17 +78,13 @@ public class SblockChatCommand extends SblockCommand {
 		} else if (args[0].equals("new")) {
 			return scNew(user, args);
 		} else if (args[0].equals("nick")) {
-			args[0] = "listen";
 			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
 			return true;
 		} else if (args[0].equals("suppress")) {
-			user.setSuppression(!user.getSuppression());
-			user.sendMessage(ChatColor.GREEN + "Suppression toggled " + (user.getSuppression() ? "on" : "off") + "!");
+			Bukkit.dispatchCommand(sender, "suppress");
 			return true;
 		} else if (args[0].equals("channel")) {
 			return scChannel(user, args);
-		} else if (args[0].equals("global")) {
-			return scGlobal(user, args);
 		} else {
 			sender.sendMessage(ChatMsgs.helpDefault());
 		}
@@ -241,7 +236,7 @@ public class SblockChatCommand extends SblockCommand {
 			user.sendMessage(ChatMsgs.errorChannelExists());
 		}
 		for (char c : args[1].substring(1).toCharArray()) {
-			if (!Character.isAlphabetic(c)) {
+			if (!Character.isLetterOrDigit(c)) {
 				user.sendMessage(ChatMsgs.errorChannelName());
 				return true;
 			}
@@ -262,93 +257,6 @@ public class SblockChatCommand extends SblockCommand {
 			user.setCurrentChannel(c);
 		}
 		return true;
-	}
-
-	private boolean scGlobal(OfflineUser user, String[] args) {
-		if (!user.getPlayer().hasPermission("sblock.denizen")) {
-			return false;
-		}
-		if (args.length == 4 && args[1].equalsIgnoreCase("setnick")) {
-			scGlobalSetNick(user, args);
-			return true;
-		} else if (args.length >= 3) {
-			if (args[1].equalsIgnoreCase("mute")) {
-				scGlobalMute(user, args);
-				return true;
-			} else if (args[1].equalsIgnoreCase("unmute")) {
-				scGlobalUnmute(user, args);
-				return true;
-			} else if (args[1].equalsIgnoreCase("rmnick")) {
-				scGlobalRmNick(user, args);
-				return true;
-			} else if (args[1].equalsIgnoreCase("clearnicks")) {
-				for (OfflineUser u : Users.getUsers()) {
-					if (!u.getPlayer().getDisplayName().equals(u.getPlayerName())) {
-						u.getPlayer().setDisplayName(u.getPlayerName());
-					}
-				}
-			}
-		}
-		user.sendMessage(ChatMsgs.helpGlobalMod());
-		return true;
-	}
-
-	private void scGlobalSetNick(OfflineUser user, String[] args) {
-		Player p = Bukkit.getPlayer(args[2]);
-		if (p == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
-			return;
-		}
-		p.setDisplayName(args[3]);
-		String msg = ChatMsgs.onUserSetGlobalNick(args[2], args[3]);
-		for (OfflineUser u : Users.getUsers()) {
-			u.sendMessage(msg);
-		}
-		Log.anonymousInfo(msg);
-	}
-
-	private void scGlobalRmNick(OfflineUser user, String[] args) {
-		Player p = Bukkit.getPlayer(args[2]);
-		if (p == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
-			return;
-		}
-		String msg = ChatMsgs.onUserRmGlobalNick(args[2], p.getDisplayName());
-		for (OfflineUser u : Users.getUsers()) {
-			u.sendMessage(msg);
-		}
-		Log.anonymousInfo(msg);
-		p.setDisplayName(p.getName());
-	}
-
-	private void scGlobalMute(OfflineUser user, String[] args) {
-		Player p = Bukkit.getPlayer(args[2]);
-		if (p == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
-			return;
-		}
-		OfflineUser victim = Users.getGuaranteedUser(p.getUniqueId());
-		victim.setMute(true);
-		String msg = ChatMsgs.onUserMute(args[2]);
-		for (OfflineUser u : Users.getUsers()) {
-			u.sendMessage(msg);
-		}
-		Log.anonymousInfo(msg);
-	}
-
-	private void scGlobalUnmute(OfflineUser user, String[] args) {
-		Player p = Bukkit.getPlayer(args[2]);
-		if (p == null) {
-			user.sendMessage(ChatMsgs.errorInvalidUser(args[2]));
-			return;
-		}
-		OfflineUser victim = Users.getGuaranteedUser(p.getUniqueId());
-		victim.setMute(false);;
-		String msg = ChatMsgs.onUserUnmute(args[2]);
-		for (OfflineUser u : Users.getUsers()) {
-			u.sendMessage(msg);
-		}
-		Log.anonymousInfo(msg);
 	}
 
 	private boolean scChannel(OfflineUser user, String[] args) {

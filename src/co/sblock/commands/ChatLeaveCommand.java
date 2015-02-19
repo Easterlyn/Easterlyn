@@ -3,6 +3,7 @@ package co.sblock.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -24,7 +25,8 @@ public class ChatLeaveCommand extends SblockCommand {
 	public ChatLeaveCommand() {
 		super("leave");
 		setDescription("Leave a chat channel.");
-		setUsage("/leave #channel");
+		setUsage(ChatColor.AQUA + "leave <channel>"
+				+ ChatColor.YELLOW + ": Stop listening to <channel>.");
 		setAliases("quit");
 	}
 
@@ -38,8 +40,7 @@ public class ChatLeaveCommand extends SblockCommand {
 			return true;
 		}
 		if (args.length == 0) {
-			sender.sendMessage(ChatMsgs.helpSCLeave());
-			return true;
+			return false;
 		}
 		if (ChannelManager.getChannelManager().getChannel(args[0]) instanceof RegionChannel) {
 			sender.sendMessage(ChatMsgs.errorRegionChannelLeave());
