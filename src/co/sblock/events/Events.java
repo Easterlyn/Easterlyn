@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -16,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
+
 import org.reflections.Reflections;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -97,7 +97,7 @@ public class Events extends Module {
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+			YamlConfiguration yaml = new YamlConfiguration();
 			for (Entry<String, String> entry : ipcache.entrySet()) {
 				yaml.set(entry.getKey().replace(".", "_"), entry.getValue());
 			}
@@ -139,8 +139,13 @@ public class Events extends Module {
 		if (surplus < 1) {
 			return;
 		}
-		for (Iterator<Entry<String, String>> iterator = ipcache.entrySet().iterator(); surplus > 0; surplus--) {
-			iterator.remove();
+		for (Object entry : ipcache.entrySet().toArray()) {
+			if (surplus <= 0) {
+				break;
+			}
+			--surplus;
+
+			ipcache.remove(((Entry<?, ?>) entry).getKey());
 		}
 	}
 
