@@ -43,12 +43,6 @@ public class ChatMsgs {
 		return ChatColor.YELLOW + "Current channel set to " + ChatColor.GOLD + channelName;
 	}
 
-	public static String onChannelCreation(Channel channel) {
-		return ChatColor.GOLD + channel.getName() + ChatColor.GREEN
-				+ " has been created with access " + ChatColor.GOLD + channel.getAccess()
-				+ ChatColor.GREEN + " and type " + ChatColor.GOLD + channel.getType();
-	}
-
 	public static String onChannelDisband(String channelName) {
 		return ChatColor.GOLD + channelName + ChatColor.RED
 				+ " has been disbanded! These are indeed dark times...";
@@ -138,19 +132,9 @@ public class ChatMsgs {
 				+ " does not exist!";
 	}
 
-	public static String errorInvalidType(String typeName) {
-		return ChatColor.GOLD + typeName + ChatColor.RED
-				+ " is not a valid channel type!\nValid types: NORMAL, RP, NICK.";
-	}
-
 	public static String unsupportedOperation(String channelName) {
 		return ChatColor.RED + "Channel " + ChatColor.GOLD + channelName + ChatColor.RED
 				+ " does not support that operation.";
-	}
-
-	public static String errorInvalidAccess(String accessName) {
-		return ChatColor.GOLD + accessName + ChatColor.RED
-				+ " is not a valid access level!\nValid levels: PUBLIC, PRIVATE";
 	}
 
 	public static String errorInvalidUser(String userName) {
@@ -183,14 +167,6 @@ public class ChatMsgs {
 
 	public static String errorNickInUse(String nick) {
 		return ChatColor.GOLD + nick + ChatColor.RED + " is already in use!";
-	}
-
-	public static String errorChannelName() {
-		return ChatColor.RED + "Channel names must start with '#' and cannot exceed 16 characters!";
-	}
-
-	public static String errorChannelExists() {
-		return ChatColor.RED + "A channel by that name already exists!";
 	}
 
 	public static String errorRegionChannelJoin() {

@@ -15,9 +15,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
@@ -29,7 +27,6 @@ import co.sblock.users.Users;
 public class SblockChatCommand extends SblockCommand {
 
 	private final String[] primaryArgs;
-	private final String[] channelTypes;
 	private final String[] channelMod;
 	private final String[] channelOwner;
 
@@ -39,7 +36,6 @@ public class SblockChatCommand extends SblockCommand {
 		this.setUsage("/sc");
 		setAliases("chat");
 		primaryArgs = new String[] {"list", "listall", "new", "nick", "suppress"};
-		channelTypes = new String[] {"NORMAL", "NICK", "RP"};
 		channelMod = new String[] {"info", "getlisteners", "kick", "ban", "approve", "deapprove"};
 		channelOwner = new String[] {"mod", "unban", "disband"};
 	}
@@ -71,12 +67,10 @@ public class SblockChatCommand extends SblockCommand {
 			args[0] = "leave";
 			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
 			return true;
-		} else if (args[0].equals("list")) {
-			return scList(user, args);
-		} else if (args[0].equals("listall")) {
-			return scListAll(user, args);
-		} else if (args[0].equals("new")) {
-			return scNew(user, args);
+		} else if (args[0].equals("list") || args[0].equals("listall") || args[0].equals("new")) {
+			args[0] = "channel";
+			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
+			return true;
 		} else if (args[0].equals("nick")) {
 			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
 			return true;
@@ -112,38 +106,7 @@ public class SblockChatCommand extends SblockCommand {
 			}
 			return matches;
 		}
-		if (args[0].equals("new")) {
-			if (args.length == 2) {
-				matches.add("#<channelname>");
-				return matches;
-			}
-			if (args.length == 3) {
-				args[2] = args[2].toUpperCase();
-				for (AccessLevel access : AccessLevel.values()) {
-					if (access.name().startsWith(args[2])) {
-						matches.add(access.name());
-					}
-				}
-				return matches;
-			}
-			if (args.length == 4) {
-				args[3] = args[3].toUpperCase();
-				for (String type : channelTypes) {
-					if (type.startsWith(args[3])) {
-						matches.add(type);
-					}
-				}
-				return matches;
-			}
-			return ImmutableList.of();
-		}
 		if (args[0].equals("channel")) {
-			if (!user.getCurrentChannel().isModerator(user)) {
-				if (args.length == 2) {
-					matches.add("info");
-				}
-				return matches;
-			}
 			if (args.length > 4) {
 				return ImmutableList.of();
 			}
@@ -198,65 +161,6 @@ public class SblockChatCommand extends SblockCommand {
 			return ImmutableList.of();
 		}
 		return ImmutableList.of();
-	}
-
-	private boolean scList(OfflineUser user, String[] args) {
-		StringBuilder sb = new StringBuilder().append(ChatColor.YELLOW).append("Currently pestering: ");
-		for (String s : user.getListening()) {
-			sb.append(s).append(' ');
-		}
-		user.sendMessage(sb.toString());
-		return true;
-	}
-
-	private boolean scListAll(OfflineUser user, String[] args) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(ChatColor.YELLOW).append("All channels: ");
-		for (Channel c : ChannelManager.getChannelManager().getChannelList().values()) {
-			ChatColor cc;
-			if (user.isListening(c)) {
-				cc = ChatColor.YELLOW;
-			} else if (c.getAccess() == AccessLevel.PUBLIC) {
-				cc = ChatColor.GREEN;
-			} else {
-				cc = ChatColor.RED;
-			}
-			sb.append(cc).append(c.getName()).append(' ');
-		}
-		user.sendMessage(sb.toString());
-		return true;
-	}
-
-	private boolean scNew(OfflineUser user, String[] args) {
-		if (args.length != 4) {
-			user.sendMessage(ChatMsgs.helpSCNew());
-			return true;
-		}
-		if (ChannelManager.getChannelManager().isValidChannel(args[1])) {
-			user.sendMessage(ChatMsgs.errorChannelExists());
-		}
-		for (char c : args[1].substring(1).toCharArray()) {
-			if (!Character.isLetterOrDigit(c)) {
-				user.sendMessage(ChatMsgs.errorChannelName());
-				return true;
-			}
-		}
-		if (args[1].length() > 16) {
-			user.sendMessage(ChatMsgs.errorChannelName());
-		} else if (args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("sblock.denizen")) {
-			user.sendMessage(ChatMsgs.errorChannelName());
-		} else if (ChannelType.getType(args[3]) == null) {
-			user.sendMessage(ChatMsgs.errorInvalidType(args[3]));
-		} else if (AccessLevel.getAccessLevel(args[2]) == null) {
-			user.sendMessage(ChatMsgs.errorInvalidAccess(args[2]));
-		} else {
-			ChannelManager.getChannelManager().createNewChannel(args[1],
-					AccessLevel.getAccessLevel(args[2]), user.getUUID(), ChannelType.getType(args[3]));
-			Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
-			user.sendMessage(ChatMsgs.onChannelCreation(c));
-			user.setCurrentChannel(c);
-		}
-		return true;
 	}
 
 	private boolean scChannel(OfflineUser user, String[] args) {
