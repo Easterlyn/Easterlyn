@@ -237,10 +237,4 @@ public class ChatMsgs {
 				+ ChatColor.AQUA + "/channel"
 				+ ChatColor.YELLOW + ": Channel creation/moderation commands.";
 	}
-
-	public static String helpSCNew() {
-		return ChatColor.AQUA + "/sc new <name> <access> <type>" + ChatColor.YELLOW
-				+ ": Create a new channel.\nAccess must be either PUBLIC or PRIVATE\n"
-				+ "Type must be NORMAL, NICK, or RP";
-	}
 }

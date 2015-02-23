@@ -2,6 +2,7 @@ package co.sblock.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -23,7 +25,7 @@ import co.sblock.users.Users;
  */
 public class ChatChannelCommand extends SblockCommand {
 
-	private final String[] defaultArgs = new String[] {"list", "listall", "new", "info"};
+	private final String[] defaultArgs = new String[] {"getlisteners", "info", "list", "listall", "new"};
 
 	public ChatChannelCommand() {
 		super("channel");
@@ -44,10 +46,36 @@ public class ChatChannelCommand extends SblockCommand {
 		}
 
 		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
+		Channel channel = user.getCurrentChannel();
 		StringBuilder sb;
 		args[0] = args[0].toLowerCase();
 
 		switch (args[0]) {
+		case "getlisteners":
+			if (channel == null) {
+				user.sendMessage(ChatMsgs.errorNoCurrent());
+				return true;
+			}
+			sb = new StringBuilder().append(ChatColor.YELLOW);
+			sb.append("Channel members: ");
+			for (UUID userID : channel.getListening()) {
+				OfflineUser u = Users.getGuaranteedUser(userID);
+				if (channel.equals(u.getCurrentChannel())) {
+					sb.append(ChatColor.GREEN);
+				} else {
+					sb.append(ChatColor.YELLOW);
+				}
+				sb.append(u.getPlayerName()).append(' ');
+			}
+			user.sendMessage(sb.toString());
+			return true;
+		case "info":
+			if (channel == null) {
+				user.sendMessage(ChatMsgs.errorNoCurrent());
+				return true;
+			}
+			user.sendMessage(channel.toString());
+			return true;
 		case "list":
 			sb = new StringBuilder().append(ChatColor.YELLOW).append("Currently pestering: ");
 			for (String s : user.getListening()) {
