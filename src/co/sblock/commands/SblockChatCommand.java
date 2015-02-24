@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -89,6 +90,7 @@ public class SblockChatCommand extends SblockCommand {
 		return true;
 	}
 
+	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
 		if (!(sender instanceof Player) || args.length == 0) {
@@ -389,7 +391,13 @@ public class SblockChatCommand extends SblockCommand {
 			return true;
 		}
 		if (args[1].equalsIgnoreCase("set")) {
-			c.setNick(user, StringUtils.join(args, ' ', 2, args.length));
+			StringBuilder sb = new StringBuilder();
+			for (char character : StringUtils.join(args, ' ', 2, args.length).toCharArray()) {
+				if (Character.isAlphabetic(character) || Character.isDigit(character) || Character.isSpaceChar(character)) {
+					sb.append(character);
+				}
+			}
+			c.setNick(user, sb.toString());
 			return true;
 		} else if (args[1].equalsIgnoreCase("remove")) {
 			c.removeNick(user, true);
