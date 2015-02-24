@@ -68,7 +68,13 @@ public class ChatNickCommand extends SblockCommand {
 			c.removeNick(user, true);
 			return true;
 		}
-		c.setNick(user, StringUtils.join(args, ' ', 0, args.length));
+		StringBuilder sb = new StringBuilder();
+		for (char character : StringUtils.join(args, ' ', 2, args.length).toCharArray()) {
+			if (Character.isAlphabetic(character) || Character.isDigit(character) || Character.isSpaceChar(character)) {
+				sb.append(character);
+			}
+		}
+		c.setNick(user, sb.toString());
 		return true;
 	}
 
