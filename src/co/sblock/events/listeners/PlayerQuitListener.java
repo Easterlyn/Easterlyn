@@ -89,7 +89,7 @@ public class PlayerQuitListener implements Listener {
 			public void run() {
 				// A player chatting during an unload will cause the recipient's OnlineUser to be re-created.
 				// To combat this, we attempt to unload the user after they should no longer be online.
-				if (Bukkit.getPlayer(uuid) == null) {
+				if (!Bukkit.getOfflinePlayer(uuid).isOnline()) {
 					Users.unloadUser(uuid);
 				}
 			}
