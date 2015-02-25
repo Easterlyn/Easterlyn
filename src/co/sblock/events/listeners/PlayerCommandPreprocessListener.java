@@ -29,7 +29,7 @@ public class PlayerCommandPreprocessListener implements Listener {
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
 		if (!event.getPlayer().hasPermission("sblock.denizen") && 0 < colon && (colon < space || space < 0)) {
-			event.setMessage("/" + event.getMessage().substring(colon));
+			event.setMessage("/" + event.getMessage().substring(colon + 1));
 		}
 
 		String command = event.getMessage().toLowerCase().substring(1, space > 0 ? space : event.getMessage().length());
