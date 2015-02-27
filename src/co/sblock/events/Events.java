@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
+
 import org.reflections.Reflections;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -44,13 +45,15 @@ public class Events extends Module {
 	private static Events instance;
 	private Status status;
 	private int statusResample = 0;
-	private HashMap<UUID, BukkitTask> tasks;
+	private HashMap<UUID, BukkitTask> sleep;
 	private LinkedHashMap<String, String> ipcache;
+	private HashMap<UUID, BukkitTask> pvp;
 
 	@Override
 	protected void onEnable() {
 		instance = this;
-		tasks = new HashMap<>();
+		sleep = new HashMap<>();
+		pvp = new HashMap<>();
 
 		ipcache = new LinkedHashMap<>();
 		File file = new File(Sblock.getInstance().getDataFolder(), "ipcache.yml");
@@ -111,8 +114,15 @@ public class Events extends Module {
 	/**
 	 * Gets the HashMap of all SleepTeleports scheduled for players by UUID.
 	 */
-	public HashMap<UUID, BukkitTask> getTasks() {
-		return tasks;
+	public HashMap<UUID, BukkitTask> getSleepTasks() {
+		return sleep;
+	}
+
+	/**
+	 * Gets the HashMap PVP ending scheduled for players by UUID.
+	 */
+	public HashMap<UUID, BukkitTask> getPVPTasks() {
+		return pvp;
 	}
 
 	/**
@@ -161,7 +171,7 @@ public class Events extends Module {
 		} catch (InvocationTargetException e) {
 			getLogger().err(e);
 		}
-		tasks.put(p.getUniqueId(), new SleepTeleport(p.getUniqueId()).runTaskLater(Sblock.getInstance(), 100L));
+		sleep.put(p.getUniqueId(), new SleepTeleport(p.getUniqueId()).runTaskLater(Sblock.getInstance(), 100L));
 	}
 
 	/**
@@ -180,7 +190,7 @@ public class Events extends Module {
 			getLogger().err(e);
 		}
 
-		BukkitTask task = tasks.remove(p.getUniqueId());
+		BukkitTask task = sleep.remove(p.getUniqueId());
 		if (task != null) {
 			task.cancel();
 		}

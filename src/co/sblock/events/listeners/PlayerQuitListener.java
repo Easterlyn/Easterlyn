@@ -53,8 +53,8 @@ public class PlayerQuitListener implements Listener {
 		}
 
 		// Stop scheduled sleep teleport
-		if (Events.getInstance().getTasks().containsKey(event.getPlayer().getName())) {
-			Events.getInstance().getTasks().remove(event.getPlayer().getName()).cancel();
+		if (Events.getInstance().getSleepTasks().containsKey(event.getPlayer().getName())) {
+			Events.getInstance().getSleepTasks().remove(event.getPlayer().getName()).cancel();
 		}
 
 		// Restore inventory if still preserved

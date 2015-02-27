@@ -60,7 +60,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 	public void onPacketReceiving(PacketEvent event) {
 		if (event.getPacket().getType() == PacketType.Play.Client.ENTITY_ACTION) {
 			if (event.getPacket().getPlayerActions().read(0) == PlayerAction.STOP_SLEEPING
-					&& Events.getInstance().getTasks().containsKey(event.getPlayer().getUniqueId())) {
+					&& Events.getInstance().getSleepTasks().containsKey(event.getPlayer().getUniqueId())) {
 				event.setCancelled(true);
 				Events.getInstance().fakeWakeUp(event.getPlayer());
 			}

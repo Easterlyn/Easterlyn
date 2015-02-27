@@ -1,11 +1,17 @@
 package co.sblock.events.listeners;
 
+import java.util.UUID;
+
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
+import co.sblock.Sblock;
+import co.sblock.events.Events;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -45,6 +51,19 @@ public class EntityDamageByEntityListener implements Listener {
 		}
 		if (!(event.getDamager() instanceof Player)) {
 			return;
+		}
+
+		final UUID uuid = event.getEntity().getUniqueId();
+		BukkitTask oldTask = Events.getInstance().getPVPTasks().put(uuid, new BukkitRunnable() {
+			@Override
+			public void run() {
+				if (Events.getInstance().getPVPTasks().containsKey(uuid)) {
+					Events.getInstance().getPVPTasks().remove(uuid);
+				}
+			}
+		}.runTaskLater(Sblock.getInstance(), 100L));
+		if (oldTask != null) {
+			oldTask.cancel();
 		}
 
 		OfflineUser user = Users.getGuaranteedUser(event.getDamager().getUniqueId());
