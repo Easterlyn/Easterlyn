@@ -1,10 +1,12 @@
 package co.sblock.events.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import co.sblock.events.Events;
 import co.sblock.users.Users;
 import co.sblock.utilities.minecarts.FreeCart;
 
@@ -29,11 +31,18 @@ public class PlayerDeathListener implements Listener {
 		String message = new String[] {"Oh dear, you are dead.", "Crikey, that was a big 'un!",
 				"I say, my dear chap, you appear to have died a little there.", "Git rekt.",
 				"That was a fatal miscalculation."}[(int) (Math.random() * 5)];
-		event.getEntity().sendMessage(ChatColor.RED + message + " Death point: "
-				+ ChatColor.AQUA + event.getEntity().getLocation().getBlockX() +"x, "
-				+ event.getEntity().getLocation().getBlockY() +"y, "
-				+ event.getEntity().getLocation().getBlockZ() +"z");
-		
+		String location = new StringBuilder(" Death point: ")
+				.append(event.getEntity().getLocation().getBlockX()).append(", ")
+				.append(event.getEntity().getLocation().getBlockY()).append(", ")
+				.append(event.getEntity().getLocation().getBlockZ()).append('z').toString();
+		event.getEntity().sendMessage(ChatColor.RED + message + location);
+		Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died." + location);
+
+		if (Events.getInstance().getPVPTasks().containsKey(event.getEntity().getUniqueId())) {
+			event.setKeepInventory(true);
+			Events.getInstance().getPVPTasks().remove(event.getEntity().getUniqueId()).cancel();
+		}
+
 		Users.getGuaranteedUser(event.getEntity().getUniqueId()).getOnlineUser().removeAllEffects();
 
 		// Fun future feature for when I get bored

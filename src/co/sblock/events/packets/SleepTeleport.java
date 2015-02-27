@@ -30,7 +30,7 @@ public class SleepTeleport extends BukkitRunnable {
 	@Override
 	public void run() {
 		Player player = Bukkit.getPlayer(uuid);
-		if (player == null || !Events.getInstance().getTasks().containsKey(player.getUniqueId())) {
+		if (player == null || !Events.getInstance().getSleepTasks().containsKey(player.getUniqueId())) {
 			return;
 		}
 		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());

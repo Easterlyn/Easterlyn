@@ -1,15 +1,23 @@
 package co.sblock.events.listeners;
 
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
+import java.util.UUID;
+
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
+import co.sblock.Sblock;
+import co.sblock.events.Events;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.meteors.MeteoriteComponent;
+
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
 
 /**
  * Listener for EntityDamageByEntityEvents.
@@ -45,8 +53,21 @@ public class EntityDamageByEntityListener implements Listener {
 			return;
 		}
 
-		OfflineUser u = Users.getGuaranteedUser(event.getDamager().getUniqueId());
-		if (u != null && u.isServer()) {
+		final UUID uuid = event.getEntity().getUniqueId();
+		BukkitTask oldTask = Events.getInstance().getPVPTasks().put(uuid, new BukkitRunnable() {
+			@Override
+			public void run() {
+				if (Events.getInstance().getPVPTasks().containsKey(uuid)) {
+					Events.getInstance().getPVPTasks().remove(uuid);
+				}
+			}
+		}.runTaskLater(Sblock.getInstance(), 100L));
+		if (oldTask != null) {
+			oldTask.cancel();
+		}
+
+		OfflineUser user = Users.getGuaranteedUser(event.getDamager().getUniqueId());
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			event.setCancelled(true);
 			return;
 		}
