@@ -31,7 +31,14 @@ public class ChatChannelCommand extends SblockCommand {
 		super("channel");
 		setDescription("Check or manipulate channel data.");
 		setUsage(ChatColor.DARK_AQUA + "Channel information/manipulation\n"
-				+ ChatColor.AQUA + "/channel ");
+				+ ChatColor.AQUA + "/channel getlisteners"
+				+ ChatColor.YELLOW + ": List people in the channel."
+				+ ChatColor.AQUA + "/channel info"
+				+ ChatColor.YELLOW + ": Shows channel type, creator, etc."
+				+ ChatColor.AQUA + "/channel list"
+				+ ChatColor.YELLOW + ": List channels you're in."
+				+ ChatColor.AQUA + "/channel listall"
+				+ ChatColor.YELLOW + ": List all channels.");
 	}
 
 	@Override
@@ -184,5 +191,8 @@ public class ChatChannelCommand extends SblockCommand {
 		if (current == null || !current.isModerator(user)) {
 			return ImmutableList.of();
 		}
+
+		// TODO TODO TODO
+		return ImmutableList.of();
 	}
 }
