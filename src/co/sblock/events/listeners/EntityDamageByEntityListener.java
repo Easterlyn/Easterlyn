@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -49,21 +50,26 @@ public class EntityDamageByEntityListener implements Listener {
 				return;
 			}
 		}
-		if (!(event.getDamager() instanceof Player)) {
-			return;
+
+		if (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile
+				&& ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+			// Player or player-shot projectile
+			final UUID uuid = event.getEntity().getUniqueId();
+			BukkitTask oldTask = Events.getInstance().getPVPTasks().put(uuid, new BukkitRunnable() {
+				@Override
+				public void run() {
+					if (Events.getInstance().getPVPTasks().containsKey(uuid)) {
+						Events.getInstance().getPVPTasks().remove(uuid);
+					}
+				}
+			}.runTaskLater(Sblock.getInstance(), 100L));
+			if (oldTask != null) {
+				oldTask.cancel();
+			}
 		}
 
-		final UUID uuid = event.getEntity().getUniqueId();
-		BukkitTask oldTask = Events.getInstance().getPVPTasks().put(uuid, new BukkitRunnable() {
-			@Override
-			public void run() {
-				if (Events.getInstance().getPVPTasks().containsKey(uuid)) {
-					Events.getInstance().getPVPTasks().remove(uuid);
-				}
-			}
-		}.runTaskLater(Sblock.getInstance(), 100L));
-		if (oldTask != null) {
-			oldTask.cancel();
+		if (!(event.getDamager() instanceof Player)) {
+			return;
 		}
 
 		OfflineUser user = Users.getGuaranteedUser(event.getDamager().getUniqueId());
