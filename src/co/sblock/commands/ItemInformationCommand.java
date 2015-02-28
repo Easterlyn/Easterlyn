@@ -2,13 +2,12 @@ package co.sblock.commands;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableList;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for printing information about an item.
