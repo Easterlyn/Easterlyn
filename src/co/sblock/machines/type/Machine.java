@@ -1,8 +1,8 @@
 package co.sblock.machines.type;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,6 +37,7 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 
 /**
@@ -160,9 +161,10 @@ public abstract class Machine {
 			}
 		}
 		this.assemble();
-		OfflineUser u = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if (u != null && u.isServer() && owner.equals(u.getUUID().toString())) {
-			this.owner = u.getClient().toString();
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
+				&& owner.equals(user.getUUID().toString())) {
+			this.owner = user.getClient().toString();
 		}
 		Machines.getInstance().saveMachine(this);
 	}
@@ -432,6 +434,7 @@ public abstract class Machine {
 	 */
 	private void triggerPostAssemble() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@Override
 			@SuppressWarnings("deprecation")
 			public void run() {
 				MaterialData m = blocks.get(key);
@@ -447,6 +450,7 @@ public abstract class Machine {
 	 */
 	protected void assemblyFailed() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@Override
 			public void run() {
 				disable();
 				Machines.getInstance().deleteMachine(key);

@@ -5,22 +5,23 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.users.OfflineUser;
+import co.sblock.users.Users;
+
 /**
- * SblockCommand for printing information about an item.
+ * Command for toggling chat suppression.
  * 
  * @author Jikoo
  */
-public class ItemInformationCommand extends SblockCommand {
+public class ChatSuppressCommand extends SblockCommand {
 
-	public ItemInformationCommand() {
-		super("iteminfo");
-		this.setDescription("Serializes item in hand and prints the result.");
-		this.setUsage("/iteminfo");
-		this.setPermissionLevel("felt");
+	public ChatSuppressCommand() {
+		super("suppress");
+		setDescription("Toggle chat suppression.");
+		setUsage(ChatColor.AQUA + "/suppress");
 	}
 
 	@Override
@@ -29,19 +30,16 @@ public class ItemInformationCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		ItemStack hand = ((Player) sender).getItemInHand();
-		if (hand == null) {
-			sender.sendMessage("NULL");
-			return true;
-		}
-		sender.sendMessage(ChatColor.stripColor(hand.toString()));
+		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
+		user.setSuppression(!user.getSuppression());
+		user.sendMessage(ChatColor.YELLOW + "Suppression toggled " + (user.getSuppression() ? "on" : "off") + "!");
 		return true;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (!(sender instanceof Player) || !sender.hasPermission(this.getPermission()) || args.length > 0) {
+		if (!(sender instanceof Player) || args.length > 0) {
 			return ImmutableList.of();
 		}
 		return super.tabComplete(sender, alias, args);

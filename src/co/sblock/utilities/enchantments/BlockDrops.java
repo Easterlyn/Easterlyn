@@ -99,11 +99,11 @@ public class BlockDrops {
 		case STONE:
 		case COAL_ORE:
 		case QUARTZ_ORE:
-			if (tool == Material.WOOD_PICKAXE) {
+			if (tool == Material.WOOD_PICKAXE || tool == Material.GOLD_PICKAXE) {
 				return true;
 			}
 		case LAPIS_ORE:
-			if (tool == Material.STONE_PICKAXE || tool == Material.GOLD_PICKAXE) {
+			if (tool == Material.STONE_PICKAXE) {
 				return true;
 			}
 		case DIAMOND_ORE:

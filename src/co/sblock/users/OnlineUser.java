@@ -1,5 +1,6 @@
 package co.sblock.users;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,22 +8,23 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
-import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Chat;
+import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.effects.FXManager;
@@ -44,19 +46,17 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class OnlineUser extends OfflineUser {
 
-	private Location serverDisableTeleport;
 	private final Map<String, SblockFX> effectsList;
 
-	protected OnlineUser(UUID userID, String ip, String displayName, Location currentLocation,
-			Region currentRegion, Location previousLocation, UserClass userClass,
-			UserAspect aspect, Region mplanet, Region dplanet, ProgressionState progstate,
-			UUID server, UUID client, Set<Integer> programs, boolean allowFlight,
-			boolean spectatable, String currentChannel, Set<String> listening,
-			AtomicBoolean globalMute, AtomicBoolean supress, AtomicBoolean highlight) {
-		super(userID, ip, displayName, currentLocation, currentRegion, null, previousLocation,
-				userClass, aspect, mplanet, dplanet, progstate, server, client, programs,
-				allowFlight, spectatable, currentChannel, listening, globalMute, supress, highlight);
+	private Location serverDisableTeleport;
+	private boolean isServer;
+
+	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, String displayName,
+			Location previousLocation, Set<Integer> programs, String currentChannel,
+			Set<String> listening) {
+		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
 		effectsList = new HashMap<>();
+		isServer = false;
 		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
 			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());
 			if (c != null && !c.isBanned(this) && (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
@@ -90,7 +90,7 @@ public class OnlineUser extends OfflineUser {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().contains("Circle")
+				boolean allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().equals("Derspit")
 						|| getPlayer().getGameMode() == GameMode.CREATIVE
 						|| getPlayer().getGameMode() == GameMode.SPECTATOR
 						|| isServer || Spectators.getInstance().isSpectator(getUUID()));
@@ -98,6 +98,7 @@ public class OnlineUser extends OfflineUser {
 					getPlayer().setAllowFlight(allowFlight);
 					getPlayer().setFlying(allowFlight);
 				}
+				getYamlConfiguration().set("flying", allowFlight);
 			}
 		}.runTask(Sblock.getInstance());
 	}
@@ -110,7 +111,8 @@ public class OnlineUser extends OfflineUser {
 		long hours = time / (60 * 60 * 20);
 		time -= hours * 60 * 60 * 20;
 		time = time / (60 * 20);
-		return days + " days, " + DECIMAL_FORMATTER.format(hours) + ':' + DECIMAL_FORMATTER.format(time);
+		DecimalFormat decimalFormat = new DecimalFormat("00");
+		return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
 	}
 
 	@Override
@@ -157,7 +159,15 @@ public class OnlineUser extends OfflineUser {
 		setCurrentRegion(newRegion);
 	}
 
-	@Override
+	/**
+	 * Check if the User is in server mode.
+	 * 
+	 * @return true if the User is in server mode
+	 */
+	public boolean isServer() {
+		return this.isServer;
+	}
+
 	public void startServerMode() {
 		Player p = this.getPlayer();
 		if (Spectators.getInstance().isSpectator(getUUID())) {
@@ -203,7 +213,6 @@ public class OnlineUser extends OfflineUser {
 		p.sendMessage(ChatColor.GREEN + "Server mode enabled!");
 	}
 
-	@Override
 	public void stopServerMode() {
 		if (Bukkit.getOfflinePlayer(getClient()).isOnline()) {
 			Player clientPlayer = Bukkit.getPlayer(getClient());

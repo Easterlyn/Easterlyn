@@ -13,8 +13,10 @@ import co.sblock.Sblock;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.PBO;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.MachineType;
+import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 
 /**
@@ -42,7 +44,8 @@ public class BlockPlaceListener implements Listener {
 		}
 
 		// Server mode placement
-		if (Users.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer()) {
+		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {

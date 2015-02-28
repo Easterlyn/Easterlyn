@@ -16,9 +16,10 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Icon;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 
 /**
@@ -65,6 +66,7 @@ public class Computer extends Machine implements InventoryHolder {
 	/**
 	 * @see co.sblock.machines.type.Machine#getType()
 	 */
+	@Override
 	public MachineType getType() {
 		return MachineType.COMPUTER;
 	}
@@ -72,6 +74,7 @@ public class Computer extends Machine implements InventoryHolder {
 	/**
 	 * @see co.sblock.machines.type.Machine#handleClick(InventoryClickEvent)
 	 */
+	@Override
 	public boolean handleClick(InventoryClickEvent event) {
 		if (!event.getWhoClicked().getUniqueId().toString().equals(this.owner)
 				&& !event.getWhoClicked().hasPermission("sblock.denizen")) {
@@ -101,17 +104,18 @@ public class Computer extends Machine implements InventoryHolder {
 					event.getWhoClicked().openInventory(getServerConfirmation());
 					break;
 				case CONFIRM:
-					OfflineUser u = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
-					if (u == null) {
+					OfflineUser offUser = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
+					if (!(offUser instanceof OnlineUser)) {
 						((Player) event.getWhoClicked()).sendMessage(
 								ChatColor.RED + "Your data appears to not have loaded properly. Please relog.");
 						break;
 					}
+					OnlineUser onUser = (OnlineUser) offUser;
 					// All checks for starting server mode handled inside startServerMode()
-					if (u.isServer()) {
-						u.stopServerMode();
+					if (onUser.isServer()) {
+						onUser.stopServerMode();
 					} else {
-						u.startServerMode();
+						onUser.startServerMode();
 					}
 				default:
 					break;
@@ -125,6 +129,7 @@ public class Computer extends Machine implements InventoryHolder {
 	/**
 	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
 	 */
+	@Override
 	public boolean handleInteract(PlayerInteractEvent event) {
 		if (super.handleInteract(event)) {
 			return true;
