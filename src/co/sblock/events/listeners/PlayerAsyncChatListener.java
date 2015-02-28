@@ -1,5 +1,6 @@
 package co.sblock.events.listeners;
 
+import java.text.Normalizer;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,6 +49,16 @@ public class PlayerAsyncChatListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerChatLow(final AsyncPlayerChatEvent event) {
+		if (!event.getPlayer().hasPermission("sblock.felt")) {
+			// TODO perhaps allow non-ASCII in non-global channels
+			StringBuilder sb = new StringBuilder();
+			for (char character : Normalizer.normalize(event.getMessage(), Normalizer.Form.NFD).toCharArray()) {
+				if (character <= '\u007F') {
+					sb.append(character);
+				}
+			}
+			event.setMessage(sb.toString());
+		}
 		boolean thirdPerson = event.getMessage().startsWith("@#>me");
 		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
 		if (thirdPerson) {
