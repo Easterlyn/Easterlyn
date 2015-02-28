@@ -35,7 +35,7 @@ public class OfflineUser {
 
 	/* General player data */
 	private final UUID uuid;
-	private String userIP;
+	private final String userIP;
 	private String displayName;
 	private Location currentLocation;
 	private Region currentRegion;
@@ -57,7 +57,7 @@ public class OfflineUser {
 	/* Chat data*/
 	protected String currentChannel;
 	private Set<String> listening;
-	private AtomicBoolean globalMute, suppress, highlight;
+	private final AtomicBoolean globalMute, suppress, highlight;
 
 	protected OfflineUser(UUID userID, String ip, String displayName, Location currentLocation,
 			Region currentRegion, String timePlayed, Location previousLocation,
@@ -730,15 +730,18 @@ public class OfflineUser {
 				.append(ChatColor.YELLOW).append(", Suppressing: ").append(ChatColor.DARK_AQUA)
 				.append(getSuppression()).append('\n');
 
-		// Last seen: date, Playtime: X days, XX:XX
-		sb.append(ChatColor.YELLOW).append("Last login: ").append(ChatColor.DARK_AQUA)
-				.append(new SimpleDateFormat("HH:mm 'on' dd/MM/YY").format(new Date(
-						getOfflinePlayer().getLastPlayed()))).append(ChatColor.YELLOW)
-				.append(", Time ingame: ").append(ChatColor.DARK_AQUA).append(getTimePlayed());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm 'on' dd/MM/YY");
+		// Seen: date, Playtime: X days, XX:XX since XX:XX on XX/XX/XX
+		sb.append(ChatColor.YELLOW).append("Seen: ").append(ChatColor.DARK_AQUA)
+				.append(dateFormat.format(new Date(getOfflinePlayer().getLastPlayed())))
+				.append(ChatColor.YELLOW).append(", Ingame: ").append(ChatColor.DARK_AQUA)
+				.append(getTimePlayed()).append(" since ")
+				.append(dateFormat.format(getOfflinePlayer().getFirstPlayed()));
 
 		return sb.toString();
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
 			return false;
