@@ -3,6 +3,7 @@ package co.sblock.events.listeners;
 import org.bukkit.Material;
 import org.bukkit.block.Furnace;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +24,7 @@ public class FurnaceSmeltListener implements Listener {
 	 * 
 	 * @param event the FurnaceSmeltEvent
 	 */
-	@EventHandler(priority = org.bukkit.event.EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onFurnaceSmelt(FurnaceSmeltEvent event) {
 
 		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());

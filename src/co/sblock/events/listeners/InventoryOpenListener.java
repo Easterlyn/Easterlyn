@@ -19,7 +19,7 @@ public class InventoryOpenListener implements Listener {
 	 * 
 	 * @param event the InventoryOpenEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		if (Users.getGuaranteedUser(event.getPlayer().getUniqueId()).isServer()
 				&& event.getInventory().getHolder() != null

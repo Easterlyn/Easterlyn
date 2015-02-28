@@ -13,8 +13,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.ColorDef;
 import co.sblock.chat.Chat;
+import co.sblock.chat.ColorDef;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -46,7 +46,7 @@ public class PlayerAsyncChatListener implements Listener {
 	 * 
 	 * @param event the AsyncPlayerChatEvent
 	 */
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerChatLow(final AsyncPlayerChatEvent event) {
 		boolean thirdPerson = event.getMessage().startsWith("@#>me");
 		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));

@@ -20,7 +20,7 @@ public class EntityRegainHealthListener implements Listener {
 	 * 
 	 * @param event the EntityRegainHealthEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onEntityRegainHealth(EntityRegainHealthEvent event) {
 		if (event.getEntityType() != EntityType.PLAYER) {
 			return;

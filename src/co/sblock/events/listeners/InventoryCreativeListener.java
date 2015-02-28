@@ -1,15 +1,12 @@
 package co.sblock.events.listeners;
 
-import java.util.Map;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+
+import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
  * Listener for InventoryCreativeEvents. Used to clean input items from creative clients, preventing
@@ -30,19 +27,13 @@ public class InventoryCreativeListener implements Listener {
 	 * 
 	 * @param event the InventoryCreativeEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onInventoryCreative(InventoryCreativeEvent event) {
 		if (event.getWhoClicked().hasPermission("sblock.felt")) {
 			return;
 		}
 
 		if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
-			return;
-		}
-
-		// TODO BannerMeta is a thing
-		if (event.getCursor().getType() == Material.BANNER) {
-			// Banners actually come with NBT tags when using pick-block. We'll just avoid them for now.
 			return;
 		}
 
@@ -53,10 +44,7 @@ public class InventoryCreativeListener implements Listener {
 			}
 		}
 
-		// By not using the original ItemStack, we remove all lore and attributes spawned.
-		ItemStack cleanedItem = new ItemStack(event.getCursor().getType());
-		// Why Bukkit doesn't have a constructor ItemStack(MaterialData) I don't know.
-		cleanedItem.setData(event.getCursor().getData());
+		ItemStack cleanedItem = InventoryUtils.cleanNBT(event.getCursor());
 
 		// No invalid durabilities.
 		if (event.getCursor().getDurability() < 0) {
@@ -72,16 +60,6 @@ public class InventoryCreativeListener implements Listener {
 			event.getCursor().setAmount(1);
 		} else {
 			cleanedItem.setAmount(event.getCursor().getAmount());
-		}
-
-		// Creative enchanted books are allowed a single enchant
-		if (event.getCursor().getType() == Material.ENCHANTED_BOOK && event.getCursor().hasItemMeta()) {
-			EnchantmentStorageMeta meta = (EnchantmentStorageMeta) Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
-			for (Map.Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta) event.getCursor().getItemMeta()).getStoredEnchants().entrySet()) {
-				meta.addStoredEnchant(entry.getKey(), entry.getValue(), false);
-				break;
-			}
-			cleanedItem.setItemMeta(meta);
 		}
 
 		event.setCursor(cleanedItem);

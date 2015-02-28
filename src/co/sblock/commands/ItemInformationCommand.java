@@ -2,14 +2,13 @@ package co.sblock.commands;
 
 import java.util.List;
 
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableList;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for printing information about an item.
@@ -36,9 +35,7 @@ public class ItemInformationCommand extends SblockCommand {
 			sender.sendMessage("NULL");
 			return true;
 		}
-		YamlConfiguration temp = new YamlConfiguration();
-		temp.set("item", hand);
-		sender.sendMessage(ChatColor.stripColor(String.valueOf(temp.get("item"))));
+		sender.sendMessage(ChatColor.stripColor(hand.toString()));
 		return true;
 	}
 

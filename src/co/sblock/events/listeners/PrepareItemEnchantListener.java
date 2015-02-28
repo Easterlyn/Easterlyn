@@ -18,7 +18,7 @@ public class PrepareItemEnchantListener implements Listener {
 	 * 
 	 * @param event the PrepareItemEnchantEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
 		if (Captcha.isCard(event.getItem())) {
 			event.setCancelled(true);

@@ -14,7 +14,7 @@ import co.sblock.users.Users;
  */
 public class PlayerChatTabCompleteListener implements Listener {
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerChatTabComplete(PlayerChatTabCompleteEvent event) {
 		if (event.getChatMessage().split(" ")[0].equals(event.getLastToken())
 				&& event.getLastToken().length() > 0 && event.getLastToken().charAt(0) == '@') {

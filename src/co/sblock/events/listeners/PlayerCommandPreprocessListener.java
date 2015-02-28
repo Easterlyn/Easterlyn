@@ -22,7 +22,7 @@ public class PlayerCommandPreprocessListener implements Listener {
 	 * 
 	 * @param event the PlayerCommandPreprocessEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
@@ -40,7 +40,7 @@ public class PlayerCommandPreprocessListener implements Listener {
 			return;
 		}
 
-		if (isExecuting(command, "gc") && !event.getPlayer().hasPermission("sblock.helper")) {
+		if (isExecuting(command, "gc") && !event.getPlayer().hasPermission("essentials.gc")) {
 			event.setMessage("/tps");
 			return;
 		}

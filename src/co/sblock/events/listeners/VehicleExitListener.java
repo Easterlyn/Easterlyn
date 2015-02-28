@@ -22,7 +22,7 @@ public class VehicleExitListener implements Listener {
 	 * 
 	 * @param event the VehicleExitEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onVehicleExit(VehicleExitEvent event) {
 		Entity entity = event.getVehicle();
 		if (entity.getType() == EntityType.HORSE) {

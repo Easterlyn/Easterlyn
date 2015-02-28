@@ -19,7 +19,7 @@ public class PlayerInteractEntityListener implements Listener {
 	 * 
 	 * @param event the PlayerInteractEntityEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user.isServer()) {

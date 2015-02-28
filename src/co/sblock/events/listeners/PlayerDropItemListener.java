@@ -24,7 +24,7 @@ public class PlayerDropItemListener implements Listener {
 	 * 
 	 * @param event the PlayerDropItemEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onItemDrop(PlayerDropItemEvent event) {
 		// Cruxite items should not be tradeable.
 		if (event.getItemDrop().getItemStack().getItemMeta().hasDisplayName()
