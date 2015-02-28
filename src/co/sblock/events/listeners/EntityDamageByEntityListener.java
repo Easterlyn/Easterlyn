@@ -32,7 +32,7 @@ public class EntityDamageByEntityListener implements Listener {
 	 * 
 	 * @param event the EntityDamageByEntityEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (event.getEntityType() == EntityType.DROPPED_ITEM) {
 			event.setCancelled(true);
@@ -51,29 +51,33 @@ public class EntityDamageByEntityListener implements Listener {
 			}
 		}
 
-		if (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile
+		final UUID damager;
+		if (event.getDamager() instanceof Player) {
+			damager = event.getDamager().getUniqueId();
+		} else if (event.getDamager() instanceof Projectile
 				&& ((Projectile) event.getDamager()).getShooter() instanceof Player) {
-			// Player or player-shot projectile
-			final UUID uuid = event.getEntity().getUniqueId();
-			BukkitTask oldTask = Events.getInstance().getPVPTasks().put(uuid, new BukkitRunnable() {
-				@Override
-				public void run() {
-					if (Events.getInstance().getPVPTasks().containsKey(uuid)) {
-						Events.getInstance().getPVPTasks().remove(uuid);
-					}
-				}
-			}.runTaskLater(Sblock.getInstance(), 100L));
-			if (oldTask != null) {
-				oldTask.cancel();
-			}
-		}
-
-		if (!(event.getDamager() instanceof Player)) {
+			damager = ((Player) ((Projectile) event.getDamager()).getShooter()).getUniqueId();
+		} else {
 			return;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(event.getDamager().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		final UUID damaged = event.getEntity().getUniqueId();
+		BukkitTask oldTask = Events.getInstance().getPVPTasks().put(damaged, new BukkitRunnable() {
+			@Override
+			public void run() {
+				if (Events.getInstance().getPVPTasks().containsKey(damaged)) {
+					Events.getInstance().getPVPTasks().remove(damaged);
+				}
+			}
+		}.runTaskLater(Sblock.getInstance(), 100L));
+		if (oldTask != null) {
+			oldTask.cancel();
+		}
+
+		OfflineUser damagerUser = Users.getGuaranteedUser(damager);
+		OfflineUser damagedUser = Users.getGuaranteedUser(damaged);
+		if (damagerUser instanceof OnlineUser && ((OnlineUser) damagerUser).isServer()
+				|| damagedUser instanceof OnlineUser && ((OnlineUser) damagedUser).isServer()) {
 			event.setCancelled(true);
 			return;
 		}

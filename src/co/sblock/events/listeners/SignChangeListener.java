@@ -19,8 +19,8 @@ public class SignChangeListener implements Listener {
 	 * 
 	 * @param event the SignChangeEvent
 	 */
-	@EventHandler
-	public void onSignPlace(SignChangeEvent event) {
+	@EventHandler(ignoreCancelled = true)
+	public void onSignChange(SignChangeEvent event) {
 		for (int i = 0; i < event.getLines().length; i++) {
 			event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));
 		}

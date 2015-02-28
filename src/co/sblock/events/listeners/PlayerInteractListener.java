@@ -47,7 +47,7 @@ public class PlayerInteractListener implements Listener {
 	 * @param event the PlayerInteractEvent
 	 */
 	@SuppressWarnings("deprecation")
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {

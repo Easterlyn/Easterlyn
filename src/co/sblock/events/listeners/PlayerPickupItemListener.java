@@ -24,7 +24,7 @@ public class PlayerPickupItemListener implements Listener {
 	 * 
 	 * @param event the PlayerPickupItemEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
 		OfflineUser offUser = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (!(offUser instanceof OnlineUser)) {

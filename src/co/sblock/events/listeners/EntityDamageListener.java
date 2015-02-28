@@ -17,7 +17,7 @@ public class EntityDamageListener implements Listener {
 	 * 
 	 * @param event the EntityDamageEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
 		switch (event.getCause()) {
 		case BLOCK_EXPLOSION:

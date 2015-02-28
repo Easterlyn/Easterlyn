@@ -20,7 +20,7 @@ public class FoodLevelChangeListener implements Listener {
 	 * 
 	 * @param event the FoodLevelChangeEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getEntity().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {

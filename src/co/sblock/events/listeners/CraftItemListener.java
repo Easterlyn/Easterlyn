@@ -25,7 +25,7 @@ public class CraftItemListener implements Listener {
 	 * 
 	 * @param event the CraftItemEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onCraftItem(final CraftItemEvent event) {
 		for (ItemStack is : event.getInventory().getMatrix()) {
 			if (is == null) {

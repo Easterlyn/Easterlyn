@@ -20,7 +20,7 @@ public class VehicleEntityCollisionListener implements Listener {
 	 * 
 	 * @param event the VehicleEntityCollisionEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
 		if (event.getVehicle().getType() != EntityType.MINECART) {
 			return;

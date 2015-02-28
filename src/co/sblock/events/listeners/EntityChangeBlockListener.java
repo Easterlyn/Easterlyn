@@ -19,7 +19,7 @@ public class EntityChangeBlockListener implements Listener {
 	 * 
 	 * @param event the EntityChangeBlockEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
 		if (event.getEntityType() != EntityType.FALLING_BLOCK) {
 			return;

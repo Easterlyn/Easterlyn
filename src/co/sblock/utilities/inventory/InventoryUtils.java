@@ -13,8 +13,10 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -163,6 +165,16 @@ public class InventoryUtils {
 		}
 		ItemMeta im = is.getItemMeta();
 
+		// Banners
+		if (im instanceof BannerMeta) {
+			BannerMeta meta = (BannerMeta) Bukkit.getItemFactory().getItemMeta(Material.BANNER);
+			meta.setBaseColor(((BannerMeta) im).getBaseColor());
+			for (Pattern pattern : ((BannerMeta) im).getPatterns()) {
+				meta.addPattern(pattern);
+			}
+			cleanedItem.setItemMeta(meta);
+		}
+
 		// Book and quill/Written books
 		if (im instanceof BookMeta) {
 			BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
@@ -188,17 +200,17 @@ public class InventoryUtils {
 			cleanedItem.setItemMeta(meta);
 		}
 
-		// Leather armor color
-		if (im instanceof LeatherArmorMeta) {
-			LeatherArmorMeta meta = (LeatherArmorMeta) Bukkit.getItemFactory().getItemMeta(Material.LEATHER_CHESTPLATE);
-			meta.setColor(((LeatherArmorMeta) im).getColor());
-			cleanedItem.setItemMeta(meta);
-		}
-
 		// Fireworks/Firework stars
 		if (im instanceof FireworkMeta && ((FireworkMeta) im).getEffectsSize() > 0) {
 			FireworkMeta meta = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(Material.FIREWORK);
 			meta.addEffects(((FireworkMeta) im).getEffects());
+			cleanedItem.setItemMeta(meta);
+		}
+
+		// Leather armor color
+		if (im instanceof LeatherArmorMeta) {
+			LeatherArmorMeta meta = (LeatherArmorMeta) Bukkit.getItemFactory().getItemMeta(Material.LEATHER_CHESTPLATE);
+			meta.setColor(((LeatherArmorMeta) im).getColor());
 			cleanedItem.setItemMeta(meta);
 		}
 
@@ -213,10 +225,13 @@ public class InventoryUtils {
 			cleanedItem.setItemMeta(meta);
 		}
 
+		// Repairable would preserve anvil tags on tools, we'll avoid that
+
 		// Skulls
 		if (im instanceof SkullMeta && ((SkullMeta) im).hasOwner()) {
 			SkullMeta meta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 			meta.setOwner(((SkullMeta) im).getOwner());
+			cleanedItem.setItemMeta(meta);
 		}
 
 		// Normal meta

@@ -21,7 +21,7 @@ public class InventoryOpenListener implements Listener {
 	 * 
 	 * @param event the InventoryOpenEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()

@@ -25,7 +25,7 @@ public class EntityExplodeListener implements Listener {
 	 * 
 	 * @param event the EntityExplodeEvent
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onEntityExplode(EntityExplodeEvent event) {
 		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")
 				&& CreeperConfig.getWorld(event.getLocation().getWorld().getName()).shouldReplace(
@@ -40,7 +40,6 @@ public class EntityExplodeListener implements Listener {
 			}
 
 			Machines.getInstance().addBlock(affected.toArray(new Block[0]));
-
 			return;
 		}
 
