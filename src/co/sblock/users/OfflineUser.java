@@ -136,7 +136,7 @@ public class OfflineUser {
 	 * @return the UserClass, default Heir
 	 */
 	public UserClass getUserClass() {
-		return (UserClass) yaml.get("classpect.class", UserClass.HEIR);
+		return UserClass.getClass(yaml.getString("classpect.class", "HEIR"));
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class OfflineUser {
 	 * @param userClassName the new UserClass
 	 */
 	public void setUserClass(String userClassName) {
-		yaml.set("classpect.class", UserClass.getClass(userClassName));
+		yaml.set("classpect.class", UserClass.getClass(userClassName).getDisplayName());
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class OfflineUser {
 	 * @return the UserAspect
 	 */
 	public UserAspect getUserAspect() {
-		return (UserAspect) yaml.get("classpect.aspect", UserAspect.BREATH);
+		return UserAspect.getAspect(yaml.getString("classpect.aspect", "BREATH"));
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class OfflineUser {
 	 * @param userAspectName the new UserAspect
 	 */
 	public void setUserAspect(String userAspectName) {
-		yaml.set("classpect.aspect", UserAspect.getAspect(userAspectName));
+		yaml.set("classpect.aspect", UserAspect.getAspect(userAspectName).getDisplayName());
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class OfflineUser {
 	 * @return the medium Region
 	 */
 	public Region getMediumPlanet() {
-		return (Region) yaml.get("classpect.medium", Region.LOWAS);
+		return Region.getRegion(yaml.getString("classpect.medium", "LOWAS"));
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class OfflineUser {
 		if (!planet.isMedium()) {
 			throw new RuntimeException("Invalid medium planet: " + planet.name());
 		}
-		yaml.set("classpect.medium", planet);
+		yaml.set("classpect.medium", planet.getDisplayName());
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class OfflineUser {
 	 * @return the dream Region
 	 */
 	public Region getDreamPlanet() {
-		return (Region) yaml.get("classpect.dream", Region.PROSPIT);
+		return Region.getRegion(yaml.getString("classpect.dream", "PROSPIT"));
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class OfflineUser {
 		if (!planet.isDream()) {
 			throw new RuntimeException("Invalid dream planet: " + planet.name());
 		}
-		yaml.set("classpect.dream", planet);
+		yaml.set("classpect.dream", planet.getDisplayName());
 	}
 
 	/**
@@ -216,7 +216,7 @@ public class OfflineUser {
 	 * @return the ProgressionState
 	 */
 	public ProgressionState getProgression() {
-		return (ProgressionState) yaml.get("progression.progression", ProgressionState.NONE);
+		return ProgressionState.valueOf(yaml.getString("progression.progression", "NONE"));
 	}
 
 	/**
@@ -225,7 +225,7 @@ public class OfflineUser {
 	 * @param progression the new ProgressionState
 	 */
 	public void setProgression(ProgressionState progression) {
-		yaml.set("progression.progression", progression);
+		yaml.set("progression.progression", progression.name());
 	}
 
 	/**
@@ -274,7 +274,7 @@ public class OfflineUser {
 	 * @return the Region the Player is in.
 	 */
 	public Region getCurrentRegion() {
-		return (Region) yaml.get("region", Region.UNKNOWN);
+		return Region.getRegion(yaml.getString("region", "UNKNOWN"));
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class OfflineUser {
 	 * @param region
 	 */
 	protected void setCurrentRegion(Region region) {
-		yaml.set("region", region);
+		yaml.set("region", region.getDisplayName());
 	}
 
 	/**
@@ -785,25 +785,15 @@ public class OfflineUser {
 		OfflineUser user = new OfflineUser(uuid, yaml.getString("ip", "null"), yaml);
 		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
 		//yaml.getString("previousRegion");
-		// try
-		user.setUserClass(yaml.getString("classpect.class", "HEIR"));
-		user.setUserAspect(yaml.getString("classpect.aspect", "BREATH"));
-		user.setMediumPlanet(yaml.getString("classpect.medium", "LOWAS"));
-		Region dream = Region.getRegion(yaml.getString("classpect.dream", "PROSPIT"));
-		// catch classcast
-		user.setDreamPlanet(dream.name());
 		Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("location"));
 		if (currentLoc == null) {
 			currentLoc = Users.getSpawnLocation();
 		}
 		Region current = Region.getRegion(currentLoc.getWorld().getName());
 		if (current.isDream()) {
-			current = dream;
+			current = user.getDreamPlanet();
 		}
 		user.setCurrentRegion(current);
-		// try
-		user.setProgression(ProgressionState.valueOf(yaml.getString("progression.progression", "NONE")));
-		// catch classcast, get string
 		user.getPrograms().addAll((HashSet<Integer>) yaml.get("progression.programs"));
 		if (yaml.getString("progression.server") != null) {
 			user.setServer(UUID.fromString(yaml.getString("progression.server")));
