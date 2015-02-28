@@ -53,7 +53,7 @@ public class PlayerAsyncChatListener implements Listener {
 			// TODO perhaps allow non-ASCII in non-global channels
 			StringBuilder sb = new StringBuilder();
 			for (char character : Normalizer.normalize(event.getMessage(), Normalizer.Form.NFD).toCharArray()) {
-				if (character <= '\u007F') {
+				if (character > '\u001F' && character < '\u007E') {
 					sb.append(character);
 				}
 			}
