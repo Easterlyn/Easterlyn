@@ -1,6 +1,5 @@
 package co.sblock.effects;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -10,6 +9,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.Sblock;
@@ -22,7 +22,7 @@ import co.sblock.users.Users;
  */
 public class InvisibilityManager {
 
-	private HashMap<UUID, BukkitTask> tasks;
+	private final HashMap<UUID, BukkitTask> tasks;
 
 	public InvisibilityManager() {
 		tasks = new HashMap<>();
@@ -69,15 +69,7 @@ public class InvisibilityManager {
 			Users.team(player);
 			team = player.getScoreboard().getPlayerTeam(player);
 		}
-		try {
-			Field f = team.getClass().getDeclaredField("team");
-			f.setAccessible(true);
-			net.minecraft.server.v1_8_R1.ScoreboardTeam nmsTeam = (net.minecraft.server.v1_8_R1.ScoreboardTeam) f.get(team);
-			nmsTeam.a(net.minecraft.server.v1_8_R1.EnumNameTagVisibility.NEVER);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			FXManager.getInstance().getLogger().warning("Unable to set nametag visibility!");
-			FXManager.getInstance().getLogger().err(e);
-		}
+		team.setNameTagVisibility(NameTagVisibility.NEVER);
 		final UUID uuid = player.getUniqueId();
 		tasks.put(uuid, new BukkitRunnable() {
 			@Override
@@ -97,14 +89,6 @@ public class InvisibilityManager {
 			Users.team(player);
 			team = player.getScoreboard().getPlayerTeam(player);
 		}
-		try {
-			Field f = team.getClass().getDeclaredField("team");
-			f.setAccessible(true);
-			net.minecraft.server.v1_8_R1.ScoreboardTeam nmsTeam = (net.minecraft.server.v1_8_R1.ScoreboardTeam) f.get(team);
-			nmsTeam.a(net.minecraft.server.v1_8_R1.EnumNameTagVisibility.ALWAYS);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			FXManager.getInstance().getLogger().warning("Unable to set nametag visibility!");
-			FXManager.getInstance().getLogger().err(e);
-		}
+		team.setNameTagVisibility(NameTagVisibility.ALWAYS);
 	}
 }
