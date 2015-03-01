@@ -200,7 +200,7 @@ public class Message {
 			json.append(",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/m ").append(sender.getPlayerName());
 			json.append(" \"},\"hoverEvent\":{\"action\":\"show_item\",\"value\":\"{id:diamond,tag:{display:{Name:\\\"");
 			json.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+---").append(ChatColor.RESET)
-					.append(' ').append(globalRank).append(channel.getNick(sender)).append(' ')
+					.append(' ').append(globalRank).append(sender.getDisplayName()).append(' ')
 					.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("---+\\\",Lore:[\\\"");
 			json.append(ChatColor.DARK_AQUA).append(sender.getUserClass().getDisplayName())
 					.append(ChatColor.YELLOW).append(" of ").append(sender.getUserAspect().getColor())
