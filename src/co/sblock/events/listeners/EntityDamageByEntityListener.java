@@ -51,6 +51,10 @@ public class EntityDamageByEntityListener implements Listener {
 			}
 		}
 
+		if (!(event.getEntity() instanceof Player)) {
+			return;
+		}
+
 		final UUID damager;
 		if (event.getDamager() instanceof Player) {
 			damager = event.getDamager().getUniqueId();
