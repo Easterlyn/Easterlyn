@@ -32,8 +32,8 @@ public class PlayerDeathListener implements Listener {
 				"I say, my dear chap, you appear to have died a little there.", "Git rekt.",
 				"That was a fatal miscalculation."}[(int) (Math.random() * 5)];
 		String location = new StringBuilder(" Death point: ")
-				.append(event.getEntity().getLocation().getBlockX()).append(", ")
-				.append(event.getEntity().getLocation().getBlockY()).append(", ")
+				.append(event.getEntity().getLocation().getBlockX()).append("x ")
+				.append(event.getEntity().getLocation().getBlockY()).append("y ")
 				.append(event.getEntity().getLocation().getBlockZ()).append('z').toString();
 		event.getEntity().sendMessage(ChatColor.RED + message + location);
 		Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died." + location);
