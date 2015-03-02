@@ -1,6 +1,7 @@
 package co.sblock.commands;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -30,13 +31,12 @@ public class MeteorCommand extends SblockCommand {
 		primaryArgs = new String[] {"p:", "r:", "e:", "b:", "m:"};
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Location target = null;
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
-			target = p.getTargetBlock(null, 128).getLocation();
+			target = p.getTargetBlock((HashSet<Material>) null, 128).getLocation();
 		}
 		int radius = -1;
 		String material = "";

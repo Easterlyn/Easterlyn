@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
@@ -26,6 +28,22 @@ import co.sblock.users.Users;
 public class ChatChannelCommand extends SblockCommand {
 
 	private final String[] defaultArgs = new String[] {"getlisteners", "info", "list", "listall", "new"};
+	private final String[] modArgs = new String[] {"approve", "ban", "deapprove", "kick"};
+	private final String modHelp = ChatColor.YELLOW + "Channel moderation commands:\n"
+			+ ChatColor.AQUA + "/channel kick <user>"
+			+ ChatColor.YELLOW + ": Kick a user from the channel\n"
+			+ ChatColor.AQUA + "/channel ban <user>"
+			+ ChatColor.YELLOW + ": Ban a user from the channel\n"
+			+ ChatColor.AQUA + "/channel (de)approve <user>"
+			+ ChatColor.YELLOW + ": (De-)approve a user for this channel.";
+	private final String[] ownerArgs = new String[] {"mod", "unban", "disband"};
+	private final String ownerHelp = ChatColor.YELLOW + "Channel owner commands:\n"
+			+ ChatColor.AQUA + "/channel mod <add|remove> <user>"
+			+ ChatColor.YELLOW + ": Add or remove a channel mod\n"
+			+ ChatColor.AQUA + "/channel unban <user>"
+			+ ChatColor.YELLOW + ": (Un)bans a user from the channel\n"
+			+ ChatColor.AQUA + "/channel disband"
+			+ ChatColor.YELLOW + ": Delete the channel!";
 
 	public ChatChannelCommand() {
 		super("channel");
@@ -38,7 +56,9 @@ public class ChatChannelCommand extends SblockCommand {
 				+ ChatColor.AQUA + "/channel list"
 				+ ChatColor.YELLOW + ": List channels you're in."
 				+ ChatColor.AQUA + "/channel listall"
-				+ ChatColor.YELLOW + ": List all channels.");
+				+ ChatColor.YELLOW + ": List all channels."
+				+ ChatColor.AQUA + "/channel new <name> <access> <type>"
+				+ ChatColor.YELLOW + ": Create a new channel.\n");
 	}
 
 	@Override
@@ -118,7 +138,7 @@ public class ChatChannelCommand extends SblockCommand {
 			}
 			for (char c : args[1].substring(1).toCharArray()) {
 				if (!Character.isLetterOrDigit(c)) {
-					user.sendMessage(ChatColor.RED + "Channel names must start with '#' and cannot exceed 16 characters!");
+					user.sendMessage(ChatColor.RED + "Channel names must be alphanumeric!");
 					return true;
 				}
 			}
@@ -133,12 +153,85 @@ public class ChatChannelCommand extends SblockCommand {
 			} else {
 				ChannelManager.getChannelManager().createNewChannel(args[1],
 						AccessLevel.getAccessLevel(args[2]), user.getUUID(), ChannelType.getType(args[3]));
-				Channel c = ChannelManager.getChannelManager().getChannel(args[1]);
-				user.setCurrentChannel(c);
+				channel = ChannelManager.getChannelManager().getChannel(args[1]);
+				user.setCurrentChannel(channel);
 			}
 			return true;
 		}
+
+		if (!channel.isModerator(user)) {
+			sender.sendMessage(this.getUsage());
+			return true;
+		}
+
+		switch (args[0]) {
+		case "approve":
+			if (args.length == 1) {
+				sender.sendMessage(ChatColor.AQUA + "/channel approve <user>" + ChatColor.YELLOW + ": Approve a user for this channel.");
+				return true;
+			}
+			channel.approveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+			return true;
+		case "ban":
+			if (args.length == 1) {
+				sender.sendMessage(ChatColor.AQUA + "/channel ban <user>" + ChatColor.YELLOW + ": Ban a user from the channel");
+				return true;
+			}
+			channel.banUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+			return true;
+		case "deapprove":
+			if (args.length == 1) {
+				sender.sendMessage(ChatColor.AQUA + "/channel deapprove <user>" + ChatColor.YELLOW + ": De-approve a user for this channel.");
+				return true;
+			}
+			channel.disapproveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+			return true;
+		case "kick":
+			if (args.length == 1) {
+				sender.sendMessage(ChatColor.AQUA + "/channel kick <user>" + ChatColor.YELLOW + ": Kick a user from the channel");
+				return true;
+			}
+			channel.kickUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
+			return true;
+		}
+
+		if (!channel.isOwner(user)) {
+			sender.sendMessage(this.getUsage());
+			sender.sendMessage(this.modHelp);
+			return true;
+		}
+
+		switch (args[0]) {
+		case "mod":
+			if (args.length < 3) {
+				sender.sendMessage(ChatColor.AQUA + "/channel mod <add|remove> <user>" + ChatColor.YELLOW + ": Add or remove a channel mod");
+				return true;
+			}
+			if (args[1].equalsIgnoreCase("add")) {
+				channel.addMod(user, Bukkit.getPlayer(args[3]).getUniqueId());
+				return true;
+			} else if (args[1].equalsIgnoreCase("remove")) {
+				channel.removeMod(user, Bukkit.getPlayer(args[3]).getUniqueId());
+				return true;
+			} else {
+				sender.sendMessage(ChatColor.AQUA + "/channel mod <add|remove> <user>" + ChatColor.YELLOW + ": Add or remove a channel mod");
+				return true;
+			}
+		case "unban":
+			if (args.length < 2) {
+				sender.sendMessage(ChatColor.AQUA + "/channel unban <user>" + ChatColor.YELLOW + ": Unban a user from the channel");
+				return true;
+			}
+			channel.unbanUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+			return true;
+		case "disband":
+			channel.disband(user);
+			return true;
+		}
+
 		sender.sendMessage(this.getUsage());
+		sender.sendMessage(this.modHelp);
+			sender.sendMessage(this.ownerHelp);
 		return true;
 	}
 
@@ -159,6 +252,19 @@ public class ChatChannelCommand extends SblockCommand {
 			}
 			if (user.getCurrentChannel() == null || !user.getCurrentChannel().isModerator(user)) {
 				return matches;
+			}
+			for (String subcommand : modArgs) {
+				if (subcommand.startsWith(args[0])) {
+					matches.add(subcommand);
+				}
+			}
+			if (!user.getCurrentChannel().isOwner(user)) {
+				return matches;
+			}
+			for (String subcommand : ownerArgs) {
+				if (subcommand.startsWith(args[0])) {
+					matches.add(subcommand);
+				}
 			}
 			return matches;
 		}
@@ -187,12 +293,43 @@ public class ChatChannelCommand extends SblockCommand {
 			}
 			return ImmutableList.of();
 		}
+
 		Channel current = user.getCurrentChannel();
 		if (current == null || !current.isModerator(user)) {
 			return ImmutableList.of();
 		}
 
-		// TODO TODO TODO
+		if (args[0].equals("kick") || args[0].equals("ban") || args[0].equals("approve") || args[0].equals("deapprove")) {
+			if (args.length > 2) {
+				return ImmutableList.of();
+			}
+			return super.tabComplete(sender, alias, args);
+		}
+
+		if (!current.isOwner(user)) {
+			return ImmutableList.of();
+		}
+
+		if (args[0].equals("mod")) {
+			if (args.length == 2) {
+				if (StringUtil.startsWithIgnoreCase(args[1], "add")) {
+					matches.add("add");
+				}
+				if (StringUtil.startsWithIgnoreCase(args[1], "remove")) {
+					matches.add("remove");
+				}
+				return matches;
+			}
+			if (args.length == 3) {
+				return super.tabComplete(sender, alias, args);
+			}
+			return ImmutableList.of();
+		}
+
+		if (args.length == 2 && args[0].equals("unban")) {
+			return super.tabComplete(sender, alias, args);
+		}
+
 		return ImmutableList.of();
 	}
 }
