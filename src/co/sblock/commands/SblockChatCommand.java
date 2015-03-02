@@ -22,7 +22,7 @@ public class SblockChatCommand extends SblockCommand {
 		super("sc");
 		this.setDescription("SblockChat's main command");
 		this.setUsage(ChatColor.YELLOW + "Chat-related commands:\n"
-						+ ChatColor.AQUA + "/join <channel>"
+						+ ChatColor.AQUA + "/focus <channel>"
 						+ ChatColor.YELLOW + ": Talking will send messages to <channel>.\n"
 						+ ChatColor.AQUA + "/listen <channel>"
 						+ ChatColor.YELLOW + ": Recieve messages from <channel>.\n"
