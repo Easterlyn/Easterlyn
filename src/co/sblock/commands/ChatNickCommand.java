@@ -1,5 +1,6 @@
 package co.sblock.commands;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,12 +70,18 @@ public class ChatNickCommand extends SblockCommand {
 			return true;
 		}
 		StringBuilder sb = new StringBuilder();
-		for (char character : StringUtils.join(args, ' ', 2, args.length).toCharArray()) {
-			if (Character.isAlphabetic(character) || Character.isDigit(character) || Character.isSpaceChar(character)) {
+		for (char character : Normalizer.normalize(StringUtils.join(args, ' '),
+				Normalizer.Form.NFD).toCharArray()) {
+			if (character > '\u001F' && character < '\u007E') {
 				sb.append(character);
 			}
 		}
-		c.setNick(user, sb.toString());
+		if (sb.length() == 0) {
+			sender.sendMessage(ChatColor.RED
+					+ "Nicks must be 1+ characters long when stripped of non-ASCII characters.");
+			return true;
+		}
+		c.setNick(user, ChatColor.translateAlternateColorCodes('&', sb.toString()));
 		return true;
 	}
 

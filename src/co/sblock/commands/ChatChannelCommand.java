@@ -29,15 +29,15 @@ public class ChatChannelCommand extends SblockCommand {
 
 	private final String[] defaultArgs = new String[] {"getlisteners", "info", "list", "listall", "new"};
 	private final String[] modArgs = new String[] {"approve", "ban", "deapprove", "kick"};
-	private final String modHelp = ChatColor.YELLOW + "Channel moderation commands:\n"
+	private final String modHelp = ChatColor.DARK_AQUA + "Channel moderation commands:\n"
 			+ ChatColor.AQUA + "/channel kick <user>"
 			+ ChatColor.YELLOW + ": Kick a user from the channel\n"
 			+ ChatColor.AQUA + "/channel ban <user>"
 			+ ChatColor.YELLOW + ": Ban a user from the channel\n"
 			+ ChatColor.AQUA + "/channel (de)approve <user>"
-			+ ChatColor.YELLOW + ": (De-)approve a user for this channel.";
+			+ ChatColor.YELLOW + ": Manage allowed users.";
 	private final String[] ownerArgs = new String[] {"mod", "unban", "disband"};
-	private final String ownerHelp = ChatColor.YELLOW + "Channel owner commands:\n"
+	private final String ownerHelp = ChatColor.DARK_AQUA + "Channel owner commands:\n"
 			+ ChatColor.AQUA + "/channel mod <add|remove> <user>"
 			+ ChatColor.YELLOW + ": Add or remove a channel mod\n"
 			+ ChatColor.AQUA + "/channel unban <user>"
@@ -50,15 +50,15 @@ public class ChatChannelCommand extends SblockCommand {
 		setDescription("Check or manipulate channel data.");
 		setUsage(ChatColor.DARK_AQUA + "Channel information/manipulation\n"
 				+ ChatColor.AQUA + "/channel getlisteners"
-				+ ChatColor.YELLOW + ": List people in the channel."
+				+ ChatColor.YELLOW + ": List people in the channel.\n"
 				+ ChatColor.AQUA + "/channel info"
-				+ ChatColor.YELLOW + ": Shows channel type, creator, etc."
+				+ ChatColor.YELLOW + ": Shows channel type, creator, etc.\n"
 				+ ChatColor.AQUA + "/channel list"
-				+ ChatColor.YELLOW + ": List channels you're in."
+				+ ChatColor.YELLOW + ": List channels you're in.\n"
 				+ ChatColor.AQUA + "/channel listall"
-				+ ChatColor.YELLOW + ": List all channels."
+				+ ChatColor.YELLOW + ": List all channels.\n"
 				+ ChatColor.AQUA + "/channel new <name> <access> <type>"
-				+ ChatColor.YELLOW + ": Create a new channel.\n");
+				+ ChatColor.YELLOW + ": Create a new channel.");
 	}
 
 	@Override
@@ -67,13 +67,22 @@ public class ChatChannelCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		if (args.length == 0) {
-			sender.sendMessage(this.getUsage());
-			return true;
-		}
 
 		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		Channel channel = user.getCurrentChannel();
+
+		if (args.length == 0) {
+			sender.sendMessage(this.getUsage());
+			if (channel == null || !channel.isModerator(user)) {
+				return true;
+			}
+			sender.sendMessage(modHelp);
+			if (channel.isOwner(user)) {
+				sender.sendMessage(ownerHelp);
+			}
+			return true;
+		}
+
 		StringBuilder sb;
 		args[0] = args[0].toLowerCase();
 
@@ -181,7 +190,7 @@ public class ChatChannelCommand extends SblockCommand {
 			return true;
 		case "deapprove":
 			if (args.length == 1) {
-				sender.sendMessage(ChatColor.AQUA + "/channel deapprove <user>" + ChatColor.YELLOW + ": De-approve a user for this channel.");
+				sender.sendMessage(ChatColor.AQUA + "/channel deapprove <user>" + ChatColor.YELLOW + ": De-approve a user from this channel.");
 				return true;
 			}
 			channel.disapproveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());

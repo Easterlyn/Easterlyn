@@ -22,14 +22,14 @@ import co.sblock.users.Users;
  * 
  * @author Jikoo
  */
-public class ChatJoinCommand extends SblockCommand {
+public class ChatFocusCommand extends SblockCommand {
 
-	public ChatJoinCommand() {
-		super("join");
+	public ChatFocusCommand() {
+		super("focus");
 		setDescription("Join or focus on a chat channel.");
 		setUsage(ChatColor.AQUA + "/join <channel>"
 				+ ChatColor.YELLOW + ": Join or focus on <channel>.");
-		setAliases("focus");
+		setAliases("join", "current");
 	}
 
 	@Override

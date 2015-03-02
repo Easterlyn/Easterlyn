@@ -51,37 +51,35 @@ public class SblockChatCommand extends SblockCommand {
 			return true;
 		}
 
-		sender.sendMessage(ChatColor.RED + "/sc is being phased out! Please check /chat for the new commands!");
+		sender.sendMessage(ChatColor.RED + "/sc is being phased out! Please check /chat for alternatives!");
 
+		String command;
 		args[0] = args[0].toLowerCase();
-		if (args[0].equals("c")) {
-			args[0] = "join";
-			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
-			return true;
-		} else if (args[0].equals("l") || args[0].equals("listen")) {
+		switch (args[0]) {
+		case "c":
+			args[0] = "focus";
+			command = StringUtils.join(args, ' ');
+			break;
+		case "l":
 			args[0] = "listen";
-			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
-			return true;
-		} else if (args[0].equals("leave")) {
-			args[0] = "leave";
-			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
-			return true;
-		} else if (args[0].equals("list") || args[0].equals("listall") || args[0].equals("new")) {
-			args[0] = "channel";
-			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' '));
-			return true;
-		} else if (args[0].equals("nick")) {
-			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' ', 1, args.length));
-			return true;
-		} else if (args[0].equals("suppress")) {
-			Bukkit.dispatchCommand(sender, "suppress");
-			return true;
-		} else if (args[0].equals("channel")) {
-			Bukkit.dispatchCommand(sender, StringUtils.join(args, ' ', 1, args.length));
-			return true;
-		} else {
+		case "listen":
+		case "leave":
+		case "nick":
+		case "suppress":
+		case "channel":
+			command = StringUtils.join(args, ' ');
+			break;
+		case "list":
+		case "listall":
+		case "new":
+			command = "channel " + StringUtils.join(args, ' ');
+			break;
+		default:
 			sender.sendMessage(this.usageMessage);
+			return true;
 		}
+		sender.sendMessage(ChatColor.RED + "Running " + ChatColor.AQUA + "/" + command);
+		Bukkit.dispatchCommand(sender, command);
 		return true;
 	}
 
