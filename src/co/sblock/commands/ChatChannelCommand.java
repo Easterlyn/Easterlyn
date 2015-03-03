@@ -144,6 +144,7 @@ public class ChatChannelCommand extends SblockCommand {
 			}
 			if (ChannelManager.getChannelManager().isValidChannel(args[1])) {
 				user.sendMessage(ChatColor.RED + "A channel by that name already exists!");
+				return true;
 			}
 			for (char c : args[1].substring(1).toCharArray()) {
 				if (!Character.isLetterOrDigit(c)) {
