@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
 import com.google.common.collect.ImmutableList;
@@ -31,7 +32,16 @@ public class PermissionInformationCommand extends SblockCommand {
 			permission = Bukkit.getPluginManager().getPermission(args[0]);
 		}
 		if (permission == null) {
-			sender.sendMessage(ChatColor.RED + "Please enter a valid permission.");
+			sender.sendMessage(ChatColor.RED + args[0] + " is not a valid permission.");
+			return true;
+		}
+		if (args.length > 1) {
+			List<Player> players = Bukkit.matchPlayer(args[1]);
+			if (players.isEmpty()) {
+				sender.sendMessage(ChatColor.RED + "No matching players found for " + args[1]);
+			}
+			sender.sendMessage(ChatColor.YELLOW + args[0] + " is "
+					+ players.get(0).hasPermission(permission) + " for " + players.get(0).getName());
 			return true;
 		}
 		sender.sendMessage(ChatColor.DARK_AQUA + "Permission: " + ChatColor.YELLOW + permission.getName());
