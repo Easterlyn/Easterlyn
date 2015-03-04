@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -46,6 +47,7 @@ public class PlayerInteractListener implements Listener {
 	 * @param event the PlayerInteractEvent
 	 */
 	@SuppressWarnings("deprecation")
+	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
