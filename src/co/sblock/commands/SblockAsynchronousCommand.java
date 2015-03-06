@@ -34,7 +34,6 @@ public abstract class SblockAsynchronousCommand extends SblockCommand {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				if (!onCommand(sender, label, args)) {
 					sender.sendMessage(getUsage());
 				}

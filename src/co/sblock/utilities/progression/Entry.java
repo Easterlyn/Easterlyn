@@ -26,6 +26,8 @@ import org.bukkit.util.Vector;
 import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
+import co.sblock.events.packets.ParticleEffectWrapper;
+import co.sblock.events.packets.ParticleUtils;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
@@ -173,19 +175,7 @@ public class Entry {
 		firework.setFireworkMeta(fm);
 		firework.setPassenger(player);
 
-//		final int particleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
-//				packet.setParticleEffect(WrapperPlayServerWorldParticles.ParticleEffect.FIREWORKS_SPARK);
-//				packet.setNumberOfParticles(5);
-//				packet.setLocation(firework.getLocation());
-//				packet.setOffset(new Vector(0.5, 0.5, 0.5));
-//
-//				// TODO particle utility ProtocolLibrary.getProtocolManager().broadcastServerPacket(packet.getHandle(), firework.getLocation(), 64);
-//			}
-//		}, 0, 1L);
+		ParticleUtils.getInstance().addEntity(firework, new ParticleEffectWrapper(Effect.FIREWORKS_SPARK, 5));
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 

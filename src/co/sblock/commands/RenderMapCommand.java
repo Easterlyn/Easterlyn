@@ -62,7 +62,7 @@ public class RenderMapCommand extends SblockCommand {
 		view.setCenterX(x);
 		view.setCenterZ(z);
 		player.setItemInHand(new ItemStack(Material.MAP, 1, view.getId()));
-		// TODO try to render whole map
+		// future try to render whole map
 		//((org.bukkit.craftbukkit.v1_8_R1.map.CraftMapView) view).render((org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer) player);
 		//player.sendMap(view);
 		return true;

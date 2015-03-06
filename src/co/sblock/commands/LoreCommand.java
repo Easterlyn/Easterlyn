@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -43,7 +44,7 @@ public class LoreCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		// TODO better help, leather color
+		// future leather color
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
@@ -192,36 +193,29 @@ public class LoreCommand extends SblockCommand {
 			SkullMeta meta = (SkullMeta) hand.getItemMeta();
 			meta.setOwner(null);
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Owner cleared!");
+			player.sendMessage(ChatColor.GREEN + "Deleted owner!");
 			return true;
 		}
-		if (args[1].equals("author")) {
+		if (args[1].equals("author") || args[1].equals("title")) {
 			if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.BOOK_AND_QUILL) {
-				player.sendMessage(ChatColor.RED + "You must be holding a writable book to clear its author.");
+				player.sendMessage(ChatColor.RED + "You must be holding a writable book to clear its " + args[1] + ".");
 				return true;
 			}
 			BookMeta meta = (BookMeta) hand.getItemMeta();
-			meta.setAuthor(null);
-			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Author cleared!");
-			return true;
-		}
-		if (args[1].equals("title")) {
-			if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.BOOK_AND_QUILL) {
-				player.sendMessage(ChatColor.RED + "You must be holding a writable book to clear its title.");
-				return true;
+			if (args[1].equals("author")) {
+				meta.setAuthor(null);
+			} else {
+				meta.setTitle(null);
 			}
-			BookMeta meta = (BookMeta) hand.getItemMeta();
-			meta.setTitle(null);
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Title cleared!");
+			player.sendMessage(ChatColor.GREEN + "Deleted " + args[1] + "!");
 			return true;
 		}
 		if (args[1].equals("name")) {
 			ItemMeta meta = hand.getItemMeta();
 			meta.setDisplayName(null);
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Name cleared!");
+			player.sendMessage(ChatColor.GREEN + "Deleted name!");
 			return true;
 		}
 		try {
