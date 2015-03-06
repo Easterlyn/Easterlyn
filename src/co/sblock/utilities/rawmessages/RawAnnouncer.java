@@ -66,11 +66,11 @@ public class RawAnnouncer extends Module {
 				ColorDef.HAL + "Join us on our subreddit, http://www.reddit.com/r/sblock"));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "If you're having trouble with chat, \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"/sc ?\","
-					+ "\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/sc ?\"},"
+				+ "{\"color\":\"aqua\",\"text\":\"/chat\","
+					+ "\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/chat\"},"
 					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to run!\",\"color\":\"gold\"}}},"
 				+ "{\"color\":\"red\",\"text\":\" is your friend!\"}]}",
-				ColorDef.HAL + "If you're having trouble with chat, /sc ? is your friend"));
+				ColorDef.HAL + "If you're having trouble with chat, /chat is your friend"));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "Remember, we are in \"},"
 				+ "{\"color\":\"gold\",\"bold\":\"true\",\"text\":\"ALPHA\","
@@ -116,12 +116,6 @@ public class RawAnnouncer extends Module {
 				+ "{\"color\":\"red\",\"text\":\" to listen and play!\"}]}",
 				ColorDef.HAL + "Interested in jamming with your fellow Sblock players? Join http://plug.dj/sblock/ to listen and play!"));
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "As of March 1, unprotected areas will slowly be regenerated. Protect your stuff! \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"http://redd.it/2u938a\","
-					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://redd.it/2u938a\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}}]}",
-				ColorDef.HAL + "As of March 1, unprotected areas will slowly be regenerated. Protect your stuff! http://redd.it/2u938a"));
-
 		return msgs;
 	}
 
@@ -144,7 +138,7 @@ public class RawAnnouncer extends Module {
 	}
 
 	public class AnnouncementMessage {
-		private String json, console;
+		private final String json, console;
 		public AnnouncementMessage(String json, String console) {
 			this.json = json;
 			this.console = console;

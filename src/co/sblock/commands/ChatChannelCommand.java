@@ -180,21 +180,21 @@ public class ChatChannelCommand extends SblockCommand {
 				sender.sendMessage(ChatColor.AQUA + "/channel approve <user>" + ChatColor.YELLOW + ": Approve a user for this channel.");
 				return true;
 			}
-			channel.approveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+			channel.approveUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
 			return true;
 		case "ban":
 			if (args.length == 1) {
 				sender.sendMessage(ChatColor.AQUA + "/channel ban <user>" + ChatColor.YELLOW + ": Ban a user from the channel");
 				return true;
 			}
-			channel.banUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+			channel.banUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
 			return true;
 		case "deapprove":
 			if (args.length == 1) {
 				sender.sendMessage(ChatColor.AQUA + "/channel deapprove <user>" + ChatColor.YELLOW + ": De-approve a user from this channel.");
 				return true;
 			}
-			channel.disapproveUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+			channel.disapproveUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
 			return true;
 		case "kick":
 			if (args.length == 1) {
@@ -218,10 +218,10 @@ public class ChatChannelCommand extends SblockCommand {
 				return true;
 			}
 			if (args[1].equalsIgnoreCase("add")) {
-				channel.addMod(user, Bukkit.getPlayer(args[3]).getUniqueId());
+				channel.addMod(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			} else if (args[1].equalsIgnoreCase("remove")) {
-				channel.removeMod(user, Bukkit.getPlayer(args[3]).getUniqueId());
+				channel.removeMod(user, Bukkit.getPlayer(args[2]).getUniqueId());
 				return true;
 			} else {
 				sender.sendMessage(ChatColor.AQUA + "/channel mod <add|remove> <user>" + ChatColor.YELLOW + ": Add or remove a channel mod");
@@ -232,7 +232,7 @@ public class ChatChannelCommand extends SblockCommand {
 				sender.sendMessage(ChatColor.AQUA + "/channel unban <user>" + ChatColor.YELLOW + ": Unban a user from the channel");
 				return true;
 			}
-			channel.unbanUser(user, Bukkit.getPlayer(args[2]).getUniqueId());
+			channel.unbanUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
 			return true;
 		case "disband":
 			channel.disband(user);
