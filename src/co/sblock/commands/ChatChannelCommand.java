@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +24,7 @@ import co.sblock.users.Users;
  * 
  * @author Jikoo
  */
-public class ChatChannelCommand extends SblockCommand {
+public class ChatChannelCommand extends SblockAsynchronousCommand {
 
 	private final String[] defaultArgs = new String[] {"getlisteners", "info", "list", "listall", "new"};
 	private final String[] modArgs = new String[] {"approve", "ban", "deapprove", "kick"};
@@ -180,28 +179,28 @@ public class ChatChannelCommand extends SblockCommand {
 				sender.sendMessage(ChatColor.AQUA + "/channel approve <user>" + ChatColor.YELLOW + ": Approve a user for this channel.");
 				return true;
 			}
-			channel.approveUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
+			channel.approveUser(user, getUniqueId(args[1]));
 			return true;
 		case "ban":
 			if (args.length == 1) {
 				sender.sendMessage(ChatColor.AQUA + "/channel ban <user>" + ChatColor.YELLOW + ": Ban a user from the channel");
 				return true;
 			}
-			channel.banUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
+			channel.banUser(user, getUniqueId(args[1]));
 			return true;
 		case "deapprove":
 			if (args.length == 1) {
 				sender.sendMessage(ChatColor.AQUA + "/channel deapprove <user>" + ChatColor.YELLOW + ": De-approve a user from this channel.");
 				return true;
 			}
-			channel.disapproveUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
+			channel.disapproveUser(user, getUniqueId(args[1]));
 			return true;
 		case "kick":
 			if (args.length == 1) {
 				sender.sendMessage(ChatColor.AQUA + "/channel kick <user>" + ChatColor.YELLOW + ": Kick a user from the channel");
 				return true;
 			}
-			channel.kickUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
+			channel.kickUser(user, getUniqueId(args[1]));
 			return true;
 		}
 
@@ -218,10 +217,10 @@ public class ChatChannelCommand extends SblockCommand {
 				return true;
 			}
 			if (args[1].equalsIgnoreCase("add")) {
-				channel.addMod(user, Bukkit.getPlayer(args[2]).getUniqueId());
+				channel.addMod(user, getUniqueId(args[2]));
 				return true;
 			} else if (args[1].equalsIgnoreCase("remove")) {
-				channel.removeMod(user, Bukkit.getPlayer(args[2]).getUniqueId());
+				channel.removeMod(user, getUniqueId(args[2]));
 				return true;
 			} else {
 				sender.sendMessage(ChatColor.AQUA + "/channel mod <add|remove> <user>" + ChatColor.YELLOW + ": Add or remove a channel mod");
@@ -232,7 +231,7 @@ public class ChatChannelCommand extends SblockCommand {
 				sender.sendMessage(ChatColor.AQUA + "/channel unban <user>" + ChatColor.YELLOW + ": Unban a user from the channel");
 				return true;
 			}
-			channel.unbanUser(user, Bukkit.getPlayer(args[1]).getUniqueId());
+			channel.unbanUser(user, getUniqueId(args[1]));
 			return true;
 		case "disband":
 			channel.disband(user);

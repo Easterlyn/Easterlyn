@@ -2,9 +2,11 @@ package co.sblock.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
@@ -12,14 +14,12 @@ import co.sblock.users.UserAspect;
 import co.sblock.users.UserClass;
 import co.sblock.users.Users;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * SblockCommand for setting User data.
  * 
  * @author Jikoo
  */
-public class SetPlayerCommand extends SblockCommand {
+public class SetPlayerCommand extends SblockAsynchronousCommand {
 
 	private final String[] primaryArgs;
 
@@ -36,7 +36,12 @@ public class SetPlayerCommand extends SblockCommand {
 		if (args == null || args.length < 3) {
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(Bukkit.getPlayer(args[0]).getUniqueId());
+		UUID uuid = getUniqueId(args[0]);
+		if (uuid == null) {
+			sender.sendMessage(args[0] + " has never played on this server.");
+			return true;
+		}
+		OfflineUser user = Users.getGuaranteedUser(uuid);
 		args[1] = args[1].toLowerCase();
 		if(args[1].equals("class"))
 			user.setUserClass(args[2]);
@@ -50,8 +55,10 @@ public class SetPlayerCommand extends SblockCommand {
 			user.setProgression(ProgressionState.valueOf(args[2].toUpperCase()));
 		else if (args[1].equals("prevloc")) {
 			user.setPreviousLocation(user.getPlayer().getLocation());
-		} else
+		} else {
 			return false;
+		}
+		sender.sendMessage("If you see this message, it worked.");
 		return true;
 	}
 

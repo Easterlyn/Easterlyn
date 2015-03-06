@@ -28,7 +28,7 @@ public class Users extends Module {
 	/* The Map of Player UUID and relevant SblockUsers currently online. */
 	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
 
-	/** Map containing all server/client player requests */
+	/* Map containing all server/client player requests */
 	private Map<String, String> requests;
 
 	@Override
