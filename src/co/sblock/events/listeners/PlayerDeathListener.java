@@ -49,56 +49,5 @@ public class PlayerDeathListener implements Listener {
 		}
 
 		Users.getGuaranteedUser(event.getEntity().getUniqueId()).getOnlineUser().removeAllEffects();
-
-		// Fun future feature for when I get bored
-//		Player killer = event.getEntity().getKiller();
-//		String message = null;
-//		switch (event.getEntity().getLastDamageCause().getCause()) {
-//		case BLOCK_EXPLOSION:
-//			if (killer == null) {
-//				message = new String[]{"", "", ""}[0];
-//				event.setDeathMessage(message);
-//			}
-//			break;
-//		case CONTACT:
-//			break;
-//		case DROWNING:
-//			break;
-//		case ENTITY_ATTACK:
-//		case ENTITY_EXPLOSION:
-//			break;
-//		case FALL:
-//			break;
-//		case FALLING_BLOCK:
-//			break;
-//		case FIRE:
-//		case FIRE_TICK:
-//			break;
-//		case LAVA:
-//			break;
-//		case LIGHTNING:
-//			break;
-//		case MAGIC:
-//			break;
-//		case POISON:
-//			break;
-//		case PROJECTILE:
-//			break;
-//		case STARVATION:
-//			break;
-//		case SUFFOCATION:
-//			break;
-//		case THORNS:
-//			break;
-//		case VOID:
-//			break;
-//		case WITHER:
-//			break;
-//		case SUICIDE:
-//		case CUSTOM:
-//		default:
-//			break;
-//		
-//		}
 	}
 }

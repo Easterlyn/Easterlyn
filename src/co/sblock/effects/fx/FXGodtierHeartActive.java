@@ -2,11 +2,8 @@ package co.sblock.effects.fx;
 
 import java.util.ArrayList;
 
-import net.minecraft.server.v1_8_R1.NBTTagCompound;
-
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftAnimals;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -18,6 +15,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import co.sblock.users.OnlineUser;
+
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftAnimals;
+
+import net.minecraft.server.v1_8_R2.NBTTagCompound;
 
 public class FXGodtierHeartActive extends SblockFX {
 

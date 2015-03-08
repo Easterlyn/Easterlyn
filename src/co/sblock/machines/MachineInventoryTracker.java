@@ -5,28 +5,29 @@ import io.netty.buffer.Unpooled;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_8_R1.ChatComponentText;
-import net.minecraft.server.v1_8_R1.Container;
-import net.minecraft.server.v1_8_R1.ContainerMerchant;
-import net.minecraft.server.v1_8_R1.EntityHuman;
-import net.minecraft.server.v1_8_R1.EntityPlayer;
-import net.minecraft.server.v1_8_R1.IChatBaseComponent;
-import net.minecraft.server.v1_8_R1.IMerchant;
-import net.minecraft.server.v1_8_R1.ItemStack;
-import net.minecraft.server.v1_8_R1.MerchantRecipe;
-import net.minecraft.server.v1_8_R1.MerchantRecipeList;
-import net.minecraft.server.v1_8_R1.PacketDataSerializer;
-import net.minecraft.server.v1_8_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_8_R1.PacketPlayOutOpenWindow;
-
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.regex.RegexUtils;
+
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
+
+import net.minecraft.server.v1_8_R2.ChatComponentText;
+import net.minecraft.server.v1_8_R2.Container;
+import net.minecraft.server.v1_8_R2.ContainerMerchant;
+import net.minecraft.server.v1_8_R2.EntityHuman;
+import net.minecraft.server.v1_8_R2.EntityPlayer;
+import net.minecraft.server.v1_8_R2.IChatBaseComponent;
+import net.minecraft.server.v1_8_R2.IMerchant;
+import net.minecraft.server.v1_8_R2.ItemStack;
+import net.minecraft.server.v1_8_R2.MerchantRecipe;
+import net.minecraft.server.v1_8_R2.MerchantRecipeList;
+import net.minecraft.server.v1_8_R2.PacketDataSerializer;
+import net.minecraft.server.v1_8_R2.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_8_R2.PacketPlayOutOpenWindow;
 
 /**
  * brb going insane because of NBT
@@ -37,7 +38,7 @@ public class MachineInventoryTracker {
 
 	private static MachineInventoryTracker instance;
 
-	private Map<Player, Machine> openMachines;
+	private final Map<Player, Machine> openMachines;
 
 	public MachineInventoryTracker() {
 		openMachines = new HashMap<>();
@@ -52,7 +53,7 @@ public class MachineInventoryTracker {
 	}
 
 	public void closeMachine(InventoryCloseEvent event) {
-		Machine m = openMachines.remove((Player) event.getPlayer());
+		Machine m = openMachines.remove(event.getPlayer());
 		if (m == null) {
 			return;
 		}
@@ -63,7 +64,6 @@ public class MachineInventoryTracker {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void openVillagerInventory(Player player, Machine m, org.bukkit.inventory.ItemStack... items) {
 		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
@@ -139,7 +139,7 @@ public class MachineInventoryTracker {
 		}
 
 		@Override
-		public EntityHuman u_() {
+		public EntityHuman v_() {
 			return customer;
 		}
 	}
