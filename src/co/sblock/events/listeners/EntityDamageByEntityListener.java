@@ -66,6 +66,19 @@ public class EntityDamageByEntityListener implements Listener {
 		}
 
 		final UUID damaged = event.getEntity().getUniqueId();
+		if (damaged.equals(damager)) {
+			// Deserved.
+			return;
+		}
+
+		OfflineUser damagerUser = Users.getGuaranteedUser(damager);
+		OfflineUser damagedUser = Users.getGuaranteedUser(damaged);
+		if (damagerUser instanceof OnlineUser && ((OnlineUser) damagerUser).isServer()
+				|| damagedUser instanceof OnlineUser && ((OnlineUser) damagedUser).isServer()) {
+			event.setCancelled(true);
+			return;
+		}
+
 		BukkitTask oldTask = Events.getInstance().getPVPTasks().put(damaged, new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -76,14 +89,6 @@ public class EntityDamageByEntityListener implements Listener {
 		}.runTaskLater(Sblock.getInstance(), 100L));
 		if (oldTask != null) {
 			oldTask.cancel();
-		}
-
-		OfflineUser damagerUser = Users.getGuaranteedUser(damager);
-		OfflineUser damagedUser = Users.getGuaranteedUser(damaged);
-		if (damagerUser instanceof OnlineUser && ((OnlineUser) damagerUser).isServer()
-				|| damagedUser instanceof OnlineUser && ((OnlineUser) damagedUser).isServer()) {
-			event.setCancelled(true);
-			return;
 		}
 	}
 }
