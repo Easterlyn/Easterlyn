@@ -30,7 +30,7 @@ public class WhoIsCommand extends SblockAsynchronousCommand {
 		if (!(sender instanceof Player) && args.length == 0) {
 			return false;
 		}
-		final UUID uuid = getUniqueId(args[0]);
+		final UUID uuid = args.length > 1 ? getUniqueId(args[0]) : ((Player) sender).getUniqueId();
 		if (uuid == null) {
 			sender.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED + " has never played on this server.");
 			return true;
