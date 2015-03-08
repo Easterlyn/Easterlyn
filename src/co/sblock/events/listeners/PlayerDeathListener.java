@@ -36,11 +36,16 @@ public class PlayerDeathListener implements Listener {
 				.append(event.getEntity().getLocation().getBlockY()).append("y ")
 				.append(event.getEntity().getLocation().getBlockZ()).append('z').toString();
 		event.getEntity().sendMessage(ChatColor.RED + message + location);
-		Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died." + location);
 
 		if (Events.getInstance().getPVPTasks().containsKey(event.getEntity().getUniqueId())) {
 			event.setKeepInventory(true);
 			Events.getInstance().getPVPTasks().remove(event.getEntity().getUniqueId()).cancel();
+			if (event.getEntity().getKiller() != null) {
+				Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died to "
+						+ event.getEntity().getKiller().getName() + " at" + location);
+			}
+		} else {
+			Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died." + location);
 		}
 
 		Users.getGuaranteedUser(event.getEntity().getUniqueId()).getOnlineUser().removeAllEffects();

@@ -11,7 +11,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -25,8 +24,8 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
 import co.sblock.Sblock;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
 
 /**
@@ -41,7 +40,7 @@ import co.sblock.machines.utilities.Shape;
 public class Transportalizer extends Machine {
 
 	private long fuel;
-	private Hologram hologram;
+	private final Hologram hologram;
 	/**
 	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
 	 */
@@ -125,7 +124,7 @@ public class Transportalizer extends Machine {
 	 */
 	@Override
 	public boolean handleHopperPickupItem(InventoryPickupItemEvent event) {
-		ItemStack inserted = ((Item) event.getItem()).getItemStack();
+		ItemStack inserted = event.getItem().getItemStack();
 		if (hasValue(inserted.getType())) {
 			fuel += getValue(inserted.getType()) * inserted.getAmount();
 			hologram.clearLines();
@@ -218,23 +217,28 @@ public class Transportalizer extends Machine {
 			return false;
 		}
 
+		Sign sign = (Sign) signBlock.getState();
 		// Check sign for proper format - sign lines are 0-3, third line is line 2
-		String line3 = ((Sign) signBlock.getState()).getLine(2);
-		if (!line3.matches("\\-?[0-9]+,[0-9]+,\\-?[0-9]+")) {
+		String line3 = sign.getLine(2);
+		if (!line3.matches("\\-?[0-9]+, ?[0-9]+, ?\\-?[0-9]+")) {
 			event.getPlayer().sendMessage(ChatColor.RED
 					+ "The third line of your transportalizer sign must contain "
-					+ "your desired destination in x,y,z format. Ex: 0,64,0");
+					+ "your desired destination in x, y, z format. Ex: 0, 64, 0");
 			return false;
 		}
 
-		// Parse remote location. Do not allow invalid height or coords. TODO warn?
-		String[] locString = line3.split(",");
-		int x = Integer.parseInt(locString[0]);
-		x = x > 25000 ? 25000 : x < -25000 ? -25000 : x;
-		int y = Integer.parseInt(locString[1]);
-		y = y > 0 ? y < 256 ? y : 255 : 63;
-		int z = Integer.parseInt(locString[2]);
-		z = z > 25000 ? 25000 : z < -25000 ? -25000 : z;
+		// Parse remote location. Do not allow invalid height or coords.
+		String[] locString = line3.split(", ?");
+		int x0 = Integer.parseInt(locString[0]);
+		int x = x0 > 25000 ? 25000 : x0 < -25000 ? -25000 : x0;
+		int y0 = Integer.parseInt(locString[1]);
+		int y = y0 > 0 ? y0 < 256 ? y0 : 255 : 63;
+		int z0 = Integer.parseInt(locString[2]);
+		int z = z0 > 25000 ? 25000 : z0 < -25000 ? -25000 : z0;
+		if (x != x0 | y != y0 || z != z0) {
+			sign.setLine(2, x + ", " + y + ", " + z);
+			sign.update();
+		}
 		Location remote = new Location(event.getClickedBlock().getWorld(), x, y, z);
 
 		// 50 fuel per block of distance, rounded up.
