@@ -348,7 +348,7 @@ public class OfflineUser {
 	 * @param userID the UUID of the server
 	 */
 	public void setServer(UUID userID) {
-		yaml.set("progression.server", userID.toString());
+		yaml.set("progression.server", userID != null ? userID.toString() : null);
 	}
 
 	/**
@@ -369,7 +369,7 @@ public class OfflineUser {
 	 * @param s the name of the Player to set as the client player.
 	 */
 	public void setClient(UUID userID) {
-		yaml.set("progression.client", userID.toString());
+		yaml.set("progression.client", userID != null ? userID.toString() : null);
 	}
 
 	/**
