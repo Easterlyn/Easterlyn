@@ -64,7 +64,7 @@ public class Spectators extends Module {
 	public void addSpectator(Player p) {
 		p.closeInventory();
 		p.setGameMode(GameMode.SPECTATOR);
-		spectators.put(p.getUniqueId(), p.getLocation());
+		spectators.put(p.getUniqueId(), p.getLocation().add(0, .5, 0));
 	}
 
 	/**
