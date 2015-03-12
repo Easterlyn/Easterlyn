@@ -47,7 +47,7 @@ public class PlayerAsyncChatListener implements Listener {
 	 * 
 	 * @param event the AsyncPlayerChatEvent
 	 */
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerChatLow(final AsyncPlayerChatEvent event) {
 		if (!event.getPlayer().hasPermission("sblock.felt")) {
 			// TODO perhaps allow non-ASCII in non-global channels
