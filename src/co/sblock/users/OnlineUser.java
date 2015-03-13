@@ -124,7 +124,7 @@ public class OnlineUser extends OfflineUser {
 	public Region getCurrentRegion() {
 		Region region = Region.getRegion(getPlayer().getWorld().getName());
 		if (region.isDream()) {
-			return super.getCurrentRegion();
+			return getDreamPlanet();
 		}
 		return region;
 	}

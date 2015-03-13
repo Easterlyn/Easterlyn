@@ -2,12 +2,13 @@ package co.sblock.commands;
 
 import java.util.Arrays;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
+
+import co.sblock.Sblock;
 
 /**
  * Base to be extended by all commands registered by Sblock.
@@ -67,7 +68,16 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 	protected abstract boolean onCommand(CommandSender sender, String label, String[] args);
 
 	@Override
+	public java.util.List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (getPermission() != null && !sender.hasPermission(getPermission())) {
+			return com.google.common.collect.ImmutableList.of();
+		}
+		return super.tabComplete(sender, alias, args);
+	}
+
+	@Override
 	public Plugin getPlugin() {
-		return Bukkit.getPluginManager().getPlugin("Sblock");
+		return Sblock.getInstance();
 	}
 }
