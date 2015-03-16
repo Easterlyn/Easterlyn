@@ -18,8 +18,8 @@ public class Experience {
 	 * @return the amount of exp the Player has
 	 */
 	public static int getExp(Player player) {
-		return (int) (getLevelExp(player.getLevel())
-				+ Math.round(getExpToNext(player.getLevel()) * player.getExp()));
+		return getLevelExp(player.getLevel())
+				+ Math.round(getExpToNext(player.getLevel()) * player.getExp());
 	}
 
 	/**
@@ -61,6 +61,9 @@ public class Experience {
 
 	/**
 	 * Change a Player's exp.
+	 * <p>
+	 * This method should be used in place of {@link Player#giveExp(int)}, which does not properly
+	 * account for different levels requiring different amounts of experience.
 	 * 
 	 * @param player the Player affected
 	 * @param exp the amount of experience to add or remove

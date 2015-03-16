@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import co.sblock.events.event.SblockBreakEvent;
 import co.sblock.users.OnlineUser;
 import co.sblock.utilities.enchantments.BlockDrops;
+import co.sblock.utilities.experience.Experience;
 
 /**
  * Mine or dig a 3x3 area at once.
@@ -23,12 +24,14 @@ import co.sblock.utilities.enchantments.BlockDrops;
 public class FXTunnelBore extends SblockFX {
 
 	private final BlockFace[] faces;
+	private final BlockFace[] levels;
 	@SuppressWarnings("unchecked")
 	public FXTunnelBore() {
 		super("Tunnel Bore", false, 2500, 0, BlockBreakEvent.class);
 		faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
 				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST,
 				BlockFace.SOUTH_WEST, BlockFace.SOUTH_EAST };
+		levels = new BlockFace[] {BlockFace.SELF, BlockFace.DOWN, BlockFace.UP};
 	}
 
 	@Override
@@ -47,13 +50,12 @@ public class FXTunnelBore extends SblockFX {
 		Block block = breakEvent.getBlock();
 		Player player = breakEvent.getPlayer();
 
-		for (int y = -1; y < 2; y++) {
-			if (block.getY() + y <= 0) {
+		for (BlockFace level : levels) {
+			if (block.getY() == 0 && level == BlockFace.DOWN) {
 				continue;
 			}
-			Block relativeCenter = block.getWorld().getBlockAt(block.getLocation().add(0, y, 0));
-			if (y != 0) {
-				// More efficient than including BlockFace.SELF
+			Block relativeCenter = block.getRelative(level);
+			if (level != BlockFace.SELF) {
 				sblockBreak(relativeCenter, player);
 			}
 			for (BlockFace face : faces) {
@@ -76,9 +78,13 @@ public class FXTunnelBore extends SblockFX {
 			return;
 		}
 		Collection<ItemStack> drops = BlockDrops.getDrops(player.getItemInHand(), block);
+		int exp = BlockDrops.getExp(player.getItemInHand(), block);
 		block.setType(Material.AIR);
 		for (ItemStack is : drops) {
-			block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), is);
+			player.getWorld().dropItem(player.getLocation(), is).setPickupDelay(0);
+		}
+		if (exp > 0) {
+			Experience.changeExp(player, exp);
 		}
 	}
 

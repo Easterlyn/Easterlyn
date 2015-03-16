@@ -40,8 +40,29 @@ public class BlockDrops {
 	}
 
 	public static int getExp(ItemStack tool, Block block) {
-		// TODO exp
-		return 0;
+		if (tool.containsEnchantment(Enchantment.SILK_TOUCH)
+				&& block.getType() != Material.MOB_SPAWNER) {
+			return 0;
+		}
+		if (!canMine(tool.getType(), block.getType())) {
+			return 0;
+		}
+		switch (block.getType()) {
+		case COAL_ORE:
+			return (int) (Math.random() * 3);
+		case DIAMOND_ORE:
+		case EMERALD_ORE:
+			return (int) (3 + Math.random() * 5);
+		case LAPIS_ORE:
+		case QUARTZ_ORE:
+			return (int) (2 + Math.random() * 4);
+		case REDSTONE_ORE:
+			return (int) (1 + Math.random() * 5);
+		case MOB_SPAWNER:
+			return (int) (15 + Math.random() * 29);
+		default:
+			return 0;
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -98,6 +119,7 @@ public class BlockDrops {
 		switch (block) {
 		case STONE:
 		case COAL_ORE:
+		case MOB_SPAWNER:
 		case QUARTZ_ORE:
 			if (tool == Material.WOOD_PICKAXE || tool == Material.GOLD_PICKAXE) {
 				return true;
