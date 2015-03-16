@@ -159,11 +159,11 @@ public class BlockDrops {
 			drops.add(dust);
 			break;
 		case GRAVEL:
-			boolean gravel = Math.random() < (fortune == 1 ? .14 : fortune == 2 ? .25 : 1);
-			if (gravel) {
-				drops.add(new ItemStack(Material.GRAVEL));
-			} else {
+			boolean flint = fortune > 2 || Math.random() < (fortune == 1 ? .14 : .25);
+			if (flint) {
 				drops.add(new ItemStack(Material.FLINT));
+			} else {
+				drops.add(new ItemStack(Material.GRAVEL));
 			}
 			break;
 		case LAPIS_ORE:
