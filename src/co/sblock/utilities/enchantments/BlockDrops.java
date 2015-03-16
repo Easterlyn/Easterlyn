@@ -168,7 +168,7 @@ public class BlockDrops {
 			break;
 		case LAPIS_ORE:
 			ItemStack lapis = doFortune(Material.INK_SACK, 4, 8, fortune, true);
-			lapis.setData(new MaterialData(Material.INK_SACK, DyeColor.BLUE.getDyeData()));
+			lapis.setDurability(DyeColor.BLUE.getDyeData());
 			drops.add(lapis);
 			break;
 		case LEAVES:
