@@ -35,7 +35,7 @@ import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.vote.SleepVote;
 
 /**
- * 
+ * Listener for PlayerInteractEvents.
  * 
  * @author Jikoo
  */
@@ -183,9 +183,20 @@ public class PlayerInteractListener implements Listener {
 				// Other inventory/action. Do not proceed to captcha.
 				return;
 			}
-		} else if (event.getPlayer().getItemInHand() != null
+		}
+
+		if (event.getPlayer().getItemInHand() != null
 				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE) {
-			// Bottle experience by right clicking air
+			for (Block block : event.getPlayer().getLineOfSight((java.util.Set<Material>) null, 4)) {
+				if (block.getType().isOccluding()) {
+					// Stairs, steps, etc. can be clicked through. Only occluding blocks are guaranteed safe.
+					break;
+				}
+				if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
+					return;
+				}
+			}
+			// Bottle experience by right clicking
 			int exp = Experience.getExp(event.getPlayer());
 			if (exp >= 11) {
 				Experience.changeExp(event.getPlayer(), -11);
