@@ -451,8 +451,8 @@ public class OfflineUser {
 			if (this.isOnline()) {
 				highlights.add(channel.getNick(this));
 			}
-			highlights.add(this.getPlayerName());
-			highlights.add(this.getDisplayName());
+			highlights.add(getPlayerName());
+			highlights.add(getDisplayName());
 		}
 		return highlights;
 	}
@@ -460,23 +460,23 @@ public class OfflineUser {
 	/**
 	 * Sets the Player's current Channel.
 	 * 
-	 * @param c the Channel to set as current
+	 * @param channel the Channel to set as current
 	 */
-	public void setCurrentChannel(Channel c) {
-		if (!c.isApproved(this) || c.isBanned(this)) {
+	public void setCurrentChannel(Channel channel) {
+		if (!channel.isApproved(this) || channel.isBanned(this)) {
 			return;
 		}
-		this.currentChannel = c.getName();
+		this.currentChannel = channel.getName();
 	}
 
 	/**
 	 * Sets the Player's current Channel.
 	 * 
-	 * @param c the Channel to set as current
+	 * @param channelName the name of the Channel to set as current
 	 */
-	public void setCurrentChannel(String s) {
-		Channel c = ChannelManager.getChannelManager().getChannel(s);
-		this.setCurrentChannel(c);
+	public void setCurrentChannel(String channelName) {
+		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+		this.setCurrentChannel(channel);
 	}
 
 	/**
@@ -709,8 +709,7 @@ public class OfflineUser {
 		OnlineUser user = Users.getOnlineUser(getUUID());
 		if (user == null) {
 			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
-					yaml, getDisplayName(), getPreviousLocation(), getPrograms(), currentChannel,
-					getListening());
+					yaml, getPreviousLocation(), getPrograms(), currentChannel, getListening());
 		}
 		return null;
 	}

@@ -51,9 +51,8 @@ public class OnlineUser extends OfflineUser {
 	private Location serverDisableTeleport;
 	private boolean isServer;
 
-	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, String displayName,
-			Location previousLocation, Set<Integer> programs, String currentChannel,
-			Set<String> listening) {
+	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, Location previousLocation,
+			Set<Integer> programs, String currentChannel, Set<String> listening) {
 		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
 		effectsList = new HashMap<>();
 		isServer = false;
@@ -65,9 +64,6 @@ public class OnlineUser extends OfflineUser {
 			} else {
 				iterator.remove();
 			}
-		}
-		if (displayName != null) {
-			this.getPlayer().setDisplayName(displayName);
 		}
 		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
 			this.getListening().add("@");
