@@ -445,7 +445,7 @@ public class OfflineUser {
 		return yaml.getBoolean("chat.highlight", true);
 	}
 
-	public Collection<String> getHighlights(Channel channel) {
+	public synchronized Collection<String> getHighlights(Channel channel) {
 		HashSet<String> highlights = new HashSet<>();
 		if (this.getHighlight()) {
 			if (this.isOnline()) {
@@ -462,7 +462,7 @@ public class OfflineUser {
 	 * 
 	 * @param channel the Channel to set as current
 	 */
-	public void setCurrentChannel(Channel channel) {
+	public synchronized void setCurrentChannel(Channel channel) {
 		if (!channel.isApproved(this) || channel.isBanned(this)) {
 			return;
 		}
@@ -474,7 +474,7 @@ public class OfflineUser {
 	 * 
 	 * @param channelName the name of the Channel to set as current
 	 */
-	public void setCurrentChannel(String channelName) {
+	public synchronized void setCurrentChannel(String channelName) {
 		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
 		this.setCurrentChannel(channel);
 	}
@@ -484,7 +484,7 @@ public class OfflineUser {
 	 * 
 	 * @return Channel
 	 */
-	public Channel getCurrentChannel() {
+	public synchronized Channel getCurrentChannel() {
 		return ChannelManager.getChannelManager().getChannel(this.currentChannel);
 	}
 
@@ -495,7 +495,7 @@ public class OfflineUser {
 	 * 
 	 * @return true if the Channel was added
 	 */
-	public boolean addListening(Channel channel) {
+	public synchronized boolean addListening(Channel channel) {
 		if (!channel.isApproved(this) || channel.isBanned(this)) {
 			return false;
 		}
@@ -515,7 +515,7 @@ public class OfflineUser {
 	 * 
 	 * @param channelName the name of the Channel to remove
 	 */
-	public void removeListening(String channelName) {
+	public synchronized void removeListening(String channelName) {
 		if (this.currentChannel.equals(channelName)) {
 			this.currentChannel = null;
 		}
@@ -527,7 +527,7 @@ public class OfflineUser {
 	 * 
 	 * @param channel the Channel to remove
 	 */
-	public void removeListeningSilent(Channel channel) {
+	public synchronized void removeListeningSilent(Channel channel) {
 		channel.removeNick(this, false);
 		this.listening.remove(channel.getName());
 		if (this.currentChannel != null && this.currentChannel.equals(channel.getName())) {
@@ -569,7 +569,7 @@ public class OfflineUser {
 	 * 
 	 * @return true if the Player is listening to c
 	 */
-	public boolean isListening(Channel c) {
+	public synchronized boolean isListening(Channel c) {
 		return this.listening.contains(c.getName());
 	}
 
@@ -580,7 +580,7 @@ public class OfflineUser {
 	 * 
 	 * @return true if the Player is listening to c
 	 */
-	public boolean isListening(String s) {
+	public synchronized boolean isListening(String s) {
 		return this.listening.contains(s);
 	}
 
