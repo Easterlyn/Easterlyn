@@ -82,7 +82,6 @@ public class ServerInformationCommand extends SblockAsynchronousCommand {
 			sender.sendMessage(ChatColor.RED + "IOException creating report.txt");
 			return true;
 		}
-		// TODO Auto-generated method stub
 		sender.sendMessage(ChatColor.GREEN + "Report written to /plugins/Sblock/report.txt");
 		return true;
 	}

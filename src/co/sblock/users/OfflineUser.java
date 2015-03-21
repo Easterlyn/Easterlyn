@@ -3,6 +3,7 @@ package co.sblock.users;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -585,6 +586,53 @@ public class OfflineUser {
 	}
 
 	/**
+	 * Add a UUID to the Player's ignore list.
+	 * 
+	 * @param uuid the UUID to add
+	 * 
+	 * @return true if the UUID was added
+	 */
+	public synchronized boolean addIgnore(UUID uuid) {
+		ArrayList<String> list = new ArrayList<String>(yaml.getStringList("chat.ignoring"));
+		String uuidString = uuid.toString();
+		if (!list.contains(uuidString)) {
+			list.add(uuidString);
+			yaml.set("chat.ignoring", list);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Remove a UUID from the Player's ignore list.
+	 * 
+	 * @param uuid the UUID to remove
+	 * 
+	 * @return true if the UUID was removed
+	 */
+	public synchronized boolean removeIgnore(UUID uuid) {
+		ArrayList<String> list = new ArrayList<String>(yaml.getStringList("chat.ignoring"));
+		String uuidString = uuid.toString();
+		if (list.contains(uuidString)) {
+			list.remove(uuidString);
+			yaml.set("chat.ignoring", list);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Check if the Player is ignoring a UUID.
+	 * 
+	 * @param uuid the UUID to check
+	 * 
+	 * @return true if the UUID is ignored
+	 */
+	public synchronized boolean isIgnoring(UUID uuid) {
+		return yaml.getStringList("chat.ignoring").contains(uuid.toString());
+	}
+
+	/**
 	 * Checks if the Player is close enough to a Computer to chat in #.
 	 * 
 	 * @return true if the Player can chat in #
@@ -802,7 +850,6 @@ public class OfflineUser {
 		}
 		user.setCurrentChannel(yaml.getString("chat.current", "#"));
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
-		//(Set<String>) yaml.get("chat.ignoring");
 
 		String name = yaml.getString("name");
 		if (name != null && !name.equals(Bukkit.getOfflinePlayer(uuid).getName())) {

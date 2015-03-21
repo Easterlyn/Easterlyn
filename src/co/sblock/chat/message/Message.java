@@ -250,7 +250,8 @@ public class Message {
 				throw new RuntimeException("Invalid recipient type: " + object.getClass());
 			}
 			OfflineUser u = Users.getGuaranteedUser(uuid);
-			if (player == null || !u.isOnline() || channel.getType() == ChannelType.REGION && u.getSuppression()) {
+			if (player == null || !u.isOnline() || channel.getType() == ChannelType.REGION
+					&& u.getSuppression() || sender != null && u.isIgnoring(sender.getUUID())) {
 				continue;
 			}
 			if (sender != null && (sender.equals(u) || !sender.getHighlight())) {

@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
 import co.sblock.utilities.spectator.Spectators;
@@ -98,7 +99,12 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(ChatColor.RED + "Incorporeal players cannot be teleported to!");
 			return;
 		}
-		Region rTarget = Users.getGuaranteedUser(target.getUniqueId()).getCurrentRegion();
+		OfflineUser targetUser = Users.getGuaranteedUser(target.getUniqueId());
+		if (targetUser.isIgnoring(sender.getUniqueId())) {
+			sender.sendMessage(ChatColor.GOLD + target.getDisplayName() + ChatColor.RED + " is ignoring you!");
+			return;
+		}
+		Region rTarget = targetUser.getCurrentRegion();
 		Region rSource = Users.getGuaranteedUser(sender.getUniqueId()).getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
 			sender.sendMessage(ChatColor.RED + "Teleports cannot be initiated from different planets!");
