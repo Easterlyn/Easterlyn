@@ -2,9 +2,9 @@ package co.sblock.commands;
 
 import java.util.List;
 
+import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.BanList.Type;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,6 +42,9 @@ public class SuperBanCommand extends SblockCommand {
 		}
 		if (args.length == 1) {
 			reason.append("Git wrekt m8.");
+		} else {
+			// Remove trailing space
+			reason.deleteCharAt(reason.length() - 1);
 		}
 		if (target.contains(".")) { // IPs probably shouldn't be announced.
 			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, sender.getName());

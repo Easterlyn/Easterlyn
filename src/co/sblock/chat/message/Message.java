@@ -51,12 +51,6 @@ public class Message {
 			}
 		}
 
-		// Anyone can use color codes in nick channels. Channel mods can use color codes in non-rp channels
-		if (channel.getType() != ChannelType.RP 
-				&& (channel.getType() == ChannelType.NICK || sender != null && channel.isModerator(sender))) {
-			message = ChatColor.translateAlternateColorCodes('&', message);
-		}
-
 		// Canon nicks for RP channels
 		if (sender != null && channel.getType() == ChannelType.RP) {
 			this.nick = CanonNick.getNick(channel.getNick(sender));
@@ -217,21 +211,11 @@ public class Message {
 	}
 
 	public void send() {
-		this.send(false);
-	}
-
-	public void send(boolean uncancelledRegionalChat) {
-		this.send(getChannel().getListening(), uncancelledRegionalChat);
+		this.send(getChannel().getListening());
 	}
 
 	public <T> void send(Collection<T> recipients) {
-		this.send(recipients, false);
-	}
-
-	public <T> void send(Collection<T> recipients, boolean uncancelledRegionalChat) {
-		if (!uncancelledRegionalChat) {
 			Log.anonymousInfo(getConsoleMessage());
-		}
 		String message = unformattedMessage.replace("\\", "\\\\").replace("\"", "\\\"");
 		String focusedUnhighlighted = JSONUtil.getWrappedJSON(getChannelPrefix(false), nameElement,
 				JSONUtil.toJSONElements(ChatColor.WHITE + message, true, nick));
@@ -284,20 +268,22 @@ public class Message {
 				if (lastEnd < message.length()) {
 					msg.append(message.substring(lastEnd));
 				}
-				// Funtimes sound effects here
-				switch ((int) (Math.random() * 20)) {
-				case 0:
-					player.playSound(player.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
-					break;
-				case 1:
-					player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1, 2);
-					break;
-				case 2:
-				case 3:
-					player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1, 1);
-					break;
-				default:
-					player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 2);
+				if (!channel.getName().equals("#privatemessage")) {
+					// Fun sound effects! Sadly, ender dragon kill is a little long even at 2x
+					switch ((int) (Math.random() * 20)) {
+					case 0:
+						player.playSound(player.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
+						break;
+					case 1:
+						player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1, 2);
+						break;
+					case 2:
+					case 3:
+						player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1, 1);
+						break;
+					default:
+						player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 2);
+					}
 				}
 				String rawHighlight = JSONUtil.getWrappedJSON(channelHighlightElement, nameElement, JSONUtil.toJSONElements(msg.toString(), true, nick));
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + u.getPlayerName() + ' ' + rawHighlight);

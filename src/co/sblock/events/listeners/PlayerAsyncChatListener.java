@@ -1,24 +1,18 @@
 package co.sblock.events.listeners;
 
-import java.text.Normalizer;
-import java.util.HashSet;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
+import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
 
 /**
@@ -37,9 +31,6 @@ public class PlayerAsyncChatListener implements Listener {
 			"Testing complete. Proceeding with operation.", "A critical fault has been discovered while testing.",
 			"Error: Test results contaminated.", "tset", "PONG."};
 
-	private final ConcurrentHashMap<UUID, Message> messages = new ConcurrentHashMap<>();
-
-
 	/**
 	 * The first event handler for AsyncPlayerChatEvents.
 	 * 
@@ -49,29 +40,28 @@ public class PlayerAsyncChatListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerChatLow(final AsyncPlayerChatEvent event) {
-		if (!event.getPlayer().hasPermission("sblock.felt")) {
-			// TODO perhaps allow non-ASCII in non-global channels
-			StringBuilder sb = new StringBuilder();
-			for (char character : Normalizer.normalize(event.getMessage(), Normalizer.Form.NFD).toCharArray()) {
-				if (character > '\u001F' && character < '\u007E') {
-					sb.append(character);
-				}
-			}
-			event.setMessage(sb.toString());
-		}
-		boolean thirdPerson = event.getMessage().startsWith("@#>me");
-		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
-		if (thirdPerson) {
-			event.setMessage(event.getMessage().substring(5));
-			mb.setThirdPerson(true);
-		}
-		mb.setMessage(event.getMessage());
-		// Ensure message can be sent
-		if (!mb.canBuild(true)) {
+		if (!(event instanceof SblockAsyncChatEvent)) {
 			event.setCancelled(true);
+			boolean thirdPerson = event.getMessage().startsWith("@#>me");
+			MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
+			if (thirdPerson) {
+				event.setMessage(event.getMessage().substring(5));
+				mb.setThirdPerson(true);
+			}
+			mb.setMessage(event.getMessage());
+			// Ensure message can be sent
+			if (!mb.canBuild(true)) {
+				return;
+			}
+			Message msg = mb.toMessage();
+			// Because we have a collection of UUIDs and not Players, nice compact lambda notation instead of a loop
+			event.getRecipients().removeIf(p -> !msg.getChannel().getListening().contains(p.getUniqueId()));
+
+			SblockAsyncChatEvent sblockEvent = new SblockAsyncChatEvent(event.isAsynchronous(), event.getPlayer(), event.getRecipients(), msg);
+			Bukkit.getPluginManager().callEvent(sblockEvent);
 			return;
 		}
-		Message message = mb.toMessage();
+		Message message = ((SblockAsyncChatEvent) event).getSblockMessage();
 		// Test
 		if (message.getCleanedMessage().equalsIgnoreCase("test")) {
 			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
@@ -84,19 +74,9 @@ public class PlayerAsyncChatListener implements Listener {
 			return;
 		}
 		if (message.getChannel().getType() == ChannelType.REGION && rpMatch(message.getCleanedMessage())) {
-			event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /sc c!");
+			event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
 			event.setCancelled(true);
 			return;
-		}
-		// Because we have a collection of UUIDs and not Players, nice compact lambda notation instead of a loop
-		event.getRecipients().removeIf(p -> !message.getChannel().getListening().contains(p.getUniqueId()));
-
-		event.setMessage(message.getMessage());
-		event.setFormat(message.getConsoleFormat());
-
-		messages.put(event.getPlayer().getUniqueId(), message);
-		if (message.getChannel().getType() != ChannelType.REGION) {
-			event.setCancelled(true);
 		}
 	}
 
@@ -110,57 +90,32 @@ public class PlayerAsyncChatListener implements Listener {
 	 * 
 	 * @param event the AsyncPlayerChatEvent
 	 */
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerChat(final AsyncPlayerChatEvent event) {
-		final Message message;
-		if (messages.containsKey(event.getPlayer().getUniqueId())) {
-			message = messages.remove(event.getPlayer().getUniqueId());
-			// Message was cancelled by us - other plugins should not be manipulating messages aside from recipients.
-			event.setCancelled(false);
-		} else {
-			message = null;
-			event.setCancelled(true);
-		}
-		if (event.isCancelled()) {
-			return;
-		}
-
-		// GP's anti-spam also filters allcaps, which we bypass by forming the message earlier. Reset message for console.
-		event.setMessage(message.getMessage());
-
-		final HashSet<Player> recipients = new HashSet<>(event.getRecipients());
-
-		// Region channels are the only ones that should be appearing in certain plugins that don't use log filters
-		boolean doNotCancel = message.getChannel().getType() == ChannelType.REGION;
-		if (!doNotCancel) {
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerChat(final SblockAsyncChatEvent event) {
+		// Region channels are the only ones that should be appearing in certain plugins
+		if (event.getSblockMessage().getChannel().getType() != ChannelType.REGION) {
 			event.setCancelled(true);
 		}
 
 		// Prevent IRC picking up soft muted messages
-		if (event.getRecipients().size() < message.getChannel().getListening().size()) {
+		if (event.getRecipients().size() < event.getSblockMessage().getChannel().getListening().size()) {
 			event.setFormat("[SoftMute] " + event.getFormat());
 		}
 
-		// Clear and manually send messages to each player so we can wrap links, etc.
-		event.getRecipients().clear();
-		message.send(recipients, doNotCancel);
+		// Manually send messages to each player so we can wrap links, etc.
+		event.getSblockMessage().send(event.getRecipients());
 
-		// Delay reply to prevent global channels logging reply before original message
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				String msg = ChatColor.stripColor(event.getMessage().toLowerCase());
-				if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
-					msg = msg.substring(msg.indexOf(' ')).trim();
-					final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
-							.setMessage(ChatColor.RED + Chat.getChat().getHalculator().evhaluate(msg))
-							.setChannel(message.getChannel()).toMessage();
-					hal.send(recipients);
-				} else {
-					Chat.getChat().getHal().handleMessage(message, recipients);
-				}
-			}
-		}.runTaskLaterAsynchronously(Sblock.getInstance(), 2L);
+		// Handle Hal functions
+		String msg = ChatColor.stripColor(event.getMessage().toLowerCase());
+		if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
+			msg = msg.substring(msg.indexOf(' ')).trim();
+			final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
+					.setMessage(ChatColor.RED + Chat.getChat().getHalculator().evhaluate(msg))
+					.setChannel(event.getSblockMessage().getChannel()).toMessage();
+			hal.send(event.getRecipients());
+		} else {
+			Chat.getChat().getHal().handleMessage(event.getSblockMessage(), event.getRecipients());
+		}
 	}
 
 	public boolean rpMatch(String message) {

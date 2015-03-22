@@ -10,37 +10,14 @@ softdepend: [CreeperHeal]
 
 permissions:
  sblock.ask.adam.before.touching:
-  description: If something requires this permission, you probably shouldn't be touching it.
+  description: 'If something requires this permission, you probably shouldn''t be touching it.'
   default: false
  sblock.guildleader:
-  description: Default false - not all horrorterrors are guild leaders.
+  description: 'Default false - not all horrorterrors are guild leaders.'
   default: false
- sblockchat.color:
-  description: Automatically colors message with name color.
-  default: false
- sblockchat.colors:
+ sblockchat.greentext:
+  description: '>mfw tfw'
   default: true
-  description: Name color permissions. Default all off so ops don't end up with weird colored names.
-  children:
-   sblockchat.black: false
-   sblockchat.dark_blue: false
-   sblockchat.dark_green: false
-   sblockchat.dark_aqua: false
-   sblockchat.dark_red: false
-   sblockchat.dark_purple: false
-   sblockchat.gold: false
-   sblockchat.gray: false
-   sblockchat.dark_gray: false
-   sblockchat.blue: false
-   sblockchat.green: false
-   sblockchat.aqua: false
-   sblockchat.red: false
-   sblockchat.light_purple: false
-   sblockchat.yellow: false
-   sblockchat.white: false
-   sblockchat.magic: false
-   sblockchat.bold: false
-   sblockchat.strikethrough: false
-   sblockchat.underline: false
-   sblockchat.italic: false
-   sblockchat.reset: false
+ sblockchat.color:
+  description: 'Automatically colors message with name color.'
+  default: false

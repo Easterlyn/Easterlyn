@@ -21,7 +21,7 @@ public class PermissionInformationCommand extends SblockCommand {
 	public PermissionInformationCommand() {
 		super("perminfo");
 		this.setDescription("Prints out information about the specified permission.");
-		this.setUsage("/perminfo <permission>");
+		this.setUsage("/perminfo <permission> [player]");
 		this.setPermissionLevel("felt");
 	}
 

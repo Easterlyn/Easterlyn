@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Chat;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -22,7 +21,7 @@ import co.sblock.chat.channel.RegionChannel;
 
 public class ChannelManager {
 
-	private ConcurrentHashMap<String, Channel> channelList;
+	private final ConcurrentHashMap<String, Channel> channelList;
 
 	public ChannelManager() {
 		channelList = new ConcurrentHashMap<>();
@@ -178,6 +177,8 @@ public class ChannelManager {
 		channelList.put("#LOFAF", new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null));
 		channelList.put("#Aether", new RegionChannel("#Aether", AccessLevel.PUBLIC, null));
 		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null));
+		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null));
+		channelList.put("#privatemessage", new NormalChannel("#privatemessage", AccessLevel.PRIVATE, null));
 		channelList.put("@", new NormalChannel("@", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6")));
 	}
 

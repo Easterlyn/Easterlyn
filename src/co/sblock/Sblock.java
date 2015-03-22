@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -121,6 +122,10 @@ public class Sblock extends JavaPlugin {
 		try {
 			for (String perm : new String[] {"default", "godtier", "donator", "helper", "felt", "denizen", "horrorterror"}) {
 				Permission permission = new Permission("sblock." + perm, perm.equals("default") ? PermissionDefault.TRUE : PermissionDefault.OP);
+				getServer().getPluginManager().addPermission(permission);
+			}
+			for (ChatColor color : ChatColor.values()) {
+				Permission permission = new Permission("sblockchat." + color.name().toLowerCase(), PermissionDefault.FALSE);
 				getServer().getPluginManager().addPermission(permission);
 			}
 		} catch (IllegalArgumentException e) {
