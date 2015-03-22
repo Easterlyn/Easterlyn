@@ -68,7 +68,8 @@ public class MessageBuilder {
 					sb.append(character);
 				}
 			}
-			message = sb.toString();
+			// Fuck you.
+			message = sb.toString().replaceAll("tilde?s?", "");
 		}
 
 		// Trim whitespace created by formatting codes, etc.
