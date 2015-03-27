@@ -7,7 +7,7 @@ package co.sblock.chat.ai;
  */
 public class Halculator {
 
-	private com.fathzer.soft.javaluator.DoubleEvaluator eval;
+	private final com.fathzer.soft.javaluator.DoubleEvaluator eval;
 
 	public Halculator() {
 		eval = new com.fathzer.soft.javaluator.DoubleEvaluator();
@@ -26,7 +26,7 @@ public class Halculator {
 			}
 			return input + " = " + answer;
 		} catch (IllegalArgumentException e) {
-			if (input.matches("\\A\\s*m(y|e|ah?).*((di|co)c?k|penis|(we(i|e)n|(schl|d)ong)(er)?|willy|(trouser )?snake|lizard)\\s*\\Z")) {
+			if (input.matches("\\A\\s*m(y|e|ah?).*((di|co)c?k|pe(en|nis)|(we(i|e)n|(schl|d)ong)(er)?|willy|(trouser )?snake|lizard)\\s*\\Z")) {
 				return "Sorry, your equation is too tiny for me to read.";
 			} else if (input.matches("\\A.*life.*universe.*everything*\\Z")) {
 				return input + " = 42";
