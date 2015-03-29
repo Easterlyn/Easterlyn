@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.events.event.SblockBreakEvent;
 import co.sblock.users.OnlineUser;
-import co.sblock.utilities.enchantments.BlockDrops;
+import co.sblock.utilities.experience.BlockDrops;
 import co.sblock.utilities.experience.Experience;
 
 /**

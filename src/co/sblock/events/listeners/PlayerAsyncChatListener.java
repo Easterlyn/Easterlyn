@@ -40,40 +40,51 @@ public class PlayerAsyncChatListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerChatLow(final AsyncPlayerChatEvent event) {
-		if (!(event instanceof SblockAsyncChatEvent)) {
-			event.setCancelled(true);
-			boolean thirdPerson = event.getMessage().startsWith("@#>me");
-			MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
-			if (thirdPerson) {
-				event.setMessage(event.getMessage().substring(5));
-				mb.setThirdPerson(true);
-			}
-			mb.setMessage(event.getMessage());
-			// Ensure message can be sent
-			if (!mb.canBuild(true)) {
-				return;
-			}
-			Message msg = mb.toMessage();
-			// Because we have a collection of UUIDs and not Players, nice compact lambda notation instead of a loop
-			event.getRecipients().removeIf(p -> !msg.getChannel().getListening().contains(p.getUniqueId()));
-
-			SblockAsyncChatEvent sblockEvent = new SblockAsyncChatEvent(event.isAsynchronous(), event.getPlayer(), event.getRecipients(), msg);
-			Bukkit.getPluginManager().callEvent(sblockEvent);
+		if (event instanceof SblockAsyncChatEvent) {
 			return;
 		}
-		Message message = ((SblockAsyncChatEvent) event).getSblockMessage();
+		event.setCancelled(true);
+		boolean thirdPerson = event.getMessage().startsWith("@#>me");
+		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
+		if (thirdPerson) {
+			event.setMessage(event.getMessage().substring(5));
+			mb.setThirdPerson(true);
+		}
+		mb.setMessage(event.getMessage());
+		// Ensure message can be sent
+		if (!mb.canBuild(true)) {
+			return;
+		}
+		Message msg = mb.toMessage();
+		// Because we have a collection of UUIDs and not Players, nice compact lambda notation instead of a loop
+		event.getRecipients().removeIf(p -> !msg.getChannel().getListening().contains(p.getUniqueId()));
+
+		SblockAsyncChatEvent sblockEvent = new SblockAsyncChatEvent(event.isAsynchronous(), event.getPlayer(), event.getRecipients(), msg);
+		Bukkit.getPluginManager().callEvent(sblockEvent);
+	}
+
+	/**
+	 * The first event handler for SblockAsyncChatEvents.
+	 * 
+	 * Mostly used to remove messages that should not be sent.
+	 * 
+	 * @param event
+	 */
+	@EventHandler(ignoreCancelled = true)
+	public void onSblockChat(final SblockAsyncChatEvent event) {
+		String cleaned = event.getSblockMessage().getCleanedMessage();
 		// Test
-		if (message.getCleanedMessage().equalsIgnoreCase("test")) {
+		if (cleaned.equalsIgnoreCase("test")) {
 			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
 			event.setCancelled(true);
 			return;
 		}
-		if (message.getCleanedMessage().equalsIgnoreCase("hal") || message.getCleanedMessage().equalsIgnoreCase("dirk")) {
+		if (cleaned.equalsIgnoreCase("hal") || cleaned.equalsIgnoreCase("dirk")) {
 			event.getPlayer().sendMessage(ColorDef.HAL + "What?");
 			event.setCancelled(true);
 			return;
 		}
-		if (message.getChannel().getType() == ChannelType.REGION && rpMatch(message.getCleanedMessage())) {
+		if (event.getSblockMessage().getChannel().getType() == ChannelType.REGION && rpMatch(cleaned)) {
 			event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
 			event.setCancelled(true);
 			return;
@@ -81,7 +92,7 @@ public class PlayerAsyncChatListener implements Listener {
 	}
 
 	/**
-	 * The second event handler for AsyncPlayerChatEvents.
+	 * The second event handler for SblockAsyncChatEvents.
 	 * 
 	 * Because we send JSON messages, we actually have to remove all recipients from the event and
 	 * manually send each one the message. This MUST be done after all plugins have finished
@@ -91,7 +102,7 @@ public class PlayerAsyncChatListener implements Listener {
 	 * @param event the AsyncPlayerChatEvent
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerChat(final SblockAsyncChatEvent event) {
+	public void onSblockChatComplete(final SblockAsyncChatEvent event) {
 		// Region channels are the only ones that should be appearing in certain plugins
 		if (event.getSblockMessage().getChannel().getType() != ChannelType.REGION) {
 			event.setCancelled(true);
@@ -112,6 +123,9 @@ public class PlayerAsyncChatListener implements Listener {
 			final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
 					.setMessage(ChatColor.RED + Chat.getChat().getHalculator().evhaluate(msg))
 					.setChannel(event.getSblockMessage().getChannel()).toMessage();
+			if (msg.length() > 30) {
+				event.getPlayer().sendMessage(ColorDef.HAL + "Your equation is a bit long for public chat. Please use /halc to reduce spam.");
+			}
 			hal.send(event.getRecipients());
 		} else {
 			Chat.getChat().getHal().handleMessage(event.getSblockMessage(), event.getRecipients());

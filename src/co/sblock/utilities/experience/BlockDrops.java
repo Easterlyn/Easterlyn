@@ -1,4 +1,4 @@
-package co.sblock.utilities.enchantments;
+package co.sblock.utilities.experience;
 
 import java.util.ArrayList;
 import java.util.Collection;

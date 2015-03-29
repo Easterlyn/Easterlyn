@@ -178,7 +178,7 @@ public class ChannelManager {
 		channelList.put("#Aether", new RegionChannel("#Aether", AccessLevel.PUBLIC, null));
 		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null));
 		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null));
-		channelList.put("#privatemessage", new NormalChannel("#privatemessage", AccessLevel.PRIVATE, null));
+		channelList.put("#pm", new NormalChannel("#pm", AccessLevel.PRIVATE, null));
 		channelList.put("@", new NormalChannel("@", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6")));
 	}
 

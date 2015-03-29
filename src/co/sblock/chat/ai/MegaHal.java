@@ -197,6 +197,9 @@ public class MegaHal {
 	}
 
 	public void saveLogs() {
+		if (pendingMessages.size() == 0) {
+			return;
+		}
 		try (FileWriter filewriter = new FileWriter(getFirstAvailableHalFile(), true);
 				PrintWriter writer = new PrintWriter(filewriter)) {
 			for (String s : pendingMessages) {

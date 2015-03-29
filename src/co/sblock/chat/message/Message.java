@@ -268,7 +268,7 @@ public class Message {
 				if (lastEnd < message.length()) {
 					msg.append(message.substring(lastEnd));
 				}
-				if (!channel.getName().equals("#privatemessage")) {
+				if (!channel.getName().equals("#pm")) {
 					// Fun sound effects! Sadly, ender dragon kill is a little long even at 2x
 					switch ((int) (Math.random() * 20)) {
 					case 0:
