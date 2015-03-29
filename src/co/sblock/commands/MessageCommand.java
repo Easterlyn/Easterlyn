@@ -50,12 +50,12 @@ public class MessageCommand extends SblockCommand {
 		} else {
 			senderPlayer = PlayerLoader.getFakePlayer(sender.getName());
 		}
+		GameProfile senderProfile = new GameProfile(senderPlayer.getUniqueId(), senderPlayer.getName());
 
 		boolean isReply = label.equals("r") || label.equals("reply");
 
-		GameProfile senderProfile = new GameProfile(senderPlayer.getUniqueId(), senderPlayer.getName());
+		Player recipientPlayer;
 		GameProfile recipientProfile;
-		Player recipient;
 		if (isReply) {
 			if (args.length == 0) {
 				return false;
@@ -73,35 +73,35 @@ public class MessageCommand extends SblockCommand {
 					sender.sendMessage(ChatColor.RED + "The person you were talking to has logged out!");
 					return true;
 				}
-				recipient = reply.getPlayer();
+				recipientPlayer = reply.getPlayer();
 			} else {
 				// Reply was a fake player
-				recipient = PlayerLoader.getFakePlayer(recipientProfile.getId(), recipientProfile.getName());
+				recipientPlayer = PlayerLoader.getFakePlayer(recipientProfile.getId(), recipientProfile.getName());
 			}
 		} else {
 			if (args.length < 2) {
 				return false;
 			}
 			if (args[0].equalsIgnoreCase("CONSOLE")) {
-				recipient = PlayerLoader.getFakePlayer("CONSOLE");
+				recipientPlayer = PlayerLoader.getFakePlayer("CONSOLE");
 			} else {
 				List<Player> players = Bukkit.matchPlayer(args[0]);
 				if (players.size() == 0) {
 					sender.sendMessage(ChatColor.RED + "That player is not online!");
 					return true;
 				}
-				recipient = players.get(0);
+				recipientPlayer = players.get(0);
 			}
-			recipientProfile = new GameProfile(recipient.getUniqueId(), recipient.getName());
+			recipientProfile = new GameProfile(recipientPlayer.getUniqueId(), recipientPlayer.getName());
 		}
 
 		OfflineUser senderUser = Users.getGuaranteedUser(senderPlayer.getUniqueId());
 
 		Message message = new MessageBuilder().setChannel(ChannelManager.getChannelManager().getChannel("#pm")).setSender(senderUser)
-				.setMessage(recipient.getName() + ": " + StringUtils.join(args, ' ', isReply ? 0 : 1, args.length)).toMessage();
+				.setMessage(recipientPlayer.getName() + ": " + StringUtils.join(args, ' ', isReply ? 0 : 1, args.length)).toMessage();
 
 		Set<Player> players = new HashSet<Player>();
-		players.add(recipient);
+		players.add(recipientPlayer);
 		players.add(senderPlayer);
 		message.getChannel().getListening().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
@@ -111,7 +111,14 @@ public class MessageCommand extends SblockCommand {
 		});
 
 		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, (Player) sender, players, message);
+
 		Bukkit.getPluginManager().callEvent(event);
+
+		if (!event.isCancelled()) {
+			reply.put(senderProfile, recipientProfile);
+			reply.put(recipientProfile, senderProfile);
+		}
+
 		return true;
 	}
 
