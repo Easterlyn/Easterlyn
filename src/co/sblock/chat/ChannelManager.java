@@ -21,14 +21,10 @@ import co.sblock.chat.channel.RegionChannel;
 
 public class ChannelManager {
 
-	private final ConcurrentHashMap<String, Channel> channelList;
-
-	public ChannelManager() {
-		channelList = new ConcurrentHashMap<>();
-	}
+	private final ConcurrentHashMap<String, Channel> channelList = new ConcurrentHashMap<>();
 
 	public void loadAllChannels() {
-		File file;
+		final File file;
 		try {
 			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
 			if (!file.exists()) {
@@ -37,26 +33,20 @@ public class ChannelManager {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load channel data!", e);
 		}
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		for (String channelName : yaml.getKeys(false)) {
-			Channel channel = ChannelManager.getChannelManager().loadChannel(channelName,
+			final Channel channel = ChannelManager.getChannelManager().loadChannel(channelName,
 					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
 					UUID.fromString(yaml.getString(channelName + ".owner")),
 					ChannelType.valueOf(yaml.getString(channelName + ".type")));
-			for (String uuid : yaml.getStringList(channelName + ".mods")) {
-				channel.addModerator(UUID.fromString(uuid));
-			}
-			for (String uuid : yaml.getStringList(channelName + ".bans")) {
-				channel.addBan(UUID.fromString(uuid));
-			}
-			for (String uuid : yaml.getStringList(channelName + ".approved")) {
-				channel.addApproved(UUID.fromString(uuid));
-			}
+			yaml.getStringList(channelName + ".mods").forEach(uuid -> channel.addModerator(UUID.fromString(uuid)));
+			yaml.getStringList(channelName + ".bans").forEach(uuid -> channel.addBan(UUID.fromString(uuid)));
+			yaml.getStringList(channelName + ".approved").forEach(uuid -> channel.addApproved(UUID.fromString(uuid)));
 		}
 	}
 
 	public void saveAllChannels() {
-		File file;
+		final File file;
 		try {
 			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
 			if (!file.exists()) {
@@ -65,31 +55,25 @@ public class ChannelManager {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to save all channel data!", e);
 		}
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		for (Channel channel : channelList.values()) {
 			if (channel.getOwner() == null) {
 				// Default channel
 				continue;
 			}
-			String name = channel.getName();
+			final String name = channel.getName();
 			yaml.set(name + ".owner", channel.getOwner().toString());
 			yaml.set(name + ".type", channel.getType().name());
 			yaml.set(name + ".access", channel.getAccess().name());
-			ArrayList<String> list = new ArrayList<>();
-			for (UUID uuid : channel.getModList()) {
-				list.add(uuid.toString());
-			}
-			yaml.set(name + ".mods", list);
-			list = new ArrayList<>();
-			for (UUID uuid : channel.getBanList()) {
-				list.add(uuid.toString());
-			}
-			yaml.set(name + ".bans", list);
-			list = new ArrayList<>();
-			for (UUID uuid : channel.getApprovedUsers()) {
-				list.add(uuid.toString());
-			}
-			yaml.set(name + ".approved", list);
+			final ArrayList<String> mods = new ArrayList<>();
+			channel.getModList().forEach(uuid -> mods.add(uuid.toString()));
+			yaml.set(name + ".mods", mods);
+			final ArrayList<String> bans = new ArrayList<>();
+			channel.getBanList().forEach(uuid -> bans.add(uuid.toString()));
+			yaml.set(name + ".bans", bans);
+			final ArrayList<String> approved = new ArrayList<>();
+			channel.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
+			yaml.set(name + ".approved", approved);
 		}
 		try {
 			yaml.save(file);
@@ -99,7 +83,7 @@ public class ChannelManager {
 	}
 
 	public void saveChannel(Channel channel) {
-		File file;
+		final File file;
 		try {
 			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
 			if (!file.exists()) {
@@ -108,26 +92,20 @@ public class ChannelManager {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to save data for channel " + channel.getName(), e);
 		}
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		String name = channel.getName();
+		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		final String name = channel.getName();
 		yaml.set(name + ".owner", channel.getOwner().toString());
 		yaml.set(name + ".type", channel.getType().name());
 		yaml.set(name + ".access", channel.getAccess().name());
-		ArrayList<String> list = new ArrayList<>();
-		for (UUID uuid : channel.getModList()) {
-			list.add(uuid.toString());
-		}
-		yaml.set(name + ".mods", list);
-		list = new ArrayList<>();
-		for (UUID uuid : channel.getBanList()) {
-			list.add(uuid.toString());
-		}
-		yaml.set(name + ".bans", list);
-		list = new ArrayList<>();
-		for (UUID uuid : channel.getApprovedUsers()) {
-			list.add(uuid.toString());
-		}
-		yaml.set(name + ".approved", list);
+		final ArrayList<String> mods = new ArrayList<>();
+		channel.getModList().forEach(uuid -> mods.add(uuid.toString()));
+		yaml.set(name + ".mods", mods);
+		final ArrayList<String> bans = new ArrayList<>();
+		channel.getBanList().forEach(uuid -> bans.add(uuid.toString()));
+		yaml.set(name + ".bans", bans);
+		final ArrayList<String> approved = new ArrayList<>();
+		channel.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
+		yaml.set(name + ".approved", approved);
 		try {
 			yaml.save(file);
 		} catch (IOException e) {
@@ -140,7 +118,7 @@ public class ChannelManager {
 		Chat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
 	}
 
-	public Channel loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
+	private Channel loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
 		Channel channel;
 		switch (channelType) {
 		case NICK:
@@ -178,7 +156,7 @@ public class ChannelManager {
 		channelList.put("#Aether", new RegionChannel("#Aether", AccessLevel.PUBLIC, null));
 		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null));
 		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null));
-		channelList.put("#pm", new NormalChannel("#pm", AccessLevel.PRIVATE, null));
+		channelList.put("#pm", new NickChannel("#pm", AccessLevel.PRIVATE, null));
 		channelList.put("@", new NormalChannel("@", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6")));
 	}
 

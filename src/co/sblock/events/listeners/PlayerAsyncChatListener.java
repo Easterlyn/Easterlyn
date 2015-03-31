@@ -52,7 +52,7 @@ public class PlayerAsyncChatListener implements Listener {
 		}
 		mb.setMessage(event.getMessage());
 		// Ensure message can be sent
-		if (!mb.canBuild(true)) {
+		if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
 			return;
 		}
 		Message msg = mb.toMessage();

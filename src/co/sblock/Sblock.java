@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -34,6 +35,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
 import com.google.common.collect.ImmutableList;
+
+import com.mojang.authlib.GameProfile;
 
 import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
@@ -347,6 +350,19 @@ public class Sblock extends JavaPlugin {
 			file.mkdirs();
 		}
 		return file;
+	}
+
+	public GameProfile getFakeGameProfile(String name) {
+		String uuidString = Sblock.getInstance().getConfig().getString("uuid." + name);
+		UUID uuid;
+		if (uuidString != null) {
+			uuid = UUID.fromString(uuidString);
+		} else {
+			uuid = UUID.randomUUID();
+			Sblock.getInstance().getConfig().set("uuid." + name, uuid.toString());
+			Sblock.getInstance().saveConfig();
+		}
+		return new GameProfile(uuid, name);
 	}
 
 	public static final Log getLog() {

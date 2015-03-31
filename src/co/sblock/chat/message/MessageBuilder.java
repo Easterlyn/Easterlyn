@@ -28,7 +28,9 @@ public class MessageBuilder {
 
 	public MessageBuilder setSender(OfflineUser sender) {
 		this.sender = sender;
-		this.channel = sender.getCurrentChannel();
+		if (this.channel == null) {
+			this.channel = sender.getCurrentChannel();
+		}
 		return this;
 	}
 
@@ -64,7 +66,7 @@ public class MessageBuilder {
 			// TODO perhaps allow non-ASCII in non-global channels
 			StringBuilder sb = new StringBuilder();
 			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
-				if (character > '\u001F' && character < '\u007E') {
+				if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
 					sb.append(character);
 				}
 			}
@@ -134,14 +136,6 @@ public class MessageBuilder {
 			return false;
 		}
 
-		// Must be in target channel to send messages.
-		if (!this.channel.getListening().contains(this.sender.getUUID())) {
-			if (informSender) {
-				this.sender.sendMessage(ChatMsgs.errorNotListening(channel.getName()));
-			}
-			return false;
-		}
-
 		// Nicks required in RP channels.
 		if (this.channel.getType() == ChannelType.RP && !this.channel.hasNick(sender)) {
 			if (informSender) {
@@ -151,6 +145,17 @@ public class MessageBuilder {
 		}
 
 		return true;
+	}
+
+	public boolean isSenderInChannel(boolean informSender) {
+		// Must be in target channel to send messages.
+		if (sender == null || this.channel.getListening().contains(this.sender.getUUID())) {
+			return true;
+		}
+		if (informSender) {
+			this.sender.sendMessage(ChatMsgs.errorNotListening(channel.getName()));
+		}
+		return false;
 	}
 
 	public Message toMessage() {

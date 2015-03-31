@@ -73,7 +73,8 @@ public class NickChannel extends Channel {
 	 */
 	@Override
 	public String getNick(OfflineUser sender) {
-		return nickList.containsKey(sender.getUUID()) ? nickList.get(sender.getUUID()) : sender.getPlayer().getDisplayName();
+		return nickList.containsKey(sender.getUUID()) ? nickList.get(sender.getUUID())
+				: sender.isOnline() ? sender.getPlayer().getDisplayName() : sender.getPlayerName();
 	}
 
 	/**

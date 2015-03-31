@@ -776,7 +776,7 @@ public class OfflineUser {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to save data for " + getUUID().toString(), e);
 		}
-		Player player = Bukkit.getPlayer(getUUID());
+		Player player = this instanceof OnlineUser ? this.getPlayer() : Bukkit.getPlayer(getUUID());
 		yaml.set("name", player != null ? getPlayerName() : Bukkit.getOfflinePlayer(getUUID()).getName());
 		yaml.set("ip", getUserIP());
 		if (player != null) {

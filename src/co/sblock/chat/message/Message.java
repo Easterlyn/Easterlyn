@@ -41,7 +41,8 @@ public class Message {
 		this.thirdPerson = thirdPerson;
 
 		// Prepend chat colors to every message if sender has permission
-		if (channel.getType() != ChannelType.RP && sender != null && sender.getPlayer().hasPermission("sblockchat.color")) {
+		if (channel.getType() != ChannelType.RP && sender != null && sender.getPlayer()!= null
+				&& sender.getPlayer().hasPermission("sblockchat.color")) {
 			Player player = sender.getPlayer();
 			for (ChatColor c : ChatColor.values()) {
 				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
@@ -163,7 +164,7 @@ public class Message {
 		json.append("\"},{\"text\":\"").append(sender != null ? channel.getNick(sender) : name);
 
 		ChatColor globalRank;
-		if (sender != null && sender.isOnline()) {
+		if (sender != null && sender.getPlayer() != null) {
 			Player player = sender.getPlayer();
 			// Name color fetched from scoreboard, if team invalid perm-based instead.
 			try {
