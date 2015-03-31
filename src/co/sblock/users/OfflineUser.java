@@ -464,6 +464,10 @@ public class OfflineUser {
 	 * @param channel the Channel to set as current
 	 */
 	public synchronized void setCurrentChannel(Channel channel) {
+		if (channel == null) {
+			this.currentChannel = null;
+			return;
+		}
 		if (!channel.isApproved(this) || channel.isBanned(this)) {
 			return;
 		}

@@ -100,12 +100,17 @@ public class TeleportRequestCommand extends SblockCommand {
 			return;
 		}
 		OfflineUser targetUser = Users.getGuaranteedUser(target.getUniqueId());
-		if (targetUser.isIgnoring(sender.getUniqueId())) {
+		OfflineUser sourceUser = Users.getGuaranteedUser(sender.getUniqueId());
+		if (targetUser.isIgnoring(sourceUser.getUUID())) {
 			sender.sendMessage(ChatColor.GOLD + target.getDisplayName() + ChatColor.RED + " is ignoring you!");
 			return;
 		}
+		if (sourceUser.isIgnoring(targetUser.getUUID())) {
+			sender.sendMessage(ChatColor.RED + "You are ignoring " + ChatColor.GOLD + target.getDisplayName() + ChatColor.RED + "!");
+			return;
+		}
 		Region rTarget = targetUser.getCurrentRegion();
-		Region rSource = Users.getGuaranteedUser(sender.getUniqueId()).getCurrentRegion();
+		Region rSource = sourceUser.getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
 			sender.sendMessage(ChatColor.RED + "Teleports cannot be initiated from different planets!");
 			return;

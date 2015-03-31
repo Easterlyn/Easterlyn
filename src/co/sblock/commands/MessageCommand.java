@@ -96,6 +96,17 @@ public class MessageCommand extends SblockCommand {
 			}
 		}
 
+		if (senderUser != null && recipientPlayer != null) {
+			if (senderUser.isIgnoring(recipientPlayer.getUniqueId())) {
+				sender.sendMessage(ChatColor.RED + "You are ignoring " + ChatColor.GOLD + recipientPlayer.getDisplayName() + ChatColor.RED + "!");
+				return true;
+			}
+			if (Users.getGuaranteedUser(recipientPlayer.getUniqueId()).isIgnoring(senderUser.getUUID())) {
+				sender.sendMessage(ChatColor.GOLD + recipientPlayer.getDisplayName() + ChatColor.RED + " is ignoring you!");
+				return true;
+			}
+		}
+
 		MessageBuilder builder = new MessageBuilder();
 		builder.setChannel(ChannelManager.getChannelManager().getChannel("#pm"));
 		builder.setMessage(ChatColor.WHITE + recipientProfile.getName() + ": "
@@ -132,10 +143,8 @@ public class MessageCommand extends SblockCommand {
 
 		Bukkit.getPluginManager().callEvent(event);
 
-		if (!event.isCancelled()) {
-			reply.put(senderProfile, recipientProfile);
-			reply.put(recipientProfile, senderProfile);
-		}
+		reply.put(senderProfile, recipientProfile);
+		reply.put(recipientProfile, senderProfile);
 
 		return true;
 	}

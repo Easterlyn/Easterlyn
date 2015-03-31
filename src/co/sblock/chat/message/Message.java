@@ -216,7 +216,7 @@ public class Message {
 	}
 
 	public <T> void send(Collection<T> recipients) {
-			Log.anonymousInfo(getConsoleMessage());
+		Log.anonymousInfo(getConsoleMessage());
 		String message = unformattedMessage.replace("\\", "\\\\").replace("\"", "\\\"");
 		String focusedUnhighlighted = JSONUtil.getWrappedJSON(getChannelPrefix(false), nameElement,
 				JSONUtil.toJSONElements(ChatColor.WHITE + message, true, nick));
