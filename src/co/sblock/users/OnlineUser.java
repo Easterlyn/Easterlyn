@@ -289,10 +289,9 @@ public class OnlineUser extends OfflineUser {
 
 	@Override
 	public void announceLoginChannelJoins() {
-		StringBuilder base = new StringBuilder(ChatColor.GREEN.toString())
-				.append(this.getDisplayName()).append(ChatColor.YELLOW)
-				.append(" logs the fuck in and begins pestering <>").append(ChatColor.YELLOW)
-				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date()));
+		String base = new StringBuilder(ChatColor.GREEN.toString()).append(this.getDisplayName())
+				.append(ChatColor.YELLOW).append(" began pestering <>").append(ChatColor.YELLOW)
+				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date())).toString();
 		// Heavy loopage ensues
 		for (OfflineUser u : Users.getUsers()) {
 			if (!u.isOnline() || !(u instanceof OnlineUser)) {
@@ -304,18 +303,23 @@ public class OnlineUser extends OfflineUser {
 					matches.append(ChatColor.GOLD).append(s).append(ChatColor.YELLOW).append(", ");
 				}
 			}
+			String message;
 			if (matches.length() > 0) {
 				matches.replace(matches.length() - 3, matches.length() - 1, "");
-				StringBuilder msg = new StringBuilder(base.toString().replace("<>", matches.toString()));
-				int comma = msg.toString().lastIndexOf(',');
+				StringBuilder msg = new StringBuilder(base.replace("<>", matches.toString()));
+				int comma = msg.lastIndexOf(",");
 				if (comma != -1) {
-					u.sendMessage(msg.replace(comma, comma + 1, " and").toString());
-				} else {
-					u.sendMessage(msg.toString());
+					if (comma == msg.indexOf(",")) {
+						msg.replace(comma, comma + 1, " and");
+					} else {
+						msg.insert(comma + 1, " and");
+					}
 				}
+				message = msg.toString();
 			} else {
-				u.sendMessage(base.toString().replace(" and begins pestering <>", ""));
+				message = base.replace(" <>", "");
 			}
+			u.sendMessage(message);
 		}
 
 		Log.anonymousInfo(base.toString().replace("<>", StringUtils.join(getListening(), ", ")));
