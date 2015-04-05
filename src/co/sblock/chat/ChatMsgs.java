@@ -56,10 +56,6 @@ public class ChatMsgs {
 		return ChatColor.YELLOW + name + ChatColor.GREEN + " has been unmuted in all channels.";
 	}
 
-	public static String isMute() {
-		return ChatColor.RED + "You are muted!";
-	}
-
 	public static String onUserKickAnnounce(String userName, String channelName) {
 		return ChatColor.YELLOW + userName + " has been kicked from " + ChatColor.GOLD
 				+ channelName + ChatColor.YELLOW + "!";
@@ -143,26 +139,16 @@ public class ChatMsgs {
 
 	public static String errorNoCurrent() {
 		return ChatColor.RED + "You must set a current channel to chat! Use "
-				+ ChatColor.AQUA + "/sc c <channel>";
+				+ ChatColor.AQUA + "/join <channel>";
 	}
 
 	public static String errorAlreadyListening(String channelName) {
 		return ChatColor.RED + "You are already listening to channel " + ChatColor.GOLD + channelName;
 	}
 
-	public static String errorNotListening(String channelName) {
-		return ChatColor.RED + "You are not listening to channel " + ChatColor.GOLD + channelName;
-	}
-
-	public static String errorNickRequired(String channelName) {
-		return ChatColor.GOLD + channelName + ChatColor.RED
-				+ " is a roleplay channel, a nick is required. Use "
-				+ ChatColor.AQUA + "/sc nick set";
-	}
-
 	public static String errorNickNotCanon(String nick) {
 		return ChatColor.GOLD + nick + ChatColor.RED + " is not a canon nickname! Use "
-				+ ChatColor.AQUA + "/sc nick list" + ChatColor.RED + " for a list.";
+				+ ChatColor.AQUA + "/nick list" + ChatColor.RED + " for a list.";
 	}
 
 	public static String errorNickInUse(String nick) {
@@ -175,11 +161,6 @@ public class ChatMsgs {
 
 	public static String errorRegionChannelLeave() {
 		return ChatColor.RED + "You cannot leave a region channel!";
-	}
-
-	public static String errorSuppressingGlobal() {
-		return ChatColor.RED + "You cannot talk in a global channel while suppressing!\nUse "
-				+ ChatColor.AQUA + "/sc suppress" + ChatColor.RED + " to toggle.";
 	}
 
 	public static String errorEmptyMessage() {

@@ -123,7 +123,7 @@ public class MessageBuilder {
 		// Shockingly, muted users are not allowed to talk.
 		if (this.sender.getMute()) {
 			if (informSender) {
-				this.sender.sendMessage(ChatMsgs.isMute());
+				this.sender.sendMessage(ChatColor.RED + "You are muted!");
 			}
 			return false;
 		}
@@ -131,7 +131,9 @@ public class MessageBuilder {
 		// No sending messages to global chats while ignoring them.
 		if (this.channel.getType() == ChannelType.REGION && this.sender.getSuppression()) {
 			if (informSender) {
-				this.sender.sendMessage(ChatMsgs.errorSuppressingGlobal());
+				this.sender.sendMessage(ChatColor.RED
+						+ "You cannot talk in a global channel while suppressing!\nUse "
+						+ ChatColor.AQUA + "/suppress" + ChatColor.RED + " to toggle.");
 			}
 			return false;
 		}
@@ -139,7 +141,9 @@ public class MessageBuilder {
 		// Nicks required in RP channels.
 		if (this.channel.getType() == ChannelType.RP && !this.channel.hasNick(sender)) {
 			if (informSender) {
-				this.sender.sendMessage(ChatMsgs.errorNickRequired(channel.getName()));
+				this.sender.sendMessage(ChatColor.GOLD + channel.getName() + ChatColor.RED
+						+ " is a roleplay channel, a nick is required. Check " + ChatColor.AQUA
+						+ "/nick list");
 			}
 			return false;
 		}
@@ -153,7 +157,7 @@ public class MessageBuilder {
 			return true;
 		}
 		if (informSender) {
-			this.sender.sendMessage(ChatMsgs.errorNotListening(channel.getName()));
+			this.sender.sendMessage(ChatColor.RED + "You are not listening to " + ChatColor.GOLD + channel.getName());
 		}
 		return false;
 	}

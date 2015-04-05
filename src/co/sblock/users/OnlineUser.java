@@ -341,7 +341,7 @@ public class OnlineUser extends OfflineUser {
 				this.currentChannel = null;
 			}
 		} else {
-			this.sendMessage(ChatMsgs.errorNotListening(channelName));
+			this.sendMessage(ChatColor.RED + "You are not listening to " + ChatColor.GOLD + channelName);
 		}
 	}
 

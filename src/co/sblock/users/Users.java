@@ -9,7 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -160,17 +164,27 @@ public class Users extends Module {
 			teamPrefix = ColorDef.RANK_HERO.toString();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-		String teamName = p.getUniqueId().toString().replace("-", "").substring(0, 16);
+		String teamName = p.getName();
 		Team team = board.getTeam(teamName);
 		if (team == null) {
 			team = board.registerNewTeam(teamName);
 		}
 		team.setPrefix(teamPrefix);
 		team.addPlayer(p);
+
+		Objective objective = board.getObjective("deaths");
+		if (objective == null) {
+			objective = board.registerNewObjective("deaths", "deathCount");
+			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		}
+
+		// Since Mojang doesn't, we'll force deathcount to persist - it's been a feature for ages
+		Score score = objective.getScore(p.getDisplayName());
+		score.setScore(p.getStatistic(Statistic.DEATHS));
 	}
 
 	public static void unteam(Player player) {
-		unteam(player.getUniqueId().toString().replace("-", "").substring(0, 16));
+		unteam(player.getName());
 	}
 
 	private static void unteam(String teamName) {
