@@ -43,6 +43,7 @@ public class PlayerAsyncChatListener implements Listener {
 		if (event instanceof SblockAsyncChatEvent) {
 			return;
 		}
+		System.out.println(event.getClass().getName());
 		event.setCancelled(true);
 		boolean thirdPerson = event.getMessage().startsWith("@#>me");
 		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
@@ -95,13 +96,17 @@ public class PlayerAsyncChatListener implements Listener {
 	 * The second event handler for SblockAsyncChatEvents.
 	 * 
 	 * Because we send JSON messages, we actually have to remove all recipients from the event and
-	 * manually send each one the message. This MUST be done after all plugins have finished
-	 * modifying the event, so HIGHEST is not late enough - we are forced to ignore convention and
-	 * modify the event at MONITOR priority to preserve compatibility with GP's soft mute.
+	 * manually send each one the message.
+	 * 
+	 * To combat GriefPrevention modifying the event at HIGHEST for soft mutes, we softdepend on it
+	 * in our plugin.yml - this should ideally cause GP to handle it before us.
+	 * 
+	 * To prevent IRC and other chat loggers from picking it up, it must be cancelled before they
+	 * recieve it at MONITOR.
 	 * 
 	 * @param event the AsyncPlayerChatEvent
 	 */
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onSblockChatComplete(final SblockAsyncChatEvent event) {
 		// Region channels are the only ones that should be appearing in certain plugins
 		if (event.getSblockMessage().getChannel().getType() != ChannelType.REGION) {
@@ -121,8 +126,9 @@ public class PlayerAsyncChatListener implements Listener {
 		if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
 			msg = msg.substring(msg.indexOf(' ')).trim();
 			final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
+					.setChannel(event.getSblockMessage().getChannel())
 					.setMessage(ChatColor.RED + Chat.getChat().getHalculator().evhaluate(msg))
-					.setChannel(event.getSblockMessage().getChannel()).toMessage();
+					.toMessage();
 			if (msg.length() > 30) {
 				event.getPlayer().sendMessage(ColorDef.HAL + "Your equation is a bit long for public chat. Please use /halc to reduce spam.");
 			}

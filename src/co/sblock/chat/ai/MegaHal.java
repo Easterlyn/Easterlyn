@@ -167,9 +167,9 @@ public class MegaHal {
 				} else {
 					word = message;
 				}
+				word = word == null ? hal.getSentence() : hal.getSentence(word);
 				Message msg = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
-						.setMessage(ChatColor.RED + (word == null ? hal.getSentence() : hal.getSentence(word)))
-						.setChannel(channel).toMessage();
+						.setChannel(channel).setMessage(word).toMessage();
 				msg.send(recipients);
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());

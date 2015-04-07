@@ -55,14 +55,14 @@ public class MessageBuilder {
 		}
 
 		// Anyone can use color codes in nick channels. Channel mods can use color codes in non-rp channels
-		if (channel.getType() != ChannelType.RP 
+		if (channel != null && channel.getType() != ChannelType.RP 
 				&& (channel.getType() == ChannelType.NICK || sender != null && channel.isModerator(sender))) {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
 
 		Player player = sender != null ? sender.getPlayer() : null;
 
-		if (channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
+		if (channel != null && channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
 			// TODO perhaps allow non-ASCII in non-global channels
 			StringBuilder sb = new StringBuilder();
 			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
