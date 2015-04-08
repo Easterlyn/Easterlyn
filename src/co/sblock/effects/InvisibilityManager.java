@@ -29,7 +29,7 @@ public class InvisibilityManager {
 	}
 
 	/**
-	 * Update the Player specified's nametag on a second delay. Allows per-gamemode stuff to finish beforehand.
+	 * Update the Player specified's nametag on a tick delay. Allows per-gamemode stuff to finish beforehand.
 	 * 
 	 * @param player the Player to update
 	 */
@@ -44,7 +44,7 @@ public class InvisibilityManager {
 				}
 				updateVisibility(player);
 			}
-		}.runTaskLater(Sblock.getInstance(), 20L);
+		}.runTaskLater(Sblock.getInstance(), 1L);
 	}
 
 	public void updateVisibility(Player player) {
@@ -56,7 +56,7 @@ public class InvisibilityManager {
 			return;
 		}
 		for (PotionEffect potion : player.getActivePotionEffects()) {
-			if (potion.getType() == PotionEffectType.INVISIBILITY) {
+			if (potion.getType().equals(PotionEffectType.INVISIBILITY)) {
 				setInvisible(player, potion.getDuration());
 				break;
 			}

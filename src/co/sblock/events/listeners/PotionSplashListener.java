@@ -22,7 +22,7 @@ public class PotionSplashListener implements Listener {
 	public void onPotionSplash(PotionSplashEvent event) {
 		boolean invisibility = false;
 		for (PotionEffect effect : event.getPotion().getEffects()) {
-			if (effect.getType() == PotionEffectType.INVISIBILITY) {
+			if (effect.getType().equals(PotionEffectType.INVISIBILITY)) {
 				invisibility = true;
 				break;
 			}

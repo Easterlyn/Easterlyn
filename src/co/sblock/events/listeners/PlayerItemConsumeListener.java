@@ -26,7 +26,7 @@ public class PlayerItemConsumeListener implements Listener {
 		Potion potion = Potion.fromItemStack(event.getItem());
 		boolean invisibility = false;
 		for (PotionEffect effect : potion.getEffects()) {
-			if (effect.getType() == PotionEffectType.INVISIBILITY) {
+			if (effect.getType().equals(PotionEffectType.INVISIBILITY)) {
 				invisibility = true;
 				break;
 			}
