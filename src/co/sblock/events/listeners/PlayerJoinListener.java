@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.effects.FXManager;
 import co.sblock.events.Events;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Region;
@@ -47,6 +48,7 @@ public class PlayerJoinListener implements Listener {
 				// On login, conditions for setting rpack are not met, must be done here
 				player.setResourcePack(region.getResourcePackURL());
 				user.updateFlight();
+				FXManager.getInstance().getInvisibilityManager().updateVisibility(player);
 			}
 		}.runTask(Sblock.getInstance());
 	}
