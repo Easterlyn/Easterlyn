@@ -71,6 +71,10 @@ public class PlayerTeleportListener implements Listener {
 		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
 			@Override
 			public void run() {
+				if (event.getPlayer() == null) {
+					// Player has logged out.
+					return;
+				}
 				OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 				// Update region
 				Region target;
