@@ -14,6 +14,7 @@ import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
+import co.sblock.utilities.player.DummyPlayer;
 
 /**
  * Listener for PlayerAsyncChatEvents.
@@ -32,9 +33,8 @@ public class PlayerAsyncChatListener implements Listener {
 			"Error: Test results contaminated.", "tset", "PONG."};
 
 	/**
-	 * The first event handler for AsyncPlayerChatEvents.
-	 * 
-	 * LOW priority allows us to modify the event before chat loggers (IRC, etc.) pick it up.
+	 * The event handler for AsyncPlayerChatEvents.
+	 * Converts basic chat into SblockAsyncChatEvents and cancels.
 	 * 
 	 * @param event the AsyncPlayerChatEvent
 	 */
@@ -43,7 +43,6 @@ public class PlayerAsyncChatListener implements Listener {
 		if (event instanceof SblockAsyncChatEvent) {
 			return;
 		}
-		System.out.println(event.getClass().getName());
 		event.setCancelled(true);
 		boolean thirdPerson = event.getMessage().startsWith("@#>me");
 		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
@@ -57,7 +56,7 @@ public class PlayerAsyncChatListener implements Listener {
 			return;
 		}
 		Message msg = mb.toMessage();
-		// Because we have a collection of UUIDs and not Players, nice compact lambda notation instead of a loop
+
 		event.getRecipients().removeIf(p -> !msg.getChannel().getListening().contains(p.getUniqueId()));
 
 		SblockAsyncChatEvent sblockEvent = new SblockAsyncChatEvent(event.isAsynchronous(), event.getPlayer(), event.getRecipients(), msg);
@@ -69,7 +68,7 @@ public class PlayerAsyncChatListener implements Listener {
 	 * 
 	 * Mostly used to remove messages that should not be sent.
 	 * 
-	 * @param event
+	 * @param event the SblockAsyncChatEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onSblockChat(final SblockAsyncChatEvent event) {
@@ -102,12 +101,12 @@ public class PlayerAsyncChatListener implements Listener {
 	 * in our plugin.yml - this should ideally cause GP to handle it before us.
 	 * 
 	 * To prevent IRC and other chat loggers from picking it up, it must be cancelled before they
-	 * recieve it at MONITOR.
+	 * receive it at MONITOR.
 	 * 
-	 * @param event the AsyncPlayerChatEvent
+	 * @param event the SblockAsyncChatEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onSblockChatComplete(final SblockAsyncChatEvent event) {
+	public void onSblockChatHighest(final SblockAsyncChatEvent event) {
 		// Region channels are the only ones that should be appearing in certain plugins
 		if (event.getSblockMessage().getChannel().getType() != ChannelType.REGION) {
 			event.setCancelled(true);
@@ -121,14 +120,18 @@ public class PlayerAsyncChatListener implements Listener {
 		// Manually send messages to each player so we can wrap links, etc.
 		event.getSblockMessage().send(event.getRecipients());
 
+		// Dummy player should not trigger Hal; he may become one.
+		if (event.getPlayer() instanceof DummyPlayer) {
+			return;
+		}
+
 		// Handle Hal functions
 		String msg = ChatColor.stripColor(event.getMessage().toLowerCase());
 		if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
 			msg = msg.substring(msg.indexOf(' ')).trim();
 			final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
-					.setChannel(event.getSblockMessage().getChannel())
 					.setMessage(ChatColor.RED + Chat.getChat().getHalculator().evhaluate(msg))
-					.toMessage();
+					.setChannel(event.getSblockMessage().getChannel()).toMessage();
 			if (msg.length() > 30) {
 				event.getPlayer().sendMessage(ColorDef.HAL + "Your equation is a bit long for public chat. Please use /halc to reduce spam.");
 			}

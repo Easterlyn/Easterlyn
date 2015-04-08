@@ -101,7 +101,7 @@ public class MegaHal {
 			if (!channel.equals("#halchat")) {
 				if (ratelimit.containsKey(channel) && ratelimit.get(msg.getChannel().getName()) > System.currentTimeMillis()) {
 					// Still on cooldown, warn a bitch
-					msg.getSender().getPlayer().sendMessage(ColorDef.HAL.replaceFirst("#", channel) + "If you want to spam with me, run /sc c #halchat");
+					msg.getSender().getPlayer().sendMessage(ColorDef.HAL.replaceFirst("#", channel) + "If you want to spam with me, do /focus #halchat");
 					Log.getLog("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return;
 				} else {
@@ -170,7 +170,7 @@ public class MegaHal {
 				word = word == null ? hal.getSentence() : hal.getSentence(word);
 				word = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', word));
 				Message msg = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
-						.setChannel(channel).setMessage(ChatColor.RED + word).toMessage();
+						.setMessage(ChatColor.RED + word).setChannel(channel).toMessage();
 				msg.send(recipients);
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());

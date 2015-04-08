@@ -60,30 +60,8 @@ public class MessageBuilder {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
 
-		Player player = sender != null ? sender.getPlayer() : null;
-
-		if (channel != null && channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
-			// TODO perhaps allow non-ASCII in non-global channels
-			StringBuilder sb = new StringBuilder();
-			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
-				if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
-					sb.append(character);
-				}
-			}
-			// Fuck you.
-			message = sb.toString().replaceAll("tilde?s?", "");
-		}
-
 		// Trim whitespace created by formatting codes, etc.
 		message = RegexUtils.trimExtraWhitespace(message);
-
-		// Greentext must be at least 4 letters long and the second character must be a letter.
-		// E.G. >mfw people do it wrong
-		// instead of > lol le edgy meme
-		if (message.length() > 3 && message.charAt(0) == '>' && Character.isLetter(message.charAt(1))) {
-			if (player == null || player.hasPermission("sblockchat.greentext"))
-			message = ChatColor.GREEN + message;
-		}
 
 		this.message = message;
 		return this;
@@ -166,6 +144,30 @@ public class MessageBuilder {
 		if (!canBuild(false)) {
 			throw new RuntimeException("Someone did something stupid with chat!");
 		}
+
+		// A channel must be set for these checks
+		Player player = sender != null ? sender.getPlayer() : null;
+
+		if (channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
+			// TODO perhaps allow non-ASCII in non-global channels
+			StringBuilder sb = new StringBuilder();
+			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
+				if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
+					sb.append(character);
+				}
+			}
+			// Fuck you.
+			message = sb.toString().replaceAll("tilde?s?", "");
+		}
+
+		// Greentext must be at least 4 letters long and the second character must be a letter.
+		// E.G. >mfw people do it wrong
+		// instead of > lol le edgy meme
+		if (message.length() > 3 && message.charAt(0) == '>' && Character.isLetter(message.charAt(1))
+				&& (player == null || player.hasPermission("sblockchat.greentext"))) {
+			message = ChatColor.GREEN + message;
+		}
+
 		return new Message(this.sender, this.senderName, this.channel, this.message, this.thirdPerson);
 	}
 }
