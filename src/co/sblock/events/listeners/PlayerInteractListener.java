@@ -10,6 +10,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -41,13 +42,27 @@ import co.sblock.utilities.vote.SleepVote;
  */
 public class PlayerInteractListener implements Listener {
 
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onPlayerInteractLow(PlayerInteractEvent event) {
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+
+		// Machines
+		Machine m = Machines.getInstance().getMachineByBlock(event.getClickedBlock());
+		if (m != null) {
+			event.setCancelled(m.handleInteract(event));
+			return;
+		}
+	}
+
 	/**
 	 * The event handler for PlayerInteractEvents.
 	 * 
 	 * @param event the PlayerInteractEvent
 	 */
 	@SuppressWarnings("deprecation")
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
@@ -108,13 +123,6 @@ public class PlayerInteractListener implements Listener {
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();
-
-			// Machines
-			Machine m = Machines.getInstance().getMachineByBlock(b);
-			if (m != null) {
-				event.setCancelled(m.handleInteract(event));
-				return;
-			}
 
 			if (b.getType().equals(Material.BED_BLOCK)) {
 				if (b.getWorld().getEnvironment() == Environment.NETHER || b.getWorld().getEnvironment() == Environment.THE_END) {
