@@ -62,8 +62,12 @@ public class PlayerInteractListener implements Listener {
 	 * @param event the PlayerInteractEvent
 	 */
 	@SuppressWarnings("deprecation")
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
+			// Right clicking air is cancelled by default as there is no result.
+			return;
+		}
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			// No interaction with any blocks while out of range.
