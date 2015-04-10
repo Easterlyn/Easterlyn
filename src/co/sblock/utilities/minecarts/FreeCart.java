@@ -19,8 +19,8 @@ public class FreeCart {
 
 	private static FreeCart instance;
 
-	private HashSet<Minecart> carts;
-	private HashMap<UUID, Long> cooldowns;
+	private final HashSet<Minecart> carts;
+	private final HashMap<UUID, Long> cooldowns;
 
 	public FreeCart() {
 		carts = new HashSet<>();
@@ -40,8 +40,18 @@ public class FreeCart {
 		carts.add(m);
 	}
 
-	public boolean isCart(Minecart cart) {
+	public boolean isFreeCart(Minecart cart) {
 		return carts.contains(cart);
+	}
+
+	public boolean isOnFreeCart(Player p) {
+		if (p.getVehicle() == null) {
+			return false;
+		}
+		if (p.getVehicle().getType() != EntityType.MINECART) {
+			return false;
+		}
+		return isFreeCart((Minecart) p.getVehicle());
 	}
 
 	public void remove(Player p) {
