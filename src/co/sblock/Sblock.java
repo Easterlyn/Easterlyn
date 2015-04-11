@@ -121,62 +121,77 @@ public class Sblock extends JavaPlugin {
 		instance = null;
 	}
 
-	private boolean createBasePermissions() {
+	private void createBasePermissions() {
+		Permission permission;
 		try {
-			for (String perm : new String[] {"default", "godtier", "donator", "helper", "felt", "denizen", "horrorterror"}) {
-				Permission permission = new Permission("sblock." + perm, perm.equals("default") ? PermissionDefault.TRUE : PermissionDefault.OP);
-				getServer().getPluginManager().addPermission(permission);
-			}
-			for (ChatColor color : ChatColor.values()) {
-				Permission permission = new Permission("sblockchat." + color.name().toLowerCase(), PermissionDefault.FALSE);
-				getServer().getPluginManager().addPermission(permission);
-			}
+			permission = new Permission("sblock.default", PermissionDefault.TRUE);
+			getServer().getPluginManager().addPermission(permission);
 		} catch (IllegalArgumentException e) {
-			return false;
+			getServer().getPluginManager().getPermission("sblock.default").setDefault(PermissionDefault.TRUE);
 		}
-		return true;
+		for (String perm : new String[] { "hero", "godtier", "donator", "helper", "felt", "denizen", "horrorterror" }) {
+			try {
+				permission = new Permission("sblock." + perm, PermissionDefault.OP);
+				getServer().getPluginManager().addPermission(permission);
+			} catch (IllegalArgumentException e) {
+				getServer().getPluginManager().getPermission("sblock." + perm).setDefault(PermissionDefault.OP);
+			}
+		}
+		for (ChatColor color : ChatColor.values()) {
+			try {
+				permission = new Permission("sblockchat." + color.name().toLowerCase(), PermissionDefault.FALSE);
+				getServer().getPluginManager().addPermission(permission);
+			} catch (IllegalArgumentException e) {
+				getServer().getPluginManager().getPermission("sblockchat." + color.name().toLowerCase())
+						.setDefault(PermissionDefault.FALSE);
+			}
+		}
 	}
 
 	private void registerAllCommands() {
+		HashMap<String, Command> cmdMapKnownCommands;
 		try {
 			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")
-			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
-			Reflections reflections = new Reflections("co.sblock.commands");
-			Set<Class<? extends SblockCommand>> commands = reflections.getSubTypesOf(SblockCommand.class);
-			for (Class<? extends SblockCommand> command : commands) {
-				if (Modifier.isAbstract(command.getModifiers())) {
-					continue;
-				}
-				try {
-					SblockCommand cmd = command.newInstance();
-					if (cmdMapKnownCommands.containsKey(cmd.getName())) {
-						Command overwritten = cmdMapKnownCommands.remove(cmd.getName());
-						getLog().info("Overriding " + cmd.getName() + " by "
-						+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
-						+ ". Aliases: " + overwritten.getAliases().toString());
-					}
-					for (String alias : cmd.getAliases()) {
-						if (cmdMapKnownCommands.containsKey(alias)) {
-							Command overwritten = cmdMapKnownCommands.remove(alias);
-							getLog().info("Overriding " + alias + " by "
-							+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
-							+ ". Aliases: " + overwritten.getAliases().toString());
-						}
-					}
-					cmdMap.register(this.getDescription().getName(), cmd);
-					Permission permission = new Permission(cmd.getPermission());
-					permission.addParent(cmd.getPermissionLevel(), true).recalculatePermissibles();
-					permission.addParent("sblock.command.*", true).recalculatePermissibles();
-				} catch (InstantiationException | IllegalAccessException e) {
-					getLog().severe("Unable to register command " + command.getName());
-					getLog().criticalErr(e);
-				}
-			}
+			HashMap<String, Command> map = (HashMap<String, Command>) field.get(cmdMap);
+			// For some reason, the compiler just hates directly doing this.
+			cmdMapKnownCommands = map;
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			getLog().severe("Unable to modify SimpleCommandMap.knownCommands! No commands will be registered!");
 			e.printStackTrace();
+			return;
+		}
+		Reflections reflections = new Reflections("co.sblock.commands");
+		Set<Class<? extends SblockCommand>> commands = reflections.getSubTypesOf(SblockCommand.class);
+		for (Class<? extends SblockCommand> command : commands) {
+			if (Modifier.isAbstract(command.getModifiers())) {
+				continue;
+			}
+			try {
+				SblockCommand cmd = command.newInstance();
+				if (cmdMapKnownCommands.containsKey(cmd.getName())) {
+					Command overwritten = cmdMapKnownCommands.remove(cmd.getName());
+					getLog().info("Overriding " + cmd.getName() + " by "
+					+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
+					+ ". Aliases: " + overwritten.getAliases().toString());
+				}
+				for (String alias : cmd.getAliases()) {
+					if (cmdMapKnownCommands.containsKey(alias)) {
+						Command overwritten = cmdMapKnownCommands.remove(alias);
+						getLog().info("Overriding " + alias + " by "
+						+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
+						+ ". Aliases: " + overwritten.getAliases().toString());
+					}
+				}
+				cmdMap.register(this.getDescription().getName(), cmd);
+				Permission permission = new Permission(cmd.getPermission());
+				permission.addParent(cmd.getPermissionLevel(), true).recalculatePermissibles();
+				permission.addParent("sblock.command.*", true).recalculatePermissibles();
+			} catch (InstantiationException | IllegalAccessException e) {
+				getLog().severe("Unable to register command " + command.getName());
+				getLog().criticalErr(e);
+			}
 		}
 	}
 

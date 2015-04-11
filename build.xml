@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Sblock" basedir="." default="jar">
+<project name="SblockSuite" basedir="." default="jar">
+	<property file="custom.properties" />
 	<property name="source.dir" value="src" />
 	<property name="lib.dir" value="lib" />
 	<property name="class.dir" value="bin" />
 	<property name="jar.dir" value="dist" />
 	<property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
+	<!-- Default to server time, not ${user.timezone} -->
+	<property name="timezone" value="America/New_York" />
+	<tstamp>
+		<!-- Version usually only matters during heavy testing.
+			 Times are more important than revision numbers or git hashes. -->
+		<format property="time" pattern="HH:mm@dd-MM-yyyy" timezone="timezone"/>
+	</tstamp>
 
 	<path id="libraries.path">
 		<fileset dir="${lib.dir}">
@@ -48,6 +56,8 @@
 		<copy todir="${class.dir}" flatten="true">
 			<path refid="yml.path" />
 		</copy>
+
+		<replace file="${class.dir}/plugin.yml" token="{BUILD}" value="${time}"/>
 
 		<manifestclasspath property="manifest.classpath" jarfile="${jar.file}">
 			<classpath refid="bundle.path" />

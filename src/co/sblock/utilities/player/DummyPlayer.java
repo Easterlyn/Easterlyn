@@ -77,7 +77,7 @@ public class DummyPlayer implements Player {
 	@Override
 	public Inventory getEnderChest() {
 		return null;
-		}
+	}
 
 	@Override
 	public int getExpToLevel() {
@@ -456,7 +456,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public boolean isValid() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -695,12 +695,12 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public Player getPlayer() {
-		return null;
+		return this;
 	}
 
 	@Override
 	public boolean hasPlayedBefore() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -710,7 +710,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public boolean isOnline() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -933,7 +933,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public boolean isSleepingIgnored() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -953,8 +953,8 @@ public class DummyPlayer implements Player {
 	public void loadData() { }
 
 	@Override
-	public boolean performCommand(String arg0) {
-		return false;
+	public boolean performCommand(String command) {
+		return Bukkit.dispatchCommand(sender, command);
 	}
 
 	@Override

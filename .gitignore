@@ -2,10 +2,10 @@
 ## Sblock Additions
 #############
 
-testenv/
+# For those who wish, ant target location, among other things, can be personalized.
+custom.properties
 
-# Due to the current DMCA I'm not going to add my patched Spigot binary to the repo.
-lib/spigot-*-patched.jar
+testenv/
 
 # We don't want passwords to end up public, so keep config.yml out
 src/config.yml
