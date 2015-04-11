@@ -249,6 +249,9 @@ public class PlayerInteractListener implements Listener {
 		case BOOKSHELF:
 			// Awww yiss BookShelf <3
 			return Bukkit.getPluginManager().isPluginEnabled("BookShelf");
+		case IRON_DOOR_BLOCK:
+		case IRON_TRAPDOOR:
+			return Bukkit.getPluginManager().isPluginEnabled("LWC");
 		case ACACIA_DOOR:
 		case ACACIA_FENCE_GATE:
 		case ANVIL:
@@ -272,7 +275,7 @@ public class PlayerInteractListener implements Listener {
 		case ENDER_CHEST:
 		case FENCE_GATE:
 		case HOPPER:
-		case ITEM_FRAME:
+		case JUKEBOX:
 		case JUNGLE_DOOR:
 		case JUNGLE_FENCE_GATE:
 		case LEVER:
