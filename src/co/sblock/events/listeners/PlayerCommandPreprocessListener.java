@@ -43,7 +43,8 @@ public class PlayerCommandPreprocessListener implements Listener {
 			return;
 		}
 
-		if (isExecuting(command, "gc") && !event.getPlayer().hasPermission("essentials.gc")) {
+		if (isExecuting(command, "gc") && !event.getPlayer().hasPermission("essentials.gc")
+				&& !event.getPlayer().hasPermission("essentials.*")) {
 			event.setMessage("/tps");
 			return;
 		}
