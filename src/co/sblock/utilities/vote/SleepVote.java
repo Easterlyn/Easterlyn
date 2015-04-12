@@ -2,11 +2,13 @@ package co.sblock.utilities.vote;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.utilities.Log;
@@ -73,13 +75,19 @@ public class SleepVote {
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
-		int worldsize = world.getPlayers().size();
+		AtomicInteger worldSize = new AtomicInteger(0);
+		world.getPlayers().forEach(p -> {
+			// Essentials sets afk players to sleeping ignored
+			if (!p.isSleepingIgnored()) {
+				worldSize.incrementAndGet();
+			}
+		});
 		if (player != null) {
 			sb.append(ChatColor.GREEN).append(player).append(ChatColor.YELLOW).append(" has gone to bed. ");
 		} else {
-			worldsize--;
+			worldSize.decrementAndGet();
 		}
-		int percent = worldsize == 0 ? 100 : (int) 100 * votes.get(world.getName()).size() / worldsize;
+		int percent = worldSize.get() == 0 ? 100 : 100 * votes.get(world.getName()).size() / worldSize.get();
 		sb.append(ChatColor.YELLOW).append(percent).append("% of players have slept.");
 		if (percent >= 50) {
 			sb.append('\n').append("Time to get up, a new day awaits!");
@@ -99,12 +107,11 @@ public class SleepVote {
 	}
 
 	public void resetVote(final World world) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-
+		new BukkitRunnable() {
 			@Override
 			public void run() {
 				votes.remove(world.getName());
 			}
-		}, 24001 - world.getTime());
+		}.runTaskLater(Sblock.getInstance(), 24001 - world.getTime());
 	}
 }

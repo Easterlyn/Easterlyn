@@ -60,7 +60,6 @@ public class Spectators extends Module {
 	public void addSpectator(Player p) {
 		p.closeInventory();
 		p.setGameMode(GameMode.SPECTATOR);
-		p.setSleepingIgnored(true);
 		SleepVote.getInstance().updateVoteCount(p.getWorld().getName(), p.getName());
 		spectators.put(p.getUniqueId(), p.getLocation().add(0, .5, 0));
 	}
@@ -91,7 +90,6 @@ public class Spectators extends Module {
 	public void removeSpectator(Player p) {
 		p.teleport(spectators.remove(p.getUniqueId()));
 		p.setGameMode(GameMode.SURVIVAL);
-		p.setSleepingIgnored(false);
 		if (!p.hasPermission("sblock.command.spectate.nocooldown")) {
 			// 8 minutes, 8 * 60 * 1000 ms
 			oreCooldown.put(p.getUniqueId(), System.currentTimeMillis() + 480000);

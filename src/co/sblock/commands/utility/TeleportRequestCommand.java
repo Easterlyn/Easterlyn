@@ -10,6 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
@@ -33,6 +35,16 @@ public class TeleportRequestCommand extends SblockCommand {
 		this.setDescription("Handle a teleport request");
 		this.setUsage("/tpa name, /tpahere name, /tpaccept, /tpdecline");
 		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno");
+		Permission permission;
+		try {
+			permission = new Permission("sblock.command.tpa.nocooldown", PermissionDefault.OP);
+			Bukkit.getPluginManager().addPermission(permission);
+		} catch (IllegalArgumentException e) {
+			permission = Bukkit.getPluginManager().getPermission("sblock.command.tpa.nocooldown");
+			permission.setDefault(PermissionDefault.OP);
+		}
+		permission.addParent("sblock.command.*", true).recalculatePermissibles();
+		permission.addParent("sblock.helper", true).recalculatePermissibles();
 		// entry
 //		this.setPermissionLevel("hero");
 //		this.setPermissionMessage("You must complete classpect selection before you can teleport!");
