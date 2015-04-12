@@ -148,23 +148,19 @@ public class Computer extends Machine implements InventoryHolder {
 			event.setCancelled(true);
 			Icon ico = Icon.getIcon(event.getItem());
 			if (ico != null) {
+				// TODO Do not decrement in creative, decrement instead of setting null, do not allow reinstallation
 				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed "
 						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
 				event.getPlayer().setItemInHand(null);
 				OfflineUser u = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 				u.addProgram(ico.getProgramID());
 				return true;
-			} else {
-				event.getPlayer().openInventory(getInventory());
 			}
 		}
 		event.getPlayer().openInventory(getInventory(Users.getGuaranteedUser(event.getPlayer().getUniqueId())));
 		return true;
 	}
 
-	/**
-	 * @see org.bukkit.inventory.InventoryHolder#getInventory()
-	 */
 	@Override
 	public Inventory getInventory() {
 		return null;

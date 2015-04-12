@@ -20,14 +20,15 @@ import net.minecraft.server.v1_8_R2.Container;
 import net.minecraft.server.v1_8_R2.ContainerMerchant;
 import net.minecraft.server.v1_8_R2.EntityHuman;
 import net.minecraft.server.v1_8_R2.EntityPlayer;
+import net.minecraft.server.v1_8_R2.EntityVillager;
 import net.minecraft.server.v1_8_R2.IChatBaseComponent;
-import net.minecraft.server.v1_8_R2.IMerchant;
 import net.minecraft.server.v1_8_R2.ItemStack;
 import net.minecraft.server.v1_8_R2.MerchantRecipe;
 import net.minecraft.server.v1_8_R2.MerchantRecipeList;
 import net.minecraft.server.v1_8_R2.PacketDataSerializer;
 import net.minecraft.server.v1_8_R2.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_8_R2.PacketPlayOutOpenWindow;
+import net.minecraft.server.v1_8_R2.World;
 
 /**
  * brb going insane because of NBT
@@ -101,21 +102,15 @@ public class MachineInventoryTracker {
 
 	public class MerchantContainer extends ContainerMerchant {
 		public MerchantContainer(EntityPlayer player) {
-			super(player.inventory, new FakeMerchant(player), player.world);
+			super(player.inventory, new FakeNMSVillager(player, player.world), player.world);
 			this.checkReachable = false;
 		}
 	}
 
-	public class FakeMerchant implements IMerchant {
-		private EntityHuman customer;
-
-		public FakeMerchant(EntityHuman customer) {
-			this.customer = customer;
-		}
-
-		@Override
-		public void a_(EntityHuman paramEntityHuman) {
-			this.customer = paramEntityHuman;
+	public class FakeNMSVillager extends EntityVillager {
+		public FakeNMSVillager(EntityPlayer player, World world) {
+			super(world);
+			a_(player);
 		}
 
 		@Override
@@ -136,11 +131,6 @@ public class MachineInventoryTracker {
 		@Override
 		public IChatBaseComponent getScoreboardDisplayName() {
 			return new ChatComponentText("Machine");
-		}
-
-		@Override
-		public EntityHuman v_() {
-			return customer;
 		}
 	}
 
