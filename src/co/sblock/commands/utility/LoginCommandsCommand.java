@@ -116,7 +116,7 @@ public class LoginCommandsCommand extends SblockCommand {
 			int line = Integer.parseInt(args[1]);
 			ArrayList<String> commands = new ArrayList<>(user.getLoginCommands());
 			if (commands.size() < line) {
-				player.sendMessage(ChatColor.RED + "You only have " + commands.size() + " commands, cannot delete " + line + "!");
+				player.sendMessage(ChatColor.RED + "You only have " + commands.size() + " command(s), cannot delete " + line + "!");
 				return;
 			}
 			if (line < 1) {
@@ -125,7 +125,7 @@ public class LoginCommandsCommand extends SblockCommand {
 			}
 			String removed = commands.remove(line - 1);
 			user.setLoginCommands(commands);
-			player.sendMessage(ChatColor.GREEN + "Deleted \"" + removed + "!");
+			player.sendMessage(ChatColor.GREEN + "Deleted \"" + removed + "\"");
 			return;
 		} catch (NumberFormatException e) {
 			player.sendMessage(ChatColor.RED + "/onlogin delete <number>");
