@@ -63,7 +63,7 @@ public class SilentTeleportCommand extends SblockCommand {
 			return super.tabComplete(sender, alias, args);
 		}
 		if (args.length < 7) {
-			return ImmutableList.of("#");
+			return ImmutableList.of("0");
 		}
 		return ImmutableList.of();
 	}

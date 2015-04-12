@@ -49,11 +49,11 @@ public class TemporaryCart extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (args.length < 2) {
+		if (args.length == 1) {
 			return super.tabComplete(sender, alias, args);
 		}
 		if (args.length < 7) {
-			return ImmutableList.of("#");
+			return ImmutableList.of("0");
 		}
 		return ImmutableList.of();
 	}

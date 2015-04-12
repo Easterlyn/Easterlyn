@@ -9,8 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
@@ -88,9 +86,9 @@ public class SuperBanCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (args.length < 2) {
-			return super.tabComplete(sender, alias, args);
+		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
+			return com.google.common.collect.ImmutableList.of();
 		}
-		return ImmutableList.of();
+		return super.tabComplete(sender, alias, args);
 	}
 }

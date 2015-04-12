@@ -68,12 +68,11 @@ public class MachineCommand extends SblockCommand {
 		return true;
 	}
 
+	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (!(sender instanceof Player)) {
-			return ImmutableList.of("NoConsoleSupport");
-		}
-		if (!sender.hasPermission(this.getPermission()) || args.length < 1 || args.length > 2) {
+		if (!(sender instanceof Player) || !sender.hasPermission(this.getPermission())
+				|| args.length < 1 || args.length > 2) {
 			return ImmutableList.of();
 		}
 		ArrayList<String> matches = new ArrayList<>();

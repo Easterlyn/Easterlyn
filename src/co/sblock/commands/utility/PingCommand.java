@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
@@ -22,6 +24,16 @@ public class PingCommand extends SblockCommand {
 		super("ping");
 		this.setDescription("Get your ping.");
 		this.setUsage("/ping <player>");
+		Permission permission;
+		try {
+			permission = new Permission("sblock.command.ping.other", PermissionDefault.OP);
+			Bukkit.getPluginManager().addPermission(permission);
+		} catch (IllegalArgumentException e) {
+			permission = Bukkit.getPluginManager().getPermission("sblock.command.ping.other");
+			permission.setDefault(PermissionDefault.OP);
+		}
+		permission.addParent("sblock.command.*", true).recalculatePermissibles();
+		permission.addParent("sblock.helper", true).recalculatePermissibles();
 	}
 
 	@Override
@@ -31,7 +43,7 @@ public class PingCommand extends SblockCommand {
 		}
 		// TODO couple samples over a short period
 		Player target;
-		if (args.length == 0 || !sender.hasPermission("sblock.helper")) {
+		if (args.length == 0 || !sender.hasPermission("sblock.command.ping.other")) {
 			target = (Player) sender;
 		} else {
 			target = Bukkit.getPlayer(args[0]);
@@ -47,7 +59,7 @@ public class PingCommand extends SblockCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-		if (args.length != 1 || !sender.hasPermission("sblock.helper")) {
+		if (args.length != 1 || !sender.hasPermission("sblock.command.ping.other")) {
 			return ImmutableList.of();
 		} else {
 			return super.tabComplete(sender, alias, args);

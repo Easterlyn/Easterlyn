@@ -107,7 +107,8 @@ public class LoreCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (!sender.hasPermission(this.getPermission()) || args.length == 0) {
+		if (!(sender instanceof Player) || !sender.hasPermission(this.getPermission())
+				|| args.length == 0) {
 			return ImmutableList.of();
 		}
 		if (args.length > 2) {

@@ -220,4 +220,13 @@ public class TeleportRequestCommand extends SblockCommand {
 			return expiry;
 		}
 	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
+			return com.google.common.collect.ImmutableList.of();
+		}
+		return super.tabComplete(sender, alias, args);
+	}
 }

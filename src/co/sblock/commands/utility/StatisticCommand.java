@@ -1,11 +1,15 @@
 package co.sblock.commands.utility;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.commands.SblockCommand;
 
@@ -103,5 +107,12 @@ public class StatisticCommand extends SblockCommand {
 			sender.sendMessage("Set to " + setStatTo);
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		// TODO
+		return ImmutableList.of();
 	}
 }

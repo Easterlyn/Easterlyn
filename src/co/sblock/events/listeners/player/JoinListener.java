@@ -49,6 +49,9 @@ public class JoinListener implements Listener {
 				player.setResourcePack(region.getResourcePackURL());
 				user.updateFlight();
 				FXManager.getInstance().getInvisibilityManager().updateVisibility(player);
+				for (String command : user.getLoginCommands()) {
+					player.chat(command);
+				}
 			}
 		}.runTask(Sblock.getInstance());
 	}

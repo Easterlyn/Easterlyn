@@ -1,5 +1,7 @@
 package co.sblock.commands.utility;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.commands.SblockCommand;
 
@@ -68,5 +72,12 @@ public class RenderMapCommand extends SblockCommand {
 		//((org.bukkit.craftbukkit.v1_8_R1.map.CraftMapView) view).render((org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer) player);
 		//player.sendMap(view);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return ImmutableList.of();
 	}
 }

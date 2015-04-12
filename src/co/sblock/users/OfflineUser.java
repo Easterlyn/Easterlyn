@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -643,6 +644,24 @@ public class OfflineUser {
 	 */
 	public boolean getComputerAccess() {
 		return false;
+	}
+
+	/**
+	 * Gets a List of commands to be sent on login.
+	 * 
+	 * @return
+	 */
+	public List<String> getLoginCommands() {
+		return yaml.getStringList("misc.logincommands");
+	}
+
+	/**
+	 * Sets a List of commands to be sent on login.
+	 * 
+	 * @param commands
+	 */
+	public void setLoginCommands(List<String> commands) {
+		yaml.set("misc.logincommands", commands);
 	}
 
 	/**

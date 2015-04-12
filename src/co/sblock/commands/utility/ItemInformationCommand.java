@@ -43,9 +43,6 @@ public class ItemInformationCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (!(sender instanceof Player) || !sender.hasPermission(this.getPermission()) || args.length > 0) {
-			return ImmutableList.of();
-		}
-		return super.tabComplete(sender, alias, args);
+		return ImmutableList.of();
 	}
 }

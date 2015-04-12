@@ -40,9 +40,9 @@ public class SilentKickCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (args.length < 2) {
-			return super.tabComplete(sender, alias, args);
+		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
+			return com.google.common.collect.ImmutableList.of();
 		}
-		return com.google.common.collect.ImmutableList.of();
+		return super.tabComplete(sender, alias, args);
 	}
 }

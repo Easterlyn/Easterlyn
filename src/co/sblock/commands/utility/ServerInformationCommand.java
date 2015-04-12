@@ -14,6 +14,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 
+import com.google.common.collect.ImmutableList;
+
 import co.sblock.commands.SblockAsynchronousCommand;
 
 /**
@@ -97,5 +99,11 @@ public class ServerInformationCommand extends SblockAsynchronousCommand {
 		}
 		sender.sendMessage(ChatColor.GREEN + "Report written to plugins/Sblock/report.txt");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		return ImmutableList.of();
 	}
 }
