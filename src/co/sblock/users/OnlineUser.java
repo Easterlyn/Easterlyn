@@ -56,19 +56,6 @@ public class OnlineUser extends OfflineUser {
 		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
 		effectsList = new HashMap<>();
 		isServer = false;
-		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
-			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());
-			if (c != null && !c.isBanned(this) && (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
-				this.getListening().add(c.getName());
-				c.addListening(this.getUUID());
-			} else {
-				iterator.remove();
-			}
-		}
-		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
-			this.getListening().add("@");
-			ChannelManager.getChannelManager().getChannel("@").addListening(this.getUUID());
-		}
 	}
 
 	@Override
@@ -288,7 +275,20 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	@Override
-	public void announceLoginChannelJoins() {
+	public void handleLoginChannelJoins() {
+		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
+			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());
+			if (c != null && !c.isBanned(this) && (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
+				this.getListening().add(c.getName());
+				c.addListening(this.getUUID());
+			} else {
+				iterator.remove();
+			}
+		}
+		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
+			this.getListening().add("@");
+			ChannelManager.getChannelManager().getChannel("@").addListening(this.getUUID());
+		}
 		String base = new StringBuilder(ChatColor.GREEN.toString()).append(this.getDisplayName())
 				.append(ChatColor.YELLOW).append(" began pestering <>").append(ChatColor.YELLOW)
 				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date())).toString();

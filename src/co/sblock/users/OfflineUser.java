@@ -514,7 +514,7 @@ public class OfflineUser {
 	 * 
 	 * @param channels
 	 */
-	public void announceLoginChannelJoins() {}
+	public void handleLoginChannelJoins() {}
 
 	/**
 	 * Remove a Channel from the Player's listening List.
