@@ -142,7 +142,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 						+ "Type must be NORMAL, NICK, or RP");
 				return true;
 			}
-			if (ChannelManager.getChannelManager().isValidChannel(args[1])) {
+			if (ChannelManager.getChannelManager().getChannel(args[1]) != null) {
 				user.sendMessage(ChatColor.RED + "A channel by that name already exists!");
 				return true;
 			}

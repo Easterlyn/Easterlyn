@@ -36,7 +36,7 @@
 
 	<target name="clean" description="delete old files">
 		<delete dir="${class.dir}" />
-		<delete dir="${jar.dir}/${ant.project.name}.jar" />
+		<delete dir="${jar.file}" />
 	</target>
 
 	<target name="compile" description="build class files" depends="clean">
