@@ -261,6 +261,7 @@ public class InteractListener implements Listener {
 		case BIRCH_FENCE_GATE:
 		case BREWING_STAND:
 		case BURNING_FURNACE:
+		case CAULDRON:
 		case CHEST:
 		case COMMAND:
 		case DARK_OAK_DOOR:
