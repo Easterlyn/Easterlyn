@@ -48,6 +48,35 @@ public class InventoryUtils {
 	private static HashMap<String, String> items;
 	private static HashMultimap<String, String> itemsReverse;
 	private static HashSet<ItemStack> uniques;
+	private static final HashMap<Integer, String> potionEffects = new HashMap<>();
+
+	static {
+		potionEffects.put(0, "Mundane Potion");
+		potionEffects.put(1, "Potion of Regeneration");
+		potionEffects.put(2, "Potion of Swiftness");
+		potionEffects.put(3, "Potion of Fire Resistance");
+		potionEffects.put(4, "Potion of Poison");
+		potionEffects.put(5, "Potion of Healing");
+		potionEffects.put(6, "Potion of Night Vision");
+		potionEffects.put(7, "Clear Potion");
+		potionEffects.put(8, "Potion of Weakness");
+		potionEffects.put(9, "Potion of Strength");
+		potionEffects.put(10, "Potion of Slowness");
+		potionEffects.put(11, "Potion of Leaping");
+		potionEffects.put(12, "Potion of Harming");
+		potionEffects.put(13, "Potion of Water Breathing");
+		potionEffects.put(14, "Potion of Invisibility");
+		potionEffects.put(15, "Thin Potion");
+		potionEffects.put(16, "Awkward Potion");
+		potionEffects.put(23, "Bungling Potion");
+		potionEffects.put(31, "Debonair Potion");
+		potionEffects.put(32, "Thick Potion");
+		potionEffects.put(39, "Charming Potion");
+		potionEffects.put(47, "Sparkling Potion");
+		potionEffects.put(48, "Potent Potion");
+		potionEffects.put(55, "Rank Potion");
+		potionEffects.put(63, "Stinky Potion");
+	}
 
 	private static HashMap<String, String> getItems() {
 		if (items != null) {
@@ -79,7 +108,23 @@ public class InventoryUtils {
 			return items.get(m.getId() + ":" + durability);
 		}
 		if (m == Material.POTION) {
-			return "Potion";
+			StringBuilder potion = new StringBuilder();
+			if (((durability >> 6) & 1) == 1) {
+				potion.append("Extended ");
+			}
+			if (((durability >> 14) & 1) == 1) {
+				potion.append("Splash ");
+			}
+			int remainder = durability % 64;
+			if (potionEffects.containsKey(remainder)) {
+				potion.append(potionEffects.get(remainder));
+			} else {
+				potion.append(potionEffects.get(remainder % 16));
+			}
+			if (((durability >> 5) & 1) == 1) {
+				potion.append(" II");
+			}
+			return potion.toString();
 		}
 		return items.get(m.getId() + ":" + 0);
 	}
