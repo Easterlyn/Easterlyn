@@ -108,25 +108,29 @@ public class InventoryUtils {
 			return items.get(m.getId() + ":" + durability);
 		}
 		if (m == Material.POTION) {
-			StringBuilder potion = new StringBuilder();
-			if (((durability >> 6) & 1) == 1) {
-				potion.append("Extended ");
-			}
-			if (((durability >> 14) & 1) == 1) {
-				potion.append("Splash ");
-			}
-			int remainder = durability % 64;
-			if (potionEffects.containsKey(remainder)) {
-				potion.append(potionEffects.get(remainder));
-			} else {
-				potion.append(potionEffects.get(remainder % 16));
-			}
-			if (((durability >> 5) & 1) == 1) {
-				potion.append(" II");
-			}
-			return potion.toString();
+			return getPotionName(durability);
 		}
 		return items.get(m.getId() + ":" + 0);
+	}
+
+	private static String getPotionName(short durability) {
+		StringBuilder potion = new StringBuilder();
+		if (((durability >> 6) & 1) == 1) {
+			potion.append("Extended ");
+		}
+		if (((durability >> 14) & 1) == 1) {
+			potion.append("Splash ");
+		}
+		int remainder = durability % 64;
+		if (potionEffects.containsKey(remainder)) {
+			potion.append(potionEffects.get(remainder));
+		} else {
+			potion.append(potionEffects.get(remainder % 16));
+		}
+		if (((durability >> 5) & 1) == 1) {
+			potion.append(" II");
+		}
+		return potion.toString();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -139,6 +143,9 @@ public class InventoryUtils {
 				return false;
 			}
 			match = true;
+		}
+		if (!match) {
+			return name.matches("(\\w+ ){0,2}Potion of \\w+");
 		}
 		return match;
 	}
