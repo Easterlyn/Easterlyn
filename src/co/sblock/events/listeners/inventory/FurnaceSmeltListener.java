@@ -8,8 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.machines.Machines;
-import co.sblock.machines.type.Machine;
 import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
@@ -27,12 +25,6 @@ public class FurnaceSmeltListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onFurnaceSmelt(FurnaceSmeltEvent event) {
 
-		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handleFurnaceSmelt(event));
-			return;
-		}
-
 		if (!canSalvage(event.getSource().getType())) {
 			return;
 		}
@@ -45,15 +37,26 @@ public class FurnaceSmeltListener implements Listener {
 						.getDurability())) / event.getSource().getType().getMaxDurability());
 
 		if (amount < 1) {
-			// Default coal recipe will fire
-			return;
+			amount = 1;
+			result = new ItemStack(Material.COAL, 1);
 		}
 
 		result.setAmount(amount);
 
 		event.setCancelled(true);
 		Furnace furnace = (Furnace) event.getBlock().getState();
-		if (furnace.getInventory().getResult() == null) {
+		ItemStack furnaceResult = furnace.getInventory().getResult();
+		if (furnaceResult == null || furnaceResult.isSimilar(result)) {
+			if (furnaceResult != null) {
+				amount = furnaceResult.getAmount() + result.getAmount();
+				if (amount > result.getMaxStackSize()) {
+					amount -= result.getMaxStackSize();
+					result.setAmount(result.getMaxStackSize());
+					furnace.getWorld().dropItem(furnace.getLocation(), new ItemStack(result.getType(), amount));
+				} else {
+					result.setAmount(amount);
+				}
+			}
 			furnace.getInventory().setResult(result);
 		} else {
 			furnace.getWorld().dropItemNaturally(furnace.getLocation(), result);

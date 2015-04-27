@@ -15,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
@@ -358,5 +359,33 @@ public class InventoryUtils {
 			is = null;
 		}
 		return is;
+	}
+
+	/**
+	 * Checks if there is space in the given Inventory to add the given ItemStack.
+	 * 
+	 * @param is the ItemStack
+	 * @param inv the Inventory to check
+	 * 
+	 * @return true if the ItemStack can be fully added
+	 */
+	public static boolean hasSpaceFor(ItemStack is, Inventory inv) {
+		if (is == null) {
+			return true;
+		}
+		ItemStack toAdd = is.clone();
+		for (ItemStack invStack : inv.getContents()) {
+			if (invStack == null) {
+				return true;
+			}
+			if (!invStack.isSimilar(toAdd)) {
+				continue;
+			}
+			toAdd.setAmount(toAdd.getAmount() - toAdd.getMaxStackSize() + invStack.getAmount());
+			if (toAdd.getAmount() <= 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

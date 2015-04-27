@@ -18,9 +18,9 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
-import co.sblock.machines.utilities.MachineType;
-import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
@@ -95,6 +95,9 @@ public class Alchemiter extends Machine {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
+		if (event.getPlayer().isSneaking()) {
+			return false;
+		}
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
@@ -115,6 +118,7 @@ public class Alchemiter extends Machine {
 	/**
 	 * @see co.sblock.machines.type.Machine#handleClick(InventoryClickEvent)
 	 */
+	@Override
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event) {
 		updateInventory(event.getWhoClicked().getUniqueId());
@@ -132,9 +136,20 @@ public class Alchemiter extends Machine {
 			Inventory top = event.getView().getTopInventory();
 			Player player = (Player) event.getWhoClicked();
 			if (event.getClick().name().contains("SHIFT")) {
-				player.getInventory().addItem(event.getCurrentItem().clone());
-			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
-				event.setCursor(event.getCurrentItem());
+				if (InventoryUtils.hasSpaceFor(event.getCurrentItem(), player.getInventory())) {
+					player.getInventory().addItem(event.getCurrentItem().clone());
+				} else {
+					return true;
+				}
+			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR
+					|| (event.getCursor().isSimilar(event.getCurrentItem())
+						&& event.getCursor().getAmount() + event.getCurrentItem().getAmount()
+						< event.getCursor().getMaxStackSize())) {
+				ItemStack result = event.getCurrentItem().clone();
+				if (result.isSimilar(event.getCursor())) {
+					result.setAmount(result.getAmount() + event.getCursor().getAmount());
+				}
+				event.setCursor(result);
 			} else {
 				return true;
 			}
@@ -155,6 +170,7 @@ public class Alchemiter extends Machine {
 	 */
 	public void updateInventory(final UUID id) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@Override
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);

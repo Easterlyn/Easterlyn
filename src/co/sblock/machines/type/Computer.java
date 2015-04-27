@@ -157,6 +157,9 @@ public class Computer extends Machine implements InventoryHolder {
 				return true;
 			}
 		}
+		if (event.getPlayer().isSneaking()) {
+			return false;
+		}
 		event.getPlayer().openInventory(getInventory(Users.getGuaranteedUser(event.getPlayer().getUniqueId())));
 		return true;
 	}

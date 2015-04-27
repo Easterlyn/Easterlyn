@@ -18,9 +18,9 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
-import co.sblock.machines.utilities.MachineType;
-import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
@@ -83,6 +83,9 @@ public class PunchDesignix extends Machine {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
+		if (event.getPlayer().isSneaking()) {
+			return false;
+		}
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
@@ -94,6 +97,7 @@ public class PunchDesignix extends Machine {
 	/**
 	 * @see co.sblock.machines.type.Machine#handleClick(InventoryClickEvent)
 	 */
+	@Override
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event) {
 		if (event.getSlot() == 2 && event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())
@@ -179,6 +183,7 @@ public class PunchDesignix extends Machine {
 	 */
 	public void updateInventory(final UUID id) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			@Override
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);

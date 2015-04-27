@@ -59,7 +59,6 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 		} else {
 			return false;
 		}
-		sender.sendMessage("If you see this message, it worked.");
 		return true;
 	}
 

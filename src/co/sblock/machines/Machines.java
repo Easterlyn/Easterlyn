@@ -11,14 +11,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.FurnaceRecipe;
-import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.machines.type.Alchemiter;
@@ -60,9 +56,6 @@ public class Machines extends Module {
 		this.machineBlocks = new HashMap<>();
 		this.exploded = new HashMap<>();
 		this.loadAllMachines();
-
-		// Recipe does nothing on its own - We'll cancel all smelts that do not happen within a TotemLathe.
-		Bukkit.addRecipe(new FurnaceRecipe(new ItemStack(Material.NETHER_BRICK_ITEM), Material.NETHER_BRICK_ITEM));
 	}
 
 	/**
