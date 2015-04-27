@@ -216,11 +216,10 @@ public class Entry {
 	}
 
 	private Material[] createMaterialList() {
-		return new Material[] { Material.WOOL, Material.MELON_BLOCK, Material.TORCH,
-				Material.LADDER, Material.WATER_LILY, Material.REDSTONE_TORCH_ON,
-				Material.CARROT_STICK, Material.LAVA_BUCKET, Material.WATER_BUCKET, Material.APPLE,
-				Material.EGG, Material.SAPLING, Material.SUGAR_CANE, Material.QUARTZ,
-				Material.BLAZE_ROD };
+		return new Material[] { Material.MELON, Material.ARROW, Material.COAL, Material.WATER_LILY,
+				Material.INK_SACK, Material.CARROT_STICK, Material.LAVA_BUCKET,
+				Material.WATER_BUCKET, Material.APPLE, Material.EGG, Material.SULPHUR,
+				Material.SUGAR, Material.QUARTZ, Material.BLAZE_ROD };
 	}
 	public Material[] getMaterialList() {
 		return materials;
