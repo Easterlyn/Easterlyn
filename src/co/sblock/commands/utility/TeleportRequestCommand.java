@@ -176,7 +176,7 @@ public class TeleportRequestCommand extends SblockCommand {
 				+ toTeleport.getDisplayName() + ChatColor.YELLOW + " to you.");
 
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
-		// TODO perhaps rather than use /spectate deny, attempted spectating sends a tpa?
+		// future: perhaps rather than use /spectate deny, attempted spectating sends a tpa?
 		if (Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
 			tpacooldown.remove(request.getSource());
 		}

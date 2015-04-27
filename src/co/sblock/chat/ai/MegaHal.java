@@ -139,7 +139,7 @@ public class MegaHal {
 				|| message.contains("/") || isTrigger(message)) {
 			return;
 		}
-		// TODO strip more stuff we don't want
+		// CHAT: strip more stuff we don't want
 		for (Pattern pattern : ignoreMatches) {
 			if (pattern.matcher(message).find()) {
 				return;

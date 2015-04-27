@@ -23,6 +23,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ColorDef;
 import co.sblock.chat.channel.Channel;
+import co.sblock.utilities.player.PlayerLoader;
 
 /**
  * Storage and access of all data saved for a User.
@@ -92,8 +93,7 @@ public class OfflineUser {
 	 * @return the Player
 	 */
 	public Player getPlayer() {
-		// TODO offline load
-		return null;
+		return PlayerLoader.getPlayer(getUUID());
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class OfflineUser {
 	 * 
 	 * @param newR the Region being transitioned into
 	 */
-	public void updateCurrentRegion(Region newR) {} // TODO allow + channel management
+	public void updateCurrentRegion(Region newR) {} // CHAT: allow and do channel management
 
 	/**
 	 * Sets the Player's previous location. Used for returning to and from dream planets.

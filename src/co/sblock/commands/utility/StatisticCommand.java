@@ -112,7 +112,7 @@ public class StatisticCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		// TODO
+		// CHAT: tab-complete
 		return ImmutableList.of();
 	}
 }

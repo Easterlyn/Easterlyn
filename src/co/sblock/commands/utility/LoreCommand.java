@@ -46,7 +46,7 @@ public class LoreCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		// future leather color
+		// future: leather color
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;

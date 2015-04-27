@@ -28,7 +28,7 @@ public class JoinListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(final PlayerJoinEvent event) {
 		event.setJoinMessage(null);
-		// TODO check message beforehand and don't announce channels if muted
+		// CHAT: check message beforehand and don't announce channels if muted
 		Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 
 		Events.getInstance().addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());

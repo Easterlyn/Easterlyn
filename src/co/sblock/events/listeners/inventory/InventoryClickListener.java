@@ -254,8 +254,6 @@ public class InventoryClickListener implements Listener {
 			return;
 		}
 
-		// TODO ENTRY
-
 		// Captcha: attempt to captcha item in clicked slot
 		Captcha.handleCaptcha(event);
 	}

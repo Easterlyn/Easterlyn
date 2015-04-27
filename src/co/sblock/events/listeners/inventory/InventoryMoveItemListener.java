@@ -24,7 +24,7 @@ public class InventoryMoveItemListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryMoveItem(InventoryMoveItemEvent event) {
 		InventoryHolder ih = event.getDestination().getHolder();
-		// TODO check sending inv as well
+		// TODO: check sending inv as well
 		if (ih != null && ih instanceof BlockState) {
 			Machine m = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
 			if (m != null) {

@@ -2,6 +2,7 @@ package co.sblock.machines.type;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
+import co.sblock.utilities.inventory.InventoryUtils;
 
 /**
  * Computers for players! Inventory-based selection system.
@@ -148,10 +150,11 @@ public class Computer extends Machine implements InventoryHolder {
 			event.setCancelled(true);
 			Icon ico = Icon.getIcon(event.getItem());
 			if (ico != null) {
-				// TODO Do not decrement in creative, decrement instead of setting null, do not allow reinstallation
 				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed "
 						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
-				event.getPlayer().setItemInHand(null);
+				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+					event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
+				}
 				OfflineUser u = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 				u.addProgram(ico.getProgramID());
 				return true;

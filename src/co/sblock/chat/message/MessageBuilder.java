@@ -149,7 +149,6 @@ public class MessageBuilder {
 		Player player = sender != null ? sender.getPlayer() : null;
 
 		if (channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
-			// TODO perhaps allow non-ASCII in non-global channels
 			StringBuilder sb = new StringBuilder();
 			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
 				if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {

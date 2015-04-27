@@ -216,7 +216,7 @@ public class Message {
 	}
 
 	public <T> void send(Collection<T> recipients) {
-		if (channel.getName().equals("#")) { // future fix, IRC workaround
+		if (channel.getName().equals("#")) { // CHAT: fix IRC workaround
 			Log.anonymousInfo(ChatColor.stripColor(getConsoleMessage()));
 		} else {
 			Log.anonymousInfo(getConsoleMessage());

@@ -68,7 +68,7 @@ public class RenderMapCommand extends SblockCommand {
 		view.setCenterX(x);
 		view.setCenterZ(z);
 		player.setItemInHand(new ItemStack(Material.MAP, 1, view.getId()));
-		// future try to render whole map
+		// future: render whole map
 		//((org.bukkit.craftbukkit.v1_8_R1.map.CraftMapView) view).render((org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer) player);
 		//player.sendMap(view);
 		return true;
@@ -77,7 +77,6 @@ public class RenderMapCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
 		return ImmutableList.of();
 	}
 }

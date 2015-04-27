@@ -41,7 +41,7 @@ public class PingCommand extends SblockCommand {
 		if (!(sender instanceof Player) && args.length == 0) {
 			return false;
 		}
-		// TODO couple samples over a short period
+		// future: couple samples over a short period
 		Player target;
 		if (args.length == 0 || !sender.hasPermission("sblock.command.ping.other")) {
 			target = (Player) sender;

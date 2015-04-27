@@ -19,7 +19,12 @@ public class RegionCheck extends BukkitRunnable {
 	public void run() {
 //		for (World world : medium) {
 //			for (Player p : world.getPlayers()) {
-//				// TODO calculate relative planets
+//				// TODO: calculate relative planets
+//				// Up: Dream
+//				// N:
+//				// S:
+//				// E:
+//				// W:
 //				// may just want separate loops because destination will be per-location per-planet anyway
 //				// I.E. southeast planet, triangle northwest would have destination Derspit(InnerCircle)
 //				//     east and south would have destination Derspit (OuterCircle) and other directions obvious

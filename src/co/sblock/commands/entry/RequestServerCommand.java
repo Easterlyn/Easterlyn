@@ -72,5 +72,5 @@ public class RequestServerCommand extends SblockCommand {
 		return true;
 	}
 
-	// TODO only tab complete arg0, tab complete only users with server installed, only if sender has client
+	// CHAT: tab-complete arg0 if sender has client, only users with server installed
 }

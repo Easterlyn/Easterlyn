@@ -24,7 +24,7 @@ public class FXAbsorption extends SblockFX {
 
 	@Override
 	protected void getEffect(OnlineUser user, Event event) {
-		//TODO: Add scheduler after shift to global perspective
+		// EFFECTS: Add scheduler after shift to global perspective
 		PotionEffect potEffect = new PotionEffect(PotionEffectType.ABSORPTION, 1000 * 60, getMultiplier());
 		user.getPlayer().addPotionEffect(potEffect, true);
 	}

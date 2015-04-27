@@ -46,7 +46,7 @@ public class AetherCommand extends SblockCommand {
 		Set<Player> players = new HashSet<Player>(Bukkit.getOnlinePlayers());
 		players.removeIf(p -> Users.getGuaranteedUser(p.getUniqueId()).getSuppression());
 
-		// TODO DummyPlayer's sender is always CONSOLE
+		// CHAT: DummyPlayer's sender is always CONSOLE
 		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, new DummyPlayer(sender), players, message));
 
 		return true;

@@ -79,21 +79,12 @@ public class TeleportListener implements Listener {
 				// Update region
 				Region target;
 				if (event.getPlayer().getWorld().getName().equals("Derspit")) {
-					target = getTargetDreamPlanet(user, event.getFrom().getWorld().getName());
+					target = user.getDreamPlanet();;
 				} else {
 					target = Region.getRegion(event.getTo().getWorld().getName());
 				}
 				user.updateCurrentRegion(target);
 			}
 		});
-	}
-
-	private Region getTargetDreamPlanet(OfflineUser user, String from) {
-		Region fromRegion = Region.getRegion(from);
-		if (!fromRegion.isMedium()) {
-			return user.getDreamPlanet();
-		}
-		// future flight to dream planets
-		return user.getDreamPlanet();
 	}
 }

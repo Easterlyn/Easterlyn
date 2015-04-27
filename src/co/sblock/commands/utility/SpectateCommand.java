@@ -89,7 +89,7 @@ public class SpectateCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		// TODO allow completion of allow/deny
+		// CHAT: tab-complete allow/deny
 		return ImmutableList.of();
 	}
 }

@@ -67,7 +67,7 @@ public class FXFlowers extends SblockFX {
 			standingIn.setTypeIdAndData(Material.RED_ROSE.getId(), (byte) 8, true);
 			break;
 		case 10:
-			// TODO Keiko, double plants also need to check face block, plenty of passable blocks.
+			// EFFECTS: double plants also need to check face block, plenty of passable blocks.
 			standingIn.setTypeIdAndData(Material.DOUBLE_PLANT.getId(), (byte) 0, true);
 			standingIn.getRelative(BlockFace.UP).setTypeIdAndData(Material.DOUBLE_PLANT.getId(), (byte) 8, true);
 			break;

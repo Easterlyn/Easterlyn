@@ -34,7 +34,7 @@ public class CompilationAmalgamator extends Machine {
 	 */
 	@Override
 	public MachineType getType() {
-		// TODO Auto-generated method stub
+		// TODO: implement
 		return null;
 	}
 }
