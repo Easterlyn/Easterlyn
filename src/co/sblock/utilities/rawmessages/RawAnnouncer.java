@@ -109,12 +109,12 @@ public class RawAnnouncer extends Module {
 				+ "{\"color\":\"red\",\"text\":\" the sound pack as well.\"}]}",
 				ColorDef.HAL + "If you're using our resource pack, we suggest you download the sound pack as well."));
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "Interested in jamming with your fellow Sblock players? Join our \"},"
+		msgs.add(new AnnouncementMessage(HALEMENT + "Please be aware that our \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"plug.dj room\","
-					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://plug.dj/sblock/\"},"
+					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://plug.dj/sblockco/\"},"
 					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}},"
-				+ "{\"color\":\"red\",\"text\":\" to listen and play!\"}]}",
-				ColorDef.HAL + "Interested in jamming with your fellow Sblock players? Join http://plug.dj/sblock/ to listen and play!"));
+				+ "{\"color\":\"red\",\"text\":\" has changed!\"}]}",
+				ColorDef.HAL + "Interested in jamming with your fellow Sblock players? Join http://plug.dj/sblockco/ to listen and play!"));
 
 		return msgs;
 	}
