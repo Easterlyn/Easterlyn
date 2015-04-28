@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -28,6 +29,9 @@ public class RSSUpdateCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
+		if (!Sblock.getInstance().getConfig().getBoolean("rss-enabled")) {
+			return true;
+		}
 		if (args.length < 3) {
 			return false;
 		}
