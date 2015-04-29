@@ -8,6 +8,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import co.sblock.events.Events;
 import co.sblock.users.Users;
+import co.sblock.utilities.experience.Experience;
 import co.sblock.utilities.minecarts.FreeCart;
 
 /**
@@ -38,11 +39,12 @@ public class DeathListener implements Listener {
 		event.getEntity().sendMessage(ChatColor.RED + message + location);
 
 		if (Events.getInstance().getPVPTasks().containsKey(event.getEntity().getUniqueId())) {
+			event.setDroppedExp(Experience.getExp(event.getEntity()));
 			event.setKeepInventory(true);
 			Events.getInstance().getPVPTasks().remove(event.getEntity().getUniqueId()).cancel();
 			if (event.getEntity().getKiller() != null) {
 				Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died to "
-						+ event.getEntity().getKiller().getName() + " at" + location);
+						+ event.getEntity().getKiller().getName() + ". " + location);
 			}
 		} else {
 			Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died." + location);
