@@ -102,13 +102,6 @@ public class RawAnnouncer extends Module {
 		msgs.add(new AnnouncementMessage(HALEMENT + "To sleep without dreaming, sneak while right clicking your bed!\"}]}",
 				ColorDef.HAL + "To sleep without dreaming, sneak while right clicking your bed!"));
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "If you're using our resource pack, we suggest you \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"download\","
-				+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://sblock.co/rpack/\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to see all Sblock rpacks!\",\"color\":\"gold\"}}},"
-				+ "{\"color\":\"red\",\"text\":\" the sound pack as well.\"}]}",
-				ColorDef.HAL + "If you're using our resource pack, we suggest you download the sound pack as well."));
-
 		msgs.add(new AnnouncementMessage(HALEMENT + "Please be aware that our \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"plug.dj room\","
 					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://plug.dj/sblockco/\"},"
