@@ -1,6 +1,6 @@
 package co.sblock.chat;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Class for defining rank and region colors more easily.
@@ -35,7 +35,7 @@ public class ColorDef {
 	public static String listColors() {
 		StringBuilder sb = new StringBuilder();
 		for (ChatColor c : ChatColor.values()) {
-			sb.append(c).append('&').append(c.getChar()).append(' ');
+			sb.append(c).append('&').append(c.toString().substring(1)).append(' ');
 			sb.append(c.name().toLowerCase()).append(ChatColor.RESET).append(' ');
 		}
 		return sb.toString();

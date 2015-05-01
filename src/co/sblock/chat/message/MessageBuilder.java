@@ -1,16 +1,34 @@
 package co.sblock.chat.message;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.ColorDef;
+import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
+import co.sblock.utilities.rawmessages.JSONUtil;
 import co.sblock.utilities.regex.RegexUtils;
+
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
+
+import net.minecraft.server.v1_8_R2.NBTTagCompound;
 
 /**
  * 
@@ -19,12 +37,21 @@ import co.sblock.utilities.regex.RegexUtils;
  */
 public class MessageBuilder {
 
+	private static final TextComponent HIGHLIGHTED_BRACKET;
+
+	static {
+		HIGHLIGHTED_BRACKET = new TextComponent("!!");
+		HIGHLIGHTED_BRACKET.setColor(ChatColor.AQUA);
+	}
+
 	private OfflineUser sender = null;
 	private String senderName = null;
 	private Channel channel = null;
 	private String message = null;
 	private boolean thirdPerson = false;
 	private String atChannel = null;
+	private ItemStack hover;
+	private String channelClick, nameClick;
 
 	public MessageBuilder setSender(OfflineUser sender) {
 		this.sender = sender;
@@ -69,6 +96,21 @@ public class MessageBuilder {
 
 	public MessageBuilder setThirdPerson(boolean thirdPerson) {
 		this.thirdPerson = thirdPerson;
+		return this;
+	}
+
+	public MessageBuilder setNameHover(ItemStack hover) {
+		this.hover = hover;
+		return this;
+	}
+
+	public MessageBuilder setNameClick(String suggestion) {
+		this.nameClick = suggestion;
+		return this;
+	}
+
+	public MessageBuilder setChannelClick(String suggestion) {
+		this.channelClick = suggestion;
 		return this;
 	}
 
@@ -167,6 +209,147 @@ public class MessageBuilder {
 			message = ChatColor.GREEN + message;
 		}
 
-		return new Message(this.sender, this.senderName, this.channel, this.message, this.thirdPerson);
+		// Prepend chat colors to every message if sender has permission
+		if (channel.getType() != ChannelType.RP && player != null && player.hasPermission("sblockchat.color")) {
+			for (ChatColor c : ChatColor.values()) {
+				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
+					message = c + message;
+					break;
+				}
+			}
+		}
+
+		// Canon nicks for RP channels
+		CanonNick nick = null;
+		if (sender != null && channel.getType() == ChannelType.RP) {
+			nick = CanonNick.getNick(channel.getNick(sender));
+			message = nick.getPrefix() + message;
+		}
+
+		// CHANNEL ELEMENT: [#channel]
+		ChatColor channelBracket;
+		if (player != null && player.hasPermission("sblock.guildleader")) {
+			channelBracket = sender.getUserAspect().getColor();
+		} else {
+			channelBracket = ChatColor.WHITE;
+		}
+		ChatColor channelRank = channel.isOwner(sender) ? ChatColor.RED
+				: channel.isModerator(sender) ? ChatColor.AQUA : ChatColor.GOLD;
+
+		LinkedList<TextComponent> channelHighlightComponents = new LinkedList<>();
+		LinkedList<TextComponent> components = new LinkedList<>();
+
+		// [ | !!
+		channelHighlightComponents.add(HIGHLIGHTED_BRACKET);
+		TextComponent component = new TextComponent("[");
+		component.setColor(channelBracket);
+		components.add(component);
+
+		// [#channel | !!#channel
+		component = new TextComponent(channel.getName());
+		component.setColor(channelRank);
+		channelHighlightComponents.add(component);
+		components.add(component);
+
+		// [#channel] | !!#channel!!
+		channelHighlightComponents.add(HIGHLIGHTED_BRACKET);
+		component = new TextComponent("]");
+		component.setColor(channelBracket);
+		components.add(component);
+
+		TextComponent channelComponent = new TextComponent(components.toArray(new BaseComponent[components.size()]));
+		if (channelClick == null) {
+			channelClick = new StringBuilder("@").append(channel.getName()).append(' ').toString();
+		}
+		channelComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, channelClick));
+		TextComponent channelHighlightComponent = new TextComponent(channelHighlightComponents.toArray(new BaseComponent[channelHighlightComponents.size()]));
+		channelHighlightComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, channelClick));
+
+		components.clear();
+
+		// NAME ELEMENT: <Name>
+		ChatColor region = sender != null ? sender.getCurrentRegion().getColor() : ChatColor.WHITE;
+
+		// > | <
+		component = new TextComponent(thirdPerson ? "> " : " <");
+		component.setColor(region);
+		components.add(component);
+
+		ChatColor globalRank;
+		if (player != null) {
+			// Name color fetched from scoreboard, if team invalid perm-based instead.
+			try {
+				globalRank = ChatColor.getByChar(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getPrefix().charAt(1));
+			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
+				if (player.hasPermission("group.horrorterror"))
+					globalRank = ColorDef.RANK_HORRORTERROR;
+				else if (player.hasPermission("sblock.denizen"))
+					globalRank = ColorDef.RANK_DENIZEN;
+				else if (player.hasPermission("sblock.felt"))
+					globalRank = ColorDef.RANK_FELT;
+				else if (player.hasPermission("sblock.helper"))
+					globalRank = ColorDef.RANK_HELPER;
+				else if (player.hasPermission("sblock.donator"))
+					globalRank = ColorDef.RANK_DONATOR;
+				else if (player.hasPermission("sblock.godtier"))
+					globalRank = ColorDef.RANK_GODTIER;
+				else {
+					globalRank = ColorDef.RANK_HERO;
+				}
+			}
+		} else {
+			globalRank = ChatColor.WHITE;
+		}
+
+		// > Name | <Name
+		component = new TextComponent(sender != null ? channel.getNick(sender) : senderName);
+		component.setColor(globalRank);
+		components.add(component);
+
+		// > Name | <Name>
+		component = new TextComponent(thirdPerson ? " " : "> ");
+		component.setColor(region);
+		components.add(component);
+
+		if (hover == null && sender != null) {
+			hover = new ItemStack(Material.DIAMOND);
+			ItemMeta meta = hover.getItemMeta();
+			meta.setDisplayName(new StringBuilder().append(ChatColor.YELLOW)
+					.append(ChatColor.STRIKETHROUGH).append("+--").append(ChatColor.AQUA)
+					.append(ChatColor.RESET).append(' ').append(globalRank)
+					.append(sender.getDisplayName()).append(' ').append(ChatColor.YELLOW)
+					.append(ChatColor.STRIKETHROUGH).append("--+").toString());
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add(new StringBuilder().append(ChatColor.DARK_AQUA)
+					.append(sender.getUserClass().getDisplayName()).append(ChatColor.YELLOW)
+					.append(" of ").append(sender.getUserAspect().getColor())
+					.append(sender.getUserAspect().getDisplayName()).toString());
+			lore.add(new StringBuilder().append(ChatColor.YELLOW).append("Dream: ")
+					.append(sender.getDreamPlanet().getColor())
+					.append(sender.getDreamPlanet().getDisplayName()).toString());
+			lore.add(new StringBuilder().append(ChatColor.YELLOW).append("Medium: ")
+					.append(sender.getMediumPlanet().getColor())
+					.append(sender.getMediumPlanet().getDisplayName()).toString());
+			meta.setLore(lore);
+			hover.setItemMeta(meta);
+		}
+
+		TextComponent nameComponent = new TextComponent(components.toArray(new BaseComponent[components.size()]));
+		if (nameClick == null && player != null) {
+			nameClick = new StringBuilder("/m ").append(player.getName()).append(' ').toString();
+		}
+		nameComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, nameClick));
+		if (hover != null) {
+			net.minecraft.server.v1_8_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(hover);
+			nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM,
+					new BaseComponent[] { new TextComponent(nmsStack.save(new NBTTagCompound()).toString()) }));
+		}
+
+		// MESSAGE ELEMENT: Your text here.
+		TextComponent messageComponent = new TextComponent(JSONUtil.getJson(message, nick));
+
+		return new Message(this.sender, this.senderName, this.channel, this.message,
+				this.thirdPerson, channelComponent, channelHighlightComponent, nameComponent,
+				messageComponent);
 	}
 }

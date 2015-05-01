@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,7 +20,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.jibble.jmegahal.JMegaHal;
@@ -47,6 +51,7 @@ public class MegaHal {
 	private final Map<String, Long> ratelimit;
 	private final HalLogSavingTask save;
 	private final Set<Pattern> ignoreMatches;
+	private final ItemStack hover;
 	private int fileNum;
 
 	public MegaHal() {
@@ -65,6 +70,15 @@ public class MegaHal {
 		ignoreMatches.add(Pattern.compile("^.*[Bb]([Ee]|[Aa])[Nn][Zz]([Uu]|[Ee])?[Rr][Ff]([Ll][Ee][Ss]?)?.*$"));
 		ignoreMatches.add(Pattern.compile("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$"));
 		ignoreMatches.add(Pattern.compile("^[Ee][Vv][Hh][Aa][Ll]([Uu][Aa][Tt][Ee])? .*$"));
+
+		hover = new ItemStack(Material.BARRIER);
+		ItemMeta hoverMeta = hover.getItemMeta();
+		hoverMeta.setDisplayName(ChatColor.RED + "Artificial Intelligence");
+		hoverMeta.setLore(Arrays.asList(new String[] {
+				ChatColor.DARK_RED + "Sblock is not responsible",
+				ChatColor.DARK_RED + "for anything Hal says.", "",
+				ChatColor.DARK_RED + "Unless it's awesome." }));
+		hover.setItemMeta(hoverMeta);
 
 		loadHal();
 
@@ -170,7 +184,8 @@ public class MegaHal {
 				word = word == null ? hal.getSentence() : hal.getSentence(word);
 				word = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', word));
 				Message msg = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
-						.setMessage(ChatColor.RED + word).setChannel(channel).toMessage();
+						.setMessage(ChatColor.RED + word).setChannel(channel)
+						.setNameClick("@#halchat ").setNameHover(hover).toMessage();
 				msg.send(recipients);
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());

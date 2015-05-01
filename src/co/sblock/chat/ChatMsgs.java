@@ -3,12 +3,12 @@ package co.sblock.chat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.bukkit.ChatColor;
-
 import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * A container for all messages sent to <code>Player</code>s from various Chat subsections.

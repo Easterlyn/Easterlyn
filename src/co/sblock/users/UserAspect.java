@@ -1,6 +1,6 @@
 package co.sblock.users;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Represents canon Aspects, including those of mythological roles.

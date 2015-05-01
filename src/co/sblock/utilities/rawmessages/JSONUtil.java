@@ -3,187 +3,78 @@ package co.sblock.utilities.rawmessages;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.ChatColor;
-
+import co.sblock.chat.Chat;
 import co.sblock.chat.channel.CanonNick;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.HoverEvent.Action;
+import net.md_5.bungee.api.chat.TextComponent;
+
 /**
- * DarkSeraphim's ChatColor to JSON colored element converter modified with a couple Sblock features.
+ * A modified version of vanilla's raw message creation.
  * 
- * @author DarkSeraphim
+ * @author Jikoo
  **/
 public class JSONUtil {
-	private static final StringBuffer JSON_WRAPPER = new StringBuffer("{\"text\":\"\",\"extra\":[");
+	private static final Pattern LINK_PATTERN = Pattern.compile("((https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?)(\\s|\\z)");
+	private static final StringBuffer COMPONENT_BUILDER = new StringBuffer();
 
-	private static final int RETAIN = "{\"text\":\"\",\"extra\":[".length();
-
-	public static final String getWrappedJSON(String... jsonElements) {
-		if (JSON_WRAPPER.length() > RETAIN) {
-			JSON_WRAPPER.delete(RETAIN, JSON_WRAPPER.length());
-		}
-		if (jsonElements.length == 0) {
-			throw new IllegalArgumentException("JSON elements are required to construct a wrapped JSON message!");
-		}
-		for (String element : jsonElements) {
-			JSON_WRAPPER.append(element).append(",");
-		}
-		return JSON_WRAPPER.deleteCharAt(JSON_WRAPPER.length() - 1).append("]}").toString();
-	}
-
-	private static final StringBuffer JSON_BUILDER = new StringBuffer();
-
-	public static String toJSONElements(String message, boolean injectLinks, CanonNick quirk) {
+	public static BaseComponent[] getJson(String message, CanonNick quirk) {
 		if (message == null || message.isEmpty()) {
 			return null;
 		}
-		if (JSON_BUILDER.length() > 0) {
-			JSON_BUILDER.delete(0, JSON_BUILDER.length());
-		}
-		String[] parts = message.split(Character.toString(ChatColor.COLOR_CHAR));
-		boolean first = true;
-		String colour = null;
-		String format = null;
-		boolean ignoreFirst = !parts[0].isEmpty() && ChatColor.getByChar(parts[0].charAt(0)) != null;
-		for (String part : parts) {
-			// If it starts with a colour, just ignore the empty String before it
-			if (part.isEmpty()) {
-				continue;
-			}
-			String newStyle = null;
-			// If it doesn't start with a color, don't try to parse one.
-			if (!ignoreFirst) {
-				newStyle = getStyle(part.charAt(0));
-			} else {
-				ignoreFirst = false;
-			}
-			if (newStyle != null) {
-				part = part.substring(1);
-				if (newStyle.startsWith("\"c"))
-					colour = newStyle;
-				else
-					format = newStyle;
-			}
-			if (!part.isEmpty()) {
-				if (first)
-					first = false;
-				else {
-					JSON_BUILDER.append(",");
-				}
-				JSON_BUILDER.append("{");
-				if (colour != null) {
-					JSON_BUILDER.append(colour);
-					colour = null;
-				}
-				if (format != null) {
-					JSON_BUILDER.append(format);
-					format = null;
-				}
-				if (injectLinks) {
-					part = injectLinks(part, quirk);
-				} else if (quirk != null) {
-					part = quirk.applyQuirk(part);
-				}
-				JSON_BUILDER.append(String.format("\"text\":\"%s", part));
-				if (!injectLinks) {
-					JSON_BUILDER.append('\"');
-				}
-				JSON_BUILDER.append('}');
+		BaseComponent[] components = TextComponent.fromLegacyText(message);
+		for (int i = 0; i < components.length; i++) {
+			TextComponent component = (TextComponent) components[i];
+			if (component.getClickEvent() != null) {
+				// Link element
+				component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT,
+						TextComponent.fromLegacyText(ChatColor.BLUE + component.getText())));
+				component.setText(getLinkString(component.getText()));
+				component.setColor(ChatColor.BLUE);
+			} else if (quirk != null) {
+				component.setColor(quirk.getColor());
+				component.setText(quirk.applyQuirk(message));
 			}
 		}
-		// Remove trailing commas - should be handled by getWrappedJSON
-		if (JSON_BUILDER.charAt(JSON_BUILDER.length() - 1) == ',') {
-			JSON_BUILDER.deleteCharAt(JSON_BUILDER.length() - 1);
-		}
-		return JSON_BUILDER.toString();
+		return components;
 	}
 
-	private static final StringBuffer COMPONENT_BUILDER = new StringBuffer();
-
-	private static String getStyle(char colour) {
-		if (COMPONENT_BUILDER.length() > 0) {
-			COMPONENT_BUILDER.delete(0, COMPONENT_BUILDER.length());
-		}
-		switch (colour) {
-		case 'k':
-			return "\"obfuscated\": true,";
-		case 'l':
-			return "\"bold\": true,";
-		case 'm':
-			return "\"strikethrough\": true,";
-		case 'n':
-			return "\"underlined\": true,";
-		case 'o':
-			return "\"italic\": true,";
-		case 'r':
-			return "\"reset\": true,";
-		default:
-			break;
-		}
-		ChatColor cc = ChatColor.getByChar(colour);
-		if (cc == null)
-			return null;
-		return COMPONENT_BUILDER.append("\"color\":\"").append(cc.name().toLowerCase()).append("\",")
-				.toString();
-	}
-
-	private static final Pattern LINK_PATTERN = Pattern.compile("((https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?)(\\s|\\z)");
-	private static final int DELETE_IF_EMPTY = ",{\"text\":\"".length();
-
-	/**
-	 * Wrap any links found in a more compact JSON version.
-	 * 
-	 * @author Jikoo
-	 * 
-	 * @param part the String to check for links
-	 * @return the modified String
-	 */
-	private static String injectLinks(String part, CanonNick quirk) {
+	private static String getLinkString(String text) {
 		if (COMPONENT_BUILDER.length() > 0) { // Reusing the style StringBuilder for that sweet sweet microoptimization.
 			COMPONENT_BUILDER.delete(0, COMPONENT_BUILDER.length());
 		}
-		Matcher match = LINK_PATTERN.matcher(part);
-		int lastEnd = 0;
-		while (match.find()) {
-			if (quirk != null) {
-				COMPONENT_BUILDER.append(quirk.applyQuirk(part.substring(lastEnd, match.start())));
-			} else {
-				COMPONENT_BUILDER.append(part.substring(lastEnd, match.start()));
-			}
-			if (lastEnd == 0) {
-				// Initial JSON injection - uses extra to preserve previous colors for any following segments
-				COMPONENT_BUILDER.append("\",\"extra\":[");
-			} else {
-				COMPONENT_BUILDER.append("\"},");
-			}
-			String url = match.group(1);
-			// If URL does not start with http:// or https:// the client will crash. Client autofills this for normal links.
-			if (!match.group().matches("https?://.*")) {
-				url = "http://" + url;
-			}
-			// Glorious link wrapping ensues
-			COMPONENT_BUILDER.append("{\"text\":\"[").append(match.group(3)).append("]").append(match.group(8))
-					.append("\",\"color\":\"blue\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"")
-					.append(url).append("\"},\"clickEvent\":{\"action\":\"open_url\",\"value\":\"")
-					.append(url).append("\"}}");
-
-			COMPONENT_BUILDER.append(",{\"text\":\"");
-			lastEnd = match.end();
-		}
-		if (lastEnd == 0) {
-			return (quirk != null ? quirk.applyQuirk(part) : part) + '\"';
-		}
-		String substring = part.substring(lastEnd);
-		if (substring.isEmpty()) {
-			COMPONENT_BUILDER.delete(COMPONENT_BUILDER.length() - DELETE_IF_EMPTY, COMPONENT_BUILDER.length());
+		Matcher match = LINK_PATTERN.matcher(text);
+		if (match.find()) {
+			return COMPONENT_BUILDER.append("[").append(match.group(3)).append("]").toString();
 		} else {
-			if (quirk != null) {
-				COMPONENT_BUILDER.append(quirk.applyQuirk(substring));
-			} else {
-				COMPONENT_BUILDER.append(substring);
-			}
-			COMPONENT_BUILDER.append("\"}");
+			Chat.getChat().getLogger().severe("Hover event detected, no link found!");
 		}
-		COMPONENT_BUILDER.append("]");
-		return COMPONENT_BUILDER.toString();
+		return text;
+	}
+
+	public static BaseComponent clone(BaseComponent component) {
+		TextComponent clone;
+		if (component instanceof TextComponent) {
+			clone = new TextComponent(((TextComponent) component).getText());
+		} else {
+			clone = new TextComponent();
+		}
+		clone.setColor(component.getColorRaw());
+		clone.setBold(component.isBoldRaw());
+		clone.setItalic(component.isItalicRaw());
+		clone.setUnderlined(component.isUnderlinedRaw());
+		clone.setStrikethrough(component.isStrikethroughRaw());
+		clone.setObfuscated(component.isObfuscatedRaw());
+		clone.setClickEvent(component.getClickEvent());
+		clone.setHoverEvent(component.getHoverEvent());
+		if (component.getExtra() == null)
+			return clone;
+		for (BaseComponent basecomponent : component.getExtra()) {
+			clone.addExtra(clone(basecomponent));
+		}
+		return clone;
 	}
 }

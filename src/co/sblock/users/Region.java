@@ -1,6 +1,6 @@
 package co.sblock.users;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Class that keeps track of players currently logged on to the game

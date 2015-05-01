@@ -3,70 +3,70 @@ package co.sblock.chat.channel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.ChatColor;
-
 import co.sblock.chat.ColorDef;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * @author Jikoo
  *
  */
 public enum CanonNick {
-	JOHN("John", "ectoBiologist", "1", "pestering"),
-	ROSE("Rose", "tentacleTherapist", "d", "pestering"),
-	DAVE("Dave", "turntechGodhead", "4", "pestering"),
-	JADE("Jade", "gardenGnostic", "a", "pestering"),
+	JOHN("John", "ectoBiologist", '1', "pestering"),
+	ROSE("Rose", "tentacleTherapist", 'd', "pestering"),
+	DAVE("Dave", "turntechGodhead", '4', "pestering"),
+	JADE("Jade", "gardenGnostic", 'a', "pestering"),
 
-	DAD("Dad Egbert", "pipefan413", "8", "discussing matters of great import in"),
-	DADCROCKER("Dad Crocker", "pipefan413", "8", "discussing matters of great import in"),
+	DAD("Dad Egbert", "pipefan413", '8', "discussing matters of great import in"),
+	DADCROCKER("Dad Crocker", "pipefan413", '8', "discussing matters of great import in"),
 	// This is fabricated based Dad's header: http://www.mspaintadventures.com/?s=6&p=002167
 
-	ARADIA("Aradia", "apocalypseArisen", "4", "trolling"),
-	TAVROS("Tavros", "adiosToreador", "6", "trolling"),
-	SOLLUX("Sollux", "twinArmageddons", "e", "trolling"),
-	KARKAT("Karkat", "carcinoGeneticist", "7", "trolling"),
-	NEPETA("Nepeta", "arsenicCatnip", "2", "trolling"),
-	KANAYA("Kanaya", "grimAuxiliatrix", "2", "trolling"),
-	TEREZI("Terezi", "gallowsCalibrator", "3", "trolling"),
-	VRISKA("Vriska", "arachnidsGrip", "9", "trolling"),
-	EQUIUS("Equius", "centaursTesticle", "1", "trolling"),
-	GAMZEE("Gamzee", "terminallyCapricious", "5", "trolling"),
-	ERIDAN("Eridan", "caligulasAquarium", "5", "trolling"),
-	FEFERI("Feferi", "cuttlefishCuller", "5", "trolling"),
+	ARADIA("Aradia", "apocalypseArisen", '4', "trolling"),
+	TAVROS("Tavros", "adiosToreador", '6', "trolling"),
+	SOLLUX("Sollux", "twinArmageddons", 'e', "trolling"),
+	KARKAT("Karkat", "carcinoGeneticist", '7', "trolling"),
+	NEPETA("Nepeta", "arsenicCatnip", '2', "trolling"),
+	KANAYA("Kanaya", "grimAuxiliatrix", '2', "trolling"),
+	TEREZI("Terezi", "gallowsCalibrator", '3', "trolling"),
+	VRISKA("Vriska", "arachnidsGrip", '9', "trolling"),
+	EQUIUS("Equius", "centaursTesticle", '1', "trolling"),
+	GAMZEE("Gamzee", "terminallyCapricious", '5', "trolling"),
+	ERIDAN("Eridan", "caligulasAquarium", '5', "trolling"),
+	FEFERI("Feferi", "cuttlefishCuller", '5', "trolling"),
 
-	JAKE("Jake", "golgothasTerror", "2", "pestering"),
-	ROXY("Roxy", "tipsyGnostalgic", "d", "pestering"),
-	DIRK("Dirk", "timaeusTestified", "6", "pestering"),
-	AUTORESPONDER("Auto-Responder", "timaeusTestified", "4", "pestering"),
-	AUTORESPONDER2("Lil Hal", "timaeusTestified", "4", "pestering"),
-	LILHALJUNIOR("Lil Hal Junior", "timaeusTestified", "6", "pestering"),
-	JANE("Jane", "gutsyGumshoe", "b", "pestering"),
-	CROCKERJANE(ChatColor.AQUA + "Jane", "gutsyGumshoe", "4", "pestering"),
+	JAKE("Jake", "golgothasTerror", '2', "pestering"),
+	ROXY("Roxy", "tipsyGnostalgic", 'd', "pestering"),
+	DIRK("Dirk", "timaeusTestified", '6', "pestering"),
+	AUTORESPONDER("Auto-Responder", "timaeusTestified", '4', "pestering"),
+	AUTORESPONDER2("Lil Hal", "timaeusTestified", '4', "pestering"),
+	LILHALJUNIOR("Lil Hal Junior", "timaeusTestified", '6', "pestering"),
+	JANE("Jane", "gutsyGumshoe", 'b', "pestering"),
+	CROCKERJANE(ChatColor.AQUA + "Jane", "gutsyGumshoe", '4', "pestering"),
 
-	DAMARA("Damara", null, "4", "trolling"),
-	RUFIOH("Rufioh", null, "6", "trolling"),
-	MITUNA("Mituna", null, "e", "trolling"),
-	KANKRI("Kankri", null, "4", "trolling"),
-	MEULIN("Meulin", null, "2", "trolling"),
-	PORRIM("Porrim", null, "2", "trolling"),
-	LATULA("Latula", null, "3", "trolling"),
-	ARANEA("Aranea", null, "9", "trolling"),
-	HORUSS("Horuss", null, "1", "trolling"),
-	KURLOZ("Kurloz", null, "5", "trolling"),
-	CRONUS("Cronus", null, "5", "trolling"),
-	MEENAH("Meenah", null, "5", "trolling"),
+	DAMARA("Damara", null, '4', "trolling"),
+	RUFIOH("Rufioh", null, '6', "trolling"),
+	MITUNA("Mituna", null, 'e', "trolling"),
+	KANKRI("Kankri", null, '4', "trolling"),
+	MEULIN("Meulin", null, '2', "trolling"),
+	PORRIM("Porrim", null, '2', "trolling"),
+	LATULA("Latula", null, '3', "trolling"),
+	ARANEA("Aranea", null, '9', "trolling"),
+	HORUSS("Horuss", null, '1', "trolling"),
+	KURLOZ("Kurloz", null, '5', "trolling"),
+	CRONUS("Cronus", null, '5', "trolling"),
+	MEENAH("Meenah", null, '5', "trolling"),
 
-	CALLIOPE("Calliope", "uranianUmbra", "7", "cheering"),
-	CALIBORN("Caliborn", "undyingUmbrage", "8", "jeering"),
+	CALLIOPE("Calliope", "uranianUmbra", '7', "cheering"),
+	CALIBORN("Caliborn", "undyingUmbrage", '8', "jeering"),
 	SERKITFEATURE(ChatColor.GREEN + "L" + ChatColor.MAGIC + "o" + ChatColor.GREEN + "rd English",
-			null, "a", "paying attention to");
+			null, 'a', "paying attention to");
 
 	private String name;
 	private String chumHandle;
 	private ChatColor color;
 	private String pester;
 
-	private CanonNick(String name, String chumHandle, String colorCode, String pester) {
+	private CanonNick(String name, String chumHandle, char colorCode, String pester) {
 		this.name = name;
 		this.chumHandle = chumHandle;
 		this.color = ChatColor.getByChar(colorCode);
