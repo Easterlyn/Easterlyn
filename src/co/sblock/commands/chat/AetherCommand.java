@@ -44,6 +44,7 @@ public class AetherCommand extends SblockCommand {
 		hoverMeta.setLore(Arrays.asList(new String[] {
 				ChatColor.GRAY + "Server: irc.freenode.net",
 				ChatColor.GRAY + "Channel: #sblockserver" }));
+		hover.setItemMeta(hoverMeta);
 	}
 
 	@Override
