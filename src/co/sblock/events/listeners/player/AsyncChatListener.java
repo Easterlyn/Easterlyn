@@ -1,9 +1,7 @@
 package co.sblock.events.listeners.player;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -33,92 +31,66 @@ public class AsyncChatListener implements Listener {
 			"Error: Test results contaminated.", "tset", "PONG."};
 
 	/**
-	 * The event handler for AsyncPlayerChatEvents.
-	 * Converts basic chat into SblockAsyncChatEvents and cancels.
+	 * Because we send JSON messages, we actually have to remove all recipients from the event and
+	 * manually send each one the message.
 	 * 
-	 * @param event the AsyncPlayerChatEvent
-	 */
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onPlayerChatLow(final AsyncPlayerChatEvent event) {
-		if (event instanceof SblockAsyncChatEvent) {
-			return;
-		}
-		event.setCancelled(true);
-		boolean thirdPerson = event.getMessage().startsWith("@#>me");
-		MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
-		if (thirdPerson) {
-			event.setMessage(event.getMessage().substring(5));
-			mb.setThirdPerson(true);
-		}
-		mb.setMessage(event.getMessage());
-		// Ensure message can be sent
-		if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
-			return;
-		}
-		Message msg = mb.toMessage();
-
-		event.getRecipients().removeIf(p -> !msg.getChannel().getListening().contains(p.getUniqueId()));
-
-		SblockAsyncChatEvent sblockEvent = new SblockAsyncChatEvent(event.isAsynchronous(), event.getPlayer(), event.getRecipients(), msg);
-		Bukkit.getPluginManager().callEvent(sblockEvent);
-	}
-
-	/**
-	 * The first event handler for SblockAsyncChatEvents.
-	 * 
-	 * Mostly used to remove messages that should not be sent.
+	 * To prevent IRC and other chat loggers from picking up chat sent to non-regional channels,
+	 * non-regional chat must be cancelled.
 	 * 
 	 * @param event the SblockAsyncChatEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
-	public void onSblockChat(final SblockAsyncChatEvent event) {
-		String cleaned = event.getSblockMessage().getCleanedMessage();
-		// Test
+	public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
+		Message message;
+		if (event instanceof SblockAsyncChatEvent) {
+			message = ((SblockAsyncChatEvent) event).getSblockMessage();
+		} else {
+			boolean thirdPerson = event.getMessage().startsWith("@#>me");
+			MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
+			if (thirdPerson) {
+				event.setMessage(event.getMessage().substring(5));
+				mb.setThirdPerson(true);
+			}
+			mb.setMessage(event.getMessage());
+			// Ensure message can be sent
+			if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
+				return;
+			}
+			message = mb.toMessage();
+
+			event.getRecipients().removeIf(p -> !message.getChannel().getListening().contains(p.getUniqueId()));
+		}
+
+		String cleaned = message.getCleanedMessage();
+
 		if (cleaned.equalsIgnoreCase("test")) {
 			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
-			event.setCancelled(true);
-			return;
 		}
-		if (cleaned.equalsIgnoreCase("hal") || cleaned.equalsIgnoreCase("dirk")) {
+		if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
 			event.getPlayer().sendMessage(ColorDef.HAL + "What?");
 			event.setCancelled(true);
 			return;
 		}
-		if (event.getSblockMessage().getChannel().getType() == ChannelType.REGION && rpMatch(cleaned)) {
-			event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
-			event.setCancelled(true);
-			return;
-		}
-	}
+		if (message.getChannel().getType() == ChannelType.REGION) {
+			if (rpMatch(cleaned)) {
+				event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
+				event.setCancelled(true);
+				return;
+			}
 
-	/**
-	 * The second event handler for SblockAsyncChatEvents.
-	 * 
-	 * Because we send JSON messages, we actually have to remove all recipients from the event and
-	 * manually send each one the message.
-	 * 
-	 * To combat GriefPrevention modifying the event at HIGHEST for soft mutes, we softdepend on it
-	 * in our plugin.yml - this should ideally cause GP to handle it before us.
-	 * 
-	 * To prevent IRC and other chat loggers from picking it up, it must be cancelled before they
-	 * receive it at MONITOR.
-	 * 
-	 * @param event the SblockAsyncChatEvent
-	 */
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onSblockChatHighest(final SblockAsyncChatEvent event) {
+			// Prevent IRC picking up soft muted messages
+			if (event.getRecipients().size() < message.getChannel().getListening().size()) {
+				event.setFormat("[SoftMute] " + event.getFormat());
+			}
+		}
+
 		// Region channels are the only ones that should be appearing in certain plugins
-		if (event.getSblockMessage().getChannel().getType() != ChannelType.REGION) {
+		if (message.getChannel().getType() != ChannelType.REGION) {
 			event.setCancelled(true);
-		}
-
-		// Prevent IRC picking up soft muted messages
-		if (event.getRecipients().size() < event.getSblockMessage().getChannel().getListening().size()) {
-			event.setFormat("[SoftMute] " + event.getFormat());
 		}
 
 		// Manually send messages to each player so we can wrap links, etc.
-		event.getSblockMessage().send(event.getRecipients());
+		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
 
 		// Dummy player should not trigger Hal; he may become one.
 		if (event.getPlayer() instanceof DummyPlayer) {
@@ -131,13 +103,13 @@ public class AsyncChatListener implements Listener {
 			msg = msg.substring(msg.indexOf(' ')).trim();
 			final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
 					.setMessage(ChatColor.RED + Chat.getChat().getHalculator().evhaluate(msg))
-					.setChannel(event.getSblockMessage().getChannel()).toMessage();
+					.setChannel(message.getChannel()).toMessage();
 			if (msg.length() > 30) {
 				event.getPlayer().sendMessage(ColorDef.HAL + "Your equation is a bit long for public chat. Please use /halc to reduce spam.");
 			}
 			hal.send(event.getRecipients());
 		} else {
-			Chat.getChat().getHal().handleMessage(event.getSblockMessage(), event.getRecipients());
+			Chat.getChat().getHal().handleMessage(message, event.getRecipients());
 		}
 	}
 

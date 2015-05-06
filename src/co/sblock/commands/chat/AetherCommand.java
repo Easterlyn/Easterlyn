@@ -17,7 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
-import co.sblock.commands.SblockCommand;
+import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
 import co.sblock.utilities.player.DummyPlayer;
@@ -27,7 +27,7 @@ import co.sblock.utilities.player.DummyPlayer;
  * 
  * @author Jikoo
  */
-public class AetherCommand extends SblockCommand {
+public class AetherCommand extends SblockAsynchronousCommand {
 
 	private final ItemStack hover;
 
@@ -58,11 +58,10 @@ public class AetherCommand extends SblockCommand {
 				.setChannel(ChannelManager.getChannelManager().getChannel("#Aether"))
 				.setChannelClick("@# ").setNameClick("@# ").setNameHover(hover).toMessage();
 
-		Set<Player> players = new HashSet<Player>(Bukkit.getOnlinePlayers());
+		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
 		players.removeIf(p -> Users.getGuaranteedUser(p.getUniqueId()).getSuppression());
 
-		// CHAT: DummyPlayer's sender is always CONSOLE
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, new DummyPlayer(sender), players, message));
+		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, new DummyPlayer(sender, "IRC:" + args[0]), players, message));
 
 		return true;
 	}

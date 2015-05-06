@@ -118,11 +118,18 @@ public class Message {
 	}
 
 	public <T> void send(Collection<T> recipients) {
-		if (channel.getName().equals("#")) { // CHAT: fix IRC workaround
-			Log.anonymousInfo(ChatColor.stripColor(getConsoleMessage()));
-		} else {
-			Log.anonymousInfo(getConsoleMessage());
+		this.send(recipients, false);
+	}
+
+	public <T> void send(Collection<T> recipients, boolean normalChat) {
+		if (!normalChat || channel.getType() != ChannelType.REGION) {
+			if (recipients.size() < channel.getListening().size()) {
+				Log.anonymousInfo("[SoftMute]" + getConsoleMessage());
+			} else {
+				Log.anonymousInfo(getConsoleMessage());
+			}
 		}
+
 		for (T object : recipients) {
 			UUID uuid;
 			Player player;

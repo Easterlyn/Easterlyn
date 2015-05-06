@@ -1,17 +1,23 @@
 package co.sblock.commands.chat;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.commands.SblockCommand;
+import co.sblock.chat.message.Message;
+import co.sblock.chat.message.MessageBuilder;
+import co.sblock.commands.SblockAsynchronousCommand;
+import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
@@ -20,7 +26,7 @@ import co.sblock.users.Users;
  * 
  * @author Jikoo
  */
-public class MeCommand extends SblockCommand {
+public class MeCommand extends SblockAsynchronousCommand {
 
 	public MeCommand() {
 		super("me");
@@ -37,7 +43,14 @@ public class MeCommand extends SblockCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		((Player) sender).chat("@#>me" + StringUtils.join(args, ' '));
+		Player player = (Player) sender;
+		Message message = new MessageBuilder().setSender(Users.getGuaranteedUser(player.getUniqueId()))
+				.setMessage(StringUtils.join(args, ' ', 1, args.length)).setThirdPerson(true).toMessage();
+
+		Set<Player> players = new HashSet<>();
+		message.getChannel().getListening().forEach(uuid -> players.add(Bukkit.getPlayer(uuid)));
+
+		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, message));
 		return true;
 	}
 

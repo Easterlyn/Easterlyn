@@ -6,7 +6,7 @@ author: Sblock Co.
 authors: [Jikoo, Dublek, FireNG, tmathmeyer]
 description: Sblock's sexy mainframe
 depend: [ProtocolLib, HolographicDisplays]
-softdepend: [CreeperHeal, GriefPrevention]
+softdepend: [CreeperHeal]
 
 permissions:
  sblock.ask.adam.before.touching:

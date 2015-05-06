@@ -65,10 +65,16 @@ public class DummyPlayer implements Player {
 
 	private final CommandSender sender;
 	private final GameProfile profile;
+	private final String name;
 
 	public DummyPlayer (CommandSender sender) {
+		this(sender, sender.getName());
+	}
+
+	public DummyPlayer(CommandSender sender, String name) {
 		this.sender = sender;
 		this.profile = Sblock.getInstance().getFakeGameProfile(sender.getName());
+		this.name = name;
 	}
 
 	@Override
@@ -106,7 +112,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public String getName() {
-		return sender.getName();
+		return name;
 	}
 
 	@Override
@@ -789,7 +795,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public String getDisplayName() {
-		return sender.getName();
+		return name;
 	}
 
 	@Override
@@ -824,7 +830,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public String getPlayerListName() {
-		return sender.getName();
+		return name;
 	}
 
 	@Override
