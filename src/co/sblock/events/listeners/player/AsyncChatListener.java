@@ -45,13 +45,8 @@ public class AsyncChatListener implements Listener {
 		if (event instanceof SblockAsyncChatEvent) {
 			message = ((SblockAsyncChatEvent) event).getSblockMessage();
 		} else {
-			boolean thirdPerson = event.getMessage().startsWith("@#>me");
-			MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()));
-			if (thirdPerson) {
-				event.setMessage(event.getMessage().substring(5));
-				mb.setThirdPerson(true);
-			}
-			mb.setMessage(event.getMessage());
+			MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()))
+					.setMessage(event.getMessage());
 			// Ensure message can be sent
 			if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
 				return;

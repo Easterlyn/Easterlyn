@@ -44,8 +44,14 @@ public class MeCommand extends SblockAsynchronousCommand {
 			return false;
 		}
 		Player player = (Player) sender;
-		Message message = new MessageBuilder().setSender(Users.getGuaranteedUser(player.getUniqueId()))
-				.setMessage(StringUtils.join(args, ' ', 1, args.length)).setThirdPerson(true).toMessage();
+		MessageBuilder builder = new MessageBuilder().setSender(Users.getGuaranteedUser(player.getUniqueId()))
+				.setMessage(StringUtils.join(args, ' ', 1, args.length)).setThirdPerson(true);
+
+		if (!builder.canBuild(true) || !builder.isSenderInChannel(true)) {
+			return true;
+		}
+
+		Message message = builder.toMessage();
 
 		Set<Player> players = new HashSet<>();
 		message.getChannel().getListening().forEach(uuid -> players.add(Bukkit.getPlayer(uuid)));

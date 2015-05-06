@@ -53,10 +53,16 @@ public class AetherCommand extends SblockAsynchronousCommand {
 			sender.sendMessage(ChatColor.RED + "Hey Adam, stop faking empty IRC messages.");
 			return true;
 		}
-		Message message = new MessageBuilder().setSender(ChatColor.WHITE + args[0])
+		MessageBuilder builder = new MessageBuilder().setSender(ChatColor.WHITE + args[0])
 				.setMessage(StringUtils.join(args, ' ', 1, args.length))
 				.setChannel(ChannelManager.getChannelManager().getChannel("#Aether"))
-				.setChannelClick("@# ").setNameClick("@# ").setNameHover(hover).toMessage();
+				.setChannelClick("@# ").setNameClick("@# ").setNameHover(hover);
+
+		if (!builder.canBuild(false)) {
+			return true;
+		}
+
+		Message message = builder.toMessage();
 
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
 		players.removeIf(p -> Users.getGuaranteedUser(p.getUniqueId()).getSuppression());
