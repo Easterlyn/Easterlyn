@@ -3,7 +3,6 @@ package co.sblock.utilities.rawmessages;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import co.sblock.chat.Chat;
 import co.sblock.chat.channel.CanonNick;
 
 import net.md_5.bungee.api.ChatColor;
@@ -19,7 +18,6 @@ import net.md_5.bungee.api.chat.TextComponent;
  **/
 public class JSONUtil {
 	private static final Pattern LINK_PATTERN = Pattern.compile("((https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?)(\\s|\\z)");
-	private static final StringBuffer COMPONENT_BUILDER = new StringBuffer();
 
 	public static BaseComponent[] getJson(String message, CanonNick quirk) {
 		if (message == null || message.isEmpty()) {
@@ -30,29 +28,22 @@ public class JSONUtil {
 			TextComponent component = (TextComponent) components[i];
 			if (component.getClickEvent() != null) {
 				// Link element
-				component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT,
-						TextComponent.fromLegacyText(ChatColor.BLUE + component.getText())));
-				component.setText(getLinkString(component.getText()));
-				component.setColor(ChatColor.BLUE);
+				Matcher match = LINK_PATTERN.matcher(component.getText());
+				if (match.find()) {
+					component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT,
+							TextComponent.fromLegacyText(ChatColor.BLUE + component.getText())));
+					component.setText(new StringBuilder().append('[').append(match.group(3)).append(']').toString());
+					component.setColor(ChatColor.BLUE);
+				} else {
+					// Default link matcher creates links for Strings such as "okay...fine"
+					component.setClickEvent(null);
+				}
 			} else if (quirk != null) {
 				component.setColor(quirk.getColor());
 				component.setText(quirk.applyQuirk(message));
 			}
 		}
 		return components;
-	}
-
-	private static String getLinkString(String text) {
-		if (COMPONENT_BUILDER.length() > 0) { // Reusing the style StringBuilder for that sweet sweet microoptimization.
-			COMPONENT_BUILDER.delete(0, COMPONENT_BUILDER.length());
-		}
-		Matcher match = LINK_PATTERN.matcher(text);
-		if (match.find()) {
-			return COMPONENT_BUILDER.append("[").append(match.group(3)).append("]").toString();
-		} else {
-			Chat.getChat().getLogger().severe("Hover event detected, no link found!");
-		}
-		return text;
 	}
 
 	public static BaseComponent clone(BaseComponent component) {
