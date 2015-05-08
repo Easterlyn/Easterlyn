@@ -183,22 +183,20 @@ public class MessageBuilder {
 	}
 
 	public Message toMessage() {
-		if (!canBuild(false)) {
-			throw new RuntimeException("Someone did something stupid with chat!");
-		}
-
-		// A channel must be set for these checks
 		Player player = sender != null ? sender.getPlayer() : null;
 
-		if (channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
+		if (channel != null && channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
 			StringBuilder sb = new StringBuilder();
 			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
 				if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
 					sb.append(character);
 				}
 			}
-			// Fuck you.
 			message = sb.toString().replaceAll("tilde?s?", "");
+		}
+
+		if (!canBuild(false)) {
+			throw new RuntimeException("Someone did something stupid with chat!");
 		}
 
 		// Greentext must be at least 4 letters long and the second character must be a letter.
