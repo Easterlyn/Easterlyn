@@ -163,7 +163,7 @@ public abstract class Channel {
 	}
 
 	/**
-	 * Change the owner of a channel. This should only be useable by admins/the current owner.
+	 * Change the owner of a channel. This should only be usable by admins/the current owner.
 	 *
 	 * @param newOwner the new owner
 	 */

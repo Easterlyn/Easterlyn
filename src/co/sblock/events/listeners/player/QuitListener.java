@@ -17,6 +17,7 @@ import co.sblock.users.OnlineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.inventory.InventoryManager;
+import co.sblock.utilities.messages.SlackMessager;
 import co.sblock.utilities.minecarts.FreeCart;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.spectator.Spectators;
@@ -40,6 +41,9 @@ public class QuitListener implements Listener {
 		if (event.getQuitMessage() != null) {
 			event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED + " ollies outie");
 		}
+
+		// Slack integration
+		SlackMessager.post(event.getPlayer().getName(), event.getPlayer().getUniqueId(), event.getPlayer().getName() + " logs out: " + event.getQuitMessage());
 
 		// Update vote
 		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
