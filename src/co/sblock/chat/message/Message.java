@@ -17,7 +17,8 @@ import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.rawmessages.JSONUtil;
+import co.sblock.utilities.messages.JSONUtil;
+import co.sblock.utilities.messages.SlackMessager;
 import co.sblock.utilities.regex.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -70,7 +71,20 @@ public class Message {
 	}
 
 	public String getConsoleMessage() {
-		return getConsoleFormat().replace("%1$s", sender != null ? channel.getNick(sender) : name).replace("%2$s", unformattedMessage);
+		StringBuilder nameBuilder = new StringBuilder();
+		if (sender != null) {
+			boolean hasNick = !sender.getPlayerName().equals(channel.getNick(sender));
+			if (hasNick) {
+				nameBuilder.append(channel.getNick(sender)).append(" (");
+			}
+			nameBuilder.append(sender.getPlayerName());
+			if (hasNick) {
+				nameBuilder.append(')');
+			}
+		} else {
+			nameBuilder.append(name);
+		}
+		return String.format(getConsoleFormat(), nameBuilder.toString(), unformattedMessage);
 	}
 
 	public String getConsoleFormat() {
@@ -122,13 +136,16 @@ public class Message {
 	}
 
 	public <T> void send(Collection<T> recipients, boolean normalChat) {
+		String consoleMessage = getConsoleMessage();
 		if (!normalChat || channel.getType() != ChannelType.REGION) {
 			if (recipients.size() < channel.getListening().size()) {
-				Log.anonymousInfo("[SoftMute]" + getConsoleMessage());
-			} else {
-				Log.anonymousInfo(getConsoleMessage());
+				consoleMessage = "[SoftMute] " + consoleMessage;
 			}
+			Log.anonymousInfo(getConsoleMessage());
 		}
+
+		SlackMessager.post(sender != null ? sender.getPlayerName() : name,
+				sender != null ? sender.getUUID() : null, consoleMessage);
 
 		for (T object : recipients) {
 			UUID uuid;

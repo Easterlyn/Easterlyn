@@ -1,4 +1,4 @@
-package co.sblock.utilities.rawmessages;
+package co.sblock.utilities.messages;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.commands.SblockCommand;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.rawmessages.RawAnnouncer;
+import co.sblock.utilities.messages.RawAnnouncer;
 
 import net.md_5.bungee.api.ChatColor;
 

@@ -87,6 +87,11 @@ public class AsyncChatListener implements Listener {
 		// Manually send messages to each player so we can wrap links, etc.
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
 
+		// No one should receive the final message if it is not cancelled.
+		event.getRecipients().clear();
+		event.setFormat(message.getConsoleFormat());
+		event.setMessage(message.getCleanedMessage());
+
 		// Dummy player should not trigger Hal; he may become one.
 		if (event.getPlayer() instanceof DummyPlayer) {
 			return;

@@ -17,7 +17,7 @@ import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
-import co.sblock.utilities.rawmessages.JSONUtil;
+import co.sblock.utilities.messages.JSONUtil;
 import co.sblock.utilities.regex.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;

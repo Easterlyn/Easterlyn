@@ -47,8 +47,8 @@ import co.sblock.module.Module;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.captcha.Captcha;
+import co.sblock.utilities.messages.RawAnnouncer;
 import co.sblock.utilities.meteors.Meteors;
-import co.sblock.utilities.rawmessages.RawAnnouncer;
 import co.sblock.utilities.spectator.Spectators;
 
 /**

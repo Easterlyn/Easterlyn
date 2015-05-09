@@ -1,4 +1,4 @@
-package co.sblock.utilities.rawmessages;
+package co.sblock.utilities.messages;
 
 import java.util.ArrayList;
 import java.util.List;

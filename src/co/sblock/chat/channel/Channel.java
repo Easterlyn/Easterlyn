@@ -1,18 +1,19 @@
 package co.sblock.chat.channel;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import co.sblock.chat.ChannelManager;
-import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Chat;
+import co.sblock.chat.ChatMsgs;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.threadsafe.SetGenerator;
 
 /**
  * Defines default channel behavior
@@ -42,11 +43,11 @@ public abstract class Channel {
 		this.name = name;
 		this.access = a;
 		this.owner = creator;
-		approvedList = SetGenerator.generate();
-		modList = SetGenerator.generate();
-		muteList = SetGenerator.generate();
-		banList = SetGenerator.generate();
-		listening = SetGenerator.generate();
+		approvedList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		modList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		muteList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		banList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 		if (creator != null) {
 			modList.add(creator);
 			ChannelManager.getChannelManager().saveChannel(this);
@@ -432,6 +433,7 @@ public abstract class Channel {
 		Log.anonymousInfo(message);
 	}
 
+	@Override
 	public String toString() {
 		return ChatColor.GOLD + this.getName() + ChatColor.GREEN + ": Access: " + ChatColor.GOLD
 				+ this.getAccess() + ChatColor.GREEN + " Type: " + ChatColor.GOLD + this.getType()
