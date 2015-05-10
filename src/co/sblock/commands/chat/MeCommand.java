@@ -45,7 +45,7 @@ public class MeCommand extends SblockAsynchronousCommand {
 		}
 		Player player = (Player) sender;
 		MessageBuilder builder = new MessageBuilder().setSender(Users.getGuaranteedUser(player.getUniqueId()))
-				.setMessage(StringUtils.join(args, ' ', 1, args.length)).setThirdPerson(true);
+				.setMessage(StringUtils.join(args, ' ', 0, args.length)).setThirdPerson(true);
 
 		if (!builder.canBuild(true) || !builder.isSenderInChannel(true)) {
 			return true;
