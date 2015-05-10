@@ -86,9 +86,6 @@ public class AsyncChatListener implements Listener {
 
 		// Manually send messages to each player so we can wrap links, etc.
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
-
-		// No one should receive the final message if it is not cancelled.
-		event.getRecipients().clear();
 		event.setFormat(message.getConsoleFormat());
 		event.setMessage(message.getCleanedMessage());
 
@@ -111,6 +108,9 @@ public class AsyncChatListener implements Listener {
 		} else {
 			Chat.getChat().getHal().handleMessage(message, event.getRecipients());
 		}
+
+		// No one should receive the final message if it is not cancelled.
+		event.getRecipients().clear();
 	}
 
 	public boolean rpMatch(String message) {

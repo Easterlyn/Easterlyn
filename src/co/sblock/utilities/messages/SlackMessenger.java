@@ -19,7 +19,7 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class SlackMessager {
+public class SlackMessenger {
 	private static final String URL_STRING = "https://cravatar.eu/helmhead/%s/128.png";
 
 	public static void post(String username, String message) {
