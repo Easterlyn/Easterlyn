@@ -60,6 +60,8 @@ public class AsyncChatListener implements Listener {
 
 		if (cleaned.equalsIgnoreCase("test")) {
 			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
+			event.setCancelled(true);
+			return;
 		}
 		if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
 			event.getPlayer().sendMessage(ColorDef.HAL + "What?");
