@@ -109,6 +109,9 @@ public class RawAnnouncer extends Module {
 				+ "{\"color\":\"red\",\"text\":\" has changed!\"}]}",
 				ColorDef.HAL + "Interested in jamming with your fellow Sblock players? Join http://plug.dj/sblockco/ to listen and play!"));
 
+		msgs.add(new AnnouncementMessage(HALEMENT + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!\"}]}",
+				ColorDef.HAL + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!"));
+
 		return msgs;
 	}
 
