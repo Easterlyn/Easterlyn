@@ -49,6 +49,7 @@ public class AsyncChatListener implements Listener {
 					.setMessage(event.getMessage());
 			// Ensure message can be sent
 			if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
+				event.setCancelled(true);
 				return;
 			}
 			message = mb.toMessage();
@@ -68,17 +69,18 @@ public class AsyncChatListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (message.getChannel().getType() == ChannelType.REGION) {
-			if (rpMatch(cleaned)) {
-				event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
-				event.setCancelled(true);
-				return;
-			}
+		if (message.getChannel().getType() == ChannelType.REGION && rpMatch(cleaned)) {
+			event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
+			event.setCancelled(true);
+			return;
+		}
 
-			// Prevent IRC picking up soft muted messages
-			if (event.getRecipients().size() < message.getChannel().getListening().size()) {
-				event.setFormat("[SoftMute] " + event.getFormat());
-			}
+		event.setFormat(message.getConsoleFormat());
+		event.setMessage(message.getCleanedMessage());
+
+		// Flag soft muted messages
+		if (event.getRecipients().size() < message.getChannel().getListening().size()) {
+			event.setFormat("[SoftMute] " + event.getFormat());
 		}
 
 		// Region channels are the only ones that should be appearing in certain plugins
@@ -88,11 +90,10 @@ public class AsyncChatListener implements Listener {
 
 		// Manually send messages to each player so we can wrap links, etc.
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
-		event.setFormat(message.getConsoleFormat());
-		event.setMessage(message.getCleanedMessage());
 
 		// Dummy player should not trigger Hal; he may become one.
 		if (event.getPlayer() instanceof DummyPlayer) {
+			event.getRecipients().clear();
 			return;
 		}
 
