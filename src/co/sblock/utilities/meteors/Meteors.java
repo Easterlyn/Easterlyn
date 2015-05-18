@@ -9,10 +9,10 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 import co.sblock.module.Module;
 
-import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 
-import net.minecraft.server.v1_8_R2.Explosion;
+import net.minecraft.server.v1_8_R3.Explosion;
 
 /**
  * @author Dublek, Jikoo
@@ -52,7 +52,7 @@ public class Meteors extends Module implements Listener {
 	 * @param event the EntityChangeBlockEvent
 	 */
 	public void handlePotentialMeteorite(EntityChangeBlockEvent event) {
-		net.minecraft.server.v1_8_R2.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
+		net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
 		if (nmsEntity instanceof MeteoriteComponent) {
 			event.setCancelled(true);
 			Meteors.getInstance().explode(event.getBlock().getLocation(), event.getEntity(),

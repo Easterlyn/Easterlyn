@@ -16,9 +16,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import co.sblock.users.OnlineUser;
 
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftAnimals;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftAnimals;
 
-import net.minecraft.server.v1_8_R2.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 public class FXGodtierHeartActive extends SblockFX {
 

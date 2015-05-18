@@ -18,7 +18,7 @@ import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.meteors.MeteoriteComponent;
 
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 
 /**
  * Listener for EntityDamageByEntityEvents.
