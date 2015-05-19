@@ -10,7 +10,7 @@ import co.sblock.Sblock;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.messages.SlackMessenger;
+import co.sblock.utilities.messages.Slack;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -37,8 +37,8 @@ public class CommandPreprocessListener implements Listener {
 
 		if (!event.getPlayer().hasPermission("sblock.felt")
 				&& !Sblock.getInstance().getConfig().getStringList("slack.command-blacklist").contains(command)) {
-			SlackMessenger.post(event.getPlayer().getName(), event.getPlayer().getUniqueId(),
-					event.getPlayer().getName() + " issued command: " + event.getMessage());
+			Slack.getInstance().postMessage(event.getPlayer().getName(), event.getPlayer().getUniqueId(),
+					event.getPlayer().getName() + " issued command: " + event.getMessage(), false);
 		}
 
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());

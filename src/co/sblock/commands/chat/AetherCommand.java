@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockAsynchronousCommand;
@@ -29,7 +30,20 @@ import co.sblock.utilities.player.DummyPlayer;
  */
 public class AetherCommand extends SblockAsynchronousCommand {
 
-	private final ItemStack hover;
+	private static final ItemStack HOVER;
+	private static final DummyPlayer SENDER;
+
+	static {
+		HOVER = new ItemStack(Material.WEB);
+		ItemMeta hoverMeta = HOVER.getItemMeta();
+		hoverMeta.setDisplayName(ChatColor.WHITE + "IRC Chat");
+		hoverMeta.setLore(Arrays.asList(new String[] {
+				ChatColor.GRAY + "Server: irc.freenode.net",
+				ChatColor.GRAY + "Channel: #sblockserver" }));
+		HOVER.setItemMeta(hoverMeta);
+
+		SENDER = new DummyPlayer(Bukkit.getConsoleSender());
+	}
 
 	public AetherCommand() {
 		super("aether");
@@ -38,13 +52,6 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		this.setPermissionLevel("horrorterror");
 		this.setPermissionMessage("The aetherial realm eludes your grasp once more.");
 
-		hover = new ItemStack(Material.WEB);
-		ItemMeta hoverMeta = hover.getItemMeta();
-		hoverMeta.setDisplayName(ChatColor.WHITE + "IRC Chat");
-		hoverMeta.setLore(Arrays.asList(new String[] {
-				ChatColor.GRAY + "Server: irc.freenode.net",
-				ChatColor.GRAY + "Channel: #sblockserver" }));
-		hover.setItemMeta(hoverMeta);
 	}
 
 	@Override
@@ -53,13 +60,21 @@ public class AetherCommand extends SblockAsynchronousCommand {
 			sender.sendMessage(ChatColor.RED + "Hey Adam, stop faking empty IRC messages.");
 			return true;
 		}
-		MessageBuilder builder = new MessageBuilder().setSender(ChatColor.WHITE + args[0])
-				.setMessage(StringUtils.join(args, ' ', 1, args.length))
-				.setChannel(ChannelManager.getChannelManager().getChannel("#Aether"))
-				.setChannelClick("@# ").setNameClick("@# ").setNameHover(hover);
+
+		sendAether(args[0], StringUtils.join(args, ' ', 1, args.length));
+		return true;
+	}
+
+	public static void sendAether(String name, String msg) {
+
+		Channel aether = ChannelManager.getChannelManager().getChannel("#Aether");
+		// set channel before and after to prevent @channel changing while also stripping invalid characters
+		MessageBuilder builder = new MessageBuilder().setSender(ChatColor.WHITE + name)
+				.setChannel(aether).setMessage(msg).setChannel(aether).setChannelClick("@# ")
+				.setNameClick("@# ").setNameHover(HOVER);
 
 		if (!builder.canBuild(false)) {
-			return true;
+			return;
 		}
 
 		Message message = builder.toMessage();
@@ -67,8 +82,9 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
 		players.removeIf(p -> Users.getGuaranteedUser(p.getUniqueId()).getSuppression());
 
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, new DummyPlayer(sender, "IRC:" + args[0]), players, message));
+		// CHAT: Verify that this does not cause concurrency issues (It totally does)
+		SENDER.setDisplayName(name);
 
-		return true;
+		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, SENDER, players, message));
 	}
 }

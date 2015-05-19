@@ -87,6 +87,18 @@ public class MessageBuilder {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
 
+		Player player = sender != null ? sender.getPlayer() : null;
+		// Strip characters that are not allowed in the current channel
+		if (channel != null && channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
+			StringBuilder sb = new StringBuilder();
+			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
+				if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
+					sb.append(character);
+				}
+			}
+			message = sb.toString().replaceAll("tilde?s?", "");
+		}
+
 		// Trim whitespace created by formatting codes, etc.
 		message = RegexUtils.trimExtraWhitespace(message);
 
@@ -183,21 +195,11 @@ public class MessageBuilder {
 	}
 
 	public Message toMessage() {
-		Player player = sender != null ? sender.getPlayer() : null;
-
-		if (channel != null && channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
-			StringBuilder sb = new StringBuilder();
-			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
-				if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
-					sb.append(character);
-				}
-			}
-			message = sb.toString().replaceAll("tilde?s?", "");
-		}
-
 		if (!canBuild(false)) {
 			throw new RuntimeException("Someone did something stupid with chat!");
 		}
+
+		Player player = sender != null ? sender.getPlayer() : null;
 
 		// Greentext must be at least 4 letters long and the second character must be a letter.
 		// E.G. >mfw people do it wrong

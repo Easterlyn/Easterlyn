@@ -18,7 +18,7 @@ import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.messages.JSONUtil;
-import co.sblock.utilities.messages.SlackMessenger;
+import co.sblock.utilities.messages.Slack;
 import co.sblock.utilities.regex.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -144,8 +144,9 @@ public class Message {
 			Log.anonymousInfo(getConsoleMessage());
 		}
 
-		SlackMessenger.post(sender != null ? sender.getPlayerName() : name,
-				sender != null ? sender.getUUID() : null, consoleMessage);
+		Slack.getInstance().postMessage(sender != null ? sender.getPlayerName() : name,
+				sender != null ? sender.getUUID() : null, consoleMessage,
+				channel.getName().equals("#"));
 
 		for (T object : recipients) {
 			UUID uuid;

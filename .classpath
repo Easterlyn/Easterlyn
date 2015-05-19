@@ -35,5 +35,7 @@
 			<attribute name="javadoc_location" value="http://filoghost.me/HolographicDisplays/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/simpleslackapi-0.4.0.jar" sourcepath="lib/simpleslackapi-0.4.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/dynmap-2.2-alpha-2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -48,6 +48,7 @@ import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.messages.RawAnnouncer;
+import co.sblock.utilities.messages.Slack;
 import co.sblock.utilities.meteors.Meteors;
 import co.sblock.utilities.spectator.Spectators;
 
@@ -95,6 +96,7 @@ public class Sblock extends JavaPlugin {
 		createBasePermissions();
 
 		modules = new ArrayList<>();
+		modules.add(new Slack().enable());
 		modules.add(new Chat().enable());
 		modules.add(new Users().enable());
 		modules.add(new Events().enable());

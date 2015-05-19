@@ -24,6 +24,7 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import co.sblock.Sblock;
 import co.sblock.chat.ColorDef;
 import co.sblock.events.listeners.plugin.CHBlockHealListener;
+import co.sblock.events.listeners.plugin.DynmapWebChatListener;
 import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.SyncPacketAdapter;
 import co.sblock.events.packets.WrapperPlayServerAnimation;
@@ -71,6 +72,10 @@ public class Events extends Module {
 		for (Class<? extends Listener> listener : listeners) {
 			if (listener.equals(CHBlockHealListener.class) && !Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")) {
 				getLogger().info("CreeperHeal not found, skipping listener.");
+				continue;
+			}
+			if (listener.equals(DynmapWebChatListener.class) && !Bukkit.getPluginManager().isPluginEnabled("dynmap")) {
+				getLogger().info("dynmap not found, skipping listener.");
 				continue;
 			}
 			try {

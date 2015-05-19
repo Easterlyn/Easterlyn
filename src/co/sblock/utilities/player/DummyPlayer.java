@@ -65,7 +65,7 @@ public class DummyPlayer implements Player {
 
 	private final CommandSender sender;
 	private final GameProfile profile;
-	private final String name;
+	private String name;
 
 	public DummyPlayer (CommandSender sender) {
 		this(sender, sender.getName());
@@ -1026,7 +1026,9 @@ public class DummyPlayer implements Player {
 	public void setCompassTarget(Location arg0) { }
 
 	@Override
-	public void setDisplayName(String arg0) { }
+	public void setDisplayName(String displayName) {
+		this.name = displayName;
+	}
 
 	@Override
 	public void setExhaustion(float arg0) { }

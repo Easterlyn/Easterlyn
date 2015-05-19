@@ -12,7 +12,7 @@ import co.sblock.events.Events;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
-import co.sblock.utilities.messages.SlackMessenger;
+import co.sblock.utilities.messages.Slack;
 
 /**
  * Listener for PlayerJoinEvents.
@@ -34,7 +34,8 @@ public class JoinListener implements Listener {
 
 		Events.getInstance().addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
 
-		SlackMessenger.post(event.getPlayer().getName(), event.getPlayer().getUniqueId(), event.getPlayer().getName() + " logs in.");
+		Slack.getInstance().postMessage(event.getPlayer().getName(), event.getPlayer().getUniqueId(),
+				event.getPlayer().getName() + " logs in.", true);
 
 		new BukkitRunnable() {
 			@Override
