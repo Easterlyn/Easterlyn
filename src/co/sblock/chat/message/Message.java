@@ -163,8 +163,7 @@ public class Message {
 
 			OfflineUser u = Users.getGuaranteedUser(uuid);
 			if (player == null || !u.isOnline() || player.spigot() == null
-					|| channel.getType() == ChannelType.REGION && u.getSuppression()
-					|| sender != null && u.isIgnoring(sender.getUUID())) {
+					|| channel.getType() == ChannelType.REGION && u.getSuppression()) {
 				continue;
 			}
 

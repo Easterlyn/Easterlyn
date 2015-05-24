@@ -3,7 +3,6 @@ package co.sblock.users;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -588,53 +587,6 @@ public class OfflineUser {
 	 */
 	public synchronized boolean isListening(String s) {
 		return this.listening.contains(s);
-	}
-
-	/**
-	 * Add a UUID to the Player's ignore list.
-	 * 
-	 * @param uuid the UUID to add
-	 * 
-	 * @return true if the UUID was added
-	 */
-	public synchronized boolean addIgnore(UUID uuid) {
-		ArrayList<String> list = new ArrayList<String>(yaml.getStringList("chat.ignoring"));
-		String uuidString = uuid.toString();
-		if (!list.contains(uuidString)) {
-			list.add(uuidString);
-			yaml.set("chat.ignoring", list);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Remove a UUID from the Player's ignore list.
-	 * 
-	 * @param uuid the UUID to remove
-	 * 
-	 * @return true if the UUID was removed
-	 */
-	public synchronized boolean removeIgnore(UUID uuid) {
-		ArrayList<String> list = new ArrayList<String>(yaml.getStringList("chat.ignoring"));
-		String uuidString = uuid.toString();
-		if (list.contains(uuidString)) {
-			list.remove(uuidString);
-			yaml.set("chat.ignoring", list);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Check if the Player is ignoring a UUID.
-	 * 
-	 * @param uuid the UUID to check
-	 * 
-	 * @return true if the UUID is ignored
-	 */
-	public synchronized boolean isIgnoring(UUID uuid) {
-		return yaml.getStringList("chat.ignoring").contains(uuid.toString());
 	}
 
 	/**
