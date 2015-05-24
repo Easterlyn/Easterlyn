@@ -16,10 +16,17 @@ public class ChatTabCompleteListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerChatTabComplete(PlayerChatTabCompleteEvent event) {
-		if (event.getChatMessage().split(" ")[0].equals(event.getLastToken())
-				&& event.getLastToken().length() > 0 && event.getLastToken().charAt(0) == '@') {
-			String completing = event.getLastToken().substring(1);
+		if (!event.getChatMessage().equals(event.getLastToken())) {
+			// Not tab completing first section, ignore
+			return;
+		}
+		if (event.getChatMessage().isEmpty()) {
 			for (String channel : Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getListening()) {
+				event.getTabCompletions().add("@" + channel);
+			}
+		} else if (event.getLastToken().charAt(0) == '@') {
+			for (String channel : Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getListening()) {
+				String completing = event.getLastToken().substring(1);
 				if (StringUtil.startsWithIgnoreCase(channel, completing)) {
 					event.getTabCompletions().add("@" + channel);
 				}
