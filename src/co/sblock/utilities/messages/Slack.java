@@ -13,6 +13,7 @@ import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
 import com.ullink.slack.simpleslackapi.listeners.SlackMessagePostedListener;
 
 import co.sblock.Sblock;
+import co.sblock.commands.chat.AetherCommand;
 import co.sblock.module.Module;
 
 /**
@@ -51,7 +52,18 @@ public class Slack extends Module {
 					// This session, ignore.
 					return;
 				}
-				// TODO handle messages from Slack
+				if (event.getChannel().isDirect()) {
+					// Private message to the bot, ignore
+					return;
+				}
+				if (event.getChannel().getName().equals(getMainChat())) {
+					AetherCommand.sendAether(event.getSender().getUserName(), event.getMessageContent());
+					return;
+				}
+				if (event.getChannel().getName().equals(getFullLog())) {
+					// Admin command
+					// TODO allow a whitelist of commands + grab output for Slack
+				}
 				getLogger().info(event.getSender().getUserName() + ": " + event.getMessageContent());
 			}
 		});
@@ -100,9 +112,17 @@ public class Slack extends Module {
 
 	public synchronized void postMessage(String name, UUID uuid, String message, boolean global) {
 		if (global) {
-			toPost.add(new SlackMessageWrapper(Sblock.getInstance().getConfig().getString("main-chat"), message, uuid, name));
+			toPost.add(new SlackMessageWrapper(getMainChat(), message, uuid, name));
 		}
-		toPost.add(new SlackMessageWrapper(Sblock.getInstance().getConfig().getString("full-log"), message, uuid, name));
+		toPost.add(new SlackMessageWrapper(getFullLog(), message, uuid, name));
+	}
+
+	public String getMainChat() {
+		return Sblock.getInstance().getConfig().getString("slack.main-chat");
+	}
+
+	public String getFullLog() {
+		return Sblock.getInstance().getConfig().getString("slack.full-log");
 	}
 
 	/**
