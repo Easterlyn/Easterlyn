@@ -2,12 +2,12 @@ package co.sblock.commands.utility;
 
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.utilities.captcha.Captcha;
 
@@ -33,9 +33,9 @@ public class ConvertOldCaptchaCommand extends SblockCommand {
 		Player player = (Player) sender;
 		int conversions = Captcha.convert(player);
 		if (conversions > 0) {
-			player.sendMessage(ChatColor.GREEN.toString() + conversions + " captchacards converted!");
+			player.sendMessage(Color.GOOD + "Converted " + conversions + " captchas.");
 		} else {
-			player.sendMessage(ChatColor.RED + "No old captchacards found!");
+			player.sendMessage(Color.BAD + "No old captchacards found!");
 		}
 		return true;
 	}

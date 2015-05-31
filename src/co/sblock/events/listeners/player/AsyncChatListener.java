@@ -2,13 +2,12 @@ package co.sblock.events.listeners.player;
 
 import java.util.LinkedHashSet;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.chat.Chat;
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.chat.ai.HalMessageHandler;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.message.Message;
@@ -16,6 +15,8 @@ import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
 import co.sblock.utilities.player.DummyPlayer;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for PlayerAsyncChatEvents.
@@ -80,12 +81,12 @@ public class AsyncChatListener implements Listener {
 			return;
 		}
 		if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
-			event.getPlayer().sendMessage(ColorDef.HAL + "What?");
+			event.getPlayer().sendMessage(Color.HAL + "What?");
 			event.setCancelled(true);
 			return;
 		}
 		if (message.getChannel().getType() == ChannelType.REGION && rpMatch(cleaned)) {
-			event.getPlayer().sendMessage(ColorDef.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
+			event.getPlayer().sendMessage(Color.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
 			event.setCancelled(true);
 			return;
 		}

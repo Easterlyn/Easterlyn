@@ -6,13 +6,13 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -21,6 +21,8 @@ import co.sblock.chat.channel.RPChannel;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Command for changing nickname in a channel.
@@ -31,8 +33,8 @@ public class ChatNickCommand extends SblockCommand {
 
 	public ChatNickCommand() {
 		super("nick");
-		setDescription(ChatColor.AQUA + "/nick remove|list|<nick choice>"
-				+ ChatColor.YELLOW + ": Set a nick in a Nick/RP channel.");
+		setDescription(Color.COMMAND + "/nick remove|list|<nick choice>"
+				+ Color.GOOD + ": Set a nick in a Nick/RP channel.");
 		setUsage("/nick name");
 	}
 
@@ -53,14 +55,14 @@ public class ChatNickCommand extends SblockCommand {
 		}
 		if (args[0].equalsIgnoreCase("list")) {
 			if (c.getType() == ChannelType.NICK) {
-				user.sendMessage(ChatColor.YELLOW + "You can use any nick you want in a nick channel.");
+				user.sendMessage(Color.GOOD + "You can use any nick you want in a nick channel.");
 				return true;
 			}
-			StringBuilder sb = new StringBuilder(ChatColor.YELLOW.toString()).append("Nicks: ");
+			StringBuilder sb = new StringBuilder(Color.GOOD.toString()).append("Nicks: ");
 			for (CanonNick n : CanonNick.values()) {
 				if (n != CanonNick.SERKITFEATURE) {
-					sb.append(ChatColor.AQUA).append(n.getName());
-					sb.append(ChatColor.YELLOW).append(", ");
+					sb.append(Color.GOOD_EMPHASIS).append(n.getName());
+					sb.append(Color.GOOD).append(", ");
 				}
 			}
 			user.sendMessage(sb.substring(0, sb.length() - 4).toString());
@@ -78,7 +80,7 @@ public class ChatNickCommand extends SblockCommand {
 			}
 		}
 		if (sb.length() == 0) {
-			sender.sendMessage(ChatColor.RED
+			sender.sendMessage(Color.BAD
 					+ "Nicks must be 1+ characters long when stripped of non-ASCII characters.");
 			return true;
 		}

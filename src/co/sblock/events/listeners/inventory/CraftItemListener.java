@@ -1,7 +1,6 @@
 package co.sblock.events.listeners.inventory;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,6 +8,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.inventory.InventoryUtils;
@@ -34,7 +34,7 @@ public class CraftItemListener implements Listener {
 			Player clicked = (Player) event.getWhoClicked();
 			if (Captcha.isCard(is) || CruxiteDowel.isDowel(is)) {
 				event.setCancelled(true);
-				clicked.sendMessage(ChatColor.RED + "Using captchas in crafting tends to lose valuables!");
+				clicked.sendMessage(Color.BAD + "Using captchas in crafting tends to lose valuables!");
 				clicked.updateInventory();
 				return;
 			}
@@ -42,8 +42,8 @@ public class CraftItemListener implements Listener {
 				if (is1.isSimilar(is)) {
 					event.setCancelled(true);
 					if (is.getItemMeta().hasDisplayName()) {
-						clicked.sendMessage(ChatColor.RED + "You can't use a "
-								+ is.getItemMeta().getDisplayName() + ChatColor.RED + " for that!");
+						clicked.sendMessage(Color.BAD + "You can't use a "
+								+ is.getItemMeta().getDisplayName() + Color.BAD + " for that!");
 					}
 					return;
 				}

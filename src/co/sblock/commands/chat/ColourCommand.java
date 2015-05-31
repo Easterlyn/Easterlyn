@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -20,12 +20,12 @@ public class ColourCommand extends SblockCommand {
 		super("colour");
 		this.setAliases("color");
 		this.setDescription("List all colours.");
-		this.setUsage("&c/colour");
+		this.setUsage("/colour");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		sender.sendMessage(ColorDef.listColors());
+		sender.sendMessage(Color.listColors());
 		return true;
 	}
 

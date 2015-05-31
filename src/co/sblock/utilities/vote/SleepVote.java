@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.utilities.Log;
 
 /**
@@ -83,12 +83,12 @@ public class SleepVote {
 			}
 		});
 		if (player != null) {
-			sb.append(ChatColor.GREEN).append(player).append(ChatColor.YELLOW).append(" has gone to bed. ");
+			sb.append(Color.GOOD_PLAYER).append(player).append(Color.GOOD).append(" has gone to bed. ");
 		} else {
 			worldSize.decrementAndGet();
 		}
 		int percent = worldSize.get() == 0 ? 100 : 100 * votes.get(world.getName()).size() / worldSize.get();
-		sb.append(ChatColor.YELLOW).append(percent).append("% of players have slept.");
+		sb.append(Color.GOOD).append(percent).append("% of players have slept.");
 		if (percent >= 50) {
 			sb.append('\n').append("Time to get up, a new day awaits!");
 			world.setTime(0);

@@ -2,7 +2,6 @@ package co.sblock.events.listeners.block;
 
 import java.util.HashMap;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,6 +16,8 @@ import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.spectator.Spectators;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for BlockBreakEvents.

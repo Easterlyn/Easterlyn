@@ -1,9 +1,10 @@
 package co.sblock.events.listeners.player;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for SignChangeEvents.

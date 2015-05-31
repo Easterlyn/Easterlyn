@@ -51,17 +51,17 @@ public class NumberCrunchCommand extends SblockCommand {
 				counts.get(player.getString("classpect.dream", "Prospit")).incrementAndGet();
 			}
 			sender.sendMessage("Total files: " + files.length);
-			sender.sendMessage("CLASS:");
+			sender.sendMessage("\nCLASS:");
 			for (UserClass userClass : UserClass.values()) {
 				int count = counts.get(userClass.getDisplayName()).get();
 				sender.sendMessage(userClass.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
 			}
-			sender.sendMessage("ASPECT:");
+			sender.sendMessage("\nASPECT:");
 			for (UserAspect userAspect : UserAspect.values()) {
 				int count = counts.get(userAspect.getDisplayName()).get();
 				sender.sendMessage(userAspect.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
 			}
-			sender.sendMessage("DREAM/REGION:");
+			sender.sendMessage("\nDREAM/REGION:");
 			for (Region region : Region.values()) {
 				if (region.isDream() || region.isMedium()) {
 					int count = counts.get(region.getDisplayName()).get();

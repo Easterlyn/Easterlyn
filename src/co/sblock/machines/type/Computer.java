@@ -1,7 +1,6 @@
 package co.sblock.machines.type;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,6 +15,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Icon;
 import co.sblock.machines.utilities.MachineType;
@@ -58,7 +58,7 @@ public class Computer extends Machine implements InventoryHolder {
 			}
 			event.setCancelled(true);
 			event.getBlock().setType(Material.AIR);
-			event.getPlayer().sendMessage(ChatColor.RED + "You can only have one Computer placed!");
+			event.getPlayer().sendMessage(Color.BAD + "You can only have one Computer placed!");
 			this.assemblyFailed();
 			return;
 		}
@@ -109,7 +109,7 @@ public class Computer extends Machine implements InventoryHolder {
 					OfflineUser offUser = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
 					if (!(offUser instanceof OnlineUser)) {
 						((Player) event.getWhoClicked()).sendMessage(
-								ChatColor.RED + "Your data appears to not have loaded properly. Please relog.");
+								Color.BAD + "Your data appears to not have loaded properly. Please relog.");
 						break;
 					}
 					OnlineUser onUser = (OnlineUser) offUser;
@@ -150,8 +150,8 @@ public class Computer extends Machine implements InventoryHolder {
 			event.setCancelled(true);
 			Icon ico = Icon.getIcon(event.getItem());
 			if (ico != null) {
-				event.getPlayer().sendMessage(ChatColor.GREEN + "Installed "
-						+ event.getItem().getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
+				event.getPlayer().sendMessage(Color.GOOD + "Installed "
+						+ event.getItem().getItemMeta().getDisplayName() + Color.GOOD + "!");
 				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 					event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
 				}
@@ -178,7 +178,7 @@ public class Computer extends Machine implements InventoryHolder {
 			i.addItem(Icon.getIcon(i1).getIcon());
 		}
 		if (i.firstEmpty() == 9) {
-			user.getPlayer().sendMessage(ChatColor.RED + "You do not have any programs installed!");
+			user.getPlayer().sendMessage(Color.BAD + "You do not have any programs installed!");
 		}
 		return i;
 	}

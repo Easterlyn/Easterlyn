@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -282,19 +282,19 @@ public class MessageBuilder {
 				globalRank = ChatColor.getByChar(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getPrefix().charAt(1));
 			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
 				if (player.hasPermission("group.horrorterror"))
-					globalRank = ColorDef.RANK_HORRORTERROR;
+					globalRank = Color.RANK_HORRORTERROR;
 				else if (player.hasPermission("sblock.denizen"))
-					globalRank = ColorDef.RANK_DENIZEN;
+					globalRank = Color.RANK_DENIZEN;
 				else if (player.hasPermission("sblock.felt"))
-					globalRank = ColorDef.RANK_FELT;
+					globalRank = Color.RANK_FELT;
 				else if (player.hasPermission("sblock.helper"))
-					globalRank = ColorDef.RANK_HELPER;
+					globalRank = Color.RANK_HELPER;
 				else if (player.hasPermission("sblock.donator"))
-					globalRank = ColorDef.RANK_DONATOR;
+					globalRank = Color.RANK_DONATOR;
 				else if (player.hasPermission("sblock.godtier"))
-					globalRank = ColorDef.RANK_GODTIER;
+					globalRank = Color.RANK_GODTIER;
 				else {
-					globalRank = ColorDef.RANK_HERO;
+					globalRank = Color.RANK_HERO;
 				}
 			}
 		} else {

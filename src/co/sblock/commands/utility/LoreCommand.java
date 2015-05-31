@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +16,10 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for manipulating item lore and some other meta-related cases.
@@ -59,13 +61,13 @@ public class LoreCommand extends SblockCommand {
 		Player player = (Player) sender;
 		ItemStack hand = player.getItemInHand();
 		if (hand == null || hand.getType() == Material.AIR) {
-			player.sendMessage(ChatColor.RED + "You need an item in hand to use this command!");
+			player.sendMessage(Color.BAD + "You need an item in hand to use this command!");
 			return true;
 		}
 		if (!hand.hasItemMeta() && hand.getItemMeta() == null) {
 			ItemMeta meta = Bukkit.getItemFactory().getItemMeta(hand.getType());
 			if (meta == null) {
-				sender.sendMessage(ChatColor.RED + "This item does not support meta.");
+				sender.sendMessage(Color.BAD + "This item does not support meta.");
 				return true;
 			}
 			hand.setItemMeta(meta);
@@ -142,39 +144,39 @@ public class LoreCommand extends SblockCommand {
 
 	private boolean owner(Player player, ItemStack hand, String[] args) {
 		if (hand.getType() != Material.SKULL_ITEM && hand.getDurability() != 3) {
-			player.sendMessage(ChatColor.RED + "You must be holding a player skull to set its owner!");
+			player.sendMessage(Color.BAD + "You must be holding a player skull to set its owner!");
 			return true;
 		}
 		SkullMeta meta = (SkullMeta) hand.getItemMeta();
 		meta.setOwner(args[1]);
 		hand.setItemMeta(meta);
-		player.sendMessage(ChatColor.GREEN + "Owner set to " + args[1]);
+		player.sendMessage(Color.GOOD + "Owner set to " + args[1]);
 		return true;
 	}
 
 	private boolean author(Player player, ItemStack hand, String[] args) {
 		if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.BOOK_AND_QUILL) {
-			player.sendMessage(ChatColor.RED + "You must be holding a writable book to set its author.");
+			player.sendMessage(Color.BAD + "You must be holding a writable book to set its author.");
 			return true;
 		}
 		BookMeta meta = (BookMeta) hand.getItemMeta();
 		String author = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length));
 		meta.setAuthor(author);
 		hand.setItemMeta(meta);
-		player.sendMessage(ChatColor.GREEN + "Author set to " + author);
+		player.sendMessage(Color.GOOD + "Author set to " + author);
 		return true;
 	}
 
 	private boolean title(Player player, ItemStack hand, String[] args) {
 		if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.BOOK_AND_QUILL) {
-			player.sendMessage(ChatColor.RED + "You must be holding a writable book to set its title.");
+			player.sendMessage(Color.BAD + "You must be holding a writable book to set its title.");
 			return true;
 		}
 		BookMeta meta = (BookMeta) hand.getItemMeta();
 		String title = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length));
 		meta.setTitle(title);
 		hand.setItemMeta(meta);
-		player.sendMessage(ChatColor.GREEN + "Title set to " + title);
+		player.sendMessage(Color.GOOD + "Title set to " + title);
 		return true;
 	}
 
@@ -183,25 +185,25 @@ public class LoreCommand extends SblockCommand {
 		String name = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length));
 		meta.setDisplayName(name);
 		hand.setItemMeta(meta);
-		player.sendMessage(ChatColor.GREEN + "Name set to " + name);
+		player.sendMessage(Color.GOOD + "Name set to " + name);
 		return true;
 	}
 
 	private boolean delete(Player player, ItemStack hand, String[] args) {
 		if (args[1].equals("owner")) {
 			if (hand.getType() != Material.SKULL_ITEM && hand.getDurability() != 3) {
-				player.sendMessage(ChatColor.RED + "You must be holding a player skull to delete its owner!");
+				player.sendMessage(Color.BAD + "You must be holding a player skull to delete its owner!");
 				return true;
 			}
 			SkullMeta meta = (SkullMeta) hand.getItemMeta();
 			meta.setOwner(null);
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Deleted owner!");
+			player.sendMessage(Color.GOOD + "Deleted owner!");
 			return true;
 		}
 		if (args[1].equals("author") || args[1].equals("title")) {
 			if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.BOOK_AND_QUILL) {
-				player.sendMessage(ChatColor.RED + "You must be holding a writable book to clear its " + args[1] + ".");
+				player.sendMessage(Color.BAD + "You must be holding a writable book to clear its " + args[1] + ".");
 				return true;
 			}
 			BookMeta meta = (BookMeta) hand.getItemMeta();
@@ -211,39 +213,39 @@ public class LoreCommand extends SblockCommand {
 				meta.setTitle(null);
 			}
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Deleted " + args[1] + "!");
+			player.sendMessage(Color.GOOD + "Deleted " + args[1] + "!");
 			return true;
 		}
 		if (args[1].equals("name")) {
 			ItemMeta meta = hand.getItemMeta();
 			meta.setDisplayName(null);
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Deleted name!");
+			player.sendMessage(Color.GOOD + "Deleted name!");
 			return true;
 		}
 		try {
 			int line = Integer.parseInt(args[1]);
 			ItemMeta meta = hand.getItemMeta();
 			if (!meta.hasLore()) {
-				player.sendMessage(ChatColor.RED + "Item has no lore!");
+				player.sendMessage(Color.BAD + "Item has no lore!");
 				return true;
 			}
 			ArrayList<String> lore = new ArrayList<>(meta.getLore());
 			if (lore.size() < line) {
-				player.sendMessage(ChatColor.RED + "Item only has " + lore.size() + " lines, cannot delete " + line + "!");
+				player.sendMessage(Color.BAD + "Item only has " + lore.size() + " lines, cannot delete " + line + "!");
 				return true;
 			}
 			if (line < 1) {
-				player.sendMessage(ChatColor.RED + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
+				player.sendMessage(Color.BAD + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
 				return true;
 			}
 			String removed = lore.remove(line - 1);
 			meta.setLore(lore);
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Deleted \"" + removed + ChatColor.GREEN + "\" from line " + line + "!");
+			player.sendMessage(Color.GOOD + "Deleted \"" + removed + Color.GOOD + "\" from line " + line + "!");
 			return true;
 		} catch (NumberFormatException e) {
-			player.sendMessage(ChatColor.RED + "/lore delete <owner|title|author|name|[lore line number]>");
+			player.sendMessage(Color.BAD + "/lore delete <owner|title|author|name|[lore line number]>");
 			return true;
 		}
 	}
@@ -257,39 +259,39 @@ public class LoreCommand extends SblockCommand {
 		lore.add(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length)));
 		meta.setLore(lore);
 		hand.setItemMeta(meta);
-		player.sendMessage(ChatColor.GREEN + "Added \"" + lore.get(lore.size() - 1) + ChatColor.GREEN + "\"");
+		player.sendMessage(Color.GOOD + "Added \"" + lore.get(lore.size() - 1) + Color.GOOD + "\"");
 		return true;
 	}
 
 	private boolean set(Player player, ItemStack hand, String[] args) {
 		if (args.length < 3) {
-			player.sendMessage(ChatColor.RED + "/lore set <number> <arguments>");
+			player.sendMessage(Color.BAD + "/lore set <number> <arguments>");
 		}
 		try {
 			int line = Integer.parseInt(args[1]);
 			ItemMeta meta = hand.getItemMeta();
 			if (!meta.hasLore()) {
-				player.sendMessage(ChatColor.RED + "Item has no lore to set!");
+				player.sendMessage(Color.BAD + "Item has no lore to set!");
 				return true;
 			}
 			ArrayList<String> lore = new ArrayList<>(meta.getLore());
 			if (lore.size() < line) {
-				player.sendMessage(ChatColor.RED + "Item only has " + lore.size() + " lines, cannot set " + line + "!");
+				player.sendMessage(Color.BAD + "Item only has " + lore.size() + " lines, cannot set " + line + "!");
 				return true;
 			}
 			if (line < 1) {
-				player.sendMessage(ChatColor.RED + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
+				player.sendMessage(Color.BAD + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
 				return true;
 			}
 			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 2, args.length));
 			String removed = lore.set(line - 1, added);
 			meta.setLore(lore);
 			hand.setItemMeta(meta);
-			player.sendMessage(ChatColor.GREEN + "Replaced \"" + removed + ChatColor.GREEN
-					+ "\" with \"" + added + ChatColor.GREEN + "\" at "+ line + "!");
+			player.sendMessage(Color.GOOD + "Replaced \"" + removed + Color.GOOD
+					+ "\" with \"" + added + Color.GOOD + "\" at "+ line + "!");
 			return true;
 		} catch (NumberFormatException e) {
-			player.sendMessage(ChatColor.RED + "/lore set <number> <arguments>");
+			player.sendMessage(Color.BAD + "/lore set <number> <arguments>");
 			return true;
 		}
 	}
@@ -297,26 +299,26 @@ public class LoreCommand extends SblockCommand {
 	private boolean insert(Player player, ItemStack hand, String[] args) {
 
 		if (args.length < 3) {
-			player.sendMessage(ChatColor.RED + "/lore insert <number> <arguments>");
+			player.sendMessage(Color.BAD + "/lore insert <number> <arguments>");
 		}
 		try {
 			int line = Integer.parseInt(args[1]);
 			ItemMeta meta = hand.getItemMeta();
 			if (!meta.hasLore()) {
-				player.sendMessage(ChatColor.RED + "Item has no lore to set!");
+				player.sendMessage(Color.BAD + "Item has no lore to set!");
 				return true;
 			}
 			ArrayList<String> lore = new ArrayList<>(meta.getLore());
 			if (lore.size() < line) {
-				player.sendMessage(ChatColor.RED + "Item only has " + lore.size() + " lines, cannot set " + line + "!");
+				player.sendMessage(Color.BAD + "Item only has " + lore.size() + " lines, cannot set " + line + "!");
 				return true;
 			}
 			if (line < 1) {
-				player.sendMessage(ChatColor.RED + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
+				player.sendMessage(Color.BAD + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
 				return true;
 			}
 			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 2, args.length));
-			player.sendMessage(ChatColor.GREEN + "Inserted \"" + added + ChatColor.GREEN + "\" at " + line + "!");
+			player.sendMessage(Color.GOOD + "Inserted \"" + added + Color.GOOD + "\" at " + line + "!");
 			int size = lore.size();
 			for (int i = 0; i < size; i++) {
 				if (line - 1 <= i) {
@@ -328,7 +330,7 @@ public class LoreCommand extends SblockCommand {
 			hand.setItemMeta(meta);
 			return true;
 		} catch (NumberFormatException e) {
-			player.sendMessage(ChatColor.RED + "/lore insert <number> <arguments>");
+			player.sendMessage(Color.BAD + "/lore insert <number> <arguments>");
 			return true;
 		}
 	}

@@ -1,6 +1,8 @@
 package co.sblock.events.session;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
+
+
 
 /**
  * Enum representing the status of Minecraft's servers.

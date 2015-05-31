@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,6 +26,8 @@ import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.progression.Entry;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Simulate a Sburb Punch Designix in Minecraft.

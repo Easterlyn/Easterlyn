@@ -3,7 +3,6 @@ package co.sblock.commands.utility;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,6 +11,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
@@ -55,13 +55,13 @@ public class SpectateCommand extends SblockCommand {
 			args[0] = args[0].toLowerCase();
 			if (args[0].equals("on") || args[0].equals("allow") || args[0].equals("true")) {
 				user.setSpectatable(true);
-				sender.sendMessage(ChatColor.GREEN
+				sender.sendMessage(Color.GOOD
 						+ "Other players are now allowed to spectate to you!");
 				return true;
 			}
 			if (args[0].equals("off") || args[0].equals("deny") || args[0].equals("false")) {
 				user.setSpectatable(false);
-				sender.sendMessage(ChatColor.GREEN
+				sender.sendMessage(Color.GOOD
 						+ "Other players are no longer allowed to spectate to you!");
 				return true;
 			}
@@ -69,18 +69,18 @@ public class SpectateCommand extends SblockCommand {
 			return true;
 		}
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
-			sender.sendMessage(ChatColor.RED + "Perhaps you should focus on helping your client!");
+			sender.sendMessage(Color.BAD + "Perhaps you should focus on helping your client!");
 			return true;
 		}
 		if (Spectators.getInstance().isSpectator(player.getUniqueId())) {
-			sender.sendMessage(ChatColor.GREEN + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
+			sender.sendMessage(Color.GOOD + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
 			Spectators.getInstance().removeSpectator(player);
 		} else {
 			if (player.getGameMode() != GameMode.SURVIVAL) {
-				sender.sendMessage(ChatColor.RED + "You can only enter spectate mode from survival.");
+				sender.sendMessage(Color.BAD + "You can only enter spectate mode from survival.");
 				return true;
 			}
-			sender.sendMessage(ChatColor.GREEN + "You feel a tingling sensation about your extremities as you hover up slightly.");
+			sender.sendMessage(Color.GOOD + "You feel a tingling sensation about your extremities as you hover up slightly.");
 			Spectators.getInstance().addSpectator(player);
 		}
 		return true;

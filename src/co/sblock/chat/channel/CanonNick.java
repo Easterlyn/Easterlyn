@@ -3,7 +3,7 @@ package co.sblock.chat.channel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -315,7 +315,7 @@ public enum CanonNick {
 			if (m.group().equals(m.group().toUpperCase())) {
 				for (int i = 0; i < m.group().length(); i++) {
 					String next = m.group().substring(i, i + 1);
-					sb.append(ColorDef.RAINBOW[(int) (Math.random() * ColorDef.RAINBOW.length)]);
+					sb.append(Color.RAINBOW[(int) (Math.random() * Color.RAINBOW.length)]);
 					if (next.equals("O")) {
 						sb.append(ChatColor.MAGIC);
 					}

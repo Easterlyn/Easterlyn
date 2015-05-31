@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.module.Module;
 import co.sblock.utilities.Log;
 
@@ -63,20 +63,20 @@ public class RawAnnouncer extends Module {
 					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://www.reddit.com/r/sblock\"},"
 					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}},"
 				+ "{\"color\":\"red\",\"text\":\"!\"}]}",
-				ColorDef.HAL + "Join us on our subreddit, http://www.reddit.com/r/sblock"));
+				Color.HAL + "Join us on our subreddit, http://www.reddit.com/r/sblock"));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "If you're having trouble with chat, \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"/chat\","
 					+ "\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/chat\"},"
 					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to run!\",\"color\":\"gold\"}}},"
 				+ "{\"color\":\"red\",\"text\":\" is your friend!\"}]}",
-				ColorDef.HAL + "If you're having trouble with chat, /chat is your friend"));
+				Color.HAL + "If you're having trouble with chat, /chat is your friend"));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "Remember, we are in \"},"
 				+ "{\"color\":\"gold\",\"bold\":\"true\",\"text\":\"ALPHA\","
 					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"We reserve the right to fuck up badly.\",\"color\":\"dark_red\"}}},"
 				+ "{\"color\":\"red\",\"text\":\"!\"}]}",
-				ColorDef.HAL + "Remember, we are in ALPHA! We reserve the right to fuck up badly."));
+				Color.HAL + "Remember, we are in ALPHA! We reserve the right to fuck up badly."));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "Join us on \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"Mumble\","
@@ -87,30 +87,30 @@ public class RawAnnouncer extends Module {
 				+ "{\"color\":\"red\",\"text\":\", port \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"25560\"},"
 				+ "{\"color\":\"red\",\"text\":\"!\"}]}",
-				ColorDef.HAL + "Join us on Mumble for voice chat! The server is sblock.co, port 25560!"));
+				Color.HAL + "Join us on Mumble for voice chat! The server is sblock.co, port 25560!"));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "It appears that enchanting furnaces is very beneficial. You might consider giving it a try.\"}]}",
-				ColorDef.HAL + "It appears that enchanting furnaces is very beneficial. You might consider giving it a try."));
+				Color.HAL + "It appears that enchanting furnaces is very beneficial. You might consider giving it a try."));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "It is your generosity that keeps Sblock alive. Please consider \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"donating\","
 					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=Z327Z7E2SBVV2&lc=US&item_name=Sblock&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted\"},"
 					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}},"
 				+ "{\"color\":\"red\",\"text\":\" to help!\"}]}",
-				ColorDef.HAL + "It is your generosity that keeps Sblock alive. Please consider donating to help."));
+				Color.HAL + "It is your generosity that keeps Sblock alive. Please consider donating to help."));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "To sleep without dreaming, sneak while right clicking your bed!\"}]}",
-				ColorDef.HAL + "To sleep without dreaming, sneak while right clicking your bed!"));
+				Color.HAL + "To sleep without dreaming, sneak while right clicking your bed!"));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "Please be aware that our \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"plug.dj room\","
 					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://plug.dj/sblockco/\"},"
 					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}},"
 				+ "{\"color\":\"red\",\"text\":\" has changed!\"}]}",
-				ColorDef.HAL + "Interested in jamming with your fellow Sblock players? Join http://plug.dj/sblockco/ to listen and play!"));
+				Color.HAL + "Interested in jamming with your fellow Sblock players? Join http://plug.dj/sblockco/ to listen and play!"));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!\"}]}",
-				ColorDef.HAL + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!"));
+				Color.HAL + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!"));
 
 		return msgs;
 	}

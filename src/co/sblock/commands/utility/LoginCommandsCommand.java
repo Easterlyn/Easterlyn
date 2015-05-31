@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -14,6 +13,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
@@ -60,12 +60,12 @@ public class LoginCommandsCommand extends SblockCommand {
 		if (args[0].equals("list")) {
 			List<String> commands = user.getLoginCommands();
 			if (commands.isEmpty()) {
-				sender.sendMessage(ChatColor.YELLOW + "No commands registered! Try /onlogin add /command");
+				sender.sendMessage(Color.GOOD + "No commands registered! Try /onlogin add /command");
 				return true;
 			}
 			for (int i = 0; i < commands.size(); i++) {
-				sender.sendMessage(new StringBuilder().append(ChatColor.AQUA).append(i + 1)
-						.append(": ").append(ChatColor.YELLOW).append(commands.get(i)).toString());
+				sender.sendMessage(new StringBuilder().append(Color.GOOD).append(i + 1)
+						.append(": ").append(Color.GOOD_EMPHASIS).append(commands.get(i)).toString());
 			}
 			return true;
 		}
@@ -116,19 +116,19 @@ public class LoginCommandsCommand extends SblockCommand {
 			int line = Integer.parseInt(args[1]);
 			ArrayList<String> commands = new ArrayList<>(user.getLoginCommands());
 			if (commands.size() < line) {
-				player.sendMessage(ChatColor.RED + "You only have " + commands.size() + " command(s), cannot delete " + line + "!");
+				player.sendMessage(Color.BAD + "You only have " + commands.size() + " command(s), cannot delete " + line + "!");
 				return;
 			}
 			if (line < 1) {
-				player.sendMessage(ChatColor.RED + "Index must be between 1 and " + commands.size() + "! " + line + " is invalid.");
+				player.sendMessage(Color.BAD + "Index must be between 1 and " + commands.size() + "! " + line + " is invalid.");
 				return;
 			}
 			String removed = commands.remove(line - 1);
 			user.setLoginCommands(commands);
-			player.sendMessage(ChatColor.GREEN + "Deleted \"" + removed + "\"");
+			player.sendMessage(Color.GOOD + "Deleted \"" + removed + "\"");
 			return;
 		} catch (NumberFormatException e) {
-			player.sendMessage(ChatColor.RED + "/onlogin delete <number>");
+			player.sendMessage(Color.BAD + "/onlogin delete <number>");
 			return;
 		}
 	}
@@ -136,17 +136,17 @@ public class LoginCommandsCommand extends SblockCommand {
 	private void add(Player player, OfflineUser user, String[] args) {
 		ArrayList<String> commands = new ArrayList<String>(user.getLoginCommands());
 		if (!player.hasPermission("sblock.command.onlogin.more") && commands.size() >= 2) {
-			player.sendMessage(ChatColor.RED + "You cannot set more than two commands on login.");
+			player.sendMessage(Color.BAD + "You cannot set more than two commands on login.");
 			return;
 		}
 		if (args.length <= 1) {
-			player.sendMessage(ChatColor.RED + "/onlogin add /command arguments");
+			player.sendMessage(Color.BAD + "/onlogin add /command arguments");
 			return;
 		}
 		String command = StringUtils.join(args, ' ', 1, args.length);
 		commands.add(command);
 		user.setLoginCommands(commands);
-		player.sendMessage(ChatColor.GREEN + "Added \"" + command + "\"");
+		player.sendMessage(Color.GOOD + "Added \"" + command + "\"");
 		return;
 	}
 }

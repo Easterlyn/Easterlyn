@@ -4,13 +4,13 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.events.Events;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
@@ -39,7 +39,7 @@ public class QuitListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		// Our very own custom quits!
 		if (event.getQuitMessage() != null) {
-			event.setQuitMessage(ChatColor.AQUA + event.getPlayer().getDisplayName() + ChatColor.RED + " ollies outie");
+			event.setQuitMessage(Color.BAD_PLAYER + event.getPlayer().getDisplayName() + Color.BAD + " ollies outie");
 		}
 
 		// Slack integration

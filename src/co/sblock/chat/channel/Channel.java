@@ -6,11 +6,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.Color;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
@@ -435,9 +435,9 @@ public abstract class Channel {
 
 	@Override
 	public String toString() {
-		return ChatColor.GOLD + this.getName() + ChatColor.GREEN + ": Access: " + ChatColor.GOLD
-				+ this.getAccess() + ChatColor.GREEN + " Type: " + ChatColor.GOLD + this.getType()
-				+ "\n" + ChatColor.GREEN + "Owner: " + ChatColor.GOLD
+		return Color.GOOD_EMPHASIS + this.getName() + Color.GOOD + ": Access: " + Color.GOOD_EMPHASIS
+				+ this.getAccess() + Color.GOOD + " Type: " + Color.GOOD_EMPHASIS + this.getType()
+				+ "\n" + Color.GOOD + "Owner: " + Color.GOOD_EMPHASIS
 				+ (this.owner != null ? Bukkit.getOfflinePlayer(this.getOwner()).getName() : "Sblock default");
 	}
 }

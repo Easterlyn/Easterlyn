@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.FurnaceRecipe;
@@ -16,6 +15,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
 import co.sblock.effects.FXManager;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * A class for handling all functions of cruxite dowels.

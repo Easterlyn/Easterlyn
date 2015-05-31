@@ -1,11 +1,11 @@
 package co.sblock.events.listeners.player;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import co.sblock.chat.Color;
 import co.sblock.events.Events;
 import co.sblock.users.Users;
 import co.sblock.utilities.experience.Experience;
@@ -36,7 +36,7 @@ public class DeathListener implements Listener {
 				.append(event.getEntity().getLocation().getBlockX()).append("x ")
 				.append(event.getEntity().getLocation().getBlockY()).append("y ")
 				.append(event.getEntity().getLocation().getBlockZ()).append('z').toString();
-		event.getEntity().sendMessage(ChatColor.RED + message + location);
+		event.getEntity().sendMessage(Color.BAD + message + location);
 
 		if (Events.getInstance().getPVPTasks().containsKey(event.getEntity().getUniqueId())) {
 			event.setDroppedExp(Experience.getExp(event.getEntity()));
@@ -44,10 +44,11 @@ public class DeathListener implements Listener {
 			Events.getInstance().getPVPTasks().remove(event.getEntity().getUniqueId()).cancel();
 			if (event.getEntity().getKiller() != null) {
 				Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died to "
-						+ event.getEntity().getKiller().getName() + ". " + location);
+						+ event.getEntity().getKiller().getName() + "." + location);
 			}
 		} else {
-			Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died." + location);
+			Bukkit.getConsoleSender().sendMessage(event.getEntity().getName() + " died to "
+					+ event.getEntity().getLastDamageCause().getCause().name() + "." + location);
 		}
 
 		Users.getGuaranteedUser(event.getEntity().getUniqueId()).getOnlineUser().removeAllEffects();

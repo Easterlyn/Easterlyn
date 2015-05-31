@@ -7,13 +7,12 @@ import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -47,14 +46,14 @@ public class UnSuperBanCommand extends SblockCommand {
 					.replaceAll(".*<ip=(([0-9]{1,3}\\.){3}[0-9]{1,3})>.*", "$1"));
 			pbans.pardon(args[0]);
 		} else  {
-			sender.sendMessage(ChatColor.RED + "No bans were found for " + args[0]);
+			sender.sendMessage(Color.BAD + "No bans were found for " + args[0]);
 			return true;
 		}
 		if (args[0].contains(".")) {
-			sender.sendMessage(ChatColor.GREEN + "Not globally announcing unban: " + args[0]
+			sender.sendMessage(Color.GOOD + "Not globally announcing unban: " + args[0]
 					+ " may be an IP.");
 		} else {
-			Bukkit.broadcastMessage(ColorDef.HAL + args[0] + " has been unbanned.");
+			Bukkit.broadcastMessage(Color.HAL + args[0] + " has been unbanned.");
 		}
 		return true;
 	}

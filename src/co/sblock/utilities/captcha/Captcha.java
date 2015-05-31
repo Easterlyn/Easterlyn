@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -19,6 +18,8 @@ import com.google.common.io.BaseEncoding;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.module.Module;
 import co.sblock.utilities.inventory.InventoryUtils;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * @author Dublek, Jikoo
@@ -202,7 +203,7 @@ public class Captcha extends Module {
 		}
 		im = is.getItemMeta();
 		if (!data[0].equals(is.getType().toString())) {
-			im.setDisplayName((String) data[0]);
+			im.setDisplayName(data[0]);
 			// Custom display names starting with ">" or ":" could break our parsing
 			// or, worse, allow free illegal enchants. Can you say Sharpness 32767?
 			data[0] = "No.";

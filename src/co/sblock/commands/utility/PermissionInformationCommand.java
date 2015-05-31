@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -34,32 +34,32 @@ public class PermissionInformationCommand extends SblockCommand {
 			permission = Bukkit.getPluginManager().getPermission(args[0]);
 		}
 		if (permission == null) {
-			sender.sendMessage(ChatColor.RED + args[0] + " is not a valid permission.");
+			sender.sendMessage(Color.BAD + args[0] + " is not a valid permission.");
 			return true;
 		}
 		if (args.length > 1) {
 			List<Player> players = Bukkit.matchPlayer(args[1]);
 			if (players.isEmpty()) {
-				sender.sendMessage(ChatColor.RED + "No matching players found for " + args[1]);
+				sender.sendMessage(Color.BAD + "No matching players found for " + args[1]);
 			}
-			sender.sendMessage(ChatColor.YELLOW + args[0] + " is "
+			sender.sendMessage(Color.GOOD + args[0] + " is "
 					+ players.get(0).hasPermission(permission) + " for " + players.get(0).getName());
 			return true;
 		}
-		sender.sendMessage(ChatColor.DARK_AQUA + "Permission: " + ChatColor.YELLOW + permission.getName());
+		sender.sendMessage(Color.GOOD + "Permission: " + Color.GOOD_EMPHASIS + permission.getName());
 		if (permission.getDescription() != null) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "Description: " + ChatColor.YELLOW + permission.getDescription());
+			sender.sendMessage(Color.GOOD + "Description: " + Color.GOOD_EMPHASIS + permission.getDescription());
 		}
 		if (permission.getChildren().size() > 0) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "Children:");
+			sender.sendMessage(Color.GOOD + "Children:");
 			for (Entry<String, Boolean> entry : permission.getChildren().entrySet()) {
-				sender.sendMessage(new StringBuilder().append(ChatColor.YELLOW)
-						.append(entry.getKey()).append(ChatColor.DARK_AQUA).append(": ")
-						.append(entry.getValue() ? ChatColor.GREEN : ChatColor.RED)
+				sender.sendMessage(new StringBuilder().append(Color.GOOD_EMPHASIS)
+						.append(entry.getKey()).append(Color.GOOD).append(": ")
+						.append(entry.getValue() ? Color.GOOD : Color.BAD)
 						.append(entry.getValue()).toString());
 			}
 		}
-		sender.sendMessage(ChatColor.DARK_AQUA + "Default: " + ChatColor.YELLOW + permission.getDefault().name());
+		sender.sendMessage(Color.GOOD + "Default: " + Color.GOOD_EMPHASIS + permission.getDefault().name());
 		return true;
 	}
 

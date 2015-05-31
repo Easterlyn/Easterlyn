@@ -3,11 +3,12 @@ package co.sblock.utilities.regex;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Skeleton.SkeletonType;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * A collection of useful regex functions.

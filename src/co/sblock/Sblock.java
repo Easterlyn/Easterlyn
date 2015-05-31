@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -51,6 +50,8 @@ import co.sblock.utilities.messages.RawAnnouncer;
 import co.sblock.utilities.messages.Slack;
 import co.sblock.utilities.meteors.Meteors;
 import co.sblock.utilities.spectator.Spectators;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Sblock is the base of Sblock.co's custom plugin. All features are handled by

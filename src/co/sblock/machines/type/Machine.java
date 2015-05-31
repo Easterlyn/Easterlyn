@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,6 +29,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
@@ -153,7 +153,7 @@ public abstract class Machine {
 			if (!l.equals(this.key) && (!l.getBlock().isEmpty()
 					|| Machines.getInstance().isExploded(l.getBlock()))) {
 				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED + "There isn't enough space to build this Machine here.");
+				event.getPlayer().sendMessage(Color.BAD + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed();
 				return;
 			}
@@ -364,7 +364,7 @@ public abstract class Machine {
 	public boolean handleInteract(PlayerInteractEvent event) {
 		for (Location l : this.blocks.keySet()) {
 			if (Machines.getInstance().isExploded(l.getBlock())) {
-				event.getPlayer().sendMessage(ChatColor.RED + "This machine is too damaged to use!");
+				event.getPlayer().sendMessage(Color.BAD + "This machine is too damaged to use!");
 				return true;
 			}
 		}

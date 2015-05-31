@@ -1,6 +1,5 @@
 package co.sblock.events.listeners.inventory;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
@@ -29,6 +28,8 @@ import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for InventoryClickEvents.

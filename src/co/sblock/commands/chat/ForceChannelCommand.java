@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -13,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
@@ -50,7 +50,7 @@ public class ForceChannelCommand extends SblockCommand {
 		}
 		OfflineUser user = Users.getGuaranteedUser(p.getUniqueId());
 		user.setCurrentChannel(c);
-		sender.sendMessage(ChatColor.GREEN + "Channel forced!");
+		sender.sendMessage(Color.GOOD + "Channel forced!");
 		return true;
 	}
 

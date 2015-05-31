@@ -2,13 +2,15 @@ package co.sblock.commands;
 
 import java.util.Arrays;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Base to be extended by all commands registered by Sblock.
@@ -30,12 +32,12 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 
 	@Override
 	public Command setUsage(String usage) {
-		return super.setUsage(ChatColor.RED + ChatColor.translateAlternateColorCodes('&', usage));
+		return super.setUsage(Color.BAD + ChatColor.translateAlternateColorCodes('&', usage));
 	}
 
 	@Override
 	public Command setDescription(String description) {
-		return super.setDescription(ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', description));
+		return super.setDescription(Color.GOOD + ChatColor.translateAlternateColorCodes('&', description));
 	}
 
 	public Command setPermissionLevel(String group) {
@@ -49,7 +51,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 
 	@Override
 	public Command setPermissionMessage(String permissionMessage) {
-		return super.setPermissionMessage(ChatColor.RED + ChatColor.translateAlternateColorCodes('&', permissionMessage));
+		return super.setPermissionMessage(Color.BAD + ChatColor.translateAlternateColorCodes('&', permissionMessage));
 	}
 
 	public Command setAliases(String... aliases) {

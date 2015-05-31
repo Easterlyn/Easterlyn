@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,6 +38,8 @@ import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.meteors.Meteorite;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Class containing functions controlling the Entry sequence.

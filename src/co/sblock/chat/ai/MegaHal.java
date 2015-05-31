@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +28,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jibble.jmegahal.JMegaHal;
 
 import co.sblock.Sblock;
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -37,6 +36,8 @@ import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.regex.RegexUtils;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Sblock's JMegaHal implementation - Chester is just too buggy and difficult to customize.
@@ -75,9 +76,10 @@ public class MegaHal extends HalMessageHandler {
 		ItemMeta hoverMeta = hover.getItemMeta();
 		hoverMeta.setDisplayName(ChatColor.RED + "Artificial Intelligence");
 		hoverMeta.setLore(Arrays.asList(new String[] {
-				ChatColor.DARK_RED + "Sblock is not responsible",
-				ChatColor.DARK_RED + "for anything Hal says.", "",
-				ChatColor.DARK_RED + "Unless it's awesome." }));
+				Color.BAD_EMPHASIS + "Sblock is not responsible",
+				Color.BAD_EMPHASIS + "for anything Hal says.", "",
+				Color.BAD_EMPHASIS + "Unless it's awesome.", "",
+				Color.COMMAND + "/join #halchat" + Color.BAD + " to spam usage."}));
 		hover.setItemMeta(hoverMeta);
 
 		loadHal();
@@ -109,14 +111,14 @@ public class MegaHal extends HalMessageHandler {
 		if (isTrigger(msg.getCleanedMessage())) {
 			if (isOnlyTrigger(msg.getCleanedMessage())) {
 				// Set sender on fire or some shit
-				msg.getSender().sendMessage(ColorDef.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
+				msg.getSender().sendMessage(Color.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
 				return true;
 			}
 			String channel = msg.getChannel().getName();
 			if (!channel.equals("#halchat")) {
 				if (ratelimit.containsKey(channel) && ratelimit.get(msg.getChannel().getName()) > System.currentTimeMillis()) {
 					// Still on cooldown, warn a bitch
-					msg.getSender().getPlayer().sendMessage(ColorDef.HAL.replaceFirst("#", channel) + "If you want to spam with me, do /focus #halchat");
+					msg.getSender().getPlayer().sendMessage(Color.HAL.replaceFirst("#", channel) + "If you want to spam with me, do /focus #halchat");
 					Log.getLog("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return true;
 				} else {

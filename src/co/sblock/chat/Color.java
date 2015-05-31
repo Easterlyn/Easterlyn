@@ -8,7 +8,7 @@ import net.md_5.bungee.api.ChatColor;
  * @author Dublek, Jikoo
  */
 
-public class ColorDef {
+public class Color {
 
 	public static final ChatColor DEFAULT = ChatColor.WHITE;
 
@@ -23,6 +23,16 @@ public class ColorDef {
 	public static final ChatColor CHANNEL_OWNER = ChatColor.RED;
 	public static final ChatColor CHANNEL_MOD = ChatColor.AQUA;
 	public static final ChatColor CHANNEL_MEMBER = ChatColor.GOLD;
+
+	public static final ChatColor COMMAND = ChatColor.AQUA;
+
+	public static final ChatColor GOOD_PLAYER = ChatColor.GREEN;
+	public static final ChatColor GOOD = ChatColor.YELLOW;
+	public static final ChatColor GOOD_EMPHASIS = ChatColor.GOLD;
+
+	public static final ChatColor BAD_PLAYER = ChatColor.DARK_AQUA;
+	public static final ChatColor BAD = ChatColor.RED;
+	public static final ChatColor BAD_EMPHASIS = ChatColor.DARK_RED;
 
 	public static final ChatColor RAINBOW[] = {
 		ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW,

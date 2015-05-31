@@ -1,10 +1,11 @@
 package co.sblock.commands.chat;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import co.sblock.commands.SblockCommand;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for being Doc Scratch.
@@ -22,9 +23,6 @@ public class DocScratchCommand extends SblockCommand {
 					+ "No one can be the white text guy except for the white text guy.");
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.commands.SblockCommand#execute(org.bukkit.command.CommandSender, java.lang.String, java.lang.String[])
-	 */
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args == null || args.length == 0) {

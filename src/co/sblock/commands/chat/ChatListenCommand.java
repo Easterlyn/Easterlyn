@@ -3,7 +3,6 @@ package co.sblock.commands.chat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -12,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.commands.SblockCommand;
@@ -28,8 +28,8 @@ public class ChatListenCommand extends SblockCommand {
 	public ChatListenCommand() {
 		super("listen");
 		setDescription("Join a chat channel without focusing on it.");
-		setUsage(ChatColor.AQUA + "/listen <channel>"
-				+ ChatColor.YELLOW + ": Listen to <channel>.");
+		setUsage(Color.COMMAND + "/listen <channel>"
+				+ Color.GOOD + ": Listen to <channel>.");
 	}
 
 	@Override

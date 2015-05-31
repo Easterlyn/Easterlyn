@@ -1,12 +1,12 @@
 package co.sblock.events.listeners.player;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -46,7 +46,7 @@ public class CommandPreprocessListener implements Listener {
 				|| Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId()))
 				&& (isExecuting(command, "sethome"))) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "You hear a fizzling noise as your spell fails.");
+			event.getPlayer().sendMessage(Color.BAD + "You hear a fizzling noise as your spell fails.");
 			return;
 		}
 

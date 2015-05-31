@@ -22,7 +22,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.wrappers.BlockPosition;
 
 import co.sblock.Sblock;
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.events.listeners.plugin.CHBlockHealListener;
 import co.sblock.events.listeners.plugin.DynmapWebChatListener;
 import co.sblock.events.packets.SleepTeleport;
@@ -234,7 +234,7 @@ public class Events extends Module {
 			announcement = status.getAnnouncement();
 		}
 		if (announcement != null) {
-			Bukkit.broadcastMessage(ColorDef.HAL + announcement);
+			Bukkit.broadcastMessage(Color.HAL + announcement);
 			statusResample = 0;
 		}
 		this.status = status;

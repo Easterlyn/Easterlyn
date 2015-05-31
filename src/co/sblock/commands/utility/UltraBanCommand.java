@@ -51,7 +51,9 @@ public class UltraBanCommand extends SblockCommand {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + p.getUniqueId());
 		}
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + args[0]);
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ps delete " + args[0]);
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "deleteallclaims " + args[0]);
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "shopkeeper remove " + args[0]);
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "shopkeeper confirm");
 		return true;
 	}
 

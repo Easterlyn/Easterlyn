@@ -12,7 +12,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,6 +24,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.effects.FXManager;
@@ -157,22 +157,22 @@ public class OnlineUser extends OfflineUser {
 			Spectators.getInstance().removeSpectator(p);
 		}
 		if (getClient() == null) {
-			p.sendMessage(ChatColor.RED + "You must have a client to enter server mode!"
-					+ "+\nAsk someone with " + ChatColor.AQUA + "/requestclient <player>");
+			p.sendMessage(Color.BAD + "You must have a client to enter server mode!"
+					+ "+\nAsk someone with " + Color.COMMAND + "/requestclient <player>");
 			return;
 		}
 		OnlineUser u = Users.getOnlineUser(getClient());
 		if (u == null) {
-			p.sendMessage(ChatColor.RED + "You should wait for your client before progressing!");
+			p.sendMessage(Color.BAD + "You should wait for your client before progressing!");
 			return;
 		}
 		if (!u.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())) {
-			p.sendMessage(ChatColor.RED + u.getPlayerName() + " does not have the Sburb Client installed!");
+			p.sendMessage(Color.BAD + u.getPlayerName() + " does not have the Sburb Client installed!");
 			return;
 		}
 		Machine m = Machines.getInstance().getComputer(getClient());
 		if (m == null) {
-			p.sendMessage(ChatColor.RED + u.getPlayerName() + " has not placed their computer in their house!");
+			p.sendMessage(Color.BAD + u.getPlayerName() + " has not placed their computer in their house!");
 			return;
 		}
 		this.serverDisableTeleport = p.getLocation();
@@ -193,7 +193,7 @@ public class OnlineUser extends OfflineUser {
 		for (Material mat : ServerMode.getInstance().getApprovedSet()) {
 			p.getInventory().addItem(new ItemStack(mat));
 		}
-		p.sendMessage(ChatColor.GREEN + "Server mode enabled!");
+		p.sendMessage(Color.GOOD + "Server mode enabled!");
 	}
 
 	public void stopServerMode() {
@@ -213,7 +213,7 @@ public class OnlineUser extends OfflineUser {
 		p.setFallDistance(0);
 		p.setNoDamageTicks(0);
 		InventoryManager.restoreInventory(p);
-		p.sendMessage(ChatColor.GREEN + "Server program closed!");
+		p.sendMessage(Color.GOOD + "Server program closed!");
 	}
 
 	@Override
@@ -289,8 +289,8 @@ public class OnlineUser extends OfflineUser {
 			this.getListening().add("@");
 			ChannelManager.getChannelManager().getChannel("@").addListening(this.getUUID());
 		}
-		String base = new StringBuilder(ChatColor.GREEN.toString()).append(this.getDisplayName())
-				.append(ChatColor.YELLOW).append(" began pestering <>").append(ChatColor.YELLOW)
+		String base = new StringBuilder(Color.GOOD_PLAYER.toString()).append(this.getDisplayName())
+				.append(Color.GOOD).append(" began pestering <>").append(Color.GOOD)
 				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date())).toString();
 		// Heavy loopage ensues
 		for (OfflineUser u : Users.getUsers()) {
@@ -300,7 +300,7 @@ public class OnlineUser extends OfflineUser {
 			StringBuilder matches = new StringBuilder();
 			for (String s : this.getListening()) {
 				if (u.getListening().contains(s)) {
-					matches.append(ChatColor.GOLD).append(s).append(ChatColor.YELLOW).append(", ");
+					matches.append(Color.GOOD_EMPHASIS).append(s).append(Color.GOOD).append(", ");
 				}
 			}
 			String message;
@@ -341,7 +341,7 @@ public class OnlineUser extends OfflineUser {
 				this.currentChannel = null;
 			}
 		} else {
-			this.sendMessage(ChatColor.RED + "You are not listening to " + ChatColor.GOLD + channelName);
+			this.sendMessage(Color.BAD + "You are not listening to " + Color.BAD_EMPHASIS + channelName);
 		}
 	}
 

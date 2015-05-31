@@ -1,7 +1,6 @@
 package co.sblock.events.listeners.player;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +10,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
@@ -46,7 +46,7 @@ public class TeleportListener implements Listener {
 				return;
 			}
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.AQUA + player.getDisplayName() + ChatColor.YELLOW
+			event.getPlayer().sendMessage(Color.BAD_PLAYER + player.getDisplayName() + Color.BAD
 					+ " has disallowed spectating! You'll need to send a tpa.");
 			return;
 		}

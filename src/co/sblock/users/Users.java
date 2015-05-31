@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -17,7 +16,7 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.module.Module;
 
 /**
@@ -140,28 +139,27 @@ public class Users extends Module {
 	 */
 	public static void team(Player p) {
 		String teamPrefix = null;
-		for (ChatColor c : ChatColor.values()) {
-			if (p.hasPermission("sblockchat." + c.name().toLowerCase())) {
+		for (org.bukkit.ChatColor c : org.bukkit.ChatColor.values()) {
+			if ((teamPrefix == null || c.isFormat()) && p.hasPermission("sblockchat." + c.name().toLowerCase())) {
 				teamPrefix = c.toString();
-				break;
 			}
 		}
 		if (teamPrefix != null) {
 			// Do nothing, we've got a fancy override going on
 		} else if (p.hasPermission("sblock.horrorterror")) {
-			teamPrefix = ColorDef.RANK_HORRORTERROR.toString();
+			teamPrefix = Color.RANK_HORRORTERROR.toString();
 		} else if (p.hasPermission("sblock.denizen")) {
-			teamPrefix = ColorDef.RANK_DENIZEN.toString();
+			teamPrefix = Color.RANK_DENIZEN.toString();
 		} else if (p.hasPermission("sblock.felt")) {
-			teamPrefix = ColorDef.RANK_FELT.toString();
+			teamPrefix = Color.RANK_FELT.toString();
 		} else if (p.hasPermission("sblock.helper")) {
-			teamPrefix = ColorDef.RANK_HELPER.toString();
+			teamPrefix = Color.RANK_HELPER.toString();
 		} else if (p.hasPermission("sblock.donator")) {
-			teamPrefix = ColorDef.RANK_DONATOR.toString();
+			teamPrefix = Color.RANK_DONATOR.toString();
 		} else if (p.hasPermission("sblock.godtier")) {
-			teamPrefix = ColorDef.RANK_GODTIER.toString();
+			teamPrefix = Color.RANK_GODTIER.toString();
 		} else {
-			teamPrefix = ColorDef.RANK_HERO.toString();
+			teamPrefix = Color.RANK_HERO.toString();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 		String teamName = p.getName();

@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -20,9 +19,11 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.utilities.player.PlayerLoader;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Storage and access of all data saved for a User.
@@ -622,15 +623,15 @@ public class OfflineUser {
 	 * @return the profile information
 	 */
 	public String getProfile() {
-		return new StringBuilder().append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH)
-				.append("+---").append(ChatColor.DARK_AQUA).append(' ').append(getPlayerName())
-				.append(' ').append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH)
-				.append("---+\n").append(ChatColor.YELLOW).append(getUserClass().getDisplayName())
-				.append(ChatColor.DARK_AQUA).append(" of ").append(getUserAspect().getColor())
-				.append(getUserAspect().getDisplayName()).append('\n').append(ChatColor.DARK_AQUA)
+		return new StringBuilder().append(Color.GOOD).append(ChatColor.STRIKETHROUGH)
+				.append("+---").append(Color.GOOD_EMPHASIS).append(' ').append(getPlayerName())
+				.append(' ').append(Color.GOOD).append(ChatColor.STRIKETHROUGH)
+				.append("---+\n").append(Color.GOOD).append(getUserClass().getDisplayName())
+				.append(Color.GOOD_EMPHASIS).append(" of ").append(getUserAspect().getColor())
+				.append(getUserAspect().getDisplayName()).append('\n').append(Color.GOOD_EMPHASIS)
 				.append("Medium: ").append(getMediumPlanet().getColor())
 				.append(getMediumPlanet().getDisplayName()).append('\n')
-				.append(ChatColor.DARK_AQUA).append("Dream: ").append(getDreamPlanet().getColor())
+				.append(Color.GOOD_EMPHASIS).append("Dream: ").append(getDreamPlanet().getColor())
 				.append(getDreamPlanet().getDisplayName()).toString();
 	}
 
@@ -642,66 +643,66 @@ public class OfflineUser {
 	public String getWhois() {
 		StringBuilder sb = new StringBuilder();
 		//+-- Name aka Nickname from IP --+
-		sb.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+--")
-				.append(ChatColor.DARK_AQUA).append(' ').append(getPlayerName())
-				.append(ChatColor.YELLOW).append(" from ").append(ChatColor.DARK_AQUA)
-				.append(getUserIP()).append(ChatColor.YELLOW).append(' ')
+		sb.append(Color.GOOD).append(ChatColor.STRIKETHROUGH).append("+--")
+				.append(Color.GOOD_EMPHASIS).append(' ').append(getPlayerName())
+				.append(Color.GOOD).append(" from ").append(Color.GOOD_EMPHASIS)
+				.append(getUserIP()).append(Color.GOOD).append(' ')
 				.append(ChatColor.STRIKETHROUGH).append("--+\n");
 
 		// If stored, Previously known as: Name
 		if (yaml.getString("previousname") != null) {
-			sb.append(ChatColor.YELLOW).append("Previously known as: ").append(ChatColor.DARK_AQUA)
+			sb.append(Color.GOOD).append("Previously known as: ").append(Color.GOOD_EMPHASIS)
 					.append(yaml.getString("previousname")).append('\n');
 		}
 
 		// Class of Aspect, dream, planet
-		sb.append(ChatColor.DARK_AQUA).append(getUserClass().getDisplayName())
-				.append(ChatColor.YELLOW).append(" of ").append(ChatColor.DARK_AQUA)
-				.append(getUserAspect().getDisplayName()).append(ChatColor.YELLOW).append(", ")
-				.append(ChatColor.DARK_AQUA).append(getDreamPlanet().getDisplayName())
-				.append(ChatColor.YELLOW).append(", ").append(ChatColor.DARK_AQUA)
+		sb.append(Color.GOOD_EMPHASIS).append(getUserClass().getDisplayName())
+				.append(Color.GOOD).append(" of ").append(Color.GOOD_EMPHASIS)
+				.append(getUserAspect().getDisplayName()).append(Color.GOOD).append(", ")
+				.append(Color.GOOD_EMPHASIS).append(getDreamPlanet().getDisplayName())
+				.append(Color.GOOD).append(", ").append(Color.GOOD_EMPHASIS)
 				.append(getMediumPlanet().getDisplayName()).append('\n');
 
 		// Loc: current location, Region: region
-		sb.append(ChatColor.YELLOW).append("Loc: ").append(ChatColor.DARK_AQUA)
+		sb.append(Color.GOOD).append("Loc: ").append(Color.GOOD_EMPHASIS)
 				.append(BukkitSerializer.locationToBlockCenterString(getCurrentLocation()))
-				.append(ChatColor.YELLOW).append(", Region: ").append(ChatColor.DARK_AQUA)
+				.append(Color.GOOD).append(", Region: ").append(Color.GOOD_EMPHASIS)
 				.append(getCurrentRegion().getDisplayName()).append('\n');
 
 		// Prev loc: loc prior to change to/from dreamplanet, Prev region: region of said location
-		sb.append(ChatColor.YELLOW).append("Prev loc: ").append(ChatColor.DARK_AQUA)
+		sb.append(Color.GOOD).append("Prev loc: ").append(Color.GOOD_EMPHASIS)
 				.append(BukkitSerializer.locationToBlockCenterString(previousLocation))
-				.append(ChatColor.YELLOW).append(", Prev region: ").append(ChatColor.DARK_AQUA)
+				.append(Color.GOOD).append(", Prev region: ").append(Color.GOOD_EMPHASIS)
 				.append(Region.getRegion(getPreviousLocation().getWorld().getName())).append('\n');
 
 		// Progression: PROGRESSION, Programs: [list]
-		sb.append(ChatColor.YELLOW).append("Progression: ").append(ChatColor.DARK_AQUA)
-				.append(getProgression().name()).append(ChatColor.YELLOW)
-				.append(", Programs: ").append(ChatColor.DARK_AQUA)
+		sb.append(Color.GOOD).append("Progression: ").append(Color.GOOD_EMPHASIS)
+				.append(getProgression().name()).append(Color.GOOD)
+				.append(", Programs: ").append(Color.GOOD_EMPHASIS)
 				.append(getPrograms()).append('\n');
 
 		// Server: UUID, Client: UUID
-		sb.append(ChatColor.YELLOW).append("Server: ").append(ChatColor.DARK_AQUA)
-				.append(getServer() != null ? getServer() : "null").append(ChatColor.YELLOW)
-				.append(", Client: ").append(ChatColor.DARK_AQUA)
+		sb.append(Color.GOOD).append("Server: ").append(Color.GOOD_EMPHASIS)
+				.append(getServer() != null ? getServer() : "null").append(Color.GOOD)
+				.append(", Client: ").append(Color.GOOD_EMPHASIS)
 				.append(getClient() != null ? getClient() : "null").append('\n');
 
 		// Pestering: current, Listening: [list]
-		sb.append(ChatColor.YELLOW).append("Pestering: ").append(ChatColor.DARK_AQUA)
+		sb.append(Color.GOOD).append("Pestering: ").append(Color.GOOD_EMPHASIS)
 				.append(getCurrentChannel() != null ? getCurrentChannel().getName() : "null")
-				.append(ChatColor.YELLOW).append(", Listening: ").append(ChatColor.DARK_AQUA)
+				.append(Color.GOOD).append(", Listening: ").append(Color.GOOD_EMPHASIS)
 				.append(getListening()).append('\n');
 
 		// Muted: boolean, Suppressing: boolean
-		sb.append(ChatColor.YELLOW).append("Muted: ").append(ChatColor.DARK_AQUA).append(getMute())
-				.append(ChatColor.YELLOW).append(", Suppressing: ").append(ChatColor.DARK_AQUA)
+		sb.append(Color.GOOD).append("Muted: ").append(Color.GOOD_EMPHASIS).append(getMute())
+				.append(Color.GOOD).append(", Suppressing: ").append(Color.GOOD_EMPHASIS)
 				.append(getSuppression()).append('\n');
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm 'on' dd/MM/YY");
 		// Seen: date, Playtime: X days, XX:XX since XX:XX on XX/XX/XX
-		sb.append(ChatColor.YELLOW).append("Seen: ").append(ChatColor.DARK_AQUA)
+		sb.append(Color.GOOD).append("Seen: ").append(Color.GOOD_EMPHASIS)
 				.append(dateFormat.format(new Date(getOfflinePlayer().getLastPlayed())))
-				.append(ChatColor.YELLOW).append(", Ingame: ").append(ChatColor.DARK_AQUA)
+				.append(Color.GOOD).append(", Ingame: ").append(Color.GOOD_EMPHASIS)
 				.append(getTimePlayed()).append(" since ")
 				.append(dateFormat.format(getOfflinePlayer().getFirstPlayed()));
 
@@ -792,10 +793,10 @@ public class OfflineUser {
 
 				if (!player.hasPlayedBefore()) {
 					// Our data file may have just been deleted - reset planned for Entry, etc.
-					Bukkit.broadcastMessage(ColorDef.HAL + "It would seem that " + player.getName()
+					Bukkit.broadcastMessage(Color.HAL + "It would seem that " + player.getName()
 							+ " is joining us for the first time! Please welcome them.");
 				} else {
-					player.sendMessage(ColorDef.HAL + "We've reset classpect since you last played. Please re-select now!");
+					player.sendMessage(Color.HAL + "We've reset classpect since you last played. Please re-select now!");
 				}
 				return user;
 			}
@@ -828,7 +829,7 @@ public class OfflineUser {
 		String name = yaml.getString("name");
 		if (name != null && !name.equals(Bukkit.getOfflinePlayer(uuid).getName())) {
 			yaml.set("previousname", name);
-			Bukkit.broadcastMessage(ColorDef.HAL + Bukkit.getOfflinePlayer(uuid).getName() + " was previously known as " + name);
+			Bukkit.broadcastMessage(Color.HAL + Bukkit.getOfflinePlayer(uuid).getName() + " was previously known as " + name);
 		}
 		return user;
 	}

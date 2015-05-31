@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,6 +16,7 @@ import com.mojang.authlib.GameProfile;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Color;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
@@ -24,6 +24,8 @@ import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.player.DummyPlayer;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Reimplementation of messaging.
@@ -66,7 +68,7 @@ public class MessageCommand extends SblockCommand {
 				return false;
 			}
 			if (!reply.containsKey(senderProfile)) {
-				sender.sendMessage(ChatColor.RED + "You do not have anyone to reply to!");
+				sender.sendMessage(Color.BAD + "You do not have anyone to reply to!");
 				return true;
 			}
 			recipientProfile = reply.get(senderProfile);
@@ -75,7 +77,7 @@ public class MessageCommand extends SblockCommand {
 			if (reply.hasPlayedBefore()) {
 				// Ensure that they're online
 				if (!reply.isOnline()) {
-					sender.sendMessage(ChatColor.RED + "The person you were talking to has logged out!");
+					sender.sendMessage(Color.BAD + "The person you were talking to has logged out!");
 					return true;
 				}
 				recipientPlayer = reply.getPlayer();
@@ -89,7 +91,7 @@ public class MessageCommand extends SblockCommand {
 			} else {
 				List<Player> players = Bukkit.matchPlayer(args[0]);
 				if (players.size() == 0) {
-					sender.sendMessage(ChatColor.RED + "That player is not online!");
+					sender.sendMessage(Color.BAD + "That player is not online!");
 					return true;
 				}
 				recipientPlayer = players.get(0);

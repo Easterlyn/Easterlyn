@@ -10,6 +10,7 @@ import co.sblock.users.OfflineUser;
 
 import net.md_5.bungee.api.ChatColor;
 
+
 /**
  * A container for all messages sent to <code>Player</code>s from various Chat subsections.
  * 
@@ -20,7 +21,7 @@ public class ChatMsgs {
 	public static String onChannelJoin(OfflineUser user, Channel channel) {
 		String name = user.getPlayer().getDisplayName();
 		String message = "pestering";
-		ChatColor nameC = ChatColor.GREEN;
+		ChatColor nameC = Color.GOOD_PLAYER;
 		if (channel.hasNick(user)) {
 			name = channel.getNick(user);
 			if (channel.getType().equals(ChannelType.RP)) {
@@ -29,9 +30,8 @@ public class ChatMsgs {
 				name = CanonNick.getNick(name).getHandle();
 			}
 		}
-		return nameC + name + ChatColor.YELLOW + " began "
-				+ message + " " + ChatColor.GOLD
-				+ channel.getName() + ChatColor.YELLOW + " at "
+		return nameC + name + Color.GOOD + " began " + message + " " + Color.GOOD_EMPHASIS
+				+ channel.getName() + Color.GOOD + " at "
 				+ new SimpleDateFormat("HH:mm").format(new Date());
 	}
 
@@ -40,134 +40,124 @@ public class ChatMsgs {
 	}
 
 	public static String onChannelSetCurrent(String channelName) {
-		return ChatColor.YELLOW + "Current channel set to " + ChatColor.GOLD + channelName;
+		return Color.GOOD + "Current channel set to " + Color.GOOD_EMPHASIS + channelName;
 	}
 
 	public static String onChannelDisband(String channelName) {
-		return ChatColor.GOLD + channelName + ChatColor.RED
+		return Color.BAD_EMPHASIS + channelName + Color.BAD
 				+ " has been disbanded! These are indeed dark times...";
 	}
 
 	public static String onUserMute(String name) {
-		return ChatColor.YELLOW + name + ChatColor.RED + " has been muted in all channels.";
+		return Color.BAD_PLAYER + name + Color.BAD + " has been muted in all channels.";
 	}
 
 	public static String onUserUnmute(String name) {
-		return ChatColor.YELLOW + name + ChatColor.GREEN + " has been unmuted in all channels.";
+		return Color.GOOD + name + Color.GOOD + " has been unmuted in all channels.";
 	}
 
 	public static String onUserKickAnnounce(String userName, String channelName) {
-		return ChatColor.YELLOW + userName + " has been kicked from " + ChatColor.GOLD
-				+ channelName + ChatColor.YELLOW + "!";
+		return Color.BAD_PLAYER + userName + " has been kicked from " + Color.BAD_EMPHASIS
+				+ channelName + Color.BAD + "!";
 	}
 
 	public static String onUserBanAnnounce(String userName, String channelName) {
-		return ChatColor.YELLOW + userName + ChatColor.RED + " has been " + ChatColor.BOLD
-				+ "banned" + ChatColor.RED + " from " + ChatColor.GOLD + channelName
-				+ ChatColor.RED + "!";
+		return Color.BAD_PLAYER + userName + Color.BAD + " has been " + Color.BAD_EMPHASIS
+				+ "banned" + Color.BAD + " from " + Color.BAD_EMPHASIS + channelName
+				+ Color.BAD + "!";
 	}
 
 	public static String onUserUnbanAnnounce(String userName, String channelName) {
-		return ChatColor.YELLOW + userName + ChatColor.RED + " has been " + ChatColor.BOLD
-				+ "unbanned" + ChatColor.RED + " from " + ChatColor.GOLD + channelName
-				+ ChatColor.RED + "!";
+		return Color.GOOD_PLAYER + userName + Color.GOOD + " has been " + Color.GOOD_EMPHASIS
+				+ "unbanned" + Color.GOOD + " from " + Color.GOOD_EMPHASIS + channelName
+				+ Color.GOOD + "!";
 	}
 
 	public static String onUserApproved(String userName, String channelName) {
-		return ChatColor.YELLOW + userName + " has been approved in "
-				+ ChatColor.GOLD + channelName + ChatColor.YELLOW + "!";
+		return Color.GOOD + userName + " has been approved in "
+				+ Color.GOOD_EMPHASIS + channelName + Color.GOOD + "!";
 	}
 
 	public static String onUserDeapproved(String userName, String channelName) {
-		return ChatColor.YELLOW + userName + " has been deapproved in "
-				+ ChatColor.GOLD + channelName + ChatColor.YELLOW + "!";
+		return Color.BAD_PLAYER + userName + Color.BAD + " has been deapproved in "
+				+ Color.BAD_EMPHASIS + channelName + Color.BAD + "!";
 	}
 
 	public static String onChannelModAdd(String userName, String channelName) {
-		return ChatColor.YELLOW + userName + " is now a mod in " + ChatColor.GOLD + channelName
-				+ ChatColor.YELLOW + "!";
-	}
-
-	public static String onUserSetGlobalNick(String userName, String nick) {
-		return ChatColor.YELLOW + userName + ChatColor.BLUE + " shall henceforth be know as "
-				+ ChatColor.YELLOW + nick;
-	}
-
-	public static String onUserRmGlobalNick(String userName, String nick) {
-		return ChatColor.YELLOW + userName + ChatColor.BLUE + " is no longer known as "
-				+ ChatColor.YELLOW + nick;
+		return Color.GOOD_PLAYER + userName + Color.GOOD + " is now a mod in "
+				+ Color.GOOD_EMPHASIS + channelName + Color.GOOD + "!";
 	}
 
 	public static String onUserSetNick(String userName, String nick, String channelName) {
-		return ChatColor.YELLOW + userName + ChatColor.BLUE + " is now known as "
-				+ ChatColor.YELLOW + nick + ChatColor.YELLOW + " in " + channelName;
+		return Color.GOOD_PLAYER + userName + Color.GOOD + " is now known as " + Color.GOOD_PLAYER
+				+ nick + Color.GOOD + " in " + Color.GOOD_EMPHASIS + channelName;
 	}
 
 	public static String onUserRmNick(String userName, String nick, String channelName) {
-		return ChatColor.YELLOW + userName + ChatColor.BLUE + " is no longer known as "
-				+ ChatColor.YELLOW + nick + ChatColor.YELLOW + " in " + channelName;
+		return Color.BAD_PLAYER + userName + Color.BAD + " is no longer known as "
+				+ Color.BAD_PLAYER + nick + Color.BAD + " in " + Color.BAD + channelName;
 	}
 
 	public static String onChannelCommandFail(String channelName) {
-		return ChatColor.RED + "You do not have high enough access in " + ChatColor.GOLD
-				+ channelName + ChatColor.RED + " to perform that action!";
+		return Color.BAD + "You do not have high enough access in " + Color.BAD_EMPHASIS
+				+ channelName + Color.BAD + " to perform that action!";
 	}
 
 	public static String onChannelModRm(String userName, String channelName) {
-		return ChatColor.YELLOW + userName + ChatColor.RED + " is no longer a mod in " + ChatColor.GOLD
-				+ channelName + ChatColor.RED + "!";
+		return Color.BAD_EMPHASIS + userName + Color.BAD + " is no longer a mod in " + Color.BAD_EMPHASIS
+				+ channelName + Color.BAD + "!";
 	}
 
 	public static String onUserDeniedPrivateAccess(String channelName) {
-		return ChatColor.GOLD + channelName + ChatColor.RED + " is a private channel."
-				+ ChatColor.YELLOW + " Ask a channel mod for access!";
+		return Color.BAD_EMPHASIS + channelName + Color.BAD + " is a private channel."
+				+ Color.GOOD + " Ask a channel mod for access!";
 	}
 
 	public static String errorInvalidChannel(String channelName) {
-		return ChatColor.RED + "Channel " + ChatColor.GOLD + channelName + ChatColor.RED
+		return Color.BAD + "Channel " + Color.BAD_EMPHASIS + channelName + Color.BAD
 				+ " does not exist!";
 	}
 
 	public static String unsupportedOperation(String channelName) {
-		return ChatColor.RED + "Channel " + ChatColor.GOLD + channelName + ChatColor.RED
+		return Color.BAD + "Channel " + Color.BAD_EMPHASIS + channelName + Color.BAD
 				+ " does not support that operation.";
 	}
 
 	public static String errorInvalidUser(String userName) {
-		return ChatColor.YELLOW + userName + ChatColor.RED + " does not exist! Get them to log in.";
+		return Color.BAD_PLAYER + userName + Color.BAD + " does not exist! Get them to log in.";
 	}
 
 	public static String errorNoCurrent() {
-		return ChatColor.RED + "You must set a current channel to chat! Use "
-				+ ChatColor.AQUA + "/join <channel>";
+		return Color.BAD + "You must set a current channel to chat! Use "
+				+ Color.COMMAND + "/join <channel>";
 	}
 
 	public static String errorAlreadyListening(String channelName) {
-		return ChatColor.RED + "You are already listening to channel " + ChatColor.GOLD + channelName;
+		return Color.BAD + "You are already listening to channel " + Color.BAD_EMPHASIS + channelName;
 	}
 
 	public static String errorNickNotCanon(String nick) {
-		return ChatColor.GOLD + nick + ChatColor.RED + " is not a canon nickname! Use "
-				+ ChatColor.AQUA + "/nick list" + ChatColor.RED + " for a list.";
+		return Color.BAD_EMPHASIS + nick + Color.BAD + " is not a canon nickname! Use "
+				+ Color.COMMAND + "/nick list" + Color.BAD + " for a list.";
 	}
 
 	public static String errorNickInUse(String nick) {
-		return ChatColor.GOLD + nick + ChatColor.RED + " is already in use!";
+		return Color.BAD_EMPHASIS + nick + Color.BAD + " is already in use!";
 	}
 
 	public static String errorRegionChannelJoin() {
-		return ChatColor.RED + "You cannot join a region channel!";
+		return Color.BAD + "You cannot join a region channel!";
 	}
 
 	public static String errorRegionChannelLeave() {
-		return ChatColor.RED + "You cannot leave a region channel!";
+		return Color.BAD + "You cannot leave a region channel!";
 	}
 
 	public static String errorEmptyMessage() {
-		return ChatColor.RED + "You cannot send empty messages!";
+		return Color.BAD + "You cannot send empty messages!";
 	}
 
 	public static String errorDisbandDefault() {
-		return ChatColor.RED + "Hardcoded default channels cannot be disbanded.";
+		return Color.BAD + "Hardcoded default channels cannot be disbanded.";
 	}
 }

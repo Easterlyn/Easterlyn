@@ -1,7 +1,6 @@
 package co.sblock.events.listeners.block;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,6 +9,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.PBO;
@@ -40,7 +40,7 @@ public class PlaceListener implements Listener {
 			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "You decide against fussing with the internals of this machine.");
+			event.getPlayer().sendMessage(Color.BAD + "You decide against fussing with the internals of this machine.");
 		}
 
 		// Server mode placement

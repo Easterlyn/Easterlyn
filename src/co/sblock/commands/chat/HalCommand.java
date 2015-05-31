@@ -8,11 +8,10 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.messages.RawAnnouncer;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for manipulating the raw message announcer.
@@ -36,7 +35,7 @@ public class HalCommand extends SblockCommand {
 			try {
 				int msgNum = Integer.valueOf(args[0]);
 				if (msgNum > RawAnnouncer.getInstance().getMessages().size()) {
-					sender.sendMessage(ChatColor.RED.toString() + RawAnnouncer.getInstance().getMessages().size() + " announcements exist currently.");
+					sender.sendMessage(Color.BAD.toString() + RawAnnouncer.getInstance().getMessages().size() + " announcements exist currently.");
 					msgNum = RawAnnouncer.getInstance().getMessages().size();
 				}
 				msg = RawAnnouncer.getInstance().getMessages().get(msgNum - 1);

@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
@@ -38,6 +37,8 @@ import co.sblock.Sblock;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * A set of useful methods for inventory functions.

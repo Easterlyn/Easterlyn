@@ -4,15 +4,17 @@ import java.util.List;
 
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for a dual ip and UUID ban.
@@ -48,8 +50,9 @@ public class SuperBanCommand extends SblockCommand {
 		if (target.contains(".")) { // IPs probably shouldn't be announced.
 			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, sender.getName());
 		} else {
-			Bukkit.broadcastMessage(ChatColor.DARK_RED + target
-					+ " has been wiped from the face of the multiverse. " + reason.toString());
+			Bukkit.broadcastMessage(Color.BAD_PLAYER + target + Color.BAD
+					+ " has been wiped from the face of the multiverse. "
+					+ Color.BAD_EMPHASIS + reason.toString());
 			banByName(sender, target, reason.toString());
 		}
 		return true;

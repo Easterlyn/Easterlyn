@@ -2,7 +2,6 @@ package co.sblock.machines.type;
 
 import java.util.Map.Entry;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +23,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
@@ -210,7 +210,7 @@ public class Transportalizer extends Machine {
 		// Check for a sign in the proper location
 		Block signBlock = this.key.clone().add(new Vector(0, 2, 0)).getBlock();
 		if (signBlock.getType() != Material.WALL_SIGN) {
-			event.getPlayer().sendMessage(ChatColor.RED
+			event.getPlayer().sendMessage(Color.BAD
 					+ "Please place a sign on your transportalizer between the buttons to use it."
 					+ "\nThe third row should contain your desired coordinates in x,y,x format."
 					+ "\nAll the other rows can contain whatever you like.");
@@ -221,7 +221,7 @@ public class Transportalizer extends Machine {
 		// Check sign for proper format - sign lines are 0-3, third line is line 2
 		String line3 = sign.getLine(2);
 		if (!line3.matches("\\-?[0-9]+, ?[0-9]+, ?\\-?[0-9]+")) {
-			event.getPlayer().sendMessage(ChatColor.RED
+			event.getPlayer().sendMessage(Color.BAD
 					+ "The third line of your transportalizer sign must contain "
 					+ "your desired destination in x, y, z format. Ex: 0, 64, 0");
 			return false;
@@ -245,7 +245,7 @@ public class Transportalizer extends Machine {
 		int cost = (int) (key.distance(remote) / 50 + 1);
 		// CHECK FUEL
 		if (fuel < cost) {
-			event.getPlayer().sendMessage(ChatColor.RED
+			event.getPlayer().sendMessage(Color.BAD
 					+ "The Transportalizer begins humming through standard teleport procedure,"
 					+ " when all of a sudden it growls to a halt."
 					+ "\nPerhaps it requires more fuel?");

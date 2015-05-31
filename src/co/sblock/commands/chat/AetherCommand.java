@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,11 +14,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
+import co.sblock.users.Region;
 import co.sblock.users.Users;
 import co.sblock.utilities.player.DummyPlayer;
 
@@ -36,10 +37,10 @@ public class AetherCommand extends SblockAsynchronousCommand {
 	static {
 		HOVER = new ItemStack(Material.WEB);
 		ItemMeta hoverMeta = HOVER.getItemMeta();
-		hoverMeta.setDisplayName(ChatColor.WHITE + "IRC Chat");
+		hoverMeta.setDisplayName(Color.GOOD_EMPHASIS + "IRC Chat");
 		hoverMeta.setLore(Arrays.asList(new String[] {
-				ChatColor.GRAY + "Server: irc.freenode.net",
-				ChatColor.GRAY + "Channel: #sblockserver" }));
+				Color.GOOD + "Server: irc.freenode.net",
+				Color.GOOD + "Channel: #sblockserver" }));
 		HOVER.setItemMeta(hoverMeta);
 
 		SENDER = new DummyPlayer(Bukkit.getConsoleSender());
@@ -57,7 +58,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args.length < 2) {
-			sender.sendMessage(ChatColor.RED + "Hey Adam, stop faking empty IRC messages.");
+			sender.sendMessage(Color.BAD + "Hey Adam, stop faking empty IRC messages.");
 			return true;
 		}
 
@@ -69,7 +70,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 
 		Channel aether = ChannelManager.getChannelManager().getChannel("#Aether");
 		// set channel before and after to prevent @channel changing while also stripping invalid characters
-		MessageBuilder builder = new MessageBuilder().setSender(ChatColor.WHITE + name)
+		MessageBuilder builder = new MessageBuilder().setSender(Region.UNKNOWN.getColor() + name)
 				.setChannel(aether).setMessage(msg).setChannel(aether).setChannelClick("@# ")
 				.setNameClick("@# ").setNameHover(HOVER);
 

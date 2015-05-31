@@ -3,7 +3,6 @@ package co.sblock.commands.chat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -12,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.commands.SblockCommand;
@@ -28,8 +28,8 @@ public class ChatFocusCommand extends SblockCommand {
 	public ChatFocusCommand() {
 		super("focus");
 		setDescription("Join or focus on a chat channel.");
-		setUsage(ChatColor.AQUA + "/join <channel>"
-				+ ChatColor.YELLOW + ": Join or focus on <channel>.");
+		setUsage(Color.COMMAND + "/join <channel>"
+				+ Color.GOOD + ": Join or focus on <channel>.");
 		setAliases("join", "current");
 	}
 

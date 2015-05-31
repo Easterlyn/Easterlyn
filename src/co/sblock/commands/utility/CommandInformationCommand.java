@@ -3,7 +3,6 @@ package co.sblock.commands.utility;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
@@ -11,6 +10,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -36,21 +36,21 @@ public class CommandInformationCommand extends SblockCommand {
 			command = Sblock.getInstance().getCommandMap().getCommand("cmdinfo");
 		}
 		if (command == null) {
-			sender.sendMessage(ChatColor.RED + "Invalid command! /cmdinfo <command>");
+			sender.sendMessage(Color.BAD + "Invalid command! /cmdinfo <command>");
 			return true;
 		}
-		sender.sendMessage(ChatColor.DARK_AQUA + "Primary command: " + ChatColor.YELLOW + command.getName());
-		sender.sendMessage(ChatColor.DARK_AQUA + "Description: " + ChatColor.YELLOW + command.getDescription());
-		sender.sendMessage(ChatColor.DARK_AQUA + "Usage: " + ChatColor.YELLOW + command.getUsage());
-		sender.sendMessage(ChatColor.DARK_AQUA + "Permission: " + ChatColor.YELLOW + command.getPermission());
+		sender.sendMessage(Color.GOOD + "Primary command: " + Color.GOOD_EMPHASIS + command.getName());
+		sender.sendMessage(Color.GOOD + "Description: " + Color.GOOD_EMPHASIS + command.getDescription());
+		sender.sendMessage(Color.GOOD + "Usage: " + Color.GOOD_EMPHASIS + command.getUsage());
+		sender.sendMessage(Color.GOOD + "Permission: " + Color.GOOD_EMPHASIS + command.getPermission());
 		if (command.getAliases().size() > 0) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "Aliases: " + ChatColor.YELLOW + command.getAliases());
+			sender.sendMessage(Color.GOOD + "Aliases: " + Color.GOOD_EMPHASIS + command.getAliases());
 		}
 		if (command instanceof PluginIdentifiableCommand) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "Owning plugin: " + ChatColor.YELLOW + ((PluginIdentifiableCommand) command).getPlugin().getName());
+			sender.sendMessage(Color.GOOD + "Owning plugin: " + Color.GOOD_EMPHASIS + ((PluginIdentifiableCommand) command).getPlugin().getName());
 		} else {
-			sender.sendMessage(ChatColor.DARK_AQUA + "Command is most likely vanilla.");
-			sender.sendMessage(ChatColor.DARK_AQUA + "Class: " + ChatColor.YELLOW + command.getClass().getName());
+			sender.sendMessage(Color.GOOD + "Command is most likely vanilla.");
+			sender.sendMessage(Color.GOOD + "Class: " + Color.GOOD_EMPHASIS + command.getClass().getName());
 		}
 		return true;
 	}

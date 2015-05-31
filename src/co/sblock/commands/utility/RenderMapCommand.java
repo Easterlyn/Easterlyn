@@ -3,7 +3,6 @@ package co.sblock.commands.utility;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -14,6 +13,7 @@ import org.bukkit.map.MapView.Scale;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -39,7 +39,7 @@ public class RenderMapCommand extends SblockCommand {
 		Player player = (Player) sender;
 		ItemStack mapItem = player.getItemInHand();
 		if (mapItem.getType() != Material.EMPTY_MAP) {
-			sender.sendMessage(ChatColor.RED + "You must be holding a blank map in your hand.");
+			sender.sendMessage(Color.BAD + "You must be holding a blank map in your hand.");
 			return true;
 		}
 		MapView view = Bukkit.createMap(player.getWorld());
@@ -50,13 +50,13 @@ public class RenderMapCommand extends SblockCommand {
 				x = Integer.valueOf(args[0]);
 				z = Integer.valueOf(args[1]);
 			} catch (NumberFormatException e) {
-				sender.sendMessage(ChatColor.RED + "Invalid coordinates! Ex. /rendermap 0 0");
+				sender.sendMessage(Color.BAD + "Invalid coordinates! Ex. /rendermap 0 0");
 				return true;
 			}
 			if (args.length > 2) {
 				World world = Bukkit.getWorld(args[2]);
 				if (world == null) {
-					sender.sendMessage(ChatColor.RED + "Invalid world! Ex. /rendermap 0 0 Earth_the_end");
+					sender.sendMessage(Color.BAD + "Invalid world! Ex. /rendermap 0 0 Earth_the_end");
 					return true;
 				}
 				view.setWorld(world);

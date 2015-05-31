@@ -3,7 +3,7 @@ package co.sblock.commands.chat;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -29,10 +29,10 @@ public class LordEnglishCommand extends SblockCommand {
 		}
 		StringBuilder leOut = new StringBuilder();
 		for (int i = 0; i < msg.length();) {
-			for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
+			for (int j = 0; j < Color.RAINBOW.length; j++) {
 				if (i >= msg.length())
 					break;
-				leOut.append(ColorDef.RAINBOW[j]).append(msg.charAt(i));
+				leOut.append(Color.RAINBOW[j]).append(msg.charAt(i));
 				i++;
 			}
 		}

@@ -2,7 +2,6 @@ package co.sblock.events.listeners.player;
 
 import java.util.HashMap;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -12,6 +11,8 @@ import co.sblock.effects.fx.SblockFX;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for PlayerDropItemEvents.

@@ -3,7 +3,6 @@ package co.sblock.events.listeners.player;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
@@ -17,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
+import co.sblock.chat.Color;
 import co.sblock.effects.FXManager;
 import co.sblock.effects.fx.SblockFX;
 import co.sblock.events.Events;
@@ -34,6 +34,8 @@ import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.progression.ServerMode;
 import co.sblock.utilities.vote.SleepVote;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for PlayerInteractEvents.
@@ -73,7 +75,7 @@ public class InteractListener implements Listener {
 			// No interaction with any blocks while out of range.
 			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
 					user, event.getClickedBlock())) {
-				event.getPlayer().sendMessage(ChatColor.RED + "Block out of range!");
+				event.getPlayer().sendMessage(Color.BAD + "Block out of range!");
 				event.setCancelled(true);
 				return;
 			}
@@ -139,7 +141,7 @@ public class InteractListener implements Listener {
 						SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					} else {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "It's not dark or raining!");
+						event.getPlayer().sendMessage(Color.BAD + "It's not dark or raining!");
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					}
 					event.setCancelled(true);

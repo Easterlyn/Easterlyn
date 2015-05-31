@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -16,6 +15,7 @@ import org.bukkit.entity.Entity;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockAsynchronousCommand;
 
 /**
@@ -42,7 +42,7 @@ public class ServerInformationCommand extends SblockAsynchronousCommand {
 		} else {
 			final World world = Bukkit.getWorld(args[0]);
 			if (world == null) {
-				sender.sendMessage(ChatColor.RED + "No such world " + args[0] + " loaded!");
+				sender.sendMessage(Color.BAD + "No such world " + args[0] + " loaded!");
 				return true;
 			}
 			worlds = new ArrayList<>();
@@ -57,7 +57,7 @@ public class ServerInformationCommand extends SblockAsynchronousCommand {
 			file.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
-			sender.sendMessage(ChatColor.RED + "IOException creating report.txt");
+			sender.sendMessage(Color.BAD + "IOException creating report.txt");
 			return true;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -94,10 +94,10 @@ public class ServerInformationCommand extends SblockAsynchronousCommand {
 		try (FileWriter writer = new FileWriter(file)) {
 			writer.write(sb.toString());
 		} catch (IOException e) {
-			sender.sendMessage(ChatColor.RED + "IOException creating report.txt");
+			sender.sendMessage(Color.BAD + "IOException creating report.txt");
 			return true;
 		}
-		sender.sendMessage(ChatColor.GREEN + "Report written to plugins/Sblock/report.txt");
+		sender.sendMessage(Color.GOOD + "Report written to plugins/Sblock/report.txt");
 		return true;
 	}
 

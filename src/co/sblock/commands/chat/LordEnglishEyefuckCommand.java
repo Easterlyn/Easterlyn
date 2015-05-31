@@ -1,11 +1,12 @@
 package co.sblock.commands.chat;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import co.sblock.chat.ColorDef;
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for making people want to gouge their eyes out.
@@ -30,10 +31,10 @@ public class LordEnglishEyefuckCommand extends SblockCommand {
 		}
 		StringBuilder lelOut = new StringBuilder();
 		for (int i = 0; i < msg.length();) {
-			for (int j = 0; j < ColorDef.RAINBOW.length; j++) {
+			for (int j = 0; j < Color.RAINBOW.length; j++) {
 				if (i >= msg.length())
 					break;
-				lelOut.append(ColorDef.RAINBOW[j]).append(ChatColor.MAGIC).append(msg.charAt(i));
+				lelOut.append(Color.RAINBOW[j]).append(ChatColor.MAGIC).append(msg.charAt(i));
 				i++;
 			}
 		}

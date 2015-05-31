@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for using the halculate function just for yourself.

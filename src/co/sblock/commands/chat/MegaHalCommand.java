@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
 
@@ -13,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.commands.SblockCommand;
 
@@ -36,7 +36,7 @@ public class MegaHalCommand extends SblockCommand {
 		if (args.length >= 1) {
 			target = ChannelManager.getChannelManager().getChannel(args[0]);
 			if (target == null) {
-				sender.sendMessage(ChatColor.RED + "Invalid channel: " + args[0]);
+				sender.sendMessage(Color.BAD + "Invalid channel: " + args[0]);
 				return true;
 			}
 		} else {
