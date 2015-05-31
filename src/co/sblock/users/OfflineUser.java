@@ -644,10 +644,9 @@ public class OfflineUser {
 		//+-- Name aka Nickname from IP --+
 		sb.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+--")
 				.append(ChatColor.DARK_AQUA).append(' ').append(getPlayerName())
-				.append(ChatColor.YELLOW).append(" aka ").append(ChatColor.DARK_AQUA)
-				.append(getDisplayName()).append(ChatColor.YELLOW).append(" from ")
-				.append(ChatColor.DARK_AQUA).append(getUserIP()).append(ChatColor.YELLOW)
-				.append(' ').append(ChatColor.STRIKETHROUGH).append("--+\n");
+				.append(ChatColor.YELLOW).append(" from ").append(ChatColor.DARK_AQUA)
+				.append(getUserIP()).append(ChatColor.YELLOW).append(' ')
+				.append(ChatColor.STRIKETHROUGH).append("--+\n");
 
 		// If stored, Previously known as: Name
 		if (yaml.getString("previousname") != null) {

@@ -43,7 +43,7 @@ import co.sblock.utilities.regex.RegexUtils;
  * 
  * @author Jikoo
  */
-public class MegaHal {
+public class MegaHal extends HalMessageHandler {
 
 	private final Pattern exactPattern, whitespacePattern;
 	private final JMegaHal hal;
@@ -100,16 +100,17 @@ public class MegaHal {
 		return regex.toString();
 	}
 
-	public void handleMessage(Message msg, Collection<Player> recipients) {
+	@Override
+	public boolean handleMessage(Message msg, Collection<Player> recipients) {
 		if (msg.getSender() == null || msg.getChannel().getType() == ChannelType.NICK
 				|| msg.getChannel().getType() == ChannelType.RP) {
-			return;
+			return true;
 		}
 		if (isTrigger(msg.getCleanedMessage())) {
 			if (isOnlyTrigger(msg.getCleanedMessage())) {
 				// Set sender on fire or some shit
 				msg.getSender().sendMessage(ColorDef.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
-				return;
+				return true;
 			}
 			String channel = msg.getChannel().getName();
 			if (!channel.equals("#halchat")) {
@@ -117,7 +118,7 @@ public class MegaHal {
 					// Still on cooldown, warn a bitch
 					msg.getSender().getPlayer().sendMessage(ColorDef.HAL.replaceFirst("#", channel) + "If you want to spam with me, do /focus #halchat");
 					Log.getLog("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
-					return;
+					return true;
 				} else {
 					ratelimit.put(channel, System.currentTimeMillis() + 2500L);
 				}
@@ -128,6 +129,7 @@ public class MegaHal {
 		} else if (msg.getChannel().getAccess() != AccessLevel.PRIVATE) {
 			log(msg);
 		}
+		return true;
 	}
 
 	public boolean isTrigger(String message) {

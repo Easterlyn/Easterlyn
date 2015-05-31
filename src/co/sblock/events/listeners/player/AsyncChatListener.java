@@ -1,5 +1,7 @@
 package co.sblock.events.listeners.player;
 
+import java.util.LinkedHashSet;
+
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -7,6 +9,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.chat.Chat;
 import co.sblock.chat.ColorDef;
+import co.sblock.chat.ai.HalMessageHandler;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -21,6 +24,7 @@ import co.sblock.utilities.player.DummyPlayer;
  */
 public class AsyncChatListener implements Listener {
 
+	private final LinkedHashSet<HalMessageHandler> halFunctions;
 	private final String[] tests = new String[] {"It is certain.", "It is decidedly so.",
 			"Without a doubt.", "Yes, definitely.", "You may rely on it.", "As I see, yes.",
 			"Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
@@ -29,6 +33,17 @@ public class AsyncChatListener implements Listener {
 			"My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful.",
 			"Testing complete. Proceeding with operation.", "A critical fault has been discovered while testing.",
 			"Error: Test results contaminated.", "tset", "PONG."};
+
+	/**
+	 * 
+	 */
+	public AsyncChatListener() {
+		halFunctions = new LinkedHashSet<>();
+		halFunctions.add(Chat.getChat().getHalculator());
+		// MegaHal function should be last as it (by design) handles any message passed to it.
+		// Insert any additional functions above.
+		halFunctions.add(Chat.getChat().getHal());
+	}
 
 	/**
 	 * Because we send JSON messages, we actually have to remove all recipients from the event and
@@ -98,18 +113,10 @@ public class AsyncChatListener implements Listener {
 		}
 
 		// Handle Hal functions
-		String msg = ChatColor.stripColor(event.getMessage().toLowerCase());
-		if (msg.startsWith("halc ") || msg.startsWith("halculate ") || msg.startsWith("evhal ") || msg.startsWith("evhaluate ")) {
-			msg = msg.substring(msg.indexOf(' ')).trim();
-			final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
-					.setMessage(ChatColor.RED + Chat.getChat().getHalculator().evhaluate(msg))
-					.setChannel(message.getChannel()).toMessage();
-			if (msg.length() > 30) {
-				event.getPlayer().sendMessage(ColorDef.HAL + "Your equation is a bit long for public chat. Please use /halc to reduce spam.");
+		for (HalMessageHandler handler : halFunctions) {
+			if (handler.handleMessage(message, event.getRecipients())) {
+				break;
 			}
-			hal.send(event.getRecipients());
-		} else {
-			Chat.getChat().getHal().handleMessage(message, event.getRecipients());
 		}
 
 		// No one should receive the final message if it is not cancelled.
