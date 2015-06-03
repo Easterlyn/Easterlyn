@@ -7,7 +7,7 @@ import co.sblock.module.Module;
 public class Chat extends Module {
 
 	private static Chat instance;
-	private ChannelManager cm = new ChannelManager();
+	private final ChannelManager cm = new ChannelManager();
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
 	private MegaHal megaHal;
 	private Halculator halculator;

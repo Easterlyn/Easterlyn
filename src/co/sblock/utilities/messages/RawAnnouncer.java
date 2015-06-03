@@ -16,6 +16,20 @@ import co.sblock.utilities.Log;
  */
 public class RawAnnouncer extends Module {
 
+	public class AnnouncementMessage {
+		private final String json, console;
+		public AnnouncementMessage(String json, String console) {
+			this.json = json;
+			this.console = console;
+		}
+		public String getJSON() {
+			return this.json;
+		}
+		public String getConsole() {
+			return this.console;
+		}
+	}
+
 	private List<AnnouncementMessage> announcements;
 	private static RawAnnouncer instance;
 	private static final String HALEMENT = "{\"text\":\"\",\"extra\":["
@@ -124,26 +138,12 @@ public class RawAnnouncer extends Module {
 		instance = null;
 	}
 
-	@Override
-	protected String getModuleName() {
-		return "RawAnnouncer";
-	}
-
 	public static RawAnnouncer getInstance() {
 		return instance;
 	}
 
-	public class AnnouncementMessage {
-		private final String json, console;
-		public AnnouncementMessage(String json, String console) {
-			this.json = json;
-			this.console = console;
-		}
-		public String getJSON() {
-			return this.json;
-		}
-		public String getConsole() {
-			return this.console;
-		}
+	@Override
+	protected String getModuleName() {
+		return "RawAnnouncer";
 	}
 }

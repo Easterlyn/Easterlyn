@@ -1,14 +1,17 @@
 package co.sblock.module;
 
+import co.sblock.Sblock;
 import co.sblock.utilities.Log;
 
 /**
  * The base class for all plugin modules, allowing separate components of the
  * plugin to be managed separately.
  * 
- * @author FireNG
+ * @author FireNG, Jikoo
  */
 public abstract class Module {
+
+	private boolean enabled = false;
 
 	/**
 	 * Called when the Module is enabled.
@@ -33,10 +36,16 @@ public abstract class Module {
 	 */
 	public final Module enable() {
 		this.getLogger().info("Enabling module " + this.getModuleName());
+
+		if (!Sblock.areDependenciesPresent(getClass())) {
+			return this;
+		}
+
 		try {
 			this.onEnable();
+			enabled = true;
 		} catch (Exception e) {
-			getLogger().severe("[SblockSuite] Unhandled exception in module " + this.getClass().getSimpleName() + ". Module failed to enable.");
+			getLogger().severe("Unhandled exception in module " + this.getModuleName() + ". Module failed to enable.");
 			getLogger().criticalErr(e);
 		}
 		return this;
@@ -51,11 +60,21 @@ public abstract class Module {
 		this.getLogger().info("Disabled module " + this.getModuleName());
 		try {
 			this.onDisable();
+			enabled = false;
 		} catch (Exception e) {
 			getLogger().severe("[SblockSuite] Unhandled exception in module " + this.getClass().getSimpleName() + ". Module failed to disable.");
 			getLogger().criticalErr(e);
 		}
 		return this;
+	}
+
+	/**
+	 * Gets whether or not the Module is enabled.
+	 * 
+	 * @return true if the Module is enabled
+	 */
+	public boolean isEnabled() {
+		return enabled;
 	}
 
 	/**

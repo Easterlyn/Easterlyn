@@ -486,11 +486,6 @@ public class Machines extends Module {
 		return machines;
 	}
 
-	@Override
-	protected String getModuleName() {
-		return "Sblock Machines";
-	}
-
 	/**
 	 * Gets the current instance of MachineModule.
 	 * 
@@ -498,5 +493,10 @@ public class Machines extends Module {
 	 */
 	public static Machines getInstance() {
 		return instance;
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "Sblock Machines";
 	}
 }

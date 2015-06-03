@@ -30,6 +30,7 @@ import co.sblock.events.packets.ParticleUtils;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
+import co.sblock.module.Dependency;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.ProgressionState;
@@ -46,6 +47,7 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
+@Dependency("HolographicDisplays")
 public class Entry {
 
 	public class EntryStorage {

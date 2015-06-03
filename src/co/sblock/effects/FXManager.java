@@ -9,6 +9,7 @@ import java.util.Set;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+
 import org.reflections.Reflections;
 
 import co.sblock.Sblock;
@@ -167,12 +168,12 @@ public class FXManager extends Module {
 		return invisibilityManager;
 	}
 
+	public static FXManager getInstance() {
+		return instance;
+	}
+
 	@Override
 	protected String getModuleName() {
 		return "Sblock FX";
-	}
-
-	public static FXManager getInstance() {
-		return instance;
 	}
 }

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -42,6 +43,8 @@ import co.sblock.commands.SblockCommand;
 import co.sblock.effects.FXManager;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
+import co.sblock.module.Dependencies;
+import co.sblock.module.Dependency;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
@@ -169,6 +172,10 @@ public class Sblock extends JavaPlugin {
 		Set<Class<? extends SblockCommand>> commands = reflections.getSubTypesOf(SblockCommand.class);
 		for (Class<? extends SblockCommand> command : commands) {
 			if (Modifier.isAbstract(command.getModifiers())) {
+				continue;
+			}
+			if (!areDependenciesPresent(command)) {
+				getLog().warning(command.getSimpleName() + " is missing dependencies, skipping.");
 				continue;
 			}
 			try {
@@ -385,5 +392,18 @@ public class Sblock extends JavaPlugin {
 
 	public static final Log getLog() {
 		return logger;
+	}
+
+	public static <T> boolean areDependenciesPresent(Class<T> clazz) {
+		if (clazz.isAnnotationPresent(Dependencies.class)) {
+			for (Dependency dependency : clazz.getAnnotation(Dependencies.class).value()) {
+				String pluginName = dependency.value();
+				if (!Bukkit.getPluginManager().isPluginEnabled(pluginName)) {
+					getLog().severe("Dependency " + pluginName + " is not enabled!");
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

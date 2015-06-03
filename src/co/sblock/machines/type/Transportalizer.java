@@ -2,6 +2,7 @@ package co.sblock.machines.type;
 
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -78,6 +79,11 @@ public class Transportalizer extends Machine {
 		blocks = shape.getBuildLocations(getFacingDirection());
 
 		fuel = 0;
+
+		if (!Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays")) {
+			hologram = null;
+			return;
+		}
 		Location holoLoc = null;
 		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
 			if (e.getValue().getItemType() == Material.STAINED_GLASS) {
@@ -112,8 +118,10 @@ public class Transportalizer extends Machine {
 	public void setData(String data) {
 		try {
 			fuel = Long.valueOf(data);
-			hologram.clearLines();
-			hologram.appendTextLine(String.valueOf(fuel));
+			if (hologram != null) {
+				hologram.clearLines();
+				hologram.appendTextLine(String.valueOf(fuel));
+			}
 		} catch (NumberFormatException e)  {
 			fuel = 0;
 		}
@@ -127,8 +135,10 @@ public class Transportalizer extends Machine {
 		ItemStack inserted = event.getItem().getItemStack();
 		if (hasValue(inserted.getType())) {
 			fuel += getValue(inserted.getType()) * inserted.getAmount();
-			hologram.clearLines();
-			hologram.appendTextLine(String.valueOf(fuel));
+			if (hologram != null) {
+				hologram.clearLines();
+				hologram.appendTextLine(String.valueOf(fuel));
+			}
 			key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
 			event.getItem().remove();
 		} else {
@@ -269,8 +279,10 @@ public class Transportalizer extends Machine {
 				source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
 				target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
 				fuel -= cost;
-				hologram.clearLines();
-				hologram.appendTextLine(String.valueOf(fuel));
+				if (hologram != null) {
+					hologram.clearLines();
+					hologram.appendTextLine(String.valueOf(fuel));
+				}
 				e.teleport(new Location(target.getWorld(), target.getX() + .5, target.getY(), target.getZ() + .5,
 						e.getLocation().getYaw(), e.getLocation().getPitch()));
 				key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
@@ -295,6 +307,8 @@ public class Transportalizer extends Machine {
 	 */
 	@Override
 	public void disable() {
-		hologram.delete();
+		if (hologram != null) {
+			hologram.delete();
+		}
 	}
 }

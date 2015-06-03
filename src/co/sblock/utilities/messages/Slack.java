@@ -102,15 +102,14 @@ public class Slack extends Module {
 		}.runTaskTimer(Sblock.getInstance(), 0, 20);
 	}
 
-	public synchronized void postMessage(SlackMessageWrapper message) {
-		toPost.add(message);
-	}
-
 	public synchronized void postMessage(String name, String message, boolean global) {
 		postMessage(name, null, message, global);
 	}
 
 	public synchronized void postMessage(String name, UUID uuid, String message, boolean global) {
+		if (!isEnabled()) {
+			return;
+		}
 		if (global) {
 			toPost.add(new SlackMessageWrapper(getMainChat(), message, uuid, name));
 		}
@@ -138,15 +137,12 @@ public class Slack extends Module {
 		instance = null;
 	}
 
-	/**
-	 * @see co.sblock.module.Module#getModuleName()
-	 */
+	public static Slack getInstance() {
+		return instance;
+	}
+
 	@Override
 	protected String getModuleName() {
 		return "Slack";
-	}
-
-	public static Slack getInstance() {
-		return instance;
 	}
 }

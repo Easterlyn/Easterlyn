@@ -96,11 +96,6 @@ public class Spectators extends Module {
 		}
 	}
 
-	@Override
-	protected String getModuleName() {
-		return "Spectators";
-	}
-
 	/**
 	 * Gets the Spectators instance.
 	 * 
@@ -108,5 +103,10 @@ public class Spectators extends Module {
 	 */
 	public static Spectators getInstance() {
 		return instance;
+	}
+
+	@Override
+	protected String getModuleName() {
+		return "Spectators";
 	}
 }

@@ -5,8 +5,8 @@ version: {BUILD}
 author: Sblock Co.
 authors: [Jikoo, Dublek, FireNG, tmathmeyer]
 description: Sblock's sexy mainframe
-depend: [ProtocolLib, HolographicDisplays]
-softdepend: [CreeperHeal, dynmap]
+depend: [ProtocolLib]
+softdepend: [CreeperHeal, dynmap, HolographicDisplays, WorldEdit]
 
 permissions:
  sblock.ask.adam.before.touching:

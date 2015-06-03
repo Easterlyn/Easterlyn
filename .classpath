@@ -18,9 +18,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/javaluator.jar"/>
-	<classpathentry kind="lib" path="lib/JMegaHal.jar"/>
-	<classpathentry kind="lib" path="lib/reflections-0.9.9-RC1.jar">
+	<classpathentry kind="lib" path="bundle/javaluator.jar"/>
+	<classpathentry kind="lib" path="bundle/JMegaHal.jar"/>
+	<classpathentry kind="lib" path="bundle/reflections-0.9.9-RC1.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://reflections.googlecode.com/svn/trunk/reflections/javadoc/apidocs/"/>
 		</attributes>
@@ -35,7 +35,8 @@
 			<attribute name="javadoc_location" value="http://filoghost.me/HolographicDisplays/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/simpleslackapi-0.4.0.jar" sourcepath="lib/simpleslackapi-0.4.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="bundle/simpleslackapi-0.4.0.jar" sourcepath="lib/simpleslackapi-0.4.0-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/dynmap-2.2-alpha-2.jar"/>
+	<classpathentry kind="lib" path="lib/worldedit-bukkit-6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
