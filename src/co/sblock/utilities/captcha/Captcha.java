@@ -1,11 +1,11 @@
 package co.sblock.utilities.captcha;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -85,7 +85,7 @@ public class Captcha extends Module {
 			cardLore.add(serialization.substring(start, i));
 			start = i;
 		}
-		cardMeta.setDisplayName("Captchacard");
+		cardMeta.setDisplayName("Captcha");
 		cardMeta.setLore(cardLore);
 		card.setItemMeta(cardMeta);
 		return card;
@@ -100,11 +100,63 @@ public class Captcha extends Module {
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	public static ItemStack captchaToItem(ItemStack card) {
-		if (card.getItemMeta().getLore().contains("Lorecard")) {
+		return captchaToItem(card, false);
+	}
+
+	/**
+	 * Converts a Captchacard into an ItemStack. Also used for Punchcards and
+	 * Cruxite Dowels.
+	 * 
+	 * @param card the Captchacard ItemStack
+	 * @param loreCard true if Lorecards are to be converted to a combinable object.
+	 * 
+	 * @return the ItemStack represented by this Captchacard
+	 */
+	private static ItemStack captchaToItem(ItemStack card, boolean loreCard) {
+		if (!loreCard ||card.getItemMeta().getLore().contains("Lorecard")) {
 			// Specialty items cannot be uncaptcha'd.
 			return card;
 		}
-		return getCaptchaItem(card.getItemMeta().getLore().toArray(new String[0]));
+		try {
+			String[] data = card.getItemMeta().getLore().toArray(new String[0]);
+			if (data[0].equals("Lorecard")) {
+				ItemStack is = new ItemStack(Material.DIRT);
+				ItemMeta im = is.getItemMeta();
+				ArrayList<String> lore = new ArrayList<>(im.getLore());
+				for (String s : data) {
+					if (s.length() < 1 || s.charAt(0) != '>') {
+						continue;
+					}
+					lore.add(s.substring(1));
+				}
+				im.setLore(lore);
+				is.setItemMeta(im);
+				return is;
+			}
+			if (data[0].equals("Blank")) {
+				return MachineType.PERFECTLY_GENERIC_OBJECT.getUniqueDrop();
+			}
+			for (int j = 1; j < data.length; j++) {
+				if (data[j].startsWith(ChatColor.MAGIC.toString())) {
+					data[j] = data[j].substring(2);
+					break;
+				}
+			}
+			StringBuilder serialized = null;
+			for (int i = 1; i < data.length; i++) {
+				if (serialized == null && ChatColor.stripColor(data[i]).isEmpty()) {
+					serialized = new StringBuilder(data[i]);
+					continue;
+				}
+				if (serialized == null) {
+					continue;
+				}
+				serialized.append(data[i]);
+			}
+			return InventoryUtils.deserializeFromFormattingCodes(serialized.toString());
+		} catch (Exception e) {
+			return card;
+		}
 	}
 
 	/**
@@ -123,7 +175,6 @@ public class Captcha extends Module {
 			is.setItemMeta(im);
 			return is;
 		}
-		is = convert(is);
 		for (String lore : is.getItemMeta().getLore()) {
 			if (lore.startsWith(ChatColor.MAGIC.toString())) {
 				// New "secret" unpunchable demarkation is serialized hex prepended by magic
@@ -149,111 +200,17 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Converts a Captchdex entry into an ItemStack.
-	 * 
-	 * @param data the Captchadex page split at '\n' ItemStack
-	 * 
-	 * @return the ItemStack represented by this Captchacard
-	 */
-	@SuppressWarnings("deprecation")
-	public static ItemStack getCaptchaItem(String[] data) {
-		ItemStack is;
-		ItemMeta im;
-		if (data[0].equals("Lorecard")) {
-			is = createLoreCard(data[1]);
-			im = is.getItemMeta();
-			ArrayList<String> lore = new ArrayList<>(im.getLore());
-			for (int i = 2; i < data.length; i++) {
-				lore.add(data[i]);
-			}
-			im.setLore(lore);
-			is.setItemMeta(im);
-			return is;
-		}
-		if (data[0].equals("Blank")) {
-			return MachineType.PERFECTLY_GENERIC_OBJECT.getUniqueDrop();
-		}
-		for (int j = 1; j < data.length; j++) {
-			if (data[j].startsWith(ChatColor.MAGIC.toString())) {
-				data[j] = data[j].substring(2);
-				break;
-			}
-		}
-		if (data[0].startsWith(ChatColor.DARK_AQUA.toString())) {
-			// New serialization format
-			StringBuilder serialized = null;
-			for (int i = 1; i < data.length; i++) {
-				if (serialized == null && ChatColor.stripColor(data[i]).isEmpty()) {
-					serialized = new StringBuilder(data[i]);
-					continue;
-				}
-				if (serialized == null) {
-					continue;
-				}
-				serialized.append(data[i]);
-			}
-			return InventoryUtils.deserializeFromFormattingCodes(serialized.toString());
-		}
-		try {
-			is = new ItemStack(Material.getMaterial(Integer.valueOf(data[1])),
-					Integer.valueOf(data[3]), Short.valueOf(data[2]));
-		} catch (NumberFormatException e) {
-			is = new ItemStack(Material.getMaterial(data[1]),
-					Integer.valueOf(data[3]), Short.valueOf(data[2]));
-		}
-		im = is.getItemMeta();
-		if (!data[0].equals(is.getType().toString())) {
-			im.setDisplayName(data[0]);
-			// Custom display names starting with ">" or ":" could break our parsing
-			// or, worse, allow free illegal enchants. Can you say Sharpness 32767?
-			data[0] = "No.";
-		} else {
-			im.setDisplayName(null);
-		}
-		List<String> itemLore = new ArrayList<String>();
-		for (String s : data) {
-			if (s.isEmpty()) {
-				continue;
-			}
-			if (s.charAt(0) == ':') {
-				// Enchantments line format
-				String[] enchs = s.substring(1).split(":");
-				for (String s1 : enchs) {
-					String[] ench = s1.split(";");
-					try {
-						im.addEnchant(Enchantment.getById(Integer.parseInt(ench[0])),
-								Integer.parseInt(ench[1]), true);
-					} catch (NumberFormatException e) {
-						im.addEnchant(Enchantment.getByName(ench[0]),
-								Integer.parseInt(ench[1]), true);
-					}
-				}
-			} else if (s.charAt(0) == '>') {
-				// Lore lines format
-				itemLore.add(s.substring(1));
-			}
-		}
-		if (!itemLore.isEmpty()) {
-			im.setLore(itemLore);
-		}
-		is.setItemMeta(im);
-		return is;
-	}
-
-	/**
 	 * Creates a blank Captchacard
 	 * 
 	 * @return ItemStack
 	 */
 	private static ItemStack blankCaptchaCard() {
-		ItemStack iS = new ItemStack(Material.BOOK);
-		ItemMeta iM = iS.getItemMeta();
-		iM.setDisplayName("Captchacard");
-		ArrayList<String> lore = new ArrayList<String>();
-		lore.add("Blank");
-		iM.setLore(lore);
-		iS.setItemMeta(iM);
-		return iS;
+		ItemStack is = new ItemStack(Material.BOOK);
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName("Captcha");
+		im.setLore(Arrays.asList("Blank"));
+		is.setItemMeta(im);
+		return is;
 	}
 
 	/**
@@ -332,8 +289,8 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a card
 	 */
 	public static boolean isCard(ItemStack is) {
-		return is != null && (is.getType() == Material.PAPER || is.getType() == Material.BOOK)
-				&& is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
+		return is != null && is.getType() == Material.BOOK && is.hasItemMeta()
+				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
 				&& (is.getItemMeta().getDisplayName().equals("Captchacard")
 						|| is.getItemMeta().getDisplayName().equals("Punchcard"));
 	}
@@ -400,7 +357,7 @@ public class Captcha extends Module {
 				}
 			}
 		}
-		if (isUsedCaptcha(toCaptcha) && toCaptcha.getItemMeta().getLore().get(0).matches("^(..-?[0-9]+ Captcha of )+..-?[0-9]+ .+$")) {
+		if (isUsedCaptcha(toCaptcha) && toCaptcha.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$")) {
 			// Double captchas are fine, triple captchas hurt client
 			return;
 		}
@@ -451,36 +408,6 @@ public class Captcha extends Module {
 		im.setDisplayName("Captchacard");
 		card.setItemMeta(im);
 		return card;
-	}
-
-	public static int convert(Player player) {
-		int conversions = 0;
-		for (int i = 0; i < player.getInventory().getSize(); i++) {
-			ItemStack is = player.getInventory().getItem(i);
-			if (!Captcha.isUsedCaptcha(is)) {
-				continue;
-			}
-			if (is.getItemMeta().getLore().get(0).startsWith(ChatColor.DARK_AQUA.toString())) {
-				continue;
-			}
-			ItemStack captchas = Captcha.itemToCaptcha(Captcha.captchaToItem(is));
-			captchas.setAmount(is.getAmount());
-			conversions += is.getAmount();
-			player.getInventory().setItem(i, captchas);
-		}
-		return conversions;
-	}
-
-	private static ItemStack convert(ItemStack is) {
-		if (!Captcha.isUsedCaptcha(is)) {
-			return is;
-		}
-		if (is.getItemMeta().getLore().get(0).startsWith(ChatColor.DARK_AQUA.toString())) {
-			return is;
-		}
-		ItemStack captchas = Captcha.itemToCaptcha(Captcha.captchaToItem(is));
-		captchas.setAmount(is.getAmount());
-		return captchas;
 	}
 
 	@Override

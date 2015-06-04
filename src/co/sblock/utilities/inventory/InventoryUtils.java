@@ -9,6 +9,11 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -94,9 +99,9 @@ public class InventoryUtils {
 					continue;
 				}
 				String[] column = line.split("\t");
-				String id = column[0] + ":" + column[1];
-				items.put(id, column[2]);
-				itemsReverse.put(column[2], id);
+				String id = column[1] + ":" + column[2];
+				items.put(id, column[3]);
+				itemsReverse.put(column[3], id);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load items from items.tsv!", e);
@@ -104,15 +109,15 @@ public class InventoryUtils {
 		return items;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static String getMaterialDataName(Material m, short durability) {
-		if (getItems().containsKey(m.getId() + ":" + durability)) {
-			return items.get(m.getId() + ":" + durability);
-		}
 		if (m == Material.POTION) {
 			return getPotionName(durability);
 		}
-		return items.get(m.getId() + ":" + 0);
+		String key = m.name() + ":" + durability;
+		if (getItems().containsKey(key)) {
+			return items.get(key);
+		}
+		return "Unknown item. Please report this!";
 	}
 
 	private static String getPotionName(short durability) {
@@ -150,6 +155,56 @@ public class InventoryUtils {
 			return name.matches("(\\w+ ){0,2}Potion of \\w+");
 		}
 		return match;
+	}
+
+	@SuppressWarnings("deprecation")
+	public static Pair<Material, Short> matchMaterial(String search) {
+		String[] matData = search.split(":");
+		if (matData[0].length() < 2) {
+			// Too short strings will always result in "air"
+			throw new IllegalArgumentException("Search string must be 2 characters minimum.");
+		}
+
+		Material material = null;
+		Short durability = null;
+
+		if (matData.length > 1) {
+			try {
+				durability = Short.parseShort(matData[1]);
+			} catch (NumberFormatException e) {}
+		}
+
+		try {
+			material = Material.getMaterial(Integer.parseInt(matData[0]));
+			return new ImmutablePair<Material, Short>(material, durability != null ? durability : 0);
+		} catch (NumberFormatException e) {}
+
+		boolean durabilitySet = durability != null;
+		if (!durabilitySet) {
+			durability = 0;
+		}
+
+		int matchLevel = Integer.MAX_VALUE;
+		matData[0] = matData[0].replace('_', ' ').toLowerCase();
+		for (Entry<String, String> entry : getItems().entrySet()) {
+			int current = StringUtils.getLevenshteinDistance(matData[0], entry.getValue().toLowerCase());
+			if (current < matchLevel) {
+				matchLevel = current;
+				String[] entryData = entry.getKey().split(":");
+				material = Material.getMaterial(entryData[0]);
+				if (!durabilitySet) {
+					durability = Short.valueOf(entryData[1]);
+				}
+			}
+			if (current == 0) {
+				return new ImmutablePair<Material, Short>(material, durability);
+			}
+		}
+		// Allow more fuzziness for longer named items
+		if (matchLevel < (3 + material.name().length() / 5)) {
+			return new ImmutablePair<Material, Short>(material, durability);
+		}
+		return null;
 	}
 
 	public static String serializeItemStack(ItemStack is) {

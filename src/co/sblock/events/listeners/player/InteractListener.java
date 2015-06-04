@@ -230,7 +230,7 @@ public class InteractListener implements Listener {
 					event.getPlayer().getInventory().addItem(captcha);
 				} else {
 					event.getPlayer().getWorld().dropItem(event.getPlayer().getEyeLocation(), captcha)
-					.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
+							.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
 				}
 			} else {
 				event.getPlayer().setItemInHand(captcha);
