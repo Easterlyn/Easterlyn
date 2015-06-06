@@ -35,9 +35,6 @@ public class AsyncChatListener implements Listener {
 			"Testing complete. Proceeding with operation.", "A critical fault has been discovered while testing.",
 			"Error: Test results contaminated.", "tset", "PONG."};
 
-	/**
-	 * 
-	 */
 	public AsyncChatListener() {
 		halFunctions = new LinkedHashSet<>();
 		halFunctions.add(Chat.getChat().getHalculator());
@@ -101,7 +98,11 @@ public class AsyncChatListener implements Listener {
 
 		// Region channels are the only ones that should be appearing in certain plugins
 		if (message.getChannel().getType() != ChannelType.REGION) {
-			event.setCancelled(true);
+			if (!event.isCancelled() && event instanceof SblockAsyncChatEvent) {
+				((SblockAsyncChatEvent) event).setGlobalCancelled(true);
+			} else {
+				event.setCancelled(true);
+			}
 		}
 
 		// Manually send messages to each player so we can wrap links, etc.

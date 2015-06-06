@@ -135,8 +135,12 @@ public class MessageCommand extends SblockCommand {
 
 		Bukkit.getPluginManager().callEvent(event);
 
-		reply.put(senderProfile, recipientProfile);
-		reply.put(recipientProfile, senderProfile);
+		// If the event is not globally cancelled because the message was sent to a channel other than #pm,
+		// the event was cancelled prior to being successfully sent. Probably a muted player trying to talk.
+		if (event.isCancelled() && event.isGlobalCancelled()) {
+			reply.put(senderProfile, recipientProfile);
+			reply.put(recipientProfile, senderProfile);
+		}
 
 		return true;
 	}

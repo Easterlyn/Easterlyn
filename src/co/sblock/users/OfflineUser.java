@@ -394,24 +394,6 @@ public class OfflineUser {
 	public void sendMessage(String message) {}
 
 	/**
-	 * Sets the User's chat mute status.
-	 * 
-	 * @param mute true if the User is muted
-	 */
-	public synchronized void setMute(boolean mute) {
-		yaml.set("chat.muted", mute);
-	}
-
-	/**
-	 * Gets the User's mute status.
-	 * 
-	 * @return true if the User is muted
-	 */
-	public synchronized boolean getMute() {
-		return yaml.getBoolean("chat.muted", false);
-	}
-
-	/**
 	 * Sets the User's current chat suppression status.
 	 * 
 	 * @param suppress true if the User is to suppress global channels
@@ -694,8 +676,7 @@ public class OfflineUser {
 				.append(getListening()).append('\n');
 
 		// Muted: boolean, Suppressing: boolean
-		sb.append(Color.GOOD).append("Muted: ").append(Color.GOOD_EMPHASIS).append(getMute())
-				.append(Color.GOOD).append(", Suppressing: ").append(Color.GOOD_EMPHASIS)
+		sb.append(Color.GOOD).append("Suppressing: ").append(Color.GOOD_EMPHASIS)
 				.append(getSuppression()).append('\n');
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm 'on' dd/MM/YY");
@@ -825,13 +806,15 @@ public class OfflineUser {
 		}
 		user.setCurrentChannel(yaml.getString("chat.current", "#"));
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
+		return user;
+	}
 
+	public void handleNameChange() {
 		String name = yaml.getString("name");
-		if (name != null && !name.equals(Bukkit.getOfflinePlayer(uuid).getName())) {
+		if (name != null && !name.equalsIgnoreCase(Bukkit.getOfflinePlayer(uuid).getName())) {
 			yaml.set("previousname", name);
 			Bukkit.broadcastMessage(Color.HAL + Bukkit.getOfflinePlayer(uuid).getName() + " was previously known as " + name);
 		}
-		return user;
 	}
 
 	public static OfflineUser fromOnline(OnlineUser online) {
@@ -854,7 +837,6 @@ public class OfflineUser {
 		user.programs = online.getPrograms();
 		user.setCurrentChannel(online.getCurrentChannel());
 		user.listening = online.getListening();
-		user.setMute(online.getMute());
 		user.setSuppression(user.getSuppression());
 
 		return user;

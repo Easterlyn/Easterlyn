@@ -6,13 +6,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+
 import co.sblock.Sblock;
 import co.sblock.effects.FXManager;
 import co.sblock.events.Events;
+import co.sblock.events.packets.WrapperPlayServerPlayerListHeaderFooter;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
 import co.sblock.utilities.messages.Slack;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for PlayerJoinEvents.
@@ -20,6 +25,13 @@ import co.sblock.utilities.messages.Slack;
  * @author Jikoo
  */
 public class JoinListener implements Listener {
+
+	private final WrapperPlayServerPlayerListHeaderFooter list;
+
+	public JoinListener() {
+		list = new WrapperPlayServerPlayerListHeaderFooter();
+		list.setHeader(WrappedChatComponent.fromText(ChatColor.DARK_AQUA + "Welcome to " + ChatColor.GOLD + "Sblock Alpha"));
+	}
 
 	/**
 	 * The event handler for PlayerJoinEvents.
@@ -47,6 +59,7 @@ public class JoinListener implements Listener {
 				Users.team(player);
 				OnlineUser user = Users.getGuaranteedUser(player.getUniqueId()).getOnlineUser();
 				user.handleLoginChannelJoins();
+				user.handleNameChange();
 				Region region = user.getCurrentRegion();
 				user.updateCurrentRegion(region);
 				// On login, conditions for setting rpack are not met, must be done here
@@ -56,6 +69,8 @@ public class JoinListener implements Listener {
 				for (String command : user.getLoginCommands()) {
 					player.chat(command);
 				}
+
+				list.sendPacket(player);
 			}
 		}.runTask(Sblock.getInstance());
 	}

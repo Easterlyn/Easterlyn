@@ -15,11 +15,13 @@ import co.sblock.chat.message.Message;
 public class SblockAsyncChatEvent extends AsyncPlayerChatEvent {
 
 	private final Message message;
+	private boolean globalCancelled;
 
 	public SblockAsyncChatEvent(boolean async, Player who, Set<Player> players, Message message) {
 		super(async, who, message.getMessage(), players);
 		setFormat(message.getConsoleFormat());
 		this.message = message;
+		this.globalCancelled = false;
 	}
 
 	@Override
@@ -29,5 +31,24 @@ public class SblockAsyncChatEvent extends AsyncPlayerChatEvent {
 
 	public Message getSblockMessage() {
 		return message;
+	}
+
+	@Override
+	public void setCancelled(boolean cancel) {
+		super.setCancelled(cancel);
+		globalCancelled = false;
+	}
+
+	public void setGlobalCancelled(boolean cancelled) {
+		if (cancelled && !isCancelled()) {
+			globalCancelled = true;
+			super.setCancelled(true);
+			return;
+		}
+		globalCancelled = false;
+	}
+
+	public boolean isGlobalCancelled() {
+		return globalCancelled;
 	}
 }
