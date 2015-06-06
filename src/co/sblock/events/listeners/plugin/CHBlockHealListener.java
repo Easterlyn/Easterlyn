@@ -6,12 +6,14 @@ import org.bukkit.event.Listener;
 import com.nitnelave.CreeperHeal.events.CHBlockHealEvent;
 
 import co.sblock.machines.Machines;
+import co.sblock.module.Dependency;
 
 /**
  * Listener for CHBlockHealEvents.
  * 
  * @author Jikoo
  */
+@Dependency("CreeperHeal")
 public class CHBlockHealListener implements Listener {
 
 	/**
