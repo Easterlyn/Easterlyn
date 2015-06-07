@@ -85,7 +85,7 @@ public class Captcha extends Module {
 			cardLore.add(serialization.substring(start, i));
 			start = i;
 		}
-		cardMeta.setDisplayName("Captcha");
+		cardMeta.setDisplayName("Captchacard");
 		cardMeta.setLore(cardLore);
 		card.setItemMeta(cardMeta);
 		return card;
@@ -207,7 +207,7 @@ public class Captcha extends Module {
 	private static ItemStack blankCaptchaCard() {
 		ItemStack is = new ItemStack(Material.BOOK);
 		ItemMeta im = is.getItemMeta();
-		im.setDisplayName("Captcha");
+		im.setDisplayName("Captchacard");
 		im.setLore(Arrays.asList("Blank"));
 		is.setItemMeta(im);
 		return is;
