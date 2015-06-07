@@ -31,6 +31,7 @@ public class JoinListener implements Listener {
 	public JoinListener() {
 		list = new WrapperPlayServerPlayerListHeaderFooter();
 		list.setHeader(WrappedChatComponent.fromText(ChatColor.DARK_AQUA + "Welcome to " + ChatColor.GOLD + "Sblock Alpha"));
+		list.setFooter(WrappedChatComponent.fromText(ChatColor.YELLOW + "Enjoy your stay!"));
 	}
 
 	/**

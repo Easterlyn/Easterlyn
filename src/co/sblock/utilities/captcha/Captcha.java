@@ -113,7 +113,7 @@ public class Captcha extends Module {
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	private static ItemStack captchaToItem(ItemStack card, boolean loreCard) {
-		if (!loreCard ||card.getItemMeta().getLore().contains("Lorecard")) {
+		if (!loreCard && card.getItemMeta().getLore().contains("Lorecard")) {
 			// Specialty items cannot be uncaptcha'd.
 			return card;
 		}
@@ -319,7 +319,7 @@ public class Captcha extends Module {
 		ArrayList<String> lore = new ArrayList<>();
 		lore.addAll(item.getItemMeta().getLore());
 		if (card2 != null) {
-			lore.addAll(captchaToItem(card2).getItemMeta().getLore());
+			lore.addAll(captchaToItem(card2, true).getItemMeta().getLore());
 		}
 		ItemMeta im = item.getItemMeta();
 		im.setLore(lore);
