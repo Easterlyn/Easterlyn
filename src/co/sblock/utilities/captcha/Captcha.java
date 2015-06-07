@@ -115,6 +115,8 @@ public class Captcha extends Module {
 	private static ItemStack captchaToItem(ItemStack card, boolean loreCard) {
 		if (!loreCard && card.getItemMeta().getLore().contains("Lorecard")) {
 			// Specialty items cannot be uncaptcha'd.
+			card = card.clone();
+			card.setAmount(1);
 			return card;
 		}
 		try {
@@ -155,6 +157,8 @@ public class Captcha extends Module {
 			}
 			return InventoryUtils.deserializeFromFormattingCodes(serialized.toString());
 		} catch (Exception e) {
+			card = card.clone();
+			card.setAmount(1);
 			return card;
 		}
 	}
