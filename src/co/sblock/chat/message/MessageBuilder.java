@@ -152,14 +152,6 @@ public class MessageBuilder {
 			return this.senderName != null;
 		}
 
-		// Shockingly, muted users are not allowed to talk.
-		if (this.sender.getMute()) {
-			if (informSender) {
-				this.sender.sendMessage(ChatColor.RED + "You are muted!");
-			}
-			return false;
-		}
-
 		// No sending messages to global chats while ignoring them.
 		if (this.channel.getType() == ChannelType.REGION && this.sender.getSuppression()) {
 			if (informSender) {
