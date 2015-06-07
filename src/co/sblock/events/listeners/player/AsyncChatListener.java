@@ -77,6 +77,11 @@ public class AsyncChatListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
+		if (cleaned.equalsIgnoreCase("Adam") || cleaned.equalsIgnoreCase("Pete")) {
+			event.getPlayer().sendMessage(ChatColor.RED + "Wishes you would say his name in a sentence, not by itself.");
+			event.setCancelled(true);
+			return;
+		}
 		if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
 			event.getPlayer().sendMessage(Color.HAL + "What?");
 			event.setCancelled(true);
