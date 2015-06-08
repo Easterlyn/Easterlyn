@@ -29,7 +29,7 @@ public class Halculator extends HalMessageHandler {
 		ItemMeta meta = hover.getItemMeta();
 		meta.setDisplayName(ChatColor.RED + "Calculator");
 		meta.setLore(Arrays.asList(new String[] {ChatColor.DARK_RED + "For long or multiple", ChatColor.DARK_RED + "equations, use /halc"}));
-		hover.setItemMeta(meta);//TODO use
+		hover.setItemMeta(meta);
 	}
 
 	public String evhaluate(String input) {

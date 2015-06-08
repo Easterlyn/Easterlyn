@@ -20,9 +20,10 @@ import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
-import co.sblock.users.Region;
 import co.sblock.users.Users;
 import co.sblock.utilities.player.DummyPlayer;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for /aether, the command executed to make IRC chat mimic normal channels.
@@ -70,7 +71,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 
 		Channel aether = ChannelManager.getChannelManager().getChannel("#Aether");
 		// set channel before and after to prevent @channel changing while also stripping invalid characters
-		MessageBuilder builder = new MessageBuilder().setSender(Region.UNKNOWN.getColor() + name)
+		MessageBuilder builder = new MessageBuilder().setSender(ChatColor.WHITE + name)
 				.setChannel(aether).setMessage(msg).setChannel(aether).setChannelClick("@# ")
 				.setNameClick("@# ").setNameHover(HOVER);
 
