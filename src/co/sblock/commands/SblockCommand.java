@@ -64,7 +64,11 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 			sender.sendMessage(this.getPermissionMessage());
 			return true;
 		}
-		return onCommand(sender, label, args);
+		if (onCommand(sender, label, args)) {
+			return true;
+		}
+		sender.sendMessage(this.getUsage());
+		return false;
 	}
 
 	protected abstract boolean onCommand(CommandSender sender, String label, String[] args);
