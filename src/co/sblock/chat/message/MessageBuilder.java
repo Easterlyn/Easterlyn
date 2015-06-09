@@ -294,8 +294,8 @@ public class MessageBuilder {
 		}
 
 		// > Name | <Name
-		component = new TextComponent(sender != null ? channel.getNick(sender) : senderName);
-		component.setColor(globalRank);
+		component = new TextComponent(nick != null ? nick.getDisplayName() : sender != null ? channel.getNick(sender) : senderName);
+		component.setColor(nick != null ? nick.getNameColor() : globalRank);
 		components.add(component);
 
 		// > Name | <Name>

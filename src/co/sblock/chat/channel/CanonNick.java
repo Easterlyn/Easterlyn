@@ -12,65 +12,60 @@ import net.md_5.bungee.api.ChatColor;
  *
  */
 public enum CanonNick {
-	JOHN("John", "ectoBiologist", '1', "pestering"),
-	ROSE("Rose", "tentacleTherapist", 'd', "pestering"),
-	DAVE("Dave", "turntechGodhead", '4', "pestering"),
-	JADE("Jade", "gardenGnostic", 'a', "pestering"),
+	JOHN("John", "John", '1'),
+	DRUNKROSE("drunk!Rose", "Rose", 'd'),
+	SOBERROSE("sober!Rose", "Rose", 'd'),
+	DAVE("Dave", "Dave", '4'),
+	JADE("Jade", "Jade", 'a'),
 
-	DAD("Dad Egbert", "pipefan413", '8', "discussing matters of great import in"),
-	DADCROCKER("Dad Crocker", "pipefan413", '8', "discussing matters of great import in"),
-	// This is fabricated based Dad's header: http://www.mspaintadventures.com/?s=6&p=002167
+	DAD("Dad Egbert", "Dad Egbert", '8'),
+	DADCROCKER("Dad Crocker", "Dad Crocker", '8'),
 
-	ARADIA("Aradia", "apocalypseArisen", '4', "trolling"),
-	TAVROS("Tavros", "adiosToreador", '6', "trolling"),
-	SOLLUX("Sollux", "twinArmageddons", 'e', "trolling"),
-	KARKAT("Karkat", "carcinoGeneticist", '7', "trolling"),
-	NEPETA("Nepeta", "arsenicCatnip", '2', "trolling"),
-	KANAYA("Kanaya", "grimAuxiliatrix", '2', "trolling"),
-	TEREZI("Terezi", "gallowsCalibrator", '3', "trolling"),
-	VRISKA("Vriska", "arachnidsGrip", '9', "trolling"),
-	EQUIUS("Equius", "centaursTesticle", '1', "trolling"),
-	GAMZEE("Gamzee", "terminallyCapricious", '5', "trolling"),
-	ERIDAN("Eridan", "caligulasAquarium", '5', "trolling"),
-	FEFERI("Feferi", "cuttlefishCuller", '5', "trolling"),
+	ARADIA("Aradia", "Aradia", '4'),
+	TAVROS("Tavros", "Tavros", '6'),
+	SOLLUX("Sollux", "Sollux", 'e'),
+	KARKAT("Karkat", "Karkat", '7'),
+	NEPETA("Nepeta", "Nepeta", '2'),
+	KANAYA("Kanaya", "Kanaya", '2'),
+	TEREZI("Terezi", "Terezi", '3'),
+	VRISKA("Vriska", "Vriska", '9'),
+	EQUIUS("Equius", "Equius", '1'),
+	GAMZEE("Gamzee", "Gamzee", '5'),
+	ERIDAN("Eridan", "Eridan", '5'),
+	FEFERI("Feferi", "Feferi", '5'),
 
-	JAKE("Jake", "golgothasTerror", '2', "pestering"),
-	ROXY("Roxy", "tipsyGnostalgic", 'd', "pestering"),
-	DIRK("Dirk", "timaeusTestified", '6', "pestering"),
-	AUTORESPONDER("Auto-Responder", "timaeusTestified", '4', "pestering"),
-	AUTORESPONDER2("Lil Hal", "timaeusTestified", '4', "pestering"),
-	LILHALJUNIOR("Lil Hal Junior", "timaeusTestified", '6', "pestering"),
-	JANE("Jane", "gutsyGumshoe", 'b', "pestering"),
-	CROCKERJANE(ChatColor.AQUA + "Jane", "gutsyGumshoe", '4', "pestering"),
+	JAKE("Jake", "Jake", '2'),
+	ROXY("Roxy", "Roxy", 'd'),
+	DIRK("Dirk", "Dirk", '6'),
+	AUTORESPONDER("Auto-Responder", "Auto-Responder", '4'),
+	LILHAL("Lil Hal", "Lil Hal", '4'),
+	LILHALJUNIOR("Lil Hal Junior", "Lil Hal Junior", '6'),
+	JANE("Jane", "Jane", 'b'),
+	CROCKERJANE("crocker!Jane", "Jane", '4'),
 
-	DAMARA("Damara", null, '4', "trolling"),
-	RUFIOH("Rufioh", null, '6', "trolling"),
-	MITUNA("Mituna", null, 'e', "trolling"),
-	KANKRI("Kankri", null, '4', "trolling"),
-	MEULIN("Meulin", null, '2', "trolling"),
-	PORRIM("Porrim", null, '2', "trolling"),
-	LATULA("Latula", null, '3', "trolling"),
-	ARANEA("Aranea", null, '9', "trolling"),
-	HORUSS("Horuss", null, '1', "trolling"),
-	KURLOZ("Kurloz", null, '5', "trolling"),
-	CRONUS("Cronus", null, '5', "trolling"),
-	MEENAH("Meenah", null, '5', "trolling"),
+	DAMARA("Damara", "Damara", '4'),
+	RUFIOH("Rufioh", "Rufioh", '6'),
+	MITUNA("Mituna", "Mituna", 'e'),
+	KANKRI("Kankri", "Kankri", '4'),
+	MEULIN("Meulin", "Meulin", '2'),
+	PORRIM("Porrim", "Porrim", '2'),
+	LATULA("Latula", "Latula", '3'),
+	ARANEA("Aranea", "Aranea", '9'),
+	HORUSS("Horuss", "Horuss", '1'),
+	KURLOZ("Kurloz", "Kurloz", '5'),
+	CRONUS("Cronus", "Cronus", '5'),
+	MEENAH("Meenah", "Meenah", '5'),
 
-	CALLIOPE("Calliope", "uranianUmbra", '7', "cheering"),
-	CALIBORN("Caliborn", "undyingUmbrage", '8', "jeering"),
-	SERKITFEATURE(ChatColor.GREEN + "L" + ChatColor.MAGIC + "o" + ChatColor.GREEN + "rd English",
-			null, 'a', "paying attention to");
+	CALLIOPE("Calliope", "Calliope", '7'),
+	CALIBORN("Caliborn", "Caliborn", '8'),
+	SERKITFEATURE(ChatColor.DARK_RED + ":3 :3 :3", ChatColor.GREEN + "L" + ChatColor.MAGIC + "o" + ChatColor.GREEN + "rd English", 'a');
 
+	private String id;
 	private String name;
-	private String chumHandle;
 	private ChatColor color;
-	private String pester;
-
-	private CanonNick(String name, String chumHandle, char colorCode, String pester) {
+	private CanonNick(String id, String name, char colorCode) {
 		this.name = name;
-		this.chumHandle = chumHandle;
 		this.color = ChatColor.getByChar(colorCode);
-		this.pester = pester;
 	}
 
 //	Nakodile: Red text ALL CAPS NAK NAK NAK THE GLASSES ARE TALKING
@@ -188,13 +183,13 @@ public enum CanonNick {
 					.replace("E", "3").replace("I", "1").replace("O", "0")
 					.replace("S", "5").replace("T", "7");
 		case NEPETA:
-			return s.replaceAll("[eE]{2},", "33")
+			return s.toLowerCase().replaceAll("[e]{2},", "33")
 					.replace("ver", "fur").replace("pos", "paws");
 		case PORRIM:
-			return s.replaceAll("o", "o+");
+			return s.replaceAll("[o0]", "$1+").replaceAll("[pP][lL][uU][sS]", "+");
 		case ROXY:
 			s = mixedToLowerCase(s).replaceAll("\\b(.*in)g\\b", "$1");
-		case ROSE:
+		case DRUNKROSE:
 			return randShuffle(s);
 		case RUFIOH:
 			return mixedToLowerCase(s).replaceAll("[iI]", "1")
@@ -224,20 +219,25 @@ public enum CanonNick {
 		}
 	}
 
-	public String getPester() {
-		return this.pester;
+	public String getId() {
+		return this.id;
 	}
 
-	public String getName() {
+	public String getDisplayName() {
 		return this.name;
+	}
+
+	public ChatColor getNameColor() {
+		switch (this) {
+		case CROCKERJANE:
+			return ChatColor.AQUA;
+		default:
+			return this.getColor();
+		}
 	}
 
 	public ChatColor getColor() {
 		return this.color;
-	}
-
-	public String getHandle() {
-		return this.color + this.chumHandle;
 	}
 
 	public static CanonNick getNick(String nick) {
@@ -245,7 +245,7 @@ public enum CanonNick {
 			return CanonNick.valueOf(nick.toUpperCase());
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			for (CanonNick n : CanonNick.values()) {
-				if (nick.equals(n.color + n.name) || nick.equals(n.name)) {
+				if (nick.equals(n.id) || nick.equals(n.name)) {
 					return n;
 				}
 			}

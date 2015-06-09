@@ -3,9 +3,7 @@ package co.sblock.chat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
 
 import net.md_5.bungee.api.ChatColor;
@@ -24,11 +22,6 @@ public class ChatMsgs {
 		ChatColor nameC = Color.GOOD_PLAYER;
 		if (channel.hasNick(user)) {
 			name = channel.getNick(user);
-			if (channel.getType().equals(ChannelType.RP)) {
-				nameC = CanonNick.getNick(name).getColor();
-				message = CanonNick.getNick(name).getPester();
-				name = CanonNick.getNick(name).getHandle();
-			}
 		}
 		return nameC + name + Color.GOOD + " began " + message + " " + Color.GOOD_EMPHASIS
 				+ channel.getName() + Color.GOOD + " at "

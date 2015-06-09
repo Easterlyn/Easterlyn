@@ -61,7 +61,7 @@ public class ChatNickCommand extends SblockCommand {
 			StringBuilder sb = new StringBuilder(Color.GOOD.toString()).append("Nicks: ");
 			for (CanonNick n : CanonNick.values()) {
 				if (n != CanonNick.SERKITFEATURE) {
-					sb.append(Color.GOOD_EMPHASIS).append(n.getName());
+					sb.append(Color.GOOD_EMPHASIS).append(n.getId());
 					sb.append(Color.GOOD).append(", ");
 				}
 			}
