@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.ullink.slack.simpleslackapi.SlackChannel;
@@ -28,9 +30,6 @@ public class Slack extends Module {
 	private SlackSession session;
 	private LinkedList<SlackMessageWrapper> toPost;
 
-	/**
-	 * @see co.sblock.module.Module#onEnable()
-	 */
 	@Override
 	protected void onEnable() {
 		instance = this;
@@ -60,7 +59,7 @@ public class Slack extends Module {
 					AetherCommand.sendAether(event.getSender().getUserName(), event.getMessageContent());
 					return;
 				}
-				if (event.getChannel().getName().equals(getFullLog())) {
+				if (event.getChannel().getName().equals(getFullChat())) {
 					// Admin command
 					// TODO allow a whitelist of commands + grab output for Slack
 				}
@@ -106,27 +105,54 @@ public class Slack extends Module {
 		postMessage(name, null, message, global);
 	}
 
+	public synchronized void postMessage(UUID uuid, String message, boolean global) {
+		postMessage(null, uuid, message, global);
+	}
+
 	public synchronized void postMessage(String name, UUID uuid, String message, boolean global) {
 		if (!isEnabled()) {
 			return;
 		}
 		if (global) {
-			toPost.add(new SlackMessageWrapper(getMainChat(), message, uuid, name));
+			postMessage(name, uuid, message, getMainChat(), getFullChat());
+		} else {
+			postMessage(name, uuid, message, getFullChat());
 		}
-		toPost.add(new SlackMessageWrapper(getFullLog(), message, uuid, name));
+	}
+
+	public synchronized void postMessage(String name, UUID uuid, String message, String... channels) {
+		if (!isEnabled()) {
+			return;
+		}
+		if (name == null) {
+			OfflinePlayer offline = Bukkit.getOfflinePlayer(uuid);
+			if (offline.hasPlayedBefore()) {
+				name = offline.getName();
+			} else {
+				name = uuid.toString();
+			}
+		}
+		for (String channel : channels) {
+			toPost.add(new SlackMessageWrapper(channel, message, uuid, name));
+		}
+	}
+
+	public synchronized void postReport(String name, UUID uuid, String message) {
+		postMessage(name, uuid, message, getReportChat());
 	}
 
 	public String getMainChat() {
 		return Sblock.getInstance().getConfig().getString("slack.main-chat");
 	}
 
-	public String getFullLog() {
+	public String getFullChat() {
 		return Sblock.getInstance().getConfig().getString("slack.full-log");
 	}
 
-	/**
-	 * @see co.sblock.module.Module#onDisable()
-	 */
+	public String getReportChat() {
+		return Sblock.getInstance().getConfig().getString("slack.reports");
+	}
+
 	@Override
 	protected void onDisable() {
 		session = null;

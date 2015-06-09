@@ -3,20 +3,26 @@ package co.sblock.events;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.reflections.Reflections;
+
+import com.google.common.collect.ImmutableList;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.wrappers.BlockPosition;
@@ -154,6 +160,38 @@ public class Events extends Module {
 
 			ipcache.remove(((Entry<?, ?>) entry).getKey());
 		}
+	}
+
+	/**
+	 * Get all cached IPs for a UUID.
+	 * 
+	 * @param uuid the UUID
+	 * 
+	 * @return a Collection of all matching IPs.
+	 */
+	public Collection<String> getIPsFor(UUID uuid) {
+		OfflinePlayer offline = Bukkit.getOfflinePlayer(uuid);
+		if (!offline.hasPlayedBefore()) {
+			return ImmutableList.of();
+		}
+		return getIPsFor(offline.getName());
+	}
+
+	/**
+	 * Get all cached IPs for a name.
+	 * 
+	 * @param name the name
+	 * 
+	 * @return a Collection of all matching IPs.
+	 */
+	public synchronized Collection<String> getIPsFor(String name) {
+		ArrayList<String> list = new ArrayList<>();
+		for (Map.Entry<String, String> entry : ipcache.entrySet()) {
+			if (entry.getValue().equals(name)) {
+				list.add(entry.getKey());
+			}
+		}
+		return list;
 	}
 
 	/**
