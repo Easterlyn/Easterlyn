@@ -66,12 +66,12 @@ public class MeCommand extends SblockAsynchronousCommand {
 		if (!(sender instanceof Player)) {
 			return ImmutableList.of("NoConsoleSupport");
 		}
- 		if (args.length != 1 || !args[0].isEmpty() && args[0].charAt(0) != '@') {
+ 		if (args.length > 1 || !args[0].isEmpty() && args[0].charAt(0) != '@') {
 			return super.tabComplete(sender, alias, args);
 		}
 		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		ArrayList<String> matches = new ArrayList<>();
-		String toMatch = args[0].substring(1);
+		String toMatch = args.length == 0 || args[0].isEmpty() ? new String() : args[0].substring(1);
 		for (String s : user.getListening()) {
 			if (StringUtil.startsWithIgnoreCase(s, toMatch)) {
 				matches.add('@' + s);
