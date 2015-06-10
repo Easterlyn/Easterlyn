@@ -96,10 +96,10 @@ public class ChatNickCommand extends SblockCommand {
 		}
 		if (Users.getGuaranteedUser(((Player) sender).getUniqueId()).getCurrentChannel() instanceof RPChannel) {
 			ArrayList<String> matches = new ArrayList<>();
-			args[0] = args[0].toUpperCase();
+			args[0] = args[0].toLowerCase();
 			for (CanonNick nick : CanonNick.values()) {
-				if (nick != CanonNick.SERKITFEATURE && nick.name().startsWith(args[0])) {
-					matches.add(nick.name());
+				if (nick != CanonNick.SERKITFEATURE && nick.getId().toLowerCase().startsWith(args[0])) {
+					matches.add(nick.getId());
 				}
 			}
 			return matches;
