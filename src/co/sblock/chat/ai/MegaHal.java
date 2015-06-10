@@ -71,6 +71,7 @@ public class MegaHal extends HalMessageHandler {
 		ignoreMatches.add(Pattern.compile("^.*[Bb]([Ee]|[Aa])[Nn][Zz]([Uu]|[Ee])?[Rr][Ff]([Ll][Ee][Ss]?)?.*$"));
 		ignoreMatches.add(Pattern.compile("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$"));
 		ignoreMatches.add(Pattern.compile("^[Ee][Vv][Hh][Aa][Ll]([Uu][Aa][Tt][Ee])? .*$"));
+		ignoreMatches.add(Pattern.compile("^.*[Dd][Aa][Dd]([Dd][Yy])?.*$"));
 
 		hover = new ItemStack(Material.BARRIER);
 		ItemMeta hoverMeta = hover.getItemMeta();
