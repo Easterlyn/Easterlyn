@@ -126,6 +126,13 @@ public class RawAnnouncer extends Module {
 		msgs.add(new AnnouncementMessage(HALEMENT + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!\"}]}",
 				Color.HAL + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!"));
 
+		msgs.add(new AnnouncementMessage(HALEMENT + "Experiencing issues? If you \"},"
+				+ "{\"color\":\"aqua\",\"text\":\"/report\","
+					+ "\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/report\"},"
+					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to insert!\",\"color\":\"gold\"}}},"
+				+ "{\"color\":\"red\",\"text\":\" it, we may be able to help out!\"}]}",
+				Color.HAL + "Experiencing issues? If you /report it, we may be able to help out!"));
+
 		return msgs;
 	}
 
