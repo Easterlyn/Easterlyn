@@ -108,10 +108,10 @@ public class RawAnnouncer extends Module {
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "It is your generosity that keeps Sblock alive. Please consider \"},"
 				+ "{\"color\":\"aqua\",\"text\":\"donating\","
-					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=Z327Z7E2SBVV2&lc=US&item_name=Sblock&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}},"
+					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://sblock.co/wiki/Donating\"},"
+					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here for more information!\",\"color\":\"gold\"}}},"
 				+ "{\"color\":\"red\",\"text\":\" to help!\"}]}",
-				Color.HAL + "It is your generosity that keeps Sblock alive. Please consider donating to help."));
+				Color.HAL + "It is your generosity that keeps Sblock alive. Please consider http://sblock.co/wiki/Donating to help."));
 
 		msgs.add(new AnnouncementMessage(HALEMENT + "To sleep without dreaming, sneak while right clicking your bed!\"}]}",
 				Color.HAL + "To sleep without dreaming, sneak while right clicking your bed!"));
