@@ -404,7 +404,7 @@ public abstract class Channel {
 
 	public boolean isRecentlyAccessed() {
 		// 1000 ms/s * 60 s/min * 60 min/hr * 24 hr/d * 30d
-		return lastAccessed.get() > System.currentTimeMillis() + 2592000000L;
+		return lastAccessed.get() + 2592000000L > System.currentTimeMillis();
 	}
 
 	public void updateLastAccess() {
