@@ -44,7 +44,7 @@ public class AsyncPreLoginListener implements Listener {
 		} catch (Exception ex) {}
 		Collection<String> ips = Events.getInstance().getIPsFor(event.getUniqueId());
 		if (ips.size() > 1) {
-			Slack.getInstance().postReport(null, event.getUniqueId(), ips.size() + " IPs on record: " + StringUtils.join(ips.toArray(new String[ips.size()])));
+			Slack.getInstance().postReport(null, event.getUniqueId(), ips.size() + " IPs on record: " + StringUtils.join(ips.toArray(new String[ips.size()]), ", "));
 		}
 	}
 }
