@@ -11,12 +11,12 @@ import co.sblock.users.OfflineUser;
  * @author Dublek, tmathmeyer
  */
 public class NormalChannel extends Channel {
-	
+
 	/**
 	 * @see co.sblock.Chat.Channel.Channel#Channel(String, AccessLevel, String)
 	 */
-	public NormalChannel(String name, AccessLevel a, UUID creator) {
-		super(name, a, creator);
+	public NormalChannel(String name, AccessLevel a, UUID creator, long lastAccessed) {
+		super(name, a, creator, lastAccessed);
 	}
 
 	/**

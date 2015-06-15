@@ -52,6 +52,7 @@ public class ChatFocusCommand extends SblockCommand {
 			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
 			return true;
 		}
+		c.updateLastAccess();
 		user.setCurrentChannel(c);
 		return true;
 	}

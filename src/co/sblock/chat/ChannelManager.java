@@ -34,14 +34,32 @@ public class ChannelManager {
 			throw new RuntimeException("Unable to load channel data!", e);
 		}
 		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		final ArrayList<String> drop = new ArrayList<>();
 		for (String channelName : yaml.getKeys(false)) {
 			final Channel channel = ChannelManager.getChannelManager().loadChannel(channelName,
 					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
 					UUID.fromString(yaml.getString(channelName + ".owner")),
-					ChannelType.valueOf(yaml.getString(channelName + ".type")));
+					ChannelType.valueOf(yaml.getString(channelName + ".type")),
+					yaml.getLong(channelName + ".lastAccessed", System.currentTimeMillis()));
+			if (!channel.isRecentlyAccessed()) {
+				drop.add(channelName);
+				continue;
+			}
 			yaml.getStringList(channelName + ".mods").forEach(uuid -> channel.addModerator(UUID.fromString(uuid)));
 			yaml.getStringList(channelName + ".bans").forEach(uuid -> channel.addBan(UUID.fromString(uuid)));
 			yaml.getStringList(channelName + ".approved").forEach(uuid -> channel.addApproved(UUID.fromString(uuid)));
+		}
+		for (String channelName : drop) {
+			yaml.set(channelName, null);
+			channelList.remove(channelName);
+		}
+		if (drop.size() > 0) {
+			try {
+				yaml.save(file);
+			} catch (IOException e) {
+				Chat.getChat().getLogger().warning("Unable to save when dropping old channels!");
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -114,25 +132,25 @@ public class ChannelManager {
 	}
 
 	public void createNewChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
-		this.loadChannel(name, access, creator, channelType);
+		this.loadChannel(name, access, creator, channelType, System.currentTimeMillis());
 		Chat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
 	}
 
-	private Channel loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
+	private Channel loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType, long lastAccessed) {
 		Channel channel;
 		switch (channelType) {
 		case NICK:
-			channel = new NickChannel(name, access, creator);
+			channel = new NickChannel(name, access, creator, lastAccessed);
 			break;
 		case REGION:
-			channel = new RegionChannel(name, access, creator);
+			channel = new RegionChannel(name, access, creator, lastAccessed);
 			break;
 		case RP:
-			channel = new RPChannel(name, access, creator);
+			channel = new RPChannel(name, access, creator, lastAccessed);
 			break;
 		case NORMAL:
 		default:
-			channel = new NormalChannel(name, access, creator);
+			channel = new NormalChannel(name, access, creator, lastAccessed);
 			break;
 		}
 		this.channelList.put(name, channel);
@@ -140,25 +158,25 @@ public class ChannelManager {
 	}
 
 	public void createDefaultSet() {
-		channelList.put("#", new RegionChannel("#", AccessLevel.PUBLIC, null));
-		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null));
-		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null));
-		channelList.put("#fanrp", new NickChannel("#fanrp", AccessLevel.PUBLIC, null));
-		channelList.put("#EARTH", new RegionChannel("#EARTH", AccessLevel.PUBLIC, null));
-		channelList.put("#DERSPIT", new RegionChannel("#DERSPIT", AccessLevel.PUBLIC, null));
-		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null));
-		channelList.put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null));
-		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, null));
-		channelList.put("#LOWAS", new RegionChannel("#LOWAS", AccessLevel.PUBLIC, null));
-		channelList.put("#LOLAR", new RegionChannel("#LOLAR", AccessLevel.PUBLIC, null));
-		channelList.put("#LOHAC", new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null));
-		channelList.put("#LOFAF", new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null));
-		channelList.put("#Aether", new RegionChannel("#Aether", AccessLevel.PUBLIC, null));
-		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null));
-		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null));
+		channelList.put("#", new RegionChannel("#", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#fanrp", new NickChannel("#fanrp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#EARTH", new RegionChannel("#EARTH", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#DERSPIT", new RegionChannel("#DERSPIT", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#LOWAS", new RegionChannel("#LOWAS", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#LOLAR", new RegionChannel("#LOLAR", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#LOHAC", new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#LOFAF", new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#Aether", new RegionChannel("#Aether", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		// #pm must have a real owner so that people may use unicode characters in private messages
-		channelList.put("#pm", new NickChannel("#pm", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6")));
-		channelList.put("@", new NormalChannel("@", AccessLevel.PRIVATE, null));
+		channelList.put("#pm", new NickChannel("#pm", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
+		channelList.put("@", new NormalChannel("@", AccessLevel.PRIVATE, null, Long.MAX_VALUE));
 	}
 
 	public void dropChannel(String channelName) {

@@ -15,8 +15,8 @@ public class RPChannel extends NickChannel {
 	/**
 	 * @see co.sblock.chat.channel.Channel#Channel(String, AccessLevel, UUID)
 	 */
-	public RPChannel(String name, AccessLevel a, UUID creator) {
-		super(name, a, creator);
+	public RPChannel(String name, AccessLevel a, UUID creator, long lastAccessed) {
+		super(name, a, creator, lastAccessed);
 	}
 
 	/**

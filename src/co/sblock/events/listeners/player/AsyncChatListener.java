@@ -110,6 +110,9 @@ public class AsyncChatListener implements Listener {
 			}
 		}
 
+		// Flag channel as having been used so it is not deleted.
+		message.getChannel().updateLastAccess();
+
 		// Manually send messages to each player so we can wrap links, etc.
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
 

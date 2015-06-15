@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.bukkit.Bukkit;
 
@@ -25,21 +26,22 @@ public abstract class Channel {
 	/*
 	 * Immutable Data regarding the channel
 	 */
-	protected String name;
-	protected AccessLevel access;
-	protected Set<UUID> approvedList;
-	protected Set<UUID> modList;
-	protected Set<UUID> muteList;
-	protected Set<UUID> banList;
-	protected Set<UUID> listening;
+	protected final String name;
+	protected final AccessLevel access;
+	protected final Set<UUID> approvedList;
+	protected final Set<UUID> modList;
+	protected final Set<UUID> muteList;
+	protected final Set<UUID> banList;
+	protected final Set<UUID> listening;
 	protected UUID owner;
+	private final AtomicLong lastAccessed;
 
 	/**
 	 * @param name the name of the channel
 	 * @param a the access level of the channel
 	 * @param creator the owner of the channel
 	 */
-	public Channel(String name, AccessLevel a, UUID creator) {
+	public Channel(String name, AccessLevel a, UUID creator, long lastAccessed) {
 		this.name = name;
 		this.access = a;
 		this.owner = creator;
@@ -48,6 +50,7 @@ public abstract class Channel {
 		muteList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 		banList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		this.lastAccessed = new AtomicLong(lastAccessed);
 		if (creator != null) {
 			modList.add(creator);
 			ChannelManager.getChannelManager().saveChannel(this);
@@ -399,12 +402,21 @@ public abstract class Channel {
 		return access == AccessLevel.PUBLIC || approvedList.contains(user.getUUID()) || isModerator(user);
 	}
 
+	public boolean isRecentlyAccessed() {
+		// 1000 ms/s * 60 s/min * 60 min/hr * 24 hr/d * 30d
+		return lastAccessed.get() > System.currentTimeMillis() + 2592000000L;
+	}
+
+	public void updateLastAccess() {
+		this.lastAccessed.set(System.currentTimeMillis());
+	}
+
 	public void disband(OfflineUser sender) {
 		if (this.owner == null) {
 			sender.sendMessage(ChatMsgs.errorDisbandDefault());
 			return;
 		}
-		if (!this.isOwner(sender)) {
+		if (sender != null && !this.isOwner(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}

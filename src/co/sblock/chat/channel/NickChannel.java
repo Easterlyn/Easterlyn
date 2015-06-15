@@ -20,8 +20,8 @@ public class NickChannel extends Channel {
 	/**
 	 * @see co.sblock.chat.channel.Channel#Channel(String, AccessLevel, UUID)
 	 */
-	public NickChannel(String name, AccessLevel a, UUID creator) {
-		super(name, a, creator);
+	public NickChannel(String name, AccessLevel a, UUID creator, long lastAccessed) {
+		super(name, a, creator, lastAccessed);
 		nickList = new ConcurrentHashMap<>();
 	}
 

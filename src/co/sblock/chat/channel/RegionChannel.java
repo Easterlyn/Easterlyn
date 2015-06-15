@@ -11,8 +11,8 @@ public class RegionChannel extends NormalChannel {
 	/**
 	 * @see co.sblock.chat.channel.Channel#Channel(String, AccessLevel, UUID)
 	 */
-	public RegionChannel(String name, AccessLevel a, UUID creator) {
-		super(name, a, creator);
+	public RegionChannel(String name, AccessLevel a, UUID creator, long lastAccessed) {
+		super(name, a, creator, lastAccessed);
 	}
 
 	/**
@@ -41,5 +41,23 @@ public class RegionChannel extends NormalChannel {
 			}
 		}
 		Log.anonymousInfo(message);
+	}
+
+	/**
+	 * Regional channels do not need last access updated; they cannot be deleted.
+	 * 
+	 * @see co.sblock.chat.channel.Channel#updateLastAccess()
+	 */
+	@Override
+	public void updateLastAccess() {}
+
+	/**
+	 * Regional channels are never eligible for deletion.
+	 * 
+	 * @see co.sblock.chat.channel.Channel#isRecentlyAccessed()
+	 */
+	@Override
+	public boolean isRecentlyAccessed() {
+		return true;
 	}
 }
