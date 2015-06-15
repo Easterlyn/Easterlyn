@@ -64,6 +64,7 @@ public enum CanonNick {
 	private String name;
 	private ChatColor color;
 	private CanonNick(String id, String name, char colorCode) {
+		this.id = id;
 		this.name = name;
 		this.color = ChatColor.getByChar(colorCode);
 	}

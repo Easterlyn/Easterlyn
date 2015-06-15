@@ -43,6 +43,6 @@ public class RPChannel extends NickChannel {
 				return;
 			}
 		}
-		super.setNick(sender, name.getColor() + name.getId());
+		super.setNick(sender, name.getId());
 	}
 }
