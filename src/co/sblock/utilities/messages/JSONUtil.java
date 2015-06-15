@@ -45,27 +45,4 @@ public class JSONUtil {
 		}
 		return components;
 	}
-
-	public static BaseComponent clone(BaseComponent component) {
-		TextComponent clone;
-		if (component instanceof TextComponent) {
-			clone = new TextComponent(((TextComponent) component).getText());
-		} else {
-			clone = new TextComponent();
-		}
-		clone.setColor(component.getColorRaw());
-		clone.setBold(component.isBoldRaw());
-		clone.setItalic(component.isItalicRaw());
-		clone.setUnderlined(component.isUnderlinedRaw());
-		clone.setStrikethrough(component.isStrikethroughRaw());
-		clone.setObfuscated(component.isObfuscatedRaw());
-		clone.setClickEvent(component.getClickEvent());
-		clone.setHoverEvent(component.getHoverEvent());
-		if (component.getExtra() == null)
-			return clone;
-		for (BaseComponent basecomponent : component.getExtra()) {
-			clone.addExtra(clone(basecomponent));
-		}
-		return clone;
-	}
 }

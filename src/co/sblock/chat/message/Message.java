@@ -17,7 +17,6 @@ import co.sblock.chat.channel.ChannelType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.messages.JSONUtil;
 import co.sblock.utilities.messages.Slack;
 import co.sblock.utilities.regex.RegexUtils;
 
@@ -167,7 +166,7 @@ public class Message {
 				continue;
 			}
 
-			BaseComponent message = JSONUtil.clone(messageComponent);
+			BaseComponent message = messageComponent.duplicate();
 
 			if (channel.equals(u.getCurrentChannel())) {
 				message.setColor(ChatColor.WHITE);
