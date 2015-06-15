@@ -134,7 +134,7 @@ public class MessageBuilder {
 			if (informSender && this.atChannel != null) {
 				this.sender.sendMessage(ChatMsgs.errorInvalidChannel(atChannel));
 			} else if (informSender) {
-				this.sender.sendMessage(ChatMsgs.errorNoCurrent());
+				this.sender.sendMessage(ChatMsgs.errorCurrentChannelNull());
 			}
 			return false;
 		}

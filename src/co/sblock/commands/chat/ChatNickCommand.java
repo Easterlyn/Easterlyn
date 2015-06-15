@@ -43,7 +43,7 @@ public class ChatNickCommand extends SblockCommand {
 		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
 		Channel c = user.getCurrentChannel();
 		if (c == null) {
-			user.sendMessage(ChatMsgs.errorNoCurrent());
+			user.sendMessage(ChatMsgs.errorCurrentChannelNull());
 			return true;
 		}
 		if (args.length == 0) {

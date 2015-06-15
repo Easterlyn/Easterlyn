@@ -39,7 +39,7 @@ public class RPChannel extends NickChannel {
 		}
 		for (String nickname : nickList.values()) {
 			if (CanonNick.getNick(nickname).getDisplayName().equals(name.getDisplayName())) {
-				sender.sendMessage(ChatMsgs.errorNickInUse(name.getDisplayName()));
+				sender.sendMessage(ChatMsgs.errorNickTaken(name.getDisplayName()));
 				return;
 			}
 		}

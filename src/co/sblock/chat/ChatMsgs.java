@@ -6,9 +6,6 @@ import java.util.Date;
 import co.sblock.chat.channel.Channel;
 import co.sblock.users.OfflineUser;
 
-import net.md_5.bungee.api.ChatColor;
-
-
 /**
  * A container for all messages sent to <code>Player</code>s from various Chat subsections.
  * 
@@ -16,16 +13,27 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class ChatMsgs {
 
+	private static final SimpleDateFormat TIME_24 = new SimpleDateFormat("HH:mm");
+	private static final String CHANNEL_JOIN = Color.GOOD_PLAYER + "%s" + Color.GOOD
+			+ " began pestering " + Color.GOOD_EMPHASIS + "%s" + Color.GOOD + " at %s";
+	private static final String ERROR_ALREADY_LISTENING = Color.BAD + "You are already listening to channel " + Color.BAD_EMPHASIS + "%s";
+	private static final String ERROR_CURRENT_NULL = Color.BAD + "You must set a current channel to chat! Use "
+			+ Color.COMMAND + "/join <channel>";
+	private static final String ERROR_DISBAND_DEFAULT = Color.BAD + "Hardcoded default channels cannot be disbanded.";
+	private static final String ERROR_EMPTY_MESSAGE = Color.BAD + "You cannot send empty messages!";
+	private static final String ERROR_INVALID_CHANNEL = Color.BAD + "Channel " + Color.BAD_EMPHASIS + "%s" + Color.BAD
+			+ " does not exist! Did you forget the #?";
+	private static final String ERROR_INVALID_USER = Color.BAD_PLAYER + "%s" + Color.BAD + " does not exist! Get them to log in.";
+	private static final String ERROR_NICK_NOT_CANON = Color.BAD_EMPHASIS + "%s" + Color.BAD + " is not a canon nickname! Use "
+			+ Color.COMMAND + "/nick list" + Color.BAD + " for a list.";
+	private static final String ERROR_NICK_TAKEN = Color.BAD_EMPHASIS + "%s" + Color.BAD + " is already in use!";
+	private static final String ERROR_REGION_JOIN = Color.BAD + "You cannot join a region channel!";
+	private static final String ERROR_REGION_LEAVE = Color.BAD
+			+ "You cannot leave a region channel! Use " + Color.COMMAND + "/suppress" + Color.BAD
+			+ " to ignore all regional channels.";
+
 	public static String onChannelJoin(OfflineUser user, Channel channel) {
-		String name = user.getPlayer().getDisplayName();
-		String message = "pestering";
-		ChatColor nameC = Color.GOOD_PLAYER;
-		if (channel.hasNick(user)) {
-			name = channel.getNick(user);
-		}
-		return nameC + name + Color.GOOD + " began " + message + " " + Color.GOOD_EMPHASIS
-				+ channel.getName() + Color.GOOD + " at "
-				+ new SimpleDateFormat("HH:mm").format(new Date());
+		return String.format(CHANNEL_JOIN, channel.getNick(user), channel.getName(), TIME_24.format(new Date()));
 	}
 
 	public static String onChannelLeave(OfflineUser user, Channel channel) {
@@ -106,51 +114,48 @@ public class ChatMsgs {
 				+ Color.GOOD + " Ask a channel mod for access!";
 	}
 
-	public static String errorInvalidChannel(String channelName) {
-		return Color.BAD + "Channel " + Color.BAD_EMPHASIS + channelName + Color.BAD
-				+ " does not exist!";
-	}
-
 	public static String unsupportedOperation(String channelName) {
 		return Color.BAD + "Channel " + Color.BAD_EMPHASIS + channelName + Color.BAD
 				+ " does not support that operation.";
 	}
 
-	public static String errorInvalidUser(String userName) {
-		return Color.BAD_PLAYER + userName + Color.BAD + " does not exist! Get them to log in.";
-	}
-
-	public static String errorNoCurrent() {
-		return Color.BAD + "You must set a current channel to chat! Use "
-				+ Color.COMMAND + "/join <channel>";
-	}
-
 	public static String errorAlreadyListening(String channelName) {
-		return Color.BAD + "You are already listening to channel " + Color.BAD_EMPHASIS + channelName;
+		return String.format(ERROR_ALREADY_LISTENING, channelName);
 	}
 
-	public static String errorNickNotCanon(String nick) {
-		return Color.BAD_EMPHASIS + nick + Color.BAD + " is not a canon nickname! Use "
-				+ Color.COMMAND + "/nick list" + Color.BAD + " for a list.";
-	}
-
-	public static String errorNickInUse(String nick) {
-		return Color.BAD_EMPHASIS + nick + Color.BAD + " is already in use!";
-	}
-
-	public static String errorRegionChannelJoin() {
-		return Color.BAD + "You cannot join a region channel!";
-	}
-
-	public static String errorRegionChannelLeave() {
-		return Color.BAD + "You cannot leave a region channel!";
-	}
-
-	public static String errorEmptyMessage() {
-		return Color.BAD + "You cannot send empty messages!";
+	public static String errorCurrentChannelNull() {
+		return ERROR_CURRENT_NULL;
 	}
 
 	public static String errorDisbandDefault() {
-		return Color.BAD + "Hardcoded default channels cannot be disbanded.";
+		return ERROR_DISBAND_DEFAULT;
+	}
+
+	public static String errorEmptyMessage() {
+		return ERROR_EMPTY_MESSAGE;
+	}
+
+	public static String errorInvalidChannel(String channelName) {
+		return String.format(ERROR_INVALID_CHANNEL, channelName);
+	}
+
+	public static String errorInvalidUser(String userName) {
+		return String.format(ERROR_INVALID_USER, userName);
+	}
+
+	public static String errorNickNotCanon(String nick) {
+		return String.format(ERROR_NICK_NOT_CANON, nick);
+	}
+
+	public static String errorNickTaken(String nick) {
+		return String.format(ERROR_NICK_TAKEN, nick);
+	}
+
+	public static String errorRegionChannelJoin() {
+		return ERROR_REGION_JOIN;
+	}
+
+	public static String errorRegionChannelLeave() {
+		return ERROR_REGION_LEAVE;
 	}
 }

@@ -13,7 +13,7 @@ import co.sblock.users.Users;
  * 
  * @author Dublek
  */
-public class NickChannel extends Channel {
+public class NickChannel extends NormalChannel {
 
 	protected transient Map<UUID, String> nickList; 
 

@@ -91,7 +91,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		switch (args[0]) {
 		case "getlisteners":
 			if (channel == null) {
-				user.sendMessage(ChatMsgs.errorNoCurrent());
+				user.sendMessage(ChatMsgs.errorCurrentChannelNull());
 				return true;
 			}
 			sb = new StringBuilder().append(Color.GOOD);
@@ -109,7 +109,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			return true;
 		case "info":
 			if (channel == null) {
-				user.sendMessage(ChatMsgs.errorNoCurrent());
+				user.sendMessage(ChatMsgs.errorCurrentChannelNull());
 				return true;
 			}
 			user.sendMessage(channel.toString());

@@ -24,7 +24,7 @@ public class RegionChannel extends NormalChannel {
 	}
 
 	/**
-	 * Allows null senders and chat suppression for global channels.
+	 * Allows chat suppression for global channels.
 	 * 
 	 * @see co.sblock.chat.channel.Channel#sendMessage(User, String, boolean)
 	 */
