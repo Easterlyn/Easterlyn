@@ -16,6 +16,7 @@ import co.sblock.chat.Color;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
+import co.sblock.chat.channel.NormalChannel;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
@@ -91,7 +92,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		switch (args[0]) {
 		case "getlisteners":
 			if (channel == null) {
-				user.sendMessage(ChatMsgs.errorNoCurrent());
+				user.sendMessage(ChatMsgs.errorCurrentChannelNull());
 				return true;
 			}
 			sb = new StringBuilder().append(Color.GOOD);
@@ -109,7 +110,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			return true;
 		case "info":
 			if (channel == null) {
-				user.sendMessage(ChatMsgs.errorNoCurrent());
+				user.sendMessage(ChatMsgs.errorCurrentChannelNull());
 				return true;
 			}
 			user.sendMessage(channel.toString());
@@ -172,9 +173,15 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		}
 
 		if (!channel.isModerator(user)) {
-			sender.sendMessage(this.getUsage());
-			return true;
+			return false;
 		}
+
+		if (!(channel instanceof NormalChannel)) {
+			sender.sendMessage(Color.BAD + "Regional channels do not support kicks, bans, or approval. Moderators are permissions-based.");
+			return false;
+		}
+
+		NormalChannel normal = (NormalChannel) channel;
 
 		switch (args[0]) {
 		case "approve":
@@ -182,28 +189,28 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				sender.sendMessage(Color.COMMAND + "/channel approve <user>" + Color.GOOD + ": Approve a user for this channel.");
 				return true;
 			}
-			channel.approveUser(user, getUniqueId(args[1]));
+			normal.approveUser(user, getUniqueId(args[1]));
 			return true;
 		case "ban":
 			if (args.length == 1) {
 				sender.sendMessage(Color.COMMAND + "/channel ban <user>" + Color.GOOD + ": Ban a user from the channel");
 				return true;
 			}
-			channel.banUser(user, getUniqueId(args[1]));
+			normal.banUser(user, getUniqueId(args[1]));
 			return true;
 		case "deapprove":
 			if (args.length == 1) {
 				sender.sendMessage(Color.COMMAND + "/channel deapprove <user>" + Color.GOOD + ": De-approve a user from this channel.");
 				return true;
 			}
-			channel.disapproveUser(user, getUniqueId(args[1]));
+			normal.disapproveUser(user, getUniqueId(args[1]));
 			return true;
 		case "kick":
 			if (args.length == 1) {
 				sender.sendMessage(Color.COMMAND + "/channel kick <user>" + Color.GOOD + ": Kick a user from the channel");
 				return true;
 			}
-			channel.kickUser(user, getUniqueId(args[1]));
+			normal.kickUser(user, getUniqueId(args[1]));
 			return true;
 		}
 
@@ -220,10 +227,10 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				return true;
 			}
 			if (args[1].equalsIgnoreCase("add")) {
-				channel.addMod(user, getUniqueId(args[2]));
+				normal.addMod(user, getUniqueId(args[2]));
 				return true;
 			} else if (args[1].equalsIgnoreCase("remove")) {
-				channel.removeMod(user, getUniqueId(args[2]));
+				normal.removeMod(user, getUniqueId(args[2]));
 				return true;
 			} else {
 				sender.sendMessage(Color.COMMAND + "/channel mod <add|remove> <user>" + Color.GOOD + ": Add or remove a channel mod");
@@ -234,16 +241,16 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				sender.sendMessage(Color.COMMAND + "/channel unban <user>" + Color.GOOD + ": Unban a user from the channel");
 				return true;
 			}
-			channel.unbanUser(user, getUniqueId(args[1]));
+			normal.unbanUser(user, getUniqueId(args[1]));
 			return true;
 		case "disband":
-			channel.disband(user);
+			normal.disband(user);
 			return true;
 		}
 
 		sender.sendMessage(this.getUsage());
 		sender.sendMessage(this.modHelp);
-			sender.sendMessage(this.ownerHelp);
+		sender.sendMessage(this.ownerHelp);
 		return true;
 	}
 

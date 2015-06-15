@@ -6,25 +6,18 @@ import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 
-public class RegionChannel extends NormalChannel {
+public class RegionChannel extends Channel {
 
 	/**
-	 * @see co.sblock.chat.channel.Channel#Channel(String, AccessLevel, UUID)
+	 * Constructor for a RegionChannel. Regional channels all are hardcoded and may not be created
+	 * or owned by a player.
 	 */
-	public RegionChannel(String name, AccessLevel a, UUID creator, long lastAccessed) {
-		super(name, a, creator, lastAccessed);
+	public RegionChannel(String name) {
+		super(name, null);
 	}
 
 	/**
-	 * @see co.sblock.chat.channel.Channel#getType()
-	 */
-	@Override
-	public ChannelType getType() {
-		return ChannelType.REGION;
-	}
-
-	/**
-	 * Allows null senders and chat suppression for global channels.
+	 * Allows chat suppression for global channels.
 	 * 
 	 * @see co.sblock.chat.channel.Channel#sendMessage(User, String, boolean)
 	 */
@@ -59,5 +52,47 @@ public class RegionChannel extends NormalChannel {
 	@Override
 	public boolean isRecentlyAccessed() {
 		return true;
+	}
+
+	/**
+	 * @see co.sblock.chat.channel.Channel#getAccess()
+	 */
+	@Override
+	public AccessLevel getAccess() {
+		return AccessLevel.PUBLIC;
+	}
+
+	/* (non-Javadoc)
+	 * @see co.sblock.chat.channel.Channel#isOwner(co.sblock.users.OfflineUser)
+	 */
+	@Override
+	public boolean isOwner(OfflineUser user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see co.sblock.chat.channel.Channel#isModerator(co.sblock.users.OfflineUser)
+	 */
+	@Override
+	public boolean isModerator(OfflineUser user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * @see co.sblock.chat.channel.Channel#isApproved(co.sblock.users.OfflineUser)
+	 */
+	@Override
+	public boolean isApproved(OfflineUser user) {
+		return false;
+	}
+
+	/**
+	 * @see co.sblock.chat.channel.Channel#isBanned(co.sblock.users.OfflineUser)
+	 */
+	@Override
+	public boolean isBanned(OfflineUser user) {
+		return false;
 	}
 }

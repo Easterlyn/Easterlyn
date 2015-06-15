@@ -15,7 +15,9 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelType;
+import co.sblock.chat.channel.NickChannel;
+import co.sblock.chat.channel.RPChannel;
+import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.OfflineUser;
 import co.sblock.utilities.messages.JSONUtil;
 import co.sblock.utilities.regex.RegexUtils;
@@ -82,8 +84,8 @@ public class MessageBuilder {
 		}
 
 		// Anyone can use color codes in nick channels. Channel mods can use color codes in non-rp channels
-		if (channel != null && channel.getType() != ChannelType.RP 
-				&& (channel.getType() == ChannelType.NICK || sender != null && channel.isModerator(sender))) {
+		if (channel != null && !(channel instanceof RPChannel)
+				&& (channel instanceof NickChannel || sender != null && channel.isModerator(sender))) {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
 
@@ -134,7 +136,7 @@ public class MessageBuilder {
 			if (informSender && this.atChannel != null) {
 				this.sender.sendMessage(ChatMsgs.errorInvalidChannel(atChannel));
 			} else if (informSender) {
-				this.sender.sendMessage(ChatMsgs.errorNoCurrent());
+				this.sender.sendMessage(ChatMsgs.errorCurrentChannelNull());
 			}
 			return false;
 		}
@@ -153,7 +155,7 @@ public class MessageBuilder {
 		}
 
 		// No sending messages to global chats while ignoring them.
-		if (this.channel.getType() == ChannelType.REGION && this.sender.getSuppression()) {
+		if (this.channel instanceof RegionChannel && this.sender.getSuppression()) {
 			if (informSender) {
 				this.sender.sendMessage(ChatColor.RED
 						+ "You cannot talk in a global channel while suppressing!\nUse "
@@ -163,7 +165,7 @@ public class MessageBuilder {
 		}
 
 		// Nicks required in RP channels.
-		if (this.channel.getType() == ChannelType.RP && !this.channel.hasNick(sender)) {
+		if (this.channel instanceof RPChannel && !((RPChannel) this.channel).hasNick(sender)) {
 			if (informSender) {
 				this.sender.sendMessage(ChatColor.GOLD + channel.getName() + ChatColor.RED
 						+ " is a roleplay channel, a nick is required. Check " + ChatColor.AQUA
@@ -202,7 +204,7 @@ public class MessageBuilder {
 		}
 
 		// Prepend chat colors to every message if sender has permission
-		if (channel.getType() != ChannelType.RP && player != null && player.hasPermission("sblockchat.color")) {
+		if (!(channel instanceof RPChannel) && player != null && player.hasPermission("sblockchat.color")) {
 			for (ChatColor c : ChatColor.values()) {
 				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
 					message = c + message;
@@ -213,8 +215,8 @@ public class MessageBuilder {
 
 		// Canon nicks for RP channels
 		CanonNick nick = null;
-		if (sender != null && channel.getType() == ChannelType.RP) {
-			nick = CanonNick.getNick(channel.getNick(sender));
+		if (sender != null && channel instanceof RPChannel) {
+			nick = CanonNick.getNick(((RPChannel) channel).getNick(sender));
 			message = nick.getPrefix() + message;
 		}
 
@@ -294,7 +296,9 @@ public class MessageBuilder {
 		}
 
 		// > Name | <Name
-		component = new TextComponent(nick != null ? nick.getDisplayName() : sender != null ? channel.getNick(sender) : senderName);
+		component = new TextComponent(nick != null ? nick.getDisplayName() : sender != null
+				? channel instanceof NickChannel ? ((NickChannel) channel).getNick(sender)
+						: sender.getDisplayName() : senderName);
 		component.setColor(nick != null ? nick.getNameColor() : globalRank);
 		components.add(component);
 

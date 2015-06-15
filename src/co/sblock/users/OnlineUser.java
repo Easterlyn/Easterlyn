@@ -27,6 +27,7 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
+import co.sblock.chat.channel.NickChannel;
 import co.sblock.effects.FXManager;
 import co.sblock.effects.fx.SblockFX;
 import co.sblock.machines.Machines;
@@ -263,8 +264,8 @@ public class OnlineUser extends OfflineUser {
 		if (!this.getListening().contains(channel)) {
 			this.getListening().add(channel.getName());
 		}
-		if (!channel.getListening().contains(getUUID())) {
-			channel.addListening(getUUID());
+		if (!channel.getListening().contains(this.getUUID())) {
+			channel.getListening().add(this.getUUID());
 			this.getListening().add(channel.getName());
 			channel.sendMessage(ChatMsgs.onChannelJoin(this, channel));
 			return true;
@@ -277,17 +278,17 @@ public class OnlineUser extends OfflineUser {
 	@Override
 	public void handleLoginChannelJoins() {
 		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
-			Channel c = ChannelManager.getChannelManager().getChannel(iterator.next());
-			if (c != null && !c.isBanned(this) && (c.getAccess() != AccessLevel.PRIVATE || c.isApproved(this))) {
-				this.getListening().add(c.getName());
-				c.addListening(this.getUUID());
+			Channel channel = ChannelManager.getChannelManager().getChannel(iterator.next());
+			if (channel != null && !channel.isBanned(this) && (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))) {
+				this.getListening().add(channel.getName());
+				channel.getListening().add(this.getUUID());
 			} else {
 				iterator.remove();
 			}
 		}
 		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
 			this.getListening().add("@");
-			ChannelManager.getChannelManager().getChannel("@").addListening(this.getUUID());
+			ChannelManager.getChannelManager().getChannel("@").getListening().add(this.getUUID());
 		}
 		String base = new StringBuilder(Color.GOOD_PLAYER.toString()).append(this.getDisplayName())
 				.append(Color.GOOD).append(" began pestering <>").append(Color.GOOD)
@@ -327,16 +328,18 @@ public class OnlineUser extends OfflineUser {
 
 	@Override
 	public void removeListening(String channelName) {
-		Channel c = ChannelManager.getChannelManager().getChannel(channelName);
-		if (c == null) {
+		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+		if (channel == null) {
 			this.sendMessage(ChatMsgs.errorInvalidChannel(channelName));
 			this.getListening().remove(channelName);
 			return;
 		}
 		if (this.getListening().remove(channelName)) {
-			c.removeNick(this, false);
-			c.sendMessage(ChatMsgs.onChannelLeave(this, c));
-			c.removeListening(this.getUUID());
+			if (channel instanceof NickChannel) {
+				((NickChannel) channel).removeNick(this, false);
+			}
+			channel.sendMessage(ChatMsgs.onChannelLeave(this, channel));
+			channel.getListening().remove(this.getUUID());
 			if (this.currentChannel != null && channelName.equals(this.getCurrentChannel().getName())) {
 				this.currentChannel = null;
 			}

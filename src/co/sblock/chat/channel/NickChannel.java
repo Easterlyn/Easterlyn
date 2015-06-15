@@ -13,12 +13,12 @@ import co.sblock.users.Users;
  * 
  * @author Dublek
  */
-public class NickChannel extends Channel {
+public class NickChannel extends NormalChannel {
 
 	protected transient Map<UUID, String> nickList; 
 
 	/**
-	 * @see co.sblock.chat.channel.Channel#Channel(String, AccessLevel, UUID)
+	 * @see co.sblock.chat.channel.NormalChannel#Channel(String, AccessLevel, UUID, Long)
 	 */
 	public NickChannel(String name, AccessLevel a, UUID creator, long lastAccessed) {
 		super(name, a, creator, lastAccessed);
@@ -26,78 +26,75 @@ public class NickChannel extends Channel {
 	}
 
 	/**
-	 * @see co.sblock.chat.channel.Channel#getType()
+	 * Sets a nickname for an OfflineUser.
+	 * 
+	 * @param user the OfflineUser
+	 * @param nick the nickname
 	 */
-	@Override
-	public ChannelType getType() {
-		return ChannelType.NICK;
+	public void setNick(OfflineUser user, String nick) {
+		nickList.put(user.getUUID(), nick);
+		this.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), nick, this.name));
 	}
 
 	/**
-	 * ONLY CALL FROM CHATUSER
-	 *
-	 * @param user the UUID to remove from listening.
+	 * Removes a nickname from an OfflineUser.
+	 * 
+	 * @param user the OfflineUser
+	 * @param warn whether to warn the user
 	 */
-	@Override
-	public void removeListening(UUID userID) {
-		this.listening.remove(userID);
-		if (this.nickList.containsKey(userID)) {
-			this.nickList.remove(userID);
-		}
-	}
-
-	/**
-	 * @see co.sblock.chat.channel.Channel#setNick(ChatUser, String)
-	 */
-	@Override
-	public void setNick(OfflineUser sender, String nick) {
-		nickList.put(sender.getUUID(), nick);
-		this.sendMessage(ChatMsgs.onUserSetNick(sender.getPlayerName(), nick, this.name));
-	}
-
-	/**
-	 * @see co.sblock.chat.channel.Channel#removeNick(ChatUser)
-	 */
-	@Override
-	public void removeNick(OfflineUser sender, boolean warn) {
-		if (nickList.containsKey(sender.getUUID())) {
-			String old = nickList.remove(sender.getUUID());
+	public void removeNick(OfflineUser user, boolean warn) {
+		if (nickList.containsKey(user.getUUID())) {
+			String old = nickList.remove(user.getUUID());
 			if (warn) {
-				this.sendMessage(ChatMsgs.onUserRmNick(sender.getPlayerName(), old, this.name));
+				this.sendMessage(ChatMsgs.onUserRmNick(user.getPlayerName(), old, this.name));
 			}
 		}
 	}
 
 	/**
-	 * @see co.sblock.chat.channel.Channel#getNick(ChatUser)
+	 * Gets the nickname of the given OfflineUser, defaulting to their name if they do not have one.
+	 * 
+	 * @param user the OfflinePlayer
+	 * @return the nickname
 	 */
-	@Override
-	public String getNick(OfflineUser sender) {
-		return nickList.containsKey(sender.getUUID()) ? nickList.get(sender.getUUID())
-				: sender.isOnline() ? sender.getPlayer().getDisplayName() : sender.getPlayerName();
+	public String getNick(OfflineUser user) {
+		return nickList.containsKey(user.getUUID()) ? nickList.get(user.getUUID())
+				: user.isOnline() ? user.getPlayer().getDisplayName() : user.getPlayerName();
 	}
 
 	/**
-	 * @see co.sblock.chat.channel.Channel#hasNick(ChatUser)
+	 * Check if the given OfflineUser has a nickname set in this Channel.
+	 * 
+	 * @param sender the OfflineUser
+	 * @return true if a nickname is set
 	 */
-	@Override
 	public boolean hasNick(OfflineUser sender) {
 		return nickList.containsKey(sender.getUUID());
 	}
 
 	/**
-	 * @see co.sblock.chat.channel.Channel#getNickOwner(String)
+	 * Gets the OfflineUser using the nickname provided, or null if the nickname is not in use.
+	 * 
+	 * @param nick the nickname to reverse lookup
+	 * @return the owner of the provided nickname
 	 */
-	@Override
 	public OfflineUser getNickOwner(String nick) {
 		OfflineUser owner = null;
+		UUID remove = null;
 		if (nickList.containsValue(nick)) {
-			for (UUID u : nickList.keySet()) {
-				if (nickList.get(u).equalsIgnoreCase(nick)) {
-					owner = Users.getGuaranteedUser(u);
+			for (UUID uuid : nickList.keySet()) {
+				if (nickList.get(uuid).equalsIgnoreCase(nick)) {
+					if (!getListening().contains(uuid)) {
+						remove = uuid;
+						break;
+					}
+					owner = Users.getGuaranteedUser(uuid);
 					break;
 				}
 			}
+		}
+		if (remove != null) {
+			nickList.remove(remove);
 		}
 		return owner;
 	}

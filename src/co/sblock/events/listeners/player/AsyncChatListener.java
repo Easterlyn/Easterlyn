@@ -9,7 +9,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.ai.HalMessageHandler;
-import co.sblock.chat.channel.ChannelType;
+import co.sblock.chat.channel.RegionChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.event.SblockAsyncChatEvent;
@@ -87,7 +87,7 @@ public class AsyncChatListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (message.getChannel().getType() == ChannelType.REGION && rpMatch(cleaned)) {
+		if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
 			event.getPlayer().sendMessage(Color.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
 			event.setCancelled(true);
 			return;
@@ -102,7 +102,7 @@ public class AsyncChatListener implements Listener {
 		}
 
 		// Region channels are the only ones that should be appearing in certain plugins
-		if (message.getChannel().getType() != ChannelType.REGION) {
+		if (!(message.getChannel() instanceof RegionChannel)) {
 			if (!event.isCancelled() && event instanceof SblockAsyncChatEvent) {
 				((SblockAsyncChatEvent) event).setGlobalCancelled(true);
 			} else {

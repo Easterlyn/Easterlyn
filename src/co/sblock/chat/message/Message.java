@@ -13,7 +13,8 @@ import org.bukkit.entity.Player;
 
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelType;
+import co.sblock.chat.channel.NickChannel;
+import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
@@ -72,9 +73,9 @@ public class Message {
 	public String getConsoleMessage() {
 		StringBuilder nameBuilder = new StringBuilder();
 		if (sender != null) {
-			boolean hasNick = !sender.getPlayerName().equals(channel.getNick(sender));
+			boolean hasNick = channel instanceof NickChannel && ((NickChannel) channel).hasNick(sender);
 			if (hasNick) {
-				nameBuilder.append(channel.getNick(sender)).append(" (");
+				nameBuilder.append(((NickChannel) channel).getNick(sender)).append(" (");
 			}
 			nameBuilder.append(sender.getPlayerName());
 			if (hasNick) {
@@ -136,7 +137,7 @@ public class Message {
 
 	public <T> void send(Collection<T> recipients, boolean normalChat) {
 		String consoleMessage = getConsoleMessage();
-		if (!normalChat || channel.getType() != ChannelType.REGION) {
+		if (!normalChat || channel instanceof RegionChannel) {
 			if (recipients.size() < channel.getListening().size()) {
 				consoleMessage = "[SoftMute] " + consoleMessage;
 			}
@@ -162,7 +163,7 @@ public class Message {
 
 			OfflineUser u = Users.getGuaranteedUser(uuid);
 			if (player == null || !u.isOnline() || player.spigot() == null
-					|| channel.getType() == ChannelType.REGION && u.getSuppression()) {
+					|| channel instanceof RegionChannel && u.getSuppression()) {
 				continue;
 			}
 

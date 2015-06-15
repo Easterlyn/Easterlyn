@@ -15,7 +15,6 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.channel.RPChannel;
 import co.sblock.commands.SblockCommand;
@@ -41,35 +40,36 @@ public class ChatNickCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
-		Channel c = user.getCurrentChannel();
-		if (c == null) {
-			user.sendMessage(ChatMsgs.errorNoCurrent());
+		Channel channel = user.getCurrentChannel();
+		if (channel == null) {
+			user.sendMessage(ChatMsgs.errorCurrentChannelNull());
 			return true;
 		}
 		if (args.length == 0) {
 			return false;
 		}
-		if (!(c instanceof NickChannel)) {
-			user.sendMessage(ChatMsgs.unsupportedOperation(c.getName()));
+		if (!(channel instanceof NickChannel)) {
+			user.sendMessage(ChatMsgs.unsupportedOperation(channel.getName()));
 			return true;
 		}
 		if (args[0].equalsIgnoreCase("list")) {
-			if (c.getType() == ChannelType.NICK) {
-				user.sendMessage(Color.GOOD + "You can use any nick you want in a nick channel.");
+			if (channel instanceof RPChannel) {
+				StringBuilder sb = new StringBuilder(Color.GOOD.toString()).append("Nicks: ");
+				for (CanonNick n : CanonNick.values()) {
+					if (n != CanonNick.SERKITFEATURE) {
+						sb.append(Color.GOOD_EMPHASIS).append(n.getId());
+						sb.append(Color.GOOD).append(", ");
+					}
+				}
+				user.sendMessage(sb.substring(0, sb.length() - 4).toString());
 				return true;
 			}
-			StringBuilder sb = new StringBuilder(Color.GOOD.toString()).append("Nicks: ");
-			for (CanonNick n : CanonNick.values()) {
-				if (n != CanonNick.SERKITFEATURE) {
-					sb.append(Color.GOOD_EMPHASIS).append(n.getId());
-					sb.append(Color.GOOD).append(", ");
-				}
-			}
-			user.sendMessage(sb.substring(0, sb.length() - 4).toString());
+			user.sendMessage(Color.GOOD + "You can use any nick you want in a nick channel.");
 			return true;
 		}
+		NickChannel nick = (NickChannel) channel;
 		if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("off")) {
-			c.removeNick(user, true);
+			nick.removeNick(user, true);
 			return true;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -84,7 +84,7 @@ public class ChatNickCommand extends SblockCommand {
 					+ "Nicks must be 1+ characters long when stripped of non-ASCII characters.");
 			return true;
 		}
-		c.setNick(user, ChatColor.translateAlternateColorCodes('&', sb.toString()));
+		nick.setNick(user, ChatColor.translateAlternateColorCodes('&', sb.toString()));
 		return true;
 	}
 

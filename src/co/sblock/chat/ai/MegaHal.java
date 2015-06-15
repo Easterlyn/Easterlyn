@@ -31,7 +31,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelType;
+import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.utilities.Log;
@@ -105,8 +105,7 @@ public class MegaHal extends HalMessageHandler {
 
 	@Override
 	public boolean handleMessage(Message msg, Collection<Player> recipients) {
-		if (msg.getSender() == null || msg.getChannel().getType() == ChannelType.NICK
-				|| msg.getChannel().getType() == ChannelType.RP) {
+		if (msg.getSender() == null || msg.getChannel() instanceof NickChannel) {
 			return true;
 		}
 		if (isTrigger(msg.getCleanedMessage())) {
@@ -145,8 +144,7 @@ public class MegaHal extends HalMessageHandler {
 
 	public void log(Message message) {
 		if (message.getChannel().getAccess() == AccessLevel.PRIVATE
-				|| message.getChannel().getType() == ChannelType.NICK
-				|| message.getChannel().getType() == ChannelType.RP) {
+				|| message.getChannel() instanceof NickChannel) {
 			return;
 		}
 		log(message.getCleanedMessage());

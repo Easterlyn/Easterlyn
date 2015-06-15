@@ -13,7 +13,7 @@ import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.ChannelType;
+import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
@@ -43,17 +43,17 @@ public class ChatFocusCommand extends SblockCommand {
 			return false;
 		}
 		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
-		Channel c = ChannelManager.getChannelManager().getChannel(args[0]);
-		if (c == null) {
+		Channel channel = ChannelManager.getChannelManager().getChannel(args[0]);
+		if (channel == null) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
 			return true;
 		}
-		if (c.getType() == ChannelType.REGION && !user.isListening(c)) {
+		if (channel instanceof RegionChannel && !user.isListening(channel)) {
 			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
 			return true;
 		}
-		c.updateLastAccess();
-		user.setCurrentChannel(c);
+		channel.updateLastAccess();
+		user.setCurrentChannel(channel);
 		return true;
 	}
 

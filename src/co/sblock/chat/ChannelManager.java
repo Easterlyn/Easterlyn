@@ -41,13 +41,14 @@ public class ChannelManager {
 					UUID.fromString(yaml.getString(channelName + ".owner")),
 					ChannelType.valueOf(yaml.getString(channelName + ".type")),
 					yaml.getLong(channelName + ".lastAccessed", System.currentTimeMillis()));
-			if (!channel.isRecentlyAccessed()) {
+			if (!(channel instanceof NormalChannel) || !((NormalChannel) channel).isRecentlyAccessed()) {
 				drop.add(channelName);
 				continue;
 			}
-			yaml.getStringList(channelName + ".mods").forEach(uuid -> channel.addModerator(UUID.fromString(uuid)));
-			yaml.getStringList(channelName + ".bans").forEach(uuid -> channel.addBan(UUID.fromString(uuid)));
-			yaml.getStringList(channelName + ".approved").forEach(uuid -> channel.addApproved(UUID.fromString(uuid)));
+			NormalChannel normal = (NormalChannel) channel;
+			yaml.getStringList(channelName + ".mods").forEach(uuid -> normal.addModerator(UUID.fromString(uuid)));
+			yaml.getStringList(channelName + ".bans").forEach(uuid -> normal.addBan(UUID.fromString(uuid)));
+			yaml.getStringList(channelName + ".approved").forEach(uuid -> normal.addApproved(UUID.fromString(uuid)));
 		}
 		for (String channelName : drop) {
 			yaml.set(channelName, null);
@@ -75,22 +76,23 @@ public class ChannelManager {
 		}
 		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		for (Channel channel : channelList.values()) {
-			if (channel.getOwner() == null) {
+			if (channel.getOwner() == null || !(channel instanceof NormalChannel)) {
 				// Default channel
 				continue;
 			}
-			final String name = channel.getName();
-			yaml.set(name + ".owner", channel.getOwner().toString());
-			yaml.set(name + ".type", channel.getType().name());
-			yaml.set(name + ".access", channel.getAccess().name());
+			NormalChannel normal = (NormalChannel) channel;
+			final String name = normal.getName();
+			yaml.set(name + ".owner", normal.getOwner().toString());
+			yaml.set(name + ".type", normal.getClass().getSimpleName().replace("Channel", "").toUpperCase());
+			yaml.set(name + ".access", normal.getAccess().name());
 			final ArrayList<String> mods = new ArrayList<>();
-			channel.getModList().forEach(uuid -> mods.add(uuid.toString()));
+			normal.getModList().forEach(uuid -> mods.add(uuid.toString()));
 			yaml.set(name + ".mods", mods);
 			final ArrayList<String> bans = new ArrayList<>();
-			channel.getBanList().forEach(uuid -> bans.add(uuid.toString()));
+			normal.getBanList().forEach(uuid -> bans.add(uuid.toString()));
 			yaml.set(name + ".bans", bans);
 			final ArrayList<String> approved = new ArrayList<>();
-			channel.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
+			normal.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
 			yaml.set(name + ".approved", approved);
 		}
 		try {
@@ -101,6 +103,10 @@ public class ChannelManager {
 	}
 
 	public void saveChannel(Channel channel) {
+		if (!(channel instanceof NormalChannel)) {
+			return;
+		}
+		NormalChannel normal = (NormalChannel) channel;
 		final File file;
 		try {
 			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
@@ -108,26 +114,26 @@ public class ChannelManager {
 				file.createNewFile();
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to save data for channel " + channel.getName(), e);
+			throw new RuntimeException("Unable to save data for channel " + normal.getName(), e);
 		}
 		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		final String name = channel.getName();
-		yaml.set(name + ".owner", channel.getOwner().toString());
-		yaml.set(name + ".type", channel.getType().name());
-		yaml.set(name + ".access", channel.getAccess().name());
+		final String name = normal.getName();
+		yaml.set(name + ".owner", normal.getOwner().toString());
+		yaml.set(name + ".type", normal.getClass().getSimpleName().replace("Channel", "").toUpperCase());
+		yaml.set(name + ".access", normal.getAccess().name());
 		final ArrayList<String> mods = new ArrayList<>();
-		channel.getModList().forEach(uuid -> mods.add(uuid.toString()));
+		normal.getModList().forEach(uuid -> mods.add(uuid.toString()));
 		yaml.set(name + ".mods", mods);
 		final ArrayList<String> bans = new ArrayList<>();
-		channel.getBanList().forEach(uuid -> bans.add(uuid.toString()));
+		normal.getBanList().forEach(uuid -> bans.add(uuid.toString()));
 		yaml.set(name + ".bans", bans);
 		final ArrayList<String> approved = new ArrayList<>();
-		channel.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
+		normal.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
 		yaml.set(name + ".approved", approved);
 		try {
 			yaml.save(file);
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to save data for channel " + channel.getName(), e);
+			throw new RuntimeException("Unable to save data for channel " + normal.getName(), e);
 		}
 	}
 
@@ -136,14 +142,11 @@ public class ChannelManager {
 		Chat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
 	}
 
-	private Channel loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType, long lastAccessed) {
-		Channel channel;
+	private NormalChannel loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType, long lastAccessed) {
+		NormalChannel channel;
 		switch (channelType) {
 		case NICK:
 			channel = new NickChannel(name, access, creator, lastAccessed);
-			break;
-		case REGION:
-			channel = new RegionChannel(name, access, creator, lastAccessed);
 			break;
 		case RP:
 			channel = new RPChannel(name, access, creator, lastAccessed);
@@ -158,20 +161,20 @@ public class ChannelManager {
 	}
 
 	public void createDefaultSet() {
-		channelList.put("#", new RegionChannel("#", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#", new RegionChannel("#"));
 		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#fanrp", new NickChannel("#fanrp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#EARTH", new RegionChannel("#EARTH", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#DERSPIT", new RegionChannel("#DERSPIT", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#LOWAS", new RegionChannel("#LOWAS", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#LOLAR", new RegionChannel("#LOLAR", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#LOHAC", new RegionChannel("#LOHAC", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#LOFAF", new RegionChannel("#LOFAF", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#Aether", new RegionChannel("#Aether", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#EARTH", new RegionChannel("#EARTH"));
+		channelList.put("#DERSPIT", new RegionChannel("#DERSPIT"));
+		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE"));
+		channelList.put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE"));
+		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING"));
+		channelList.put("#LOWAS", new RegionChannel("#LOWAS"));
+		channelList.put("#LOLAR", new RegionChannel("#LOLAR"));
+		channelList.put("#LOHAC", new RegionChannel("#LOHAC"));
+		channelList.put("#LOFAF", new RegionChannel("#LOFAF"));
+		channelList.put("#Aether", new RegionChannel("#Aether"));
 		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		// #pm must have a real owner so that people may use unicode characters in private messages

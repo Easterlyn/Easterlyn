@@ -21,6 +21,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
+import co.sblock.chat.channel.NickChannel;
 import co.sblock.utilities.player.PlayerLoader;
 
 import net.md_5.bungee.api.ChatColor;
@@ -432,8 +433,8 @@ public class OfflineUser {
 	public synchronized Collection<String> getHighlights(Channel channel) {
 		HashSet<String> highlights = new HashSet<>();
 		if (this.getHighlight()) {
-			if (this.isOnline()) {
-				highlights.add(channel.getNick(this));
+			if (this.isOnline() && channel instanceof NickChannel) {
+				highlights.add(((NickChannel) channel).getNick(this));
 			}
 			highlights.add(getPlayerName());
 			highlights.add(getDisplayName());
@@ -516,12 +517,14 @@ public class OfflineUser {
 	 * @param channel the Channel to remove
 	 */
 	public synchronized void removeListeningSilent(Channel channel) {
-		channel.removeNick(this, false);
+		if (channel instanceof NickChannel) {
+			((NickChannel) channel).removeNick(this, false);
+		}
 		this.listening.remove(channel.getName());
 		if (this.currentChannel != null && this.currentChannel.equals(channel.getName())) {
 			this.currentChannel = null;
 		}
-		channel.removeListening(this.getUUID());
+		channel.getListening().remove(this.getUUID());
 	}
 
 	/**
@@ -537,7 +540,7 @@ public class OfflineUser {
 		if (channel == null || !channel.getListening().contains(this.getUUID())) {
 			return false;
 		}
-		channel.removeListening(this.getUUID());
+		channel.getListening().remove(this.getUUID());
 		return true;
 	}
 

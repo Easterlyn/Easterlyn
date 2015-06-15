@@ -20,14 +20,6 @@ public class RPChannel extends NickChannel {
 	}
 
 	/**
-	 * @see co.sblock.chat.channel.Channel#getType()
-	 */
-	@Override
-	public ChannelType getType() {
-		return ChannelType.RP;
-	}
-
-	/**
 	 * @see co.sblock.chat.channel.Channel#setNick(ChatUser, String)
 	 */
 	@Override
@@ -39,7 +31,7 @@ public class RPChannel extends NickChannel {
 		}
 		for (String nickname : nickList.values()) {
 			if (CanonNick.getNick(nickname).getDisplayName().equals(name.getDisplayName())) {
-				sender.sendMessage(ChatMsgs.errorNickInUse(name.getDisplayName()));
+				sender.sendMessage(ChatMsgs.errorNickTaken(name.getDisplayName()));
 				return;
 			}
 		}
