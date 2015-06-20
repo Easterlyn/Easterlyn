@@ -3,6 +3,7 @@ package co.sblock.chat.channel;
 import java.util.UUID;
 
 import co.sblock.users.OfflineUser;
+import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
 
@@ -55,6 +56,8 @@ public class RegionChannel extends Channel {
 	}
 
 	/**
+	 * Regional channels are public, but require moderator status to actually join.
+	 * 
 	 * @see co.sblock.chat.channel.Channel#getAccess()
 	 */
 	@Override
@@ -62,33 +65,40 @@ public class RegionChannel extends Channel {
 		return AccessLevel.PUBLIC;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Owners and moderators are permission-based for regional channels.
+	 * 
 	 * @see co.sblock.chat.channel.Channel#isOwner(co.sblock.users.OfflineUser)
 	 */
 	@Override
 	public boolean isOwner(OfflineUser user) {
-		// TODO Auto-generated method stub
-		return false;
+		return user instanceof OnlineUser && ((OnlineUser) user).getPlayer().hasPermission("sblock.denizen");
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Owners and moderators are permission-based for regional channels.
+	 * 
 	 * @see co.sblock.chat.channel.Channel#isModerator(co.sblock.users.OfflineUser)
 	 */
 	@Override
 	public boolean isModerator(OfflineUser user) {
-		// TODO Auto-generated method stub
-		return false;
+		return user instanceof OnlineUser && ((OnlineUser) user).getPlayer().hasPermission("sblock.felt");
 	}
 
 	/**
+	 * All users are approved to focus on regional channels.
+	 * 
 	 * @see co.sblock.chat.channel.Channel#isApproved(co.sblock.users.OfflineUser)
 	 */
 	@Override
 	public boolean isApproved(OfflineUser user) {
-		return false;
+		return true;
 	}
 
 	/**
+	 * Users cannot be banned from regional channels; they should be muted if they are that much of
+	 * an issue.
+	 * 
 	 * @see co.sblock.chat.channel.Channel#isBanned(co.sblock.users.OfflineUser)
 	 */
 	@Override
