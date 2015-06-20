@@ -8,8 +8,9 @@ import co.sblock.chat.Color;
 import net.md_5.bungee.api.ChatColor;
 
 /**
+ * An enum representing all supported nicknames in RPChannels.
+ * 
  * @author Jikoo
- *
  */
 public enum CanonNick {
 	JOHN("John", "John", '1'),
@@ -30,7 +31,8 @@ public enum CanonNick {
 	TEREZI("Terezi", "Terezi", '3'),
 	VRISKA("Vriska", "Vriska", '9'),
 	EQUIUS("Equius", "Equius", '1'),
-	GAMZEE("Gamzee", "Gamzee", '5'),
+	PRESGRUBGAMZEE("pre-sgrub!Gamzee", "Gamzee", '5'),
+	SGRUBGAMZEE("sgrub!Gamzee", "Gamzee", '5'),
 	ERIDAN("Eridan", "Eridan", '5'),
 	FEFERI("Feferi", "Feferi", '5'),
 
@@ -57,7 +59,10 @@ public enum CanonNick {
 	MEENAH("Meenah", "Meenah", '5'),
 
 	CALLIOPE("Calliope", "Calliope", '7'),
+	TAKEOVERCALLIOPE("takeover!Calliope", "Calliope", '7'),
 	CALIBORN("Caliborn", "Caliborn", '8'),
+	TAKEOVERCALIBORN("takeover!Caliborn", "Caliborn", '8'),
+	BLOODYTAKEOVERCALIBORN("bloodytakeover!Caliborn", "Caliborn", 'a'),
 	SERKITFEATURE(ChatColor.DARK_RED + ":3 :3 :3", ChatColor.GREEN + "L" + ChatColor.MAGIC + "o" + ChatColor.GREEN + "rd English", 'a');
 
 	private String id;
@@ -75,7 +80,6 @@ public enum CanonNick {
 //	DadLalonde: White text, perfect grammar and syntext
 //	Bro strider: same quirk and color as Dirk
 //	Grandpa Harley: Same color/quirk as jake
-//	ANCESTORS: same color quirks as their descendants, Cept Condy cus s)(e speak all ghetto
 //	Betty Crocker: White text, Condy's quirk
 //	LilCal: Orange, HEE HEE HEE HAA HAA HAA HOOO HOOO HOOO CAPS
 //	Jack Noir: absolutely no punctuation and no niceness he ain that fuckin sweet sugar
@@ -117,8 +121,14 @@ public enum CanonNick {
 		case DIRK:
 			return s.replaceAll("([^bB]|\\b)ro", "$1bro").replaceAll("([^bB]|\\b)Ro", "$1Bro")
 					.replaceAll("([^bB]|\\b)[rR][oO]", "$1BRO");
+		case BLOODYTAKEOVERCALIBORN:
+		case TAKEOVERCALIBORN:
+		case KARKAT:
+			return s.toUpperCase();
 		case CALIBORN:
 			return s.toUpperCase().replace("U", "u");
+		case TAKEOVERCALLIOPE:
+			return s.toLowerCase();
 		case CALLIOPE:
 			return s.toLowerCase().replace("u", "U");
 		case CRONUS:
@@ -142,7 +152,9 @@ public enum CanonNick {
 			return s.replaceAll("[;:]([dDbBpPL\\Q)(][\\E])", "38$1")
 					.replaceAll("([^8])[\\W&&[^\\s]]", "$1").replaceAll("[hH]", ")(")
 					.replace("E", "-E");
-		case GAMZEE:
+		case PRESGRUBGAMZEE:
+			return alternateCaseAlphabetical(s);
+		case SGRUBGAMZEE:
 			return alternateCase(s);
 		case HORUSS:
 			return EQUIUS.applyQuirk(s).replaceAll("[iI]", "\\*");
@@ -164,8 +176,6 @@ public enum CanonNick {
 			return hellaAnnoying(s.replaceAll("[\\W&&[^\\s]]", ""));
 		case KANKRI:
 			return s.replaceAll("[oO]", "9").replaceAll("[bB]", "6");
-		case KARKAT:
-			return s.toUpperCase();
 		case KURLOZ:
 			return "...";
 		case LATULA:
@@ -340,6 +350,25 @@ public enum CanonNick {
 			if (Math.random() > 0.7) {
 				sb.append('\u0020');
 			}
+		}
+		return sb.toString();
+	}
+
+	private String alternateCaseAlphabetical(String s) {
+		boolean upper = true;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			char charAt = s.charAt(i);
+			if (!Character.isAlphabetic(charAt)) {
+				sb.append(charAt);
+				continue;
+			}
+			if (upper) {
+				sb.append(Character.toUpperCase(charAt));
+				upper = false;
+				continue;
+			}
+			sb.append(Character.toLowerCase(charAt));
 		}
 		return sb.toString();
 	}
