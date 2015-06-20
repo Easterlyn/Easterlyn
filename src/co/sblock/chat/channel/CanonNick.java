@@ -98,13 +98,13 @@ public enum CanonNick {
 	public String getPrefix() {
 		switch (this) {
 		case EQUIUS:
-			return this.color + "D --> ";
+			return "D --> ";
 		case HORUSS:
-			return this.color + "8=D < ";
+			return "8=D < ";
 		case NEPETA:
-			return this.color + ":33 < ";
+			return ":33 < ";
 		default:
-			return this.color.toString();
+			return null;
 		}
 	}
 

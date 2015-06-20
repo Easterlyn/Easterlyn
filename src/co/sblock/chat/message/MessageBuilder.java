@@ -33,17 +33,42 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
- * 
+ * Builder for Messages. In most cases, set sender, channel, and finally message. In the event that
+ * channel must be fixed, set it last to prevent @#channel changing. However, in the case of nick
+ * channels, this can result in chat colors not being allowed when they should be.
  * 
  * @author Jikoo
  */
 public class MessageBuilder {
 
 	private static final TextComponent HIGHLIGHTED_BRACKET;
+	private static final String ITEM_NAME;
+	private static final String LORE_CLASS_OF_ASPECT;
+	private static final String LORE_DREAM;
+	private static final String LORE_MEDIUM;
 
 	static {
 		HIGHLIGHTED_BRACKET = new TextComponent("!!");
 		HIGHLIGHTED_BRACKET.setColor(ChatColor.AQUA);
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+--")
+				.append(ChatColor.AQUA).append(ChatColor.RESET).append(" %s%s ")
+				.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("--+");
+		ITEM_NAME = sb.toString();
+
+		sb.delete(0, sb.length());
+		sb.append(ChatColor.DARK_AQUA).append("%s").append(ChatColor.YELLOW)
+				.append(" of %s%s");
+		LORE_CLASS_OF_ASPECT = sb.toString();
+
+		sb.delete(0, sb.length());
+		sb.append(ChatColor.YELLOW).append("Dream: %s%s");
+		LORE_DREAM = sb.toString();
+
+		sb.delete(0, sb.length());
+		sb.append(ChatColor.YELLOW).append("Medium: %s%s");
+		LORE_MEDIUM = sb.toString();
 	}
 
 	private OfflineUser sender = null;
@@ -90,7 +115,7 @@ public class MessageBuilder {
 		}
 
 		Player player = sender != null ? sender.getPlayer() : null;
-		// Strip characters that are not allowed in the current channel
+		// Strip characters that are not allowed in default channels
 		if (channel != null && channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
 			StringBuilder sb = new StringBuilder();
 			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
@@ -129,7 +154,7 @@ public class MessageBuilder {
 	}
 
 	public boolean canBuild(boolean informSender) {
-		informSender = this.sender != null ? informSender : false;
+		informSender = this.sender != null && informSender;
 
 		// Channel must exist
 		if (this.channel == null) {
@@ -217,7 +242,9 @@ public class MessageBuilder {
 		CanonNick nick = null;
 		if (sender != null && channel instanceof RPChannel) {
 			nick = CanonNick.getNick(((RPChannel) channel).getNick(sender));
-			message = nick.getPrefix() + message;
+			if (nick.getPrefix() != null) {
+				message = nick.getPrefix() + message;
+			}
 		}
 
 		// CHANNEL ELEMENT: [#channel]
@@ -310,22 +337,14 @@ public class MessageBuilder {
 		if (hover == null && sender != null) {
 			hover = new ItemStack(Material.DIAMOND);
 			ItemMeta meta = hover.getItemMeta();
-			meta.setDisplayName(new StringBuilder().append(ChatColor.YELLOW)
-					.append(ChatColor.STRIKETHROUGH).append("+--").append(ChatColor.AQUA)
-					.append(ChatColor.RESET).append(' ').append(globalRank)
-					.append(sender.getDisplayName()).append(' ').append(ChatColor.YELLOW)
-					.append(ChatColor.STRIKETHROUGH).append("--+").toString());
+			meta.setDisplayName(String.format(ITEM_NAME, globalRank, sender.getDisplayName()));
 			ArrayList<String> lore = new ArrayList<>();
-			lore.add(new StringBuilder().append(ChatColor.DARK_AQUA)
-					.append(sender.getUserClass().getDisplayName()).append(ChatColor.YELLOW)
-					.append(" of ").append(sender.getUserAspect().getColor())
-					.append(sender.getUserAspect().getDisplayName()).toString());
-			lore.add(new StringBuilder().append(ChatColor.YELLOW).append("Dream: ")
-					.append(sender.getDreamPlanet().getColor())
-					.append(sender.getDreamPlanet().getDisplayName()).toString());
-			lore.add(new StringBuilder().append(ChatColor.YELLOW).append("Medium: ")
-					.append(sender.getMediumPlanet().getColor())
-					.append(sender.getMediumPlanet().getDisplayName()).toString());
+			lore.add(String.format(LORE_CLASS_OF_ASPECT, sender.getUserClass().getDisplayName(),
+					sender.getUserAspect().getColor(), sender.getUserAspect().getDisplayName()));
+			lore.add(String.format(LORE_DREAM, sender.getDreamPlanet().getColor(), sender
+					.getDreamPlanet().getDisplayName()));
+			lore.add(String.format(LORE_MEDIUM, sender.getMediumPlanet().getColor(), sender
+					.getMediumPlanet().getDisplayName()));
 			meta.setLore(lore);
 			hover.setItemMeta(meta);
 		}
@@ -343,6 +362,11 @@ public class MessageBuilder {
 
 		// MESSAGE ELEMENT: Your text here.
 		TextComponent messageComponent = new TextComponent(JSONUtil.getJson(message, nick));
+
+		// Console prettiness
+		if (nick != null) {
+			message = nick.getColor() + message;
+		}
 
 		return new Message(this.sender, this.senderName, this.channel, this.message,
 				this.thirdPerson, channelComponent, channelHighlightComponent, nameComponent,
