@@ -42,7 +42,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 	private final String[] ownerArgs = new String[] {"mod", "unban", "disband"};
 	private final String ownerHelp = Color.GOOD_EMPHASIS + "Channel owner commands:\n"
 			+ Color.COMMAND + "/channel mod <add|remove> <user>"
-			+ Color.GOOD + ": Add or remove a channel mod\n"
+			+ Color.GOOD + ": Add/remove a channel mod\n"
 			+ Color.COMMAND + "/channel unban <user>"
 			+ Color.GOOD + ": (Un)bans a user from the channel\n"
 			+ Color.COMMAND + "/channel disband"
