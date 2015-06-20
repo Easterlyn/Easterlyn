@@ -137,7 +137,7 @@ public class Message {
 
 	public <T> void send(Collection<T> recipients, boolean normalChat) {
 		String consoleMessage = getConsoleMessage();
-		if (!normalChat || channel instanceof RegionChannel) {
+		if (!normalChat || !(channel instanceof RegionChannel)) {
 			if (recipients.size() < channel.getListening().size()) {
 				consoleMessage = "[SoftMute] " + consoleMessage;
 			}
