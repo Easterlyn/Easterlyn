@@ -103,7 +103,7 @@ public class InteractListener implements Listener {
 				if (event.getItem().getType() == m && event.getItem().getItemMeta().hasDisplayName() 
 						&& event.getItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
 					if (Entry.getEntry().isEntering(user)) {
-						if (m == Entry.getEntry().getData().get(user).getCruxtype()) {
+						if (m == Entry.getEntry().getData().get(user).getRight()) {
 							Entry.getEntry().succeed(user);
 						}
 					}

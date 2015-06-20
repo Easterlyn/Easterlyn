@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -21,8 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
-
-import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
 import co.sblock.events.packets.ParticleEffectWrapper;
@@ -50,32 +51,17 @@ import net.md_5.bungee.api.ChatColor;
 @Dependency("HolographicDisplays")
 public class Entry {
 
-	public class EntryStorage {
-		public Meteorite meteorite;
-		private final Material cruxtype;
-		public EntryStorage(Meteorite meteorite, Material cruxtype) {
-			this.meteorite = meteorite;
-			this.cruxtype = cruxtype;
-		}
-
-		public Material getCruxtype() {
-			return cruxtype;
-		}
-	}
-
 	private static Entry instance;
 
 	private final Material[] materials;
-	private final HashBiMap<EntryTimer, UUID> holograms;
-	private final HashMap<UUID, EntryStorage> data;
+	private final HashMap<UUID, Triple<Meteorite, EntryTimer, Material>> data;
 
 	public Entry() {
 		materials = createMaterialList();
-		holograms = HashBiMap.create();
 		data = new HashMap<>();
 	}
 	public boolean canStart(OfflineUser user) {
-		if (!holograms.values().contains(user.getUUID()) && user.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())
+		if (!data.containsKey(user.getUUID()) && user.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())
 				&& user.getProgression() == ProgressionState.NONE) {
 			return true;
 		}
@@ -84,7 +70,7 @@ public class Entry {
 	}
 
 	public boolean isEntering(OfflineUser user) {
-		return holograms.containsValue(user.getUUID());
+		return data.containsKey(user.getUUID());
 	}
 
 
@@ -100,7 +86,6 @@ public class Entry {
 		// 4:13 = 253 seconds, 2 second display of 0:00
 		EntryTimer task = new EntryTimer(holoLoc, user.getUUID());
 		task.runTaskTimer(Sblock.getInstance(), 20L, 20L);
-		holograms.put(task, user.getUUID());
 		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true, -1);
 		// 254 seconds * 20 ticks per second = 5080
 		meteorite.hoverMeteorite(5080);
@@ -118,7 +103,7 @@ public class Entry {
 			Player player = user.getPlayer();
 			player.getWorld().dropItem(player.getLocation(), is);
 		}
-		data.put(user.getUUID(), new EntryStorage(meteorite, material));
+		data.put(user.getUUID(), new ImmutableTriple<>(meteorite, task, material));
 	}
 
 	private void finish(OfflineUser user) {
@@ -127,7 +112,7 @@ public class Entry {
 		}
 
 		// Drop the Meteor created.
-		Meteorite meteorite = data.remove(user.getUUID()).meteorite;
+		Meteorite meteorite = data.remove(user.getUUID()).getLeft();
 		if (!meteorite.hasDropped()) {
 			meteorite.dropMeteorite();
 		}
@@ -146,7 +131,7 @@ public class Entry {
 		}
 
 		finish(user);
-		if (user.getProgression() != ProgressionState.NONE) {
+		if (user.getProgression().ordinal() > ProgressionState.ENTRY_UNDERWAY.ordinal()) {
 			return;
 		}
 
@@ -245,7 +230,7 @@ public class Entry {
 				&& l.clone().add(new Vector(0, -1, 0)).getBlock().getType().isSolid();
 	}
 	
-	public HashMap<UUID, EntryStorage> getData() {
+	public HashMap<UUID, Triple<Meteorite, EntryTimer, Material>> getData() {
 		return data;
 	}
 }

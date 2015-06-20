@@ -27,9 +27,6 @@ public class ServerMode {
 		createApprovedSet();
 	}
 
-	/**
-	 * @return
-	 */
 	private void createApprovedSet() {
 		approved = new HashMap<Material, Integer>();
 		approved.put(Material.STONE, 0);
@@ -37,12 +34,12 @@ public class ServerMode {
 		approved.put(Material.DIRT, 1);
 		approved.put(Material.COBBLESTONE, 0);
 		approved.put(Material.WOOD, 5);
-		approved.put(Material.SAND, 1);
 		approved.put(Material.GRAVEL, 0);
 		approved.put(Material.LOG, 3);
 		approved.put(Material.LOG_2, 1);
 		approved.put(Material.GLASS, 0);
-		approved.put(Material.SANDSTONE, 1);
+		approved.put(Material.SANDSTONE, 2);
+		approved.put(Material.RED_SANDSTONE, 2);
 		approved.put(Material.WOOL, 15);
 		approved.put(Material.STEP, 7);
 		approved.put(Material.BRICK, 0);

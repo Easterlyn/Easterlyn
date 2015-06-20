@@ -431,7 +431,7 @@ public class OnlineUser extends OfflineUser {
 	}
 	
 	public void applyGodtierPassiveEffect() {
-		if(this.getProgression().value() >= ProgressionState.GODTIER.value()) {
+		if(this.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
 			SblockFX passive = null;
 			switch(this.getUserAspect()) {
 			case BLOOD:
@@ -472,7 +472,7 @@ public class OnlineUser extends OfflineUser {
 	}
 	
 	public void applyGodtierActiveEffect() {
-		if(this.getProgression().value() >= ProgressionState.GODTIER.value()) {
+		if(this.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
 			SblockFX active = null;
 			switch(this.getUserAspect()) {
 			case BLOOD:
