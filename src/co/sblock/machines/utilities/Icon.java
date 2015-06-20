@@ -15,8 +15,12 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public enum Icon {
 
-	PESTERCHUM(1), SBURBCLIENT(5), SBURBSERVER(2),
-	BACK(0), CONFIRM(0), BOONDOLLAR_SHOP(0), ;
+	PESTERCHUM(1),
+	SBURBCLIENT(5),
+	SBURBSERVER(2),
+	BACK(0),
+	CONFIRM(0),
+	BOONDOLLAR_SHOP(0);
 
 	/** The program ID. */
 	private int number;

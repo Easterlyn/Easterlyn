@@ -29,12 +29,11 @@ public class ServerMode {
 
 	private void createApprovedSet() {
 		approved = new HashMap<Material, Integer>();
-		approved.put(Material.STONE, 0);
+		approved.put(Material.STONE, 6);
 		approved.put(Material.GRASS, 0);
 		approved.put(Material.DIRT, 1);
 		approved.put(Material.COBBLESTONE, 0);
 		approved.put(Material.WOOD, 5);
-		approved.put(Material.GRAVEL, 0);
 		approved.put(Material.LOG, 3);
 		approved.put(Material.LOG_2, 1);
 		approved.put(Material.GLASS, 0);
@@ -44,17 +43,13 @@ public class ServerMode {
 		approved.put(Material.STEP, 7);
 		approved.put(Material.BRICK, 0);
 		approved.put(Material.SNOW_BLOCK, 0);
-		approved.put(Material.CLAY, 0);
 		approved.put(Material.NETHERRACK, 0);
 		approved.put(Material.STAINED_GLASS, 15);
 		approved.put(Material.SMOOTH_BRICK, 0);
 		approved.put(Material.NETHER_BRICK, 0);
 		approved.put(Material.ENDER_STONE, 0);
 		approved.put(Material.QUARTZ_BLOCK, 2);
-		approved.put(Material.HARD_CLAY, 0);
 		approved.put(Material.STAINED_CLAY, 15);
-		approved.put(Material.LEAVES, 3);
-		approved.put(Material.LEAVES_2, 1);
 		approved.put(Material.WORKBENCH, 0);
 		approved.put(Material.CHEST, 0);
 		approved.put(Material.FURNACE, 0);
