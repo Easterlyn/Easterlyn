@@ -9,6 +9,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.ai.HalMessageHandler;
+import co.sblock.chat.ai.Halper;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -37,6 +38,7 @@ public class AsyncChatListener implements Listener {
 
 	public AsyncChatListener() {
 		halFunctions = new LinkedHashSet<>();
+		halFunctions.add(new Halper());
 		halFunctions.add(Chat.getChat().getHalculator());
 		// MegaHal function should be last as it (by design) handles any message passed to it.
 		// Insert any additional functions above.
