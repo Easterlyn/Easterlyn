@@ -30,7 +30,7 @@ public class PublicMessageCommand extends SblockCommand {
 			return false;
 		}
 		((Player) sender).chat(new StringBuilder("[privatemessage;Username:").append(args[0])
-				.append(']').append(StringUtils.join(args, ' ', 1, args.length - 1))
+				.append(']').append(StringUtils.join(args, ' ', 1, args.length))
 				.append("[/privatemessage]").toString());
 		return true;
 	}
