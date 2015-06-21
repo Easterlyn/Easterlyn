@@ -80,7 +80,9 @@ public class AsyncChatListener implements Listener {
 			return;
 		}
 		if (cleaned.equalsIgnoreCase("Adam") || cleaned.equalsIgnoreCase("Pete")) {
-			event.getPlayer().sendMessage(ChatColor.RED + "Wishes you would say his name in a sentence, not by itself.");
+			event.getPlayer().sendMessage(
+					ChatColor.RED + "Names are short and easy to include in a sentence, "
+							+ event.getPlayer().getDisplayName() + ". Please do it.");
 			event.setCancelled(true);
 			return;
 		}
