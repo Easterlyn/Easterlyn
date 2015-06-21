@@ -314,6 +314,9 @@ public enum CanonNick {
 			}
 			end = m.end();
 		}
+		if (end < s.length()) {
+			sb.append(s.substring(end));
+		}
 		return sb.toString();
 	}
 
