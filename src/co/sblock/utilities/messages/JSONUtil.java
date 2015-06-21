@@ -40,7 +40,7 @@ public class JSONUtil {
 				}
 			} else if (quirk != null) {
 				component.setColor(quirk.getColor());
-				component.setText(quirk.applyQuirk(message));
+				component.setText(quirk.applyQuirk(component.getText()));
 			}
 		}
 		return components;
