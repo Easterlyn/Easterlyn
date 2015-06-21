@@ -49,6 +49,11 @@ public class Halper extends HalMessageHandler {
 				+ ". Press tab to auto-complete options if you're confused!");
 		responses.put(Pattern.compile("(start|make|create).*cha(t|nnel)"), builder.toMessage());
 
+		// Match "my stuff was griefed" etc.
+		builder.setMessage(ChatColor.RED + "Please " + Color.COMMAND + "/report" + ChatColor.RED
+				+ " any suspected grief - a moderator will be able to check it out later!");
+		responses.put(Pattern.compile("(grief|br(o|ea)k|gone|st(ea|o)l|missing)"), builder.toMessage());
+
 		// Match anything, should be added last.
 		builder.setMessage(ChatColor.RED + "Sorry, I don't have any matching help. Help us out by "
 				+ Color.COMMAND + "/report" + ChatColor.RED + "ing if you feel it's necessary!");
@@ -69,6 +74,7 @@ public class Halper extends HalMessageHandler {
 		for (Entry<Pattern, Message> entry : responses.entrySet()) {
 			if (entry.getKey().matcher(msg).find()) {
 				entry.getValue().send(recipients);
+				return true;
 			}
 		}
 		return true;
