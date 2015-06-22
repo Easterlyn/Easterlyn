@@ -115,13 +115,39 @@ public class MessageBuilder {
 		}
 
 		Player player = sender != null ? sender.getPlayer() : null;
-		// Strip characters that are not allowed in default channels
-		if (channel != null && channel.getOwner() == null && (player == null || !player.hasPermission("sblock.felt"))) {
+		// Strip characters that are not allowed in default channels and partial caps
+		if (channel != null && channel.getOwner() == null && !(channel instanceof NickChannel)
+				&& (player == null || !player.hasPermission("sblock.felt"))) {
 			StringBuilder sb = new StringBuilder();
-			for (char character : Normalizer.normalize(message, Normalizer.Form.NFD).toCharArray()) {
-				if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
-					sb.append(character);
+			for (String word : Normalizer.normalize(message, Normalizer.Form.NFD).split(" ")) {
+				if (word.isEmpty()) {
+					continue;
 				}
+				boolean startsUpper = Character.isUpperCase(word.charAt(0));
+				int upper = 2;
+				if (startsUpper) {
+					for (int i = 1; i < word.length(); i++) {
+						if (Character.isUpperCase(word.charAt(i))) {
+							upper++;
+						}
+					}
+				}
+				// I'm aware that this will strip a couple cases that belong capitalized,
+				// but no self-respecting person sings Old MacDonald anyway.
+				// Main concern here truly is names, but GP's caps filter already hits a few of those.
+				boolean stripUpper = !startsUpper || startsUpper && upper > 2 && upper < word.length();
+				for (char character : word.toCharArray()) {
+					if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
+						if (stripUpper) {
+							character = Character.toLowerCase(character);
+						}
+						sb.append(character);
+					}
+				}
+				sb.append(" ");
+			}
+			if (sb.length() > 0) {
+				sb.deleteCharAt(sb.length() - 1);
 			}
 			message = sb.toString().replaceAll("tilde?s?", "");
 		}
