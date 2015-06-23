@@ -518,7 +518,7 @@ public class OfflineUser {
 	 */
 	public synchronized void removeListeningSilent(Channel channel) {
 		if (channel instanceof NickChannel) {
-			((NickChannel) channel).removeNick(this, false);
+			((NickChannel) channel).removeNick(this);
 		}
 		this.listening.remove(channel.getName());
 		if (this.currentChannel != null && this.currentChannel.equals(channel.getName())) {

@@ -1,10 +1,10 @@
 package co.sblock.chat.channel;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import co.sblock.chat.ChatMsgs;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
@@ -33,22 +33,19 @@ public class NickChannel extends NormalChannel {
 	 */
 	public void setNick(OfflineUser user, String nick) {
 		nickList.put(user.getUUID(), nick);
-		this.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), nick, this.name));
 	}
 
 	/**
 	 * Removes a nickname from an OfflineUser.
 	 * 
 	 * @param user the OfflineUser
-	 * @param warn whether to warn the user
+	 * @return the nick in use, or null if none.
 	 */
-	public void removeNick(OfflineUser user, boolean warn) {
+	public String removeNick(OfflineUser user) {
 		if (nickList.containsKey(user.getUUID())) {
-			String old = nickList.remove(user.getUUID());
-			if (warn) {
-				this.sendMessage(ChatMsgs.onUserRmNick(user.getPlayerName(), old, this.name));
-			}
+			return nickList.remove(user.getUUID());
 		}
+		return null;
 	}
 
 	/**
@@ -79,24 +76,23 @@ public class NickChannel extends NormalChannel {
 	 * @return the owner of the provided nickname
 	 */
 	public OfflineUser getNickOwner(String nick) {
-		OfflineUser owner = null;
+		if (!nickList.containsValue(nick)) {
+			return null;
+		}
 		UUID remove = null;
-		if (nickList.containsValue(nick)) {
-			for (UUID uuid : nickList.keySet()) {
-				if (nickList.get(uuid).equalsIgnoreCase(nick)) {
-					if (!getListening().contains(uuid)) {
-						remove = uuid;
-						break;
-					}
-					owner = Users.getGuaranteedUser(uuid);
+		for (Entry<UUID, String> entry : nickList.entrySet()) {
+			if (entry.getValue().equalsIgnoreCase(nick)) {
+				if (!getListening().contains(entry.getKey())) {
+					remove = entry.getKey();
 					break;
 				}
+				return Users.getGuaranteedUser(entry.getKey());
 			}
 		}
 		if (remove != null) {
 			nickList.remove(remove);
 		}
-		return owner;
+		return null;
 	}
 
 	/**

@@ -336,7 +336,7 @@ public class OnlineUser extends OfflineUser {
 		}
 		if (this.getListening().remove(channelName)) {
 			if (channel instanceof NickChannel) {
-				((NickChannel) channel).removeNick(this, false);
+				((NickChannel) channel).removeNick(this);
 			}
 			channel.sendMessage(ChatMsgs.onChannelLeave(this, channel));
 			channel.getListening().remove(this.getUUID());

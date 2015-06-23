@@ -69,7 +69,12 @@ public class ChatNickCommand extends SblockCommand {
 		}
 		NickChannel nick = (NickChannel) channel;
 		if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("off")) {
-			nick.removeNick(user, true);
+			String oldName = nick.removeNick(user);
+			if (oldName != null) {
+				nick.sendMessage(ChatMsgs.onUserRmNick(user.getPlayerName(), oldName, nick.getName()));
+			} else {
+				sender.sendMessage(Color.BAD + "You do not have a nick currently.");
+			}
 			return true;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -84,7 +89,28 @@ public class ChatNickCommand extends SblockCommand {
 					+ "Nicks must be 1+ characters long when stripped of non-ASCII characters.");
 			return true;
 		}
-		nick.setNick(user, ChatColor.translateAlternateColorCodes('&', sb.toString()));
+		String cleanName = sb.toString();
+		String nickname = sb.toString();
+		if (nick instanceof RPChannel) {
+			CanonNick canonNick = CanonNick.getNick(nickname);
+			if (canonNick == null) {
+				sender.sendMessage(ChatMsgs.errorNickNotCanon(nickname));
+				return true;
+			}
+			nickname = canonNick.name();
+			cleanName = canonNick.getDisplayName();
+		}
+		OfflineUser nickOwner = nick.getNickOwner(nickname);
+		if (nickOwner != null) {
+			if (!nickOwner.getUUID().equals(user.getUUID())) {
+				sender.sendMessage(ChatMsgs.errorNickTaken(cleanName));
+				return true;
+			}
+			// Don't send a message for nick changes if owner is changing back to the same nick (or an RP variant)
+		} else {
+			nick.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), cleanName, nick.getName()));
+		}
+		nick.setNick(user, ChatColor.translateAlternateColorCodes('&', nickname));
 		return true;
 	}
 
