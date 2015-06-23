@@ -627,12 +627,15 @@ public class OfflineUser {
 	 */
 	public String getWhois() {
 		StringBuilder sb = new StringBuilder();
-		//+-- Name aka Nickname from IP --+
+		//+-- Name from IP --+
 		sb.append(Color.GOOD).append(ChatColor.STRIKETHROUGH).append("+--")
 				.append(Color.GOOD_EMPHASIS).append(' ').append(getPlayerName())
 				.append(Color.GOOD).append(" from ").append(Color.GOOD_EMPHASIS)
 				.append(getUserIP()).append(Color.GOOD).append(' ')
 				.append(ChatColor.STRIKETHROUGH).append("--+\n");
+
+		// UUID: uuid
+		sb.append(Color.GOOD).append("UUID: ").append(getUUID()).append('\n');
 
 		// If stored, Previously known as: Name
 		if (yaml.getString("previousname") != null) {

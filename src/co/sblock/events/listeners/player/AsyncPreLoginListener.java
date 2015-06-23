@@ -5,6 +5,8 @@ import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -44,7 +46,9 @@ public class AsyncPreLoginListener implements Listener {
 		} catch (Exception ex) {}
 		Collection<String> ips = Events.getInstance().getIPsFor(event.getUniqueId());
 		if (ips.size() > 1) {
-			Slack.getInstance().postReport(null, event.getUniqueId(), ips.size() + " IPs on record: " + StringUtils.join(ips.toArray(new String[ips.size()]), ", "));
+			OfflinePlayer offline = Bukkit.getOfflinePlayer(event.getUniqueId());
+			String name = offline.getName() != null ? offline.getName() : event.getUniqueId().toString();
+			Bukkit.getConsoleSender().sendMessage( ips.size() + " IPs on record for " + name + ": " + StringUtils.join(ips.toArray(new String[ips.size()]), ", "));
 		}
 	}
 }
