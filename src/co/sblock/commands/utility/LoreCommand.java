@@ -297,7 +297,6 @@ public class LoreCommand extends SblockCommand {
 	}
 
 	private boolean insert(Player player, ItemStack hand, String[] args) {
-
 		if (args.length < 3) {
 			player.sendMessage(Color.BAD + "/lore insert <number> <arguments>");
 		}
