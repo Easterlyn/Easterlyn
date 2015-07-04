@@ -61,7 +61,7 @@ public class Spectators extends Module {
 		p.closeInventory();
 		p.setGameMode(GameMode.SPECTATOR);
 		SleepVote.getInstance().updateVoteCount(p.getWorld().getName(), p.getName());
-		spectators.put(p.getUniqueId(), p.getLocation().add(0, .5, 0));
+		spectators.put(p.getUniqueId(), p.getLocation().add(0, .1, 0));
 	}
 
 	/**
