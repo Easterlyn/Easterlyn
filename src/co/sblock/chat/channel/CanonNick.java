@@ -197,7 +197,7 @@ public enum CanonNick {
 			return s.toLowerCase().replaceAll("[e]{2},", "33")
 					.replace("ver", "fur").replace("pos", "paws");
 		case PORRIM:
-			return s.replaceAll("[o0]", "$1+").replaceAll("[pP][lL][uU][sS]", "+");
+			return s.replaceAll("([oO0])", "$1+").replaceAll("[pP][lL][uU][sS]", "+");
 		case ROXY:
 			s = mixedToLowerCase(s).replaceAll("\\b(.*in)g\\b", "$1");
 		case DRUNKROSE:
