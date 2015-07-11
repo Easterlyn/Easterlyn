@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableList;
 
@@ -31,7 +32,8 @@ public class MoreCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		if (player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR) {
+		ItemStack stack = player.getItemInHand();
+		if (stack == null || stack.getType() == Material.AIR) {
 			return false;
 		}
 		int amount;
@@ -39,6 +41,12 @@ public class MoreCommand extends SblockCommand {
 			try {
 				amount = Integer.parseInt(args[0]);
 			} catch (NumberFormatException e) {
+				amount = 64;
+			}
+
+			amount += stack.getAmount();
+
+			if (amount > 64) {
 				amount = 64;
 			}
 		} else {
