@@ -19,6 +19,7 @@ import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.channel.RPChannel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.OfflineUser;
+import co.sblock.users.Users;
 import co.sblock.utilities.messages.JSONUtil;
 import co.sblock.utilities.regex.RegexUtils;
 
@@ -118,13 +119,24 @@ public class MessageBuilder {
 		// Strip characters that are not allowed in default channels and partial caps
 		if (channel != null && channel.getOwner() == null && !(channel instanceof NickChannel)
 				&& (player == null || !player.hasPermission("sblock.felt"))) {
+			ArrayList<String> names = new ArrayList<String>();
+			channel.getListening().forEach(uuid -> {
+				names.add(Users.getGuaranteedUser(uuid).getPlayerName());
+			});
 			StringBuilder sb = new StringBuilder();
 			for (String word : Normalizer.normalize(message, Normalizer.Form.NFD).split(" ")) {
 				if (word.isEmpty()) {
 					continue;
 				}
+
+				// Anything goes as long as it's the name of a recipient
+				if (names.contains(word)) {
+					sb.append(word).append(' ');
+					continue;
+				}
+
 				boolean startsUpper = Character.isUpperCase(word.charAt(0));
-				int upper = 2;
+				int upper = 1;
 				if (startsUpper) {
 					for (int i = 1; i < word.length(); i++) {
 						if (Character.isUpperCase(word.charAt(i))) {
@@ -134,8 +146,7 @@ public class MessageBuilder {
 				}
 				// I'm aware that this will strip a couple cases that belong capitalized,
 				// but no self-respecting person sings Old MacDonald anyway.
-				// Main concern here truly is names, but GP's caps filter already hits a few of those.
-				boolean stripUpper = !startsUpper || startsUpper && upper > 2 && upper < word.length();
+				boolean stripUpper = !startsUpper || startsUpper && upper > 1 && upper < word.length();
 				for (char character : word.toCharArray()) {
 					if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
 						if (stripUpper) {
@@ -144,12 +155,12 @@ public class MessageBuilder {
 						sb.append(character);
 					}
 				}
-				sb.append(" ");
+				sb.append(' ');
 			}
 			if (sb.length() > 0) {
 				sb.deleteCharAt(sb.length() - 1);
 			}
-			message = sb.toString().replaceAll("tilde?s?", "");
+			message = sb.toString().replaceAll("[tT]ilde?s?", "");
 		}
 
 		// Trim whitespace created by formatting codes, etc.

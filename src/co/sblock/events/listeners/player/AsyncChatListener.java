@@ -60,16 +60,23 @@ public class AsyncChatListener implements Listener {
 		if (event instanceof SblockAsyncChatEvent) {
 			message = ((SblockAsyncChatEvent) event).getSblockMessage();
 		} else {
-			MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()))
-					.setMessage(event.getMessage());
-			// Ensure message can be sent
-			if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
+			try {
+				MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()))
+						.setMessage(event.getMessage());
+				// Ensure message can be sent
+				if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
+					event.setCancelled(true);
+					return;
+				}
+				message = mb.toMessage();
+
+				event.getRecipients().removeIf(p -> !message.getChannel().getListening().contains(p.getUniqueId()));
+			} catch (Exception e) {
+				// 
 				event.setCancelled(true);
+				e.printStackTrace();
 				return;
 			}
-			message = mb.toMessage();
-
-			event.getRecipients().removeIf(p -> !message.getChannel().getListening().contains(p.getUniqueId()));
 		}
 
 		String cleaned = message.getCleanedMessage();
@@ -79,18 +86,23 @@ public class AsyncChatListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (cleaned.equalsIgnoreCase("Adam") || cleaned.equalsIgnoreCase("Pete")) {
-			event.getPlayer().sendMessage(
-					ChatColor.RED + "Names are short and easy to include in a sentence, "
-							+ event.getPlayer().getDisplayName() + ". Please do it.");
-			event.setCancelled(true);
-			return;
-		}
+
+		event.getRecipients().forEach(player -> {
+			if (cleaned.equalsIgnoreCase(player.getName())) {
+				event.getPlayer().sendMessage(
+						ChatColor.RED + "Names are short and easy to include in a sentence, "
+								+ event.getPlayer().getDisplayName() + ". Please do it.");
+				event.setCancelled(true);
+				return;
+			}
+		});
+
 		if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
 			event.getPlayer().sendMessage(Color.HAL + "What?");
 			event.setCancelled(true);
 			return;
 		}
+
 		if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
 			event.getPlayer().sendMessage(Color.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
 			event.setCancelled(true);
