@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -62,7 +64,8 @@ public class OfflineUser {
 		}
 		this.programs = programs;
 		this.currentChannel = currentChannel;
-		this.listening = listening;
+		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+		this.listening.addAll(listening);
 	}
 
 	private OfflineUser(UUID uuid, String ip, YamlConfiguration yaml) {
