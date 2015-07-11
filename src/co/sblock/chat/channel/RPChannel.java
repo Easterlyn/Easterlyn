@@ -46,7 +46,7 @@ public class RPChannel extends NickChannel {
 		}
 		UUID remove = null;
 		for (Entry<UUID, String> entry : nickList.entrySet()) {
-			CanonNick canonNick = CanonNick.valueOf(entry.getValue());
+			CanonNick canonNick = CanonNick.getNick(entry.getValue());
 			if (name == canonNick || name.getDisplayName().equals(canonNick.getDisplayName())) {
 				if (!getListening().contains(entry.getKey())) {
 					remove = entry.getKey();
