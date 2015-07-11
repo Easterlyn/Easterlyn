@@ -26,7 +26,6 @@ public abstract class Channel {
 
 	/**
 	 * @param name the name of the channel
-	 * @param a the access level of the channel
 	 * @param creator the owner of the channel
 	 */
 	public Channel(String name, UUID creator) {
@@ -35,7 +34,6 @@ public abstract class Channel {
 		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 	}
 
-	/* GETTERS */
 	/**
 	 * @return the channel's name
 	 */
@@ -62,10 +60,6 @@ public abstract class Channel {
 		return this.owner;
 	}
 
-
-
-
-	/* TESTERS */
 	/**
 	 * @param user a user
 	 * @return if this user is an owner
@@ -108,8 +102,7 @@ public abstract class Channel {
 	public abstract void updateLastAccess();
 
 	/**
-	 * For sending a channel message, not for chat! Chat should be handled by getting a Message from
-	 * ChannelManager.
+	 * For sending a channel message, not for chat! Chat should be sent by constructing a Message with a MessageBuilder.
 	 *
 	 * @param message the message to send the channel.
 	 */
