@@ -150,8 +150,8 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				return true;
 			}
 			for (char c : args[1].substring(1).toCharArray()) {
-				if (!Character.isLetterOrDigit(c)) {
-					user.sendMessage(Color.BAD + "Channel names must be alphanumeric!");
+				if (c < '0' || c > '9' && c < 'A' || c > 'Z' && c < 'a' || c > 'z') {
+					user.sendMessage(Color.BAD + "Channel names can only contain A-Z, a-z, or 0-9!");
 					return true;
 				}
 			}

@@ -135,10 +135,23 @@ public class MessageBuilder {
 					continue;
 				}
 
-				boolean startsUpper = Character.isUpperCase(word.charAt(0));
-				int upper = 1;
+				char firstChar = word.charAt(0);
+				int wordStart = 0;
+				if (firstChar == '"' || firstChar == '\'' || firstChar == ':' || firstChar == ';') {
+					wordStart = 1;
+				}
+
+				if (word.length() < wordStart + 1) {
+					if (!isCharacterGloballyIllegal(firstChar)) {
+						sb.append(word).append(' ');
+					}
+					continue;
+				}
+
+				boolean startsUpper = Character.isUpperCase(word.charAt(wordStart));
+				int upper = wordStart + 1;
 				if (startsUpper) {
-					for (int i = 1; i < word.length(); i++) {
+					for (int i = wordStart + 1; i < word.length(); i++) {
 						if (Character.isUpperCase(word.charAt(i))) {
 							upper++;
 						}
@@ -148,7 +161,7 @@ public class MessageBuilder {
 				// but no self-respecting person sings Old MacDonald anyway.
 				boolean stripUpper = !startsUpper || startsUpper && upper > 1 && upper < word.length();
 				for (char character : word.toCharArray()) {
-					if (character > '\u001F' && character < '\u007E' || character == ChatColor.COLOR_CHAR) {
+					if (isCharacterGloballyIllegal(character) || character == ChatColor.COLOR_CHAR) {
 						if (stripUpper) {
 							character = Character.toLowerCase(character);
 						}
@@ -168,6 +181,10 @@ public class MessageBuilder {
 
 		this.message = message;
 		return this;
+	}
+
+	private boolean isCharacterGloballyIllegal(char character) {
+		return character > '\u001F' && character < '\u007E';
 	}
 
 	public MessageBuilder setThirdPerson(boolean thirdPerson) {
