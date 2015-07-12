@@ -35,7 +35,7 @@ public class DeathListener implements Listener {
 		BookMeta meta = (BookMeta) facts.getItemMeta();
 		meta.setTitle("Wither Facts");
 		meta.setAuthor(Color.RANK_DENIZEN + "Pete");
-		meta.setPage(0, "Withers are awesome.");
+		meta.addPage("Withers are awesome.");
 		facts.setItemMeta(meta);
 	}
 
