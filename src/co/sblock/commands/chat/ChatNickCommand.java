@@ -106,7 +106,8 @@ public class ChatNickCommand extends SblockCommand {
 				sender.sendMessage(ChatMsgs.errorNickTaken(cleanName));
 				return true;
 			}
-			// Don't send a message for nick changes if owner is changing back to the same nick (or an RP variant)
+			// Only send command sender, not whole channel, a message when changing to the same nick (or an RP variant)
+			sender.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), cleanName, nick.getName()));
 		} else {
 			nick.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), cleanName, nick.getName()));
 		}
