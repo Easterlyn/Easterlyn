@@ -171,9 +171,12 @@ public class JSONUtil {
 		return components.toArray(new BaseComponent[components.size()]);
 	}
 
-	public static HoverEvent getItemHover(ItemStack item) {
+	public static TextComponent getItemText(ItemStack item) {
 		net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-		return new HoverEvent(HoverEvent.Action.SHOW_ITEM,
-				new BaseComponent[] { new TextComponent(nmsStack.save(new NBTTagCompound()).toString()) });
+		return new TextComponent(nmsStack.save(new NBTTagCompound()).toString());
+	}
+
+	public static HoverEvent getItemHover(ItemStack item) {
+		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { getItemText(item) });
 	}
 }

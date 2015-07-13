@@ -75,8 +75,12 @@ public class MessageBuilder {
 	private String atChannel = null;
 	private ItemStack hover;
 	private String channelClick, nameClick;
+	private TextComponent[] messageComponents;
 
 	public MessageBuilder setSender(OfflineUser sender) {
+		if (this.sender != null || this.senderName != null) {
+			throw new IllegalArgumentException("Sender is already set!");
+		}
 		this.sender = sender;
 		if (this.channel == null) {
 			this.channel = sender.getCurrentChannel();
@@ -85,6 +89,9 @@ public class MessageBuilder {
 	}
 
 	public MessageBuilder setSender(String name) {
+		if (this.sender != null || this.senderName != null) {
+			throw new IllegalArgumentException("Sender is already set!");
+		}
 		this.senderName = name;
 		return this;
 	}
@@ -94,7 +101,19 @@ public class MessageBuilder {
 		return this;
 	}
 
+	public MessageBuilder setMessage(TextComponent... messageComponents) {
+		if (messageComponents.length == 0) {
+			throw new IllegalArgumentException("Message components must exist!");
+		}
+		this.messageComponents = messageComponents;
+		this.message = TextComponent.toPlainText(messageComponents);
+		return this;
+	}
+
 	public MessageBuilder setMessage(String message) {
+		if (this.messageComponents != null) {
+			this.messageComponents = null;
+		}
 		// Set @<channel> destination
 		this.atChannel = null;
 		int space = message.indexOf(' ');
@@ -291,9 +310,6 @@ public class MessageBuilder {
 		CanonNick nick = null;
 		if (sender != null && channel instanceof RPChannel) {
 			nick = CanonNick.getNick(((RPChannel) channel).getNick(sender));
-			if (nick.getPrefix() != null) {
-				message = nick.getPrefix() + message;
-			}
 		}
 
 		// CHANNEL ELEMENT: [#channel]
@@ -408,7 +424,12 @@ public class MessageBuilder {
 		}
 
 		// MESSAGE ELEMENT: Your text here.
-		TextComponent messageComponent = new TextComponent(JSONUtil.getJson(message, nick));
+		TextComponent messageComponent;
+		if (messageComponents != null) {
+			messageComponent = new TextComponent(messageComponents);
+		} else {
+			messageComponent = new TextComponent(JSONUtil.getJson(message, nick));
+		}
 
 		// Console prettiness
 		if (nick != null) {
