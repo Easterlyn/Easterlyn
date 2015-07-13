@@ -2,6 +2,7 @@ package co.sblock.events.listeners.player;
 
 import java.util.LinkedHashSet;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -87,7 +88,7 @@ public class AsyncChatListener implements Listener {
 			return;
 		}
 
-		event.getRecipients().forEach(player -> {
+		for (Player player : event.getRecipients()) {
 			if (cleaned.equalsIgnoreCase(player.getName())) {
 				event.getPlayer().sendMessage(
 						ChatColor.RED + "Names are short and easy to include in a sentence, "
@@ -95,7 +96,7 @@ public class AsyncChatListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-		});
+		}
 
 		if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
 			event.getPlayer().sendMessage(Color.HAL + "What?");
