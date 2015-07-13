@@ -18,7 +18,6 @@ import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.messages.JSONUtil;
 
 import net.md_5.bungee.api.ChatColor;
@@ -48,25 +47,15 @@ public class ShowItemCommand extends SblockCommand {
 		Player player = (Player) sender;
 		ItemStack hand = player.getItemInHand();
 
-		if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasDisplayName() && !hand.getItemMeta().hasEnchants()) {
-			sender.sendMessage(Color.BAD + "You do not have anything special to show in your hand!");
+		if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasDisplayName() || !hand.getItemMeta().hasEnchants()) {
+			sender.sendMessage(Color.BAD + "You do not have anything named and enchanted in your hand!");
+			return true;
 		}
 
 		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
-		TextComponent item = new TextComponent();
 
-		if (hand.getItemMeta().hasDisplayName()) {
-			item.setText(hand.getItemMeta().getDisplayName());
-		} else {
-			item.setText(InventoryUtils.getMaterialDataName(hand.getType(), hand.getType().getMaxDurability() > 0 ? 0 : hand.getDurability()));
-		}
-		if (hand.getItemMeta().hasDisplayName() && !hand.getItemMeta().hasEnchants()) {
-			item.setColor(ChatColor.WHITE);
-			item.setItalic(true);
-		} else {
-			item.setColor(ChatColor.AQUA);
-		}
-
+		TextComponent item = new TextComponent(JSONUtil.fromLegacyText(hand.getItemMeta().getDisplayName()));
+		item.setColor(ChatColor.AQUA);
 		item.setHoverEvent(JSONUtil.getItemHover(hand));
 
 		MessageBuilder builder = new MessageBuilder().setSender(user).setThirdPerson(true)
