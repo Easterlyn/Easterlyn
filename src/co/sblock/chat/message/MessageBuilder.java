@@ -26,12 +26,7 @@ import co.sblock.utilities.regex.RegexUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Builder for Messages. In most cases, set sender, channel, and finally message. In the event that
@@ -409,9 +404,7 @@ public class MessageBuilder {
 		}
 		nameComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, nameClick));
 		if (hover != null) {
-			net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(hover);
-			nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM,
-					new BaseComponent[] { new TextComponent(nmsStack.save(new NBTTagCompound()).toString()) }));
+			nameComponent.setHoverEvent(JSONUtil.getItemHover(hover));
 		}
 
 		// MESSAGE ELEMENT: Your text here.
