@@ -8,7 +8,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import co.sblock.utilities.regex.RegexUtils;
+import co.sblock.utilities.messages.RegexUtils;
 
 /**
  * Enum defining all types of Machines.

@@ -18,8 +18,8 @@ import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
+import co.sblock.utilities.messages.RegexUtils;
 import co.sblock.utilities.messages.Slack;
-import co.sblock.utilities.regex.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;

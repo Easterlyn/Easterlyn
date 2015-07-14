@@ -28,7 +28,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 public class JSONUtil {
 
 	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?$");
-	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,})([,\\.:;])?$");
+	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,})(\\W)?$");
 
 	public static BaseComponent[] getJson(String message, CanonNick quirk) {
 		if (message == null || message.isEmpty()) {
@@ -45,7 +45,7 @@ public class JSONUtil {
 		return components;
 	}
 
-	public static BaseComponent[] fromLegacyText(String message) {
+	public static TextComponent[] fromLegacyText(String message) {
 		ArrayList<BaseComponent> components = new ArrayList<BaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
@@ -168,7 +168,7 @@ public class JSONUtil {
 			components.add(new TextComponent(""));
 		}
 
-		return components.toArray(new BaseComponent[components.size()]);
+		return components.toArray(new TextComponent[components.size()]);
 	}
 
 	public static TextComponent getItemText(ItemStack item) {

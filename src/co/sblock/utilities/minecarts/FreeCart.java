@@ -1,14 +1,14 @@
 package co.sblock.utilities.minecarts;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import co.sblock.utilities.general.Cooldowns;
 
 /**
  * 
@@ -20,20 +20,17 @@ public class FreeCart {
 	private static FreeCart instance;
 
 	private final HashSet<Minecart> carts;
-	private final HashMap<UUID, Long> cooldowns;
 
 	public FreeCart() {
 		carts = new HashSet<>();
-		cooldowns = new HashMap<>();
 	}
 
 	public void spawnCart(Player p, Location location, Vector startspeed) {
-		if (cooldowns.containsKey(p.getUniqueId())) {
-			if (cooldowns.get(p.getUniqueId()) >= System.currentTimeMillis())  {
-				return;
-			}
+		Cooldowns cooldowns = Cooldowns.getInstance();
+		if (cooldowns.getRemainder(p.getUniqueId(), "freecart") > 0) {
+			return;
 		}
-		cooldowns.put(p.getUniqueId(), System.currentTimeMillis() + 2000);
+		cooldowns.addCooldown(p.getUniqueId(), "freecart", 2000);
 		Minecart m = (Minecart) location.getWorld().spawnEntity(location, EntityType.MINECART);
 		m.setPassenger(p);
 		m.setVelocity(startspeed);
@@ -77,7 +74,6 @@ public class FreeCart {
 			cart.eject();
 			cart.remove();
 		}
-		cooldowns.clear();
 	}
 
 	public static FreeCart getInstance() {

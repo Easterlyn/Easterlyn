@@ -11,10 +11,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -35,7 +33,9 @@ import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.regex.RegexUtils;
+import co.sblock.utilities.general.Cooldowns;
+import co.sblock.utilities.messages.JSONUtil;
+import co.sblock.utilities.messages.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -49,11 +49,11 @@ public class MegaHal extends HalMessageHandler {
 	private final Pattern exactPattern, whitespacePattern;
 	private final JMegaHal hal;
 	private final Set<String> pendingMessages;
-	private final Map<String, Long> ratelimit;
 	private final HalLogSavingTask save;
 	private final Set<Pattern> ignoreMatches;
 	private final ItemStack hover;
 	private int fileNum;
+	private final MessageBuilder noSpam;
 
 	public MegaHal() {
 		hal = new JMegaHal();
@@ -63,8 +63,6 @@ public class MegaHal extends HalMessageHandler {
 		exactPattern = Pattern.compile(createExactRegex(regexBase));
 		whitespacePattern = Pattern.compile(createWhitespaceRegex(regexBase));
 		pendingMessages = Collections.synchronizedSet(new LinkedHashSet<String>());
-
-		ratelimit = new ConcurrentHashMap<>();
 
 		ignoreMatches = new HashSet<>();
 		ignoreMatches.add(Pattern.compile(".*(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?.*"));
@@ -82,6 +80,10 @@ public class MegaHal extends HalMessageHandler {
 				Color.BAD_EMPHASIS + "Unless it's awesome.", "",
 				Color.COMMAND + "/join #halchat" + Color.BAD + " to spam usage."}));
 		hover.setItemMeta(hoverMeta);
+
+		noSpam = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
+				.setNameClick("/join #halchat").setNameHover(hover).setChannelClick("@#halchat ")
+				.setMessage( JSONUtil.fromLegacyText(ChatColor.RED + "To spam with me, join #halchat."));
 
 		loadHal();
 
@@ -108,6 +110,10 @@ public class MegaHal extends HalMessageHandler {
 		if (msg.getSender() == null || msg.getChannel() instanceof NickChannel) {
 			return true;
 		}
+		Player sender = msg.getSender().getPlayer();
+		if (sender == null) {
+			return true;
+		}
 		if (isTrigger(msg.getCleanedMessage())) {
 			if (isOnlyTrigger(msg.getCleanedMessage())) {
 				// Set sender on fire or some shit
@@ -116,13 +122,15 @@ public class MegaHal extends HalMessageHandler {
 			}
 			String channel = msg.getChannel().getName();
 			if (!channel.equals("#halchat")) {
-				if (ratelimit.containsKey(channel) && ratelimit.get(msg.getChannel().getName()) > System.currentTimeMillis()) {
+				Cooldowns cooldowns = Cooldowns.getInstance();
+				if (cooldowns.getGlobalRemainder("megahal" + channel) > 0) {
 					// Still on cooldown, warn a bitch
-					msg.getSender().getPlayer().sendMessage(Color.HAL.replaceFirst("#", channel) + "If you want to spam with me, do /focus #halchat");
+					noSpam.setChannel(msg.getChannel());
+					noSpam.toMessage().send(Arrays.asList(sender));
 					Log.getLog("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return true;
 				} else {
-					ratelimit.put(channel, System.currentTimeMillis() + 2500L);
+					cooldowns.addGlobalCooldown(channel, 2500L);
 				}
 			}
 			HashSet<UUID> recipientUUIDs = new HashSet<>();
@@ -188,7 +196,8 @@ public class MegaHal extends HalMessageHandler {
 				word = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', word));
 				Message msg = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
 						.setMessage(ChatColor.RED + word).setChannel(channel)
-						.setNameClick("@#halchat ").setNameHover(hover).toMessage();
+						.setChannelClick("@#halchat ").setNameClick("/join #halchat")
+						.setNameHover(hover).toMessage();
 				msg.send(recipients);
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());

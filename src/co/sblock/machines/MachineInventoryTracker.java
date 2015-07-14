@@ -10,7 +10,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
-import co.sblock.utilities.regex.RegexUtils;
+import co.sblock.utilities.messages.RegexUtils;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;

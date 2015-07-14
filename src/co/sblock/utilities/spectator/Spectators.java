@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import co.sblock.module.Module;
+import co.sblock.utilities.general.Cooldowns;
 import co.sblock.utilities.vote.SleepVote;
 
 /**
@@ -26,8 +27,6 @@ public class Spectators extends Module {
 	/* The List of Players in spectator mode */
 	private Map<UUID, Location> spectators;
 
-	private Map<UUID, Long> oreCooldown;
-
 	/**
 	 * @see co.sblock.Module#onEnable()
 	 */
@@ -35,7 +34,6 @@ public class Spectators extends Module {
 	protected void onEnable() {
 		instance = this;
 		spectators = new HashMap<>();
-		oreCooldown = new HashMap<>();
 	}
 
 	/**
@@ -76,10 +74,7 @@ public class Spectators extends Module {
 	}
 
 	public boolean canMineOre(Player p) {
-		if (oreCooldown.containsKey(p.getUniqueId())) {
-			return System.currentTimeMillis() > oreCooldown.get(p.getUniqueId());
-		}
-		return true;
+		return Cooldowns.getInstance().getRemainder(p.getUniqueId(), "spectatore") <= 0;
 	}
 
 	/**
@@ -92,7 +87,7 @@ public class Spectators extends Module {
 		p.setGameMode(GameMode.SURVIVAL);
 		if (!p.hasPermission("sblock.command.spectate.nocooldown")) {
 			// 8 minutes, 8 * 60 * 1000 ms
-			oreCooldown.put(p.getUniqueId(), System.currentTimeMillis() + 480000);
+			Cooldowns.getInstance().addCooldown(p.getUniqueId(), "spectatore", 480000L);
 		}
 	}
 

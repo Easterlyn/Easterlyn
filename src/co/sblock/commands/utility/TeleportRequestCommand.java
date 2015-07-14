@@ -17,6 +17,7 @@ import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
+import co.sblock.utilities.general.Cooldowns;
 import co.sblock.utilities.spectator.Spectators;
 
 /**
@@ -27,7 +28,6 @@ import co.sblock.utilities.spectator.Spectators;
 public class TeleportRequestCommand extends SblockCommand {
 
 	private final SimpleDateFormat time =  new SimpleDateFormat("m:ss");
-	private final HashMap<UUID, Long> tpacooldown = new HashMap<>();
 	private final HashMap<UUID, TeleportRequest> pending = new HashMap<>();
 
 	public TeleportRequestCommand() {
@@ -86,11 +86,10 @@ public class TeleportRequestCommand extends SblockCommand {
 	}
 
 	private void ask(Player sender, String[] args, boolean here) {
-		if (tpacooldown.containsKey(sender.getUniqueId())
-				&& tpacooldown.get(sender.getUniqueId()) > System.currentTimeMillis()) {
-			sender.sendMessage(Color.BAD + "You cannot send a teleport request for another " + Color.BAD_EMPHASIS
-					+ time.format(new Date(tpacooldown.get(sender.getUniqueId()) - System.currentTimeMillis()))
-					+ Color.BAD + ".");
+		long remainder = Cooldowns.getInstance().getRemainder(sender.getUniqueId(), "teleportRequest");
+		if (remainder > 0) {
+			sender.sendMessage(Color.BAD + "You cannot send a teleport request for another "
+					+ Color.BAD_EMPHASIS + time.format(new Date(remainder)) + Color.BAD + ".");
 			return;
 		}
 		List<Player> matches = Bukkit.matchPlayer(args[0]);
@@ -127,7 +126,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
 		if (!sender.hasPermission("group.helper")) {
-			tpacooldown.put(sender.getUniqueId(), System.currentTimeMillis() + 480000L);
+			Cooldowns.getInstance().addCooldown(sender.getUniqueId(), "teleportRequest", 480000L);
 		}
 		sender.sendMessage(Color.GOOD + "Request sent!");
 		target.sendMessage(Color.GOOD_PLAYER + sender.getDisplayName() + Color.GOOD + " is requesting to teleport " + (here ? "you to them." : "to you."));
@@ -172,7 +171,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
 		// future: perhaps rather than use /spectate deny, attempted spectating sends a tpa?
 		if (Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
-			tpacooldown.remove(request.getSource());
+			Cooldowns.getInstance().clearCooldown(request.getSource(), "teleportRequest");
 		}
 	}
 
@@ -187,7 +186,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		if (issuer != null) {
 			issuer.sendMessage(Color.BAD_PLAYER + sender.getDisplayName() + Color.BAD + " declined your request!");
 		}
-		tpacooldown.remove(request.getSource());
+		Cooldowns.getInstance().clearCooldown(request.getSource(), "teleportRequest");
 	}
 
 	private class TeleportRequest {
