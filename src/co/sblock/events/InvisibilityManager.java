@@ -1,4 +1,4 @@
-package co.sblock.effects;
+package co.sblock.events;
 
 import java.util.HashMap;
 import java.util.UUID;

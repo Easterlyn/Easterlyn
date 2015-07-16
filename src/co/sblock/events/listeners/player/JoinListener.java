@@ -9,7 +9,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 import co.sblock.Sblock;
-import co.sblock.effects.FXManager;
 import co.sblock.events.Events;
 import co.sblock.events.packets.WrapperPlayServerPlayerListHeaderFooter;
 import co.sblock.users.OnlineUser;
@@ -66,7 +65,7 @@ public class JoinListener implements Listener {
 				// On login, conditions for setting rpack are not met, must be done here
 				player.setResourcePack(region.getResourcePackURL());
 				user.updateFlight();
-				FXManager.getInstance().getInvisibilityManager().updateVisibility(player);
+				Events.getInstance().getInvisibilityManager().updateVisibility(player);
 				for (String command : user.getLoginCommands()) {
 					player.chat(command);
 				}

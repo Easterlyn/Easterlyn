@@ -9,7 +9,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import co.sblock.effects.FXManager;
+import co.sblock.events.Events;
 
 /**
  * Listener for PotionSplashEvents.
@@ -32,7 +32,7 @@ public class PotionSplashListener implements Listener {
 		}
 		for (LivingEntity entity : event.getAffectedEntities()) {
 			if (entity instanceof Player) {
-				FXManager.getInstance().getInvisibilityManager().lazyVisibilityUpdate((Player) entity);
+				Events.getInstance().getInvisibilityManager().lazyVisibilityUpdate((Player) entity);
 			}
 		}
 	}

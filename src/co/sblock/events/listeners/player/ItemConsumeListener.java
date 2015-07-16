@@ -9,7 +9,7 @@ import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import co.sblock.effects.FXManager;
+import co.sblock.events.Events;
 
 /**
  * Listener for PlayerConsumeItemEvents.
@@ -34,6 +34,6 @@ public class ItemConsumeListener implements Listener {
 		if (!invisibility) {
 			return;
 		}
-		FXManager.getInstance().getInvisibilityManager().lazyVisibilityUpdate(event.getPlayer());
+		Events.getInstance().getInvisibilityManager().lazyVisibilityUpdate(event.getPlayer());
 	}
 }

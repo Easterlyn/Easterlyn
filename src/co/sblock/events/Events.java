@@ -52,6 +52,7 @@ public class Events extends Module {
 	private HashMap<UUID, BukkitTask> sleep;
 	private LinkedHashMap<String, String> ipcache;
 	private HashMap<UUID, BukkitTask> pvp;
+	private InvisibilityManager invisibilityManager;
 
 	@Override
 	protected void onEnable() {
@@ -86,6 +87,8 @@ public class Events extends Module {
 		}
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new SyncPacketAdapter());
+
+		invisibilityManager = new InvisibilityManager();
 
 		//initiateRegionChecks();
 	}
@@ -276,6 +279,10 @@ public class Events extends Module {
 	 */
 	public Status getStatus() {
 		return status;
+	}
+
+	public InvisibilityManager getInvisibilityManager() {
+		return invisibilityManager;
 	}
 
 	/**
