@@ -30,6 +30,7 @@ import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.experience.Experience;
+import co.sblock.utilities.general.Cooldowns;
 import co.sblock.utilities.inventory.InventoryUtils;
 import co.sblock.utilities.progression.Entry;
 import co.sblock.utilities.progression.ServerMode;
@@ -200,7 +201,8 @@ public class InteractListener implements Listener {
 		}
 
 		if (event.getPlayer().getItemInHand() != null
-				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE) {
+				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE
+				&& Cooldowns.getInstance().getRemainder(event.getPlayer().getUniqueId(), "PotionDrink") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight((java.util.Set<Material>) null, 4)) {
 				if (block.getType().isOccluding()) {
 					// Stairs, steps, etc. can be clicked through. Only occluding blocks are guaranteed safe.
