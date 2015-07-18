@@ -1,14 +1,11 @@
 package co.sblock.events.listeners.block;
 
-import java.util.HashMap;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import co.sblock.effects.FXManager;
-import co.sblock.effects.fx.SblockFX;
+import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.users.OfflineUser;
@@ -52,10 +49,6 @@ public class BreakListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBlockBreakOccurred(BlockBreakEvent event) {
-		// Effect application
-		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getPlayer().getItemInHand());
-		for (SblockFX fx : effects.values()) {
-			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), event);
-		}
+		Effects.getInstance().handleEvent(event, event.getPlayer(), false);
 	}
 }

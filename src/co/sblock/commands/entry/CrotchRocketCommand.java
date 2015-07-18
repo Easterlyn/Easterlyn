@@ -34,7 +34,15 @@ public class CrotchRocketCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage("Console support not offered at this time.");
+			return true;
+		}
 		final Player player = (Player) sender;
+		return launch(player);
+	}
+
+	public boolean launch(Player player) {
 		player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);
 
 		final Firework firework = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);

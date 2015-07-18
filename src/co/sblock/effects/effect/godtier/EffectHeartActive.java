@@ -22,7 +22,8 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftAnimals;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
- * Heart godtier active effect.
+ * Heart godtier active effect. Set animals breeding if nearby and adult, speed up the growth of
+ * babies, and apply a regeneration PotionEffect to all nearby entities.
  * 
  * @author Dublekfx, Jikoo
  */
@@ -49,6 +50,9 @@ public class EffectHeartActive extends Effect implements EffectBehaviorActive, E
 
 	@Override
 	public void handleEvent(Event event, Player player, int level) {
+		if (!player.isSneaking()) {
+			return;
+		}
 		PotionEffect potEffect = new PotionEffect(PotionEffectType.REGENERATION, 20 * 20, 1);
 		player.addPotionEffect(potEffect, true);
 		player.getWorld().playEffect(player.getLocation().add(0, 1, 0), org.bukkit.Effect.HEART, 0);

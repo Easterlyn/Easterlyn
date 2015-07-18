@@ -12,9 +12,8 @@ import org.bukkit.entity.Player;
  */
 public class EffectAdjacentFreeze extends EffectAdjacentBlockModifier {
 
-	public EffectAdjacentFreeze(int cost, String[] names) {
+	public EffectAdjacentFreeze() {
 		super(400, "Eternally Frozen");
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

@@ -1,8 +1,8 @@
-package co.sblock.effects.fx;
+package co.sblock.effects.effect.active;
 
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collection;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -10,31 +10,50 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import co.sblock.effects.FXManager;
-import co.sblock.users.OnlineUser;
+import co.sblock.effects.effect.Effect;
+import co.sblock.effects.effect.EffectBehaviorActive;
+import co.sblock.effects.effect.EffectBehaviorCooldown;
 
-public class FXFlowers extends SblockFX {
+/**
+ * Flowers while you walk!
+ * 
+ * @author Dublekfx, Jikoo
+ */
+public class EffectFlowers extends Effect implements EffectBehaviorActive, EffectBehaviorCooldown {
 
-	@SuppressWarnings("unchecked")
-	public FXFlowers() {
-		super("FLOWERS", false, 2500, 0, PlayerMoveEvent.class);
+	public EffectFlowers() {
+		super(1200, 1, 1, "Flowers");
+	}
+
+	@Override
+	public String getCooldownName() {
+		return "Effect:Flowers";
+	}
+
+	@Override
+	public long getCooldownDuration() {
+		return 1000;
+	}
+
+	@Override
+	public Collection<Class<? extends Event>> getApplicableEvents() {
+		return Arrays.asList(PlayerMoveEvent.class);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	protected void getEffect(OnlineUser user, Event event) {
-		Player p = user.getPlayer();
-		Location loc = p.getLocation();
-		Block standingIn = loc.getBlock();
+	public void handleEvent(Event event, Player player, int level) {
+		Block standingIn = player.getLocation().getBlock();
 		Block standingOn = standingIn.getRelative(BlockFace.DOWN);
 
-		HashMap<String, SblockFX> inHand = FXManager.getInstance().itemScan(p.getItemInHand());
-		if (!inHand.containsKey(this.getCanonicalName()) || standingIn.getType() != Material.AIR
+		if (standingIn.getType() != Material.AIR
 				|| (standingOn.getType() != Material.DIRT && standingOn.getType() != Material.GRASS)) {
 			return;
 		}
 
-		int flowerNum = (int) (Math.random() * 14);
+		Block head = standingIn.getRelative(BlockFace.UP);
+
+		int flowerNum = (int) (head.isEmpty() ? Math.random() * 10 : Math.random() * 14);
 		switch(flowerNum) {
 		case 0:
 			standingIn.setType(Material.YELLOW_FLOWER);
@@ -67,7 +86,6 @@ public class FXFlowers extends SblockFX {
 			standingIn.setTypeIdAndData(Material.RED_ROSE.getId(), (byte) 8, true);
 			break;
 		case 10:
-			// EFFECTS: double plants also need to check face block, plenty of passable blocks.
 			standingIn.setTypeIdAndData(Material.DOUBLE_PLANT.getId(), (byte) 0, true);
 			standingIn.getRelative(BlockFace.UP).setTypeIdAndData(Material.DOUBLE_PLANT.getId(), (byte) 8, true);
 			break;
@@ -86,6 +104,4 @@ public class FXFlowers extends SblockFX {
 		}
 	}
 
-	@Override
-	public void removeEffect(OnlineUser user) {}
 }

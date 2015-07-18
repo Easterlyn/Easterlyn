@@ -22,7 +22,10 @@ import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.effects.effect.EffectBehaviorCooldown;
 import co.sblock.effects.effect.EffectBehaviorReactive;
 import co.sblock.module.Module;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
+import co.sblock.users.ProgressionState;
+import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.general.Cooldowns;
 import co.sblock.utilities.general.Roman;
@@ -129,6 +132,17 @@ public class Effects extends Module {
 		} else {
 			effects = getEffects(player.getItemInHand());
 		}
+		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		if (user.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
+			Effect effect = Effects.getInstance().getEffect(user.getUserAspect().name() + (reactive ? "::REACTIVE" : "::ACTIVE"));
+			if (effect != null) {
+				if (effects.containsKey(effect)) {
+					effects.put(effect, effects.get(effect) + 1);
+				} else {
+					effects.put(effect, 1);
+				}
+			}
+		}
 		if (effects.isEmpty()) {
 			return;
 		}
@@ -141,9 +155,13 @@ public class Effects extends Module {
 					continue;
 				}
 				if (effect instanceof EffectBehaviorCooldown && Cooldowns.getInstance().getRemainder(player.getUniqueId(), ((EffectBehaviorCooldown) effect).getCooldownName()) > 0) {
-					
+					continue;
 				}
 				((EffectBehaviorActive) effect).handleEvent(event, player, effects.get(effect));
+				if (effect instanceof EffectBehaviorCooldown) {
+					EffectBehaviorCooldown cool = (EffectBehaviorCooldown) effect;
+					Cooldowns.getInstance().addCooldown(player.getUniqueId(), cool.getCooldownName(), cool.getCooldownDuration());
+				}
 			}
 		}
 	}

@@ -7,8 +7,18 @@ package co.sblock.effects.effect;
  */
 public interface EffectBehaviorCooldown {
 
+	/**
+	 * Gets the name to use for this Effect's cooldown.
+	 * 
+	 * @return the name
+	 */
 	public String getCooldownName();
 
+	/**
+	 * Gets the cooldown's duration in milliseconds.
+	 * 
+	 * @return the duration
+	 */
 	public long getCooldownDuration();
 
 }

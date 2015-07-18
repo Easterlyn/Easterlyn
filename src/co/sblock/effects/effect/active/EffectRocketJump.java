@@ -7,29 +7,31 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import co.sblock.Sblock;
+import co.sblock.commands.entry.CrotchRocketCommand;
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.effects.effect.EffectBehaviorCooldown;
 
 /**
- * Try not to die!
+ * Per request, the ever-popular CrotchRocket.
  * 
  * @author Jikoo
  */
-public class EffectPshoooot extends Effect implements EffectBehaviorActive, EffectBehaviorCooldown {
+public class EffectRocketJump extends Effect implements EffectBehaviorActive, EffectBehaviorCooldown {
 
-	public EffectPshoooot() {
-		super(350, 5, 10, "Pshoooot");
+	public EffectRocketJump() {
+		super(300, 1, 1, "Crotchrocket", "Rocket Jump", "Rocket Rider");
 	}
 
 	@Override
 	public String getCooldownName() {
-		return "Effect:Pshoooot";
+		return "RocketJump";
 	}
 
 	@Override
 	public long getCooldownDuration() {
-		return 500;
+		return 1000;
 	}
 
 	@Override
@@ -39,8 +41,7 @@ public class EffectPshoooot extends Effect implements EffectBehaviorActive, Effe
 
 	@Override
 	public void handleEvent(Event event, Player player, int level) {
-		player.setFallDistance(0);
-		player.setVelocity(player.getLocation().getDirection().multiply(level + 2));
+		((CrotchRocketCommand) Sblock.getInstance().getCommandMap().getCommand("crotchrocket")).launch(player);
 	}
 
 }

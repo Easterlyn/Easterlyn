@@ -29,10 +29,8 @@ import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.effects.Effects;
-import co.sblock.effects.FXManager;
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorPassive;
-import co.sblock.effects.fx.SblockFX;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
@@ -379,12 +377,23 @@ public class OnlineUser extends OfflineUser {
 	public void setAllEffects(Map<Effect, Integer> effects) {
 		removeAllEffects();
 		this.effects.putAll(effects);
+		Player player = this.getPlayer();
+		if (player == null) {
+			return;
+		}
 		for (Map.Entry<Effect, Integer> entry : effects.entrySet()) {
 			if (entry.getKey() instanceof EffectBehaviorPassive
 					&& !Effects.getInstance().isOnCooldown(getUUID(), entry.getKey())) {
-				((EffectBehaviorPassive) entry.getKey()).applyEffect(this);
+				((EffectBehaviorPassive) entry.getKey()).applyEffect(player, entry.getValue());
 				Effects.getInstance().startCooldown(getUUID(), entry.getKey());
 			}
+		}
+		if (this.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
+			Effect effect = Effects.getInstance().getEffect(getUserAspect().name() + "::PASSIVE");
+			if (effect == null) { // Not yet written
+				return;
+			}
+			modifyEffect(effect, 1);
 		}
 	}
 
@@ -392,11 +401,6 @@ public class OnlineUser extends OfflineUser {
 	 * Removes all Effects from the user.
 	 */
 	public void removeAllEffects() {
-		for (Effect effect : effects.keySet()) {
-			if (effect instanceof EffectBehaviorPassive) {
-				((EffectBehaviorPassive) effect).removeEffect(this);
-			}
-		}
 		this.effects.clear();
 	}
 
@@ -412,98 +416,16 @@ public class OnlineUser extends OfflineUser {
 		}
 		if (level <= 0) {
 			effects.remove(effect);
-			if (effect instanceof EffectBehaviorPassive) {
-				((EffectBehaviorPassive) effect).removeEffect(this);
-			}
 			return;
 		}
 		effects.put(effect, level);
 		if (effect instanceof EffectBehaviorPassive
 				&& !Effects.getInstance().isOnCooldown(getUUID(), effect)) {
-			((EffectBehaviorPassive) effect).applyEffect(this);
+			Player player = this.getPlayer();
+			if (player != null) {
+				((EffectBehaviorPassive) effect).applyEffect(player, level);
+			}
 			Effects.getInstance().startCooldown(getUUID(), effect);
-		}
-	}
-
-	public void applyGodtierPassiveEffect() {
-		if(this.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
-			SblockFX passive = null;
-			switch(this.getUserAspect()) {
-			case BLOOD:
-				break;
-			case BREATH:
-				break;
-			case DOOM:
-				break;
-			case HEART:
-				try {
-					passive = FXManager.getInstance().getValidEffects().get("ABSORPTION").newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					Sblock.getLog().info("Passive Heart Effect Exception");
-					e.printStackTrace();
-				}
-				break;
-			case HOPE:
-				break;
-			case LIFE:
-				break;
-			case LIGHT:
-				break;
-			case MIND:
-				break;
-			case RAGE:
-				break;
-			case SPACE:
-				break;
-			case TIME:
-				break;
-			case VOID:
-				break;
-			default:
-				break;
-			}
-			if(passive != null)	passive.applyEffect(this, null);
-		}
-	}
-	
-	public void applyGodtierActiveEffect() {
-		if(this.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
-			SblockFX active = null;
-			switch(this.getUserAspect()) {
-			case BLOOD:
-				break;
-			case BREATH:
-				break;
-			case DOOM:
-				break;
-			case HEART:
-				try {
-					active = FXManager.getInstance().getValidEffects().get("FXGodtierHeartActive").newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					Sblock.getLog().info("Active Heart Effect Exception");
-					e.printStackTrace();
-				}
-				break;
-			case HOPE:
-				break;
-			case LIFE:
-				break;
-			case LIGHT:
-				break;
-			case MIND:
-				break;
-			case RAGE:
-				break;
-			case SPACE:
-				break;
-			case TIME:
-				break;
-			case VOID:
-				break;
-			default:
-				break;
-			}
-			if(active != null)	active.applyEffect(this, null);
 		}
 	}
 

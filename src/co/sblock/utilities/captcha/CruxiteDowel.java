@@ -14,7 +14,8 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
-import co.sblock.effects.FXManager;
+import co.sblock.effects.Effects;
+import co.sblock.effects.effect.Effect;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -83,27 +84,15 @@ public class CruxiteDowel {
 			cost += 85;
 		}
 
-		if (toCreate.getItemMeta().hasLore()) {
-
-			int loreCost = 0;
-
-			for (String lore : toCreate.getItemMeta().getLore()) {
-				if (!FXManager.getInstance().getValidEffects().containsKey(lore)) {
-					continue;
-				}
-				try {
-					loreCost += FXManager.getInstance().getValidEffects().get(lore).newInstance().getCost();
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-
-			// if item contains special lore and doesn't need repair, raise price
-			if (!(toCreate.getItemMeta() instanceof Repairable)) {
-				loreCost *= 4;
-			}
-			cost += loreCost;
+		int effectCost = 0;
+		for (Entry<Effect, Integer> effect : Effects.getInstance().getEffects(toCreate).entrySet()) {
+			effectCost += effect.getKey().getCost() * effect.getValue();
 		}
+		// if item contains special lore and doesn't need repair, raise price
+		if (!(toCreate.getItemMeta() instanceof Repairable)) {
+			effectCost *= 4;
+		}
+		cost += effectCost;
 
 		// 2 exp/boondollar seems reasonable.
 		// Puts a stack of cobble at lvl 0-13, nether star at 0-42.

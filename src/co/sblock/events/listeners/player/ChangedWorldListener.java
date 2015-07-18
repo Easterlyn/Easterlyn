@@ -4,8 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
-import co.sblock.effects.FXManager;
-import co.sblock.users.OnlineUser;
+import co.sblock.effects.Effects;
 import co.sblock.users.Users;
 import co.sblock.utilities.vote.SleepVote;
 
@@ -26,9 +25,6 @@ public class ChangedWorldListener implements Listener {
 
 		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
 
-		OnlineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser();
-
-		user.removeAllEffects();
-		FXManager.getInstance().fullEffectsScan(user);
+		Effects.getInstance().applyAllEffects(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser());
 	}
 }

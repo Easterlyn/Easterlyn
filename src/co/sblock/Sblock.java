@@ -40,7 +40,7 @@ import com.mojang.authlib.GameProfile;
 
 import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
-import co.sblock.effects.FXManager;
+import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
 import co.sblock.module.Dependencies;
@@ -104,7 +104,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new Chat().enable());
 		modules.add(new Users().enable());
 		modules.add(new Events().enable());
-		modules.add(new FXManager().enable());
+		modules.add(new Effects().enable());
 		modules.add(new Machines().enable());
 		modules.add(new Captcha().enable());
 		modules.add(new Meteors().enable());

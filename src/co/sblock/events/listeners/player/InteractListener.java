@@ -1,7 +1,5 @@
 package co.sblock.events.listeners.player;
 
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,8 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
 import co.sblock.chat.Color;
-import co.sblock.effects.FXManager;
-import co.sblock.effects.fx.SblockFX;
+import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
@@ -26,7 +23,6 @@ import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
-import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.experience.Experience;
@@ -118,15 +114,8 @@ public class InteractListener implements Listener {
 			return;
 		}
 
-		// Effect application
-		HashMap<String, SblockFX> effects = FXManager.getInstance().itemScan(event.getItem());
-		for (SblockFX fx : effects.values()) {
-			fx.applyEffect(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser(), event);
-		}
-		if(Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser().getProgression() == ProgressionState.GODTIER &&
-				event.getPlayer().isSneaking() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-			Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getOnlineUser().applyGodtierActiveEffect();
-		}
+		// EFFECTS: Active application - right click only for now, change if needed.
+		Effects.getInstance().handleEvent(event, event.getPlayer(), false);
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();

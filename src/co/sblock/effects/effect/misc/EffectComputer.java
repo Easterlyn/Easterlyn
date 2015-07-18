@@ -1,8 +1,9 @@
 package co.sblock.effects.effect.misc;
 
+import org.bukkit.entity.Player;
+
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorPassive;
-import co.sblock.users.OnlineUser;
 
 /**
  * Effect for indicating that the user has alchemized a computer into an object.
@@ -16,9 +17,6 @@ public class EffectComputer extends Effect implements EffectBehaviorPassive {
 	}
 
 	@Override
-	public void applyEffect(OnlineUser user) {}
-
-	@Override
-	public void removeEffect(OnlineUser user) {}
+	public void applyEffect(Player player, int level) {}
 
 }
