@@ -17,7 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.events.Events;
-import co.sblock.users.Users;
 import co.sblock.utilities.experience.Experience;
 import co.sblock.utilities.minecarts.FreeCart;
 
@@ -86,7 +85,5 @@ public class DeathListener implements Listener {
 			Bukkit.getConsoleSender().sendMessage(player.getName() + " died to "
 					+ player.getLastDamageCause().getCause().name() + "." + location);
 		}
-
-		Users.getGuaranteedUser(player.getUniqueId()).getOnlineUser().removeAllEffects();
 	}
 }

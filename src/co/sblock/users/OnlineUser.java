@@ -30,7 +30,6 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorPassive;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
@@ -357,76 +356,6 @@ public class OnlineUser extends OfflineUser {
 		}
 		return effects.containsKey(Effects.getInstance().getEffect("Computer"))
 				|| Machines.getInstance().isByComputer(this.getPlayer(), 10);
-	}
-
-	/**
-	 * Gets the level of the Effect specified.
-	 * 
-	 * @param effect the Effect
-	 * @return the level, or 0 if not present.
-	 */
-	public int getEffectLevel(Effect effect) {
-		return effects.getOrDefault(effect, 0);
-	}
-
-	/**
-	 * Sets and applies effects for the User.
-	 * 
-	 * @param effects the map of all Effects to add
-	 */
-	public void setAllEffects(Map<Effect, Integer> effects) {
-		removeAllEffects();
-		this.effects.putAll(effects);
-		Player player = this.getPlayer();
-		if (player == null) {
-			return;
-		}
-		for (Map.Entry<Effect, Integer> entry : effects.entrySet()) {
-			if (entry.getKey() instanceof EffectBehaviorPassive
-					&& !Effects.getInstance().isOnCooldown(getUUID(), entry.getKey())) {
-				((EffectBehaviorPassive) entry.getKey()).applyEffect(player, entry.getValue());
-				Effects.getInstance().startCooldown(getUUID(), entry.getKey());
-			}
-		}
-		if (this.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
-			Effect effect = Effects.getInstance().getEffect(getUserAspect().name() + "::PASSIVE");
-			if (effect == null) { // Not yet written
-				return;
-			}
-			modifyEffect(effect, 1);
-		}
-	}
-
-	/**
-	 * Removes all Effects from the user.
-	 */
-	public void removeAllEffects() {
-		this.effects.clear();
-	}
-
-	/**
-	 * Add a new effect to the user's current Effects. If the effect is already present, increases
-	 * the strength by 1.
-	 * 
-	 * @param effect the Effect to add
-	 */
-	public void modifyEffect(Effect effect, int level) {
-		if (effects.containsKey(effect)) {
-			level += effects.get(effect);
-		}
-		if (level <= 0) {
-			effects.remove(effect);
-			return;
-		}
-		effects.put(effect, level);
-		if (effect instanceof EffectBehaviorPassive
-				&& !Effects.getInstance().isOnCooldown(getUUID(), effect)) {
-			Player player = this.getPlayer();
-			if (player != null) {
-				((EffectBehaviorPassive) effect).applyEffect(player, level);
-			}
-			Effects.getInstance().startCooldown(getUUID(), effect);
-		}
 	}
 
 	@Override

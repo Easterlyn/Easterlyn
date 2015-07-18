@@ -8,22 +8,25 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import org.reflections.Reflections;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.effects.effect.EffectBehaviorCooldown;
+import co.sblock.effects.effect.EffectBehaviorPassive;
 import co.sblock.effects.effect.EffectBehaviorReactive;
 import co.sblock.module.Module;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.Captcha;
@@ -73,6 +76,16 @@ public class Effects extends Module {
 				e.printStackTrace();
 			}
 		}
+
+		// Schedule effect scanning and application
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					applyAllEffects(player);
+				}
+			}
+		}.runTaskTimer(Sblock.getInstance(), 40, 40);
 	}
 
 	/**
@@ -86,15 +99,35 @@ public class Effects extends Module {
 	}
 
 	/**
-	 * Scans the User for effects and applies them.
+	 * Applies all effects to the given Player.
 	 * 
-	 * @param user
+	 * @param player the Player
 	 */
-	public void applyAllEffects(OnlineUser user) {
-		Player player = user.getPlayer();
-		if (player == null) {
-			return;
+	public void applyAllEffects(Player player) {
+		for (Map.Entry<Effect, Integer> entry : getAllEffects(player).entrySet()) {
+			if (!(entry.getKey() instanceof EffectBehaviorPassive)) {
+				continue;
+			}
+			EffectBehaviorCooldown cool = null;
+			if (entry.getKey() instanceof EffectBehaviorCooldown) {
+				cool = (EffectBehaviorCooldown) entry.getKey();
+				if (Cooldowns.getInstance().getRemainder(player.getUniqueId(), cool.getCooldownName()) > 0) {
+					continue;
+				}
+			}
+			((EffectBehaviorPassive) entry.getKey()).applyEffect(player, entry.getValue());
+			if (cool != null) {
+				Cooldowns.getInstance().addCooldown(player.getUniqueId(), cool.getCooldownName(), cool.getCooldownDuration());
+			}
 		}
+	}
+
+	/**
+	 * Scans the Player for effects and gets them.
+	 * 
+	 * @param player the Player
+	 */
+	public Map<Effect, Integer> getAllEffects(Player player) {
 		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
 
 		for (ItemStack item: player.getInventory().getArmorContents()) {
@@ -115,7 +148,21 @@ public class Effects extends Module {
 			}
 		}
 
-		user.setAllEffects(applicableEffects);
+		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		if (user.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
+			for (String effectType : new String[] {"::ACTIVE", "::PASSIVE", "::REACTIVE"}) {
+				Effect effect = getEffect(user.getUserAspect().name() + effectType);
+				if (effect != null) {
+					if (applicableEffects.containsKey(effect)) {
+						applicableEffects.put(effect, applicableEffects.get(effect) + 1);
+					} else {
+						applicableEffects.put(effect, 1);
+					}
+				}
+			}
+		}
+
+		return applicableEffects;
 	}
 
 	/**
