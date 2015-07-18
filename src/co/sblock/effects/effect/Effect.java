@@ -3,8 +3,6 @@ package co.sblock.effects.effect;
 import java.util.Arrays;
 import java.util.List;
 
-import co.sblock.users.OnlineUser;
-
 /**
  * 
  * 
@@ -16,10 +14,16 @@ public abstract class Effect {
 	private final List<String> names;
 	// Cost of the Effect during alchemy
 	private final int cost;
+	// Maximum level per individual item
+	private final int maximumLevel;
+	// Maximum level with any effect on play
+	private final int maximumCombinedLevel;
 
-	public Effect(int cost, String... names) {
+	public Effect(int cost, int maximumLevel, int maximumCombinedLevel, String... names) {
 		this.cost = cost;
 		this.names = Arrays.asList(names);
+		this.maximumLevel = maximumLevel;
+		this.maximumCombinedLevel = maximumCombinedLevel;
 	}
 
 	/**
@@ -41,10 +45,21 @@ public abstract class Effect {
 	}
 
 	/**
-	 * Applies the Effect to the given OnlineUser.
+	 * Gets the maximum level of an Effect per gear part.
 	 * 
-	 * @param user the OnlineUser
+	 * @return the maximum level
 	 */
-	public abstract void applyEffect(OnlineUser user);
+	public int getMaxLevel() {
+		return this.maximumLevel;
+	}
+
+	/**
+	 * Gets the maximum level of an Effect for all gear parts combined.
+	 * 
+	 * @return the maximum level
+	 */
+	public int getMaxTotalLevel() {
+		return this.maximumCombinedLevel;
+	}
 
 }

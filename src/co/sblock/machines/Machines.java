@@ -408,9 +408,6 @@ public class Machines extends Module {
 	 * @return true if the Player is within 10 meters of a Computer.
 	 */
 	public static boolean hasComputerAccess(OfflineUser user) {
-		if (user.getOnlineUser().getEffects().containsKey("COMPUTER")) {
-			return true;
-		}
 		return getInstance().isByComputer(user.getPlayer(), 10);
 	}
 

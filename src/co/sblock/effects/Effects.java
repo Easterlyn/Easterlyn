@@ -4,9 +4,11 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,7 +19,12 @@ import com.google.common.collect.Multimap;
 
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorActive;
+import co.sblock.effects.effect.EffectBehaviorCooldown;
+import co.sblock.effects.effect.EffectBehaviorReactive;
 import co.sblock.module.Module;
+import co.sblock.users.OnlineUser;
+import co.sblock.utilities.captcha.Captcha;
+import co.sblock.utilities.general.Cooldowns;
 import co.sblock.utilities.general.Roman;
 
 import net.md_5.bungee.api.ChatColor;
@@ -32,6 +39,7 @@ public class Effects extends Module {
 	private static Effects instance;
 	private final Map<String, Effect> effects = new HashMap<>();
 	private final Multimap<Class<? extends Event>, Effect> active = HashMultimap.create();
+	private final Multimap<Class<? extends Event>, Effect> reactive = HashMultimap.create();
 	private final Pattern effectPattern = Pattern.compile("^\\" + ChatColor.COLOR_CHAR + "[A-FK-ORa-fk-or0-9](.*) ([IVXLCDM]+)$");
 
 	@Override
@@ -48,7 +56,11 @@ public class Effects extends Module {
 				for (String name : instance.getNames()) {
 					effects.put(name, instance);
 				}
-				if (instance instanceof EffectBehaviorActive) {
+				if (instance instanceof EffectBehaviorReactive) {
+					for (Class<? extends Event> clazz : ((EffectBehaviorReactive) instance).getApplicableEvents()) {
+						reactive.put(clazz, instance);
+					}
+				} else if (instance instanceof EffectBehaviorActive) {
 					for (Class<? extends Event> clazz : ((EffectBehaviorActive) instance).getApplicableEvents()) {
 						active.put(clazz, instance);
 					}
@@ -61,34 +73,140 @@ public class Effects extends Module {
 	}
 
 	/**
+	 * Gets an effect by name.
+	 * 
+	 * @param effect the name of the Effect
+	 * @return the Effect
+	 */
+	public Effect getEffect(String effect) {
+		return effects.get(effect);
+	}
+
+	/**
+	 * Scans the User for effects and applies them.
+	 * 
+	 * @param user
+	 */
+	public void applyAllEffects(OnlineUser user) {
+		Player player = user.getPlayer();
+		if (player == null) {
+			return;
+		}
+		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
+
+		for (ItemStack item: player.getInventory().getArmorContents()) {
+			for (Map.Entry<Effect, Integer> entry : getEffects(item).entrySet()) {
+				if (applicableEffects.containsKey(entry.getKey())) {
+					applicableEffects.put(entry.getKey(), applicableEffects.get(entry.getKey()) + entry.getValue());
+				} else {
+					applicableEffects.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+
+		for (Map.Entry<Effect, Integer> entry : getEffects(player.getItemInHand()).entrySet()) {
+			if (applicableEffects.containsKey(entry.getKey())) {
+				applicableEffects.put(entry.getKey(), applicableEffects.get(entry.getKey()) + entry.getValue());
+			} else {
+				applicableEffects.put(entry.getKey(), entry.getValue());
+			}
+		}
+
+		user.setAllEffects(applicableEffects);
+	}
+
+	/**
+	 * Handles an event for an active or reactive Effect.
+	 * 
+	 * @param event the Event
+	 * @param player the Player
+	 * @param reactive true if the Effect is reactive
+	 */
+	public void handleEvent(Event event, Player player, boolean reactive) {
+		Map<Effect, Integer> effects;
+		if (reactive) {
+			effects = getEffects(player.getInventory().getArmorContents());
+		} else {
+			effects = getEffects(player.getItemInHand());
+		}
+		if (effects.isEmpty()) {
+			return;
+		}
+		for (Class<? extends Event> clazz : reactive ? this.reactive.keySet() : active.keySet()) {
+			if (!clazz.isAssignableFrom(event.getClass())) {
+				continue;
+			}
+			for (Effect effect : active.get(clazz)) {
+				if (!effects.containsKey(effect)) {
+					continue;
+				}
+				if (effect instanceof EffectBehaviorCooldown && Cooldowns.getInstance().getRemainder(player.getUniqueId(), ((EffectBehaviorCooldown) effect).getCooldownName()) > 0) {
+					
+				}
+				((EffectBehaviorActive) effect).handleEvent(event, player, effects.get(effect));
+			}
+		}
+	}
+
+	/**
 	 * Gets all Effects and corresponding levels on the provided ItemStack.
 	 * 
 	 * @param item the ItemStack
 	 * @return the Effects and corresponding levels
 	 */
-	public Map<Effect, Integer> getEffects(ItemStack item) {
+	public Map<Effect, Integer> getEffects(ItemStack... items) {
 		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
-		if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore()) {
-			return applicableEffects;
-		}
-		for (String lore : item.getItemMeta().getLore()) {
-			Matcher match = effectPattern.matcher(lore);
-			if (!match.find()) {
+		for (ItemStack item : items) {
+			if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore() || Captcha.isCard(item)) {
 				continue;
 			}
-			String effect = ChatColor.stripColor(match.group(1));
-			if (!effects.containsKey(effect)) {
-				continue;
+			for (String lore : item.getItemMeta().getLore()) {
+				Matcher match = effectPattern.matcher(lore);
+				if (!match.find()) {
+					continue;
+				}
+				String effect = ChatColor.stripColor(match.group(1));
+				if (!effects.containsKey(effect)) {
+					continue;
+				}
+				int level;
+				try {
+					level = Roman.fromString(match.group(2));
+				} catch (NumberFormatException e) {
+					continue;
+				}
+				applicableEffects.put(effects.get(effect), level);
 			}
-			int level;
-			try {
-				level = Roman.fromString(match.group(2));
-			} catch (NumberFormatException e) {
-				continue;
-			}
-			applicableEffects.put(effects.get(effect), level);
 		}
 		return applicableEffects;
+	}
+
+	/**
+	 * Checks if the Effect provided is on cooldown for the given UUID.
+	 * 
+	 * @param uuid the UUID
+	 * @param effect the effect
+	 * @return true if the Effect is on cooldown.
+	 */
+	public boolean isOnCooldown(UUID uuid, Effect effect) {
+		if (!(effect instanceof EffectBehaviorCooldown)) {
+			return false;
+		}
+		return Cooldowns.getInstance().getRemainder(uuid, ((EffectBehaviorCooldown) effect).getCooldownName()) > 0;
+	}
+
+	/**
+	 * Starts the cooldown for the given UUID and Effect.
+	 * 
+	 * @param uuid the UUID
+	 * @param effect the Effect
+	 */
+	public void startCooldown(UUID uuid, Effect effect) {
+		if (!(effect instanceof EffectBehaviorCooldown)) {
+			return;
+		}
+		EffectBehaviorCooldown cool = (EffectBehaviorCooldown) effect;
+		Cooldowns.getInstance().addCooldown(uuid, cool.getCooldownName(), cool.getCooldownDuration());
 	}
 
 	@Override

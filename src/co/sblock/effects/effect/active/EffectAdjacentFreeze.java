@@ -1,4 +1,4 @@
-package co.sblock.effects.fx;
+package co.sblock.effects.effect.active;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -10,19 +10,21 @@ import org.bukkit.entity.Player;
  * 
  * @author Jikoo
  */
-public class FXAdjacentFreeze extends FXAdjacentBlockModifier {
+public class EffectAdjacentFreeze extends EffectAdjacentBlockModifier {
 
-	public FXAdjacentFreeze() {
-		super("Eternally Frozen", 400, 0);
+	public EffectAdjacentFreeze(int cost, String[] names) {
+		super(400, "Eternally Frozen");
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void handleAdjacentBlock(Player player, Block block) {
-		if (block.getType() == Material.STATIONARY_WATER) {
+		if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
 			if (handleBlockSet(player, block, Material.ICE)) {
 				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.SPLASH2, 16, 1);
 			}
 			return;
 		}
 	}
+
 }

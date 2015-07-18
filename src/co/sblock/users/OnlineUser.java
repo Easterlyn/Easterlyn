@@ -3,11 +3,11 @@ package co.sblock.users;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -28,7 +28,10 @@ import co.sblock.chat.Color;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
+import co.sblock.effects.Effects;
 import co.sblock.effects.FXManager;
+import co.sblock.effects.effect.Effect;
+import co.sblock.effects.effect.EffectBehaviorPassive;
 import co.sblock.effects.fx.SblockFX;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
@@ -47,7 +50,7 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class OnlineUser extends OfflineUser {
 
-	private final Map<String, SblockFX> effectsList;
+	private final Map<Effect, Integer> effects;
 
 	private Location serverDisableTeleport;
 	private boolean isServer;
@@ -55,7 +58,7 @@ public class OnlineUser extends OfflineUser {
 	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, Location previousLocation,
 			Set<Integer> programs, String currentChannel, Set<String> listening) {
 		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
-		effectsList = new HashMap<>();
+		effects = new ConcurrentHashMap<>();
 		isServer = false;
 	}
 
@@ -354,41 +357,47 @@ public class OnlineUser extends OfflineUser {
 			// Overrides the computer limitation for pre-Entry shenanigans
 			return true;
 		}
-		return getEffects().containsKey("Computer") || Machines.getInstance().isByComputer(this.getPlayer(), 10);
+		return effects.containsKey(Effects.getInstance().getEffect("Computer"))
+				|| Machines.getInstance().isByComputer(this.getPlayer(), 10);
 	}
 
 	/**
-	 * Gets the user's current Effects
+	 * Gets the level of the Effect specified.
 	 * 
-	 * @return the Map of effects
+	 * @param effect the Effect
+	 * @return the level, or 0 if not present.
 	 */
-	public Map<String, SblockFX> getEffects() {
-		return this.effectsList;
+	public int getEffectLevel(Effect effect) {
+		return effects.getOrDefault(effect, 0);
 	}
 
 	/**
-	 * Set the user's current Effects. Will overlay existing map.
+	 * Sets and applies effects for the User.
 	 * 
 	 * @param effects the map of all Effects to add
 	 */
-	public void setAllEffects(HashMap<String, SblockFX> effects) {
+	public void setAllEffects(Map<Effect, Integer> effects) {
 		removeAllEffects();
-		for (SblockFX entry : effects.values()) {
-			this.effectsList.put(entry.getCanonicalName(), entry);
-			if (entry.isPassive()) {
-				entry.applyEffect(this, null);
+		this.effects.putAll(effects);
+		for (Map.Entry<Effect, Integer> entry : effects.entrySet()) {
+			if (entry.getKey() instanceof EffectBehaviorPassive
+					&& !Effects.getInstance().isOnCooldown(getUUID(), entry.getKey())) {
+				((EffectBehaviorPassive) entry.getKey()).applyEffect(this);
+				Effects.getInstance().startCooldown(getUUID(), entry.getKey());
 			}
 		}
 	}
 
 	/**
-	 * Removes all Effects from the user and cancels the Effect
+	 * Removes all Effects from the user.
 	 */
 	public void removeAllEffects() {
-		for (SblockFX effect : effectsList.values()) {
-			effect.removeEffect(this);
+		for (Effect effect : effects.keySet()) {
+			if (effect instanceof EffectBehaviorPassive) {
+				((EffectBehaviorPassive) effect).removeEffect(this);
+			}
 		}
-		this.effectsList.clear();
+		this.effects.clear();
 	}
 
 	/**
@@ -397,39 +406,25 @@ public class OnlineUser extends OfflineUser {
 	 * 
 	 * @param effect the Effect to add
 	 */
-	public void addEffect(SblockFX effect) {
-		if (this.effectsList.containsKey(effect.getCanonicalName())) {
-			effect.setMultiplier(this.effectsList.get(effect.getCanonicalName()).getMultiplier()
-					+ effect.getMultiplier());
-			this.effectsList.put(effect.getCanonicalName(), effect);
-		} else {
-			this.effectsList.put(effect.getCanonicalName(), effect);
+	public void modifyEffect(Effect effect, int level) {
+		if (effects.containsKey(effect)) {
+			level += effects.get(effect);
 		}
-		if (effect.isPassive()) {
-			effect.applyEffect(this, null);
+		if (level <= 0) {
+			effects.remove(effect);
+			if (effect instanceof EffectBehaviorPassive) {
+				((EffectBehaviorPassive) effect).removeEffect(this);
+			}
+			return;
+		}
+		effects.put(effect, level);
+		if (effect instanceof EffectBehaviorPassive
+				&& !Effects.getInstance().isOnCooldown(getUUID(), effect)) {
+			((EffectBehaviorPassive) effect).applyEffect(this);
+			Effects.getInstance().startCooldown(getUUID(), effect);
 		}
 	}
 
-	/**
-	 * Reduces the multiplier on an effect
-	 * 
-	 * @param effect The effect to change
-	 * @param reduction The amount to reduce the multiplier by
-	 */
-	public void reduceEffect(SblockFX effect, Integer reduction) {
-		if (this.effectsList.containsKey(effect.getCanonicalName())) {
-			if (this.effectsList.get(effect.getCanonicalName()).getMultiplier() - reduction > 0) {
-				effect.setMultiplier(effect.getMultiplier() - reduction);
-				if (effect.isPassive()) {
-					effect.applyEffect(this, null);
-				}
-			} else {
-				this.effectsList.remove(effect.getCanonicalName());
-				effect.removeEffect(this);
-			}
-		}
-	}
-	
 	public void applyGodtierPassiveEffect() {
 		if(this.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
 			SblockFX passive = null;

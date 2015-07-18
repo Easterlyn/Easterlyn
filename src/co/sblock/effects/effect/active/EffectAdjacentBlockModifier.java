@@ -1,4 +1,7 @@
-package co.sblock.effects.fx;
+package co.sblock.effects.effect.active;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -11,26 +14,33 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.effects.effect.Effect;
+import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.events.event.SblockBreakEvent;
-import co.sblock.users.OnlineUser;
 
 /**
- * Base for multiple block break behaviours that affect adjacent blocks.
+ * Base for multiple block break behaviors that affect adjacent blocks.
  * 
  * @author Jikoo
  */
-public abstract class FXAdjacentBlockModifier extends SblockFX {
+public abstract class EffectAdjacentBlockModifier extends Effect implements EffectBehaviorActive {
 
 	private final BlockFace[] faces;
-	@SuppressWarnings("unchecked")
-	public FXAdjacentBlockModifier(String name, int cost, int cooldown) {
-		super(name, false, cost, cooldown, BlockBreakEvent.class, SblockBreakEvent.class);
+	public EffectAdjacentBlockModifier(int cost, String... names) {
+		super(cost, 1, 1, names);
 		faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
 				BlockFace.EAST, BlockFace.WEST };
 	}
 
 	@Override
-	protected void getEffect(OnlineUser user, Event event) {
+	public Collection<Class<? extends Event>> getApplicableEvents() {
+		return Arrays.asList(BlockBreakEvent.class, SblockBreakEvent.class);
+	}
+	/* (non-Javadoc)
+	 * @see co.sblock.effects.effect.EffectBehaviorActive#handleEvent(org.bukkit.event.Event, org.bukkit.entity.Player, int)
+	 */
+	@Override
+	public void handleEvent(Event event, Player player, int level) {
 		BlockBreakEvent breakEvent = (BlockBreakEvent) event;
 		handleAdjacentBlocks(breakEvent.getPlayer(), breakEvent.getBlock());
 	}
@@ -56,7 +66,4 @@ public abstract class FXAdjacentBlockModifier extends SblockFX {
 		}
 		return true;
 	}
-
-	@Override
-	public void removeEffect(OnlineUser user) {}
 }

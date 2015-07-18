@@ -7,7 +7,7 @@ package co.sblock.effects.effect;
  */
 public interface EffectBehaviorCooldown {
 
-	public long getCooldownName();
+	public String getCooldownName();
 
 	public long getCooldownDuration();
 

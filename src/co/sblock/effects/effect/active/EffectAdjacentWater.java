@@ -1,4 +1,4 @@
-package co.sblock.effects.fx;
+package co.sblock.effects.effect.active;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -10,13 +10,14 @@ import org.bukkit.entity.Player;
  * 
  * @author Jikoo
  */
-public class FXAdjacentWater extends FXAdjacentBlockModifier {
+public class EffectAdjacentWater extends EffectAdjacentBlockModifier {
 
-	public FXAdjacentWater() {
-		super("Liquid Cooled", 400, 0);
+	public EffectAdjacentWater() {
+		super(400, "Liquid Cooled");
 	}
 
 	@SuppressWarnings("deprecation")
+	@Override
 	protected void handleAdjacentBlock(Player player, Block block) {
 		if (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA) {
 			if ((block.getData() == 0 && handleBlockSet(player, block, Material.OBSIDIAN))
@@ -32,4 +33,5 @@ public class FXAdjacentWater extends FXAdjacentBlockModifier {
 			return;
 		}
 	}
+
 }

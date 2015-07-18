@@ -1,5 +1,8 @@
 package co.sblock.effects.effect;
 
+import java.util.Collection;
+
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 /**
@@ -9,7 +12,7 @@ import org.bukkit.event.Event;
  */
 public interface EffectBehaviorActive {
 
-	public Class<? extends Event>[] getApplicableEvents();
+	public Collection<Class<? extends Event>> getApplicableEvents();
 
-	public void handleEvent(Class<? extends Event> event);
+	public void handleEvent(Event event, Player player, int level);
 }

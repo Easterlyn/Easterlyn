@@ -1,5 +1,6 @@
-package co.sblock.effects.fx;
+package co.sblock.effects.effect.active;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.bukkit.Bukkit;
@@ -11,8 +12,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.effects.effect.Effect;
+import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.events.event.SblockBreakEvent;
-import co.sblock.users.OnlineUser;
 import co.sblock.utilities.experience.BlockDrops;
 import co.sblock.utilities.experience.Experience;
 
@@ -21,13 +23,12 @@ import co.sblock.utilities.experience.Experience;
  * 
  * @author Jikoo
  */
-public class FXTunnelBore extends SblockFX {
+public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 
 	private final BlockFace[] faces;
 	private final BlockFace[] levels;
-	@SuppressWarnings("unchecked")
-	public FXTunnelBore() {
-		super("Tunnel Bore", false, 2500, 0, BlockBreakEvent.class);
+	public EffectTunnelBore() {
+		super(2500, 1, 1, "Tunnel Bore");
 		faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
 				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST,
 				BlockFace.SOUTH_WEST, BlockFace.SOUTH_EAST };
@@ -35,7 +36,12 @@ public class FXTunnelBore extends SblockFX {
 	}
 
 	@Override
-	protected void getEffect(OnlineUser user, Event event) {
+	public Collection<Class<? extends Event>> getApplicableEvents() {
+		return Arrays.asList(BlockBreakEvent.class);
+	}
+
+	@Override
+	public void handleEvent(Event event, Player player, int level) {
 		if (!(event instanceof BlockBreakEvent) || event instanceof SblockBreakEvent) {
 			return;
 		}
@@ -48,14 +54,13 @@ public class FXTunnelBore extends SblockFX {
 		}
 
 		Block block = breakEvent.getBlock();
-		Player player = breakEvent.getPlayer();
 
-		for (BlockFace level : levels) {
-			if (block.getY() == 0 && level == BlockFace.DOWN) {
+		for (BlockFace yLevel : levels) {
+			if (block.getY() == 0 && yLevel == BlockFace.DOWN) {
 				continue;
 			}
-			Block relativeCenter = block.getRelative(level);
-			if (level != BlockFace.SELF) {
+			Block relativeCenter = block.getRelative(yLevel);
+			if (yLevel != BlockFace.SELF) {
 				sblockBreak(relativeCenter, player);
 			}
 			for (BlockFace face : faces) {
@@ -88,6 +93,4 @@ public class FXTunnelBore extends SblockFX {
 		}
 	}
 
-	@Override
-	public void removeEffect(OnlineUser user) {}
 }
