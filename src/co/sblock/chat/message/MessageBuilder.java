@@ -156,24 +156,7 @@ public class MessageBuilder {
 
 				// I'm aware that this will strip a couple cases that belong capitalized,
 				// but no self-respecting person sings Old MacDonald anyway.
-				boolean stripUpper = false;
-				for (int i = 0, upper = 0, total = 0; i < word.length(); i++) {
-					char character = word.charAt(i);
-					if (Character.isAlphabetic(character)) {
-						boolean startsUpper = Character.isUpperCase(character);
-						for (; i < word.length(); i++) {
-							character = word.charAt(i);
-							if (Character.isAlphabetic(character)) {
-								total++;
-								if (Character.isUpperCase(character)) {
-									upper++;
-								}
-							}
-						}
-						stripUpper = !startsUpper && upper > 0 || upper != total;
-						break;
-					}
-				}
+				boolean stripUpper = stripUpper(word);
 
 				for (char character : word.toCharArray()) {
 					if (isCharacterGloballyIllegal(character) || character == ChatColor.COLOR_CHAR) {
@@ -196,6 +179,26 @@ public class MessageBuilder {
 
 		this.message = message;
 		return this;
+	}
+
+	private boolean stripUpper(String word) {
+		for (int i = 0, upper = 0, total = 0; i < word.length(); i++) {
+			char character = word.charAt(i);
+			if (Character.isAlphabetic(character)) {
+				boolean startsUpper = Character.isUpperCase(character);
+				for (; i < word.length(); i++) {
+					character = word.charAt(i);
+					if (Character.isAlphabetic(character)) {
+						total++;
+						if (Character.isUpperCase(character)) {
+							upper++;
+						}
+					}
+				}
+				return !startsUpper && upper > 0 || upper != total;
+			}
+		}
+		return false;
 	}
 
 	private boolean isCharacterGloballyIllegal(char character) {
