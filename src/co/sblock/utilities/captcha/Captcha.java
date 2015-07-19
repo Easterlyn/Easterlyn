@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.io.BaseEncoding;
 
+import co.sblock.effects.Effects;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.module.Module;
 import co.sblock.utilities.inventory.InventoryUtils;
@@ -113,6 +114,9 @@ public class Captcha extends Module {
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	private static ItemStack captchaToItem(ItemStack card, boolean loreCard) {
+		if (card == null) {
+			return null;
+		}
 		if (!loreCard && card.getItemMeta().getLore().contains("Lorecard")) {
 			// Specialty items cannot be uncaptcha'd.
 			card = card.clone();
@@ -310,20 +314,36 @@ public class Captcha extends Module {
 	 * @return the ItemStack created or null if invalid cards are provided
 	 */
 	public static ItemStack createCombinedPunch(ItemStack card1, ItemStack card2) {
-		if (!isCard(card1)) {
-			return null;
-		}
 		if (isCaptcha(card1)) {
 			if (card2 != null) {
 				return null;
 			}
-			return captchaToPunch(card1);
+			ItemStack is = captchaToPunch(card1);
+			if (card1.isSimilar(is)) {
+				return null;
+			}
+			return is;
+		}
+		if (!isPunch(card1)) {
+			return null;
+		}
+		if (isCaptcha(card2)) {
+			card1 = card1.clone();
+			card1.setAmount(1);
+			return card1;
+		}
+		if (card2 != null && !isPunch(card2)) {
+			return null;
 		}
 		ItemStack item = captchaToItem(card1);
-		ArrayList<String> lore = new ArrayList<>();
-		lore.addAll(item.getItemMeta().getLore());
-		if (card2 != null) {
-			lore.addAll(captchaToItem(card2, true).getItemMeta().getLore());
+		ItemStack item2 = captchaToItem(card2);
+		List<String> lore;
+		if (item2 != null && item2.hasItemMeta() && item2.getItemMeta().hasLore()) {
+			lore = Effects.getInstance().organizeEffectLore(item.getItemMeta().getLore(), false,
+					false, item2.getItemMeta().getLore().toArray(new String[0]));
+		} else {
+			lore = Effects.getInstance().organizeEffectLore(item.getItemMeta().getLore(), false,
+					false);
 		}
 		ItemMeta im = item.getItemMeta();
 		im.setLore(lore);
