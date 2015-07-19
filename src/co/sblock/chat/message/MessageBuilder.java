@@ -3,6 +3,7 @@ package co.sblock.chat.message;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -37,6 +38,7 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class MessageBuilder {
 
+	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?$");
 	private static final TextComponent HIGHLIGHTED_BRACKET;
 	private static final String ITEM_NAME;
 	private static final String LORE_CLASS_OF_ASPECT;
@@ -142,6 +144,9 @@ public class MessageBuilder {
 				if (word.isEmpty()) {
 					continue;
 				}
+				if (URL_PATTERN.matcher(word).find()) {
+					continue;
+				}
 
 				// Anything goes as long as it's the name of a recipient
 				if (names.contains(word)) {
@@ -149,31 +154,27 @@ public class MessageBuilder {
 					continue;
 				}
 
-				char firstChar = word.charAt(0);
-				int wordStart = 0;
-				if (firstChar == '"' || firstChar == '\'' || firstChar == ':' || firstChar == ';') {
-					wordStart = 1;
-				}
-
-				if (word.length() < wordStart + 1) {
-					if (!isCharacterGloballyIllegal(firstChar)) {
-						sb.append(word).append(' ');
-					}
-					continue;
-				}
-
-				boolean startsUpper = Character.isUpperCase(word.charAt(wordStart));
-				int upper = wordStart + 1;
-				if (startsUpper) {
-					for (int i = wordStart + 1; i < word.length(); i++) {
-						if (Character.isUpperCase(word.charAt(i))) {
-							upper++;
-						}
-					}
-				}
 				// I'm aware that this will strip a couple cases that belong capitalized,
 				// but no self-respecting person sings Old MacDonald anyway.
-				boolean stripUpper = !startsUpper || startsUpper && upper > 1 && upper < word.length();
+				boolean stripUpper = false;
+				for (int i = 0, upper = 0, total = 0; i < word.length(); i++) {
+					char character = word.charAt(i);
+					if (Character.isAlphabetic(character)) {
+						boolean startsUpper = Character.isUpperCase(character);
+						for (; i < word.length(); i++) {
+							character = word.charAt(i);
+							if (Character.isAlphabetic(character)) {
+								total++;
+								if (Character.isUpperCase(character)) {
+									upper++;
+								}
+							}
+						}
+						stripUpper = !startsUpper && upper > 0 || upper != total;
+						break;
+					}
+				}
+
 				for (char character : word.toCharArray()) {
 					if (isCharacterGloballyIllegal(character) || character == ChatColor.COLOR_CHAR) {
 						if (stripUpper) {

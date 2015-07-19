@@ -28,7 +28,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 public class JSONUtil {
 
 	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?$");
-	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,})(\\W)?$");
+	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([^A-Za-z0-9])?$");
 
 	public static BaseComponent[] getJson(String message, CanonNick quirk) {
 		if (message == null || message.isEmpty()) {
@@ -114,7 +114,7 @@ public class JSONUtil {
 				component = new TextComponent(old);
 				String urlString = message.substring(i, pos);
 				urlString = urlString.startsWith("http") ? urlString : "http://" + urlString;
-				component.setText('[' + urlMatcher.group(2) + ']');
+				component.setText('[' + urlMatcher.group(2).toLowerCase() + ']');
 				component.setColor(ChatColor.BLUE);
 				TextComponent[] hover = { new TextComponent(urlString) };
 				hover[0].setColor(ChatColor.BLUE);
