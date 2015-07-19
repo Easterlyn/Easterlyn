@@ -1,12 +1,19 @@
 package co.sblock.effects;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -46,7 +53,7 @@ public class Effects extends Module {
 	private final Map<String, Effect> effects = new HashMap<>();
 	private final Multimap<Class<? extends Event>, Effect> active = HashMultimap.create();
 	private final Multimap<Class<? extends Event>, Effect> reactive = HashMultimap.create();
-	private final Pattern effectPattern = Pattern.compile("^\\" + ChatColor.COLOR_CHAR + "[A-FK-ORa-fk-or0-9](.*) ([IVXLCDM]+)$");
+	private final Pattern effectPattern = Pattern.compile("^\\" + ChatColor.COLOR_CHAR + "7(.*) ([IVXLCDM]+)$");
 
 	@Override
 	protected void onEnable() {
@@ -89,13 +96,25 @@ public class Effects extends Module {
 	}
 
 	/**
+	 * Gets a collection of all Effect names.
+	 * 
+	 * @return the Effect names
+	 */
+	public Collection<String> getAllEffectNames() {
+		return effects.keySet();
+	}
+
+	/**
 	 * Gets an effect by name.
 	 * 
 	 * @param effect the name of the Effect
 	 * @return the Effect
 	 */
 	public Effect getEffect(String effect) {
-		return effects.get(effect);
+		if (effects.containsKey(effect)) {
+			return effects.get(effect);
+		}
+		return null;
 	}
 
 	/**
@@ -244,6 +263,89 @@ public class Effects extends Module {
 			}
 		}
 		return applicableEffects;
+	}
+
+	public List<String> organizeEffectLore(List<String> lore, boolean ignoreCase, boolean overwrite, String... toAdd) {
+		ArrayList<String> oldLore = new ArrayList<>();
+		if (lore != null) {
+			oldLore.addAll(lore);
+		}
+		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
+		Iterator<String> iterator = oldLore.iterator();
+		while (iterator.hasNext()) {
+			Pair<Effect, Integer> pair = getEffectFromLore(iterator.next(), false);
+			if (pair == null) {
+				continue;
+			}
+			iterator.remove();
+			if (applicableEffects.containsKey(pair.getLeft())) {
+				applicableEffects.put(pair.getLeft(), applicableEffects.get(pair.getLeft()) + pair.getRight());
+				continue;
+			}
+			applicableEffects.put(pair.getLeft(), pair.getRight());
+		}
+
+		for (String string : toAdd) {
+			Pair<Effect, Integer> pair = getEffectFromLore(iterator.next(), ignoreCase);
+			if (pair == null) {
+				oldLore.add(string);
+				continue;
+			}
+			if (!overwrite && applicableEffects.containsKey(pair.getLeft())) {
+				applicableEffects.put(pair.getLeft(), applicableEffects.get(pair.getLeft()) + pair.getRight());
+				continue;
+			}
+			applicableEffects.put(pair.getLeft(), pair.getRight());
+		}
+
+		ArrayList<String> newLore = new ArrayList<>();
+		for (Map.Entry<Effect, Integer> entry : applicableEffects.entrySet()) {
+			if (entry.getValue() < 1) {
+				continue;
+			}
+			newLore.add(new StringBuilder().append(ChatColor.GRAY)
+					.append(entry.getKey().getNames().get(0)).append(' ')
+					.append(Roman.fromInt(entry.getValue())).toString());
+		}
+		newLore.addAll(oldLore);
+
+		return newLore;
+	}
+
+	/**
+	 * Gets the Effect and level represented by a String in an ItemStack's lore.
+	 * 
+	 * @param lore the String
+	 * @param ignoreCase if case should be ignored when matching Effect
+	 */
+	public Pair<Effect, Integer> getEffectFromLore(String lore, boolean ignoreCase) {
+		Matcher match = effectPattern.matcher(lore);
+		if (!match.find()) {
+			return null;
+		}
+		lore = ChatColor.stripColor(match.group(1));
+		Effect effect = null;
+		if (effects.containsKey(lore)) {
+			effect = effects.get(lore);
+		} else {
+			if (!ignoreCase) {
+				return null;
+			}
+			for (Map.Entry<String, Effect> entry : effects.entrySet()) {
+				if (entry.getKey().equalsIgnoreCase(lore)) {
+					effect = entry.getValue();
+					break;
+				}
+			}
+			if (effect == null) {
+				return null;
+			}
+		}
+		try {
+			return new ImmutablePair<>(effect, Roman.fromString(match.group(2)));
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	/**

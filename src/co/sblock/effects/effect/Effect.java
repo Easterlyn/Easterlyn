@@ -20,8 +20,11 @@ public abstract class Effect {
 	private final int maximumCombinedLevel;
 
 	public Effect(int cost, int maximumLevel, int maximumCombinedLevel, String... names) {
-		this.cost = cost;
+		if (names.length == 0) {
+			throw new IllegalArgumentException("Effects must have a minimum of 1 identifying name to register!");
+		}
 		this.names = Arrays.asList(names);
+		this.cost = cost;
 		this.maximumLevel = maximumLevel;
 		this.maximumCombinedLevel = maximumCombinedLevel;
 	}

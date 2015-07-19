@@ -1,52 +1,31 @@
-package co.sblock.effects.effect.active;
-
-import java.util.Arrays;
-import java.util.Collection;
+package co.sblock.effects.effect.passive;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
-import co.sblock.effects.effect.EffectBehaviorCooldown;
+import co.sblock.effects.effect.EffectBehaviorPassive;
 
 /**
  * Flowers while you walk!
  * 
  * @author Dublekfx, Jikoo
  */
-public class EffectFlowers extends Effect implements EffectBehaviorActive, EffectBehaviorCooldown {
+public class EffectFlowers extends Effect implements EffectBehaviorPassive {
 
 	public EffectFlowers() {
 		super(1200, 1, 1, "Flowers");
 	}
 
-	@Override
-	public String getCooldownName() {
-		return "Effect:Flowers";
-	}
-
-	@Override
-	public long getCooldownDuration() {
-		return 1000;
-	}
-
-	@Override
-	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(PlayerMoveEvent.class);
-	}
-
 	@SuppressWarnings("deprecation")
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
+	public void applyEffect(Player player, int level) {
 		Block standingIn = player.getLocation().getBlock();
 		Block standingOn = standingIn.getRelative(BlockFace.DOWN);
 
-		if (standingIn.getType() != Material.AIR
+		if (!standingIn.isEmpty()
 				|| (standingOn.getType() != Material.DIRT && standingOn.getType() != Material.GRASS)) {
 			return;
 		}
