@@ -4,10 +4,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -29,7 +27,6 @@ import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.effects.Effects;
-import co.sblock.effects.effect.Effect;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
@@ -47,7 +44,6 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class OnlineUser extends OfflineUser {
 
-	private final Map<Effect, Integer> effects;
 
 	private Location serverDisableTeleport;
 	private boolean isServer;
@@ -55,7 +51,6 @@ public class OnlineUser extends OfflineUser {
 	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, Location previousLocation,
 			Set<Integer> programs, String currentChannel, Set<String> listening) {
 		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
-		effects = new ConcurrentHashMap<>();
 		isServer = false;
 	}
 
@@ -354,7 +349,8 @@ public class OnlineUser extends OfflineUser {
 			// Overrides the computer limitation for pre-Entry shenanigans
 			return true;
 		}
-		return effects.containsKey(Effects.getInstance().getEffect("Computer"))
+		Effects effects = Effects.getInstance();
+		return effects.getAllEffects(getPlayer()).containsKey(effects.getEffect("Computer"))
 				|| Machines.getInstance().isByComputer(this.getPlayer(), 10);
 	}
 

@@ -26,7 +26,8 @@ public class RenderMapCommand extends SblockCommand {
 	public RenderMapCommand() {
 		super("rendermap");
 		setPermissionLevel("helper");
-		setUsage("/rendermap [x] [z] [world]");
+		setUsage("/centermap [x] [z] [world]");
+		setAliases("centermap");
 	}
 
 	@SuppressWarnings("deprecation")

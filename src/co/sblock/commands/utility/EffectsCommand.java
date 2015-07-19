@@ -54,7 +54,7 @@ public class EffectsCommand extends SblockCommand {
 				sender.sendMessage(Color.BAD + "Effect level must be a positive integer!");
 				return true;
 			}
-			level = level < 0 ? 0 : level;
+			level = level < 1 ? 1 : level;
 		} else {
 			level = 1;
 		}
