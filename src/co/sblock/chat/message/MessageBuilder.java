@@ -186,7 +186,7 @@ public class MessageBuilder {
 			char character = word.charAt(i);
 			if (Character.isAlphabetic(character)) {
 				boolean startsUpper = Character.isUpperCase(character);
-				for (; i < word.length(); i++) {
+				for (i++; i < word.length(); i++) {
 					character = word.charAt(i);
 					if (Character.isAlphabetic(character)) {
 						total++;
@@ -195,7 +195,7 @@ public class MessageBuilder {
 						}
 					}
 				}
-				return !startsUpper && upper > 0 || upper != total;
+				return !startsUpper && upper > 0 || upper != 0 && upper != total;
 			}
 		}
 		return false;
