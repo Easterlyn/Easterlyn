@@ -177,6 +177,7 @@ public class Captcha extends Module {
 	 * @return the unpunched captchacard
 	 */
 	public static ItemStack captchaToPunch(ItemStack is) {
+		is = is.clone();
 		if (isBlankCaptcha(is)) {
 			ItemMeta im = is.getItemMeta();
 			im.setDisplayName("Punchcard");
