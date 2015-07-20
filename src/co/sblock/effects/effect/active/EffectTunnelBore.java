@@ -4,14 +4,19 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.PermissionAttachment;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.events.event.SblockBreakEvent;
@@ -55,6 +60,8 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 
 		Block block = breakEvent.getBlock();
 
+		PermissionAttachment attachment = player.addAttachment(Sblock.getInstance());
+		attachment.setPermission("nocheatplus.checks.blockbreak", true);
 		for (BlockFace yLevel : levels) {
 			if (block.getY() == 0 && yLevel == BlockFace.DOWN) {
 				continue;
@@ -63,10 +70,20 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 			if (yLevel != BlockFace.SELF) {
 				sblockBreak(relativeCenter, player);
 			}
+			if (player.getItemInHand() == null) {
+				breakEvent.setCancelled(true);
+				return;
+			}
 			for (BlockFace face : faces) {
 				sblockBreak(relativeCenter.getRelative(face), player);
+				if (player.getItemInHand() == null) {
+					breakEvent.setCancelled(true);
+					return;
+				}
 			}
 		}
+		player.updateInventory();
+		player.removeAttachment(attachment);
 	}
 
 	private void sblockBreak(Block block, Player player) {
@@ -82,8 +99,23 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 		if (event.isCancelled() || block.isLiquid()) {
 			return;
 		}
-		Collection<ItemStack> drops = BlockDrops.getDrops(player.getItemInHand(), block);
-		int exp = BlockDrops.getExp(player.getItemInHand(), block);
+		if (player.getGameMode() == GameMode.CREATIVE) {
+			block.setType(Material.AIR);
+			return;
+		}
+		ItemStack hand = player.getItemInHand();
+		Collection<ItemStack> drops = BlockDrops.getDrops(hand, block);
+		int exp = BlockDrops.getExp(hand, block);
+		if (hand.getType().getMaxDurability() > 0 && (!hand.containsEnchantment(Enchantment.DURABILITY)
+				|| Math.random() < 100.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 1))) {
+			//if (BlockDrops.isProperTool(hand, block))
+			hand.setDurability((short) (hand.getDurability() + 1));
+			if (hand.getDurability() > hand.getType().getMaxDurability()) {
+				player.setItemInHand(null);
+				player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.ITEM_BREAK, hand.getType());
+				player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 5, 1F);
+			}
+		}
 		block.setType(Material.AIR);
 		for (ItemStack is : drops) {
 			player.getWorld().dropItem(player.getLocation(), is).setPickupDelay(0);

@@ -21,7 +21,7 @@ import co.sblock.effects.effect.EffectBehaviorReactive;
  */
 public class EffectPanic extends Effect implements EffectBehaviorReactive, EffectBehaviorCooldown {
 
-	public EffectPanic(int cost) {
+	public EffectPanic() {
 		super(200, 5, 20, "Panic", "Adrenaline");
 	}
 

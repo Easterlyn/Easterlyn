@@ -13,7 +13,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.PermissionAttachment;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.events.event.SblockBreakEvent;
@@ -36,19 +38,16 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Effe
 	public Collection<Class<? extends Event>> getApplicableEvents() {
 		return Arrays.asList(BlockBreakEvent.class, SblockBreakEvent.class);
 	}
-	/* (non-Javadoc)
-	 * @see co.sblock.effects.effect.EffectBehaviorActive#handleEvent(org.bukkit.event.Event, org.bukkit.entity.Player, int)
-	 */
+
 	@Override
 	public void handleEvent(Event event, Player player, int level) {
 		BlockBreakEvent breakEvent = (BlockBreakEvent) event;
-		handleAdjacentBlocks(breakEvent.getPlayer(), breakEvent.getBlock());
-	}
-
-	private void handleAdjacentBlocks(Player player, Block center) {
+		PermissionAttachment attachment = player.addAttachment(Sblock.getInstance());
+		attachment.setPermission("nocheatplus.checks.blockplace", true);
 		for (BlockFace face : faces) {
-			handleAdjacentBlock(player, center.getRelative(face));
+			handleAdjacentBlock(player, breakEvent.getBlock().getRelative(face));
 		}
+		player.removeAttachment(attachment);
 	}
 
 	protected abstract void handleAdjacentBlock(Player player, Block block);
@@ -56,7 +55,7 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Effe
 	protected boolean handleBlockSet(Player player, Block block, Material toMaterial) {
 		// Capture state and change block - prevents certain plugins assuming block being placed is of the replaced material
 		BlockState state = block.getState();
-		block.setType(toMaterial);
+		block.setType(toMaterial, false);
 		BlockPlaceEvent event = new BlockPlaceEvent(block, state, block, new ItemStack(toMaterial), player, true);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
