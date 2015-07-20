@@ -1,7 +1,6 @@
 package co.sblock.users;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,13 +30,9 @@ public class Users extends Module {
 	/* The Map of Player UUID and relevant SblockUsers currently online. */
 	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
 
-	/* Map containing all server/client player requests */
-	private Map<String, String> requests;
-
 	@Override
 	protected void onEnable() {
 		instance = this;
-		requests = new HashMap<String, String>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			getGuaranteedUser(p.getUniqueId());
 			team(p);
@@ -56,15 +51,6 @@ public class Users extends Module {
 	@Override
 	protected String getModuleName() {
 		return "Sblock UserManager";
-	}
-
-	/**
-	 * Gets a Map of all pending requests.
-	 * 
-	 * @return a Map of all pending requests
-	 */
-	public Map<String, String> getRequests() {
-		return requests;
 	}
 
 	public static Users getInstance() {

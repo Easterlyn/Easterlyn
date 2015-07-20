@@ -148,10 +148,10 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	public void startServerMode() {
-		Player p = this.getPlayer();
-		if (Spectators.getInstance().isSpectator(getUUID())) {
-			Spectators.getInstance().removeSpectator(p);
+		if (this.isServer) {
+			return;
 		}
+		Player p = this.getPlayer();
 		if (getClient() == null) {
 			p.sendMessage(Color.BAD + "You must have a client to enter server mode!"
 					+ "+\nAsk someone with " + Color.COMMAND + "/requestclient <player>");
@@ -170,6 +170,9 @@ public class OnlineUser extends OfflineUser {
 		if (m == null) {
 			p.sendMessage(Color.BAD + u.getPlayerName() + " has not placed their computer in their house!");
 			return;
+		}
+		if (Spectators.getInstance().isSpectator(getUUID())) {
+			Spectators.getInstance().removeSpectator(p);
 		}
 		this.serverDisableTeleport = p.getLocation();
 		if (!Machines.getInstance().isByComputer(u.getPlayer(), 25)) {
@@ -193,6 +196,9 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	public void stopServerMode() {
+		if (!this.isServer) {
+			return;
+		}
 		if (Bukkit.getOfflinePlayer(getClient()).isOnline()) {
 			Player clientPlayer = Bukkit.getPlayer(getClient());
 			for (ItemStack is : getPlayer().getInventory()) {
