@@ -3,6 +3,8 @@ package co.sblock.commands.utility;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -47,16 +49,19 @@ public class EffectsCommand extends SblockCommand {
 		}
 
 		int level;
+		String effectName;
 		if (args.length > 1) {
 			try {
-				level = Integer.valueOf(args[1]);
+				level = Integer.valueOf(args[args.length - 1]);
+				level = level < 1 ? 1 : level;
+				effectName = StringUtils.join(args, ' ', 0, args.length - 1);
 			} catch (NumberFormatException e) {
-				sender.sendMessage(Color.BAD + "Effect level must be a positive integer!");
-				return true;
+				level = 1;
+				effectName = StringUtils.join(args, ' ', 0, args.length);
 			}
-			level = level < 1 ? 1 : level;
 		} else {
 			level = 1;
+			effectName = StringUtils.join(args, ' ', 0, args.length);
 		}
 
 		Player player = (Player) sender;
@@ -77,18 +82,18 @@ public class EffectsCommand extends SblockCommand {
 			meta = hand.getItemMeta();
 		}
 
-		String loreString = new StringBuilder().append(ChatColor.GRAY).append(args[0]).append(' ')
+		String loreString = new StringBuilder().append(ChatColor.GRAY).append(effectName).append(' ')
 				.append(Roman.fromInt(level)).toString();
 
 		if (Effects.getInstance().getEffectFromLore(loreString, true) == null) {
-			sender.sendMessage(Color.BAD + "Invalid effect! Try tab completing.");
+			sender.sendMessage(Color.BAD + "Invalid effect " + loreString + Color.BAD + "! Try tab completing.");
 			return true;
 		}
 
 		meta.setLore(Effects.getInstance().organizeEffectLore(meta.getLore(), true, true, loreString));
 		hand.setItemMeta(meta);
 		sender.sendMessage(Color.GOOD + "Added " + loreString);
-		return false;
+		return true;
 	}
 
 	@Override
