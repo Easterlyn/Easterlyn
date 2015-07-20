@@ -58,7 +58,7 @@ public class Effects extends Module {
 	@Override
 	protected void onEnable() {
 		instance = this;
-		Reflections reflections = new Reflections("co.sblock.effects.effects");
+		Reflections reflections = new Reflections("co.sblock.effects.effect");
 		Set<Class<? extends Effect>> allEffects = reflections.getSubTypesOf(Effect.class);
 		for (Class<? extends Effect> effect : allEffects) {
 			if (Modifier.isAbstract(effect.getModifiers())) {
@@ -286,7 +286,7 @@ public class Effects extends Module {
 		}
 
 		for (String string : toAdd) {
-			Pair<Effect, Integer> pair = getEffectFromLore(iterator.next(), ignoreCase);
+			Pair<Effect, Integer> pair = getEffectFromLore(string, ignoreCase);
 			if (pair == null) {
 				oldLore.add(string);
 				continue;
@@ -383,7 +383,7 @@ public class Effects extends Module {
 
 	@Override
 	protected String getModuleName() {
-		return "Effects";
+		return "Sblock Effects";
 	}
 
 	public static Effects getInstance() {
