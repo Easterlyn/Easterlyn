@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffectType;
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorCooldown;
 import co.sblock.effects.effect.EffectBehaviorPassive;
+import co.sblock.utilities.general.Potions;
 
 /**
  * Effect for passively granting the jump PotionEffect.
@@ -31,7 +32,10 @@ public class EffectJump  extends Effect implements EffectBehaviorPassive, Effect
 
 	@Override
 	public void applyEffect(Player player, int level) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, level), false);
+		if (level < 1) {
+			level = 1;
+		}
+		Potions.applyIfBetter(player, new PotionEffect(PotionEffectType.JUMP, 200, level - 1));
 	}
 
 }

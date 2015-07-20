@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffectType;
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorCooldown;
 import co.sblock.effects.effect.EffectBehaviorPassive;
+import co.sblock.utilities.general.Potions;
 
 /**
  * Effect granting the user the absorption PotionEffect every minute. Due to the nature of
@@ -34,6 +35,9 @@ public class EffectAbsorption extends Effect implements EffectBehaviorPassive,
 
 	@Override
 	public void applyEffect(Player player, int level) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 1200, level), false);
+		if (level < 1) {
+			level = 1;
+		}
+		Potions.applyIfBetter(player, new PotionEffect(PotionEffectType.ABSORPTION, 1200, level - 1));
 	}
 }

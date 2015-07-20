@@ -43,6 +43,7 @@ public class CrotchRocketCommand extends SblockCommand {
 	}
 
 	public boolean launch(Player player) {
+		player.setFallDistance(0);
 		player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);
 
 		final Firework firework = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
