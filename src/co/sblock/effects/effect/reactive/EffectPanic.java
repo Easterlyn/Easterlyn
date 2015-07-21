@@ -41,7 +41,6 @@ public class EffectPanic extends Effect implements EffectBehaviorReactive, Effec
 		if (ede.getFinalDamage() > .5 && ede.getFinalDamage() > player.getHealth() && Math.random() * 100 < level * 3) {
 			// 10% damage reduction
 			ede.setDamage(ede.getDamage() * .9);
-			return;
 		}
 
 		double remainingHealth = player.getHealth() - ede.getFinalDamage();
@@ -49,11 +48,11 @@ public class EffectPanic extends Effect implements EffectBehaviorReactive, Effec
 			return;
 		}
 
-		level = (int) Math.ceil(level / 5D);
+		level = level / 6;
 		if (Math.random() < .75) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 80 * level, level));
 		}
-		level = (int) Math.ceil(level / 2D);
+		level = level / 2;
 		if (Math.random() < .3) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 40 / level, level));
 		}

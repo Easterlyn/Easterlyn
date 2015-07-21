@@ -216,7 +216,7 @@ public class Effects extends Module {
 			if (!clazz.isAssignableFrom(event.getClass())) {
 				continue;
 			}
-			for (Effect effect : active.get(clazz)) {
+			for (Effect effect : reactive ? this.reactive.get(clazz) : active.get(clazz)) {
 				if (!effects.containsKey(effect)) {
 					continue;
 				}
