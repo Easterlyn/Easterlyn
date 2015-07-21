@@ -59,17 +59,17 @@ public class MegaHal extends HalMessageHandler {
 		hal = new JMegaHal();
 		fileNum = 0;
 
-		String regexBase = RegexUtils.ignoreCaseRegex("hal", "dirk");
-		exactPattern = Pattern.compile(createExactRegex(regexBase));
-		whitespacePattern = Pattern.compile(createWhitespaceRegex(regexBase));
+		exactPattern = Pattern.compile("^(hal|dirk)$", Pattern.CASE_INSENSITIVE);
+		whitespacePattern = Pattern.compile("(^|\\W)(hal|dirk)(\\W|$)", Pattern.CASE_INSENSITIVE);
 		pendingMessages = Collections.synchronizedSet(new LinkedHashSet<String>());
 
 		ignoreMatches = new HashSet<>();
-		ignoreMatches.add(Pattern.compile("^.*(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,6}))((#|/)\\S*)?.*$"));
-		ignoreMatches.add(Pattern.compile("^.*[Bb]([Ee]|[Aa])[Nn][Zz]([Uu]|[Ee])?[Rr][Ff]([Ll][Ee][Ss]?)?.*$"));
-		ignoreMatches.add(Pattern.compile("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$"));
-		ignoreMatches.add(Pattern.compile("^[Ee][Vv][Hh][Aa][Ll]([Uu][Aa][Tt][Ee])? .*$"));
-		ignoreMatches.add(Pattern.compile("^.*[Dd][Aa][Dd]([Dd][Yy])?.*$"));
+		ignoreMatches.add(whitespacePattern);
+		ignoreMatches.add(RegexUtils.URL_PATTERN);
+		ignoreMatches.add(Pattern.compile("^.*b(e|a)n(j(ie|y)? ?z(u|e)?rf(les?)?.*$", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("^halc(ulate)? .*$", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("^evhal(uate)? .*$", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("^.*dad(dy)?.*$", Pattern.CASE_INSENSITIVE));
 
 		hover = new ItemStack(Material.BARRIER);
 		ItemMeta hoverMeta = hover.getItemMeta();
@@ -89,20 +89,6 @@ public class MegaHal extends HalMessageHandler {
 
 		save = new HalLogSavingTask();
 		save.runTaskTimer(Sblock.getInstance(), 6000L, 6000L);
-	}
-
-	private String createExactRegex(String regexBase) {
-		StringBuilder regex = new StringBuilder().append("\\A");
-		regex.append(regexBase);
-		regex.append("\\Z");
-		return regex.toString();
-	}
-
-	private String createWhitespaceRegex(String regexBase) {
-		StringBuilder regex = new StringBuilder().append("(\\W|\\A)");
-		regex.append(regexBase);
-		regex.append("(\\W|\\Z|\\z)");
-		return regex.toString();
 	}
 
 	@Override

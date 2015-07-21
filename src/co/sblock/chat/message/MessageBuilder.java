@@ -3,7 +3,6 @@ package co.sblock.chat.message;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,7 +37,6 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class MessageBuilder {
 
-	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?$");
 	private static final TextComponent HIGHLIGHTED_BRACKET;
 	private static final String ITEM_NAME;
 	private static final String LORE_CLASS_OF_ASPECT;
@@ -151,7 +149,7 @@ public class MessageBuilder {
 				if (word.isEmpty()) {
 					continue;
 				}
-				if (URL_PATTERN.matcher(word).find()) {
+				if (RegexUtils.URL_PATTERN.matcher(word).find()) {
 					continue;
 				}
 

@@ -27,7 +27,6 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
  **/
 public class JSONUtil {
 
-	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?$");
 	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([^A-Za-z0-9])?$");
 
 	public static BaseComponent[] getJson(String message, CanonNick quirk) {
@@ -49,7 +48,7 @@ public class JSONUtil {
 		ArrayList<BaseComponent> components = new ArrayList<BaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
-		Matcher urlMatcher = URL_PATTERN.matcher(message);
+		Matcher urlMatcher = RegexUtils.URL_PATTERN.matcher(message);
 		Matcher channelMatcher = CHANNEL_PATTERN.matcher(message);
 
 		for (int i = 0; i < message.length(); i++) {

@@ -16,7 +16,6 @@ import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
-import co.sblock.utilities.messages.RegexUtils;
 import co.sblock.utilities.messages.Slack;
 
 import net.md_5.bungee.api.ChatColor;
@@ -133,7 +132,15 @@ public class Message {
 
 			boolean highlight = false;
 
-			Pattern pattern = Pattern.compile(RegexUtils.ignoreCaseRegex(u.getHighlights(getChannel()).toArray(new String[0])));
+			StringBuilder patternString = new StringBuilder("(^|\\W)(");
+			for (String highlightString : u.getHighlights(getChannel())) {
+				if (patternString.length() > 8) {
+					patternString.append('|');
+				}
+				patternString.append(highlightString);
+			}
+			patternString.append(")(\\W|$)");
+			Pattern pattern = Pattern.compile(patternString.toString(), Pattern.CASE_INSENSITIVE);
 			for (BaseComponent component : message.getExtra()) {
 				TextComponent text = (TextComponent) component;
 				String componentMessage = text.getText();
