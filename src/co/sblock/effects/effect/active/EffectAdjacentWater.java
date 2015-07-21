@@ -2,6 +2,7 @@ package co.sblock.effects.effect.active;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -20,15 +21,19 @@ public class EffectAdjacentWater extends EffectAdjacentBlockModifier {
 	@Override
 	protected void handleAdjacentBlock(Player player, Block block) {
 		if (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA) {
+			if (block.getWorld().getEnvironment() == Environment.NETHER) {
+				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 4, 1);
+				return;
+			}
 			if ((block.getData() == 0 && handleBlockSet(player, block, Material.OBSIDIAN))
 					|| (block.getData() != 0 && handleBlockSet(player, block, Material.COBBLESTONE))) {
-				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 16, 1);
+				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 4, 1);
 			}
 			return;
 		}
 		if (block.getType() == Material.FIRE) {
 			if (handleBlockSet(player, block, Material.AIR)) {
-				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 16, 1);
+				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 4, 1);
 			}
 			return;
 		}

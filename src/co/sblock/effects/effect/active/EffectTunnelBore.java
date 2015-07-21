@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
@@ -37,7 +36,7 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 		faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
 				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST,
 				BlockFace.SOUTH_WEST, BlockFace.SOUTH_EAST };
-		levels = new BlockFace[] {BlockFace.SELF, BlockFace.DOWN, BlockFace.UP};
+		levels = new BlockFace[] {BlockFace.DOWN, BlockFace.SELF, BlockFace.UP};
 	}
 
 	@Override
@@ -68,16 +67,12 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 			}
 			Block relativeCenter = block.getRelative(yLevel);
 			if (yLevel != BlockFace.SELF) {
-				sblockBreak(relativeCenter, player);
-			}
-			if (player.getItemInHand() == null) {
-				breakEvent.setCancelled(true);
-				return;
+				if (sblockBreak(relativeCenter, player)) {
+					return;
+				}
 			}
 			for (BlockFace face : faces) {
-				sblockBreak(relativeCenter.getRelative(face), player);
-				if (player.getItemInHand() == null) {
-					breakEvent.setCancelled(true);
+				if (sblockBreak(relativeCenter.getRelative(face), player)) {
 					return;
 				}
 			}
@@ -86,35 +81,29 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 		player.removeAttachment(attachment);
 	}
 
-	private void sblockBreak(Block block, Player player) {
+	private boolean sblockBreak(Block block, Player player) {
 		if (block.getType() == Material.BARRIER || block.getType() == Material.BEDROCK
 				|| block.getType() == Material.COMMAND || block.getType() == Material.ENDER_PORTAL
 				|| block.getType() == Material.ENDER_PORTAL_FRAME
 				|| block.getType() == Material.PORTAL || block.isEmpty()) {
-			return;
+			return false;
 		}
 
 		SblockBreakEvent event = new SblockBreakEvent(block, player);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled() || block.isLiquid()) {
-			return;
+			return false;
 		}
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			block.setType(Material.AIR);
-			return;
+			return false;
 		}
 		ItemStack hand = player.getItemInHand();
 		Collection<ItemStack> drops = BlockDrops.getDrops(hand, block);
 		int exp = BlockDrops.getExp(hand, block);
 		if (hand.getType().getMaxDurability() > 0 && (!hand.containsEnchantment(Enchantment.DURABILITY)
 				|| Math.random() < 100.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 1))) {
-			//if (BlockDrops.isProperTool(hand, block))
 			hand.setDurability((short) (hand.getDurability() + 1));
-			if (hand.getDurability() > hand.getType().getMaxDurability()) {
-				player.setItemInHand(null);
-				player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.ITEM_BREAK, hand.getType());
-				player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 5, 1F);
-			}
 		}
 		block.setType(Material.AIR);
 		for (ItemStack is : drops) {
@@ -123,6 +112,7 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 		if (exp > 0) {
 			Experience.changeExp(player, exp);
 		}
+		return hand.getDurability() == hand.getType().getMaxDurability();
 	}
 
 }
