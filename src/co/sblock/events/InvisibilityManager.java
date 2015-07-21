@@ -64,10 +64,10 @@ public class InvisibilityManager {
 	}
 
 	private void setInvisible(Player player, int duration) {
-		Team team = player.getScoreboard().getPlayerTeam(player);
+		Team team = player.getScoreboard().getEntryTeam(player.getName());
 		if (team == null) {
 			Users.team(player);
-			team = player.getScoreboard().getPlayerTeam(player);
+			team = player.getScoreboard().getEntryTeam(player.getName());
 		}
 		team.setNameTagVisibility(NameTagVisibility.NEVER);
 		final UUID uuid = player.getUniqueId();
@@ -84,10 +84,10 @@ public class InvisibilityManager {
 	}
 
 	private void setVisible(Player player) {
-		Team team = player.getScoreboard().getPlayerTeam(player);
+		Team team = player.getScoreboard().getEntryTeam(player.getName());
 		if (team == null) {
 			Users.team(player);
-			team = player.getScoreboard().getPlayerTeam(player);
+			team = player.getScoreboard().getEntryTeam(player.getName());
 		}
 		team.setNameTagVisibility(NameTagVisibility.ALWAYS);
 	}

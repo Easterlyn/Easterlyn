@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/CreeperHeal-6.7.6.jar">
+	<classpathentry exported="true" kind="lib" path="lib/CreeperHeal-6.7.9.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://nitnelave.github.io/CreeperHeal/apidoc/"/>
 		</attributes>
@@ -36,6 +36,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="bundle/simpleslackapi-0.4.0.jar" sourcepath="lib/simpleslackapi-0.4.0-javadoc.jar"/>
-	<classpathentry kind="lib" path="lib/dynmap-2.2-alpha-2.jar"/>
+	<classpathentry kind="lib" path="lib/dynmap-2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

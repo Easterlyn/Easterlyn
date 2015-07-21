@@ -44,6 +44,8 @@ public class MessageBuilder {
 	private static final String LORE_CLASS_OF_ASPECT;
 	private static final String LORE_DREAM;
 	private static final String LORE_MEDIUM;
+	private static final String CONSOLE_FORMAT;
+	private static final String CONSOLE_FORMAT_THIRD;
 
 	static {
 		HIGHLIGHTED_BRACKET = new TextComponent("!!");
@@ -67,6 +69,11 @@ public class MessageBuilder {
 		sb.delete(0, sb.length());
 		sb.append(ChatColor.YELLOW).append("Medium: %s%s");
 		LORE_MEDIUM = sb.toString();
+
+		sb.delete(0, sb.length());
+		sb.append("%1$2s[%2$2s%1$2s]%3$2s <%4$2s%5$2s%3$2s> ").append(ChatColor.WHITE).append("%5$2s");
+		CONSOLE_FORMAT = sb.toString();
+		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
 	}
 
 	private OfflineUser sender = null;
@@ -369,7 +376,7 @@ public class MessageBuilder {
 		if (player != null) {
 			// Name color fetched from scoreboard, if team invalid perm-based instead.
 			try {
-				globalRank = ChatColor.getByChar(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getPrefix().charAt(1));
+				globalRank = ChatColor.getByChar(Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName()).getPrefix().charAt(1));
 			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
 				if (player.hasPermission("group.horrorterror"))
 					globalRank = Color.RANK_HORRORTERROR;
@@ -387,6 +394,16 @@ public class MessageBuilder {
 					globalRank = Color.RANK_HERO;
 				}
 			}
+			StringBuilder nameBuilder = new StringBuilder();
+			boolean hasNick = channel instanceof NickChannel && ((NickChannel) channel).hasNick(sender);
+			if (hasNick) {
+				nameBuilder.append(((NickChannel) channel).getNick(sender)).append(" (");
+			}
+			nameBuilder.append(sender.getPlayerName());
+			if (hasNick) {
+				nameBuilder.append(')');
+			}
+			senderName = nameBuilder.toString();
 		} else {
 			globalRank = ChatColor.WHITE;
 		}
@@ -439,8 +456,10 @@ public class MessageBuilder {
 		if (nick != null) {
 			message = nick.getColor() + message;
 		}
+		String consoleFormat = String.format(thirdPerson ? CONSOLE_FORMAT_THIRD : CONSOLE_FORMAT,
+				channelBracket, channelRank, channel.getName(), region, globalRank, "%s");
 
-		return new Message(this.sender, this.senderName, this.channel, this.message,
+		return new Message(this.sender, this.senderName, this.channel, this.message, consoleFormat,
 				this.thirdPerson, channelComponent, channelHighlightComponent, nameComponent,
 				messageComponent);
 	}

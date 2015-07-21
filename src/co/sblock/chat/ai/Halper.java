@@ -70,7 +70,7 @@ public class Halper extends HalMessageHandler {
 		if (!message.getChannel().getName().equals("#help")) {
 			return false;
 		}
-		String msg = message.getCleanedMessage().toLowerCase();
+		String msg = ChatColor.stripColor(message.getMessage()).toLowerCase();
 		for (Entry<Pattern, Message> entry : responses.entrySet()) {
 			if (entry.getKey().matcher(msg).find()) {
 				entry.getValue().send(recipients);

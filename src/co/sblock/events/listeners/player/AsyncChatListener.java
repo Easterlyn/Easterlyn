@@ -80,7 +80,7 @@ public class AsyncChatListener implements Listener {
 			}
 		}
 
-		String cleaned = message.getCleanedMessage();
+		String cleaned = ChatColor.stripColor(message.getMessage());
 
 		if (cleaned.equalsIgnoreCase("test")) {
 			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
@@ -111,7 +111,7 @@ public class AsyncChatListener implements Listener {
 		}
 
 		event.setFormat(message.getConsoleFormat());
-		event.setMessage(message.getCleanedMessage());
+		event.setMessage(cleaned);
 
 		// Flag soft muted messages
 		if (event.getRecipients().size() < message.getChannel().getListening().size()) {

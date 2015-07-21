@@ -11,9 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
-import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
@@ -34,20 +32,21 @@ public class Message {
 
 	private final OfflineUser sender;
 	private final Channel channel;
-	private final String name, unformattedMessage;
+	private final String name, unformattedMessage, consoleFormat;
 	private final boolean thirdPerson;
 
 	private final TextComponent channelComponent, channelHighlightComponent, nameComponent, messageComponent;
 
-	Message(OfflineUser sender, String senderName, Channel channel, String message,
+	Message(OfflineUser sender, String name, Channel channel, String message, String consoleFormat,
 			boolean thirdPerson, TextComponent channelComponent,
 			TextComponent channelHighlightComponent, TextComponent nameComponent,
 			TextComponent messageComponent) {
 		this.sender = sender;
-		this.name = senderName;
+		this.name = name;
 		this.channel = channel;
 		this.thirdPerson = thirdPerson;
 		this.unformattedMessage = message;
+		this.consoleFormat = consoleFormat;
 		this.channelComponent = channelComponent;
 		this.channelHighlightComponent = channelHighlightComponent;
 		this.nameComponent = nameComponent;
@@ -66,61 +65,12 @@ public class Message {
 		return unformattedMessage;
 	}
 
-	public String getCleanedMessage() {
-		return ChatColor.stripColor(unformattedMessage);
-	}
-
 	public String getConsoleMessage() {
-		StringBuilder nameBuilder = new StringBuilder();
-		if (sender != null) {
-			boolean hasNick = channel instanceof NickChannel && ((NickChannel) channel).hasNick(sender);
-			if (hasNick) {
-				nameBuilder.append(((NickChannel) channel).getNick(sender)).append(" (");
-			}
-			nameBuilder.append(sender.getPlayerName());
-			if (hasNick) {
-				nameBuilder.append(')');
-			}
-		} else {
-			nameBuilder.append(name);
-		}
-		return String.format(getConsoleFormat(), nameBuilder.toString(), unformattedMessage);
+		return String.format(getConsoleFormat(), name, unformattedMessage);
 	}
 
 	public String getConsoleFormat() {
-		ChatColor region = sender != null ? sender.getCurrentRegion().getColor() : ChatColor.WHITE;
-		ChatColor globalRank;
-		if (sender != null && sender.isOnline()) {
-			Player player = sender.getPlayer();
-			// Name color fetched from scoreboard, if team invalid perm-based instead.
-			try {
-				globalRank = ChatColor.getByChar(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player).getPrefix().charAt(1));
-			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
-				if (player.hasPermission("group.horrorterror"))
-					globalRank = Color.RANK_HORRORTERROR;
-				else if (player.hasPermission("sblock.denizen"))
-					globalRank = Color.RANK_DENIZEN;
-				else if (player.hasPermission("sblock.felt"))
-					globalRank = Color.RANK_FELT;
-				else if (player.hasPermission("sblock.helper"))
-					globalRank = Color.RANK_HELPER;
-				else if (player.hasPermission("sblock.donator"))
-					globalRank = Color.RANK_DONATOR;
-				else if (player.hasPermission("sblock.godtier"))
-					globalRank = Color.RANK_GODTIER;
-				else {
-					globalRank = Color.RANK_HERO;
-				}
-			}
-		} else {
-			globalRank = ChatColor.WHITE;
-		}
-		return new StringBuilder().append(ChatColor.WHITE).append('[')
-				.append(channel.isOwner(sender) ? ChatColor.RED : channel.isModerator(sender)
-						? ChatColor.AQUA : ChatColor.GOLD).append(channel.getName())
-				.append(ChatColor.WHITE).append(']').append(region)
-				.append(thirdPerson ? "> " : " <").append(globalRank).append("%1$s").append(region)
-				.append(thirdPerson ? " " : "> ").append(ChatColor.WHITE).append("%2$s").toString();
+		return consoleFormat;
 	}
 
 	public boolean isThirdPerson() {

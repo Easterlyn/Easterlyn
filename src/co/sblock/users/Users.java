@@ -121,40 +121,40 @@ public class Users extends Module {
 	/**
 	 * Add a Player to their group's Team.
 	 * 
-	 * @param p the Player
+	 * @param player the Player
 	 */
-	public static void team(Player p) {
+	public static void team(Player player) {
 		String teamPrefix = null;
 		for (org.bukkit.ChatColor c : org.bukkit.ChatColor.values()) {
-			if ((teamPrefix == null || c.isFormat()) && p.hasPermission("sblockchat." + c.name().toLowerCase())) {
+			if ((teamPrefix == null || c.isFormat()) && player.hasPermission("sblockchat." + c.name().toLowerCase())) {
 				teamPrefix = c.toString();
 			}
 		}
 		if (teamPrefix != null) {
 			// Do nothing, we've got a fancy override going on
-		} else if (p.hasPermission("sblock.horrorterror")) {
+		} else if (player.hasPermission("sblock.horrorterror")) {
 			teamPrefix = Color.RANK_HORRORTERROR.toString();
-		} else if (p.hasPermission("sblock.denizen")) {
+		} else if (player.hasPermission("sblock.denizen")) {
 			teamPrefix = Color.RANK_DENIZEN.toString();
-		} else if (p.hasPermission("sblock.felt")) {
+		} else if (player.hasPermission("sblock.felt")) {
 			teamPrefix = Color.RANK_FELT.toString();
-		} else if (p.hasPermission("sblock.helper")) {
+		} else if (player.hasPermission("sblock.helper")) {
 			teamPrefix = Color.RANK_HELPER.toString();
-		} else if (p.hasPermission("sblock.donator")) {
+		} else if (player.hasPermission("sblock.donator")) {
 			teamPrefix = Color.RANK_DONATOR.toString();
-		} else if (p.hasPermission("sblock.godtier")) {
+		} else if (player.hasPermission("sblock.godtier")) {
 			teamPrefix = Color.RANK_GODTIER.toString();
 		} else {
 			teamPrefix = Color.RANK_HERO.toString();
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-		String teamName = p.getName();
+		String teamName = player.getName();
 		Team team = board.getTeam(teamName);
 		if (team == null) {
 			team = board.registerNewTeam(teamName);
 		}
 		team.setPrefix(teamPrefix);
-		team.addPlayer(p);
+		team.addEntry(player.getName());
 
 		Objective objective = board.getObjective("deaths");
 		if (objective == null) {
@@ -163,8 +163,8 @@ public class Users extends Module {
 		}
 
 		// Since Mojang doesn't, we'll force deathcount to persist - it's been a feature for ages
-		Score score = objective.getScore(p.getDisplayName());
-		score.setScore(p.getStatistic(Statistic.DEATHS));
+		Score score = objective.getScore(player.getDisplayName());
+		score.setScore(player.getStatistic(Statistic.DEATHS));
 	}
 
 	public static void unteam(Player player) {

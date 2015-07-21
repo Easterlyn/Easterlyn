@@ -65,7 +65,7 @@ public class MegaHal extends HalMessageHandler {
 		pendingMessages = Collections.synchronizedSet(new LinkedHashSet<String>());
 
 		ignoreMatches = new HashSet<>();
-		ignoreMatches.add(Pattern.compile(".*(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,4}))((#|/)\\S*)?.*"));
+		ignoreMatches.add(Pattern.compile("^.*(https?://)?(([\\w-_]+\\.)+([a-zA-Z]{2,6}))((#|/)\\S*)?.*$"));
 		ignoreMatches.add(Pattern.compile("^.*[Bb]([Ee]|[Aa])[Nn][Zz]([Uu]|[Ee])?[Rr][Ff]([Ll][Ee][Ss]?)?.*$"));
 		ignoreMatches.add(Pattern.compile("^[Hh][Aa]Ll][Cc]([Uu][Ll][Aa][Tt][Ee])? .*$"));
 		ignoreMatches.add(Pattern.compile("^[Ee][Vv][Hh][Aa][Ll]([Uu][Aa][Tt][Ee])? .*$"));
@@ -114,8 +114,9 @@ public class MegaHal extends HalMessageHandler {
 		if (sender == null) {
 			return true;
 		}
-		if (isTrigger(msg.getCleanedMessage())) {
-			if (isOnlyTrigger(msg.getCleanedMessage())) {
+		String message = ChatColor.stripColor(msg.getMessage());
+		if (isTrigger(message)) {
+			if (isOnlyTrigger(message)) {
 				// Set sender on fire or some shit
 				msg.getSender().sendMessage(Color.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
 				return true;
@@ -135,9 +136,9 @@ public class MegaHal extends HalMessageHandler {
 			}
 			HashSet<UUID> recipientUUIDs = new HashSet<>();
 			recipients.forEach(player -> recipientUUIDs.add(player.getUniqueId()));
-			triggerResponse(recipientUUIDs, msg.getChannel(), msg.getCleanedMessage(), true);
+			triggerResponse(recipientUUIDs, msg.getChannel(), message, true);
 		} else if (msg.getChannel().getAccess() != AccessLevel.PRIVATE) {
-			log(msg);
+			log(msg, message);
 		}
 		return true;
 	}
@@ -150,12 +151,12 @@ public class MegaHal extends HalMessageHandler {
 		return exactPattern.matcher(message).find();
 	}
 
-	public void log(Message message) {
+	public void log(Message message, String msg) {
 		if (message.getChannel().getAccess() == AccessLevel.PRIVATE
 				|| message.getChannel() instanceof NickChannel) {
 			return;
 		}
-		log(message.getCleanedMessage());
+		log(msg);
 	}
 
 	public synchronized void log(String message) {
