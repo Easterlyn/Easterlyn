@@ -16,6 +16,7 @@ import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
+import co.sblock.utilities.messages.JSONUtil;
 import co.sblock.utilities.messages.Slack;
 
 import net.md_5.bungee.api.ChatColor;
@@ -31,10 +32,11 @@ public class Message {
 
 	private final OfflineUser sender;
 	private final Channel channel;
-	private final String name, unformattedMessage, consoleFormat;
+	private final String name, consoleFormat;
 	private final boolean thirdPerson;
-
-	private final TextComponent channelComponent, channelHighlightComponent, nameComponent, messageComponent;
+	private final TextComponent channelComponent, channelHighlightComponent, nameComponent;
+	private String unformattedMessage;
+	private TextComponent messageComponent;
 
 	Message(OfflineUser sender, String name, Channel channel, String message, String consoleFormat,
 			boolean thirdPerson, TextComponent channelComponent,
@@ -62,6 +64,14 @@ public class Message {
 
 	public String getMessage() {
 		return unformattedMessage;
+	}
+
+	public void setMessage(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Message cannot be null!");
+		}
+		this.unformattedMessage = message;
+		this.messageComponent = new TextComponent(JSONUtil.fromLegacyText(message));
 	}
 
 	public String getConsoleMessage() {
