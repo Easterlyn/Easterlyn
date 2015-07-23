@@ -31,6 +31,7 @@ import co.sblock.users.Users;
 import co.sblock.utilities.general.Cooldowns;
 import co.sblock.utilities.messages.JSONUtil;
 import co.sblock.utilities.messages.RegexUtils;
+import co.sblock.utilities.messages.Slack;
 import co.sblock.utilities.player.DummyPlayer;
 
 import me.ryanhamshire.GriefPrevention.ClaimsMode;
@@ -223,6 +224,7 @@ public class AsyncChatListener implements Listener {
 		boolean spam = !message.getChannel().getName().equals("#halchat") && detectGPSpam(event, message, playerData);
 		playerData.lastMessage = message.getMessage().toLowerCase();
 		message.getChannel().setLastMessage(playerData.lastMessage);
+		Cooldowns.getInstance().addCooldown(player.getUniqueId(), "chat", 3000);
 		if (spam) {
 			event.getRecipients().clear();
 			event.getRecipients().add(player);
@@ -234,6 +236,7 @@ public class AsyncChatListener implements Listener {
 			if (playerData.spamCount > 8 && playerData.spamWarned) {
 				sendMessageOnDelay(player, Color.HAL.replace("#", message.getChannel().getName()) + "You were asked not to spam. This mute will last 5 minutes.");
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("mute %s 5m", player.getName()));
+				Slack.getInstance().postReport(player.getName(), player.getUniqueId(), "Automatically muted for spamming, violation level " + playerData.spamCount);
 				event.setCancelled(true);
 			}
 			return;
@@ -317,7 +320,6 @@ public class AsyncChatListener implements Listener {
 		}
 
 		long lastChat = Cooldowns.getInstance().getRemainder(player.getUniqueId(), "chat");
-		Cooldowns.getInstance().addCooldown(player.getUniqueId(), "chat", 3000);
 
 		// Cooldown of 1.5 seconds between messages, 3 seconds between short messages.
 		if (lastChat > 1500 || msg.length() < 5 && lastChat > 0) {
