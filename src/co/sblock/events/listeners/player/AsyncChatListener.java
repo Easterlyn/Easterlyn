@@ -143,19 +143,14 @@ public class AsyncChatListener implements Listener {
 			return;
 		}
 
+		event.setFormat(message.getConsoleFormat());
+		event.setMessage(cleaned);
+
 		if (handleGriefPrevention) {
 			handleGPChat(event, message);
 			if (event.isCancelled()) {
 				return;
 			}
-		}
-
-		event.setFormat(message.getConsoleFormat());
-		event.setMessage(cleaned);
-
-		// Flag soft muted messages
-		if (event.getRecipients().size() < message.getChannel().getListening().size()) {
-			event.setFormat("[SoftMute] " + event.getFormat());
 		}
 
 		// Region channels are the only ones that should be appearing in certain plugins
@@ -266,10 +261,10 @@ public class AsyncChatListener implements Listener {
 		try {
 			Iterator<Player> iterator = event.getRecipients().iterator();
 			PlayerData data = dataStore.getPlayerData(player.getUniqueId());
-			Field field = dataStore.getClass().getField("ignoredPlayers");
+			Field field = data.getClass().getDeclaredField("ignoredPlayers");
 			field.setAccessible(true);
 			Object object = field.get(data);
-			Method method = object.getClass().getMethod("containsKey", UUID.class);
+			Method method = object.getClass().getMethod("containsKey", Object.class);
 			while (iterator.hasNext()) {
 				UUID uuid = iterator.next().getUniqueId();
 				if ((boolean) method.invoke(object, uuid)) {
@@ -283,7 +278,8 @@ public class AsyncChatListener implements Listener {
 			}
 		} catch (NoSuchFieldException | SecurityException | NoSuchMethodException
 				| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			// Silently fail to ignore if an error occurs
+			e.printStackTrace();
+			// Just fail to ignore if an error occurs
 		}
 	}
 

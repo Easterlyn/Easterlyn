@@ -69,7 +69,7 @@ public class MessageBuilder {
 		LORE_MEDIUM = sb.toString();
 
 		sb.delete(0, sb.length());
-		sb.append("%1$2s[%2$2s%1$2s]%3$2s <%4$2s%5$2s%3$2s> ").append(ChatColor.WHITE).append("%5$2s");
+		sb.append("%1$2s[%2$2s%3$2s%1$2s]%4$2s <%5$2s%6$2s%4$2s> ").append(ChatColor.WHITE).append("%6$2s");
 		CONSOLE_FORMAT = sb.toString();
 		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
 	}

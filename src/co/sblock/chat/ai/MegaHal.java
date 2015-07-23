@@ -66,7 +66,7 @@ public class MegaHal extends HalMessageHandler {
 		ignoreMatches = new HashSet<>();
 		ignoreMatches.add(whitespacePattern);
 		ignoreMatches.add(RegexUtils.URL_PATTERN);
-		ignoreMatches.add(Pattern.compile("^.*b(e|a)n(j(ie|y)? ?z(u|e)?rf(les?)?.*$", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("^.*b(e|a)n(j(ie|y))? ?z(u|e)?rf(les?)?.*$", Pattern.CASE_INSENSITIVE));
 		ignoreMatches.add(Pattern.compile("^halc(ulate)? .*$", Pattern.CASE_INSENSITIVE));
 		ignoreMatches.add(Pattern.compile("^evhal(uate)? .*$", Pattern.CASE_INSENSITIVE));
 		ignoreMatches.add(Pattern.compile("^.*dad(dy)?.*$", Pattern.CASE_INSENSITIVE));
