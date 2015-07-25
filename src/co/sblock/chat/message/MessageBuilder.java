@@ -150,6 +150,7 @@ public class MessageBuilder {
 					continue;
 				}
 				if (RegexUtils.URL_PATTERN.matcher(word).find()) {
+					sb.append(word).append(' ');
 					continue;
 				}
 
@@ -164,7 +165,7 @@ public class MessageBuilder {
 				boolean stripUpper = stripUpper(word);
 
 				for (char character : word.toCharArray()) {
-					if (isCharacterGloballyIllegal(character) || character == ChatColor.COLOR_CHAR) {
+					if (isCharacterGloballyLegal(character) || character == ChatColor.COLOR_CHAR) {
 						if (stripUpper) {
 							character = Character.toLowerCase(character);
 						}
@@ -206,7 +207,7 @@ public class MessageBuilder {
 		return false;
 	}
 
-	private boolean isCharacterGloballyIllegal(char character) {
+	private boolean isCharacterGloballyLegal(char character) {
 		return character > '\u001F' && character < '\u007E';
 	}
 
