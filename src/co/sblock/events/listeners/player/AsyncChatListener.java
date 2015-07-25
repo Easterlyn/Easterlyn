@@ -302,7 +302,19 @@ public class AsyncChatListener implements Listener {
 		// Caps filter only belongs in regional channels.
 		if (message.getChannel() instanceof RegionChannel && msg.length() > 3
 				&& StringUtils.getLevenshteinDistance(msg, msg.toUpperCase()) < msg.length() * .25) {
-			message.setMessage(msg.toLowerCase());
+			StringBuilder msgBuilder = new StringBuilder();
+			for (String word : msg.split(" ")) {
+				if (RegexUtils.URL_PATTERN.matcher(word).find()) {
+					msgBuilder.append(word);
+				} else {
+					msgBuilder.append(word.toLowerCase());
+				}
+				msgBuilder.append(' ');
+			}
+			if (msgBuilder.length() > 0) {
+				msgBuilder.deleteCharAt(msgBuilder.length() - 1);
+			}
+			message.setMessage(msgBuilder.toString());
 		}
 
 		msg = msg.toLowerCase();
