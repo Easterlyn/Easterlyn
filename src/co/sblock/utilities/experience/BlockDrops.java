@@ -171,7 +171,7 @@ public class BlockDrops {
 		case GLOWING_REDSTONE_ORE:
 		case REDSTONE_ORE:
 			// Only ore that is supposed to use addition-style fortune.
-			drops.add(doFortune(Material.REDSTONE, 1, 1, fortune, false));
+			drops.add(doFortune(Material.REDSTONE, 4, 5, fortune, false));
 			break;
 		case GLOWSTONE:
 			ItemStack dust = doFortune(Material.GLOWSTONE_DUST, 1, 4, fortune, false);
@@ -204,7 +204,7 @@ public class BlockDrops {
 				drops.add(new ItemStack(Material.APPLE));
 			}
 			double dropRate = treeType == 3 ? fortune < 1 ? .025 : fortune == 1 ? .0278 : fortune == 2 ? .03125 : .0417
-					: fortune < 1 ? .06 : fortune == 1 ? .0625 : fortune == 2 ? .0833 : .01;
+					: fortune < 1 ? .06 : fortune == 1 ? .0625 : fortune == 2 ? .0833 : .1;
 			if (Math.random() < dropRate) {
 				drops.add(new ItemStack(Material.SAPLING, 1, (short) treeType));
 			}
