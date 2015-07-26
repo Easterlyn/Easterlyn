@@ -251,7 +251,7 @@ public class MegaHal extends HalMessageHandler {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				File logDir = new File("plugins/Sblock/MegaHal");
+				File logDir = new File(Sblock.getInstance().getDataFolder(), "MegaHal");
 				if (logDir.exists()) {
 					File[] logs = logDir.listFiles(new FilenameFilter() {
 						@Override
