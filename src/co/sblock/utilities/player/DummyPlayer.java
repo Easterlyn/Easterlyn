@@ -1112,40 +1112,18 @@ public class DummyPlayer implements Player {
 	@Override
 	public void updateInventory() {}
 
-	/* (non-Javadoc)
-	 * @see org.bukkit.entity.Player#getSpectatorTarget()
-	 */
 	@Override
 	public Entity getSpectatorTarget() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.bukkit.entity.Player#resetTitle()
-	 */
 	@Override
-	public void resetTitle() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void resetTitle() {}
 
-	/* (non-Javadoc)
-	 * @see org.bukkit.entity.Player#sendTitle(java.lang.String, java.lang.String)
-	 */
 	@Override
-	public void sendTitle(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void sendTitle(String arg0, String arg1) {}
 
-	/* (non-Javadoc)
-	 * @see org.bukkit.entity.Player#setSpectatorTarget(org.bukkit.entity.Entity)
-	 */
 	@Override
-	public void setSpectatorTarget(Entity arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void setSpectatorTarget(Entity arg0) {}
 
 }
