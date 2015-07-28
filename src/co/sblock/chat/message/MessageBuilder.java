@@ -329,8 +329,8 @@ public class MessageBuilder {
 		} else {
 			channelBracket = ChatColor.WHITE;
 		}
-		ChatColor channelRank = channel.isOwner(sender) ? ChatColor.RED
-				: channel.isModerator(sender) ? ChatColor.AQUA : ChatColor.GOLD;
+		ChatColor channelRank = channel.isOwner(sender) ? Color.CHANNEL_OWNER
+				: channel.isModerator(sender) ? Color.CHANNEL_MOD : Color.CHANNEL_MEMBER;
 
 		LinkedList<TextComponent> channelHighlightComponents = new LinkedList<>();
 		LinkedList<TextComponent> components = new LinkedList<>();
