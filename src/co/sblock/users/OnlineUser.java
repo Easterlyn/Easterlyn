@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -44,14 +46,19 @@ import co.sblock.utilities.spectator.Spectators;
  */
 public class OnlineUser extends OfflineUser {
 
-
 	private Location serverDisableTeleport;
 	private boolean isServer;
+	private String lastChat;
+	private final AtomicInteger violationLevel;
+	private final AtomicBoolean spamWarned;
 
 	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, Location previousLocation,
 			Set<Integer> programs, String currentChannel, Set<String> listening) {
 		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
 		isServer = false;
+		lastChat = new String();
+		violationLevel = new AtomicInteger();
+		spamWarned = new AtomicBoolean();
 	}
 
 	@Override
@@ -347,6 +354,36 @@ public class OnlineUser extends OfflineUser {
 		} else {
 			this.sendMessage(Color.BAD + "You are not listening to " + Color.BAD_EMPHASIS + channelName);
 		}
+	}
+
+	@Override
+	public synchronized String getLastMessage() {
+		return this.lastChat;
+	}
+
+	@Override
+	public synchronized void setLastChat(String message) {
+		this.lastChat = message;
+	}
+
+	@Override
+	public int getChatViolationLevel() {
+		return violationLevel.get();
+	}
+
+	@Override
+	public void setChatViolationLevel(int violationLevel) {
+		this.violationLevel.set(violationLevel);
+	}
+
+	@Override
+	public boolean getChatWarnStatus() {
+		return spamWarned.get();
+	}
+
+	@Override
+	public void setChatWarnStatus(boolean warned) {
+		spamWarned.set(warned);
 	}
 
 	@Override

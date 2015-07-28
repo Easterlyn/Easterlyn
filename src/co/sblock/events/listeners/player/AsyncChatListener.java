@@ -27,6 +27,7 @@ import co.sblock.chat.channel.RegionChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.event.SblockAsyncChatEvent;
+import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.general.Cooldowns;
 import co.sblock.utilities.messages.JSONUtil;
@@ -34,10 +35,8 @@ import co.sblock.utilities.messages.RegexUtils;
 import co.sblock.utilities.messages.Slack;
 import co.sblock.utilities.player.DummyPlayer;
 
-import me.ryanhamshire.GriefPrevention.ClaimsMode;
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import me.ryanhamshire.GriefPrevention.Messages;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 
 import net.md_5.bungee.api.ChatColor;
@@ -71,8 +70,8 @@ public class AsyncChatListener implements Listener {
 
 		handleGriefPrevention = Bukkit.getPluginManager().isPluginEnabled("GriefPrevention");
 		if (handleGriefPrevention) {
-			unregisterGPChatListener();
-			claimPattern = Pattern.compile(GriefPrevention.instance.dataStore.getMessage(Messages.HowToClaimRegex), Pattern.CASE_INSENSITIVE);
+			unregisterChatListeners();
+			claimPattern = Pattern.compile("(^|.*\\W)how\\W.*\\W(claim|protect|lock)(\\W.*|$)", Pattern.CASE_INSENSITIVE);
 			trappedPattern = Pattern.compile("(^|\\s)(stuck|trapped)(\\s|$)", Pattern.CASE_INSENSITIVE);
 		} else {
 			claimPattern = null;
@@ -131,14 +130,16 @@ public class AsyncChatListener implements Listener {
 			}
 		}
 
+		final Player player = event.getPlayer();
+
 		if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
-			event.getPlayer().sendMessage(Color.HAL + "What?");
+			player.sendMessage(Color.HAL + "What?");
 			event.setCancelled(true);
 			return;
 		}
 
 		if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
-			event.getPlayer().sendMessage(Color.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
+			player.sendMessage(Color.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
 			event.setCancelled(true);
 			return;
 		}
@@ -150,6 +151,30 @@ public class AsyncChatListener implements Listener {
 			handleGPChat(event, message);
 			if (event.isCancelled()) {
 				return;
+			}
+		}
+
+		final OfflineUser sender = message.getSender();
+
+		// Spam detection and handling, woo!
+		if (sender != null && !message.getChannel().getName().equals("#halchat")
+				&& detectSpam(event, message)) {
+			event.getRecipients().clear();
+			event.getRecipients().add(player);
+			if (sender.getChatViolationLevel() > 8 && sender.getChatWarnStatus()) {
+				sendMessageOnDelay(player, Color.HAL.replace("#", message.getChannel().getName())
+						+ "You were asked not to spam. This mute will last 5 minutes.");
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+						String.format("mute %s 5m", player.getName()));
+				Slack.getInstance().postReport(player.getName(), player.getUniqueId(),
+						"Automatically muted for spamming, violation level " + sender.getChatViolationLevel());
+				event.setCancelled(true);
+				return;
+			}
+			if (sender.getChatViolationLevel() > 3 && !sender.getChatWarnStatus()) {
+				sendMessageOnDelay(player, Color.HAL.replace("#", message.getChannel().getName())
+						+ "You appear to be spamming. Please slow down chat.");
+				sender.setChatWarnStatus(true);
 			}
 		}
 
@@ -169,7 +194,7 @@ public class AsyncChatListener implements Listener {
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
 
 		// Dummy player should not trigger Hal; he may become one.
-		if (event.getPlayer() instanceof DummyPlayer) {
+		if (player instanceof DummyPlayer) {
 			event.getRecipients().clear();
 			return;
 		}
@@ -193,48 +218,23 @@ public class AsyncChatListener implements Listener {
 	}
 
 	private void handleGPChat(final AsyncPlayerChatEvent event, final Message message) {
-		if (GriefPrevention.instance == null) {
+		if (message.getSender() == null || GriefPrevention.instance == null) {
 			return;
 		}
 
-		DataStore dataStore = GriefPrevention.instance.dataStore;
+		final DataStore dataStore = GriefPrevention.instance.dataStore;
 		final Player player = event.getPlayer();
+		final String world = player.getWorld().getName();
 
-		if (claimPattern.matcher(message.getMessage()).find()) {
-			if (GriefPrevention.instance.config_claims_worldModes.get(player.getWorld().getName()) == ClaimsMode.Creative) {
-				sendMessageOnDelay(player, Color.GOOD + dataStore.getMessage(Messages.CreativeBasicsVideo2,
-						"https://www.youtube.com/watch?v=of88cxVmfSM&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=3"));
-			} else {
-				sendMessageOnDelay(player, Color.GOOD + dataStore.getMessage(Messages.SurvivalBasicsVideo2,
-						"https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1"));
-			}
-		} else if (trappedPattern.matcher(message.getMessage()).find()) {
-			// Improvement over GP: Pattern ignores case and matches in substrings of words
-			sendMessageOnDelay(player, Color.GOOD + dataStore.getMessage(Messages.TrappedInstructions));
+		if (!world.equals("Derspit") && !world.equals("DreamBubble")
+				&& claimPattern.matcher(message.getMessage()).find()) {
+			sendMessageOnDelay(player,Color.GOOD
+					+ "For information about claims, watch https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1");
 		}
-
-		PlayerData playerData = dataStore.getPlayerData(player.getUniqueId());
-
-		// Hard mute chat to just sender in the event of spam matches
-		boolean spam = !message.getChannel().getName().equals("#halchat") && detectGPSpam(event, message, playerData);
-		playerData.lastMessage = message.getMessage().toLowerCase();
-		message.getChannel().setLastMessage(playerData.lastMessage);
-		Cooldowns.getInstance().addCooldown(player.getUniqueId(), "chat", 3000);
-		if (spam) {
-			event.getRecipients().clear();
-			event.getRecipients().add(player);
-			if (playerData.spamCount > 3 && !playerData.spamWarned) {
-				sendMessageOnDelay(player, Color.BAD + GriefPrevention.instance.config_spam_warningMessage);
-				playerData.spamWarned = true;
-				return;
-			}
-			if (playerData.spamCount > 8 && playerData.spamWarned) {
-				sendMessageOnDelay(player, Color.HAL.replace("#", message.getChannel().getName()) + "You were asked not to spam. This mute will last 5 minutes.");
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("mute %s 5m", player.getName()));
-				Slack.getInstance().postReport(player.getName(), player.getUniqueId(), "Automatically muted for spamming, violation level " + playerData.spamCount);
-				event.setCancelled(true);
-			}
-			return;
+		if (trappedPattern.matcher(message.getMessage()).find()) {
+			// Improvement over GP: Pattern ignores case and matches in substrings of words
+			sendMessageOnDelay(player, Color.GOOD + "Trapped in someone's land claim? Try "
+					+ Color.COMMAND + "/trapped");
 		}
 
 		// Soft-muted chat
@@ -283,19 +283,12 @@ public class AsyncChatListener implements Listener {
 		}
 	}
 
-	private boolean detectGPSpam(AsyncPlayerChatEvent event, Message message, PlayerData playerData) {
-		Player player = event.getPlayer();
-		if (player.hasPermission("griefprevention.spam")) {
+	private boolean detectSpam(AsyncPlayerChatEvent event, Message message) {
+		final Player player = event.getPlayer();
+		final OfflineUser sender = message.getSender();
+		if (sender == null || player.hasPermission("sblockchat.spam")) {
 			return false;
 		}
-
-		// Rather than ensure player has moved since login, check against achievement and spawn location
-		// Disabled for now, as I don't recall ever seeing spammers of this kind. We're a small server.
-//		if (!player.hasAchievement(Achievement.MINE_WOOD)
-//				&& player.getLocation().getBlock().equals(Users.getSpawnLocation().getBlock())) {
-//			sendMessageOnDelay(player, Color.GOOD + dataStore.getMessage(Messages.NoChatUntilMove));
-//			return true;
-//		}
 
 		String msg = message.getMessage();
 
@@ -318,11 +311,21 @@ public class AsyncChatListener implements Listener {
 		}
 
 		msg = msg.toLowerCase();
+		String lastMsg = sender.getLastMessage();
+		sender.setLastChat(msg);
+		message.getChannel().setLastMessage(msg);
+		Cooldowns.getInstance().addCooldown(player.getUniqueId(), "chat", 3000);
 
 		// Mute repeat messages
-		if (msg.equals(playerData.lastMessage) || message.equals(message.getChannel().getLastMessage())) {
+		if (msg.equals(lastMsg) || message.equals(message.getChannel().getLastMessage())) {
 			// In event of exact duplicates, reach penalization levels at a much faster rate
-			playerData.spamCount += playerData.spamCount > 0 ? playerData.spamCount : 1;
+			int spamCount = sender.getChatViolationLevel();
+			if (spamCount == 0) {
+				spamCount++;
+			} else {
+				spamCount *= 2;
+			}
+			sender.setChatViolationLevel(spamCount);
 			event.setFormat("[RepeatChat] " + event.getFormat());
 			return true;
 		}
@@ -331,7 +334,7 @@ public class AsyncChatListener implements Listener {
 
 		// Cooldown of 1.5 seconds between messages, 3 seconds between short messages.
 		if (lastChat > 1500 || msg.length() < 5 && lastChat > 0) {
-			playerData.spamCount++;
+			sender.setChatViolationLevel(sender.getChatViolationLevel() + 1);
 			event.setFormat("[FastChat] " + event.getFormat());
 			return true;
 		}
@@ -354,20 +357,20 @@ public class AsyncChatListener implements Listener {
 			}
 		}
 		if (symbols > length / 2 || length > 15 && spaces < length / 10) {
-			playerData.spamCount++;
+			sender.setChatViolationLevel(sender.getChatViolationLevel() + 1);
 			event.setFormat("[Gibberish] " + event.getFormat());
 			return true;
 		}
 
 		// Must be more than 25% different from last message
-		if (StringUtils.getLevenshteinDistance(msg, playerData.lastMessage) < msg.length() * .25) {
-			playerData.spamCount++;
+		if (StringUtils.getLevenshteinDistance(msg, lastMsg) < msg.length() * .25) {
+			sender.setChatViolationLevel(sender.getChatViolationLevel() + 1);
 			event.setFormat("[SimilarChat] " + event.getFormat());
 			return true;
 		}
 
-		playerData.spamCount = 0;
-		playerData.spamWarned = false;
+		sender.setChatViolationLevel(0);
+		sender.setChatWarnStatus(false);
 		return false;
 	}
 
@@ -385,14 +388,13 @@ public class AsyncChatListener implements Listener {
 		}.runTaskLater(Sblock.getInstance(), 10L);
 	}
 
-	private void unregisterGPChatListener() {
-		RegisteredListener chatListener = null;
+	private void unregisterChatListeners() {
 		for (RegisteredListener listener : AsyncPlayerChatEvent.getHandlerList().getRegisteredListeners()) {
-			if (listener.getPlugin().getName().equals("GriefPrevention")) {
-				chatListener = listener;
+			String plugin = listener.getPlugin().getName();
+			if (plugin.equals("GriefPrevention")) {
+				AsyncPlayerChatEvent.getHandlerList().unregister(listener);
 				break;
 			}
 		}
-		AsyncPlayerChatEvent.getHandlerList().unregister(chatListener);
 	}
 }

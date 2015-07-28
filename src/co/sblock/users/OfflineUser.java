@@ -559,24 +559,72 @@ public class OfflineUser {
 	/**
 	 * Check if the Player is listening to a specific Channel.
 	 * 
-	 * @param c the Channel to check for
+	 * @param channel the Channel to check for
 	 * 
 	 * @return true if the Player is listening to c
 	 */
-	public synchronized boolean isListening(Channel c) {
-		return this.listening.contains(c.getName());
+	public boolean isListening(Channel channel) {
+		return this.listening.contains(channel.getName());
 	}
 
 	/**
 	 * Check if the Player is listening to a specific Channel.
 	 * 
-	 * @param s the Channel name to check for
+	 * @param channelName the Channel name to check for
 	 * 
 	 * @return true if the Player is listening to c
 	 */
-	public synchronized boolean isListening(String s) {
-		return this.listening.contains(s);
+	public boolean isListening(String channelName) {
+		return this.listening.contains(channelName);
 	}
+
+	/**
+	 * Gets the last chat message sent by the Player.
+	 * 
+	 * @return the last chat message sent
+	 */
+	public synchronized String getLastMessage() {
+		return new String();
+	}
+
+	/**
+	 * Sets the last chat message sent by the Player.
+	 * 
+	 * @param message the last chat message sent
+	 */
+	public synchronized void setLastChat(String message) {}
+
+	/**
+	 * Gets the Player's chat violation level.
+	 * 
+	 * @return the violation level
+	 */
+	public int getChatViolationLevel() {
+		return 0;
+	}
+
+	/**
+	 * Sets the Player's chat violation level.
+	 * 
+	 * @param violationLevel the violation level
+	 */
+	public void setChatViolationLevel(int violationLevel) {}
+
+	/**
+	 * Gets whether or not the Player has been warned to not spam.
+	 * 
+	 * @return true if the Player has been warned
+	 */
+	public boolean getChatWarnStatus() {
+		return false;
+	}
+
+	/**
+	 * Sets whether or not the Player has been warned not to spam.
+	 * 
+	 * @param warned whether or not the Player has been warned
+	 */
+	public void setChatWarnStatus(boolean warned) {}
 
 	/**
 	 * Checks if the Player is close enough to a Computer to chat in #.
