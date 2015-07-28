@@ -53,9 +53,8 @@ public class LoreCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		if (args.length < 2) {
-			sender.sendMessage(getUsage());
-			return true;
+		if (args.length < 1) {
+			return false;
 		}
 		args[0] = args[0].toLowerCase();
 		Player player = (Player) sender;
@@ -71,6 +70,15 @@ public class LoreCommand extends SblockCommand {
 				return true;
 			}
 			hand.setItemMeta(meta);
+		}
+		if (args[0].equals("clearmeta")) {
+			ItemMeta meta = Bukkit.getItemFactory().getItemMeta(hand.getType());
+			hand.setItemMeta(meta);
+			player.sendMessage("Meta cleared!");
+			return true;
+		}
+		if (args.length < 2) {
+			return false;
 		}
 		if (args[0].equals("owner")) {
 			return owner(player, hand, args);
@@ -95,12 +103,6 @@ public class LoreCommand extends SblockCommand {
 		}
 		if (args[0].equals("insert")) {
 			return insert(player, hand, args);
-		}
-		if (args[0].equals("clearmeta")) {
-			ItemMeta meta = Bukkit.getItemFactory().getItemMeta(hand.getType());
-			hand.setItemMeta(meta);
-			player.sendMessage("Meta cleared!");
-			return true;
 		}
 		sender.sendMessage(getUsage());
 		return true;
