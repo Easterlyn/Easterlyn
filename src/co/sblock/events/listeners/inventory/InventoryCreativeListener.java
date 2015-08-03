@@ -16,8 +16,10 @@ import co.sblock.utilities.inventory.InventoryUtils;
  */
 public class InventoryCreativeListener implements Listener {
 
-	private final Material[] blacklist = new Material[] {Material.BARRIER, Material.BEDROCK,
-			Material.COMMAND, Material.COMMAND_MINECART, Material.ENDER_PORTAL, Material.MOB_SPAWNER};
+	private final Material[] blacklist = new Material[] { Material.BARRIER, Material.BEDROCK,
+			Material.COMMAND, Material.COMMAND_MINECART, Material.ENDER_PORTAL,
+			Material.ENDER_PORTAL_FRAME, Material.JUKEBOX, Material.EXPLOSIVE_MINECART,
+			Material.MOB_SPAWNER, Material.MONSTER_EGG, Material.MONSTER_EGGS, Material.TNT };
 
 	/**
 	 * EventHandler for InventoryCreativeEvents. Triggered when a creative client spawns an item.
@@ -53,7 +55,7 @@ public class InventoryCreativeListener implements Listener {
 			cleanedItem.setDurability(event.getCursor().getDurability());
 		}
 
-		// No overstacking, no negative amounts (negative dispensed by dropper/dispenser = infinite)
+		// No overstacking, no negative amounts
 		if (event.getCursor().getAmount() > event.getCursor().getMaxStackSize()) {
 			event.getCursor().setAmount(event.getCursor().getMaxStackSize());
 		} else if (event.getCursor().getAmount() < 1) {
