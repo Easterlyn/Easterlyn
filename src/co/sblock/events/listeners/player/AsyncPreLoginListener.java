@@ -36,8 +36,8 @@ public class AsyncPreLoginListener implements Listener {
 				lookup.append("xbl.spamhaus.org.");
 				if (InetAddress.getByName(lookup.toString()) != null) {
 					event.setLoginResult(Result.KICK_OTHER);
-					event.setKickMessage("Your IP address (" + ip + ") is flagged as unsafe by spamhaus.org/xbl"
-							+"\n");
+					event.setKickMessage("Your IP address is flagged as unsafe by the Spamhaus XBL."
+							+"\n\nPlease visit https://www.spamhaus.org/query/ip/" + ip + " to learn why.");
 					Slack.getInstance().postReport(null, event.getUniqueId(),
 							ip + " is flagged as unsafe by spamhaus.org/xbl, disconnecting " + event.getUniqueId());
 					return;
