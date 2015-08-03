@@ -1,8 +1,5 @@
 package co.sblock.events.listeners.player;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.UUID;
@@ -257,29 +254,19 @@ public class AsyncChatListener implements Listener {
 
 		// Fix for GP issue: SoftMuted players cannot ignore others - don't return as soon as softmute is handled.
 
-		// Ignore lists are not currently accessible. This is a problem.
-		try {
-			Iterator<Player> iterator = event.getRecipients().iterator();
-			PlayerData data = dataStore.getPlayerData(player.getUniqueId());
-			Field field = data.getClass().getDeclaredField("ignoredPlayers");
-			field.setAccessible(true);
-			Object object = field.get(data);
-			Method method = object.getClass().getMethod("containsKey", Object.class);
-			while (iterator.hasNext()) {
-				UUID uuid = iterator.next().getUniqueId();
-				if ((boolean) method.invoke(object, uuid)) {
-					iterator.remove();
-					continue;
-				}
-				if ((boolean) method.invoke(field.get(dataStore.getPlayerData(uuid)), player.getUniqueId())) {
-					iterator.remove();
-					continue;
-				}
+		// Don't send messages to players ignoring sender or who the sender is ignoring
+		Iterator<Player> iterator = event.getRecipients().iterator();
+		PlayerData data = dataStore.getPlayerData(player.getUniqueId());
+		while (iterator.hasNext()) {
+			UUID uuid = iterator.next().getUniqueId();
+			if (data.ignoredPlayers.containsKey(uuid)) {
+				iterator.remove();
+				continue;
 			}
-		} catch (NoSuchFieldException | SecurityException | NoSuchMethodException
-				| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-			// Just fail to ignore if an error occurs
+			if (dataStore.getPlayerData(uuid).ignoredPlayers.containsKey(player.getUniqueId())) {
+				iterator.remove();
+				continue;
+			}
 		}
 	}
 
