@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -25,7 +25,7 @@ import co.sblock.effects.effect.EffectBehaviorActive;
 public class EffectVacuum extends Effect implements EffectBehaviorActive {
 
 	public EffectVacuum() {
-		super(300, 1, 5, "Vacuum");
+		super(300, 1, 3, "Vacuum");
 	}
 
 	@Override
@@ -46,11 +46,16 @@ public class EffectVacuum extends Effect implements EffectBehaviorActive {
 					return;
 				}
 
-				for (Entity e : player.getNearbyEntities(radius, radius, radius)) {
-					if (e.getType() == EntityType.DROPPED_ITEM) {
-						e.getWorld().playEffect(e.getLocation(), org.bukkit.Effect.FLYING_GLYPH, 0);
-						e.teleport(player);
-						player.playSound(e.getLocation(), Sound.ENDERDRAGON_WINGS, 1F, 1.5F);
+				for (Entity near : player.getNearbyEntities(radius, radius, radius)) {
+					if (!(near instanceof Item)) {
+						continue;
+					}
+					near.getWorld().playEffect(near.getLocation(), org.bukkit.Effect.FLYING_GLYPH, 0);
+					near.teleport(player);
+					player.playSound(near.getLocation(), Sound.ENDERDRAGON_WINGS, 0.2F, 1.5F);
+					Item item = (Item) near;
+					if (item.getPickupDelay() < 1000) {
+						item.setPickupDelay(0);
 					}
 				}
 			}

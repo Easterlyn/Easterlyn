@@ -36,7 +36,7 @@ public class EffectPull extends Effect implements EffectBehaviorActive {
 			return;
 		}
 		// EFFECTS: Verify that this is a decent vector
-		damaged.setVelocity(damaged.getVelocity().subtract(player.getLocation().toVector()).multiply(level));
+		damaged.setVelocity(player.getLocation().toVector().subtract(damaged.getLocation().toVector()).multiply(level * 0.35));
 	}
 
 }

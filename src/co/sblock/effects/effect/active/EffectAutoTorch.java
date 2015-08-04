@@ -3,6 +3,7 @@ package co.sblock.effects.effect.active;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -21,7 +22,7 @@ import co.sblock.effects.effect.EffectBehaviorActive;
  */
 public class EffectAutoTorch extends Effect implements EffectBehaviorActive {
 
-	public EffectAutoTorch(int cost, int maximumLevel, int maximumCombinedLevel, String[] names) {
+	public EffectAutoTorch() {
 		super(200, 1, 1, "Darkness Despising", "Torcherous");
 	}
 
@@ -33,8 +34,10 @@ public class EffectAutoTorch extends Effect implements EffectBehaviorActive {
 	@Override
 	public void handleEvent(Event event, Player player, int level) {
 		Block block = player.getLocation().getBlock();
-		if (block.getLightFromBlocks() > 7 || !block.getRelative(BlockFace.DOWN).getType().isSolid()
-				|| !player.getInventory().removeItem(new ItemStack(Material.TORCH)).isEmpty()) {
+		if (block.getLightFromBlocks() > 7
+				|| !block.getRelative(BlockFace.DOWN).getType().isSolid()
+				|| player.getGameMode() != GameMode.CREATIVE
+				&& !player.getInventory().removeItem(new ItemStack(Material.TORCH)).isEmpty()) {
 			return;
 		}
 		block.setType(Material.TORCH);
