@@ -1,5 +1,7 @@
 package co.sblock.events.listeners.player;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -68,18 +70,21 @@ public class TeleportListener implements Listener {
 			return;
 		}
 
+		final UUID uuid = event.getPlayer().getUniqueId();
+
 		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				if (event.getPlayer() == null) {
+				Player player = Bukkit.getPlayer(uuid);
+				if (player == null) {
 					// Player has logged out.
 					return;
 				}
-				OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+				OfflineUser user = Users.getGuaranteedUser(uuid);
 				// Update region
 				Region target;
-				if (event.getPlayer().getWorld().getName().equals("Derspit")) {
-					target = user.getDreamPlanet();;
+				if (player.getWorld().getName().equals("Derspit")) {
+					target = user.getDreamPlanet();
 				} else {
 					target = Region.getRegion(event.getTo().getWorld().getName());
 				}
