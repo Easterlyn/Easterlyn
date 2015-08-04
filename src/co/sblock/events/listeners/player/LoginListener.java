@@ -30,6 +30,9 @@ public class LoginListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
+		if (event.getPlayer() == null) {
+			return;
+		}
 		if (pattern.matcher(event.getPlayer().getName()).find()) {
 			event.setResult(Result.KICK_BANNED);
 			event.setKickMessage("Your name contains invalid characters. Valid characters are [a-zA-Z_0-9]."
