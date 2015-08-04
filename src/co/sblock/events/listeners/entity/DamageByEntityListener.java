@@ -2,6 +2,7 @@ package co.sblock.events.listeners.entity;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -12,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import co.sblock.Sblock;
+import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
@@ -47,14 +49,10 @@ public class DamageByEntityListener implements Listener {
 				return;
 			}
 			if (event.getEntityType() == EntityType.FALLING_BLOCK
-					&& ((MeteoriteComponent) ((CraftEntity)event.getDamager()).getHandle()).shouldBore()) {
+					&& ((MeteoriteComponent) ((CraftEntity) event.getDamager()).getHandle()).shouldBore()) {
 				event.setCancelled(true);
 				return;
 			}
-		}
-
-		if (!(event.getEntity() instanceof Player)) {
-			return;
 		}
 
 		final UUID damager;
@@ -64,6 +62,15 @@ public class DamageByEntityListener implements Listener {
 				&& ((Projectile) event.getDamager()).getShooter() instanceof Player) {
 			damager = ((Player) ((Projectile) event.getDamager()).getShooter()).getUniqueId();
 		} else {
+			return;
+		}
+
+		Player damagerPlayer = Bukkit.getPlayer(damager);
+		if (damagerPlayer != null) {
+			Effects.getInstance().handleEvent(event, damagerPlayer, false);
+		}
+
+		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
 
