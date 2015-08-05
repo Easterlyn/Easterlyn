@@ -40,9 +40,12 @@ public class TeleportListener implements Listener {
 			if (!player.getLocation().equals(event.getTo())) {
 				continue;
 			}
-			if (player.getGameMode() == GameMode.SPECTATOR && player.getVehicle() != null
-					&& player.getVehicle() instanceof Player) {
-				player = (Player) player.getVehicle();
+			if (player.getGameMode() == GameMode.SPECTATOR) {
+				if (player.getSpectatorTarget() != null) {
+					player = (Player) player.getSpectatorTarget();
+				} else {
+					continue;
+				}
 			}
 			if (Users.getGuaranteedUser(player.getUniqueId()).getSpectatable()) {
 				return;
