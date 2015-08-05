@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -45,14 +46,15 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 	}
 
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
+	public void handleEvent(Event event, LivingEntity entity, int level) {
 		if (!(event instanceof BlockBreakEvent) || event instanceof SblockBreakEvent) {
 			return;
 		}
 
 		BlockBreakEvent breakEvent = (BlockBreakEvent) event;
+		Player player = breakEvent.getPlayer();
 
-		if (breakEvent.getPlayer().isSneaking()) {
+		if (player.isSneaking()) {
 			// Sneak to mine single blocks
 			return;
 		}
@@ -99,7 +101,7 @@ public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
 			return false;
 		}
 		ItemStack hand = player.getItemInHand();
-		Collection<ItemStack> drops = BlockDrops.getDrops(hand, block);
+		Collection<ItemStack> drops = BlockDrops.getDrops(player, hand, block);
 		int exp = BlockDrops.getExp(hand, block);
 		if (hand.getType().getMaxDurability() > 0 && (!hand.containsEnchantment(Enchantment.DURABILITY)
 				|| Math.random() < 1.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 1))) {

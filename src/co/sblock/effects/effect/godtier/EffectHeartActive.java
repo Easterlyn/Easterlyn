@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.bukkit.Location;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -16,6 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.effects.effect.EffectBehaviorCooldown;
+import co.sblock.utilities.general.Potions;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftAnimals;
 
@@ -30,7 +32,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 public class EffectHeartActive extends Effect implements EffectBehaviorActive, EffectBehaviorCooldown {
 
 	public EffectHeartActive() {
-		super(Integer.MAX_VALUE, 1, 1, "HEART::ACTIVE");
+		super(Integer.MAX_VALUE, 5, 5, "HEART::ACTIVE");
 	}
 
 	@Override
@@ -49,17 +51,18 @@ public class EffectHeartActive extends Effect implements EffectBehaviorActive, E
 	}
 
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
+	public void handleEvent(Event event, LivingEntity entity, int level) {
+		Player player = (Player) entity;
 		if (!player.isSneaking()) {
 			return;
 		}
 		PotionEffect potEffect = new PotionEffect(PotionEffectType.REGENERATION, 20 * 20, 1);
-		player.addPotionEffect(potEffect, true);
+		Potions.applyIfBetter(player, potEffect);
 		player.getWorld().playEffect(player.getLocation().add(0, 1, 0), org.bukkit.Effect.HEART, 0);
-		for (Entity e : player.getNearbyEntities(8, 8, 8)) {
+		for (Entity near : player.getNearbyEntities(8, 8, 8)) {
 			Location loc;
-			if (e instanceof Animals) {
-				Animals animal = (Animals) e;
+			if (near instanceof Animals) {
+				Animals animal = (Animals) near;
 				if (animal.isAdult()) {
 					loc = animal.getLocation().add(0, 1, 0);
 					animal.setBreed(true);
@@ -70,11 +73,11 @@ public class EffectHeartActive extends Effect implements EffectBehaviorActive, E
 					((CraftAnimals) animal).getHandle().a(tag);
 				} else {
 					animal.setAge(animal.getAge() + 20 * 60 * 5);
-					continue;
 				}
-			} else if (e instanceof Player) {
-				((Player) e).addPotionEffect(potEffect, true);
-				loc = ((Player) e).getLocation().add(0, 1, 0);
+			}
+			if (near instanceof LivingEntity) {
+				Potions.applyIfBetter((LivingEntity) near, potEffect);
+				loc = ((Player) near).getLocation().add(0, 1, 0);
 			} else {
 				continue;
 			}

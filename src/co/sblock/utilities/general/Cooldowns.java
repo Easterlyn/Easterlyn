@@ -1,7 +1,15 @@
 package co.sblock.utilities.general;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
+
+import co.sblock.Sblock;
 
 /**
  * A utility for tracking time remaining until a Player can use an ability/ActiveEffect again.
@@ -44,14 +52,20 @@ public class Cooldowns {
 	}
 
 	/**
-	 * Adds a cooldown for a Player of specified duration in milliseconds.
+	 * Adds a cooldown for an Entity of specified duration in milliseconds.
 	 * 
-	 * @param uuid the UUID of the Player
+	 * @param entity the Entity
 	 * @param cooldownName the name of the cooldown
 	 * @param durationMillis the length of the cooldown in milliseconds
 	 */
-	public void addCooldown(UUID uuid, String cooldownName, long durationMillis) {
-		getCooldownMap(uuid).put(cooldownName, System.currentTimeMillis() + durationMillis);
+	public void addCooldown(Entity entity, String cooldownName, long durationMillis) {
+		long expiry = System.currentTimeMillis() + durationMillis;
+		if (entity instanceof Player) {
+			getCooldownMap(entity.getUniqueId()).put(cooldownName, expiry);
+			return;
+		}
+
+		entity.setMetadata(cooldownName, new FixedMetadataValue(Sblock.getInstance(), expiry));
 	}
 
 	/**
@@ -65,21 +79,26 @@ public class Cooldowns {
 	}
 
 	/**
-	 * Removes a cooldown for the specified Player. If the Player has no remaining cooldowns on
+	 * Removes a cooldown for the specified Entity. If the Entity has no remaining cooldowns on
 	 * record, their entry is entirely removed.
 	 * 
-	 * @param uuid the UUID of the Player
+	 * @param entity the Entity
 	 * @param cooldownName the name of the cooldown
 	 */
-	public void clearCooldown(UUID uuid, String cooldownName) {
-		if (!cooldowns.containsKey(uuid)) {
+	public void clearCooldown(Entity entity, String cooldownName) {
+		if (entity instanceof Player) {
+			if (!cooldowns.containsKey(entity.getUniqueId())) {
+				return;
+			}
+			ConcurrentHashMap<String, Long> playerCooldowns = this.getCooldownMap(entity.getUniqueId());
+			playerCooldowns.remove(cooldownName);
+			if (playerCooldowns.isEmpty()) {
+				cooldowns.remove(entity.getUniqueId());
+			}
 			return;
 		}
-		ConcurrentHashMap<String, Long> playerCooldowns = this.getCooldownMap(uuid);
-		playerCooldowns.remove(cooldownName);
-		if (playerCooldowns.isEmpty()) {
-			cooldowns.remove(uuid);
-		}
+
+		entity.removeMetadata(cooldownName, Sblock.getInstance());
 	}
 
 	/**
@@ -89,17 +108,37 @@ public class Cooldowns {
 	 * @param cooldownName the name of the cooldown
 	 * @return the remaining milliseconds until specified ability can be re-used
 	 */
-	public long getRemainder(UUID uuid, String cooldownName) {
-		if (!cooldowns.containsKey(uuid) || !cooldowns.get(uuid).containsKey(cooldownName)) {
+	public long getRemainder(Entity entity, String cooldownName) {
+		if (entity instanceof Player) {
+			if (!cooldowns.containsKey(entity.getUniqueId()) || !cooldowns.get(entity.getUniqueId()).containsKey(cooldownName)) {
+				return 0;
+			}
+			long remaining = cooldowns.get(entity.getUniqueId()).get(cooldownName) - System.currentTimeMillis();
+			if (remaining > 0) {
+				return remaining;
+			} else {
+				clearCooldown(entity, cooldownName);
+				return 0;
+			}
+		}
+
+		if (!entity.hasMetadata(cooldownName)) {
 			return 0;
 		}
-		long remaining = cooldowns.get(uuid).get(cooldownName) - System.currentTimeMillis();
-		if (remaining > 0) {
-			return remaining;
-		} else {
-			clearCooldown(uuid, cooldownName);
+
+		long remaining = 0;
+
+		for (MetadataValue value : entity.getMetadata(cooldownName)) {
+			if (value.getOwningPlugin().equals(Sblock.getInstance())) {
+				remaining = value.asLong();
+				break;
+			}
+		}
+
+		if (remaining < 0) {
 			return 0;
 		}
+		return remaining;
 	}
 
 	/**
@@ -117,7 +156,11 @@ public class Cooldowns {
 		if (remaining > 0) {
 			return remaining;
 		} else {
-			clearCooldown(global, cooldownName);
+			ConcurrentHashMap<String, Long> globals = this.getCooldownMap(global);
+			globals.remove(cooldownName);
+			if (globals.isEmpty()) {
+				cooldowns.remove(global);
+			}
 			return 0;
 		}
 	}
@@ -131,9 +174,13 @@ public class Cooldowns {
 		}
 		long now = System.currentTimeMillis();
 		for (UUID uuid : instance.cooldowns.keySet()) {
-			for (String cooldown : instance.cooldowns.get(uuid).keySet()) {
-				if (instance.cooldowns.get(uuid).get(cooldown) <= now) {
-					instance.clearCooldown(uuid, cooldown);
+			Map<String, Long> map = instance.cooldowns.get(uuid);
+			for (String cooldown : map.keySet()) {
+				if (map.get(cooldown) <= now) {
+					map.remove(cooldown);
+					if (map.isEmpty()) {
+						instance.cooldowns.remove(map);
+					}
 				}
 			}
 		}

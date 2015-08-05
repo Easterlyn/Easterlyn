@@ -3,7 +3,7 @@ package co.sblock.effects.effect.active;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -40,8 +40,8 @@ public class EffectRocketJump extends Effect implements EffectBehaviorActive, Ef
 	}
 
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
-		((CrotchRocketCommand) Sblock.getInstance().getCommandMap().getCommand("crotchrocket")).launch(player);
+	public void handleEvent(Event event, LivingEntity entity, int level) {
+		((CrotchRocketCommand) Sblock.getInstance().getCommandMap().getCommand("crotchrocket")).launch(entity);
 	}
 
 }

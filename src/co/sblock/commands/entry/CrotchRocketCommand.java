@@ -7,6 +7,7 @@ import org.bukkit.Effect;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.Vector;
@@ -38,19 +39,18 @@ public class CrotchRocketCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		final Player player = (Player) sender;
-		return launch(player);
+		return launch((LivingEntity) sender);
 	}
 
-	public boolean launch(Player player) {
-		player.setFallDistance(0);
-		player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 0);
+	public boolean launch(LivingEntity entity) {
+		entity.setFallDistance(0);
+		entity.getWorld().playEffect(entity.getLocation(), Effect.EXPLOSION_HUGE, 0);
 
-		final Firework firework = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+		final Firework firework = (Firework) entity.getWorld().spawnEntity(entity.getLocation(), EntityType.FIREWORK);
 		FireworkMeta fm = firework.getFireworkMeta();
 		fm.setPower(4);
 		firework.setFireworkMeta(fm);
-		firework.setPassenger(player);
+		firework.setPassenger(entity);
 
 		ParticleUtils.getInstance().addEntity(firework, new ParticleEffectWrapper(Effect.FIREWORKS_SPARK, 5));
 

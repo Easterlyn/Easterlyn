@@ -8,38 +8,58 @@ package co.sblock.users;
  * @author FireNG, Jikoo
  */
 public enum UserClass {
-	BARD("Bard"),
-	DOUCHE("Douche"),
-	GENT("Gent"),
-	HEIR("Heir"),
-	KNIGHT("Knight"),
-	LORD("Lord"),
-	MAGE("Mage"),
-	MAID("Maid"),
-	MUSE("Muse"),
-	ORACLE("Oracle"),
-	PAGE("Page"),
-	PRINCE("Prince"),
-	ROGUE("Rogue"),
-	SEER("Seer"),
-	SYLPH("Sylph"),
-	THIEF("Thief"),
-	WASTE("Waste"),
-	WITCH("Witch");
+	BARD("Bard", 3),
+	DOUCHE("Douche", 4),
+	GENT("Gent", 3),
+	HEIR("Heir", 3),
+	KNIGHT("Knight", 5),
+	LORD("Lord", 7),
+	MAGE("Mage", 4),
+	MAID("Maid", 4),
+	MUSE("Muse", 0),
+	ORACLE("Oracle", 4),
+	PAGE("Page", 2),
+	PRINCE("Prince", 6),
+	ROGUE("Rogue", 2),
+	SEER("Seer", 1),
+	SYLPH("Sylph", 1),
+	THIEF("Thief", 5),
+	WASTE("Waste", 3),
+	WITCH("Witch", 6);
 
 	private final String name;
+	private final int activity;
 
-	private UserClass(String name) {
+	private UserClass(String name, int activity) {
 		this.name = name;
+		this.activity = activity;
 	}
 
 	/**
 	 * Gets the display name of the UserClass.
 	 * 
-	 * @return The display name of this UserClass.
+	 * @return the display name of this UserClass
 	 */
 	public String getDisplayName() {
 		return this.name;
+	}
+
+	/**
+	 * Gets the number of active abilities granted by this UserClass.
+	 * 
+	 * @return the number of abilities
+	 */
+	public int getActiveSkills() {
+		return activity;
+	}
+
+	/**
+	 * Gets the number of passive or reactive abilities granted by this UserClass.
+	 * 
+	 * @return the number of abilities
+	 */
+	public int getPassiveSkills() {
+		return 7 - activity;
 	}
 
 	/**

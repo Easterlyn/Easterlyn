@@ -3,7 +3,7 @@ package co.sblock.effects.effect.passive;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorPassive;
@@ -21,8 +21,8 @@ public class EffectFlowers extends Effect implements EffectBehaviorPassive {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void applyEffect(Player player, int level) {
-		Block standingIn = player.getLocation().getBlock();
+	public void applyEffect(LivingEntity entity, int level) {
+		Block standingIn = entity.getLocation().getBlock();
 		Block standingOn = standingIn.getRelative(BlockFace.DOWN);
 
 		if (!standingIn.isEmpty()

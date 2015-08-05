@@ -2,13 +2,18 @@ package co.sblock.utilities.experience;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+
+import co.sblock.effects.Effects;
+import co.sblock.effects.effect.Effect;
 
 /**
  * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
@@ -18,11 +23,20 @@ import org.bukkit.material.MaterialData;
  */
 public class BlockDrops {
 
-	public static Collection<ItemStack> getDrops(ItemStack tool, Block block) {
-		return getDrops(tool, block, 0);
+	public static Collection<ItemStack> getDrops(Player player, ItemStack tool, Block block) {
+		int bonus;
+		Map<Effect, Integer> effects = Effects.getInstance().getAllEffects(player);
+		Effect light = Effects.getInstance().getEffect("LIGHT::PASSIVE");
+		if (effects.containsKey(light)) {
+			bonus = effects.get(light);
+		} else {
+			bonus = 0;
+		}
+
+		return getDrops(tool, block, bonus);
 	}
 
-	public static Collection<ItemStack> getDrops(ItemStack tool, Block block, int fortuneBonus) {
+	private static Collection<ItemStack> getDrops(ItemStack tool, Block block, int fortuneBonus) {
 		if (tool.containsEnchantment(Enchantment.SILK_TOUCH) && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
 			Collection<ItemStack> drops = getSilkDrops(tool, block.getState().getData());
 			if (drops != null) {

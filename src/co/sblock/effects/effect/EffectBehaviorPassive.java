@@ -1,6 +1,6 @@
 package co.sblock.effects.effect;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 
 /**
  * Interface declaring methods required for a passive effect.
@@ -10,10 +10,10 @@ import org.bukkit.entity.Player;
 public interface EffectBehaviorPassive {
 
 	/**
-	 * Applies the Effect to the given OnlineUser.
+	 * Applies the Effect to the given LivingEntity.
 	 * 
-	 * @param user the OnlineUser
+	 * @param entity the LivingEntity
 	 */
-	public abstract void applyEffect(Player player, int level);
+	public abstract void applyEffect(LivingEntity entity, int level);
 
 }

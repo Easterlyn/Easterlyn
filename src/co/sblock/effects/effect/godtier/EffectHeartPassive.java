@@ -1,5 +1,6 @@
-package co.sblock.effects.effect.passive;
+package co.sblock.effects.effect.godtier;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -16,11 +17,11 @@ import co.sblock.utilities.general.Potions;
  * 
  * @author Jikoo
  */
-public class EffectAbsorption extends Effect implements EffectBehaviorPassive,
+public class EffectHeartPassive extends Effect implements EffectBehaviorPassive,
 		EffectBehaviorCooldown {
 
-	public EffectAbsorption() {
-		super(500, 4, 20, "Absorbant", "HEART::PASSIVE");
+	public EffectHeartPassive() {
+		super(1000, 3, 20, "Absorbant", "HEART::PASSIVE");
 	}
 
 	@Override
@@ -34,10 +35,11 @@ public class EffectAbsorption extends Effect implements EffectBehaviorPassive,
 	}
 
 	@Override
-	public void applyEffect(Player player, int level) {
+	public void applyEffect(LivingEntity entity, int level) {
 		if (level < 1) {
 			level = 1;
 		}
-		Potions.applyIfBetter(player, new PotionEffect(PotionEffectType.ABSORPTION, 1200, level - 1));
+		int duration = entity instanceof Player ? 1200 : Integer.MAX_VALUE;
+		Potions.applyIfBetter(entity, new PotionEffect(PotionEffectType.ABSORPTION, duration, level - 1));
 	}
 }

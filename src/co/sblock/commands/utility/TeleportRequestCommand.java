@@ -86,7 +86,7 @@ public class TeleportRequestCommand extends SblockCommand {
 	}
 
 	private void ask(Player sender, String[] args, boolean here) {
-		long remainder = Cooldowns.getInstance().getRemainder(sender.getUniqueId(), "teleportRequest");
+		long remainder = Cooldowns.getInstance().getRemainder(sender, "teleportRequest");
 		if (remainder > 0) {
 			sender.sendMessage(Color.BAD + "You cannot send a teleport request for another "
 					+ Color.BAD_EMPHASIS + time.format(new Date(remainder)) + Color.BAD + ".");
@@ -126,7 +126,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
 		if (!sender.hasPermission("group.helper")) {
-			Cooldowns.getInstance().addCooldown(sender.getUniqueId(), "teleportRequest", 480000L);
+			Cooldowns.getInstance().addCooldown(sender, "teleportRequest", 480000L);
 		}
 		sender.sendMessage(Color.GOOD + "Request sent!");
 		target.sendMessage(Color.GOOD_PLAYER + sender.getDisplayName() + Color.GOOD + " is requesting to teleport " + (here ? "you to them." : "to you."));
@@ -171,7 +171,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
 		// future: perhaps rather than use /spectate deny, attempted spectating sends a tpa?
 		if (Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
-			Cooldowns.getInstance().clearCooldown(request.getSource(), "teleportRequest");
+			Cooldowns.getInstance().clearCooldown(request.isHere() ? toArriveAt : toTeleport, "teleportRequest");
 		}
 	}
 
@@ -185,8 +185,9 @@ public class TeleportRequestCommand extends SblockCommand {
 		Player issuer = Bukkit.getPlayer(request.getSource());
 		if (issuer != null) {
 			issuer.sendMessage(Color.BAD_PLAYER + sender.getDisplayName() + Color.BAD + " declined your request!");
+			Cooldowns.getInstance().clearCooldown(issuer, "teleportRequest");
 		}
-		Cooldowns.getInstance().clearCooldown(request.getSource(), "teleportRequest");
+		
 	}
 
 	private class TeleportRequest {

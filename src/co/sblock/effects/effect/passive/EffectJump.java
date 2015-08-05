@@ -1,5 +1,6 @@
 package co.sblock.effects.effect.passive;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -31,11 +32,12 @@ public class EffectJump  extends Effect implements EffectBehaviorPassive, Effect
 	}
 
 	@Override
-	public void applyEffect(Player player, int level) {
+	public void applyEffect(LivingEntity entity, int level) {
 		if (level < 1) {
 			level = 1;
 		}
-		Potions.applyIfBetter(player, new PotionEffect(PotionEffectType.JUMP, 200, level - 1));
+		int duration = entity instanceof Player ? 200 : Integer.MAX_VALUE;
+		Potions.applyIfBetter(entity, new PotionEffect(PotionEffectType.JUMP, duration, level - 1));
 	}
 
 }

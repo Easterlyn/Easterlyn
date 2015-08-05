@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -34,9 +35,9 @@ public class EffectVacuum extends Effect implements EffectBehaviorActive {
 	}
 
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
+	public void handleEvent(Event event, LivingEntity entity, int level) {
 		final double radius = level * 1.5;
-		final UUID uuid = player.getUniqueId();
+		final UUID uuid = entity.getUniqueId();
 		new BukkitRunnable() {
 			@Override
 			public void run() {

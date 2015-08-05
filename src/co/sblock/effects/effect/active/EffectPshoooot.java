@@ -3,7 +3,7 @@ package co.sblock.effects.effect.active;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -38,9 +38,9 @@ public class EffectPshoooot extends Effect implements EffectBehaviorActive, Effe
 	}
 
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
-		player.setFallDistance(0);
-		player.setVelocity(player.getLocation().getDirection().multiply(level + 2));
+	public void handleEvent(Event event, LivingEntity entity, int level) {
+		entity.setFallDistance(0);
+		entity.setVelocity(entity.getLocation().getDirection().multiply(level + 2));
 	}
 
 }

@@ -1,21 +1,28 @@
 package co.sblock.utilities.general;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 
 /**
- * 
+ * A utility for common potion or effect-related methods.
  * 
  * @author Jikoo
  */
 public class Potions {
 
-	public static void applyIfBetter(Player player, PotionEffect effect) {
-		if (!player.hasPotionEffect(effect.getType())) {
-			player.addPotionEffect(effect);
+	/**
+	 * Applies the given PotionEffect to an Entity provided the effect is not present or has a
+	 * higher amplifier or duration than the one currently present.
+	 * 
+	 * @param entity the Entity
+	 * @param effect the PotionEffect
+	 */
+	public static void applyIfBetter(LivingEntity entity, PotionEffect effect) {
+		if (!entity.hasPotionEffect(effect.getType())) {
+			entity.addPotionEffect(effect);
 			return;
 		}
-		for (PotionEffect current : player.getActivePotionEffects()) {
+		for (PotionEffect current : entity.getActivePotionEffects()) {
 			if (!current.getType().equals(effect.getType())) {
 				continue;
 			}
@@ -25,7 +32,9 @@ public class Potions {
 			if (current.getDuration() > effect.getDuration() && current.getAmplifier() == effect.getAmplifier()) {
 				return;
 			}
-			player.addPotionEffect(effect, true);
+			entity.addPotionEffect(effect, true);
+			return;
 		}
 	}
+
 }

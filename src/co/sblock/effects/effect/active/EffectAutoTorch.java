@@ -7,6 +7,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -32,7 +33,8 @@ public class EffectAutoTorch extends Effect implements EffectBehaviorActive {
 	}
 
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
+	public void handleEvent(Event event, LivingEntity entity, int level) {
+		Player player = (Player) entity;
 		Block block = player.getLocation().getBlock();
 		if (block.getLightFromBlocks() > 7
 				|| !block.getRelative(BlockFace.DOWN).getType().isSolid()

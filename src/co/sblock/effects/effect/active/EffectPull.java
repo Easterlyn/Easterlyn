@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -29,14 +28,13 @@ public class EffectPull extends Effect implements EffectBehaviorActive {
 	}
 
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
+	public void handleEvent(Event event, LivingEntity entity, int level) {
 		EntityDamageByEntityEvent dmgEvent = (EntityDamageByEntityEvent) event;
 		Entity damaged = dmgEvent.getEntity();
 		if (!(damaged instanceof LivingEntity)) {
 			return;
 		}
-		// EFFECTS: Verify that this is a decent vector
-		damaged.setVelocity(player.getLocation().toVector().subtract(damaged.getLocation().toVector()).multiply(level * 0.35));
+		damaged.setVelocity(entity.getLocation().toVector().subtract(damaged.getLocation().toVector()).multiply(level * 0.35));
 	}
 
 }

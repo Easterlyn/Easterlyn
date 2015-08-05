@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -40,8 +41,9 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Effe
 	}
 
 	@Override
-	public void handleEvent(Event event, Player player, int level) {
+	public void handleEvent(Event event, LivingEntity entity, int level) {
 		BlockBreakEvent breakEvent = (BlockBreakEvent) event;
+		Player player = breakEvent.getPlayer();
 		PermissionAttachment attachment = player.addAttachment(Sblock.getInstance());
 		attachment.setPermission("nocheatplus.checks.blockplace", true);
 		for (BlockFace face : faces) {
@@ -63,6 +65,7 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Effe
 			state.update(true, false);
 			return false;
 		}
+		block.getState().update();
 		return true;
 	}
 }

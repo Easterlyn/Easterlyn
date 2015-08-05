@@ -301,8 +301,8 @@ public class AsyncChatListener implements Listener {
 		String lastMsg = sender.getLastMessage();
 		sender.setLastChat(msg);
 		message.getChannel().setLastMessage(msg);
-		long lastChat = Cooldowns.getInstance().getRemainder(player.getUniqueId(), "chat");
-		Cooldowns.getInstance().addCooldown(player.getUniqueId(), "chat", 3000);
+		long lastChat = Cooldowns.getInstance().getRemainder(player, "chat");
+		Cooldowns.getInstance().addCooldown(player, "chat", 3000);
 
 		// Mute repeat messages
 		if (msg.equals(lastMsg) || message.equals(message.getChannel().getLastMessage())) {

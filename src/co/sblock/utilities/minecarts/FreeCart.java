@@ -27,10 +27,10 @@ public class FreeCart {
 
 	public void spawnCart(Player p, Location location, Vector startspeed) {
 		Cooldowns cooldowns = Cooldowns.getInstance();
-		if (cooldowns.getRemainder(p.getUniqueId(), "freecart") > 0) {
+		if (cooldowns.getRemainder(p, "freecart") > 0) {
 			return;
 		}
-		cooldowns.addCooldown(p.getUniqueId(), "freecart", 2000);
+		cooldowns.addCooldown(p, "freecart", 2000);
 		Minecart m = (Minecart) location.getWorld().spawnEntity(location, EntityType.MINECART);
 		m.setPassenger(p);
 		m.setVelocity(startspeed);

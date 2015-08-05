@@ -2,7 +2,7 @@ package co.sblock.effects.effect;
 
 import java.util.Collection;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 
 /**
@@ -23,8 +23,8 @@ public interface EffectBehaviorActive {
 	 * Handles an Event triggering this Effect.
 	 * 
 	 * @param event the Event
-	 * @param player the Player involved
-	 * @param level the level of the Effect on the Player
+	 * @param entity the LivingEntity involved
+	 * @param level the level of the Effect on the LivingEntity
 	 */
-	public void handleEvent(Event event, Player player, int level);
+	public void handleEvent(Event event, LivingEntity entity, int level);
 }

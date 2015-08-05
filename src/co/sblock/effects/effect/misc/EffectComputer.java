@@ -1,6 +1,6 @@
 package co.sblock.effects.effect.misc;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 
 import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.EffectBehaviorPassive;
@@ -17,6 +17,6 @@ public class EffectComputer extends Effect implements EffectBehaviorPassive {
 	}
 
 	@Override
-	public void applyEffect(Player player, int level) {}
+	public void applyEffect(LivingEntity entity, int level) {}
 
 }

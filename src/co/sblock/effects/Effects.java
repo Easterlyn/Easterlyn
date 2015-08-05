@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -118,38 +118,38 @@ public class Effects extends Module {
 	}
 
 	/**
-	 * Applies all effects to the given Player.
+	 * Applies all effects to the given LivingEntity.
 	 * 
-	 * @param player the Player
+	 * @param entity the LivingEntity
 	 */
-	public void applyAllEffects(Player player) {
-		for (Map.Entry<Effect, Integer> entry : getAllEffects(player).entrySet()) {
+	public void applyAllEffects(LivingEntity entity) {
+		for (Map.Entry<Effect, Integer> entry : getAllEffects(entity).entrySet()) {
 			if (!(entry.getKey() instanceof EffectBehaviorPassive)) {
 				continue;
 			}
 			EffectBehaviorCooldown cool = null;
 			if (entry.getKey() instanceof EffectBehaviorCooldown) {
 				cool = (EffectBehaviorCooldown) entry.getKey();
-				if (Cooldowns.getInstance().getRemainder(player.getUniqueId(), cool.getCooldownName()) > 0) {
+				if (Cooldowns.getInstance().getRemainder(entity, cool.getCooldownName()) > 0) {
 					continue;
 				}
 			}
-			((EffectBehaviorPassive) entry.getKey()).applyEffect(player, entry.getValue());
+			((EffectBehaviorPassive) entry.getKey()).applyEffect(entity, entry.getValue());
 			if (cool != null) {
-				Cooldowns.getInstance().addCooldown(player.getUniqueId(), cool.getCooldownName(), cool.getCooldownDuration());
+				Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 			}
 		}
 	}
 
 	/**
-	 * Scans the Player for effects and gets them.
+	 * Scans the LivingEntity for effects and gets them.
 	 * 
-	 * @param player the Player
+	 * @param entity the LivingEntity
 	 */
-	public Map<Effect, Integer> getAllEffects(Player player) {
+	public Map<Effect, Integer> getAllEffects(LivingEntity entity) {
 		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
 
-		for (ItemStack item: player.getInventory().getArmorContents()) {
+		for (ItemStack item: entity.getEquipment().getArmorContents()) {
 			for (Map.Entry<Effect, Integer> entry : getEffects(item).entrySet()) {
 				if (applicableEffects.containsKey(entry.getKey())) {
 					applicableEffects.put(entry.getKey(), applicableEffects.get(entry.getKey()) + entry.getValue());
@@ -159,7 +159,7 @@ public class Effects extends Module {
 			}
 		}
 
-		for (Map.Entry<Effect, Integer> entry : getEffects(player.getItemInHand()).entrySet()) {
+		for (Map.Entry<Effect, Integer> entry : getEffects(entity.getEquipment().getItemInHand()).entrySet()) {
 			if (applicableEffects.containsKey(entry.getKey())) {
 				applicableEffects.put(entry.getKey(), applicableEffects.get(entry.getKey()) + entry.getValue());
 			} else {
@@ -167,16 +167,22 @@ public class Effects extends Module {
 			}
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
-		if (user.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
-			for (String effectType : new String[] {"::ACTIVE", "::PASSIVE", "::REACTIVE"}) {
-				Effect effect = getEffect(user.getUserAspect().name() + effectType);
-				if (effect != null) {
-					if (applicableEffects.containsKey(effect)) {
-						applicableEffects.put(effect, applicableEffects.get(effect) + 1);
-					} else {
-						applicableEffects.put(effect, 1);
-					}
+		if (!(entity instanceof Player)) {
+			return applicableEffects;
+		}
+
+		OfflineUser user = Users.getGuaranteedUser(entity.getUniqueId());
+		if (user.getProgression().ordinal() < ProgressionState.GODTIER.ordinal()) {
+			return applicableEffects;
+		}
+
+		for (String effectType : new String[] {"::ACTIVE", "::PASSIVE", "::REACTIVE"}) {
+			Effect effect = getEffect(user.getUserAspect().name() + effectType);
+			if (effect != null) {
+				if (applicableEffects.containsKey(effect)) {
+					applicableEffects.put(effect, applicableEffects.get(effect) + 1);
+				} else {
+					applicableEffects.put(effect, 1);
 				}
 			}
 		}
@@ -188,24 +194,26 @@ public class Effects extends Module {
 	 * Handles an event for an active or reactive Effect.
 	 * 
 	 * @param event the Event
-	 * @param player the Player
+	 * @param entity the LivingEntity
 	 * @param reactive true if the Effect is reactive
 	 */
-	public void handleEvent(Event event, Player player, boolean reactive) {
+	public void handleEvent(Event event, LivingEntity entity, boolean reactive) {
 		Map<Effect, Integer> effects;
 		if (reactive) {
-			effects = getEffects(player.getInventory().getArmorContents());
+			effects = getEffects(entity.getEquipment().getArmorContents());
 		} else {
-			effects = getEffects(player.getItemInHand());
+			effects = getEffects(entity.getEquipment().getItemInHand());
 		}
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
-		if (user.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
-			Effect effect = Effects.getInstance().getEffect(user.getUserAspect().name() + (reactive ? "::REACTIVE" : "::ACTIVE"));
-			if (effect != null) {
-				if (effects.containsKey(effect)) {
-					effects.put(effect, effects.get(effect) + 1);
-				} else {
-					effects.put(effect, 1);
+		if (entity instanceof Player) {
+			OfflineUser user = Users.getGuaranteedUser(entity.getUniqueId());
+			if (user.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
+				Effect effect = Effects.getInstance().getEffect(user.getUserAspect().name() + (reactive ? "::REACTIVE" : "::ACTIVE"));
+				if (effect != null) {
+					if (effects.containsKey(effect)) {
+						effects.put(effect, effects.get(effect) + 1);
+					} else {
+						effects.put(effect, 1);
+					}
 				}
 			}
 		}
@@ -220,13 +228,13 @@ public class Effects extends Module {
 				if (!effects.containsKey(effect)) {
 					continue;
 				}
-				if (effect instanceof EffectBehaviorCooldown && Cooldowns.getInstance().getRemainder(player.getUniqueId(), ((EffectBehaviorCooldown) effect).getCooldownName()) > 0) {
+				if (effect instanceof EffectBehaviorCooldown && Cooldowns.getInstance().getRemainder(entity, ((EffectBehaviorCooldown) effect).getCooldownName()) > 0) {
 					continue;
 				}
-				((EffectBehaviorActive) effect).handleEvent(event, player, effects.get(effect));
+				((EffectBehaviorActive) effect).handleEvent(event, entity, effects.get(effect));
 				if (effect instanceof EffectBehaviorCooldown) {
 					EffectBehaviorCooldown cool = (EffectBehaviorCooldown) effect;
-					Cooldowns.getInstance().addCooldown(player.getUniqueId(), cool.getCooldownName(), cool.getCooldownDuration());
+					Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 				}
 			}
 		}
@@ -355,11 +363,11 @@ public class Effects extends Module {
 	 * @param effect the effect
 	 * @return true if the Effect is on cooldown.
 	 */
-	public boolean isOnCooldown(UUID uuid, Effect effect) {
+	public boolean isOnCooldown(LivingEntity entity, Effect effect) {
 		if (!(effect instanceof EffectBehaviorCooldown)) {
 			return false;
 		}
-		return Cooldowns.getInstance().getRemainder(uuid, ((EffectBehaviorCooldown) effect).getCooldownName()) > 0;
+		return Cooldowns.getInstance().getRemainder(entity, ((EffectBehaviorCooldown) effect).getCooldownName()) > 0;
 	}
 
 	/**
@@ -368,12 +376,12 @@ public class Effects extends Module {
 	 * @param uuid the UUID
 	 * @param effect the Effect
 	 */
-	public void startCooldown(UUID uuid, Effect effect) {
+	public void startCooldown(LivingEntity entity, Effect effect) {
 		if (!(effect instanceof EffectBehaviorCooldown)) {
 			return;
 		}
 		EffectBehaviorCooldown cool = (EffectBehaviorCooldown) effect;
-		Cooldowns.getInstance().addCooldown(uuid, cool.getCooldownName(), cool.getCooldownDuration());
+		Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 	}
 
 	@Override

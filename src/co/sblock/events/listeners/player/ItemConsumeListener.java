@@ -24,7 +24,7 @@ public class ItemConsumeListener implements Listener {
 		if (event.getItem().getType() != Material.POTION) {
 			return;
 		}
-		Cooldowns.getInstance().addCooldown(event.getPlayer().getUniqueId(), "PotionDrink", 1500);
+		Cooldowns.getInstance().addCooldown(event.getPlayer(), "PotionDrink", 1500);
 		if (!event.getItem().hasItemMeta()) {
 			return;
 		}
