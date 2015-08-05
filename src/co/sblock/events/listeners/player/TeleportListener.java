@@ -41,7 +41,8 @@ public class TeleportListener implements Listener {
 				continue;
 			}
 			if (player.getGameMode() == GameMode.SPECTATOR) {
-				if (player.getSpectatorTarget() != null) {
+				if (player.getSpectatorTarget() != null
+						&& player.getSpectatorTarget() instanceof Player) {
 					player = (Player) player.getSpectatorTarget();
 				} else {
 					continue;
