@@ -16,6 +16,7 @@ import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Log;
+import co.sblock.utilities.general.Cooldowns;
 import co.sblock.utilities.messages.JSONUtil;
 import co.sblock.utilities.messages.Slack;
 
@@ -173,24 +174,24 @@ public class Message {
 				text.setExtra(components);
 			}
 
-			if (highlight) {
-				if (!channel.getName().equals("#pm")) {
-					// Fun sound effects! Sadly, ender dragon kill is a little long even at 2x
-					switch ((int) (Math.random() * 20)) {
-					case 0:
-						player.playSound(player.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
-						break;
-					case 1:
-						player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1, 2);
-						break;
-					case 2:
-					case 3:
-						player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1, 1);
-						break;
-					default:
-						player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 2);
-					}
+			if (highlight && Cooldowns.getInstance().getRemainder(player, "highlight") == 0
+					&& !channel.getName().equals("#pm")) {
+				// Fun sound effects! Sadly, ender dragon kill is a little long even at 2x
+				switch ((int) (Math.random() * 20)) {
+				case 0:
+					player.playSound(player.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
+					break;
+				case 1:
+					player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1, 2);
+					break;
+				case 2:
+				case 3:
+					player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1, 1);
+					break;
+				default:
+					player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 2);
 				}
+				Cooldowns.getInstance().addCooldown(player, "highlight", 30000);
 			}
 			player.spigot().sendMessage(highlight ? channelHighlightComponent : channelComponent, nameComponent, message);
 		}
