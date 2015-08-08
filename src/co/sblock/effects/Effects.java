@@ -27,11 +27,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import co.sblock.Sblock;
+import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.BehaviorCooldown;
+import co.sblock.effects.effect.BehaviorPassive;
+import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
-import co.sblock.effects.effect.EffectBehaviorCooldown;
-import co.sblock.effects.effect.EffectBehaviorPassive;
-import co.sblock.effects.effect.EffectBehaviorReactive;
 import co.sblock.module.Module;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
@@ -66,15 +66,13 @@ public class Effects extends Module {
 			}
 			try {
 				Effect instance = effect.newInstance();
-				for (String name : instance.getNames()) {
-					effects.put(name, instance);
-				}
-				if (instance instanceof EffectBehaviorReactive) {
-					for (Class<? extends Event> clazz : ((EffectBehaviorReactive) instance).getApplicableEvents()) {
+				effects.put(instance.getName(), instance);
+				if (instance instanceof BehaviorReactive) {
+					for (Class<? extends Event> clazz : ((BehaviorReactive) instance).getApplicableEvents()) {
 						reactive.put(clazz, instance);
 					}
-				} else if (instance instanceof EffectBehaviorActive) {
-					for (Class<? extends Event> clazz : ((EffectBehaviorActive) instance).getApplicableEvents()) {
+				} else if (instance instanceof BehaviorActive) {
+					for (Class<? extends Event> clazz : ((BehaviorActive) instance).getApplicableEvents()) {
 						active.put(clazz, instance);
 					}
 				}
@@ -124,17 +122,17 @@ public class Effects extends Module {
 	 */
 	public void applyAllEffects(LivingEntity entity) {
 		for (Map.Entry<Effect, Integer> entry : getAllEffects(entity).entrySet()) {
-			if (!(entry.getKey() instanceof EffectBehaviorPassive)) {
+			if (!(entry.getKey() instanceof BehaviorPassive)) {
 				continue;
 			}
-			EffectBehaviorCooldown cool = null;
-			if (entry.getKey() instanceof EffectBehaviorCooldown) {
-				cool = (EffectBehaviorCooldown) entry.getKey();
+			BehaviorCooldown cool = null;
+			if (entry.getKey() instanceof BehaviorCooldown) {
+				cool = (BehaviorCooldown) entry.getKey();
 				if (Cooldowns.getInstance().getRemainder(entity, cool.getCooldownName()) > 0) {
 					continue;
 				}
 			}
-			((EffectBehaviorPassive) entry.getKey()).applyEffect(entity, entry.getValue());
+			((BehaviorPassive) entry.getKey()).applyEffect(entity, entry.getValue());
 			if (cool != null) {
 				Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 			}
@@ -228,12 +226,12 @@ public class Effects extends Module {
 				if (!effects.containsKey(effect)) {
 					continue;
 				}
-				if (effect instanceof EffectBehaviorCooldown && Cooldowns.getInstance().getRemainder(entity, ((EffectBehaviorCooldown) effect).getCooldownName()) > 0) {
+				if (effect instanceof BehaviorCooldown && Cooldowns.getInstance().getRemainder(entity, ((BehaviorCooldown) effect).getCooldownName()) > 0) {
 					continue;
 				}
-				((EffectBehaviorActive) effect).handleEvent(event, entity, effects.get(effect));
-				if (effect instanceof EffectBehaviorCooldown) {
-					EffectBehaviorCooldown cool = (EffectBehaviorCooldown) effect;
+				((BehaviorActive) effect).handleEvent(event, entity, effects.get(effect));
+				if (effect instanceof BehaviorCooldown) {
+					BehaviorCooldown cool = (BehaviorCooldown) effect;
 					Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 				}
 			}
@@ -312,7 +310,7 @@ public class Effects extends Module {
 				continue;
 			}
 			newLore.add(new StringBuilder().append(ChatColor.GRAY)
-					.append(entry.getKey().getNames().get(0)).append(' ')
+					.append(entry.getKey().getName()).append(' ')
 					.append(Roman.fromInt(entry.getValue())).toString());
 		}
 		newLore.addAll(oldLore);
@@ -364,10 +362,10 @@ public class Effects extends Module {
 	 * @return true if the Effect is on cooldown.
 	 */
 	public boolean isOnCooldown(LivingEntity entity, Effect effect) {
-		if (!(effect instanceof EffectBehaviorCooldown)) {
+		if (!(effect instanceof BehaviorCooldown)) {
 			return false;
 		}
-		return Cooldowns.getInstance().getRemainder(entity, ((EffectBehaviorCooldown) effect).getCooldownName()) > 0;
+		return Cooldowns.getInstance().getRemainder(entity, ((BehaviorCooldown) effect).getCooldownName()) > 0;
 	}
 
 	/**
@@ -377,10 +375,10 @@ public class Effects extends Module {
 	 * @param effect the Effect
 	 */
 	public void startCooldown(LivingEntity entity, Effect effect) {
-		if (!(effect instanceof EffectBehaviorCooldown)) {
+		if (!(effect instanceof BehaviorCooldown)) {
 			return;
 		}
-		EffectBehaviorCooldown cool = (EffectBehaviorCooldown) effect;
+		BehaviorCooldown cool = (BehaviorCooldown) effect;
 		Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 	}
 

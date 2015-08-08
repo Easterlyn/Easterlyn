@@ -9,19 +9,19 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import co.sblock.Sblock;
 import co.sblock.commands.entry.CrotchRocketCommand;
+import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
-import co.sblock.effects.effect.EffectBehaviorCooldown;
 
 /**
  * Per request, the ever-popular CrotchRocket.
  * 
  * @author Jikoo
  */
-public class EffectRocketJump extends Effect implements EffectBehaviorActive, EffectBehaviorCooldown {
+public class EffectRocketJump extends Effect implements BehaviorActive, BehaviorCooldown {
 
 	public EffectRocketJump() {
-		super(300, 1, 1, "Crotchrocket", "Rocket Jump", "Rocket Rider");
+		super(300, 1, 1, "Crotchrocket");
 	}
 
 	@Override

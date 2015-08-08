@@ -5,9 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import co.sblock.effects.effect.BehaviorCooldown;
+import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorCooldown;
-import co.sblock.effects.effect.EffectBehaviorPassive;
 import co.sblock.utilities.general.Potions;
 
 /**
@@ -15,10 +15,10 @@ import co.sblock.utilities.general.Potions;
  * 
  * @author Jikoo
  */
-public class EffectJump  extends Effect implements EffectBehaviorPassive, EffectBehaviorCooldown {
+public class EffectJump  extends Effect implements BehaviorPassive, BehaviorCooldown {
 
 	public EffectJump() {
-		super(500, 2, 10, "Jump", "Boing");
+		super(500, 2, 10, "Jump");
 	}
 
 	@Override

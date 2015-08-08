@@ -6,14 +6,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
 
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorPassive;
+import co.sblock.effects.effect.BehaviorPassive;
 
 /**
  * Flowers while you walk!
  * 
  * @author Dublekfx, Jikoo
  */
-public class EffectFlowers extends Effect implements EffectBehaviorPassive {
+public class EffectFlowers extends Effect implements BehaviorPassive {
 
 	public EffectFlowers() {
 		super(1200, 1, 1, "Flowers");

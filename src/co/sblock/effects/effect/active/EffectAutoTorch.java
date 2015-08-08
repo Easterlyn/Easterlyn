@@ -13,18 +13,18 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
 
 /**
  * Automatically consumes and places torches if light level is below 8 and the block below is solid.
  * 
  * @author Jikoo
  */
-public class EffectAutoTorch extends Effect implements EffectBehaviorActive {
+public class EffectAutoTorch extends Effect implements BehaviorActive {
 
 	public EffectAutoTorch() {
-		super(200, 1, 1, "Darkness Despising", "Torcherous");
+		super(200, 1, 1, "Darkness Despising");
 	}
 
 	@Override

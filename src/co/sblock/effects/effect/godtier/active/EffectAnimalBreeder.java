@@ -1,4 +1,4 @@
-package co.sblock.effects.effect.godtier;
+package co.sblock.effects.effect.godtier.active;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,9 +14,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.BehaviorCooldown;
+import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
-import co.sblock.effects.effect.EffectBehaviorCooldown;
+import co.sblock.users.UserAspect;
 import co.sblock.utilities.general.Potions;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftAnimals;
@@ -29,20 +31,45 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
  * 
  * @author Dublekfx, Jikoo
  */
-public class EffectHeartActive extends Effect implements EffectBehaviorActive, EffectBehaviorCooldown {
+public class EffectAnimalBreeder extends Effect implements BehaviorActive, BehaviorCooldown, BehaviorGodtier {
 
-	public EffectHeartActive() {
-		super(Integer.MAX_VALUE, 5, 5, "HEART::ACTIVE");
+	public EffectAnimalBreeder() {
+		super(Integer.MAX_VALUE, 5, 5, "Breeding");
 	}
 
 	@Override
 	public String getCooldownName() {
-		return "Effect:HeartActive";
+		return "Effect:Breeding";
 	}
 
 	@Override
 	public long getCooldownDuration() {
 		return 60000;
+	}
+
+	@Override
+	public Collection<UserAspect> getAspects() {
+		return Arrays.asList(UserAspect.HEART);
+	}
+
+	@Override
+	public String getName(UserAspect aspect) {
+		switch (aspect) {
+		case HEART:
+			return "TODO TODO SPLIT THIS";
+		default:
+			return "If you are reading this, please report it.";
+		}
+	}
+
+	@Override
+	public String getDescription(UserAspect aspect) {
+		switch (aspect) {
+		case HEART:
+			return "THIS IS A PLACEHOLDER HELLO YES";
+		default:
+			return "If you are reading this, please report it.";
+		}
 	}
 
 	@Override
@@ -52,6 +79,7 @@ public class EffectHeartActive extends Effect implements EffectBehaviorActive, E
 
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
+		// TODO split into multiple effects
 		Player player = (Player) entity;
 		if (!player.isSneaking()) {
 			return;

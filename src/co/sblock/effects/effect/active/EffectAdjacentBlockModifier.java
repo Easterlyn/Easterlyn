@@ -17,8 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
 
 import co.sblock.Sblock;
+import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
 import co.sblock.events.event.SblockBreakEvent;
 
 /**
@@ -26,11 +26,11 @@ import co.sblock.events.event.SblockBreakEvent;
  * 
  * @author Jikoo
  */
-public abstract class EffectAdjacentBlockModifier extends Effect implements EffectBehaviorActive {
+public abstract class EffectAdjacentBlockModifier extends Effect implements BehaviorActive {
 
 	private final BlockFace[] faces;
-	public EffectAdjacentBlockModifier(int cost, String... names) {
-		super(cost, 1, 1, names);
+	public EffectAdjacentBlockModifier(int cost, String name) {
+		super(cost, 1, 1, name);
 		faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
 				BlockFace.EAST, BlockFace.WEST };
 	}

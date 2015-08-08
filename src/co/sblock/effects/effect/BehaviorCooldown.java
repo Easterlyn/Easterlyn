@@ -5,7 +5,7 @@ package co.sblock.effects.effect;
  * 
  * @author Jikoo
  */
-public interface EffectBehaviorCooldown {
+public interface BehaviorCooldown {
 
 	/**
 	 * Gets the name to use for this Effect's cooldown.

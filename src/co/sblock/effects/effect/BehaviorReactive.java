@@ -5,4 +5,4 @@ package co.sblock.effects.effect;
  * 
  * @author Jikoo
  */
-public interface EffectBehaviorReactive extends EffectBehaviorActive {}
+public interface BehaviorReactive extends BehaviorActive {}

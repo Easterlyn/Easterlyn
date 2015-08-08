@@ -18,7 +18,7 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import co.sblock.Sblock;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
+import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.events.event.SblockBreakEvent;
 import co.sblock.utilities.experience.BlockDrops;
 import co.sblock.utilities.experience.Experience;
@@ -28,7 +28,7 @@ import co.sblock.utilities.experience.Experience;
  * 
  * @author Jikoo
  */
-public class EffectTunnelBore extends Effect implements EffectBehaviorActive {
+public class EffectTunnelBore extends Effect implements BehaviorActive {
 
 	private final BlockFace[] faces;
 	private final BlockFace[] levels;

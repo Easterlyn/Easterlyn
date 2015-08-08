@@ -1,17 +1,18 @@
 package co.sblock.effects.effect;
 
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * 
+ * Base class defining properties for an Effect.
+ * <p>
+ * No behaviors are defined, the Effect must implement BehaviorActive, BehaviorPassive, or
+ * BehaviorReactive.
  * 
  * @author Jikoo
  */
 public abstract class Effect {
 
 	// Lore which will trigger the same Effect
-	private final List<String> names;
+	private final String name;
 	// Cost of the Effect during alchemy
 	private final int cost;
 	// Maximum level per individual item
@@ -19,23 +20,20 @@ public abstract class Effect {
 	// Maximum level with any effect on play
 	private final int maximumCombinedLevel;
 
-	public Effect(int cost, int maximumLevel, int maximumCombinedLevel, String... names) {
-		if (names.length == 0) {
-			throw new IllegalArgumentException("Effects must have a minimum of 1 identifying name to register!");
-		}
-		this.names = Arrays.asList(names);
+	public Effect(int cost, int maximumLevel, int maximumCombinedLevel, String name) {
+		this.name = name;
 		this.cost = cost;
 		this.maximumLevel = maximumLevel;
 		this.maximumCombinedLevel = maximumCombinedLevel;
 	}
 
 	/**
-	 * Gets the List of names which this Effect goes by.
+	 * Gets the name this Effect goes by.
 	 * 
-	 * @return the names
+	 * @return the name
 	 */
-	public List<String> getNames() {
-		return this.names;
+	public String getName() {
+		return this.name;
 	}
 
 	/**

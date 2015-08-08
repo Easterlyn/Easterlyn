@@ -9,9 +9,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import co.sblock.effects.effect.BehaviorCooldown;
+import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorCooldown;
-import co.sblock.effects.effect.EffectBehaviorReactive;
 import co.sblock.utilities.general.Potions;
 
 /**
@@ -20,10 +20,10 @@ import co.sblock.utilities.general.Potions;
  * 
  * @author Jikoo
  */
-public class EffectPanic extends Effect implements EffectBehaviorReactive, EffectBehaviorCooldown {
+public class EffectPanic extends Effect implements BehaviorReactive, BehaviorCooldown {
 
 	public EffectPanic() {
-		super(200, 5, 20, "Panic", "Adrenaline");
+		super(200, 5, 20, "Panic");
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import org.bukkit.entity.LivingEntity;
  * 
  * @author Jikoo
  */
-public interface EffectBehaviorPassive {
+public interface BehaviorPassive {
 
 	/**
 	 * Applies the Effect to the given LivingEntity.

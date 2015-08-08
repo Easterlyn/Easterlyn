@@ -8,15 +8,15 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
-import co.sblock.effects.effect.EffectBehaviorCooldown;
+import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.BehaviorCooldown;
 
 /**
  * Try not to die!
  * 
  * @author Jikoo
  */
-public class EffectPshoooot extends Effect implements EffectBehaviorActive, EffectBehaviorCooldown {
+public class EffectPshoooot extends Effect implements BehaviorActive, BehaviorCooldown {
 
 	public EffectPshoooot() {
 		super(350, 5, 10, "Pshoooot");

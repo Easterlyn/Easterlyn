@@ -16,14 +16,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
+import co.sblock.effects.effect.BehaviorActive;
 
 /**
  * Cause all nearby items to be sucked to the player.
  * 
  * @author Jikoo
  */
-public class EffectVacuum extends Effect implements EffectBehaviorActive {
+public class EffectVacuum extends Effect implements BehaviorActive {
 
 	public EffectVacuum() {
 		super(300, 1, 3, "Vacuum");

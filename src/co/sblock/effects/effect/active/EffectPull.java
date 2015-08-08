@@ -9,14 +9,14 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import co.sblock.effects.effect.Effect;
-import co.sblock.effects.effect.EffectBehaviorActive;
+import co.sblock.effects.effect.BehaviorActive;
 
 /**
  * In essence, the opposite of knockback.
  * 
  * @author Jikoo
  */
-public class EffectPull extends Effect implements EffectBehaviorActive {
+public class EffectPull extends Effect implements BehaviorActive {
 
 	public EffectPull() {
 		super(200, 2, 2, "Pull");

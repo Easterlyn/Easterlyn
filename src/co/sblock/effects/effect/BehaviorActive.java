@@ -10,7 +10,7 @@ import org.bukkit.event.Event;
  * 
  * @author Jikoo
  */
-public interface EffectBehaviorActive {
+public interface BehaviorActive {
 
 	/**
 	 * Gets a Collection of Events during which this Effect triggers.
