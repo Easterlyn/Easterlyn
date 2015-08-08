@@ -7,7 +7,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.World.Environment;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -29,7 +29,6 @@ import co.sblock.chat.Color;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
-import co.sblock.users.Region;
 
 /**
  * Machine for Entity teleportation.
@@ -238,16 +237,16 @@ public class Transportalizer extends Machine {
 		}
 
 		// Parse remote location. Do not allow invalid height or coords.
-		Region region = Region.getRegion(getKey().getWorld().getName());
-		int maximumCoordinate = region.isMedium() ? 5000
-				: getKey().getWorld().getEnvironment() == Environment.NETHER ? 3125 : 25000;
+		WorldBorder border = getKey().getWorld().getWorldBorder();
 		String[] locString = line3.split(", ?");
 		int x0 = Integer.parseInt(locString[0]);
-		int x = Math.max(-maximumCoordinate, Math.min(maximumCoordinate, x0));
+		int max = (int) (border.getCenter().getX() + border.getSize());
+		int x = Math.max(-max, Math.min(max, x0));
 		int y0 = Integer.parseInt(locString[1]);
 		int y = Math.max(1, Math.min(255, y0));
 		int z0 = Integer.parseInt(locString[2]);
-		int z = Math.max(-maximumCoordinate, Math.min(maximumCoordinate, z0));
+		max = (int) (border.getCenter().getZ() + border.getSize());
+		int z = Math.max(-max, Math.min(max, z0));
 		if (x != x0 | y != y0 || z != z0) {
 			sign.setLine(2, x + ", " + y + ", " + z);
 			sign.update();
