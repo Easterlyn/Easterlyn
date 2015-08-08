@@ -7,6 +7,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -28,6 +29,7 @@ import co.sblock.chat.Color;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
+import co.sblock.users.Region;
 
 /**
  * Machine for Entity teleportation.
@@ -42,9 +44,7 @@ public class Transportalizer extends Machine {
 
 	private long fuel;
 	private final Hologram hologram;
-	/**
-	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
-	 */
+
 	@SuppressWarnings("deprecation")
 	public Transportalizer(Location l, String owner, Direction d) {
 		super(l, owner, d);
@@ -238,13 +238,16 @@ public class Transportalizer extends Machine {
 		}
 
 		// Parse remote location. Do not allow invalid height or coords.
+		Region region = Region.getRegion(getKey().getWorld().getName());
+		int maximumCoordinate = region.isMedium() ? 5000
+				: getKey().getWorld().getEnvironment() == Environment.NETHER ? 3125 : 25000;
 		String[] locString = line3.split(", ?");
 		int x0 = Integer.parseInt(locString[0]);
-		int x = x0 > 25000 ? 25000 : x0 < -25000 ? -25000 : x0;
+		int x = Math.max(-maximumCoordinate, Math.min(maximumCoordinate, x0));
 		int y0 = Integer.parseInt(locString[1]);
-		int y = y0 > 0 ? y0 < 256 ? y0 : 255 : 63;
+		int y = Math.max(1, Math.min(255, y0));
 		int z0 = Integer.parseInt(locString[2]);
-		int z = z0 > 25000 ? 25000 : z0 < -25000 ? -25000 : z0;
+		int z = Math.max(-maximumCoordinate, Math.min(maximumCoordinate, z0));
 		if (x != x0 | y != y0 || z != z0) {
 			sign.setLine(2, x + ", " + y + ", " + z);
 			sign.update();
