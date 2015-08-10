@@ -6,6 +6,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -13,6 +15,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
+import co.sblock.utilities.messages.Slack;
 
 /**
  * Base for commands that should be processed off the main thread.
@@ -34,8 +38,25 @@ public abstract class SblockAsynchronousCommand extends SblockCommand {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (!onCommand(sender, label, args)) {
-					sender.sendMessage(getUsage());
+				try {
+					if (!onCommand(sender, label, args)) {
+						sender.sendMessage(getUsage());
+					}
+				} catch (Exception e) {
+					sender.sendMessage(Color.BAD + "An error occurred processing this command. Please make sure your parameters are correct.");
+					StringBuilder cause = new StringBuilder("\nTrace base: ");
+					if (e.getMessage() != null) {
+						cause.append(e.getMessage());
+					} else {
+						cause.append("null");
+					}
+					if (e.getCause() != null && e.getCause().getMessage() != null) {
+						cause.append(", cause by: ").append(e.getCause().getMessage());
+					}
+					Slack.getInstance().postReport(sender.getName(), null,
+							"Error processing command: " + StringUtils.join(args, ' ')
+									+ cause.toString());
+					e.printStackTrace();
 				}
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());

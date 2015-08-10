@@ -2,6 +2,8 @@ package co.sblock.commands;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
@@ -9,6 +11,7 @@ import org.bukkit.plugin.Plugin;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
+import co.sblock.utilities.messages.Slack;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -64,8 +67,25 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 			sender.sendMessage(this.getPermissionMessage());
 			return true;
 		}
-		if (onCommand(sender, label, args)) {
-			return true;
+		try {
+			if (onCommand(sender, label, args)) {
+				return true;
+			}
+		} catch (Exception e) {
+			sender.sendMessage(Color.BAD + "An error occurred processing this command. Please make sure your parameters are correct.");
+			StringBuilder cause = new StringBuilder("\nTrace base: ");
+			if (e.getMessage() != null) {
+				cause.append(e.getMessage());
+			} else {
+				cause.append("null");
+			}
+			if (e.getCause() != null && e.getCause().getMessage() != null) {
+				cause.append(", cause by: ").append(e.getCause().getMessage());
+			}
+			Slack.getInstance().postReport(sender.getName(), null,
+					"Error processing command: " + StringUtils.join(args, ' ')
+							+ cause.toString());
+			e.printStackTrace();
 		}
 		sender.sendMessage(this.getUsage());
 		return true;
