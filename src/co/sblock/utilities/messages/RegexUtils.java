@@ -77,4 +77,16 @@ public class RegexUtils {
 		}
 		return sb.append(getFriendlyName(e.getType().name().toLowerCase())).toString();
 	}
+
+	public static String stripEndPunctuation(String word) {
+		if (word.length() == 0) {
+			return word;
+		}
+		char character = word.charAt(word.length() - 1);
+		if (character < '0' || character > '9' && character < 'A' || character > 'Z'
+				&& character != '_' && character < 'a' || character > 'z') {
+			return word.substring(0, word.length() - 1);
+		}
+		return word;
+	}
 }

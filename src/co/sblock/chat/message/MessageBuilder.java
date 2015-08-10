@@ -155,7 +155,7 @@ public class MessageBuilder {
 				}
 
 				// Anything goes as long as it's the name of a recipient
-				if (names.contains(word)) {
+				if (names.contains(RegexUtils.stripEndPunctuation(word))) {
 					sb.append(word).append(' ');
 					continue;
 				}
@@ -177,7 +177,9 @@ public class MessageBuilder {
 			if (sb.length() > 0) {
 				sb.deleteCharAt(sb.length() - 1);
 			}
-			message = sb.toString().replaceAll("[tT]ilde?s?", "");
+			message = sb.toString().replaceAll("[tT]ilde?s?", "").replace("GOG", "GOD")
+					.replaceAll("([Gg])og", "$1od").replace("JEGUS", "JESUS")
+					.replaceAll("([Jj])egus", "$1esus");
 		}
 
 		// Trim whitespace created by formatting codes, etc.
