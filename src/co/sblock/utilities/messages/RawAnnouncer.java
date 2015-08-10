@@ -4,45 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.Sblock;
+import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Color;
+import co.sblock.chat.message.Message;
+import co.sblock.chat.message.MessageBuilder;
 import co.sblock.module.Module;
-import co.sblock.utilities.Log;
+
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * @author Jikoo
  */
 public class RawAnnouncer extends Module {
 
-	public class AnnouncementMessage {
-		private final String json, console;
-		public AnnouncementMessage(String json, String console) {
-			this.json = json;
-			this.console = console;
-		}
-		public String getJSON() {
-			return this.json;
-		}
-		public String getConsole() {
-			return this.console;
-		}
-	}
-
-	private List<AnnouncementMessage> announcements;
+	private List<Message> announcements;
 	private static RawAnnouncer instance;
-	private static final String HALEMENT = "{\"text\":\"\",\"extra\":["
-			+ "{\"color\":\"white\",\"text\":\"[\"},"
-			+ "{\"color\":\"red\",\"text\":\"#\"},"
-			+ "{\"color\":\"white\",\"text\":\"] <\"},"
-			+ "{\"color\":\"dark_red\",\"text\":\"Lil Hal\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Automated Announcement\",\"color\":\"red\"}}},"
-			+ "{\"color\":\"white\",\"text\":\"> \"},"
-			+ "{\"color\":\"red\",\"text\":\"";
 
-	/**
-	 * @see co.sblock.Module#onEnable()
-	 */
 	@Override
 	protected void onEnable() {
 		instance = this;
@@ -55,11 +40,7 @@ public class RawAnnouncer extends Module {
 				if (Bukkit.getOnlinePlayers().size() == 0) {
 					return;
 				}
-				AnnouncementMessage msg = announcements.get((int) (Math.random() * announcements.size()));
-				Log.anonymousInfo(msg.getConsole());
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + ' ' + msg.getJSON());
-				}
+				announcements.get((int) (Math.random() * announcements.size())).send(Bukkit.getOnlinePlayers());
 			}
 		}, 0, 1200 * 15); // 15 minutes in between rawnouncments
 	}
@@ -69,74 +50,247 @@ public class RawAnnouncer extends Module {
 	 * 
 	 * @return the List created
 	 */
-	private List<AnnouncementMessage> constructAnnouncements() {
-		List<AnnouncementMessage> msgs = new ArrayList<>();
+	private List<Message> constructAnnouncements() {
+		List<Message> msgs = new ArrayList<>();
+		ItemStack hoverStack = new ItemStack(Material.DIODE);
+		ItemMeta meta = hoverStack.getItemMeta();
+		meta.setDisplayName(ChatColor.RED + "Automated Announcement");
+		hoverStack.setItemMeta(meta);
+		MessageBuilder builder = new MessageBuilder().setChannel(ChannelManager.getChannelManager().getChannel("#"))
+				.setSender(ChatColor.DARK_RED + "Lil Hal").setNameHover(hoverStack).setNameClick("/report ");
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "Join us on our subreddit, \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"/r/Sblock\","
-					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://www.reddit.com/r/sblock\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}},"
-				+ "{\"color\":\"red\",\"text\":\"!\"}]}",
-				Color.HAL + "Join us on our subreddit, http://www.reddit.com/r/sblock"));
+		List<TextComponent> components = new ArrayList<>();
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "If you're having trouble with chat, \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"/chat\","
-					+ "\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/chat\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to run!\",\"color\":\"gold\"}}},"
-				+ "{\"color\":\"red\",\"text\":\" is your friend!\"}]}",
-				Color.HAL + "If you're having trouble with chat, /chat is your friend"));
+		TextComponent[] hover = new TextComponent[]{new TextComponent("Click here to go!")};
+		hover[0].setColor(ChatColor.GOLD);
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "Remember, we are in \"},"
-				+ "{\"color\":\"gold\",\"bold\":\"true\",\"text\":\"ALPHA\","
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"We reserve the right to fuck up badly.\",\"color\":\"dark_red\"}}},"
-				+ "{\"color\":\"red\",\"text\":\"!\"}]}",
-				Color.HAL + "Remember, we are in ALPHA! We reserve the right to fuck up badly."));
+		// Announcement: Join us on our subreddit
+		TextComponent component = new TextComponent("Join us on our subreddit,");
+		component.setColor(ChatColor.RED);
+		components.add(component);
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "Join us on \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"Mumble\","
-				+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://mumble.sourceforge.net/\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to download!\",\"color\":\"gold\"}}},"
-				+ "{\"color\":\"red\",\"text\":\" for voice chat! The server is \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"   sblock.co\"},"
-				+ "{\"color\":\"red\",\"text\":\", port \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"25560\"},"
-				+ "{\"color\":\"red\",\"text\":\"!\"}]}",
-				Color.HAL + "Join us on Mumble for voice chat! The server is sblock.co, port 25560!"));
+		component = new TextComponent(" /r/Sblock");
+		component.setColor(ChatColor.BLUE);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://www.reddit.com/r/sblock"));
+		components.add(component);
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "It appears that enchanting furnaces is very beneficial. You might consider giving it a try.\"}]}",
-				Color.HAL + "It appears that enchanting furnaces is very beneficial. You might consider giving it a try."));
+		component = new TextComponent("!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "It is your generosity that keeps Sblock alive. Please consider \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"donating\","
-					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://sblock.co/wiki/Donating\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here for more information!\",\"color\":\"gold\"}}},"
-				+ "{\"color\":\"red\",\"text\":\" to help!\"}]}",
-				Color.HAL + "It is your generosity that keeps Sblock alive. Please consider http://sblock.co/wiki/Donating to help."));
+		builder.setMessage(Color.HAL + "Join us on our subreddit, http://www.reddit.com/r/sblock",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "To sleep without dreaming, sneak while right clicking your bed!\"}]}",
-				Color.HAL + "To sleep without dreaming, sneak while right clicking your bed!"));
+		// Announcement: Join plug.dj
+		components.clear();
+		component = new TextComponent("Join our");
+		component.setColor(ChatColor.RED);
+		components.add(component);
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "Please be aware that our \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"plug.dj room\","
-					+ "\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://plug.dj/sblockco/\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to go!\",\"color\":\"gold\"}}},"
-				+ "{\"color\":\"red\",\"text\":\" has changed!\"}]}",
-				Color.HAL + "Interested in jamming with your fellow Sblock players? Join http://plug.dj/sblockco/ to listen and play!"));
+		component = new TextComponent(" plug.dj room ");
+		component.setColor(ChatColor.BLUE);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://plug.dj/sblockco/"));
+		components.add(component);
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!\"}]}",
-				Color.HAL + "Unprotected and unvisited areas will gradually regenerate. Please claim your builds!"));
+		component = new TextComponent("to play tunes and videos with other players!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
 
-		msgs.add(new AnnouncementMessage(HALEMENT + "Experiencing issues? If you \"},"
-				+ "{\"color\":\"aqua\",\"text\":\"/report\","
-					+ "\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/report\"},"
-					+ "\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Click here to insert!\",\"color\":\"gold\"}}},"
-				+ "{\"color\":\"red\",\"text\":\" it, we may be able to help out!\"}]}",
-				Color.HAL + "Experiencing issues? If you /report it, we may be able to help out!"));
+		builder.setMessage(Color.HAL + "Join http://plug.dj/sblockco/ to play tunes and videos with other players!",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
+		// Announcement: Pls gib monie
+		components.clear();
+		component = new TextComponent("It is your generosity that keeps Sblock alive. Please consider");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent(" donating ");
+		component.setColor(ChatColor.DARK_GREEN);
+		hover[0].setText("Click here for more information!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://sblock.co/wiki/Donating"));
+		components.add(component);
+
+		component = new TextComponent("to help.");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage(Color.HAL + "It is your generosity that keeps Sblock alive. Please consider http://sblock.co/wiki/Donating to help.",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
+		// Announcement: Try EnchantedFurnace
+		components.clear();
+		component = new TextComponent("Are furnaces wasting too much of your time? Try");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent(" enchanting a furnace");
+		component.setColor(ChatColor.BLUE);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://sblock.co/wiki/EnchantedFurnace"));
+		components.add(component);
+
+		component = new TextComponent("!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage(Color.HAL + "Are furnaces wasting too much of your time? Try http://sblock.co/wiki/EnchantedFurnace",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
+		// Announcement: Protect your stuff
+		components.clear();
+		component = new TextComponent("Unprotected and unvisited areas gradually regenerate. Please");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent(" claim your builds");
+		component.setColor(ChatColor.BLUE);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
+				"https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1"));
+		components.add(component);
+
+		component = new TextComponent("!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage(Color.HAL + "Unprotected and unvisited areas gradually regenerate. Please claim your builds!",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
+		// Announcement: Try /chat
+		components.clear();
+		component = new TextComponent("Having trouble with chat? Check out ");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent("/chat");
+		component.setColor(ChatColor.AQUA);
+		hover[0].setText("Click here to run!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/chat"));
+		components.add(component);
+
+		component = new TextComponent("!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage(Color.HAL + "Having trouble with chat? Check out /chat!",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
+		// Announcement: How to sleep
+		components.clear();
+		component = new TextComponent("To");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent(" sleep ");
+		component.setColor(ChatColor.AQUA);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sleep"));
+		components.add(component);
+
+		component = new TextComponent("without dreaming, sneak while right clicking your bed!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage(Color.HAL + "To sleep without dreaming, sneak while right clicking your bed!",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
+		// Announcement: Use /report ffs
+		components.clear();
+		component = new TextComponent("Been griefed? Found a bug? Please");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent(" /report ");
+		component.setColor(ChatColor.AQUA);
+		hover[0].setText("Click to autofill!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/report "));
+		components.add(component);
+
+		component = new TextComponent("issues so we can help!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage(Color.HAL + "Been griefed? Found a bug? Please /report issues so we can help!",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
+		// Announcement: Mamblo No. 5
+		components.clear();
+		component = new TextComponent("We use");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent(" Mumble ");
+		component.setColor(ChatColor.BLUE);
+		hover[0].setText("Click here to download!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://mumble.sourceforge.net/"));
+		components.add(component);
+
+		component = new TextComponent("for voice chat! The server is ");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent("sblock.co");
+		component.setColor(ChatColor.BLUE);
+		components.add(component);
+
+		component = new TextComponent(", port ");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent("25560");
+		component.setColor(ChatColor.BLUE);
+		components.add(component);
+
+		component = new TextComponent(".");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage(Color.HAL + "Join us on Mumble for voice chat! The server is sblock.co, port 25560.",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
+		// Announcement: ALPHA
+		components.clear();
+		component = new TextComponent("Remember, we are in ");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent("ALPHA");
+		component.setColor(ChatColor.GOLD);
+		component.setBold(true);
+		hover[0].setText("We reserve the right to fuck up badly.");
+		hover[0].setColor(ChatColor.DARK_RED);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/report "));
+		components.add(component);
+
+		component = new TextComponent("!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage(Color.HAL + "Remember, we are in ALPHA! We reserve the right to fuck up badly.",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
 
 		return msgs;
 	}
 
-	public List<AnnouncementMessage> getMessages() {
+	public List<Message> getMessages() {
 		return announcements;
 	}
 

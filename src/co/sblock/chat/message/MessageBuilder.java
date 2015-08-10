@@ -109,15 +109,25 @@ public class MessageBuilder {
 	}
 
 	public MessageBuilder setMessage(TextComponent... messageComponents) {
+		return setMessage(TextComponent.toPlainText(messageComponents), messageComponents);
+	}
+
+	public MessageBuilder setMessage(String message, TextComponent... messageComponents) {
 		if (messageComponents.length == 0) {
 			throw new IllegalArgumentException("Message components must exist!");
 		}
+		if (message == null) {
+			throw new IllegalArgumentException("Message cannot be null!");
+		}
 		this.messageComponents = messageComponents;
-		this.message = TextComponent.toPlainText(messageComponents);
+		this.message = message;
 		return this;
 	}
 
 	public MessageBuilder setMessage(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Message cannot be null!");
+		}
 		if (this.messageComponents != null) {
 			this.messageComponents = null;
 		}
