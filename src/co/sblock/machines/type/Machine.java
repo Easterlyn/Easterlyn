@@ -2,13 +2,15 @@ package co.sblock.machines.type;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -26,13 +28,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
@@ -45,87 +45,73 @@ import co.sblock.users.Users;
  */
 public abstract class Machine {
 
-	/* The Location of the key Block of the Machine. */
-	protected Location key;
-
-	/* The owner and any other data stored for the Machine. */
-	protected String owner, data;
-
-	/* Machine facing */
-	protected Direction direction;
-
-	/* The Shape of the Machine */
-	protected transient Shape shape;
-
-	/* A Map of all Locations defined as part of the Machine and the relevant MaterialData. */
-	protected transient HashMap<Location, MaterialData> blocks;
+	private final Shape shape;
 
 	/**
-	 * @param key the Location of the key Block of this Machine
-	 * @param owner the UUID of the Machine's owner
-	 * @param direction the facing direction of the Machine
-	 */
-	Machine(Location key, String owner, Direction direction) {
-		this.key = key;
-		this.owner = owner;
-		this.direction = direction;
-		this.shape = new Shape(key.clone());
-		shape.addBlock(new Vector(0, 0, 0), this.getType().getUniqueDrop().getData());
-	}
-
-	/**
-	 * @param key the Location of the key Block of this Machine
-	 * @param owner any additional data stored in this machine, e.g. creator name
-	 */
-	Machine(Location key, String owner) {
-		this(key, owner, Direction.NORTH);
-	}
-
-	/**
-	 * Gets the Location of the key Block of this Machine.
+	 * Constructor for a Machine.
 	 * 
+	 * @param shape the in-world representation of the machine
+	 */
+	Machine(Shape shape) {
+		this.shape = shape;
+	}
+
+	/**
+	 * Gets the Machine's shape.
+	 * 
+	 * @return the Shape of the Machine
+	 */
+	public Shape getShape() {
+		return shape;
+	}
+
+	/**
+	 * Checks if the Machine is free. Free machines can be broken by anyone, and do not yield any
+	 * drops.
+	 * 
+	 * @return true if the Machine's cost is 0
+	 */
+	public boolean isFree() {
+		return getCost() < 1;
+	}
+
+	/**
+	 * Gets the grist cost for creating this Machine.
+	 * 
+	 * @return the cost
+	 */
+	public int getCost() {
+		return 0;
+	}
+
+	/**
+	 * Gets the key Location of a Machine from a ConfigurationSection.
+	 * 
+	 * @param storage the Machine's ConfigurationSection
 	 * @return the Location
 	 */
-	public Location getKey() {
-		return key;
+	public Location getKey(ConfigurationSection storage) {
+		return Machines.fromString(storage.getCurrentPath());
 	}
 
 	/**
-	 * Gets the Location of the key Block of this Machine in String form.
-	 * <p>
-	 * Primarily intended for saving to database.
+	 * Gets the Direction of a Machine from a ConfigurationSection.
 	 * 
-	 * @return the Location String
+	 * @param storage the Machine's ConfigurationSection
+	 * @return the Direction
 	 */
-	public String getLocationString() {
-		return key.getWorld().getName() + "," + key.getBlockX() + "," + key.getBlockY() + "," + key.getBlockZ();
+	public Direction getDirection(ConfigurationSection storage) {
+		return Direction.valueOf(storage.getString("direction"));
 	}
 
 	/**
-	 * Gets the owner of this Machine.
+	 * Gets UUID of the owner of a Machine from a ConfigurationSection.
 	 * 
-	 * @return the UUID of the owner of the Machine
+	 * @param storage the Machine's ConfigurationSection
+	 * @return the UUID
 	 */
-	public String getOwner() {
-		return this.owner;
-	}
-
-	/**
-	 * Sets additional data stored for the Machine.
-	 * 
-	 * @param data the data to set
-	 */
-	public void setData(String data) {
-		this.data = data;
-	}
-
-	/**
-	 * Gets any additional data used to identify this Machine.
-	 * 
-	 * @return String
-	 */
-	public String getData() {
-		return data;
+	public UUID getOwner(ConfigurationSection storage) {
+		return UUID.fromString(storage.getString("owner"));
 	}
 
 	/**
@@ -136,10 +122,9 @@ public abstract class Machine {
 	 * @param event the BlockPlaceEvent
 	 * @return boolean
 	 */
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
-		return this.getType().isFree() || this.getType().getCost() < 0
-				|| event.getPlayer().hasPermission("sblock.denizen")
-				|| owner.equals(event.getPlayer().getUniqueId().toString());
+	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event, ConfigurationSection storage) {
+		return this.isFree() || event.getPlayer().hasPermission("sblock.denizen")
+				|| event.getPlayer().getUniqueId().toString().equals(storage.getString("owner"));
 	}
 
 	/**
@@ -148,36 +133,37 @@ public abstract class Machine {
 	 * @param event the BlockPlaceEvent
 	 * @return 
 	 */
-	public void assemble(BlockPlaceEvent event) {
-		for (Location l : blocks.keySet()) {
-			if (!l.equals(this.key) && (!l.getBlock().isEmpty()
-					|| Machines.getInstance().isExploded(l.getBlock()))) {
+	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
+		Location key = getKey(storage);
+		Direction direction = getDirection(storage);
+		for (Location location : shape.getBuildLocations(key, direction).keySet()) {
+			if (!location.equals(key) && (!location.getBlock().isEmpty()
+					|| Machines.getInstance().isExploded(location.getBlock()))) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(Color.BAD + "There isn't enough space to build this Machine here.");
-				this.assemblyFailed();
+				this.assemblyFailed(storage);
 				return;
 			}
 		}
-		this.assemble();
+		this.assemble(key, direction, storage);
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
-				&& owner.equals(user.getUUID().toString())) {
-			this.owner = user.getClient().toString();
+				&& user.getUUID().toString().equals(storage.getString("owner"))) {
+			storage.set("owner", user.getClient().toString());
 		}
-		Machines.getInstance().saveMachine(this);
 	}
 
 	/**
 	 * Helper method for assembling the Machine.
 	 */
-	@SuppressWarnings("deprecation")
-	protected void assemble() {
-		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
-			Block b = e.getKey().getBlock();
-			b.setType(e.getValue().getItemType());
-			b.setData(e.getValue().getData());
+	protected void assemble(Location key, Direction direction, ConfigurationSection storage) {
+		HashMap<Location, MaterialData> buildData = shape.getBuildLocations(key, direction);
+		for (Entry<Location, MaterialData> entry : buildData.entrySet()) {
+			BlockState state = entry.getKey().getBlock().getState();
+			state.setData(entry.getValue());
+			state.update(true, false);
 		}
-		this.triggerPostAssemble();
+		this.triggerPostAssemble(buildData, storage);
 	}
 
 	/**
@@ -187,23 +173,23 @@ public abstract class Machine {
 	 * the event, making it rather difficult to do anything fun like drop a meteor on someone's
 	 * computer, we'll hook it and play nice.
 	 */
-	@SuppressWarnings("deprecation")
-	public void reassemble() {
+	public void reassemble(ConfigurationSection storage) {
+		final Location key = getKey(storage);
 		final HashMap<Location, ItemStack[]> invents = new HashMap<Location, ItemStack[]>();
-		for (Location l : blocks.keySet()) {
+		for (Location l : Machines.getInstance().getMachineBlocks(key)) {
 			Block b = l.getBlock();
 			if (b.getState() instanceof InventoryHolder) {
 				InventoryHolder ih = (InventoryHolder) b.getState();
 				invents.put(l, ih.getInventory().getContents().clone());
 				ih.getInventory().clear();
 			}
-			b.setTypeId(0, false);
+			b.setType(Material.AIR, false);
 		}
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				assemble();
+				assemble(key, getDirection(storage), storage);
 				for (Entry<Location, ItemStack[]> e : invents.entrySet()) {
 					try {
 						((InventoryHolder) e.getKey().getBlock().getState()).getInventory().setContents(e.getValue());
@@ -220,41 +206,14 @@ public abstract class Machine {
 	/**
 	 * Removes this machine's blocks and listing.
 	 */
-	public void remove() {
-		disable();
-		for (Location l : this.getLocations()) {
+	public void remove(ConfigurationSection storage) {
+		disable(storage);
+		Location key = getKey(storage);
+		for (Location l : Machines.getInstance().getMachineBlocks(key)) {
 			l.getBlock().setType(Material.AIR);
 		}
-		getKey().getBlock().setType(Material.AIR);
-		Machines.getInstance().deleteMachine(getKey());
-	}
-
-	/**
-	 * Gets a Set of all non-key Locations of Blocks in a Machine.
-	 * 
-	 * @return the Set
-	 */
-	public Set<Location> getLocations() {
-		if (blocks == null) {
-			blocks = shape.getBuildLocations(getFacingDirection());
-		}
-		return blocks.keySet();
-	}
-
-	/**
-	 * Gets the MachineType.
-	 * 
-	 * @return the MachineType
-	 */
-	public abstract MachineType getType();
-
-	/**
-	 * Gets the Direction the machine was placed in.
-	 * 
-	 * @return the Direction
-	 */
-	public Direction getFacingDirection() {
-		return direction;
+		key.getBlock().setType(Material.AIR);
+		Machines.getInstance().deleteMachine(key);
 	}
 
 	/**
@@ -264,14 +223,15 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleBreak(BlockBreakEvent event) {
-		if (!meetsAdditionalBreakConditions(event) && !event.getPlayer().hasPermission("sblock.denizen")) {
+	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
+		if (!meetsAdditionalBreakConditions(event, storage) && !event.getPlayer().hasPermission("sblock.denizen")) {
 			return true;
 		}
-		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !getType().isFree()) {
-			getKey().getWorld().dropItemNaturally(getKey(), getType().getUniqueDrop());
+		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !isFree()) {
+			Location key = getKey(storage);
+			key.getWorld().dropItemNaturally(key, getUniqueDrop());
 		}
-		remove();
+		remove(storage);
 		return true;
 	}
 
@@ -282,7 +242,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleGrow(BlockGrowEvent event) {
+	public boolean handleGrow(BlockGrowEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -293,7 +253,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleFade(BlockFadeEvent event) {
+	public boolean handleFade(BlockFadeEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -304,7 +264,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleIgnite(BlockIgniteEvent event) {
+	public boolean handleIgnite(BlockIgniteEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -315,7 +275,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handlePhysics(BlockPhysicsEvent event) {
+	public boolean handlePhysics(BlockPhysicsEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -326,7 +286,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handlePush(BlockPistonExtendEvent event) {
+	public boolean handlePush(BlockPistonExtendEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -337,7 +297,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handlePull(BlockPistonRetractEvent event) {
+	public boolean handlePull(BlockPistonRetractEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -348,7 +308,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleSpread(BlockSpreadEvent event) {
+	public boolean handleSpread(BlockSpreadEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -361,8 +321,8 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleInteract(PlayerInteractEvent event) {
-		for (Location l : this.blocks.keySet()) {
+	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
+		for (Location l : Machines.getInstance().getMachineBlocks(getKey(storage))) {
 			if (Machines.getInstance().isExploded(l.getBlock())) {
 				event.getPlayer().sendMessage(Color.BAD + "This machine is too damaged to use!");
 				return true;
@@ -378,7 +338,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleHopperMoveItem(InventoryMoveItemEvent event) {
+	public boolean handleHopperMoveItem(InventoryMoveItemEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -389,7 +349,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if the event should be cancelled
 	 */
-	public boolean handleHopperPickupItem(InventoryPickupItemEvent event) {
+	public boolean handleHopperPickupItem(InventoryPickupItemEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
@@ -400,7 +360,7 @@ public abstract class Machine {
 	 * 
 	 * @return true if event should be cancelled
 	 */
-	public boolean handleClick(InventoryClickEvent event) {
+	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
 		event.setResult(Result.DENY);
 		return true;
 	}
@@ -408,15 +368,17 @@ public abstract class Machine {
 	/**
 	 * Triggers postAssemble method on a synchronous 0 tick delay.
 	 */
-	private void triggerPostAssemble() {
+	private void triggerPostAssemble(HashMap<Location, MaterialData> buildData, ConfigurationSection storage) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@Override
-			@SuppressWarnings("deprecation")
 			public void run() {
-				MaterialData m = blocks.get(key);
-				Block b = key.getBlock();
-				b.setType(m.getItemType());
-				b.setData(m.getData());
+				for (Entry<Location, MaterialData> entry : buildData.entrySet()) {
+					BlockState state = entry.getKey().getBlock().getState();
+					if (!state.getData().equals(entry.getValue())) {
+						state.setData(entry.getValue());
+					}
+					state.update(true);
+				}
 			}
 		});
 	}
@@ -424,12 +386,12 @@ public abstract class Machine {
 	/**
 	 * Removes this Machine's listing on a synchronous 0 tick delay.
 	 */
-	protected void assemblyFailed() {
+	protected void assemblyFailed(ConfigurationSection storage) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				disable();
-				Machines.getInstance().deleteMachine(key);
+				disable(storage);
+				Machines.getInstance().deleteMachine(getKey(storage));
 			}
 		});
 	}
@@ -437,7 +399,15 @@ public abstract class Machine {
 	/**
 	 * Used to trigger cleanup when a Machine listing is removed on plugin disable.
 	 */
-	public void disable() {
+	public void disable(ConfigurationSection storage) {
 		// Most machines do not do anything when disabled.
 	}
+
+	/**
+	 * Gets the unique drop for this Machine.
+	 * 
+	 * @return the unique drop.
+	 */
+	public abstract ItemStack getUniqueDrop();
+
 }

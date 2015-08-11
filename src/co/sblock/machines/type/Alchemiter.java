@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -13,13 +14,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
@@ -38,59 +40,48 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Alchemiter extends Machine {
 
-	/**
-	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
-	 */
-	@SuppressWarnings("deprecation")
+	private final ItemStack drop;
+
 	public Alchemiter(Location l, String data, Direction d) {
-		super(l, data, d);
-		MaterialData m = new MaterialData(Material.QUARTZ_BLOCK, (byte) 1);
-		shape.addBlock(new Vector(0, 0, 0), m);
-		shape.addBlock(new Vector(0, 0, 1), m);
-		shape.addBlock(new Vector(1, 0, 1), m);
-		shape.addBlock(new Vector(1, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_BLOCK, (byte) 2);
-		shape.addBlock(new Vector(0, 0, 2), m);
-		m = new MaterialData(Material.NETHER_FENCE);
-		shape.addBlock(new Vector(0, 1, 2), m);
-		shape.addBlock(new Vector(0, 2, 2), m);
-		shape.addBlock(new Vector(0, 3, 2), m);
-		shape.addBlock(new Vector(0, 3, 1), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS, d.getStairByte());
-		shape.addBlock(new Vector(-1, 0, -1), m);
-		shape.addBlock(new Vector(0, 0, -1), m);
-		shape.addBlock(new Vector(1, 0, -1), m);
-		shape.addBlock(new Vector(2, 0, -1), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.SOUTH).getStairByte());
-		shape.addBlock(new Vector(-1, 0, 2), m);
-		shape.addBlock(new Vector(1, 0, 2), m);
-		shape.addBlock(new Vector(2, 0, 2), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.EAST).getStairByte());
-		shape.addBlock(new Vector(-1, 0, 1), m);
-		shape.addBlock(new Vector(-1, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.WEST).getStairByte());
-		shape.addBlock(new Vector(2, 0, 1), m);
-		shape.addBlock(new Vector(2, 0, 0), m);
-		blocks = shape.getBuildLocations(getFacingDirection());
+		super(new Shape());
+		Shape shape = getShape();
+		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 1);
+		shape.setVectorData(new Vector(0, 0, 0), m);
+		shape.setVectorData(new Vector(0, 0, 1), m);
+		shape.setVectorData(new Vector(1, 0, 1), m);
+		shape.setVectorData(new Vector(1, 0, 0), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 2);
+		shape.setVectorData(new Vector(0, 0, 2), m);
+		m = shape.new MaterialDataValue(Material.NETHER_FENCE);
+		shape.setVectorData(new Vector(0, 1, 2), m);
+		shape.setVectorData(new Vector(0, 2, 2), m);
+		shape.setVectorData(new Vector(0, 3, 2), m);
+		shape.setVectorData(new Vector(0, 3, 1), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "stair");
+		shape.setVectorData(new Vector(-1, 0, -1), m);
+		shape.setVectorData(new Vector(0, 0, -1), m);
+		shape.setVectorData(new Vector(1, 0, -1), m);
+		shape.setVectorData(new Vector(2, 0, -1), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.SOUTH, "stair");
+		shape.setVectorData(new Vector(-1, 0, 2), m);
+		shape.setVectorData(new Vector(1, 0, 2), m);
+		shape.setVectorData(new Vector(2, 0, 2), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST, "stair");
+		shape.setVectorData(new Vector(-1, 0, 1), m);
+		shape.setVectorData(new Vector(-1, 0, 0), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "stair");
+		shape.setVectorData(new Vector(2, 0, 1), m);
+		shape.setVectorData(new Vector(2, 0, 0), m);
+
+		drop = new ItemStack(Material.QUARTZ_BLOCK, 2);
+		ItemMeta meta = drop.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Alchemiter");
+		drop.setItemMeta(meta);
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
 	@Override
-	public MachineType getType() {
-		return MachineType.ALCHEMITER;
-	}
-
-	/**
-	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
-	 */
-	@Override
-	public boolean handleInteract(PlayerInteractEvent event) {
-		if (super.handleInteract(event)) {
+	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
+		if (super.handleInteract(event, storage)) {
 			return true;
 		}
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -102,7 +93,7 @@ public class Alchemiter extends Machine {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
-			openInventory(event.getPlayer());
+			openInventory(event.getPlayer(), storage);
 		}
 		return true;
 	}
@@ -112,16 +103,13 @@ public class Alchemiter extends Machine {
 	 * 
 	 * @param player the Player
 	 */
-	public void openInventory(Player player) {
-		MachineInventoryTracker.getTracker().openVillagerInventory(player, this);
+	public void openInventory(Player player, ConfigurationSection storage) {
+		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, getKey(storage));
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleClick(InventoryClickEvent)
-	 */
 	@Override
 	@SuppressWarnings("deprecation")
-	public boolean handleClick(InventoryClickEvent event) {
+	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
 		updateInventory(event.getWhoClicked().getUniqueId());
 		if (event.getRawSlot() != event.getView().convertSlot(event.getRawSlot())) {
 			// Clicked inv is not the top.
@@ -216,5 +204,10 @@ public class Alchemiter extends Machine {
 				player.updateInventory();
 			}
 		});
+	}
+
+	@Override
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
 }

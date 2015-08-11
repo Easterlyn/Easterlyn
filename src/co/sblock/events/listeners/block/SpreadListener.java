@@ -1,5 +1,8 @@
 package co.sblock.events.listeners.block;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockSpreadEvent;
@@ -21,9 +24,9 @@ public class SpreadListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockSpread(BlockSpreadEvent event) {
-		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handleSpread(event));
+		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(event.getBlock());
+		if (pair != null) {
+			event.setCancelled(pair.getLeft().handleSpread(event, pair.getRight()));
 		}
 	}
 }

@@ -1,9 +1,11 @@
 package co.sblock.machines.utilities;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
@@ -14,46 +16,81 @@ import org.bukkit.util.Vector;
  */
 public class Shape {
 
-	/** All relative Locations and Materials of the Machine. */
-	private HashMap<Vector, MaterialData> vectors;
+	public class MaterialDataValue {
+		Material material;
+		byte data;
+		Direction direction;
+		String type;
 
-	/** The key Location of the Machine. */
-	private Location key;
+		public MaterialDataValue(Material material, Direction direction, String type) {
+			this.material = material;
+			this.direction = direction;
+			this.type = type;
+		}
+
+		public MaterialDataValue(Material material, byte data) {
+			this.material = material;
+			this.data = data;
+		}
+
+		public MaterialDataValue(Material material) {
+			this.material = material;
+			this.data = 0;
+		}
+
+		@SuppressWarnings("deprecation")
+		public MaterialData getRotatedData(Direction direction) {
+			if (this.direction == null) {
+				return new MaterialData(material, data);
+			}
+			return new MaterialData(material, direction.getRelativeDirection(this.direction).getTypeByte(type));
+		}
+	}
+
+	/** All relative Locations and Materials of the Machine. */
+	private final HashMap<Vector, MaterialDataValue> vectors;
 
 	/**
 	 * Constructor of Shape. Creates a blank Shape.
 	 * 
 	 * @param l the location the Machine is placed in
 	 */
-	public Shape(Location l) {
-		this.key = l;
+	public Shape() {
 		this.vectors = new HashMap<>();
 	}
 
 	/**
-	 * Adds a Block to the defined Shape of a Machine.
-	 * <p>
-	 * N.B. all Locations are relative to the key Block of the Machine.
+	 * Sets the MaterialData for a Vector.
 	 * 
-	 * @param key the Location to add
-	 * @param m the MaterialData to make the Block from
+	 * @param vector the Vector
+	 * @param data the MaterialData
 	 */
-	public void addBlock(Vector v, MaterialData m) {
-		// x axis is inverted for our interpretation of north on an x, z plane
-		v.setX(-v.getX());
-		this.vectors.put(v, m);
+	public void setVectorData(Vector vector, MaterialDataValue data) {
+		vectors.put(vector, data);
+	}
+
+	/**
+	 * Sets the MaterialData for a Vector.
+	 * 
+	 * @param vector the Vector
+	 * @param data the MaterialData
+	 */
+	@SuppressWarnings("deprecation")
+	public void setVectorData(Vector vector, MaterialData data) {
+		vectors.put(vector, new MaterialDataValue(data.getItemType(), data.getData()));
 	}
 
 	/**
 	 * Gets a HashMap of all properly oriented Locations and Materials needed to
 	 * build a Machine.
 	 * 
+	 * @param location the Location to center the Shape on
 	 * @param d the Direction the Machine needs to be built in
 	 * 
 	 * @return the Locations and relative MaterialData
 	 */
-	public HashMap<Location, MaterialData> getBuildLocations(Direction d) {
-		return assembly(rotate(d));
+	public HashMap<Location, MaterialData> getBuildLocations(Location location, Direction d) {
+		return assembly(location, rotate(d));
 	}
 
 	/**
@@ -72,7 +109,7 @@ public class Shape {
 		case WEST:
 			return rotateCCW();
 		default:
-			return vectors;
+			return current();
 		}
 	}
 
@@ -83,12 +120,13 @@ public class Shape {
 	 */
 	private HashMap<Vector, MaterialData> rotateCW() {
 		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
-		for (Entry<Vector, MaterialData> e : vectors.entrySet()) {
-			Vector newVec = e.getKey().clone();
-			int newZ = -newVec.getBlockX();
-			newVec.setX(newVec.getBlockZ());
-			newVec.setZ(newZ);
-			newVectors.put(newVec, e.getValue());
+		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
+			Entry<Vector, MaterialDataValue> entry = iterator.next();
+			Vector vector = entry.getKey().clone();
+			int newZ = -vector.getBlockX();
+			vector.setX(vector.getBlockZ());
+			vector.setZ(newZ);
+			newVectors.put(vector, entry.getValue().getRotatedData(Direction.EAST));
 		}
 		return newVectors;
 	}
@@ -98,14 +136,15 @@ public class Shape {
 	 * 
 	 * @return the counterclockwise rotation of blocks
 	 */
-	private HashMap<Vector,MaterialData> rotateCCW() {
+	private HashMap<Vector, MaterialData> rotateCCW() {
 		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
-		for (Entry<Vector, MaterialData> e : vectors.entrySet()) {
-			Vector newVec = e.getKey().clone();
-			int newZ = newVec.getBlockX();
-			newVec.setX(-newVec.getBlockZ());
-			newVec.setZ(newZ);
-			newVectors.put(newVec, e.getValue());
+		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
+			Entry<Vector, MaterialDataValue> entry = iterator.next();
+			Vector vector = entry.getKey().clone();
+			int newZ = vector.getBlockX();
+			vector.setX(-vector.getBlockZ());
+			vector.setZ(newZ);
+			newVectors.put(vector, entry.getValue().getRotatedData(Direction.WEST));
 		}
 		return newVectors;
 	}
@@ -116,14 +155,29 @@ public class Shape {
 	 * @return the 180 degree rotation of blocks
 	 */
 	private HashMap<Vector, MaterialData> rotate180() {
-		HashMap<Vector, MaterialData> newBlocks = new HashMap<>();
-		for (Entry<Vector, MaterialData> e : vectors.entrySet()) {
-			Vector newVec = e.getKey().clone();
-			newVec.setX(-newVec.getBlockX());
-			newVec.setZ(-newVec.getBlockZ());
-			newBlocks.put(newVec, e.getValue());
+		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
+		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
+			Entry<Vector, MaterialDataValue> entry = iterator.next();
+			Vector vector = entry.getKey().clone();
+			vector.setX(-vector.getBlockX());
+			vector.setZ(-vector.getBlockZ());
+			newVectors.put(vector, entry.getValue().getRotatedData(Direction.NORTH));
 		}
-		return newBlocks;
+		return newVectors;
+	}
+
+	/**
+	 * Creates a copy of blocks.
+	 * 
+	 * @return the blocks
+	 */
+	private HashMap<Vector, MaterialData> current() {
+		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
+		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
+			Entry<Vector, MaterialDataValue> entry = iterator.next();
+			newVectors.put(entry.getKey().clone(), entry.getValue().getRotatedData(Direction.SOUTH));
+		}
+		return newVectors;
 	}
 
 	/**
@@ -133,10 +187,10 @@ public class Shape {
 	 * 
 	 * @return valid ingame coordinates for assembling a Machine in
 	 */
-	private HashMap<Location, MaterialData> assembly(HashMap<Vector, MaterialData> translation) {
+	private HashMap<Location, MaterialData> assembly(Location location, HashMap<Vector, MaterialData> translation) {
 		HashMap<Location, MaterialData> newLocs = new HashMap<>();
-		for (Vector v : translation.keySet()) {
-			newLocs.put(key.clone().add(v), translation.get(v));
+		for (Entry<Vector, MaterialData> entry : translation.entrySet()) {
+			newLocs.put(location.clone().add(entry.getKey()), entry.getValue());
 		}
 		return newLocs;
 	}

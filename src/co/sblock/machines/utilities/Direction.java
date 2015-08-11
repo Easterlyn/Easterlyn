@@ -67,60 +67,35 @@ public enum Direction {
 	}
 
 	/**
-	 * For determining rotation of buttons in a Machine's Shape.
+	 * Used to determine data values for directional blocks in Machines.
+	 * <p>
+	 * Valid types: anvil, button, chest, stair, upperstair, door, upperdoor.
 	 * 
-	 * @return byte
+	 * @param type the name of the directional block type
+	 * @return the byte for a block of the type specified in the correct rotation
 	 */
-	public byte getButtonByte() {
-		return button;
-	}
-
-	/**
-	 * For determining rotation of chests in a Machine's Shape.
-	 * 
-	 * @return byte
-	 */
-	public byte getChestByte() {
-		return chest;
-	}
-
-	/**
-	 * For determining rotation of stairs in a Machine's Shape.
-	 * 
-	 * @return byte
-	 */
-	public byte getStairByte() {
-		return stair;
-	}
-
-	/**
-	 * For determining rotation of stairs in a Machine's Shape.
-	 * 
-	 * @return byte
-	 */
-	public byte getUpperStairByte() {
-		return (byte) (stair + 4);
-	}
-
-	/**
-	 * For determining rotation of doors in a Machine's Shape.
-	 * 
-	 * @return byte
-	 */
-	public byte getDoorByte() {
-		if (dirNum == 0) {
-			return 3;
+	public byte getTypeByte(String type) {
+		switch (type) {
+		case "anvil":
+			return (byte) (dirNum % 2 == 0 ? 1 : 0);
+		case "button":
+			return button;
+		case "chest":
+			return chest;
+		case "stair":
+			return stair;
+		case "upperstair":
+			return (byte) (stair + 4);
+		case "door":
+			if (dirNum == 0) {
+				return 3;
+			}
+			return (byte) (dirNum - 1);
+		case "upperdoor":
+			return 8;
+		default:
+			return 0;
 		}
-		return (byte) (dirNum - 1);
-	}
-
-	/**
-	 * Door tops always have a data value of 8, I'm just going to forget this.
-	 * 
-	 * @return byte
-	 */
-	public byte getDoorTopByte() {
-		return 8;
 	}
 
 	/**

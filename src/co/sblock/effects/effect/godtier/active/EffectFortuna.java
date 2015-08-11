@@ -1,4 +1,4 @@
-package co.sblock.effects.effect.godtier;
+package co.sblock.effects.effect.godtier.active;
 
 import java.util.Arrays;
 import java.util.Collection;

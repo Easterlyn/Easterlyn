@@ -1,5 +1,9 @@
 package co.sblock.events.listeners.block;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -21,9 +25,11 @@ public class PistonRetractListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPull(BlockPistonRetractEvent event) {
-		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handlePull(event));
+		for (Block block : event.getBlocks()) {
+			Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(block);
+			if (pair != null) {
+				event.setCancelled(pair.getLeft().handlePull(event, pair.getRight()));
+			}
 		}
 	}
 }

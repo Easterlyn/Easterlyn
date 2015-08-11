@@ -1,5 +1,8 @@
 package co.sblock.events.listeners.block;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,9 +39,9 @@ public class BreakListener implements Listener {
 			return;
 		}
 
-		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handleBreak(event));
+		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(event.getBlock());
+		if (pair != null) {
+			event.setCancelled(pair.getLeft().handleBreak(event, pair.getRight()));
 		}
 
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());

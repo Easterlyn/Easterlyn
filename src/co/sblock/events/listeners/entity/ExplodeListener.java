@@ -2,8 +2,11 @@ package co.sblock.events.listeners.entity;
 
 import java.util.HashSet;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -32,22 +35,22 @@ public class ExplodeListener implements Listener {
 						event.getEntity())) {
 
 			HashSet<Block> affected = new HashSet<>();
-			for (Block b : event.blockList()) {
-				Machine m = Machines.getInstance().getMachineByBlock(b);
-				if (m != null) {
-					affected.add(b);
+			for (Block block : event.blockList()) {
+				Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(block);
+				if (pair != null) {
+					affected.add(block);
 				}
 			}
 
-			Machines.getInstance().addBlock(affected.toArray(new Block[0]));
+			Machines.getInstance().addExplodedBlock(affected.toArray(new Block[0]));
 			return;
 		}
 
 		// CreeperHeal is not set to heal whatever destroyed this machine. Prevent damage.
-		for (Block b : event.blockList().toArray(new Block[0])) {
-			Machine m = Machines.getInstance().getMachineByBlock(b);
-			if (m != null) {
-				event.blockList().remove(b);
+		for (Block block : event.blockList().toArray(new Block[0])) {
+			Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(block);
+			if (pair != null) {
+				event.blockList().remove(block);
 			}
 		}
 	}

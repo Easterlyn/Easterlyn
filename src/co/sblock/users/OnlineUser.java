@@ -10,11 +10,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -173,8 +175,8 @@ public class OnlineUser extends OfflineUser {
 			p.sendMessage(Color.BAD + u.getPlayerName() + " does not have the Sburb Client installed!");
 			return;
 		}
-		Machine m = Machines.getInstance().getComputer(getClient());
-		if (m == null) {
+		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getComputer(getClient());
+		if (pair == null) {
 			p.sendMessage(Color.BAD + u.getPlayerName() + " has not placed their computer in their house!");
 			return;
 		}
@@ -183,7 +185,7 @@ public class OnlineUser extends OfflineUser {
 		}
 		this.serverDisableTeleport = p.getLocation();
 		if (!Machines.getInstance().isByComputer(u.getPlayer(), 25)) {
-			p.teleport(m.getKey());
+			p.teleport(pair.getLeft().getKey(pair.getRight()));
 		} else {
 			p.teleport(u.getPlayer());
 		}

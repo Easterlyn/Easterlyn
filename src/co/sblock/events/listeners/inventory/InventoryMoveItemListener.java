@@ -1,6 +1,9 @@
 package co.sblock.events.listeners.inventory;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.bukkit.block.BlockState;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -26,10 +29,9 @@ public class InventoryMoveItemListener implements Listener {
 		InventoryHolder ih = event.getDestination().getHolder();
 		// TODO: check sending inv as well
 		if (ih != null && ih instanceof BlockState) {
-			Machine m = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
-			if (m != null) {
-				event.setCancelled(m.handleHopperMoveItem(event));
-				return;
+			Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
+			if (pair != null) {
+				event.setCancelled(pair.getLeft().handleHopperMoveItem(event, pair.getRight()));
 			}
 		}
 	}

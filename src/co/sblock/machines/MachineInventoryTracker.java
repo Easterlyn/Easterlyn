@@ -4,12 +4,18 @@ import io.netty.buffer.Unpooled;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
+import co.sblock.machines.type.Alchemiter;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.messages.RegexUtils;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -39,33 +45,36 @@ public class MachineInventoryTracker {
 
 	private static MachineInventoryTracker instance;
 
-	private final Map<Player, Machine> openMachines;
+	private final Map<UUID, Pair<Machine, Location>> openMachines;
 
 	public MachineInventoryTracker() {
 		openMachines = new HashMap<>();
 	}
 
 	public boolean hasMachineOpen(Player p) {
-		return openMachines.containsKey(p);
+		return openMachines.containsKey(p.getUniqueId());
 	}
 
-	public Machine getOpenMachine(Player p) {
-		return openMachines.get(p);
+	public Pair<Machine, ConfigurationSection> getOpenMachine(Player p) {
+		if (!openMachines.containsKey(p.getUniqueId())) {
+			return null;
+		}
+		return Machines.getInstance().getMachineByLocation(openMachines.get(p.getUniqueId()).getRight());
 	}
 
 	public void closeMachine(InventoryCloseEvent event) {
-		Machine m = openMachines.remove(event.getPlayer());
-		if (m == null) {
+		Pair<Machine, Location> pair = openMachines.remove(event.getPlayer().getUniqueId());
+		if (pair == null) {
 			return;
 		}
 
 		// Do not drop exp bottle placed in second slot
-		if (m.getType() == MachineType.ALCHEMITER) {
+		if (pair.getLeft() instanceof Alchemiter) {
 			event.getInventory().setItem(1, null);
 		}
 	}
 
-	public void openVillagerInventory(Player player, Machine m, org.bukkit.inventory.ItemStack... items) {
+	public void openVillagerInventory(Player player, Machine m, Location key, org.bukkit.inventory.ItemStack... items) {
 		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
 		int containerCounter = nmsPlayer.nextContainerCounter();
@@ -74,9 +83,9 @@ public class MachineInventoryTracker {
 		container.windowId = containerCounter;
 		container.addSlotListener(nmsPlayer);
 		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, "minecraft:villager",
-				new ChatComponentText(RegexUtils.getFriendlyName(m.getType().name())), 3));
+				new ChatComponentText(RegexUtils.getFriendlyName(m.getClass().getSimpleName())), 3));
 
-		this.openMachines.put(player, m);
+		this.openMachines.put(player.getUniqueId(), new ImmutablePair<Machine, Location>(m, key));
 
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (int i = 0; i < items.length; i++) {

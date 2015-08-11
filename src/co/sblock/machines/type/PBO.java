@@ -1,14 +1,19 @@
 package co.sblock.machines.type;
 
-import java.util.HashMap;
-
-import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockState;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import co.sblock.machines.utilities.MachineType;
+import co.sblock.Sblock;
+import co.sblock.machines.Machines;
+import co.sblock.machines.utilities.Shape;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * For Zack, with love.
@@ -17,45 +22,36 @@ import co.sblock.machines.utilities.MachineType;
  */
 public class PBO extends Machine {
 
-	/**
-	 * @see co.sblock.Machines.Type.Machine#Machine(Location, String)
-	 */
-	public PBO(Location l, String data) {
-		super(l, data);
-		this.blocks = new HashMap<Location, MaterialData>();
+	private final ItemStack drop;
+
+	public PBO() {
+		super(new Shape());
+		drop = new ItemStack(Material.DIAMOND_BLOCK);
+		ItemMeta meta = drop.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Perfect Building Object");
+		drop.setItemMeta(meta);
 	}
 
-	/**
-	 * @see co.sblock.Machines.Type.Machine#meetsAdditionalBreakConditions(BlockBreakEvent)
-	 */
 	@Override
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
+	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
-	/**
-	 * @see co.sblock.Machines.Type.Machine#assemble(BlockPlaceEvent)
-	 */
-	@SuppressWarnings("deprecation")
 	@Override
-	public void assemble(BlockPlaceEvent event) {
-		this.blocks.put(key, new MaterialData(event.getBlockAgainst().getType(), event.getBlockAgainst().getData()));
-		this.assemble();
+	public void assemble(final BlockPlaceEvent event, ConfigurationSection storage) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				BlockState against = event.getBlockAgainst().getState();
+				BlockState state = event.getBlock().getState();
+				state.setData(against.getData());
+				Machines.getInstance().deleteMachine(event.getBlock().getLocation());
+			}
+		}.runTask(Sblock.getInstance());
 	}
 
-	/**
-	 * @see co.sblock.Machines.Type.Machine#getType()
-	 */
 	@Override
-	public MachineType getType() {
-		return MachineType.PERFECT_BUILDING_OBJECT;
-	}
-
-	/**
-	 * @see co.sblock.Machines.Type.Machine#handleInteract(PlayerInteractEvent)
-	 */
-	@Override
-	public boolean handleInteract(PlayerInteractEvent event) {
-		return false;
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
 }

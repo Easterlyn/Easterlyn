@@ -1,6 +1,11 @@
 package co.sblock.events.listeners.block;
 
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,7 +17,6 @@ import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.PBO;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
@@ -34,8 +38,8 @@ public class PlaceListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 
-		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());
-		if (m != null) {
+		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(event.getBlock());
+		if (pair != null) {
 			// Block registered as part of a machine. Most likely removed by explosion or similar.
 			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
@@ -63,16 +67,13 @@ public class PlaceListener implements Listener {
 		}
 
 		// Machine place logic
-		for (MachineType mt : MachineType.values()) {
-			if (mt.getUniqueDrop().isSimilar(event.getItemInHand())) {
-				if (mt == MachineType.PERFECT_BUILDING_OBJECT) {
-					new PBO(event.getBlock().getLocation(), "").assemble(event);
-					break;
-				}
+		for (Entry<String, Machine> entry : Machines.getInstance().getMachinesByName().entrySet()) {
+			if (entry.getValue().getUniqueDrop().isSimilar(event.getItemInHand())) {
 				try {
-					Machines.getInstance().addMachine(
-							event.getBlock().getLocation(), mt, event.getPlayer().getUniqueId().toString(),
-							Direction.getFacingDirection(event.getPlayer()), mt.getData(event)).assemble(event);
+					pair = Machines.getInstance().addMachine(event.getBlock().getLocation(),
+							entry.getKey(), event.getPlayer().getUniqueId(),
+							Direction.getFacingDirection(event.getPlayer()));
+					pair.getLeft().assemble(event, pair.getRight());
 				} catch (NullPointerException e) {
 					Machines.getInstance().getLogger().debug("Invalid machine placed.");
 					event.setBuild(false);

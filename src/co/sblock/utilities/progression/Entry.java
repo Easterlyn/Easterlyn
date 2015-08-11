@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -139,9 +141,9 @@ public class Entry {
 		user.getPrograms().remove(Icon.SBURBCLIENT.getProgramID());
 
 		// Removes all free machines placed by the User or their server
-		for (Machine m : Machines.getInstance().getMachines(user.getUUID())) {
-			if (m.getType().isFree()) {
-				m.remove();
+		for (Pair<Machine, ConfigurationSection> pair : Machines.getInstance().getMachines(user.getUUID())) {
+			if (pair.getLeft().isFree()) {
+				pair.getLeft().remove(pair.getRight());
 			}
 		}
 	}

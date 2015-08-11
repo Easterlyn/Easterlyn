@@ -1,7 +1,10 @@
 package co.sblock.events.listeners.inventory;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -47,29 +50,29 @@ public class InventoryClickListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
 
-		Machine m;
-		if (ih != null && ih instanceof Machine) {
-			m = (Machine) ih;
-			if (m != null) {
-				event.setCancelled(m.handleClick(event));
-				return;
-			}
-		}
-
 		// Finds inventories of physical blocks opened by Machines
 		if (ih != null && ih instanceof BlockState) {
-			m = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
-			if (m != null) {
-				event.setCancelled(m.handleClick(event));
-				return;
+			Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
+			if (pair != null) {
+				event.setCancelled(pair.getLeft().handleClick(event, pair.getRight()));
 			}
 		}
 
 		// Finds inventories forcibly opened by Machines
-		m = MachineInventoryTracker.getTracker().getOpenMachine((Player) event.getWhoClicked());
-		if (m != null) {
-			event.setCancelled(m.handleClick(event));
+		Pair<Machine, ConfigurationSection> pair = MachineInventoryTracker.getTracker().getOpenMachine((Player) event.getWhoClicked());
+		if (pair != null) {
+			event.setCancelled(pair.getLeft().handleClick(event, pair.getRight()));
 			return;
+		}
+
+		// Lowest priority Machine check, one with no identifying block
+		Machine m;
+		if (ih != null && ih instanceof Machine) {
+			m = (Machine) ih;
+			if (m != null) {
+				event.setCancelled(m.handleClick(event, null));
+				return;
+			}
 		}
 
 		boolean top = event.getRawSlot() == event.getView().convertSlot(event.getRawSlot());
@@ -193,9 +196,8 @@ public class InventoryClickListener implements Listener {
 			if (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
-				event.getWhoClicked().openInventory(new Computer(event.getWhoClicked().getLocation(),
-						event.getWhoClicked().getUniqueId().toString(), true)
-								.getInventory(Users.getGuaranteedUser(event.getWhoClicked().getUniqueId())));
+				event.getWhoClicked().openInventory(
+						new Computer().getInventory(Users.getGuaranteedUser(event.getWhoClicked().getUniqueId())));
 			}
 			return;
 		}

@@ -1,40 +1,36 @@
 package co.sblock.machines.type;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
 
 /**
- * 
+ * Combine and create.
  * 
  * @author Jikoo
  */
 public class CompoundingUnionizor extends Machine {
 
-	/**
-	 * @param key
-	 * @param owner
-	 * @param direction
-	 */
-	CompoundingUnionizor(Location key, String owner, Direction direction) {
-		super(key, owner, direction);
-		MaterialData m = new MaterialData(Material.HOPPER);
-		shape.addBlock(new Vector(0, 2, 0), m);
-		shape.addBlock(new Vector(0, 0, 0), m);
-		m = new MaterialData(Material.WORKBENCH);
-		shape.addBlock(new Vector(0, 1, 0), m);
+	private final ItemStack drop;
+
+	CompoundingUnionizor() {
+		super(new Shape());
+		Shape shape = getShape();
+		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER);
+		shape.setVectorData(new Vector(0, 2, 0), m);
+		shape.setVectorData(new Vector(0, 0, 0), m);
+		m = shape.new MaterialDataValue(Material.WORKBENCH);
+		shape.setVectorData(new Vector(0, 1, 0), m);
+
+		drop = null; // future
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
 	@Override
-	public MachineType getType() {
-		// TODO: implement
-		return null;
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
+
 }

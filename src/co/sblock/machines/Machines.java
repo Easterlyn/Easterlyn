@@ -2,65 +2,83 @@ package co.sblock.machines;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import org.reflections.Reflections;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import co.sblock.Sblock;
-import co.sblock.machines.type.Alchemiter;
-import co.sblock.machines.type.Computer;
-import co.sblock.machines.type.Cruxtruder;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.PGO;
-import co.sblock.machines.type.PunchDesignix;
-import co.sblock.machines.type.TotemLathe;
-import co.sblock.machines.type.Transportalizer;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.module.Module;
-import co.sblock.users.BukkitSerializer;
-import co.sblock.users.OfflineUser;
 
 /**
  * @author Jikoo
  */
 public class Machines extends Module {
 
-	/** The MachineModule instance. */
 	private static Machines instance;
 
-	/** A Map of Machine key Locations to corresponding Machine. */
-	private Map<Location, Machine> machineKeys;
-	/** A Map of Machine Block Locations to the corresponding key Location. */
-	private Map<Location, Location> machineBlocks;
-	/** A Map of all exploded blocks. */
+	/* A Map of Machine names to instances. */
+	private Map<String, Machine> byName;
+	/* A Map of Machine key Locations to the corresponding Block Locations. */
+	private Multimap<Location, Location> machineBlocks;
+	/* A Map of all exploded blocks. */
 	private Map<Block, Boolean> exploded;
+	/* The YamlConfiguration containing all stored data. */
+	private YamlConfiguration storage;
 
-	/**
-	 * @see co.sblock.Module#onEnable()
-	 */
 	@Override
 	protected void onEnable() {
 		instance = this;
-		this.machineKeys = new HashMap<>();
-		this.machineBlocks = new HashMap<>();
+		this.byName = new HashMap<>();
+		Reflections reflections = new Reflections("co.sblock.machines.type");
+		for (Class<? extends Machine> type : reflections.getSubTypesOf(Machine.class)) {
+			if (Modifier.isAbstract(type.getModifiers())) {
+				continue;
+			}
+			Machine machine;
+			try {
+				machine = type.newInstance();
+				byName.put(type.getSimpleName(), machine);
+			} catch (InstantiationException | IllegalAccessException e) {
+				// Improperly set up Machine
+				e.printStackTrace();
+			}
+		}
+		this.machineBlocks = HashMultimap.create();
 		this.exploded = new HashMap<>();
 		this.loadAllMachines();
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				saveAllMachines();
+			}
+		}.runTaskTimerAsynchronously(Sblock.getInstance(), 6000L, 6000L);
+		// Saving async should ideally not be a problem - we do not ever load or modify the data elsewhere.
 	}
 
-	/**
-	 * @see co.sblock.Module#onDisable()
-	 */
 	@Override
 	protected void onDisable() {
 		this.saveAllMachines();
@@ -70,52 +88,42 @@ public class Machines extends Module {
 	/**
 	 * Adds a Machine with the given parameters.
 	 * 
-	 * @param l the Location of the key
-	 * @param m the MachineType
+	 * @param location the Location of the key
+	 * @param type the type of the Machine
 	 * @param owner the owner of the Machine
-	 * @param d the facing direction
+	 * @param direction the facing direction
 	 * @param data the additional data stored by the Machine
 	 * 
 	 * @return the Machine created
 	 */
-	public Machine addMachine(Location l, MachineType m, String owner, Direction d, String data) {
-		Machine machine = null;
-		switch (m) {
-		case ALCHEMITER:
-			machine = new Alchemiter(l, owner, d);
-			break;
-		case COMPUTER:
-			machine = new Computer(l, owner, false);
-			break;
-		case CRUXTRUDER:
-			machine = new Cruxtruder(l, owner);
-			break;
-		case PERFECTLY_GENERIC_OBJECT:
-			machine = new PGO(l, owner);
-			break;
-		case PUNCH_DESIGNIX:
-			machine = new PunchDesignix(l, owner, d);
-			break;
-		case TOTEM_LATHE:
-			machine = new TotemLathe(l, owner, d);
-			break;
-		case TRANSPORTALIZER:
-			machine = new Transportalizer(l, owner, d);
-			break;
-		default:
-			break;
-		}
-		if (machine == null) {
+	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type, UUID owner, Direction direction) {
+		if (!byName.containsKey(type)) {
 			return null;
 		}
-		machineKeys.put(l, machine);
-		for (Location l1 : machine.getLocations()) {
-			machineBlocks.put(l1, l);
+		ConfigurationSection section = storage.createSection(fromLocation(location));
+		section.set("type", type);
+		section.set("owner", owner.toString());
+		section.set("direction", direction.name());
+		return loadMachine(location, section);
+	}
+
+	/**
+	 * Loads a Machine from a ConfigurationSection.
+	 * 
+	 * @param key the key Location of the Machine
+	 * @param section the ConfigurationSection
+	 * @return the Machine type loaded
+	 */
+	public Pair<Machine, ConfigurationSection> loadMachine(Location key, ConfigurationSection section) {
+		if (!byName.containsKey(section.getString("type"))) {
+			return null;
 		}
-		if (data != null) {
-			machine.setData(data);
+		Machine type = byName.get(section.getString("type"));
+		Direction direction = type.getDirection(section);
+		for (Location location : type.getShape().getBuildLocations(key, direction).keySet()) {
+			machineBlocks.put(key, location);
 		}
-		return machine;
+		return new ImmutablePair<>(type, section);
 	}
 
 	public void loadAllMachines() {
@@ -129,36 +137,9 @@ public class Machines extends Module {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load machine data!", e);
 		}
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		for (String machineLocation : yaml.getKeys(false)) {
-			addMachine(BukkitSerializer.locationFromString(machineLocation),
-					MachineType.getType(yaml.getString(machineLocation + ".type")),
-					yaml.getString(machineLocation + ".owner"),
-					Direction.valueOf(yaml.getString(machineLocation + ".direction")),
-					yaml.getString(machineLocation + ".data"));
-		}
-	}
-
-	public void saveMachine(Machine machine) {
-		File file;
-		try {
-			file = new File(Sblock.getInstance().getDataFolder(), "Machines.yml");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load machine data!", e);
-		}
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		String location = machine.getLocationString();
-		yaml.set(location + ".type", machine.getType().name());
-		yaml.set(location + ".owner", machine.getOwner());
-		yaml.set(location + ".direction", machine.getFacingDirection().name());
-		yaml.set(location + ".data", machine.getData());
-		try {
-			yaml.save(file);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save machine at " + machine, e);
+		storage = YamlConfiguration.loadConfiguration(file);
+		for (String machineLocation : storage.getKeys(false)) {
+			loadMachine(fromString(machineLocation), storage.getConfigurationSection(machineLocation));
 		}
 	}
 
@@ -172,101 +153,102 @@ public class Machines extends Module {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load machine data!", e);
 		}
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		for (Machine machine : this.getMachines()) {
-			String location = machine.getLocationString();
-			yaml.set(location + ".type", machine.getType().name());
-			yaml.set(location + ".owner", machine.getOwner());
-			yaml.set(location + ".direction", machine.getFacingDirection().name());
-			yaml.set(location + ".data", machine.getData());
-		}
 		try {
-			yaml.save(file);
+			storage.save(file);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to save all machines!", e);
 		}
 	}
 
 	/**
-	 * Checks a Location to see if there is a Machine there.
-	 * 
-	 * @param l the Location to check
-	 * 
-	 * @return true if the Location is a Machine
-	 */
-	public boolean isMachine(Location l) {
-		return machineKeys.containsKey(l) || machineBlocks.containsKey(l);
-	}
-
-	/**
 	 * Checks a Block to see if it is part of a Machine.
 	 * 
-	 * @param b the Block to check
+	 * @param block the Block to check
 	 * 
 	 * @return true if the Block is a Machine
 	 */
-	public boolean isMachine(Block b) {
-		return machineKeys.containsKey(b.getLocation()) || machineBlocks.containsKey(b.getLocation());
+	public boolean isMachine(Block block) {
+		return isMachine(block.getLocation());
+	}
+
+	/**
+	 * Checks a Location to see if there is a Machine there.
+	 * 
+	 * @param location the Location to check
+	 * 
+	 * @return true if the Location is a Machine
+	 */
+	public boolean isMachine(Location location) {
+		return machineBlocks.containsValue(location);
 	}
 
 	/**
 	 * Gets a Machine from a Block.
 	 * 
-	 * @param b the Block
+	 * @param block the Block
 	 * 
 	 * @return the Machine
 	 */
-	public Machine getMachineByBlock(Block b) {
-		Machine m = machineKeys.get(b.getLocation());
-		if (m == null) {
-			m = machineKeys.get(machineBlocks.get(b.getLocation()));
-		}
-		return m;
+	public Pair<Machine, ConfigurationSection> getMachineByBlock(Block block) {
+		return getMachineByLocation(block.getLocation());
 	}
 
 	/**
 	 * Gets a Machine from a Location.
 	 * 
-	 * @param l the Location
+	 * @param location the Location
 	 * 
 	 * @return the Machine
 	 */
-	public Machine getMachineByLocation(Location l) {
-		Machine m = machineKeys.get(l);
-		if (m == null) {
-			m = machineKeys.get(machineBlocks.get(l));
+	public Pair<Machine, ConfigurationSection> getMachineByLocation(Location location) {
+		if (location == null || !machineBlocks.containsValue(location)) {
+			return null;
 		}
-		return m;
+		Location key = getKeyLocation(location);
+		if (key == null) {
+			return null;
+		}
+
+		ConfigurationSection section = storage.getConfigurationSection(fromLocation(key));
+		if (section == null) {
+			return null;
+		}
+		return new ImmutablePair<Machine, ConfigurationSection>(byName.get(storage.getString("type")), section);
 	}
 
 	/**
-	 * Gets a Set of all Machine key Locations.
+	 * Gets all locations defined as part of the Machine with the given key Location.
 	 * 
-	 * @return the Set
+	 * @param location the Location of the Machine
+	 * @return a Collection of all Locations in the Machine, or null if the Location is not a Machine
 	 */
-	public Set<Location> getMachineLocs() {
-		return machineKeys.keySet();
-	}
-
-	public Collection<Machine> getMachines() {
-		return machineKeys.values();
+	public Collection<Location> getMachineBlocks(Location location) {
+		location = getKeyLocation(location);
+		if (location != null) {
+			return machineBlocks.get(location);
+		}
+		return null;
 	}
 
 	/**
-	 * Gets a Set of all Machine key Locations by MachineType.
+	 * Gets the key location of a Machine from any location within it.
 	 * 
-	 * @param m the MachineType
-	 * 
-	 * @return the Set
+	 * @param location the location.
+	 * @return the key location, or null if the location is not a Machine.
 	 */
-	public Set<Location> getMachines(MachineType m) {
-		Set<Location> set = new HashSet<Location>();
-		for (Entry<Location, Machine> e : machineKeys.entrySet()) {
-			if (e.getValue().getType().equals(m)) {
-				set.add(e.getKey());
+	private Location getKeyLocation(Location location) {
+		if (location == null || !machineBlocks.containsValue(location)) {
+			return null;
+		}
+		if (machineBlocks.containsKey(location)) {
+			return location;
+		}
+		for (Entry<Location, Location> entry : machineBlocks.entries()) {
+			if (location.equals(entry.getValue())) {
+				return entry.getKey();
 			}
 		}
-		return set;
+		return null;
 	}
 
 	/**
@@ -274,36 +256,23 @@ public class Machines extends Module {
 	 * <p>
 	 * Be aware - this does not modify the World. All Blocks will remain.
 	 * 
-	 * @param l the key Location
+	 * @param location the key Location
 	 */
-	public void deleteMachine(Location l) {
-		if (!machineKeys.containsKey(l)) {
+	public void deleteMachine(Location location) {
+		if (!machineBlocks.containsKey(location)) {
 			return;
 		}
-		for (Iterator<Entry<Location, Location>> iterator = machineBlocks.entrySet().iterator(); iterator.hasNext();) {
-			Entry<Location, Location> entry = iterator.next();
-			if (entry.getValue().equals(l)) {
-				iterator.remove();
-				setRemoved(entry.getKey().getBlock());
-			}
+		Location key = getKeyLocation(location);
+		if (key == null) {
+			return;
 		}
-		Machine machine = machineKeys.remove(l);
-		File file;
-		try {
-			file = new File(Sblock.getInstance().getDataFolder(), "Machines.yml");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load machine data!", e);
+		String path = fromLocation(key);
+		ConfigurationSection section = storage.getConfigurationSection(path);
+		if (section == null) {
+			return;
 		}
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		yaml.set(machine.getLocationString(), null);
-		try {
-			yaml.save(file);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to delete machine at " + machine.getLocationString(), e);
-		}
+		machineBlocks.removeAll(key);
+		storage.set(path, null);
 	}
 
 	/**
@@ -311,30 +280,30 @@ public class Machines extends Module {
 	 * 
 	 * @param b the Block
 	 */
-	public void addBlock(Block... blocks) {
-		for (Block b : blocks) {
-			exploded.put(b, true);
+	public void addExplodedBlock(Block... blocks) {
+		for (Block block : blocks) {
+			exploded.put(block, true);
 		}
 	}
 
 	/**
 	 * Checks to see if a Machine block is exploded.
 	 * 
-	 * @param b the Block to check
+	 * @param block the Block to check
 	 * 
 	 * @return true if the block is recorded as being exploded.
 	 */
-	public boolean isExploded(Block b) {
-		return exploded.containsKey(b);
+	public boolean isExploded(Block block) {
+		return exploded.containsKey(block);
 	}
 
 	/**
 	 * Marks a Block as having been restored post-explosion.
 	 * 
-	 * @param b the Block
+	 * @param block the Block
 	 */
-	public void setRestored(Block b) {
-		exploded.remove(b);
+	public void setRestored(Block block) {
+		exploded.remove(block);
 	}
 
 	/**
@@ -354,13 +323,13 @@ public class Machines extends Module {
 	 * Checks if a Block should be replaced post-explosion. This allows Machines to be unregistered
 	 * while partially exploded.
 	 * 
-	 * @param b the Block
+	 * @param block the Block
 	 * 
 	 * @return true if the block is to be restored
 	 */
-	public boolean shouldRestore(Block b) {
-		if (exploded.containsKey(b)) {
-			return exploded.get(b);
+	public boolean shouldRestore(Block block) {
+		if (exploded.containsKey(block)) {
+			return exploded.get(block);
 		}
 		return true;
 	}
@@ -372,14 +341,18 @@ public class Machines extends Module {
 	 * 
 	 * @see co.sblock.Machines.Type.Computer#assemble(org.bukkit.event.block.BlockPlaceEvent)
 	 * 
-	 * @param p the Player
+	 * @param player the Player
 	 * @param key the location of the Computer just assembled
 	 * 
 	 * @return true if the Player has placed a Computer
 	 */
-	public boolean hasComputer(Player p, Location key) {
-		for (Machine m : machineKeys.values()) {
-			if (m instanceof Computer && m.getOwner().equals(p.getUniqueId().toString()) && !m.getKey().equals(key)) {
+	public boolean hasComputer(Player player, Location key) {
+		String keyPath = fromLocation(key);
+		for (String path : storage.getKeys(false)) {
+			if (path.equals(keyPath) || !storage.getString(path + ".type").equals("Computer")) {
+				continue;
+			}
+			if (storage.getString(path + ".owner").equals(player.getUniqueId().toString())) {
 				return true;
 			}
 		}
@@ -391,24 +364,18 @@ public class Machines extends Module {
 	 * 
 	 * @param playerID the UUID of the Player
 	 * 
-	 * @return the matching Machine, or null if the Player has no computer.
+	 * @return the matching Machine and ConfigurationSection, or null if the Player has no computer.
 	 */
-	public Machine getComputer(UUID playerID) {
-		for (Machine m : machineKeys.values()) {
-			if (m instanceof Computer && m.getOwner().equals(playerID.toString())) {
-				return m;
+	public Pair<Machine, ConfigurationSection> getComputer(UUID playerID) {
+		for (String path : storage.getKeys(false)) {
+			if (!"Computer".equals(storage.getString(path + ".type"))) {
+				continue;
+			}
+			if (playerID.toString().equals(storage.getString(path + ".owner"))) {
+				return new ImmutablePair<Machine, ConfigurationSection>(byName.get("Computer"), storage);
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Check to see if the Player is within range of a Computer.
-	 * 
-	 * @return true if the Player is within 10 meters of a Computer.
-	 */
-	public static boolean hasComputerAccess(OfflineUser user) {
-		return getInstance().isByComputer(user.getPlayer(), 10);
 	}
 
 	/**
@@ -420,8 +387,8 @@ public class Machines extends Module {
 	 * @return true if the Player is within the radius
 	 */
 	public boolean isByComputer(Player p, int distance) {
-		for (Machine m : this.getMachinesInProximity(p.getLocation(), distance, MachineType.COMPUTER, true)) {
-			if (m.getOwner().equals(p.getUniqueId().toString())) {
+		for (ConfigurationSection data : this.getMachinesInProximity(p.getLocation(), distance, "Computer", true)) {
+			if (data.getString("owner").equals(p.getUniqueId().toString())) {
 				return true;
 			}
 		}
@@ -439,27 +406,22 @@ public class Machines extends Module {
 	 * 
 	 * @return all machines of the correct type within the specified radius
 	 */
-	public Set<Machine> getMachinesInProximity(Location current, int searchDistance,
-			MachineType mt, boolean keyRequired) {
-		Set<Machine> machines = new HashSet<Machine>();
-		// distance^2 once > blocks to check * root(distance from current)
-		searchDistance = (int) Math.pow(searchDistance, 2);
-		if (!keyRequired) {
-			for (Entry<Location, Location> e : machineBlocks.entrySet()) {
-				if (e.getKey().getWorld().equals(current.getWorld())
-						&& current.distanceSquared(e.getKey()) <= searchDistance) {
-					Machine m = this.getMachineByLocation(e.getValue());
-					if (mt == m.getType() || mt == MachineType.ANY) {
-						machines.add(m);
-					}
-				}
+	public Set<ConfigurationSection> getMachinesInProximity(Location current, int searchDistance,
+			String type, boolean keyRequired) {
+		Set<ConfigurationSection> machines = new HashSet<>();
+		if (type != null) {
+			if (!byName.containsKey(type)) {
+				return machines;
 			}
 		}
-		for (Entry<Location, Machine> e : machineKeys.entrySet()) {
-			if (e.getKey().getWorld().equals(current.getWorld())
-					&& current.distanceSquared(e.getKey()) <= searchDistance) {
-				if (mt == e.getValue().getType() || mt == MachineType.ANY) {
-					machines.add(e.getValue());
+		// distance^2 once > blocks to check * root(distance from current)
+		searchDistance = (int) Math.pow(searchDistance, 2);
+		for (Location location : machineBlocks.keySet()) {
+			if (location.getWorld().equals(current.getWorld())
+					&& current.distanceSquared(location) <= searchDistance) {
+				Pair<Machine, ConfigurationSection> pair = this.getMachineByLocation(location);
+				if (type == null || type.equals(pair.getRight().getString("type"))) {
+					machines.add(pair.getRight());
 				}
 			}
 		}
@@ -473,14 +435,21 @@ public class Machines extends Module {
 	 * 
 	 * @return the Set of Machines
 	 */
-	public Set<Machine> getMachines(UUID playerID) {
-		HashSet<Machine> machines = new HashSet<>();
-		for (Machine m : machineKeys.values()) {
-			if (m.getOwner().equals(playerID.toString())) {
-				machines.add(m);
+	public Set<Pair<Machine, ConfigurationSection>> getMachines(UUID playerID) {
+		HashSet<Pair<Machine, ConfigurationSection>> machines = new HashSet<>();
+		for (String path : storage.getKeys(false)) {
+			if (!"Computer".equals(storage.getString(path + ".type"))) {
+				continue;
+			}
+			if (playerID.toString().equals(storage.getString(path + ".owner"))) {
+				machines.add(new ImmutablePair<Machine, ConfigurationSection>(byName.get("Computer"), storage));
 			}
 		}
 		return machines;
+	}
+
+	public Map<String, Machine> getMachinesByName() {
+		return byName;
 	}
 
 	/**
@@ -495,5 +464,16 @@ public class Machines extends Module {
 	@Override
 	protected String getModuleName() {
 		return "Sblock Machines";
+	}
+
+	public static String fromLocation(Location location) {
+		return new StringBuilder(location.getWorld().getName()).append('_')
+				.append(location.getBlockX()).append('_').append(location.getBlockY()).append('_')
+				.append(location.getBlockZ()).toString();
+	}
+
+	public static Location fromString(String string) {
+		String[] split = string.split("_");
+		return new Location(Bukkit.getWorld(split[0]), Integer.valueOf(split[1]), Integer.valueOf(split[2]), Integer.valueOf(split[3]));
 	}
 }

@@ -1,6 +1,9 @@
 package co.sblock.events.listeners.block;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -22,11 +25,10 @@ public class PistonExtendListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPush(BlockPistonExtendEvent event) {
-		for (Block b : event.getBlocks()) {
-			Machine m = Machines.getInstance().getMachineByBlock(b);
-			if (m != null) {
-				event.setCancelled(m.handlePush(event));
-				return;
+		for (Block block : event.getBlocks()) {
+			Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(block);
+			if (pair != null) {
+				event.setCancelled(pair.getLeft().handlePush(event, pair.getRight()));
 			}
 		}
 	}

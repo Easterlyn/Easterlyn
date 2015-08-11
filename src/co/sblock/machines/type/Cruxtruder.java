@@ -1,19 +1,23 @@
 package co.sblock.machines.type;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.captcha.CruxiteDowel;
 import co.sblock.utilities.progression.Entry;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Simulate a Sburb Cruxtender in Minecraft.
@@ -22,35 +26,36 @@ import co.sblock.utilities.progression.Entry;
  */
 public class Cruxtruder extends Machine {
 
-	/**
-	 * @see co.sblock.machines.type.Machine#Machine(Location, String)
-	 */
-	@SuppressWarnings("deprecation")
-	public Cruxtruder(Location l, String owner) {
-		super(l, owner);
-		MaterialData m = new MaterialData(Material.SEA_LANTERN);
-		shape.addBlock(new Vector(0, 0, 0), m);
-		shape.addBlock(new Vector(0, 1, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.NORTH.getStairByte());
-		shape.addBlock(new Vector(1, 0, -1), m);
-		shape.addBlock(new Vector(0, 0, -1), m);
-		shape.addBlock(new Vector(-1, 0, -1), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.WEST.getStairByte());
-		shape.addBlock(new Vector(1, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.EAST.getStairByte());
-		shape.addBlock(new Vector(-1, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS, Direction.SOUTH.getStairByte());
-		shape.addBlock(new Vector(1, 0, 1), m);
-		shape.addBlock(new Vector(0, 0, 1), m);
-		shape.addBlock(new Vector(-1, 0, 1), m);
-		blocks = shape.getBuildLocations(Direction.NORTH);
+	private final ItemStack drop;
+
+	public Cruxtruder() {
+		super(new Shape());
+		Shape shape = getShape();
+		MaterialDataValue m = shape.new MaterialDataValue(Material.SEA_LANTERN);
+		shape.setVectorData(new Vector(0, 0, 0), m);
+		shape.setVectorData(new Vector(0, 1, 0), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH.getTypeByte("stair"));
+		shape.setVectorData(new Vector(1, 0, -1), m);
+		shape.setVectorData(new Vector(0, 0, -1), m);
+		shape.setVectorData(new Vector(-1, 0, -1), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST.getTypeByte("stair"));
+		shape.setVectorData(new Vector(1, 0, 0), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST.getTypeByte("stair"));
+		shape.setVectorData(new Vector(-1, 0, 0), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.SOUTH.getTypeByte("stair"));
+		shape.setVectorData(new Vector(1, 0, 1), m);
+		shape.setVectorData(new Vector(0, 0, 1), m);
+		shape.setVectorData(new Vector(-1, 0, 1), m);
+
+		drop = new ItemStack(Material.BEACON);
+		ItemMeta meta = drop.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Cruxtruder");
+		drop.setItemMeta(meta);
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleBreak(BlockBreakEvent)
-	 */
-	public boolean handleBreak(BlockBreakEvent event) {
-		if (this.key.clone().add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
+	@Override
+	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
+		if (getKey(storage).add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
 			OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 			if (Entry.getEntry().canStart(user)) {
 				Entry.getEntry().startEntry(user, event.getBlock().getLocation());
@@ -62,24 +67,18 @@ public class Cruxtruder extends Machine {
 			}
 			event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), CruxiteDowel.getDowel());
 		} else {
-			super.handleBreak(event);
+			super.handleBreak(event, storage);
 		}
 		return true;
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
 	@Override
-	public MachineType getType() {
-		return MachineType.CRUXTRUDER;
+	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
+		return false;
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
-	 */
 	@Override
-	public boolean handleInteract(PlayerInteractEvent event) {
-		return false;
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
 }

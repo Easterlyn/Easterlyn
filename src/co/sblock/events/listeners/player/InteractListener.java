@@ -1,11 +1,14 @@
 package co.sblock.events.listeners.player;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -48,10 +51,9 @@ public class InteractListener implements Listener {
 		}
 
 		// Machines
-		Machine m = Machines.getInstance().getMachineByBlock(event.getClickedBlock());
-		if (m != null) {
-			event.setCancelled(m.handleInteract(event));
-			return;
+		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(event.getClickedBlock());
+		if (pair != null) {
+			event.setCancelled(pair.getLeft().handleInteract(event, pair.getRight()));
 		}
 	}
 
@@ -87,8 +89,7 @@ public class InteractListener implements Listener {
 					ServerMode.getInstance().cycleData(event.getItem());
 				} else if (event.getItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
 					// Right click air: Open computer
-					event.getPlayer().openInventory(new Computer(event.getPlayer().getLocation(),
-							event.getPlayer().getUniqueId().toString(), true).getInventory(user));
+					event.getPlayer().openInventory(new Computer().getInventory(user));
 				}
 			}
 			return;

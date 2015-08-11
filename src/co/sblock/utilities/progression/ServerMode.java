@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.machines.Machines;
@@ -84,8 +87,8 @@ public class ServerMode {
 	}
 
 	public boolean isWithinRange(OfflineUser server, Block broken) {
-		Machine computer = Machines.getInstance().getComputer(server.getClient());
-		return computer != null && computer.getKey().distanceSquared(broken.getLocation()) <= 625;
+		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getComputer(server.getClient());
+		return pair != null && pair.getLeft().getKey(pair.getRight()).distanceSquared(broken.getLocation()) <= 625;
 	}
 
 	public static ServerMode getInstance() {

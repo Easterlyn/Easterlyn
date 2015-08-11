@@ -2,12 +2,17 @@ package co.sblock.machines.type;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
-import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Shape;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Perfectly Generic Object Machine. Mimics most objects when placed against them.
@@ -16,45 +21,33 @@ import co.sblock.machines.utilities.MachineType;
  */
 public class PGO extends Machine {
 
-	/**
-	 * @see co.sblock.machines.type.Machine#Machine(Location, String)
-	 */
+	private final ItemStack drop;
+
 	public PGO(Location l, String owner) {
-		super(l, owner);
-		this.blocks = shape.getBuildLocations(direction);
+		super(new Shape());
+		drop = new ItemStack(Material.DIAMOND_BLOCK);
+		ItemMeta meta = drop.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Perfect Building Object");
+		drop.setItemMeta(meta);
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
-	public MachineType getType() {
-		return MachineType.PERFECTLY_GENERIC_OBJECT;
-	}
-
-	/**
-	 * @see co.sblock.machines.type.Machine#assemble(BlockPlaceEvent)
-	 */
-	@SuppressWarnings("deprecation")
-	public void assemble(BlockPlaceEvent event) {
+	@Override
+	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
 		Material placedOn = event.getBlockAgainst().getType();
 		if (isValid(placedOn)) {
-			this.blocks.put(key, new MaterialData(event.getBlockAgainst().getType(), event.getBlockAgainst().getData()));
+			getShape().setVectorData(new Vector(0, 0, 0), event.getBlockAgainst().getState().getData());
 		}
 		// Future features: Make wall signs etc. valid and copy text
-		this.assemble();
+		super.assemble(event, storage);
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#meetsAdditionalBreakConditions(BlockPlaceEvent)
-	 */
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event) {
+	@Override
+	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event, ConfigurationSection storage) {
 		return true;
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
-	 */
-	public boolean handleInteract(PlayerInteractEvent event) {
+	@Override
+	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
 		return false;
 	}
 
@@ -145,6 +138,7 @@ public class PGO extends Machine {
 		case STAINED_GLASS_PANE:
 		case STEP:
 		case STONE:
+		case STONE_SLAB2:
 		case THIN_GLASS:
 		case TNT:
 		case TRIPWIRE:
@@ -159,5 +153,10 @@ public class PGO extends Machine {
 		default:
 			return false;
 		}
+	}
+
+	@Override
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
 }

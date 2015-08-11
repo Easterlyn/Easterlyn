@@ -2,8 +2,8 @@ package co.sblock.machines.type;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
@@ -12,17 +12,19 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.material.MaterialData;
-import org.bukkit.util.Vector;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Icon;
-import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Shape;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.inventory.InventoryUtils;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Computers for players! Inventory-based selection system.
@@ -31,17 +33,15 @@ import co.sblock.utilities.inventory.InventoryUtils;
  */
 public class Computer extends Machine implements InventoryHolder {
 
-	/**
-	 * Creates a Computer. If virtual is true, computer is not to actually be built.
-	 * 
-	 * @see co.sblock.machines.type.Machine#Machine(Location, String)
-	 */
-	public Computer(Location l, String owner, boolean virtual) {
-		super(l, owner);
-		if (!virtual) {
-			shape.addBlock(new Vector(0, 0, 0), new MaterialData(Material.JUKEBOX));
-			this.blocks = shape.getBuildLocations(direction);
-		}
+	private final ItemStack drop;
+
+	public Computer() {
+		super(new Shape());
+
+		drop = new ItemStack(Material.JUKEBOX);
+		ItemMeta meta = drop.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Computer");
+		drop.setItemMeta(meta);
 	}
 
 	/**
@@ -50,8 +50,8 @@ public class Computer extends Machine implements InventoryHolder {
 	 * @see co.sblock.machines.type.Machine#assemble()
 	 */
 	@Override
-	public void assemble(BlockPlaceEvent event) {
-		if (Machines.getInstance().hasComputer(event.getPlayer(), key)) {
+	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
+		if (Machines.getInstance().hasComputer(event.getPlayer(), getKey(storage))) {
 			if (event.getPlayer().hasPermission("sblock.horrorterror")) {
 				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
 				return;
@@ -59,26 +59,15 @@ public class Computer extends Machine implements InventoryHolder {
 			event.setCancelled(true);
 			event.getBlock().setType(Material.AIR);
 			event.getPlayer().sendMessage(Color.BAD + "You can only have one Computer placed!");
-			this.assemblyFailed();
+			this.assemblyFailed(storage);
 			return;
 		}
-		super.assemble(event);
+		super.assemble(event, storage);
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
 	@Override
-	public MachineType getType() {
-		return MachineType.COMPUTER;
-	}
-
-	/**
-	 * @see co.sblock.machines.type.Machine#handleClick(InventoryClickEvent)
-	 */
-	@Override
-	public boolean handleClick(InventoryClickEvent event) {
-		if (!event.getWhoClicked().getUniqueId().toString().equals(this.owner)
+	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
+		if (!event.getWhoClicked().getUniqueId().equals(getOwner(storage))
 				&& !event.getWhoClicked().hasPermission("sblock.denizen")) {
 			event.setResult(Result.DENY);
 			return true;
@@ -128,18 +117,15 @@ public class Computer extends Machine implements InventoryHolder {
 		return true;
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
-	 */
 	@Override
-	public boolean handleInteract(PlayerInteractEvent event) {
-		if (super.handleInteract(event)) {
+	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
+		if (super.handleInteract(event, storage)) {
 			return true;
 		}
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		if (!event.getPlayer().getUniqueId().toString().equals(this.owner)) {
+		if (!event.getPlayer().getUniqueId().equals(getOwner(storage))) {
 			if (event.getPlayer().hasPermission("sblock.denizen")) {
 				event.getPlayer().sendMessage("Allowing admin override for interaction with Computer.");
 			} else {
@@ -193,5 +179,10 @@ public class Computer extends Machine implements InventoryHolder {
 		i.setItem(0, Icon.CONFIRM.getIcon());
 		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
 		return i;
+	}
+
+	@Override
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
 }

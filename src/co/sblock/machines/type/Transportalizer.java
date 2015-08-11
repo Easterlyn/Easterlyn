@@ -1,8 +1,6 @@
 package co.sblock.machines.type;
 
-import java.util.Map.Entry;
-
-import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,24 +9,27 @@ import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
-import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
+import co.sblock.utilities.general.Holograms;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Machine for Entity teleportation.
@@ -41,118 +42,91 @@ import co.sblock.machines.utilities.Shape;
  */
 public class Transportalizer extends Machine {
 
-	private long fuel;
-	private final Hologram hologram;
+	private final ItemStack drop;
 
 	@SuppressWarnings("deprecation")
-	public Transportalizer(Location l, String owner, Direction d) {
-		super(l, owner, d);
-		MaterialData m = new MaterialData(Material.HOPPER, d.getRelativeDirection(Direction.SOUTH).getChestByte());
-		shape.addBlock(new Vector(0, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_BLOCK);
-		shape.addBlock(new Vector(-1, 0, 0), m);
-		shape.addBlock(new Vector(1, 0, 0), m);
-		shape.addBlock(new Vector(-1, 0, 1), m);
-		shape.addBlock(new Vector(1, 0, 1), m);
-		shape.addBlock(new Vector(-1, 2, 1), m);
-		shape.addBlock(new Vector(0, 2, 1), m);
-		shape.addBlock(new Vector(1, 2, 1), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS, d.getUpperStairByte());
-		shape.addBlock(new Vector(0, 0, 1), m);
-		m = new MaterialData(Material.STAINED_GLASS);
-		shape.addBlock(new Vector(0, 1, 1), m);
-		m = new MaterialData(Material.WOOD_BUTTON, d.getButtonByte());
-		shape.addBlock(new Vector(-1, 2, 0), m);
-		shape.addBlock(new Vector(1, 2, 0), m);
-		m = new MaterialData(Material.STEP, (byte) 7);
-		shape.addBlock(new Vector(-1, 0, -1), m);
-		shape.addBlock(new Vector(0, 0, -1), m);
-		shape.addBlock(new Vector(1, 0, -1), m);
-		m = new MaterialData(Material.NETHER_FENCE);
-		shape.addBlock(new Vector(-1, 1, 1), m);
-		shape.addBlock(new Vector(1, 1, 1), m);
-		m = new MaterialData(Material.CARPET, (byte) 14);
-		shape.addBlock(new Vector(-1, 1, 0), m);
-		m = new MaterialData(Material.CARPET, (byte) 5);
-		shape.addBlock(new Vector(1, 1, 0), m);
-		blocks = shape.getBuildLocations(getFacingDirection());
+	public Transportalizer() {
+		super(new Shape());
+		Shape shape = getShape();
+		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER, Direction.SOUTH, "chest");
+		shape.setVectorData(new Vector(0, 0, 0), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK);
+		shape.setVectorData(new Vector(-1, 0, 0), m);
+		shape.setVectorData(new Vector(1, 0, 0), m);
+		shape.setVectorData(new Vector(-1, 0, 1), m);
+		shape.setVectorData(new Vector(1, 0, 1), m);
+		shape.setVectorData(new Vector(-1, 2, 1), m);
+		shape.setVectorData(new Vector(0, 2, 1), m);
+		shape.setVectorData(new Vector(1, 2, 1), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
+		shape.setVectorData(new Vector(0, 0, 1), m);
+		m = shape.new MaterialDataValue(Material.STAINED_GLASS);
+		shape.setVectorData(new Vector(0, 1, 1), m);
+		m = shape.new MaterialDataValue(Material.WOOD_BUTTON, Direction.NORTH, "button");
+		shape.setVectorData(new Vector(-1, 2, 0), m);
+		shape.setVectorData(new Vector(1, 2, 0), m);
+		m = shape.new MaterialDataValue(Material.STEP, (byte) 7);
+		shape.setVectorData(new Vector(-1, 0, -1), m);
+		shape.setVectorData(new Vector(0, 0, -1), m);
+		shape.setVectorData(new Vector(1, 0, -1), m);
+		m = shape.new MaterialDataValue(Material.NETHER_FENCE);
+		shape.setVectorData(new Vector(-1, 1, 1), m);
+		shape.setVectorData(new Vector(1, 1, 1), m);
+		m = shape.new MaterialDataValue(Material.CARPET, DyeColor.RED.getWoolData());
+		shape.setVectorData(new Vector(-1, 1, 0), m);
+		m = shape.new MaterialDataValue(Material.CARPET, DyeColor.LIME.getWoolData());
+		shape.setVectorData(new Vector(1, 1, 0), m);
 
-		fuel = 0;
+		drop = new ItemStack(Material.CHEST);
+		ItemMeta meta = drop.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Transportalizer");
+		drop.setItemMeta(meta);
+	}
 
-		if (!Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays")) {
-			hologram = null;
-			return;
+	private Location getHoloLocation(ConfigurationSection storage) {
+		return getKey(storage).add(Shape.getRelativeVector(getDirection(storage), new Vector(0.5, 1.5, 1.5)));
+	}
+
+	public void setFuel(ConfigurationSection storage, long fuel) {
+		Hologram hologram = Holograms.getHologram(getHoloLocation(storage));
+		if (hologram != null) {
+			hologram.clearLines();
+			hologram.appendTextLine(String.valueOf(fuel));
 		}
-		Location holoLoc = null;
-		for (Entry<Location, MaterialData> e : blocks.entrySet()) {
-			if (e.getValue().getItemType() == Material.STAINED_GLASS) {
-				holoLoc = e.getKey().clone().add(0.5, 0.5, 0.5);
-				break;
-			}
-		}
-		hologram = HologramsAPI.createHologram(Sblock.getInstance(), holoLoc);
-		hologram.appendTextLine(String.valueOf(fuel));
+		storage.set("fuel", fuel);
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
-	@Override
-	public MachineType getType() {
-		return MachineType.TRANSPORTALIZER;
+	public long getFuel(ConfigurationSection storage) {
+		return storage.getLong("fuel", 0);
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
 	@Override
-	public String getData() {
-		return String.valueOf(fuel);
+	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
+		super.assemble(event, storage);
+		setFuel(storage, getFuel(storage));
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
 	@Override
-	public void setData(String data) {
-		try {
-			fuel = Long.valueOf(data);
-			if (hologram != null) {
-				hologram.clearLines();
-				hologram.appendTextLine(String.valueOf(fuel));
-			}
-		} catch (NumberFormatException e)  {
-			fuel = 0;
-		}
-	}
-
-	/**
-	 * @see co.sblock.machines.type.Machine#handleHopperPickupItem(org.bukkit.event.inventory.InventoryPickupItemEvent)
-	 */
-	@Override
-	public boolean handleHopperPickupItem(InventoryPickupItemEvent event) {
+	public boolean handleHopperPickupItem(InventoryPickupItemEvent event, ConfigurationSection storage) {
 		ItemStack inserted = event.getItem().getItemStack();
+		Location key = getKey(storage);
 		if (hasValue(inserted.getType())) {
-			fuel += getValue(inserted.getType()) * inserted.getAmount();
-			if (hologram != null) {
-				hologram.clearLines();
-				hologram.appendTextLine(String.valueOf(fuel));
-			}
+			setFuel(storage, getFuel(storage) + getValue(inserted.getType()) * inserted.getAmount());
 			key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
 			event.getItem().remove();
 		} else {
-			event.getItem().teleport(key.clone().add(Shape.getRelativeVector(direction.getRelativeDirection(Direction.SOUTH), new Vector(0.5, 0.5, -1.5))));
+			event.getItem().teleport(
+					key.add(Shape.getRelativeVector(
+							getDirection(storage).getRelativeDirection(Direction.SOUTH),
+							new Vector(0.5, 0.5, -1.5))));
 		}
 		return true;
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleHopperMoveItem(org.bukkit.event.inventory.InventoryMoveItemEvent)
-	 */
 	@Override
-	public boolean handleHopperMoveItem(InventoryMoveItemEvent event) {
+	public boolean handleHopperMoveItem(InventoryMoveItemEvent event, ConfigurationSection storage) {
 		// TODO: allow pulling from chest or something like that
-		return super.handleHopperMoveItem(event);
+		return super.handleHopperMoveItem(event, storage);
 	}
 
 	/**
@@ -196,13 +170,10 @@ public class Transportalizer extends Machine {
 		}
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
-	 */
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean handleInteract(PlayerInteractEvent event) {
-		if (super.handleInteract(event)) {
+	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
+		if (super.handleInteract(event, storage)) {
 			return true;
 		}
 
@@ -216,8 +187,10 @@ public class Transportalizer extends Machine {
 			return false;
 		}
 
+		Location key = getKey(storage);
+
 		// Check for a sign in the proper location
-		Block signBlock = this.key.clone().add(new Vector(0, 2, 0)).getBlock();
+		Block signBlock = key.clone().add(new Vector(0, 2, 0)).getBlock();
 		if (signBlock.getType() != Material.WALL_SIGN) {
 			event.getPlayer().sendMessage(Color.BAD
 					+ "Please place a sign on your transportalizer between the buttons to use it."
@@ -237,7 +210,7 @@ public class Transportalizer extends Machine {
 		}
 
 		// Parse remote location. Do not allow invalid height or coords.
-		WorldBorder border = getKey().getWorld().getWorldBorder();
+		WorldBorder border = key.getWorld().getWorldBorder();
 		String[] locString = line3.split(", ?");
 		int x0 = Integer.parseInt(locString[0]);
 		int max = (int) (border.getCenter().getX() + border.getSize());
@@ -256,6 +229,7 @@ public class Transportalizer extends Machine {
 		// 50 fuel per block of distance, rounded up.
 		int cost = (int) (key.distance(remote) / 50 + 1);
 		// CHECK FUEL
+		long fuel = getFuel(storage);
 		if (fuel < cost) {
 			event.getPlayer().sendMessage(Color.BAD
 					+ "The Transportalizer begins humming through standard teleport procedure,"
@@ -280,11 +254,7 @@ public class Transportalizer extends Machine {
 			if (e.getLocation().getBlock().equals(source.getBlock())) {
 				source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
 				target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
-				fuel -= cost;
-				if (hologram != null) {
-					hologram.clearLines();
-					hologram.appendTextLine(String.valueOf(fuel));
-				}
+				setFuel(storage, fuel - cost);
 				e.teleport(new Location(target.getWorld(), target.getX() + .5, target.getY(), target.getZ() + .5,
 						e.getLocation().getYaw(), e.getLocation().getPitch()));
 				key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
@@ -296,21 +266,18 @@ public class Transportalizer extends Machine {
 		return false;
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleClick(org.bukkit.event.inventory.InventoryClickEvent)
-	 */
 	@Override
-	public boolean handleClick(InventoryClickEvent event) {
+	public boolean handleClick(InventoryClickEvent event, ConfigurationSection section) {
 		return false;
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#disable()
-	 */
 	@Override
-	public void disable() {
-		if (hologram != null) {
-			hologram.delete();
-		}
+	public void disable(ConfigurationSection section) {
+		Holograms.removeHologram(getHoloLocation(section));
+	}
+
+	@Override
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
 }

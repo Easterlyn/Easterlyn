@@ -1,6 +1,9 @@
 package co.sblock.events.listeners.inventory;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.bukkit.block.BlockState;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
@@ -25,10 +28,9 @@ public class InventoryPickupItemListener implements Listener {
 	public void onInventoryMoveItem(InventoryPickupItemEvent event) {
 		InventoryHolder ih = event.getInventory().getHolder();
 		if (ih != null && ih instanceof BlockState) {
-			Machine m = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
-			if (m != null) {
-				event.setCancelled(m.handleHopperPickupItem(event));
-				return;
+			Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
+			if (pair != null) {
+				event.setCancelled(pair.getLeft().handleHopperPickupItem(event, pair.getRight()));
 			}
 		}
 	}

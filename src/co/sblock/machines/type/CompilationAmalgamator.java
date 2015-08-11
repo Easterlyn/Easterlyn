@@ -2,11 +2,12 @@ package co.sblock.machines.type;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
 
 /**
  * Automation at its finest!
@@ -15,26 +16,22 @@ import co.sblock.machines.utilities.MachineType;
  */
 public class CompilationAmalgamator extends Machine {
 
-	/**
-	 * @param key
-	 * @param owner
-	 * @param direction
-	 */
+	private final ItemStack drop;
+
 	CompilationAmalgamator(Location key, String owner, Direction direction) {
-		super(key, owner, direction);
-		MaterialData m = new MaterialData(Material.HOPPER);
-		shape.addBlock(new Vector(0, 2, 0), m);
-		shape.addBlock(new Vector(0, 0, 0), m);
-		m = new MaterialData(Material.DROPPER);
-		shape.addBlock(new Vector(0, 1, 0), m);
+		super(new Shape());
+		Shape shape = getShape();
+		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER);
+		shape.setVectorData(new Vector(0, 2, 0), m);
+		shape.setVectorData(new Vector(0, 0, 0), m);
+		m = shape.new MaterialDataValue(Material.DROPPER);
+		shape.setVectorData(new Vector(0, 1, 0), m);
+
+		drop = null; // future
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
 	@Override
-	public MachineType getType() {
-		// TODO: implement
-		return null;
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
 }

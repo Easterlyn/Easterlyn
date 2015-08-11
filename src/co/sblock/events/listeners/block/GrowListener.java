@@ -1,5 +1,8 @@
 package co.sblock.events.listeners.block;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockGrowEvent;
@@ -22,9 +25,9 @@ public class GrowListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockGrow(BlockGrowEvent event) {
-		Machine m = Machines.getInstance().getMachineByBlock(event.getBlock());
-		if (m != null) {
-			event.setCancelled(m.handleGrow(event));
+		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(event.getBlock());
+		if (pair != null) {
+			event.setCancelled(pair.getLeft().handleGrow(event, pair.getRight()));
 		}
 	}
 }

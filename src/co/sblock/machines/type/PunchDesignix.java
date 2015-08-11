@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -13,13 +13,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
@@ -36,49 +36,37 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class PunchDesignix extends Machine {
 
-	/** The ItemStack used to create usage help */
+	/* The ItemStacks used to create usage help trade offers */
 	private static ItemStack[] exampleRecipes;
 
-	/**
-	 * @see co.sblock.machines.type.Machine#Machine(Location, String, Direction)
-	 */
-	@SuppressWarnings("deprecation")
-	public PunchDesignix(Location l, String owner, Direction d) {
-		super(l, owner, d);
-		MaterialData m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.WEST).getUpperStairByte());
-		shape.addBlock(new Vector(0, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.EAST).getUpperStairByte());
-		shape.addBlock(new Vector(1, 0, 0), m);
-		m = new MaterialData(Material.QUARTZ_STAIRS,
-				d.getRelativeDirection(Direction.NORTH).getStairByte());
-		shape.addBlock(new Vector(0, 1, 0), m);
-		shape.addBlock(new Vector(1, 1, 0), m);
-		m = new MaterialData(Material.STEP, (byte) 15);
-		shape.addBlock(new Vector(0, 0, -1), m);
-		shape.addBlock(new Vector(1, 0, -1), m);
-		m = new MaterialData(Material.CARPET, (byte) 8);
-		shape.addBlock(new Vector(0, 1, -1), m);
-		shape.addBlock(new Vector(1, 1, -1), m);
-		blocks = shape.getBuildLocations(getFacingDirection());
+	private final ItemStack drop;
+
+	public PunchDesignix() {
+		super(new Shape());
+		Shape shape = getShape();
+		shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "upperstair"));
+		shape.setVectorData(new Vector(1, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST, "upperstair"));
+		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
+		shape.setVectorData(new Vector(0, 1, 0), m);
+		shape.setVectorData(new Vector(1, 1, 0), m);
+		m = shape.new MaterialDataValue(Material.STEP, (byte) 15);
+		shape.setVectorData(new Vector(0, 0, -1), m);
+		shape.setVectorData(new Vector(1, 0, -1), m);
+		m = shape.new MaterialDataValue(Material.CARPET, (byte) 8);
+		shape.setVectorData(new Vector(0, 1, -1), m);
+		shape.setVectorData(new Vector(1, 1, -1), m);
+
+		drop = new ItemStack(Material.QUARTZ_STAIRS);
+		ItemMeta meta = drop.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Punch Designix");
+		drop.setItemMeta(meta);
+
 		createExampleRecipes();
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#getType()
-	 */
 	@Override
-	public MachineType getType() {
-		return MachineType.PUNCH_DESIGNIX;
-	}
-
-	/**
-	 * @see co.sblock.machines.type.Machine#handleInteract(PlayerInteractEvent)
-	 */
-	@Override
-	public boolean handleInteract(PlayerInteractEvent event) {
-		if (super.handleInteract(event)) {
+	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
+		if (super.handleInteract(event, storage)) {
 			return true;
 		}
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -90,17 +78,14 @@ public class PunchDesignix extends Machine {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
-			openInventory(event.getPlayer());
+			openInventory(event.getPlayer(), storage);
 		}
 		return true;
 	}
 
-	/**
-	 * @see co.sblock.machines.type.Machine#handleClick(InventoryClickEvent)
-	 */
 	@Override
 	@SuppressWarnings("deprecation")
-	public boolean handleClick(InventoryClickEvent event) {
+	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
 		if (event.getSlot() == 2 && event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())
 				&& event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
 			// Clicking an item in result slot
@@ -213,8 +198,13 @@ public class PunchDesignix extends Machine {
 	 * 
 	 * @param player the Player
 	 */
-	public void openInventory(Player player) {
-		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, getExampleRecipes());
+	public void openInventory(Player player, ConfigurationSection storage) {
+		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, getKey(storage), getExampleRecipes());
+	}
+
+	@Override
+	public ItemStack getUniqueDrop() {
+		return drop;
 	}
 
 	/**
