@@ -60,6 +60,9 @@ public class Machines extends Module {
 			Machine machine;
 			try {
 				machine = type.newInstance();
+				if (machine.getUniqueDrop() == null) {
+					continue;
+				}
 				byName.put(type.getSimpleName(), machine);
 			} catch (InstantiationException | IllegalAccessException e) {
 				// Improperly set up Machine
