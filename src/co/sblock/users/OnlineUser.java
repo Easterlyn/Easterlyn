@@ -34,7 +34,6 @@ import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Icon;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryManager;
@@ -193,11 +192,11 @@ public class OnlineUser extends OfflineUser {
 		this.updateFlight();
 		p.setNoDamageTicks(Integer.MAX_VALUE);
 		InventoryManager.storeAndClearInventory(p);
-		p.getInventory().addItem(MachineType.COMPUTER.getUniqueDrop());
-		p.getInventory().addItem(MachineType.CRUXTRUDER.getUniqueDrop());
-		p.getInventory().addItem(MachineType.PUNCH_DESIGNIX.getUniqueDrop());
-		p.getInventory().addItem(MachineType.TOTEM_LATHE.getUniqueDrop());
-		p.getInventory().addItem(MachineType.ALCHEMITER.getUniqueDrop());
+		p.getInventory().addItem(Machines.getMachineByName("Computer").getUniqueDrop());
+		p.getInventory().addItem(Machines.getMachineByName("Cruxtruder").getUniqueDrop());
+		p.getInventory().addItem(Machines.getMachineByName("PunchDesignix").getUniqueDrop());
+		p.getInventory().addItem(Machines.getMachineByName("TotemLathe").getUniqueDrop());
+		p.getInventory().addItem(Machines.getMachineByName("Alchemiter").getUniqueDrop());
 		for (Material mat : ServerMode.getInstance().getApprovedSet()) {
 			p.getInventory().addItem(new ItemStack(mat));
 		}

@@ -25,7 +25,6 @@ import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -193,7 +192,7 @@ public class InventoryClickListener implements Listener {
 		// Server: Click computer icon -> open computer interface
 		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
-			if (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
+			if (event.getCurrentItem().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
 				event.getWhoClicked().openInventory(
@@ -228,7 +227,7 @@ public class InventoryClickListener implements Listener {
 		// Server: No picking up computer icon
 		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
-				&& event.getCurrentItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+				&& event.getCurrentItem().equals(Machines.getMachineByName("Computer").getUniqueDrop())) {
 			event.setCancelled(true);
 			return;
 		}
@@ -243,8 +242,8 @@ public class InventoryClickListener implements Listener {
 
 		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
-				&& (event.getCurrentItem().isSimilar(MachineType.COMPUTER.getUniqueDrop())
-						|| hotbar.isSimilar(MachineType.COMPUTER.getUniqueDrop()))) {
+				&& (event.getCurrentItem().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())
+						|| hotbar.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop()))) {
 			event.setCancelled(true);
 			return;
 		}

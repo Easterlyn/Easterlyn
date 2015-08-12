@@ -18,7 +18,6 @@ import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -50,7 +49,7 @@ public class PlaceListener implements Listener {
 		// Server mode placement
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
-			if (event.getItemInHand().isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
+			if (event.getItemInHand().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {
 				final int slot = event.getPlayer().getInventory().getHeldItemSlot();
@@ -66,8 +65,9 @@ public class PlaceListener implements Listener {
 			}
 		}
 
+		Machines.getInstance();
 		// Machine place logic
-		for (Entry<String, Machine> entry : Machines.getInstance().getMachinesByName().entrySet()) {
+		for (Entry<String, Machine> entry : Machines.getMachinesByName().entrySet()) {
 			if (entry.getValue().getUniqueDrop().isSimilar(event.getItemInHand())) {
 				try {
 					pair = Machines.getInstance().addMachine(event.getBlock().getLocation(),

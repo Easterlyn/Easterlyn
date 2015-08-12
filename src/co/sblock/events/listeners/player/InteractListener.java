@@ -23,7 +23,6 @@ import co.sblock.events.Events;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -87,7 +86,7 @@ public class InteractListener implements Listener {
 				if (ServerMode.getInstance().isApproved(event.getMaterial())) {
 					// Right click air: Cycle to next approved material
 					ServerMode.getInstance().cycleData(event.getItem());
-				} else if (event.getItem().equals(MachineType.COMPUTER.getUniqueDrop())) {
+				} else if (event.getItem().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
 					// Right click air: Open computer
 					event.getPlayer().openInventory(new Computer().getInventory(user));
 				}

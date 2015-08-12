@@ -448,8 +448,23 @@ public class Machines extends Module {
 		return machines;
 	}
 
-	public Map<String, Machine> getMachinesByName() {
-		return byName;
+	/**
+	 * Gets a Map of instances of Machines stored by name.
+	 * 
+	 * @return the Map of all Machine instances stored by name
+	 */
+	public static Map<String, Machine> getMachinesByName() {
+		return getInstance().byName;
+	}
+
+	/**
+	 * Gets an instance of a Machine by name.
+	 * 
+	 * @param name the name of the Machine
+	 * @return the Machine instance
+	 */
+	public static Machine getMachineByName(String name) {
+		return getInstance().byName.get(name);
 	}
 
 	/**

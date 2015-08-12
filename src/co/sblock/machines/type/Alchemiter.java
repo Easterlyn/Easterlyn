@@ -18,8 +18,8 @@ import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
 import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.MachineType;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.users.OfflineUser;
@@ -173,7 +173,7 @@ public class Alchemiter extends Machine {
 				ItemStack expCost;
 				if (CruxiteDowel.isUsedDowel(open.getItem(0))) {
 					if (open.getItem(0).getItemMeta().getLore().contains("Blank")) {
-						result = MachineType.PERFECTLY_GENERIC_OBJECT.getUniqueDrop();
+						result = Machines.getMachineByName("PGO").getUniqueDrop();
 					} else {
 						result = Captcha.captchaToItem(open.getItem(0));
 					}

@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.commands.SblockCommand;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Icon;
-import co.sblock.machines.utilities.MachineType;
 
 /**
  * SblockCommand for getting machine key objects and icons.
@@ -37,12 +37,12 @@ public class MachineCommand extends SblockCommand {
 		}
 		if (args[0].equalsIgnoreCase("get")) {
 			try {
-				((Player) sender).getInventory().addItem(MachineType.getType(args[1]).getUniqueDrop());
+				((Player) sender).getInventory().addItem(Machines.getMachineByName(args[1]).getUniqueDrop());
 				sender.sendMessage("Machine get!");
 			} catch (Exception e) {
 				StringBuilder sb = new StringBuilder("Valid types: ");
-				for (MachineType m : MachineType.values()) {
-					sb.append(m.name()).append(' ');
+				for (String name : Machines.getMachinesByName().keySet()) {
+					sb.append(name).append(' ');
 				}
 				sender.sendMessage(sb.toString());
 			}
@@ -87,9 +87,9 @@ public class MachineCommand extends SblockCommand {
 		}
 		args[1] = args[1].toUpperCase();
 		if (args[0].equals("get")) {
-			for (MachineType type : MachineType.values()) {
-				if (type.name().startsWith(args[1])) {
-					matches.add(type.name());
+			for (String type : Machines.getMachinesByName().keySet()) {
+				if (type.startsWith(args[1])) {
+					matches.add(type);
 				}
 			}
 			return matches;

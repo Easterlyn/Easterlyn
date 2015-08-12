@@ -16,7 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.google.common.io.BaseEncoding;
 
 import co.sblock.effects.Effects;
-import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.Machines;
 import co.sblock.module.Module;
 import co.sblock.utilities.inventory.InventoryUtils;
 
@@ -140,7 +140,7 @@ public class Captcha extends Module {
 				return is;
 			}
 			if (data[0].equals("Blank")) {
-				return MachineType.PERFECTLY_GENERIC_OBJECT.getUniqueDrop();
+				return Machines.getMachineByName("PGO").getUniqueDrop();
 			}
 			for (int j = 1; j < data.length; j++) {
 				if (data[j].startsWith(ChatColor.MAGIC.toString())) {
@@ -372,7 +372,7 @@ public class Captcha extends Module {
 			return;
 		}
 		ItemStack captcha = null;
-		if (toCaptcha.isSimilar(MachineType.COMPUTER.getUniqueDrop())) {
+		if (toCaptcha.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
 			// Computers can (and should) be alchemized.
 			captcha = createLoreCard("Computer");
 		} else {

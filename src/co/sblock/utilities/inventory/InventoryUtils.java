@@ -39,7 +39,8 @@ import com.google.common.io.BaseEncoding;
 import com.sun.corba.se.impl.orbutil.HexOutputStream;
 
 import co.sblock.Sblock;
-import co.sblock.machines.utilities.MachineType;
+import co.sblock.machines.Machines;
+import co.sblock.machines.type.Machine;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.captcha.CruxiteDowel;
 
@@ -367,8 +368,8 @@ public class InventoryUtils {
 	public static HashSet<ItemStack> getUniqueItems() {
 		if (uniques == null) {
 			uniques = new HashSet<>();
-			for (MachineType mt : MachineType.values()) {
-				uniques.add(mt.getUniqueDrop());
+			for (Machine machine : Machines.getMachinesByName().values()) {
+				uniques.add(machine.getUniqueDrop());
 			}
 		}
 		return uniques;
