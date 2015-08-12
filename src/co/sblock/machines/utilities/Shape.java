@@ -66,6 +66,8 @@ public class Shape {
 	 * @param data the MaterialData
 	 */
 	public void setVectorData(Vector vector, MaterialDataValue data) {
+		// x axis is inverted for our interpretation of north on an x, z plane
+		vector.setX(-vector.getX());
 		vectors.put(vector, data);
 	}
 
@@ -77,7 +79,7 @@ public class Shape {
 	 */
 	@SuppressWarnings("deprecation")
 	public void setVectorData(Vector vector, MaterialData data) {
-		vectors.put(vector, new MaterialDataValue(data.getItemType(), data.getData()));
+		setVectorData(vector, new MaterialDataValue(data.getItemType(), data.getData()));
 	}
 
 	/**
@@ -85,136 +87,46 @@ public class Shape {
 	 * build a Machine.
 	 * 
 	 * @param location the Location to center the Shape on
-	 * @param d the Direction the Machine needs to be built in
+	 * @param direction the Direction the Machine needs to be built in
 	 * 
 	 * @return the Locations and relative MaterialData
 	 */
-	public HashMap<Location, MaterialData> getBuildLocations(Location location, Direction d) {
-		return assembly(location, rotate(d));
-	}
-
-	/**
-	 * Rotates block shape based on input Direction.
-	 * 
-	 * @param d the Direction to rotate to
-	 * 
-	 * @return the rotated shape
-	 */
-	private HashMap<Vector, MaterialData> rotate(Direction d) {
-		switch (d) {
-		case EAST:
-			return rotateCW();
-		case NORTH:
-			return rotate180();
-		case WEST:
-			return rotateCCW();
-		default:
-			return current();
-		}
-	}
-
-	/**
-	 * Creates a copy of blocks with all locations rotated 90 degrees clockwise.
-	 * 
-	 * @return the clockwise rotation of blocks
-	 */
-	private HashMap<Vector, MaterialData> rotateCW() {
-		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
-		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
-			Entry<Vector, MaterialDataValue> entry = iterator.next();
-			Vector vector = entry.getKey().clone();
-			int newZ = -vector.getBlockX();
-			vector.setX(vector.getBlockZ());
-			vector.setZ(newZ);
-			newVectors.put(vector, entry.getValue().getRotatedData(Direction.EAST));
-		}
-		return newVectors;
-	}
-
-	/**
-	 * Creates a copy of blocks with all locations rotated 90 degrees counterclockwise.
-	 * 
-	 * @return the counterclockwise rotation of blocks
-	 */
-	private HashMap<Vector, MaterialData> rotateCCW() {
-		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
-		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
-			Entry<Vector, MaterialDataValue> entry = iterator.next();
-			Vector vector = entry.getKey().clone();
-			int newZ = vector.getBlockX();
-			vector.setX(-vector.getBlockZ());
-			vector.setZ(newZ);
-			newVectors.put(vector, entry.getValue().getRotatedData(Direction.WEST));
-		}
-		return newVectors;
-	}
-
-	/**
-	 * Creates a copy of blocks with all locations rotated 180 degrees.
-	 * 
-	 * @return the 180 degree rotation of blocks
-	 */
-	private HashMap<Vector, MaterialData> rotate180() {
-		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
-		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
-			Entry<Vector, MaterialDataValue> entry = iterator.next();
-			Vector vector = entry.getKey().clone();
-			vector.setX(-vector.getBlockX());
-			vector.setZ(-vector.getBlockZ());
-			newVectors.put(vector, entry.getValue().getRotatedData(Direction.NORTH));
-		}
-		return newVectors;
-	}
-
-	/**
-	 * Creates a copy of blocks.
-	 * 
-	 * @return the blocks
-	 */
-	private HashMap<Vector, MaterialData> current() {
-		HashMap<Vector, MaterialData> newVectors = new HashMap<>();
-		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
-			Entry<Vector, MaterialDataValue> entry = iterator.next();
-			newVectors.put(entry.getKey().clone(), entry.getValue().getRotatedData(Direction.SOUTH));
-		}
-		return newVectors;
-	}
-
-	/**
-	 * Creates a HashMap of in-world Locations for Machine components.
-	 * 
-	 * @param translation the correctly rotated Shape HashMap
-	 * 
-	 * @return valid ingame coordinates for assembling a Machine in
-	 */
-	private HashMap<Location, MaterialData> assembly(Location location, HashMap<Vector, MaterialData> translation) {
+	public HashMap<Location, MaterialData> getBuildLocations(Location location, Direction direction) {
 		HashMap<Location, MaterialData> newLocs = new HashMap<>();
-		for (Entry<Vector, MaterialData> entry : translation.entrySet()) {
-			newLocs.put(location.clone().add(entry.getKey()), entry.getValue());
+		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
+			Entry<Vector, MaterialDataValue> entry = iterator.next();
+			newLocs.put(location.clone().add(getRelativeVector(direction, entry.getKey().clone())), entry.getValue().getRotatedData(direction));
 		}
 		return newLocs;
 	}
 
-	public static Vector getRelativeVector(Direction d, Vector v) {
-		switch (d) {
+	/**
+	 * Gets a Vector translated from the internal Sblock representation.
+	 * 
+	 * Internally, we consider north to be positive Z, east to be positive X. In Minecraft, north is negative Z.
+	 * @param direction the Direction
+	 * @param vector the Vector to translate
+	 * @return
+	 */
+	public static Vector getRelativeVector(Direction direction, Vector vector) {
+		switch (direction) {
 		case EAST:
-			double newZ = v.getX();
-			v.setX(v.getBlockZ());
-			v.setZ(newZ);
-			return v;
+			double newZ = vector.getX();
+			vector.setX(vector.getBlockZ());
+			vector.setZ(newZ);
+			return vector;
 		case SOUTH:
-			v.setX(-v.getX());
-			v.setZ(-v.getZ());
-			return v;
+			vector.setX(-vector.getX());
+			return vector;
 		case WEST:
-			double newZ1 = -v.getX();
-			v.setX(v.getBlockZ());
-			v.setZ(newZ1);
-			return v;
+			double newZ1 = -vector.getX();
+			vector.setX(-vector.getBlockZ());
+			vector.setZ(newZ1);
+			return vector;
 		case NORTH:
 		default:
-			v.setX(-v.getX());
-			return v;
+			vector.setZ(-vector.getZ());
+			return vector;
 		}
 	}
 }

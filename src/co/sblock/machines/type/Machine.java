@@ -91,7 +91,7 @@ public abstract class Machine {
 	 * @return the Location
 	 */
 	public Location getKey(ConfigurationSection storage) {
-		return Machines.fromString(storage.getCurrentPath());
+		return Machines.locFromString(storage.getCurrentPath());
 	}
 
 	/**
@@ -159,9 +159,11 @@ public abstract class Machine {
 	protected void assemble(Location key, Direction direction, ConfigurationSection storage) {
 		HashMap<Location, MaterialData> buildData = shape.getBuildLocations(key, direction);
 		for (Entry<Location, MaterialData> entry : buildData.entrySet()) {
-			BlockState state = entry.getKey().getBlock().getState();
-			state.setData(entry.getValue());
-			state.update(true, false);
+			Block block = entry.getKey().getBlock();
+			if (block.isEmpty()) {
+				block.setType(entry.getValue().getItemType(), false);
+			}
+			block.getState().setData(entry.getValue());
 		}
 		this.triggerPostAssemble(buildData, storage);
 	}

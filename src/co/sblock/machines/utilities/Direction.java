@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
  * @author Jikoo
  */
 public enum Direction {
-	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 0),
-	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 1);
+	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 1),
+	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 0);
 
 	/** The arbitrarily defined byte deciding direction facing. */
 	private byte dirNum;
@@ -117,13 +117,13 @@ public enum Direction {
 	}
 
 	/**
-	 * Gets Direction by byte. For database use.
+	 * Gets Direction by byte.
 	 * 
 	 * @param direction byte
 	 * 
 	 * @return Direction
 	 */
-	public static Direction getDirection(byte direction) {
+	private static Direction getDirection(byte direction) {
 		for (Direction d : Direction.values()) {
 			if (d.dirNum == direction) {
 				return d;

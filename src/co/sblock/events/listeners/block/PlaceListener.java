@@ -68,6 +68,9 @@ public class PlaceListener implements Listener {
 		Machines.getInstance();
 		// Machine place logic
 		for (Entry<String, Machine> entry : Machines.getMachinesByName().entrySet()) {
+			if (entry.getValue().getUniqueDrop() == null) {
+				continue;
+			}
 			if (entry.getValue().getUniqueDrop().isSimilar(event.getItemInHand())) {
 				try {
 					pair = Machines.getInstance().addMachine(event.getBlock().getLocation(),

@@ -100,7 +100,7 @@ public class Machines extends Module {
 		if (!byName.containsKey(type)) {
 			return null;
 		}
-		ConfigurationSection section = storage.createSection(fromLocation(location));
+		ConfigurationSection section = storage.createSection(stringFromLoc(location));
 		section.set("type", type);
 		section.set("owner", owner.toString());
 		section.set("direction", direction.name());
@@ -126,12 +126,20 @@ public class Machines extends Module {
 		return new ImmutablePair<>(type, section);
 	}
 
+	void addMachineBlock(Location key, Location block) {
+		machineBlocks.put(key, block);
+	}
+
+	/**
+	 * Loads all Machine data from file.
+	 */
 	public void loadAllMachines() {
 		File file;
 		try {
 			file = new File(Sblock.getInstance().getDataFolder(), "Machines.yml");
 			if (!file.exists()) {
 				file.createNewFile();
+				storage = new YamlConfiguration();
 				return;
 			}
 		} catch (IOException e) {
@@ -139,10 +147,13 @@ public class Machines extends Module {
 		}
 		storage = YamlConfiguration.loadConfiguration(file);
 		for (String machineLocation : storage.getKeys(false)) {
-			loadMachine(fromString(machineLocation), storage.getConfigurationSection(machineLocation));
+			loadMachine(locFromString(machineLocation), storage.getConfigurationSection(machineLocation));
 		}
 	}
 
+	/**
+	 * Saves all Machine data to file.
+	 */
 	public void saveAllMachines() {
 		File file;
 		try {
@@ -209,11 +220,11 @@ public class Machines extends Module {
 			return null;
 		}
 
-		ConfigurationSection section = storage.getConfigurationSection(fromLocation(key));
+		ConfigurationSection section = storage.getConfigurationSection(stringFromLoc(key));
 		if (section == null) {
 			return null;
 		}
-		return new ImmutablePair<Machine, ConfigurationSection>(byName.get(storage.getString("type")), section);
+		return new ImmutablePair<Machine, ConfigurationSection>(byName.get(section.getString("type")), section);
 	}
 
 	/**
@@ -266,7 +277,7 @@ public class Machines extends Module {
 		if (key == null) {
 			return;
 		}
-		String path = fromLocation(key);
+		String path = stringFromLoc(key);
 		ConfigurationSection section = storage.getConfigurationSection(path);
 		if (section == null) {
 			return;
@@ -347,7 +358,7 @@ public class Machines extends Module {
 	 * @return true if the Player has placed a Computer
 	 */
 	public boolean hasComputer(Player player, Location key) {
-		String keyPath = fromLocation(key);
+		String keyPath = stringFromLoc(key);
 		for (String path : storage.getKeys(false)) {
 			if (path.equals(keyPath) || !storage.getString(path + ".type").equals("Computer")) {
 				continue;
@@ -481,13 +492,13 @@ public class Machines extends Module {
 		return "Sblock Machines";
 	}
 
-	public static String fromLocation(Location location) {
+	public static String stringFromLoc(Location location) {
 		return new StringBuilder(location.getWorld().getName()).append('_')
 				.append(location.getBlockX()).append('_').append(location.getBlockY()).append('_')
 				.append(location.getBlockZ()).toString();
 	}
 
-	public static Location fromString(String string) {
+	public static Location locFromString(String string) {
 		String[] split = string.split("_");
 		return new Location(Bukkit.getWorld(split[0]), Integer.valueOf(split[1]), Integer.valueOf(split[2]), Integer.valueOf(split[3]));
 	}

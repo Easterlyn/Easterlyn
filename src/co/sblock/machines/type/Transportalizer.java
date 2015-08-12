@@ -45,7 +45,7 @@ public class Transportalizer extends Machine {
 	private final ItemStack drop;
 
 	@SuppressWarnings("deprecation")
-	Transportalizer() {
+	public Transportalizer() {
 		super(new Shape());
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER, Direction.SOUTH, "chest");

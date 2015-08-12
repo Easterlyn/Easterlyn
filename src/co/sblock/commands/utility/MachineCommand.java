@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
@@ -88,7 +89,7 @@ public class MachineCommand extends SblockCommand {
 		args[1] = args[1].toUpperCase();
 		if (args[0].equals("get")) {
 			for (String type : Machines.getMachinesByName().keySet()) {
-				if (type.startsWith(args[1])) {
+				if (StringUtil.startsWithIgnoreCase(type, args[1])) {
 					matches.add(type);
 				}
 			}

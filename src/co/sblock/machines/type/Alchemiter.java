@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -42,7 +41,7 @@ public class Alchemiter extends Machine {
 
 	private final ItemStack drop;
 
-	Alchemiter(Location l, String data, Direction d) {
+	public Alchemiter() {
 		super(new Shape());
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 1);
@@ -73,7 +72,7 @@ public class Alchemiter extends Machine {
 		shape.setVectorData(new Vector(2, 0, 1), m);
 		shape.setVectorData(new Vector(2, 0, 0), m);
 
-		drop = new ItemStack(Material.QUARTZ_BLOCK, 2);
+		drop = new ItemStack(Material.QUARTZ_BLOCK, 1, (short) 2);
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Alchemiter");
 		drop.setItemMeta(meta);

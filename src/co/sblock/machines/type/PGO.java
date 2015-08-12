@@ -1,6 +1,5 @@
 package co.sblock.machines.type;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -23,7 +22,7 @@ public class PGO extends Machine {
 
 	private final ItemStack drop;
 
-	PGO(Location l, String owner) {
+	public PGO() {
 		super(new Shape());
 		drop = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta meta = drop.getItemMeta();

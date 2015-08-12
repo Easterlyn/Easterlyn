@@ -16,7 +16,7 @@ public class CompoundingUnionizor extends Machine {
 
 	private final ItemStack drop;
 
-	CompoundingUnionizor() {
+	public CompoundingUnionizor() {
 		super(new Shape());
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER);

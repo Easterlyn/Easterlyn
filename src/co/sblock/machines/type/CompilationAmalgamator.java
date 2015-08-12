@@ -1,11 +1,9 @@
 package co.sblock.machines.type;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
 
@@ -18,7 +16,7 @@ public class CompilationAmalgamator extends Machine {
 
 	private final ItemStack drop;
 
-	CompilationAmalgamator(Location key, String owner, Direction direction) {
+	public CompilationAmalgamator() {
 		super(new Shape());
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER);

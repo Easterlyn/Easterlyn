@@ -24,7 +24,7 @@ public class PBO extends Machine {
 
 	private final ItemStack drop;
 
-	PBO() {
+	public PBO() {
 		super(new Shape());
 		drop = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta meta = drop.getItemMeta();
