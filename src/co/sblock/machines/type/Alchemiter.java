@@ -42,7 +42,7 @@ public class Alchemiter extends Machine {
 
 	private final ItemStack drop;
 
-	public Alchemiter(Location l, String data, Direction d) {
+	Alchemiter(Location l, String data, Direction d) {
 		super(new Shape());
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 1);

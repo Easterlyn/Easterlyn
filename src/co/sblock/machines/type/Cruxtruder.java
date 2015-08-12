@@ -28,7 +28,7 @@ public class Cruxtruder extends Machine {
 
 	private final ItemStack drop;
 
-	public Cruxtruder() {
+	Cruxtruder() {
 		super(new Shape());
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.SEA_LANTERN);

@@ -35,7 +35,7 @@ public class Computer extends Machine implements InventoryHolder {
 
 	private final ItemStack drop;
 
-	public Computer() {
+	Computer() {
 		super(new Shape());
 
 		drop = new ItemStack(Material.JUKEBOX);

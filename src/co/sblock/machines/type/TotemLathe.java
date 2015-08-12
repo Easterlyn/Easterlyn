@@ -38,7 +38,7 @@ public class TotemLathe extends Machine	{
 
 	private final ItemStack drop;
 
-	public TotemLathe() {
+	TotemLathe() {
 		super(new Shape());
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 2);

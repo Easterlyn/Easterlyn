@@ -88,7 +88,7 @@ public class InteractListener implements Listener {
 					ServerMode.getInstance().cycleData(event.getItem());
 				} else if (event.getItem().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
 					// Right click air: Open computer
-					event.getPlayer().openInventory(new Computer().getInventory(user));
+					event.getPlayer().openInventory(((Computer) Machines.getMachineByName("Computer")).getInventory(user));
 				}
 			}
 			return;

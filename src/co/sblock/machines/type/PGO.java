@@ -23,7 +23,7 @@ public class PGO extends Machine {
 
 	private final ItemStack drop;
 
-	public PGO(Location l, String owner) {
+	PGO(Location l, String owner) {
 		super(new Shape());
 		drop = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta meta = drop.getItemMeta();

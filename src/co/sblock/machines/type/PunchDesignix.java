@@ -41,7 +41,7 @@ public class PunchDesignix extends Machine {
 
 	private final ItemStack drop;
 
-	public PunchDesignix() {
+	PunchDesignix() {
 		super(new Shape());
 		Shape shape = getShape();
 		shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "upperstair"));
