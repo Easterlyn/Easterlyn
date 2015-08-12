@@ -16,6 +16,7 @@ import co.sblock.chat.message.MessageBuilder;
 import co.sblock.module.Module;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -61,8 +62,8 @@ public class RawAnnouncer extends Module {
 
 		List<TextComponent> components = new ArrayList<>();
 
-		TextComponent[] hover = new TextComponent[]{new TextComponent("Click here to go!")};
-		hover[0].setColor(ChatColor.GOLD);
+		TextComponent hover = new TextComponent("Click here to go!");
+		hover.setColor(ChatColor.GOLD);
 
 		// Announcement: Join us on our subreddit
 		TextComponent component = new TextComponent("Join us on our subreddit,");
@@ -71,7 +72,7 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" /r/Sblock");
 		component.setColor(ChatColor.BLUE);
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://www.reddit.com/r/sblock"));
 		components.add(component);
 
@@ -91,7 +92,7 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" plug.dj room ");
 		component.setColor(ChatColor.BLUE);
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://plug.dj/sblockco/"));
 		components.add(component);
 
@@ -111,8 +112,8 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" donating ");
 		component.setColor(ChatColor.DARK_GREEN);
-		hover[0].setText("Click here for more information!");
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		hover.setText("Click here for more information!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://sblock.co/wiki/Donating"));
 		components.add(component);
 
@@ -132,7 +133,7 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" enchanting a furnace");
 		component.setColor(ChatColor.BLUE);
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://sblock.co/wiki/EnchantedFurnace"));
 		components.add(component);
 
@@ -152,7 +153,7 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" claim your builds");
 		component.setColor(ChatColor.BLUE);
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
 				"https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1"));
 		components.add(component);
@@ -173,8 +174,8 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent("/chat");
 		component.setColor(ChatColor.AQUA);
-		hover[0].setText("Click here to run!");
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		hover.setText("Click here to run!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/chat"));
 		components.add(component);
 
@@ -194,7 +195,7 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" sleep ");
 		component.setColor(ChatColor.AQUA);
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sleep"));
 		components.add(component);
 
@@ -214,8 +215,8 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" /report ");
 		component.setColor(ChatColor.AQUA);
-		hover[0].setText("Click to autofill!");
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		hover.setText("Click to autofill!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/report "));
 		components.add(component);
 
@@ -235,8 +236,8 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" Mumble ");
 		component.setColor(ChatColor.BLUE);
-		hover[0].setText("Click here to download!");
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		hover.setText("Click here to download!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://mumble.sourceforge.net/"));
 		components.add(component);
 
@@ -273,9 +274,9 @@ public class RawAnnouncer extends Module {
 		component = new TextComponent("ALPHA");
 		component.setColor(ChatColor.GOLD);
 		component.setBold(true);
-		hover[0].setText("We reserve the right to fuck up badly.");
-		hover[0].setColor(ChatColor.DARK_RED);
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+		hover.setText("We reserve the right to fuck up badly.");
+		hover.setColor(ChatColor.DARK_RED);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/report "));
 		components.add(component);
 

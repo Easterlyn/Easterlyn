@@ -28,7 +28,7 @@ public class HalCommand extends SblockCommand {
 	public HalCommand() {
 		super("hal");
 		this.setDescription("Force a raw message announcement.");
-		this.setUsage("/hal 1-8");
+		this.setUsage("/hal 1-10");
 		this.setPermissionLevel("denizen");
 	}
 
