@@ -44,8 +44,8 @@ public class PunchDesignix extends Machine {
 	public PunchDesignix() {
 		super(new Shape());
 		Shape shape = getShape();
-		shape.setVectorData(new Vector(1, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "upperstair"));
-		shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST, "upperstair"));
+		shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "upperstair"));
+		shape.setVectorData(new Vector(1, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST, "upperstair"));
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
 		shape.setVectorData(new Vector(0, 1, 0), m);
 		shape.setVectorData(new Vector(1, 1, 0), m);

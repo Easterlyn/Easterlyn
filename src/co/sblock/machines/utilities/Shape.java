@@ -66,8 +66,6 @@ public class Shape {
 	 * @param data the MaterialData
 	 */
 	public void setVectorData(Vector vector, MaterialDataValue data) {
-		// x axis is inverted for our interpretation of north on an x, z plane
-		vector.setX(-vector.getX());
 		vectors.put(vector, data);
 	}
 
