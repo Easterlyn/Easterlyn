@@ -113,6 +113,9 @@ public class InventoryUtils {
 	public static String getMaterialDataName(Material m, short durability) {
 		if (m == Material.POTION) {
 			return getPotionName(durability);
+		} if (m.getMaxDurability() > 0) {
+			// Degradable item
+			durability = 0;
 		}
 		String key = m.name() + ":" + durability;
 		if (getItems().containsKey(key)) {
