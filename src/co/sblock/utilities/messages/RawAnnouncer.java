@@ -127,7 +127,7 @@ public class RawAnnouncer extends Module {
 
 		// Announcement: Try EnchantedFurnace
 		components.clear();
-		component = new TextComponent("Are furnaces wasting too much of your time? Try");
+		component = new TextComponent("Is smelting wasting too much of your time? Try");
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
@@ -141,7 +141,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Are furnaces wasting too much of your time? Try http://sblock.co/wiki/EnchantedFurnace",
+		builder.setMessage(Color.HAL + "Is smelting wasting too much of your time? Try http://sblock.co/wiki/EnchantedFurnace",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
