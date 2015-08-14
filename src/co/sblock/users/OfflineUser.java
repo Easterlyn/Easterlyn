@@ -43,14 +43,14 @@ public class OfflineUser {
 	private Location previousLocation;
 
 	/* Various data Sblock tracks for progression purposes */
-	private Set<Integer> programs;
+	private Set<String> programs;
 
 	/* Chat data*/
 	protected String currentChannel;
 	private Set<String> listening;
 
 	protected OfflineUser(UUID userID, String ip, YamlConfiguration yaml,
-			Location previousLocation, Set<Integer> programs, String currentChannel,
+			Location previousLocation, Set<String> programs, String currentChannel,
 			Set<String> listening) {
 		this.uuid = userID;
 		this.userIP = ip;
@@ -335,17 +335,17 @@ public class OfflineUser {
 	 * 
 	 * @return the programs installed
 	 */
-	public Set<Integer> getPrograms() {
+	public Set<String> getPrograms() {
 		return this.programs;
 	}
 
 	/**
 	 * Add an Entry to the Set of programs accessible by the User at their Computer.
 	 * 
-	 * @param i the number of the program to add
+	 * @param id the id of the program to add
 	 */
-	public void addProgram(int i) {
-		this.programs.add(i);
+	public void addProgram(String id) {
+		this.programs.add(id);
 	}
 
 	/**
@@ -854,7 +854,7 @@ public class OfflineUser {
 			current = user.getDreamPlanet();
 		}
 		user.setCurrentRegion(current);
-		user.getPrograms().addAll((HashSet<Integer>) yaml.get("progression.programs"));
+		user.getPrograms().addAll((HashSet<String>) yaml.get("progression.programs"));
 		if (yaml.getString("progression.server") != null) {
 			user.setServer(UUID.fromString(yaml.getString("progression.server")));
 		}

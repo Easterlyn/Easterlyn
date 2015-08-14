@@ -32,7 +32,6 @@ import co.sblock.events.packets.ParticleEffectWrapper;
 import co.sblock.events.packets.ParticleUtils;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.utilities.Icon;
 import co.sblock.module.Dependency;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
@@ -63,7 +62,7 @@ public class Entry {
 		data = new HashMap<>();
 	}
 	public boolean canStart(OfflineUser user) {
-		if (!data.containsKey(user.getUUID()) && user.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())
+		if (!data.containsKey(user.getUUID()) && user.getPrograms().contains("SburbClient")
 				&& user.getProgression() == ProgressionState.NONE) {
 			return true;
 		}
@@ -138,7 +137,7 @@ public class Entry {
 		}
 
 		// Uninstalls the client program
-		user.getPrograms().remove(Icon.SBURBCLIENT.getProgramID());
+		user.getPrograms().remove("SburbClient");
 
 		// Removes all free machines placed by the User or their server
 		for (Pair<Machine, ConfigurationSection> pair : Machines.getInstance().getMachines(user.getUUID())) {

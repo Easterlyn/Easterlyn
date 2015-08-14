@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
-import co.sblock.machines.utilities.Icon;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
@@ -125,12 +124,12 @@ public class RequestServerClient extends SblockCommand {
 		Player target = players.get(0);
 
 		OfflineUser targetUser = Users.getGuaranteedUser(target.getUniqueId());
-		if (server && !targetUser.getPrograms().contains(Icon.SBURBSERVER.getProgramID())) {
+		if (server && !targetUser.getPrograms().contains("SburbServer")) {
 			player.sendMessage(Color.BAD_PLAYER + target.getName() + Color.BAD
 					+ " does not have the Sburb Server installed!");
 			return;
 		}
-		if (!server && !targetUser.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())) {
+		if (!server && !targetUser.getPrograms().contains("SburbClient")) {
 			player.sendMessage(Color.BAD_PLAYER + target.getName() + Color.BAD
 					+ " does not have the Sburb Client installed!");
 			return;

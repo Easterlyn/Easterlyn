@@ -11,7 +11,8 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.commands.SblockCommand;
 import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Icon;
+import co.sblock.machines.type.computer.Program;
+import co.sblock.machines.type.computer.Programs;
 
 /**
  * SblockCommand for getting machine key objects and icons.
@@ -51,13 +52,13 @@ public class MachineCommand extends SblockCommand {
 		}
 		if (args[0].equalsIgnoreCase("icon")) {
 			try {
-				((Player) sender).getInventory().addItem(Icon.valueOf(args[1]).getInstaller());
+				((Player) sender).getInventory().addItem(Programs.getProgramByName(args[1]).getInstaller());
 				sender.sendMessage("Installer get!");
 			} catch (Exception e) {
 				StringBuilder sb = new StringBuilder("Valid types: ");
-				for (Icon i : Icon.values()) {
-					if (i.getInstaller() != null) {
-						sb.append(i.name()).append(' ');
+				for (Program program : Programs.getPrograms()) {
+					if (program.getInstaller() != null) {
+						sb.append(program.getName()).append(' ');
 					}
 				}
 				sender.sendMessage(sb.toString());
@@ -96,9 +97,9 @@ public class MachineCommand extends SblockCommand {
 			return matches;
 		}
 		if (args[0].equals("icon")) {
-			for (Icon i : Icon.values()) {
-				if (i.getInstaller() != null && i.name().startsWith(args[1])) {
-					matches.add(i.name());
+			for (Program program : Programs.getPrograms()) {
+				if (program.getInstaller() != null && StringUtil.startsWithIgnoreCase(program.getName(), args[1])) {
+					matches.add(program.getName());
 				}
 			}
 			return matches;

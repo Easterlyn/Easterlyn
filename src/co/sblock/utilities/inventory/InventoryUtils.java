@@ -6,6 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
@@ -36,6 +40,11 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import com.google.common.collect.HashMultimap;
 import com.google.common.io.BaseEncoding;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.sun.corba.se.impl.orbutil.HexOutputStream;
 
 import co.sblock.Sblock;
@@ -447,5 +456,37 @@ public class InventoryUtils {
 			}
 		}
 		return false;
+	}
+
+	public static void changeWindowName(Player player, String name) {
+		if (name.length() > 32) {
+			name = name.substring(0, 32);
+		}
+
+		int containerCounter;
+		try {
+			Method method = player.getClass().getMethod("getHandle");
+			Object nmsPlayer = method.invoke(player);
+			Field field = nmsPlayer.getClass().getField("containerCounter");
+			field.setAccessible(true);
+			containerCounter = (int) field.get(nmsPlayer);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException
+				| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			return;
+		}
+
+		ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+		PacketContainer packet = manager.createPacket(PacketType.Play.Server.OPEN_WINDOW);
+		packet.getIntegers().write(0, containerCounter);
+		packet.getStrings().write(0, "minecraft:container");
+		packet.getChatComponents().write(0,
+				WrappedChatComponent.fromJson("{\"text\": \"" + name + "\"}"));
+		packet.getIntegers().write(1, 9);
+		try {
+			manager.sendServerPacket(player, packet);
+			player.updateInventory();
+		} catch (InvocationTargetException ex) {
+			ex.printStackTrace();
+		}
 	}
 }

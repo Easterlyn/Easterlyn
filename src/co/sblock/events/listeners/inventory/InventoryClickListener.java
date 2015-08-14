@@ -197,9 +197,7 @@ public class InventoryClickListener implements Listener {
 			if (event.getCurrentItem().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
-				event.getWhoClicked().openInventory(
-						((Computer) Machines.getMachineByName("Computer")).getInventory(
-								Users.getGuaranteedUser(event.getWhoClicked().getUniqueId())));
+				((Computer) Machines.getMachineByName("Computer")).openInventory((Player) event.getWhoClicked());
 			}
 			return;
 		}
@@ -325,9 +323,9 @@ public class InventoryClickListener implements Listener {
 			ItemStack blazingSaddle = new ItemStack(saddle);
 			ItemMeta saddleMeta = blazingSaddle.getItemMeta();
 			saddleMeta.addEnchant(Enchantment.ARROW_FIRE, 1, true);
-			int repairCost = 2; // Flame from a book costs 2.
+			int repairCost = 3; // Flame from a book costs 2, all repairs add 1.
 			if (((Repairable) saddleMeta).hasRepairCost()) {
-				repairCost += ((Repairable) saddleMeta).getRepairCost() * 2 + 1;
+				repairCost += ((Repairable) saddleMeta).getRepairCost() * 2;
 			}
 			((Repairable) saddleMeta).setRepairCost(repairCost);
 			blazingSaddle.setItemMeta(saddleMeta);

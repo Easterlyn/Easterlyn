@@ -33,7 +33,6 @@ import co.sblock.chat.channel.NickChannel;
 import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.utilities.Icon;
 import co.sblock.utilities.Log;
 import co.sblock.utilities.captcha.Captcha;
 import co.sblock.utilities.inventory.InventoryManager;
@@ -54,7 +53,7 @@ public class OnlineUser extends OfflineUser {
 	private final AtomicBoolean spamWarned;
 
 	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, Location previousLocation,
-			Set<Integer> programs, String currentChannel, Set<String> listening) {
+			Set<String> programs, String currentChannel, Set<String> listening) {
 		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
 		isServer = false;
 		lastChat = new String();
@@ -170,7 +169,7 @@ public class OnlineUser extends OfflineUser {
 			p.sendMessage(Color.BAD + "You should wait for your client before progressing!");
 			return;
 		}
-		if (!u.getPrograms().contains(Icon.SBURBCLIENT.getProgramID())) {
+		if (!u.getPrograms().contains("SburbClient")) {
 			p.sendMessage(Color.BAD + u.getPlayerName() + " does not have the Sburb Client installed!");
 			return;
 		}

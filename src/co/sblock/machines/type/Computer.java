@@ -17,10 +17,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Icon;
+import co.sblock.machines.type.computer.Program;
+import co.sblock.machines.type.computer.Programs;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.inventory.InventoryUtils;
 
@@ -77,42 +77,9 @@ public class Computer extends Machine implements InventoryHolder {
 			return true;
 		}
 		event.setResult(Result.DENY);
-		for (Icon ico : Icon.values()) {
-			if (event.getCurrentItem().equals(ico.getIcon())) {
-				switch (ico) {
-				case BACK:
-					event.getWhoClicked().openInventory(getInventory(Users.getGuaranteedUser(event.getWhoClicked().getUniqueId())));
-					break;
-				case BOONDOLLAR_SHOP:
-					// Keiko, shop name is all you, set to LOHACSE for now
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bossshop open LOHACSE " + event.getWhoClicked().getName());
-					break;
-				case SBURBCLIENT:
-					// if gamestate != none
-				case PESTERCHUM:
-					break;
-				case SBURBSERVER:
-					event.getWhoClicked().openInventory(getServerConfirmation());
-					break;
-				case CONFIRM:
-					OfflineUser offUser = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
-					if (!(offUser instanceof OnlineUser)) {
-						((Player) event.getWhoClicked()).sendMessage(
-								Color.BAD + "Your data appears to not have loaded properly. Please relog.");
-						break;
-					}
-					OnlineUser onUser = (OnlineUser) offUser;
-					// All checks for starting server mode handled inside startServerMode()
-					if (onUser.isServer()) {
-						onUser.stopServerMode();
-					} else {
-						onUser.startServerMode();
-					}
-				default:
-					break;
-				}
-				break;
-			}
+		Program program = Programs.getProgramByIcon(event.getCurrentItem());
+		if (program != null) {
+			program.openInventory((Player) event.getWhoClicked(), event.getCurrentItem());
 		}
 		return true;
 	}
@@ -134,51 +101,42 @@ public class Computer extends Machine implements InventoryHolder {
 		}
 		if (event.getMaterial().name().contains("RECORD")) { // prevent non-program Icons from being registered
 			event.setCancelled(true);
-			Icon ico = Icon.getIcon(event.getItem());
-			if (ico != null) {
+			Program program = Programs.getProgramByInstaller(event.getItem());
+			if (program != null) {
 				event.getPlayer().sendMessage(Color.GOOD + "Installed "
 						+ event.getItem().getItemMeta().getDisplayName() + Color.GOOD + "!");
 				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 					event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
 				}
 				OfflineUser u = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-				u.addProgram(ico.getProgramID());
+				u.addProgram(program.getName());
 				return true;
 			}
 		}
 		if (event.getPlayer().isSneaking()) {
 			return false;
 		}
-		event.getPlayer().openInventory(getInventory(Users.getGuaranteedUser(event.getPlayer().getUniqueId())));
+		openInventory(event.getPlayer());
 		return true;
 	}
 
 	@Override
 	public Inventory getInventory() {
-		return null;
+		return Bukkit.createInventory(this, 9, "Computer");
 	}
 
-	public Inventory getInventory(OfflineUser user) {
-		Inventory i = Bukkit.createInventory(this, 9, user.getPlayerName() + "@sblock.co:~/");
-		for (int i1 : user.getPrograms()) {
-			i.addItem(Icon.getIcon(i1).getIcon());
+	public void openInventory(Player player) {
+		Inventory inventory = getInventory();
+		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		for (String id : user.getPrograms()) {
+			inventory.addItem(Programs.getProgramByName(id).getIcon());
 		}
-		if (i.firstEmpty() == 9) {
+		if (inventory.firstEmpty() == 0) {
 			user.getPlayer().sendMessage(Color.BAD + "You do not have any programs installed!");
+			return;
 		}
-		return i;
-	}
-
-	/**
-	 * Create a confirmation screen prior to entering server mode.
-	 * 
-	 * @return the Inventory created
-	 */
-	private Inventory getServerConfirmation() {
-		Inventory i = Bukkit.createInventory(this, 9, "~/Verify?initialize=SburbServer");
-		i.setItem(0, Icon.CONFIRM.getIcon());
-		i.setItem(i.getSize() - 1, Icon.BACK.getIcon());
-		return i;
+		player.openInventory(inventory);
+		InventoryUtils.changeWindowName(player, player.getName() + "@sblock.co:~/");
 	}
 
 	@Override
