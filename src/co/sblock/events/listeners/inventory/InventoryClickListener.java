@@ -18,6 +18,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
@@ -303,14 +305,14 @@ public class InventoryClickListener implements Listener {
 			return;
 		}
 
-		ItemStack maybeSaddle = tryCombineBookSaddle(secondSlot, firstSlot);
+		ItemStack maybeSaddle = tryCombineBookSaddle(firstSlot, secondSlot);
 
 		if (maybeSaddle != null) {
 			toTest.setItem(2, maybeSaddle);
 		}
 	}
 
-	private ItemStack tryCombineBookSaddle(ItemStack book, ItemStack saddle) {
+	private ItemStack tryCombineBookSaddle(ItemStack saddle, ItemStack book) {
 		int fireAspectLevel = 0;
 
 		if (book.getItemMeta() instanceof EnchantmentStorageMeta) {
@@ -320,8 +322,15 @@ public class InventoryClickListener implements Listener {
 		}
 
 		if (fireAspectLevel > 0) {
-			ItemStack blazingSaddle = new ItemStack(Material.SADDLE, 1);
-			blazingSaddle.addUnsafeEnchantment(Enchantment.ARROW_FIRE, 1);
+			ItemStack blazingSaddle = new ItemStack(saddle);
+			ItemMeta saddleMeta = blazingSaddle.getItemMeta();
+			saddleMeta.addEnchant(Enchantment.ARROW_FIRE, 1, true);
+			int repairCost = 2; // Flame from a book costs 2.
+			if (((Repairable) saddleMeta).hasRepairCost()) {
+				repairCost += ((Repairable) saddleMeta).getRepairCost() * 2 + 1;
+			}
+			((Repairable) saddleMeta).setRepairCost(repairCost);
+			blazingSaddle.setItemMeta(saddleMeta);
 			return blazingSaddle;
 		}
 		return null;
