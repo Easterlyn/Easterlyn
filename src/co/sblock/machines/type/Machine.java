@@ -357,6 +357,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles Inventory clicks for the Machine.
+	 * <p>
+	 * N.B.: Due to the way Machines that are detected via InventoryHolder status are detected,
+	 * Machines that directly extend InventoryHolder may be passed a null storage
+	 * ConfigurationSection.
 	 * 
 	 * @param event the InventoryClickEvent
 	 * 
@@ -375,7 +379,11 @@ public abstract class Machine {
 			@Override
 			public void run() {
 				for (Entry<Location, MaterialData> entry : buildData.entrySet()) {
-					BlockState state = entry.getKey().getBlock().getState();
+					Block block = entry.getKey().getBlock();
+					if (block.getType() != entry.getValue().getItemType()) {
+						block.setType(entry.getValue().getItemType(), false);
+					}
+					BlockState state = block.getState();
 					if (!state.getData().equals(entry.getValue())) {
 						state.setData(entry.getValue());
 					}

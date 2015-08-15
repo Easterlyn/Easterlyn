@@ -31,6 +31,7 @@ import net.md_5.bungee.api.ChatColor;
 public class PowerManager extends Program {
 
 	private final ItemStack icon;
+	private final ItemStack installer; // TODO remove this post-testing
 
 	protected PowerManager() {
 		icon = new ItemStack(Material.FIREWORK);
@@ -39,6 +40,10 @@ public class PowerManager extends Program {
 		meta.setLore(Arrays.asList(ChatColor.WHITE + "Manage Godtier powers!"));
 		icon.setItemMeta(meta);
 
+		installer = new ItemStack(Material.RECORD_12);
+		meta = installer.getItemMeta();
+		meta.setDisplayName(ChatColor.DARK_RED + "Temporary PowerManager Installer");
+		installer.setItemMeta(meta);
 	}
 
 	@Override
@@ -79,6 +84,7 @@ public class PowerManager extends Program {
 			top.setItem(slot, toggle.getIcon(effect, user.getUserAspect(), enabledEffects.contains(effect.getName())));
 		}
 		top.setItem(22, Programs.getProgramByName("Back").getIcon());
+
 		InventoryUtils.changeWindowName(player, "Godtier Power Manager");
 	}
 

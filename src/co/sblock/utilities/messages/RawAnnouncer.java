@@ -10,7 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
-import co.sblock.chat.Color;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.module.Module;
@@ -80,7 +79,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Join us on our subreddit, http://www.reddit.com/r/sblock",
+		builder.setMessage("Join us on our subreddit, http://www.reddit.com/r/sblock",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -100,7 +99,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Join http://plug.dj/sblockco/ to play tunes and videos with other players!",
+		builder.setMessage("Join http://plug.dj/sblockco/ to play tunes and videos with other players!",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -121,7 +120,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "It is your generosity that keeps Sblock alive. Please consider http://sblock.co/wiki/Donating to help.",
+		builder.setMessage("It is your generosity that keeps Sblock alive. Please consider http://sblock.co/wiki/Donating to help.",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -141,7 +140,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Is smelting wasting too much of your time? Try http://sblock.co/wiki/EnchantedFurnace",
+		builder.setMessage("Is smelting wasting too much of your time? Try http://sblock.co/wiki/EnchantedFurnace",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -162,7 +161,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Unprotected and unvisited areas gradually regenerate. Please claim your builds!",
+		builder.setMessage("Unprotected and unvisited areas gradually regenerate. Please claim your builds!",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -183,7 +182,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Having trouble with chat? Check out /chat!",
+		builder.setMessage("Having trouble with chat? Check out /chat!",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -203,7 +202,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "To sleep without dreaming, sneak while right clicking your bed!",
+		builder.setMessage("To sleep without dreaming, sneak while right clicking your bed!",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -224,7 +223,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Been griefed? Found a bug? Please /report issues so we can help!",
+		builder.setMessage("Been griefed? Found a bug? Please /report issues so we can help!",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -261,7 +260,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Join us on Mumble for voice chat! The server is sblock.co, port 25560.",
+		builder.setMessage("Join us on Mumble for voice chat! The server is sblock.co, port 25560.",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -284,7 +283,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage(Color.HAL + "Remember, we are in ALPHA! We reserve the right to fuck up badly.",
+		builder.setMessage("Remember, we are in ALPHA! We reserve the right to fuck up badly.",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 

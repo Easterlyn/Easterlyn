@@ -26,6 +26,7 @@ import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.effects.Effects;
+import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
@@ -676,12 +677,52 @@ public class OfflineUser {
 		return list;
 	}
 
-	public void addGodtierEffect(Effect effect) {
-		// TODO
+	/**
+	 * Attempts to add an Effect to the OfflineUser's selected godtier Effects.
+	 * 
+	 * @param effect the Effect
+	 * @return true if the Effect can be added
+	 */
+	public boolean addGodtierEffect(Effect effect) {
+		if (!(effect instanceof BehaviorGodtier)
+				|| !((BehaviorGodtier) effect).getAspects().contains(getUserAspect())) {
+			return false;
+		}
+		ArrayList<String> list = new ArrayList<>(yaml.getStringList("progression.godtier.powers"));
+		int type = 0;
+		boolean active = !(effect instanceof BehaviorPassive || effect instanceof BehaviorReactive);
+		for (String effectName : list) {
+			Effect enabledEffect = Effects.getInstance().getEffect(effectName);
+			if (enabledEffect instanceof BehaviorPassive || enabledEffect instanceof BehaviorReactive) {
+				if (!active) {
+					type++;
+				}
+			} else if (active) {
+				type++;
+			}
+		}
+		if (type >= (active ? getUserClass().getActiveSkills() : getUserClass().getPassiveSkills())) {
+			return false;
+		}
+		if (!list.contains(effect.getName())) {
+			list.add(effect.getName());
+		}
+		yaml.set("progression.godtier.powers", list);
+		return true;
 	}
 
+	/**
+	 * Removes an Effect from an OfflineUser's selected godtier Effects.
+	 * 
+	 * @param effect the Effect
+	 */
 	public void removeGodtierEffect(Effect effect) {
-		// TODO
+		if (!yaml.isSet("progression.godtier.powers")) {
+			return;
+		}
+		ArrayList<String> list = new ArrayList<>(yaml.getStringList("progression.godtier.powers"));
+		list.remove(effect.getName());
+		yaml.set("progression.godtier.powers", list);
 	}
 
 	/**

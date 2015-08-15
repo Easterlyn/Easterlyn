@@ -14,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
@@ -42,6 +43,8 @@ public class Computer extends Machine implements InventoryHolder {
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Computer");
 		drop.setItemMeta(meta);
+
+		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
 	}
 
 	/**
@@ -54,24 +57,19 @@ public class Computer extends Machine implements InventoryHolder {
 		if (Machines.getInstance().hasComputer(event.getPlayer(), getKey(storage))) {
 			if (event.getPlayer().hasPermission("sblock.horrorterror")) {
 				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
+			} else {
+				event.setCancelled(true);
+				event.getBlock().setType(Material.AIR);
+				event.getPlayer().sendMessage(Color.BAD + "You can only have one Computer placed!");
+				this.assemblyFailed(storage);
 				return;
 			}
-			event.setCancelled(true);
-			event.getBlock().setType(Material.AIR);
-			event.getPlayer().sendMessage(Color.BAD + "You can only have one Computer placed!");
-			this.assemblyFailed(storage);
-			return;
 		}
 		super.assemble(event, storage);
 	}
 
 	@Override
 	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
-		if (!event.getWhoClicked().getUniqueId().equals(getOwner(storage))
-				&& !event.getWhoClicked().hasPermission("sblock.denizen")) {
-			event.setResult(Result.DENY);
-			return true;
-		}
 		if (event.getCurrentItem() == null) {
 			event.setResult(Result.DENY);
 			return true;

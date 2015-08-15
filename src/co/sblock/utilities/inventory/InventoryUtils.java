@@ -463,15 +463,23 @@ public class InventoryUtils {
 			name = name.substring(0, 32);
 		}
 
+		Inventory top = player.getOpenInventory().getTopInventory();
+		if (top == null) {
+			return;
+		}
+
+		int slots = top.getSize();
+
 		int containerCounter;
 		try {
 			Method method = player.getClass().getMethod("getHandle");
 			Object nmsPlayer = method.invoke(player);
-			Field field = nmsPlayer.getClass().getField("containerCounter");
+			Field field = nmsPlayer.getClass().getDeclaredField("containerCounter");
 			field.setAccessible(true);
 			containerCounter = (int) field.get(nmsPlayer);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException
 				| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			e.printStackTrace();
 			return;
 		}
 
@@ -481,7 +489,7 @@ public class InventoryUtils {
 		packet.getStrings().write(0, "minecraft:container");
 		packet.getChatComponents().write(0,
 				WrappedChatComponent.fromJson("{\"text\": \"" + name + "\"}"));
-		packet.getIntegers().write(1, 9);
+		packet.getIntegers().write(1, slots);
 		try {
 			manager.sendServerPacket(player, packet);
 			player.updateInventory();
