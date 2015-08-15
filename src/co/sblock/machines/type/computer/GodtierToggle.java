@@ -63,8 +63,8 @@ public class GodtierToggle extends Program {
 			user.removeGodtierEffect(effect);
 			newClicked = getIcon(effect, user.getUserAspect(), false);
 		} else if (clicked.getData().equals(icoff.getData())) {
-			user.addGodtierEffect(effect);
-			newClicked = getIcon(effect, user.getUserAspect(), true);
+			
+			newClicked = getIcon(effect, user.getUserAspect(), user.addGodtierEffect(effect));
 		} else {
 			return;
 		}
