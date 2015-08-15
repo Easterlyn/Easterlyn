@@ -64,10 +64,7 @@ public class Programs {
 			return null;
 		}
 		for (Program program : byName.values()) {
-			if (icon.isSimilar(program.getIcon())) {
-				return program;
-			}
-			if (program instanceof Verification && areSimilarSansLore(icon, program.getIcon())) {
+			if (looseCompare(icon, program.getIcon())) {
 				return program;
 			}
 		}
@@ -81,8 +78,8 @@ public class Programs {
 	 * @param is2 the second ItemStack
 	 * @return true if the ItemStacks are similar aside from lore
 	 */
-	private static boolean areSimilarSansLore(ItemStack is1, ItemStack is2) {
-		if (!is1.getData().equals(is2.getData())) {
+	private static boolean looseCompare(ItemStack is1, ItemStack is2) {
+		if (is1.getType() != is2.getType()) {
 			return false;
 		}
 		if (is1.hasItemMeta() && is2.hasItemMeta()) {
@@ -92,7 +89,7 @@ public class Programs {
 			meta2.setLore(null);
 			return meta1.equals(meta2);
 		}
-		return is1.isSimilar(is2);
+		return true;
 	}
 
 	/**

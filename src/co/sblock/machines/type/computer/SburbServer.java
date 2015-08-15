@@ -1,11 +1,15 @@
 package co.sblock.machines.type.computer;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * A Program allowing a Player to enable server mode.
@@ -14,8 +18,20 @@ import co.sblock.users.Users;
  */
 public class SburbServer extends Program {
 
+	private final ItemStack icon, installer;
+
+	protected SburbServer() {
+		icon = new ItemStack(Material.ENDER_PORTAL_FRAME);
+		ItemMeta meta = icon.getItemMeta();
+		meta.setDisplayName(ChatColor.GREEN + "SburbServer");
+		icon.setItemMeta(meta);
+
+		installer = new ItemStack(Material.GREEN_RECORD);
+		installer.setItemMeta(meta);
+	}
+
 	@Override
-	public void openInventory(Player player, ItemStack clicked, boolean verified) {
+	public void execute(Player player, ItemStack clicked, boolean verified) {
 		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
 		if (!user.isOnline()) {
 			return;
@@ -34,14 +50,12 @@ public class SburbServer extends Program {
 
 	@Override
 	public ItemStack getIcon() {
-		// TODO Auto-generated method stub
-		return null;
+		return icon;
 	}
 
 	@Override
 	public ItemStack getInstaller() {
-		// TODO Auto-generated method stub
-		return null;
+		return installer;
 	}
 
 }

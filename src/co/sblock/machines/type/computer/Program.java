@@ -10,11 +10,11 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class Program {
 
-	public void openInventory(Player player, ItemStack clicked) {
-		openInventory(player, clicked, false);
+	public void execute(Player player, ItemStack clicked) {
+		execute(player, clicked, false);
 	}
 
-	protected abstract void openInventory(Player player, ItemStack clicked, boolean verified);
+	protected abstract void execute(Player player, ItemStack clicked, boolean verified);
 
 	public abstract ItemStack getIcon();
 

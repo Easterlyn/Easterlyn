@@ -1,7 +1,9 @@
 package co.sblock.effects.effect.godtier.passive;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -14,6 +16,8 @@ import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
 import co.sblock.utilities.general.Potions;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Effect granting the user the absorption PotionEffect every minute. Due to the nature of
@@ -45,26 +49,20 @@ public class EffectAbsorption extends Effect implements BehaviorCooldown, Behavi
 	}
 
 	@Override
-	public String getName(UserAspect aspect) {
+	public List<String> getDescription(UserAspect aspect) {
+		ArrayList<String> list = new ArrayList<>();
 		switch (aspect) {
 		case HEART:
-			return "Hale and Hearty";
+			list.add(aspect.getColor() + "Hale and Hearty");
+			break;
 		case TIME:
-			return "Futureproof";
+			list.add(aspect.getColor() + "Futureproof");
+			break;
 		default:
-			return "If you are reading this, please report it.";
+			break;
 		}
-	}
-
-	@Override
-	public String getDescription(UserAspect aspect) {
-		switch (aspect) {
-		case HEART:
-		case TIME:
-			return "Gain extra life!";
-		default:
-			return "If you are reading this, please report it.";
-		}
+		list.add(ChatColor.WHITE + "Gain extra life.");
+		return list;
 	}
 
 	@Override

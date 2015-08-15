@@ -3,6 +3,7 @@ package co.sblock.users;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +25,10 @@ import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
+import co.sblock.effects.Effects;
+import co.sblock.effects.effect.BehaviorPassive;
+import co.sblock.effects.effect.BehaviorReactive;
+import co.sblock.effects.effect.Effect;
 import co.sblock.utilities.player.PlayerLoader;
 
 import net.md_5.bungee.api.ChatColor;
@@ -152,6 +157,7 @@ public class OfflineUser {
 	 */
 	public void setUserClass(String userClassName) {
 		yaml.set("classpect.class", UserClass.getClass(userClassName).getDisplayName());
+		yaml.set("progression.godtier.powers", null);
 	}
 
 	/**
@@ -170,6 +176,7 @@ public class OfflineUser {
 	 */
 	public void setUserAspect(String userAspectName) {
 		yaml.set("classpect.aspect", UserAspect.getAspect(userAspectName).getDisplayName());
+		yaml.set("progression.godtier.powers", null);
 	}
 
 	/**
@@ -633,6 +640,48 @@ public class OfflineUser {
 	 */
 	public boolean getComputerAccess() {
 		return false;
+	}
+
+	/**
+	 * Gets a List of Effect names set as active powers. If the List has not been set, creates a
+	 * random assortment from available Effects for the OfflineUser's UserAspect.
+	 * 
+	 * @return the List of enabled godtier Effects
+	 */
+	public List<String> getGodtierEffects() {
+		if (yaml.isSet("progression.godtier.powers")) {
+			return yaml.getStringList("progression.godtier.powers");
+		}
+		List<Effect> active = Effects.getInstance().getGodtierEffects(getUserAspect());
+		ArrayList<Effect> passive = new ArrayList<>();
+		active.removeIf(effect -> {
+			if (effect instanceof BehaviorPassive || effect instanceof BehaviorReactive) {
+				passive.add(effect);
+				return true;
+			}
+			return false;
+		});
+		List<String> list = new ArrayList<>();
+		for (int i = 0; i < getUserClass().getActiveSkills() && !active.isEmpty(); i++) {
+			Effect effect = active.get((int) (Math.random() * active.size()));
+			active.remove(effect);
+			list.add(effect.getName());
+		}
+		for (int i = 0; i < getUserClass().getPassiveSkills() && !passive.isEmpty(); i++) {
+			Effect effect = passive.get((int) (Math.random() * passive.size()));
+			passive.remove(effect);
+			list.add(effect.getName());
+		}
+		yaml.set("progression.godtier.powers", list);
+		return list;
+	}
+
+	public void addGodtierEffect(Effect effect) {
+		// TODO
+	}
+
+	public void removeGodtierEffect(Effect effect) {
+		// TODO
 	}
 
 	/**

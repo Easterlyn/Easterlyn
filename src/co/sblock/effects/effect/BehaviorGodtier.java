@@ -1,6 +1,7 @@
 package co.sblock.effects.effect;
 
 import java.util.Collection;
+import java.util.List;
 
 import co.sblock.users.UserAspect;
 
@@ -13,8 +14,6 @@ public interface BehaviorGodtier {
 
 	public Collection<UserAspect> getAspects();
 
-	public String getName(UserAspect aspect);
-
-	public String getDescription(UserAspect aspect);
+	public List<String> getDescription(UserAspect aspect);
 
 }

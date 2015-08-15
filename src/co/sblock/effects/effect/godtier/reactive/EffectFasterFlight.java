@@ -1,7 +1,9 @@
 package co.sblock.effects.effect.godtier.reactive;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,6 +15,8 @@ import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Faster flight.
@@ -31,23 +35,17 @@ public class EffectFasterFlight extends Effect implements BehaviorGodtier, Behav
 	}
 
 	@Override
-	public String getName(UserAspect aspect) {
+	public List<String> getDescription(UserAspect aspect) {
+		ArrayList<String> list = new ArrayList<>();
 		switch (aspect) {
 		case BREATH:
-			return "Heavenly Parasail";
+			list.add(aspect.getColor() + "Heavenly Parasail");
+			break;
 		default:
-			return "If you are reading this, please report it.";
+			break;
 		}
-	}
-
-	@Override
-	public String getDescription(UserAspect aspect) {
-		switch (aspect) {
-		case BREATH:
-			return "You fly faster than others.";
-		default:
-			return "If you are reading this, please report it.";
-		}
+		list.add(ChatColor.WHITE + "You fly faster than others.");
+		return list;
 	}
 
 	@Override

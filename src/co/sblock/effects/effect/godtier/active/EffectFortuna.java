@@ -1,7 +1,9 @@
 package co.sblock.effects.effect.godtier.active;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
@@ -13,6 +15,8 @@ import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * 
@@ -43,23 +47,17 @@ public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGod
 	}
 
 	@Override
-	public String getName(UserAspect aspect) {
+	public List<String> getDescription(UserAspect aspect) {
+		ArrayList<String> list = new ArrayList<>();
 		switch (aspect) {
 		case LIGHT:
-			return "Fortuna";
+			list.add(aspect.getColor() + "Fortuna");
+			break;
 		default:
-			return "If you are reading this, please report it.";
+			break;
 		}
-	}
-
-	@Override
-	public String getDescription(UserAspect aspect) {
-		switch (aspect) {
-		case LIGHT:
-			return "Fortune just isn't enough.";
-		default:
-			return "If you are reading this, please report it.";
-		}
+		list.add(ChatColor.WHITE + "Fortune just isn't enough.");
+		return list;
 	}
 
 }

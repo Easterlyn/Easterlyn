@@ -33,10 +33,6 @@ public class Verification extends Program {
 	}
 
 	public void openInventory(Player player, String verification) {
-		if (verification.length() > 12) {
-			throw new IllegalArgumentException("Verification inventory name will be too long!");
-		}
-
 		InventoryView view = player.getOpenInventory();
 		if (view.getTopInventory() == null || !(view.getTopInventory().getHolder() instanceof Computer)) {
 			return;
@@ -54,22 +50,25 @@ public class Verification extends Program {
 		icon.setItemMeta(meta);
 		top.setItem(0, icon);
 		top.setItem(8, Programs.getProgramByName("Back").getIcon());
+		if (verification.length() > 12) {
+			verification = verification.substring(0, 12);
+		}
 		InventoryUtils.changeWindowName(player, String.format(title, verification));
 	}
 
 	@Override
-	public void openInventory(Player player, ItemStack clicked) {
+	public void execute(Player player, ItemStack clicked) {
 		if (clicked == null || !clicked.hasItemMeta() || !clicked.getItemMeta().hasLore()) {
 			return;
 		}
 		Program toOpen = Programs.getProgramByName(clicked.getItemMeta().getLore().get(0).replaceFirst("..sudo ", ""));
 		if (toOpen != null) {
-			toOpen.openInventory(player, clicked, true);
+			toOpen.execute(player, clicked, true);
 		}
 	}
 
 	@Override
-	protected void openInventory(Player player, ItemStack clicked, boolean verified) {}
+	protected void execute(Player player, ItemStack clicked, boolean verified) {}
 
 	@Override
 	public ItemStack getIcon() {

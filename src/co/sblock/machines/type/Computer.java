@@ -79,7 +79,7 @@ public class Computer extends Machine implements InventoryHolder {
 		event.setResult(Result.DENY);
 		Program program = Programs.getProgramByIcon(event.getCurrentItem());
 		if (program != null) {
-			program.openInventory((Player) event.getWhoClicked(), event.getCurrentItem());
+			program.execute((Player) event.getWhoClicked(), event.getCurrentItem());
 		}
 		return true;
 	}

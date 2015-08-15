@@ -24,12 +24,12 @@ public class Back extends Program {
 		icon = new ItemStack(Material.REDSTONE_BLOCK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.DARK_RED + "Back");
-		meta.setLore(Arrays.asList(ChatColor.WHITE + "cd .."));
+		meta.setLore(Arrays.asList(ChatColor.WHITE + "cd ~/"));
 		icon.setItemMeta(meta);
 	}
 
 	@Override
-	protected void openInventory(Player player, ItemStack clicked, boolean verified) {
+	protected void execute(Player player, ItemStack clicked, boolean verified) {
 		((Computer) Machines.getMachineByName("Computer")).openInventory(player);
 	}
 
