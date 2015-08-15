@@ -57,6 +57,7 @@ public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGod
 			break;
 		}
 		list.add(ChatColor.WHITE + "Fortune just isn't enough.");
+		list.add(ChatColor.GRAY + "+1 Fortune");
 		return list;
 	}
 

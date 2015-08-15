@@ -44,7 +44,8 @@ public class EffectFasterFlight extends Effect implements BehaviorGodtier, Behav
 		default:
 			break;
 		}
-		list.add(ChatColor.WHITE + "You fly faster than others.");
+		list.add(ChatColor.WHITE + "The winds are on your side.");
+		list.add(ChatColor.GRAY + "Fly faster.");
 		return list;
 	}
 
