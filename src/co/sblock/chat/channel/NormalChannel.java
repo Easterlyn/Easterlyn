@@ -300,6 +300,15 @@ public class NormalChannel extends Channel {
 		this.lastAccessed.set(System.currentTimeMillis());
 	}
 
+	/**
+	 * Gets the last access time of this Channel.
+	 * 
+	 * @return the last access time.
+	 */
+	public long getLastAccess() {
+		return this.lastAccessed.get();
+	}
+
 	public void disband(OfflineUser sender) {
 		if (this.owner == null) {
 			sender.sendMessage(ChatMsgs.errorDisbandDefault());

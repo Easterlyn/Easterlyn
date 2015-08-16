@@ -94,6 +94,7 @@ public class ChannelManager {
 			final ArrayList<String> approved = new ArrayList<>();
 			normal.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
 			yaml.set(name + ".approved", approved);
+			yaml.set(name + ".lastAccess", normal.getLastAccess());
 		}
 		try {
 			yaml.save(file);
@@ -130,6 +131,7 @@ public class ChannelManager {
 		final ArrayList<String> approved = new ArrayList<>();
 		normal.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
 		yaml.set(name + ".approved", approved);
+		yaml.set(name + ".lastAccess", normal.getLastAccess());
 		try {
 			yaml.save(file);
 		} catch (IOException e) {
