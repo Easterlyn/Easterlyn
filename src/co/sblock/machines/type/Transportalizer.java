@@ -83,6 +83,11 @@ public class Transportalizer extends Machine {
 		drop.setItemMeta(meta);
 	}
 
+	@Override
+	public int getCost() {
+		return 1000;
+	}
+
 	private Location getHoloLocation(ConfigurationSection storage) {
 		return getKey(storage).add(Shape.getRelativeVector(getDirection(storage), new Vector(0.5, 1.5, 1.5)));
 	}

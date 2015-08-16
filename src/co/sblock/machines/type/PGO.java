@@ -24,10 +24,15 @@ public class PGO extends Machine {
 
 	public PGO() {
 		super(new Shape());
-		drop = new ItemStack(Material.DIAMOND_BLOCK);
+		drop = new ItemStack(Material.DIRT);
 		ItemMeta meta = drop.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "Perfect Building Object");
+		meta.setDisplayName(ChatColor.WHITE + "Perfectly Generic Object");
 		drop.setItemMeta(meta);
+	}
+
+	@Override
+	public int getCost() {
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
@@ -35,6 +40,8 @@ public class PGO extends Machine {
 		Material placedOn = event.getBlockAgainst().getType();
 		if (isValid(placedOn)) {
 			getShape().setVectorData(new Vector(0, 0, 0), event.getBlockAgainst().getState().getData());
+		} else {
+			getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
 		}
 		// Future features: Make wall signs etc. valid and copy text
 		super.assemble(event, storage);
@@ -117,20 +124,24 @@ public class PGO extends Machine {
 		case NOTE_BLOCK:
 		case OBSIDIAN:
 		case PACKED_ICE:
+		case PRISMARINE:
 		case PUMPKIN:
 		case QUARTZ_BLOCK:
 		case QUARTZ_ORE:
 		case QUARTZ_STAIRS:
+		case RED_SANDSTONE:
+		case RED_SANDSTONE_STAIRS:
 		case REDSTONE_BLOCK:
 		case REDSTONE_ORE:
 //		case SAND:
 		case SANDSTONE:
 		case SANDSTONE_STAIRS:
+		case SEA_LANTERN:
 		case SMOOTH_BRICK:
 		case SMOOTH_STAIRS:
 		case SNOW_BLOCK:
 		case SOUL_SAND:
-		case SPONGE:
+//		case SPONGE:
 		case SPRUCE_WOOD_STAIRS:
 		case STAINED_CLAY:
 		case STAINED_GLASS:

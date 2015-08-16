@@ -81,10 +81,7 @@ public class TotemLathe extends Machine	{
 			return false;
 		}
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if ((user != null && (user.getProgression() != ProgressionState.NONE
-				|| Entry.getEntry().isEntering(user)))
-				&& (event.getPlayer().hasPermission("sblock.denizen")
-						|| event.getPlayer().getUniqueId().equals(getOwner(storage)))) {
+		if (user != null && (user.getProgression() != ProgressionState.NONE || Entry.getEntry().isEntering(user))) {
 			openInventory(event.getPlayer(), storage);
 		}
 		return true;

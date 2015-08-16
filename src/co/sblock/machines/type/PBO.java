@@ -7,7 +7,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
 import co.sblock.machines.Machines;
@@ -26,6 +28,7 @@ public class PBO extends Machine {
 
 	public PBO() {
 		super(new Shape());
+		getShape().setVectorData(new Vector(0, 0, 0), new MaterialData(Material.DIAMOND_BLOCK));
 		drop = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Perfect Building Object");
@@ -42,9 +45,11 @@ public class PBO extends Machine {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
+				event.getBlock().setType(event.getBlockAgainst().getType(), false);
 				BlockState against = event.getBlockAgainst().getState();
 				BlockState state = event.getBlock().getState();
 				state.setData(against.getData());
+				state.update(true, false);
 				Machines.getInstance().deleteMachine(event.getBlock().getLocation());
 			}
 		}.runTask(Sblock.getInstance());

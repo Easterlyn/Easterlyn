@@ -95,7 +95,7 @@ public class PowerManager extends Program {
 
 	@Override
 	public ItemStack getInstaller() {
-		return null;
+		return installer;
 	}
 
 }
