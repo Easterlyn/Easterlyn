@@ -17,6 +17,7 @@ import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NormalChannel;
+import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
@@ -52,13 +53,13 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		super("channel");
 		setDescription("Check or manipulate channel data.");
 		setUsage(Color.GOOD_EMPHASIS + "Channel information/manipulation\n"
-				+ Color.COMMAND + "/channel getlisteners"
+				+ Color.COMMAND + "/channel listeners"
 				+ Color.GOOD + ": List people in the channel.\n"
 				+ Color.COMMAND + "/channel info"
 				+ Color.GOOD + ": Shows channel type, creator, etc.\n"
-				+ Color.COMMAND + "/channel list"
+				+ Color.COMMAND + "/channel listening"
 				+ Color.GOOD + ": List channels you're in.\n"
-				+ Color.COMMAND + "/channel listall"
+				+ Color.COMMAND + "/channel list"
 				+ Color.GOOD + ": List all channels.\n"
 				+ Color.COMMAND + "/channel new <name> <access> <type>"
 				+ Color.GOOD + ": Create a new channel.");
@@ -90,7 +91,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		args[0] = args[0].toLowerCase();
 
 		switch (args[0]) {
-		case "getlisteners":
+		case "listeners":
 			if (channel == null) {
 				user.sendMessage(ChatMsgs.errorCurrentChannelNull());
 				return true;
@@ -115,14 +116,14 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			}
 			user.sendMessage(channel.toString());
 			return true;
-		case "list":
+		case "listening":
 			sb = new StringBuilder().append(Color.GOOD).append("Currently pestering: ");
 			for (String s : user.getListening()) {
 				sb.append(s).append(' ');
 			}
 			user.sendMessage(sb.toString());
 			return true;
-		case "listall":
+		case "list":
 			sb = new StringBuilder();
 			sb.append(Color.GOOD).append("All channels: ");
 			for (Channel c : ChannelManager.getChannelManager().getChannelList().values()) {
@@ -176,41 +177,62 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			return false;
 		}
 
-		if (!(channel instanceof NormalChannel)) {
-			sender.sendMessage(Color.BAD + "Regional channels do not support kicks, bans, or approval. Moderators are permissions-based.");
+		if (channel instanceof RegionChannel) {
+			sender.sendMessage(Color.BAD + "Region channels do not support kicks, bans, or approval. Moderators are permissions-based.");
 			return false;
 		}
 
 		NormalChannel normal = (NormalChannel) channel;
 
+		UUID target;
 		switch (args[0]) {
 		case "approve":
 			if (args.length == 1) {
 				sender.sendMessage(Color.COMMAND + "/channel approve <user>" + Color.GOOD + ": Approve a user for this channel.");
 				return true;
 			}
-			normal.approveUser(user, getUniqueId(args[1]));
+			target = getUniqueId(args[1]);
+			if (target == null) {
+				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				return true;
+			}
+			normal.approveUser(user, target);
 			return true;
 		case "ban":
 			if (args.length == 1) {
 				sender.sendMessage(Color.COMMAND + "/channel ban <user>" + Color.GOOD + ": Ban a user from the channel");
 				return true;
 			}
-			normal.banUser(user, getUniqueId(args[1]));
+			target = getUniqueId(args[1]);
+			if (target == null) {
+				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				return true;
+			}
+			normal.banUser(user, target);
 			return true;
 		case "deapprove":
 			if (args.length == 1) {
 				sender.sendMessage(Color.COMMAND + "/channel deapprove <user>" + Color.GOOD + ": De-approve a user from this channel.");
 				return true;
 			}
-			normal.disapproveUser(user, getUniqueId(args[1]));
+			target = getUniqueId(args[1]);
+			if (target == null) {
+				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				return true;
+			}
+			normal.disapproveUser(user, target);
 			return true;
 		case "kick":
 			if (args.length == 1) {
 				sender.sendMessage(Color.COMMAND + "/channel kick <user>" + Color.GOOD + ": Kick a user from the channel");
 				return true;
 			}
-			normal.kickUser(user, getUniqueId(args[1]));
+			target = getUniqueId(args[1]);
+			if (target == null) {
+				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				return true;
+			}
+			normal.kickUser(user, target);
 			return true;
 		}
 
@@ -226,11 +248,16 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				sender.sendMessage(Color.COMMAND + "/channel mod <add|remove> <user>" + Color.GOOD + ": Add or remove a channel mod");
 				return true;
 			}
+			target = getUniqueId(args[2]);
+			if (target == null) {
+				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				return true;
+			}
 			if (args[1].equalsIgnoreCase("add")) {
-				normal.addMod(user, getUniqueId(args[2]));
+				normal.addMod(user, target);
 				return true;
 			} else if (args[1].equalsIgnoreCase("remove")) {
-				normal.removeMod(user, getUniqueId(args[2]));
+				normal.removeMod(user, target);
 				return true;
 			} else {
 				sender.sendMessage(Color.COMMAND + "/channel mod <add|remove> <user>" + Color.GOOD + ": Add or remove a channel mod");
@@ -241,7 +268,12 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				sender.sendMessage(Color.COMMAND + "/channel unban <user>" + Color.GOOD + ": Unban a user from the channel");
 				return true;
 			}
-			normal.unbanUser(user, getUniqueId(args[1]));
+			target = getUniqueId(args[1]);
+			if (target == null) {
+				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				return true;
+			}
+			normal.unbanUser(user, target);
 			return true;
 		case "disband":
 			normal.disband(user);

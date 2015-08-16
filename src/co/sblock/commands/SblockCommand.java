@@ -82,9 +82,8 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 			if (e.getCause() != null && e.getCause().getMessage() != null) {
 				cause.append(", cause by: ").append(e.getCause().getMessage());
 			}
-			Slack.getInstance().postReport(sender.getName(), null,
-					"Error processing command: " + StringUtils.join(args, ' ')
-							+ cause.toString());
+			Slack.getInstance().postReport(sender.getName(), null, "Error processing command: "
+					+ getName() + " " + StringUtils.join(args, ' ') + cause.toString());
 			e.printStackTrace();
 		}
 		sender.sendMessage(this.getUsage());
