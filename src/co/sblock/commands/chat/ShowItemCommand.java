@@ -18,7 +18,7 @@ import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.messages.JSONUtil;
+import co.sblock.utilities.JSONUtil;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;

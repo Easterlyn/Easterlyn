@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
 import co.sblock.events.packets.ParticleUtils;
-import co.sblock.utilities.minecarts.FreeCart;
+import co.sblock.micromodules.FreeCart;
 
 /**
  * Listener for VehicleExitEvents.

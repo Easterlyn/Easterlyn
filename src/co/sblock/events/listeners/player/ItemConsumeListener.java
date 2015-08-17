@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import co.sblock.events.Events;
-import co.sblock.utilities.general.Cooldowns;
+import co.sblock.utilities.Cooldowns;
 
 /**
  * Listener for PlayerConsumeItemEvents.

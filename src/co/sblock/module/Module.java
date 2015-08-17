@@ -1,7 +1,9 @@
 package co.sblock.module;
 
+import java.util.logging.Logger;
+
 import co.sblock.Sblock;
-import co.sblock.utilities.Log;
+import co.sblock.utilities.RegexUtils;
 
 /**
  * The base class for all plugin modules, allowing separate components of the
@@ -46,7 +48,7 @@ public abstract class Module {
 			enabled = true;
 		} catch (Exception e) {
 			getLogger().severe("Unhandled exception in module " + this.getModuleName() + ". Module failed to enable.");
-			getLogger().criticalErr(e);
+			getLogger().severe(RegexUtils.getTrace(e));
 		}
 		return this;
 	}
@@ -63,7 +65,7 @@ public abstract class Module {
 			enabled = false;
 		} catch (Exception e) {
 			getLogger().severe("[SblockSuite] Unhandled exception in module " + this.getClass().getSimpleName() + ". Module failed to disable.");
-			getLogger().criticalErr(e);
+			getLogger().severe(RegexUtils.getTrace(e));
 		}
 		return this;
 	}
@@ -83,7 +85,7 @@ public abstract class Module {
 	 * 
 	 * @return the Log
 	 */
-	public final Log getLogger() {
-		return Log.getLog(getModuleName());
+	public final Logger getLogger() {
+		return Logger.getLogger(getModuleName());
 	}
 }

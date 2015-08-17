@@ -1,11 +1,11 @@
 package co.sblock.chat.channel;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.Log;
 
 public class RegionChannel extends Channel {
 
@@ -34,7 +34,7 @@ public class RegionChannel extends Channel {
 				u.sendMessage(message);
 			}
 		}
-		Log.anonymousInfo(message);
+		Logger.getLogger("Minecraft").info(message);
 	}
 
 	/**

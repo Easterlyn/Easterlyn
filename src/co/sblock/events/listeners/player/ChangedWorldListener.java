@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 import co.sblock.effects.Effects;
-import co.sblock.utilities.vote.SleepVote;
+import co.sblock.micromodules.SleepVote;
 
 /**
  * Listener for PlayerChangedWorldEvents.

@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.effects.Effects;
-import co.sblock.utilities.general.Roman;
+import co.sblock.utilities.Roman;
 
 import net.md_5.bungee.api.ChatColor;
 

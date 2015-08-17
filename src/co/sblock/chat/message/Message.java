@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,12 +14,11 @@ import org.bukkit.entity.Player;
 
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
+import co.sblock.micromodules.Slack;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.Log;
-import co.sblock.utilities.general.Cooldowns;
-import co.sblock.utilities.messages.JSONUtil;
-import co.sblock.utilities.messages.Slack;
+import co.sblock.utilities.Cooldowns;
+import co.sblock.utilities.JSONUtil;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -101,7 +101,7 @@ public class Message {
 			if (recipients.size() < channel.getListening().size()) {
 				consoleMessage = "[SoftMute] " + consoleMessage;
 			}
-			Log.anonymousInfo(getConsoleMessage());
+			Logger.getLogger("Minecraft").info(getConsoleMessage());
 		}
 
 		Slack.getInstance().postMessage(sender != null ? sender.getPlayerName() : name,

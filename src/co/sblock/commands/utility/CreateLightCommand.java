@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import co.sblock.commands.SblockCommand;
-import co.sblock.utilities.general.LightSource;
+import co.sblock.utilities.LightSource;
 
 /**
  * Basic SblockCommand for creating a light source.

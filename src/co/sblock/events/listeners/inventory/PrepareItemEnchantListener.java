@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 
-import co.sblock.utilities.captcha.Captcha;
+import co.sblock.micromodules.Captcha;
 
 /**
  * Listener for PrepareItemEnchantEvents.

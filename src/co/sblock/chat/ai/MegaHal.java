@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -32,10 +33,9 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
-import co.sblock.utilities.Log;
-import co.sblock.utilities.general.Cooldowns;
-import co.sblock.utilities.messages.JSONUtil;
-import co.sblock.utilities.messages.RegexUtils;
+import co.sblock.utilities.Cooldowns;
+import co.sblock.utilities.JSONUtil;
+import co.sblock.utilities.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -114,7 +114,7 @@ public class MegaHal extends HalMessageHandler {
 					// Still on cooldown, warn a bitch
 					noSpam.setChannel(msg.getChannel());
 					noSpam.toMessage().send(Arrays.asList(sender));
-					Log.getLog("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
+					Logger.getLogger("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return true;
 				} else {
 					cooldowns.addGlobalCooldown(channel, 2500L);
@@ -159,7 +159,7 @@ public class MegaHal extends HalMessageHandler {
 		}
 		pendingMessages.add(message);
 		if (save.getTaskId() == -1) {
-			Log.getLog("MegaHal").warning("Log saving task was stopped! Restarting...");
+			Logger.getLogger("MegaHal").warning("Log saving task was stopped! Restarting...");
 			save.runTaskTimer(Sblock.getInstance(), 0L, 6000L);
 		}
 		hal.add(message);
@@ -222,7 +222,7 @@ public class MegaHal extends HalMessageHandler {
 			}
 			pendingMessages.clear();
 		} catch (IOException e) {
-			Log.getLog("MegaHal").err(e);
+			Logger.getLogger("MegaHal").warning(RegexUtils.getTrace(e));
 		}
 		if (pendingMessages.size() > 0) {
 			saveLogs();
@@ -239,7 +239,7 @@ public class MegaHal extends HalMessageHandler {
 			File log = new File(folder, "hal-" + fileNum + ".log");
 			if (log.exists() && log.length() > 1048000L) { // ~1M
 				fileNum++;
-				Log.getLog("MegaHal").info("Hal log too large, rolling to " + fileNum);
+				Logger.getLogger("MegaHal").info("Hal log too large, rolling to " + fileNum);
 				continue;
 			}
 			return log;
@@ -266,11 +266,11 @@ public class MegaHal extends HalMessageHandler {
 								hal.add(string);
 							}
 						} catch (IOException e) {
-							Log.getLog("MegaHal").err(e);
+							Logger.getLogger("MegaHal").warning(RegexUtils.getTrace(e));
 						}
 					}
 				}
-				Log.getLog("MegaHal").info("Finished loading Hal logs.");
+				Logger.getLogger("MegaHal").info("Finished loading Hal logs.");
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());
 	}

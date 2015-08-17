@@ -17,11 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
 
 import co.sblock.Sblock;
-import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.Effect;
 import co.sblock.events.event.SblockBreakEvent;
-import co.sblock.utilities.experience.BlockDrops;
-import co.sblock.utilities.experience.Experience;
+import co.sblock.utilities.BlockDrops;
+import co.sblock.utilities.Experience;
 
 /**
  * Mine or dig a 3x3 area at once.

@@ -12,16 +12,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.events.Events;
+import co.sblock.micromodules.FreeCart;
+import co.sblock.micromodules.Slack;
+import co.sblock.micromodules.SleepVote;
+import co.sblock.micromodules.Spectators;
+import co.sblock.progression.Entry;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
-import co.sblock.utilities.inventory.InventoryManager;
-import co.sblock.utilities.messages.Slack;
-import co.sblock.utilities.minecarts.FreeCart;
-import co.sblock.utilities.progression.Entry;
-import co.sblock.utilities.spectator.Spectators;
-import co.sblock.utilities.vote.SleepVote;
+import co.sblock.utilities.InventoryManager;
 
 /**
  * Listener for PlayerQuitEvents.

@@ -27,11 +27,11 @@ import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
+import co.sblock.micromodules.Captcha;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.inventory.InventoryUtils;
+import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 

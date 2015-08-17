@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+import co.sblock.micromodules.Slack;
 import co.sblock.users.BukkitSerializer;
-import co.sblock.utilities.messages.Slack;
 
 /**
  * Command allowing users to report issues directly to moderators, even if none are online.

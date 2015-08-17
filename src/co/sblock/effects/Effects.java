@@ -33,14 +33,14 @@ import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
+import co.sblock.micromodules.Captcha;
 import co.sblock.module.Module;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.UserAspect;
 import co.sblock.users.Users;
-import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.general.Cooldowns;
-import co.sblock.utilities.general.Roman;
+import co.sblock.utilities.Cooldowns;
+import co.sblock.utilities.Roman;
 
 import net.md_5.bungee.api.ChatColor;
 

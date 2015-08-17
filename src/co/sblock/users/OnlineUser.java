@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,11 +34,10 @@ import co.sblock.chat.channel.NickChannel;
 import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
-import co.sblock.utilities.Log;
-import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.inventory.InventoryManager;
-import co.sblock.utilities.progression.ServerMode;
-import co.sblock.utilities.spectator.Spectators;
+import co.sblock.micromodules.Captcha;
+import co.sblock.micromodules.Spectators;
+import co.sblock.progression.ServerMode;
+import co.sblock.utilities.InventoryManager;
 
 /**
  * Represents a Player currently logged into the game.
@@ -331,7 +331,7 @@ public class OnlineUser extends OfflineUser {
 			u.sendMessage(message);
 		}
 
-		Log.anonymousInfo(base.toString().replace("<>", StringUtils.join(getListening(), ", ")));
+		Logger.getLogger("Minecraft").info(base.toString().replace("<>", StringUtils.join(getListening(), ", ")));
 	}
 
 	@Override

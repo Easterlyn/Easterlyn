@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -43,16 +44,18 @@ import co.sblock.commands.SblockCommand;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
+import co.sblock.micromodules.Captcha;
+import co.sblock.micromodules.FreeCart;
+import co.sblock.micromodules.Meteors;
+import co.sblock.micromodules.RawAnnouncer;
+import co.sblock.micromodules.Slack;
+import co.sblock.micromodules.SleepVote;
+import co.sblock.micromodules.Spectators;
 import co.sblock.module.Dependencies;
 import co.sblock.module.Dependency;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
-import co.sblock.utilities.Log;
-import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.messages.RawAnnouncer;
-import co.sblock.utilities.messages.Slack;
-import co.sblock.utilities.meteors.Meteors;
-import co.sblock.utilities.spectator.Spectators;
+import co.sblock.utilities.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -63,9 +66,6 @@ import net.md_5.bungee.api.ChatColor;
  * @author Jikoo, FireNG, Dublek
  */
 public class Sblock extends JavaPlugin {
-
-	/* Sblock's Log */
-	private static final Log logger = Log.getLog("Sblock");
 
 	/* The Sblock instance. */
 	private static Sblock instance;
@@ -93,7 +93,7 @@ public class Sblock extends JavaPlugin {
 		} catch (IllegalArgumentException | IllegalAccessException | SecurityException
 				| NoSuchMethodException | InvocationTargetException e) {
 			getLog().severe("Could not fetch SimpleCommandMap from CraftServer, Sblock commands will fail to register.");
-			getLog().criticalErr(e);
+			getLog().severe(RegexUtils.getTrace(e));
 		}
 		instance = this;
 
@@ -110,6 +110,8 @@ public class Sblock extends JavaPlugin {
 		modules.add(new Meteors().enable());
 		modules.add(new RawAnnouncer().enable());
 		modules.add(new Spectators().enable());
+		modules.add(new FreeCart().enable());
+		modules.add(new SleepVote().enable());
 
 		createRecipes();
 		registerAllCommands();
@@ -200,7 +202,7 @@ public class Sblock extends JavaPlugin {
 				permission.addParent("sblock.command.*", true).recalculatePermissibles();
 			} catch (InstantiationException | IllegalAccessException e) {
 				getLog().severe("Unable to register command " + command.getName());
-				getLog().criticalErr(e);
+				getLog().severe(RegexUtils.getTrace(e));
 			}
 		}
 	}
@@ -218,7 +220,7 @@ public class Sblock extends JavaPlugin {
 			}
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			getLog().severe("Unable to modify SimpleCommandMap.knownCommands! Commands cannot be unregistered!");
-			getLog().criticalErr(e);
+			getLog().severe(RegexUtils.getTrace(e));
 		}
 	}
 
@@ -390,8 +392,8 @@ public class Sblock extends JavaPlugin {
 		return new GameProfile(uuid, name);
 	}
 
-	public static final Log getLog() {
-		return logger;
+	public static Logger getLog() {
+		return instance.getLogger();
 	}
 
 	public static <T> boolean areDependenciesPresent(Class<T> clazz) {

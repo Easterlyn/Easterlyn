@@ -11,7 +11,8 @@ import org.bukkit.plugin.Plugin;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
-import co.sblock.utilities.messages.Slack;
+import co.sblock.micromodules.Slack;
+import co.sblock.utilities.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -73,17 +74,8 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 			}
 		} catch (Exception e) {
 			sender.sendMessage(Color.BAD + "An error occurred processing this command. Please make sure your parameters are correct.");
-			StringBuilder cause = new StringBuilder("\nTrace base: ");
-			if (e.getMessage() != null) {
-				cause.append(e.getMessage());
-			} else {
-				cause.append("null");
-			}
-			if (e.getCause() != null && e.getCause().getMessage() != null) {
-				cause.append(", cause by: ").append(e.getCause().getMessage());
-			}
-			Slack.getInstance().postReport(sender.getName(), null, "Error processing command: "
-					+ getName() + " " + StringUtils.join(args, ' ') + cause.toString());
+			Slack.getInstance().postReport(sender.getName(), null, "Error processing command: /"
+					+ getName() + " " + StringUtils.join(args, ' ') + '\n' + RegexUtils.getTrace(e));
 			e.printStackTrace();
 		}
 		sender.sendMessage(this.getUsage());

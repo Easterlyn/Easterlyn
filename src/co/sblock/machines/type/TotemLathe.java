@@ -19,13 +19,13 @@ import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
+import co.sblock.micromodules.Captcha;
+import co.sblock.micromodules.CruxiteDowel;
+import co.sblock.progression.Entry;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
-import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.captcha.CruxiteDowel;
-import co.sblock.utilities.inventory.InventoryUtils;
-import co.sblock.utilities.progression.Entry;
+import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 

@@ -2,8 +2,6 @@ package co.sblock.events.session;
 
 import net.md_5.bungee.api.ChatColor;
 
-
-
 /**
  * Enum representing the status of Minecraft's servers.
  * 
@@ -21,7 +19,7 @@ public enum Status {
 	NEITHER(null, null, null);
 
 	/* The messages to broadcast under certain conditions */
-	private String announcement, allClear, motd;
+	private final String announcement, allClear, motd;
 
 	/**
 	 * Constructor for Status.
@@ -87,6 +85,6 @@ public enum Status {
 	 * @return String
 	 */
 	public String getMOTDChange() {
-		return ChatColor.RED + "[Lil Hal] " + motd;
+		return ChatColor.RED + motd;
 	}
 }

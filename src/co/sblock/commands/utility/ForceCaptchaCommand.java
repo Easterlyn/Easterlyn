@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.commands.SblockCommand;
-import co.sblock.utilities.captcha.Captcha;
+import co.sblock.micromodules.Captcha;
 
 /**
  * SblockCommand for creating a captcha of an item.

@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 
-import co.sblock.utilities.minecarts.FreeCart;
+import co.sblock.micromodules.FreeCart;
 
 /**
  * Listener for PlayerAchievementAwardedEvents.

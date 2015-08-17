@@ -16,7 +16,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import co.sblock.machines.type.Alchemiter;
 import co.sblock.machines.type.Machine;
-import co.sblock.utilities.messages.RegexUtils;
+import co.sblock.utilities.RegexUtils;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;

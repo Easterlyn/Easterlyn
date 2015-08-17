@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorPassive;
-import co.sblock.utilities.general.Potions;
+import co.sblock.effects.effect.Effect;
+import co.sblock.utilities.Potions;
 
 /**
  * Effect for passively granting the speed PotionEffect.

@@ -9,9 +9,9 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
-import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.captcha.CruxiteDowel;
-import co.sblock.utilities.inventory.InventoryUtils;
+import co.sblock.micromodules.Captcha;
+import co.sblock.micromodules.CruxiteDowel;
+import co.sblock.utilities.InventoryUtils;
 
 /**
  * Listener for CraftItemEvents.

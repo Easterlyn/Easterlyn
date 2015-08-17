@@ -36,8 +36,9 @@ import co.sblock.events.packets.WrapperPlayServerBed;
 import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
+import co.sblock.micromodules.FreeCart;
 import co.sblock.module.Module;
-import co.sblock.utilities.minecarts.FreeCart;
+import co.sblock.utilities.RegexUtils;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -113,7 +114,7 @@ public class Events extends Module {
 			yaml.save(file);
 		} catch (IOException e) {
 			getLogger().warning("Failed to save IP cache!");
-			getLogger().err(e);
+			getLogger().warning(RegexUtils.getTrace(e));
 		}
 	}
 
@@ -212,7 +213,7 @@ public class Events extends Module {
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			getLogger().err(e);
+			getLogger().warning(RegexUtils.getTrace(e));
 		}
 		sleep.put(p.getUniqueId(), new SleepTeleport(p.getUniqueId()).runTaskLater(Sblock.getInstance(), 100L));
 	}
@@ -230,7 +231,7 @@ public class Events extends Module {
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			getLogger().err(e);
+			getLogger().warning(RegexUtils.getTrace(e));
 		}
 
 		BukkitTask task = sleep.remove(p.getUniqueId());
@@ -255,17 +256,21 @@ public class Events extends Module {
 	 * @param status the Status
 	 */
 	public void changeStatus(Status status) {
-		if (status.hasAnnouncement() && statusResample < 5) {
-			// less spam - must return red status 5 times in a row to announce.
+		if (status == this.status) {
+			statusResample = 0;
+			return;
+		}
+		if (statusResample < 5) {
+			// less spam - must have status change 5 times in a row to announce.
 			statusResample++;
 			new StatusCheck().runTaskAsynchronously(Sblock.getInstance());
 			return;
 		}
 		String announcement = null;
-		if (this.status.hasAllClear() && !status.hasAnnouncement()) {
-			announcement = this.status.getAllClear();
-		} else if (status.hasAnnouncement() && status != this.status) {
+		if (status.hasAnnouncement()) {
 			announcement = status.getAnnouncement();
+		} else {
+			announcement = this.status.getAllClear();
 		}
 		if (announcement != null) {
 			Bukkit.broadcastMessage(Color.HAL + announcement);

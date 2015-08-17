@@ -19,7 +19,7 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.inventory.InventoryUtils;
+import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 

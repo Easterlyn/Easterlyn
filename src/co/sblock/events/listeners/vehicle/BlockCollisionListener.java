@@ -10,7 +10,7 @@ import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.utilities.minecarts.FreeCart;
+import co.sblock.micromodules.FreeCart;
 
 /**
  * Listener for VehicleBlockCollisionEvents.

@@ -24,13 +24,13 @@ import co.sblock.chat.channel.RegionChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.event.SblockAsyncChatEvent;
+import co.sblock.micromodules.Slack;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.general.Cooldowns;
-import co.sblock.utilities.messages.JSONUtil;
-import co.sblock.utilities.messages.RegexUtils;
-import co.sblock.utilities.messages.Slack;
-import co.sblock.utilities.player.DummyPlayer;
+import co.sblock.utilities.Cooldowns;
+import co.sblock.utilities.DummyPlayer;
+import co.sblock.utilities.JSONUtil;
+import co.sblock.utilities.RegexUtils;
 
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;

@@ -17,8 +17,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.events.Events;
-import co.sblock.utilities.experience.Experience;
-import co.sblock.utilities.minecarts.FreeCart;
+import co.sblock.micromodules.FreeCart;
+import co.sblock.utilities.Experience;
 
 /**
  * Listener for PlayerDeathEvents.

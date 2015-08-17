@@ -11,10 +11,10 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import co.sblock.Sblock;
 import co.sblock.events.Events;
 import co.sblock.events.packets.WrapperPlayServerPlayerListHeaderFooter;
+import co.sblock.micromodules.Slack;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
-import co.sblock.utilities.messages.Slack;
 
 import net.md_5.bungee.api.ChatColor;
 

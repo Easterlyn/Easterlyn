@@ -14,11 +14,11 @@ import org.bukkit.permissions.PermissionDefault;
 
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+import co.sblock.micromodules.Spectators;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
-import co.sblock.utilities.general.Cooldowns;
-import co.sblock.utilities.spectator.Spectators;
+import co.sblock.utilities.Cooldowns;
 
 /**
  * Essentials' TPA just won't cut it.

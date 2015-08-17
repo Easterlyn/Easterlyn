@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.utilities.inventory.InventoryUtils;
+import co.sblock.utilities.InventoryUtils;
 
 /**
  * Listener for FurnaceSmeltEvents.

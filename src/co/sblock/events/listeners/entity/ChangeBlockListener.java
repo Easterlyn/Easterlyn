@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-import co.sblock.utilities.meteors.Meteors;
+import co.sblock.micromodules.Meteors;
 
 /**
  * Listener for EntityChangeBlockEvents.

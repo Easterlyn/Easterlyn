@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionEffectType;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.utilities.general.Potions;
+import co.sblock.utilities.Potions;
 
 /**
  * Panic effect. When damaged, player may receive a speed boost and brief regeneration or slightly

@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 
 import co.sblock.events.Events;
-import co.sblock.utilities.spectator.Spectators;
+import co.sblock.micromodules.Spectators;
 
 /**
  * Listener for PlayerGameModeChangeEvents.

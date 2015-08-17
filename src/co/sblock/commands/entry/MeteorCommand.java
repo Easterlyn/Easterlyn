@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.commands.SblockCommand;
-import co.sblock.utilities.meteors.Meteorite;
+import co.sblock.micromodules.Meteorite;
 
 /**
  * SblockCommand for summoning a meteor.

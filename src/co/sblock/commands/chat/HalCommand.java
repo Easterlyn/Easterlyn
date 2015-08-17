@@ -14,7 +14,7 @@ import co.sblock.chat.Color;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
-import co.sblock.utilities.messages.RawAnnouncer;
+import co.sblock.micromodules.RawAnnouncer;
 
 import net.md_5.bungee.api.ChatColor;
 

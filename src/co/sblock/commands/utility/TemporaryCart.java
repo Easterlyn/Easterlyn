@@ -11,7 +11,7 @@ import org.bukkit.util.Vector;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.commands.SblockCommand;
-import co.sblock.utilities.minecarts.FreeCart;
+import co.sblock.micromodules.FreeCart;
 
 /**
  * SblockCommand for spawning a temporary minecart.

@@ -4,15 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import co.sblock.Sblock;
-import co.sblock.utilities.Log;
 
 /**
  * Checks and updates Status from Minecraft's servers.
@@ -20,9 +21,7 @@ import co.sblock.utilities.Log;
  * @author Jikoo
  */
 public class StatusCheck extends BukkitRunnable {
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
+
 	@Override
 	public void run() {
 		boolean session = false;
@@ -39,7 +38,7 @@ public class StatusCheck extends BukkitRunnable {
 		} catch (IOException | ParseException | ClassCastException | NullPointerException e) {
 			// ClassCast/NPE happens occasionally when JSON appears to be parsed incorrectly.
 			// This check is run every minute, and 99.9% of the time we are casting correctly. I blame Mojang.
-			Log.getLogger("Session").warning("Unable to check http://status.mojang.com/check - status unavailable.");
+			Logger.getLogger("Session").warning("Unable to check http://status.mojang.com/check - status unavailable.");
 			return;
 		}
 
@@ -59,4 +58,5 @@ public class StatusCheck extends BukkitRunnable {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new StatusSync(status));
 		}
 	}
+
 }

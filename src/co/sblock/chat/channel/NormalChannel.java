@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 
@@ -12,7 +13,6 @@ import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.Log;
 
 /**
  * Defines normal channel behavior.
@@ -27,9 +27,6 @@ public class NormalChannel extends Channel {
 	protected final Set<UUID> banList;
 	private final AtomicLong lastAccessed;
 
-	/**
-	 * @see co.sblock.chat.channel.Channel#Channel(String, AccessLevel, String)
-	 */
 	public NormalChannel(String name, AccessLevel access, UUID creator, long lastAccessed) {
 		super(name, creator);
 		this.access = access;
@@ -42,9 +39,6 @@ public class NormalChannel extends Channel {
 		}
 	}
 
-	/**
-	 * @see co.sblock.chat.channel.Channel#getAccess()
-	 */
 	@Override
 	public AccessLevel getAccess() {
 		return access;
@@ -325,9 +319,6 @@ public class NormalChannel extends Channel {
 		Chat.getChat().getChannelManager().dropChannel(this.name);
 	}
 
-	/**
-	 * @see co.sblock.chat.channel.Channel#sendMessage(java.lang.String)
-	 */
 	@Override
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
@@ -338,6 +329,6 @@ public class NormalChannel extends Channel {
 			}
 			u.sendMessage(message);
 		}
-		Log.anonymousInfo(message);
+		Logger.getLogger("Minecraft").info(message);
 	}
 }

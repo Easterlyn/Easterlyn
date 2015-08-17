@@ -30,7 +30,7 @@ import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.utilities.player.PlayerLoader;
+import co.sblock.utilities.PlayerLoader;
 
 import net.md_5.bungee.api.ChatColor;
 

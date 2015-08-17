@@ -15,10 +15,10 @@ import org.bukkit.scheduler.BukkitTask;
 import co.sblock.Sblock;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
+import co.sblock.micromodules.MeteoriteComponent;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.meteors.MeteoriteComponent;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 

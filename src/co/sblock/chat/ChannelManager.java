@@ -40,7 +40,7 @@ public class ChannelManager {
 					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
 					UUID.fromString(yaml.getString(channelName + ".owner")),
 					ChannelType.valueOf(yaml.getString(channelName + ".type")),
-					yaml.getLong(channelName + ".lastAccessed", System.currentTimeMillis()));
+					yaml.getLong(channelName + ".lastAccess", System.currentTimeMillis()));
 			if (!(channel instanceof NormalChannel) || !((NormalChannel) channel).isRecentlyAccessed()) {
 				drop.add(channelName);
 				continue;

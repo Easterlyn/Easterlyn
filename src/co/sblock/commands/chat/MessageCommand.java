@@ -23,7 +23,7 @@ import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.player.DummyPlayer;
+import co.sblock.utilities.DummyPlayer;
 
 import net.md_5.bungee.api.ChatColor;
 

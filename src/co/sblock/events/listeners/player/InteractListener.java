@@ -23,16 +23,16 @@ import co.sblock.events.Events;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
+import co.sblock.micromodules.Captcha;
+import co.sblock.micromodules.SleepVote;
+import co.sblock.progression.Entry;
+import co.sblock.progression.ServerMode;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.captcha.Captcha;
-import co.sblock.utilities.experience.Experience;
-import co.sblock.utilities.general.Cooldowns;
-import co.sblock.utilities.inventory.InventoryUtils;
-import co.sblock.utilities.progression.Entry;
-import co.sblock.utilities.progression.ServerMode;
-import co.sblock.utilities.vote.SleepVote;
+import co.sblock.utilities.Cooldowns;
+import co.sblock.utilities.Experience;
+import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 

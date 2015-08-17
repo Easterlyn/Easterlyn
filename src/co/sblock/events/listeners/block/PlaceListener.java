@@ -75,7 +75,6 @@ public class PlaceListener implements Listener {
 							Direction.getFacingDirection(event.getPlayer()));
 					pair.getLeft().assemble(event, pair.getRight());
 				} catch (NullPointerException e) {
-					Machines.getInstance().getLogger().debug("Invalid machine placed.");
 					event.setBuild(false);
 					event.setCancelled(true);
 				}

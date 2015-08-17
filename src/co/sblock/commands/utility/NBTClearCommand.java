@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
-import co.sblock.utilities.inventory.InventoryUtils;
+import co.sblock.utilities.InventoryUtils;
 
 /**
  * SblockCommand for removing NBT tags from an item. Attempts to preserve standard meta.

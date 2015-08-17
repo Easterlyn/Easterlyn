@@ -13,7 +13,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 
 import co.sblock.events.Events;
-import co.sblock.utilities.messages.Slack;
+import co.sblock.micromodules.Slack;
 
 /**
  * Proxy detection, because apparently this is an issue.

@@ -19,7 +19,7 @@ import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
-import co.sblock.utilities.general.Potions;
+import co.sblock.utilities.Potions;
 
 import net.md_5.bungee.api.ChatColor;
 

@@ -11,11 +11,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
+import co.sblock.micromodules.Spectators;
+import co.sblock.progression.ServerMode;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.progression.ServerMode;
-import co.sblock.utilities.spectator.Spectators;
 
 import net.md_5.bungee.api.ChatColor;
 

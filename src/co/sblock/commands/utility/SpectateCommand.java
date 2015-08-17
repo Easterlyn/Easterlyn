@@ -13,10 +13,10 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+import co.sblock.micromodules.Spectators;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.spectator.Spectators;
 
 /**
  * SblockCommand for toggling spectate mode.
