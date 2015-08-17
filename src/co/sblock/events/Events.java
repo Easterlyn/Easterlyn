@@ -71,7 +71,7 @@ public class Events extends Module {
 		}
 
 		status = Status.NEITHER;
-		initiateSessionChecks();
+		new StatusCheck().runTaskTimerAsynchronously(Sblock.getInstance(), 100L, 1200L);
 
 		Reflections reflections = new Reflections("co.sblock.events.listeners");
 		Set<Class<? extends Listener>> listeners = reflections.getSubTypesOf(Listener.class);
@@ -238,13 +238,6 @@ public class Events extends Module {
 		if (task != null) {
 			task.cancel();
 		}
-	}
-
-	/**
-	 * Schedules a SessionCheck to update the Status every minute.
-	 */
-	private void initiateSessionChecks() {
-		new StatusCheck().runTaskTimerAsynchronously(Sblock.getInstance(), 100L, 1200L);
 	}
 
 	/**
