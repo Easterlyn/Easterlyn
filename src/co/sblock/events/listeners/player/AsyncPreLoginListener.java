@@ -11,9 +11,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import co.sblock.events.Events;
 import co.sblock.micromodules.Slack;
+import co.sblock.utilities.PermissionBridge;
 
 /**
  * Proxy detection, because apparently this is an issue.
@@ -22,8 +25,24 @@ import co.sblock.micromodules.Slack;
  */
 public class AsyncPreLoginListener implements Listener {
 
+	public AsyncPreLoginListener() {
+		Permission permission;
+		try {
+			permission = new Permission("sblock.login.proxy", PermissionDefault.OP);
+			Bukkit.getPluginManager().addPermission(permission);
+		} catch (IllegalArgumentException e) {
+			permission = Bukkit.getPluginManager().getPermission("sblock.login.proxy");
+			permission.setDefault(PermissionDefault.OP);
+		}
+		permission.addParent("sblock.command.*", true).recalculatePermissibles();
+		permission.addParent("sblock.helper", true).recalculatePermissibles();
+	}
+
 	@EventHandler
 	public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+		if (PermissionBridge.getInstance().hasPermission(event.getUniqueId(), "sblock.login.proxy")) {
+			return;
+		}
 		try {
 			final String ip = event.getAddress().getHostAddress();
 			final String[] split = ip.split("\\.");
