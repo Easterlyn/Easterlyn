@@ -75,7 +75,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 		} catch (Exception e) {
 			sender.sendMessage(Color.BAD + "An error occurred processing this command. Please make sure your parameters are correct.");
 			Slack.getInstance().postReport(sender.getName(), null, "Error processing command: /"
-					+ getName() + " " + StringUtils.join(args, ' ') + '\n' + RegexUtils.getTrace(e));
+					+ getName() + " " + StringUtils.join(args, ' ') + '\n' + RegexUtils.getTrace(e, 5));
 			e.printStackTrace();
 		}
 		sender.sendMessage(this.getUsage());

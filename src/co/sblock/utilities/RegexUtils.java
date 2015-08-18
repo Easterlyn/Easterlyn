@@ -91,14 +91,19 @@ public class RegexUtils {
 	}
 
 	public static String getTrace(Throwable throwable) {
+		return getTrace(throwable, 50);
+	}
+
+	public static String getTrace(Throwable throwable, int limit) {
 		StringBuilder trace = new StringBuilder(throwable.toString());
-		for (StackTraceElement ste : throwable.getStackTrace()) {
-			trace.append("\n\tat " + ste.toString());
+		StackTraceElement[] elements = throwable.getStackTrace();
+		for (int i = 0; i < elements.length && i < limit; i++) {
+			trace.append("\n\tat ").append(elements[i].toString());
 		}
 		if (throwable.getCause() != null) {
-			trace.append("\nCaused by: " + throwable.getCause().toString());
-			for (StackTraceElement ste : throwable.getCause().getStackTrace()) {
-				trace.append("\n\tat " + ste.toString());
+			trace.append("\nCaused by: ").append(throwable.getCause().toString());
+			for (int i = 0; i < elements.length && i < limit; i++) {
+				trace.append("\n\tat ").append(elements[i].toString());
 			}
 		}
 		return trace.toString();
