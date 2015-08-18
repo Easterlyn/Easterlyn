@@ -126,11 +126,11 @@ public class RawAnnouncer extends Module {
 
 		// Announcement: Try EnchantedFurnace
 		components.clear();
-		component = new TextComponent("Is smelting wasting too much of your time? Try");
+		component = new TextComponent("Smelting wasting your time?");
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		component = new TextComponent(" enchanting a furnace");
+		component = new TextComponent(" Enchant a furnace");
 		component.setColor(ChatColor.BLUE);
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://sblock.co/wiki/EnchantedFurnace"));
@@ -140,7 +140,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage("Is smelting wasting too much of your time? Try http://sblock.co/wiki/EnchantedFurnace",
+		builder.setMessage("Smelting wasting your time? http://sblock.co/wiki/EnchantedFurnace",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
@@ -208,7 +208,7 @@ public class RawAnnouncer extends Module {
 
 		// Announcement: Use /report ffs
 		components.clear();
-		component = new TextComponent("Been griefed? Found a bug? Please");
+		component = new TextComponent("Found grief or a bug? Please");
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
@@ -223,7 +223,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage("Been griefed? Found a bug? Please /report issues so we can help!",
+		builder.setMessage("Found grief or a bug? Please /report issues so we can help!",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
