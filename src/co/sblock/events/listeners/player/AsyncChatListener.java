@@ -175,6 +175,9 @@ public class AsyncChatListener implements Listener {
 			}
 		}
 
+		// Set message format in case of softmute or spam detection
+		message.setConsoleFormat(event.getFormat());
+
 		// Region channels are the only ones that should be appearing in certain plugins
 		if (!(message.getChannel() instanceof RegionChannel)) {
 			if (!event.isCancelled() && event instanceof SblockAsyncChatEvent) {

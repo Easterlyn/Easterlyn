@@ -33,10 +33,10 @@ public class Message {
 
 	private final OfflineUser sender;
 	private final Channel channel;
-	private final String name, consoleFormat;
+	private final String name;
 	private final boolean thirdPerson;
 	private final TextComponent channelComponent, channelHighlightComponent, nameComponent;
-	private String unformattedMessage;
+	private String consoleFormat, unformattedMessage;
 	private TextComponent messageComponent;
 
 	Message(OfflineUser sender, String name, Channel channel, String message, String consoleFormat,
@@ -79,6 +79,10 @@ public class Message {
 		return String.format(getConsoleFormat(), name, unformattedMessage);
 	}
 
+	public void setConsoleFormat(String consoleFormat) {
+		this.consoleFormat = consoleFormat;
+	}
+
 	public String getConsoleFormat() {
 		return consoleFormat;
 	}
@@ -98,9 +102,6 @@ public class Message {
 	public <T> void send(Collection<T> recipients, boolean normalChat) {
 		String consoleMessage = getConsoleMessage();
 		if (!normalChat || !(channel instanceof RegionChannel)) {
-			if (recipients.size() < channel.getListening().size()) {
-				consoleMessage = "[SoftMute] " + consoleMessage;
-			}
 			Logger.getLogger("Minecraft").info(getConsoleMessage());
 		}
 
