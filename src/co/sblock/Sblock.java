@@ -100,17 +100,17 @@ public class Sblock extends JavaPlugin {
 		createBasePermissions();
 
 		modules = new ArrayList<>();
-		modules.add(new Captcha().enable());
 		modules.add(new Slack().enable());
 		modules.add(new Chat().enable());
 		modules.add(new Users().enable());
+		modules.add(new Captcha().enable());
+		modules.add(new FreeCart().enable());
 		modules.add(new Events().enable());
 		modules.add(new Effects().enable());
 		modules.add(new Machines().enable());
 		modules.add(new Meteors().enable());
 		modules.add(new RawAnnouncer().enable());
 		modules.add(new Spectators().enable());
-		modules.add(new FreeCart().enable());
 		modules.add(new SleepVote().enable());
 
 		createRecipes();

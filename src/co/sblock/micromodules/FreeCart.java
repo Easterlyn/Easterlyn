@@ -30,6 +30,10 @@ public class FreeCart extends Module {
 	@Override
 	protected void onDisable() {
 		instance = null;
+		for (Minecart cart : this.carts) {
+			cart.eject();
+			cart.remove();
+		}
 	}
 
 	public void spawnCart(Player p, Location location, Vector startspeed) {
@@ -74,13 +78,6 @@ public class FreeCart extends Module {
 		}
 		minecart.eject();
 		minecart.remove();
-	}
-
-	public void cleanUp() {
-		for (Minecart cart : this.carts) {
-			cart.eject();
-			cart.remove();
-		}
 	}
 
 	public static FreeCart getInstance() {

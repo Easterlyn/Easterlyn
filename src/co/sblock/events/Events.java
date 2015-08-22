@@ -36,7 +36,6 @@ import co.sblock.events.packets.WrapperPlayServerBed;
 import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
-import co.sblock.micromodules.FreeCart;
 import co.sblock.module.Module;
 import co.sblock.utilities.RegexUtils;
 
@@ -99,7 +98,6 @@ public class Events extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		FreeCart.getInstance().cleanUp();
 		instance = null;
 
 		try {
