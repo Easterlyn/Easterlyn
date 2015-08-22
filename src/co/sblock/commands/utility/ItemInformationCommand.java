@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.captcha.Captcha;
 import co.sblock.commands.SblockCommand;
 
 import net.md_5.bungee.api.ChatColor;
@@ -38,6 +39,7 @@ public class ItemInformationCommand extends SblockCommand {
 			return true;
 		}
 		sender.sendMessage(ChatColor.stripColor(hand.toString()));
+		sender.sendMessage("Hash: " + Captcha.getInstance().getHash(hand));
 		return true;
 	}
 

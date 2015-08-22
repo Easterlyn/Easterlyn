@@ -2,10 +2,8 @@ package co.sblock.utilities;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,7 +33,6 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.io.BaseEncoding;
@@ -45,13 +42,12 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.sun.corba.se.impl.orbutil.HexOutputStream;
 
 import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.captcha.CruxiteDowel;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
-import co.sblock.micromodules.Captcha;
-import co.sblock.micromodules.CruxiteDowel;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -218,38 +214,6 @@ public class InventoryUtils {
 			return new ImmutablePair<Material, Short>(material, durability);
 		}
 		return null;
-	}
-
-	public static String serializeItemStack(ItemStack is) {
-		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				BukkitObjectOutputStream bukkitOutputStream = new BukkitObjectOutputStream(outputStream)) {
-			bukkitOutputStream.writeObject(is);
-			String encoded = outputStream.toString();
-			return encoded;
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to serialize ItemStack!", e);
-		}
-	}
-
-	public static String serializeIntoFormattingCodes(ItemStack is) {
-		String hex;
-		// Using BaseEncoding to encode corrupts the stream header.
-		try (StringWriter writer = new StringWriter();
-				HexOutputStream hexOut = new HexOutputStream(writer);
-				BukkitObjectOutputStream bukkitOut = new BukkitObjectOutputStream(hexOut)) {
-			bukkitOut.writeObject(is);
-			bukkitOut.close();
-			hexOut.close();
-			hex = writer.toString();
-			writer.close();
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to serialize ItemStack!", e);
-		}
-		StringBuilder formatting = new StringBuilder();
-		for (char c : hex.toCharArray()) {
-			formatting.append(ChatColor.COLOR_CHAR).append(c);
-		}
-		return formatting.toString();
 	}
 
 	public static ItemStack deserializeItemStack(String s) {

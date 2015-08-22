@@ -8,9 +8,9 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.captcha.CruxiteDowel;
 import co.sblock.chat.Color;
-import co.sblock.micromodules.Captcha;
-import co.sblock.micromodules.CruxiteDowel;
 import co.sblock.utilities.InventoryUtils;
 
 /**

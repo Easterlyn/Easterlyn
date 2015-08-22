@@ -4,26 +4,24 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.captcha.Captcha;
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
- * SblockCommand for creating a captcha of an item.
+ * SblockCommand for converting all captchacards in an older format to the latest.
  * 
  * @author Jikoo
  */
-public class ForceCaptchaCommand extends SblockCommand {
+public class ConvertOldCaptchaCommand extends SblockCommand {
 
-	public ForceCaptchaCommand() {
-		super("forcecaptcha");
-		this.setDescription("Captchalogues item in hand, even if it can't ordinarily be captcha'd.");
-		this.setUsage("/forcecaptcha");
-		this.setPermissionMessage("By the order of the Jarl, stop right there!");
-		this.setPermissionLevel("denizen");
+	public ConvertOldCaptchaCommand() {
+		super("convert");
+		this.setDescription("Converts captchacards from paper to plastic.");
+		this.setUsage("Run /convert with old captchacards in your inventory.");
 	}
 
 	@Override
@@ -32,10 +30,13 @@ public class ForceCaptchaCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		Player p = (Player) sender;
-		ItemStack item = p.getItemInHand();
-		p.getInventory().remove(item);
-		p.getInventory().addItem(Captcha.itemToCaptcha(item));
+		Player player = (Player) sender;
+		int conversions = Captcha.convert(player);
+		if (conversions > 0) {
+			player.sendMessage(Color.GOOD + "Converted " + conversions + " captchas.");
+		} else {
+			player.sendMessage(Color.BAD + "No old captchacards found!");
+		}
 		return true;
 	}
 

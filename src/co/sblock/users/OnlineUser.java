@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
@@ -34,7 +35,6 @@ import co.sblock.chat.channel.NickChannel;
 import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
-import co.sblock.micromodules.Captcha;
 import co.sblock.micromodules.Spectators;
 import co.sblock.progression.ServerMode;
 import co.sblock.utilities.InventoryManager;

@@ -17,13 +17,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
+import co.sblock.captcha.Captcha;
 import co.sblock.chat.Color;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
-import co.sblock.micromodules.Captcha;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.progression.Entry;
 import co.sblock.progression.ServerMode;

@@ -27,13 +27,13 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.micromodules.Captcha;
 import co.sblock.module.Module;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;

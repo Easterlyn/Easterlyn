@@ -28,11 +28,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
 import co.sblock.events.packets.ParticleEffectWrapper;
 import co.sblock.events.packets.ParticleUtils;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
-import co.sblock.micromodules.Captcha;
 import co.sblock.micromodules.Meteorite;
 import co.sblock.module.Dependency;
 import co.sblock.users.OfflineUser;

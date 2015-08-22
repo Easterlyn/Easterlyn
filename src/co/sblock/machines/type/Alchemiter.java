@@ -16,13 +16,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.captcha.CruxiteDowel;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.micromodules.Captcha;
-import co.sblock.micromodules.CruxiteDowel;
 import co.sblock.progression.Entry;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;

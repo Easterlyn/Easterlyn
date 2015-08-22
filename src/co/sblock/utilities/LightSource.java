@@ -32,11 +32,10 @@ public class LightSource {
 	public static void createLightSource(Location l, int level) {
 		CraftWorld w = (CraftWorld) l.getWorld();
 
+		BlockPosition blockPos = new BlockPosition(l.getBlockX(), l.getBlockY(), l.getBlockZ());
 		// Sets the light source at the location to the level
-		w.getHandle().a(EnumSkyBlock.BLOCK,
-				new BlockPosition(l.getBlockX(), l.getBlockY(), l.getBlockZ()), level);
+		w.getHandle().a(EnumSkyBlock.BLOCK, blockPos, level);
 
-		// Send packets to the area telling players to see this level
 		updateChunk(l);
 	}
 
@@ -49,7 +48,7 @@ public class LightSource {
 		Block block = l.getBlock();
 		BlockState state = block.getState();
 		block.setType(block.getType() == Material.STONE ? Material.DIRT : Material.STONE, false);
-		state.update(true, false);
+		state.update(true, true);
 	}
 
 	/**

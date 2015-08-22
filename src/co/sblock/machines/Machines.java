@@ -40,7 +40,7 @@ public class Machines extends Module {
 	private static Machines instance;
 
 	/* A Map of Machine names to instances. */
-	private Map<String, Machine> byName;
+	private static final Map<String, Machine> BY_NAME;
 	/* A Map of Machine key Locations to the corresponding Block Locations. */
 	private Multimap<Location, Location> machineBlocks;
 	/* A Map of all exploded blocks. */
@@ -48,10 +48,8 @@ public class Machines extends Module {
 	/* The YamlConfiguration containing all stored data. */
 	private YamlConfiguration storage;
 
-	@Override
-	protected void onEnable() {
-		instance = this;
-		this.byName = new HashMap<>();
+	static {
+		BY_NAME = new HashMap<>();
 		Reflections reflections = new Reflections("co.sblock.machines.type");
 		for (Class<? extends Machine> type : reflections.getSubTypesOf(Machine.class)) {
 			if (Modifier.isAbstract(type.getModifiers())) {
@@ -63,12 +61,17 @@ public class Machines extends Module {
 				if (machine.getUniqueDrop() == null) {
 					continue;
 				}
-				byName.put(type.getSimpleName(), machine);
+				BY_NAME.put(type.getSimpleName(), machine);
 			} catch (InstantiationException | IllegalAccessException e) {
 				// Improperly set up Machine
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	protected void onEnable() {
+		instance = this;
 		this.machineBlocks = HashMultimap.create();
 		this.exploded = new HashMap<>();
 		this.loadAllMachines();
@@ -100,7 +103,7 @@ public class Machines extends Module {
 	 * @return the Machine created
 	 */
 	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type, UUID owner, Direction direction) {
-		if (!byName.containsKey(type)) {
+		if (!BY_NAME.containsKey(type)) {
 			return null;
 		}
 		ConfigurationSection section = storage.createSection(stringFromLoc(location));
@@ -118,10 +121,10 @@ public class Machines extends Module {
 	 * @return the Machine type loaded
 	 */
 	public Pair<Machine, ConfigurationSection> loadMachine(Location key, ConfigurationSection section) {
-		if (!byName.containsKey(section.getString("type"))) {
+		if (!BY_NAME.containsKey(section.getString("type"))) {
 			return null;
 		}
-		Machine type = byName.get(section.getString("type"));
+		Machine type = BY_NAME.get(section.getString("type"));
 		Direction direction = type.getDirection(section);
 		for (Location location : type.getShape().getBuildLocations(key, direction).keySet()) {
 			machineBlocks.put(key, location);
@@ -227,7 +230,7 @@ public class Machines extends Module {
 		if (section == null) {
 			return null;
 		}
-		return new ImmutablePair<Machine, ConfigurationSection>(byName.get(section.getString("type")), section);
+		return new ImmutablePair<Machine, ConfigurationSection>(BY_NAME.get(section.getString("type")), section);
 	}
 
 	/**
@@ -386,7 +389,7 @@ public class Machines extends Module {
 				continue;
 			}
 			if (playerID.toString().equals(storage.getString(path + ".owner"))) {
-				return new ImmutablePair<Machine, ConfigurationSection>(byName.get("Computer"), storage);
+				return new ImmutablePair<Machine, ConfigurationSection>(BY_NAME.get("Computer"), storage);
 			}
 		}
 		return null;
@@ -424,7 +427,7 @@ public class Machines extends Module {
 			String type, boolean keyRequired) {
 		Set<ConfigurationSection> machines = new HashSet<>();
 		if (type != null) {
-			if (!byName.containsKey(type)) {
+			if (!BY_NAME.containsKey(type)) {
 				return machines;
 			}
 		}
@@ -456,7 +459,7 @@ public class Machines extends Module {
 				continue;
 			}
 			if (playerID.toString().equals(storage.getString(path + ".owner"))) {
-				machines.add(new ImmutablePair<Machine, ConfigurationSection>(byName.get("Computer"), storage));
+				machines.add(new ImmutablePair<Machine, ConfigurationSection>(BY_NAME.get("Computer"), storage));
 			}
 		}
 		return machines;
@@ -468,7 +471,7 @@ public class Machines extends Module {
 	 * @return the Map of all Machine instances stored by name
 	 */
 	public static Map<String, Machine> getMachinesByName() {
-		return getInstance().byName;
+		return BY_NAME;
 	}
 
 	/**
@@ -478,7 +481,7 @@ public class Machines extends Module {
 	 * @return the Machine instance
 	 */
 	public static Machine getMachineByName(String name) {
-		return getInstance().byName.get(name);
+		return BY_NAME.get(name);
 	}
 
 	/**

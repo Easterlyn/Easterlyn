@@ -1,4 +1,4 @@
-package co.sblock.micromodules;
+package co.sblock.captcha;
 
 import java.util.HashMap;
 import java.util.Map.Entry;

@@ -39,12 +39,12 @@ import com.google.common.collect.ImmutableList;
 
 import com.mojang.authlib.GameProfile;
 
+import co.sblock.captcha.Captcha;
 import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
-import co.sblock.micromodules.Captcha;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Meteors;
 import co.sblock.micromodules.RawAnnouncer;
@@ -100,6 +100,7 @@ public class Sblock extends JavaPlugin {
 		createBasePermissions();
 
 		modules = new ArrayList<>();
+		modules.add(new co.sblock.captcha.Captcha().enable());
 		modules.add(new Slack().enable());
 		modules.add(new Chat().enable());
 		modules.add(new Users().enable());
@@ -373,6 +374,14 @@ public class Sblock extends JavaPlugin {
 
 	public File getUserDataFolder() throws IOException {
 		File file = new File(getDataFolder(), "UserData");
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+		return file;
+	}
+
+	public File getCaptchaDataFolder() throws IOException {
+		File file = new File(getDataFolder(), "captcha");
 		if (!file.exists()) {
 			file.mkdirs();
 		}
