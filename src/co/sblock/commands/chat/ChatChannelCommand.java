@@ -31,7 +31,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class ChatChannelCommand extends SblockAsynchronousCommand {
 
-	private final String[] defaultArgs = new String[] {"getlisteners", "info", "list", "listall", "new"};
+	private final String[] defaultArgs = new String[] {"info", "list", "listeners", "listening", "new"};
 	private final String[] modArgs = new String[] {"approve", "ban", "deapprove", "kick"};
 	private final String modHelp = Color.GOOD_EMPHASIS + "Channel moderation commands:\n"
 			+ Color.COMMAND + "/channel kick <user>"
@@ -133,7 +133,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				} else if (c.getAccess() == AccessLevel.PUBLIC) {
 					cc = ChatColor.YELLOW;
 				} else {
-					cc = ChatColor.RED;
+					continue;
 				}
 				sb.append(cc).append(c.getName()).append(' ');
 			}
