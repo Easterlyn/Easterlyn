@@ -101,13 +101,15 @@ public class Captcha extends Module {
 			hash = hash.add(BigInteger.ONE);
 			itemHash = Base.getBase62(hash, 8);
 		}
+		hashCache.put(itemHash, item);
+		hashCacheAccess.put(System.currentTimeMillis(), itemHash);
 		return itemHash;
 	}
 
 	public ItemStack getItemStack(String hash) {
 		if (hashCache.containsKey(hash)) {
 			hashCacheAccess.put(System.currentTimeMillis(), hash);
-			return hashCache.get(hash);
+			return hashCache.get(hash).clone();
 		}
 		try {
 			File file = new File(Sblock.getInstance().getCaptchaDataFolder(), hash);
@@ -118,7 +120,7 @@ public class Captcha extends Module {
 				ItemStack item = (ItemStack) stream.readObject();
 				hashCache.put(hash, item);
 				hashCacheAccess.put(System.currentTimeMillis(), hash);
-				return item;
+				return item.clone();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				return null;
