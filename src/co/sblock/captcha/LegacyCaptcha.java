@@ -1,12 +1,6 @@
 package co.sblock.captcha;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import com.google.common.io.BaseEncoding;
 
 import co.sblock.utilities.InventoryUtils;
 
@@ -55,44 +49,4 @@ public class LegacyCaptcha {
 		}
 	}
 
-	/**
-	 * Create a punchcard from a captchacard.
-	 * <p>
-	 * Good luck patching punched holes.
-	 * 
-	 * @param is the punchcard ItemStack
-	 * 
-	 * @return the unpunched captchacard
-	 */
-	public static ItemStack captchaToPunch(ItemStack is) {
-		is = is.clone();
-		if (Captcha.isBlankCaptcha(is)) {
-			ItemMeta im = is.getItemMeta();
-			im.setDisplayName("Punchcard");
-			is.setItemMeta(im);
-			return is;
-		}
-		for (String lore : is.getItemMeta().getLore()) {
-			if (lore.startsWith(ChatColor.MAGIC.toString())) {
-				// "New" "secret" unpunchable demarkation is serialized hex prepended by magic
-				return is;
-			}
-		}
-		ItemMeta im = is.getItemMeta();
-		im.setDisplayName("Punchcard");
-		List<String> newlore = new ArrayList<>();
-		// If the captcha doesn't have the correct lore, we've got issues already.
-		String lore0 = im.getLore().get(0);
-		int space = lore0.indexOf(' ') + 1;
-		String line = lore0.substring(0, space);
-		String encoded = BaseEncoding.base16().encode(lore0.substring(space).getBytes());
-		line += encoded.substring(encoded.length() > 8 ? encoded.length() - 8 : 0, encoded.length());
-		newlore.add(line);
-		for (int i = 1; i < im.getLore().size(); i++) {
-			newlore.add(im.getLore().get(i));
-		}
-		im.setLore(newlore);
-		is.setItemMeta(im);
-		return is;
-	}
 }

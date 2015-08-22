@@ -567,7 +567,12 @@ public class Captcha extends Module {
 					continue nextItem;
 				}
 			}
-			ItemStack captchas = itemToCaptcha(LegacyCaptcha.captchaToItem(is));
+			ItemStack internal = LegacyCaptcha.captchaToItem(is);
+			if (isCaptcha(internal)) {
+				// Properly convert contents of double captchas
+				internal = itemToCaptcha(LegacyCaptcha.captchaToItem(internal));
+			}
+			ItemStack captchas = itemToCaptcha(internal);
 			captchas.setAmount(is.getAmount());
 			conversions += is.getAmount();
 			player.getInventory().setItem(i, captchas);
