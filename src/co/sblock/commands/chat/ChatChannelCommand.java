@@ -187,6 +187,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		UUID target;
 		switch (args[0]) {
 		case "approve":
+		case "invite":
 			if (args.length == 1) {
 				sender.sendMessage(Color.COMMAND + "/channel approve <user>" + Color.GOOD + ": Approve a user for this channel.");
 				return true;
