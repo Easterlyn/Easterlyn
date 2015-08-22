@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import co.sblock.machines.type.Alchemiter;
 import co.sblock.machines.type.Machine;
-import co.sblock.utilities.RegexUtils;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -83,7 +82,7 @@ public class MachineInventoryTracker {
 		container.windowId = containerCounter;
 		container.addSlotListener(nmsPlayer);
 		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, "minecraft:villager",
-				new ChatComponentText(RegexUtils.getFriendlyName(m.getClass().getSimpleName())), 3));
+				new ChatComponentText(m.getClass().getSimpleName()), 3));
 
 		this.openMachines.put(player.getUniqueId(), new ImmutablePair<Machine, Location>(m, key));
 

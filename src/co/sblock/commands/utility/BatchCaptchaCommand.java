@@ -56,6 +56,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 
 		if (!Captcha.canCaptcha(item)) {
 			p.sendMessage(Color.BAD + "That item cannot be put in a captcha!");
+			return true;
 		}
 
 		PlayerInventory inventory = p.getInventory();
