@@ -570,7 +570,9 @@ public class Captcha extends Module {
 			ItemStack internal = LegacyCaptcha.captchaToItem(is);
 			if (isCaptcha(internal)) {
 				// Properly convert contents of double captchas
+				int amount = internal.getAmount();
 				internal = itemToCaptcha(LegacyCaptcha.captchaToItem(internal));
+				internal.setAmount(amount);
 			}
 			ItemStack captchas = itemToCaptcha(internal);
 			captchas.setAmount(is.getAmount());
