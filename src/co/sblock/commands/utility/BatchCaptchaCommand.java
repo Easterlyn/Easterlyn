@@ -54,6 +54,10 @@ public class BatchCaptchaCommand extends SblockCommand {
 			return false;
 		}
 
+		if (!Captcha.canCaptcha(item)) {
+			p.sendMessage(Color.BAD + "That item cannot be put in a captcha!");
+		}
+
 		PlayerInventory inventory = p.getInventory();
 		ItemStack blankCaptcha = Captcha.blankCaptchaCard();
 
@@ -76,14 +80,22 @@ public class BatchCaptchaCommand extends SblockCommand {
 			return true;
 		}
 
+		boolean blank = Captcha.isBlankCaptcha(item);
+
 		int count = 0;
 		for (int i = 0; count < max && i < inventory.getSize(); i++) {
 			if (item.equals(inventory.getItem(i))) {
 				inventory.setItem(i, null);
+				if (blank && max != Integer.MAX_VALUE && inventory.removeItem(blankCaptcha).size() > 0) {
+					// Blank captchas are required - if they're being stored as well, we need to store as we go or risk running out.
+					inventory.setItem(i, item.clone());
+					break;
+				}
 				count++;
 			}
 		}
-		if (max != Integer.MAX_VALUE) {
+
+		if (!blank && max != Integer.MAX_VALUE) {
 			blankCaptcha.setAmount(count);
 			// Not bothering catching failed removals here, there should be none.
 			inventory.removeItem(blankCaptcha);

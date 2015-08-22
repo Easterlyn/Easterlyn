@@ -43,7 +43,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Captcha extends Module {
 
-	private static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
+	protected static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
 	private static Captcha instance;
 
 	private Map<Long, String> hashCacheAccess;
@@ -199,6 +199,9 @@ public class Captcha extends Module {
 	 * @return the Captchacard representing by this ItemStack
 	 */
 	public static ItemStack itemToCaptcha(ItemStack item) {
+		if (item.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
+			return createLorecard(ChatColor.GRAY + "Computer I");
+		}
 		ItemStack card = blankCaptchaCard();
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta meta = item.getItemMeta();
@@ -394,6 +397,29 @@ public class Captcha extends Module {
 	}
 
 	/**
+	 * Check if an ItemStack can be turned into a captchacard. The only items that cannot be put
+	 * into a captcha are other captchas of captchas and unique Machine key items.
+	 * 
+	 * @param item the ItemStack to check
+	 * @return
+	 */
+	public static boolean canCaptcha(ItemStack item) {
+		if (item == null || item.getType() == Material.AIR) {
+			return false;
+		}
+		if (item.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
+			// Computers can (and should) be alchemized.
+			return true;
+		}
+		for (ItemStack is : InventoryUtils.getUniqueItems()) {
+			if (is.isSimilar(item)) {
+				return false;
+			}
+		}
+		return !isUsedCaptcha(item) || !item.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$");
+	}
+
+	/**
 	 * Checks if an ItemStack is any Punchcard or Captchacard.
 	 * 
 	 * @param is the ItemStack to check
@@ -472,28 +498,12 @@ public class Captcha extends Module {
 			blankCaptcha = event.getCurrentItem();
 			toCaptcha = event.getCursor();
 		}
-		if (!isBlankCaptcha(blankCaptcha) || toCaptcha == null || toCaptcha.getType() == Material.AIR || isBlankCaptcha(toCaptcha)) {
+
+		if (!isBlankCaptcha(blankCaptcha) || !canCaptcha(toCaptcha) || isBlankCaptcha(toCaptcha)) {
 			return;
 		}
-		ItemStack captcha = null;
-		if (toCaptcha.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
-			// Computers can (and should) be alchemized.
-			captcha = createLorecard("Computer");
-		} else {
-			for (ItemStack is : InventoryUtils.getUniqueItems()) {
-				if (is.isSimilar(toCaptcha)) {
-					return;
-				}
-			}
-		}
-		if (isUsedCaptcha(toCaptcha) && toCaptcha.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$")) {
-			// Double captchas are fine, triple captchas hurt client
-			return;
-		}
-		Player p = (Player) event.getWhoClicked();
-		if (captcha == null) {
-			captcha = itemToCaptcha(toCaptcha);
-		}
+
+		ItemStack captcha = itemToCaptcha(toCaptcha);;
 		event.setResult(Result.DENY);
 
 		// Decrement captcha stack
@@ -520,7 +530,7 @@ public class Captcha extends Module {
 				event.setCursor(captcha);
 			}
 		}
-		p.updateInventory();
+		((Player) event.getWhoClicked()).updateInventory();
 	}
 
 	/**
