@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.google.common.collect.ImmutableList;
 
@@ -21,7 +22,7 @@ public class ForceCaptchaCommand extends SblockCommand {
 	public ForceCaptchaCommand() {
 		super("forcecaptcha");
 		this.setDescription("Captchalogues item in hand, even if it can't ordinarily be captcha'd.");
-		this.setUsage("/forcecaptcha");
+		this.setUsage("Hold an item, run /forcecaptcha");
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");
 		this.setPermissionLevel("denizen");
 	}
@@ -34,8 +35,20 @@ public class ForceCaptchaCommand extends SblockCommand {
 		}
 		Player p = (Player) sender;
 		ItemStack item = p.getItemInHand();
-		p.getInventory().remove(item);
-		p.getInventory().addItem(Captcha.itemToCaptcha(item));
+		if (item == null) {
+			return false;
+		}
+		PlayerInventory inventory = p.getInventory();
+		int count = 0;
+		for (int i = 0; i < inventory.getSize(); i++) {
+			if (item.equals(inventory.getItem(i))) {
+				inventory.setItem(i, null);
+				count++;
+			}
+		}
+		item = Captcha.itemToCaptcha(item);
+		item.setAmount(count);
+		p.getInventory().addItem(item);
 		return true;
 	}
 
