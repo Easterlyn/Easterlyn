@@ -178,6 +178,9 @@ public class Captcha extends Module {
 
 	@Override
 	protected void onDisable() {
+		for (Map.Entry<String, ItemStack> entry : hashCache.entrySet()) {
+			saveItemStack(entry.getKey(), entry.getValue());
+		}
 		instance = null;
 	}
 
@@ -249,7 +252,7 @@ public class Captcha extends Module {
 		if (card == null) {
 			return null;
 		}
-		if (!isCard(card) || !loreCard && card.getItemMeta().getLore().contains("Lorecard")) {
+		if (!isCard(card) || !loreCard && card.getItemMeta().getDisplayName().equals("Lorecard")) {
 			// Lore card and not being combined or not a captcha
 			card = card.clone();
 			card.setAmount(1);
