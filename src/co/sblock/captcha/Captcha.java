@@ -33,6 +33,7 @@ import co.sblock.machines.Machines;
 import co.sblock.module.Module;
 import co.sblock.utilities.Base;
 import co.sblock.utilities.InventoryUtils;
+import co.sblock.utilities.JSONUtil;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -93,7 +94,7 @@ public class Captcha extends Module {
 	}
 
 	public String getHash(ItemStack item) {
-		String itemString = item.toString();
+		String itemString = JSONUtil.getItemText(item).toString();
 		BigInteger hash = Base.md5(itemString);
 		String itemHash = Base.getBase62(hash, 8);
 		ItemStack captcha;
