@@ -111,7 +111,7 @@ public class TotemLathe extends Machine	{
 			Player player = (Player) event.getWhoClicked();
 			int decrement;
 			if (event.getClick().name().contains("SHIFT")) {
-				decrement = Math.max(top.getItem(0).getAmount(), top.getItem(1).getAmount());
+				decrement = Math.min(top.getItem(0).getAmount(), top.getItem(1).getAmount());
 				ItemStack add = event.getCurrentItem().clone();
 				add.setAmount(decrement);
 				if (InventoryUtils.hasSpaceFor(add, player.getInventory())) {
