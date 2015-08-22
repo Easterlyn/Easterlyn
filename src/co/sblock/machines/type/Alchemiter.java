@@ -19,7 +19,6 @@ import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
 import co.sblock.machines.MachineInventoryTracker;
-import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
@@ -170,12 +169,8 @@ public class Alchemiter extends Machine {
 				Inventory open = player.getOpenInventory().getTopInventory();
 				ItemStack result;
 				ItemStack expCost;
-				if (CruxiteDowel.isUsedDowel(open.getItem(0))) {
-					if (open.getItem(0).getItemMeta().getLore().contains("Blank")) {
-						result = Machines.getMachineByName("PGO").getUniqueDrop();
-					} else {
-						result = Captcha.captchaToItem(open.getItem(0));
-					}
+				if (CruxiteDowel.isDowel(open.getItem(0))) {
+					result = Captcha.captchaToItem(open.getItem(0));
 					expCost = new ItemStack(Material.EXP_BOTTLE);
 					int exp = CruxiteDowel.expCost(result);
 					ItemMeta im = expCost.getItemMeta();
