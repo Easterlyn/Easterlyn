@@ -1,5 +1,6 @@
 package co.sblock.machines.type;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -55,7 +56,8 @@ public class Cruxtruder extends Machine {
 
 	@Override
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
-		if (getKey(storage).add(new Vector(0, 1, 0)).equals(event.getBlock().getLocation())) {
+		Location broken = event.getBlock().getLocation();
+		if (getKey(storage).add(new Vector(0, 1, 0)).equals(broken)) {
 			OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 			if (Entry.getEntry().canStart(user)) {
 				Entry.getEntry().startEntry(user, event.getBlock().getLocation());
@@ -65,7 +67,7 @@ public class Cruxtruder extends Machine {
 			} else {
 				return true;
 			}
-			event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), CruxiteDowel.getDowel());
+			broken.getWorld().dropItemNaturally(broken.add(0.5, 1, 0.5), CruxiteDowel.getDowel());
 		} else {
 			super.handleBreak(event, storage);
 		}
