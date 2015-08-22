@@ -136,7 +136,7 @@ public class Captcha extends Module {
 	 * 
 	 * @return ItemStack
 	 */
-	private static ItemStack blankCaptchaCard() {
+	public static ItemStack blankCaptchaCard() {
 		ItemStack is = new ItemStack(Material.BOOK);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName("Captchacard");
@@ -254,7 +254,8 @@ public class Captcha extends Module {
 		if (card == null) {
 			return null;
 		}
-		if (!isCard(card) || !loreCard && card.getItemMeta().getDisplayName().equals("Lorecard")) {
+		if ((!isCard(card) && !CruxiteDowel.isUsedDowel(card))
+				|| !loreCard && card.getItemMeta().getDisplayName().equals("Lorecard")) {
 			// Lore card and not being combined or not a captcha
 			card = card.clone();
 			card.setAmount(1);
