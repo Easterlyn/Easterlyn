@@ -254,7 +254,7 @@ public class Events extends Module {
 		if (statusResample < 5) {
 			// less spam - must have status change 5 times in a row to announce.
 			statusResample++;
-			new StatusCheck().runTaskAsynchronously(Sblock.getInstance());
+			new StatusCheck().runTaskLaterAsynchronously(Sblock.getInstance(), 50L);
 			return;
 		}
 		String announcement = null;
