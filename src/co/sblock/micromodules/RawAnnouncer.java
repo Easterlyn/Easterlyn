@@ -206,6 +206,26 @@ public class RawAnnouncer extends Module {
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
+		// Announcement: /convert your shit
+		components.clear();
+		component = new TextComponent("Captchas have changed! Be sure to");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		component = new TextComponent(" convert ");
+		component.setColor(ChatColor.AQUA);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/convert"));
+		components.add(component);
+
+		component = new TextComponent("all your captchas before the old format is dropped!");
+		component.setColor(ChatColor.RED);
+		components.add(component);
+
+		builder.setMessage("Captchas have changed! Be sure to /convert all your captchas before the old format is dropped!",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
 		// Announcement: Use /report ffs
 		components.clear();
 		component = new TextComponent("Found grief or a bug? Please");
