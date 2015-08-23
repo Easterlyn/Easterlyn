@@ -499,13 +499,13 @@ public class Machines extends Module {
 	}
 
 	public static String stringFromLoc(Location location) {
-		return new StringBuilder(location.getWorld().getName()).append('_')
-				.append(location.getBlockX()).append('_').append(location.getBlockY()).append('_')
+		return new StringBuilder(location.getWorld().getName()).append(';')
+				.append(location.getBlockX()).append(';').append(location.getBlockY()).append(';')
 				.append(location.getBlockZ()).toString();
 	}
 
 	public static Location locFromString(String string) {
-		String[] split = string.split("_");
+		String[] split = string.split(";");
 		return new Location(Bukkit.getWorld(split[0]), Integer.valueOf(split[1]), Integer.valueOf(split[2]), Integer.valueOf(split[3]));
 	}
 }
