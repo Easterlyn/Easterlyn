@@ -55,12 +55,11 @@ public class CaptchaHashCommand extends SblockCommand {
 			}
 		}
 		if (args[0].equals("get")) {
-			ItemStack item = Captcha.getInstance().getItemStack(args[1]);
+			ItemStack item = Captcha.getInstance().getCaptchaFor(args[1]);
 			if (item == null) {
 				sender.sendMessage(Color.BAD + "No item is stored by that hash.");
 				return true;
 			}
-			item = Captcha.itemToCaptcha(item);
 			player.getWorld().dropItem(player.getLocation(), item).setPickupDelay(0);
 			player.sendMessage(Color.GOOD + "Loaded captcha of item for " + args[1]);
 			return true;

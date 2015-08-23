@@ -132,6 +132,41 @@ public class Captcha extends Module {
 		}
 	}
 
+	public ItemStack getCaptchaFor(String hash) {
+		ItemStack item = getItemStack(hash);
+		if (item == null) {
+			return null;
+		}
+		ItemStack card = blankCaptchaCard();
+		ItemMeta cardMeta = card.getItemMeta();
+		ItemMeta meta = item.getItemMeta();
+		ArrayList<String> cardLore = new ArrayList<String>();
+		StringBuilder builder = new StringBuilder().append(ChatColor.DARK_AQUA).append(item.getAmount()).append(' ');
+		if (isCaptcha(item)) {
+			builder.append("Captcha of ").append(meta.getLore().get(0));
+		} else if (meta.hasDisplayName() && !InventoryUtils.isMisleadinglyNamed(meta.getDisplayName(), item.getType(), item.getDurability())) {
+			builder.append(meta.getDisplayName());
+		} else {
+			builder.append(InventoryUtils.getMaterialDataName(item.getType(), item.getDurability()));
+		}
+		cardLore.add(builder.toString());
+		if (item.getType().getMaxDurability() > 0) {
+			builder.delete(0, builder.length());
+			builder.append(ChatColor.YELLOW).append("Durability: ").append(ChatColor.DARK_AQUA)
+					.append(item.getType().getMaxDurability() - item.getDurability())
+					.append(ChatColor.YELLOW).append("/").append(ChatColor.DARK_AQUA)
+					.append(item.getType().getMaxDurability());
+			cardLore.add(builder.toString());
+		}
+		builder.delete(0, builder.length());
+		builder.append(HASH_PREFIX).append(hash);
+		cardLore.add(builder.toString());
+		cardMeta.setDisplayName("Captchacard");
+		cardMeta.setLore(cardLore);
+		card.setItemMeta(cardMeta);
+		return card;
+	}
+
 	/**
 	 * Creates a blank Captchacard
 	 * 
@@ -203,34 +238,7 @@ public class Captcha extends Module {
 		if (item.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
 			return createLorecard(ChatColor.GRAY + "Computer I");
 		}
-		ItemStack card = blankCaptchaCard();
-		ItemMeta cardMeta = card.getItemMeta();
-		ItemMeta meta = item.getItemMeta();
-		ArrayList<String> cardLore = new ArrayList<String>();
-		StringBuilder builder = new StringBuilder().append(ChatColor.DARK_AQUA).append(item.getAmount()).append(' ');
-		if (isCaptcha(item)) {
-			builder.append("Captcha of ").append(meta.getLore().get(0));
-		} else if (meta.hasDisplayName() && !InventoryUtils.isMisleadinglyNamed(meta.getDisplayName(), item.getType(), item.getDurability())) {
-			builder.append(meta.getDisplayName());
-		} else {
-			builder.append(InventoryUtils.getMaterialDataName(item.getType(), item.getDurability()));
-		}
-		cardLore.add(builder.toString());
-		if (item.getType().getMaxDurability() > 0) {
-			builder.delete(0, builder.length());
-			builder.append(ChatColor.YELLOW).append("Durability: ").append(ChatColor.DARK_AQUA)
-					.append(item.getType().getMaxDurability() - item.getDurability())
-					.append(ChatColor.YELLOW).append("/").append(ChatColor.DARK_AQUA)
-					.append(item.getType().getMaxDurability());
-			cardLore.add(builder.toString());
-		}
-		builder.delete(0, builder.length());
-		builder.append(HASH_PREFIX).append(getInstance().getHash(item));
-		cardLore.add(builder.toString());
-		cardMeta.setDisplayName("Captchacard");
-		cardMeta.setLore(cardLore);
-		card.setItemMeta(cardMeta);
-		return card;
+		return instance.getCaptchaFor(instance.getHash(item));
 	}
 
 	/**
