@@ -153,7 +153,12 @@ public class Machines extends Module {
 		}
 		storage = YamlConfiguration.loadConfiguration(file);
 		for (String machineLocation : storage.getKeys(false)) {
-			loadMachine(locFromString(machineLocation), storage.getConfigurationSection(machineLocation));
+			try {
+				loadMachine(locFromString(machineLocation), storage.getConfigurationSection(machineLocation));
+			} catch (Exception e) {
+				getLogger().warning("Unable to load machine for section " + machineLocation);
+				e.printStackTrace();
+			}
 		}
 	}
 
