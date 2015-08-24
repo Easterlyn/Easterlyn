@@ -179,8 +179,12 @@ public class ChannelManager {
 		channelList.put("#Aether", new RegionChannel("#Aether"));
 		channelList.put("#halchat", new NickChannel("#halchat", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		// #pm must have a real owner so that people may use unicode characters in private messages
+		// People may use unicode characters in private messages
 		channelList.put("#pm", new NickChannel("#pm", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
+		// Show true sign contents
+		channelList.put("#sign", new NickChannel("#sign", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
+		// Tests should be done as-is, no filters
+		channelList.put("@test@", new NickChannel("@test@", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
 		channelList.put("@", new NormalChannel("@", AccessLevel.PRIVATE, null, Long.MAX_VALUE));
 	}
 

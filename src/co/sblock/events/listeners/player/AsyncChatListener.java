@@ -10,8 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -58,6 +61,17 @@ public class AsyncChatListener implements Listener {
 	private final Pattern claimPattern, trappedPattern;
 
 	public AsyncChatListener() {
+		Permission permission;
+		try {
+			permission = new Permission("sblock.spam.chat", PermissionDefault.OP);
+			Bukkit.getPluginManager().addPermission(permission);
+		} catch (IllegalArgumentException e) {
+			permission = Bukkit.getPluginManager().getPermission("sblock.spam.chat");
+			permission.setDefault(PermissionDefault.OP);
+		}
+		permission.addParent("sblock.command.*", true).recalculatePermissibles();
+		permission.addParent("sblock.felt", true).recalculatePermissibles();
+
 		halFunctions = new LinkedHashSet<>();
 		halFunctions.add(new Halper());
 		halFunctions.add(Chat.getChat().getHalculator());
@@ -85,7 +99,7 @@ public class AsyncChatListener implements Listener {
 	 * 
 	 * @param event the SblockAsyncChatEvent
 	 */
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
 		Message message;
 		if (event instanceof SblockAsyncChatEvent) {
@@ -154,7 +168,8 @@ public class AsyncChatListener implements Listener {
 		final OfflineUser sender = message.getSender();
 
 		// Spam detection and handling, woo!
-		if (sender != null && !message.getChannel().getName().equals("#halchat")
+		if (sender != null&& !message.getChannel().getName().equals("#halchat")
+				&& (!(event instanceof SblockAsyncChatEvent) || ((SblockAsyncChatEvent) event).checkSpam())
 				&& detectSpam(event, message)) {
 			event.getRecipients().clear();
 			event.getRecipients().add(player);
@@ -276,7 +291,7 @@ public class AsyncChatListener implements Listener {
 	private boolean detectSpam(AsyncPlayerChatEvent event, Message message) {
 		final Player player = event.getPlayer();
 		final OfflineUser sender = message.getSender();
-		if (sender == null || player.hasPermission("sblockchat.spam")) {
+		if (sender == null || player.hasPermission("sblock.spam.chat")) {
 			return false;
 		}
 
