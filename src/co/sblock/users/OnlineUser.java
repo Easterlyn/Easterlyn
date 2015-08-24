@@ -76,10 +76,10 @@ public class OnlineUser extends OfflineUser {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				boolean allowFlight = getPlayer() != null && (getPlayer().getWorld().getName().equals("Derspit")
-						|| getPlayer().getGameMode() == GameMode.CREATIVE
-						|| getPlayer().getGameMode() == GameMode.SPECTATOR
-						|| isServer || Spectators.getInstance().isSpectator(getUUID()));
+				boolean allowFlight = getPlayer() != null
+						&& (getPlayer().getWorld().getName().equals("Derspit")
+								|| getPlayer().getGameMode() == GameMode.CREATIVE
+								|| getPlayer().getGameMode() == GameMode.SPECTATOR || isServer);
 				if (getPlayer() != null) {
 					getPlayer().setAllowFlight(allowFlight);
 					getPlayer().setFlying(allowFlight);

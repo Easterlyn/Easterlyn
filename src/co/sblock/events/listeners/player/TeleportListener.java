@@ -93,6 +93,7 @@ public class TeleportListener implements Listener {
 					target = Region.getRegion(event.getTo().getWorld().getName());
 				}
 				user.updateCurrentRegion(target);
+				user.updateFlight();
 			}
 		});
 	}
