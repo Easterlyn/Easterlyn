@@ -14,6 +14,7 @@ import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
+import co.sblock.utilities.DummyPlayer;
 
 public class Chat extends Module {
 
@@ -22,6 +23,7 @@ public class Chat extends Module {
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
 	private MegaHal megaHal;
 	private Halculator halculator;
+	private final DummyPlayer buffer = new DummyPlayer();
 
 	@Override
 	protected void onEnable() {
@@ -92,6 +94,8 @@ public class Chat extends Module {
 				players.add(player);
 			}
 		});
+		// Add a dummy player so WG doesn't cancel the event if there are no recipients
+		players.add(buffer);
 
 		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, sender, players, message, false);
 

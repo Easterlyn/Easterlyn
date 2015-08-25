@@ -122,6 +122,9 @@ public class Computer extends Machine implements InventoryHolder {
 	public Inventory getInventory() {
 		return Bukkit.createInventory(this, 9, "Computer");
 	}
+	public Inventory getInventory(int size) {
+		return Bukkit.createInventory(this, size, "Computer");
+	}
 
 	public void openInventory(Player player) {
 		Inventory inventory = getInventory();

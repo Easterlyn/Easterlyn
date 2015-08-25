@@ -31,7 +31,7 @@ import co.sblock.micromodules.Slack;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Cooldowns;
-import co.sblock.utilities.DummyPlayer;
+import co.sblock.utilities.WrappedSenderPlayer;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
 
@@ -102,8 +102,11 @@ public class AsyncChatListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
 		Message message;
+		boolean checkSpam = true;
 		if (event instanceof SblockAsyncChatEvent) {
-			message = ((SblockAsyncChatEvent) event).getSblockMessage();
+			SblockAsyncChatEvent sblockEvent = (SblockAsyncChatEvent) event;
+			message = sblockEvent.getSblockMessage();
+			checkSpam = sblockEvent.checkSpam();
 		} else {
 			try {
 				MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()))
@@ -123,42 +126,44 @@ public class AsyncChatListener implements Listener {
 			}
 		}
 
+		final Player player = event.getPlayer();
 		String cleaned = ChatColor.stripColor(message.getMessage());
 
-		if (cleaned.equalsIgnoreCase("test")) {
-			event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
-			event.setCancelled(true);
-			return;
-		}
+		if (checkSpam) {
+			if (cleaned.equalsIgnoreCase("test")) {
+				event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
+				event.setCancelled(true);
+				return;
+			}
 
-		for (Player player : event.getRecipients()) {
-			if (cleaned.equalsIgnoreCase(player.getName())) {
-				event.getPlayer().sendMessage(
-						ChatColor.RED + "Names are short and easy to include in a sentence, "
-								+ event.getPlayer().getDisplayName() + ". Please do it.");
+			for (Player recipient : event.getRecipients()) {
+				if (cleaned.equalsIgnoreCase(recipient.getName())) {
+					event.getPlayer().sendMessage(
+							ChatColor.RED + "Names are short and easy to include in a sentence, "
+									+ player.getDisplayName() + ". Please do it.");
+					event.setCancelled(true);
+					return;
+				}
+			}
+
+			if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
+				player.sendMessage(Color.HAL + "What?");
+				event.setCancelled(true);
+				return;
+			}
+
+			if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
+				player.sendMessage(Color.HAL
+						+ "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
 				event.setCancelled(true);
 				return;
 			}
 		}
 
-		final Player player = event.getPlayer();
-
-		if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
-			player.sendMessage(Color.HAL + "What?");
-			event.setCancelled(true);
-			return;
-		}
-
-		if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
-			player.sendMessage(Color.HAL + "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
-			event.setCancelled(true);
-			return;
-		}
-
 		event.setFormat(message.getConsoleFormat());
 		event.setMessage(cleaned);
 
-		if (handleGriefPrevention) {
+		if (checkSpam && handleGriefPrevention) {
 			handleGPChat(event, message);
 			if (event.isCancelled()) {
 				return;
@@ -168,8 +173,7 @@ public class AsyncChatListener implements Listener {
 		final OfflineUser sender = message.getSender();
 
 		// Spam detection and handling, woo!
-		if (sender != null&& !message.getChannel().getName().equals("#halchat")
-				&& (!(event instanceof SblockAsyncChatEvent) || ((SblockAsyncChatEvent) event).checkSpam())
+		if (checkSpam && sender != null && !message.getChannel().getName().equals("#halchat")
 				&& detectSpam(event, message)) {
 			event.getRecipients().clear();
 			event.getRecipients().add(player);
@@ -209,7 +213,7 @@ public class AsyncChatListener implements Listener {
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
 
 		// Dummy player should not trigger Hal; he may become one.
-		if (player instanceof DummyPlayer) {
+		if (player instanceof WrappedSenderPlayer) {
 			event.getRecipients().clear();
 			return;
 		}

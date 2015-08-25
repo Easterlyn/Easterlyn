@@ -30,6 +30,7 @@ public class Back extends Program {
 
 	@Override
 	protected void execute(Player player, ItemStack clicked, boolean verified) {
+		// TODO parse back location from lore
 		((Computer) Machines.getMachineByName("Computer")).openInventory(player);
 	}
 

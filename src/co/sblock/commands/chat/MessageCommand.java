@@ -23,7 +23,7 @@ import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.DummyPlayer;
+import co.sblock.utilities.WrappedSenderPlayer;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -119,7 +119,7 @@ public class MessageCommand extends SblockCommand {
 		if (senderPlayer != null) {
 			players.add(senderPlayer);
 		} else {
-			senderPlayer = new DummyPlayer(sender);
+			senderPlayer = new WrappedSenderPlayer(sender);
 		}
 		if (recipientPlayer != null) {
 			players.add(recipientPlayer);

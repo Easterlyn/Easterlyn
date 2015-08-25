@@ -21,7 +21,7 @@ import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
-import co.sblock.utilities.DummyPlayer;
+import co.sblock.utilities.WrappedSenderPlayer;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -33,7 +33,7 @@ import net.md_5.bungee.api.ChatColor;
 public class AetherCommand extends SblockAsynchronousCommand {
 
 	private static final ItemStack HOVER;
-	private static final DummyPlayer SENDER;
+	private static final WrappedSenderPlayer SENDER;
 
 	static {
 		HOVER = new ItemStack(Material.WEB);
@@ -44,7 +44,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 				Color.GOOD + "Channel: #sblockserver" }));
 		HOVER.setItemMeta(hoverMeta);
 
-		SENDER = new DummyPlayer(Bukkit.getConsoleSender());
+		SENDER = new WrappedSenderPlayer(Bukkit.getConsoleSender());
 	}
 
 	public AetherCommand() {

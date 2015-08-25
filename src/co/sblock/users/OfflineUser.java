@@ -52,7 +52,7 @@ public class OfflineUser {
 	private Set<String> programs;
 
 	/* Chat data*/
-	protected String currentChannel;
+	public String currentChannel;
 	private Set<String> listening;
 
 	protected OfflineUser(UUID userID, String ip, YamlConfiguration yaml,
@@ -906,7 +906,6 @@ public class OfflineUser {
 			if (!file.exists()) {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player == null) {
-					Users.getInstance().getLogger().warning("File " + uuid.toString() + ".yml does not exist!");
 					return new OfflineUser(uuid, "null", new YamlConfiguration());
 				}
 				player.teleport(Users.getSpawnLocation());

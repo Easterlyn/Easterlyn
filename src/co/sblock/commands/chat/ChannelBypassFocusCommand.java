@@ -19,16 +19,16 @@ import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
 /**
- * SblockCommand for forcing a User to change current channel.
+ * 
  * 
  * @author Jikoo
  */
-public class ForceChannelCommand extends SblockCommand {
+public class ChannelBypassFocusCommand extends SblockCommand {
 
-	public ForceChannelCommand() {
-		super("forcechannel");
-		this.setDescription("Help people find their way.");
-		this.setUsage("/forcechannel <channel> <player>");
+	public ChannelBypassFocusCommand() {
+		super("totalfocus");
+		this.setDescription("Knock knock. Come on in.");
+		this.setUsage("/totalfocus <channel> <player>");
 		this.setPermissionMessage("Try /join <channel>");
 		this.setPermissionLevel("felt");
 	}
@@ -49,8 +49,9 @@ public class ForceChannelCommand extends SblockCommand {
 			return true;
 		}
 		OfflineUser user = Users.getGuaranteedUser(p.getUniqueId());
-		user.setCurrentChannel(c);
-		sender.sendMessage(Color.GOOD + "Channel forced!");
+		user.getListening().add(c.getName());
+		user.currentChannel = c.getName();
+		sender.sendMessage(Color.GOOD + "Jacked in!");
 		return true;
 	}
 
@@ -71,4 +72,5 @@ public class ForceChannelCommand extends SblockCommand {
 			return matches;
 		}
 	}
+
 }

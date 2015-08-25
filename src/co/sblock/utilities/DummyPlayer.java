@@ -23,7 +23,6 @@ import org.bukkit.Statistic;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Arrow;
@@ -52,30 +51,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
-import com.mojang.authlib.GameProfile;
-
-import co.sblock.Sblock;
-
 /**
- * Dummy player for usage in commands.
+ * 
  * 
  * @author Jikoo
  */
 public class DummyPlayer implements Player {
-
-	private final CommandSender sender;
-	private final GameProfile profile;
-	private String name;
-
-	public DummyPlayer (CommandSender sender) {
-		this(sender, sender.getName());
-	}
-
-	public DummyPlayer(CommandSender sender, String name) {
-		this.sender = sender;
-		this.profile = Sblock.getInstance().getFakeGameProfile(sender.getName());
-		this.name = name;
-	}
 
 	@Override
 	public void closeInventory() {}
@@ -112,7 +93,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public String getName() {
-		return name;
+		return "Dummy";
 	}
 
 	@Override
@@ -387,7 +368,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public Location getLocation(Location arg0) {
-		return null;
+		return arg0;
 	}
 
 	@Override
@@ -422,7 +403,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public UUID getUniqueId() {
-		return profile.getId();
+		return UUID.randomUUID();
 	}
 
 	@Override
@@ -539,79 +520,69 @@ public class DummyPlayer implements Player {
 	public void setMetadata(String arg0, MetadataValue arg1) { }
 
 	@Override
-	public void sendMessage(String message) {
-		sender.sendMessage(message);
-	}
+	public void sendMessage(String message) { }
 
 	@Override
-	public void sendMessage(String[] messages) {
-		sender.sendMessage(messages);
-	}
+	public void sendMessage(String[] messages) { }
 
 	@Override
 	public PermissionAttachment addAttachment(Plugin plugin) {
-		return sender.addAttachment(plugin);
+		return null;
 	}
 
 	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
-		return sender.addAttachment(plugin, ticks);
+		return null;
 	}
 
 	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) {
-		return sender.addAttachment(plugin, name, value);
+		return null;
 	}
 
 	@Override
 	public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) {
-		return sender.addAttachment(plugin, name, value, ticks);
+		return null;
 	}
 
 	@Override
 	public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-		return sender.getEffectivePermissions();
+		return null;
 	}
 
 	@Override
 	public boolean hasPermission(String name) {
-		return sender.hasPermission(name);
+		return false;
 	}
 
 	@Override
 	public boolean hasPermission(Permission perm) {
-		return sender.hasPermission(perm);
+		return false;
 	}
 
 	@Override
 	public boolean isPermissionSet(String name) {
-		return sender.isPermissionSet(name);
+		return false;
 	}
 
 	@Override
 	public boolean isPermissionSet(Permission perm) {
-		return sender.isPermissionSet(perm);
+		return false;
 	}
 
 	@Override
-	public void recalculatePermissions() {
-		sender.recalculatePermissions();
-	}
+	public void recalculatePermissions() { }
 
 	@Override
-	public void removeAttachment(PermissionAttachment attachment) {
-		sender.removeAttachment(attachment);
-	}
+	public void removeAttachment(PermissionAttachment attachment) { }
 
 	@Override
 	public boolean isOp() {
-		return sender.isOp();
+		return false;
 	}
 
 	@Override
-	public void setOp(boolean arg0) {
-		sender.setOp(arg0);
-	}
+	public void setOp(boolean arg0) { }
 
 	@Override
 	public void _INVALID_damage(int arg0) { }
@@ -795,7 +766,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public String getDisplayName() {
-		return name;
+		return getName();
 	}
 
 	@Override
@@ -830,7 +801,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public String getPlayerListName() {
-		return name;
+		return getName();
 	}
 
 	@Override
@@ -960,7 +931,7 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public boolean performCommand(String command) {
-		return Bukkit.dispatchCommand(sender, command);
+		return false;
 	}
 
 	@Override
@@ -1027,7 +998,6 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public void setDisplayName(String displayName) {
-		this.name = displayName;
 	}
 
 	@Override
