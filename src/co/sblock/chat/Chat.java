@@ -100,7 +100,6 @@ public class Chat extends Module {
 		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, sender, players, message, false);
 
 		Bukkit.getPluginManager().callEvent(event);
-		System.out.println("plain:" + event.isCancelled() + " sblock:" + event.isGlobalCancelled());
 
 		return event.isCancelled() && !event.isGlobalCancelled();
 	}
