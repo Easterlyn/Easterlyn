@@ -67,11 +67,11 @@ public class ChatNickCommand extends SblockCommand {
 			user.sendMessage(Color.GOOD + "You can use any nick you want in a nick channel.");
 			return true;
 		}
-		NickChannel nick = (NickChannel) channel;
+		NickChannel nickChannel = (NickChannel) channel;
 		if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("off")) {
-			String oldName = nick.removeNick(user);
+			String oldName = nickChannel.removeNick(user);
 			if (oldName != null) {
-				nick.sendMessage(ChatMsgs.onUserRmNick(user.getPlayerName(), oldName, nick.getName()));
+				nickChannel.sendMessage(ChatMsgs.onUserRmNick(user.getPlayerName(), oldName, nickChannel.getName()));
 			} else {
 				sender.sendMessage(Color.BAD + "You do not have a nick currently.");
 			}
@@ -89,9 +89,9 @@ public class ChatNickCommand extends SblockCommand {
 					+ "Nicks must be 1+ characters long when stripped of non-ASCII characters.");
 			return true;
 		}
-		String cleanName = sb.toString();
 		String nickname = sb.toString();
-		if (nick instanceof RPChannel) {
+		String cleanName = null;
+		if (nickChannel instanceof RPChannel) {
 			CanonNick canonNick = CanonNick.getNick(nickname);
 			if (canonNick == null) {
 				sender.sendMessage(ChatMsgs.errorNickNotCanon(nickname));
@@ -99,19 +99,22 @@ public class ChatNickCommand extends SblockCommand {
 			}
 			nickname = canonNick.name();
 			cleanName = canonNick.getDisplayName();
+		} else {
+			nickname = ChatColor.translateAlternateColorCodes('&', nickname);
+			cleanName = ChatColor.stripColor(nickname);
 		}
-		OfflineUser nickOwner = nick.getNickOwner(nickname);
+		OfflineUser nickOwner = nickChannel.getNickOwner(nickname);
 		if (nickOwner != null) {
 			if (!nickOwner.getUUID().equals(user.getUUID())) {
 				sender.sendMessage(ChatMsgs.errorNickTaken(cleanName));
 				return true;
 			}
 			// Only send command sender, not whole channel, a message when changing to the same nick (or an RP variant)
-			sender.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), cleanName, nick.getName()));
+			sender.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), cleanName, nickChannel.getName()));
 		} else {
-			nick.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), cleanName, nick.getName()));
+			nickChannel.sendMessage(ChatMsgs.onUserSetNick(user.getPlayerName(), cleanName, nickChannel.getName()));
 		}
-		nick.setNick(user, ChatColor.translateAlternateColorCodes('&', nickname));
+		nickChannel.setNick(user, ChatColor.translateAlternateColorCodes('&', nickname));
 		return true;
 	}
 
