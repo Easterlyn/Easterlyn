@@ -28,6 +28,8 @@ import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
+import co.sblock.machines.type.computer.EmailWriter;
+import co.sblock.machines.type.computer.Programs;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -41,6 +43,14 @@ import net.md_5.bungee.api.ChatColor;
  * @author Jikoo
  */
 public class InventoryClickListener implements Listener {
+
+	private final ItemStack computer;
+	private final EmailWriter mail;
+
+	public InventoryClickListener() {
+		this.computer = Machines.getMachineByName("Computer").getUniqueDrop();
+		this.mail = (EmailWriter) Programs.getProgramByName("EmailWriter");
+	}
 
 	/**
 	 * EventHandler for all InventoryClickEvents.
@@ -80,6 +90,14 @@ public class InventoryClickListener implements Listener {
 		switch (event.getClick()) {
 		case DOUBLE_CLICK:
 			itemGather(event);
+			if (event.isCancelled()) {
+				break;
+			}
+			if (top) {
+				itemRemoveTop(event);
+			} else {
+				itemRemoveBottom(event);
+			}
 			break;
 		case NUMBER_KEY:
 			if (top) {
@@ -191,10 +209,16 @@ public class InventoryClickListener implements Listener {
 	// remove bottom
 	private void itemRemoveBottom(InventoryClickEvent event) {
 
+		// Letters cannot be moved. The lore specifically warns against attempting to.
+		if (mail.isLetter(event.getCurrentItem())) {
+			event.setCurrentItem(null);
+			return;
+		}
+
 		// Server: Click computer icon -> open computer interface
 		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
-			if (event.getCurrentItem().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
+			if (computer.isSimilar(event.getCurrentItem())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
 				((Computer) Machines.getMachineByName("Computer")).openInventory((Player) event.getWhoClicked());
@@ -208,6 +232,13 @@ public class InventoryClickListener implements Listener {
 
 	// move bottom to top
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
+
+		// Letters cannot be moved. The lore specifically warns against attempting to.
+		if (mail.isLetter(event.getCurrentItem())) {
+			event.setCurrentItem(null);
+			return;
+		}
+
 		// Cruxite items should not be tradeable.
 		if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().hasDisplayName()
 				&& event.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
@@ -225,10 +256,19 @@ public class InventoryClickListener implements Listener {
 
 	// switch bottom
 	private void itemSwapIntoBottom(InventoryClickEvent event) {
+
+		// Letters cannot be moved. The lore specifically warns against attempting to.
+		if (mail.isLetter(event.getCurrentItem())) {
+			event.setCurrentItem(null);
+			// This is now an attempt to add an item to the bottom inventory rather than a swap.
+			itemAddBottom(event);
+			return;
+		}
+
 		// Server: No picking up computer icon
 		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
-				&& event.getCurrentItem().equals(Machines.getMachineByName("Computer").getUniqueDrop())) {
+				&& computer.isSimilar(event.getCurrentItem())) {
 			event.setCancelled(true);
 			return;
 		}
@@ -241,10 +281,19 @@ public class InventoryClickListener implements Listener {
 	private void itemSwapToHotbar(InventoryClickEvent event) {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
 
+		// Letters cannot be moved. The lore specifically warns against attempting to.
+		if (mail.isLetter(event.getCurrentItem())) {
+			event.setCurrentItem(null);
+			return;
+		}
+		if (mail.isLetter(hotbar)) {
+			event.getView().getBottomInventory().setItem(event.getHotbarButton(), null);
+			return;
+		}
+
 		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
-				&& (event.getCurrentItem().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())
-						|| hotbar.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop()))) {
+				&& (computer.isSimilar(event.getCurrentItem()) || computer.isSimilar(hotbar))) {
 			event.setCancelled(true);
 			return;
 		}

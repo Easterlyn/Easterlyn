@@ -85,7 +85,7 @@ public class PowerManager extends Program {
 		}
 		top.setItem(22, Programs.getProgramByName("Back").getIcon());
 
-		InventoryUtils.changeWindowName(player, "Godtier Power Manager");
+		InventoryUtils.changeWindowName(player, "~/PowerManager");
 	}
 
 	@Override

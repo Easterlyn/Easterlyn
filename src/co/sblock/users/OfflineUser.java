@@ -19,6 +19,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
@@ -641,6 +642,34 @@ public class OfflineUser {
 	 */
 	public boolean getComputerAccess() {
 		return false;
+	}
+
+	/**
+	 * Gets the List of all items currently saved in a Player's mail.
+	 * 
+	 * @return the List of ItemStacks
+	 */
+	public List<ItemStack> getMailItems() {
+		List<?> list = yaml.getList("chat.mail.items");
+		ArrayList<ItemStack> items = new ArrayList<>();
+		if (list == null || list.isEmpty()) {
+			return items;
+		}
+		for (Object object : yaml.getList("chat.mail.items")) {
+			if (object instanceof ItemStack) {
+				items.add((ItemStack) object);
+			}
+		}
+		return items;
+	}
+
+	/**
+	 * Sets the Player's saved mail items.
+	 * 
+	 * @param items the List of ItemStacks
+	 */
+	public void setMailItems(List<ItemStack> items) {
+		yaml.set("chat.mail.items", items);
 	}
 
 	/**

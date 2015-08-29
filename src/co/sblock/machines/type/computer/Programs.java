@@ -34,7 +34,7 @@ public class Programs {
 				}
 				byName.put(type.getSimpleName(), program);
 			} catch (InstantiationException | IllegalAccessException e) {
-				// Improperly set up Machine
+				// Improperly set up Program
 				e.printStackTrace();
 			}
 		}
@@ -76,20 +76,18 @@ public class Programs {
 	 * 
 	 * @param is1 the first ItemStack
 	 * @param is2 the second ItemStack
-	 * @return true if the ItemStacks are similar aside from lore
+	 * @return true if the ItemStacks have the same name or type
 	 */
 	private static boolean looseCompare(ItemStack is1, ItemStack is2) {
-		if (is1.getType() != is2.getType()) {
-			return false;
-		}
 		if (is1.hasItemMeta() && is2.hasItemMeta()) {
 			ItemMeta meta1 = is1.getItemMeta();
-			meta1.setLore(null);
 			ItemMeta meta2 = is2.getItemMeta();
-			meta2.setLore(null);
-			return meta1.equals(meta2);
+			if (meta1.hasDisplayName() && meta2.hasDisplayName()
+					&& meta1.getDisplayName().equals(meta2.getDisplayName())) {
+				return true;
+			}
 		}
-		return true;
+		return is1.getType() == is2.getType();
 	}
 
 	/**

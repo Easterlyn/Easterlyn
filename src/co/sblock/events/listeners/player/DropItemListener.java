@@ -4,6 +4,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
+import co.sblock.machines.type.computer.EmailWriter;
+import co.sblock.machines.type.computer.Programs;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -17,6 +19,12 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class DropItemListener implements Listener {
 
+	private final EmailWriter email;
+
+	public DropItemListener() {
+		this.email = (EmailWriter) Programs.getProgramByName("EmailWriter");
+	}
+
 	/**
 	 * EventHandler for PlayerDropItemEvents.
 	 * 
@@ -24,6 +32,11 @@ public class DropItemListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onItemDrop(PlayerDropItemEvent event) {
+		if (email.isLetter(event.getItemDrop().getItemStack())) {
+			event.setCancelled(true);
+			return;
+		}
+
 		// Cruxite items should not be tradeable.
 		if (event.getItemDrop().getItemStack().getItemMeta().hasDisplayName()
 				&& event.getItemDrop().getItemStack().getItemMeta().getDisplayName()

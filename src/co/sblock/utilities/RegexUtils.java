@@ -90,6 +90,18 @@ public class RegexUtils {
 		return word;
 	}
 
+	public static String stripNonAlphanumerics(String word) {
+		StringBuilder sb = new StringBuilder();
+		for (char character : word.toCharArray()) {
+			if (character < '0' || character > '9' && character < 'A' || character > 'Z'
+					&& character != '_' && character < 'a' || character > 'z') {
+				continue;
+			}
+			sb.append(character);
+		}
+		return sb.toString();
+	}
+
 	public static String getTrace(Throwable throwable) {
 		return getTrace(throwable, 50);
 	}

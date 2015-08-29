@@ -38,19 +38,20 @@ public class ChannelBypassFocusCommand extends SblockCommand {
 		if (args.length < 2) {
 			return false;
 		}
-		Channel c = ChannelManager.getChannelManager().getChannel(args[0]);
-		if (c == null) {
+		Channel channel = ChannelManager.getChannelManager().getChannel(args[0]);
+		if (channel == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
 			return true;
 		}
-		Player p = Bukkit.getPlayer(args[1]);
-		if (p == null) {
+		Player player = Bukkit.getPlayer(args[1]);
+		if (player == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(p.getUniqueId());
-		user.getListening().add(c.getName());
-		user.currentChannel = c.getName();
+		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		user.getListening().add(channel.getName());
+		user.currentChannel = channel.getName();
+		channel.getListening().add(player.getUniqueId());
 		sender.sendMessage(Color.GOOD + "Jacked in!");
 		return true;
 	}
