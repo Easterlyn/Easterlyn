@@ -1,7 +1,8 @@
 package co.sblock.events.listeners.player;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -48,7 +49,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class AsyncChatListener implements Listener {
 
-	private final LinkedHashSet<HalMessageHandler> halFunctions;
+	private final List<HalMessageHandler> halFunctions;
 	private final String[] tests = new String[] {"It is certain.", "It is decidedly so.",
 			"Without a doubt.", "Yes, definitely.", "You may rely on it.", "As I see, yes.",
 			"Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
@@ -59,6 +60,7 @@ public class AsyncChatListener implements Listener {
 			"Error: Test results contaminated.", "tset", "PONG."};
 	private final boolean handleGriefPrevention;
 	private final Pattern claimPattern, trappedPattern;
+	private final List<Pattern> doNotSayThat;
 
 	public AsyncChatListener() {
 		Permission permission;
@@ -72,7 +74,7 @@ public class AsyncChatListener implements Listener {
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock.felt", true).recalculatePermissibles();
 
-		halFunctions = new LinkedHashSet<>();
+		halFunctions = new ArrayList<>();
 		halFunctions.add(new Halper());
 		halFunctions.add(Chat.getChat().getHalculator());
 		// MegaHal function should be last as it (by design) handles any message passed to it.
@@ -88,6 +90,10 @@ public class AsyncChatListener implements Listener {
 			claimPattern = null;
 			trappedPattern = null;
 		}
+
+		doNotSayThat = new ArrayList<>();
+		// Generally, anything including a variant of "rape" is in incredibly poor taste.
+		doNotSayThat.add(Pattern.compile("(^|\\s)rap(ed?|ing)(\\W|\\s|$)"));
 	}
 
 	/**
@@ -139,7 +145,7 @@ public class AsyncChatListener implements Listener {
 			for (Player recipient : event.getRecipients()) {
 				if (cleaned.equalsIgnoreCase(recipient.getName())) {
 					event.getPlayer().sendMessage(
-							ChatColor.RED + "Names are short and easy to include in a sentence, "
+							Color.BAD + "Names are short and easy to include in a sentence, "
 									+ player.getDisplayName() + ". Please do it.");
 					event.setCancelled(true);
 					return;
@@ -326,6 +332,14 @@ public class AsyncChatListener implements Listener {
 		long lastChat = Cooldowns.getInstance().getRemainder(player, "chat");
 		Cooldowns.getInstance().addCooldown(player, "chat", 3000);
 
+		for (Pattern pattern : doNotSayThat) {
+			if (pattern.matcher(msg).find()) {
+				sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
+				event.setFormat("[Scumbag] " + event.getFormat());
+				return true;
+			}
+		}
+
 		// Mute repeat messages
 		if (msg.equals(lastMsg) || message.equals(message.getChannel().getLastMessage())) {
 			// In event of exact duplicates, reach penalization levels at a much faster rate
@@ -341,8 +355,8 @@ public class AsyncChatListener implements Listener {
 		}
 
 		// Cooldown of 1.5 seconds between messages, 3 seconds between short messages.
-		if (lastChat > 1500 || msg.length() < 5 && lastChat > 0) {
-			sender.setChatViolationLevel(sender.getChatViolationLevel() + 1);
+		if (lastChat > 1500 || msg.length() < 12 && lastChat > 0) {
+			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[FastChat] " + event.getFormat());
 			return true;
 		}
@@ -372,7 +386,7 @@ public class AsyncChatListener implements Listener {
 
 		// Must be more than 25% different from last message
 		if (StringUtils.getLevenshteinDistance(msg, lastMsg) < msg.length() * .25) {
-			sender.setChatViolationLevel(sender.getChatViolationLevel() + 1);
+			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[SimilarChat] " + event.getFormat());
 			return true;
 		}
@@ -393,7 +407,7 @@ public class AsyncChatListener implements Listener {
 					player.spigot().sendMessage(JSONUtil.fromLegacyText(message));
 				}
 			}
-		}.runTaskLater(Sblock.getInstance(), 10L);
+		}.runTaskLater(Sblock.getInstance(), 5L);
 	}
 
 	private void unregisterChatListeners() {
