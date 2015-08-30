@@ -31,9 +31,9 @@ import co.sblock.micromodules.Slack;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Cooldowns;
-import co.sblock.utilities.WrappedSenderPlayer;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.WrappedSenderPlayer;
 
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
@@ -83,7 +83,7 @@ public class AsyncChatListener implements Listener {
 		if (handleGriefPrevention) {
 			unregisterChatListeners();
 			claimPattern = Pattern.compile("(^|.*\\W)how\\W.*\\W(claim|protect|lock)(\\W.*|$)", Pattern.CASE_INSENSITIVE);
-			trappedPattern = Pattern.compile("(^|\\s)(stuck|trapped)(\\s|$)", Pattern.CASE_INSENSITIVE);
+			trappedPattern = Pattern.compile("(^|\\s)(stuck|trapped(?! chest))(\\W|\\s|$)", Pattern.CASE_INSENSITIVE);
 		} else {
 			claimPattern = null;
 			trappedPattern = null;
