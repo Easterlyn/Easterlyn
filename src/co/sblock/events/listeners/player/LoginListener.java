@@ -33,7 +33,8 @@ public class LoginListener implements Listener {
 		if (event.getPlayer() == null) {
 			return;
 		}
-		if (pattern.matcher(event.getPlayer().getName()).find()) {
+		if (event.getPlayer().getName() != null
+				&& pattern.matcher(event.getPlayer().getName()).find()) {
 			event.setResult(Result.KICK_BANNED);
 			event.setKickMessage("Your name contains invalid characters. Valid characters are [a-zA-Z_0-9]."
 					+ "\nPlease contact Mojang about this issue.");
@@ -47,7 +48,8 @@ public class LoginListener implements Listener {
 		case KICK_BANNED:
 		case KICK_OTHER:
 			String reason = null;
-			if (Bukkit.getBanList(Type.NAME).isBanned(event.getPlayer().getName())) {
+			if (event.getPlayer().getName() != null
+					&& Bukkit.getBanList(Type.NAME).isBanned(event.getPlayer().getName())) {
 				reason = Bukkit.getBanList(Type.NAME).getBanEntry(event.getPlayer().getName()).getReason()
 						.replaceAll("<ip=.*?>", "");
 			} else {
