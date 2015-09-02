@@ -109,9 +109,11 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		OfflineUser targetUser = Users.getGuaranteedUser(target.getUniqueId());
 		OfflineUser sourceUser = Users.getGuaranteedUser(sender.getUniqueId());
-		if (Spectators.getInstance().isSpectator(targetUser.getUUID())
-				&& !Spectators.getInstance().isSpectator(sourceUser.getUUID())) {
-			sender.sendMessage(Color.BAD + "Incorporeal players cannot be teleported to!");
+		Spectators spectators = Spectators.getInstance();
+		boolean targetSpectating = spectators.isSpectator(targetUser.getUUID());
+		boolean sourceSpectating = spectators.isSpectator(sourceUser.getUUID());
+		if (!here && targetSpectating && !sourceSpectating || here && !targetSpectating && sourceSpectating) {
+			sender.sendMessage(Color.BAD + "Corporeal players cannot teleport to incorporeal players!");
 			return;
 		}
 		Region rTarget = targetUser.getCurrentRegion();
@@ -149,7 +151,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		if (Spectators.getInstance().isSpectator(toArriveAt.getUniqueId())
 				&& !Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
-			String message = Color.BAD + "Incorporeal players cannot be teleported to!";
+			String message = Color.BAD + "Corporeal players cannot teleport to incorporeal players!";
 			toTeleport.sendMessage(message);
 			toArriveAt.sendMessage(message);
 			return;
@@ -169,7 +171,6 @@ public class TeleportRequestCommand extends SblockCommand {
 				+ toTeleport.getDisplayName() + Color.GOOD + " to you.");
 
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
-		// future: perhaps rather than use /spectate deny, attempted spectating sends a tpa?
 		if (Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
 			Cooldowns.getInstance().clearCooldown(request.isHere() ? toArriveAt : toTeleport, "teleportRequest");
 		}
