@@ -328,6 +328,7 @@ public class AsyncChatListener implements Listener {
 		msg = msg.toLowerCase();
 		String lastMsg = sender.getLastMessage();
 		sender.setLastChat(msg);
+		String lastChannelMsg = message.getChannel().getLastMessage();
 		message.getChannel().setLastMessage(msg);
 		long lastChat = Cooldowns.getInstance().getRemainder(player, "chat");
 		Cooldowns.getInstance().addCooldown(player, "chat", 3000);
@@ -341,7 +342,7 @@ public class AsyncChatListener implements Listener {
 		}
 
 		// Mute repeat messages
-		if (msg.equals(lastMsg) || message.equals(message.getChannel().getLastMessage())) {
+		if (msg.equals(lastMsg) || !msg.contains("welcome") && msg.equals(lastChannelMsg)) {
 			// In event of exact duplicates, reach penalization levels at a much faster rate
 			int spamCount = sender.getChatViolationLevel();
 			if (spamCount == 0) {
@@ -385,7 +386,9 @@ public class AsyncChatListener implements Listener {
 		}
 
 		// Must be more than 25% different from last message
-		if (StringUtils.getLevenshteinDistance(msg, lastMsg) < msg.length() * .25) {
+		double lenPercent = msg.length() * .25;
+		if (StringUtils.getLevenshteinDistance(msg, lastMsg) < lenPercent
+				|| !msg.contains("welcome") && StringUtils.getLevenshteinDistance(msg, lastChannelMsg) < lenPercent) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[SimilarChat] " + event.getFormat());
 			return true;

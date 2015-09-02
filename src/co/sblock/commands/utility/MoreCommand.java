@@ -54,7 +54,6 @@ public class MoreCommand extends SblockCommand {
 		}
 		player.getItemInHand().setAmount(amount);
 		player.sendMessage(Color.GOOD + "Stack in hand set to " + Color.GOOD_EMPHASIS + amount);
-		// TODO check if this needs inv update/setItemInHand
 		return true;
 	}
 

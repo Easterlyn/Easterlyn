@@ -45,7 +45,7 @@ public class Halculator extends HalMessageHandler {
 			}
 			return input + " = " + answer;
 		} catch (IllegalArgumentException e) {
-			if (input.matches("\\A.*m(y|[aeu]h?).*((di|co)c?k|pe(en|nis)|(we[ie]n|(schl|d)ong)(er)?|willy|(trouser )?snake|lizard).*\\Z")) {
+			if (input.matches("\\A.*m(y|[aeu]h?).*((di|co)c?k|pe(en|nis)|(we[ie]n|(schl|d)ong)(er)?|willy|(trouser ?)?snake|lizard).*\\Z")) {
 				return "Sorry, your equation is too tiny for me to read.";
 			} else if (input.matches("\\A.*life.*universe.*everything*\\Z")) {
 				return input + " = 42";

@@ -126,7 +126,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
 		if (!sender.hasPermission("group.helper")) {
-			Cooldowns.getInstance().addCooldown(sender, "teleportRequest", 480000L);
+			Cooldowns.getInstance().addCooldown(sender, "teleportRequest", 3600000L);
 		}
 		sender.sendMessage(Color.GOOD + "Request sent!");
 		target.sendMessage(Color.GOOD_PLAYER + sender.getDisplayName() + Color.GOOD + " is requesting to teleport " + (here ? "you to them." : "to you."));

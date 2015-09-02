@@ -26,7 +26,7 @@ public class BlockDrops {
 	public static Collection<ItemStack> getDrops(Player player, ItemStack tool, Block block) {
 		int bonus;
 		Map<Effect, Integer> effects = Effects.getInstance().getAllEffects(player);
-		Effect light = Effects.getInstance().getEffect("Fortuna"); // TODO finalized name
+		Effect light = Effects.getInstance().getEffect("Fortuna");
 		if (effects.containsKey(light)) {
 			bonus = effects.get(light);
 		} else {
