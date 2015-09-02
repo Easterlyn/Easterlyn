@@ -90,7 +90,7 @@ public class Events extends Module {
 
 		invisibilityManager = new InvisibilityManager();
 
-		//initiateRegionChecks();
+		initiateRegionChecks();
 	}
 
 	/**
@@ -286,7 +286,7 @@ public class Events extends Module {
 	 * every 5 seconds of game time (100 ticks).
 	 */
 	public void initiateRegionChecks() {
-		new RegionCheck().runTaskTimer(Sblock.getInstance(), 100L, 100L);
+		new RegionCheck().runTaskTimer(Sblock.getInstance(), 20L, 20L);
 	}
 
 	/**

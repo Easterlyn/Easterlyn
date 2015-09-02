@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import co.sblock.Sblock;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.users.Region;
 
@@ -25,10 +26,11 @@ public class RegionCheck extends BukkitRunnable {
 	private HashMap<Player, Integer> LOLARQueue = new HashMap<Player, Integer>();
 	private HashMap<Player, Integer> LOHACQueue = new HashMap<Player, Integer>();
 	private HashMap<Player, Integer> LOFAFQueue = new HashMap<Player, Integer>();
+	private HashMap<Player, Location> playerIC = new HashMap<Player, Location>();
 
 	private final int planetaryRadius = 2631;
-	private final int planetaryOffset = 128;
-	private final int teleportDelay = 5;
+	private final int planetaryOffset = 256;
+	private final int teleportDelay = 8;
 
 	public RegionCheck() {
 		worldMap.put("LOWAS", LOWASQueue);
@@ -51,7 +53,8 @@ public class RegionCheck extends BukkitRunnable {
 	}
 
 	private Location calculateIncipisphereCoords(World world, Player p) {
-		Location iC = new Location(world, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
+		Location iC = new Location(world, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(),
+				p.getLocation().getYaw(), p.getLocation().getPitch());
 		switch(world.getName()) {
 		case "LOWAS":
 			iC.setX(iC.getX()-planetaryRadius-planetaryOffset);
@@ -74,7 +77,7 @@ public class RegionCheck extends BukkitRunnable {
 	}
 
 	private void calculateRegionTransfer(Player p, Location iC) {
-		String newWorld = ""; 
+		String newWorld = "";
 		if(iC.getX() < 0) {
 			if(iC.getZ() < 0) {			//LOLAR --
 				newWorld = "LOLAR";
@@ -92,9 +95,10 @@ public class RegionCheck extends BukkitRunnable {
 			}
 		}
 
-		if(iC.getWorld().getName() != newWorld) {
+		if(!iC.getWorld().getName().equals(newWorld)) {
 			if(playerQueue.get(p) == null) {
 				playerQueue.put(p, newWorld);
+				playerIC.put(p, iC);
 			}
 			if(worldMap.get(newWorld).get(p) == null) {
 				worldMap.get(newWorld).put(p, teleportDelay);
@@ -103,8 +107,10 @@ public class RegionCheck extends BukkitRunnable {
 				worldMap.get(newWorld).put(p, worldMap.get(newWorld).get(p)-1);
 			}
 			if(worldMap.get(playerQueue.get(p)).get(p) == 0) {
-				iC.setWorld(Bukkit.getWorld(newWorld));
-				teleportPlayer(p, iC);
+				Location target = playerIC.get(p).clone();
+				target.setWorld(Bukkit.getWorld(newWorld));
+				playerIC.put(p, target);
+				teleportPlayer(p);
 			}
 			else {
 				displayTitles(p);
@@ -117,42 +123,46 @@ public class RegionCheck extends BukkitRunnable {
 			}
 			worldMap.get(playerQueue.get(p)).remove(p);
 			playerQueue.remove(p);
+			playerIC.remove(p);
 		}
 	}
 	
 	private void displayTitles(Player p) {
-		String titleCommand = "/title " + p.getName() + " times 0 20 0";
-		String title = "/title " + p.getName() + " title {text:\"Approaching " + playerQueue.get(p) + "\",color:\"" + Region.getRegion(playerQueue.get(p)).getColor().getName() + "\"}";
-		String subtitle = "/title " + p.getName() + " subtitle {text:\"Continue " + Direction.getFacingDirection(p).name() + " to transfer in " + worldMap.get(playerQueue.get(p)).get(p) + " seconds\"}";
+		String titleCommand = "title " + p.getName() + " times 0 30 0";
+		String title = "title " + p.getName() + " title {text:\"Approaching " + playerQueue.get(p) + "\",color:\"" + Region.getRegion(playerQueue.get(p)).getColor().getName() + "\"}";
+		String subtitle = "title " + p.getName() + " subtitle {text:\"Continue " + Direction.getFacingDirection(p).name() + " to transfer in " + worldMap.get(playerQueue.get(p)).get(p) + " seconds\"}";
+		Sblock.getLog().info(titleCommand);
+		Sblock.getLog().info(title);
+		Sblock.getLog().info(subtitle);
 		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), titleCommand);
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), title);
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), subtitle);
 	}
 	
-	private void teleportPlayer(Player p, Location iC) {
-		Location target = iC.clone();
+	private void teleportPlayer(Player p) {
+		Location iC = playerIC.get(p).clone();
 		
 		switch(iC.getWorld().getName()) {
 		case "LOWAS":
-			target.setX(iC.getX()+planetaryRadius+planetaryOffset);
-			target.setZ(iC.getZ()-planetaryRadius-planetaryOffset);
+			iC.setX(iC.getX()+planetaryRadius+planetaryOffset);
+			iC.setZ(iC.getZ()-planetaryRadius-planetaryOffset);
 			break;
 		case "LOLAR":
-			target.setX(iC.getX()+planetaryRadius+planetaryOffset);
-			target.setZ(iC.getZ()+planetaryRadius+planetaryOffset);
+			iC.setX(iC.getX()+planetaryRadius+planetaryOffset);
+			iC.setZ(iC.getZ()+planetaryRadius+planetaryOffset);
 			break;
 		case "LOHAC":
-			target.setX(iC.getX()-planetaryRadius-planetaryOffset);
-			target.setZ(iC.getZ()+planetaryRadius+planetaryOffset);
+			iC.setX(iC.getX()-planetaryRadius-planetaryOffset);
+			iC.setZ(iC.getZ()+planetaryRadius+planetaryOffset);
 			break;
 		case "LOFAF":
-			target.setX(iC.getX()-planetaryRadius-planetaryOffset);
-			target.setZ(iC.getZ()-planetaryRadius-planetaryOffset);
+			iC.setX(iC.getX()-planetaryRadius-planetaryOffset);
+			iC.setZ(iC.getZ()-planetaryRadius-planetaryOffset);
 			break;
 		}
 		
-		p.teleport(target);
+		p.teleport(iC);
 		p.setVelocity(p.getVelocity().setY(p.getVelocity().getY()+3));
 	}
 }
