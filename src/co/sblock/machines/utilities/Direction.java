@@ -1,5 +1,6 @@
 package co.sblock.machines.utilities;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
@@ -45,25 +46,6 @@ public enum Direction {
 	 */
 	public byte getDirByte() {
 		return dirNum;
-	}
-
-	/**
-	 * Get a Direction based on Player facing.
-	 * 
-	 * @param p the Player
-	 * 
-	 * @return the Direction to rotate the Shape to face
-	 */
-	public static Direction getFacingDirection(Player p) {
-		byte playerFace = (byte) Math.round(p.getLocation().getYaw() / 90);
-		if (playerFace == 0 || playerFace == -4 || playerFace == 4)
-			return SOUTH;
-		else if (playerFace == 1 || playerFace == -3)
-			return WEST;
-		else if (playerFace == 2 || playerFace == -2)
-			return NORTH;
-		else
-			return EAST;
 	}
 
 	/**
@@ -131,4 +113,35 @@ public enum Direction {
 		}
 		return NORTH;
 	}
+
+	/**
+	 * Get a Direction based on Player facing.
+	 * 
+	 * @param player the Player
+	 * 
+	 * @return the Direction
+	 */
+	public static Direction getFacingDirection(Player player) {
+		return getFacingDirection(player.getLocation());
+	}
+
+	/**
+	 * Get a Direction based on Location yaw.
+	 * 
+	 * @param location the Location
+	 * 
+	 * @return the Direction
+	 */
+	public static Direction getFacingDirection(Location location) {
+		byte playerFace = (byte) Math.round(location.getYaw() / 90);
+		if (playerFace == 0 || playerFace == -4 || playerFace == 4)
+			return SOUTH;
+		else if (playerFace == 1 || playerFace == -3)
+			return WEST;
+		else if (playerFace == 2 || playerFace == -2)
+			return NORTH;
+		else
+			return EAST;
+	}
+
 }

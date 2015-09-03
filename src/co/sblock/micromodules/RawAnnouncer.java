@@ -253,34 +253,18 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		component = new TextComponent(" Mumble ");
+		component = new TextComponent(" Discord ");
 		component.setColor(ChatColor.BLUE);
-		hover.setText("Click here to download!");
+		hover.setText("Click here to join Sblock's server!");
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://mumble.sourceforge.net/"));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://sblock.co/discord/"));
 		components.add(component);
 
-		component = new TextComponent("for voice chat! The server is ");
+		component = new TextComponent("for voice chat. Join today!");
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		component = new TextComponent("sblock.co");
-		component.setColor(ChatColor.BLUE);
-		components.add(component);
-
-		component = new TextComponent(", port ");
-		component.setColor(ChatColor.RED);
-		components.add(component);
-
-		component = new TextComponent("25560");
-		component.setColor(ChatColor.BLUE);
-		components.add(component);
-
-		component = new TextComponent(".");
-		component.setColor(ChatColor.RED);
-		components.add(component);
-
-		builder.setMessage("Join us on Mumble for voice chat! The server is sblock.co, port 25560.",
+		builder.setMessage("We use http://sblock.co/discord/ for voice chat. Join today!",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
