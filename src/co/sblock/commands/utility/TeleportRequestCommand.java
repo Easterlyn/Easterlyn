@@ -127,14 +127,14 @@ public class TeleportRequestCommand extends SblockCommand {
 			return;
 		}
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
-		if (!sender.hasPermission("group.helper")) {
-			Cooldowns.getInstance().addCooldown(sender, "teleportRequest", 3600000L);
+		if (!sender.hasPermission("sblock.command.tpa.nocooldown")) {
+			Cooldowns.getInstance().addCooldown(sender, "teleportRequest", 480000L);
 		}
 		sender.sendMessage(Color.GOOD + "Request sent!");
 		target.sendMessage(Color.GOOD_PLAYER + sender.getDisplayName() + Color.GOOD + " is requesting to teleport " + (here ? "you to them." : "to you."));
 		target.sendMessage(Color.GOOD + "To accept, use " + Color.COMMAND + "/tpyes"
 				+ Color.GOOD + ". To decline, use " + Color.COMMAND + "/tpno" + Color.GOOD + ".");
-		target.sendMessage(Color.GOOD + "This request will expire in 45 seconds.");
+		target.sendMessage(Color.GOOD + "This request will expire in 60 seconds.");
 	}
 
 	private void accept(Player sender) {
@@ -171,8 +171,11 @@ public class TeleportRequestCommand extends SblockCommand {
 				+ toTeleport.getDisplayName() + Color.GOOD + " to you.");
 
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
-		if (Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
+		if (sender.hasPermission("sblock.command.tpa.nocooldown")
+				|| Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
 			Cooldowns.getInstance().clearCooldown(request.isHere() ? toArriveAt : toTeleport, "teleportRequest");
+		} else {
+			Cooldowns.getInstance().addCooldown(request.isHere() ? toArriveAt : toTeleport, "teleportRequest", 3600000L);
 		}
 	}
 
@@ -188,7 +191,6 @@ public class TeleportRequestCommand extends SblockCommand {
 			issuer.sendMessage(Color.BAD_PLAYER + sender.getDisplayName() + Color.BAD + " declined your request!");
 			Cooldowns.getInstance().clearCooldown(issuer, "teleportRequest");
 		}
-		
 	}
 
 	private class TeleportRequest {
@@ -200,7 +202,7 @@ public class TeleportRequestCommand extends SblockCommand {
 			this.source = source;
 			this.target = target;
 			this.here = here;
-			this.expiry = System.currentTimeMillis() + 45000L;
+			this.expiry = System.currentTimeMillis() + 60000L;
 		}
 		public UUID getSource() {
 			return source;
