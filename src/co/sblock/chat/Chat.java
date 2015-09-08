@@ -78,6 +78,11 @@ public class Chat extends Module {
 			throw new IllegalArgumentException("Null values not allowed for mute testing!");
 		}
 
+		if (Bukkit.getPluginManager().isPluginEnabled("GriefPrevention")
+				&& me.ryanhamshire.GriefPrevention.GriefPrevention.instance.dataStore.isSoftMuted(sender.getUniqueId())) {
+			return true;
+		}
+
 		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
 		if (channel == null) {
 			throw new IllegalArgumentException("Given channel does not exist!");

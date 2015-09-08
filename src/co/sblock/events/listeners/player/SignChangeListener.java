@@ -11,8 +11,6 @@ import org.bukkit.permissions.PermissionDefault;
 import co.sblock.chat.Chat;
 import co.sblock.utilities.RegexUtils;
 
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
-
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -56,12 +54,6 @@ public class SignChangeListener implements Listener {
 		}
 
 		if (empty || event.getPlayer().hasPermission("sblock.spam.sign")) {
-			return;
-		}
-
-		if (Bukkit.getPluginManager().isPluginEnabled("GriefPrevention")
-				&& GriefPrevention.instance.dataStore.isSoftMuted(event.getPlayer().getUniqueId())) {
-			event.setCancelled(true);
 			return;
 		}
 
