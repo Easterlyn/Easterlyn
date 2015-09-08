@@ -78,13 +78,13 @@ public class RegionCheck extends BukkitRunnable {
 		if (iC.getX() < 0) {
 			if (iC.getZ() < 0) {		// LOLAR --
 				newWorld = "LOLAR";
-			} else if (iC.getZ() > 0) {	// LOWAS -+
+			} else {					// LOWAS -+
 				newWorld = "LOWAS";
 			}
-		} else if (iC.getX() > 0) {
+		} else {
 			if (iC.getZ() < 0) {		// LOHAC +-
 				newWorld = "LOHAC";
-			} else if (iC.getZ() > 0) {	// LOFAF ++
+			} else  {					// LOFAF ++
 				newWorld = "LOFAF";
 			}
 		}
