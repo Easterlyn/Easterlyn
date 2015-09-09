@@ -96,11 +96,11 @@ public class Captcha extends Module {
 	public String getHash(ItemStack item) {
 		String itemString = JSONUtil.getItemText(item).toString();
 		BigInteger hash = Base.md5(itemString);
-		String itemHash = Base.getBase62(hash, 8);
+		String itemHash = Base.getBase(hash, 62, 8);
 		ItemStack captcha;
 		while ((captcha = getItemStack(itemHash)) != null && !captcha.equals(item)) {
 			hash = hash.add(BigInteger.ONE);
-			itemHash = Base.getBase62(hash, 8);
+			itemHash = Base.getBase(hash, 62, 8);
 		}
 		hashCache.put(itemHash, item);
 		hashCacheAccess.put(System.currentTimeMillis(), itemHash);
