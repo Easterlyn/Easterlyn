@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.CanonNick;
@@ -39,7 +40,15 @@ public class ChatNickCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
+		if (!(sender instanceof Player)) {
+			sender.sendMessage("Console support not offered at this time.");
+			return true;
+		}
+		Player player = (Player) sender;
+		if (Chat.getChat().testForMute(player)) {
+			return true;
+		}
+		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
 		Channel channel = user.getCurrentChannel();
 		if (channel == null) {
 			user.sendMessage(ChatMsgs.errorCurrentChannelNull());
