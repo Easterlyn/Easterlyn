@@ -13,6 +13,9 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class SlackMessageWrapper {
 
+	// Alternative services:
+	// https://crafatar.com/renders/head/%s?helm
+	// https://minotar.net/cube/%s/128.png
 	private static final String ICON_URL = "https://cravatar.eu/helmhead/%s/128.png";
 
 	private final String channel;
