@@ -77,6 +77,7 @@ public class Events extends Module {
 		for (Class<? extends Listener> listener : listeners) {
 			if (!Sblock.areDependenciesPresent(listener)) {
 				getLogger().info(listener.getSimpleName() + " dependencies not found.");
+				continue;
 			}
 			try {
 				Bukkit.getPluginManager().registerEvents(listener.newInstance(), Sblock.getInstance());
