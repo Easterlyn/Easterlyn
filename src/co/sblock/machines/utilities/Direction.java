@@ -63,18 +63,21 @@ public enum Direction {
 		case "button":
 			return button;
 		case "chest":
+		case "hopper":
 			return chest;
-		case "stair":
-			return stair;
-		case "upperstair":
-			return (byte) (stair + 4);
 		case "door":
 			if (dirNum == 0) {
 				return 3;
 			}
 			return (byte) (dirNum - 1);
+		case "portal":
+			return (byte) (dirNum % 2 + 1);
+		case "stair":
+			return stair;
 		case "upperdoor":
 			return 8;
+		case "upperstair":
+			return (byte) (stair + 4);
 		default:
 			return 0;
 		}

@@ -2,9 +2,11 @@ package co.sblock.events.region;
 
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TravelAgent;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
@@ -16,8 +18,10 @@ import co.sblock.machines.utilities.Shape.MaterialDataValue;
 public class SblockTravelAgent implements TravelAgent {
 
 	private int searchRadius = 0, creationRadius = 0;
+	private final int mediumNetherOffset = 329;
 	private boolean canCreatePortal = true;
 	private final Shape shape;
+	private Block from;
 
 	public SblockTravelAgent() {
 		shape = new Shape();
@@ -25,75 +29,75 @@ public class SblockTravelAgent implements TravelAgent {
 		MaterialDataValue value = shape.new MaterialDataValue(Material.OBSIDIAN);
 
 		// Platform
-		shape.setVectorData(new Vector(1, -1, -2), value);
-		shape.setVectorData(new Vector(1, -1, -1), value);
-		shape.setVectorData(new Vector(1, -1, 0), value);
-		shape.setVectorData(new Vector(1, -1, 1), value);
-		shape.setVectorData(new Vector(-1, -1, -2), value);
-		shape.setVectorData(new Vector(-1, -1, -1), value);
-		shape.setVectorData(new Vector(-1, -1, 0), value);
+		shape.setVectorData(new Vector(-2, -1, 1), value);
 		shape.setVectorData(new Vector(-1, -1, 1), value);
+		shape.setVectorData(new Vector(0, -1, 1), value);
+		shape.setVectorData(new Vector(1, -1, 1), value);
+		shape.setVectorData(new Vector(-2, -1, -1), value);
+		shape.setVectorData(new Vector(-1, -1, -1), value);
+		shape.setVectorData(new Vector(0, -1, -1), value);
+		shape.setVectorData(new Vector(1, -1, -1), value);
 
 		// Frame
-		shape.setVectorData(new Vector(0, -1, -2), value);
-		shape.setVectorData(new Vector(0, -1, -1), value);
+		shape.setVectorData(new Vector(-2, -1, 0), value);
+		shape.setVectorData(new Vector(-1, -1, 0), value);
 		shape.setVectorData(new Vector(0, -1, 0), value);
-		shape.setVectorData(new Vector(0, -1, 1), value);
-		shape.setVectorData(new Vector(0, 0, -2), value);
-		shape.setVectorData(new Vector(0, 0, 1), value);
-		shape.setVectorData(new Vector(0, 1, -2), value);
-		shape.setVectorData(new Vector(0, 1, 1), value);
-		shape.setVectorData(new Vector(0, 2, -2), value);
-		shape.setVectorData(new Vector(0, 2, 1), value);
-		shape.setVectorData(new Vector(0, 3, -2), value);
-		shape.setVectorData(new Vector(0, 3, -1), value);
+		shape.setVectorData(new Vector(1, -1, 0), value);
+		shape.setVectorData(new Vector(-2, 0, 0), value);
+		shape.setVectorData(new Vector(1, 0, 0), value);
+		shape.setVectorData(new Vector(-2, 1, 0), value);
+		shape.setVectorData(new Vector(1, 1, 0), value);
+		shape.setVectorData(new Vector(-2, 2, 0), value);
+		shape.setVectorData(new Vector(1, 2, 0), value);
+		shape.setVectorData(new Vector(-2, 3, 0), value);
+		shape.setVectorData(new Vector(-1, 3, 0), value);
 		shape.setVectorData(new Vector(0, 3, 0), value);
-		shape.setVectorData(new Vector(0, 3, 1), value);
+		shape.setVectorData(new Vector(1, 3, 0), value);
 
 		value = shape.new MaterialDataValue(Material.AIR);
 
 		// Surrounding air
-		shape.setVectorData(new Vector(1, 0, -2), value);
-		shape.setVectorData(new Vector(1, 0, -1), value);
-		shape.setVectorData(new Vector(1, 0, 0), value);
-		shape.setVectorData(new Vector(1, 0, 1), value);
-		shape.setVectorData(new Vector(-1, 0, -2), value);
-		shape.setVectorData(new Vector(-1, 0, -1), value);
-		shape.setVectorData(new Vector(-1, 0, 0), value);
+		shape.setVectorData(new Vector(-2, 0, 1), value);
 		shape.setVectorData(new Vector(-1, 0, 1), value);
-		shape.setVectorData(new Vector(1, 1, -2), value);
-		shape.setVectorData(new Vector(1, 1, -1), value);
-		shape.setVectorData(new Vector(1, 1, 0), value);
-		shape.setVectorData(new Vector(1, 1, 1), value);
-		shape.setVectorData(new Vector(-1, 1, -2), value);
-		shape.setVectorData(new Vector(-1, 1, -1), value);
-		shape.setVectorData(new Vector(-1, 1, 0), value);
+		shape.setVectorData(new Vector(0, 0, 1), value);
+		shape.setVectorData(new Vector(1, 0, 1), value);
+		shape.setVectorData(new Vector(-2, 0, -1), value);
+		shape.setVectorData(new Vector(-1, 0, -1), value);
+		shape.setVectorData(new Vector(0, 0, -1), value);
+		shape.setVectorData(new Vector(1, 0, -1), value);
+		shape.setVectorData(new Vector(-2, 1, 1), value);
 		shape.setVectorData(new Vector(-1, 1, 1), value);
-		shape.setVectorData(new Vector(1, 2, -2), value);
-		shape.setVectorData(new Vector(1, 2, -1), value);
-		shape.setVectorData(new Vector(1, 2, 0), value);
-		shape.setVectorData(new Vector(1, 2, 1), value);
-		shape.setVectorData(new Vector(-1, 2, -2), value);
-		shape.setVectorData(new Vector(-1, 2, -1), value);
-		shape.setVectorData(new Vector(-1, 2, 0), value);
+		shape.setVectorData(new Vector(0, 1, 1), value);
+		shape.setVectorData(new Vector(1, 1, 1), value);
+		shape.setVectorData(new Vector(-2, 1, -1), value);
+		shape.setVectorData(new Vector(-1, 1, -1), value);
+		shape.setVectorData(new Vector(0, 1, -1), value);
+		shape.setVectorData(new Vector(1, 1, -1), value);
+		shape.setVectorData(new Vector(-2, 2, 1), value);
 		shape.setVectorData(new Vector(-1, 2, 1), value);
-		shape.setVectorData(new Vector(1, 3, -2), value);
-		shape.setVectorData(new Vector(1, 3, -1), value);
-		shape.setVectorData(new Vector(1, 3, 0), value);
-		shape.setVectorData(new Vector(1, 3, 1), value);
-		shape.setVectorData(new Vector(-1, 3, -2), value);
-		shape.setVectorData(new Vector(-1, 3, -1), value);
-		shape.setVectorData(new Vector(-1, 3, 0), value);
+		shape.setVectorData(new Vector(0, 2, 1), value);
+		shape.setVectorData(new Vector(1, 2, 1), value);
+		shape.setVectorData(new Vector(-2, 2, -1), value);
+		shape.setVectorData(new Vector(-1, 2, -1), value);
+		shape.setVectorData(new Vector(0, 2, -1), value);
+		shape.setVectorData(new Vector(1, 2, -1), value);
+		shape.setVectorData(new Vector(-2, 3, 1), value);
 		shape.setVectorData(new Vector(-1, 3, 1), value);
+		shape.setVectorData(new Vector(0, 3, 1), value);
+		shape.setVectorData(new Vector(1, 3, 1), value);
+		shape.setVectorData(new Vector(-2, 3, -1), value);
+		shape.setVectorData(new Vector(-1, 3, -1), value);
+		shape.setVectorData(new Vector(0, 3, -1), value);
+		shape.setVectorData(new Vector(1, 3, -1), value);
 
-		value = shape.new MaterialDataValue(Material.PORTAL, Direction.NORTH, "anvil");
+		value = shape.new MaterialDataValue(Material.PORTAL, Direction.NORTH, "portal");
 
 		// Portal
-		shape.setVectorData(new Vector(0, 0, -1), value);
+		shape.setVectorData(new Vector(-1, 0, 0), value);
 		shape.setVectorData(new Vector(0, 0, 0), value);
-		shape.setVectorData(new Vector(0, 1, -1), value);
+		shape.setVectorData(new Vector(-1, 1, 0), value);
 		shape.setVectorData(new Vector(0, 1, 0), value);
-		shape.setVectorData(new Vector(0, 2, -1), value);
+		shape.setVectorData(new Vector(-1, 2, 0), value);
 		shape.setVectorData(new Vector(0, 2, 0), value);
 	}
 
@@ -122,6 +126,10 @@ public class SblockTravelAgent implements TravelAgent {
 	@Override
 	public boolean getCanCreatePortal() {
 		return canCreatePortal;
+	}
+
+	public void setFrom(Block block) {
+		from = block;
 	}
 
 	@Override
@@ -154,9 +162,13 @@ public class SblockTravelAgent implements TravelAgent {
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean createPortal(Location location) {
-		Direction direction = Direction.getFacingDirection(location);
+		if (from == null) {
+			return false;
+		}
+		Direction direction = from.getData() % 2 == 0 ? Direction.EAST : Direction.NORTH;
 		for (Entry<Location, MaterialData> entry : shape.getBuildLocations(location, direction).entrySet()) {
-			location.getBlock().setTypeIdAndData(entry.getValue().getItemTypeId(), entry.getValue().getData(), false);
+			Block block = entry.getKey().getBlock();
+			block.setTypeIdAndData(entry.getValue().getItemTypeId(), entry.getValue().getData(), false);
 		}
 		return true;
 	}
@@ -197,7 +209,109 @@ public class SblockTravelAgent implements TravelAgent {
 		searchRadius = 0;
 		creationRadius = 0;
 		canCreatePortal = true;
+		from = null;
 		return this;
+	}
+
+	public Block getAdjacentPortalBlock(Block block) {
+		// Player isn't standing inside the portal block, they're next to it.
+		if (block.getType() == Material.PORTAL) {
+			return block;
+		}
+		for (int dX = -1; dX < 2; dX++) {
+			for (int dZ = -1; dZ < 2; dZ++) {
+				if (dX == 0 && dZ == 0) {
+					continue;
+				}
+				Block maybePortal = block.getRelative(dX, 0, dZ);
+				if (maybePortal.getType() == Material.PORTAL) {
+					return maybePortal;
+				}
+			}
+		}
+		return null;
+	}
+
+	public Location getTo(Location from) {
+		World world = null;
+		double x, y, z;
+		switch (from.getWorld().getName()) {
+		case "Earth":
+			world = Bukkit.getWorld("Earth_nether");
+			x = from.getX() / 8;
+			y = from.getY();
+			z = from.getZ() / 8;
+			break;
+		case "Earth_nether":
+			world = Bukkit.getWorld("Earth");
+			x = from.getX() * 8;
+			y = from.getY();
+			z = from.getZ() * 8;
+			break;
+		case "LOFAF":
+			world = Bukkit.getWorld("Medium_nether");
+			x = from.getX() / 8 + mediumNetherOffset;
+			y = from.getY() / 2.05;
+			z = from.getZ() / 8 + mediumNetherOffset;
+			break;
+		case "LOHAC":
+			world = Bukkit.getWorld("Medium_nether");
+			x = from.getX() / 8 + mediumNetherOffset;
+			y = from.getY() / 2.05;
+			z = from.getZ() / 8 - mediumNetherOffset;
+			break;
+		case "LOLAR":
+			world = Bukkit.getWorld("Medium_nether");
+			x = from.getX() / 8 - mediumNetherOffset;
+			y = from.getY() / 2.05;
+			z = from.getZ() / 8 - mediumNetherOffset;
+			break;
+		case "LOWAS":
+			world = Bukkit.getWorld("Medium_nether");
+			x = from.getX() / 8 - mediumNetherOffset;
+			y = from.getY() / 2.05;
+			z = from.getZ() / 8 + mediumNetherOffset;
+			break;
+		case "Medium_nether":
+			String worldName;
+			if (from.getX() < 0) {
+				x = from.getX() + mediumNetherOffset;
+				if (from.getZ() < 0) {
+					// -x -z: LOLAR (Northwest)
+					z = from.getZ() + mediumNetherOffset;
+					worldName = "LOLAR";
+				} else {
+					// -x +z: LOWAS (Southwest)
+					z = from.getZ() - mediumNetherOffset;
+					worldName = "LOWAS";
+				}
+			} else {
+				x = from.getX() - mediumNetherOffset;
+				if (from.getZ() < 0) {
+					// +x -z: LOHAC (Northeast)
+					z = from.getZ() + mediumNetherOffset;
+					worldName = "LOHAC";
+				} else {
+					// +x +z: LOFAF (Southeast)
+					z = from.getZ() - mediumNetherOffset;
+					worldName = "LOFAF";
+				}
+			}
+			world = Bukkit.getWorld(worldName);
+			x *= 8;
+			y = from.getY() * 2.05;
+			z *= 8;
+			break;
+		default:
+			x = y = z = 0;
+		}
+		if (world == null) {
+			return null;
+		}
+		if (y < 2) {
+			y = 2;
+		}
+		return new Location(world, x, y, z, from.getYaw(), from.getPitch());
 	}
 
 }

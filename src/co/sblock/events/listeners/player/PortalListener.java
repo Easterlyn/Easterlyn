@@ -1,16 +1,16 @@
-package co.sblock.events.listeners.entity;
+package co.sblock.events.listeners.player;
 
 import org.bukkit.Location;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 
 import co.sblock.events.region.SblockTravelAgent;
 
 /**
- * Listener for EntityPortalEvents.
+ * Listener for PlayerPortalEvents.
  * 
  * @author Jikoo
  */
@@ -23,12 +23,12 @@ public class PortalListener implements Listener {
 	}
 
 	/**
-	 * EventHandler for EntityPortalEvents.
+	 * EventHandler for PlayerPortalEvents.
 	 * 
-	 * @param event the EntityPortalEvent
+	 * @param event the PlayerPortalEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
-	public void onEntityPortal(EntityPortalEvent event) {
+	public void onPlayerPortal(PlayerPortalEvent event) {
 		if (!event.useTravelAgent()) {
 			return;
 		}
