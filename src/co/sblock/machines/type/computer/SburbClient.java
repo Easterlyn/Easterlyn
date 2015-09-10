@@ -15,16 +15,13 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class SburbClient extends Program {
 
-	private final ItemStack icon, installer;
+	private final ItemStack icon;
 
 	protected SburbClient() {
 		icon = new ItemStack(Material.WORKBENCH);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "SburbClient");
 		icon.setItemMeta(meta);
-
-		installer = new ItemStack(Material.RECORD_5);
-		installer.setItemMeta(meta);
 	}
 
 	@Override
@@ -34,13 +31,18 @@ public class SburbClient extends Program {
 	}
 
 	@Override
+	public boolean isDefault() {
+		return true;
+	}
+
+	@Override
 	public ItemStack getIcon() {
 		return icon;
 	}
 
 	@Override
 	public ItemStack getInstaller() {
-		return installer;
+		return null;
 	}
 
 }

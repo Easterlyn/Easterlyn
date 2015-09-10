@@ -30,7 +30,6 @@ import net.md_5.bungee.api.ChatColor;
 public class Email extends Program {
 
 	private final ItemStack icon;
-	private final ItemStack installer;
 
 	protected Email() {
 		icon = new ItemStack(Material.WRITTEN_BOOK);
@@ -38,12 +37,6 @@ public class Email extends Program {
 		meta.setDisplayName(ChatColor.GREEN + "Email");
 		meta.setLore(Arrays.asList(ChatColor.WHITE + "Check your messages!"));
 		icon.setItemMeta(meta);
-
-		installer = new ItemStack(Material.RECORD_12);
-		meta = installer.getItemMeta();
-		meta.setDisplayName(ChatColor.GOLD + "Thundermonkey Express");
-		meta.setLore(Arrays.asList(ChatColor.WHITE + "Email so good it can send physical objects."));
-		installer.setItemMeta(meta);
 	}
 
 	@Override
@@ -85,13 +78,18 @@ public class Email extends Program {
 	}
 
 	@Override
+	public boolean isDefault() {
+		return true;
+	}
+
+	@Override
 	public ItemStack getIcon() {
 		return icon;
 	}
 
 	@Override
 	public ItemStack getInstaller() {
-		return installer;
+		return null;
 	}
 
 }

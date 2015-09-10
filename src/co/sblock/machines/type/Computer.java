@@ -129,12 +129,13 @@ public class Computer extends Machine implements InventoryHolder {
 	public void openInventory(Player player) {
 		Inventory inventory = getInventory();
 		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		for (Program program : Programs.getPrograms()) {
+			if (program.isDefault()) {
+				inventory.addItem(program.getIcon());
+			}
+		}
 		for (String id : user.getPrograms()) {
 			inventory.addItem(Programs.getProgramByName(id).getIcon());
-		}
-		if (inventory.firstEmpty() == 0) {
-			user.getPlayer().sendMessage(Color.BAD + "You do not have any programs installed!");
-			return;
 		}
 		player.openInventory(inventory);
 		InventoryUtils.changeWindowName(player, player.getName() + "@sblock.co:~/");

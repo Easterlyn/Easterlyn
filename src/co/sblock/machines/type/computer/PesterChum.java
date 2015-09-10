@@ -15,20 +15,22 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class PesterChum extends Program {
 
-	private final ItemStack icon, installer;
+	private final ItemStack icon;
 
 	protected PesterChum() {
 		icon = new ItemStack(Material.RAW_FISH, 1, (short) 3);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.YELLOW + "PesterChum");
 		icon.setItemMeta(meta);
-
-		installer = new ItemStack(Material.GOLD_RECORD);
-		installer.setItemMeta(meta);
 	}
 
 	@Override
 	protected void execute(Player player, ItemStack clicked, boolean verified) {}
+
+	@Override
+	public boolean isDefault() {
+		return true;
+	}
 
 	@Override
 	public ItemStack getIcon() {
@@ -37,7 +39,7 @@ public class PesterChum extends Program {
 
 	@Override
 	public ItemStack getInstaller() {
-		return installer;
+		return null;
 	}
 
 }

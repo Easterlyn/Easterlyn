@@ -16,6 +16,10 @@ public abstract class Program {
 
 	protected abstract void execute(Player player, ItemStack clicked, boolean verified);
 
+	public boolean isDefault() {
+		return false;
+	}
+
 	public abstract ItemStack getIcon();
 
 	public abstract ItemStack getInstaller();

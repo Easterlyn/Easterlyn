@@ -123,22 +123,12 @@ public class RequestServerClient extends SblockCommand {
 		}
 		Player target = players.get(0);
 
-		OfflineUser targetUser = Users.getGuaranteedUser(target.getUniqueId());
-		if (server && !targetUser.getPrograms().contains("SburbServer")) {
-			player.sendMessage(Color.BAD_PLAYER + target.getName() + Color.BAD
-					+ " does not have the Sburb Server installed!");
-			return;
-		}
-		if (!server && !targetUser.getPrograms().contains("SburbClient")) {
-			player.sendMessage(Color.BAD_PLAYER + target.getName() + Color.BAD
-					+ " does not have the Sburb Client installed!");
-			return;
-		}
 		if (pending.containsKey(target.getUniqueId())) {
 			player.sendMessage(Color.BAD_PLAYER + target.getName() + Color.BAD
 					+ " has a pending request to handle already!");
 			return;
 		}
+
 		player.sendMessage(Color.GOOD + "Request sent to " + Color.GOOD_PLAYER + target.getName());
 		pending.put(target.getUniqueId(), new ImmutablePair<UUID, Boolean>(target.getUniqueId(), server));
 		target.sendMessage(Color.GOOD_PLAYER + player.getName() + Color.GOOD

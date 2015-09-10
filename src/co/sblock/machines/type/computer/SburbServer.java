@@ -18,16 +18,13 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class SburbServer extends Program {
 
-	private final ItemStack icon, installer;
+	private final ItemStack icon;
 
 	protected SburbServer() {
 		icon = new ItemStack(Material.ENDER_PORTAL_FRAME);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "SburbServer");
 		icon.setItemMeta(meta);
-
-		installer = new ItemStack(Material.GREEN_RECORD);
-		installer.setItemMeta(meta);
 	}
 
 	@Override
@@ -49,13 +46,18 @@ public class SburbServer extends Program {
 	}
 
 	@Override
+	public boolean isDefault() {
+		return true;
+	}
+
+	@Override
 	public ItemStack getIcon() {
 		return icon;
 	}
 
 	@Override
 	public ItemStack getInstaller() {
-		return installer;
+		return null;
 	}
 
 }

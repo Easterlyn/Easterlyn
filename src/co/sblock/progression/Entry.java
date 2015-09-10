@@ -136,9 +136,6 @@ public class Entry {
 			return;
 		}
 
-		// Uninstalls the client program
-		user.getPrograms().remove("SburbClient");
-
 		// Removes all free machines placed by the User or their server
 		for (Pair<Machine, ConfigurationSection> pair : Machines.getInstance().getMachines(user.getUUID())) {
 			if (pair.getLeft().isFree()) {
