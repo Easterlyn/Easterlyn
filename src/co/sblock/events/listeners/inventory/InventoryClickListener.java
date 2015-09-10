@@ -13,9 +13,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -328,9 +328,9 @@ public class InventoryClickListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onInventoryClickHasOccurred(InventoryClickEvent event) {
-		final Inventory toTest = event.getInventory();
+		final InventoryView view = event.getView();
 
-		if (toTest.getType() != InventoryType.ANVIL
+		if (view.getTopInventory().getType() != InventoryType.ANVIL
 				|| !((Player) event.getWhoClicked()).hasPermission("sblock.blaze")) {
 			return;
 		}
@@ -338,48 +338,59 @@ public class InventoryClickListener implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				doCombine((AnvilInventory) toTest);
+				createBlazingSaddle(view);
 			}
 		}.runTask(Sblock.getInstance());
 	}
 
-	private void doCombine(AnvilInventory toTest) {
-		ItemStack firstSlot = toTest.getItem(0);
-		ItemStack secondSlot = toTest.getItem(1);
+	private void createBlazingSaddle(InventoryView view) {
+		Inventory top = view.getTopInventory();
+		ItemStack firstSlot = top.getItem(0);
+		ItemStack secondSlot = top.getItem(1);
 
 		if (firstSlot == null || secondSlot == null || firstSlot.getType() != Material.SADDLE
-				|| secondSlot.getType() != Material.ENCHANTED_BOOK) {
+				|| firstSlot.containsEnchantment(Enchantment.ARROW_FIRE)
+				|| secondSlot.getType() != Material.ENCHANTED_BOOK || !secondSlot.hasItemMeta()) {
 			return;
 		}
 
-		ItemStack maybeSaddle = tryCombineBookSaddle(firstSlot, secondSlot);
+		EnchantmentStorageMeta esm = (EnchantmentStorageMeta) secondSlot.getItemMeta();
+		int fire = esm.getStoredEnchantLevel(Enchantment.ARROW_FIRE);
 
-		if (maybeSaddle != null) {
-			toTest.setItem(2, maybeSaddle);
+		if (fire < 1) {
+			return;
 		}
+
+		ItemStack blazingSaddle = new ItemStack(firstSlot);
+		ItemMeta saddleMeta = blazingSaddle.getItemMeta();
+
+		saddleMeta.addEnchant(Enchantment.ARROW_FIRE, 1, true);
+
+		Repairable repairable = (Repairable) saddleMeta;
+		int cost = repairable.hasRepairCost() ? repairable.getRepairCost() : 0;
+
+		// Next cost is always current * 2 + 1
+		((Repairable) saddleMeta).setRepairCost(cost * 2 + 1);
+
+		// Flame from a book costs 2
+		cost += 2;
+
+		String displayName = InventoryUtils.getNameFromAnvil(view);
+		if (saddleMeta.hasDisplayName() && !saddleMeta.getDisplayName().equals(displayName)
+				|| !saddleMeta.hasDisplayName() && displayName != null) {
+			saddleMeta.setDisplayName(displayName);
+			// Renaming adds 1
+			cost += 1;
+		}
+
+		blazingSaddle.setItemMeta(saddleMeta);
+
+		top.setItem(2, blazingSaddle);
+		InventoryUtils.setAnvilExpCost(view, cost);
+		if (view.getPlayer() instanceof Player) {
+			((Player) view.getPlayer()).updateInventory();
+		}
+		InventoryUtils.updateAnvilExpCost(view);
 	}
 
-	private ItemStack tryCombineBookSaddle(ItemStack saddle, ItemStack book) {
-		int fireAspectLevel = 0;
-
-		if (book.getItemMeta() instanceof EnchantmentStorageMeta) {
-			EnchantmentStorageMeta esm = (EnchantmentStorageMeta) book.getItemMeta();
-
-			fireAspectLevel = esm.getStoredEnchantLevel(Enchantment.ARROW_FIRE);
-		}
-
-		if (fireAspectLevel > 0) {
-			ItemStack blazingSaddle = new ItemStack(saddle);
-			ItemMeta saddleMeta = blazingSaddle.getItemMeta();
-			saddleMeta.addEnchant(Enchantment.ARROW_FIRE, 1, true);
-			int repairCost = 3; // Flame from a book costs 2, all repairs add 1.
-			if (((Repairable) saddleMeta).hasRepairCost()) {
-				repairCost += ((Repairable) saddleMeta).getRepairCost() * 2;
-			}
-			((Repairable) saddleMeta).setRepairCost(repairCost);
-			blazingSaddle.setItemMeta(saddleMeta);
-			return blazingSaddle;
-		}
-		return null;
-	}
 }

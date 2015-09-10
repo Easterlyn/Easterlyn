@@ -21,7 +21,9 @@ import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
@@ -459,6 +461,53 @@ public class InventoryUtils {
 			player.updateInventory();
 		} catch (InvocationTargetException ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	public static String getNameFromAnvil(InventoryView view) {
+		if (!(view.getTopInventory() instanceof AnvilInventory)) {
+			return null;
+		}
+		try {
+			Method method = view.getClass().getMethod("getHandle");
+			Object nmsInventory = method.invoke(view);
+			Field field = nmsInventory.getClass().getDeclaredField("l");
+			field.setAccessible(true);
+			return (String) field.get(nmsInventory);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static void setAnvilExpCost(InventoryView view, int cost) {
+		if (!(view.getTopInventory() instanceof AnvilInventory)) {
+			return;
+		}
+		try {
+			Method method = view.getClass().getMethod("getHandle");
+			Object nmsInventory = method.invoke(view);
+			Field field = nmsInventory.getClass().getDeclaredField("a");
+			field.set(nmsInventory, cost);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void updateAnvilExpCost(InventoryView view) {
+		if (!(view.getTopInventory() instanceof AnvilInventory)) {
+			return;
+		}
+		try {
+			Method method = view.getClass().getMethod("getHandle");
+			Object nmsInventory = method.invoke(view);
+			Field field = nmsInventory.getClass().getDeclaredField("a");
+			method = view.getPlayer().getClass().getMethod("getHandle");
+			Object nmsPlayer = method.invoke(view.getPlayer());
+			method = nmsPlayer.getClass().getMethod("setContainerData", nmsInventory.getClass().getSuperclass(), int.class, int.class);
+			method.invoke(nmsPlayer, nmsInventory, 0, field.get(nmsInventory));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
