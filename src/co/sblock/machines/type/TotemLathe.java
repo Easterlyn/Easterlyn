@@ -104,41 +104,45 @@ public class TotemLathe extends Machine	{
 			// Clicked inv is not the top.
 			return false;
 		}
-		if (event.getSlot() == 2 && event.getCurrentItem() != null
-				&& event.getCurrentItem().getType() != Material.AIR) {
-			// Item is being crafted
-			Inventory top = event.getView().getTopInventory();
-			Player player = (Player) event.getWhoClicked();
-			int decrement;
-			if (event.getClick().name().contains("SHIFT")) {
-				decrement = Math.min(top.getItem(0).getAmount(), top.getItem(1).getAmount());
-				ItemStack add = event.getCurrentItem().clone();
-				add.setAmount(decrement);
-				if (InventoryUtils.hasSpaceFor(add, player.getInventory())) {
-					player.getInventory().addItem(add);
-				} else {
-					return true;
-				}
-			} else if (event.getCursor() == null
-					|| event.getCursor().getType() == Material.AIR
-					|| (event.getCursor().isSimilar(event.getCurrentItem())
-							&& event.getCursor().getAmount() + event.getCurrentItem().getAmount()
-							< event.getCursor().getMaxStackSize())) {
-				decrement = 1;
-				ItemStack result = event.getCurrentItem().clone();
-				if (result.isSimilar(event.getCursor())) {
-					result.setAmount(result.getAmount() + event.getCursor().getAmount());
-				}
-				event.setCursor(result);
+		if (event.getSlot() != 2 || event.getCurrentItem() == null
+				|| event.getCurrentItem().getType() == Material.AIR) {
+			// No result
+			return false;
+		}
+		// Item is being crafted
+		Inventory top = event.getView().getTopInventory();
+		Player player = (Player) event.getWhoClicked();
+		int decrement;
+		if (event.getClick().name().contains("SHIFT")) {
+			// This is not a good way to handle shift clicks for normal crafting, but in
+			// this case the result is guaranteed to be a single item that stacks to 64.
+			decrement = Math.min(top.getItem(0).getAmount(), top.getItem(1).getAmount());
+			ItemStack add = event.getCurrentItem().clone();
+			add.setAmount(decrement);
+			if (InventoryUtils.hasSpaceFor(add, player.getInventory())) {
+				player.getInventory().addItem(add);
 			} else {
 				return true;
 			}
-			event.setCurrentItem(null);
-			top.setItem(0, InventoryUtils.decrement(top.getItem(0), decrement));
-			top.setItem(1, InventoryUtils.decrement(top.getItem(1), decrement));
-			player.updateInventory();
+		} else if (event.getCursor() == null
+				|| event.getCursor().getType() == Material.AIR
+				|| (event.getCursor().isSimilar(event.getCurrentItem())
+						&& event.getCursor().getAmount() + event.getCurrentItem().getAmount()
+						<= event.getCursor().getMaxStackSize())) {
+			decrement = 1;
+			ItemStack result = event.getCurrentItem().clone();
+			if (result.isSimilar(event.getCursor())) {
+				result.setAmount(result.getAmount() + event.getCursor().getAmount());
+			}
+			event.setCursor(result);
+		} else {
+			return true;
 		}
-		return false;
+		event.setCurrentItem(null);
+		top.setItem(0, InventoryUtils.decrement(top.getItem(0), decrement));
+		top.setItem(1, InventoryUtils.decrement(top.getItem(1), decrement));
+		player.updateInventory();
+		return true;
 	}
 
 	/**

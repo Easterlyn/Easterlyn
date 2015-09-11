@@ -118,8 +118,12 @@ public class PunchDesignix extends Machine {
 				result.setAmount(crafts);
 
 				// Decrement number of crafts by number of items that failed to be added
+				// This is only works because the result will always be a single item that stacks to 64
 				crafts -= InventoryUtils.getAddFailures(event.getWhoClicked().getInventory().addItem(result));
-			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
+			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR
+					|| (event.getCursor().isSimilar(result)
+							&& event.getCursor().getAmount() + result.getAmount()
+							<= event.getCursor().getMaxStackSize())) {
 				// Single click. Attempting to pick up a single item (even if right click)
 				crafts = 1;
 
@@ -158,8 +162,7 @@ public class PunchDesignix extends Machine {
 	 * @return the least of the two, or, if slot2 is null, the amount in slot1
 	 */
 	private int getMaximumCrafts(ItemStack slot1, ItemStack slot2) {
-		return slot2 == null ? slot1.getAmount() 
-				: slot1.getAmount() > slot2.getAmount() ? slot1.getAmount() : slot2.getAmount();
+		return slot2 == null ? slot1.getAmount() : Math.min(slot1.getAmount(), slot2.getAmount());
 	}
 
 	/**
@@ -188,7 +191,7 @@ public class PunchDesignix extends Machine {
 					result = Captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
 				}
 				open.setItem(2, result);
-				player.updateInventory();
+				InventoryUtils.updateWindowSlot(player, 2);
 			}
 		});
 	}

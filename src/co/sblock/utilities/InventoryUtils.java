@@ -53,6 +53,11 @@ import co.sblock.machines.type.Machine;
 
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutSetSlot;
+
 /**
  * A set of useful methods for inventory functions.
  * 
@@ -422,6 +427,16 @@ public class InventoryUtils {
 			}
 		}
 		return false;
+	}
+
+	public static void updateWindowSlot(Player player, int slot) {
+		if (!(player instanceof CraftPlayer)) {
+			return;
+		}
+		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
+		nmsPlayer.playerConnection.sendPacket(
+				new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, 0,
+						nmsPlayer.activeContainer.getSlot(0).getItem()));
 	}
 
 	public static void changeWindowName(Player player, String name) {

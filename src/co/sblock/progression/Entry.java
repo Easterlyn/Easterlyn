@@ -148,6 +148,8 @@ public class Entry {
 	public void succeed(final OfflineUser user) {
 		finish(user);
 
+		user.setProgression(ProgressionState.ENTRY_COMPLETING);
+
 		Player player = user.getPlayer();
 		final UUID uuid = player.getUniqueId();
 
