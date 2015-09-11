@@ -49,6 +49,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 
 	public AetherCommand() {
 		super("aether");
+		this.setAliases("aetherme");
 		this.setDescription("For usage in console largely. Talks in #Aether.");
 		this.setUsage("/aether <text>");
 		this.setPermissionLevel("horrorterror");
@@ -63,17 +64,17 @@ public class AetherCommand extends SblockAsynchronousCommand {
 			return true;
 		}
 
-		sendAether(args[0], StringUtils.join(args, ' ', 1, args.length));
+		sendAether(args[0], StringUtils.join(args, ' ', 1, args.length), label.equals("aetherme"));
 		return true;
 	}
 
-	public static void sendAether(String name, String msg) {
+	public static void sendAether(String name, String msg, boolean thirdPerson) {
 
 		Channel aether = ChannelManager.getChannelManager().getChannel("#Aether");
 		// set channel before and after to prevent @channel changing while also stripping invalid characters
 		MessageBuilder builder = new MessageBuilder().setSender(ChatColor.WHITE + name)
 				.setChannel(aether).setMessage(msg).setChannel(aether).setChannelClick("@# ")
-				.setNameClick("@# ").setNameHover(HOVER);
+				.setNameClick("@# ").setNameHover(HOVER).setThirdPerson(thirdPerson);
 
 		if (!builder.canBuild(false)) {
 			return;

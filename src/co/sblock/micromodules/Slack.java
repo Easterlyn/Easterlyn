@@ -56,7 +56,7 @@ public class Slack extends Module {
 					return;
 				}
 				if (event.getChannel().getName().equals(getMainChat())) {
-					AetherCommand.sendAether(event.getSender().getUserName(), event.getMessageContent());
+					AetherCommand.sendAether(event.getSender().getUserName(), event.getMessageContent(), false);
 					return;
 				}
 				if (event.getChannel().getName().equals(getFullChat())) {

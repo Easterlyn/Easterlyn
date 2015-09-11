@@ -19,7 +19,7 @@ public class DynmapWebChatListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onDynmapWebChat(DynmapWebChatEvent event) {
-		AetherCommand.sendAether(event.getName(), event.getMessage());
+		AetherCommand.sendAether(event.getName(), event.getMessage(), false);
 		event.setProcessed();
 	}
 }
