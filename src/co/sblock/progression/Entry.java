@@ -132,6 +132,7 @@ public class Entry {
 		}
 
 		finish(user);
+
 		if (user.getProgression().ordinal() > ProgressionState.ENTRY_UNDERWAY.ordinal()) {
 			return;
 		}
@@ -147,9 +148,8 @@ public class Entry {
 	public void succeed(final OfflineUser user) {
 		finish(user);
 
-		user.setProgression(ProgressionState.ENTRY);
-
-		final Player player = user.getPlayer();
+		Player player = user.getPlayer();
+		final UUID uuid = player.getUniqueId();
 
 		// Put player on top of the world because we can
 		player.teleport(player.getWorld().getHighestBlockAt(player.getLocation()).getLocation().add(new Vector(0, 1, 0)));
@@ -167,31 +167,38 @@ public class Entry {
 
 			@Override
 			public void run() {
-				try {
-					// Bukkit.getScheduler().cancelTask(particleTask);
-					firework.remove();
-					Location target = getEntryLocation(user.getMediumPlanet());
-					player.teleport(target);
-					player.setBedSpawnLocation(target);
-					ItemStack house = new ItemStack(Material.ENDER_CHEST);
-					ItemMeta im = house.getItemMeta();
-					im.setDisplayName(ChatColor.AQUA + "Prebuilt House");
-					ArrayList<String> lore = new ArrayList<>();
-					lore.add(ChatColor.YELLOW + "Structure: " + ChatColor.AQUA + ChatColor.ITALIC + "house");
-					lore.add(ChatColor.YELLOW + "Place in a free space to build!");
-					im.setLore(lore);
-					house.setItemMeta(im);
-					target.getWorld().dropItem(target, house).setPickupDelay(0);
-					for (Entity e : target.getWorld().getEntitiesByClasses(Zombie.class, Skeleton.class, Creeper.class, Slime.class)) {
-						if (((LivingEntity) e).getLocation().distanceSquared(target) < 2048) {
-							e.remove();
-						}
-					}
-				} catch (Exception e) {
-					// Player is null
+				firework.remove();
+				Player player = Bukkit.getPlayer(uuid);
+				if (player != null) {
+					finalizeSuccess(player, user);
 				}
 			}
 		}, 40L);
+	}
+
+	public void finalizeSuccess(Player player, OfflineUser user) {
+		user.setProgression(ProgressionState.ENTRY);
+		Location target = getEntryLocation(user.getMediumPlanet());
+		player.teleport(target);
+		player.setBedSpawnLocation(target);
+		ItemStack house = new ItemStack(Material.ENDER_CHEST);
+		ItemMeta im = house.getItemMeta();
+		im.setDisplayName(ChatColor.AQUA + "Prebuilt House");
+		ArrayList<String> lore = new ArrayList<>();
+		lore.add(ChatColor.YELLOW + "Structure: " + ChatColor.AQUA + ChatColor.ITALIC + "house");
+		lore.add(ChatColor.YELLOW + "Place in a free space to build!");
+		im.setLore(lore);
+		house.setItemMeta(im);
+		target.getWorld().dropItem(target, house).setPickupDelay(0);
+		for (Entity e : target.getWorld().getEntitiesByClasses(Zombie.class, Skeleton.class, Creeper.class, Slime.class)) {
+			if (e.getCustomName() != null) {
+				// Named mob
+				continue;
+			}
+			if (((LivingEntity) e).getLocation().distanceSquared(target) < 2048) {
+				e.remove();
+			}
+		}
 	}
 
 	public static Entry getEntry() {
@@ -212,6 +219,7 @@ public class Entry {
 	}
 
 	private Location getEntryLocation(Region mPlanet) {
+		// TODO should we just use /spreadplayers for this?
 		double angle = Math.random() * Math.PI * 2;
 		Location l = Bukkit.getWorld(mPlanet.getWorldName())
 				.getHighestBlockAt((int) (Math.cos(angle) * 2600), (int) (Math.sin(angle) * 2600))

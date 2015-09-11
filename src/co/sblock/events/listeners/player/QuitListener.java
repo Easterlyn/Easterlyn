@@ -77,6 +77,11 @@ public class QuitListener implements Listener {
 			((OnlineUser) user).stopServerMode();
 		}
 
+		// Complete success sans animation if player logs out
+		if (user.getProgression() == ProgressionState.ENTRY_COMPLETING) {
+			Entry.getEntry().finalizeSuccess(event.getPlayer(), user);
+		}
+
 		// Fail Entry if in progress
 		if (user.getProgression() == ProgressionState.ENTRY_UNDERWAY) {
 			Entry.getEntry().fail(user);
