@@ -74,7 +74,6 @@ public class EffectBreedAnimal extends Effect implements BehaviorActive, Behavio
 
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
-		// TODO split into multiple effects
 		Player player = (Player) entity;
 		if (!player.isSneaking()) {
 			return;

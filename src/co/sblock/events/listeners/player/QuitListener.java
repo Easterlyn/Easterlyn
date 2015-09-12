@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
+import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Slack;
@@ -41,6 +42,9 @@ public class QuitListener implements Listener {
 		if (event.getQuitMessage() != null) {
 			event.setQuitMessage(Color.BAD_PLAYER + event.getPlayer().getDisplayName() + Color.BAD + " ollies outie");
 		}
+
+		// Handle reactive Effects that use quits
+		Effects.getInstance().handleEvent(event, event.getPlayer(), true);
 
 		// Slack integration
 		Slack.getInstance().postMessage(event.getPlayer().getName(), event.getPlayer().getUniqueId(),

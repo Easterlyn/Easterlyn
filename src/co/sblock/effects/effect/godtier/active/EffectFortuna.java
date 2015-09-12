@@ -31,13 +31,13 @@ public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGod
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		// TODO should these be separate? Likely yes.
+		// GODTIER: should these be separate? Likely yes.
 		return Arrays.asList(BlockBreakEvent.class, PlayerFishEvent.class, EntityDeathEvent.class);
 	}
 
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
-		// TODO
+		// GODTIER
 		
 	}
 

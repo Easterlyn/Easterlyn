@@ -44,9 +44,9 @@ public class FillMapCommand extends SblockAsynchronousCommand {
 		}
 		Renderer render = new Renderer();
 		view.addRenderer(render);
-		for (int i = 0; i < 16384; i++) {
-			// TODO
-		}
+//		for (int i = 0; i < 16384; i++) {
+//			// future
+//		}
 		view.removeRenderer(render);
 		sender.sendMessage("This function is not actually implemented.");
 		return false;
@@ -57,7 +57,7 @@ public class FillMapCommand extends SblockAsynchronousCommand {
 		@Override
 		public void render(MapView map, MapCanvas canvas, Player player) {
 			//map.
-			// TODO
+			// future
 		}
 
 	}

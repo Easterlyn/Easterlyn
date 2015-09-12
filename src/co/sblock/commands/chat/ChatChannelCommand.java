@@ -158,7 +158,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			if (args.length != 4) {
 				user.sendMessage(Color.COMMAND + "/channel new <name> <access> <type>" + Color.GOOD
 						+ ": Create a new channel.\nAccess must be either PUBLIC or PRIVATE\n"
-						+ "Type must be NORMAL, NICK, or RP");
+						+ "Type must be NORMAL, NICK, or RP\nEx: /channel new #example PUBLIC NICK");
 				return true;
 			}
 			if (ChannelManager.getChannelManager().getChannel(args[1]) != null) {

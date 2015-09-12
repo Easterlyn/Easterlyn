@@ -80,7 +80,8 @@ public class BookEditListener implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				final OfflinePlayer player = Bukkit.getPlayer(title);
+				@SuppressWarnings("deprecation")
+				final OfflinePlayer player = Bukkit.getOfflinePlayer(title);
 				new BukkitRunnable() {
 					@Override
 					public void run() {

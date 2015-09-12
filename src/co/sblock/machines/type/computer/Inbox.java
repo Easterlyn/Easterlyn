@@ -90,7 +90,7 @@ public class Inbox extends Program {
 			icon.setItemMeta(iconMeta);
 			return icon;
 		}
-		return null; // TODO Item collection icon (probably a captcha)
+		return null; // POST-ENTRY: Item collection icon (probably a captcha)
 	}
 
 	private ItemStack itemFromIcon(ItemStack icon) {
@@ -101,7 +101,7 @@ public class Inbox extends Program {
 			icon.setItemMeta(meta);
 			return icon;
 		}
-		return null; // TODO Item collection
+		return null; // POST-ENTRY: Item collection
 	}
 
 	@Override

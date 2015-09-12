@@ -130,7 +130,7 @@ public class Transportalizer extends Machine {
 
 	@Override
 	public boolean handleHopperMoveItem(InventoryMoveItemEvent event, ConfigurationSection storage) {
-		// TODO: allow pulling from chest or something like that
+		// future: allow pulling from chest or something like that
 		return super.handleHopperMoveItem(event, storage);
 	}
 

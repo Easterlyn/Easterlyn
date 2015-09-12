@@ -95,23 +95,13 @@ public enum Direction {
 	 * Ex.: Machine placed west, block in machine faces east when machine is
 	 * placed north.
 	 * 
-	 * @param d the Direction relative to this as north.
+	 * @param direction the Direction relative to this as north.
 	 */
-	public Direction getRelativeDirection(Direction d) {
-		return getDirection((byte) ((this.dirNum + d.getDirByte()) % 4));
-	}
-
-	/**
-	 * Gets Direction by byte.
-	 * 
-	 * @param direction byte
-	 * 
-	 * @return Direction
-	 */
-	private static Direction getDirection(byte direction) {
-		for (Direction d : Direction.values()) {
-			if (d.dirNum == direction) {
-				return d;
+	public Direction getRelativeDirection(Direction direction) {
+		byte dirNum = (byte) ((this.dirNum + direction.getDirByte()) % 4);
+		for (Direction dir : Direction.values()) {
+			if (dir.dirNum == dirNum) {
+				return dir;
 			}
 		}
 		return NORTH;

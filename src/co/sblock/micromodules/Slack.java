@@ -61,7 +61,7 @@ public class Slack extends Module {
 				}
 				if (event.getChannel().getName().equals(getFullChat())) {
 					// Admin command
-					// TODO allow a whitelist of commands + grab output for Slack
+					// CHAT: allow a whitelist of commands + grab output for Slack
 				}
 				getLogger().info(event.getSender().getUserName() + ": " + event.getMessageContent());
 			}

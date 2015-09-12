@@ -51,7 +51,6 @@ public class EffectFasterFlight extends Effect implements BehaviorGodtier, Behav
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		// TODO listeners
 		return Arrays.asList(PlayerToggleFlightEvent.class, PlayerQuitEvent.class);
 	}
 

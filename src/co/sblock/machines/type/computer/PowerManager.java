@@ -31,7 +31,7 @@ import net.md_5.bungee.api.ChatColor;
 public class PowerManager extends Program {
 
 	private final ItemStack icon;
-	private final ItemStack installer; // TODO remove this post-testing
+	private final ItemStack installer; // GODTIER: remove this post-testing
 
 	protected PowerManager() {
 		icon = new ItemStack(Material.FIREWORK);
