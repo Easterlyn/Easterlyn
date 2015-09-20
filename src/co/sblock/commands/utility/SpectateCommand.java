@@ -27,6 +27,7 @@ public class SpectateCommand extends SblockCommand {
 
 	public SpectateCommand() {
 		super("spectate");
+		this.setAliases("spec", "spectator");
 		this.setDescription("Player: Become the ghost (toggles spectator mode)");
 		this.setUsage("To toggle spectate mode, use no arguments.\n"
 				+ "To prevent players from spectating to you, use /spectate deny\n"
