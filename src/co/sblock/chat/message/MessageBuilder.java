@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.ChatMsgs;
@@ -26,6 +23,7 @@ import co.sblock.utilities.RegexUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
@@ -38,10 +36,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class MessageBuilder {
 
 	private static final TextComponent HIGHLIGHTED_BRACKET;
-	private static final String ITEM_NAME;
-	private static final String LORE_CLASS_OF_ASPECT;
-	private static final String LORE_DREAM;
-	private static final String LORE_MEDIUM;
+	private static final String NAME_HOVER;
 	private static final String CONSOLE_FORMAT;
 	private static final String CONSOLE_FORMAT_THIRD;
 
@@ -50,23 +45,25 @@ public class MessageBuilder {
 		HIGHLIGHTED_BRACKET.setColor(ChatColor.AQUA);
 
 		StringBuilder sb = new StringBuilder();
+		// +-- Name --+
 		sb.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+--")
-				.append(ChatColor.AQUA).append(ChatColor.RESET).append(" %s%s ")
-				.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("--+");
-		ITEM_NAME = sb.toString();
+				.append(ChatColor.RESET).append(ChatColor.AQUA).append(ChatColor.RESET)
+				.append(" %1$2s%2$2s ").append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH)
+				.append("--+").append(ChatColor.RESET);
+		// Rank (Normal server rank)
+		sb.append("\n%1$2s%3$2s\n");
 
-		sb.delete(0, sb.length());
-		sb.append(ChatColor.DARK_AQUA).append("%s").append(ChatColor.YELLOW)
-				.append(" of %s%s");
-		LORE_CLASS_OF_ASPECT = sb.toString();
+		// Class of Aspect
+		sb.append("%4$2s%5$2s of %6$2s\n");
 
-		sb.delete(0, sb.length());
-		sb.append(ChatColor.YELLOW).append("Dream: %s%s");
-		LORE_DREAM = sb.toString();
+		// Dream: Dream
+		sb.append(ChatColor.YELLOW).append("Dream: %7$2s%8$2s\n");
 
-		sb.delete(0, sb.length());
-		sb.append(ChatColor.YELLOW).append("Medium: %s%s");
-		LORE_MEDIUM = sb.toString();
+		// Medium: Medium
+		sb.append(ChatColor.YELLOW).append("Medium: %9$2s%10$2s");
+		// Arguments in order: Global rank color, name, global rank name, aspect color, class name,
+		// aspect name, dream color, dream name, medium color, medium name
+		NAME_HOVER = sb.toString();
 
 		sb.delete(0, sb.length());
 		sb.append("%1$2s[%2$2s%3$2s%1$2s]%4$2s <%5$2s%6$2s%4$2s> ").append(ChatColor.WHITE).append("%6$2s");
@@ -80,9 +77,9 @@ public class MessageBuilder {
 	private String message = null;
 	private boolean thirdPerson = false;
 	private String atChannel = null;
-	private ItemStack hover;
 	private String channelClick, nameClick;
 	private TextComponent[] messageComponents;
+	private BaseComponent[] nameHover;
 
 	public MessageBuilder setSender(OfflineUser sender) {
 		if (this.sender != null || this.senderName != null) {
@@ -220,6 +217,7 @@ public class MessageBuilder {
 	}
 
 	private boolean isCharacterGloballyLegal(char character) {
+		//  character >= ' ' and character <= }
 		return character > '\u001F' && character < '\u007E';
 	}
 
@@ -228,8 +226,31 @@ public class MessageBuilder {
 		return this;
 	}
 
-	public MessageBuilder setNameHover(ItemStack hover) {
-		this.hover = hover;
+
+	/**
+	 * Sets Message display name tooltip text.
+	 * <p>
+	 * If the tooltip will not change between uses, it is preferred that you use
+	 * {@link MessageBuilder#setNameHover(TextComponent)} and store the value.
+	 * 
+	 * @param hover the String to display
+	 * 
+	 * @return the MessageBuilder
+	 */
+	public MessageBuilder setNameHover(String hover) {
+		this.nameHover = JSONUtil.fromLegacyText(hover);
+		return this;
+	}
+
+	/**
+	 * Sets Message display name tooltip text.
+	 * 
+	 * @param hover the TextComponent to display
+	 * 
+	 * @return the MessageBuilder
+	 */
+	public MessageBuilder setNameHover(BaseComponent... hover) {
+		this.nameHover = hover;
 		return this;
 	}
 
@@ -384,26 +405,36 @@ public class MessageBuilder {
 		components.add(component);
 
 		ChatColor globalRank;
+		String rankName;
 		if (player != null) {
-			// Name color fetched from scoreboard, if team invalid perm-based instead.
+			// Permission-based rank colors
+			if (player.hasPermission("group.horrorterror")) {
+				globalRank = Color.RANK_HORRORTERROR;
+				rankName = "Horrorterror (Owner)";
+			} else if (player.hasPermission("sblock.denizen")) {
+				globalRank = Color.RANK_DENIZEN;
+				rankName = "Denizen (Admin)";
+			} else if (player.hasPermission("sblock.felt")) {
+				globalRank = Color.RANK_FELT;
+				rankName = "Felt (Moderator)";
+			} else if (player.hasPermission("sblock.helper")) {
+				globalRank = Color.RANK_HELPER;
+				rankName = "Helper";
+			} else if (player.hasPermission("sblock.donator")) {
+				globalRank = Color.RANK_DONATOR;
+				rankName = "Donator";
+			} else if (player.hasPermission("sblock.godtier")) {
+				globalRank = Color.RANK_GODTIER;
+				rankName = "Godtier";
+			} else {
+				globalRank = Color.RANK_HERO;
+				rankName = "Hero";
+			}
+			// Override rank color with scoreboard color if possible
 			try {
 				globalRank = ChatColor.getByChar(Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName()).getPrefix().charAt(1));
 			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
-				if (player.hasPermission("group.horrorterror"))
-					globalRank = Color.RANK_HORRORTERROR;
-				else if (player.hasPermission("sblock.denizen"))
-					globalRank = Color.RANK_DENIZEN;
-				else if (player.hasPermission("sblock.felt"))
-					globalRank = Color.RANK_FELT;
-				else if (player.hasPermission("sblock.helper"))
-					globalRank = Color.RANK_HELPER;
-				else if (player.hasPermission("sblock.donator"))
-					globalRank = Color.RANK_DONATOR;
-				else if (player.hasPermission("sblock.godtier"))
-					globalRank = Color.RANK_GODTIER;
-				else {
-					globalRank = Color.RANK_HERO;
-				}
+				// Scoreboard's screwed up, all good. Rank color will display.
 			}
 			StringBuilder nameBuilder = new StringBuilder();
 			boolean hasNick = channel instanceof NickChannel && ((NickChannel) channel).hasNick(sender);
@@ -417,6 +448,7 @@ public class MessageBuilder {
 			senderName = nameBuilder.toString();
 		} else {
 			globalRank = ChatColor.WHITE;
+			rankName = "Bot/Service";
 		}
 
 		// > Name | <Name
@@ -431,19 +463,15 @@ public class MessageBuilder {
 		component.setColor(region);
 		components.add(component);
 
-		if (hover == null && sender != null) {
-			hover = new ItemStack(Material.DIAMOND);
-			ItemMeta meta = hover.getItemMeta();
-			meta.setDisplayName(String.format(ITEM_NAME, globalRank, sender.getDisplayName()));
-			ArrayList<String> lore = new ArrayList<>();
-			lore.add(String.format(LORE_CLASS_OF_ASPECT, sender.getUserClass().getDisplayName(),
-					sender.getUserAspect().getColor(), sender.getUserAspect().getDisplayName()));
-			lore.add(String.format(LORE_DREAM, sender.getDreamPlanet().getColor(), sender
-					.getDreamPlanet().getDisplayName()));
-			lore.add(String.format(LORE_MEDIUM, sender.getMediumPlanet().getColor(), sender
-					.getMediumPlanet().getDisplayName()));
-			meta.setLore(lore);
-			hover.setItemMeta(meta);
+		if (nameHover == null && sender != null) {
+			// Arguments in order: Global rank color, name, global rank name, aspect color, class name,
+			// aspect name, dream color, dream name, medium color, medium name
+			nameHover = JSONUtil.fromLegacyText(String.format(NAME_HOVER,
+					globalRank, sender.getDisplayName(), rankName, sender.getUserAspect()
+							.getColor(), sender.getUserClass().getDisplayName(),
+							sender.getUserAspect().getDisplayName(), sender.getDreamPlanet().getColor(),
+							sender.getDreamPlanet().getDisplayName(), sender.getMediumPlanet().getColor(),
+							sender.getMediumPlanet().getDisplayName()));
 		}
 
 		TextComponent nameComponent = new TextComponent(components.toArray(new BaseComponent[components.size()]));
@@ -451,8 +479,8 @@ public class MessageBuilder {
 			nameClick = new StringBuilder("/m ").append(player.getName()).append(' ').toString();
 		}
 		nameComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, nameClick));
-		if (hover != null) {
-			nameComponent.setHoverEvent(JSONUtil.getItemHover(hover));
+		if (nameHover != null) {
+			nameComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, nameHover));
 		}
 
 		// MESSAGE ELEMENT: Your text here.

@@ -18,10 +18,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.jibble.jmegahal.JMegaHal;
@@ -33,11 +30,14 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
+import co.sblock.users.OfflineUser;
 import co.sblock.utilities.Cooldowns;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * Sblock's JMegaHal implementation - Chester is just too buggy and difficult to customize.
@@ -51,7 +51,7 @@ public class MegaHal extends HalMessageHandler {
 	private final Set<String> pendingMessages;
 	private final HalLogSavingTask save;
 	private final Set<Pattern> ignoreMatches;
-	private final ItemStack hover;
+	private final BaseComponent[] hover;
 	private int fileNum;
 	private final MessageBuilder noSpam;
 
@@ -71,15 +71,9 @@ public class MegaHal extends HalMessageHandler {
 		ignoreMatches.add(Pattern.compile("^evhal(uate)? .*$", Pattern.CASE_INSENSITIVE));
 		ignoreMatches.add(Pattern.compile("^.*dad(dy)?.*$", Pattern.CASE_INSENSITIVE));
 
-		hover = new ItemStack(Material.BARRIER);
-		ItemMeta hoverMeta = hover.getItemMeta();
-		hoverMeta.setDisplayName(ChatColor.RED + "Artificial Intelligence");
-		hoverMeta.setLore(Arrays.asList(new String[] {
-				Color.BAD_EMPHASIS + "Sblock is not responsible",
-				Color.BAD_EMPHASIS + "for anything Hal says.", "",
-				Color.BAD_EMPHASIS + "Unless it's awesome.", "",
-				Color.COMMAND + "/join #halchat" + Color.BAD + " to spam usage."}));
-		hover.setItemMeta(hoverMeta);
+		hover = TextComponent.fromLegacyText(ChatColor.RED + "Artificial Intelligence\n"
+				+ Color.BAD_EMPHASIS + "Sblock is not responsible\nfor anything Hal says.\n\nUnless it's awesome.\n\n"
+				+ Color.COMMAND + "/join #halchat" + Color.BAD + " to spam usage.");
 
 		noSpam = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
 				.setNameClick("/join #halchat").setNameHover(hover).setChannelClick("@#halchat ")
@@ -96,8 +90,9 @@ public class MegaHal extends HalMessageHandler {
 		if (msg.getSender() == null || msg.getChannel() instanceof NickChannel) {
 			return true;
 		}
-		Player sender = msg.getSender().getPlayer();
-		if (sender == null) {
+		OfflineUser sender = msg.getSender();
+		Player senderPlayer = sender.getPlayer();
+		if (senderPlayer == null) {
 			return true;
 		}
 		String message = ChatColor.stripColor(msg.getMessage());
@@ -110,10 +105,11 @@ public class MegaHal extends HalMessageHandler {
 			String channel = msg.getChannel().getName();
 			if (!channel.equals("#halchat")) {
 				Cooldowns cooldowns = Cooldowns.getInstance();
-				if (cooldowns.getGlobalRemainder("megahal" + channel) > 0) {
-					// Still on cooldown, warn a bitch
+				if (msg.getMessage().equals(sender.getLastMessage())
+						|| cooldowns.getGlobalRemainder("megahal" + channel) > 0) {
+					// Spammy, warn a bitch
 					noSpam.setChannel(msg.getChannel());
-					noSpam.toMessage().send(Arrays.asList(sender));
+					noSpam.toMessage().send(Arrays.asList(senderPlayer));
 					Logger.getLogger("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return true;
 				} else {

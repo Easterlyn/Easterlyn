@@ -1,20 +1,18 @@
 package co.sblock.chat.ai;
 
-import java.util.Arrays;
 import java.util.Collection;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
+import co.sblock.utilities.JSONUtil;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
  * HalMessageHandler for math functions.
@@ -23,14 +21,11 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Halculator extends HalMessageHandler {
 
-	private final ItemStack hover;
+	private final BaseComponent[] hover;
 
 	public Halculator() {
-		hover = new ItemStack(Material.REDSTONE_COMPARATOR);
-		ItemMeta meta = hover.getItemMeta();
-		meta.setDisplayName(ChatColor.RED + "Calculator");
-		meta.setLore(Arrays.asList(new String[] {ChatColor.DARK_RED + "For long or multiple", ChatColor.DARK_RED + "equations, use /halc"}));
-		hover.setItemMeta(meta);
+		hover = JSONUtil.fromLegacyText(ChatColor.RED + "Calculator\n"
+				+ ChatColor.DARK_RED + "For long or multiple\nequations, use /halc");
 	}
 
 	public String evhaluate(String input) {

@@ -1,17 +1,13 @@
 package co.sblock.commands.chat;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Color;
@@ -24,6 +20,8 @@ import co.sblock.users.Users;
 import co.sblock.utilities.WrappedSenderPlayer;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * SblockCommand for /aether, the command executed to make IRC chat mimic normal channels.
@@ -32,18 +30,12 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class AetherCommand extends SblockAsynchronousCommand {
 
-	private static final ItemStack HOVER;
+	private static final BaseComponent[] HOVER;
 	private static final WrappedSenderPlayer SENDER;
 
 	static {
-		HOVER = new ItemStack(Material.WEB);
-		ItemMeta hoverMeta = HOVER.getItemMeta();
-		hoverMeta.setDisplayName(Color.GOOD_EMPHASIS + "IRC Chat");
-		hoverMeta.setLore(Arrays.asList(new String[] {
-				Color.GOOD + "Server: irc.freenode.net",
-				Color.GOOD + "Channel: #sblockserver" }));
-		HOVER.setItemMeta(hoverMeta);
-
+		HOVER = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "IRC Chat\n"
+				+ Color.GOOD + "Server: irc.freenode.net\nChannel: #sblockserver");
 		SENDER = new WrappedSenderPlayer(Bukkit.getConsoleSender());
 	}
 

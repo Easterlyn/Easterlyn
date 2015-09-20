@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
@@ -52,12 +49,10 @@ public class RawAnnouncer extends Module {
 	 */
 	private List<Message> constructAnnouncements() {
 		List<Message> msgs = new ArrayList<>();
-		ItemStack hoverStack = new ItemStack(Material.DIODE);
-		ItemMeta meta = hoverStack.getItemMeta();
-		meta.setDisplayName(ChatColor.RED + "Automated Announcement");
-		hoverStack.setItemMeta(meta);
+		TextComponent nameHover = new TextComponent("Automated Announcement");
+		nameHover.setColor(ChatColor.RED);
 		MessageBuilder builder = new MessageBuilder().setChannel(ChannelManager.getChannelManager().getChannel("#"))
-				.setSender(ChatColor.DARK_RED + "Lil Hal").setNameHover(hoverStack).setNameClick("/report ");
+				.setSender(ChatColor.DARK_RED + "Lil Hal").setNameHover(nameHover).setNameClick("/report ");
 
 		List<TextComponent> components = new ArrayList<>();
 
