@@ -636,6 +636,15 @@ public class OfflineUser {
 	public void setChatWarnStatus(boolean warned) {}
 
 	/**
+	 * Gets whether or not the Player can join Sblock default chats.
+	 * 
+	 * @return true if the Player can join Sblock default chats.
+	 */
+	public boolean canJoinDefaultChats() {
+		return yaml.getBoolean("chat.joindefault", true);
+	}
+
+	/**
 	 * Checks if the Player is close enough to a Computer to chat in #.
 	 * 
 	 * @return true if the Player can chat in #

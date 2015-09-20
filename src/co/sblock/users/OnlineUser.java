@@ -124,7 +124,7 @@ public class OnlineUser extends OfflineUser {
 			getPlayer().resetPlayerTime();
 		}
 		if (oldRegion != null && newRegion == oldRegion) {
-			if (!getListening().contains(oldRegion.getChannelName())) {
+			if (canJoinDefaultChats() && !getListening().contains(oldRegion.getChannelName())) {
 				Channel channel = ChannelManager.getChannelManager().getChannel(oldRegion.getChannelName());
 				addListening(channel);
 			}
@@ -136,7 +136,7 @@ public class OnlineUser extends OfflineUser {
 		if (oldRegion != null && !oldRegion.getChannelName().equals(newRegion.getChannelName())) {
 			removeListening(oldRegion.getChannelName());
 		}
-		if (!getListening().contains(newRegion.getChannelName())) {
+		if (!getListening().contains(newRegion.getChannelName()) && canJoinDefaultChats()) {
 			addListening(ChannelManager.getChannelManager().getChannel(newRegion.getChannelName()));
 		}
 		if (oldRegion == null || !oldRegion.getResourcePackURL().equals(newRegion.getResourcePackURL())) {
@@ -261,7 +261,7 @@ public class OnlineUser extends OfflineUser {
 		if (channel == null) {
 			return false;
 		}
-		if (channel.isBanned(this)) {
+		if (channel.isBanned(this) || !canJoinDefaultChats() && channel.getOwner() == null) {
 			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()));
 			return false;
 		}
@@ -287,7 +287,8 @@ public class OnlineUser extends OfflineUser {
 	public void handleLoginChannelJoins() {
 		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
 			Channel channel = ChannelManager.getChannelManager().getChannel(iterator.next());
-			if (channel != null && !channel.isBanned(this) && (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))) {
+			if (channel != null && !channel.isBanned(this) && (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))
+					&& (canJoinDefaultChats() || channel.getOwner() != null)) {
 				this.getListening().add(channel.getName());
 				channel.getListening().add(this.getUUID());
 			} else {
