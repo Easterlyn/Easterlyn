@@ -55,6 +55,11 @@ public class CommandPreprocessListener implements Listener {
 			event.setMessage("/tps");
 			return;
 		}
+
+		if (isExecuting(command, "fly") && (event.getPlayer().hasPermission("essentials.fly")
+				|| event.getPlayer().hasPermission("essentials.*"))) {
+			event.getPlayer().setFallDistance(0);
+		}
 	}
 
 	private boolean isExecuting(String executed, String toCheck) {
