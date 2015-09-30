@@ -1,6 +1,7 @@
 package co.sblock.events.listeners.player;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -32,24 +33,32 @@ public class PortalListener implements Listener {
 		if (!event.useTravelAgent()) {
 			return;
 		}
+		if (event.getTo().getWorld().getEnvironment() == Environment.THE_END) {
+			// TODO Medium End?
+			return;
+		}
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
-		if (fromEnvironment == Environment.THE_END) {
+		agent.reset();
+		Block portal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
+		Location center = agent.findCenter(portal);
+		if (portal == null && fromEnvironment != Environment.THE_END) {
 			event.setCancelled(true);
 			return;
 		}
-		agent.reset();
-		Block portal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
-		if (portal == null) {
-			event.setCancelled(true);
+		if (fromEnvironment == Environment.THE_END) {
+			if (center.getBlock().getType() == Material.PORTAL) {
+				// No using nether portals in the End
+				event.setCancelled(true);
+			}
+			// TODO Medium End return?
 			return;
 		}
 		if (fromEnvironment == Environment.NETHER) {
 			agent.setSearchRadius(8);
 		}
-		event.setPortalTravelAgent(agent);
-		Location center = agent.findCenter(portal);
 		center.setPitch(event.getFrom().getPitch());
 		center.setYaw(event.getFrom().getYaw());
+		event.setPortalTravelAgent(agent);
 		event.setFrom(center);
 		agent.setFrom(center.getBlock());
 		Location to = agent.getTo(event.getFrom());
