@@ -171,11 +171,12 @@ public class TeleportRequestCommand extends SblockCommand {
 				+ toTeleport.getDisplayName() + Color.GOOD + " to you.");
 
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
-		if (sender.hasPermission("sblock.command.tpa.nocooldown")
+		Player issuer = request.isHere() ? toArriveAt : toTeleport;
+		if (issuer.hasPermission("sblock.command.tpa.nocooldown")
 				|| Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
-			Cooldowns.getInstance().clearCooldown(request.isHere() ? toArriveAt : toTeleport, "teleportRequest");
+			Cooldowns.getInstance().clearCooldown(issuer, "teleportRequest");
 		} else {
-			Cooldowns.getInstance().addCooldown(request.isHere() ? toArriveAt : toTeleport, "teleportRequest", 3600000L);
+			Cooldowns.getInstance().addCooldown(issuer, "teleportRequest", 3600000L);
 		}
 	}
 
