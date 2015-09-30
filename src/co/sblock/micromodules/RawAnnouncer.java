@@ -78,26 +78,6 @@ public class RawAnnouncer extends Module {
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
-		// Announcement: Join plug.dj
-		components.clear();
-		component = new TextComponent("Join our");
-		component.setColor(ChatColor.RED);
-		components.add(component);
-
-		component = new TextComponent(" plug.dj room ");
-		component.setColor(ChatColor.BLUE);
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://plug.dj/sblockco/"));
-		components.add(component);
-
-		component = new TextComponent("to play tunes and videos with other players!");
-		component.setColor(ChatColor.RED);
-		components.add(component);
-
-		builder.setMessage("Join http://plug.dj/sblockco/ to play tunes and videos with other players!",
-				components.toArray(new TextComponent[components.size()]));
-		msgs.add(builder.toMessage());
-
 		// Announcement: Pls gib monie
 		components.clear();
 		component = new TextComponent("It is your generosity that keeps Sblock alive. Please consider");
