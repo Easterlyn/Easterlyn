@@ -36,36 +36,51 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class MessageBuilder {
 
 	private static final TextComponent HIGHLIGHTED_BRACKET;
-	private static final String NAME_HOVER;
 	private static final String CONSOLE_FORMAT;
 	private static final String CONSOLE_FORMAT_THIRD;
+	private static final BaseComponent[] NAME_HOVER;
 
 	static {
 		HIGHLIGHTED_BRACKET = new TextComponent("!!");
 		HIGHLIGHTED_BRACKET.setColor(ChatColor.AQUA);
 
-		StringBuilder sb = new StringBuilder();
+		NAME_HOVER = new TextComponent[9];
+
 		// +-- Name --+
-		sb.append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH).append("+--")
-				.append(ChatColor.RESET).append(ChatColor.AQUA).append(ChatColor.RESET)
-				.append(" %1$2s%2$2s ").append(ChatColor.YELLOW).append(ChatColor.STRIKETHROUGH)
-				.append("--+").append(ChatColor.RESET);
+		TextComponent component = new TextComponent("+--");
+		component.setColor(Color.GOOD);
+		component.setStrikethrough(true);
+		NAME_HOVER[0] = component;
+		component = new TextComponent(" %s ");
+		NAME_HOVER[1] = component;
+		component = new TextComponent("--+\n");
+		component.setColor(Color.GOOD);
+		component.setStrikethrough(true);
+		NAME_HOVER[2] = component;
+
 		// Rank (Normal server rank)
-		sb.append("\n%1$2s%3$2s\n");
+		component = new TextComponent("%s\n");
+		NAME_HOVER[3] = component;
 
 		// Class of Aspect
-		sb.append("%4$2s%5$2s of %6$2s\n");
+		component = new TextComponent("%s of %s\n");
+		NAME_HOVER[4] = component;
 
 		// Dream: Dream
-		sb.append(ChatColor.YELLOW).append("Dream: %7$2s%8$2s\n");
+		component = new TextComponent("Dream: ");
+		component.setColor(Color.GOOD);
+		NAME_HOVER[5] = component;
+		component = new TextComponent("%s\n");
+		NAME_HOVER[6] = component;
 
 		// Medium: Medium
-		sb.append(ChatColor.YELLOW).append("Medium: %9$2s%10$2s");
-		// Arguments in order: Global rank color, name, global rank name, aspect color, class name,
-		// aspect name, dream color, dream name, medium color, medium name
-		NAME_HOVER = sb.toString();
+		component = new TextComponent("Medium: ");
+		component.setColor(Color.GOOD);
+		NAME_HOVER[7] = component;
+		component = new TextComponent("%s");
+		NAME_HOVER[8] = component;
 
-		sb.delete(0, sb.length());
+		StringBuilder sb = new StringBuilder();
 		sb.append("%1$2s[%2$2s%3$2s%1$2s]%4$2s <%5$2s%6$2s%4$2s> ").append(ChatColor.WHITE).append("%6$2s");
 		CONSOLE_FORMAT = sb.toString();
 		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
@@ -238,7 +253,7 @@ public class MessageBuilder {
 	 * @return the MessageBuilder
 	 */
 	public MessageBuilder setNameHover(String hover) {
-		this.nameHover = JSONUtil.fromLegacyText(hover);
+		this.nameHover = TextComponent.fromLegacyText(hover);
 		return this;
 	}
 
@@ -410,13 +425,13 @@ public class MessageBuilder {
 			// Permission-based rank colors
 			if (player.hasPermission("group.horrorterror")) {
 				globalRank = Color.RANK_HORRORTERROR;
-				rankName = "Horrorterror (Owner)";
+				rankName = "Horrorterror";
 			} else if (player.hasPermission("sblock.denizen")) {
 				globalRank = Color.RANK_DENIZEN;
-				rankName = "Denizen (Admin)";
+				rankName = "Denizen";
 			} else if (player.hasPermission("sblock.felt")) {
 				globalRank = Color.RANK_FELT;
-				rankName = "Felt (Moderator)";
+				rankName = "Felt";
 			} else if (player.hasPermission("sblock.helper")) {
 				globalRank = Color.RANK_HELPER;
 				rankName = "Helper";
@@ -464,14 +479,59 @@ public class MessageBuilder {
 		components.add(component);
 
 		if (nameHover == null && sender != null) {
-			// Arguments in order: Global rank color, name, global rank name, aspect color, class name,
-			// aspect name, dream color, dream name, medium color, medium name
-			nameHover = JSONUtil.fromLegacyText(String.format(NAME_HOVER,
-					globalRank, sender.getDisplayName(), rankName, sender.getUserAspect()
-							.getColor(), sender.getUserClass().getDisplayName(),
-							sender.getUserAspect().getDisplayName(), sender.getDreamPlanet().getColor(),
-							sender.getDreamPlanet().getDisplayName(), sender.getMediumPlanet().getColor(),
-							sender.getMediumPlanet().getDisplayName()));
+			nameHover = new BaseComponent[NAME_HOVER.length];
+
+			nameHover[0] = NAME_HOVER[0];
+
+			// Set name and global rank color
+			component = (TextComponent) NAME_HOVER[1].duplicate();
+			component.setText(String.format(component.getText(), senderName));
+			component.setColor(globalRank);
+			nameHover[1] = component;
+
+			nameHover[2] = NAME_HOVER[2];
+
+			// Global rank descriptor
+			component = (TextComponent) NAME_HOVER[3].duplicate();
+			component.setText(String.format(component.getText(), rankName));
+			component.setColor(globalRank);
+			nameHover[3] = component;
+
+			// Class of Aspect
+			component = (TextComponent) NAME_HOVER[4].duplicate();
+			component.setText(String.format(component.getText(), sender.getUserClass()
+					.getDisplayName(), sender.getUserAspect().getDisplayName()));
+			component.setColor(sender.getUserAspect().getColor());
+			nameHover[4] = component;
+
+			nameHover[5] = NAME_HOVER[5];
+
+			// Dream planet
+			component = (TextComponent) NAME_HOVER[6].duplicate();
+			component.setText(String.format(component.getText(), sender.getDreamPlanet().getDisplayName()));
+			component.setColor(sender.getDreamPlanet().getColor());
+			nameHover[6] = component;
+
+			nameHover[7] = NAME_HOVER[7];
+
+			// Medium planet
+			component = (TextComponent) NAME_HOVER[8].duplicate();
+			component.setText(String.format(component.getText(), sender.getMediumPlanet().getDisplayName()));
+			component.setColor(sender.getMediumPlanet().getColor());
+			nameHover[8] = component;
+
+			/*
+			 * Yes, this is stupid.
+			 * 
+			 * The client assumes that the first JSON element of an unwrapped array is the
+			 * containing element.
+			 * 
+			 * This means that since our first element has formatting, all following elements not
+			 * explicitly declared to not have formatting inherit its formatting. It's a client
+			 * limitation that can only be bypassed by wrapping all the elements of the array into
+			 * a new array as extra.
+			 */
+			nameHover = new TextComponent[] { new TextComponent(nameHover) };
 		}
 
 		TextComponent nameComponent = new TextComponent(components.toArray(new BaseComponent[components.size()]));
