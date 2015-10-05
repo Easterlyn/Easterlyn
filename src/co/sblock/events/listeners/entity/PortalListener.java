@@ -44,7 +44,9 @@ public class PortalListener implements Listener {
 			return;
 		}
 		if (fromEnvironment == Environment.NETHER) {
-			agent.setSearchRadius(8);
+			agent.setSearchRadius(9);
+		} else {
+			agent.setSearchRadius(1);
 		}
 		event.setPortalTravelAgent(agent);
 		Location center = agent.findCenter(portal);
