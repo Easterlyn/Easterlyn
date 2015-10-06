@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.micromodules.Slack;
 import co.sblock.micromodules.Spectators;
@@ -33,7 +34,7 @@ public class CommandPreprocessListener implements Listener {
 			event.setMessage("/" + event.getMessage().substring(colon + 1));
 		}
 
-		String command = event.getMessage().toLowerCase().substring(1, space > 0 ? space : event.getMessage().length());
+		String command = event.getMessage().substring(1, space > 0 ? space : event.getMessage().length()).toLowerCase();
 
 		if (!event.getPlayer().hasPermission("sblock.felt")
 				&& !Sblock.getInstance().getConfig().getStringList("slack.command-blacklist").contains(command)) {
@@ -47,6 +48,18 @@ public class CommandPreprocessListener implements Listener {
 				&& (isExecuting(command, "sethome"))) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(Color.BAD + "You hear a fizzling noise as your spell fails.");
+			return;
+		}
+
+		if (isExecuting(command, "afk") && Chat.getChat().testForMute(event.getPlayer())) {
+			event.setCancelled(true);
+			return;
+		}
+
+		if (isExecuting(command, "pr") && space > 0
+				&& event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(Color.BAD + "Restore, don't undo.");
 			return;
 		}
 

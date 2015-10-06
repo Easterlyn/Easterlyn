@@ -199,7 +199,7 @@ public class MessageBuilder {
 			if (sb.length() > 0) {
 				sb.deleteCharAt(sb.length() - 1);
 			}
-			message = sb.toString().replaceAll("[tT]ilde?s?", "").replace("GOG", "GOD")
+			message = sb.toString().replaceAll("[tT][iI][lL][dD][AEae]?[sS]?", "").replace("GOG", "GOD")
 					.replaceAll("([Gg])og", "$1od").replace("JEGUS", "JESUS")
 					.replaceAll("([Jj])egus", "$1esus");
 		}
