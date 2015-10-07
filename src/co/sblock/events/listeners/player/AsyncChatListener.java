@@ -59,7 +59,7 @@ public class AsyncChatListener implements Listener {
 			"Testing complete. Proceeding with operation.", "A critical fault has been discovered while testing.",
 			"Error: Test results contaminated.", "tset", "PONG."};
 	private final boolean handleGriefPrevention;
-	private final Pattern claimPattern, trappedPattern;
+	private final Pattern claimPattern, trappedPattern, yoooooooooooooooooooooooooooooooooooooooo;
 	private final List<Pattern> doNotSayThat;
 
 	public AsyncChatListener() {
@@ -90,6 +90,8 @@ public class AsyncChatListener implements Listener {
 			claimPattern = null;
 			trappedPattern = null;
 		}
+
+		yoooooooooooooooooooooooooooooooooooooooo = Pattern.compile("[Yy][Oo]+");
 
 		doNotSayThat = new ArrayList<>();
 		// Generally, anything including a variant of "rape" is in incredibly poor taste.
@@ -334,8 +336,6 @@ public class AsyncChatListener implements Listener {
 		msg = msg.toLowerCase();
 		String lastMsg = sender.getLastMessage();
 		sender.setLastChat(msg);
-		String lastChannelMsg = message.getChannel().getLastMessage();
-		message.getChannel().setLastMessage(msg);
 		long lastChat = Cooldowns.getInstance().getRemainder(player, "chat");
 		Cooldowns.getInstance().addCooldown(player, "chat", 3000);
 
@@ -348,7 +348,7 @@ public class AsyncChatListener implements Listener {
 		}
 
 		// Mute repeat messages
-		if (msg.equals(lastMsg) || !msg.contains("welcome") && msg.equals(lastChannelMsg)) {
+		if (msg.equals(lastMsg)) {
 			// In event of exact duplicates, reach penalization levels at a much faster rate
 			int spamCount = sender.getChatViolationLevel();
 			if (spamCount == 0) {
@@ -385,7 +385,8 @@ public class AsyncChatListener implements Listener {
 				}
 			}
 		}
-		if (symbols > length / 2 || length > 15 && spaces < length / 10) {
+		if (!yoooooooooooooooooooooooooooooooooooooooo.matcher(msg).matches()
+				&& (symbols > length / 2 || length > 15 && spaces < length / 10)) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 1);
 			event.setFormat("[Gibberish] " + event.getFormat());
 			return true;
@@ -393,8 +394,7 @@ public class AsyncChatListener implements Listener {
 
 		// Must be more than 25% different from last message
 		double lenPercent = msg.length() * .25;
-		if (StringUtils.getLevenshteinDistance(msg, lastMsg) < lenPercent
-				|| !msg.contains("welcome") && StringUtils.getLevenshteinDistance(msg, lastChannelMsg) < lenPercent) {
+		if (StringUtils.getLevenshteinDistance(msg, lastMsg) < lenPercent) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[SimilarChat] " + event.getFormat());
 			return true;
