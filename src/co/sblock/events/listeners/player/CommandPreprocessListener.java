@@ -51,28 +51,45 @@ public class CommandPreprocessListener implements Listener {
 			return;
 		}
 
-		if (isExecuting(command, "afk") && Chat.getChat().testForMute(event.getPlayer())) {
-			event.setCancelled(true);
+		if (isExecuting(command, "afk")) {
+			if (Chat.getChat().testForMute(event.getPlayer())) {
+				event.setCancelled(true);
+			}
 			return;
 		}
 
-		if (isExecuting(command, "pr") && space > 0
-				&& event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
-			event.setCancelled(true);
-			event.getPlayer().sendMessage(Color.BAD + "Restore, don't undo.");
+		if (isExecuting(command, "mail")) {
+			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("send")
+					&& Chat.getChat().testForMute(event.getPlayer())) {
+				event.setCancelled(true);
+			}
 			return;
 		}
 
-		if (isExecuting(command, "gc") && !event.getPlayer().hasPermission("essentials.gc")
-				&& !event.getPlayer().hasPermission("essentials.*")) {
-			event.setMessage("/tps");
+		if (isExecuting(command, "pr")) {
+			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
+				event.setCancelled(true);
+				event.getPlayer().sendMessage(Color.BAD + "Restore, don't undo.");
+			}
 			return;
 		}
 
-		if (isExecuting(command, "fly") && (event.getPlayer().hasPermission("essentials.fly")
-				|| event.getPlayer().hasPermission("essentials.*"))) {
-			event.getPlayer().setFallDistance(0);
+		if (isExecuting(command, "gc")) {
+			if (!event.getPlayer().hasPermission("essentials.gc")
+					&& !event.getPlayer().hasPermission("essentials.*")) {
+				event.setMessage("/tps");
+			}
+			return;
 		}
+
+		if (isExecuting(command, "fly")) {
+			if ((event.getPlayer().hasPermission("essentials.fly")
+					|| event.getPlayer().hasPermission("essentials.*"))) {
+				event.getPlayer().setFallDistance(0);
+			}
+			return;
+		}
+
 	}
 
 	private boolean isExecuting(String executed, String toCheck) {
