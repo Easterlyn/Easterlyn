@@ -24,8 +24,6 @@ public abstract class Channel {
 	protected final Set<UUID> listening;
 	protected final UUID owner;
 
-	private String lastMessage;
-
 	/**
 	 * @param name the name of the channel
 	 * @param creator the owner of the channel
@@ -102,24 +100,6 @@ public abstract class Channel {
 	 * Update the last access time.
 	 */
 	public abstract void updateLastAccess();
-
-	/**
-	 * Gets the last player chat message sent through the channel.
-	 * 
-	 * @return the message sent
-	 */
-	public String getLastMessage() {
-		return lastMessage != null ? lastMessage : new String();
-	}
-
-	/**
-	 * Sets the last player chat message sent through the channel.
-	 * 
-	 * @param message the message
-	 */
-	public void setLastMessage(String message) {
-		lastMessage = message;
-	}
 
 	/**
 	 * For sending a channel message, not for chat! Chat should be sent by constructing a Message with a MessageBuilder.
