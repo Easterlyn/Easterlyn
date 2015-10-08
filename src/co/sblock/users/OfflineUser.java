@@ -896,11 +896,11 @@ public class OfflineUser {
 
 	public OnlineUser getOnlineUser() {
 		OnlineUser user = Users.getOnlineUser(getUUID());
-		if (user == null) {
-			return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
-					yaml, getPreviousLocation(), getPrograms(), currentChannel, getListening());
+		if (user != null) {
+			return user;
 		}
-		return null;
+		return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
+				yaml, getPreviousLocation(), getPrograms(), currentChannel, getListening());
 	}
 
 	protected YamlConfiguration getYamlConfiguration() {
