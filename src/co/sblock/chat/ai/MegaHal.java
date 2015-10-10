@@ -226,7 +226,7 @@ public class MegaHal extends HalMessageHandler {
 	}
 
 	private File getFirstAvailableHalFile() {
-		File folder = new File("plugins/Sblock/MegaHal");
+		File folder = new File(Sblock.getInstance().getDataFolder(), "MegaHal");
 		if (!folder.exists()) {
 			folder.mkdir();
 			return new File(folder, "hal-0.log");
