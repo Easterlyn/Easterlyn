@@ -551,10 +551,14 @@ public class InventoryUtils {
 
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (Triple<ItemStack, ItemStack, ItemStack> recipe : recipes) {
-			list.add(new MerchantRecipe(
-					recipe.getRight() == null ? null : CraftItemStack.asNMSCopy(recipe.getLeft()),
-					recipe.getRight() == null ? null : CraftItemStack.asNMSCopy(recipe.getMiddle()),
-					CraftItemStack.asNMSCopy(recipe.getRight())));
+			// The client can handle having null results for recipes, but will crash upon removing the result.
+			// To combat that, add a full null recipe instead of a recipe with a null result.
+			// We can't just remove the recipe in case the client has changed to a higher number
+			// recipe - it cannot handle a reduction below its current recipe number.
+			boolean nope = recipe.getRight() == null;
+			list.add(new MerchantRecipe(nope ? null : CraftItemStack.asNMSCopy(recipe.getLeft()),
+					nope ? null : CraftItemStack.asNMSCopy(recipe.getMiddle()),
+							CraftItemStack.asNMSCopy(recipe.getRight())));
 		}
 
 		PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());

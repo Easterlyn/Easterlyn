@@ -66,7 +66,7 @@ public class CommandPreprocessListener implements Listener {
 			return;
 		}
 
-		if (isExecuting(command, "pr")) {
+		if (isExecuting(command, "prism")) {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(Color.BAD + "Restore, don't undo.");
@@ -97,14 +97,6 @@ public class CommandPreprocessListener implements Listener {
 		if (command ==  null) {
 			return false;
 		}
-		if (executed.equals(command.getName())) {
-			return true;
-		}
-		for (String alias : command.getAliases()) {
-			if (executed.equals(alias)) {
-				return true;
-			}
-		}
-		return false;
+		return executed.equals(command.getName());
 	}
 }
