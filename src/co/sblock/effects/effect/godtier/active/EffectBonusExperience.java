@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDeathEvent;
 
@@ -57,12 +57,14 @@ public class EffectBonusExperience extends Effect implements BehaviorActive, Beh
 	public void handleEvent(Event event, LivingEntity entity, int level) {
 		EntityDeathEvent death = (EntityDeathEvent) event;
 
-		if (death.getEntity() instanceof Player) {
+		if (death.getEntity().getType() == EntityType.PLAYER
+				|| death.getEntity().getType() == EntityType.ENDER_DRAGON) {
 			// Players drop all exp, don't multiply
+			// Ender dragon drops 12000 exp, we do not need to make that number larger
 			return;
 		}
 
-		death.setDroppedExp((int) (death.getDroppedExp() * (level * .2 + 1)));
+		death.setDroppedExp((int) (death.getDroppedExp() * (level * .25 + 1)));
 	}
 
 }
