@@ -3,6 +3,9 @@ package co.sblock.machines.type;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,7 +40,7 @@ import net.md_5.bungee.api.ChatColor;
 public class PunchDesignix extends Machine {
 
 	/* The ItemStacks used to create usage help trade offers */
-	private static ItemStack[] exampleRecipes;
+	private static Triple<ItemStack, ItemStack, ItemStack> exampleRecipes;
 
 	private final ItemStack drop;
 
@@ -191,6 +194,8 @@ public class PunchDesignix extends Machine {
 					result = Captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
 				}
 				open.setItem(2, result);
+				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
+						new ImmutableTriple<>(open.getItem(0), open.getItem(1), result));
 				InventoryUtils.updateWindowSlot(player, 2);
 			}
 		});
@@ -202,7 +207,8 @@ public class PunchDesignix extends Machine {
 	 * @param player the Player
 	 */
 	public void openInventory(Player player, ConfigurationSection storage) {
-		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, getKey(storage), getExampleRecipes());
+		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, getKey(storage));
+		InventoryUtils.updateVillagerTrades(player, getExampleRecipes());
 	}
 
 	@Override
@@ -213,7 +219,7 @@ public class PunchDesignix extends Machine {
 	/**
 	 * Singleton for getting usage help ItemStacks.
 	 */
-	public static ItemStack[] getExampleRecipes() {
+	public static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
 		if (exampleRecipes == null) {
 			exampleRecipes = createExampleRecipes();
 		}
@@ -225,7 +231,7 @@ public class PunchDesignix extends Machine {
 	 * 
 	 * @return
 	 */
-	private static ItemStack[] createExampleRecipes() {
+	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
 		ItemStack is1 = new ItemStack(Material.BOOK);
 		ItemMeta im = is1.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Slot 1 options:");
@@ -260,6 +266,6 @@ public class PunchDesignix extends Machine {
 		im.setLore(lore);
 		is3.setItemMeta(im);
 
-		return new ItemStack[] {is1, is2, is3};
+		return new ImmutableTriple<>(is1, is2, is3);
 	}
 }

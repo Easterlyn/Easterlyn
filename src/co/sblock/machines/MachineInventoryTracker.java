@@ -1,7 +1,5 @@
 package co.sblock.machines;
 
-import io.netty.buffer.Unpooled;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -18,7 +16,6 @@ import co.sblock.machines.type.Alchemiter;
 import co.sblock.machines.type.Machine;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.Container;
@@ -30,8 +27,6 @@ import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.ItemStack;
 import net.minecraft.server.v1_8_R3.MerchantRecipe;
 import net.minecraft.server.v1_8_R3.MerchantRecipeList;
-import net.minecraft.server.v1_8_R3.PacketDataSerializer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_8_R3.PacketPlayOutOpenWindow;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -73,7 +68,7 @@ public class MachineInventoryTracker {
 		}
 	}
 
-	public void openVillagerInventory(Player player, Machine m, Location key, org.bukkit.inventory.ItemStack... items) {
+	public void openVillagerInventory(Player player, Machine m, Location key) {
 		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
 		int containerCounter = nmsPlayer.nextContainerCounter();
@@ -85,27 +80,6 @@ public class MachineInventoryTracker {
 				new ChatComponentText(m.getClass().getSimpleName()), 3));
 
 		this.openMachines.put(player.getUniqueId(), new ImmutablePair<Machine, Location>(m, key));
-
-		MerchantRecipeList list = new MerchantRecipeList();
-		for (int i = 0; i < items.length; i++) {
-			if (i % 3 == 0 && items.length - i > 2) {
-				list.add(new MerchantRecipe(CraftItemStack.asNMSCopy(items[i]),
-						CraftItemStack.asNMSCopy(items[i+1]),
-						CraftItemStack.asNMSCopy(items[i+2])));
-			}
-		}
-
-		if (list.isEmpty()) {
-			// Setting result in a villager inventory with recipes doesn't play nice clientside.
-			// To make life easier, if there are no recipes, don't send the trade recipe packet.
-			return;
-		}
-
-		PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
-		out.writeInt(containerCounter);
-		list.a(out);
-		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", out));
-
 	}
 
 	public class MerchantContainer extends ContainerMerchant {

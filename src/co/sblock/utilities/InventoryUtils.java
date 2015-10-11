@@ -1,5 +1,7 @@
 package co.sblock.utilities;
 
+import io.netty.buffer.Unpooled;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,12 +17,14 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -54,8 +58,13 @@ import co.sblock.machines.type.Machine;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.MerchantRecipe;
+import net.minecraft.server.v1_8_R3.MerchantRecipeList;
+import net.minecraft.server.v1_8_R3.PacketDataSerializer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSetSlot;
 
 /**
@@ -524,5 +533,40 @@ public class InventoryUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@SafeVarargs
+	public static void updateVillagerTrades(Player player, Triple<ItemStack, ItemStack, ItemStack>... recipes) {
+		if (recipes == null || recipes.length == 0) {
+			// Setting result in a villager inventory with recipes doesn't play nice clientside.
+			// To make life easier, if there are no recipes, don't send the trade recipe packet.
+			return;
+		}
+
+		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
+
+		if (nmsPlayer.activeContainer.getBukkitView().getType() != InventoryType.MERCHANT) {
+			return;
+		}
+
+		MerchantRecipeList list = new MerchantRecipeList();
+		for (Triple<ItemStack, ItemStack, ItemStack> recipe : recipes) {
+			list.add(new MerchantRecipe(
+					recipe.getRight() == null ? null : CraftItemStack.asNMSCopy(recipe.getLeft()),
+					recipe.getRight() == null ? null : CraftItemStack.asNMSCopy(recipe.getMiddle()),
+					CraftItemStack.asNMSCopy(recipe.getRight())));
+		}
+
+		PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
+		try {
+			Field field = nmsPlayer.getClass().getDeclaredField("containerCounter");
+			field.setAccessible(true);
+			out.writeInt(field.getInt(nmsPlayer));
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+			return;
+		}
+		list.a(out);
+		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", out));
 	}
 }
