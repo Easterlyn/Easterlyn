@@ -592,7 +592,7 @@ public class OfflineUser {
 	 * 
 	 * @return the last chat message sent
 	 */
-	public synchronized String getLastMessage() {
+	public synchronized String getLastChat() {
 		return new String();
 	}
 

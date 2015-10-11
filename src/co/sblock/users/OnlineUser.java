@@ -358,7 +358,7 @@ public class OnlineUser extends OfflineUser {
 	}
 
 	@Override
-	public synchronized String getLastMessage() {
+	public synchronized String getLastChat() {
 		return this.lastChat;
 	}
 

@@ -105,8 +105,7 @@ public class MegaHal extends HalMessageHandler {
 			String channel = msg.getChannel().getName();
 			if (!channel.equals("#halchat")) {
 				Cooldowns cooldowns = Cooldowns.getInstance();
-				if (msg.getMessage().equals(sender.getLastMessage())
-						|| cooldowns.getGlobalRemainder("megahal" + channel) > 0) {
+				if (cooldowns.getGlobalRemainder("megahal" + channel) > 0) {
 					// Spammy, warn a bitch
 					noSpam.setChannel(msg.getChannel());
 					noSpam.toMessage().send(Arrays.asList(senderPlayer));

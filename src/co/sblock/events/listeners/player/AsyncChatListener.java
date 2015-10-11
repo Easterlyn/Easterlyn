@@ -332,7 +332,7 @@ public class AsyncChatListener implements Listener {
 		}
 
 		msg = msg.toLowerCase();
-		String lastMsg = sender.getLastMessage();
+		String lastMsg = sender.getLastChat();
 		sender.setLastChat(msg);
 		long lastChat = Cooldowns.getInstance().getRemainder(player, "chat");
 		Cooldowns.getInstance().addCooldown(player, "chat", 3000);
