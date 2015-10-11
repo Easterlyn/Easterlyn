@@ -93,10 +93,10 @@ public class CommandPreprocessListener implements Listener {
 	}
 
 	private boolean isExecuting(String executed, String toCheck) {
-		Command command = Sblock.getInstance().getCommandMap().getCommand(toCheck);
+		Command command = Sblock.getInstance().getCommandMap().getCommand(executed);
 		if (command ==  null) {
 			return false;
 		}
-		return executed.equals(command.getName());
+		return toCheck.equals(command.getName());
 	}
 }
