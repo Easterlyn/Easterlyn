@@ -164,7 +164,6 @@ public class ChannelManager {
 
 	public void createDefaultSet() {
 		channelList.put("#", new RegionChannel("#"));
-		channelList.put("#help", new NormalChannel("#help", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#fanrp", new NickChannel("#fanrp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#EARTH", new RegionChannel("#EARTH"));

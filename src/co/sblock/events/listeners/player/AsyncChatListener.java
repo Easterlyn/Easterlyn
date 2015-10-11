@@ -23,7 +23,6 @@ import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.ai.HalMessageHandler;
-import co.sblock.chat.ai.Halper;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -75,7 +74,6 @@ public class AsyncChatListener implements Listener {
 		permission.addParent("sblock.felt", true).recalculatePermissibles();
 
 		halFunctions = new ArrayList<>();
-		halFunctions.add(new Halper());
 		halFunctions.add(Chat.getChat().getHalculator());
 		// MegaHal function should be last as it (by design) handles any message passed to it.
 		// Insert any additional functions above.
