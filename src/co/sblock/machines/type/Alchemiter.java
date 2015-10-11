@@ -3,6 +3,9 @@ package co.sblock.machines.type;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,6 +40,8 @@ import net.md_5.bungee.api.ChatColor;
  * @author Jikoo
  */
 public class Alchemiter extends Machine {
+
+	private static Triple<ItemStack, ItemStack, ItemStack> exampleRecipes;
 
 	private final ItemStack drop;
 
@@ -91,18 +96,11 @@ public class Alchemiter extends Machine {
 		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| Entry.getEntry().isEntering(user))) {
-			openInventory(event.getPlayer(), storage);
+			MachineInventoryTracker.getTracker().openVillagerInventory(event.getPlayer(), this,
+					getKey(storage));
+			InventoryUtils.updateVillagerTrades(event.getPlayer(), getExampleRecipes());
 		}
 		return true;
-	}
-
-	/**
-	 * Open a Alchemiter inventory for a Player.
-	 * 
-	 * @param player the Player
-	 */
-	public void openInventory(Player player, ConfigurationSection storage) {
-		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, getKey(storage));
 	}
 
 	@Override
@@ -167,10 +165,11 @@ public class Alchemiter extends Machine {
 				}
 
 				Inventory open = player.getOpenInventory().getTopInventory();
-				ItemStack result;
+				ItemStack input = open.getItem(0);
 				ItemStack expCost;
-				if (CruxiteDowel.isDowel(open.getItem(0))) {
-					result = Captcha.captchaToItem(open.getItem(0));
+				ItemStack result;
+				if (CruxiteDowel.isDowel(input)) {
+					result = Captcha.captchaToItem(input);
 					expCost = new ItemStack(Material.EXP_BOTTLE);
 					int exp = CruxiteDowel.expCost(result);
 					ItemMeta im = expCost.getItemMeta();
@@ -195,6 +194,8 @@ public class Alchemiter extends Machine {
 				// Set items
 				open.setItem(1, expCost);
 				open.setItem(2, result);
+				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
+						new ImmutableTriple<>(input, expCost, result));
 				player.updateInventory();
 			}
 		});
@@ -203,5 +204,47 @@ public class Alchemiter extends Machine {
 	@Override
 	public ItemStack getUniqueDrop() {
 		return drop;
+	}
+
+	/**
+	 * Singleton for getting usage help ItemStacks.
+	 */
+	public static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
+		if (exampleRecipes == null) {
+			exampleRecipes = createExampleRecipes();
+		}
+		return exampleRecipes;
+	}
+
+	/**
+	 * Creates the ItemStacks used in displaying usage help.
+	 * 
+	 * @return
+	 */
+	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
+		ItemStack is1 = new ItemStack(Material.NETHER_BRICK_ITEM);
+		ItemMeta im = is1.getItemMeta();
+		im.setDisplayName(ChatColor.GOLD + "Cruxite Totem");
+		ArrayList<String> lore = new ArrayList<>();
+		is1.setItemMeta(im);
+
+		ItemStack is2 = new ItemStack(Material.BARRIER);
+		im = is2.getItemMeta();
+		im.setDisplayName(ChatColor.GOLD + "Grist Cost");
+		lore = new ArrayList<>();
+		lore.add(ChatColor.WHITE + "This will display when a");
+		lore.add(ChatColor.WHITE + "valid totem is inserted.");
+		im.setLore(lore);
+		is2.setItemMeta(im);
+
+		ItemStack is3 = new ItemStack(Material.DIRT);
+		im = is3.getItemMeta();
+		im.setDisplayName(ChatColor.GOLD + "Perfectly Generic Result");
+		lore = new ArrayList<>();
+		lore.add(ChatColor.WHITE + "Your result here.");
+		im.setLore(lore);
+		is3.setItemMeta(im);
+
+		return new ImmutableTriple<>(is1, is2, is3);
 	}
 }
