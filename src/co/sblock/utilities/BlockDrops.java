@@ -37,19 +37,25 @@ public class BlockDrops {
 	}
 
 	private static Collection<ItemStack> getDrops(ItemStack tool, Block block, int fortuneBonus) {
-		if (tool.containsEnchantment(Enchantment.SILK_TOUCH) && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
+
+		if (tool != null && tool.containsEnchantment(Enchantment.SILK_TOUCH) && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
 			Collection<ItemStack> drops = getSilkDrops(tool, block.getState().getData());
 			if (drops != null) {
 				return drops;
 			}
 		}
-		if (fortuneBonus > 0 || tool.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)
-				&& tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + fortuneBonus > 0) {
-			Collection<ItemStack> drops = getFortuneDrops(tool, block.getState().getData(), fortuneBonus);
+
+		if (tool.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
+			fortuneBonus += tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+		}
+
+		if (fortuneBonus > 0) {
+			Collection<ItemStack> drops = getFortuneDrops(block.getState().getData(), fortuneBonus);
 			if (drops != null) {
 				return drops;
 			}
 		}
+
 		return block.getDrops(tool);
 	}
 
@@ -159,8 +165,7 @@ public class BlockDrops {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static Collection<ItemStack> getFortuneDrops(ItemStack tool, MaterialData material, int fortuneBonus) {
-		int fortune = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + fortuneBonus;
+	private static Collection<ItemStack> getFortuneDrops(MaterialData material, int fortune) {
 		ArrayList<ItemStack> drops = new ArrayList<>();
 		switch (material.getItemType()) {
 		case CARROT:
