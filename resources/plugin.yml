@@ -21,3 +21,6 @@ permissions:
  sblockchat.color:
   description: 'Automatically colors message with name color.'
   default: false
+ sblock.god:
+  description: 'Stuff for Sblock "gods"'
+  default: false
