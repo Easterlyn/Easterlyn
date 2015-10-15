@@ -12,12 +12,15 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.events.Events;
 import co.sblock.micromodules.FreeCart;
+import co.sblock.micromodules.Godule;
+import co.sblock.users.UserAspect;
 import co.sblock.utilities.Experience;
 
 /**
@@ -77,9 +80,18 @@ public class DeathListener implements Listener {
 			event.setDroppedExp(Experience.getExp(player));
 			event.setKeepInventory(true);
 			Events.getInstance().getPVPTasks().remove(player.getUniqueId()).cancel();
-			if (player.getKiller() != null) {
-				Bukkit.getConsoleSender().sendMessage(player.getName() + " died to "
-						+ player.getKiller().getName() + "." + location);
+			Player killer = player.getKiller();
+			if (killer == null) {
+				return;
+			}
+			Bukkit.getConsoleSender().sendMessage(player.getName() + " died to "
+					+ killer.getName() + "." + location);
+			if (Godule.getInstance().isEnabled(UserAspect.BREATH)) {
+				ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+				SkullMeta meta = (SkullMeta) skull.getItemMeta();
+				meta.setOwner(player.getName());
+				skull.setItemMeta(meta);
+				player.getWorld().dropItem(player.getLocation(), skull);
 			}
 		} else {
 			Bukkit.getConsoleSender().sendMessage(player.getName() + " died to "

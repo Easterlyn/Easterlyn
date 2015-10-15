@@ -31,7 +31,7 @@ import co.sblock.utilities.InventoryUtils;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * 
+ * Effect for automatically harvesting and planting crops when right clicked.
  * 
  * @author Jikoo
  */

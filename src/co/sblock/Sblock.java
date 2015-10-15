@@ -46,6 +46,7 @@ import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
 import co.sblock.micromodules.FreeCart;
+import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.Meteors;
 import co.sblock.micromodules.RawAnnouncer;
 import co.sblock.micromodules.Slack;
@@ -110,6 +111,7 @@ public class Sblock extends JavaPlugin {
 		modules.add(new Meteors().enable());
 		modules.add(new Spectators().enable());
 		modules.add(new SleepVote().enable());
+		modules.add(new Godule().enable());
 		modules.add(new Events().enable());
 		modules.add(new RawAnnouncer().enable());
 

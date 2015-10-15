@@ -11,6 +11,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import co.sblock.Sblock;
 import co.sblock.events.Events;
 import co.sblock.events.packets.WrapperPlayServerPlayerListHeaderFooter;
+import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.Slack;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Region;
@@ -71,6 +72,10 @@ public class JoinListener implements Listener {
 				}
 
 				list.sendPacket(player);
+
+				if (player.hasPermission("sblock.god")) {
+					Godule.getInstance().enable(user.getUserAspect());
+				}
 			}
 		}.runTask(Sblock.getInstance());
 	}

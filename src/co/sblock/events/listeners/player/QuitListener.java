@@ -14,6 +14,7 @@ import co.sblock.chat.Color;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.micromodules.FreeCart;
+import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.Slack;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.micromodules.Spectators;
@@ -75,6 +76,11 @@ public class QuitListener implements Listener {
 		final UUID uuid = event.getPlayer().getUniqueId();
 		OfflineUser user = Users.getGuaranteedUser(uuid);
 		user.save();
+
+		// Disable "god" effect, if any
+		if (event.getPlayer().hasPermission("sblock.god")) {
+			Godule.getInstance().disable(user.getUserAspect());
+		}
 
 		// Remove Server status
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
