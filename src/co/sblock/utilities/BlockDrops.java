@@ -279,14 +279,13 @@ public class BlockDrops {
 		}
 		byte data = block.getData();
 
-		int count = nmsBlock.getDropCount(0, RAND);
-
 		if (nmsBlock == Blocks.NETHER_WART) {
 			// Nether wart: Drop count is always 0
 			drops.add(new ItemStack(Material.NETHER_STALK, 2 + RAND.nextInt(3)));
 			return drops;
 		}
 
+		int count = nmsBlock.getDropCount(0, RAND);
 		if (count == 0) {
 			return drops;
 		}
