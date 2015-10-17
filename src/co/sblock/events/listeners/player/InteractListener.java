@@ -43,6 +43,17 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class InteractListener implements Listener {
 
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerInteractMonitor(PlayerInteractEvent event) {
+		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
+			// Right clicking air is cancelled by default as there is no result.
+			return;
+		}
+
+		// EFFECTS: Active application - right click only for now, change if needed.
+		Effects.getInstance().handleEvent(event, event.getPlayer(), false);
+	}
+
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerInteractLow(PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -113,9 +124,6 @@ public class InteractListener implements Listener {
 		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			return;
 		}
-
-		// EFFECTS: Active application - right click only for now, change if needed.
-		Effects.getInstance().handleEvent(event, event.getPlayer(), false);
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block b = event.getClickedBlock();

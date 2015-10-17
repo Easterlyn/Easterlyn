@@ -1,5 +1,8 @@
 package co.sblock.events.listeners.player;
 
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,10 +53,12 @@ public class JoinListener implements Listener {
 		Slack.getInstance().postMessage(event.getPlayer().getName(), event.getPlayer().getUniqueId(),
 				event.getPlayer().getName() + " logs in.", true);
 
+		final UUID uuid = event.getPlayer().getUniqueId();
+
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				Player player = event.getPlayer();
+				Player player = Bukkit.getPlayer(uuid);
 				if (player == null) {
 					return;
 				}
@@ -77,6 +82,6 @@ public class JoinListener implements Listener {
 					Godule.getInstance().enable(user.getUserAspect());
 				}
 			}
-		}.runTask(Sblock.getInstance());
+		}.runTaskLater(Sblock.getInstance(), 1L);
 	}
 }

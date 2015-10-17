@@ -436,11 +436,14 @@ public class Captcha extends Module {
 	 * @return true if the ItemStack is a card
 	 */
 	public static boolean isCard(ItemStack is) {
-		return is != null && is.getType() == Material.BOOK && is.hasItemMeta()
-				&& is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()
-				&& (is.getItemMeta().getDisplayName().equals("Captchacard")
-						|| is.getItemMeta().getDisplayName().equals("Punchcard")
-						|| is.getItemMeta().getDisplayName().equals("Lorecard"));
+		if (is == null || is.getType() != Material.BOOK || !is.hasItemMeta()) {
+			return false;
+		}
+		ItemMeta meta = is.getItemMeta();
+		return meta.hasLore() && meta.hasDisplayName()
+				&& (meta.getDisplayName().equals("Captchacard")
+						|| meta.getDisplayName().equals("Punchcard")
+						|| meta.getDisplayName().equals("Lorecard"));
 	}
 
 	/**

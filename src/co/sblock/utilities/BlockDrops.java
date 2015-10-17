@@ -2,7 +2,9 @@ package co.sblock.utilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -15,6 +17,19 @@ import org.bukkit.material.MaterialData;
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.Effect;
 
+import org.bukkit.craftbukkit.v1_8_R3.CraftChunk;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
+
+import net.minecraft.server.v1_8_R3.BlockCocoa;
+import net.minecraft.server.v1_8_R3.BlockCrops;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.Blocks;
+import net.minecraft.server.v1_8_R3.GameProfileSerializer;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.TileEntitySkull;
+
 /**
  * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
  * account enchantments.
@@ -22,6 +37,8 @@ import co.sblock.effects.effect.Effect;
  * @author Jikoo
  */
 public class BlockDrops {
+
+	private static final Random RAND = new Random();
 
 	public static Collection<ItemStack> getDrops(Player player, ItemStack tool, Block block) {
 		int bonus;
@@ -56,7 +73,7 @@ public class BlockDrops {
 			}
 		}
 
-		return block.getDrops(tool);
+		return getDefaultDrops(tool != null ? tool.getType() : null, block);
 	}
 
 	public static int getExp(ItemStack tool, Block block) {
@@ -64,7 +81,7 @@ public class BlockDrops {
 				&& block.getType() != Material.MOB_SPAWNER) {
 			return 0;
 		}
-		if (!canMine(tool.getType(), block.getType())) {
+		if (!doDrops(tool.getType(), block.getType())) {
 			return 0;
 		}
 		switch (block.getType()) {
@@ -93,18 +110,20 @@ public class BlockDrops {
 		case DIAMOND_ORE:
 		case EMERALD_ORE:
 		case ENDER_CHEST:
+		case HUGE_MUSHROOM_1:
+		case HUGE_MUSHROOM_2:
 		case LAPIS_ORE:
 		case QUARTZ_ORE:
 		case REDSTONE_ORE:
 		case SNOW_BLOCK:
 		case STONE:
 		case WEB:
-			if (canMine(tool.getType(), material.getItemType())) {
+			if (doDrops(tool.getType(), material.getItemType())) {
 				drops.add(new ItemStack(material.getItemType()));
 			}
 			return drops;
 		case GLOWING_REDSTONE_ORE:
-			if (canMine(tool.getType(), Material.GLOWING_REDSTONE_ORE)) {
+			if (doDrops(tool.getType(), Material.GLOWING_REDSTONE_ORE)) {
 				drops.add(new ItemStack(Material.REDSTONE_ORE));
 			}
 			return drops;
@@ -114,8 +133,6 @@ public class BlockDrops {
 		case GLOWSTONE:
 		case GRASS:
 		case GRAVEL:
-		case HUGE_MUSHROOM_1:
-		case HUGE_MUSHROOM_2:
 		case ICE:
 		case MELON_BLOCK:
 		case MYCEL:
@@ -135,33 +152,15 @@ public class BlockDrops {
 		}
 	}
 
-	private static boolean canMine(Material tool, Material block) {
-		switch (block) {
-		case STONE:
-		case COAL_ORE:
-		case MOB_SPAWNER:
-		case QUARTZ_ORE:
-			if (tool == Material.WOOD_PICKAXE || tool == Material.GOLD_PICKAXE) {
-				return true;
-			}
-		case LAPIS_ORE:
-			if (tool == Material.STONE_PICKAXE) {
-				return true;
-			}
-		case DIAMOND_ORE:
-		case EMERALD_ORE:
-		case ENDER_CHEST:
-		case GLOWING_REDSTONE_ORE:
-		case REDSTONE_ORE:
-			return tool == Material.IRON_PICKAXE || tool == Material.DIAMOND_PICKAXE;
-		case WEB:
-			return tool == Material.SHEARS;
-		case SNOW_BLOCK:
-			return tool == Material.DIAMOND_SPADE || tool == Material.IRON_SPADE
-					|| tool == Material.GOLD_SPADE || tool == Material.WOOD_SPADE;
-		default:
+	private static boolean doDrops(Material tool, Material block) {
+		net.minecraft.server.v1_8_R3.Block nmsBlock = net.minecraft.server.v1_8_R3.Block.getById(block.getId());
+		if (nmsBlock == null) {
 			return false;
 		}
+		if (nmsBlock.getMaterial().isAlwaysDestroyable()) {
+			return true;
+		}
+		return tool != null && Item.getById(tool.getId()).canDestroySpecialBlock(nmsBlock);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -262,13 +261,96 @@ public class BlockDrops {
 
 	private static ItemStack doFortune(Material drop, int min, int max, int fortune, boolean multiply) {
 		max -= (min - 1);
-		int bonus = (int) (Math.random() * (fortune + 2));
-		if (bonus < 1) {
-			bonus = 1;
-		}
+		int random = RAND.nextInt(max) + min;
+		int bonus = RAND.nextInt(fortune + 2);
 		if (multiply) {
-			return new ItemStack(drop, (int) ((Math.random() * max) + min) * bonus);
+			bonus += 1;
+			return new ItemStack(drop, random * bonus);
 		}
-		return new ItemStack(drop, (int) (Math.random() * max) + min + bonus - 1);
+		return new ItemStack(drop, random + bonus);
+	}
+
+	private static Collection<ItemStack> getDefaultDrops(Material tool, Block block) {
+		List<ItemStack> drops = new ArrayList<>();
+
+		net.minecraft.server.v1_8_R3.Block nmsBlock = net.minecraft.server.v1_8_R3.Block.getById(block.getTypeId());
+		if (nmsBlock == Blocks.AIR || !doDrops(tool, block.getType())) {
+			return drops;
+		}
+		byte data = block.getData();
+
+		int count = nmsBlock.getDropCount(0, RAND);
+
+		if (nmsBlock == Blocks.NETHER_WART) {
+			// Nether wart: Drop count is always 0
+			drops.add(new ItemStack(Material.NETHER_STALK, 2 + RAND.nextInt(3)));
+			return drops;
+		}
+
+		if (count == 0) {
+			return drops;
+		}
+
+		if (Blocks.COCOA == nmsBlock) {
+			// Cocoa: drop Item is null rather than a dye
+			int age = nmsBlock.fromLegacyData(data).get(BlockCocoa.AGE).intValue();
+			int dropAmount = (age >= 2) ? 3 : 1;
+			drops.add(new ItemStack(Material.INK_SACK, count * dropAmount, DyeColor.BROWN.getDyeData()));
+			return drops;
+		}
+
+		Item item = nmsBlock.getDropType(nmsBlock.fromLegacyData(data), RAND, 0);
+		if (item == null) {
+			return drops;
+		}
+
+		if (Blocks.SKULL == nmsBlock) {
+			CraftChunk obcChunk = (CraftChunk) block.getChunk();
+			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
+			net.minecraft.server.v1_8_R3.ItemStack nmsStack = new net.minecraft.server.v1_8_R3.ItemStack(
+					item, count, nmsBlock.getDropData(obcChunk.getHandle().getWorld(), position));
+			TileEntitySkull tileentityskull = (TileEntitySkull) obcChunk.getHandle()
+					.getWorld().getTileEntity(position);
+
+			if ((tileentityskull.getSkullType() == 3)
+					&& (tileentityskull.getGameProfile() != null)) {
+				nmsStack.setTag(new NBTTagCompound());
+				NBTTagCompound nbttagcompound = new NBTTagCompound();
+
+				GameProfileSerializer.serialize(nbttagcompound,
+						tileentityskull.getGameProfile());
+				nmsStack.getTag().set("SkullOwner", nbttagcompound);
+			}
+			nmsStack.count = count;
+
+			drops.add(CraftItemStack.asBukkitCopy(nmsStack));
+			return drops;
+		}
+
+		ItemStack drop = new ItemStack(CraftMagicNumbers.getMaterial(item), count,
+				(short) nmsBlock.getDropData(nmsBlock.fromLegacyData(data)));
+
+		if (nmsBlock instanceof BlockCrops && data >= 7) {
+			int seeds = 0;
+			for (int i = 0; i < 3; i++) {
+				if (RAND.nextInt(15) <= data) {
+					++seeds;
+				}
+			}
+			if (seeds == 0) {
+				drops.add(drop);
+				return drops;
+			}
+			if (nmsBlock == Blocks.WHEAT) {
+				drops.add(new ItemStack(Material.SEEDS, seeds));
+			} else {
+				// Carrot/potato drop the same ripe product item as seed item
+				drop.setAmount(drop.getAmount() + seeds);
+			}
+		}
+
+		drops.add(drop);
+
+		return drops;
 	}
 }
