@@ -69,6 +69,7 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 		return Arrays.asList(PlayerInteractEvent.class);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
 		PlayerInteractEvent evt = (PlayerInteractEvent) event;

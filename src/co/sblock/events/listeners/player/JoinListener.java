@@ -82,6 +82,6 @@ public class JoinListener implements Listener {
 					Godule.getInstance().enable(user.getUserAspect());
 				}
 			}
-		}.runTaskLater(Sblock.getInstance(), 1L);
+		}.runTaskLater(Sblock.getInstance(), 2L);
 	}
 }

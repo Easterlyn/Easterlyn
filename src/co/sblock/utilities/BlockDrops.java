@@ -152,6 +152,7 @@ public class BlockDrops {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private static boolean doDrops(Material tool, Material block) {
 		net.minecraft.server.v1_8_R3.Block nmsBlock = net.minecraft.server.v1_8_R3.Block.getById(block.getId());
 		if (nmsBlock == null) {
@@ -270,6 +271,7 @@ public class BlockDrops {
 		return new ItemStack(drop, random + bonus);
 	}
 
+	@SuppressWarnings("deprecation")
 	private static Collection<ItemStack> getDefaultDrops(Material tool, Block block) {
 		List<ItemStack> drops = new ArrayList<>();
 
