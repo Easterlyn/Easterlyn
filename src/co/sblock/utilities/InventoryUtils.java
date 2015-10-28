@@ -201,7 +201,7 @@ public class InventoryUtils {
 
 		try {
 			material = Material.getMaterial(Integer.parseInt(matData[0]));
-			return new ImmutablePair<Material, Short>(material, durability != null ? durability : 0);
+			return new ImmutablePair<>(material, durability != null ? durability : 0);
 		} catch (NumberFormatException e) {}
 
 		boolean durabilitySet = durability != null;
@@ -222,12 +222,12 @@ public class InventoryUtils {
 				}
 			}
 			if (current == 0) {
-				return new ImmutablePair<Material, Short>(material, durability);
+				return new ImmutablePair<>(material, durability);
 			}
 		}
 		// Allow more fuzziness for longer named items
 		if (matchLevel < (3 + material.name().length() / 5)) {
-			return new ImmutablePair<Material, Short>(material, durability);
+			return new ImmutablePair<>(material, durability);
 		}
 		return null;
 	}

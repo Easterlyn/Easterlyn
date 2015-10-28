@@ -155,6 +155,10 @@ public class Users extends Module {
 		}
 		team.setPrefix(teamPrefix);
 		team.addEntry(player.getName());
+		String name = player.getDisplayName();
+		if (name != null && name.length() <= 16) {
+			team.addEntry(name);
+		}
 
 		Objective objective = board.getObjective("deaths");
 		if (objective == null) {

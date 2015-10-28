@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
+import co.sblock.commands.utility.OopsCommand;
 import co.sblock.micromodules.Slack;
 import co.sblock.micromodules.Spectators;
 import co.sblock.users.OfflineUser;
@@ -35,6 +36,12 @@ public class CommandPreprocessListener implements Listener {
 		}
 
 		String command = event.getMessage().substring(1, space > 0 ? space : event.getMessage().length()).toLowerCase();
+
+		if (((OopsCommand) Sblock.getInstance().getCommandMap().getCommand("oops"))
+				.handleFailedCommand(event.getPlayer(), command, space > 0
+						? event.getMessage().substring(space + 1) : null)) {
+			event.setCancelled(true);
+		}
 
 		if (!event.getPlayer().hasPermission("sblock.felt")
 				&& !Sblock.getInstance().getConfig().getStringList("slack.command-blacklist").contains(command)) {

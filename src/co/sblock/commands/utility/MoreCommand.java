@@ -21,6 +21,7 @@ public class MoreCommand extends SblockCommand {
 
 	public MoreCommand() {
 		super("more");
+		this.setDescription("Have all the things! Increase or decrease item in hand.");
 		this.setUsage("/more [optional amount]");
 		this.setPermissionLevel("felt");
 	}
@@ -41,7 +42,7 @@ public class MoreCommand extends SblockCommand {
 			try {
 				amount = Integer.parseInt(args[0]);
 			} catch (NumberFormatException e) {
-				amount = 64;
+				amount = stack.getType().getMaxStackSize();
 			}
 
 			amount += stack.getAmount();
@@ -50,6 +51,10 @@ public class MoreCommand extends SblockCommand {
 				amount = 64;
 			}
 		} else {
+			amount = stack.getType().getMaxStackSize();
+		}
+		if (amount == 1) {
+			// Default 64 for unstackable stuff or when people use /more 0
 			amount = 64;
 		}
 		player.getItemInHand().setAmount(amount);
