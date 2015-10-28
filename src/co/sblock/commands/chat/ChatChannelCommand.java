@@ -186,6 +186,8 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				user.setCurrentChannel(channel);
 			}
 			return true;
+		default:
+			break;
 		}
 
 		if (!channel.isModerator(user)) {
@@ -250,6 +252,8 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			}
 			normal.kickUser(user, target);
 			return true;
+		default:
+			break;
 		}
 
 		if (!channel.isOwner(user)) {
@@ -294,6 +298,8 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		case "disband":
 			normal.disband(user);
 			return true;
+		default:
+			break;
 		}
 
 		sender.sendMessage(this.getUsage());
