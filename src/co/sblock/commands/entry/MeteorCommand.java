@@ -42,7 +42,7 @@ public class MeteorCommand extends SblockCommand {
 		boolean blockDamage = false;
 		int bore = -1;
 		for (String s : args) {
-			if (s.length() < 3 && s.charAt(1) != ':') {
+			if (s.length() < 3 || s.charAt(1) != ':') {
 				continue;
 			}
 			char identifier = Character.toLowerCase(s.charAt(0));

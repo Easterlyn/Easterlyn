@@ -18,6 +18,8 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
+ * A Module for periodic announcements with hover text and click functionality.
+ * 
  * @author Jikoo
  */
 public class RawAnnouncer extends Module {
@@ -222,7 +224,7 @@ public class RawAnnouncer extends Module {
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
-		// Announcement: Mamblo No. 5
+		// Announcement: Discord > all
 		components.clear();
 		component = new TextComponent("We use");
 		component.setColor(ChatColor.RED);

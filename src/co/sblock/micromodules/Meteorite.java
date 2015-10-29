@@ -13,7 +13,7 @@ import co.sblock.events.packets.ParticleEffectWrapper;
 import co.sblock.events.packets.ParticleUtils;
 
 /**
- * 
+ * Small class for creating and managing an explosive hollow sphere.
  * 
  * @author Dublek, Jikoo
  */
@@ -65,7 +65,7 @@ public class Meteorite {
 			material = Material.NETHERRACK;
 		}
 		this.material = material;
-		if (radius < 1) {
+		if (radius < 0) {
 			radius = 3;
 		}
 		this.radius = radius;
@@ -173,6 +173,9 @@ public class Meteorite {
 	 */
 	private HashSet<Location> genSphereCoords(int radius) {
 		HashSet<Location> coords = new HashSet<>();
+		if (radius < 0) {
+			return coords;
+		}
 		double radiusSquared = Math.pow(radius, 2);
 		double x = skyTarget.getX();
 		double y = skyTarget.getY();
