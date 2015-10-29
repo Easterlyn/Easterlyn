@@ -76,7 +76,7 @@ public class Meteorite {
 		int visible = highestBlock + 40 + radius;
 		skyTarget.setY(visible > highestPossible ? highestPossible : visible);
 
-		this.bore = bore == 2 ? true : bore == 1 ? false : target.getBlockY() < highestBlock;
+		this.bore = bore == 1 ? true : bore == 0 ? false : target.getBlockY() < highestBlock;
 		this.explodeBlocks = explode;
 	}
 

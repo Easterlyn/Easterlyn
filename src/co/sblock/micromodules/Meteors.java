@@ -4,7 +4,6 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 import co.sblock.module.Module;
@@ -15,10 +14,13 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import net.minecraft.server.v1_8_R3.Explosion;
 
 /**
+ * A Module for creating falling explosive spheres.
+ * 
  * @author Dublek, Jikoo
  */
-public class Meteors extends Module implements Listener {
-	/** The MeteorMod instance. */
+public class Meteors extends Module {
+
+	/* The Meteors instance. */
 	private static Meteors instance;
 
 	/**
@@ -80,4 +82,5 @@ public class Meteors extends Module implements Listener {
 	protected String getModuleName() {
 		return "Meteors";
 	}
+
 }

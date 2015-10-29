@@ -38,29 +38,51 @@ public class MeteorCommand extends SblockCommand {
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Location target = null;
 		int radius = -1;
-		String material = "";
+		String material = null;
 		boolean blockDamage = false;
 		int bore = -1;
 		for (String s : args) {
-			// lighter than multiple .equalsIgnoreCase
-			s = s.toLowerCase();
-			if (s.substring(0, 2).equals("p:")) {
-				// set target (player or crosshairs)
-				Player pTarget = Bukkit.getPlayer(s.substring(2));
+			if (s.length() < 3 && s.charAt(1) != ':') {
+				continue;
+			}
+			char identifier = Character.toLowerCase(s.charAt(0));
+			String argument = s.substring(2);
+
+			// Target a player's location
+			if (identifier == 'p') {
+				Player pTarget = Bukkit.getPlayer(argument);
 				if (pTarget != null) {
 					target = pTarget.getLocation();
 				}
-			} else if (s.substring(0, 2).equals("r:")) {
-				// set radius
-				radius = Integer.parseInt(s.substring(2));
-			} else if (s.substring(0, 2).equals("e:")) {
-				// set explosion block damage
-				blockDamage = s.substring(2).equals("true");
-			} else if (s.substring(0, 2).equals("m:")) {
-				material = s.substring(2).toUpperCase();
-			} else if (s.subSequence(0, 2).equals("b:")) {
-				// set meteor to bore mode (default behavior: bore if not highest block)
-				bore = s.substring(2).equals("true") ? 1 : 0;
+				continue;
+			}
+
+			// Set meteor radius
+			if (identifier == 'r') {
+				try {
+					radius = Integer.parseInt(argument);
+				} catch (NumberFormatException e) {
+					sender.sendMessage(Color.BAD + "Invalid radius specified, defaulting to 3");
+				}
+				continue;
+			}
+
+			// Set meteor explosion block damage
+			if (identifier == 'e') {
+				blockDamage = Boolean.valueOf(argument);
+				continue;
+			}
+
+			// Set meteor material
+			if (identifier == 'm') {
+				material = argument.toUpperCase();
+				continue;
+			}
+
+			// set meteor to bore mode (default behavior: bore if not highest block)
+			if (identifier == 'b') {
+				bore = argument.equalsIgnoreCase("true") ? 1 : 0;
+				continue;
 			}
 		}
 		if (target == null) {
@@ -79,8 +101,8 @@ public class MeteorCommand extends SblockCommand {
 				return false;
 			}
 		}
-		if (radius > 20) {
-			radius = 20;
+		if (radius > 10) {
+			radius = 10;
 			sender.sendMessage(Color.BAD_EMPHASIS + "Very large meteors cause quite a bit of lag. Keep it down.");
 		}
 		new Meteorite(target, material, radius, blockDamage, bore).dropMeteorite();
