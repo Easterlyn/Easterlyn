@@ -7,11 +7,13 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Meteorite;
 
@@ -27,7 +29,7 @@ public class MeteorCommand extends SblockCommand {
 	public MeteorCommand() {
 		super("meteor");
 		this.setDescription("Summon a meteor with parameters.");
-		this.setUsage("/meteor <p:player> <r:radius> <e:explode> <c:countdown> <m:material> <b:bore>");
+		this.setUsage("/meteor [p:player] [r:radius] [e:explode] [m:material] [b:bore]");
 		this.setPermissionLevel("denizen");
 		primaryArgs = new String[] {"p:", "r:", "e:", "b:", "m:"};
 	}
@@ -35,10 +37,6 @@ public class MeteorCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Location target = null;
-		if (sender instanceof Player) {
-			Player p = (Player) sender;
-			target = p.getTargetBlock((HashSet<Material>) null, 128).getLocation();
-		}
 		int radius = -1;
 		String material = "";
 		boolean blockDamage = false;
@@ -66,8 +64,24 @@ public class MeteorCommand extends SblockCommand {
 			}
 		}
 		if (target == null) {
-			sender.sendMessage("Non-players must specify a player target!");
-			return false;
+			if (sender instanceof Player) {
+				Player p = (Player) sender;
+				Block block = p.getTargetBlock((HashSet<Material>) null, 128);
+				if (block != null) {
+					target = block.getLocation();
+				}
+				if (target == null) {
+					sender.sendMessage(Color.BAD + "Block on crosshair too far away! Aim closer or specify target!");
+					return false;
+				}
+			} else {
+				sender.sendMessage("Non-players must specify a player target!");
+				return false;
+			}
+		}
+		if (radius > 20) {
+			radius = 20;
+			sender.sendMessage(Color.BAD_EMPHASIS + "Very large meteors cause quite a bit of lag. Keep it down.");
 		}
 		new Meteorite(target, material, radius, blockDamage, bore).dropMeteorite();
 		return true;

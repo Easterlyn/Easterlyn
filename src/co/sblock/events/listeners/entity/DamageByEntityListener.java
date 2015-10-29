@@ -48,11 +48,6 @@ public class DamageByEntityListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-			if (event.getEntityType() == EntityType.FALLING_BLOCK
-					&& ((MeteoriteComponent) ((CraftEntity) event.getDamager()).getHandle()).shouldBore()) {
-				event.setCancelled(true);
-				return;
-			}
 		}
 
 		final UUID damager;

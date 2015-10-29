@@ -87,7 +87,7 @@ public class Entry {
 		// 4:13 = 253 seconds, 2 second display of 0:00
 		EntryTimer task = new EntryTimer(holoLoc, user.getUUID());
 		task.runTaskTimer(Sblock.getInstance(), 20L, 20L);
-		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK.name(), 3, true, -1);
+		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK, 3, true, -1);
 		// 254 seconds * 20 ticks per second = 5080
 		meteorite.hoverMeteorite(5080);
 		Material material = materials[(int) (materials.length *  Math.random())];

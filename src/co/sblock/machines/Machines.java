@@ -302,7 +302,7 @@ public class Machines extends Module {
 	 * 
 	 * @param b the Block
 	 */
-	public void addExplodedBlock(Block... blocks) {
+	public void addExplodedBlock(Collection<Block> blocks) {
 		for (Block block : blocks) {
 			exploded.put(block, true);
 		}

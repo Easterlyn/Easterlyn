@@ -32,7 +32,12 @@ public class MeteoriteComponent extends EntityFallingBlock {
 		return explode;
 	}
 
-	public boolean shouldBore() {
+	@Override
+	public boolean aW() {
+		/*
+		 * Cancelling damage no longer prevents physics applying to EntityTNTPrimed and
+		 * EntityFallingBlock. As a workaround, we set the MeteoriteComponent invincible.
+		 */
 		return bore;
 	}
 }
