@@ -29,7 +29,7 @@ public class OopsCommand extends SblockCommand {
 
 	public OopsCommand() {
 		super("oops");
-		this.setAliases("fuck");
+		this.setAliases("fuck", "opps");
 		this.setDescription("Suggests fixes to commands.");
 		this.setUsage("/oops");
 		oopsCommands = new HashMap<>();
