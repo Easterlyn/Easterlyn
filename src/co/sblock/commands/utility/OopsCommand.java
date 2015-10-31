@@ -17,7 +17,7 @@ import co.sblock.commands.SblockCommand;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * 
+ * Command to fix mistakes in the name of the last issued command.
  * 
  * @author Jikoo
  */
@@ -46,7 +46,7 @@ public class OopsCommand extends SblockCommand {
 
 	// TODO allow for console too?
 	public boolean handleFailedCommand(CommandSender sender, String commandName, String commandLine) {
-		String command = getMatchingCommand(commandName);
+		String command = getMatchingCommand(sender, commandName);
 		if (command == null) {
 			// Valid or severely invalid command
 			if (!commandName.equals("oops") && !commandName.equals("fuck")
@@ -64,10 +64,16 @@ public class OopsCommand extends SblockCommand {
 		return true;
 	}
 
-	private String getMatchingCommand(String commandName) {
+	private String getMatchingCommand(CommandSender sender, String commandName) {
 		int matchLevel = Integer.MAX_VALUE;
 		String correctCommandName = null;
 		for (Command command : Sblock.getInstance().getCommandMap().getCommands()) {
+			String permission = command.getPermission();
+			// future support Essentials' terrible command system?
+			if (permission != null && !sender.hasPermission(permission)) {
+				// Can't use the command, don't check.
+				continue;
+			}
 			for (String alias : getAllAliases(command)) {
 				int current = StringUtils.getLevenshteinDistance(commandName, alias);
 				if (current == 0) {
