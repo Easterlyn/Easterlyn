@@ -1,4 +1,4 @@
-package co.sblock.commands.utility;
+package co.sblock.commands.cheat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

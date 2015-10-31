@@ -1,4 +1,4 @@
-package co.sblock.commands.utility;
+package co.sblock.commands.entry;
 
 import java.util.ArrayList;
 import java.util.List;

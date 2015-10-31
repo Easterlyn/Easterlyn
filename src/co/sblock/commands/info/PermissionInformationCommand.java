@@ -1,4 +1,4 @@
-package co.sblock.commands.utility;
+package co.sblock.commands.info;
 
 import java.util.List;
 import java.util.Map.Entry;

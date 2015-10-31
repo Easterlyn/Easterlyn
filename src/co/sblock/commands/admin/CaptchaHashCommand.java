@@ -1,4 +1,4 @@
-package co.sblock.commands.utility;
+package co.sblock.commands.admin;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

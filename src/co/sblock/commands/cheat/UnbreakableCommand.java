@@ -1,4 +1,4 @@
-package co.sblock.commands.utility;
+package co.sblock.commands.cheat;
 
 import java.util.List;
 
