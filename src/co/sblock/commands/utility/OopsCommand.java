@@ -52,7 +52,7 @@ public class OopsCommand extends SblockCommand {
 		String command = getMatchingCommand(sender, commandName);
 		if (command == null) {
 			// Valid or severely invalid command
-			if (!aliases.contains(command) && oopsCommands.containsKey(sender.getName())) {
+			if (!aliases.contains(commandName) && oopsCommands.containsKey(sender.getName())) {
 				oopsCommands.remove(sender.getName());
 			}
 			return false;
