@@ -306,11 +306,23 @@ public class AsyncChatListener implements Listener {
 		}
 
 		String msg = message.getMessage();
+		String prefix = null;
+		if (message.getChannel().getName().equals("#pm")) {
+			// We want the space in the prefix, add 1 once rather than twice.
+			int space = msg.indexOf(' ') + 1;
+			if (space > 0) {
+				prefix = msg.substring(0, space);
+				msg = msg.substring(space);
+			}
+		}
 
 		// Caps filter only belongs in regional channels.
 		if (message.getChannel() instanceof RegionChannel && msg.length() > 3
 				&& StringUtils.getLevenshteinDistance(msg, msg.toUpperCase()) < msg.length() * .25) {
 			StringBuilder msgBuilder = new StringBuilder();
+			if (prefix != null) {
+				msgBuilder.append(prefix);
+			}
 			for (String word : msg.split(" ")) {
 				if (RegexUtils.URL_PATTERN.matcher(word).find()) {
 					msgBuilder.append(word);
