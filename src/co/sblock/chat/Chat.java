@@ -31,8 +31,8 @@ public class Chat extends Module {
 		this.cm.loadAllChannels();
 		this.cm.createDefaultSet();
 
-		this.megaHal = new CleverHal();
 		this.halculator = new Halculator();
+		this.megaHal = new CleverHal();
 	}
 
 	@Override

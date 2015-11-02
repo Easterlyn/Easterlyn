@@ -75,9 +75,17 @@ public class AsyncChatListener implements Listener {
 
 		halFunctions = new ArrayList<>();
 		halFunctions.add(Chat.getChat().getHalculator());
-		// MegaHal function should be last as it (by design) handles any message passed to it.
+		// Hal AI function should be last as it (by design) handles any message passed to it.
 		// Insert any additional functions above.
 		halFunctions.add(Chat.getChat().getHal());
+
+		// If, say, the Hal AI fails to load, don't NPE whenever anyone talks.
+		Iterator<HalMessageHandler> iterator = halFunctions.iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next() == null) {
+				iterator.remove();
+			}
+		}
 
 		handleGriefPrevention = Bukkit.getPluginManager().isPluginEnabled("GriefPrevention");
 		if (handleGriefPrevention) {
