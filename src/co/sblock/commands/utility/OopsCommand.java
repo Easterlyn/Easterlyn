@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
@@ -26,6 +27,7 @@ public class OopsCommand extends SblockCommand {
 	// The reason for not using UUIDs is that this storage is trivial and should work for console.
 	private final HashMap<String, String> oopsCommands;
 	private final String oopsPrefix;
+	private final List<String> aliases;
 
 	public OopsCommand() {
 		super("oops");
@@ -34,6 +36,7 @@ public class OopsCommand extends SblockCommand {
 		this.setUsage("/oops");
 		oopsCommands = new HashMap<>();
 		oopsPrefix = Color.GOOD_EMPHASIS.toString() + ChatColor.BOLD + "Oops! " + Color.GOOD;
+		aliases = this.getAllAliases(this);
 	}
 
 	@Override
@@ -49,14 +52,17 @@ public class OopsCommand extends SblockCommand {
 		String command = getMatchingCommand(sender, commandName);
 		if (command == null) {
 			// Valid or severely invalid command
-			if (!commandName.equals("oops") && !commandName.equals("fuck")
-					&& oopsCommands.containsKey(sender.getName())) {
+			if (!aliases.contains(command) && oopsCommands.containsKey(sender.getName())) {
 				oopsCommands.remove(sender.getName());
 			}
 			return false;
 		}
 		sender.sendMessage(oopsPrefix + "Did you mean " + Color.COMMAND + '/' + command
 				+ Color.GOOD + "? Run " + Color.COMMAND + "/oops" + Color.GOOD + '!');
+		if (aliases.contains(command)) {
+			// Don't store /oops as anyone's /oops
+			return true;
+		}
 		if (commandLine != null) {
 			command += ' ' + commandLine;
 		}
@@ -65,9 +71,15 @@ public class OopsCommand extends SblockCommand {
 	}
 
 	private String getMatchingCommand(CommandSender sender, String commandName) {
+		SimpleCommandMap commandMap = Sblock.getInstance().getCommandMap();
+		if (commandMap.getCommand(commandName) != null) {
+			// Valid command, nothing to oops.
+			return null;
+		}
+
 		int matchLevel = Integer.MAX_VALUE;
 		String correctCommandName = null;
-		for (Command command : Sblock.getInstance().getCommandMap().getCommands()) {
+		for (Command command : commandMap.getCommands()) {
 			String permission = command.getPermission();
 			// future support Essentials' terrible command system?
 			if (permission != null && !sender.hasPermission(permission)) {
@@ -77,7 +89,6 @@ public class OopsCommand extends SblockCommand {
 			for (String alias : getAllAliases(command)) {
 				int current = StringUtils.getLevenshteinDistance(commandName, alias);
 				if (current == 0) {
-					// Valid command, abort abort
 					return null;
 				}
 				if (current < matchLevel) {
