@@ -111,7 +111,7 @@ public class CleverHal implements HalMessageHandler {
 				// Spammy, warn a bitch
 				noSpam.setChannel(msg.getChannel());
 				noSpam.toMessage().send(Arrays.asList(senderPlayer));
-				Logger.getLogger("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
+				Logger.getLogger("CleverHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 				return true;
 			} else {
 				cooldowns.addGlobalCooldown("cleverhal" + channel, 2500L);

@@ -27,7 +27,7 @@ public class HalBotCommand extends SblockCommand {
 	public HalBotCommand() {
 		super("halbot");
 		this.setDescription("Trigger a Lil Hal response.");
-		this.setUsage("/megahal [channel] <seed mesage>");
+		this.setUsage("/halbot [channel] <seed mesage>");
 		this.setPermissionLevel("felt");
 	}
 
