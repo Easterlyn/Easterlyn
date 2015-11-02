@@ -11,8 +11,8 @@ import co.sblock.chat.message.Message;
  * 
  * @author Jikoo
  */
-public abstract class HalMessageHandler {
+public interface HalMessageHandler {
 
-	public abstract boolean handleMessage(Message message, Collection<Player> recipients);
+	public boolean handleMessage(Message message, Collection<Player> recipients);
 
 }

@@ -44,7 +44,7 @@ import net.md_5.bungee.api.chat.TextComponent;
  * 
  * @author Jikoo
  */
-public class MegaHal extends HalMessageHandler {
+public class MegaHal implements HalMessageHandler {
 
 	private final Pattern exactPattern, whitespacePattern;
 	private final JMegaHal hal;
@@ -59,7 +59,7 @@ public class MegaHal extends HalMessageHandler {
 		hal = new JMegaHal();
 		fileNum = 0;
 
-		exactPattern = Pattern.compile("^(hal|dirk)$", Pattern.CASE_INSENSITIVE);
+		exactPattern = Pattern.compile("(hal|dirk)", Pattern.CASE_INSENSITIVE);
 		whitespacePattern = Pattern.compile("(^|\\W)(hal|dirk)(\\W|$)", Pattern.CASE_INSENSITIVE);
 		pendingMessages = Collections.synchronizedSet(new LinkedHashSet<String>());
 
@@ -113,7 +113,7 @@ public class MegaHal extends HalMessageHandler {
 					Logger.getLogger("MegaHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 					return true;
 				} else {
-					cooldowns.addGlobalCooldown(channel, 2500L);
+					cooldowns.addGlobalCooldown("megahal" + channel, 2500L);
 				}
 			}
 			HashSet<UUID> recipientUUIDs = new HashSet<>();
@@ -130,7 +130,7 @@ public class MegaHal extends HalMessageHandler {
 	}
 
 	public boolean isOnlyTrigger(String message) {
-		return exactPattern.matcher(message).find();
+		return exactPattern.matcher(message).matches();
 	}
 
 	public void log(Message message, String msg) {

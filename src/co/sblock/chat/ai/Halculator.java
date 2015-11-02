@@ -19,7 +19,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
  * 
  * @author Jikoo
  */
-public class Halculator extends HalMessageHandler {
+public class Halculator implements HalMessageHandler {
 
 	private final BaseComponent[] hover;
 
