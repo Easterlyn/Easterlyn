@@ -72,7 +72,8 @@ public class MegaHal extends HalMessageHandler {
 		ignoreMatches.add(Pattern.compile("^.*dad(dy)?.*$", Pattern.CASE_INSENSITIVE));
 
 		hover = TextComponent.fromLegacyText(ChatColor.RED + "Artificial Intelligence\n"
-				+ Color.BAD_EMPHASIS + "Sblock is not responsible\nfor anything Hal says.\n\nUnless it's awesome.\n\n"
+				+ Color.BAD_EMPHASIS + "Sblock is not responsible\n" + Color.BAD_EMPHASIS
+				+ "for anything Hal says.\n\n" + Color.BAD_EMPHASIS + "Unless it's awesome.\n\n"
 				+ Color.COMMAND + "/join #halchat" + Color.BAD + " to spam usage.");
 
 		noSpam = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
