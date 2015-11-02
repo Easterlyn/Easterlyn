@@ -79,6 +79,16 @@ public class Cooldowns {
 	}
 
 	/**
+	 * Removes a global cooldown. As global cooldowns are constantly changed, the global cooldown
+	 * entry is not removed if empty.
+	 * 
+	 * @param cooldownName the name of the cooldown
+	 */
+	public void clearGlobalCooldown(String cooldownName) {
+		getCooldownMap(global).remove(cooldownName);
+	}
+
+	/**
 	 * Removes a cooldown for the specified Entity. If the Entity has no remaining cooldowns on
 	 * record, their entry is entirely removed.
 	 * 

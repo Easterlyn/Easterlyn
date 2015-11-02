@@ -6,43 +6,56 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.commands.SblockCommand;
+import co.sblock.users.Users;
 
 /**
- * SblockCommand for triggering a MegaHal response.
+ * SblockCommand for triggering a Hal AI response.
  * 
  * @author Jikoo
  */
-public class MegaHalCommand extends SblockCommand {
+public class HalBotCommand extends SblockCommand {
 
-	public MegaHalCommand() {
-		super("megahal");
+	public HalBotCommand() {
+		super("halbot");
 		this.setDescription("Trigger a Lil Hal response.");
-		this.setUsage("/megahal [channel] [seedword]");
+		this.setUsage("/megahal [channel] <seed mesage>");
 		this.setPermissionLevel("felt");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		Channel target;
-		if (args.length >= 1) {
-			target = ChannelManager.getChannelManager().getChannel(args[0]);
-			if (target == null) {
-				sender.sendMessage(Color.BAD + "Invalid channel: " + args[0]);
-				return true;
-			}
-		} else {
-			target = ChannelManager.getChannelManager().getChannel("#");
+		if (args.length < 1) {
+			return false;
 		}
-		Chat.getChat().getHal().triggerResponse(target, args.length > 1 ? StringUtils.join(args, ' ', 1, args.length) : null, false);
+		boolean specifiedTarget = false;
+		Channel target = ChannelManager.getChannelManager().getChannel(args[0]);
+		if (target != null) {
+			specifiedTarget = true;
+		} else {
+			if (sender instanceof Player) {
+				target = Users.getGuaranteedUser(((Player) sender).getUniqueId()).getCurrentChannel();
+				if (target == null) {
+					return true;
+				}
+			} else {
+				target = ChannelManager.getChannelManager().getChannel("#");
+			}
+			return true;
+		}
+		if (args.length == 1 && specifiedTarget) {
+			return false;
+		}
+		Chat.getChat().getHal().triggerResponse(target,
+				StringUtils.join(args, ' ', specifiedTarget ? 1 : 0, args.length));
 		return true;
 	}
 

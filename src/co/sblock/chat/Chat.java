@@ -6,8 +6,8 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import co.sblock.chat.ai.CleverHal;
 import co.sblock.chat.ai.Halculator;
-import co.sblock.chat.ai.MegaHal;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -21,7 +21,7 @@ public class Chat extends Module {
 	private static Chat instance;
 	private final ChannelManager cm = new ChannelManager();
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
-	private MegaHal megaHal;
+	private CleverHal megaHal;
 	private Halculator halculator;
 	private final DummyPlayer buffer = new DummyPlayer();
 
@@ -31,21 +31,20 @@ public class Chat extends Module {
 		this.cm.loadAllChannels();
 		this.cm.createDefaultSet();
 
-		this.megaHal = new MegaHal();
+		this.megaHal = new CleverHal();
 		this.halculator = new Halculator();
 	}
 
 	@Override
 	protected void onDisable() {
 		cm.saveAllChannels();
-		megaHal.saveLogs();
 	}
 
 	public ChannelManager getChannelManager() {
 		return cm;
 	}
 
-	public MegaHal getHal() {
+	public CleverHal getHal() {
 		return megaHal;
 	}
 

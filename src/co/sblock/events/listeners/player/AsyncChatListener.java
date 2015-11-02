@@ -152,12 +152,6 @@ public class AsyncChatListener implements Listener {
 				}
 			}
 
-			if (Chat.getChat().getHal().isOnlyTrigger(cleaned)) {
-				player.sendMessage(Color.HAL + "What?");
-				event.setCancelled(true);
-				return;
-			}
-
 			if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
 				player.sendMessage(Color.HAL
 						+ "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
