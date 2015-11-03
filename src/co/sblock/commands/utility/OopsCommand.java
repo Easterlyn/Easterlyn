@@ -27,7 +27,7 @@ public class OopsCommand extends SblockCommand {
 	// The reason for not using UUIDs is that this storage is trivial and should work for console.
 	private final HashMap<String, String> oopsCommands;
 	private final String oopsPrefix;
-	private final List<String> aliases;
+	private final List<String> aliases, reusable;
 
 	public OopsCommand() {
 		super("oops");
@@ -36,7 +36,8 @@ public class OopsCommand extends SblockCommand {
 		this.setUsage("/oops");
 		oopsCommands = new HashMap<>();
 		oopsPrefix = Color.GOOD_EMPHASIS.toString() + ChatColor.BOLD + "Oops! " + Color.GOOD;
-		aliases = this.getAllAliases(this);
+		reusable = new ArrayList<>();
+		aliases = new ArrayList<>(this.getAllAliases(this));
 	}
 
 	@Override
@@ -106,8 +107,9 @@ public class OopsCommand extends SblockCommand {
 	}
 
 	private List<String> getAllAliases(Command command) {
-		ArrayList<String> aliases = new ArrayList<>(command.getAliases());
-		aliases.add(command.getName());
-		return aliases;
+		reusable.clear();
+		reusable.addAll(command.getAliases());
+		reusable.add(command.getName());
+		return reusable;
 	}
 }
