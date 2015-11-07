@@ -28,7 +28,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.MaterialData;
+import org.bukkit.material.Dye;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -246,41 +246,34 @@ public class Sblock extends JavaPlugin {
 		getServer().addRecipe(shaped);
 
 		for (DyeColor dye : DyeColor.values()) {
-			// Dye 8 wool at a time just like stained glass, allows for re-dyeing
-			shaped = new ShapedRecipe(new ItemStack(Material.WOOL, 8, dye.getWoolData()));
-			shaped.shape("XXX", "XYX", "XXX");
-			shaped.setIngredient('X', Material.WOOL, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
-			getServer().addRecipe(shaped);
+			Dye dyeMaterial = new Dye(Material.INK_SACK);
+			dyeMaterial.setColor(dye);
 
-			// Re-dye stained clay
-			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_CLAY, 8, dye.getWoolData()));
-			shaped.shape("XXX", "XYX", "XXX");
-			shaped.setIngredient('X', Material.STAINED_CLAY, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
-			getServer().addRecipe(shaped);
+			for (Material material : new Material[] { Material.WOOL, Material.STAINED_CLAY,
+					Material.STAINED_GLASS, Material.STAINED_GLASS_PANE }) {
+				Dye resultDye = new Dye(material);
+				resultDye.setColor(dye);
 
-			// Re-dye stained glass
-			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_GLASS, 8, dye.getWoolData()));
-			shaped.shape("XXX", "XYX", "XXX");
-			shaped.setIngredient('X', Material.STAINED_GLASS, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
-			getServer().addRecipe(shaped);
+				// Dye 8 of an item at a time just like stained glass, allows for re-dyeing
+				shaped = new ShapedRecipe(resultDye.toItemStack(8));
+				shaped.shape("XXX", "XYX", "XXX");
+				shaped.setIngredient('X', material, Short.MAX_VALUE).setIngredient('Y', dyeMaterial);
+				getServer().addRecipe(shaped);
+			}
 
-			// Allow dyeing of panes and re-dyeing of stained panes
-			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_GLASS_PANE, 8, dye.getWoolData()));
+			// Allow dyeing of panes
+			Dye resultDye = new Dye(Material.STAINED_GLASS_PANE);
+			resultDye.setColor(dye);
+			shaped = new ShapedRecipe(resultDye.toItemStack(8));
 			shaped.shape("XXX", "XYX", "XXX");
-			shaped.setIngredient('X', Material.THIN_GLASS).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
-			getServer().addRecipe(shaped);
-
-			shaped = new ShapedRecipe(new ItemStack(Material.STAINED_GLASS_PANE, 8, dye.getWoolData()));
-			shaped.shape("XXX", "XYX", "XXX");
-			shaped.setIngredient('X', Material.STAINED_GLASS_PANE, Short.MAX_VALUE).setIngredient('Y', new MaterialData(Material.INK_SACK, dye.getDyeData()));
+			shaped.setIngredient('X', Material.THIN_GLASS).setIngredient('Y', dyeMaterial);
 			getServer().addRecipe(shaped);
 		}
 
 		// General: Packed ice = 2 snow 2 ice
 		shaped = new ShapedRecipe(new ItemStack(Material.PACKED_ICE));
 		shaped.shape("XY", "YX");
-		shaped.setIngredient('X', Material.SNOW_BLOCK);
-		shaped.setIngredient('Y', Material.ICE);
+		shaped.setIngredient('X', Material.SNOW_BLOCK).setIngredient('Y', Material.ICE);
 		getServer().addRecipe(shaped);
 		shaped.shape("YX", "XY");
 		getServer().addRecipe(shaped);
