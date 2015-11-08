@@ -124,28 +124,34 @@ public class Users extends Module {
 	 * @param player the Player
 	 */
 	public static void team(Player player) {
-		String teamPrefix = null;
-		for (org.bukkit.ChatColor c : org.bukkit.ChatColor.values()) {
-			if ((teamPrefix == null || c.isFormat()) && player.hasPermission("sblockchat." + c.name().toLowerCase())) {
-				teamPrefix = c.toString();
+		StringBuilder prefixBuilder = new StringBuilder();
+		for (net.md_5.bungee.api.ChatColor color : Color.COLORS) {
+			if (player.hasPermission("sblockchat." + color.name().toLowerCase())) {
+				prefixBuilder.append(color);
+				break;
 			}
 		}
-		if (teamPrefix != null) {
+		if (prefixBuilder.length() > 0) {
 			// Do nothing, we've got a fancy override going on
 		} else if (player.hasPermission("sblock.horrorterror")) {
-			teamPrefix = Color.RANK_HORRORTERROR.toString();
+			prefixBuilder.append(Color.RANK_HORRORTERROR.toString());
 		} else if (player.hasPermission("sblock.denizen")) {
-			teamPrefix = Color.RANK_DENIZEN.toString();
+			prefixBuilder.append(Color.RANK_DENIZEN.toString());
 		} else if (player.hasPermission("sblock.felt")) {
-			teamPrefix = Color.RANK_FELT.toString();
+			prefixBuilder.append(Color.RANK_FELT.toString());
 		} else if (player.hasPermission("sblock.helper")) {
-			teamPrefix = Color.RANK_HELPER.toString();
+			prefixBuilder.append(Color.RANK_HELPER.toString());
 		} else if (player.hasPermission("sblock.donator")) {
-			teamPrefix = Color.RANK_DONATOR.toString();
+			prefixBuilder.append(Color.RANK_DONATOR.toString());
 		} else if (player.hasPermission("sblock.godtier")) {
-			teamPrefix = Color.RANK_GODTIER.toString();
+			prefixBuilder.append(Color.RANK_GODTIER.toString());
 		} else {
-			teamPrefix = Color.RANK_HERO.toString();
+			prefixBuilder.append(Color.RANK_HERO.toString());
+		}
+		for (net.md_5.bungee.api.ChatColor color : Color.FORMATS) {
+			if (player.hasPermission("sblockchat." + color.name().toLowerCase())) {
+				prefixBuilder.append(color);
+			}
 		}
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 		String teamName = player.getName();
@@ -153,7 +159,7 @@ public class Users extends Module {
 		if (team == null) {
 			team = board.registerNewTeam(teamName);
 		}
-		team.setPrefix(teamPrefix);
+		team.setPrefix(prefixBuilder.toString());
 		team.addEntry(player.getName());
 		String name = player.getDisplayName();
 		if (name != null && name.length() <= 16) {
@@ -167,7 +173,7 @@ public class Users extends Module {
 		}
 
 		// Since Mojang doesn't, we'll force deathcount to persist - it's been a feature for ages
-		Score score = objective.getScore(player.getDisplayName());
+		Score score = objective.getScore(player.getName());
 		score.setScore(player.getStatistic(Statistic.DEATHS));
 	}
 
