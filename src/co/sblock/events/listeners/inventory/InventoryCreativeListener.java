@@ -48,22 +48,23 @@ public class InventoryCreativeListener implements Listener {
 
 		ItemStack cleanedItem = InventoryUtils.cleanNBT(event.getCursor());
 
+		if (cleanedItem == event.getCursor()) {
+			return;
+		}
+
 		// No invalid durabilities.
-		if (event.getCursor().getDurability() < 0) {
+		if (cleanedItem.getDurability() < 0) {
 			cleanedItem.setDurability((short) 0);
-		} else {
-			cleanedItem.setDurability(event.getCursor().getDurability());
 		}
 
 		// No overstacking, no negative amounts
-		if (event.getCursor().getAmount() > event.getCursor().getMaxStackSize()) {
-			event.getCursor().setAmount(event.getCursor().getMaxStackSize());
-		} else if (event.getCursor().getAmount() < 1) {
-			event.getCursor().setAmount(1);
-		} else {
-			cleanedItem.setAmount(event.getCursor().getAmount());
+		if (cleanedItem.getAmount() > cleanedItem.getMaxStackSize()) {
+			cleanedItem.setAmount(cleanedItem.getMaxStackSize());
+		} else if (cleanedItem.getAmount() < 1) {
+			cleanedItem.setAmount(1);
 		}
 
+		// TODO this may be irrelevant: https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/nms-patches/PlayerConnection.patch#1329
 		event.setCursor(cleanedItem);
 	}
 }

@@ -252,7 +252,7 @@ public class InventoryUtils {
 	}
 
 	public static ItemStack cleanNBT(ItemStack is) {
-		if (is == null) {
+		if (is == null || !is.hasItemMeta()) {
 			return null;
 		}
 
@@ -261,10 +261,6 @@ public class InventoryUtils {
 		cleanedItem.setData(is.getData());
 		cleanedItem.setDurability(is.getDurability());
 		cleanedItem.setAmount(is.getAmount());
-
-		if (!is.hasItemMeta()) {
-			return cleanedItem;
-		}
 		ItemMeta im = is.getItemMeta();
 
 		// Banners
