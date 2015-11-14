@@ -104,7 +104,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 		Collection<ItemStack> drops = BlockDrops.getDrops(player, hand, block);
 		int exp = BlockDrops.getExp(hand, block);
 		if (hand.getType().getMaxDurability() > 0 && (!hand.containsEnchantment(Enchantment.DURABILITY)
-				|| Math.random() < 1.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 1))) {
+				|| Math.random() < 1.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 2))) {
 			hand.setDurability((short) (hand.getDurability() + 1));
 		}
 		block.setType(Material.AIR);
