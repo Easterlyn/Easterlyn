@@ -20,7 +20,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.HandlerList;
@@ -359,11 +358,6 @@ public class Sblock extends JavaPlugin {
 		@SuppressWarnings("unchecked")
 		HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
 		return ImmutableList.copyOf(cmdMapKnownCommands.keySet());
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		return command.execute(sender, label, args);
 	}
 
 	public File getUserDataFolder() throws IOException {

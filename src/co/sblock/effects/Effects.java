@@ -147,25 +147,11 @@ public class Effects extends Module {
 	 * @param entity the LivingEntity
 	 */
 	public Map<Effect, Integer> getAllEffects(LivingEntity entity) {
-		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
+		boolean bypassMax = entity.hasPermission("sblock.effects.bypassmax");
+		Map<Effect, Integer> applicableEffects = getEffects(bypassMax, entity.getEquipment().getArmorContents());
 
-		for (ItemStack item: entity.getEquipment().getArmorContents()) {
-			for (Map.Entry<Effect, Integer> entry : getEffects(item).entrySet()) {
-				if (applicableEffects.containsKey(entry.getKey())) {
-					applicableEffects.put(entry.getKey(), applicableEffects.get(entry.getKey()) + entry.getValue());
-				} else {
-					applicableEffects.put(entry.getKey(), entry.getValue());
-				}
-			}
-		}
-
-		for (Map.Entry<Effect, Integer> entry : getEffects(entity.getEquipment().getItemInHand()).entrySet()) {
-			if (applicableEffects.containsKey(entry.getKey())) {
-				applicableEffects.put(entry.getKey(), applicableEffects.get(entry.getKey()) + entry.getValue());
-			} else {
-				applicableEffects.put(entry.getKey(), entry.getValue());
-			}
-		}
+		getEffects(false, entity.getEquipment().getItemInHand()).forEach(
+				(key, value) -> applicableEffects.merge(key, value, (v1, v2) -> v1 + v2));
 
 		if (!(entity instanceof Player)) {
 			return applicableEffects;
@@ -176,15 +162,12 @@ public class Effects extends Module {
 			return applicableEffects;
 		}
 
-		for (String effectType : new String[] {"::ACTIVE", "::PASSIVE", "::REACTIVE"}) {
+		for (String effectType : user.getGodtierEffects()) {
 			Effect effect = getEffect(user.getUserAspect().name() + effectType);
-			if (effect != null) {
-				if (applicableEffects.containsKey(effect)) {
-					applicableEffects.put(effect, applicableEffects.get(effect) + 1);
-				} else {
-					applicableEffects.put(effect, 1);
-				}
+			if (effect == null) {
+				continue;
 			}
+			applicableEffects.merge(effect, 1, (v1, v2) -> v1 + v2);
 		}
 
 		return applicableEffects;
@@ -198,22 +181,23 @@ public class Effects extends Module {
 	 * @param reactive true if the Effect is reactive
 	 */
 	public void handleEvent(Event event, LivingEntity entity, boolean reactive) {
+		boolean bypassMax = entity.hasPermission("sblock.effects.bypassmax");
 		Map<Effect, Integer> effects;
 		if (reactive) {
-			effects = getEffects(entity.getEquipment().getArmorContents());
+			effects = getEffects(bypassMax, entity.getEquipment().getArmorContents());
 		} else {
-			effects = getEffects(entity.getEquipment().getItemInHand());
+			effects = getEffects(bypassMax, entity.getEquipment().getItemInHand());
 		}
 		if (entity instanceof Player) {
 			OfflineUser user = Users.getGuaranteedUser(entity.getUniqueId());
 			if (user.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
-				Effect effect = Effects.getInstance().getEffect(user.getUserAspect().name() + (reactive ? "::REACTIVE" : "::ACTIVE"));
-				if (effect != null) {
-					if (effects.containsKey(effect)) {
-						effects.put(effect, effects.get(effect) + 1);
-					} else {
-						effects.put(effect, 1);
+				for (String effectType : user.getGodtierEffects()) {
+					Effect effect = getEffect(user.getUserAspect().name() + effectType);
+					if (effect == null || effect instanceof BehaviorPassive
+							|| !reactive && !(effect instanceof BehaviorReactive)) {
+						continue;
 					}
+					effects.merge(effect, 1, (v1, v2) -> v1 + v2);
 				}
 			}
 		}
@@ -243,10 +227,11 @@ public class Effects extends Module {
 	/**
 	 * Gets all Effects and corresponding levels on the provided ItemStack.
 	 * 
-	 * @param item the ItemStack
+	 * @param bypassMax whether or not the maximum level for an effect can be bypassed
+	 * @param items the item(s) to get effects from
 	 * @return the Effects and corresponding levels
 	 */
-	public Map<Effect, Integer> getEffects(ItemStack... items) {
+	public Map<Effect, Integer> getEffects(boolean bypassMax, ItemStack... items) {
 		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
 		for (ItemStack item : items) {
 			if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore() || Captcha.isCard(item)) {
@@ -257,8 +242,8 @@ public class Effects extends Module {
 				if (!match.find()) {
 					continue;
 				}
-				String effect = ChatColor.stripColor(match.group(1));
-				if (!effects.containsKey(effect)) {
+				String effectName = ChatColor.stripColor(match.group(1));
+				if (!effects.containsKey(effectName)) {
 					continue;
 				}
 				int level;
@@ -267,7 +252,17 @@ public class Effects extends Module {
 				} catch (NumberFormatException e) {
 					continue;
 				}
-				applicableEffects.put(effects.get(effect), level);
+				Effect effect = effects.get(effectName);
+				if (!bypassMax && level > effect.getMaxLevel()) {
+					level = effect.getMaxLevel();
+				}
+				if (applicableEffects.containsKey(effect)) {
+					level += applicableEffects.get(effect);
+				}
+				if (!bypassMax && level > effect.getMaxLevel()) {
+					level = effect.getMaxTotalLevel();
+				}
+				applicableEffects.put(effect, level);
 			}
 		}
 		return applicableEffects;

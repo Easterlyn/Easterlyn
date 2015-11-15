@@ -1,6 +1,5 @@
 package co.sblock.effects.effect;
 
-
 /**
  * Base class defining properties for an Effect.
  * <p>

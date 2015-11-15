@@ -89,7 +89,7 @@ public class CruxiteDowel {
 		}
 
 		int effectCost = 0;
-		for (Entry<Effect, Integer> effect : Effects.getInstance().getEffects(toCreate).entrySet()) {
+		for (Entry<Effect, Integer> effect : Effects.getInstance().getEffects(false, toCreate).entrySet()) {
 			effectCost += effect.getKey().getCost() * effect.getValue();
 		}
 		// if item contains special lore and doesn't need repair, raise price
