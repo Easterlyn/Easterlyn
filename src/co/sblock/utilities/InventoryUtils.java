@@ -253,7 +253,7 @@ public class InventoryUtils {
 
 	public static ItemStack cleanNBT(ItemStack is) {
 		if (is == null || !is.hasItemMeta()) {
-			return null;
+			return is;
 		}
 
 		ItemStack cleanedItem = new ItemStack(is.getType());
