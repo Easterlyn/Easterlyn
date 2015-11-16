@@ -16,10 +16,13 @@ import co.sblock.utilities.InventoryUtils;
  */
 public class InventoryCreativeListener implements Listener {
 
-	private final Material[] blacklist = new Material[] { Material.BARRIER, Material.BEDROCK,
-			Material.COMMAND, Material.COMMAND_MINECART, Material.ENDER_PORTAL,
-			Material.ENDER_PORTAL_FRAME, Material.JUKEBOX, Material.EXPLOSIVE_MINECART,
-			Material.MOB_SPAWNER, Material.MONSTER_EGG, Material.MONSTER_EGGS, Material.TNT };
+	private final Material[] blacklist = new Material[] { Material.ACTIVATOR_RAIL,
+			Material.BARRIER, Material.BEDROCK, Material.COMMAND, Material.COMMAND_MINECART,
+			Material.DETECTOR_RAIL, Material.ENDER_PORTAL, Material.ENDER_PORTAL_FRAME,
+			Material.EXPLOSIVE_MINECART, Material.HOPPER_MINECART, Material.JUKEBOX,
+			Material.MINECART, Material.MOB_SPAWNER, Material.MONSTER_EGG, Material.MONSTER_EGGS,
+			Material.POWERED_MINECART, Material.POWERED_RAIL, Material.RAILS,
+			Material.STORAGE_MINECART, Material.TNT };
 
 	/**
 	 * EventHandler for InventoryCreativeEvents. Triggered when a creative client spawns an item.
