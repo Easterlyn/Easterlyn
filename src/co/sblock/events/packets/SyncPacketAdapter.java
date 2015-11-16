@@ -1,6 +1,8 @@
 package co.sblock.events.packets;
 
 
+import java.util.Arrays;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -19,7 +21,8 @@ public class SyncPacketAdapter extends PacketAdapter {
 
 	private final String version;
 	public SyncPacketAdapter() {
-		super(Sblock.getInstance(), PacketType.Status.Server.OUT_SERVER_INFO, PacketType.Play.Client.ENTITY_ACTION);
+		super(Sblock.getInstance(), PacketType.Status.Server.OUT_SERVER_INFO, PacketType.Play.Client.ENTITY_ACTION,
+				PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Client.TAB_COMPLETE);
 
 		// Sblock Alpha: 1.8 - X/Y
 		version = ChatColor.GOLD + "Sblock Alpha" + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY
@@ -43,14 +46,29 @@ public class SyncPacketAdapter extends PacketAdapter {
 			// and outdated server displaying.
 			serverping.setVersionProtocol(0);
 
+			int online = serverping.getPlayersOnline(), max = serverping.getPlayersMaximum();
+
 			// Percent-based color: 0-49 = green, 50-74 = yellow, 75-100 = red
-			int percent = serverping.getPlayersOnline() * 100 / serverping.getPlayersMaximum();
+			int percent = online * 100 / max;
 			ChatColor percentColor = percent > 75 ? ChatColor.RED : percent > 50 ? ChatColor.YELLOW
 					: ChatColor.GREEN;
 
 			// Format and away we go
-			serverping.setVersionName(String.format(version, percentColor,
-					serverping.getPlayersOnline(), serverping.getPlayersMaximum()));
+			serverping.setVersionName(String.format(version, percentColor, online, max));
+		} else if (event.getPacketType() == PacketType.Play.Server.TAB_COMPLETE) {
+			if (event.getPlayer().hasPermission("sblock.denizen")) {
+				return;
+			}
+			event.getPacket().getStringArrays().write(0,
+					Arrays.stream(event.getPacket().getStringArrays().read(0))
+							.filter(completion -> {
+								int colon = completion.indexOf(':');
+								if (colon == -1) {
+									return true;
+								}
+								int space = completion.indexOf(' ');
+								return space < 0 || space > colon;
+							}).toArray(size -> new String[size]));
 		}
 	}
 
@@ -70,6 +88,15 @@ public class SyncPacketAdapter extends PacketAdapter {
 				Events.getInstance().fakeWakeUp(event.getPlayer());
 			}
 			return;
+		} else if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
+			if (event.getPlayer().hasPermission("sblock.denizen")) {
+				return;
+			}
+			String completing = event.getPacket().getStrings().read(0);
+			int colon = completing.indexOf(':'), space = completing.indexOf(' ');
+			if (colon > 0 && (space < 0 || space > colon)) {
+				event.setCancelled(true);
+			}
 		}
 	}
 }
