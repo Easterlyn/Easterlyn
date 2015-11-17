@@ -61,14 +61,10 @@ public class SyncPacketAdapter extends PacketAdapter {
 			}
 			event.getPacket().getStringArrays().write(0,
 					Arrays.stream(event.getPacket().getStringArrays().read(0))
-							.filter(completion -> {
-								int colon = completion.indexOf(':');
-								if (colon == -1) {
-									return true;
-								}
-								int space = completion.indexOf(' ');
-								return space < 0 || space > colon;
-							}).toArray(size -> new String[size]));
+							.filter(completion -> completion.length() < 1
+									|| completion.indexOf('/') != 0
+									|| completion.indexOf(':') < 0)
+							.toArray(size -> new String[size]));
 		}
 	}
 
