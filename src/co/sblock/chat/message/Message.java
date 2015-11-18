@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
-import co.sblock.micromodules.Slack;
+import co.sblock.discord.Discord;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Cooldowns;
@@ -105,9 +105,8 @@ public class Message {
 			Logger.getLogger("Minecraft").info(getConsoleMessage());
 		}
 
-		Slack.getInstance().postMessage(sender != null ? sender.getPlayerName() : name,
-				sender != null ? sender.getUUID() : null, consoleMessage,
-				channel.getName().equals("#"));
+		Discord.getInstance().postMessage(sender != null ? sender.getPlayerName() : name,
+				consoleMessage, channel.getName().equals("#"));
 
 		for (T object : recipients) {
 			UUID uuid;

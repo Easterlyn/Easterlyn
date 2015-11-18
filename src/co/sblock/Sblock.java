@@ -41,6 +41,7 @@ import com.mojang.authlib.GameProfile;
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
+import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
@@ -48,7 +49,6 @@ import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.Meteors;
 import co.sblock.micromodules.RawAnnouncer;
-import co.sblock.micromodules.Slack;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.micromodules.Spectators;
 import co.sblock.module.Dependencies;
@@ -100,7 +100,7 @@ public class Sblock extends JavaPlugin {
 		createBasePermissions();
 
 		modules = new ArrayList<>();
-		modules.add(new Slack().enable());
+		modules.add(new Discord().enable());
 		modules.add(new Chat().enable());
 		modules.add(new Users().enable());
 		modules.add(new Captcha().enable());
@@ -377,14 +377,14 @@ public class Sblock extends JavaPlugin {
 	}
 
 	public GameProfile getFakeGameProfile(String name) {
-		String uuidString = Sblock.getInstance().getConfig().getString("uuid." + name);
+		String uuidString = getConfig().getString("uuid." + name);
 		UUID uuid;
 		if (uuidString != null) {
 			uuid = UUID.fromString(uuidString);
 		} else {
 			uuid = UUID.randomUUID();
-			Sblock.getInstance().getConfig().set("uuid." + name, uuid.toString());
-			Sblock.getInstance().saveConfig();
+			getConfig().set("uuid." + name, uuid.toString());
+			saveConfig();
 		}
 		return new GameProfile(uuid, name);
 	}

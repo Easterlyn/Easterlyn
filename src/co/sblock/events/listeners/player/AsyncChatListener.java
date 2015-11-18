@@ -26,8 +26,8 @@ import co.sblock.chat.ai.HalMessageHandler;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
+import co.sblock.discord.Discord;
 import co.sblock.events.event.SblockAsyncChatEvent;
-import co.sblock.micromodules.Slack;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Cooldowns;
@@ -190,7 +190,7 @@ public class AsyncChatListener implements Listener {
 						+ "You were asked not to spam. This mute will last 5 minutes.");
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 						String.format("mute %s 5m", player.getName()));
-				Slack.getInstance().postReport(player.getName(), player.getUniqueId(),
+				Discord.getInstance().postReport(player.getName(),
 						"Automatically muted for spamming, violation level " + sender.getChatViolationLevel());
 				event.setCancelled(true);
 				return;

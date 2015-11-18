@@ -14,8 +14,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
+import co.sblock.discord.Discord;
 import co.sblock.events.Events;
-import co.sblock.micromodules.Slack;
 import co.sblock.utilities.PermissionBridge;
 
 /**
@@ -57,7 +57,7 @@ public class AsyncPreLoginListener implements Listener {
 					event.setLoginResult(Result.KICK_OTHER);
 					event.setKickMessage("Your IP address is flagged as unsafe by the Spamhaus XBL."
 							+"\n\nPlease visit https://www.spamhaus.org/query/ip/" + ip + " to learn why.");
-					Slack.getInstance().postReport(null, event.getUniqueId(),
+					Discord.getInstance().postReport(event.getUniqueId().toString(),
 							ip + " is flagged as unsafe by spamhaus.org/xbl, disconnecting " + event.getUniqueId());
 					return;
 				}

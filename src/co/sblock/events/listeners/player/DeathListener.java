@@ -76,6 +76,7 @@ public class DeathListener implements Listener {
 			}.runTask(Sblock.getInstance());
 		}
 
+		// TODO post deaths (sans coordinates) to global chat
 		if (Events.getInstance().getPVPTasks().containsKey(player.getUniqueId())) {
 			event.setDroppedExp(Experience.getExp(player));
 			event.setKeepInventory(true);

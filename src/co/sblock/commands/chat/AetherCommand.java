@@ -35,7 +35,8 @@ public class AetherCommand extends SblockAsynchronousCommand {
 
 	static {
 		HOVER = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "IRC Chat\n"
-				+ Color.GOOD + "Server: irc.freenode.net\nChannel: #sblockserver");
+				+ Color.GOOD + "Server: irc.freenode.net\n"
+				+ Color.GOOD + "Channel: #sblockserver");
 		SENDER = new WrappedSenderPlayer(Bukkit.getConsoleSender());
 	}
 
@@ -52,7 +53,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args.length < 2) {
-			sender.sendMessage(Color.BAD + "Hey Adam, stop faking empty IRC messages.");
+			sender.sendMessage(Color.BAD + "Hey Planar, stop faking empty IRC messages.");
 			return true;
 		}
 

@@ -178,6 +178,7 @@ public class ChannelManager {
 		channelList.put("#Aether", new RegionChannel("#Aether"));
 		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#discord", new RegionChannel("#discord"));
 		// People may use unicode characters in private messages
 		channelList.put("#pm", new NickChannel("#pm", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
 		// Show true sign contents

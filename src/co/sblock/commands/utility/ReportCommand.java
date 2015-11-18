@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
-import co.sblock.micromodules.Slack;
+import co.sblock.discord.Discord;
 import co.sblock.users.BukkitSerializer;
 
 /**
@@ -36,8 +36,8 @@ public class ReportCommand extends SblockCommand {
 			sender.sendMessage(Color.BAD + "More descriptive, please!");
 			return true;
 		}
-		Slack slack = Slack.getInstance();
-		if (!slack.isEnabled()) {
+		Discord discord = Discord.getInstance();
+		if (!discord.isEnabled()) {
 			sender.sendMessage(Color.BAD + "Reporting is disabled at this time, sorry! Please /mail an admin instead.");
 			return true;
 		}
@@ -50,7 +50,7 @@ public class ReportCommand extends SblockCommand {
 		StringBuilder sb = new StringBuilder("Report by ").append(player.getName()).append(" at ")
 				.append(BukkitSerializer.locationToBlockCenterString(player.getLocation()))
 				.append('\n').append(StringUtils.join(args, ' '));
-		Slack.getInstance().postReport(player.getName(), player.getUniqueId(), sb.toString());
+		discord.postReport(player.getName(), sb.toString());
 		player.sendMessage(Color.GOOD + "Report sent! Thanks for alerting us.");
 		return true;
 	}

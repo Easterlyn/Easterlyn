@@ -12,10 +12,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 import co.sblock.Sblock;
+import co.sblock.discord.Discord;
 import co.sblock.events.Events;
 import co.sblock.events.packets.WrapperPlayServerPlayerListHeaderFooter;
 import co.sblock.micromodules.Godule;
-import co.sblock.micromodules.Slack;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
@@ -50,7 +50,7 @@ public class JoinListener implements Listener {
 
 		Events.getInstance().addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
 
-		Slack.getInstance().postMessage(event.getPlayer().getName(), event.getPlayer().getUniqueId(),
+		Discord.getInstance().postMessage(event.getPlayer().getName(),
 				event.getPlayer().getName() + " logs in.", true);
 
 		final UUID uuid = event.getPlayer().getUniqueId();

@@ -11,11 +11,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
+import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
-import co.sblock.micromodules.Slack;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.micromodules.Spectators;
 import co.sblock.progression.Entry;
@@ -47,8 +47,8 @@ public class QuitListener implements Listener {
 		// Handle reactive Effects that use quits
 		Effects.getInstance().handleEvent(event, event.getPlayer(), true);
 
-		// Slack integration
-		Slack.getInstance().postMessage(event.getPlayer().getName(), event.getPlayer().getUniqueId(),
+		// Discord integration
+		Discord.getInstance().postMessage(event.getPlayer().getName(),
 				event.getPlayer().getName() + " logs out.", true);
 
 		// Update vote

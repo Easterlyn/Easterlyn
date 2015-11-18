@@ -23,6 +23,17 @@ public class PermissionBridge {
 		service = Bukkit.getServicesManager().load(org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService.class);
 	}
 
+	public boolean hasPermission(String group, String permission) {
+		if (service == null) {
+			return false;
+		}
+		if (!service.getAllGroups().contains(group)) {
+			return false;
+		}
+		Map<String, Boolean> permissions = service.getGroupPermissions(null, null, group);
+		return permissions.containsKey(permission) && permissions.get(permission);
+	}
+
 	public boolean hasPermission(UUID uuid, String permission) {
 		if (service == null) {
 			return false;

@@ -28,6 +28,7 @@ public class EmailWriter extends Program {
 		icon.setItemMeta(meta);
 
 		writable = new ItemStack(Material.BOOK_AND_QUILL);
+		meta = writable.getItemMeta();
 		meta.setDisplayName(Color.GOOD_EMPHASIS + "Letter");
 		meta.setLore(Arrays.asList(Color.GOOD + "Write your message inside.",
 				Color.GOOD + "When done, sign and title the book with the recipient's name.",

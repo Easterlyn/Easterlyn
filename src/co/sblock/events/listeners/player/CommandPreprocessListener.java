@@ -9,7 +9,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.commands.utility.OopsCommand;
-import co.sblock.micromodules.Slack;
+import co.sblock.discord.Discord;
 import co.sblock.micromodules.Spectators;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
@@ -44,8 +44,8 @@ public class CommandPreprocessListener implements Listener {
 		}
 
 		if (!event.getPlayer().hasPermission("sblock.felt")
-				&& !Sblock.getInstance().getConfig().getStringList("slack.command-blacklist").contains(command)) {
-			Slack.getInstance().postMessage(event.getPlayer().getName(), event.getPlayer().getUniqueId(),
+				&& !Sblock.getInstance().getConfig().getStringList("discord.command-blacklist").contains(command)) {
+			Discord.getInstance().postMessage(event.getPlayer().getName(),
 					event.getPlayer().getName() + " issued command: " + event.getMessage(), false);
 		}
 
