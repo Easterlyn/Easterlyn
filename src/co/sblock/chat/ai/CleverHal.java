@@ -22,7 +22,6 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
-import co.sblock.users.OfflineUser;
 import co.sblock.utilities.Cooldowns;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
@@ -82,12 +81,7 @@ public class CleverHal implements HalMessageHandler {
 
 	@Override
 	public boolean handleMessage(Message msg, Collection<Player> recipients) {
-		if (bot == null || msg.getSender() == null || msg.getChannel() instanceof NickChannel) {
-			return true;
-		}
-		OfflineUser sender = msg.getSender();
-		Player senderPlayer = sender.getPlayer();
-		if (senderPlayer == null) {
+		if (bot == null || msg.getChannel() instanceof NickChannel) {
 			return true;
 		}
 		String message = ChatColor.stripColor(msg.getMessage());
@@ -96,30 +90,33 @@ public class CleverHal implements HalMessageHandler {
 		}
 		if (exactPattern.matcher(message).matches()) {
 			// Set sender on fire or some shit
-			msg.getSender().sendMessage(Color.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
+			if (msg.getSender() != null) {
+				msg.getSender().sendMessage(Color.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
+			}
 			return true;
 		}
 		String channel = msg.getChannel().getName();
 		if (!channel.equals("#halchat")) {
-			
 			Cooldowns cooldowns = Cooldowns.getInstance();
 			if (cooldowns.getGlobalRemainder("pendinghal" + channel) > 0) {
 				return true;
 			}
 			cooldowns.addGlobalCooldown("pendinghal" + channel, 3000L);
 			if (cooldowns.getGlobalRemainder("cleverhal" + channel) > 0) {
+				if (msg.getSender() == null) {
+					return true;
+				}
 				// Spammy, warn a bitch
 				noSpam.setChannel(msg.getChannel());
-				noSpam.toMessage().send(Arrays.asList(senderPlayer));
+				noSpam.toMessage().send(Arrays.asList(msg.getSender().getPlayer()));
 				Logger.getLogger("CleverHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
-				return true;
 			} else {
 				cooldowns.addGlobalCooldown("cleverhal" + channel, 2500L);
 			}
 		}
 		HashSet<UUID> recipientUUIDs = new HashSet<>();
 		recipients.forEach(player -> recipientUUIDs.add(player.getUniqueId()));
-		triggerResponse(recipientUUIDs, msg.getChannel(), message);
+		triggerResponse(recipientUUIDs, msg.parseReplyChannel(), message);
 		return true;
 	}
 	public void triggerResponse(final Channel channel, final String message) {

@@ -181,8 +181,10 @@ public class AsyncChatListener implements Listener {
 		final OfflineUser sender = message.getSender();
 
 		// Spam detection and handling, woo!
+		boolean spam = false;
 		if (checkSpam && sender != null && !message.getChannel().getName().equals("#halchat")
 				&& detectSpam(event, message)) {
+			spam = true;
 			event.getRecipients().clear();
 			event.getRecipients().add(player);
 			if (sender.getChatViolationLevel() > 8 && sender.getChatWarnStatus()) {
@@ -226,17 +228,26 @@ public class AsyncChatListener implements Listener {
 		// Manually send messages to each player so we can wrap links, etc.
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
 
+		// Post messages to Discord
+		Discord.getInstance().postMessage(sender != null ? sender.getPlayerName() : message.getSenderName(),
+				message.getConsoleMessage(), !spam && message.getChannel().getName().equals("#"));
+
 		// Dummy player should not trigger Hal; he may become one.
 		if (player instanceof WrappedSenderPlayer) {
 			event.getRecipients().clear();
 			return;
 		}
 
-		// Handle Hal functions
-		for (HalMessageHandler handler : halFunctions) {
-			if (handler.handleMessage(message, event.getRecipients())) {
-				break;
+		try {
+			// Handle Hal functions
+			for (HalMessageHandler handler : halFunctions) {
+				if (handler.handleMessage(message, event.getRecipients())) {
+					break;
+				}
 			}
+		} catch (Exception e) {
+			// Just in case, don't allow a Hal integration mistake to break chat.
+			e.printStackTrace();
 		}
 
 		// No one should receive the final message if it is not cancelled.

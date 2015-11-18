@@ -12,9 +12,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import co.sblock.chat.ChannelManager;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
-import co.sblock.discord.Discord;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 import co.sblock.utilities.Cooldowns;
@@ -59,6 +59,10 @@ public class Message {
 		return sender;
 	}
 
+	public String getSenderName() {
+		return name;
+	}
+
 	public Channel getChannel() {
 		return channel;
 	}
@@ -91,6 +95,24 @@ public class Message {
 		return thirdPerson;
 	}
 
+	public Channel parseReplyChannel() {
+		// All Messages have a click event
+		String atChannel = channelComponent.getClickEvent().getValue();
+
+		if (atChannel.length() < 2 || atChannel.charAt('0') != '@') {
+			return getChannel();
+		}
+
+		int end = atChannel.indexOf(' ');
+		if (end == -1) {
+			end = atChannel.length();
+		}
+
+		Channel channel = ChannelManager.getChannelManager().getChannel(atChannel.substring(1, end));
+
+		return channel == null ? getChannel() : channel;
+	}
+
 	public void send() {
 		this.send(getChannel().getListening());
 	}
@@ -100,13 +122,9 @@ public class Message {
 	}
 
 	public <T> void send(Collection<T> recipients, boolean normalChat) {
-		String consoleMessage = getConsoleMessage();
 		if (!normalChat || !(channel instanceof RegionChannel)) {
 			Logger.getLogger("Minecraft").info(getConsoleMessage());
 		}
-
-		Discord.getInstance().postMessage(sender != null ? sender.getPlayerName() : name,
-				consoleMessage, channel.getName().equals("#"));
 
 		for (T object : recipients) {
 			UUID uuid;
