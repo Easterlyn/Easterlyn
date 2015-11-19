@@ -2,6 +2,9 @@ package co.sblock.discord;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,7 +21,7 @@ import co.sblock.users.Users;
 import me.itsghost.jdiscord.DiscordAPI;
 import me.itsghost.jdiscord.event.EventListener;
 import me.itsghost.jdiscord.events.UserChatEvent;
-import me.itsghost.jdiscord.talkable.GroupUser;
+import me.itsghost.jdiscord.talkable.User;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -34,6 +37,7 @@ public class DiscordListener implements EventListener {
 	private final Discord discord;
 	private final DiscordAPI api;
 	private final BaseComponent[] hover;
+	private final Pattern mention;
 
 	public DiscordListener(Discord discord, DiscordAPI api) {
 		this.discord = discord;
@@ -41,6 +45,7 @@ public class DiscordListener implements EventListener {
 		this.hover = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
 				+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
 				+ Color.GOOD + "Channel: #main");
+		this.mention = Pattern.compile("<@(\\d+)>");
 	}
 
 	public void onUserChat(UserChatEvent event) {
@@ -48,7 +53,16 @@ public class DiscordListener implements EventListener {
 			return;
 		}
 		Sblock sblock = Sblock.getInstance();
-		if (event.getServer() == null || event.getGroup() == null) {
+		String msg = event.getMsg().getMessage();
+		if (event.getServer() == null) {
+			if (msg.startsWith("/link ")) {
+				String register = msg.substring(10);
+				if (!discord.getAuthCodes().containsValue(register)) {
+					return;
+				}
+				UUID link = discord.getAuthCodes().inverse().remove(register);
+				sblock.getConfig().set("discord.users." + event.getUser().getUser().getId(), link.toString());
+			}
 			// TODO accept private messages as commands
 			return;
 		}
@@ -57,10 +71,17 @@ public class DiscordListener implements EventListener {
 			return;
 		}
 		Player sender = discord.getPlayerFor(event.getUser());
+		if (sender == null) {
+			event.getMsg().deleteMessage();
+			discord.postMessage("Sbot", '@' + event.getUser().getUser().getUsername()
+							+ ", you must link your Discord account ingame by running /link before you can talk!",
+					event.getGroup().getId());
+			return;
+		}
 		Channel channel = ChannelManager.getChannelManager().getChannel("#discord");
 		Message message = new MessageBuilder().setChannel(channel)
-				.setSender(getGroupColor(event.getUser()) + event.getUser().getUser().getUsername())
-				.setMessage(sanitize(event.getMsg().getMessage())).setChannel(channel).setNameHover(hover)
+				.setSender(Users.getGuaranteedUser(sender.getUniqueId()))
+				.setMessage(sanitize(event.getMsg())).setChannel(channel).setNameHover(hover)
 				.setNameClick("@# ").setChannelClick("@# ").toMessage();
 		// TODO MessageBuilder method overloading: add different click events (open Discord link on name click)
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
@@ -68,26 +89,23 @@ public class DiscordListener implements EventListener {
 		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, sender, players, message));
 	}
 
-	private String sanitize(String chat) {
-		// TODO
-		// @mentions become <@userid>, undo
-		return chat;
-	}
-
-	private ChatColor getGroupColor(GroupUser user) {
-		switch (user.getRole()) {
-		case "@horrorterror":
-			return Color.RANK_HORRORTERROR;
-		case "@denizen":
-			return Color.RANK_DENIZEN;
-		case "@felt":
-			return Color.RANK_FELT;
-		case "@helper":
-			return Color.RANK_HELPER;
-		case "@donator":
-			return Color.RANK_DONATOR;
-		default:
-			return Color.RANK_HERO;
+	private String sanitize(me.itsghost.jdiscord.message.Message msg) {
+		String message = msg.getMessage();
+		Matcher matcher = mention.matcher(message);
+		StringBuilder sb = new StringBuilder();
+		int lastMatch = 0;
+		while (matcher.find()) {
+			sb.append(message.substring(lastMatch, matcher.start())).append('@');
+			String id = matcher.group(1);
+			User user = api.getUserById(id);
+			if (user == null) {
+				sb.append(id);
+			} else {
+				sb.append(api.getUserById(id).getUsername());
+			}
+			lastMatch = matcher.end();
 		}
+		sb.append(message.substring(lastMatch));
+		return sb.toString();
 	}
 }

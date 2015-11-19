@@ -1,5 +1,6 @@
 package co.sblock.discord;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -8,9 +9,12 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.collect.HashBiMap;
+
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.module.Module;
-import co.sblock.utilities.DiscordPlayer;
+import co.sblock.utilities.PlayerLoader;
 
 import me.itsghost.jdiscord.DiscordAPI;
 import me.itsghost.jdiscord.DiscordBuilder;
@@ -33,13 +37,13 @@ public class Discord extends Module {
 	private static Discord instance;
 
 	private DiscordAPI discord;
+	private Server server;
 	private ConcurrentLinkedQueue<Triple<String, String, String>> queue;
+	private HashBiMap<UUID, String> authentications;
 
 	@Override
 	protected void onEnable() {
 		instance = this;
-
-		// TODO don't store as plaintext
 		Sblock sblock = Sblock.getInstance();
 		String login = sblock.getConfig().getString("discord.login");
 		String password = sblock.getConfig().getString("discord.password");
@@ -70,7 +74,8 @@ public class Discord extends Module {
 
 		discord.getEventManager().registerListener(new DiscordListener(this, discord));
 		queue = new ConcurrentLinkedQueue<>();
-		final Server server = discord.getServerById(sblock.getConfig().getString("discord.server"));
+		authentications = HashBiMap.create();
+		server = discord.getServerById(sblock.getConfig().getString("discord.server"));
 
 		new BukkitRunnable() {
 			@Override
@@ -127,6 +132,10 @@ public class Discord extends Module {
 		postMessage(name, message, Sblock.getInstance().getConfig().getString("discord.chat.reports"));
 	}
 
+	public HashBiMap<UUID, String> getAuthCodes() {
+		return authentications;
+	}
+
 	@Override
 	protected void onDisable() {
 		if (this.discord != null) {
@@ -141,9 +150,38 @@ public class Discord extends Module {
 		return "Discord";
 	}
 
-	protected Player getPlayerFor(GroupUser user) {
-		// FIXME get user's groups and set permissions
-		return new DiscordPlayer(user.getUser().getUsername(), user.getRole());
+	protected DiscordPlayer getPlayerFor(GroupUser user) {
+		String uuidString = Sblock.getInstance().getConfig().getString("discord.users." + user.getUser().getId());
+		if (uuidString != null) {
+			return null;
+		}
+		UUID uuid = UUID.fromString(uuidString);
+		Player player = PlayerLoader.getPlayer(uuid);
+		if (player instanceof DiscordPlayer) {
+			return (DiscordPlayer) player;
+		}
+		// PlayerLoader loads a PermissiblePlayer, wrapping a wrapper would be silly.
+		DiscordPlayer dplayer = new DiscordPlayer(user, player.getPlayer());
+		PlayerLoader.modifyCachedPlayer(dplayer);
+		return dplayer;
+	}
+
+	public ChatColor getGroupColor(GroupUser user) {
+		// future when jDiscord updates, multiple roles will be supported
+		switch (user.getRole()) {
+		case "@horrorterror":
+			return Color.RANK_HORRORTERROR;
+		case "@denizen":
+			return Color.RANK_DENIZEN;
+		case "@felt":
+			return Color.RANK_FELT;
+		case "@helper":
+			return Color.RANK_HELPER;
+		case "@donator":
+			return Color.RANK_DONATOR;
+		default:
+			return Color.RANK_HERO;
+		}
 	}
 
 	public static Discord getInstance() {

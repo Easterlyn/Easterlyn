@@ -52,7 +52,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 /**
- * 
+ * A barebones Player implementation, mostly for use in chat.
  * 
  * @author Jikoo
  */
