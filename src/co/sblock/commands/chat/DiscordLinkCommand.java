@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.ImmutableList;
 
@@ -42,10 +43,17 @@ public class DiscordLinkCommand extends SblockCommand {
 			sender.sendMessage(Color.BAD + "Discord link is currently nonfunctional!");
 			return true;
 		}
-		String code = generateUniqueCode(((Player) sender).getUniqueId(), discord);
+		UUID uuid = ((Player) sender).getUniqueId();
+		String code = generateUniqueCode(uuid, discord);
 		sender.sendMessage(Color.GOOD + "Message the Discord bot \"" + Color.GOOD_EMPHASIS
 				+ "/link " + code + Color.GOOD + "\" to complete linking your Discord account!\n"
 				+ Color.BAD + "This code will expire in a minute.");
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				discord.getAuthCodes().remove(uuid);
+			}
+		}.runTaskLater(getPlugin(), 1200L);
 		return true;
 	}
 

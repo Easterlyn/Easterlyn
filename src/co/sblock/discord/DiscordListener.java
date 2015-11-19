@@ -56,12 +56,15 @@ public class DiscordListener implements EventListener {
 		String msg = event.getMsg().getMessage();
 		if (event.getServer() == null) {
 			if (msg.startsWith("/link ")) {
-				String register = msg.substring(10);
+				String register = msg.substring(6);
 				if (!discord.getAuthCodes().containsValue(register)) {
+					event.getGroup().sendMessage("Invalid registration code!");
 					return;
 				}
+				event.getGroup().sendMessage("Registration complete!");
 				UUID link = discord.getAuthCodes().inverse().remove(register);
 				sblock.getConfig().set("discord.users." + event.getUser().getUser().getId(), link.toString());
+				sblock.saveConfig();
 			}
 			// TODO accept private messages as commands
 			return;
@@ -73,8 +76,8 @@ public class DiscordListener implements EventListener {
 		Player sender = discord.getPlayerFor(event.getUser());
 		if (sender == null) {
 			event.getMsg().deleteMessage();
-			discord.postMessage("Sbot", '@' + event.getUser().getUser().getUsername()
-							+ ", you must link your Discord account ingame by running /link before you can talk!",
+			discord.postMessage("Sbot", "<@" + event.getUser().getUser().getId()
+							+ ">, you must link your Discord account ingame by running /link before you can talk!",
 					event.getGroup().getId());
 			return;
 		}

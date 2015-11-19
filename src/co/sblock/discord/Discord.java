@@ -152,7 +152,7 @@ public class Discord extends Module {
 
 	protected DiscordPlayer getPlayerFor(GroupUser user) {
 		String uuidString = Sblock.getInstance().getConfig().getString("discord.users." + user.getUser().getId());
-		if (uuidString != null) {
+		if (uuidString == null) {
 			return null;
 		}
 		UUID uuid = UUID.fromString(uuidString);
