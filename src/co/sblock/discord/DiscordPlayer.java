@@ -14,6 +14,7 @@ import me.itsghost.jdiscord.talkable.GroupUser;
 public class DiscordPlayer extends PermissiblePlayer {
 
 	private final GroupUser user;
+	private StringBuilder messages;
 
 	public DiscordPlayer(GroupUser user, Player player) {
 		super(player);
@@ -25,14 +26,42 @@ public class DiscordPlayer extends PermissiblePlayer {
 		return Discord.getInstance().getGroupColor(user) + getName();
 	}
 
+	public void startMessages() {
+		if (messages == null) {
+			messages = new StringBuilder();
+		} else {
+			messages.delete(0, messages.length());
+		}
+	}
+
+	public String stopMessages() {
+		if (messages == null) {
+			throw new IllegalStateException("Messages have not been collecting!");
+		}
+		String message = messages.toString();
+		messages = null;
+		return message;
+	}
+
 	@Override
 	public void sendMessage(String arg0) {
-		// FIXME REPLY TO DISCORD - command response, etc.
+		if (messages == null) {
+			return;
+		}
+		if (messages.length() > 0) {
+			messages.append('\n');
+		}
+		messages.append(arg0);
 	}
 
 	@Override
 	public void sendMessage(String[] arg0) {
-		// FIXME see above
+		if (messages == null) {
+			return;
+		}
+		for (String s : arg0) {
+			sendMessage(s);
+		}
 	}
 
 	@Override

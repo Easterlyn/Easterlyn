@@ -23,7 +23,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class DiscordLinkCommand extends SblockCommand {
 
-	private final String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Random random = new Random();
 
 	public DiscordLinkCommand() {
@@ -44,23 +44,25 @@ public class DiscordLinkCommand extends SblockCommand {
 			return true;
 		}
 		UUID uuid = ((Player) sender).getUniqueId();
-		String code = generateUniqueCode(uuid, discord);
+		String code;
+		if (discord.getAuthCodes().containsKey(uuid)) {
+			code = discord.getAuthCodes().get(uuid);
+		} else {
+			code = generateUniqueCode(uuid, discord);
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					discord.getAuthCodes().remove(uuid);
+				}
+			}.runTaskLater(getPlugin(), 1200L);
+		}
 		sender.sendMessage(Color.GOOD + "Message the Discord bot \"" + Color.GOOD_EMPHASIS
 				+ "/link " + code + Color.GOOD + "\" to complete linking your Discord account!\n"
 				+ Color.BAD + "This code will expire in a minute.");
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				discord.getAuthCodes().remove(uuid);
-			}
-		}.runTaskLater(getPlugin(), 1200L);
 		return true;
 	}
 
 	private String generateUniqueCode(UUID uuid, Discord discord) {
-		if (discord.getAuthCodes().containsKey(uuid)) {
-			return discord.getAuthCodes().get(uuid);
-		}
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 6; i++) {
 			sb.append(chars.charAt(random.nextInt(chars.length())));

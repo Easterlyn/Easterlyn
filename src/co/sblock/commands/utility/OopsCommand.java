@@ -14,6 +14,7 @@ import org.bukkit.command.SimpleCommandMap;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+import co.sblock.discord.DiscordPlayer;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -78,6 +79,13 @@ public class OopsCommand extends SblockCommand {
 			return null;
 		}
 
+		List<String> discordWhitelist;
+		if (sender instanceof DiscordPlayer) {
+			discordWhitelist = Sblock.getInstance().getConfig().getStringList("discord.command-whitelist");
+		} else {
+			discordWhitelist = null;
+		}
+
 		int matchLevel = Integer.MAX_VALUE;
 		String correctCommandName = null;
 		for (Command command : commandMap.getCommands()) {
@@ -85,6 +93,9 @@ public class OopsCommand extends SblockCommand {
 			// future support Essentials' terrible command system?
 			if (permission != null && !sender.hasPermission(permission)) {
 				// Can't use the command, don't check.
+				continue;
+			}
+			if (discordWhitelist != null && !discordWhitelist.contains(command.getName())) {
 				continue;
 			}
 			for (String alias : getAllAliases(command)) {

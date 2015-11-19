@@ -99,7 +99,7 @@ public class Message {
 		// All Messages have a click event
 		String atChannel = channelComponent.getClickEvent().getValue();
 
-		if (atChannel.length() < 2 || atChannel.charAt('0') != '@') {
+		if (atChannel.length() < 2 || atChannel.charAt(0) != '@') {
 			return getChannel();
 		}
 

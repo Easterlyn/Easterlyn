@@ -5,6 +5,9 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.PluginManager;
 
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
 
@@ -31,7 +34,27 @@ public class PermissionBridge {
 			return false;
 		}
 		Map<String, Boolean> permissions = service.getGroupPermissions(null, null, group);
-		return permissions.containsKey(permission) && permissions.get(permission);
+		if (permissions.containsKey(permission) && permissions.get(permission)) {
+			return true;
+		}
+		PluginManager pluginManager = Bukkit.getPluginManager();
+		for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
+			Permission perm = pluginManager.getPermission(entry.getKey());
+			if (perm == null) {
+				continue;
+			}
+			if (perm.getChildren().containsKey(permission)) {
+				// If parent is true, child must be true to be true
+				// While technically functional, not false (== rather than &&)
+				// allows potential for edge cases and mistakes.
+				return entry.getValue() && perm.getChildren().get(permission);
+			}
+		}
+		Permission node = pluginManager.getPermission(permission);
+		if (node != null) {
+			return node.getDefault() == PermissionDefault.TRUE;
+		}
+		return false;
 	}
 
 	public boolean hasPermission(UUID uuid, String permission) {
@@ -43,7 +66,34 @@ public class PermissionBridge {
 			return false;
 		}
 		Map<String, Boolean> permissions = service.getPlayerPermissions(null, null, uuid);
-		return permissions.containsKey(permission) && permissions.get(permission);
+		if (permissions.containsKey(permission) && permissions.get(permission)) {
+			return true;
+		}
+		PluginManager pluginManager = Bukkit.getPluginManager();
+		for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
+			Permission perm = pluginManager.getPermission(entry.getKey());
+			if (perm == null) {
+				continue;
+			}
+			if (perm.getChildren().containsKey(permission)) {
+				return entry.getValue() && perm.getChildren().get(permission);
+			}
+		}
+		Permission node = pluginManager.getPermission(permission);
+		if (node != null) {
+			switch (node.getDefault()) {
+			case NOT_OP:
+				return !player.isOp();
+			case OP:
+				return player.isOp();
+			case TRUE:
+				return true;
+			case FALSE:
+			default:
+				return false;
+			}
+		}
+		return false;
 	}
 
 	public static PermissionBridge getInstance() {
