@@ -26,7 +26,11 @@ public class DiscordPlayer extends PermissiblePlayer {
 		return Discord.getInstance().getGroupColor(user) + getName();
 	}
 
-	public void startMessages() {
+	public synchronized boolean hasPendingCommand() {
+		return messages != null;
+	}
+
+	public synchronized void startMessages() {
 		if (messages == null) {
 			messages = new StringBuilder();
 		} else {
@@ -34,9 +38,9 @@ public class DiscordPlayer extends PermissiblePlayer {
 		}
 	}
 
-	public String stopMessages() {
+	public synchronized String stopMessages() {
 		if (messages == null) {
-			throw new IllegalStateException("Messages have not been collecting!");
+			return null;
 		}
 		String message = messages.toString();
 		messages = null;

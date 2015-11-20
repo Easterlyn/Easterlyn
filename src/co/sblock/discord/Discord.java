@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +32,6 @@ import co.sblock.utilities.PlayerLoader;
 
 import me.itsghost.jdiscord.DiscordAPI;
 import me.itsghost.jdiscord.DiscordBuilder;
-import me.itsghost.jdiscord.Server;
 import me.itsghost.jdiscord.events.UserChatEvent;
 import me.itsghost.jdiscord.exception.BadUsernamePasswordException;
 import me.itsghost.jdiscord.exception.DiscordFailedToConnectException;
@@ -56,7 +54,6 @@ public class Discord extends Module {
 	private static Discord instance;
 
 	private DiscordAPI discord;
-	private Server server;
 	private ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private HashBiMap<UUID, String> authentications;
 	private BaseComponent[] hover;
@@ -71,39 +68,21 @@ public class Discord extends Module {
 
 		if (login == null || password == null) {
 			getLogger().severe("Unable to connect to Discord, no username or password!");
-			this.disable();
+			disable();
 			return;
 		}
 
-		this.discord = new DiscordBuilder(login, password).build();
+		discord = new DiscordBuilder(login, password).build();
+		discord.getEventManager().registerListener(new DiscordLoadedListener(this, discord));
 
 		try {
-			this.discord.login();
+			discord.login();
 		} catch (NoLoginDetailsException | BadUsernamePasswordException | DiscordFailedToConnectException e) {
 			e.printStackTrace();
-			this.discord = null;
-			this.disable();
+			discord = null;
+			disable();
 			return;
 		}
-		while (!discord.isLoaded()) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-
-		StringBuilder sb = new StringBuilder();
-		for (Server server : discord.getAvailableServers()) {
-			getLogger().info("Available channels in " + server.getName() + " (" + server.getId() + "):");
-			for (Group group : server.getGroups()) {
-				sb.append(group.getName()).append(':').append(group.getId()).append(' ');
-			}
-			sb.deleteCharAt(sb.length() - 1);
-			getLogger().info(sb.toString());
-			sb.delete(0, sb.length());
-		}
-		sb = null;
 
 		authentications = HashBiMap.create();
 		hover = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
@@ -113,33 +92,28 @@ public class Discord extends Module {
 		discord.getEventManager().registerListener(new DiscordListener(this, discord));
 
 		queue = new ConcurrentLinkedQueue<>();
-		server = discord.getServerById(sblock.getConfig().getString("discord.server"));
+	}
 
+	protected void startPostingMessages() {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (discord == null || server == null) {
-					this.cancel();
+				if (discord == null) {
+					cancel();
 					return;
 				}
 				if (queue.isEmpty()) {
 					return;
 				}
 				Triple<String, String, String> triple = queue.poll();
-				Group group = null;
-				for (Group visible : server.getGroups()) {
-					if (visible.getId().equals(triple.getLeft())) {
-						group = visible;
-						break;
-					}
-				}
+				Group group = discord.getGroupById(triple.getLeft());
 				if (group == null) {
 					return;
 				}
 				discord.getSelfInfo().setUsername(triple.getMiddle());
 				group.sendMessage(triple.getRight());
 			}
-		}.runTaskTimerAsynchronously(sblock, 20L, 20L);
+		}.runTaskTimerAsynchronously(Sblock.getInstance(), 20L, 20L);
 	}
 
 	public void postMessage(String name, String message, boolean global) {
@@ -176,9 +150,9 @@ public class Discord extends Module {
 
 	@Override
 	protected void onDisable() {
-		if (this.discord != null) {
-			this.discord.stop();
-			this.discord = null;
+		if (discord != null) {
+			discord.stop();
+			discord = null;
 		}
 		instance = null;
 	}
@@ -205,17 +179,18 @@ public class Discord extends Module {
 	}
 
 	protected void handleCommandFor(DiscordPlayer player, String command, Group group) {
-		Future<String> future = Bukkit.getScheduler().callSyncMethod(Sblock.getInstance(),
-				new Callable<String>() {
+		if (player.hasPendingCommand()) {
+			postMessage("Sbot", "You alread have a pending command. Please be patient.", group.getId());
+			return;
+		}
+		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(Sblock.getInstance(),
+				new Callable<Boolean>() {
 					@Override
-					public String call() throws Exception {
+					public Boolean call() throws Exception {
 						player.startMessages();
 						PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, "/" + command);
 						Bukkit.getPluginManager().callEvent(event);
-						if (!event.isCancelled()) {
-							Bukkit.dispatchCommand(player, command);
-						}
-						return ChatColor.stripColor(player.stopMessages());
+						return !event.isCancelled() && Bukkit.dispatchCommand(player, event.getMessage().substring(1));
 					}
 				});
 
@@ -233,14 +208,18 @@ public class Discord extends Module {
 					count++;
 				}
 				if (future.isCancelled() || !future.isDone()) {
-					group.sendMessage("Command " + command + " from " + player.getName() + " timed out.");
+					postMessage("Sbot", "Command " + command + " from " + player.getName() + " timed out.", group.getId());
+					player.stopMessages();
 					return;
 				}
 				try {
-					group.sendMessage(future.get());
-				} catch (InterruptedException | ExecutionException e) {
-					group.sendMessage("Command " + command + " from " + player.getName() + " encountered an error.");
+					Thread.sleep(100);
+				} catch (InterruptedException e) { }
+				String message = player.stopMessages();
+				if (message.isEmpty()) {
+					return;
 				}
+				postMessage("Sbot", message, group.getId());
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());
 	}
