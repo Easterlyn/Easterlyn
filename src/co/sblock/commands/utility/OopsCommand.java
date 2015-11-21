@@ -90,7 +90,6 @@ public class OopsCommand extends SblockCommand {
 		String correctCommandName = null;
 		for (Command command : commandMap.getCommands()) {
 			String permission = command.getPermission();
-			// future support Essentials' terrible command system?
 			if (permission != null && !sender.hasPermission(permission)) {
 				// Can't use the command, don't check.
 				continue;
