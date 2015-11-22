@@ -225,7 +225,7 @@ public class Discord extends Module {
 					return;
 				}
 				try {
-					Thread.sleep(100);
+					Thread.sleep(200);
 				} catch (InterruptedException e) { }
 				String message = player.stopMessages();
 				if (message.isEmpty()) {

@@ -28,7 +28,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 	public SblockCommand(String name) {
 		super(name);
 		this.setDescription("A Sblock command.");
-		this.setUsage("/<command>");
+		this.setUsage("/" + name);
 		this.setPermission("sblock.command." + name);
 		this.setPermissionLevel("default");
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");

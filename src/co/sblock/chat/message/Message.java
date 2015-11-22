@@ -31,8 +31,8 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class Message {
 
-	private static final String DISCORD_FORMAT = "**%s**: %s";
-	private static final String DISCORD_FORMAT_THIRD = "***** **%s** *%s*";
+	private static final String DISCORD_FORMAT = "%s: %s";
+	private static final String DISCORD_FORMAT_THIRD = "* %s *%s*";
 
 	private final OfflineUser sender;
 	private final Channel channel;
