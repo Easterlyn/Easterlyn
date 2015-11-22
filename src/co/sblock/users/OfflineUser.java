@@ -26,6 +26,7 @@ import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
+import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
@@ -960,6 +961,8 @@ public class OfflineUser {
 					// Our data file may have just been deleted - reset planned for Entry, etc.
 					Bukkit.broadcastMessage(Color.HAL + "It would seem that " + player.getName()
 							+ " is joining us for the first time! Please welcome them.");
+					Discord.getInstance().postMessage(player.getName(), player.getName()
+							+ " is new! Please welcome them.", true);
 				} else {
 					player.sendMessage(Color.HAL + "We've reset classpect since you last played. Please re-select now!");
 				}

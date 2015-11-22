@@ -142,6 +142,7 @@ public class AsyncChatListener implements Listener {
 
 		final Player player = event.getPlayer();
 		String cleaned = ChatColor.stripColor(message.getMessage());
+		boolean publishGlobally = message.getChannel().getName().equals("#");
 
 		if (checkSpam) {
 			if (cleaned.equalsIgnoreCase("test")) {
@@ -172,7 +173,9 @@ public class AsyncChatListener implements Listener {
 		event.setMessage(cleaned);
 
 		if (checkSpam && handleGriefPrevention) {
-			handleGPChat(event, message);
+			if (handleGPChat(event, message)) {
+				publishGlobally = false;
+			}
 			if (event.isCancelled()) {
 				return;
 			}
@@ -181,10 +184,9 @@ public class AsyncChatListener implements Listener {
 		final OfflineUser sender = message.getSender();
 
 		// Spam detection and handling, woo!
-		boolean spam = false;
 		if (checkSpam && sender != null && !message.getChannel().getName().equals("#halchat")
 				&& detectSpam(event, message)) {
-			spam = true;
+			publishGlobally = false;
 			event.getRecipients().clear();
 			event.getRecipients().add(player);
 			if (sender.getChatViolationLevel() > 8 && sender.getChatWarnStatus()) {
@@ -229,8 +231,7 @@ public class AsyncChatListener implements Listener {
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
 
 		// Post messages to Discord
-		Discord.getInstance().postMessage(sender != null ? sender.getPlayerName() : message.getSenderName(),
-				message.getConsoleMessage(), !spam && message.getChannel().getName().equals("#"));
+		Discord.getInstance().postMessage(message, publishGlobally);
 
 		// Dummy player should not trigger Hal; he may become one.
 		if (player instanceof WrappedSenderPlayer) {
@@ -261,9 +262,17 @@ public class AsyncChatListener implements Listener {
 		return false;
 	}
 
-	private void handleGPChat(final AsyncPlayerChatEvent event, final Message message) {
+	/**
+	 * Handles chat in a way similar to how GP's listener does, sans the extra checks we do not
+	 * want.
+	 * 
+	 * @param event the AsyncPlayerChatEvent
+	 * @param message the Message
+	 * @return true if the sender is soft muted
+	 */
+	private boolean handleGPChat(final AsyncPlayerChatEvent event, final Message message) {
 		if (message.getSender() == null || GriefPrevention.instance == null) {
-			return;
+			return false;
 		}
 
 		final DataStore dataStore = GriefPrevention.instance.dataStore;
@@ -282,7 +291,8 @@ public class AsyncChatListener implements Listener {
 		}
 
 		// Soft-muted chat
-		if (dataStore.isSoftMuted(player.getUniqueId())) {
+		boolean softMute = dataStore.isSoftMuted(player.getUniqueId());
+		if (softMute) {
 			event.setFormat("[SoftMute] " + event.getFormat());
 			String soft = new StringBuilder().append(ChatColor.GRAY).append("[SoftMute] ")
 					.append(ChatColor.stripColor(message.getConsoleMessage())).toString();
@@ -315,6 +325,7 @@ public class AsyncChatListener implements Listener {
 				continue;
 			}
 		}
+		return softMute;
 	}
 
 	private boolean detectSpam(AsyncPlayerChatEvent event, Message message) {

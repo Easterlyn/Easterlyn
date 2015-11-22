@@ -45,8 +45,8 @@ public class CommandPreprocessListener implements Listener {
 
 		if (!event.getPlayer().hasPermission("sblock.felt")
 				&& !sblock.getConfig().getStringList("discord.command-blacklist").contains(command)) {
-			Discord.getInstance().postMessage(event.getPlayer().getName(),
-					event.getPlayer().getName() + " issued command: " + event.getMessage(), false);
+			Discord.getInstance().logMessage(event.getPlayer().getName()
+					+ " issued command: " + event.getMessage());
 		}
 
 		if (((OopsCommand) map.getCommand("oops"))

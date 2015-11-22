@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -116,16 +117,27 @@ public class Discord extends Module {
 		}.runTaskTimerAsynchronously(Sblock.getInstance(), 20L, 20L);
 	}
 
-	public void postMessage(String name, String message, boolean global) {
-		if (discord == null) {
-			return;
-		}
-		Sblock sblock = Sblock.getInstance();
+	public void logMessage(String message) {
+		postMessage("Sbot", message, Sblock.getInstance().getConfig().getString("discord.chat.log"));
+	}
+
+	public void postMessage(Message message, boolean global) {
+		FileConfiguration config = Sblock.getInstance().getConfig();
 		if (global) {
-			postMessage(name, message, sblock.getConfig().getString("discord.chat.main"),
-					sblock.getConfig().getString("discord.chat.log"));
+			postMessage(message.getSenderName(), message.getDiscordMessage(),
+					config.getString("discord.chat.main"));
+		}
+		postMessage(message.getSenderName(), message.getConsoleFormat(),
+				config.getString("discord.chat.log"));
+	}
+
+	public void postMessage(String name, String message, boolean global) {
+		FileConfiguration config = Sblock.getInstance().getConfig();
+		if (global) {
+			postMessage(name, message, config.getString("discord.chat.main"),
+					config.getString("discord.chat.log"));
 		} else {
-			postMessage(name, message, sblock.getConfig().getString("discord.chat.log"));
+			postMessage(name, message, config.getString("discord.chat.log"));
 		}
 	}
 

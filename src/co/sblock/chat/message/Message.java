@@ -31,6 +31,8 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class Message {
 
+	private static final String DISCORD_FORMAT = "**%s**: %s";
+
 	private final OfflineUser sender;
 	private final Channel channel;
 	private final String name;
@@ -81,6 +83,13 @@ public class Message {
 
 	public String getConsoleMessage() {
 		return String.format(getConsoleFormat(), name, unformattedMessage);
+	}
+
+	public String getDiscordMessage() {
+		// Names will only contain underscores, messages may contain additional formatting.
+		// In the future we may allow formatting for all users.
+		return String.format(DISCORD_FORMAT, name.replace("_", "\\_"),
+				unformattedMessage.replaceAll("([\\_~*])", "\\\\$1"));
 	}
 
 	public void setConsoleFormat(String consoleFormat) {

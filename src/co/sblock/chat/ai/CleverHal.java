@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -22,7 +23,9 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
+import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.utilities.Cooldowns;
+import co.sblock.utilities.DummyPlayer;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
 
@@ -43,6 +46,7 @@ public class CleverHal implements HalMessageHandler {
 	private final Set<Pattern> ignoreMatches;
 	private final BaseComponent[] hover;
 	private final MessageBuilder noSpam;
+	private final DummyPlayer dummy;
 
 	public CleverHal() {
 		ChatterBot chatterBot = null;
@@ -77,6 +81,8 @@ public class CleverHal implements HalMessageHandler {
 		noSpam = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
 				.setNameClick("/join #halchat").setNameHover(hover).setChannelClick("@#halchat ")
 				.setMessage( JSONUtil.fromLegacyText(ChatColor.RED + "To spam with me, join #halchat."));
+
+		dummy = new DummyPlayer();
 	}
 
 	@Override
@@ -98,10 +104,6 @@ public class CleverHal implements HalMessageHandler {
 		String channel = msg.getChannel().getName();
 		if (!channel.equals("#halchat")) {
 			Cooldowns cooldowns = Cooldowns.getInstance();
-			if (cooldowns.getGlobalRemainder("pendinghal" + channel) > 0) {
-				return true;
-			}
-			cooldowns.addGlobalCooldown("pendinghal" + channel, 3000L);
 			if (cooldowns.getGlobalRemainder("cleverhal" + channel) > 0) {
 				if (msg.getSender() == null) {
 					return true;
@@ -113,6 +115,10 @@ public class CleverHal implements HalMessageHandler {
 			} else {
 				cooldowns.addGlobalCooldown("cleverhal" + channel, 2500L);
 			}
+			if (cooldowns.getGlobalRemainder("pendinghal" + channel) > 0) {
+				return true;
+			}
+			cooldowns.addGlobalCooldown("pendinghal" + channel, 3000L);
 		}
 		HashSet<UUID> recipientUUIDs = new HashSet<>();
 		recipients.forEach(player -> recipientUUIDs.add(player.getUniqueId()));
@@ -134,10 +140,18 @@ public class CleverHal implements HalMessageHandler {
 					e.printStackTrace();
 					return;
 				}
-				new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
+				Message message = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
 						.setMessage(ChatColor.RED + msg).setChannel(channel)
 						.setChannelClick("@#halchat ").setNameClick("/join #halchat")
-						.setNameHover(hover).toMessage().send(recipients);
+						.setNameHover(hover).toMessage();
+				Set<Player> players = new HashSet<>();
+				recipients.forEach(uuid -> {
+					Player player = Bukkit.getPlayer(uuid);
+					if (player != null && player.isOnline()) {
+						players.add(player);
+					}
+				});
+				Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, dummy, players, message, false));
 				Cooldowns.getInstance().clearGlobalCooldown("pendinghal" + channel.getName());
 			}
 		}.runTaskAsynchronously(Sblock.getInstance());

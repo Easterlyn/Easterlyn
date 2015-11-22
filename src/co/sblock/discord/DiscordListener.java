@@ -40,19 +40,17 @@ public class DiscordListener implements EventListener {
 		}
 		Sblock sblock = Sblock.getInstance();
 		String msg = event.getMsg().getMessage();
-		if (event.getServer() == null) {
-			if (msg.startsWith("/link ")) {
-				String register = msg.substring(6);
-				if (!discord.getAuthCodes().containsValue(register)) {
-					event.getGroup().sendMessage("Invalid registration code!");
-					return;
-				}
-				event.getGroup().sendMessage("Registration complete!");
-				UUID link = discord.getAuthCodes().inverse().remove(register);
-				sblock.getConfig().set("discord.users." + event.getUser().getUser().getId(), link.toString());
-				sblock.saveConfig();
+		if (msg.startsWith("/link ")) {
+			String register = msg.substring(6);
+			if (!discord.getAuthCodes().containsValue(register)) {
+				discord.postMessage("Sbot", "Invalid registration code!", event.getGroup().getId());
 				return;
 			}
+			discord.postMessage("Sbot", "Registration complete!", event.getGroup().getId());
+			UUID link = discord.getAuthCodes().inverse().remove(register);
+			sblock.getConfig().set("discord.users." + event.getUser().getUser().getId(), link.toString());
+			sblock.saveConfig();
+			return;
 		}
 		boolean main = event.getServer() != null
 				&& sblock.getConfig().getString("discord.server").equals(event.getServer().getId())
