@@ -18,6 +18,10 @@ import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
  */
 public class PermissionBridge {
 
+	private enum PermState {
+		TRUE, FALSE, UNSET
+	}
+
 	private static PermissionBridge instance;
 
 	private final ZPermissionsService service;
@@ -33,9 +37,21 @@ public class PermissionBridge {
 		if (!service.getAllGroups().contains(group)) {
 			return false;
 		}
+		PermState state = getGroupPermState(group, permission);
+		if (state == PermState.UNSET) {
+			Permission node = Bukkit.getPluginManager().getPermission(permission);
+			if (node != null) {
+				return node.getDefault() == PermissionDefault.TRUE;
+			}
+			return false;
+		}
+		return state == PermState.TRUE;
+	}
+
+	private PermState getGroupPermState(String group, String permission) {
 		Map<String, Boolean> permissions = service.getGroupPermissions(null, null, group);
-		if (permissions.containsKey(permission) && permissions.get(permission)) {
-			return true;
+		if (permissions.containsKey(permission)) {
+			return permissions.get(permission) ? PermState.TRUE : PermState.FALSE;
 		}
 		PluginManager pluginManager = Bukkit.getPluginManager();
 		for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
@@ -47,14 +63,10 @@ public class PermissionBridge {
 				// If parent is true, child must be true to be true
 				// While technically functional, not false (== rather than &&)
 				// allows potential for edge cases and mistakes.
-				return entry.getValue() && perm.getChildren().get(permission);
+				return entry.getValue() && perm.getChildren().get(permission) ? PermState.TRUE : PermState.FALSE;
 			}
 		}
-		Permission node = pluginManager.getPermission(permission);
-		if (node != null) {
-			return node.getDefault() == PermissionDefault.TRUE;
-		}
-		return false;
+		return PermState.UNSET;
 	}
 
 	public boolean hasPermission(UUID uuid, String permission) {
@@ -65,9 +77,20 @@ public class PermissionBridge {
 		if (!player.hasPlayedBefore()) {
 			return false;
 		}
+		for (String group : service.getPlayerAssignedGroups(uuid)) {
+			switch (getGroupPermState(group, permission)) {
+			case FALSE:
+				return false;
+			case TRUE:
+				return true;
+			case UNSET:
+			default:
+				continue;
+			}
+		}
 		Map<String, Boolean> permissions = service.getPlayerPermissions(null, null, uuid);
-		if (permissions.containsKey(permission) && permissions.get(permission)) {
-			return true;
+		if (permissions.containsKey(permission)) {
+			return permissions.get(permission);
 		}
 		PluginManager pluginManager = Bukkit.getPluginManager();
 		for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {

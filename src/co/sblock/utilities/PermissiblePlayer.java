@@ -79,14 +79,12 @@ public class PermissiblePlayer implements Player {
 
 	@Override
 	public boolean isPermissionSet(String arg0) {
-		// future perhaps implement
-		return player.isPermissionSet(arg0);
+		return true;
 	}
 
 	@Override
 	public boolean isPermissionSet(Permission arg0) {
-		// future perhaps implement
-		return player.isPermissionSet(arg0);
+		return true;
 	}
 
 	@Override
