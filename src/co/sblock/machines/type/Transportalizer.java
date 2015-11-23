@@ -29,7 +29,7 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.utilities.Holograms;
+import co.sblock.micromodules.Holograms;
 
 import net.md_5.bungee.api.ChatColor;
 

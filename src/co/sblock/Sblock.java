@@ -53,6 +53,7 @@ import co.sblock.machines.Machines;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
+import co.sblock.micromodules.Holograms;
 import co.sblock.micromodules.Meteors;
 import co.sblock.micromodules.ParticleUtils;
 import co.sblock.micromodules.RawAnnouncer;
@@ -64,7 +65,6 @@ import co.sblock.module.Module;
 import co.sblock.progression.Entry;
 import co.sblock.progression.ServerMode;
 import co.sblock.users.Users;
-import co.sblock.utilities.Holograms;
 import co.sblock.utilities.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;

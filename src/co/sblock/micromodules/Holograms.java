@@ -1,5 +1,6 @@
-package co.sblock.utilities;
+package co.sblock.micromodules;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -12,18 +13,17 @@ import co.sblock.Sblock;
 import co.sblock.module.Module;
 
 /**
- * Container for Holograms while Machines undergo a rework.
+ * Module for Holograms while Machines undergo a rework.
  * 
  * @author Jikoo
  */
 public class Holograms extends Module {
 
-
 	private Map<Location, Hologram> holograms;
 
 	public Holograms(Sblock plugin) {
 		super(plugin);
-		// TODO Auto-generated constructor stub
+		holograms = new HashMap<>();
 	}
 
 	@Override
