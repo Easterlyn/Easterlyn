@@ -13,6 +13,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.Effect;
 
@@ -23,8 +24,8 @@ import co.sblock.effects.effect.Effect;
  */
 public class EffectAutoTorch extends Effect implements BehaviorActive {
 
-	public EffectAutoTorch() {
-		super(200, 1, 1, "Darkness Despising");
+	public EffectAutoTorch(Sblock plugin) {
+		super(plugin, 200, 1, 1, "Darkness Despising");
 	}
 
 	@Override

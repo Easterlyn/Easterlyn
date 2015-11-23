@@ -30,11 +30,12 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.events.packets.ParticleEffectWrapper;
-import co.sblock.events.packets.ParticleUtils;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.micromodules.Meteorite;
+import co.sblock.micromodules.ParticleUtils;
 import co.sblock.module.Dependency;
+import co.sblock.module.Module;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.ProgressionState;
@@ -50,17 +51,45 @@ import net.md_5.bungee.api.ChatColor;
  * @author Jikoo
  */
 @Dependency("HolographicDisplays")
-public class Entry {
-
-	private static Entry instance;
+public class Entry extends Module {
 
 	private final Material[] materials;
 	private final HashMap<UUID, Triple<Meteorite, EntryTimer, Material>> data;
 
-	public Entry() {
-		materials = createMaterialList();
-		data = new HashMap<>();
+	private Captcha captcha;
+	private Machines machines;
+	private ParticleUtils particles;
+
+	public Entry(Sblock plugin) {
+		super(plugin);
+		this.materials = createMaterialList();
+		this.data = new HashMap<>();
 	}
+
+	@Override
+	protected void onEnable() {
+		this.captcha = getPlugin().getModule(Captcha.class);
+		this.machines = getPlugin().getModule(Machines.class);
+		this.particles = getPlugin().getModule(ParticleUtils.class);
+	}
+
+	@Override
+	protected void onDisable() {
+		for (UUID uuid : data.keySet().toArray(new UUID[data.size()])) {
+			OfflineUser user = Users.getGuaranteedUser(getPlugin(), uuid);
+
+			// Complete success sans animation if player logs out
+			if (user.getProgression() == ProgressionState.ENTRY_COMPLETING) {
+				finalizeSuccess(user.getPlayer(), user);
+			}
+
+			// Fail Entry if in progress
+			if (user.getProgression() == ProgressionState.ENTRY_UNDERWAY) {
+				fail(user);
+			}
+		}
+	}
+
 	public boolean canStart(OfflineUser user) {
 		if (!data.containsKey(user.getUUID()) && user.getPrograms().contains("SburbClient")
 				&& user.getProgression() == ProgressionState.NONE) {
@@ -85,9 +114,9 @@ public class Entry {
 		// Center hologram inside the space above the block
 		final Location holoLoc = cruxtruder.clone().add(new Vector(0.5, 0.4, 0.5));
 		// 4:13 = 253 seconds, 2 second display of 0:00
-		EntryTimer task = new EntryTimer(holoLoc, user.getUUID());
-		task.runTaskTimer(Sblock.getInstance(), 20L, 20L);
-		Meteorite meteorite = new Meteorite(holoLoc, Material.NETHERRACK, 3, true, -1);
+		EntryTimer task = new EntryTimer(this, holoLoc, user.getUUID());
+		task.runTaskTimer(getPlugin(), 20L, 20L);
+		Meteorite meteorite = new Meteorite(getPlugin(), holoLoc, Material.NETHERRACK, 3, true, -1);
 		// 254 seconds * 20 ticks per second = 5080
 		meteorite.hoverMeteorite(5080);
 		Material material = materials[(int) (materials.length *  Math.random())];
@@ -95,10 +124,10 @@ public class Entry {
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(ChatColor.AQUA + "Cruxite " + InventoryUtils.getMaterialDataName(is.getType(), is.getDurability()));
 		is.setItemMeta(im);
-		is = Captcha.captchaToPunch(Captcha.itemToCaptcha(is));
+		is = captcha.captchaToPunch(captcha.itemToCaptcha(is));
 		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline()
-				&& Users.getGuaranteedUser(user.getServer()) instanceof OnlineUser
-				&& ((OnlineUser) Users.getGuaranteedUser(user.getServer())).isServer()) {
+				&& Users.getGuaranteedUser(getPlugin(), user.getServer()) instanceof OnlineUser
+				&& ((OnlineUser) Users.getGuaranteedUser(getPlugin(), user.getServer())).isServer()) {
 			Bukkit.getPlayer(user.getServer()).getInventory().addItem(is);
 		} else {
 			Player player = user.getPlayer();
@@ -119,7 +148,7 @@ public class Entry {
 		}
 
 		// Kicks the server out of server mode
-		OfflineUser server = Users.getGuaranteedUser(user.getServer());
+		OfflineUser server = Users.getGuaranteedUser(getPlugin(), user.getServer());
 		if (server instanceof OnlineUser && ((OnlineUser) server).isServer()) {
 			((OnlineUser) server).stopServerMode();
 		}
@@ -138,7 +167,7 @@ public class Entry {
 		}
 
 		// Removes all free machines placed by the User or their server
-		for (Pair<Machine, ConfigurationSection> pair : Machines.getInstance().getMachines(user.getUUID())) {
+		for (Pair<Machine, ConfigurationSection> pair : machines.getMachines(user.getUUID())) {
 			if (pair.getLeft().isFree()) {
 				pair.getLeft().remove(pair.getRight());
 			}
@@ -163,9 +192,9 @@ public class Entry {
 		firework.setFireworkMeta(fm);
 		firework.setPassenger(player);
 
-		ParticleUtils.getInstance().addEntity(firework, new ParticleEffectWrapper(Effect.FIREWORKS_SPARK, 5));
+		particles.addEntity(firework, new ParticleEffectWrapper(Effect.FIREWORKS_SPARK, 5));
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
 
 			@Override
 			public void run() {
@@ -203,13 +232,6 @@ public class Entry {
 		}
 	}
 
-	public static Entry getEntry() {
-		if (instance == null) {
-			instance = new Entry();
-		}
-		return instance;
-	}
-
 	private Material[] createMaterialList() {
 		return new Material[] { Material.MELON, Material.ARROW, Material.COAL, Material.WATER_LILY,
 				Material.INK_SACK, Material.CARROT_STICK, Material.LAVA_BUCKET,
@@ -240,5 +262,10 @@ public class Entry {
 	
 	public HashMap<UUID, Triple<Meteorite, EntryTimer, Material>> getData() {
 		return data;
+	}
+
+	@Override
+	public String getName() {
+		return "Entry";
 	}
 }

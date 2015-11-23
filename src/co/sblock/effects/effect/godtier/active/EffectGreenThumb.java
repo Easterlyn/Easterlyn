@@ -24,6 +24,7 @@ import org.bukkit.material.Crops;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.NetherWarts;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.Effect;
@@ -40,8 +41,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class EffectGreenThumb extends Effect implements BehaviorActive, BehaviorGodtier {
 
-	public EffectGreenThumb() {
-		super(Integer.MAX_VALUE, 1, 1, "Green Thumb");
+	public EffectGreenThumb(Sblock plugin) {
+		super(plugin, Integer.MAX_VALUE, 1, 1, "Green Thumb");
 	}
 
 	@Override
@@ -123,7 +124,7 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 		}
 		Player player = evt.getPlayer();
 		boolean reseed = false;
-		for (ItemStack drop : BlockDrops.getDrops(player, player.getItemInHand(), clicked)) {
+		for (ItemStack drop : BlockDrops.getDrops(getPlugin(), player, player.getItemInHand(), clicked)) {
 			if (drop.getType() == seed && !reseed) {
 				// Re-seed cost
 				drop = InventoryUtils.decrement(drop, 1);

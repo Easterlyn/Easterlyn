@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
+import co.sblock.Sblock;
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.Effect;
 
@@ -40,12 +41,14 @@ public class BlockDrops {
 
 	private static final Random RAND = new Random();
 
-	public static Collection<ItemStack> getDrops(Player player, ItemStack tool, Block block) {
+	public static Collection<ItemStack> getDrops(Sblock plugin, Player player, ItemStack tool,
+			Block block) {
 		int bonus;
-		Map<Effect, Integer> effects = Effects.getInstance().getAllEffects(player);
-		Effect light = Effects.getInstance().getEffect("Fortuna");
-		if (effects.containsKey(light)) {
-			bonus = effects.get(light);
+		Effects effects = plugin.getModule(Effects.class);
+		Map<Effect, Integer> effectMap = effects.getAllEffects(player);
+		Effect light = effects.getEffect("Fortuna");
+		if (effectMap.containsKey(light)) {
+			bonus = effectMap.get(light);
 		} else {
 			bonus = 0;
 		}

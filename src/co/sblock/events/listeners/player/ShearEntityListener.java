@@ -6,16 +6,22 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
+
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 
 /**
  * Listener for PlayerShearEntityEvents.
  * 
  * @author Jikoo
  */
-public class ShearEntityListener implements Listener {
+public class ShearEntityListener extends SblockListener {
+
+	public ShearEntityListener(Sblock plugin) {
+		super(plugin);
+	}
 
 	/**
 	 * EventHandler for PlayerShearEntityEvents.

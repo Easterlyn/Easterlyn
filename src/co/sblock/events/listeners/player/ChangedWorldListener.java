@@ -1,10 +1,11 @@
 package co.sblock.events.listeners.player;
 
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.Effects;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.SleepVote;
 
 /**
@@ -12,7 +13,16 @@ import co.sblock.micromodules.SleepVote;
  * 
  * @author Jikoo
  */
-public class ChangedWorldListener implements Listener {
+public class ChangedWorldListener extends SblockListener {
+
+	private final Effects effects;
+	private final SleepVote sleep;
+
+	public ChangedWorldListener(Sblock plugin) {
+		super(plugin);
+		this.effects = plugin.getModule(Effects.class);
+		this.sleep = plugin.getModule(SleepVote.class);
+	}
 
 	/**
 	 * The event handler for PlayerChangedWorldEvents.
@@ -22,8 +32,8 @@ public class ChangedWorldListener implements Listener {
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
 
-		SleepVote.getInstance().updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
+		sleep.updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
 
-		Effects.getInstance().applyAllEffects(event.getPlayer());
+		effects.applyAllEffects(event.getPlayer());
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ai.CleverHal;
 import co.sblock.chat.ai.Halculator;
 import co.sblock.chat.channel.Channel;
@@ -18,34 +19,39 @@ import co.sblock.utilities.DummyPlayer;
 
 public class Chat extends Module {
 
-	private static Chat instance;
-	private final ChannelManager cm = new ChannelManager();
 	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
-	private CleverHal megaHal;
+
+	private final ChannelManager channelManager;
+	private final DummyPlayer buffer;
+
+	private CleverHal cleverHal;
 	private Halculator halculator;
-	private final DummyPlayer buffer = new DummyPlayer();
+
+	public Chat(Sblock plugin) {
+		super(plugin);
+		this.channelManager = new ChannelManager(this);
+		this.buffer = new DummyPlayer();
+	}
 
 	@Override
 	protected void onEnable() {
-		instance = this;
-		this.cm.loadAllChannels();
-		this.cm.createDefaultSet();
-
-		this.halculator = new Halculator();
-		this.megaHal = new CleverHal();
+		this.cleverHal = new CleverHal(getPlugin());
+		this.halculator = new Halculator(getPlugin());
+		this.channelManager.loadAllChannels();
+		this.channelManager.createDefaultSet();
 	}
 
 	@Override
 	protected void onDisable() {
-		cm.saveAllChannels();
+		channelManager.saveAllChannels();
 	}
 
 	public ChannelManager getChannelManager() {
-		return cm;
+		return channelManager;
 	}
 
 	public CleverHal getHal() {
-		return megaHal;
+		return cleverHal;
 	}
 
 	/**
@@ -55,16 +61,12 @@ public class Chat extends Module {
 		return halculator;
 	}
 
-	public static Chat getChat() {
-		return instance;
-	}
-
 	public static boolean getComputerRequired() {
 		return computersRequired;
 	}
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Sblock Chat";
 	}
 
@@ -82,12 +84,12 @@ public class Chat extends Module {
 			return true;
 		}
 
-		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+		Channel channel = getChannelManager().getChannel(channelName);
 		if (channel == null) {
 			throw new IllegalArgumentException("Given channel does not exist!");
 		}
-		MessageBuilder builder = new MessageBuilder()
-				.setSender(Users.getGuaranteedUser(sender.getUniqueId())).setChannel(channel)
+		MessageBuilder builder = new MessageBuilder(getPlugin())
+				.setSender(Users.getGuaranteedUser(getPlugin(), sender.getUniqueId())).setChannel(channel)
 				.setMessage(msg).setChannel(channel);
 		Message message = builder.toMessage();
 

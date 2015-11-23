@@ -10,7 +10,9 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
@@ -25,12 +27,15 @@ import co.sblock.users.Users;
  */
 public class ForceChannelCommand extends SblockCommand {
 
-	public ForceChannelCommand() {
-		super("forcechannel");
+	private final ChannelManager manager;
+
+	public ForceChannelCommand(Sblock plugin) {
+		super(plugin, "forcechannel");
 		this.setDescription("Help people find their way.");
 		this.setUsage("/forcechannel <channel> <player>");
 		this.setPermissionMessage("Try /join <channel>");
 		this.setPermissionLevel("felt");
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -38,18 +43,18 @@ public class ForceChannelCommand extends SblockCommand {
 		if (args.length < 2) {
 			return false;
 		}
-		Channel c = ChannelManager.getChannelManager().getChannel(args[0]);
-		if (c == null) {
+		Channel channel = manager.getChannel(args[0]);
+		if (channel == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
 			return true;
 		}
-		Player p = Bukkit.getPlayer(args[1]);
-		if (p == null) {
+		Player player = Bukkit.getPlayer(args[1]);
+		if (player == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(p.getUniqueId());
-		user.setCurrentChannel(c);
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
+		user.setCurrentChannel(channel);
 		sender.sendMessage(Color.GOOD + "Channel forced!");
 		return true;
 	}
@@ -63,7 +68,7 @@ public class ForceChannelCommand extends SblockCommand {
 			return super.tabComplete(sender, alias, args);
 		} else {
 			ArrayList<String> matches = new ArrayList<>();
-			for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
+			for (String channel : manager.getChannelList().keySet()) {
 				if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
 					matches.add(channel);
 				}

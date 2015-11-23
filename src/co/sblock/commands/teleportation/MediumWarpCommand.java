@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
@@ -24,8 +25,8 @@ import co.sblock.users.Users;
  */
 public class MediumWarpCommand extends SblockCommand {
 
-	public MediumWarpCommand() {
-		super("mediumwarp");
+	public MediumWarpCommand(Sblock plugin) {
+		super(plugin, "mediumwarp");
 		this.setDescription("Teleports a player to the Medium planet of choice. Removes cost if required.");
 		this.setUsage("/mediumwarp <medium planet> <player>");
 		this.setPermissionLevel("felt");
@@ -46,12 +47,12 @@ public class MediumWarpCommand extends SblockCommand {
 			sender.sendMessage(Color.BAD + "Region is not in the Medium.");
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
 		if (user.getProgression().ordinal() < ProgressionState.ENTRY.ordinal()) {
 			sender.sendMessage(Color.BAD + "Entry not completed.");
 			return false;
 		}
-		if (!Users.getGuaranteedUser(player.getUniqueId()).getCurrentRegion().isMedium()) {
+		if (!Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId()).getCurrentRegion().isMedium()) {
 			if (player.getInventory().removeItem(new ItemStack(Material.NETHER_STAR)).size() > 0) {
 				player.sendMessage(Color.BAD + "You must have a nether star to fuel your journey to the Medium.");
 				return false;

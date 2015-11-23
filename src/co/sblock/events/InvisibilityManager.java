@@ -23,9 +23,11 @@ import co.sblock.users.Users;
 public class InvisibilityManager {
 
 	private final HashMap<UUID, BukkitTask> tasks;
+	private final Sblock plugin;
 
-	public InvisibilityManager() {
+	public InvisibilityManager(Sblock plugin) {
 		tasks = new HashMap<>();
+		this.plugin = plugin;
 	}
 
 	/**
@@ -44,7 +46,7 @@ public class InvisibilityManager {
 				}
 				updateVisibility(player);
 			}
-		}.runTaskLater(Sblock.getInstance(), 1L);
+		}.runTaskLater(plugin, 1L);
 	}
 
 	public void updateVisibility(Player player) {
@@ -80,7 +82,7 @@ public class InvisibilityManager {
 					updateVisibility(player);
 				}
 			}
-		}.runTaskLater(Sblock.getInstance(), duration));
+		}.runTaskLater(plugin, duration));
 	}
 
 	private void setVisible(Player player) {

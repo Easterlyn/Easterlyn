@@ -11,6 +11,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.users.Users;
@@ -22,8 +23,8 @@ import co.sblock.users.Users;
  */
 public class WhoIsCommand extends SblockAsynchronousCommand {
 
-	public WhoIsCommand() {
-		super("whois");
+	public WhoIsCommand(Sblock plugin) {
+		super(plugin, "whois");
 		this.setAliases("profile");
 		this.setDescription("Check data stored for a player.");
 		this.setUsage("/whois <player>");
@@ -50,9 +51,9 @@ public class WhoIsCommand extends SblockAsynchronousCommand {
 			return true;
 		}
 		if (sender.hasPermission("sblock.command.whois.detail")) {
-			sender.sendMessage(Users.getGuaranteedUser(uuid).getWhois());
+			sender.sendMessage(Users.getGuaranteedUser(((Sblock) getPlugin()), uuid).getWhois());
 		} else {
-			sender.sendMessage(Users.getGuaranteedUser(uuid).getProfile());
+			sender.sendMessage(Users.getGuaranteedUser(((Sblock) getPlugin()), uuid).getProfile());
 		}
 		return true;
 	}

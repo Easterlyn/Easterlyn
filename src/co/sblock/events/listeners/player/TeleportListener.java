@@ -7,12 +7,13 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
@@ -22,7 +23,11 @@ import co.sblock.users.Users;
  * 
  * @author Jikoo
  */
-public class TeleportListener implements Listener {
+public class TeleportListener extends SblockListener {
+
+	public TeleportListener(Sblock plugin) {
+		super(plugin);
+	}
 
 	/**
 	 * The event handler for PlayerTeleportEvents.
@@ -48,7 +53,7 @@ public class TeleportListener implements Listener {
 					continue;
 				}
 			}
-			if (Users.getGuaranteedUser(player.getUniqueId()).getSpectatable()) {
+			if (Users.getGuaranteedUser(getPlugin(), player.getUniqueId()).getSpectatable()) {
 				return;
 			}
 			event.setCancelled(true);
@@ -76,7 +81,7 @@ public class TeleportListener implements Listener {
 
 		final UUID uuid = event.getPlayer().getUniqueId();
 
-		Bukkit.getScheduler().runTask(Sblock.getInstance(), new Runnable() {
+		new BukkitRunnable() {
 			@Override
 			public void run() {
 				Player player = Bukkit.getPlayer(uuid);
@@ -84,7 +89,7 @@ public class TeleportListener implements Listener {
 					// Player has logged out.
 					return;
 				}
-				OfflineUser user = Users.getGuaranteedUser(uuid);
+				OfflineUser user = Users.getGuaranteedUser(getPlugin(), uuid);
 				// Update region
 				Region target;
 				if (player.getWorld().getName().equals("Derspit")) {
@@ -95,6 +100,6 @@ public class TeleportListener implements Listener {
 				user.updateCurrentRegion(target);
 				user.updateFlight();
 			}
-		});
+		}.runTask(getPlugin());
 	}
 }

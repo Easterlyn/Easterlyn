@@ -7,6 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.Effect;
 
@@ -17,8 +18,8 @@ import co.sblock.effects.effect.Effect;
  */
 public class EffectPshoooot extends Effect implements BehaviorActive {
 
-	public EffectPshoooot() {
-		super(350, 5, 10, "Pshoooot");
+	public EffectPshoooot(Sblock plugin) {
+		super(plugin, 350, 5, 10, "Pshoooot");
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.permissions.Permission;
@@ -19,8 +18,10 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import co.sblock.Sblock;
 import co.sblock.discord.Discord;
 import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.utilities.PermissionBridge;
 
 /**
@@ -28,11 +29,14 @@ import co.sblock.utilities.PermissionBridge;
  * 
  * @author Jikoo
  */
-public class AsyncPreLoginListener implements Listener {
+public class AsyncPreLoginListener extends SblockListener {
 
+	private final Discord discord;
+	private final Events events;
 	private final Cache<String, Boolean> ipCache;
 
-	public AsyncPreLoginListener() {
+	public AsyncPreLoginListener(Sblock plugin) {
+		super(plugin);
 		Permission permission;
 		try {
 			permission = new Permission("sblock.login.proxy", PermissionDefault.OP);
@@ -44,7 +48,10 @@ public class AsyncPreLoginListener implements Listener {
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock.helper", true).recalculatePermissibles();
 
-		ipCache = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.HOURS).weakKeys()
+		this.discord = plugin.getModule(Discord.class);
+		this.events = plugin.getModule(Events.class);
+
+		this.ipCache = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.HOURS).weakKeys()
 				.weakValues().build();
 	}
 
@@ -63,7 +70,7 @@ public class AsyncPreLoginListener implements Listener {
 				ipCache.put(ip, allowed);
 			}
 		}
-		Collection<String> ips = Events.getInstance().getIPsFor(event.getUniqueId());
+		Collection<String> ips = events.getIPsFor(event.getUniqueId());
 		if (ips.size() > 1) {
 			OfflinePlayer offline = Bukkit.getOfflinePlayer(event.getUniqueId());
 			String name = offline.getName() != null ? offline.getName() : event.getUniqueId().toString();
@@ -76,7 +83,7 @@ public class AsyncPreLoginListener implements Listener {
 					+"\nPlease visit https://www.spamhaus.org/query/ip/" + ip + " to learn why."
 					+ "\n\nIf you have a dynamic IP and this is a recurring problem,"
 					+ "\nplease create a /report at your earliest convenience.");
-			Discord.getInstance().postReport(event.getUniqueId().toString(),
+			discord.postReport(event.getUniqueId().toString(),
 					ip + " is flagged as unsafe by spamhaus.org/xbl, disconnecting " + event.getUniqueId());
 			return;
 		}

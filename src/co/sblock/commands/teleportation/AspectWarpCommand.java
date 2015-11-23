@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
@@ -22,13 +23,14 @@ import co.sblock.users.Users;
  */
 public class AspectWarpCommand extends SblockCommand {
 
-	public AspectWarpCommand() {
-		super("aspectwarp");
+	public AspectWarpCommand(Sblock plugin) {
+		super(plugin, "aspectwarp");
 		this.setDescription("Warps player if aspect matches warp name.");
 		this.setUsage("/aspectwarp <warp> <player>");
 		this.setPermissionLevel("felt");
 	}
 
+	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args == null || args.length < 2) {
 			return false;
@@ -38,7 +40,7 @@ public class AspectWarpCommand extends SblockCommand {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		OfflineUser u = Users.getGuaranteedUser(p.getUniqueId());
+		OfflineUser u = Users.getGuaranteedUser(((Sblock) getPlugin()), p.getUniqueId());
 		if (!u.getUserAspect().name().equalsIgnoreCase(args[0])) {
 			return true;
 		}

@@ -9,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -18,6 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.type.computer.EmailWriter;
 import co.sblock.machines.type.computer.Programs;
 import co.sblock.users.OfflineUser;
@@ -29,11 +29,14 @@ import co.sblock.utilities.RegexUtils;
  * 
  * @author Jikoo
  */
-public class BookEditListener implements Listener {
+public class BookEditListener extends SblockListener {
 
+	private final Chat chat;
 	private final EmailWriter email;
 
-	public BookEditListener() {
+	public BookEditListener(Sblock plugin) {
+		super(plugin);
+		this.chat = plugin.getModule(Chat.class);
 		this.email = (EmailWriter) Programs.getProgramByName("EmailWriter");
 	}
 
@@ -45,7 +48,7 @@ public class BookEditListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 	public void onBookedit(PlayerEditBookEvent event) {
 		// Muted players can't write books.
-		if (Chat.getChat().testForMute(event.getPlayer())) {
+		if (chat.testForMute(event.getPlayer())) {
 			event.setCancelled(true);
 			return;
 		}
@@ -101,7 +104,7 @@ public class BookEditListener implements Listener {
 							senderPlayer.getInventory().setItem(event.getSlot(), letter);
 							return;
 						}
-						OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+						OfflineUser user = Users.getGuaranteedUser(getPlugin(), player.getUniqueId());
 						List<ItemStack> items = user.getMailItems();
 						if (items.size() > 44) {
 							Player senderPlayer = Bukkit.getPlayer(sender);
@@ -120,9 +123,9 @@ public class BookEditListener implements Listener {
 						mail.setItemMeta(sendable);
 						items.add(mail);
 					}
-				}.runTask(Sblock.getInstance());
+				}.runTask(getPlugin());
 			}
-		}.runTaskAsynchronously(Sblock.getInstance());
+		}.runTaskAsynchronously(getPlugin());
 	}
 
 }

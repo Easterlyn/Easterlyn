@@ -2,9 +2,10 @@ package co.sblock.events.listeners.entity;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.Meteors;
 
 /**
@@ -12,7 +13,11 @@ import co.sblock.micromodules.Meteors;
  * 
  * @author Jikoo
  */
-public class ChangeBlockListener implements Listener {
+public class ChangeBlockListener extends SblockListener {
+
+	public ChangeBlockListener(Sblock plugin) {
+		super(plugin);
+	}
 
 	/**
 	 * EventHandler for EntityChangeBlockEvents to handle Meteorite FallingBlock landings.

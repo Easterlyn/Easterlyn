@@ -25,7 +25,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
-import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
@@ -46,15 +45,18 @@ import co.sblock.utilities.InventoryManager;
  */
 public class OnlineUser extends OfflineUser {
 
+	private final Machines machines;
 	private Location serverDisableTeleport;
 	private boolean isServer;
 	private String lastChat;
 	private final AtomicInteger violationLevel;
 	private final AtomicBoolean spamWarned;
 
-	protected OnlineUser(UUID userID, String ip, YamlConfiguration yaml, Location previousLocation,
-			Set<String> programs, String currentChannel, Set<String> listening) {
-		super(userID, ip, yaml, previousLocation, programs, currentChannel, listening);
+	protected OnlineUser(Sblock plugin, UUID userID, String ip, YamlConfiguration yaml,
+			Location previousLocation, Set<String> programs, String currentChannel,
+			Set<String> listening) {
+		super(plugin, userID, ip, yaml, previousLocation, programs, currentChannel, listening);
+		this.machines = plugin.getModule(Machines.class);
 		isServer = false;
 		lastChat = new String();
 		violationLevel = new AtomicInteger();
@@ -86,7 +88,7 @@ public class OnlineUser extends OfflineUser {
 				}
 				getYamlConfiguration().set("flying", allowFlight);
 			}
-		}.runTask(Sblock.getInstance());
+		}.runTask(getPlugin());
 	}
 
 	@Override
@@ -125,7 +127,7 @@ public class OnlineUser extends OfflineUser {
 		}
 		if (oldRegion != null && newRegion == oldRegion) {
 			if (canJoinDefaultChats() && !getListening().contains(oldRegion.getChannelName())) {
-				Channel channel = ChannelManager.getChannelManager().getChannel(oldRegion.getChannelName());
+				Channel channel = getChannelManager().getChannel(oldRegion.getChannelName());
 				addListening(channel);
 			}
 			return;
@@ -137,7 +139,7 @@ public class OnlineUser extends OfflineUser {
 			removeListening(oldRegion.getChannelName());
 		}
 		if (!getListening().contains(newRegion.getChannelName()) && canJoinDefaultChats()) {
-			addListening(ChannelManager.getChannelManager().getChannel(newRegion.getChannelName()));
+			addListening(getChannelManager().getChannel(newRegion.getChannelName()));
 		}
 		if (oldRegion == null || !oldRegion.getResourcePackURL().equals(newRegion.getResourcePackURL())) {
 			getPlayer().setResourcePack(newRegion.getResourcePackURL());
@@ -173,16 +175,17 @@ public class OnlineUser extends OfflineUser {
 			p.sendMessage(Color.BAD + u.getPlayerName() + " does not have the Sburb Client installed!");
 			return;
 		}
-		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getComputer(getClient());
+		Pair<Machine, ConfigurationSection> pair = machines.getComputer(getClient());
 		if (pair == null) {
 			p.sendMessage(Color.BAD + u.getPlayerName() + " has not placed their computer in their house!");
 			return;
 		}
-		if (Spectators.getInstance().isSpectator(getUUID())) {
-			Spectators.getInstance().removeSpectator(p);
+		Spectators spectators = getPlugin().getModule(Spectators.class);
+		if (spectators.isSpectator(getUUID())) {
+			spectators.removeSpectator(p);
 		}
 		this.serverDisableTeleport = p.getLocation();
-		if (!Machines.getInstance().isByComputer(u.getPlayer(), 25)) {
+		if (!machines.isByComputer(u.getPlayer(), 25)) {
 			p.teleport(pair.getLeft().getKey(pair.getRight()));
 		} else {
 			p.teleport(u.getPlayer());
@@ -191,12 +194,12 @@ public class OnlineUser extends OfflineUser {
 		this.updateFlight();
 		p.setNoDamageTicks(Integer.MAX_VALUE);
 		InventoryManager.storeAndClearInventory(p);
-		p.getInventory().addItem(Machines.getMachineByName("Computer").getUniqueDrop());
-		p.getInventory().addItem(Machines.getMachineByName("Cruxtruder").getUniqueDrop());
-		p.getInventory().addItem(Machines.getMachineByName("PunchDesignix").getUniqueDrop());
-		p.getInventory().addItem(Machines.getMachineByName("TotemLathe").getUniqueDrop());
-		p.getInventory().addItem(Machines.getMachineByName("Alchemiter").getUniqueDrop());
-		for (Material mat : ServerMode.getInstance().getApprovedSet()) {
+		p.getInventory().addItem(machines.getMachineByName("Computer").getUniqueDrop());
+		p.getInventory().addItem(machines.getMachineByName("Cruxtruder").getUniqueDrop());
+		p.getInventory().addItem(machines.getMachineByName("PunchDesignix").getUniqueDrop());
+		p.getInventory().addItem(machines.getMachineByName("TotemLathe").getUniqueDrop());
+		p.getInventory().addItem(machines.getMachineByName("Alchemiter").getUniqueDrop());
+		for (Material mat : getPlugin().getModule(ServerMode.class).getApprovedSet()) {
 			p.getInventory().addItem(new ItemStack(mat));
 		}
 		p.sendMessage(Color.GOOD + "Server mode enabled!");
@@ -286,7 +289,7 @@ public class OnlineUser extends OfflineUser {
 	@Override
 	public void handleLoginChannelJoins() {
 		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
-			Channel channel = ChannelManager.getChannelManager().getChannel(iterator.next());
+			Channel channel = getChannelManager().getChannel(iterator.next());
 			if (channel != null && !channel.isBanned(this) && (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))
 					&& (canJoinDefaultChats() || channel.getOwner() != null)) {
 				this.getListening().add(channel.getName());
@@ -297,7 +300,7 @@ public class OnlineUser extends OfflineUser {
 		}
 		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
 			this.getListening().add("@");
-			ChannelManager.getChannelManager().getChannel("@").getListening().add(this.getUUID());
+			getChannelManager().getChannel("@").getListening().add(this.getUUID());
 		}
 		String base = new StringBuilder(Color.GOOD_PLAYER.toString()).append(this.getDisplayName())
 				.append(Color.GOOD).append(" began pestering <>").append(Color.GOOD)
@@ -337,7 +340,7 @@ public class OnlineUser extends OfflineUser {
 
 	@Override
 	public void removeListening(String channelName) {
-		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+		Channel channel = getChannelManager().getChannel(channelName);
 		if (channel == null) {
 			this.sendMessage(ChatMsgs.errorInvalidChannel(channelName));
 			this.getListening().remove(channelName);
@@ -393,9 +396,9 @@ public class OnlineUser extends OfflineUser {
 			// Overrides the computer limitation for pre-Entry shenanigans
 			return true;
 		}
-		Effects effects = Effects.getInstance();
+		Effects effects = getPlugin().getModule(Effects.class);
 		return effects.getAllEffects(getPlayer()).containsKey(effects.getEffect("Computer"))
-				|| Machines.getInstance().isByComputer(this.getPlayer(), 10);
+				|| machines.isByComputer(this.getPlayer(), 10);
 	}
 
 	@Override
@@ -408,7 +411,7 @@ public class OnlineUser extends OfflineUser {
 		if (this.isOnline()) {
 			super.save();
 		} else {
-			Users.getInstance().getLogger().warning("Online user did not unload for " + getUUID());
+			getPlugin().getModule(Users.class).getLogger().warning("Online user did not unload for " + getUUID());
 			OfflineUser.fromOnline(this).save();
 		}
 	}

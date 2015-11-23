@@ -29,8 +29,9 @@ import co.sblock.events.event.SblockBreakEvent;
 public abstract class EffectAdjacentBlockModifier extends Effect implements BehaviorActive {
 
 	private final BlockFace[] faces;
-	public EffectAdjacentBlockModifier(int cost, String name) {
-		super(cost, 1, 1, name);
+
+	protected EffectAdjacentBlockModifier(Sblock plugin, int cost, String name) {
+		super(plugin, cost, 1, 1, name);
 		faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
 				BlockFace.EAST, BlockFace.WEST };
 	}
@@ -44,7 +45,7 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Beha
 	public void handleEvent(Event event, LivingEntity entity, int level) {
 		BlockBreakEvent breakEvent = (BlockBreakEvent) event;
 		Player player = breakEvent.getPlayer();
-		PermissionAttachment attachment = player.addAttachment(Sblock.getInstance());
+		PermissionAttachment attachment = player.addAttachment(getPlugin());
 		attachment.setPermission("nocheatplus.checks.blockplace", true);
 		for (BlockFace face : faces) {
 			handleAdjacentBlock(player, breakEvent.getBlock().getRelative(face));

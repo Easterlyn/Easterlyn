@@ -8,8 +8,8 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import co.sblock.Sblock;
 import co.sblock.module.Module;
-import co.sblock.utilities.Cooldowns;
 
 /**
  * A Module for tracking minecarts which despawn on collisions or when the rider exits.
@@ -18,18 +18,21 @@ import co.sblock.utilities.Cooldowns;
  */
 public class FreeCart extends Module {
 
-	private static FreeCart instance;
-
 	private final HashSet<Minecart> carts = new HashSet<>();
+
+	private Cooldowns cooldowns;
+
+	public FreeCart(Sblock plugin) {
+		super(plugin);
+	}
 
 	@Override
 	protected void onEnable() {
-		instance = this;
+		getPlugin().getModule(Cooldowns.class);
 	}
 
 	@Override
 	protected void onDisable() {
-		instance = null;
 		for (Minecart cart : this.carts) {
 			cart.eject();
 			cart.remove();
@@ -37,7 +40,6 @@ public class FreeCart extends Module {
 	}
 
 	public void spawnCart(Player p, Location location, Vector startspeed) {
-		Cooldowns cooldowns = Cooldowns.getInstance();
 		if (cooldowns.getRemainder(p, "freecart") > 0) {
 			return;
 		}
@@ -80,12 +82,8 @@ public class FreeCart extends Module {
 		minecart.remove();
 	}
 
-	public static FreeCart getInstance() {
-		return instance;
-	}
-
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Sblock FreeCart";
 	}
 }

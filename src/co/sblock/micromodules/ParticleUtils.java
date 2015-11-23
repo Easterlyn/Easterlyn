@@ -1,4 +1,4 @@
-package co.sblock.events.packets;
+package co.sblock.micromodules;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,27 +15,31 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-
 import com.comphenix.protocol.ProtocolLibrary;
 
 import co.sblock.Sblock;
+import co.sblock.events.packets.ParticleEffectWrapper;
+import co.sblock.module.Module;
 
 /**
  * Utility for spawning particles at an entity every tick.
  * 
  * @author Jikoo
  */
-public class ParticleUtils {
+public class ParticleUtils extends Module {
 
-	private static ParticleUtils instance;
-
-	private HashMap<UUID, EntityParticleWrapper> entities;
+	private final HashMap<UUID, EntityParticleWrapper> entities;
 	private BukkitTask task;
 
+	public ParticleUtils(Sblock plugin) {
+		super(plugin);
+		entities = new HashMap<>();
+	}
+
 	private class EntityParticleWrapper {
-		private UUID uuid;
-		private boolean player;
-		private HashSet<ParticleEffectWrapper> effects;
+		private final UUID uuid;
+		private final boolean player;
+		private final HashSet<ParticleEffectWrapper> effects;
 		public EntityParticleWrapper(Entity wrapped) {
 			uuid = wrapped.getUniqueId();
 			player = wrapped instanceof Player;
@@ -70,9 +74,11 @@ public class ParticleUtils {
 		}
 	}
 
-	private ParticleUtils() {
-		entities = new HashMap<>();
-	}
+	@Override
+	protected void onEnable() { }
+
+	@Override
+	protected void onDisable() { }
 
 	/**
 	 * Add an Entity.
@@ -91,7 +97,7 @@ public class ParticleUtils {
 			wrapper.addParticle(effect);
 		}
 		if (task == null) {
-			task = new ParticleDisplayTask().runTaskTimer(Sblock.getInstance(), 0L, 1L);
+			task = new ParticleDisplayTask().runTaskTimer(getPlugin(), 0L, 1L);
 		}
 	}
 
@@ -138,10 +144,8 @@ public class ParticleUtils {
 		}
 	}
 
-	public static ParticleUtils getInstance() {
-		if (instance == null) {
-			instance = new ParticleUtils();
-		}
-		return instance;
+	@Override
+	public String getName() {
+		return "Particles";
 	}
 }

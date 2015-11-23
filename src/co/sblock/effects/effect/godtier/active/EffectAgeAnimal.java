@@ -13,6 +13,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorGodtier;
@@ -28,8 +29,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class EffectAgeAnimal extends Effect implements BehaviorActive, BehaviorCooldown, BehaviorGodtier {
 
-	public EffectAgeAnimal() {
-		super(Integer.MAX_VALUE, 1, 1, "Fine Wine");
+	public EffectAgeAnimal(Sblock plugin) {
+		super(plugin, Integer.MAX_VALUE, 1, 1, "Fine Wine");
 	}
 
 	@Override

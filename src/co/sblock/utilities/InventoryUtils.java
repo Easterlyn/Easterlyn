@@ -111,7 +111,8 @@ public class InventoryUtils {
 		if (items != null) {
 			return items;
 		}
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(Sblock.getInstance().getResource("items.tsv")))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				Bukkit.getPluginManager().getPlugin("Sblock").getResource("items.tsv")))) {
 			items = new HashMap<>();
 			itemsReverse = HashMultimap.create();
 			String line;
@@ -353,22 +354,22 @@ public class InventoryUtils {
 		return cleanedItem;
 	}
 
-	public static HashSet<ItemStack> getUniqueItems() {
+	public static HashSet<ItemStack> getUniqueItems(Sblock plugin) {
 		if (uniques == null) {
 			uniques = new HashSet<>();
-			for (Machine machine : Machines.getMachinesByName().values()) {
+			for (Machine machine : plugin.getModule(Machines.class).getMachinesByName().values()) {
 				uniques.add(machine.getUniqueDrop());
 			}
 		}
 		return uniques;
 	}
 
-	public static boolean isUniqueItem(ItemStack toCheck) {
+	public static boolean isUniqueItem(Sblock plugin, ItemStack toCheck) {
 		if (Captcha.isCaptcha(toCheck) || CruxiteDowel.isDowel(toCheck)) {
 			return true;
 		}
 
-		for (ItemStack is : getUniqueItems()) {
+		for (ItemStack is : getUniqueItems(plugin)) {
 			if (is.isSimilar(toCheck)) {
 				return true;
 			}

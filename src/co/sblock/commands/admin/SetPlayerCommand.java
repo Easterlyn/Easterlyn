@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
@@ -24,8 +25,8 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 
 	private final String[] primaryArgs;
 
-	public SetPlayerCommand() {
-		super("setplayer");
+	public SetPlayerCommand(Sblock plugin) {
+		super(plugin, "setplayer");
 		this.setDescription("Set player data manually.");
 		this.setUsage("/setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>");
 		this.setPermissionLevel("denizen");
@@ -42,7 +43,7 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 			sender.sendMessage(args[0] + " has never played on this server.");
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(uuid);
+		OfflineUser user = Users.getGuaranteedUser((Sblock) getPlugin(), uuid);
 		args[1] = args[1].toLowerCase();
 		if(args[1].equals("class"))
 			user.setUserClass(args[2]);

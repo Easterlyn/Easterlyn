@@ -13,6 +13,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorGodtier;
@@ -33,8 +34,8 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
  */
 public class EffectBreedAnimal extends Effect implements BehaviorActive, BehaviorCooldown, BehaviorGodtier {
 
-	public EffectBreedAnimal() {
-		super(Integer.MAX_VALUE, 5, 5, "Breeding");
+	public EffectBreedAnimal(Sblock plugin) {
+		super(plugin, Integer.MAX_VALUE, 5, 5, "Breeding");
 	}
 
 	@Override

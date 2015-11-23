@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bukkit.entity.LivingEntity;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.Effect;
@@ -21,8 +22,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class EffectUnderwaterAirRestoration extends Effect implements BehaviorGodtier, BehaviorPassive {
 
-	public EffectUnderwaterAirRestoration() {
-		super(500, 1, 3, "Extra Air");
+	public EffectUnderwaterAirRestoration(Sblock plugin) {
+		super(plugin, 500, 1, 3, "Extra Air");
 	}
 
 	@Override

@@ -15,8 +15,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.effects.effect.Effect;
 import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.Effect;
 
 /**
  * Cause all nearby items to be sucked to the player.
@@ -25,8 +25,8 @@ import co.sblock.effects.effect.BehaviorActive;
  */
 public class EffectVacuum extends Effect implements BehaviorActive {
 
-	public EffectVacuum() {
-		super(300, 1, 3, "Vacuum");
+	public EffectVacuum(Sblock plugin) {
+		super(plugin, 300, 1, 3, "Vacuum");
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class EffectVacuum extends Effect implements BehaviorActive {
 					}
 				}
 			}
-		}.runTask(Sblock.getInstance());
+		}.runTask(getPlugin());
 	}
 
 }

@@ -64,7 +64,7 @@ public class CruxiteDowel {
 		return dowel;
 	}
 
-	public static int expCost(ItemStack toCreate) {
+	public static int expCost(Effects effects, ItemStack toCreate) {
 		int cost = getGrist().get(toCreate.getType().name());
 		if (Captcha.isCaptcha(toCreate)) {
 			cost = Integer.MAX_VALUE;
@@ -89,7 +89,7 @@ public class CruxiteDowel {
 		}
 
 		int effectCost = 0;
-		for (Entry<Effect, Integer> effect : Effects.getInstance().getEffects(false, toCreate).entrySet()) {
+		for (Entry<Effect, Integer> effect : effects.getEffects(false, toCreate).entrySet()) {
 			effectCost += effect.getKey().getCost() * effect.getValue();
 		}
 		// if item contains special lore and doesn't need repair, raise price

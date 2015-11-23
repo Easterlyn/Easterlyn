@@ -21,13 +21,13 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class SuperBanCommand extends SblockCommand {
+public class BanCommand extends SblockCommand {
 
-	public SuperBanCommand() {
-		super("ban");
+	public BanCommand(Sblock plugin) {
+		super(plugin, "ban");
 		this.setAliases("sban", "banip");
 		this.setDescription("YOU CAN'T ESCAPE THE RED MILES.");
-		this.setUsage("/sban <target> [optional reason]");
+		this.setUsage("/ban <target> [optional reason]");
 		this.setPermissionLevel("denizen");
 	}
 
@@ -67,7 +67,7 @@ public class SuperBanCommand extends SblockCommand {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						OfflineUser victim = Users.getGuaranteedUser(player.getUniqueId());
+						OfflineUser victim = Users.getGuaranteedUser((Sblock) getPlugin(), player.getUniqueId());
 						if (victim.getUserIP().matches("([0-9]{1,3}.){3}[0-9]{1,3}")) {
 							Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
 									"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());
@@ -81,9 +81,9 @@ public class SuperBanCommand extends SblockCommand {
 							victim.getPlayer().kickPlayer(reason);
 						}
 					}
-				}.runTask(Sblock.getInstance());
+				}.runTask(getPlugin());
 			}
-		}.runTaskAsynchronously(Sblock.getInstance());
+		}.runTaskAsynchronously(getPlugin());
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.machines.type.computer.Program;
 import co.sblock.machines.type.computer.Programs;
@@ -20,8 +21,8 @@ public class MailCommand extends SblockCommand {
 
 	private final Program email;
 
-	public MailCommand() {
-		super("mail");
+	public MailCommand(Sblock plugin) {
+		super(plugin, "mail");
 		setDescription("Check your email.");
 		setUsage("/mail");
 		setAliases("email");

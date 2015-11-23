@@ -1,14 +1,20 @@
 package co.sblock.machines.type.computer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import org.reflections.Reflections;
+
+import co.sblock.Sblock;
+import co.sblock.machines.Machines;
 
 /**
  * A container for all Programs.
@@ -23,17 +29,21 @@ public class Programs {
 		byName = new HashMap<>();
 
 		Reflections reflections = new Reflections("co.sblock.machines.type.computer");
+		// FIXME bad practice
+		Machines machines = ((Sblock) Bukkit.getPluginManager().getPlugin("Sblock")).getModule(Machines.class);
 		for (Class<? extends Program> type : reflections.getSubTypesOf(Program.class)) {
 			if (Modifier.isAbstract(type.getModifiers())) {
 				continue;
 			}
 			try {
-				Program program = type.newInstance();
+				Constructor<? extends Program> constructor = type.getConstructor(Machines.class);
+				Program program = constructor.newInstance(machines);
 				if (program.getIcon() == null) {
 					continue;
 				}
 				byName.put(type.getSimpleName(), program);
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				// Improperly set up Program
 				e.printStackTrace();
 			}

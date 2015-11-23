@@ -23,7 +23,9 @@ import org.bukkit.util.Vector;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
@@ -42,11 +44,13 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Transportalizer extends Machine {
 
+	private final Holograms holograms;
 	private final ItemStack drop;
 
 	@SuppressWarnings("deprecation")
-	public Transportalizer() {
-		super(new Shape());
+	public Transportalizer(Sblock plugin, Machines machines) {
+		super(plugin, machines, new Shape());
+		this.holograms = plugin.getModule(Holograms.class);
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER, Direction.SOUTH, "chest");
 		shape.setVectorData(new Vector(0, 0, 0), m);
@@ -93,7 +97,7 @@ public class Transportalizer extends Machine {
 	}
 
 	public void setFuel(ConfigurationSection storage, long fuel) {
-		Hologram hologram = Holograms.getHologram(getHoloLocation(storage));
+		Hologram hologram = holograms.getHologram(getHoloLocation(storage));
 		if (hologram != null) {
 			hologram.clearLines();
 			hologram.appendTextLine(String.valueOf(fuel));
@@ -278,7 +282,7 @@ public class Transportalizer extends Machine {
 
 	@Override
 	public void disable(ConfigurationSection section) {
-		Holograms.removeHologram(getHoloLocation(section));
+		holograms.removeHologram(getHoloLocation(section));
 	}
 
 	@Override

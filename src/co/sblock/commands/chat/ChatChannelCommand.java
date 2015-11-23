@@ -13,7 +13,9 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.AccessLevel;
@@ -51,9 +53,10 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			+ Color.GOOD + ": (Un)bans a user from the channel\n"
 			+ Color.COMMAND + "/channel disband"
 			+ Color.GOOD + ": Delete the channel!";
+	private final ChannelManager manager;
 
-	public ChatChannelCommand() {
-		super("channel");
+	public ChatChannelCommand(Sblock plugin) {
+		super(plugin, "channel");
 		setDescription("Check or manipulate channel data.");
 		setUsage(Color.GOOD_EMPHASIS + "Channel information/manipulation\n"
 				+ Color.COMMAND + "/channel listeners"
@@ -76,6 +79,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		}
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock.helper", true).recalculatePermissibles();
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -85,7 +89,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			return true;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
 		Channel channel = user.getCurrentChannel();
 
 		if (args.length == 0) {
@@ -112,7 +116,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			sb = new StringBuilder().append(Color.GOOD);
 			sb.append("Channel members: ");
 			for (UUID userID : channel.getListening()) {
-				OfflineUser u = Users.getGuaranteedUser(userID);
+				OfflineUser u = Users.getGuaranteedUser(((Sblock) getPlugin()), userID);
 				if (channel.equals(u.getCurrentChannel())) {
 					sb.append(Color.GOOD_PLAYER);
 				} else {
@@ -139,7 +143,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		case "list":
 			sb = new StringBuilder();
 			sb.append(Color.GOOD).append("All channels: ");
-			for (Channel c : ChannelManager.getChannelManager().getChannelList().values()) {
+			for (Channel c : manager.getChannelList().values()) {
 				ChatColor cc;
 				if (user.isListening(c)) {
 					cc = ChatColor.GREEN;
@@ -161,7 +165,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 						+ "Type must be NORMAL, NICK, or RP\nEx: /channel new #example PUBLIC NICK");
 				return true;
 			}
-			if (ChannelManager.getChannelManager().getChannel(args[1]) != null) {
+			if (manager.getChannel(args[1]) != null) {
 				user.sendMessage(Color.BAD + "A channel by that name already exists!");
 				return true;
 			}
@@ -180,9 +184,9 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				user.sendMessage(Color.BAD_EMPHASIS + args[2] + Color.BAD
 						+ " is not a valid access level!\nValid levels: PUBLIC, PRIVATE");
 			} else {
-				ChannelManager.getChannelManager().createNewChannel(args[1],
-						AccessLevel.getAccessLevel(args[2]), user.getUUID(), ChannelType.getType(args[3]));
-				channel = ChannelManager.getChannelManager().getChannel(args[1]);
+				manager.createNewChannel(args[1], AccessLevel.getAccessLevel(args[2]),
+						user.getUUID(), ChannelType.getType(args[3]));
+				channel = manager.getChannel(args[1]);
 				user.setCurrentChannel(channel);
 			}
 			return true;
@@ -316,7 +320,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		}
 		args[0] = args[0].toLowerCase();
 		ArrayList<String> matches = new ArrayList<>();
-		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
 		if (args.length == 1) {
 			for (String subcommand : defaultArgs) {
 				if (subcommand.startsWith(args[0])) {

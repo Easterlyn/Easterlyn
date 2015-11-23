@@ -21,7 +21,8 @@ public class Back extends Program {
 
 	private final ItemStack icon;
 
-	protected Back() {
+	public Back(Machines machines) {
+		super(machines);
 		icon = new ItemStack(Material.REDSTONE_BLOCK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.DARK_RED + "Back");
@@ -44,7 +45,7 @@ public class Back extends Program {
 				}
 			}
 		}
-		((Computer) Machines.getMachineByName("Computer")).openInventory(player);
+		((Computer) getMachines().getMachineByName("Computer")).openInventory(player);
 	}
 
 	public ItemStack getBackTo(String program) {

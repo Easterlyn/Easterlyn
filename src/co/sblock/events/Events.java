@@ -2,6 +2,7 @@ package co.sblock.events;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,6 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.reflections.Reflections;
@@ -29,6 +29,7 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.SyncPacketAdapter;
 import co.sblock.events.packets.WrapperPlayServerAnimation;
@@ -46,22 +47,23 @@ import co.sblock.utilities.RegexUtils;
  */
 public class Events extends Module {
 
-	private static Events instance;
 	private Status status;
 	private int statusResample = 0;
-	private HashMap<UUID, BukkitTask> sleep;
-	private LinkedHashMap<String, String> ipcache;
-	private HashMap<UUID, BukkitTask> pvp;
+	private final HashMap<UUID, BukkitTask> sleep;
+	private final LinkedHashMap<String, String> ipcache;
+	private final HashMap<UUID, BukkitTask> pvp;
 	private InvisibilityManager invisibilityManager;
+
+	public Events(Sblock plugin) {
+		super(plugin);
+		this.sleep = new HashMap<>();
+		this.pvp = new HashMap<>();
+		this.ipcache = new LinkedHashMap<>();
+	}
 
 	@Override
 	protected void onEnable() {
-		instance = this;
-		sleep = new HashMap<>();
-		pvp = new HashMap<>();
-
-		ipcache = new LinkedHashMap<>();
-		File file = new File(Sblock.getInstance().getDataFolder(), "ipcache.yml");
+		File file = new File(getPlugin().getDataFolder(), "ipcache.yml");
 		if (file.exists()) {
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 			for (String ip : yaml.getKeys(false)) {
@@ -70,26 +72,28 @@ public class Events extends Module {
 		}
 
 		status = Status.NEITHER;
-		new StatusCheck().runTaskTimerAsynchronously(Sblock.getInstance(), 100L, 1200L);
+		new StatusCheck().runTaskTimerAsynchronously(getPlugin(), 100L, 1200L);
 
 		Reflections reflections = new Reflections("co.sblock.events.listeners");
-		Set<Class<? extends Listener>> listeners = reflections.getSubTypesOf(Listener.class);
-		for (Class<? extends Listener> listener : listeners) {
+		Set<Class<? extends SblockListener>> listeners = reflections.getSubTypesOf(SblockListener.class);
+		for (Class<? extends SblockListener> listener : listeners) {
 			if (!Sblock.areDependenciesPresent(listener)) {
 				getLogger().info(listener.getSimpleName() + " dependencies not found.");
 				continue;
 			}
 			try {
-				Bukkit.getPluginManager().registerEvents(listener.newInstance(), Sblock.getInstance());
-			} catch (InstantiationException | IllegalAccessException e) {
+				Constructor<? extends SblockListener> constructor = listener.getConstructor(getPlugin().getClass());
+				Bukkit.getPluginManager().registerEvents(constructor.newInstance(getPlugin()), getPlugin());
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				getLogger().severe("Unable to register events for " + listener.getName() + "!");
 				e.printStackTrace();
 			}
 		}
 
-		ProtocolLibrary.getProtocolManager().addPacketListener(new SyncPacketAdapter());
+		ProtocolLibrary.getProtocolManager().addPacketListener(new SyncPacketAdapter(getPlugin()));
 
-		invisibilityManager = new InvisibilityManager();
+		invisibilityManager = new InvisibilityManager(getPlugin());
 
 		initiateRegionChecks();
 	}
@@ -99,10 +103,8 @@ public class Events extends Module {
 	 */
 	@Override
 	protected void onDisable() {
-		instance = null;
-
 		try {
-			File file = new File(Sblock.getInstance().getDataFolder(), "ipcache.yml");
+			File file = new File(getPlugin().getDataFolder(), "ipcache.yml");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -214,7 +216,7 @@ public class Events extends Module {
 		} catch (InvocationTargetException e) {
 			getLogger().warning(RegexUtils.getTrace(e));
 		}
-		sleep.put(p.getUniqueId(), new SleepTeleport(p.getUniqueId()).runTaskLater(Sblock.getInstance(), 100L));
+		sleep.put(p.getUniqueId(), new SleepTeleport(getPlugin(), p.getUniqueId()).runTaskLater(getPlugin(), 100L));
 	}
 
 	/**
@@ -255,7 +257,7 @@ public class Events extends Module {
 		if (statusResample < 5) {
 			// less spam - must have status change 5 times in a row to announce.
 			statusResample++;
-			new StatusCheck().runTaskLaterAsynchronously(Sblock.getInstance(), 50L);
+			new StatusCheck().runTaskLaterAsynchronously(getPlugin(), 50L);
 			return;
 		}
 		String announcement = null;
@@ -287,20 +289,11 @@ public class Events extends Module {
 	 * every 5 seconds of game time (100 ticks).
 	 */
 	public void initiateRegionChecks() {
-		new RegionCheck().runTaskTimer(Sblock.getInstance(), 20L, 20L);
-	}
-
-	/**
-	 * Gets the EventModule instance.
-	 * 
-	 * @return the EventModule instance.
-	 */
-	public static Events getInstance() {
-		return instance;
+		new RegionCheck().runTaskTimer(getPlugin(), 20L, 20L);
 	}
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Sblock Events";
 	}
 }

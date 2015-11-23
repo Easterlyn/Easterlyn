@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.Effect;
@@ -25,8 +26,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGodtier {
 
-	public EffectFortuna() {
-		super(1000, 5, 5, "Fortuna");
+	public EffectFortuna(Sblock plugin) {
+		super(plugin, 1000, 5, 5, "Fortuna");
 	}
 
 	@Override

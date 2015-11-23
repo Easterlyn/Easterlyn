@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -19,8 +20,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class SilentTeleportCommand extends SblockCommand {
 
-	public SilentTeleportCommand() {
-		super("silenttp");
+	public SilentTeleportCommand(Sblock plugin) {
+		super(plugin, "silenttp");
 		this.setDescription("Teleports a player with no confirmation to either party involved. Intended for commandsigns.");
 		this.setUsage("/silenttp <player> <x> <y> <z> [pitch] [yaw] [world]");
 		this.setPermissionLevel("denizen");

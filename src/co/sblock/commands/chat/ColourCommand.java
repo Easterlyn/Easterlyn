@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -16,8 +17,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class ColourCommand extends SblockCommand {
 
-	public ColourCommand() {
-		super("colour");
+	public ColourCommand(Sblock plugin) {
+		super(plugin, "colour");
 		this.setAliases("color");
 		this.setDescription("List all colours.");
 		this.setUsage("/colour");

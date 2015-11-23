@@ -20,8 +20,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class RSSUpdateCommand extends SblockCommand {
 
-	public RSSUpdateCommand() {
-		super("rssupdate");
+	public RSSUpdateCommand(Sblock plugin) {
+		super(plugin, "rssupdate");
 		this.setDescription("A /tellraw that's a lot easier than escaping crap for bash commands.");
 		this.setUsage("/rssupdate <feed name> <url> <title>");
 		this.setPermissionLevel("horrorterror");
@@ -29,7 +29,7 @@ public class RSSUpdateCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (!Sblock.getInstance().getConfig().getBoolean("rss-enabled")) {
+		if (!getPlugin().getConfig().getBoolean("rss-enabled")) {
 			return true;
 		}
 		if (args.length < 3) {

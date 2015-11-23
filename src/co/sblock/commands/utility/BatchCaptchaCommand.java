@@ -13,6 +13,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
@@ -24,8 +25,10 @@ import co.sblock.commands.SblockCommand;
  */
 public class BatchCaptchaCommand extends SblockCommand {
 
-	public BatchCaptchaCommand() {
-		super("baptcha");
+	private final Captcha captcha;
+
+	public BatchCaptchaCommand(Sblock plugin) {
+		super(plugin, "baptcha");
 		this.setAliases("batchcap", "capbatch", "batchcaptcha", "captchabatch");
 		this.setDescription("Captchalogues all items in your inventory matching your item in hand!");
 		this.setUsage("Hold an item, run /baptcha. Batch captcha!");
@@ -40,6 +43,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		}
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock.denizen", true).recalculatePermissibles();
+		this.captcha = plugin.getModule(Captcha.class);
 	}
 
 	@Override
@@ -54,7 +58,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 			return false;
 		}
 
-		if (!Captcha.canCaptcha(item)) {
+		if (!captcha.canCaptcha(item)) {
 			p.sendMessage(Color.BAD + "That item cannot be put in a captcha!");
 			return true;
 		}
@@ -101,7 +105,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 			// Not bothering catching failed removals here, there should be none.
 			inventory.removeItem(blankCaptcha);
 		}
-		item = Captcha.itemToCaptcha(item);
+		item = captcha.itemToCaptcha(item);
 		item.setAmount(count);
 		p.getInventory().addItem(item);
 		p.sendMessage(Color.GOOD + "Used " + count + " captchas to store items.");

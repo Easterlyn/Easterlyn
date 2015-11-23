@@ -5,6 +5,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import co.sblock.Sblock;
+import co.sblock.chat.ChannelManager;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
@@ -18,10 +20,10 @@ public class NickChannel extends NormalChannel {
 	protected transient Map<UUID, String> nickList; 
 
 	/**
-	 * @see co.sblock.chat.channel.NormalChannel#Channel(String, AccessLevel, UUID, Long)
+	 * @see co.sblock.chat.channel.NormalChannel#Channel(ChannelManager, String, AccessLevel, UUID, Long)
 	 */
-	public NickChannel(String name, AccessLevel a, UUID creator, long lastAccessed) {
-		super(name, a, creator, lastAccessed);
+	public NickChannel(Sblock plugin, String name, AccessLevel a, UUID creator, long lastAccessed) {
+		super(plugin, name, a, creator, lastAccessed);
 		nickList = new ConcurrentHashMap<>();
 	}
 
@@ -86,7 +88,7 @@ public class NickChannel extends NormalChannel {
 					remove = entry.getKey();
 					break;
 				}
-				return Users.getGuaranteedUser(entry.getKey());
+				return Users.getGuaranteedUser(getPlugin(), entry.getKey());
 			}
 		}
 		if (remove != null) {

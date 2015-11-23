@@ -13,17 +13,19 @@ import me.itsghost.jdiscord.talkable.GroupUser;
  */
 public class DiscordPlayer extends PermissiblePlayer {
 
+	private final Discord discord;
 	private final GroupUser user;
 	private StringBuilder messages;
 
-	public DiscordPlayer(GroupUser user, Player player) {
+	public DiscordPlayer(Discord discord, GroupUser user, Player player) {
 		super(player);
+		this.discord = discord;
 		this.user = user;
 	}
 
 	@Override
 	public String getDisplayName() {
-		return Discord.getInstance().getGroupColor(user) + getName();
+		return discord.getGroupColor(user) + getName();
 	}
 
 	public synchronized boolean hasPendingCommand() {

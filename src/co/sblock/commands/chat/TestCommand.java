@@ -3,6 +3,7 @@ package co.sblock.commands.chat;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -12,8 +13,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class TestCommand extends SblockCommand {
 
-	public TestCommand() {
-		super("test");
+	public TestCommand(Sblock plugin) {
+		super(plugin, "test");
 	}
 
 	@Override

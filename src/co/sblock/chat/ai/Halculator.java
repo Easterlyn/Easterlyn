@@ -7,25 +7,27 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 
+import co.sblock.Sblock;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.utilities.JSONUtil;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
  * HalMessageHandler for math functions.
  * 
  * @author Jikoo
  */
-public class Halculator implements HalMessageHandler {
+public class Halculator extends HalMessageHandler {
 
-	private final BaseComponent[] hover;
+	private final MessageBuilder hal;
 
-	public Halculator() {
-		hover = JSONUtil.fromLegacyText(ChatColor.RED + "Calculator\n"
-				+ ChatColor.DARK_RED + "For long or multiple\nequations, use /halc");
+	public Halculator(Sblock plugin) {
+		super(plugin);
+		hal = new MessageBuilder(plugin).setSender(ChatColor.DARK_RED + "Lil Hal").setNameClick("/halc ")
+				.setNameHover(JSONUtil.fromLegacyText(ChatColor.RED + "Calculator\n"
+						+ ChatColor.DARK_RED + "For long or multiple\nequations, use /halc"));
 	}
 
 	public String evhaluate(String input) {
@@ -57,10 +59,9 @@ public class Halculator implements HalMessageHandler {
 			return false;
 		}
 		msg = msg.substring(msg.indexOf(' ')).trim();
-		final Message hal = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
-				.setMessage(ChatColor.RED + evhaluate(msg)).setChannel(message.getChannel())
-				.setNameHover(hover).setNameClick("/halc ").toMessage();
-		hal.send(recipients);
+		final Message halMsg = hal.setMessage(ChatColor.RED + evhaluate(msg))
+				.setChannel(message.getChannel()).toMessage();
+		halMsg.send(recipients);
 		return true;
 	}
 }

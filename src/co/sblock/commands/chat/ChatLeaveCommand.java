@@ -9,7 +9,9 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.RegionChannel;
@@ -23,17 +25,17 @@ import co.sblock.users.Users;
  */
 public class ChatLeaveCommand extends SblockCommand {
 
-	public ChatLeaveCommand() {
-		super("leave");
+	private final ChannelManager manager;
+
+	public ChatLeaveCommand(Sblock plugin) {
+		super(plugin, "leave");
 		setDescription("Leave a chat channel.");
 		setUsage(Color.COMMAND + "/leave <channel>"
 				+ Color.GOOD + ": Stop listening to <channel>.");
 		setAliases("quit");
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
-	/* (non-Javadoc)
-	 * @see co.sblock.commands.SblockCommand#onCommand(org.bukkit.command.CommandSender, java.lang.String, java.lang.String[])
-	 */
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -43,11 +45,11 @@ public class ChatLeaveCommand extends SblockCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		if (ChannelManager.getChannelManager().getChannel(args[0]) instanceof RegionChannel) {
+		if (manager.getChannel(args[0]) instanceof RegionChannel) {
 			sender.sendMessage(ChatMsgs.errorRegionChannelLeave());
 			return true;
 		}
-		Users.getGuaranteedUser(((Player) sender).getUniqueId()).removeListening(args[0]);
+		Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId()).removeListening(args[0]);
 		return true;
 	}
 
@@ -59,7 +61,7 @@ public class ChatLeaveCommand extends SblockCommand {
 		}
 		if (args.length ==  1) {
 			ArrayList<String> matches = new ArrayList<>();
-			for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
+			for (String channel : manager.getChannelList().keySet()) {
 				if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
 					matches.add(channel);
 				}

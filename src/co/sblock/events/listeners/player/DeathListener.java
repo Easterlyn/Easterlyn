@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -18,6 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
 import co.sblock.users.UserAspect;
@@ -28,11 +28,16 @@ import co.sblock.utilities.Experience;
  * 
  * @author Jikoo
  */
-public class DeathListener implements Listener {
+public class DeathListener extends SblockListener {
 
+	private final Events events;
+	private final FreeCart carts;
 	private final ItemStack facts;
 
-	public DeathListener() {
+	public DeathListener(Sblock plugin) {
+		super(plugin);
+		this.events = plugin.getModule(Events.class);
+		this.carts = plugin.getModule(FreeCart.class);
 		facts = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta meta = (BookMeta) facts.getItemMeta();
 		meta.setTitle("Wither Facts");
@@ -51,7 +56,7 @@ public class DeathListener implements Listener {
 		final Player player = event.getEntity();
 
 		// Remove free minecart if riding one
-		FreeCart.getInstance().remove(player);
+		carts.remove(player);
 
 		String message = new String[] {"Oh dear, you are dead.", "Crikey, that was a big 'un!",
 				"I say, my dear chap, you appear to have died a little there.", "Git rekt.",
@@ -73,14 +78,14 @@ public class DeathListener implements Listener {
 						player.getInventory().addItem(facts);
 					}
 				}
-			}.runTask(Sblock.getInstance());
+			}.runTask(getPlugin());
 		}
 
 		// TODO post deaths (sans coordinates) to global chat
-		if (Events.getInstance().getPVPTasks().containsKey(player.getUniqueId())) {
+		if (events.getPVPTasks().containsKey(player.getUniqueId())) {
 			event.setDroppedExp(Experience.getExp(player));
 			event.setKeepInventory(true);
-			Events.getInstance().getPVPTasks().remove(player.getUniqueId()).cancel();
+			events.getPVPTasks().remove(player.getUniqueId()).cancel();
 			Player killer = player.getKiller();
 			if (killer == null) {
 				return;

@@ -4,19 +4,27 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.Effects;
+import co.sblock.events.listeners.SblockListener;
 
 /**
  * Listener for EntityDeathEvents.
  * 
  * @author Jikoo
  */
-public class DeathListener implements Listener {
+public class DeathListener extends SblockListener {
+
+	private final Effects effects;
+
+	public DeathListener(Sblock plugin) {
+		super(plugin);
+		this.effects = plugin.getModule(Effects.class);
+	}
 
 	/**
 	 * EventHandler for EntityDeathEvents.
@@ -41,7 +49,7 @@ public class DeathListener implements Listener {
 				return;
 			}
 			// Confusing point: Killer is the one with the active, not dying entity
-			Effects.getInstance().handleEvent(event, (LivingEntity) entityDamageEvent.getDamager(), false);
+			effects.handleEvent(event, (LivingEntity) entityDamageEvent.getDamager(), false);
 		}
 	}
 

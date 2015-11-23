@@ -5,6 +5,8 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
+
 /**
  * Freeze all adjacent water source blocks. Not useful against the ground without silk touch, but otherwise nice.
  * 
@@ -12,8 +14,8 @@ import org.bukkit.entity.Player;
  */
 public class EffectAdjacentFreeze extends EffectAdjacentBlockModifier {
 
-	public EffectAdjacentFreeze() {
-		super(400, "Eternally Frozen");
+	public EffectAdjacentFreeze(Sblock plugin) {
+		super(plugin, 400, "Eternally Frozen");
 	}
 
 	@Override

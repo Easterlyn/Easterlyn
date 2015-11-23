@@ -21,7 +21,9 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
+import co.sblock.effects.Effects;
 import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
@@ -43,10 +45,18 @@ public class Alchemiter extends Machine {
 
 	private static Triple<ItemStack, ItemStack, ItemStack> exampleRecipes;
 
+	private final Captcha captcha;
+	private final Effects effects;
+	private final Entry entry;
+	private final MachineInventoryTracker tracker;
 	private final ItemStack drop;
 
-	public Alchemiter() {
-		super(new Shape());
+	public Alchemiter(Sblock plugin, Machines machines) {
+		super(plugin, machines, new Shape());
+		this.captcha = plugin.getModule(Captcha.class);
+		this.effects = plugin.getModule(Effects.class);
+		this.entry = plugin.getModule(Entry.class);
+		this.tracker = machines.getInventoryTracker();
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 1);
 		shape.setVectorData(new Vector(0, 0, 0), m);
@@ -93,10 +103,10 @@ public class Alchemiter extends Machine {
 		if (event.getPlayer().isSneaking()) {
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
-				|| Entry.getEntry().isEntering(user))) {
-			MachineInventoryTracker.getTracker().openVillagerInventory(event.getPlayer(), this,
+				|| entry.isEntering(user))) {
+			tracker.openVillagerInventory(event.getPlayer(), this,
 					getKey(storage));
 			InventoryUtils.updateVillagerTrades(event.getPlayer(), getExampleRecipes());
 		}
@@ -154,12 +164,12 @@ public class Alchemiter extends Machine {
 	 * @param name the name of the player who is using the Punch Designix
 	 */
 	public void updateInventory(final UUID id) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
 			@Override
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);
-				if (player == null || !MachineInventoryTracker.getTracker().hasMachineOpen(player)) {
+				if (player == null || !tracker.hasMachineOpen(player)) {
 					// Player has logged out or closed inventory. Inventories are per-player, ignore.
 					return;
 				}
@@ -169,9 +179,9 @@ public class Alchemiter extends Machine {
 				ItemStack expCost;
 				ItemStack result;
 				if (CruxiteDowel.isDowel(input)) {
-					result = Captcha.captchaToItem(input);
+					result = captcha.captchaToItem(input);
 					expCost = new ItemStack(Material.EXP_BOTTLE);
-					int exp = CruxiteDowel.expCost(result);
+					int exp = CruxiteDowel.expCost(effects, result);
 					ItemMeta im = expCost.getItemMeta();
 					int playerExp = Experience.getExp(player);
 					int remainder = playerExp - exp;

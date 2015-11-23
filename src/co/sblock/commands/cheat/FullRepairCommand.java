@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.Repairable;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -20,8 +21,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class FullRepairCommand extends SblockCommand {
 
-	public FullRepairCommand() {
-		super("fullrepair");
+	public FullRepairCommand(Sblock plugin) {
+		super(plugin, "fullrepair");
 		this.setDescription("Fully repairs an item, including wiping the anvil tag.");
 		this.setUsage("Run /fullrepair while holding an item.");
 		this.setPermissionLevel("denizen");

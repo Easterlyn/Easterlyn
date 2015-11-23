@@ -5,8 +5,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
 
-import co.sblock.effects.effect.Effect;
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorPassive;
+import co.sblock.effects.effect.Effect;
 
 /**
  * Flowers while you walk!
@@ -15,8 +16,8 @@ import co.sblock.effects.effect.BehaviorPassive;
  */
 public class EffectFlowers extends Effect implements BehaviorPassive {
 
-	public EffectFlowers() {
-		super(1200, 1, 1, "Flowers");
+	public EffectFlowers(Sblock plugin) {
+		super(plugin, 1200, 1, 1, "Flowers");
 	}
 
 	@SuppressWarnings("deprecation")

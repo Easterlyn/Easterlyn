@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -30,8 +31,8 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class ShowItemCommand extends SblockCommand {
 
-	public ShowItemCommand() {
-		super("show");
+	public ShowItemCommand(Sblock plugin) {
+		super(plugin, "show");
 		this.setDescription("Displays an item in chat.");
 		this.setUsage("/show");
 		this.setAliases("showitem");
@@ -52,13 +53,14 @@ public class ShowItemCommand extends SblockCommand {
 			return true;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
 
 		TextComponent item = new TextComponent(JSONUtil.fromLegacyText(hand.getItemMeta().getDisplayName()));
 		item.setColor(ChatColor.AQUA);
 		item.setHoverEvent(JSONUtil.getItemHover(hand));
 
-		MessageBuilder builder = new MessageBuilder().setSender(user).setThirdPerson(true)
+		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin()).setSender(user)
+				.setThirdPerson(true)
 				.setMessage(new TextComponent("shows off "), item, new TextComponent("."));
 
 		if (!builder.canBuild(true) || !builder.isSenderInChannel(true)) {

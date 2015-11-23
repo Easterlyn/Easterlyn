@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockExpEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.Effect;
@@ -23,8 +24,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class EffectBonusBlockExperience extends Effect implements BehaviorActive, BehaviorGodtier {
 
-	public EffectBonusBlockExperience() {
-		super(Integer.MAX_VALUE, 5, 5, "Inquisitor");
+	public EffectBonusBlockExperience(Sblock plugin) {
+		super(plugin, Integer.MAX_VALUE, 5, 5, "Inquisitor");
 	}
 
 	@Override

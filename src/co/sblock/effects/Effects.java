@@ -1,5 +1,7 @@
 package co.sblock.effects;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,12 +36,12 @@ import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
+import co.sblock.micromodules.Cooldowns;
 import co.sblock.module.Module;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.UserAspect;
 import co.sblock.users.Users;
-import co.sblock.utilities.Cooldowns;
 import co.sblock.utilities.Roman;
 
 import net.md_5.bungee.api.ChatColor;
@@ -51,15 +53,20 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Effects extends Module {
 
-	private static Effects instance;
 	private final Map<String, Effect> effects = new HashMap<>();
 	private final Multimap<Class<? extends Event>, Effect> active = HashMultimap.create();
 	private final Multimap<Class<? extends Event>, Effect> reactive = HashMultimap.create();
 	private final Pattern effectPattern = Pattern.compile("^\\" + ChatColor.COLOR_CHAR + "7(.*) ([IVXLCDM]+)$");
 
+	private Cooldowns cooldowns;
+
+	public Effects(Sblock plugin) {
+		super(plugin);
+	}
+
 	@Override
 	protected void onEnable() {
-		instance = this;
+		this.cooldowns = getPlugin().getModule(Cooldowns.class);
 		Reflections reflections = new Reflections("co.sblock.effects.effect");
 		Set<Class<? extends Effect>> allEffects = reflections.getSubTypesOf(Effect.class);
 		for (Class<? extends Effect> effect : allEffects) {
@@ -67,7 +74,8 @@ public class Effects extends Module {
 				continue;
 			}
 			try {
-				Effect instance = effect.newInstance();
+				Constructor<? extends Effect> constructor = effect.getConstructor(getPlugin().getClass());
+				Effect instance = constructor.newInstance(getPlugin());
 				effects.put(instance.getName(), instance);
 				if (instance instanceof BehaviorReactive) {
 					for (Class<? extends Event> clazz : ((BehaviorReactive) instance).getApplicableEvents()) {
@@ -79,7 +87,7 @@ public class Effects extends Module {
 					}
 				}
 			} catch (IllegalAccessException | IllegalArgumentException | SecurityException
-					| InstantiationException e) {
+					| InstantiationException | InvocationTargetException | NoSuchMethodException e) {
 				e.printStackTrace();
 			}
 		}
@@ -92,7 +100,7 @@ public class Effects extends Module {
 					applyAllEffects(player);
 				}
 			}
-		}.runTaskTimer(Sblock.getInstance(), 40, 40);
+		}.runTaskTimer(getPlugin(), 40, 40);
 	}
 
 	/**
@@ -130,13 +138,13 @@ public class Effects extends Module {
 			BehaviorCooldown cool = null;
 			if (entry.getKey() instanceof BehaviorCooldown) {
 				cool = (BehaviorCooldown) entry.getKey();
-				if (Cooldowns.getInstance().getRemainder(entity, cool.getCooldownName()) > 0) {
+				if (cooldowns.getRemainder(entity, cool.getCooldownName()) > 0) {
 					continue;
 				}
 			}
 			((BehaviorPassive) entry.getKey()).applyEffect(entity, entry.getValue());
 			if (cool != null) {
-				Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
+				cooldowns.addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 			}
 		}
 	}
@@ -157,7 +165,7 @@ public class Effects extends Module {
 			return applicableEffects;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(entity.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), entity.getUniqueId());
 		if (user.getProgression().ordinal() < ProgressionState.GODTIER.ordinal()) {
 			return applicableEffects;
 		}
@@ -189,7 +197,7 @@ public class Effects extends Module {
 			effects = getEffects(bypassMax, entity.getEquipment().getItemInHand());
 		}
 		if (entity instanceof Player) {
-			OfflineUser user = Users.getGuaranteedUser(entity.getUniqueId());
+			OfflineUser user = Users.getGuaranteedUser(getPlugin(), entity.getUniqueId());
 			if (user.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
 				for (String effectType : user.getGodtierEffects()) {
 					Effect effect = getEffect(user.getUserAspect().name() + effectType);
@@ -212,13 +220,13 @@ public class Effects extends Module {
 				if (!effects.containsKey(effect)) {
 					continue;
 				}
-				if (effect instanceof BehaviorCooldown && Cooldowns.getInstance().getRemainder(entity, ((BehaviorCooldown) effect).getCooldownName()) > 0) {
+				if (effect instanceof BehaviorCooldown && cooldowns.getRemainder(entity, ((BehaviorCooldown) effect).getCooldownName()) > 0) {
 					continue;
 				}
 				((BehaviorActive) effect).handleEvent(event, entity, effects.get(effect));
 				if (effect instanceof BehaviorCooldown) {
 					BehaviorCooldown cool = (BehaviorCooldown) effect;
-					Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
+					cooldowns.addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 				}
 			}
 		}
@@ -362,7 +370,7 @@ public class Effects extends Module {
 		if (!(effect instanceof BehaviorCooldown)) {
 			return false;
 		}
-		return Cooldowns.getInstance().getRemainder(entity, ((BehaviorCooldown) effect).getCooldownName()) > 0;
+		return cooldowns.getRemainder(entity, ((BehaviorCooldown) effect).getCooldownName()) > 0;
 	}
 
 	/**
@@ -376,7 +384,7 @@ public class Effects extends Module {
 			return;
 		}
 		BehaviorCooldown cool = (BehaviorCooldown) effect;
-		Cooldowns.getInstance().addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
+		cooldowns.addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 	}
 
 	public List<Effect> getGodtierEffects(UserAspect aspect) {
@@ -393,17 +401,11 @@ public class Effects extends Module {
 	}
 
 	@Override
-	protected void onDisable() {
-		instance = null;
-	}
+	protected void onDisable() { }
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Sblock Effects";
-	}
-
-	public static Effects getInstance() {
-		return instance;
 	}
 
 }

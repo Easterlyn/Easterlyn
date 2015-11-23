@@ -8,8 +8,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import co.sblock.effects.effect.Effect;
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.Effect;
 
 /**
  * In essence, the opposite of knockback.
@@ -18,8 +19,8 @@ import co.sblock.effects.effect.BehaviorActive;
  */
 public class EffectPull extends Effect implements BehaviorActive {
 
-	public EffectPull() {
-		super(200, 2, 2, "Pull");
+	public EffectPull(Sblock plugin) {
+		super(plugin, 200, 2, 2, "Pull");
 	}
 
 	@Override

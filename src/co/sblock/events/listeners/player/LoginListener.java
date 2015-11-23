@@ -6,20 +6,23 @@ import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 
 /**
  * Listener for PlayerLoginEvents.
  * 
  * @author Jikoo
  */
-public class LoginListener implements Listener {
+public class LoginListener extends SblockListener {
 
 	private final Pattern pattern;
 
-	public LoginListener() {
+	public LoginListener(Sblock plugin) {
+		super(plugin);
 		pattern = Pattern.compile("\\W");
 	}
 

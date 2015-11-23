@@ -9,7 +9,9 @@ import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -25,11 +27,16 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class HalCommand extends SblockCommand {
 
-	public HalCommand() {
-		super("hal");
+	private final RawAnnouncer announcer;
+	private final ChannelManager manager;
+
+	public HalCommand(Sblock plugin) {
+		super(plugin, "hal");
 		this.setDescription("Force a raw message announcement.");
 		this.setUsage("/hal 1-10");
 		this.setPermissionLevel("denizen");
+		this.announcer = plugin.getModule(RawAnnouncer.class);
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -38,21 +45,20 @@ public class HalCommand extends SblockCommand {
 		if (args.length > 0) {
 			try {
 				int msgNum = Integer.valueOf(args[0]);
-				if (msgNum > RawAnnouncer.getInstance().getMessages().size()) {
+				if (msgNum > announcer.getMessages().size()) {
 					sender.sendMessage(Color.BAD.toString()
-							+ RawAnnouncer.getInstance().getMessages().size()
+							+ announcer.getMessages().size()
 							+ " announcements exist currently.");
-					msgNum = RawAnnouncer.getInstance().getMessages().size();
+					msgNum = announcer.getMessages().size();
 				}
-				message = RawAnnouncer.getInstance().getMessages().get(msgNum - 1);
+				message = announcer.getMessages().get(msgNum - 1);
 			} catch (NumberFormatException e) {
-				message = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
-						.setChannel(ChannelManager.getChannelManager().getChannel("#"))
-						.setNameClick("/report ").setMessage(StringUtils.join(args, ' '))
-						.toMessage();
+				message = new MessageBuilder((Sblock) getPlugin()).setSender(ChatColor.DARK_RED + "Lil Hal")
+						.setChannel(manager.getChannel("#")).setNameClick("/report ")
+						.setMessage(StringUtils.join(args, ' ')).toMessage();
 			}
 		} else {
-			message = RawAnnouncer.getInstance().getMessages().get((int) (Math.random() * RawAnnouncer.getInstance().getMessages().size()));
+			message = announcer.getMessages().get((int) (Math.random() * announcer.getMessages().size()));
 		}
 		message.send(Bukkit.getOnlinePlayers());
 		return true;

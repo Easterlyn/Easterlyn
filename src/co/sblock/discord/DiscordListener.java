@@ -38,7 +38,7 @@ public class DiscordListener implements EventListener {
 		if (event.getUser().getUser().getId().equals(api.getSelfInfo().getId())) {
 			return;
 		}
-		Sblock sblock = Sblock.getInstance();
+		Sblock sblock = discord.getPlugin();
 		String msg = event.getMsg().getMessage();
 		if (msg.startsWith("/link ")) {
 			String register = msg.substring(6);

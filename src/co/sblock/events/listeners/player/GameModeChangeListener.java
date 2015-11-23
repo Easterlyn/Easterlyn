@@ -2,10 +2,11 @@ package co.sblock.events.listeners.player;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 
+import co.sblock.Sblock;
 import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.Spectators;
 
 /**
@@ -13,7 +14,16 @@ import co.sblock.micromodules.Spectators;
  * 
  * @author Jikoo
  */
-public class GameModeChangeListener implements Listener {
+public class GameModeChangeListener extends SblockListener {
+
+	private final Events events;
+	private final Spectators spectators;
+
+	public GameModeChangeListener(Sblock plugin) {
+		super(plugin);
+		this.events = plugin.getModule(Events.class);
+		this.spectators = plugin.getModule(Spectators.class);
+	}
 
 	/**
 	 * EventHandler for PlayerGameModeChangeEvents.
@@ -22,7 +32,7 @@ public class GameModeChangeListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
-		if (Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())) {
+		if (spectators.isSpectator(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 		}
 	}
@@ -35,6 +45,6 @@ public class GameModeChangeListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerGameModeChangeMonitor(PlayerGameModeChangeEvent event) {
-		Events.getInstance().getInvisibilityManager().lazyVisibilityUpdate(event.getPlayer());
+		events.getInvisibilityManager().lazyVisibilityUpdate(event.getPlayer());
 	}
 }

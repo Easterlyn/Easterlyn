@@ -1,5 +1,7 @@
 package co.sblock.effects.effect;
 
+import co.sblock.Sblock;
+
 /**
  * Base class defining properties for an Effect.
  * <p>
@@ -10,7 +12,9 @@ package co.sblock.effects.effect;
  */
 public abstract class Effect {
 
-	// Lore which will trigger the same Effect
+	// The Sblock instance loading the Effect
+	private final Sblock plugin;
+	// The user-friendly name of the Effect
 	private final String name;
 	// Cost of the Effect during alchemy
 	private final int cost;
@@ -19,7 +23,8 @@ public abstract class Effect {
 	// Maximum level with any effect on play
 	private final int maximumCombinedLevel;
 
-	public Effect(int cost, int maximumLevel, int maximumCombinedLevel, String name) {
+	public Effect(Sblock plugin, int cost, int maximumLevel, int maximumCombinedLevel, String name) {
+		this.plugin = plugin;
 		this.name = name;
 		this.cost = cost;
 		this.maximumLevel = maximumLevel;
@@ -60,6 +65,15 @@ public abstract class Effect {
 	 */
 	public int getMaxTotalLevel() {
 		return this.maximumCombinedLevel;
+	}
+
+	/**
+	 * Gets the Sblock instance loading this Effect.
+	 * 
+	 * @return the Sblock instance
+	 */
+	public Sblock getPlugin() {
+		return this.plugin;
 	}
 
 }

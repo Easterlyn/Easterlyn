@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -24,7 +23,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
-import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
@@ -42,13 +41,18 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class InventoryClickListener implements Listener {
+public class InventoryClickListener extends SblockListener {
 
+	private final Captcha captcha;
+	private final Machines machines;
 	private final ItemStack computer;
 	private final EmailWriter mail;
 
-	public InventoryClickListener() {
-		this.computer = Machines.getMachineByName("Computer").getUniqueDrop();
+	public InventoryClickListener(Sblock plugin) {
+		super(plugin);
+		this.captcha = plugin.getModule(Captcha.class);
+		this.machines = plugin.getModule(Machines.class);
+		this.computer = machines.getMachineByName("Computer").getUniqueDrop();
 		this.mail = (EmailWriter) Programs.getProgramByName("EmailWriter");
 	}
 
@@ -63,14 +67,14 @@ public class InventoryClickListener implements Listener {
 
 		// Finds inventories of physical blocks opened by Machines
 		if (ih != null && ih instanceof BlockState) {
-			Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(((BlockState) ih).getBlock());
+			Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(((BlockState) ih).getBlock());
 			if (pair != null) {
 				event.setCancelled(pair.getLeft().handleClick(event, pair.getRight()));
 			}
 		}
 
 		// Finds inventories forcibly opened by Machines
-		Pair<Machine, ConfigurationSection> pair = MachineInventoryTracker.getTracker().getOpenMachine((Player) event.getWhoClicked());
+		Pair<Machine, ConfigurationSection> pair = machines.getInventoryTracker().getOpenMachine((Player) event.getWhoClicked());
 		if (pair != null) {
 			event.setCancelled(pair.getLeft().handleClick(event, pair.getRight()));
 			return;
@@ -178,7 +182,7 @@ public class InventoryClickListener implements Listener {
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
-				&& InventoryUtils.isUniqueItem(event.getCursor())) {
+				&& InventoryUtils.isUniqueItem(getPlugin(), event.getCursor())) {
 			event.setResult(Result.DENY);
 		}
 	}
@@ -197,13 +201,13 @@ public class InventoryClickListener implements Listener {
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
-				&& InventoryUtils.isUniqueItem(event.getCursor())) {
+				&& InventoryUtils.isUniqueItem(getPlugin(), event.getCursor())) {
 			event.setResult(Result.DENY);
 			return;
 		}
 
 		// Captcha: attempt to captcha item on cursor
-		Captcha.handleCaptcha(event);
+		captcha.handleCaptcha(event);
 	}
 
 	// remove bottom
@@ -216,12 +220,12 @@ public class InventoryClickListener implements Listener {
 		}
 
 		// Server: Click computer icon -> open computer interface
-		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			if (computer.isSimilar(event.getCurrentItem())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
-				((Computer) Machines.getMachineByName("Computer")).openInventory((Player) event.getWhoClicked());
+				((Computer) machines.getMachineByName("Computer")).openInventory((Player) event.getWhoClicked());
 			}
 			return;
 		}
@@ -248,7 +252,7 @@ public class InventoryClickListener implements Listener {
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
-				&& InventoryUtils.isUniqueItem(event.getCurrentItem())) {
+				&& InventoryUtils.isUniqueItem(getPlugin(), event.getCurrentItem())) {
 			event.setResult(Result.DENY);
 			return;
 		}
@@ -266,7 +270,7 @@ public class InventoryClickListener implements Listener {
 		}
 
 		// Server: No picking up computer icon
-		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
 				&& computer.isSimilar(event.getCurrentItem())) {
 			event.setCancelled(true);
@@ -274,7 +278,7 @@ public class InventoryClickListener implements Listener {
 		}
 
 		// Captcha: attempt to captcha item on cursor
-		Captcha.handleCaptcha(event);
+		captcha.handleCaptcha(event);
 	}
 
 	// hotbar with inv
@@ -291,7 +295,7 @@ public class InventoryClickListener implements Listener {
 			return;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(event.getWhoClicked().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getWhoClicked().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
 				&& (computer.isSimilar(event.getCurrentItem()) || computer.isSimilar(hotbar))) {
 			event.setCancelled(true);
@@ -300,14 +304,14 @@ public class InventoryClickListener implements Listener {
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
-				&& (InventoryUtils.isUniqueItem(event.getCursor())
-						|| InventoryUtils.isUniqueItem(hotbar))) {
+				&& (InventoryUtils.isUniqueItem(getPlugin(), event.getCursor())
+						|| InventoryUtils.isUniqueItem(getPlugin(), hotbar))) {
 			event.setResult(Result.DENY);
 			return;
 		}
 
 		// Captcha: attempt to captcha item in clicked slot
-		Captcha.handleCaptcha(event);
+		captcha.handleCaptcha(event);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -340,7 +344,7 @@ public class InventoryClickListener implements Listener {
 			public void run() {
 				createBlazingSaddle(view);
 			}
-		}.runTask(Sblock.getInstance());
+		}.runTask(getPlugin());
 	}
 
 	private void createBlazingSaddle(InventoryView view) {

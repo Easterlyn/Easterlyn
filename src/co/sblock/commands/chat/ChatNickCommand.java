@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
@@ -31,11 +32,14 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class ChatNickCommand extends SblockCommand {
 
-	public ChatNickCommand() {
-		super("nick");
+	private final Chat chat;
+
+	public ChatNickCommand(Sblock plugin) {
+		super(plugin, "nick");
 		setDescription(Color.COMMAND + "/nick remove|list|<nick choice>"
 				+ Color.GOOD + ": Set a nick in a Nick/RP channel.");
 		setUsage("/nick name");
+		this.chat = plugin.getModule(Chat.class);
 	}
 
 	@Override
@@ -45,10 +49,10 @@ public class ChatNickCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		if (Chat.getChat().testForMute(player)) {
+		if (chat.testForMute(player)) {
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
 		Channel channel = user.getCurrentChannel();
 		if (channel == null) {
 			user.sendMessage(ChatMsgs.errorCurrentChannelNull());
@@ -133,7 +137,7 @@ public class ChatNickCommand extends SblockCommand {
 		if (!(sender instanceof Player) || args.length > 1) {
 			return ImmutableList.of();
 		}
-		if (Users.getGuaranteedUser(((Player) sender).getUniqueId()).getCurrentChannel() instanceof RPChannel) {
+		if (Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId()).getCurrentChannel() instanceof RPChannel) {
 			ArrayList<String> matches = new ArrayList<>();
 			args[0] = args[0].toLowerCase();
 			for (CanonNick nick : CanonNick.values()) {

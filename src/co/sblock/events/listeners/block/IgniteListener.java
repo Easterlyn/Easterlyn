@@ -4,9 +4,10 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
 
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 
@@ -15,7 +16,14 @@ import co.sblock.machines.type.Machine;
  * 
  * @author Jikoo
  */
-public class IgniteListener implements Listener {
+public class IgniteListener extends SblockListener {
+
+	private final Machines machines;
+
+	public IgniteListener(Sblock plugin) {
+		super(plugin);
+		this.machines = plugin.getModule(Machines.class);
+	}
 
 	/**
 	 * EventHandler for BlockIgniteEvents.
@@ -24,7 +32,7 @@ public class IgniteListener implements Listener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockIgnite(BlockIgniteEvent event) {
-		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(event.getBlock());
+		Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(event.getBlock());
 		if (pair != null) {
 			event.setCancelled(pair.getLeft().handleIgnite(event, pair.getRight()));
 		}

@@ -3,6 +3,7 @@ package co.sblock.commands.chat;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -15,8 +16,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class LordEnglishEyefuckCommand extends SblockCommand {
 
-	public LordEnglishEyefuckCommand() {
-		super("lel");
+	public LordEnglishEyefuckCommand(Sblock plugin) {
+		super(plugin, "lel");
 		this.setDescription("&e/le, now with 250% more &kbrain pain&e.");
 		this.setUsage("/lel <text>");
 		this.setPermissionLevel("horrorterror");

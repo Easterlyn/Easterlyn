@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Meteorite;
@@ -26,8 +27,8 @@ public class MeteorCommand extends SblockCommand {
 
 	private final String[] primaryArgs;
 
-	public MeteorCommand() {
-		super("meteor");
+	public MeteorCommand(Sblock plugin) {
+		super(plugin, "meteor");
 		this.setDescription("Summon a meteor with parameters.");
 		this.setUsage("/meteor [p:player] [r:radius] [e:explode] [m:material] [b:bore]");
 		this.setPermissionLevel("denizen");
@@ -105,7 +106,7 @@ public class MeteorCommand extends SblockCommand {
 			radius = 10;
 			sender.sendMessage(Color.BAD_EMPHASIS + "Very large meteors cause quite a bit of lag. Keep it down.");
 		}
-		new Meteorite(target, material, radius, blockDamage, bore).dropMeteorite();
+		new Meteorite((Sblock) getPlugin(), target, material, radius, blockDamage, bore).dropMeteorite();
 		return true;
 	}
 

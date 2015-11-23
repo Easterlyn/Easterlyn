@@ -1,4 +1,4 @@
-package co.sblock.utilities;
+package co.sblock.micromodules;
 
 import java.util.Map;
 import java.util.UUID;
@@ -10,29 +10,30 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
 import co.sblock.Sblock;
+import co.sblock.module.Module;
 
 /**
  * A utility for tracking time remaining until a Player can use an ability/ActiveEffect again.
  * 
  * @author Jikoo
  */
-public class Cooldowns {
+public class Cooldowns extends Module {
 
-	private static Cooldowns instance;
+	private final ConcurrentHashMap<UUID, ConcurrentHashMap<String, Long>> cooldowns;
+	private final UUID global;
 
-	private final ConcurrentHashMap<UUID, ConcurrentHashMap<String, Long>> cooldowns = new ConcurrentHashMap<>();
-	private final UUID global = UUID.fromString("00000000-0000-0000-0000-000000000000");
+	public Cooldowns(Sblock plugin) {
+		super(plugin);
+		this.cooldowns = new ConcurrentHashMap<>();
+		this.global = UUID.fromString("00000000-0000-0000-0000-000000000000");
+	}
 
-	/**
-	 * Cooldowns singleton.
-	 * 
-	 * @return the current Cooldowns instance or a new instance if null
-	 */
-	public static Cooldowns getInstance() {
-		if (instance == null) {
-			instance = new Cooldowns();
-		}
-		return instance;
+	@Override
+	protected void onEnable() { }
+
+	@Override
+	protected void onDisable() {
+		cleanup();
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class Cooldowns {
 			return;
 		}
 
-		entity.setMetadata(cooldownName, new FixedMetadataValue(Sblock.getInstance(), expiry));
+		entity.setMetadata(cooldownName, new FixedMetadataValue(getPlugin(), expiry));
 	}
 
 	/**
@@ -108,7 +109,7 @@ public class Cooldowns {
 			return;
 		}
 
-		entity.removeMetadata(cooldownName, Sblock.getInstance());
+		entity.removeMetadata(cooldownName, getPlugin());
 	}
 
 	/**
@@ -139,7 +140,7 @@ public class Cooldowns {
 		long remaining = 0;
 
 		for (MetadataValue value : entity.getMetadata(cooldownName)) {
-			if (value.getOwningPlugin().equals(Sblock.getInstance())) {
+			if (value.getOwningPlugin().equals(getPlugin())) {
 				remaining = value.asLong();
 				break;
 			}
@@ -178,18 +179,15 @@ public class Cooldowns {
 	/**
 	 * Removes all expired cooldown entries.
 	 */
-	public static void cleanup() {
-		if (instance == null) {
-			return;
-		}
+	private void cleanup() {
 		long now = System.currentTimeMillis();
-		for (UUID uuid : instance.cooldowns.keySet()) {
-			Map<String, Long> map = instance.cooldowns.get(uuid);
+		for (UUID uuid : cooldowns.keySet()) {
+			Map<String, Long> map = cooldowns.get(uuid);
 			for (String cooldown : map.keySet()) {
 				if (map.get(cooldown) <= now) {
 					map.remove(cooldown);
 					if (map.isEmpty()) {
-						instance.cooldowns.remove(map);
+						cooldowns.remove(map);
 					}
 				}
 			}
@@ -199,22 +197,24 @@ public class Cooldowns {
 	/**
 	 * Removes all expired cooldown entries for a specific <code>Player</code>.
 	 */
-	public static void cleanup(UUID uuid) {
-		if (instance == null) {
-			return;
-		}
-		if (!instance.cooldowns.containsKey(uuid)) {
+	public void cleanup(UUID uuid) {
+		if (!cooldowns.containsKey(uuid)) {
 			return;
 		}
 		long now = System.currentTimeMillis();
-		for (String cooldown : instance.cooldowns.get(uuid).keySet()) {
-			if (instance.cooldowns.get(uuid).get(cooldown) <= now) {
-				ConcurrentHashMap<String, Long> playerCooldowns = instance.getCooldownMap(uuid);
+		for (String cooldown : cooldowns.get(uuid).keySet()) {
+			if (cooldowns.get(uuid).get(cooldown) <= now) {
+				ConcurrentHashMap<String, Long> playerCooldowns = getCooldownMap(uuid);
 				playerCooldowns.remove(cooldown);
 				if (playerCooldowns.isEmpty()) {
-					instance.cooldowns.remove(uuid);
+					cooldowns.remove(uuid);
 				}
 			}
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "Cooldowns";
 	}
 }

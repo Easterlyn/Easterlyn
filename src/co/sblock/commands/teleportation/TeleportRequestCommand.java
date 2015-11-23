@@ -12,13 +12,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.Spectators;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
-import co.sblock.utilities.Cooldowns;
 
 /**
  * Essentials' TPA just won't cut it.
@@ -27,11 +28,15 @@ import co.sblock.utilities.Cooldowns;
  */
 public class TeleportRequestCommand extends SblockCommand {
 
+	private final Cooldowns cooldowns;
+	private final Spectators spectators;
 	private final SimpleDateFormat time =  new SimpleDateFormat("m:ss");
 	private final HashMap<UUID, TeleportRequest> pending = new HashMap<>();
 
-	public TeleportRequestCommand() {
-		super("tpa");
+	public TeleportRequestCommand(Sblock plugin) {
+		super(plugin, "tpa");
+		this.cooldowns = plugin.getModule(Cooldowns.class);
+		this.spectators = plugin.getModule(Spectators.class);
 		this.setDescription("Handle a teleport request");
 		this.setUsage("/tpa name, /tpahere name, /tpaccept, /tpdecline");
 		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno");
@@ -86,7 +91,7 @@ public class TeleportRequestCommand extends SblockCommand {
 	}
 
 	private void ask(Player sender, String[] args, boolean here) {
-		long remainder = Cooldowns.getInstance().getRemainder(sender, "teleportRequest");
+		long remainder = cooldowns.getRemainder(sender, "teleportRequest");
 		if (remainder > 0) {
 			sender.sendMessage(Color.BAD + "You cannot send a teleport request for another "
 					+ Color.BAD_EMPHASIS + time.format(new Date(remainder)) + Color.BAD + ".");
@@ -107,9 +112,8 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(Color.BAD_PLAYER + target.getName() + Color.BAD + " cannot accept teleport requests!");
 			return;
 		}
-		OfflineUser targetUser = Users.getGuaranteedUser(target.getUniqueId());
-		OfflineUser sourceUser = Users.getGuaranteedUser(sender.getUniqueId());
-		Spectators spectators = Spectators.getInstance();
+		OfflineUser targetUser = Users.getGuaranteedUser(((Sblock) getPlugin()), target.getUniqueId());
+		OfflineUser sourceUser = Users.getGuaranteedUser(((Sblock) getPlugin()), sender.getUniqueId());
 		boolean targetSpectating = spectators.isSpectator(targetUser.getUUID());
 		boolean sourceSpectating = spectators.isSpectator(sourceUser.getUUID());
 		if (!here && targetSpectating && !sourceSpectating || here && !targetSpectating && sourceSpectating) {
@@ -128,7 +132,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
 		if (!sender.hasPermission("sblock.command.tpa.nocooldown")) {
-			Cooldowns.getInstance().addCooldown(sender, "teleportRequest", 480000L);
+			cooldowns.addCooldown(sender, "teleportRequest", 480000L);
 		}
 		sender.sendMessage(Color.GOOD + "Request sent!");
 		target.sendMessage(Color.GOOD_PLAYER + sender.getDisplayName() + Color.GOOD + " is requesting to teleport " + (here ? "you to them." : "to you."));
@@ -149,15 +153,15 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(Color.BAD + "The issuer of the request seems to have logged off.");
 			return;
 		}
-		if (Spectators.getInstance().isSpectator(toArriveAt.getUniqueId())
-				&& !Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
+		if (spectators.isSpectator(toArriveAt.getUniqueId())
+				&& !spectators.isSpectator(toTeleport.getUniqueId())) {
 			String message = Color.BAD + "Corporeal players cannot teleport to incorporeal players!";
 			toTeleport.sendMessage(message);
 			toArriveAt.sendMessage(message);
 			return;
 		}
-		Region rTarget = Users.getGuaranteedUser(toArriveAt.getUniqueId()).getCurrentRegion();
-		Region rSource = Users.getGuaranteedUser(toTeleport.getUniqueId()).getCurrentRegion();
+		Region rTarget = Users.getGuaranteedUser(((Sblock) getPlugin()), toArriveAt.getUniqueId()).getCurrentRegion();
+		Region rSource = Users.getGuaranteedUser(((Sblock) getPlugin()), toTeleport.getUniqueId()).getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
 			String message = Color.BAD + "Teleports cannot be initiated from different planets!";
 			toTeleport.sendMessage(message);
@@ -173,10 +177,10 @@ public class TeleportRequestCommand extends SblockCommand {
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
 		Player issuer = request.isHere() ? toArriveAt : toTeleport;
 		if (issuer.hasPermission("sblock.command.tpa.nocooldown")
-				|| Spectators.getInstance().isSpectator(toTeleport.getUniqueId())) {
-			Cooldowns.getInstance().clearCooldown(issuer, "teleportRequest");
+				|| spectators.isSpectator(toTeleport.getUniqueId())) {
+			cooldowns.clearCooldown(issuer, "teleportRequest");
 		} else {
-			Cooldowns.getInstance().addCooldown(issuer, "teleportRequest", 3600000L);
+			cooldowns.addCooldown(issuer, "teleportRequest", 3600000L);
 		}
 	}
 
@@ -190,7 +194,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		Player issuer = Bukkit.getPlayer(request.getSource());
 		if (issuer != null) {
 			issuer.sendMessage(Color.BAD_PLAYER + sender.getDisplayName() + Color.BAD + " declined your request!");
-			Cooldowns.getInstance().clearCooldown(issuer, "teleportRequest");
+			cooldowns.clearCooldown(issuer, "teleportRequest");
 		}
 	}
 

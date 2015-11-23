@@ -9,6 +9,7 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.computer.Program;
@@ -21,11 +22,14 @@ import co.sblock.machines.type.computer.Programs;
  */
 public class MachineCommand extends SblockCommand {
 
-	public MachineCommand() {
-		super("sm");
+	private final Machines machines;
+
+	public MachineCommand(Sblock plugin) {
+		super(plugin, "sm");
 		this.setDescription("Machinations.");
 		this.setUsage("/sm get|icon <type>");
 		this.setPermissionLevel("denizen");
+		this.machines = plugin.getModule(Machines.class);
 	}
 
 	@Override
@@ -39,11 +43,11 @@ public class MachineCommand extends SblockCommand {
 		}
 		if (args[0].equalsIgnoreCase("get")) {
 			try {
-				((Player) sender).getInventory().addItem(Machines.getMachineByName(args[1]).getUniqueDrop());
+				((Player) sender).getInventory().addItem(machines.getMachineByName(args[1]).getUniqueDrop());
 				sender.sendMessage("Machine get!");
 			} catch (Exception e) {
 				StringBuilder sb = new StringBuilder("Valid types: ");
-				for (String name : Machines.getMachinesByName().keySet()) {
+				for (String name : machines.getMachinesByName().keySet()) {
 					sb.append(name).append(' ');
 				}
 				sender.sendMessage(sb.toString());
@@ -89,7 +93,7 @@ public class MachineCommand extends SblockCommand {
 		}
 		args[1] = args[1].toUpperCase();
 		if (args[0].equals("get")) {
-			for (String type : Machines.getMachinesByName().keySet()) {
+			for (String type : machines.getMachinesByName().keySet()) {
 				if (StringUtil.startsWithIgnoreCase(type, args[1])) {
 					matches.add(type);
 				}

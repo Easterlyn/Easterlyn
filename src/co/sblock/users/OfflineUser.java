@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
@@ -43,6 +44,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class OfflineUser {
 
+	private final Sblock plugin;
+	private final ChannelManager manager;
 	private final YamlConfiguration yaml;
 
 	/* General player data */
@@ -57,9 +60,11 @@ public class OfflineUser {
 	public String currentChannel;
 	private Set<String> listening;
 
-	protected OfflineUser(UUID userID, String ip, YamlConfiguration yaml,
+	protected OfflineUser(Sblock plugin, UUID userID, String ip, YamlConfiguration yaml,
 			Location previousLocation, Set<String> programs, String currentChannel,
 			Set<String> listening) {
+		this.plugin = plugin;
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.uuid = userID;
 		this.userIP = ip;
 		this.yaml = yaml;
@@ -76,13 +81,17 @@ public class OfflineUser {
 		this.listening.addAll(listening);
 	}
 
-	private OfflineUser(UUID uuid, String ip, YamlConfiguration yaml) {
+	private OfflineUser(Sblock plugin, UUID uuid, String ip, YamlConfiguration yaml) {
+		this.plugin = plugin;
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.uuid = uuid;
 		this.userIP = ip;
 		this.yaml = yaml;
 		World earth = Bukkit.getWorld("Earth");
 		if (earth != null) {
 			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+		} else {
+			this.previousLocation = Bukkit.getWorlds().get(0).getSpawnLocation();
 		}
 		this.currentChannel = "#";
 		this.programs = new HashSet<>();
@@ -477,7 +486,7 @@ public class OfflineUser {
 	 * @param channelName the name of the Channel to set as current
 	 */
 	public synchronized void setCurrentChannel(String channelName) {
-		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+		Channel channel = getPlugin().getModule(Chat.class).getChannelManager().getChannel(channelName);
 		this.setCurrentChannel(channel);
 	}
 
@@ -487,7 +496,7 @@ public class OfflineUser {
 	 * @return Channel
 	 */
 	public synchronized Channel getCurrentChannel() {
-		return ChannelManager.getChannelManager().getChannel(this.currentChannel);
+		return getChannelManager().getChannel(this.currentChannel);
 	}
 
 	/**
@@ -549,7 +558,7 @@ public class OfflineUser {
 	 * @return true if the Channel is valid and had the User registered
 	 */
 	public boolean removeListeningQuit(String channelName) {
-		Channel channel = ChannelManager.getChannelManager().getChannel(channelName);
+		Channel channel = getChannelManager().getChannel(channelName);
 		if (channel == null || !channel.getListening().contains(this.getUUID())) {
 			return false;
 		}
@@ -692,7 +701,7 @@ public class OfflineUser {
 		if (yaml.isSet("progression.godtier.powers")) {
 			return yaml.getStringList("progression.godtier.powers");
 		}
-		List<Effect> active = Effects.getInstance().getGodtierEffects(getUserAspect());
+		List<Effect> active = getPlugin().getModule(Effects.class).getGodtierEffects(getUserAspect());
 		ArrayList<Effect> passive = new ArrayList<>();
 		active.removeIf(effect -> {
 			if (effect instanceof BehaviorPassive || effect instanceof BehaviorReactive) {
@@ -731,7 +740,7 @@ public class OfflineUser {
 		int type = 0;
 		boolean active = !(effect instanceof BehaviorPassive || effect instanceof BehaviorReactive);
 		for (String effectName : list) {
-			Effect enabledEffect = Effects.getInstance().getEffect(effectName);
+			Effect enabledEffect = getPlugin().getModule(Effects.class).getEffect(effectName);
 			if (enabledEffect instanceof BehaviorPassive || enabledEffect instanceof BehaviorReactive) {
 				if (!active) {
 					type++;
@@ -900,7 +909,7 @@ public class OfflineUser {
 		if (user != null) {
 			return user;
 		}
-		return new OnlineUser(getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
+		return new OnlineUser(getPlugin(), getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
 				yaml, getPreviousLocation(), getPrograms(), currentChannel, getListening());
 	}
 
@@ -911,7 +920,7 @@ public class OfflineUser {
 	public void save() {
 		File file;
 		try {
-			file = new File(Sblock.getInstance().getUserDataFolder(), getUUID().toString() + ".yml");
+			file = new File(getPlugin().getUserDataFolder(), getUUID().toString() + ".yml");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -937,19 +946,27 @@ public class OfflineUser {
 		}
 	}
 
+	protected ChannelManager getChannelManager() {
+		return this.manager;
+	}
+
+	public Sblock getPlugin() {
+		return this.plugin;
+	}
+
 	@SuppressWarnings("unchecked")
-	protected static OfflineUser load(final UUID uuid) {
+	protected static OfflineUser load(Sblock plugin, final UUID uuid) {
 		File file;
 		try {
-			file = new File(Sblock.getInstance().getUserDataFolder(), uuid.toString() + ".yml");
+			file = new File(plugin.getUserDataFolder(), uuid.toString() + ".yml");
 			if (!file.exists()) {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player == null) {
-					return new OfflineUser(uuid, "null", new YamlConfiguration());
+					return new OfflineUser(plugin, uuid, "null", new YamlConfiguration());
 				}
 				player.teleport(Users.getSpawnLocation());
 
-				OfflineUser offline = new OfflineUser(uuid, player.getAddress().getHostString(), new YamlConfiguration());
+				OfflineUser offline = new OfflineUser(plugin, uuid, player.getAddress().getHostString(), new YamlConfiguration());
 				offline.setCurrentChannel("#"); // Reverse come Entry
 				offline.getListening().add(Region.EARTH.getChannelName());
 				OnlineUser user = offline.getOnlineUser();
@@ -961,7 +978,7 @@ public class OfflineUser {
 					// Our data file may have just been deleted - reset planned for Entry, etc.
 					Bukkit.broadcastMessage(Color.HAL + "It would seem that " + player.getName()
 							+ " is joining us for the first time! Please welcome them.");
-					Discord.getInstance().postMessage(player.getName(), player.getName()
+					plugin.getModule(Discord.class).postMessage(player.getName(), player.getName()
 							+ " is new! Please welcome them.", true);
 				} else {
 					player.sendMessage(Color.HAL + "We've reset classpect since you last played. Please re-select now!");
@@ -972,7 +989,7 @@ public class OfflineUser {
 			throw new RuntimeException("Unable to load data for " + uuid, e);
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		OfflineUser user = new OfflineUser(uuid, yaml.getString("ip", "null"), yaml);
+		OfflineUser user = new OfflineUser(plugin, uuid, yaml.getString("ip", "null"), yaml);
 		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
 		//yaml.getString("previousRegion");
 		Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("location"));
@@ -1005,7 +1022,7 @@ public class OfflineUser {
 	}
 
 	public static OfflineUser fromOnline(OnlineUser online) {
-		OfflineUser user = OfflineUser.load(online.getUUID());
+		OfflineUser user = OfflineUser.load(online.getPlugin(), online.getUUID());
 
 		user.setUserClass(online.getUserClass().name());
 		user.setUserAspect(online.getUserAspect().name());

@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -30,8 +31,8 @@ public class LoreCommand extends SblockCommand {
 
 	private final String[] primaryArgs;
 
-	public LoreCommand() {
-		super("lore");
+	public LoreCommand(Sblock plugin) {
+		super(plugin, "lore");
 		this.setDescription("Sblock's lore manipulation command.");
 		this.setUsage("/lore owner: Set a skull's owner.\n"
 				+ "/lore author|title: Set a book's data.\n"

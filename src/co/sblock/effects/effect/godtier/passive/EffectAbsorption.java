@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
@@ -29,8 +30,8 @@ import net.md_5.bungee.api.ChatColor;
 public class EffectAbsorption extends Effect implements BehaviorCooldown, BehaviorGodtier,
 		BehaviorPassive {
 
-	public EffectAbsorption() {
-		super(1000, 3, 20, "Absorbant");
+	public EffectAbsorption(Sblock plugin) {
+		super(plugin, 1000, 3, 20, "Absorbant");
 	}
 
 	@Override

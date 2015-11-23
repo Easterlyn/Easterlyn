@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import co.sblock.machines.Machines;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -20,7 +21,8 @@ public class SburbServer extends Program {
 
 	private final ItemStack icon;
 
-	protected SburbServer() {
+	public SburbServer(Machines machines) {
+		super(machines);
 		icon = new ItemStack(Material.ENDER_PORTAL_FRAME);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "SburbServer");
@@ -29,7 +31,7 @@ public class SburbServer extends Program {
 
 	@Override
 	public void execute(Player player, ItemStack clicked, boolean verified) {
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getMachines().getPlugin(), player.getUniqueId());
 		if (!user.isOnline()) {
 			return;
 		}

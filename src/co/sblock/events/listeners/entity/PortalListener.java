@@ -4,9 +4,10 @@ import org.bukkit.Location;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.region.SblockTravelAgent;
 
 /**
@@ -14,11 +15,12 @@ import co.sblock.events.region.SblockTravelAgent;
  * 
  * @author Jikoo
  */
-public class PortalListener implements Listener {
+public class PortalListener extends SblockListener {
 
 	private final SblockTravelAgent agent;
 
-	public PortalListener() {
+	public PortalListener(Sblock plugin) {
+		super(plugin);
 		agent = new SblockTravelAgent();
 	}
 

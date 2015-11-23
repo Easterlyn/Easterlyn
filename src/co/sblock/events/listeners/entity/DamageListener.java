@@ -2,17 +2,25 @@ package co.sblock.events.listeners.entity;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.Effects;
+import co.sblock.events.listeners.SblockListener;
 
 /**
  * Listener for EntityDamageEvents.
  * 
  * @author Jikoo
  */
-public class DamageListener implements Listener {
+public class DamageListener extends SblockListener {
+
+	private final Effects effects;
+
+	public DamageListener(Sblock plugin) {
+		super(plugin);
+		this.effects = plugin.getModule(Effects.class);
+	}
 
 	/**
 	 * EventHandler for EntityDamageEvents.
@@ -25,6 +33,6 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		Effects.getInstance().handleEvent(event, (Player) event.getEntity(), true);
+		effects.handleEvent(event, (Player) event.getEntity(), true);
 	}
 }

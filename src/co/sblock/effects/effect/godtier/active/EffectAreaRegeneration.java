@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorGodtier;
@@ -30,8 +31,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class EffectAreaRegeneration extends Effect implements BehaviorActive, BehaviorCooldown, BehaviorGodtier {
 
-	public EffectAreaRegeneration() {
-		super(Integer.MAX_VALUE, 5, 5, "Team Regeneration");
+	public EffectAreaRegeneration(Sblock plugin) {
+		super(plugin, Integer.MAX_VALUE, 5, 5, "Team Regeneration");
 	}
 
 	@Override

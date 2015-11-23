@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,6 +23,8 @@ import co.sblock.events.Events;
  * @author Jikoo
  */
 public class StatusCheck extends BukkitRunnable {
+
+	private Plugin plugin;
 
 	@Override
 	public void run() {
@@ -57,15 +61,57 @@ public class StatusCheck extends BukkitRunnable {
 			}
 		}
 
-		Sblock sblock = Sblock.getInstance();
-		if (sblock.isEnabled()) {
+		
+		if (plugin != null && plugin.isEnabled()) {
 			new BukkitRunnable() {
 				@Override
 				public void run() {
-					Events.getInstance().changeStatus(status);
+					((Sblock) plugin).getModule(Events.class).changeStatus(status);
 				}
-			}.runTask(sblock);
+			}.runTask(plugin);
 		}
+	}
+
+	@Override
+	public synchronized BukkitTask runTask(Plugin plugin) throws IllegalArgumentException,
+			IllegalStateException {
+		this.plugin = plugin;
+		return super.runTask(plugin);
+	}
+
+	@Override
+	public synchronized BukkitTask runTaskAsynchronously(Plugin plugin)
+			throws IllegalArgumentException, IllegalStateException {
+		this.plugin = plugin;
+		return super.runTaskAsynchronously(plugin);
+	}
+
+	@Override
+	public synchronized BukkitTask runTaskLater(Plugin plugin, long delay)
+			throws IllegalArgumentException, IllegalStateException {
+		this.plugin = plugin;
+		return super.runTaskLater(plugin, delay);
+	}
+
+	@Override
+	public synchronized BukkitTask runTaskLaterAsynchronously(Plugin plugin, long delay)
+			throws IllegalArgumentException, IllegalStateException {
+		this.plugin = plugin;
+		return super.runTaskLaterAsynchronously(plugin, delay);
+	}
+
+	@Override
+	public synchronized BukkitTask runTaskTimer(Plugin plugin, long delay, long period)
+			throws IllegalArgumentException, IllegalStateException {
+		this.plugin = plugin;
+		return super.runTaskTimer(plugin, delay, period);
+	}
+
+	@Override
+	public synchronized BukkitTask runTaskTimerAsynchronously(Plugin plugin, long delay, long period)
+			throws IllegalArgumentException, IllegalStateException {
+		this.plugin = plugin;
+		return super.runTaskTimerAsynchronously(plugin, delay, period);
 	}
 
 }

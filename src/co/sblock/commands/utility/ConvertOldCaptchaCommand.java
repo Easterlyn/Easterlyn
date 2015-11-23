@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
@@ -18,8 +19,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class ConvertOldCaptchaCommand extends SblockCommand {
 
-	public ConvertOldCaptchaCommand() {
-		super("convert");
+	public ConvertOldCaptchaCommand(Sblock plugin) {
+		super(plugin, "convert");
 		this.setDescription("Converts captchacards from paper to plastic.");
 		this.setUsage("Run /convert with old captchacards in your inventory.");
 	}
@@ -31,7 +32,7 @@ public class ConvertOldCaptchaCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		int conversions = Captcha.convert(player);
+		int conversions = ((Sblock) getPlugin()).getModule(Captcha.class).convert(player);
 		if (conversions > 0) {
 			player.sendMessage(Color.GOOD + "Converted " + conversions + " captchas.");
 		} else {

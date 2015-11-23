@@ -22,8 +22,8 @@ import co.sblock.users.Users;
  */
 public class UltraBanCommand extends SblockCommand {
 
-	public UltraBanCommand() {
-		super("ultraban");
+	public UltraBanCommand(Sblock plugin) {
+		super(plugin, "ultraban");
 		this.setDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.");
 		this.setUsage("/ultraban <target>");
 		this.setPermissionLevel("horrorterror");
@@ -38,15 +38,15 @@ public class UltraBanCommand extends SblockCommand {
 
 		Player p = Bukkit.getPlayer(args[0]);
 		if (p != null) {
-			OfflineUser victim = Users.getGuaranteedUser(p.getUniqueId());
+			OfflineUser victim = Users.getGuaranteedUser((Sblock) getPlugin(), p.getUniqueId());
 			File file;
 			try {
-				file = new File(Sblock.getInstance().getUserDataFolder(), victim.getUUID().toString() + ".yml");
+				file = new File(((Sblock) getPlugin()).getUserDataFolder(), victim.getUUID().toString() + ".yml");
 				if (file.exists()) {
 					file.delete();
 				}
 			} catch (IOException e) {
-				Users.getInstance().getLogger().warning("Unable to delete data for " + victim.getUUID());
+				((Sblock) getPlugin()).getModule(Users.class).getLogger().warning("Unable to delete data for " + victim.getUUID());
 			}
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + p.getUniqueId());
 		}

@@ -6,11 +6,12 @@ import java.util.Iterator;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 import com.nitnelave.CreeperHeal.config.CreeperConfig;
 
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 
 /**
@@ -18,7 +19,14 @@ import co.sblock.machines.Machines;
  * 
  * @author Jikoo
  */
-public class ExplodeListener implements Listener {
+public class ExplodeListener extends SblockListener {
+
+	private final Machines machines;
+
+	public ExplodeListener(Sblock plugin) {
+		super(plugin);
+		this.machines = plugin.getModule(Machines.class);
+	}
 
 	/**
 	 * EventHandler for EntityExplodeEvents.
@@ -33,12 +41,12 @@ public class ExplodeListener implements Listener {
 
 			ArrayList<Block> affected = new ArrayList<>();
 			for (Block block : event.blockList()) {
-				if (Machines.getInstance().getMachineByBlock(block) != null) {
+				if (machines.getMachineByBlock(block) != null) {
 					affected.add(block);
 				}
 			}
 
-			Machines.getInstance().addExplodedBlock(affected);
+			machines.addExplodedBlock(affected);
 			return;
 		}
 
@@ -46,7 +54,7 @@ public class ExplodeListener implements Listener {
 		Iterator<Block> iterator = event.blockList().iterator();
 		while (iterator.hasNext()) {
 			Block block = iterator.next();
-			if (Machines.getInstance().getMachineByBlock(block) != null) {
+			if (machines.getMachineByBlock(block) != null) {
 				iterator.remove();
 			}
 		}

@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import co.sblock.machines.Machines;
+
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -17,7 +19,8 @@ public class PesterChum extends Program {
 
 	private final ItemStack icon;
 
-	protected PesterChum() {
+	public PesterChum(Machines machines) {
+		super(machines);
 		icon = new ItemStack(Material.RAW_FISH, 1, (short) 3);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.YELLOW + "PesterChum");

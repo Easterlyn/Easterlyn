@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -20,8 +21,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class StatisticCommand extends SblockCommand {
 
-	public StatisticCommand() {
-		super("stat");
+	public StatisticCommand(Sblock plugin) {
+		super(plugin, "stat");
 		this.setDescription("Statistically, you can use this command.");
 		this.setUsage("/stat <target> <stat> [integer]");
 		this.setPermissionLevel("denizen");

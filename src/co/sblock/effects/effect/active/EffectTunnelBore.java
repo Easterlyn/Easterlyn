@@ -32,8 +32,8 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 
 	private final BlockFace[] faces;
 	private final BlockFace[] levels;
-	public EffectTunnelBore() {
-		super(2500, 1, 1, "Tunnel Bore");
+	public EffectTunnelBore(Sblock plugin) {
+		super(plugin, 2500, 1, 1, "Tunnel Bore");
 		faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
 				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST,
 				BlockFace.SOUTH_WEST, BlockFace.SOUTH_EAST };
@@ -61,7 +61,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 
 		Block block = breakEvent.getBlock();
 
-		PermissionAttachment attachment = player.addAttachment(Sblock.getInstance());
+		PermissionAttachment attachment = player.addAttachment(getPlugin());
 		attachment.setPermission("nocheatplus.checks.blockbreak", true);
 		for (BlockFace yLevel : levels) {
 			if (block.getY() == 0 && yLevel == BlockFace.DOWN) {
@@ -101,7 +101,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 			return false;
 		}
 		ItemStack hand = player.getItemInHand();
-		Collection<ItemStack> drops = BlockDrops.getDrops(player, hand, block);
+		Collection<ItemStack> drops = BlockDrops.getDrops(getPlugin(), player, hand, block);
 		int exp = BlockDrops.getExp(hand, block);
 		if (hand.getType().getMaxDurability() > 0 && (!hand.containsEnchantment(Enchantment.DURABILITY)
 				|| Math.random() < 1.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 2))) {

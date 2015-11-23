@@ -21,8 +21,8 @@ import co.sblock.users.UserClass;
  */
 public class NumberCrunchCommand extends SblockCommand {
 
-	public NumberCrunchCommand() {
-		super("numbercrunch");
+	public NumberCrunchCommand(Sblock plugin) {
+		super(plugin, "numbercrunch");
 		setPermissionLevel("horrorterror");
 		setPermissionMessage("Number crunching is very server-intensive. Ask an admin!");
 	}
@@ -42,9 +42,10 @@ public class NumberCrunchCommand extends SblockCommand {
 			}
 		}
 		try {
-			String[] files = Sblock.getInstance().getUserDataFolder().list();
+			File dataDir = ((Sblock) getPlugin()).getUserDataFolder();
+			String[] files = dataDir.list();
 			for (String fileName : files) {
-				YamlConfiguration player = YamlConfiguration.loadConfiguration(new File(Sblock.getInstance().getUserDataFolder(), fileName));
+				YamlConfiguration player = YamlConfiguration.loadConfiguration(new File(dataDir, fileName));
 				counts.get(player.getString("classpect.class", "Heir")).incrementAndGet();
 				counts.get(player.getString("classpect.aspect", "Breath")).incrementAndGet();
 				counts.get(player.getString("classpect.medium", "LOWAS")).incrementAndGet();

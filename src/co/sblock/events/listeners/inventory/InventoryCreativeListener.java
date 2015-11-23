@@ -2,10 +2,11 @@ package co.sblock.events.listeners.inventory;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.utilities.InventoryUtils;
 
 /**
@@ -14,7 +15,7 @@ import co.sblock.utilities.InventoryUtils;
  * 
  * @author Jikoo
  */
-public class InventoryCreativeListener implements Listener {
+public class InventoryCreativeListener extends SblockListener {
 
 	private final Material[] blacklist = new Material[] { Material.ACTIVATOR_RAIL,
 			Material.BARRIER, Material.BEDROCK, Material.COMMAND, Material.COMMAND_MINECART,
@@ -23,6 +24,10 @@ public class InventoryCreativeListener implements Listener {
 			Material.MINECART, Material.MOB_SPAWNER, Material.MONSTER_EGG, Material.MONSTER_EGGS,
 			Material.POWERED_MINECART, Material.POWERED_RAIL, Material.RAILS,
 			Material.STORAGE_MINECART, Material.TNT };
+
+	public InventoryCreativeListener(Sblock plugin) {
+		super(plugin);
+	}
 
 	/**
 	 * EventHandler for InventoryCreativeEvents. Triggered when a creative client spawns an item.

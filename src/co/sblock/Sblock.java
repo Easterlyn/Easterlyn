@@ -2,19 +2,24 @@ package co.sblock;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
+
+import org.apache.commons.lang3.Validate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -45,16 +50,21 @@ import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
+import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.Meteors;
+import co.sblock.micromodules.ParticleUtils;
 import co.sblock.micromodules.RawAnnouncer;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.micromodules.Spectators;
 import co.sblock.module.Dependencies;
 import co.sblock.module.Dependency;
 import co.sblock.module.Module;
+import co.sblock.progression.Entry;
+import co.sblock.progression.ServerMode;
 import co.sblock.users.Users;
+import co.sblock.utilities.Holograms;
 import co.sblock.utilities.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -67,23 +77,14 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Sblock extends JavaPlugin {
 
-	/* The Sblock instance. */
-	private static Sblock instance;
-
-	/* The List of Modules enabled. */
-	private List<Module> modules;
+	/* The Modules enabled. */
+	private Map<Class<?>, Module> modules;
 
 	/* A reference to Bukkit's internal CommandMap. */
 	private SimpleCommandMap cmdMap;
 
-	/**
-	 * Get the current instance of the Sblock plugin.
-	 * 
-	 * @return the Sblock instance
-	 */
-	public static Sblock getInstance() {
-		return instance;
-	}
+	/* A Random for use in all modules. */
+	private final Random random = new Random();
 
 	@Override
 	public void onEnable() {
@@ -92,42 +93,50 @@ public class Sblock extends JavaPlugin {
 			cmdMap = (SimpleCommandMap) getCommandMap.invoke(getServer());
 		} catch (IllegalArgumentException | IllegalAccessException | SecurityException
 				| NoSuchMethodException | InvocationTargetException e) {
-			getLog().severe("Could not fetch SimpleCommandMap from CraftServer, Sblock commands will fail to register.");
-			getLog().severe(RegexUtils.getTrace(e));
+			getLogger().severe("Could not fetch SimpleCommandMap from CraftServer, Sblock commands will fail to register.");
+			getLogger().severe(RegexUtils.getTrace(e));
 		}
-		instance = this;
 
 		createBasePermissions();
 
-		modules = new ArrayList<>();
-		modules.add(new Discord().enable());
-		modules.add(new Chat().enable());
-		modules.add(new Users().enable());
-		modules.add(new Captcha().enable());
-		modules.add(new FreeCart().enable());
-		modules.add(new Effects().enable());
-		modules.add(new Machines().enable());
-		modules.add(new Meteors().enable());
-		modules.add(new Spectators().enable());
-		modules.add(new SleepVote().enable());
-		modules.add(new Godule().enable());
-		modules.add(new Events().enable());
-		modules.add(new RawAnnouncer().enable());
+		modules = new LinkedHashMap<>();
+
+		addModule(new Cooldowns(this));
+		addModule(new Discord(this));
+		addModule(new Chat(this));
+		addModule(new RawAnnouncer(this));
+
+		addModule(new Users(this));
+
+		addModule(new ParticleUtils(this));
+		addModule(new FreeCart(this));
+
+		addModule(new Effects(this));
+		addModule(new Captcha(this));
+		addModule(new Entry(this));
+		addModule(new Holograms(this));
+		// Machines depends on Captcha, Effects, Entry, and Holograms to construct
+		addModule(new Machines(this));
+
+		addModule(new ServerMode(this));
+
+		addModule(new Meteors(this));
+		addModule(new SleepVote(this));
+		addModule(new Spectators(this));
+		addModule(new Godule(this));
+
+		addModule(new Events(this));
+
+		for (Module module : modules.values()) {
+			module.enable();
+		}
 
 		createRecipes();
 		registerAllCommands();
 	}
 
-	@Override
-	public void onDisable() {
-		unregisterAllCommands();
-		HandlerList.unregisterAll(this);
-		// Disable in reverse order - should better respect modules that require others to function
-		Collections.reverse(modules);
-		for (Module module : this.modules) {
-			module.disable();
-		}
-		instance = null;
+	private void addModule(Module module) {
+		modules.put(module.getClass(), module);
 	}
 
 	private void createBasePermissions() {
@@ -167,7 +176,7 @@ public class Sblock extends JavaPlugin {
 			// For some reason, the compiler just hates directly doing this.
 			cmdMapKnownCommands = map;
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			getLog().severe("Unable to modify SimpleCommandMap.knownCommands! No commands will be registered!");
+			getLogger().severe("Unable to modify SimpleCommandMap.knownCommands! No commands will be registered!");
 			e.printStackTrace();
 			return;
 		}
@@ -178,21 +187,22 @@ public class Sblock extends JavaPlugin {
 				continue;
 			}
 			if (!areDependenciesPresent(command)) {
-				getLog().warning(command.getSimpleName() + " is missing dependencies, skipping.");
+				getLogger().warning(command.getSimpleName() + " is missing dependencies, skipping.");
 				continue;
 			}
 			try {
-				SblockCommand cmd = command.newInstance();
+				Constructor<? extends SblockCommand> constructor = command.getConstructor(this.getClass());
+				SblockCommand cmd = constructor.newInstance(this);
 				if (cmdMapKnownCommands.containsKey(cmd.getName())) {
 					Command overwritten = cmdMapKnownCommands.remove(cmd.getName());
-					getLog().info("Overriding " + cmd.getName() + " by "
+					getLogger().info("Overriding " + cmd.getName() + " by "
 					+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
 					+ ". Aliases: " + overwritten.getAliases().toString());
 				}
 				for (String alias : cmd.getAliases()) {
 					if (cmdMapKnownCommands.containsKey(alias)) {
 						Command overwritten = cmdMapKnownCommands.remove(alias);
-						getLog().info("Overriding " + alias + " by "
+						getLogger().info("Overriding " + alias + " by "
 						+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
 						+ ". Aliases: " + overwritten.getAliases().toString());
 					}
@@ -201,27 +211,11 @@ public class Sblock extends JavaPlugin {
 				Permission permission = new Permission(cmd.getPermission());
 				permission.addParent(cmd.getPermissionLevel(), true).recalculatePermissibles();
 				permission.addParent("sblock.command.*", true).recalculatePermissibles();
-			} catch (InstantiationException | IllegalAccessException e) {
-				getLog().severe("Unable to register command " + command.getName());
-				getLog().severe(RegexUtils.getTrace(e));
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
+				getLogger().severe("Unable to register command " + command.getName());
+				getLogger().severe(RegexUtils.getTrace(e));
 			}
-		}
-	}
-
-	private void unregisterAllCommands() {
-		try {
-			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
-			field.setAccessible(true);
-			@SuppressWarnings("unchecked")
-			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
-			for (Iterator<Map.Entry<String, Command>> iterator = cmdMapKnownCommands.entrySet().iterator(); iterator.hasNext();) {
-				if (iterator.next().getValue() instanceof SblockCommand) {
-					iterator.remove();
-				}
-			}
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			getLog().severe("Unable to modify SimpleCommandMap.knownCommands! Commands cannot be unregistered!");
-			getLog().severe(RegexUtils.getTrace(e));
 		}
 	}
 
@@ -232,7 +226,7 @@ public class Sblock extends JavaPlugin {
 	 * {@link Module#onEnable()}.
 	 */
 	@SuppressWarnings("deprecation")
-	public void createRecipes() {
+	private void createRecipes() {
 		// BoonConomy: 1 emerald -> 9 lapis block
 		ShapelessRecipe toLapis = new ShapelessRecipe(new ItemStack(Material.LAPIS_BLOCK, 9));
 		toLapis.addIngredient(Material.EMERALD);
@@ -342,6 +336,44 @@ public class Sblock extends JavaPlugin {
 		getServer().addRecipe(furnace);
 	}
 
+	@Override
+	public void onDisable() {
+		unregisterAllCommands();
+		HandlerList.unregisterAll(this);
+		// Disable in reverse order - should better respect modules that require others to function
+		ArrayList<Module> moduleList = new ArrayList<>(modules.values());
+		ListIterator<Module> iterator = moduleList.listIterator(moduleList.size());
+		while (iterator.hasPrevious()) {
+			iterator.previous().disable();
+		}
+	}
+
+	private void unregisterAllCommands() {
+		try {
+			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
+			field.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
+			for (Iterator<Map.Entry<String, Command>> iterator = cmdMapKnownCommands.entrySet().iterator(); iterator.hasNext();) {
+				if (iterator.next().getValue() instanceof SblockCommand) {
+					iterator.remove();
+				}
+			}
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			getLogger().severe("Unable to modify SimpleCommandMap.knownCommands! Commands cannot be unregistered!");
+			getLogger().severe(RegexUtils.getTrace(e));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getModule(Class<T> clazz) {
+		Validate.isTrue(Module.class.isAssignableFrom(clazz), "That's not a Module. Are you even trying?");
+		Validate.isTrue(modules.containsKey(clazz), "Module not enabled!");
+		Object object = modules.get(clazz);
+		Validate.isTrue(clazz.isAssignableFrom(object.getClass()));
+		return (T) object;
+	}
+
 	/**
 	 * Gets the CommandMap containing all registered commands.
 	 */
@@ -389,8 +421,8 @@ public class Sblock extends JavaPlugin {
 		return new GameProfile(uuid, name);
 	}
 
-	public static Logger getLog() {
-		return instance.getLogger();
+	public Random getRandom() {
+		return random;
 	}
 
 	public static <T> boolean areDependenciesPresent(Class<T> clazz) {
@@ -398,7 +430,7 @@ public class Sblock extends JavaPlugin {
 			for (Dependency dependency : clazz.getAnnotation(Dependencies.class).value()) {
 				String pluginName = dependency.value();
 				if (!Bukkit.getPluginManager().isPluginEnabled(pluginName)) {
-					getLog().severe("Dependency " + pluginName + " is not enabled!");
+					Logger.getLogger("Sblock").severe("Dependency " + pluginName + " is not enabled!");
 					return false;
 				}
 			}

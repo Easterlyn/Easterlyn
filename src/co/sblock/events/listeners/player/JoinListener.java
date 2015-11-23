@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -14,6 +13,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import co.sblock.Sblock;
 import co.sblock.discord.Discord;
 import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.packets.WrapperPlayServerPlayerListHeaderFooter;
 import co.sblock.micromodules.Godule;
 import co.sblock.users.OnlineUser;
@@ -27,11 +27,16 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class JoinListener implements Listener {
+public class JoinListener extends SblockListener {
 
+	private final Discord discord;
+	private final Events events;
 	private final WrapperPlayServerPlayerListHeaderFooter list;
 
-	public JoinListener() {
+	public JoinListener(Sblock plugin) {
+		super(plugin);
+		this.discord = plugin.getModule(Discord.class);
+		this.events = plugin.getModule(Events.class);
 		list = new WrapperPlayServerPlayerListHeaderFooter();
 		list.setHeader(WrappedChatComponent.fromText(ChatColor.DARK_AQUA + "Welcome to " + ChatColor.GOLD + "Sblock Alpha"));
 		list.setFooter(WrappedChatComponent.fromText(ChatColor.YELLOW + "Enjoy your stay!"));
@@ -46,11 +51,11 @@ public class JoinListener implements Listener {
 	public void onPlayerJoin(final PlayerJoinEvent event) {
 		event.setJoinMessage(null);
 		// CHAT: check message beforehand and don't announce channels if muted
-		Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
 
-		Events.getInstance().addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
+		events.addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
 
-		Discord.getInstance().postMessage(event.getPlayer().getName(),
+		discord.postMessage(event.getPlayer().getName(),
 				event.getPlayer().getName() + " logs in.", true);
 
 		final UUID uuid = event.getPlayer().getUniqueId();
@@ -63,7 +68,7 @@ public class JoinListener implements Listener {
 					return;
 				}
 				Users.team(player);
-				OnlineUser user = Users.getGuaranteedUser(player.getUniqueId()).getOnlineUser();
+				OnlineUser user = Users.getGuaranteedUser(getPlugin(), player.getUniqueId()).getOnlineUser();
 				user.handleLoginChannelJoins();
 				user.handleNameChange();
 				Region region = user.getCurrentRegion();
@@ -71,7 +76,7 @@ public class JoinListener implements Listener {
 				// On login, conditions for setting rpack are not met, must be done here
 				player.setResourcePack(region.getResourcePackURL());
 				user.updateFlight();
-				Events.getInstance().getInvisibilityManager().updateVisibility(player);
+				events.getInvisibilityManager().updateVisibility(player);
 				for (String command : user.getLoginCommands()) {
 					player.chat(command);
 				}
@@ -82,6 +87,6 @@ public class JoinListener implements Listener {
 					Godule.getInstance().enable(user.getUserAspect());
 				}
 			}
-		}.runTaskLater(Sblock.getInstance(), 2L);
+		}.runTaskLater(getPlugin(), 2L);
 	}
 }

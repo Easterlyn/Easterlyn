@@ -22,6 +22,7 @@ import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.Message;
@@ -52,20 +53,21 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class Discord extends Module {
 
-	private static Discord instance;
-
 	private DiscordAPI discord;
 	private ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private HashBiMap<UUID, String> authentications;
 	private BaseComponent[] hover;
 	private Pattern mention;
+	private ChannelManager manager;
+
+	public Discord(Sblock plugin) {
+		super(plugin);
+	}
 
 	@Override
 	protected void onEnable() {
-		instance = this;
-		Sblock sblock = Sblock.getInstance();
-		String login = sblock.getConfig().getString("discord.login");
-		String password = sblock.getConfig().getString("discord.password");
+		String login = getPlugin().getConfig().getString("discord.login");
+		String password = getPlugin().getConfig().getString("discord.password");
 
 		if (login == null || password == null) {
 			getLogger().severe("Unable to connect to Discord, no username or password!");
@@ -84,6 +86,8 @@ public class Discord extends Module {
 			disable();
 			return;
 		}
+
+		manager = getPlugin().getModule(Chat.class).getChannelManager();;
 
 		authentications = HashBiMap.create();
 		hover = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
@@ -114,25 +118,25 @@ public class Discord extends Module {
 				discord.getSelfInfo().setUsername(triple.getMiddle());
 				group.sendMessage(triple.getRight());
 			}
-		}.runTaskTimerAsynchronously(Sblock.getInstance(), 20L, 20L);
+		}.runTaskTimerAsynchronously(getPlugin(), 20L, 20L);
 	}
 
 	public void logMessage(String message) {
-		postMessage("Sbot", message, Sblock.getInstance().getConfig().getString("discord.chat.log"));
+		postMessage("Sbot", message, getPlugin().getConfig().getString("discord.chat.log"));
 	}
 
 	public void postMessage(Message message, boolean global) {
-		FileConfiguration config = Sblock.getInstance().getConfig();
+		FileConfiguration config = getPlugin().getConfig();
 		if (global) {
 			postMessage(message.getSenderName(), message.getDiscordMessage(),
 					config.getString("discord.chat.main"));
 		}
-		postMessage(message.getSenderName(), message.getConsoleFormat(),
+		postMessage(message.getSenderName(), message.getConsoleMessage(),
 				config.getString("discord.chat.log"));
 	}
 
 	public void postMessage(String name, String message, boolean global) {
-		FileConfiguration config = Sblock.getInstance().getConfig();
+		FileConfiguration config = getPlugin().getConfig();
 		if (global) {
 			postMessage(name, message, config.getString("discord.chat.main"),
 					config.getString("discord.chat.log"));
@@ -153,7 +157,7 @@ public class Discord extends Module {
 	}
 
 	public void postReport(String name, String message) {
-		postMessage(name, message, Sblock.getInstance().getConfig().getString("discord.chat.reports"));
+		postMessage(name, message, getPlugin().getConfig().getString("discord.chat.reports"));
 	}
 
 	public HashBiMap<UUID, String> getAuthCodes() {
@@ -166,16 +170,15 @@ public class Discord extends Module {
 			discord.stop();
 			discord = null;
 		}
-		instance = null;
 	}
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Discord";
 	}
 
 	protected DiscordPlayer getPlayerFor(GroupUser user) {
-		String uuidString = Sblock.getInstance().getConfig().getString("discord.users." + user.getUser().getId());
+		String uuidString = getPlugin().getConfig().getString("discord.users." + user.getUser().getId());
 		if (uuidString == null) {
 			return null;
 		}
@@ -185,7 +188,7 @@ public class Discord extends Module {
 			return (DiscordPlayer) player;
 		}
 		// PlayerLoader loads a PermissiblePlayer, wrapping a wrapper would be silly.
-		DiscordPlayer dplayer = new DiscordPlayer(user, player.getPlayer());
+		DiscordPlayer dplayer = new DiscordPlayer(this, user, player.getPlayer());
 		PlayerLoader.modifyCachedPlayer(dplayer);
 		return dplayer;
 	}
@@ -195,7 +198,7 @@ public class Discord extends Module {
 			postMessage("Sbot", "You alread have a pending command. Please be patient.", group.getId());
 			return;
 		}
-		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(Sblock.getInstance(),
+		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getPlugin(),
 				new Callable<Boolean>() {
 					@Override
 					public Boolean call() throws Exception {
@@ -233,18 +236,19 @@ public class Discord extends Module {
 				}
 				postMessage("Sbot", message, group.getId());
 			}
-		}.runTaskAsynchronously(Sblock.getInstance());
+		}.runTaskAsynchronously(getPlugin());
 	}
 
 	protected void postMessageFor(UserChatEvent event, Player player) {
-		Channel channel = ChannelManager.getChannelManager().getChannel("#discord");
-		Message message = new MessageBuilder().setChannel(channel)
-				.setSender(Users.getGuaranteedUser(player.getUniqueId()))
+		Channel channel = manager.getChannel("#discord");
+		// future re-use MessageBuilder
+		Message message = new MessageBuilder(getPlugin()).setChannel(channel)
+				.setSender(Users.getGuaranteedUser(getPlugin(), player.getUniqueId()))
 				.setMessage(sanitize(event.getMsg())).setChannel(channel).setNameHover(hover)
 				.setNameClick("@# ").setChannelClick("@# ").toMessage();
 		// TODO MessageBuilder method overloading: add different click events (open Discord link on name click)
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
-		players.removeIf(p -> Users.getGuaranteedUser(p.getUniqueId()).getSuppression());
+		players.removeIf(p -> Users.getGuaranteedUser(getPlugin(), p.getUniqueId()).getSuppression());
 		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, message));
 	}
 
@@ -284,10 +288,6 @@ public class Discord extends Module {
 		default:
 			return Color.RANK_HERO;
 		}
-	}
-
-	public static Discord getInstance() {
-		return instance;
 	}
 
 }

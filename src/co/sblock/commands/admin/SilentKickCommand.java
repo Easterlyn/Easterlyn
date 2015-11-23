@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -17,8 +18,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class SilentKickCommand extends SblockCommand {
 
-	public SilentKickCommand() {
-		super("silentkick");
+	public SilentKickCommand(Sblock plugin) {
+		super(plugin, "silentkick");
 		this.setDescription("Kicks a player without an announcement.");
 		this.setUsage("/silentkick <player> [reason]");
 		this.setPermissionLevel("denizen");

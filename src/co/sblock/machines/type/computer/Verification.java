@@ -9,6 +9,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.utilities.InventoryUtils;
 
@@ -25,7 +26,8 @@ public class Verification extends Program {
 	private final String lore = ChatColor.WHITE + "sudo %s";
 	private final ItemStack icon;
 
-	protected Verification() {
+	public Verification(Machines machines) {
+		super(machines);
 		icon = new ItemStack(Material.EMERALD_BLOCK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "Confirm");

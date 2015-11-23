@@ -30,10 +30,13 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class PowerManager extends Program {
 
+	private final Effects effects;
 	private final ItemStack icon;
 	private final ItemStack installer; // GODTIER: remove this post-testing
 
-	protected PowerManager() {
+	public PowerManager(Machines machines) {
+		super(machines);
+		this.effects = machines.getPlugin().getModule(Effects.class);
 		icon = new ItemStack(Material.FIREWORK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "PowerManager");
@@ -58,15 +61,15 @@ public class PowerManager extends Program {
 			player.openInventory(top);
 		}
 		top.clear();
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getMachines().getPlugin(), player.getUniqueId());
 		int active = 0, passive = 0;
 		List<String> enabledEffects = user.getGodtierEffects();
 		GodtierToggle toggle = (GodtierToggle) Programs.getProgramByName("GodtierToggle");
-		for (Effect effect : Effects.getInstance().getGodtierEffects(user.getUserAspect())) {
+		for (Effect effect : effects.getGodtierEffects(user.getUserAspect())) {
 			int slot;
 			if (effect instanceof BehaviorPassive || effect instanceof BehaviorReactive) {
 				if (passive > 8) {
-					Machines.getInstance().getLogger().warning("Over 9 passives detected for "
+					getMachines().getLogger().warning("Over 9 passives detected for "
 							+ user.getUserAspect().getDisplayName() + ". GUI expansion is required.");
 					continue;
 				}
@@ -74,7 +77,7 @@ public class PowerManager extends Program {
 				passive++;
 			} else {
 				if (active > 8) {
-					Machines.getInstance().getLogger().warning("Over 9 actives detected for "
+					getMachines().getLogger().warning("Over 9 actives detected for "
 							+ user.getUserAspect().getDisplayName() + ". GUI expansion is required.");
 					continue;
 				}

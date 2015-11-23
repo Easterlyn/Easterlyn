@@ -10,7 +10,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import co.sblock.Sblock;
 import co.sblock.events.packets.ParticleEffectWrapper;
-import co.sblock.events.packets.ParticleUtils;
 
 /**
  * Small class for creating and managing an explosive hollow sphere.
@@ -19,6 +18,8 @@ import co.sblock.events.packets.ParticleUtils;
  */
 public class Meteorite {
 
+	/* The Plugin dropping the Meteorite. */
+	private final Sblock plugin;
 	/* The radius to drop the Meteorite within. */
 	private final int radius;
 	/* The Location in the sky where the Meteorite will be spawned. */
@@ -42,8 +43,8 @@ public class Meteorite {
 	 * @param radius the radius to drop the Meteorite within
 	 * @param explode true if the Meteorite should explode on contact with the ground
 	 */
-	public Meteorite(Location target, String materialName, int radius, boolean explode, int bore) {
-		this(target, (Material) null, radius, explode, bore);
+	public Meteorite(Sblock plugin, Location target, String materialName, int radius, boolean explode, int bore) {
+		this(plugin, target, (Material) null, radius, explode, bore);
 		if (materialName != null && materialName.length() != 0) {
 			this.material = Material.matchMaterial(materialName);
 		}
@@ -60,7 +61,8 @@ public class Meteorite {
 	 * @param radius the radius to drop the Meteorite within
 	 * @param explode true if the Meteorite should explode on contact with the ground
 	 */
-	public Meteorite(Location target, Material material, int radius, boolean explode, int bore) {
+	public Meteorite(Sblock plugin, Location target, Material material, int radius, boolean explode, int bore) {
+		this.plugin = plugin;
 		if (material == null) {
 			material = Material.NETHERRACK;
 		}
@@ -85,7 +87,7 @@ public class Meteorite {
 	 */
 	public void dropMeteorite() {
 		// Meteorite cannot be dropped, tasks cannot be scheduled.
-		if (!Sblock.getInstance().isEnabled()) {
+		if (!plugin.isEnabled()) {
 			this.removeMeteorite();
 			return;
 		}
@@ -103,20 +105,20 @@ public class Meteorite {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						ParticleUtils pu = ParticleUtils.getInstance();
+						ParticleUtils particles = plugin.getModule(ParticleUtils.class);
 						for (Location location : sphereCoords) {
 							if (location.getBlock().getType() == material) {
 								location.getBlock().setType(Material.AIR);
 							}
-							pu.addEntity(new MeteoriteComponent(location, material, explodeBlocks, bore).getBukkitEntity(),
+							particles.addEntity(new MeteoriteComponent(location, material, explodeBlocks, bore).getBukkitEntity(),
 									new ParticleEffectWrapper(Effect.LAVA_POP, 1));
 						}
 						Meteors.getInstance().getLogger().info(
 								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());
 					}
-				}.runTask(Sblock.getInstance());
+				}.runTask(plugin);
 			}
-		}.runTaskAsynchronously(Sblock.getInstance());
+		}.runTaskAsynchronously(plugin);
 	}
 
 	/**
@@ -152,7 +154,7 @@ public class Meteorite {
 							}
 						}
 					}
-				}.runTask(Sblock.getInstance());
+				}.runTask(plugin);
 
 				// Schedule the meteorite to drop later
 				dropTask = new BukkitRunnable() {
@@ -160,9 +162,9 @@ public class Meteorite {
 					public void run() {
 						dropMeteorite();
 					}
-				}.runTaskLater(Sblock.getInstance(), hoverTicks);
+				}.runTaskLater(plugin, hoverTicks);
 			}
-		}.runTaskAsynchronously(Sblock.getInstance());
+		}.runTaskAsynchronously(plugin);
 	}
 
 	/**

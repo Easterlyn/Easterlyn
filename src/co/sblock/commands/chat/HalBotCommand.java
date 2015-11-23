@@ -11,7 +11,7 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.chat.ChannelManager;
+import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.channel.Channel;
 import co.sblock.commands.SblockCommand;
@@ -24,11 +24,14 @@ import co.sblock.users.Users;
  */
 public class HalBotCommand extends SblockCommand {
 
-	public HalBotCommand() {
-		super("halbot");
+	private final Chat chat;
+
+	public HalBotCommand(Sblock plugin) {
+		super(plugin, "halbot");
 		this.setDescription("Trigger a Lil Hal response.");
 		this.setUsage("/halbot [channel] <seed mesage>");
 		this.setPermissionLevel("felt");
+		this.chat = plugin.getModule(Chat.class);
 	}
 
 	@Override
@@ -37,24 +40,24 @@ public class HalBotCommand extends SblockCommand {
 			return false;
 		}
 		boolean specifiedTarget = false;
-		Channel target = ChannelManager.getChannelManager().getChannel(args[0]);
+		Channel target = chat.getChannelManager().getChannel(args[0]);
 		if (target != null) {
 			specifiedTarget = true;
 		} else {
 			if (sender instanceof Player) {
-				target = Users.getGuaranteedUser(((Player) sender).getUniqueId()).getCurrentChannel();
+				target = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId()).getCurrentChannel();
 				if (target == null) {
 					return true;
 				}
 			} else {
-				target = ChannelManager.getChannelManager().getChannel("#");
+				target = chat.getChannelManager().getChannel("#");
 			}
 			return true;
 		}
 		if (args.length == 1 && specifiedTarget) {
 			return false;
 		}
-		Chat.getChat().getHal().triggerResponse(target,
+		chat.getHal().triggerResponse(target,
 				StringUtils.join(args, ' ', specifiedTarget ? 1 : 0, args.length));
 		return true;
 	}
@@ -69,7 +72,7 @@ public class HalBotCommand extends SblockCommand {
 			return super.tabComplete(sender, alias, args);
 		} else {
 			ArrayList<String> matches = new ArrayList<>();
-			for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
+			for (String channel : chat.getChannelManager().getChannelList().keySet()) {
 				if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
 					matches.add(channel);
 				}

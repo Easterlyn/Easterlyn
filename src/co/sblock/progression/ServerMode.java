@@ -11,8 +11,10 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
+import co.sblock.module.Module;
 import co.sblock.users.OfflineUser;
 
 /**
@@ -20,18 +22,27 @@ import co.sblock.users.OfflineUser;
  * 
  * @author Jikoo
  */
-public class ServerMode {
+public class ServerMode extends Module {
 
-	private static ServerMode instance;
+	private final Map<Material, Integer> approved;
 
-	private Map<Material, Integer> approved;
+	private Machines machines;
 
-	public ServerMode() {
-		createApprovedSet();
+	public ServerMode(Sblock plugin) {
+		super(plugin);
+		this.approved = new HashMap<Material, Integer>();
+		this.fillApprovedSet();
 	}
 
-	private void createApprovedSet() {
-		approved = new HashMap<Material, Integer>();
+	@Override
+	protected void onEnable() {
+		this.machines = getPlugin().getModule(Machines.class);
+	}
+
+	@Override
+	protected void onDisable() { }
+
+	private void fillApprovedSet() {
 		approved.put(Material.STONE, 6);
 		approved.put(Material.GRASS, 0);
 		approved.put(Material.DIRT, 1);
@@ -87,14 +98,12 @@ public class ServerMode {
 	}
 
 	public boolean isWithinRange(OfflineUser server, Block broken) {
-		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getComputer(server.getClient());
+		Pair<Machine, ConfigurationSection> pair = machines.getComputer(server.getClient());
 		return pair != null && pair.getLeft().getKey(pair.getRight()).distanceSquared(broken.getLocation()) <= 625;
 	}
 
-	public static ServerMode getInstance() {
-		if (instance == null) {
-			instance = new ServerMode();
-		}
-		return instance;
+	@Override
+	public String getName() {
+		return "ServerMode";
 	}
 }

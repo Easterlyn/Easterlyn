@@ -3,6 +3,7 @@ package co.sblock.commands.chat;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -13,8 +14,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class LordEnglishCommand extends SblockCommand {
 
-	public LordEnglishCommand() {
-		super("le");
+	public LordEnglishCommand(Sblock plugin) {
+		super(plugin, "le");
 		this.setDescription("&4He's already here!");
 		this.setUsage("/le <text>");
 		this.setPermissionLevel("horrorterror");

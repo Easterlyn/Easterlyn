@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.chat.message.Message;
 
 /**
@@ -11,8 +12,18 @@ import co.sblock.chat.message.Message;
  * 
  * @author Jikoo
  */
-public interface HalMessageHandler {
+public abstract class HalMessageHandler {
 
-	public boolean handleMessage(Message message, Collection<Player> recipients);
+	private final Sblock plugin;
+
+	public HalMessageHandler(Sblock plugin) {
+		this.plugin = plugin;
+	}
+
+	public Sblock getPlugin() {
+		return plugin;
+	}
+
+	public abstract boolean handleMessage(Message message, Collection<Player> recipients);
 
 }

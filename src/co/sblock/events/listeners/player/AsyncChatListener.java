@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -28,9 +27,10 @@ import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.discord.Discord;
 import co.sblock.events.event.SblockAsyncChatEvent;
+import co.sblock.events.listeners.SblockListener;
+import co.sblock.micromodules.Cooldowns;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.Cooldowns;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
 import co.sblock.utilities.WrappedSenderPlayer;
@@ -46,8 +46,10 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class AsyncChatListener implements Listener {
+public class AsyncChatListener extends SblockListener {
 
+	private final Cooldowns cooldowns;
+	private final Discord discord;
 	private final List<HalMessageHandler> halFunctions;
 	private final String[] tests = new String[] {"It is certain.", "It is decidedly so.",
 			"Without a doubt.", "Yes, definitely.", "You may rely on it.", "As I see, yes.",
@@ -61,7 +63,10 @@ public class AsyncChatListener implements Listener {
 	private final Pattern claimPattern, trappedPattern, yoooooooooooooooooooooooooooooooooooooooo;
 	private final List<Pattern> doNotSayThat;
 
-	public AsyncChatListener() {
+	public AsyncChatListener(Sblock plugin) {
+		super(plugin);
+		this.cooldowns = plugin.getModule(Cooldowns.class);
+		this.discord = plugin.getModule(Discord.class);
 		Permission permission;
 		try {
 			permission = new Permission("sblock.spam.chat", PermissionDefault.OP);
@@ -74,10 +79,11 @@ public class AsyncChatListener implements Listener {
 		permission.addParent("sblock.felt", true).recalculatePermissibles();
 
 		halFunctions = new ArrayList<>();
-		halFunctions.add(Chat.getChat().getHalculator());
+		Chat chat = plugin.getModule(Chat.class);
+		halFunctions.add(chat.getHalculator());
 		// Hal AI function should be last as it (by design) handles any message passed to it.
 		// Insert any additional functions above.
-		halFunctions.add(Chat.getChat().getHal());
+		halFunctions.add(chat.getHal());
 
 		// If, say, the Hal AI fails to load, don't NPE whenever anyone talks.
 		Iterator<HalMessageHandler> iterator = halFunctions.iterator();
@@ -123,7 +129,8 @@ public class AsyncChatListener implements Listener {
 			checkSpam = sblockEvent.checkSpam();
 		} else {
 			try {
-				MessageBuilder mb = new MessageBuilder().setSender(Users.getGuaranteedUser(event.getPlayer().getUniqueId()))
+				MessageBuilder mb = new MessageBuilder(getPlugin())
+						.setSender(Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId()))
 						.setMessage(event.getMessage());
 				// Ensure message can be sent
 				if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
@@ -194,7 +201,7 @@ public class AsyncChatListener implements Listener {
 						+ "You were asked not to spam. This mute will last 5 minutes.");
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 						String.format("mute %s 5m", player.getName()));
-				Discord.getInstance().postReport(player.getName(),
+				discord.postReport(player.getName(),
 						"Automatically muted for spamming, violation level " + sender.getChatViolationLevel());
 				event.setCancelled(true);
 				return;
@@ -231,7 +238,7 @@ public class AsyncChatListener implements Listener {
 		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
 
 		// Post messages to Discord
-		Discord.getInstance().postMessage(message, publishGlobally);
+		discord.postMessage(message, publishGlobally);
 
 		// Dummy player should not trigger Hal; he may become one.
 		if (player instanceof WrappedSenderPlayer) {
@@ -370,8 +377,8 @@ public class AsyncChatListener implements Listener {
 		msg = msg.toLowerCase();
 		String lastMsg = sender.getLastChat();
 		sender.setLastChat(msg);
-		long lastChat = Cooldowns.getInstance().getRemainder(player, "chat");
-		Cooldowns.getInstance().addCooldown(player, "chat", 3000);
+		long lastChat = cooldowns.getRemainder(player, "chat");
+		cooldowns.addCooldown(player, "chat", 3000);
 
 		for (Pattern pattern : doNotSayThat) {
 			if (pattern.matcher(msg).find()) {
@@ -450,7 +457,7 @@ public class AsyncChatListener implements Listener {
 					player.spigot().sendMessage(JSONUtil.fromLegacyText(message));
 				}
 			}
-		}.runTaskLater(Sblock.getInstance(), 5L);
+		}.runTaskLater(getPlugin(), 5L);
 	}
 
 	private void unregisterChatListeners() {

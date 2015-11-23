@@ -10,6 +10,7 @@ import org.bukkit.permissions.Permission;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -20,8 +21,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class PermissionInformationCommand extends SblockCommand {
 
-	public PermissionInformationCommand() {
-		super("perminfo");
+	public PermissionInformationCommand(Sblock plugin) {
+		super(plugin, "perminfo");
 		this.setDescription("Prints out information about the specified permission.");
 		this.setUsage("/perminfo <permission> [player]");
 		this.setPermissionLevel("felt");

@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import co.sblock.Sblock;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -21,12 +20,17 @@ import co.sblock.chat.channel.RegionChannel;
 
 public class ChannelManager {
 
+	private final Chat chat;
 	private final ConcurrentHashMap<String, Channel> channelList = new ConcurrentHashMap<>();
 
-	public void loadAllChannels() {
+	protected ChannelManager(Chat chat) {
+		this.chat = chat;
+	}
+
+	protected void loadAllChannels() {
 		final File file;
 		try {
-			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
+			file = new File(chat.getPlugin().getDataFolder(), "ChatChannels.yml");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -36,7 +40,7 @@ public class ChannelManager {
 		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		final ArrayList<String> drop = new ArrayList<>();
 		for (String channelName : yaml.getKeys(false)) {
-			final Channel channel = ChannelManager.getChannelManager().loadChannel(channelName,
+			final Channel channel = chat.getChannelManager().loadChannel(channelName,
 					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
 					UUID.fromString(yaml.getString(channelName + ".owner")),
 					ChannelType.valueOf(yaml.getString(channelName + ".type")),
@@ -58,16 +62,16 @@ public class ChannelManager {
 			try {
 				yaml.save(file);
 			} catch (IOException e) {
-				Chat.getChat().getLogger().warning("Unable to save when dropping old channels!");
+				chat.getLogger().warning("Unable to save when dropping old channels!");
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void saveAllChannels() {
+	protected void saveAllChannels() {
 		final File file;
 		try {
-			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
+			file = new File(chat.getPlugin().getDataFolder(), "ChatChannels.yml");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -103,14 +107,14 @@ public class ChannelManager {
 		}
 	}
 
-	public void saveChannel(Channel channel) {
+	protected void saveChannel(Channel channel) {
 		if (!(channel instanceof NormalChannel)) {
 			return;
 		}
 		NormalChannel normal = (NormalChannel) channel;
 		final File file;
 		try {
-			file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
+			file = new File(chat.getPlugin().getDataFolder(), "ChatChannels.yml");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -141,57 +145,57 @@ public class ChannelManager {
 
 	public void createNewChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
 		this.loadChannel(name, access, creator, channelType, System.currentTimeMillis());
-		Chat.getChat().getLogger().info("Channel " + name + " created: " + access + " " + creator);
+		chat.getLogger().info("Channel " + name + " created: " + access + " " + creator);
 	}
 
 	private NormalChannel loadChannel(String name, AccessLevel access, UUID creator, ChannelType channelType, long lastAccessed) {
 		NormalChannel channel;
 		switch (channelType) {
 		case NICK:
-			channel = new NickChannel(name, access, creator, lastAccessed);
+			channel = new NickChannel(chat.getPlugin(), name, access, creator, lastAccessed);
 			break;
 		case RP:
-			channel = new RPChannel(name, access, creator, lastAccessed);
+			channel = new RPChannel(chat.getPlugin(), name, access, creator, lastAccessed);
 			break;
 		case NORMAL:
 		default:
-			channel = new NormalChannel(name, access, creator, lastAccessed);
+			channel = new NormalChannel(chat.getPlugin(), name, access, creator, lastAccessed);
 			break;
 		}
 		this.channelList.put(name, channel);
 		return channel;
 	}
 
-	public void createDefaultSet() {
-		channelList.put("#", new RegionChannel("#"));
-		channelList.put("#rp", new RPChannel("#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#fanrp", new NickChannel("#fanrp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#EARTH", new RegionChannel("#EARTH"));
-		channelList.put("#DERSPIT", new RegionChannel("#DERSPIT"));
-		channelList.put("#INNERCIRCLE", new RegionChannel("#INNERCIRCLE"));
-		channelList.put("#OUTERCIRCLE", new RegionChannel("#OUTERCIRCLE"));
-		channelList.put("#FURTHESTRING", new RegionChannel("#FURTHESTRING"));
-		channelList.put("#LOWAS", new RegionChannel("#LOWAS"));
-		channelList.put("#LOLAR", new RegionChannel("#LOLAR"));
-		channelList.put("#LOHAC", new RegionChannel("#LOHAC"));
-		channelList.put("#LOFAF", new RegionChannel("#LOFAF"));
-		channelList.put("#Aether", new RegionChannel("#Aether"));
-		channelList.put("#halchat", new NormalChannel("#halchat", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#gods", new NormalChannel("#gods", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#discord", new RegionChannel("#discord"));
+	protected void createDefaultSet() {
+		channelList.put("#", new RegionChannel(chat.getPlugin(), "#"));
+		channelList.put("#rp", new RPChannel(chat.getPlugin(), "#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#fanrp", new NickChannel(chat.getPlugin(), "#fanrp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#EARTH", new RegionChannel(chat.getPlugin(), "#EARTH"));
+		channelList.put("#DERSPIT", new RegionChannel(chat.getPlugin(), "#DERSPIT"));
+		channelList.put("#INNERCIRCLE", new RegionChannel(chat.getPlugin(), "#INNERCIRCLE"));
+		channelList.put("#OUTERCIRCLE", new RegionChannel(chat.getPlugin(), "#OUTERCIRCLE"));
+		channelList.put("#FURTHESTRING", new RegionChannel(chat.getPlugin(), "#FURTHESTRING"));
+		channelList.put("#LOWAS", new RegionChannel(chat.getPlugin(), "#LOWAS"));
+		channelList.put("#LOLAR", new RegionChannel(chat.getPlugin(), "#LOLAR"));
+		channelList.put("#LOHAC", new RegionChannel(chat.getPlugin(), "#LOHAC"));
+		channelList.put("#LOFAF", new RegionChannel(chat.getPlugin(), "#LOFAF"));
+		channelList.put("#Aether", new RegionChannel(chat.getPlugin(), "#Aether"));
+		channelList.put("#halchat", new NormalChannel(chat.getPlugin(), "#halchat", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#gods", new NormalChannel(chat.getPlugin(), "#gods", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
+		channelList.put("#discord", new RegionChannel(chat.getPlugin(), "#discord"));
 		// People may use unicode characters in private messages
-		channelList.put("#pm", new NickChannel("#pm", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
+		channelList.put("#pm", new NickChannel(chat.getPlugin(), "#pm", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
 		// Show true sign contents
-		channelList.put("#sign", new NickChannel("#sign", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
+		channelList.put("#sign", new NickChannel(chat.getPlugin(), "#sign", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
 		// Tests should be done as-is, no filters
-		channelList.put("@test@", new NickChannel("@test@", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
-		channelList.put("@", new NormalChannel("@", AccessLevel.PRIVATE, null, Long.MAX_VALUE));
+		channelList.put("@test@", new NickChannel(chat.getPlugin(), "@test@", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
+		channelList.put("@", new NormalChannel(chat.getPlugin(), "@", AccessLevel.PRIVATE, null, Long.MAX_VALUE));
 	}
 
 	public void dropChannel(String channelName) {
 		channelList.remove(channelName);
 		File file;
-		file = new File(Sblock.getInstance().getDataFolder(), "ChatChannels.yml");
+		file = new File(chat.getPlugin().getDataFolder(), "ChatChannels.yml");
 		if (!file.exists()) {
 			return;
 		}
@@ -222,9 +226,5 @@ public class ChannelManager {
 			return null;
 		}
 		return channelList.get(channelname);
-	}
-
-	public static ChannelManager getChannelManager() {
-		return Chat.getChat().getChannelManager();
 	}
 }

@@ -6,6 +6,8 @@ import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
+
 /**
  * Automatically change adjacent lava to obsidian or cobblestone and extinguish fires when mining.
  * 
@@ -13,8 +15,8 @@ import org.bukkit.entity.Player;
  */
 public class EffectAdjacentWater extends EffectAdjacentBlockModifier {
 
-	public EffectAdjacentWater() {
-		super(400, "Liquid Cooled");
+	public EffectAdjacentWater(Sblock plugin) {
+		super(plugin, 400, "Liquid Cooled");
 	}
 
 	@SuppressWarnings("deprecation")

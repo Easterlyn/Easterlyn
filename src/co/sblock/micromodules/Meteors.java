@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
+import co.sblock.Sblock;
 import co.sblock.module.Module;
 
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -22,6 +23,10 @@ public class Meteors extends Module {
 
 	/* The Meteors instance. */
 	private static Meteors instance;
+
+	public Meteors(Sblock plugin) {
+		super(plugin);
+	}
 
 	/**
 	 * @see Module#onEnable()
@@ -79,7 +84,7 @@ public class Meteors extends Module {
 	}
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Meteors";
 	}
 

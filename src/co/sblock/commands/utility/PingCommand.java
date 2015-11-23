@@ -10,6 +10,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -20,8 +21,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class PingCommand extends SblockCommand {
 
-	public PingCommand() {
-		super("ping");
+	public PingCommand(Sblock plugin) {
+		super(plugin, "ping");
 		this.setDescription("Get your ping.");
 		this.setUsage("/ping <player>");
 		Permission permission;

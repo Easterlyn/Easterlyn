@@ -7,7 +7,9 @@ import java.util.LinkedList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.CanonNick;
@@ -86,6 +88,9 @@ public class MessageBuilder {
 		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
 	}
 
+	private final Sblock plugin;
+	private final ChannelManager manager;
+
 	private OfflineUser sender = null;
 	private String senderName = null;
 	private Channel channel = null;
@@ -95,6 +100,11 @@ public class MessageBuilder {
 	private String channelClick, nameClick;
 	private TextComponent[] messageComponents;
 	private BaseComponent[] nameHover;
+
+	public MessageBuilder(Sblock plugin) {
+		this.plugin = plugin;
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
+	}
 
 	public MessageBuilder setSender(OfflineUser sender) {
 		if (this.sender != null || this.senderName != null) {
@@ -149,7 +159,7 @@ public class MessageBuilder {
 		if (space > 1 && message.charAt(0) == '@') {
 			this.atChannel = message.substring(1, space);
 			message = message.substring(space);
-			this.channel = ChannelManager.getChannelManager().getChannel(this.atChannel);
+			this.channel = manager.getChannel(this.atChannel);
 		}
 
 		// Anyone can use color codes in nick channels. Channel mods can use color codes in non-rp channels
@@ -164,7 +174,7 @@ public class MessageBuilder {
 				&& (player == null || !player.hasPermission("sblock.felt"))) {
 			ArrayList<String> names = new ArrayList<String>();
 			channel.getListening().forEach(uuid -> {
-				names.add(Users.getGuaranteedUser(uuid).getPlayerName());
+				names.add(Users.getGuaranteedUser(plugin, uuid).getPlayerName());
 			});
 			StringBuilder sb = new StringBuilder();
 			for (String word : Normalizer.normalize(message, Normalizer.Form.NFD).split(" ")) {

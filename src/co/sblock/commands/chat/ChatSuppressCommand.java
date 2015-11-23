@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
@@ -21,8 +22,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class ChatSuppressCommand extends SblockCommand {
 
-	public ChatSuppressCommand() {
-		super("suppress");
+	public ChatSuppressCommand(Sblock plugin) {
+		super(plugin, "suppress");
 		setDescription("Toggle chat suppression.");
 		setUsage(ChatColor.AQUA + "/suppress");
 	}
@@ -33,7 +34,7 @@ public class ChatSuppressCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
 		user.setSuppression(!user.getSuppression());
 		user.sendMessage(Color.GOOD + "Suppression toggled " + (user.getSuppression() ? "on" : "off") + "!");
 		return true;

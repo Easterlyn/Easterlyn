@@ -1,16 +1,16 @@
 package co.sblock.events.listeners.inventory;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
 import co.sblock.chat.Color;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.utilities.InventoryUtils;
 
 /**
@@ -18,7 +18,11 @@ import co.sblock.utilities.InventoryUtils;
  * 
  * @author Jikoo
  */
-public class CraftItemListener implements Listener {
+public class CraftItemListener extends SblockListener {
+
+	public CraftItemListener(Sblock plugin) {
+		super(plugin);
+	}
 
 	/**
 	 * EventHandler for CraftItemEvents.
@@ -38,7 +42,7 @@ public class CraftItemListener implements Listener {
 				clicked.updateInventory();
 				return;
 			}
-			for (ItemStack is1 : InventoryUtils.getUniqueItems()) {
+			for (ItemStack is1 : InventoryUtils.getUniqueItems(getPlugin())) {
 				if (is1.isSimilar(is)) {
 					event.setCancelled(true);
 					if (is.getItemMeta().hasDisplayName()) {
@@ -51,12 +55,12 @@ public class CraftItemListener implements Listener {
 		}
 
 		if (event.getClick().isShiftClick()) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+			new BukkitRunnable() {
 				@Override
 				public void run() {
 					((Player) event.getWhoClicked()).updateInventory();
 				}
-			});
+			}.runTask(getPlugin());
 		}
 	}
 }

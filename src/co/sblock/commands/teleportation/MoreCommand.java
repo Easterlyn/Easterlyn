@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -19,8 +20,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class MoreCommand extends SblockCommand {
 
-	public MoreCommand() {
-		super("more");
+	public MoreCommand(Sblock plugin) {
+		super(plugin, "more");
 		this.setDescription("Have all the things! Increase or decrease item in hand.");
 		this.setUsage("/more [optional amount]");
 		this.setPermissionLevel("felt");

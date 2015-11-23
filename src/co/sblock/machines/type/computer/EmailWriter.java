@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.chat.Color;
+import co.sblock.machines.Machines;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -21,7 +22,8 @@ public class EmailWriter extends Program {
 	private final ItemStack icon;
 	private final ItemStack writable;
 
-	protected EmailWriter() {
+	public EmailWriter(Machines machines) {
+		super(machines);
 		icon = new ItemStack(Material.BOOK_AND_QUILL);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "Write Mail");

@@ -21,6 +21,7 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
@@ -43,9 +44,15 @@ public class PunchDesignix extends Machine {
 	private static Triple<ItemStack, ItemStack, ItemStack> exampleRecipes;
 
 	private final ItemStack drop;
+	private final Captcha captcha;
+	private final Entry entry;
+	private final MachineInventoryTracker tracker;
 
-	public PunchDesignix() {
-		super(new Shape());
+	public PunchDesignix(Sblock plugin, Machines machines) {
+		super(plugin, machines, new Shape());
+		this.captcha = plugin.getModule(Captcha.class);
+		this.entry = plugin.getModule(Entry.class);
+		tracker = machines.getInventoryTracker();
 		Shape shape = getShape();
 		shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "upperstair"));
 		shape.setVectorData(new Vector(1, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST, "upperstair"));
@@ -78,9 +85,9 @@ public class PunchDesignix extends Machine {
 		if (event.getPlayer().isSneaking()) {
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
-				|| Entry.getEntry().isEntering(user))) {
+				|| entry.isEntering(user))) {
 			openInventory(event.getPlayer(), storage);
 		}
 		return true;
@@ -102,10 +109,10 @@ public class PunchDesignix extends Machine {
 			ItemStack result;
 			if (Captcha.isCaptcha(merchant.getItem(1))) {
 				// Copies and punches first, ignores lore of second.
-				result = Captcha.createCombinedPunch(merchant.getItem(0), null);
+				result = captcha.createCombinedPunch(merchant.getItem(0), null);
 			} else {
 				// Combine cards (or, if second is null, punch first)
-				result = Captcha.createCombinedPunch(merchant.getItem(0), merchant.getItem(1));
+				result = captcha.createCombinedPunch(merchant.getItem(0), merchant.getItem(1));
 			}
 
 			int crafts = 0;
@@ -174,12 +181,12 @@ public class PunchDesignix extends Machine {
 	 * @param name the name of the player who is using the Punch Designix
 	 */
 	public void updateInventory(final UUID id) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
 			@Override
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);
-				if (player == null || !MachineInventoryTracker.getTracker().hasMachineOpen(player)) {
+				if (player == null || !tracker.hasMachineOpen(player)) {
 					// Player has logged out or closed inventory. Inventories are per-player, ignore.
 					return;
 				}
@@ -189,9 +196,9 @@ public class PunchDesignix extends Machine {
 					if (!Captcha.isPunch(open.getItem(0))) {
 						result = null;
 					}
-					result = Captcha.createCombinedPunch(open.getItem(0), null);
+					result = captcha.createCombinedPunch(open.getItem(0), null);
 				} else {
-					result = Captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
+					result = captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
 				}
 				open.setItem(2, result);
 				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
@@ -207,7 +214,7 @@ public class PunchDesignix extends Machine {
 	 * @param player the Player
 	 */
 	public void openInventory(Player player, ConfigurationSection storage) {
-		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, getKey(storage));
+		tracker.openVillagerInventory(player, this, getKey(storage));
 		InventoryUtils.updateVillagerTrades(player, getExampleRecipes());
 	}
 

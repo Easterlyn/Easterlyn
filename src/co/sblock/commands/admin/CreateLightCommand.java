@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.utilities.LightSource;
 
@@ -18,8 +19,8 @@ import co.sblock.utilities.LightSource;
  */
 public class CreateLightCommand extends SblockCommand {
 
-	public CreateLightCommand() {
-		super("createlight");
+	public CreateLightCommand(Sblock plugin) {
+		super(plugin, "createlight");
 		this.setDescription("Create a fake light source at the block on your cursor.");
 		this.setUsage("Run /createlight while pointing at a block under 10 blocks away");
 		this.setAliases("lettherebelight", "fakelight");

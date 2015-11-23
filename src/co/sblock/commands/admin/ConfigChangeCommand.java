@@ -1,6 +1,7 @@
 package co.sblock.commands.admin;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
@@ -12,8 +13,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class ConfigChangeCommand extends SblockCommand {
 
-	public ConfigChangeCommand() {
-		super("configupdate");
+	public ConfigChangeCommand(Sblock plugin) {
+		super(plugin, "configupdate");
 		this.setDescription("Live config editing.");
 		this.setUsage("/sblockconfig <path> <value>");
 		this.setPermissionLevel("horrorterror");
@@ -24,7 +25,7 @@ public class ConfigChangeCommand extends SblockCommand {
 		if (args.length < 2) {
 			return false;
 		}
-		Sblock sblock = Sblock.getInstance();
+		Plugin sblock = getPlugin();
 		if (args[1].equalsIgnoreCase("null")) {
 			sblock.getConfig().set(args[0], null);
 			sblock.saveConfig();
@@ -50,6 +51,7 @@ public class ConfigChangeCommand extends SblockCommand {
 			sender.sendMessage("Set " + args[0] + " to Integer: " + integer);
 		} catch (NumberFormatException e) {
 			sblock.getConfig().set(args[0], args[1]);
+			sblock.saveConfig();
 			sender.sendMessage("Set " + args[0] + " to String: " + args[1]);
 		}
 		return true;

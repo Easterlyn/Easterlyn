@@ -3,6 +3,7 @@ package co.sblock.chat.channel;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import co.sblock.Sblock;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
 
@@ -12,12 +13,9 @@ import co.sblock.users.Users;
  * @author Dublek
  */
 public class RPChannel extends NickChannel {
-	
-	/**
-	 * @see co.sblock.chat.channel.Channel#Channel(String, AccessLevel, UUID)
-	 */
-	public RPChannel(String name, AccessLevel a, UUID creator, long lastAccessed) {
-		super(name, a, creator, lastAccessed);
+
+	public RPChannel(Sblock plugin, String name, AccessLevel a, UUID creator, long lastAccessed) {
+		super(plugin, name, a, creator, lastAccessed);
 	}
 
 	/**
@@ -52,7 +50,7 @@ public class RPChannel extends NickChannel {
 					remove = entry.getKey();
 					break;
 				}
-				return Users.getGuaranteedUser(entry.getKey());
+				return Users.getGuaranteedUser(getPlugin(), entry.getKey());
 			}
 		}
 		if (remove != null) {

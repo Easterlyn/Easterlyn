@@ -1,22 +1,24 @@
 package co.sblock.events.listeners.entity;
 
-import java.util.Random;
-
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Rabbit;
 import org.bukkit.entity.Rabbit.Type;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 
 /**
  * Listener for CreatureSpawnEvents.
  * 
  * @author Jikoo
  */
-public class SpawnListener implements Listener {
+public class SpawnListener extends SblockListener {
 
-	private final Random random = new Random();
+	public SpawnListener(Sblock plugin) {
+		super(plugin);
+	}
 
 	/**
 	 * EventHandler for CreatureSpawnEvents.
@@ -30,7 +32,7 @@ public class SpawnListener implements Listener {
 		if (event.getSpawnReason() != SpawnReason.CHUNK_GEN && event.getSpawnReason() != SpawnReason.NATURAL) {
 			return;
 		}
-		if (random.nextInt(1000) > 1) {
+		if (getPlugin().getRandom().nextInt(1000) > 1) {
 			return;
 		}
 		Rabbit rabbit = (Rabbit) event.getEntity();

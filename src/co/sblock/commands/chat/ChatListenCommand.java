@@ -9,7 +9,9 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
@@ -25,11 +27,14 @@ import co.sblock.users.Users;
  */
 public class ChatListenCommand extends SblockCommand {
 
-	public ChatListenCommand() {
-		super("listen");
+	private final ChannelManager manager;
+
+	public ChatListenCommand(Sblock plugin) {
+		super(plugin, "listen");
 		setDescription("Join a chat channel without focusing on it.");
 		setUsage(Color.COMMAND + "/listen <channel>"
 				+ Color.GOOD + ": Listen to <channel>.");
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -41,8 +46,8 @@ public class ChatListenCommand extends SblockCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Player) sender).getUniqueId());
-		Channel channel = ChannelManager.getChannelManager().getChannel(args[0]);
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
+		Channel channel = manager.getChannel(args[0]);
 		if (channel == null) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
 			return true;
@@ -63,7 +68,7 @@ public class ChatListenCommand extends SblockCommand {
 		}
 		if (args.length ==  1) {
 			ArrayList<String> matches = new ArrayList<>();
-			for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
+			for (String channel : manager.getChannelList().keySet()) {
 				if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
 					matches.add(channel);
 				}

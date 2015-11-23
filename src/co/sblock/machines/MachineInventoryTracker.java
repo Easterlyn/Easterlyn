@@ -37,12 +37,12 @@ import net.minecraft.server.v1_8_R3.World;
  */
 public class MachineInventoryTracker {
 
-	private static MachineInventoryTracker instance;
-
 	private final Map<UUID, Pair<Machine, Location>> openMachines;
+	private final Machines machines;
 
-	public MachineInventoryTracker() {
-		openMachines = new HashMap<>();
+	public MachineInventoryTracker(Machines machines) {
+		this.openMachines = new HashMap<>();
+		this.machines = machines;
 	}
 
 	public boolean hasMachineOpen(Player p) {
@@ -53,7 +53,7 @@ public class MachineInventoryTracker {
 		if (!openMachines.containsKey(p.getUniqueId())) {
 			return null;
 		}
-		return Machines.getInstance().getMachineByLocation(openMachines.get(p.getUniqueId()).getRight());
+		return machines.getMachineByLocation(openMachines.get(p.getUniqueId()).getRight());
 	}
 
 	public void closeMachine(InventoryCloseEvent event) {
@@ -114,12 +114,5 @@ public class MachineInventoryTracker {
 		public IChatBaseComponent getScoreboardDisplayName() {
 			return new ChatComponentText("Machine");
 		}
-	}
-
-	public static MachineInventoryTracker getTracker() {
-		if (instance == null) {
-			instance = new MachineInventoryTracker();
-		}
-		return instance;
 	}
 }

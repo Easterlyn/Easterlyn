@@ -10,7 +10,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
-import co.sblock.Sblock;
 import co.sblock.users.Users;
 
 /**
@@ -20,16 +19,18 @@ import co.sblock.users.Users;
  */
 public class EntryTimer extends BukkitRunnable {
 
+	private final Entry entry;
 	private final SimpleDateFormat format;
 	private final Hologram hologram;
 	private long timeRemaining;
 	private final UUID uuid;
 
-	public EntryTimer(Location holoLoc, UUID uuid) {
+	public EntryTimer(Entry entry, Location holoLoc, UUID uuid) {
+		this.entry = entry;
 		format = new SimpleDateFormat("m:ss");
 		format.setTimeZone(TimeZone.getTimeZone("UTC"));
 		timeRemaining = 253000;
-		hologram = HologramsAPI.createHologram(Sblock.getInstance(), holoLoc);
+		hologram = HologramsAPI.createHologram(entry.getPlugin(), holoLoc);
 		hologram.appendTextLine("4:13");
 		this.uuid = uuid;
 	}
@@ -39,7 +40,7 @@ public class EntryTimer extends BukkitRunnable {
 		hologram.clearLines();
 		hologram.appendTextLine(format.format(timeRemaining > 0 ? timeRemaining : 0));
 		if (timeRemaining == 0) {
-			Entry.getEntry().fail(Users.getGuaranteedUser(uuid));
+			entry.fail(Users.getGuaranteedUser(entry.getPlugin(), uuid));
 		}
 		if (timeRemaining < -1) {
 			cancel();

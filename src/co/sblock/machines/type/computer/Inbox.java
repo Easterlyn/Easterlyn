@@ -28,7 +28,8 @@ public class Inbox extends Program {
 
 	private final ItemStack icon;
 
-	protected Inbox() {
+	public Inbox(Machines machines) {
+		super(machines);
 		icon = new ItemStack(Material.WRITTEN_BOOK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "Read Mail");
@@ -46,8 +47,8 @@ public class Inbox extends Program {
 		// mail client being reached without computer access
 		boolean atComputer = !meta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE);
 		if (!meta.hasLore() || atComputer) {
-			Inventory inventory = ((Computer) Machines.getMachineByName("Computer")).getInventory(54);
-			List<ItemStack> items = Users.getGuaranteedUser(player.getUniqueId()).getMailItems();
+			Inventory inventory = ((Computer) getMachines().getMachineByName("Computer")).getInventory(54);
+			List<ItemStack> items = Users.getGuaranteedUser(getMachines().getPlugin(), player.getUniqueId()).getMailItems();
 			ItemStack nope = ((Nope) Programs.getProgramByName("Nope")).getIconFor(
 					ChatColor.WHITE + "Computer access is required",
 					ChatColor.WHITE + "to collect items from mail.");

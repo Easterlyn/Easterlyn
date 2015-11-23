@@ -16,6 +16,7 @@ import com.mojang.authlib.GameProfile;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -35,13 +36,15 @@ import net.md_5.bungee.api.ChatColor;
 public class MessageCommand extends SblockCommand {
 
 	private final HashMap<GameProfile, GameProfile> reply;
+	private final ChannelManager manager;
 
-	public MessageCommand() {
-		super("m");
+	public MessageCommand(Sblock plugin) {
+		super(plugin, "m");
 		this.setDescription("Send a private message");
 		this.setUsage("/m <name> <message> or /r <reply to last message>");
 		this.setAliases("w", "t", "pm", "msg", "tell", "whisper", "r", "reply");
-		reply = new HashMap<>();
+		this.reply = new HashMap<>();
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -53,10 +56,10 @@ public class MessageCommand extends SblockCommand {
 		GameProfile senderProfile;
 		if (sender instanceof Player) {
 			senderPlayer = (Player) sender;
-			senderUser = Users.getGuaranteedUser(senderPlayer.getUniqueId());
+			senderUser = Users.getGuaranteedUser(((Sblock) getPlugin()), senderPlayer.getUniqueId());
 			senderProfile = new GameProfile(senderPlayer.getUniqueId(), senderPlayer.getName());
 		} else {
-			senderProfile = Sblock.getInstance().getFakeGameProfile(sender.getName());
+			senderProfile = ((Sblock) getPlugin()).getFakeGameProfile(sender.getName());
 		}
 
 		boolean isReply = label.equals("r") || label.equals("reply");
@@ -87,7 +90,7 @@ public class MessageCommand extends SblockCommand {
 				return false;
 			}
 			if (args[0].equalsIgnoreCase("CONSOLE")) {
-				recipientProfile = Sblock.getInstance().getFakeGameProfile("CONSOLE");
+				recipientProfile = ((Sblock) getPlugin()).getFakeGameProfile("CONSOLE");
 			} else {
 				List<Player> players = Bukkit.matchPlayer(args[0]);
 				if (players.size() == 0) {
@@ -99,10 +102,10 @@ public class MessageCommand extends SblockCommand {
 			}
 		}
 
-		MessageBuilder builder = new MessageBuilder();
-		builder.setChannel(ChannelManager.getChannelManager().getChannel("#pm"));
-		builder.setMessage(ChatColor.WHITE + recipientProfile.getName() + ": "
-				+ StringUtils.join(args, ' ', isReply ? 0 : 1, args.length));
+		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin())
+				.setChannel(manager.getChannel("#pm")).setMessage(
+						ChatColor.WHITE + recipientProfile.getName() + ": "
+						+ StringUtils.join(args, ' ', isReply ? 0 : 1, args.length));
 		if (senderUser != null) {
 			builder.setSender(senderUser);
 		} else {
@@ -119,7 +122,7 @@ public class MessageCommand extends SblockCommand {
 		if (senderPlayer != null) {
 			players.add(senderPlayer);
 		} else {
-			senderPlayer = new WrappedSenderPlayer(sender);
+			senderPlayer = new WrappedSenderPlayer((Sblock) getPlugin(), sender);
 		}
 		if (recipientPlayer != null) {
 			players.add(recipientPlayer);

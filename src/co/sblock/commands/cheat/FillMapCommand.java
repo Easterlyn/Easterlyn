@@ -7,6 +7,7 @@ import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockAsynchronousCommand;
 
@@ -17,8 +18,8 @@ import co.sblock.commands.SblockAsynchronousCommand;
  */
 public class FillMapCommand extends SblockAsynchronousCommand {
 
-	public FillMapCommand() {
-		super("fillmap");
+	public FillMapCommand(Sblock plugin) {
+		super(plugin, "fillmap");
 		setPermissionLevel("denizen");
 		setUsage("/fillmap <map id>");
 	}

@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -14,6 +13,7 @@ import co.sblock.chat.Color;
 import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.SleepVote;
@@ -30,7 +30,26 @@ import co.sblock.utilities.InventoryManager;
  * 
  * @author Jikoo
  */
-public class QuitListener implements Listener {
+public class QuitListener extends SblockListener {
+
+	private final Discord discord;
+	private final Effects effects;
+	private final Entry entry;
+	private final Events events;
+	private final FreeCart carts;
+	private final SleepVote sleep;
+	private final Spectators spectators;
+
+	public QuitListener(Sblock plugin) {
+		super(plugin);
+		discord = plugin.getModule(Discord.class);
+		effects = plugin.getModule(Effects.class);
+		entry = plugin.getModule(Entry.class);
+		events = plugin.getModule(Events.class);
+		carts = plugin.getModule(FreeCart.class);
+		sleep = plugin.getModule(SleepVote.class);
+		spectators = plugin.getModule(Spectators.class);
+	}
 
 	/**
 	 * The event handler for PlayerQuitEvents.
@@ -45,26 +64,26 @@ public class QuitListener implements Listener {
 		}
 
 		// Handle reactive Effects that use quits
-		Effects.getInstance().handleEvent(event, event.getPlayer(), true);
+		effects.handleEvent(event, event.getPlayer(), true);
 
 		// Discord integration
-		Discord.getInstance().postMessage(event.getPlayer().getName(),
+		discord.postMessage(event.getPlayer().getName(),
 				event.getPlayer().getName() + " logs out.", true);
 
 		// Update vote
-		SleepVote.getInstance().updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+		sleep.updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
 
 		// Remove free minecart if riding one
-		FreeCart.getInstance().remove(event.getPlayer());
+		carts.remove(event.getPlayer());
 
 		// Remove Spectator status
-		if (Spectators.getInstance().isSpectator(event.getPlayer().getUniqueId())) {
-			Spectators.getInstance().removeSpectator(event.getPlayer());
+		if (spectators.isSpectator(event.getPlayer().getUniqueId())) {
+			spectators.removeSpectator(event.getPlayer());
 		}
 
 		// Stop scheduled sleep teleport
-		if (Events.getInstance().getSleepTasks().containsKey(event.getPlayer().getName())) {
-			Events.getInstance().getSleepTasks().remove(event.getPlayer().getName()).cancel();
+		if (events.getSleepTasks().containsKey(event.getPlayer().getName())) {
+			events.getSleepTasks().remove(event.getPlayer().getName()).cancel();
 		}
 
 		// Restore inventory if still preserved
@@ -74,7 +93,7 @@ public class QuitListener implements Listener {
 		Users.unteam(event.getPlayer());
 
 		final UUID uuid = event.getPlayer().getUniqueId();
-		OfflineUser user = Users.getGuaranteedUser(uuid);
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), uuid);
 		user.save();
 
 		// Disable "god" effect, if any
@@ -89,12 +108,12 @@ public class QuitListener implements Listener {
 
 		// Complete success sans animation if player logs out
 		if (user.getProgression() == ProgressionState.ENTRY_COMPLETING) {
-			Entry.getEntry().finalizeSuccess(event.getPlayer(), user);
+			entry.finalizeSuccess(event.getPlayer(), user);
 		}
 
 		// Fail Entry if in progress
 		if (user.getProgression() == ProgressionState.ENTRY_UNDERWAY) {
-			Entry.getEntry().fail(user);
+			entry.fail(user);
 		}
 
 		// Inform channels that the player is no longer listening to them
@@ -113,6 +132,6 @@ public class QuitListener implements Listener {
 					Users.unloadUser(uuid);
 				}
 			}
-		}.runTask(Sblock.getInstance());
+		}.runTask(getPlugin());
 	}
 }

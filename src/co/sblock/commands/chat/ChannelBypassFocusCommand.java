@@ -10,7 +10,9 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
@@ -25,12 +27,15 @@ import co.sblock.users.Users;
  */
 public class ChannelBypassFocusCommand extends SblockCommand {
 
-	public ChannelBypassFocusCommand() {
-		super("totalfocus");
+	private final ChannelManager manager;
+
+	public ChannelBypassFocusCommand(Sblock plugin) {
+		super(plugin, "totalfocus");
 		this.setDescription("Knock knock. Come on in.");
 		this.setUsage("/totalfocus <channel> <player>");
 		this.setPermissionMessage("Try /join <channel>");
 		this.setPermissionLevel("felt");
+		manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -38,7 +43,7 @@ public class ChannelBypassFocusCommand extends SblockCommand {
 		if (args.length < 2) {
 			return false;
 		}
-		Channel channel = ChannelManager.getChannelManager().getChannel(args[0]);
+		Channel channel = manager.getChannel(args[0]);
 		if (channel == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
 			return true;
@@ -48,7 +53,7 @@ public class ChannelBypassFocusCommand extends SblockCommand {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
 		user.getListening().add(channel.getName());
 		user.currentChannel = channel.getName();
 		channel.getListening().add(player.getUniqueId());
@@ -65,7 +70,7 @@ public class ChannelBypassFocusCommand extends SblockCommand {
 			return super.tabComplete(sender, alias, args);
 		} else {
 			ArrayList<String> matches = new ArrayList<>();
-			for (String channel : ChannelManager.getChannelManager().getChannelList().keySet()) {
+			for (String channel : manager.getChannelList().keySet()) {
 				if (StringUtil.startsWithIgnoreCase(channel, args[0])) {
 					matches.add(channel);
 				}

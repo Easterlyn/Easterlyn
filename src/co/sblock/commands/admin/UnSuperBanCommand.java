@@ -12,6 +12,7 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -22,8 +23,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class UnSuperBanCommand extends SblockCommand {
 
-	public UnSuperBanCommand() {
-		super("unban");
+	public UnSuperBanCommand(Sblock plugin) {
+		super(plugin, "unban");
 		this.setAliases("unsban", "pardon", "unbanip", "pardonip");
 		this.setDescription("DO THE WINDY THING.");
 		this.setUsage("/unsban <UUID|name|IP>");

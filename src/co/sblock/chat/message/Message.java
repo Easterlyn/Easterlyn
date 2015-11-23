@@ -12,12 +12,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import co.sblock.chat.ChannelManager;
+import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
+import co.sblock.micromodules.Cooldowns;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.Cooldowns;
 import co.sblock.utilities.JSONUtil;
 
 import net.md_5.bungee.api.ChatColor;
@@ -118,7 +118,7 @@ public class Message {
 			end = atChannel.length();
 		}
 
-		Channel channel = ChannelManager.getChannelManager().getChannel(atChannel.substring(1, end));
+		Channel channel = getChannel().getChannelManager().getChannel(atChannel.substring(1, end));
 
 		return channel == null ? getChannel() : channel;
 	}
@@ -136,6 +136,9 @@ public class Message {
 			Logger.getLogger("Minecraft").info(getConsoleMessage());
 		}
 
+		Sblock plugin = channel.getPlugin();
+		Cooldowns cooldowns = plugin.getModule(Cooldowns.class);
+
 		for (T object : recipients) {
 			UUID uuid;
 			Player player;
@@ -149,7 +152,7 @@ public class Message {
 				throw new RuntimeException("Invalid recipient type: " + object.getClass());
 			}
 
-			OfflineUser u = Users.getGuaranteedUser(uuid);
+			OfflineUser u = Users.getGuaranteedUser(plugin, uuid);
 			if (player == null || !u.isOnline() || player.spigot() == null
 					|| channel instanceof RegionChannel && u.getSuppression()) {
 				continue;
@@ -202,7 +205,7 @@ public class Message {
 				text.setExtra(components);
 			}
 
-			if (highlight && Cooldowns.getInstance().getRemainder(player, "highlight") == 0
+			if (highlight && cooldowns.getRemainder(player, "highlight") == 0
 					&& !channel.getName().equals("#pm")) {
 				// Fun sound effects! Sadly, ender dragon kill is a little long even at 2x
 				switch ((int) (Math.random() * 20)) {
@@ -219,7 +222,7 @@ public class Message {
 				default:
 					player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 2);
 				}
-				Cooldowns.getInstance().addCooldown(player, "highlight", 30000);
+				cooldowns.addCooldown(player, "highlight", 30000);
 			}
 			player.spigot().sendMessage(highlight ? channelHighlightComponent : channelComponent, nameComponent, message);
 		}

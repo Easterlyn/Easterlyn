@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -20,8 +21,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class UnbreakableCommand extends SblockCommand {
 
-	public UnbreakableCommand() {
-		super("traindon'tstop");
+	public UnbreakableCommand(Sblock plugin) {
+		super(plugin, "traindon'tstop");
 		this.setDescription("No brakes on this abuse caboose.");
 		this.setUsage("/traindon'tstop [choochoo|oshitthecops]");
 		this.setAliases("cleannbt");

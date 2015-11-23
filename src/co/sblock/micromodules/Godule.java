@@ -3,6 +3,7 @@ package co.sblock.micromodules;
 import java.util.HashMap;
 import java.util.Map;
 
+import co.sblock.Sblock;
 import co.sblock.micromodules.godules.AspectEffect;
 import co.sblock.module.Module;
 import co.sblock.users.UserAspect;
@@ -17,6 +18,10 @@ public class Godule extends Module {
 	private static Godule instance;
 
 	private Map<UserAspect, AspectEffect> aspeffects;
+
+	public Godule(Sblock plugin) {
+		super(plugin);
+	}
 
 	@Override
 	protected void onEnable() {
@@ -64,7 +69,7 @@ public class Godule extends Module {
 	}
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "GodManager";
 	}
 

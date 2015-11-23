@@ -11,26 +11,27 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Bed;
 
+import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Color;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
+import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.progression.Entry;
 import co.sblock.progression.ServerMode;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
-import co.sblock.utilities.Cooldowns;
 import co.sblock.utilities.Experience;
 import co.sblock.utilities.InventoryUtils;
 
@@ -41,7 +42,28 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class InteractListener implements Listener {
+public class InteractListener extends SblockListener {
+
+	private final Captcha captcha;
+	private final Cooldowns cooldowns;
+	private final Effects effects;
+	private final Entry entry;
+	private final Events events;
+	private final Machines machines;
+	private final ServerMode serverMode;
+	private final SleepVote sleep;
+
+	public InteractListener(Sblock plugin) {
+		super(plugin);
+		this.captcha = plugin.getModule(Captcha.class);
+		this.cooldowns = plugin.getModule(Cooldowns.class);
+		this.effects = plugin.getModule(Effects.class);
+		this.entry = plugin.getModule(Entry.class);
+		this.events = plugin.getModule(Events.class);
+		this.machines = plugin.getModule(Machines.class);
+		this.serverMode = plugin.getModule(ServerMode.class);
+		this.sleep = plugin.getModule(SleepVote.class);
+	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerInteractMonitor(PlayerInteractEvent event) {
@@ -51,7 +73,7 @@ public class InteractListener implements Listener {
 		}
 
 		// EFFECTS: Active application - right click only for now, change if needed.
-		Effects.getInstance().handleEvent(event, event.getPlayer(), false);
+		effects.handleEvent(event, event.getPlayer(), false);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -61,7 +83,7 @@ public class InteractListener implements Listener {
 		}
 
 		// Machines
-		Pair<Machine, ConfigurationSection> pair = Machines.getInstance().getMachineByBlock(event.getClickedBlock());
+		Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(event.getClickedBlock());
 		if (pair != null) {
 			event.setCancelled(pair.getLeft().handleInteract(event, pair.getRight()));
 		}
@@ -79,10 +101,10 @@ public class InteractListener implements Listener {
 			// Right clicking air is cancelled by default as there is no result.
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			// No interaction with any blocks while out of range.
-			if (event.getAction().name().contains("BLOCK") && !ServerMode.getInstance().isWithinRange(
+			if (event.getAction().name().contains("BLOCK") && !serverMode.isWithinRange(
 					user, event.getClickedBlock())) {
 				event.getPlayer().sendMessage(Color.BAD + "Block out of range!");
 				event.setCancelled(true);
@@ -90,16 +112,16 @@ public class InteractListener implements Listener {
 			}
 			// Breaking and placing blocks is acceptable, instabreak blocks in approved list.
 			if (event.getAction() == Action.LEFT_CLICK_BLOCK
-					&& ServerMode.getInstance().isApproved(event.getClickedBlock().getType())
-					&& !Machines.getInstance().isMachine(event.getClickedBlock())) {
+					&& serverMode.isApproved(event.getClickedBlock().getType())
+					&& !machines.isMachine(event.getClickedBlock())) {
 				event.getClickedBlock().setType(Material.AIR);
 			} else if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getItem() != null) {
-				if (ServerMode.getInstance().isApproved(event.getMaterial())) {
+				if (serverMode.isApproved(event.getMaterial())) {
 					// Right click air: Cycle to next approved material
-					ServerMode.getInstance().cycleData(event.getItem());
-				} else if (event.getItem().isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
+					serverMode.cycleData(event.getItem());
+				} else if (event.getItem().isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
 					// Right click air: Open computer
-					((Computer) Machines.getMachineByName("Computer")).openInventory(event.getPlayer());
+					((Computer) machines.getMachineByName("Computer")).openInventory(event.getPlayer());
 				}
 			}
 			return;
@@ -107,12 +129,12 @@ public class InteractListener implements Listener {
 
 		//Entry Trigger Items
 		if (event.getItem() != null) {
-			for (Material m : Entry.getEntry().getMaterialList()) {
+			for (Material m : entry.getMaterialList()) {
 				if (event.getItem().getType() == m && event.getItem().getItemMeta().hasDisplayName() 
 						&& event.getItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
-					if (Entry.getEntry().isEntering(user)) {
-						if (m == Entry.getEntry().getData().get(user).getRight()) {
-							Entry.getEntry().succeed(user);
+					if (entry.isEntering(user)) {
+						if (m == entry.getData().get(user).getRight()) {
+							entry.succeed(user);
 						}
 					}
 					event.getPlayer().setItemInHand(null);
@@ -136,7 +158,7 @@ public class InteractListener implements Listener {
 				// Sleep voting
 				if (event.getPlayer().isSneaking()) {
 					if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
-						SleepVote.getInstance().sleepVote(b.getWorld(), event.getPlayer());
+						sleep.sleepVote(b.getWorld(), event.getPlayer());
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					} else {
 						event.getPlayer().sendMessage(Color.BAD + "It's not dark or raining!");
@@ -174,7 +196,7 @@ public class InteractListener implements Listener {
 					head = b.getRelative(relative).getLocation();
 				}
 
-				switch (Users.getGuaranteedUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
+				switch (Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId()).getCurrentRegion()) {
 				case EARTH:
 				case PROSPIT:
 				case LOFAF:
@@ -182,7 +204,7 @@ public class InteractListener implements Listener {
 				case LOLAR:
 				case LOWAS:
 				case DERSE:
-					Events.getInstance().fakeSleepDream(event.getPlayer(), head);
+					events.fakeSleepDream(event.getPlayer(), head);
 					event.setCancelled(true);
 					return;
 				default:
@@ -199,7 +221,7 @@ public class InteractListener implements Listener {
 
 		if (event.getPlayer().getItemInHand() != null
 				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE
-				&& Cooldowns.getInstance().getRemainder(event.getPlayer(), "PotionDrink") == 0) {
+				&& cooldowns.getRemainder(event.getPlayer(), "PotionDrink") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight((java.util.Set<Material>) null, 4)) {
 				if (block.getType().isOccluding()) {
 					// Stairs, steps, etc. can be clicked through. Only occluding blocks are guaranteed safe.
@@ -222,17 +244,17 @@ public class InteractListener implements Listener {
 
 		// Uncaptcha
 		if (Captcha.isUsedCaptcha(event.getItem())) {
-			ItemStack captcha = Captcha.captchaToItem(event.getItem());
+			ItemStack captchaStack = captcha.captchaToItem(event.getItem());
 			if (event.getItem().getAmount() > 1) {
 				event.getItem().setAmount(event.getItem().getAmount() - 1);
 				if (event.getPlayer().getInventory().firstEmpty() != -1) {
-					event.getPlayer().getInventory().addItem(captcha);
+					event.getPlayer().getInventory().addItem(captchaStack);
 				} else {
-					event.getPlayer().getWorld().dropItem(event.getPlayer().getEyeLocation(), captcha)
+					event.getPlayer().getWorld().dropItem(event.getPlayer().getEyeLocation(), captchaStack)
 							.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
 				}
 			} else {
-				event.getPlayer().setItemInHand(captcha);
+				event.getPlayer().setItemInHand(captchaStack);
 			}
 			event.getPlayer().updateInventory();
 		}

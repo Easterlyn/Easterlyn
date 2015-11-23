@@ -3,9 +3,10 @@ package co.sblock.events.listeners.vehicle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.FreeCart;
 
 /**
@@ -13,7 +14,14 @@ import co.sblock.micromodules.FreeCart;
  * 
  * @author Jikoo
  */
-public class EntityCollisionListener implements Listener {
+public class EntityCollisionListener extends SblockListener {
+
+	private final FreeCart carts;
+
+	public EntityCollisionListener(Sblock plugin) {
+		super(plugin);
+		carts = plugin.getModule(FreeCart.class);
+	}
 
 	/**
 	 * EventHandler for VehicleEntityCollisionEvents.
@@ -25,7 +33,7 @@ public class EntityCollisionListener implements Listener {
 		if (event.getVehicle().getType() != EntityType.MINECART) {
 			return;
 		}
-		if (FreeCart.getInstance().isFreeCart((Minecart) event.getVehicle())) {
+		if (carts.isFreeCart((Minecart) event.getVehicle())) {
 			event.setCancelled(true);
 			if (event.getEntity().getType() == EntityType.MINECART && event.getEntity().getPassenger() == null) {
 				event.getEntity().remove();

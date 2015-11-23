@@ -20,19 +20,17 @@ import co.sblock.module.Module;
  */
 public class SleepVote extends Module {
 
-	private static SleepVote instance;
-
 	private final HashMap<String, HashSet<String>> votes = new HashMap<String, HashSet<String>>();
 
-	@Override
-	protected void onEnable() {
-		instance = this;
+	public SleepVote(Sblock plugin) {
+		super(plugin);
 	}
 
 	@Override
-	protected void onDisable() {
-		instance = null;
-	}
+	protected void onEnable() { }
+
+	@Override
+	protected void onDisable() { }
 
 	public void sleepVote(World world, Player p) {
 		if (!votes.containsKey(world.getName())) {
@@ -49,16 +47,18 @@ public class SleepVote extends Module {
 	 * worlds.
 	 * 
 	 * @param world the world to update
+	 * @return true if the count has changed
 	 */
-	public void updateVoteCount(final String world, String player) {
+	public boolean updateVoteCount(final String world, String player) {
 		if (!votes.containsKey(world)) {
-			return;
+			return false;
 		}
 		if (player != null) {
 			votes.get(world).remove(player);
 		}
 
 		updateVotes(Bukkit.getWorld(world), null);
+		return true;
 	}
 
 	public void updateVotes(World world, String player) {
@@ -104,15 +104,11 @@ public class SleepVote extends Module {
 			public void run() {
 				votes.remove(world.getName());
 			}
-		}.runTaskLater(Sblock.getInstance(), 24001 - world.getTime());
-	}
-
-	public static SleepVote getInstance() {
-		return instance;
+		}.runTaskLater(getPlugin(), 24001 - world.getTime());
 	}
 
 	@Override
-	protected String getModuleName() {
-		return "Sblock SleepVote";
+	public String getName() {
+		return "SleepVote";
 	}
 }

@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -14,8 +15,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class PublicMessageCommand extends SblockCommand {
 
-	public PublicMessageCommand() {
-		super("publicmessage");
+	public PublicMessageCommand(Sblock plugin) {
+		super(plugin, "publicmessage");
 		setDescription("Send a super private message.");
 		setUsage("/publicmessage <name> <message content>");
 	}

@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import co.sblock.machines.Machines;
+
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -17,7 +19,8 @@ public class SburbClient extends Program {
 
 	private final ItemStack icon;
 
-	protected SburbClient() {
+	public SburbClient(Machines machines) {
+		super(machines);
 		icon = new ItemStack(Material.WORKBENCH);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "SburbClient");

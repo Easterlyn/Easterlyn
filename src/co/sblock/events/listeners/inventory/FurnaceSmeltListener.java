@@ -4,10 +4,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Furnace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.utilities.InventoryUtils;
 
 /**
@@ -15,7 +16,11 @@ import co.sblock.utilities.InventoryUtils;
  * 
  * @author Jikoo
  */
-public class FurnaceSmeltListener implements Listener {
+public class FurnaceSmeltListener extends SblockListener {
+
+	public FurnaceSmeltListener(Sblock plugin) {
+		super(plugin);
+	}
 
 	/**
 	 * EventHandler for FurnaceSmeltEvents.

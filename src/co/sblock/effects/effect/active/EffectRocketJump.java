@@ -20,8 +20,8 @@ import co.sblock.effects.effect.Effect;
  */
 public class EffectRocketJump extends Effect implements BehaviorActive, BehaviorCooldown {
 
-	public EffectRocketJump() {
-		super(300, 1, 1, "Crotchrocket");
+	public EffectRocketJump(Sblock plugin) {
+		super(plugin, 300, 1, 1, "Crotchrocket");
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class EffectRocketJump extends Effect implements BehaviorActive, Behavior
 
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
-		((CrotchRocketCommand) Sblock.getInstance().getCommandMap().getCommand("crotchrocket")).launch(entity);
+		((CrotchRocketCommand) getPlugin().getCommandMap().getCommand("sblock:crotchrocket")).launch(entity);
 	}
 
 }

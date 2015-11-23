@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.module.Module;
@@ -25,15 +27,17 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class RawAnnouncer extends Module {
 
 	private List<Message> announcements;
-	private static RawAnnouncer instance;
+
+	public RawAnnouncer(Sblock plugin) {
+		super(plugin);
+	}
 
 	@Override
 	protected void onEnable() {
-		instance = this;
 
 		announcements = this.constructAnnouncements();
 
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+		new BukkitRunnable() {
 			@Override
 			public void run() {
 				if (Bukkit.getOnlinePlayers().size() == 0) {
@@ -41,7 +45,7 @@ public class RawAnnouncer extends Module {
 				}
 				announcements.get((int) (Math.random() * announcements.size())).send(Bukkit.getOnlinePlayers());
 			}
-		}, 0, 1200 * 15); // 15 minutes in between rawnouncments
+		}.runTaskTimer(getPlugin(), 1200, 1200 * 15); // 15 minutes in between rawnouncments
 	}
 
 	/**
@@ -53,7 +57,8 @@ public class RawAnnouncer extends Module {
 		List<Message> msgs = new ArrayList<>();
 		TextComponent nameHover = new TextComponent("Automated Announcement");
 		nameHover.setColor(ChatColor.RED);
-		MessageBuilder builder = new MessageBuilder().setChannel(ChannelManager.getChannelManager().getChannel("#"))
+		ChannelManager manager = getPlugin().getModule(Chat.class).getChannelManager();
+		MessageBuilder builder = new MessageBuilder(getPlugin()).setChannel(manager.getChannel("#"))
 				.setSender(ChatColor.DARK_RED + "Lil Hal").setNameHover(nameHover).setNameClick("/report ");
 
 		List<TextComponent> components = new ArrayList<>();
@@ -276,16 +281,10 @@ public class RawAnnouncer extends Module {
 	}
 
 	@Override
-	protected void onDisable() {
-		instance = null;
-	}
-
-	public static RawAnnouncer getInstance() {
-		return instance;
-	}
+	protected void onDisable() { }
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "RawAnnouncer";
 	}
 }

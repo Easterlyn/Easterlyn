@@ -1,9 +1,10 @@
 package co.sblock.events.listeners.player;
 
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.type.computer.EmailWriter;
 import co.sblock.machines.type.computer.Programs;
 import co.sblock.users.OfflineUser;
@@ -17,11 +18,12 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class DropItemListener implements Listener {
+public class DropItemListener extends SblockListener {
 
 	private final EmailWriter email;
 
-	public DropItemListener() {
+	public DropItemListener(Sblock plugin) {
+		super(plugin);
 		this.email = (EmailWriter) Programs.getProgramByName("EmailWriter");
 	}
 
@@ -46,7 +48,7 @@ public class DropItemListener implements Listener {
 		}
 
 		// valid SblockUser required for all events below this point
-		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
 		if (user == null) {
 			return;
 		}

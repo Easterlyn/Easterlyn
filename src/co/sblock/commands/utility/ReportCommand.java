@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.Discord;
@@ -17,10 +18,13 @@ import co.sblock.users.BukkitSerializer;
  */
 public class ReportCommand extends SblockCommand {
 
-	public ReportCommand() {
-		super("report");
+	private final Discord discord;
+
+	public ReportCommand(Sblock plugin) {
+		super(plugin, "report");
 		this.setDescription("Report an issue to the moderators. Be descriptive!");
 		this.setUsage("/report Your issue here. Be descriptive!");
+		this.discord = plugin.getModule(Discord.class);
 	}
 
 	@Override
@@ -36,7 +40,6 @@ public class ReportCommand extends SblockCommand {
 			sender.sendMessage(Color.BAD + "More descriptive, please!");
 			return true;
 		}
-		Discord discord = Discord.getInstance();
 		if (!discord.isEnabled()) {
 			sender.sendMessage(Color.BAD + "Reporting is disabled at this time, sorry! Please /mail an admin instead.");
 			return true;

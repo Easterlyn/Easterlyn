@@ -13,6 +13,7 @@ import org.bukkit.map.MapView.Scale;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -23,8 +24,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class RenderMapCommand extends SblockCommand {
 
-	public RenderMapCommand() {
-		super("rendermap");
+	public RenderMapCommand(Sblock plugin) {
+		super(plugin, "rendermap");
 		setPermissionLevel("helper");
 		setUsage("/centermap [x] [z] [world]");
 		setAliases("centermap");

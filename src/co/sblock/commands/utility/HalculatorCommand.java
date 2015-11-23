@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
 
@@ -20,11 +21,14 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class HalculatorCommand extends SblockCommand {
 
-	public HalculatorCommand() {
-		super("halculate");
+	private final Chat chat;
+
+	public HalculatorCommand(Sblock plugin) {
+		super(plugin, "halculate");
 		this.setAliases("halc", "evhal", "evhaluate");
 		this.setDescription("Halculate an equation privately.");
 		this.setUsage("/halc 1+1");
+		this.chat = plugin.getModule(Chat.class);
 	}
 
 	@Override
@@ -33,7 +37,7 @@ public class HalculatorCommand extends SblockCommand {
 			sender.sendMessage("Please enter an equation! Ex. /halc (1+1)^(2/3) + 10");
 		} else {
 			sender.sendMessage(ChatColor.RED + "Evhaluation: " + ChatColor.GRAY
-					+ Chat.getChat().getHalculator().evhaluate(StringUtils.join(args, ' ')));
+					+ chat.getHalculator().evhaluate(StringUtils.join(args, ' ')));
 		}
 		return true;
 	}

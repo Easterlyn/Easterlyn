@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
@@ -25,8 +26,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class EffectFasterFlight extends Effect implements BehaviorGodtier, BehaviorReactive {
 
-	public EffectFasterFlight() {
-		super(500, 5, 10, "Flighty");
+	public EffectFasterFlight(Sblock plugin) {
+		super(plugin, 500, 5, 10, "Flighty");
 	}
 
 	@Override

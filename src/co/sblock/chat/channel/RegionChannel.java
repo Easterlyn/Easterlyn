@@ -3,6 +3,7 @@ package co.sblock.chat.channel;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import co.sblock.Sblock;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
 import co.sblock.users.Users;
@@ -13,8 +14,8 @@ public class RegionChannel extends Channel {
 	 * Constructor for a RegionChannel. Regional channels all are hardcoded and may not be created
 	 * or owned by a player.
 	 */
-	public RegionChannel(String name) {
-		super(name, null);
+	public RegionChannel(Sblock plugin, String name) {
+		super(plugin, name, null);
 	}
 
 	/**
@@ -25,7 +26,7 @@ public class RegionChannel extends Channel {
 	@Override
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			OfflineUser u = Users.getGuaranteedUser(userID);
+			OfflineUser u = Users.getGuaranteedUser(getPlugin(), userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;

@@ -39,17 +39,20 @@ public class PlayerLoader {
 			return player;
 		}
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-		String name = offlinePlayer.getName();
-		if (name == null) {
+		if (offlinePlayer == null || offlinePlayer.getName() == null) {
 			// Player has not logged in.
 			return null;
 		}
 		MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
 		EntityPlayer nmsPlayer = new EntityPlayer(server, server.getWorldServer(0),
-				new GameProfile(uuid, name), new PlayerInteractManager(server.getWorldServer(0)));
+				new GameProfile(uuid, offlinePlayer.getName()),
+				new PlayerInteractManager(server.getWorldServer(0)));
 
 		player = (nmsPlayer == null) ? null : nmsPlayer.getBukkitEntity();
-		if (player != null && player.hasPlayedBefore()) {
+		if (player == null) {
+			return null;
+		}
+		if (player.hasPlayedBefore()) {
 			player.loadData();
 		}
 		// Wrap player so permissions checks will work

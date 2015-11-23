@@ -15,6 +15,7 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.effects.Effects;
@@ -29,8 +30,11 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class EffectsCommand extends SblockCommand {
 
-	public EffectsCommand() {
-		super("effects");
+	private final Effects effects;
+
+	public EffectsCommand(Sblock plugin) {
+		super(plugin, "effects");
+		this.effects = plugin.getModule(Effects.class);
 		this.setDescription("Effects! Similar to /enchant.");
 		this.setUsage("/effects <type> [level]");
 		this.setAliases("fx");
@@ -85,12 +89,12 @@ public class EffectsCommand extends SblockCommand {
 		String loreString = new StringBuilder().append(ChatColor.GRAY).append(effectName).append(' ')
 				.append(Roman.fromInt(level)).toString();
 
-		if (Effects.getInstance().getEffectFromLore(loreString, true) == null) {
+		if (effects.getEffectFromLore(loreString, true) == null) {
 			sender.sendMessage(Color.BAD + "Invalid effect " + loreString + Color.BAD + "! Try tab completing.");
 			return true;
 		}
 
-		meta.setLore(Effects.getInstance().organizeEffectLore(meta.getLore(), true, true, loreString));
+		meta.setLore(effects.organizeEffectLore(meta.getLore(), true, true, loreString));
 		hand.setItemMeta(meta);
 		sender.sendMessage(Color.GOOD + "Added " + loreString);
 		return true;
@@ -108,7 +112,7 @@ public class EffectsCommand extends SblockCommand {
 			matches.add("1");
 			return matches;
 		}
-		for (String effectName : Effects.getInstance().getAllEffectNames()) {
+		for (String effectName : effects.getAllEffectNames()) {
 			if (StringUtil.startsWithIgnoreCase(effectName, args[0])) {
 				matches.add(effectName);
 			}

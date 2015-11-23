@@ -2,8 +2,9 @@ package co.sblock.effects.effect.misc;
 
 import org.bukkit.entity.LivingEntity;
 
-import co.sblock.effects.effect.Effect;
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorPassive;
+import co.sblock.effects.effect.Effect;
 
 /**
  * Effect for indicating that the user has alchemized a computer into an object.
@@ -12,8 +13,8 @@ import co.sblock.effects.effect.BehaviorPassive;
  */
 public class EffectComputer extends Effect implements BehaviorPassive {
 
-	public EffectComputer() {
-		super(10, 1, 1, "Computer");
+	public EffectComputer(Sblock plugin) {
+		super(plugin, 10, 1, 1, "Computer");
 	}
 
 	@Override

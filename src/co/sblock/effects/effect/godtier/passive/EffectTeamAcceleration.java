@@ -10,6 +10,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
@@ -27,8 +28,8 @@ import net.md_5.bungee.api.ChatColor;
 public class EffectTeamAcceleration extends Effect implements BehaviorCooldown, BehaviorGodtier,
 		BehaviorPassive {
 
-	public EffectTeamAcceleration() {
-		super(1000, 3, 20, "Team Acceleration");
+	public EffectTeamAcceleration(Sblock plugin) {
+		super(plugin, 1000, 3, 20, "Team Acceleration");
 	}
 
 	@Override

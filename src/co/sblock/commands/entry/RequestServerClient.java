@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
@@ -25,8 +26,8 @@ import co.sblock.users.Users;
 public class RequestServerClient extends SblockCommand {
 
 	private final Map<UUID, Pair<UUID, Boolean>> pending;
-	public RequestServerClient() {
-		super("reqserver");
+	public RequestServerClient(Sblock plugin) {
+		super(plugin, "reqserver");
 		this.setDescription("Accept an open request!");
 		this.setUsage("/acceptrequest");
 		this.setAliases("reqclient", "reqyes", "reqno");
@@ -68,15 +69,15 @@ public class RequestServerClient extends SblockCommand {
 			return;
 		}
 		Pair<UUID, Boolean> pair = pending.remove(player.getUniqueId());
-		OfflineUser server = Users.getGuaranteedUser(pair.getRight() ? player.getUniqueId() : pair.getLeft());
-		OfflineUser client = Users.getGuaranteedUser(pair.getRight() ? pair.getLeft() : player.getUniqueId());
+		OfflineUser server = Users.getGuaranteedUser(((Sblock) getPlugin()), pair.getRight() ? player.getUniqueId() : pair.getLeft());
+		OfflineUser client = Users.getGuaranteedUser(((Sblock) getPlugin()), pair.getRight() ? pair.getLeft() : player.getUniqueId());
 
 		if (server.getClient() != null) {
-			Users.getGuaranteedUser(server.getClient()).setServer(null);
+			Users.getGuaranteedUser(((Sblock) getPlugin()), server.getClient()).setServer(null);
 		}
 		server.setClient(client.getUUID());
 		if (client.getServer() != null) {
-			OfflineUser oldServer = Users.getGuaranteedUser(client.getServer());
+			OfflineUser oldServer = Users.getGuaranteedUser(((Sblock) getPlugin()), client.getServer());
 			oldServer.setClient(null);
 			if (oldServer.isOnline()) {
 				oldServer.getOnlineUser().stopServerMode();

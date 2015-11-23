@@ -30,8 +30,8 @@ public class OopsCommand extends SblockCommand {
 	private final String oopsPrefix;
 	private final List<String> aliases, reusable;
 
-	public OopsCommand() {
-		super("oops");
+	public OopsCommand(Sblock plugin) {
+		super(plugin, "oops");
 		this.setAliases("fuck", "opps");
 		this.setDescription("Suggests fixes to commands.");
 		this.setUsage("/oops");
@@ -73,7 +73,7 @@ public class OopsCommand extends SblockCommand {
 	}
 
 	private String getMatchingCommand(CommandSender sender, String commandName) {
-		SimpleCommandMap commandMap = Sblock.getInstance().getCommandMap();
+		SimpleCommandMap commandMap = ((Sblock) getPlugin()).getCommandMap();
 		if (commandMap.getCommand(commandName) != null) {
 			// Valid command, nothing to oops.
 			return null;
@@ -81,7 +81,7 @@ public class OopsCommand extends SblockCommand {
 
 		List<String> discordWhitelist;
 		if (sender instanceof DiscordPlayer) {
-			discordWhitelist = Sblock.getInstance().getConfig().getStringList("discord.command-whitelist");
+			discordWhitelist = getPlugin().getConfig().getStringList("discord.command-whitelist");
 		} else {
 			discordWhitelist = null;
 		}

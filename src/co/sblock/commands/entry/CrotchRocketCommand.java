@@ -2,7 +2,6 @@ package co.sblock.commands.entry;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -10,6 +9,7 @@ import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.ImmutableList;
@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.packets.ParticleEffectWrapper;
-import co.sblock.events.packets.ParticleUtils;
+import co.sblock.micromodules.ParticleUtils;
 
 /**
  * SblockCommand for riding a firework in style.
@@ -26,11 +26,14 @@ import co.sblock.events.packets.ParticleUtils;
  */
 public class CrotchRocketCommand extends SblockCommand {
 
-	public CrotchRocketCommand() {
-		super("crotchrocket");
+	private final ParticleUtils particles;
+
+	public CrotchRocketCommand(Sblock plugin) {
+		super(plugin, "crotchrocket");
 		this.setDescription("Uncomfortably fun!");
 		this.setUsage("/crotchrocket");
 		this.setPermissionLevel("felt");
+		this.particles = plugin.getModule(ParticleUtils.class);
 	}
 
 	@Override
@@ -52,25 +55,24 @@ public class CrotchRocketCommand extends SblockCommand {
 		firework.setFireworkMeta(fm);
 		firework.setPassenger(entity);
 
-		ParticleUtils.getInstance().addEntity(firework, new ParticleEffectWrapper(Effect.FIREWORKS_SPARK, 5));
+		particles.addEntity(firework, new ParticleEffectWrapper(Effect.FIREWORKS_SPARK, 5));
 
-		final int velocityCorrectionTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sblock.getInstance(), new Runnable() {
+		new BukkitRunnable() {
+
+			private int count = 0;
 
 			@Override
 			public void run() {
+				if (count > 39) {
+					particles.removeAllEffects(firework);
+					firework.remove();
+					cancel();
+					return;
+				}
+				++count;
 				firework.setVelocity(new Vector(0, 2, 0));
 			}
-		}, 0, 1L);
-
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
-
-			@Override
-			public void run() {
-				ParticleUtils.getInstance().removeAllEffects(firework);
-				Bukkit.getScheduler().cancelTask(velocityCorrectionTask);
-				firework.remove();
-			}
-		}, 40L);
+		}.runTaskTimer(getPlugin(), 0L, 1L);
 		return true;
 	}
 

@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import co.sblock.machines.Machines;
+
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -18,7 +20,8 @@ public class Nope extends Program {
 
 	private final ItemStack icon;
 
-	public Nope() {
+	public Nope(Machines machines) {
+		super(machines);
 		icon = new ItemStack(Material.BARRIER);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.RED + "Currently Unavailable");

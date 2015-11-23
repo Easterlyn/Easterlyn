@@ -24,7 +24,7 @@ import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.event.SblockAsyncChatEvent;
-import co.sblock.utilities.Cooldowns;
+import co.sblock.micromodules.Cooldowns;
 import co.sblock.utilities.DummyPlayer;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
@@ -39,8 +39,9 @@ import net.md_5.bungee.api.chat.TextComponent;
  * 
  * @author Jikoo
  */
-public class CleverHal implements HalMessageHandler {
+public class CleverHal extends HalMessageHandler {
 
+	private final Cooldowns cooldowns;
 	private final Pattern anyPattern, exactPattern, whitespacePattern;
 	private final ChatterBotSession bot;
 	private final Set<Pattern> ignoreMatches;
@@ -48,7 +49,9 @@ public class CleverHal implements HalMessageHandler {
 	private final MessageBuilder noSpam;
 	private final DummyPlayer dummy;
 
-	public CleverHal() {
+	public CleverHal(Sblock plugin) {
+		super(plugin);
+		this.cooldowns = plugin.getModule(Cooldowns.class);
 		ChatterBot chatterBot = null;
 		try {
 			chatterBot = new ChatterBotFactory().create(ChatterBotType.CLEVERBOT);
@@ -78,9 +81,9 @@ public class CleverHal implements HalMessageHandler {
 				+ "for anything Hal says.\n\n" + Color.BAD_EMPHASIS + "Unless it's awesome.\n\n"
 				+ Color.COMMAND + "/join #halchat" + Color.BAD + " to spam usage.");
 
-		noSpam = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
+		noSpam = new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + "Lil Hal")
 				.setNameClick("/join #halchat").setNameHover(hover).setChannelClick("@#halchat ")
-				.setMessage( JSONUtil.fromLegacyText(ChatColor.RED + "To spam with me, join #halchat."));
+				.setMessage(JSONUtil.fromLegacyText(ChatColor.RED + "To spam with me, join #halchat."));
 
 		dummy = new DummyPlayer();
 	}
@@ -103,7 +106,6 @@ public class CleverHal implements HalMessageHandler {
 		}
 		String channel = msg.getChannel().getName();
 		if (!channel.equals("#halchat")) {
-			Cooldowns cooldowns = Cooldowns.getInstance();
 			if (cooldowns.getGlobalRemainder("cleverhal" + channel) > 0) {
 				if (msg.getSender() == null) {
 					return true;
@@ -140,7 +142,7 @@ public class CleverHal implements HalMessageHandler {
 					e.printStackTrace();
 					return;
 				}
-				Message message = new MessageBuilder().setSender(ChatColor.DARK_RED + "Lil Hal")
+				Message message = new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + "Lil Hal")
 						.setMessage(ChatColor.RED + msg).setChannel(channel)
 						.setChannelClick("@#halchat ").setNameClick("/join #halchat")
 						.setNameHover(hover).toMessage();
@@ -152,8 +154,8 @@ public class CleverHal implements HalMessageHandler {
 					}
 				});
 				Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, dummy, players, message, false));
-				Cooldowns.getInstance().clearGlobalCooldown("pendinghal" + channel.getName());
+				cooldowns.clearGlobalCooldown("pendinghal" + channel.getName());
 			}
-		}.runTaskAsynchronously(Sblock.getInstance());
+		}.runTaskAsynchronously(getPlugin());
 	}
 }

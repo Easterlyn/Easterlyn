@@ -29,9 +29,12 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Email extends Program {
 
+	private final Effects effects;
 	private final ItemStack icon;
 
-	protected Email() {
+	public Email(Machines machines) {
+		super(machines);
+		this.effects = machines.getPlugin().getModule(Effects.class);
 		icon = new ItemStack(Material.WRITTEN_BOOK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "Email");
@@ -53,16 +56,16 @@ public class Email extends Program {
 			player.sendMessage(Color.BAD + "You can only manage your mail while playing normally.");
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getMachines().getPlugin(), player.getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
 			player.closeInventory();
 			player.sendMessage(Color.BAD + "You're too busy helping your client to check your email.");
 			return;
 		}
 
-		Inventory inventory = ((Computer) Machines.getMachineByName("Computer")).getInventory(9);
+		Inventory inventory = ((Computer) getMachines().getMachineByName("Computer")).getInventory(9);
 		boolean atComputer = clicked != null && !clicked.getItemMeta().hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)
-				|| Effects.getInstance().getAllEffects(player).containsKey(Effects.getInstance().getEffect("Computer"));
+				|| effects.getAllEffects(player).containsKey(effects.getEffect("Computer"));
 		ItemStack inbox = Programs.getProgramByName("Inbox").getIcon();
 		if (!atComputer) {
 			ItemMeta inMeta = inbox.getItemMeta();

@@ -45,22 +45,29 @@ import net.md_5.bungee.api.ChatColor;
 public class Captcha extends Module {
 
 	protected static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
-	private static Captcha instance;
 
-	private Map<Long, String> hashCacheAccess;
-	private Map<String, ItemStack> hashCache;
+	private final Map<Long, String> hashCacheAccess;
+	private final Map<String, ItemStack> hashCache;
 
-	@Override
-	protected void onEnable() {
-		instance = this;
+	private Effects effects;
+	private Machines machines;
 
-		CruxiteDowel.getGrist();
-		insertCaptchaRecipe();
+	public Captcha(Sblock plugin) {
+		super(plugin);
 
 		hashCacheAccess = new TreeMap<>();
 		hashCache = new HashMap<>();
+	}
 
-		saveItemStack("00000000", Machines.getMachineByName("PGO").getUniqueDrop());
+	@Override
+	protected void onEnable() {
+		CruxiteDowel.getGrist();
+		insertCaptchaRecipe();
+
+		effects = getPlugin().getModule(Effects.class);
+		machines = getPlugin().getModule(Machines.class);
+
+		saveItemStack("00000000", machines.getMachineByName("PGO").getUniqueDrop());
 
 		new BukkitRunnable() {
 			@Override
@@ -74,12 +81,12 @@ public class Captcha extends Module {
 					saveItemStack(hash, hashCache.remove(hash));
 				}
 			}
-		}.runTaskTimer(Sblock.getInstance(), 600L, 600L);
+		}.runTaskTimer(getPlugin(), 600L, 600L);
 	}
 
 	public boolean saveItemStack(String hash, ItemStack item) {
 		try {
-			File file = new File(Sblock.getInstance().getCaptchaDataFolder(), hash);
+			File file = new File(getPlugin().getCaptchaDataFolder(), hash);
 			if (file.exists()) {
 				return false;
 			}
@@ -113,7 +120,7 @@ public class Captcha extends Module {
 			return hashCache.get(hash).clone();
 		}
 		try {
-			File file = new File(Sblock.getInstance().getCaptchaDataFolder(), hash);
+			File file = new File(getPlugin().getCaptchaDataFolder(), hash);
 			if (!file.exists()) {
 				return null;
 			}
@@ -219,11 +226,10 @@ public class Captcha extends Module {
 		for (Map.Entry<String, ItemStack> entry : hashCache.entrySet()) {
 			saveItemStack(entry.getKey(), entry.getValue());
 		}
-		instance = null;
 	}
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Sblock Captcha";
 	}
 
@@ -234,11 +240,11 @@ public class Captcha extends Module {
 	 * 
 	 * @return the Captchacard representing by this ItemStack
 	 */
-	public static ItemStack itemToCaptcha(ItemStack item) {
-		if (item.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
+	public ItemStack itemToCaptcha(ItemStack item) {
+		if (item.isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
 			return createLorecard(ChatColor.GRAY + "Computer I");
 		}
-		return instance.getCaptchaFor(instance.getHash(item));
+		return getCaptchaFor(getHash(item));
 	}
 
 	/**
@@ -249,7 +255,7 @@ public class Captcha extends Module {
 	 * 
 	 * @return the ItemStack represented by this Captchacard
 	 */
-	public static ItemStack captchaToItem(ItemStack card) {
+	public ItemStack captchaToItem(ItemStack card) {
 		return captchaToItem(card, false);
 	}
 
@@ -262,7 +268,7 @@ public class Captcha extends Module {
 	 * 
 	 * @return the ItemStack represented by this Captchacard
 	 */
-	private static ItemStack captchaToItem(ItemStack card, boolean loreCard) {
+	private ItemStack captchaToItem(ItemStack card, boolean loreCard) {
 		if (card == null) {
 			return null;
 		}
@@ -297,7 +303,7 @@ public class Captcha extends Module {
 				// Must be legacy. Break early.
 				break;
 			}
-			ItemStack item = instance.getItemStack(lore);
+			ItemStack item = getItemStack(lore);
 			if (item != null) {
 				return item;
 			}
@@ -317,7 +323,7 @@ public class Captcha extends Module {
 	 * 
 	 * @return the unpunched captchacard
 	 */
-	public static ItemStack captchaToPunch(ItemStack captcha) {
+	public ItemStack captchaToPunch(ItemStack captcha) {
 		if (!isCard(captcha)) {
 			return captcha;
 		}
@@ -330,7 +336,7 @@ public class Captcha extends Module {
 			return captcha;
 		}
 		ItemStack item = captchaToItem(captcha);
-		if (isCaptcha(item) || CruxiteDowel.expCost(item) == Integer.MAX_VALUE) {
+		if (isCaptcha(item) || CruxiteDowel.expCost(effects, item) == Integer.MAX_VALUE) {
 			return captcha;
 		}
 		captcha = itemToCaptcha(item);
@@ -412,15 +418,15 @@ public class Captcha extends Module {
 	 * @param item the ItemStack to check
 	 * @return
 	 */
-	public static boolean canCaptcha(ItemStack item) {
+	public boolean canCaptcha(ItemStack item) {
 		if (item == null || item.getType() == Material.AIR) {
 			return false;
 		}
-		if (item.isSimilar(Machines.getMachineByName("Computer").getUniqueDrop())) {
+		if (item.isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
 			// Computers can (and should) be alchemized.
 			return true;
 		}
-		for (ItemStack is : InventoryUtils.getUniqueItems()) {
+		for (ItemStack is : InventoryUtils.getUniqueItems(getPlugin())) {
 			if (is.isSimilar(item)) {
 				return false;
 			}
@@ -456,7 +462,7 @@ public class Captcha extends Module {
 	 * 
 	 * @return the ItemStack created or null if invalid cards are provided
 	 */
-	public static ItemStack createCombinedPunch(ItemStack card1, ItemStack card2) {
+	public ItemStack createCombinedPunch(ItemStack card1, ItemStack card2) {
 		if (isCaptcha(card1)) {
 			if (card2 != null) {
 				return null;
@@ -482,10 +488,10 @@ public class Captcha extends Module {
 		ItemStack item2 = captchaToItem(card2);
 		List<String> lore;
 		if (item2 != null && item2.hasItemMeta() && item2.getItemMeta().hasLore()) {
-			lore = Effects.getInstance().organizeEffectLore(item.getItemMeta().getLore(), false,
+			lore = effects.organizeEffectLore(item.getItemMeta().getLore(), false,
 					false, item2.getItemMeta().getLore().toArray(new String[0]));
 		} else {
-			lore = Effects.getInstance().organizeEffectLore(item.getItemMeta().getLore(), false,
+			lore = effects.organizeEffectLore(item.getItemMeta().getLore(), false,
 					false);
 		}
 		ItemMeta im = item.getItemMeta();
@@ -499,7 +505,7 @@ public class Captcha extends Module {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void handleCaptcha(InventoryClickEvent event) {
+	public void handleCaptcha(InventoryClickEvent event) {
 		boolean hotbar = event.getAction().name().contains("HOTBAR");
 		ItemStack blankCaptcha;
 		ItemStack toCaptcha;
@@ -562,7 +568,7 @@ public class Captcha extends Module {
 		return card;
 	}
 
-	public static int convert(Player player) {
+	public int convert(Player player) {
 		int conversions = 0;
 		nextItem: for (int i = 0; i < player.getInventory().getSize(); i++) {
 			ItemStack is = player.getInventory().getItem(i);
@@ -592,9 +598,5 @@ public class Captcha extends Module {
 			player.getInventory().setItem(i, captchas);
 		}
 		return conversions;
-	}
-
-	public static Captcha getInstance() {
-		return instance;
 	}
 }

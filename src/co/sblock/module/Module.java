@@ -14,6 +14,12 @@ import co.sblock.utilities.RegexUtils;
 public abstract class Module {
 
 	private boolean enabled = false;
+	private final Sblock plugin;
+
+	public Module(Sblock plugin) {
+		this.plugin = plugin;
+		getLogger().info("Initializing module " + getName());
+	}
 
 	/**
 	 * Called when the Module is enabled.
@@ -29,7 +35,7 @@ public abstract class Module {
 	 * To be used instead of the reflective class.getSimpleName() method
 	 * @return the name of this module
 	 */
-	protected abstract String getModuleName();
+	public abstract String getName();
 
 	/**
 	 * Enables the Module.
@@ -37,7 +43,7 @@ public abstract class Module {
 	 * @return the Module enabled
 	 */
 	public final Module enable() {
-		this.getLogger().info("Enabling module " + this.getModuleName());
+		this.getLogger().info("Enabling module " + this.getName());
 
 		if (!Sblock.areDependenciesPresent(getClass())) {
 			return this;
@@ -47,7 +53,7 @@ public abstract class Module {
 			this.onEnable();
 			enabled = true;
 		} catch (Exception e) {
-			getLogger().severe("Unhandled exception in module " + this.getModuleName() + ". Module failed to enable.");
+			getLogger().severe("Unhandled exception in module " + this.getName() + ". Module failed to enable.");
 			getLogger().severe(RegexUtils.getTrace(e));
 		}
 		return this;
@@ -59,7 +65,7 @@ public abstract class Module {
 	 * @return the Module disabled
 	 */
 	public final Module disable() {
-		this.getLogger().info("Disabled module " + this.getModuleName());
+		this.getLogger().info("Disabled module " + this.getName());
 		try {
 			this.onDisable();
 			enabled = false;
@@ -83,9 +89,18 @@ public abstract class Module {
 	 * Gets a Logger that the plugin may use whose name is the same as this
 	 * Module's class name.
 	 * 
-	 * @return the Log
+	 * @return the Logger
 	 */
 	public final Logger getLogger() {
-		return Logger.getLogger(getModuleName());
+		return Logger.getLogger(getName());
+	}
+
+	/**
+	 * Gets the Sblock instance that loaded this Module.
+	 * 
+	 * @return the Sblock
+	 */
+	public final Sblock getPlugin() {
+		return this.plugin;
 	}
 }

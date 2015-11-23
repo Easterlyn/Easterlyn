@@ -7,7 +7,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -15,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 import co.sblock.Sblock;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.MeteoriteComponent;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.OnlineUser;
@@ -27,7 +27,16 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
  * 
  * @author Jikoo
  */
-public class DamageByEntityListener implements Listener {
+public class DamageByEntityListener extends SblockListener {
+
+	private final Effects effects;
+	private final Events events;
+
+	public DamageByEntityListener(Sblock plugin) {
+		super(plugin);
+		this.effects = plugin.getModule(Effects.class);
+		this.events = plugin.getModule(Events.class);
+	}
 
 	/**
 	 * EventHandler for EntityDamageByEntityEvents.
@@ -62,7 +71,7 @@ public class DamageByEntityListener implements Listener {
 
 		Player damagerPlayer = Bukkit.getPlayer(damager);
 		if (damagerPlayer != null) {
-			Effects.getInstance().handleEvent(event, damagerPlayer, false);
+			effects.handleEvent(event, damagerPlayer, false);
 		}
 
 		if (!(event.getEntity() instanceof Player)) {
@@ -75,22 +84,22 @@ public class DamageByEntityListener implements Listener {
 			return;
 		}
 
-		OfflineUser damagerUser = Users.getGuaranteedUser(damager);
-		OfflineUser damagedUser = Users.getGuaranteedUser(damaged);
+		OfflineUser damagerUser = Users.getGuaranteedUser(getPlugin(), damager);
+		OfflineUser damagedUser = Users.getGuaranteedUser(getPlugin(), damaged);
 		if (damagerUser instanceof OnlineUser && ((OnlineUser) damagerUser).isServer()
 				|| damagedUser instanceof OnlineUser && ((OnlineUser) damagedUser).isServer()) {
 			event.setCancelled(true);
 			return;
 		}
 
-		BukkitTask oldTask = Events.getInstance().getPVPTasks().put(damaged, new BukkitRunnable() {
+		BukkitTask oldTask = events.getPVPTasks().put(damaged, new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (Events.getInstance().getPVPTasks().containsKey(damaged)) {
-					Events.getInstance().getPVPTasks().remove(damaged);
+				if (events.getPVPTasks().containsKey(damaged)) {
+					events.getPVPTasks().remove(damaged);
 				}
 			}
-		}.runTaskLater(Sblock.getInstance(), 100L));
+		}.runTaskLater(getPlugin(), 100L));
 		if (oldTask != null) {
 			oldTask.cancel();
 		}

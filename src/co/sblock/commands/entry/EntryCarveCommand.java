@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
 import co.sblock.commands.SblockCommand;
@@ -16,8 +17,8 @@ import co.sblock.utilities.InventoryUtils;
  */
 public class EntryCarveCommand extends SblockCommand {
 
-	public EntryCarveCommand() {
-		super("carve");
+	public EntryCarveCommand(Sblock plugin) {
+		super(plugin, "carve");
 		this.setUsage("/carve with a punchcard in hand");
 		this.setPermissionLevel("denizen");
 	}

@@ -20,8 +20,8 @@ import co.sblock.commands.SblockCommand;
  */
 public class CommandInformationCommand extends SblockCommand {
 
-	public CommandInformationCommand() {
-		super("cmdinfo");
+	public CommandInformationCommand(Sblock plugin) {
+		super(plugin, "cmdinfo");
 		this.setDescription("Prints out information about the specified command.");
 		this.setUsage("/cmdinfo <command>");
 		this.setPermissionLevel("felt");
@@ -31,9 +31,9 @@ public class CommandInformationCommand extends SblockCommand {
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Command command;
 		if (args.length > 0) {
-			command = Sblock.getInstance().getCommandMap().getCommand(args[0]);
+			command = ((Sblock) getPlugin()).getCommandMap().getCommand(args[0]);
 		} else {
-			command = Sblock.getInstance().getCommandMap().getCommand("cmdinfo");
+			command = ((Sblock) getPlugin()).getCommandMap().getCommand("cmdinfo");
 		}
 		if (command == null) {
 			sender.sendMessage(Color.BAD + "Invalid command! /cmdinfo <command>");
@@ -67,7 +67,7 @@ public class CommandInformationCommand extends SblockCommand {
 		args[0] = args[0].toLowerCase();
 		List<String> matches = new ArrayList<>();
 		try {
-			for (String command : Sblock.getInstance().getAllCommandAliases()) {
+			for (String command : ((Sblock) getPlugin()).getAllCommandAliases()) {
 				if (command.startsWith(args[0])) {
 					matches.add(command);
 				}

@@ -3,6 +3,7 @@ package co.sblock.commands.chat;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 
 import net.md_5.bungee.api.ChatColor;
@@ -14,8 +15,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class DocScratchCommand extends SblockCommand {
 
-	public DocScratchCommand() {
-		super("o");
+	public DocScratchCommand(Sblock plugin) {
+		super(plugin, "o");
 		this.setDescription("&a> Be the white text guy");
 		this.setUsage("/o <text>");
 		this.setPermissionLevel("horrorterror");

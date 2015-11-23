@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.computer.Program;
@@ -36,8 +37,8 @@ public class Computer extends Machine implements InventoryHolder {
 
 	private final ItemStack drop;
 
-	public Computer() {
-		super(new Shape());
+	public Computer(Sblock plugin, Machines machines) {
+		super(plugin, machines, new Shape());
 
 		drop = new ItemStack(Material.JUKEBOX);
 		ItemMeta meta = drop.getItemMeta();
@@ -54,7 +55,7 @@ public class Computer extends Machine implements InventoryHolder {
 	 */
 	@Override
 	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
-		if (Machines.getInstance().hasComputer(event.getPlayer(), getKey(storage))) {
+		if (getMachines().hasComputer(event.getPlayer(), getKey(storage))) {
 			if (event.getPlayer().hasPermission("sblock.horrorterror")) {
 				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
 			} else {
@@ -106,7 +107,7 @@ public class Computer extends Machine implements InventoryHolder {
 				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 					event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
 				}
-				OfflineUser u = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+				OfflineUser u = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
 				u.addProgram(program.getName());
 				return true;
 			}
@@ -128,7 +129,7 @@ public class Computer extends Machine implements InventoryHolder {
 
 	public void openInventory(Player player) {
 		Inventory inventory = getInventory();
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), player.getUniqueId());
 		for (Program program : Programs.getPrograms()) {
 			if (program.isDefault()) {
 				inventory.addItem(program.getIcon());

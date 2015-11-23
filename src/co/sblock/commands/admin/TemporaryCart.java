@@ -10,6 +10,7 @@ import org.bukkit.util.Vector;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.FreeCart;
 
@@ -20,8 +21,11 @@ import co.sblock.micromodules.FreeCart;
  */
 public class TemporaryCart extends SblockCommand {
 
-	public TemporaryCart() {
-		super("tempcart");
+	private final FreeCart carts;
+
+	public TemporaryCart(Sblock plugin) {
+		super(plugin, "tempcart");
+		this.carts = plugin.getModule(FreeCart.class);
 		this.setDescription("Spawns a temporary minecart with specified velocity vector at location, then mounts player.");
 		this.setUsage("/tempcart <player> <locX> <locY> <locZ> <vecX> <vecZ>");
 		this.setPermissionLevel("denizen");
@@ -39,7 +43,7 @@ public class TemporaryCart extends SblockCommand {
 		try {
 			Location cartDest = new Location(pTarget.getWorld(), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
 			Vector cartVector = new Vector(Double.valueOf(args[4]), 0, Double.valueOf(args[5]));
-			FreeCart.getInstance().spawnCart(pTarget, cartDest, cartVector);
+			carts.spawnCart(pTarget, cartDest, cartVector);
 			return true;
 		} catch (NumberFormatException e) {
 			return false;

@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
@@ -17,12 +18,15 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class CaptchaHashCommand extends SblockCommand {
 
-	public CaptchaHashCommand() {
-		super("hash");
+	private final Captcha captcha;
+
+	public CaptchaHashCommand(Sblock plugin) {
+		super(plugin, "hash");
 		this.setDescription("Create a new hash for your item in hand, or get a captcha for a specific hash.");
 		this.setUsage("/hash get <hash> | With item in hand, /hash add <hash>");
 		this.setPermissionLevel("denizen");
 		this.setPermissionMessage(ChatColor.GOLD + "BROWNS!");
+		captcha = plugin.getModule(Captcha.class);
 	}
 
 	@Override
@@ -45,7 +49,7 @@ public class CaptchaHashCommand extends SblockCommand {
 			if (item == null) {
 				return false;
 			}
-			if (Captcha.getInstance().saveItemStack(args[1], item)) {
+			if (captcha.saveItemStack(args[1], item)) {
 				sender.sendMessage(Color.GOOD + "Saved to " + args[1]);
 				return true;
 			} else {
@@ -55,7 +59,7 @@ public class CaptchaHashCommand extends SblockCommand {
 			}
 		}
 		if (args[0].equals("get")) {
-			ItemStack item = Captcha.getInstance().getCaptchaFor(args[1]);
+			ItemStack item = captcha.getCaptchaFor(args[1]);
 			if (item == null) {
 				sender.sendMessage(Color.BAD + "No item is stored by that hash.");
 				return true;

@@ -9,6 +9,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import co.sblock.Sblock;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Shape;
 
 import net.md_5.bungee.api.ChatColor;
@@ -22,8 +24,8 @@ public class PGO extends Machine {
 
 	private final ItemStack drop;
 
-	public PGO() {
-		super(new Shape());
+	public PGO(Sblock plugin, Machines machines) {
+		super(plugin, machines, new Shape());
 		drop = new ItemStack(Material.DIRT);
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Perfectly Generic Object");

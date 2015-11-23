@@ -9,7 +9,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import co.sblock.Sblock;
 import co.sblock.captcha.CruxiteDowel;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
@@ -27,10 +29,12 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Cruxtruder extends Machine {
 
+	private final Entry entry;
 	private final ItemStack drop;
 
-	public Cruxtruder() {
-		super(new Shape());
+	public Cruxtruder(Sblock plugin, Machines machines) {
+		super(plugin, machines, new Shape());
+		this.entry = plugin.getModule(Entry.class);
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.SEA_LANTERN);
 		shape.setVectorData(new Vector(0, 0, 0), m);
@@ -58,11 +62,11 @@ public class Cruxtruder extends Machine {
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
 		Location broken = event.getBlock().getLocation();
 		if (getKey(storage).add(new Vector(0, 1, 0)).equals(broken)) {
-			OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-			if (Entry.getEntry().canStart(user)) {
-				Entry.getEntry().startEntry(user, event.getBlock().getLocation());
+			OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
+			if (entry.canStart(user)) {
+				entry.startEntry(user, event.getBlock().getLocation());
 			}
-			if (user.getProgression() != ProgressionState.NONE || Entry.getEntry().isEntering(user)) {
+			if (user.getProgression() != ProgressionState.NONE || entry.isEntering(user)) {
 				event.getBlock().setType(Material.GLASS);
 			} else {
 				return true;

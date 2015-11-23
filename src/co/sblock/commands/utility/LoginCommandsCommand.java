@@ -13,6 +13,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.OfflineUser;
@@ -25,8 +26,8 @@ import co.sblock.users.Users;
  */
 public class LoginCommandsCommand extends SblockCommand {
 
-	public LoginCommandsCommand() {
-		super("onlogin");
+	public LoginCommandsCommand(Sblock plugin) {
+		super(plugin, "onlogin");
 		this.setDescription("Manipulate commands executed on login.");
 		this.setUsage("/onlogin list\n/onlogin add /command additional arguments\n"
 				+ "/onlogin delete [number]");
@@ -54,7 +55,7 @@ public class LoginCommandsCommand extends SblockCommand {
 		}
 
 		Player player = (Player) sender;
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
 		args[0] = args[0].toLowerCase();
 
 		if (args[0].equals("list")) {

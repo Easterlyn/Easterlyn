@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 
-import co.sblock.chat.Chat;
+import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.users.OfflineUser;
 import co.sblock.users.Users;
@@ -27,8 +27,8 @@ public class NormalChannel extends Channel {
 	protected final Set<UUID> banList;
 	private final AtomicLong lastAccessed;
 
-	public NormalChannel(String name, AccessLevel access, UUID creator, long lastAccessed) {
-		super(name, creator);
+	public NormalChannel(Sblock sblock, String name, AccessLevel access, UUID creator, long lastAccessed) {
+		super(sblock, name, creator);
 		this.access = access;
 		approvedList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 		modList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
@@ -123,7 +123,7 @@ public class NormalChannel extends Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -149,7 +149,7 @@ public class NormalChannel extends Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -175,7 +175,7 @@ public class NormalChannel extends Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -197,7 +197,7 @@ public class NormalChannel extends Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -225,7 +225,7 @@ public class NormalChannel extends Channel {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(userID);
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -245,7 +245,7 @@ public class NormalChannel extends Channel {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			OfflineUser targ = Users.getGuaranteedUser(target);
+			OfflineUser targ = Users.getGuaranteedUser(getPlugin(), target);
 			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
 			if (this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -262,7 +262,7 @@ public class NormalChannel extends Channel {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			OfflineUser targ = Users.getGuaranteedUser(target);
+			OfflineUser targ = Users.getGuaranteedUser(getPlugin(), target);
 			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
 			if (!this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -314,15 +314,15 @@ public class NormalChannel extends Channel {
 		}
 		this.sendMessage(ChatMsgs.onChannelDisband(this.getName()));
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			Users.getGuaranteedUser(userID).removeListeningSilent(this);
+			Users.getGuaranteedUser(getPlugin(), userID).removeListeningSilent(this);
 		}
-		Chat.getChat().getChannelManager().dropChannel(this.name);
+		getChannelManager().dropChannel(this.name);
 	}
 
 	@Override
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			OfflineUser u = Users.getGuaranteedUser(userID);
+			OfflineUser u = Users.getGuaranteedUser(getPlugin(), userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;

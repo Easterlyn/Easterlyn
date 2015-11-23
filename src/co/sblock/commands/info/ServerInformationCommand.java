@@ -15,6 +15,7 @@ import org.bukkit.entity.Entity;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockAsynchronousCommand;
 
@@ -25,8 +26,8 @@ import co.sblock.commands.SblockAsynchronousCommand;
  */
 public class ServerInformationCommand extends SblockAsynchronousCommand {
 
-	public ServerInformationCommand() {
-		super("serverinfo");
+	public ServerInformationCommand(Sblock plugin) {
+		super(plugin, "serverinfo");
 		this.setDescription("Detailed info about the server or a world.");
 		this.setUsage("/serverinfo [world] [chunk|entity|tile]");
 		this.setPermissionLevel("horrorterror");

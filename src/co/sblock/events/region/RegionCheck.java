@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import co.sblock.Sblock;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.users.Region;
 
@@ -122,9 +121,6 @@ public class RegionCheck extends BukkitRunnable {
 		String titleCommand = "title " + p.getName() + " times 0 30 0";
 		String title = "title " + p.getName() + " title {text:\"Approaching " + playerQueue.get(p) + "\",color:\"" + Region.getRegion(playerQueue.get(p)).getColor().getName() + "\"}";
 		String subtitle = "title " + p.getName() + " subtitle {text:\"Continue " + Direction.getFacingDirection(p).name() + " to transfer in " + worldMap.get(playerQueue.get(p)).get(p) + " seconds\"}";
-		Sblock.getLog().info(titleCommand);
-		Sblock.getLog().info(title);
-		Sblock.getLog().info(subtitle);
 
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), titleCommand);
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), title);

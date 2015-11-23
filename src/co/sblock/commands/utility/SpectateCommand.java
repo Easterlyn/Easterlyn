@@ -11,6 +11,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Spectators;
@@ -25,8 +26,10 @@ import co.sblock.users.Users;
  */
 public class SpectateCommand extends SblockCommand {
 
-	public SpectateCommand() {
-		super("spectate");
+	private final Spectators spectators;
+
+	public SpectateCommand(Sblock plugin) {
+		super(plugin, "spectate");
 		this.setAliases("spec", "spectator");
 		this.setDescription("Player: Become the ghost (toggles spectator mode)");
 		this.setUsage("To toggle spectate mode, use no arguments.\n"
@@ -42,6 +45,7 @@ public class SpectateCommand extends SblockCommand {
 		}
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock.helper", true).recalculatePermissibles();
+		this.spectators = plugin.getModule(Spectators.class);
 	}
 
 	@Override
@@ -51,7 +55,7 @@ public class SpectateCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		OfflineUser user = Users.getGuaranteedUser(player.getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
 		if (args.length > 0) {
 			args[0] = args[0].toLowerCase();
 			if (args[0].equals("on") || args[0].equals("allow") || args[0].equals("true")) {
@@ -73,16 +77,16 @@ public class SpectateCommand extends SblockCommand {
 			sender.sendMessage(Color.BAD + "Perhaps you should focus on helping your client!");
 			return true;
 		}
-		if (Spectators.getInstance().isSpectator(player.getUniqueId())) {
+		if (spectators.isSpectator(player.getUniqueId())) {
 			sender.sendMessage(Color.GOOD + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
-			Spectators.getInstance().removeSpectator(player);
+			spectators.removeSpectator(player);
 		} else {
 			if (player.getGameMode() != GameMode.SURVIVAL) {
 				sender.sendMessage(Color.BAD + "You can only enter spectate mode from survival.");
 				return true;
 			}
 			sender.sendMessage(Color.GOOD + "You feel a tingling sensation about your extremities as you hover up slightly.");
-			Spectators.getInstance().addSpectator(player);
+			spectators.addSpectator(player);
 		}
 		return true;
 	}

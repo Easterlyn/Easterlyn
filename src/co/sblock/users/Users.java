@@ -15,6 +15,7 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.module.Module;
 
@@ -25,16 +26,17 @@ import co.sblock.module.Module;
  */
 public class Users extends Module {
 
-	private static Users instance;
-
 	/* The Map of Player UUID and relevant SblockUsers currently online. */
 	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
 
+	public Users(Sblock plugin) {
+		super(plugin);
+	}
+
 	@Override
 	protected void onEnable() {
-		instance = this;
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			getGuaranteedUser(p.getUniqueId());
+			getGuaranteedUser(getPlugin(), p.getUniqueId());
 			team(p);
 		}
 	}
@@ -45,16 +47,11 @@ public class Users extends Module {
 			unloadUser(u.getUUID()).save();
 			unteam(u.getUUID().toString().replace("-", "").substring(0, 16));
 		}
-		instance = null;
 	}
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Sblock UserManager";
-	}
-
-	public static Users getInstance() {
-		return instance;
 	}
 
 	/**
@@ -63,11 +60,11 @@ public class Users extends Module {
 	 * @param uuid
 	 * @return
 	 */
-	public static OfflineUser getGuaranteedUser(UUID uuid) {
+	public static OfflineUser getGuaranteedUser(Sblock plugin, UUID uuid) {
 		if (users.containsKey(uuid)) {
 			return users.get(uuid);
 		}
-		OfflineUser user = OfflineUser.load(uuid);
+		OfflineUser user = OfflineUser.load(plugin, uuid);
 		if (user.isOnline()) {
 			user = user.getOnlineUser();
 			users.put(uuid, user);

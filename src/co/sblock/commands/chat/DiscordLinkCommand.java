@@ -1,7 +1,6 @@
 package co.sblock.commands.chat;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
@@ -10,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.ImmutableList;
 
+import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.Discord;
@@ -23,13 +23,14 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class DiscordLinkCommand extends SblockCommand {
 
+	private final Discord discord;
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	private final Random random = new Random();
 
-	public DiscordLinkCommand() {
-		super("link");
+	public DiscordLinkCommand(Sblock plugin) {
+		super(plugin, "link");
 		setDescription("Generate a code to link your Discord account with Minecraft");
 		setUsage(ChatColor.AQUA + "/link");
+		this.discord = plugin.getModule(Discord.class);
 	}
 
 	@Override
@@ -38,7 +39,6 @@ public class DiscordLinkCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		Discord discord = Discord.getInstance();
 		if (!discord.isEnabled()) {
 			sender.sendMessage(Color.BAD + "Discord link is currently nonfunctional!");
 			return true;
@@ -65,7 +65,7 @@ public class DiscordLinkCommand extends SblockCommand {
 	private String generateUniqueCode(UUID uuid, Discord discord) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 6; i++) {
-			sb.append(chars.charAt(random.nextInt(chars.length())));
+			sb.append(chars.charAt(((Sblock) getPlugin()).getRandom().nextInt(chars.length())));
 		}
 		String code = sb.toString();
 		if (discord.getAuthCodes().containsValue(code)) {

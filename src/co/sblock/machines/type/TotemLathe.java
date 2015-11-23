@@ -18,6 +18,7 @@ import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
 import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
@@ -36,10 +37,14 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class TotemLathe extends Machine	{
 
+	private final Entry entry;
+	private final MachineInventoryTracker tracker;
 	private final ItemStack drop;
 
-	public TotemLathe() {
-		super(new Shape());
+	public TotemLathe(Sblock plugin, Machines machines) {
+		super(plugin, machines, new Shape());
+		entry = plugin.getModule(Entry.class);
+		tracker = machines.getInventoryTracker();
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 2);
 		shape.setVectorData(new Vector(0, 0, 0), m);
@@ -80,8 +85,8 @@ public class TotemLathe extends Machine	{
 		if (event.getPlayer().isSneaking()) {
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
-		if (user != null && (user.getProgression() != ProgressionState.NONE || Entry.getEntry().isEntering(user))) {
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
+		if (user != null && (user.getProgression() != ProgressionState.NONE || entry.isEntering(user))) {
 			openInventory(event.getPlayer(), storage);
 		}
 		return true;
@@ -93,7 +98,7 @@ public class TotemLathe extends Machine	{
 	 * @param player the Player
 	 */
 	public void openInventory(Player player, ConfigurationSection storage) {
-		MachineInventoryTracker.getTracker().openVillagerInventory(player, this, getKey(storage));
+		tracker.openVillagerInventory(player, this, getKey(storage));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -151,12 +156,12 @@ public class TotemLathe extends Machine	{
 	 * @param name the name of the player who is using the Totem Lathe
 	 */
 	public void updateInventory(final UUID id) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
 			@Override
 			public void run() {
 				// Must re-obtain player or update doesn't seem to happen
 				Player player = Bukkit.getPlayer(id);
-				if (player == null || !MachineInventoryTracker.getTracker().hasMachineOpen(player)) {
+				if (player == null || !tracker.hasMachineOpen(player)) {
 					// Player has logged out or closed inventory. Inventories are per-player, ignore.
 					return;
 				}

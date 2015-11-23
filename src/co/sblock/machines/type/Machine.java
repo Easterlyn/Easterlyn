@@ -45,15 +45,38 @@ import co.sblock.users.Users;
  */
 public abstract class Machine {
 
+	private final Sblock plugin;
+	private final Machines machines;
 	private final Shape shape;
 
 	/**
 	 * Constructor for a Machine.
 	 * 
+	 * @param plugin the Plugin loading the Machine
 	 * @param shape the in-world representation of the machine
 	 */
-	Machine(Shape shape) {
+	Machine(Sblock plugin, Machines machines, Shape shape) {
+		this.plugin = plugin;
+		this.machines = machines;
 		this.shape = shape;
+	}
+
+	/**
+	 * Gets the Sblock instance loading this Machine.
+	 * 
+	 * @return the Sblock
+	 */
+	public Sblock getPlugin() {
+		return this.plugin;
+	}
+
+	/**
+	 * Gets the Machines instance loading this Machine.
+	 * 
+	 * @return the Machines
+	 */
+	public Machines getMachines() {
+		return this.machines;
 	}
 
 	/**
@@ -138,7 +161,7 @@ public abstract class Machine {
 		Direction direction = getDirection(storage);
 		for (Location location : shape.getBuildLocations(key, direction).keySet()) {
 			if (!location.equals(key) && (!location.getBlock().isEmpty()
-					|| Machines.getInstance().isExploded(location.getBlock()))) {
+					|| getMachines().isExploded(location.getBlock()))) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(Color.BAD + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed(storage);
@@ -146,7 +169,7 @@ public abstract class Machine {
 			}
 		}
 		this.assemble(key, direction, storage);
-		OfflineUser user = Users.getGuaranteedUser(event.getPlayer().getUniqueId());
+		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
 		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
 				&& user.getUUID().toString().equals(storage.getString("owner"))) {
 			storage.set("owner", user.getClient().toString());
@@ -178,7 +201,7 @@ public abstract class Machine {
 	public void reassemble(ConfigurationSection storage) {
 		final Location key = getKey(storage);
 		final HashMap<Location, ItemStack[]> invents = new HashMap<Location, ItemStack[]>();
-		for (Location l : Machines.getInstance().getMachineBlocks(key)) {
+		for (Location l : getMachines().getMachineBlocks(key)) {
 			Block b = l.getBlock();
 			if (b.getState() instanceof InventoryHolder) {
 				InventoryHolder ih = (InventoryHolder) b.getState();
@@ -188,7 +211,7 @@ public abstract class Machine {
 			b.setType(Material.AIR, false);
 		}
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			@Override
 			public void run() {
 				assemble(key, getDirection(storage), storage);
@@ -211,11 +234,11 @@ public abstract class Machine {
 	public void remove(ConfigurationSection storage) {
 		disable(storage);
 		Location key = getKey(storage);
-		for (Location l : Machines.getInstance().getMachineBlocks(key)) {
+		for (Location l : getMachines().getMachineBlocks(key)) {
 			l.getBlock().setType(Material.AIR);
 		}
 		key.getBlock().setType(Material.AIR);
-		Machines.getInstance().deleteMachine(key);
+		getMachines().deleteMachine(key);
 	}
 
 	/**
@@ -324,8 +347,8 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
-		for (Location l : Machines.getInstance().getMachineBlocks(getKey(storage))) {
-			if (Machines.getInstance().isExploded(l.getBlock())) {
+		for (Location l : getMachines().getMachineBlocks(getKey(storage))) {
+			if (getMachines().isExploded(l.getBlock())) {
 				event.getPlayer().sendMessage(Color.BAD + "This machine is too damaged to use!");
 				return true;
 			}
@@ -375,7 +398,7 @@ public abstract class Machine {
 	 * Triggers postAssemble method on a synchronous 0 tick delay.
 	 */
 	private void triggerPostAssemble(HashMap<Location, MaterialData> buildData, ConfigurationSection storage) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			@Override
 			public void run() {
 				for (Entry<Location, MaterialData> entry : buildData.entrySet()) {
@@ -397,11 +420,11 @@ public abstract class Machine {
 	 * Removes this Machine's listing on a synchronous 0 tick delay.
 	 */
 	protected void assemblyFailed(ConfigurationSection storage) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Sblock.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			@Override
 			public void run() {
 				disable(storage);
-				Machines.getInstance().deleteMachine(getKey(storage));
+				getMachines().deleteMachine(getKey(storage));
 			}
 		});
 	}

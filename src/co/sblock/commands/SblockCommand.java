@@ -24,9 +24,11 @@ import net.md_5.bungee.api.ChatColor;
 public abstract class SblockCommand extends Command implements PluginIdentifiableCommand {
 
 	private String permissionLevel;
+	private final Sblock plugin;
 
-	public SblockCommand(String name) {
+	public SblockCommand(Sblock plugin, String name) {
 		super(name);
+		this.plugin = plugin;
 		this.setDescription("A Sblock command.");
 		this.setUsage("/" + name);
 		this.setPermission("sblock.command." + name);
@@ -74,7 +76,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 			}
 		} catch (Exception e) {
 			sender.sendMessage(Color.BAD + "An error occurred processing this command. Please make sure your parameters are correct.");
-			Discord.getInstance().postReport(sender.getName(), "Error processing command: /"
+			plugin.getModule(Discord.class).postReport(sender.getName(), "Error processing command: /"
 					+ getName() + " " + StringUtils.join(args, ' ') + '\n' + RegexUtils.getTrace(e, 5));
 			e.printStackTrace();
 		}
@@ -94,7 +96,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 	}
 
 	@Override
-	public Plugin getPlugin() {
-		return Sblock.getInstance();
+	public final Plugin getPlugin() {
+		return plugin;
 	}
 }

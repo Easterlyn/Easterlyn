@@ -9,7 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import co.sblock.chat.ChannelManager;
+import co.sblock.Sblock;
+import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.Message;
@@ -30,24 +31,23 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class AetherCommand extends SblockAsynchronousCommand {
 
-	private static final BaseComponent[] HOVER;
-	private static final WrappedSenderPlayer SENDER;
+	private final BaseComponent[] hover;
+	private final WrappedSenderPlayer sender;
+	private final Channel aether;
 
-	static {
-		HOVER = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "IRC Chat\n"
-				+ Color.GOOD + "Server: irc.freenode.net\n"
-				+ Color.GOOD + "Channel: #sblockserver");
-		SENDER = new WrappedSenderPlayer(Bukkit.getConsoleSender());
-	}
-
-	public AetherCommand() {
-		super("aether");
+	public AetherCommand(Sblock plugin) {
+		super(plugin, "aether");
 		this.setAliases("aetherme");
 		this.setDescription("For usage in console largely. Talks in #Aether.");
 		this.setUsage("/aether <text>");
 		this.setPermissionLevel("horrorterror");
 		this.setPermissionMessage("The aetherial realm eludes your grasp once more.");
 
+		hover = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "IRC Chat\n"
+				+ Color.GOOD + "Server: irc.freenode.net\n"
+				+ Color.GOOD + "Channel: #sblockserver");
+		sender = new WrappedSenderPlayer(plugin, Bukkit.getConsoleSender());
+		aether = plugin.getModule(Chat.class).getChannelManager().getChannel("#Aether");
 	}
 
 	@Override
@@ -61,13 +61,13 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		return true;
 	}
 
-	public static void sendAether(String name, String msg, boolean thirdPerson) {
+	public void sendAether(String name, String msg, boolean thirdPerson) {
 
-		Channel aether = ChannelManager.getChannelManager().getChannel("#Aether");
 		// set channel before and after to prevent @channel changing while also stripping invalid characters
-		MessageBuilder builder = new MessageBuilder().setSender(ChatColor.WHITE + name)
-				.setChannel(aether).setMessage(msg).setChannel(aether).setChannelClick("@# ")
-				.setNameClick("@# ").setNameHover(HOVER).setThirdPerson(thirdPerson);
+		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin())
+				.setSender(ChatColor.WHITE + name).setChannel(aether).setMessage(msg)
+				.setChannel(aether).setChannelClick("@# ").setNameClick("@# ").setNameHover(hover)
+				.setThirdPerson(thirdPerson);
 
 		if (!builder.canBuild(false)) {
 			return;
@@ -76,11 +76,11 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		Message message = builder.toMessage();
 
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
-		players.removeIf(p -> Users.getGuaranteedUser(p.getUniqueId()).getSuppression());
+		players.removeIf(p -> Users.getGuaranteedUser(((Sblock) getPlugin()), p.getUniqueId()).getSuppression());
 
 		// CHAT: Verify that this does not cause concurrency issues (It totally does)
-		SENDER.setDisplayName(name);
+		sender.setDisplayName(name);
 
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, SENDER, players, message));
+		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, sender, players, message));
 	}
 }

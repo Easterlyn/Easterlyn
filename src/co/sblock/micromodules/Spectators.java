@@ -13,7 +13,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.module.Module;
-import co.sblock.utilities.Cooldowns;
 
 /**
  * Module for managing players in spectator mode. Designed to allow players
@@ -23,34 +22,40 @@ import co.sblock.utilities.Cooldowns;
  */
 public class Spectators extends Module {
 
-	/* The Spectators instance. */
-	private static Spectators instance;
-
 	/* The List of Players in spectator mode */
-	private Map<UUID, Location> spectators;
+	private final Map<UUID, Location> spectators;
+
+	/* The Cooldowns instance used to manage whether someone has recently been spectating. */
+	private Cooldowns cooldowns;
+	/* The SleepVote instance used to discount spectators from sleeping. */
+	private SleepVote sleep;
+
+	public Spectators(Sblock plugin) {
+		super(plugin);
+		spectators = new HashMap<>();
+	}
 
 	@Override
 	protected void onEnable() {
-		instance = this;
-		spectators = new HashMap<>();
+		cooldowns = getPlugin().getModule(Cooldowns.class);
+		sleep = getPlugin().getModule(SleepVote.class);
 
 		new BukkitRunnable() {
 			@Override
 			public void run() {
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (isSpectator(player.getUniqueId())
-							&& Cooldowns.getInstance().getRemainder(player, getModuleName()) == 0) {
+							&& cooldowns.getRemainder(player, getName()) == 0) {
 						removeSpectator(player);
 						player.sendMessage(Color.GOOD + "As your link to the astral plane fades, you awaken with a jolt.");
 					}
 				}
 			}
-		}.runTaskTimer(Sblock.getInstance(), 600, 600);
+		}.runTaskTimer(getPlugin(), 600, 600);
 	}
 
 	@Override
 	protected void onDisable() {
-		instance = null;
 		for (UUID uuid : spectators.keySet().toArray(new UUID[0])) {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player != null) {
@@ -67,10 +72,12 @@ public class Spectators extends Module {
 	public void addSpectator(Player player) {
 		player.closeInventory();
 		player.setGameMode(GameMode.SPECTATOR);
-		SleepVote.getInstance().updateVoteCount(player.getWorld().getName(), player.getName());
+		if (sleep.updateVoteCount(player.getWorld().getName(), player.getName())) {
+			player.sendMessage(Color.BAD + "You're no longer sleeping. You'll have to use a bed again to count towards the total.");
+		}
 		spectators.put(player.getUniqueId(), player.getLocation().add(0, .1, 0));
 		// Allow spectating for 30 minutes at a time
-		Cooldowns.getInstance().addCooldown(player, getModuleName(), 1800000);
+		cooldowns.addCooldown(player, getName(), 1800000);
 	}
 
 	/**
@@ -85,7 +92,7 @@ public class Spectators extends Module {
 	}
 
 	public boolean canMineOre(Player player) {
-		return Cooldowns.getInstance().getRemainder(player, "spectatore") <= 0;
+		return cooldowns.getRemainder(player, "spectatore") <= 0;
 	}
 
 	/**
@@ -94,26 +101,17 @@ public class Spectators extends Module {
 	 * @param player
 	 */
 	public void removeSpectator(Player player) {
-		Cooldowns.getInstance().clearCooldown(player, getModuleName());
+		cooldowns.clearCooldown(player, getName());
 		player.teleport(spectators.remove(player.getUniqueId()));
 		player.setGameMode(GameMode.SURVIVAL);
 		if (!player.hasPermission("sblock.command.spectate.nocooldown")) {
 			// 8 minutes, 8 * 60 * 1000 ms
-			Cooldowns.getInstance().addCooldown(player, "spectatore", 480000L);
+			cooldowns.addCooldown(player, "spectatore", 480000L);
 		}
 	}
 
-	/**
-	 * Gets the Spectators instance.
-	 * 
-	 * @return the Spectators instance.
-	 */
-	public static Spectators getInstance() {
-		return instance;
-	}
-
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Spectators";
 	}
 }

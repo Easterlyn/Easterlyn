@@ -26,8 +26,8 @@ public class PBO extends Machine {
 
 	private final ItemStack drop;
 
-	public PBO() {
-		super(new Shape());
+	public PBO(Sblock plugin, Machines machines) {
+		super(plugin, machines, new Shape());
 		getShape().setVectorData(new Vector(0, 0, 0), new MaterialData(Material.DIAMOND_BLOCK));
 		drop = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta meta = drop.getItemMeta();
@@ -50,9 +50,9 @@ public class PBO extends Machine {
 				BlockState state = event.getBlock().getState();
 				state.setData(against.getData());
 				state.update(true, false);
-				Machines.getInstance().deleteMachine(event.getBlock().getLocation());
+				getMachines().deleteMachine(event.getBlock().getLocation());
 			}
-		}.runTask(Sblock.getInstance());
+		}.runTask(getPlugin());
 	}
 
 	@Override

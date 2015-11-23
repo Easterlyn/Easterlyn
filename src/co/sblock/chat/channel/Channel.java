@@ -7,6 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 
+import co.sblock.Sblock;
+import co.sblock.chat.ChannelManager;
+import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.users.OfflineUser;
 
@@ -17,9 +20,9 @@ import co.sblock.users.OfflineUser;
  */
 public abstract class Channel {
 
-	/*
-	 * Immutable Data regarding the channel
-	 */
+	private final Sblock plugin;
+	private final ChannelManager manager;
+	/* Immutable Data regarding the channel */
 	protected final String name;
 	protected final Set<UUID> listening;
 	protected final UUID owner;
@@ -28,7 +31,9 @@ public abstract class Channel {
 	 * @param name the name of the channel
 	 * @param creator the owner of the channel
 	 */
-	public Channel(String name, UUID creator) {
+	public Channel(Sblock plugin, String name, UUID creator) {
+		this.plugin = plugin;
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.name = name;
 		this.owner = creator;
 		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
@@ -107,6 +112,24 @@ public abstract class Channel {
 	 * @param message the message to send the channel.
 	 */
 	public abstract void sendMessage(String message);
+
+	/**
+	 * Gets the ChannelManager this Channel is registered in.
+	 * 
+	 * @return the ChannelManager
+	 */
+	public ChannelManager getChannelManager() {
+		return this.manager;
+	}
+
+	/**
+	 * Gets the Sblock instance creating this Channel.
+	 * 
+	 * @return the Sblock
+	 */
+	public Sblock getPlugin() {
+		return this.plugin;
+	}
 
 	@Override
 	public String toString() {

@@ -25,13 +25,13 @@ public class WrappedSenderPlayer extends DummyPlayer {
 	private final GameProfile profile;
 	private final String name;
 
-	public WrappedSenderPlayer (CommandSender sender) {
-		this(sender, sender.getName());
+	public WrappedSenderPlayer(Sblock plugin, CommandSender sender) {
+		this(plugin, sender, sender.getName());
 	}
 
-	public WrappedSenderPlayer(CommandSender sender, String name) {
+	public WrappedSenderPlayer(Sblock plugin, CommandSender sender, String name) {
 		this.sender = sender;
-		this.profile = Sblock.getInstance().getFakeGameProfile(sender.getName());
+		this.profile = plugin.getFakeGameProfile(sender.getName());
 		this.name = name;
 	}
 

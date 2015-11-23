@@ -21,8 +21,8 @@ import co.sblock.Sblock;
  */
 public abstract class SblockAsynchronousCommand extends SblockCommand {
 
-	public SblockAsynchronousCommand(String name) {
-		super(name);
+	public SblockAsynchronousCommand(Sblock plugin, String name) {
+		super(plugin, name);
 	}
 
 	@Override
@@ -32,12 +32,12 @@ public abstract class SblockAsynchronousCommand extends SblockCommand {
 			public void run() {
 				SblockAsynchronousCommand.super.execute(sender, label, args);
 			}
-		}.runTaskAsynchronously(Sblock.getInstance());
+		}.runTaskAsynchronously(getPlugin());
 		return true;
 	}
 
 	protected UUID getUniqueId(String name) {
-		Future<List<Player>> future = Bukkit.getScheduler().callSyncMethod(Sblock.getInstance(), new Callable<List<Player>>() {
+		Future<List<Player>> future = Bukkit.getScheduler().callSyncMethod(getPlugin(), new Callable<List<Player>>() {
 			@Override
 			public List<Player> call() throws Exception {
 				return Bukkit.matchPlayer(name);

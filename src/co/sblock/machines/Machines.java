@@ -2,6 +2,8 @@ package co.sblock.machines;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,23 +35,29 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.module.Module;
 
 /**
+ * A Module for handling Block structures with special functions.
+ * 
  * @author Jikoo
  */
 public class Machines extends Module {
 
-	private static Machines instance;
-
 	/* A Map of Machine names to instances. */
-	private static final Map<String, Machine> BY_NAME;
+	private final Map<String, Machine> byName;
 	/* A Map of Machine key Locations to the corresponding Block Locations. */
-	private Multimap<Location, Location> machineBlocks;
+	private final Multimap<Location, Location> machineBlocks;
 	/* A Map of all exploded blocks. */
-	private Map<Block, Boolean> exploded;
+	private final Map<Block, Boolean> exploded;
+	/* The MachineInventoryTracker. */
+	private final MachineInventoryTracker tracker;
 	/* The YamlConfiguration containing all stored data. */
 	private YamlConfiguration storage;
 
-	static {
-		BY_NAME = new HashMap<>();
+	public Machines(Sblock plugin) {
+		super(plugin);
+		byName = new HashMap<>();
+		this.machineBlocks = HashMultimap.create();
+		this.exploded = new HashMap<>();
+		this.tracker = new MachineInventoryTracker(this);
 		Reflections reflections = new Reflections("co.sblock.machines.type");
 		for (Class<? extends Machine> type : reflections.getSubTypesOf(Machine.class)) {
 			if (Modifier.isAbstract(type.getModifiers())) {
@@ -57,12 +65,14 @@ public class Machines extends Module {
 			}
 			Machine machine;
 			try {
-				machine = type.newInstance();
+				Constructor<? extends Machine> constructor = type.getConstructor(Sblock.class, this.getClass());
+				machine = constructor.newInstance(getPlugin(), this);
 				if (machine.getUniqueDrop() == null) {
 					continue;
 				}
-				BY_NAME.put(type.getSimpleName(), machine);
-			} catch (InstantiationException | IllegalAccessException e) {
+				byName.put(type.getSimpleName(), machine);
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				// Improperly set up Machine
 				e.printStackTrace();
 			}
@@ -71,9 +81,6 @@ public class Machines extends Module {
 
 	@Override
 	protected void onEnable() {
-		instance = this;
-		this.machineBlocks = HashMultimap.create();
-		this.exploded = new HashMap<>();
 		this.loadAllMachines();
 
 		new BukkitRunnable() {
@@ -81,14 +88,13 @@ public class Machines extends Module {
 			public void run() {
 				saveAllMachines();
 			}
-		}.runTaskTimerAsynchronously(Sblock.getInstance(), 6000L, 6000L);
+		}.runTaskTimerAsynchronously(getPlugin(), 6000L, 6000L);
 		// Saving async should ideally not be a problem - we do not ever load or modify the data elsewhere.
 	}
 
 	@Override
 	protected void onDisable() {
 		this.saveAllMachines();
-		instance = null;
 	}
 
 	/**
@@ -103,7 +109,7 @@ public class Machines extends Module {
 	 * @return the Machine created
 	 */
 	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type, UUID owner, Direction direction) {
-		if (!BY_NAME.containsKey(type)) {
+		if (!byName.containsKey(type)) {
 			return null;
 		}
 		ConfigurationSection section = storage.createSection(stringFromLoc(location));
@@ -121,10 +127,10 @@ public class Machines extends Module {
 	 * @return the Machine type loaded
 	 */
 	public Pair<Machine, ConfigurationSection> loadMachine(Location key, ConfigurationSection section) {
-		if (!BY_NAME.containsKey(section.getString("type"))) {
+		if (!byName.containsKey(section.getString("type"))) {
 			return null;
 		}
-		Machine type = BY_NAME.get(section.getString("type"));
+		Machine type = byName.get(section.getString("type"));
 		Direction direction = type.getDirection(section);
 		for (Location location : type.getShape().getBuildLocations(key, direction).keySet()) {
 			machineBlocks.put(key, location);
@@ -142,7 +148,7 @@ public class Machines extends Module {
 	public void loadAllMachines() {
 		File file;
 		try {
-			file = new File(Sblock.getInstance().getDataFolder(), "Machines.yml");
+			file = new File(getPlugin().getDataFolder(), "Machines.yml");
 			if (!file.exists()) {
 				file.createNewFile();
 				storage = new YamlConfiguration();
@@ -168,7 +174,7 @@ public class Machines extends Module {
 	public void saveAllMachines() {
 		File file;
 		try {
-			file = new File(Sblock.getInstance().getDataFolder(), "Machines.yml");
+			file = new File(getPlugin().getDataFolder(), "Machines.yml");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -235,7 +241,7 @@ public class Machines extends Module {
 		if (section == null) {
 			return null;
 		}
-		return new ImmutablePair<Machine, ConfigurationSection>(BY_NAME.get(section.getString("type")), section);
+		return new ImmutablePair<Machine, ConfigurationSection>(byName.get(section.getString("type")), section);
 	}
 
 	/**
@@ -394,7 +400,7 @@ public class Machines extends Module {
 				continue;
 			}
 			if (playerID.toString().equals(storage.getString(path + ".owner"))) {
-				return new ImmutablePair<Machine, ConfigurationSection>(BY_NAME.get("Computer"), storage);
+				return new ImmutablePair<Machine, ConfigurationSection>(byName.get("Computer"), storage);
 			}
 		}
 		return null;
@@ -432,7 +438,7 @@ public class Machines extends Module {
 			String type, boolean keyRequired) {
 		Set<ConfigurationSection> machines = new HashSet<>();
 		if (type != null) {
-			if (!BY_NAME.containsKey(type)) {
+			if (!byName.containsKey(type)) {
 				return machines;
 			}
 		}
@@ -464,7 +470,7 @@ public class Machines extends Module {
 				continue;
 			}
 			if (playerID.toString().equals(storage.getString(path + ".owner"))) {
-				machines.add(new ImmutablePair<Machine, ConfigurationSection>(BY_NAME.get("Computer"), storage));
+				machines.add(new ImmutablePair<Machine, ConfigurationSection>(byName.get("Computer"), storage));
 			}
 		}
 		return machines;
@@ -475,8 +481,8 @@ public class Machines extends Module {
 	 * 
 	 * @return the Map of all Machine instances stored by name
 	 */
-	public static Map<String, Machine> getMachinesByName() {
-		return BY_NAME;
+	public Map<String, Machine> getMachinesByName() {
+		return byName;
 	}
 
 	/**
@@ -485,21 +491,21 @@ public class Machines extends Module {
 	 * @param name the name of the Machine
 	 * @return the Machine instance
 	 */
-	public static Machine getMachineByName(String name) {
-		return BY_NAME.get(name);
+	public Machine getMachineByName(String name) {
+		return byName.get(name);
 	}
 
 	/**
-	 * Gets the current instance of MachineModule.
+	 * Gets the MachineInventoryTracker used to open and link special inventories for Machines.
 	 * 
-	 * @return the MachineModule
+	 * @return the MachineInventoryTracker
 	 */
-	public static Machines getInstance() {
-		return instance;
+	public MachineInventoryTracker getInventoryTracker() {
+		return this.tracker;
 	}
 
 	@Override
-	protected String getModuleName() {
+	public String getName() {
 		return "Sblock Machines";
 	}
 
