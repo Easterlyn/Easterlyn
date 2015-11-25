@@ -28,7 +28,7 @@ public class FreeCart extends Module {
 
 	@Override
 	protected void onEnable() {
-		getPlugin().getModule(Cooldowns.class);
+		 cooldowns = getPlugin().getModule(Cooldowns.class);
 	}
 
 	@Override
