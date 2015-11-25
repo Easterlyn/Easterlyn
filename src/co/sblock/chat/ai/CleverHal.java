@@ -27,7 +27,6 @@ import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.utilities.DummyPlayer;
 import co.sblock.utilities.JSONUtil;
-import co.sblock.utilities.RegexUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -69,12 +68,9 @@ public class CleverHal extends HalMessageHandler {
 		whitespacePattern = Pattern.compile("(^|\\W)" + anyPattern.pattern() + "(\\W|$)", anyPattern.flags());
 
 		ignoreMatches = new HashSet<>();
-		ignoreMatches.add(whitespacePattern);
-		ignoreMatches.add(RegexUtils.URL_PATTERN);
-		ignoreMatches.add(Pattern.compile("^.*b(e|a)n(j(ie|y))? ?z(u|e)?rf(les?)?.*$", Pattern.CASE_INSENSITIVE));
-		ignoreMatches.add(Pattern.compile("^halc(ulate)? .*$", Pattern.CASE_INSENSITIVE));
-		ignoreMatches.add(Pattern.compile("^evhal(uate)? .*$", Pattern.CASE_INSENSITIVE));
-		ignoreMatches.add(Pattern.compile("^.*dad(dy)?.*$", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("(baby|bang|due|fuck|pregnant|r(@|4|a)pe|sex)\\s?", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("mo(ther|m+y?\\s?)", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("dad+y?\\s?", Pattern.CASE_INSENSITIVE));
 
 		hover = TextComponent.fromLegacyText(ChatColor.RED + "Artificial Intelligence\n"
 				+ Color.BAD_EMPHASIS + "Sblock is not responsible\n" + Color.BAD_EMPHASIS
@@ -135,9 +131,12 @@ public class CleverHal extends HalMessageHandler {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				String msg;
+				String msg = message;
+				for (Pattern pattern : ignoreMatches) {
+					msg = pattern.matcher(msg).replaceAll("");
+				}
 				try {
-					msg = bot.think(message);
+					msg = bot.think(msg);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return;
