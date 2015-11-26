@@ -24,7 +24,6 @@ import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
-import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.event.SblockAsyncChatEvent;
@@ -43,7 +42,6 @@ import me.itsghost.jdiscord.talkable.GroupUser;
 import me.itsghost.jdiscord.talkable.User;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
@@ -53,57 +51,70 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class Discord extends Module {
 
-	private DiscordAPI discord;
-	private ConcurrentLinkedQueue<Triple<String, String, String>> queue;
+	private final DiscordAPI discord;
+	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private HashBiMap<UUID, String> authentications;
-	private BaseComponent[] hover;
+	private MessageBuilder builder;
 	private Pattern mention;
 	private ChannelManager manager;
 
 	public Discord(Sblock plugin) {
 		super(plugin);
-	}
 
-	@Override
-	protected void onEnable() {
 		String login = getPlugin().getConfig().getString("discord.login");
 		String password = getPlugin().getConfig().getString("discord.password");
 
 		if (login == null || password == null) {
 			getLogger().severe("Unable to connect to Discord, no username or password!");
-			disable();
+			discord = null;
+			queue = null;
 			return;
 		}
 
 		discord = new DiscordBuilder(login, password).build();
+		queue = new ConcurrentLinkedQueue<>();
+	}
+
+	@Override
+	protected void onEnable() {
+
+		if (discord == null) {
+			this.disable();
+		}
+
 		discord.getEventManager().registerListener(new DiscordLoadedListener(this, discord));
 
 		try {
 			discord.login();
 		} catch (NoLoginDetailsException | BadUsernamePasswordException | DiscordFailedToConnectException e) {
 			e.printStackTrace();
-			discord = null;
 			disable();
 			return;
 		}
 
-		manager = getPlugin().getModule(Chat.class).getChannelManager();;
+		manager = getPlugin().getModule(Chat.class).getChannelManager();
 
 		authentications = HashBiMap.create();
-		hover = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
-				+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
-				+ Color.GOOD + "Channel: #main");
+		// future modify MessageBuilder to allow custom name clicks (OPEN_URL www.sblock.co/discord)
+		builder = new MessageBuilder(getPlugin()).setNameClick("@# ").setChannelClick("@# ")
+				.setChannel(manager.getChannel("#discord"))
+				.setNameHover(TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
+						+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
+						+ Color.GOOD + "Channel: #main"));
 		mention = Pattern.compile("<@(\\d+)>");
 		discord.getEventManager().registerListener(new DiscordListener(this, discord));
+	}
 
-		queue = new ConcurrentLinkedQueue<>();
+	@Override
+	public boolean isEnabled() {
+		return super.isEnabled() && this.discord != null;
 	}
 
 	protected void startPostingMessages() {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (discord == null) {
+				if (!isEnabled()) {
 					cancel();
 					return;
 				}
@@ -168,7 +179,6 @@ public class Discord extends Module {
 	protected void onDisable() {
 		if (discord != null) {
 			discord.stop();
-			discord = null;
 		}
 	}
 
@@ -240,16 +250,15 @@ public class Discord extends Module {
 	}
 
 	protected void postMessageFor(UserChatEvent event, Player player) {
-		Channel channel = manager.getChannel("#discord");
-		// future re-use MessageBuilder
-		Message message = new MessageBuilder(getPlugin()).setChannel(channel)
-				.setSender(Users.getGuaranteedUser(getPlugin(), player.getUniqueId()))
-				.setMessage(sanitize(event.getMsg())).setChannel(channel).setNameHover(hover)
-				.setNameClick("@# ").setChannelClick("@# ").toMessage();
-		// TODO MessageBuilder method overloading: add different click events (open Discord link on name click)
+		builder.setSender(Users.getGuaranteedUser(getPlugin(), player.getUniqueId()))
+				.setMessage(sanitize(event.getMsg())).setChannel(manager.getChannel("#discord"));
+		if (!builder.canBuild(false)) {
+			event.getMsg().deleteMessage();
+			return;
+		}
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
 		players.removeIf(p -> Users.getGuaranteedUser(getPlugin(), p.getUniqueId()).getSuppression());
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, message));
+		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, builder.toMessage()));
 	}
 
 	private String sanitize(me.itsghost.jdiscord.message.Message msg) {

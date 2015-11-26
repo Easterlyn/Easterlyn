@@ -31,6 +31,7 @@ import co.sblock.chat.Color;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
+import co.sblock.chat.channel.RegionChannel;
 import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
@@ -290,7 +291,8 @@ public class OnlineUser extends OfflineUser {
 	public void handleLoginChannelJoins() {
 		for (Iterator<String> iterator = this.getListening().iterator(); iterator.hasNext();) {
 			Channel channel = getChannelManager().getChannel(iterator.next());
-			if (channel != null && !channel.isBanned(this) && (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))
+			if (channel != null && !(channel instanceof RegionChannel) && !channel.isBanned(this)
+					&& (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))
 					&& (canJoinDefaultChats() || channel.getOwner() != null)) {
 				this.getListening().add(channel.getName());
 				channel.getListening().add(this.getUUID());
@@ -298,6 +300,7 @@ public class OnlineUser extends OfflineUser {
 				iterator.remove();
 			}
 		}
+		getListening().add(getCurrentRegion().getChannelName());
 		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
 			this.getListening().add("@");
 			getChannelManager().getChannel("@").getListening().add(this.getUUID());

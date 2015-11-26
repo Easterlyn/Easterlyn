@@ -48,10 +48,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class AsyncChatListener extends SblockListener {
 
-	private final Cooldowns cooldowns;
-	private final Discord discord;
-	private final List<HalMessageHandler> halFunctions;
-	private final String[] tests = new String[] {"It is certain.", "It is decidedly so.",
+	private static final String[] TEST = new String[] {"It is certain.", "It is decidedly so.",
 			"Without a doubt.", "Yes, definitely.", "You may rely on it.", "As I see, yes.",
 			"Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
 			"Reply hazy, try again.", "Ask again later.", "Better not tell you now.",
@@ -59,6 +56,10 @@ public class AsyncChatListener extends SblockListener {
 			"My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful.",
 			"Testing complete. Proceeding with operation.", "A critical fault has been discovered while testing.",
 			"Error: Test results contaminated.", "tset", "PONG."};
+
+	private final Cooldowns cooldowns;
+	private final Discord discord;
+	private final List<HalMessageHandler> halFunctions;
 	private final boolean handleGriefPrevention;
 	private final Pattern claimPattern, trappedPattern, yoooooooooooooooooooooooooooooooooooooooo;
 	private final List<Pattern> doNotSayThat;
@@ -153,7 +154,7 @@ public class AsyncChatListener extends SblockListener {
 
 		if (checkSpam) {
 			if (cleaned.equalsIgnoreCase("test")) {
-				event.getPlayer().sendMessage(ChatColor.RED + tests[(int) (Math.random() * 25)]);
+				event.getPlayer().sendMessage(ChatColor.RED + test());
 				event.setCancelled(true);
 				return;
 			}
@@ -162,7 +163,7 @@ public class AsyncChatListener extends SblockListener {
 				if (cleaned.equalsIgnoreCase(recipient.getName())) {
 					event.getPlayer().sendMessage(
 							Color.BAD + "Names are short and easy to include in a sentence, "
-									+ player.getDisplayName() + ". Please do it.");
+									+ player.getDisplayName() + Color.BAD + ". Please do it.");
 					event.setCancelled(true);
 					return;
 				}
@@ -468,5 +469,9 @@ public class AsyncChatListener extends SblockListener {
 				break;
 			}
 		}
+	}
+
+	public static String test() {
+		return TEST[(int) (Math.random() * TEST.length)];
 	}
 }

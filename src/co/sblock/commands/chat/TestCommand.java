@@ -1,10 +1,12 @@
 package co.sblock.commands.chat;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
+import co.sblock.events.listeners.player.AsyncChatListener;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * DAMN IT ALL, BASEMENTHERO, FINE.
@@ -19,11 +21,7 @@ public class TestCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (!(sender instanceof Player)) {
-			sender.sendMessage("TEST FAILED, JERK.");
-			return true;
-		}
-		((Player) sender).chat("test");
+		sender.sendMessage(ChatColor.RED + AsyncChatListener.test());
 		return true;
 	}
 

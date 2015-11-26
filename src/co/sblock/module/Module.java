@@ -70,7 +70,7 @@ public abstract class Module {
 			this.onDisable();
 			enabled = false;
 		} catch (Exception e) {
-			getLogger().severe("[SblockSuite] Unhandled exception in module " + this.getClass().getSimpleName() + ". Module failed to disable.");
+			getLogger().severe("Unhandled exception in module " + this.getClass().getSimpleName() + ". Module failed to disable.");
 			getLogger().severe(RegexUtils.getTrace(e));
 		}
 		return this;
