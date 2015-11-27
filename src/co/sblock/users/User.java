@@ -1259,6 +1259,13 @@ public class User {
 		if (yaml.getString("progression.client") != null) {
 			user.setClient(UUID.fromString(yaml.getString("progression.client")));
 		}
+		Channel currentChannel = user.manager.getChannel(yaml.getString("chat.current", "#"));
+		if (currentChannel != null && !currentChannel.isBanned(user) && currentChannel.isApproved(user)) {
+			user.currentChannel = currentChannel.getName();
+			if (!user.getListening().contains(currentChannel.getName())) {
+				user.getListening().add(currentChannel.getName());
+			}
+		}
 		user.setCurrentChannel(yaml.getString("chat.current", "#"));
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
 		return user;
