@@ -1,6 +1,5 @@
 package co.sblock.discord;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.Cache;
@@ -39,13 +38,15 @@ public class DiscordListener implements EventListener {
 		String msg = event.getMsg().getMessage();
 		if (msg.startsWith("/link ")) {
 			String register = msg.substring(6);
-			if (!discord.getAuthCodes().containsValue(register)) {
+			Object uuid = discord.getAuthCodes().getIfPresent(register);
+			if (uuid == null) {
 				discord.postMessage("Sbot", "Invalid registration code!", event.getGroup().getId());
 				return;
 			}
 			discord.postMessage("Sbot", "Registration complete!", event.getGroup().getId());
-			UUID link = discord.getAuthCodes().inverse().remove(register);
-			sblock.getConfig().set("discord.users." + event.getUser().getUser().getId(), link.toString());
+			discord.getAuthCodes().invalidate(uuid);
+			discord.getAuthCodes().invalidate(register);
+			sblock.getConfig().set("discord.users." + event.getUser().getUser().getId(), uuid.toString());
 			sblock.saveConfig();
 			return;
 		}

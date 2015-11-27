@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Achievement;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
@@ -124,7 +125,7 @@ public class PermissiblePlayer implements Player {
 
 	@Override
 	public String getName() {
-		return player.getName();
+		return player.isOnline() ? player.getName() : Bukkit.getOfflinePlayer(getUniqueId()).getName();
 	}
 
 	@Override

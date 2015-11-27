@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +26,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import org.reflections.Reflections;
 
-import com.google.common.collect.HashBiMap;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
@@ -62,7 +65,8 @@ public class Discord extends Module {
 	private final DiscordAPI discord;
 	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private final Map<String, DiscordCommand> commands;
-	private HashBiMap<UUID, String> authentications;
+	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	private LoadingCache<Object, Object> authentications;
 	private MessageBuilder builder;
 	private Pattern mention;
 	private ChannelManager manager;
@@ -125,7 +129,18 @@ public class Discord extends Module {
 
 		manager = getPlugin().getModule(Chat.class).getChannelManager();
 
-		authentications = HashBiMap.create();
+		authentications = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES)
+				.build(new CacheLoader<Object, Object>() {
+					@Override
+					public Object load(Object key) throws Exception {
+						if (!(key instanceof UUID)) {
+							return null;
+						}
+						String code = generateUniqueCode();
+						authentications.put(code, key);
+						return code;
+					};
+				});
 		// future modify MessageBuilder to allow custom name clicks (OPEN_URL www.sblock.co/discord)
 		builder = new MessageBuilder(getPlugin()).setNameClick("@# ").setChannelClick("@# ")
 				.setChannel(manager.getChannel("#discord"))
@@ -134,6 +149,18 @@ public class Discord extends Module {
 						+ Color.GOOD + "Channel: #main"));
 		mention = Pattern.compile("<@(\\d+)>");
 		discord.getEventManager().registerListener(new DiscordListener(this));
+	}
+
+	private String generateUniqueCode() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 6; i++) {
+			sb.append(chars.charAt(getPlugin().getRandom().nextInt(chars.length())));
+		}
+		String code = sb.toString();
+		if (authentications.getIfPresent(code) != null) {
+			return generateUniqueCode();
+		}
+		return code;
 	}
 
 	@Override
@@ -206,7 +233,7 @@ public class Discord extends Module {
 		postMessage(name, message, getPlugin().getConfig().getString("discord.chat.reports"));
 	}
 
-	public HashBiMap<UUID, String> getAuthCodes() {
+	public LoadingCache<Object, Object> getAuthCodes() {
 		return authentications;
 	}
 
