@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -14,6 +15,11 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
@@ -28,6 +34,14 @@ public class Users extends Module {
 
 	/* The Map of Player UUID and relevant SblockUsers currently online. */
 	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
+	private static final Cache<UUID, OfflineUser> userCache = CacheBuilder.newBuilder()
+			.expireAfterAccess(5L, TimeUnit.MINUTES)
+			.removalListener(new RemovalListener<UUID, OfflineUser>() {
+				@Override
+				public void onRemoval(RemovalNotification<UUID, OfflineUser> notification) {
+					notification.getValue().save();
+				}
+			}).build();
 
 	public Users(Sblock plugin) {
 		super(plugin);
@@ -44,9 +58,13 @@ public class Users extends Module {
 	@Override
 	protected void onDisable() {
 		for (OfflineUser u : Users.getUsers().toArray(new OfflineUser[0])) {
-			unloadUser(u.getUUID()).save();
+			unloadUser(u.getUUID());
 			unteam(u.getUUID().toString().replace("-", "").substring(0, 16));
 		}
+		// When unloaded, all users are added to the userCache.
+		// Invalidating and cleaning up causes our removal listener to save all cached users.
+		userCache.invalidateAll();
+		userCache.cleanUp();
 	}
 
 	@Override
@@ -64,9 +82,13 @@ public class Users extends Module {
 		if (users.containsKey(uuid)) {
 			return users.get(uuid);
 		}
-		OfflineUser user = OfflineUser.load(plugin, uuid);
-		if (user.isOnline()) {
+		OfflineUser user = userCache.getIfPresent(uuid);
+		if (user == null) {
+			user = OfflineUser.load(plugin, uuid);
+		}
+		if (!(user instanceof OnlineUser) && user.isOnline()) {
 			user = user.getOnlineUser();
+			userCache.invalidate(uuid);
 			users.put(uuid, user);
 		} else {
 			return user;
@@ -94,7 +116,7 @@ public class Users extends Module {
 	}
 
 	/**
-	 * Removes a Player from the users list.
+	 * Moves an OfflineUser from the active users list into the user cache.
 	 * 
 	 * @param player the name of the Player to remove
 	 * @return the SblockUser for the removed player, if any
@@ -102,6 +124,13 @@ public class Users extends Module {
 	public static OfflineUser unloadUser(UUID userID) {
 		if (!users.containsKey(userID)) {
 			return null;
+		}
+		OfflineUser user = users.remove(userID);
+		
+		if (user instanceof OnlineUser) {
+			userCache.put(userID, OfflineUser.fromOnline((OnlineUser) user));
+		} else {
+			userCache.put(userID, user);
 		}
 		return users.remove(userID);
 	}
