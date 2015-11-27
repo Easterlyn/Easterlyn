@@ -31,12 +31,14 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class AetherCommand extends SblockAsynchronousCommand {
 
+	private final Users users;
 	private final BaseComponent[] hover;
 	private final WrappedSenderPlayer sender;
 	private final Channel aether;
 
 	public AetherCommand(Sblock plugin) {
 		super(plugin, "aether");
+		this.users = plugin.getModule(Users.class);
 		this.setAliases("aetherme");
 		this.setDescription("For usage in console largely. Talks in #Aether.");
 		this.setUsage("/aether <text>");
@@ -76,7 +78,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		Message message = builder.toMessage();
 
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
-		players.removeIf(p -> Users.getGuaranteedUser(((Sblock) getPlugin()), p.getUniqueId()).getSuppression());
+		players.removeIf(p -> users.getUser(p.getUniqueId()).getSuppression());
 
 		// CHAT: Verify that this does not cause concurrency issues (It totally does)
 		sender.setDisplayName(name);

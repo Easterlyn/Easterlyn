@@ -6,8 +6,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.type.Computer;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -17,8 +16,11 @@ import co.sblock.users.Users;
  */
 public class InventoryOpenListener extends SblockListener {
 
+	private final Users users;
+
 	public InventoryOpenListener(Sblock plugin) {
 		super(plugin);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -28,9 +30,8 @@ public class InventoryOpenListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
-				&& event.getInventory().getHolder() != null
+		User user = users.getUser(event.getPlayer().getUniqueId());
+		if (user.isServer() && event.getInventory().getHolder() != null
 				&& !(event.getInventory().getHolder() instanceof Computer)) {
 			event.setCancelled(true);
 		}

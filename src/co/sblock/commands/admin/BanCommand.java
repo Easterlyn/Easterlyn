@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
@@ -23,8 +23,11 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class BanCommand extends SblockCommand {
 
+	private final Users users;
+
 	public BanCommand(Sblock plugin) {
 		super(plugin, "ban");
+		this.users = plugin.getModule(Users.class);
 		this.setAliases("sban", "banip");
 		this.setDescription("YOU CAN'T ESCAPE THE RED MILES.");
 		this.setUsage("/ban <target> [optional reason]");
@@ -67,7 +70,7 @@ public class BanCommand extends SblockCommand {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						OfflineUser victim = Users.getGuaranteedUser((Sblock) getPlugin(), player.getUniqueId());
+						User victim = users.getUser(player.getUniqueId());
 						if (victim.getUserIP().matches("([0-9]{1,3}.){3}[0-9]{1,3}")) {
 							Bukkit.getBanList(Type.NAME).addBan(victim.getPlayerName(),
 									"<ip=" + victim.getUserIP() + ">" + reason, null, sender.getName());

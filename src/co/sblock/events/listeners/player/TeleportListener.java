@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.events.listeners.SblockListener;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
 
@@ -25,8 +25,11 @@ import co.sblock.users.Users;
  */
 public class TeleportListener extends SblockListener {
 
+	private final Users users;
+
 	public TeleportListener(Sblock plugin) {
 		super(plugin);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -53,7 +56,7 @@ public class TeleportListener extends SblockListener {
 					continue;
 				}
 			}
-			if (Users.getGuaranteedUser(getPlugin(), player.getUniqueId()).getSpectatable()) {
+			if (users.getUser(player.getUniqueId()).getSpectatable()) {
 				return;
 			}
 			event.setCancelled(true);
@@ -89,7 +92,7 @@ public class TeleportListener extends SblockListener {
 					// Player has logged out.
 					return;
 				}
-				OfflineUser user = Users.getGuaranteedUser(getPlugin(), uuid);
+				User user = users.getUser(uuid);
 				// Update region
 				Region target;
 				if (player.getWorld().getName().equals("Derspit")) {

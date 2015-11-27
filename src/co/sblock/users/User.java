@@ -2,37 +2,58 @@ package co.sblock.users;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
+import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
+import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
+import co.sblock.chat.channel.RegionChannel;
 import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
+import co.sblock.machines.Machines;
+import co.sblock.machines.type.Machine;
+import co.sblock.micromodules.Spectators;
+import co.sblock.progression.ServerMode;
+import co.sblock.utilities.InventoryManager;
 import co.sblock.utilities.PlayerLoader;
 
 import net.md_5.bungee.api.ChatColor;
@@ -42,11 +63,14 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class OfflineUser {
+public class User {
 
 	private final Sblock plugin;
+	private final Machines machines;
+	private final Users users;
 	private final ChannelManager manager;
 	private final YamlConfiguration yaml;
+	private Location serverDisableTeleport;
 
 	/* General player data */
 	private final UUID uuid;
@@ -54,16 +78,22 @@ public class OfflineUser {
 	private Location previousLocation;
 
 	/* Various data Sblock tracks for progression purposes */
-	private Set<String> programs;
+	private final Set<String> programs;
+	private boolean isServer;
 
 	/* Chat data*/
+	private String lastChat;
+	private final AtomicInteger violationLevel;
+	private final AtomicBoolean spamWarned;
 	public String currentChannel;
-	private Set<String> listening;
+	private final Set<String> listening;
 
-	protected OfflineUser(Sblock plugin, UUID userID, String ip, YamlConfiguration yaml,
+	protected User(Sblock plugin, UUID userID, String ip, YamlConfiguration yaml,
 			Location previousLocation, Set<String> programs, String currentChannel,
 			Set<String> listening) {
 		this.plugin = plugin;
+		this.machines = plugin.getModule(Machines.class);
+		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.uuid = userID;
 		this.userIP = ip;
@@ -73,29 +103,22 @@ public class OfflineUser {
 			World earth = Bukkit.getWorld("Earth");
 			if (earth != null) {
 				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
+			} else {
+				this.previousLocation = Bukkit.getWorlds().get(0).getSpawnLocation();
 			}
 		}
 		this.programs = programs;
 		this.currentChannel = currentChannel;
 		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 		this.listening.addAll(listening);
+		this.isServer = false;
+		this.lastChat = new String();
+		this.violationLevel = new AtomicInteger();
+		this.spamWarned = new AtomicBoolean();
 	}
 
-	private OfflineUser(Sblock plugin, UUID uuid, String ip, YamlConfiguration yaml) {
-		this.plugin = plugin;
-		this.manager = plugin.getModule(Chat.class).getChannelManager();
-		this.uuid = uuid;
-		this.userIP = ip;
-		this.yaml = yaml;
-		World earth = Bukkit.getWorld("Earth");
-		if (earth != null) {
-			this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
-		} else {
-			this.previousLocation = Bukkit.getWorlds().get(0).getSpawnLocation();
-		}
-		this.currentChannel = "#";
-		this.programs = new HashSet<>();
-		this.listening = new HashSet<>();
+	private User(Sblock plugin, UUID uuid, String ip, YamlConfiguration yaml) {
+		this(plugin, uuid, ip, yaml, null, new HashSet<>(), ip, new HashSet<>());
 		this.listening.add("#");
 	}
 
@@ -150,7 +173,7 @@ public class OfflineUser {
 	 * @return a String of the Player's nickname
 	 */
 	public String getDisplayName() {
-		return yaml.getString("nickname", getPlayerName());
+		return getPlayer().getDisplayName();
 	}
 
 	/**
@@ -265,7 +288,21 @@ public class OfflineUser {
 	/**
 	 * Updates the User's ability to fly.
 	 */
-	public void updateFlight() {}
+	public void updateFlight() {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				boolean allowFlight = getPlayer() != null
+						&& (getPlayer().getWorld().getName().equals("Derspit")
+								|| getPlayer().getGameMode() == GameMode.CREATIVE
+								|| getPlayer().getGameMode() == GameMode.SPECTATOR || isServer);
+				if (getPlayer() != null) {
+					getPlayer().setAllowFlight(allowFlight);
+					getPlayer().setFlying(allowFlight);
+				}
+				getYamlConfiguration().set("flying", allowFlight);
+			}
+		}.runTask(getPlugin());}
 
 	/**
 	 * Set whether or not a user can be spectated to.
@@ -286,11 +323,7 @@ public class OfflineUser {
 	}
 
 	public Location getCurrentLocation() {
-		String location = yaml.getString("location");
-		if (location == null) {
-			return Users.getSpawnLocation();
-		}
-		return BukkitSerializer.locationFromString(location);
+		return getPlayer().getLocation();
 	}
 
 	/**
@@ -316,7 +349,34 @@ public class OfflineUser {
 	 * 
 	 * @param newR the Region being transitioned into
 	 */
-	public void updateCurrentRegion(Region newR) {} // CHAT: allow and do channel management
+	public void updateCurrentRegion(Region newRegion) {
+		Region oldRegion = getCurrentRegion();
+		if (newRegion.isDream()) {
+			getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
+		} else {
+			getPlayer().resetPlayerTime();
+		}
+		if (oldRegion != null && newRegion == oldRegion) {
+			if (canJoinDefaultChats() && !getListening().contains(oldRegion.getChannelName())) {
+				Channel channel = getChannelManager().getChannel(oldRegion.getChannelName());
+				addListening(channel);
+			}
+			return;
+		}
+		if (currentChannel == null || oldRegion != null && currentChannel.equals(oldRegion.getChannelName())) {
+			currentChannel = newRegion.getChannelName();
+		}
+		if (oldRegion != null && !oldRegion.getChannelName().equals(newRegion.getChannelName())) {
+			removeListening(oldRegion.getChannelName());
+		}
+		if (!getListening().contains(newRegion.getChannelName()) && canJoinDefaultChats()) {
+			addListening(getChannelManager().getChannel(newRegion.getChannelName()));
+		}
+		if (oldRegion == null || !oldRegion.getResourcePackURL().equals(newRegion.getResourcePackURL())) {
+			getPlayer().setResourcePack(newRegion.getResourcePackURL());
+		}
+		setCurrentRegion(newRegion);
+	}
 
 	/**
 	 * Sets the Player's previous location. Used for returning to and from dream planets.
@@ -346,7 +406,14 @@ public class OfflineUser {
 	 * @return the Player's time ingame
 	 */
 	public String getTimePlayed() {
-		return yaml.getString("playtime", "Unknown");
+		long time = getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		long days = time / (24 * 60 * 60 * 20);
+		time -= days * 24 * 60 * 60 * 20;
+		long hours = time / (60 * 60 * 20);
+		time -= hours * 60 * 60 * 20;
+		time = time / (60 * 20);
+		DecimalFormat decimalFormat = new DecimalFormat("00");
+		return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
 	}
 
 	/**
@@ -414,7 +481,13 @@ public class OfflineUser {
 	 * 
 	 * @param message the message to send
 	 */
-	public void sendMessage(String message) {}
+	public void sendMessage(String message) {
+		Player player = this.getPlayer();
+		if (player == null) {
+			return;
+		}
+		player.sendMessage(message);
+	}
 
 	/**
 	 * Sets the User's current chat suppression status.
@@ -471,13 +544,23 @@ public class OfflineUser {
 	 */
 	public synchronized void setCurrentChannel(Channel channel) {
 		if (channel == null) {
-			this.currentChannel = null;
+			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
 			return;
 		}
-		if (!channel.isApproved(this) || channel.isBanned(this)) {
+		if (channel.isBanned(this)) {
+			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()));
 			return;
 		}
-		this.currentChannel = channel.getName();
+		if (!channel.isApproved(this)) {
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(channel.getName()));
+			return;
+		}
+		currentChannel = channel.getName();
+		if (!this.getListening().contains(channel.getName())) {
+			this.addListening(channel);
+		} else {
+			this.sendMessage(ChatMsgs.onChannelSetCurrent(channel.getName()));
+		}
 	}
 
 	/**
@@ -507,11 +590,29 @@ public class OfflineUser {
 	 * @return true if the Channel was added
 	 */
 	public synchronized boolean addListening(Channel channel) {
-		if (!channel.isApproved(this) || channel.isBanned(this)) {
+		if (channel == null) {
 			return false;
 		}
-		this.listening.add(channel.getName());
-		return true;
+		if (channel.isBanned(this) || !canJoinDefaultChats() && channel.getOwner() == null) {
+			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()));
+			return false;
+		}
+		if (!channel.isApproved(this)) {
+			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(channel.getName()));
+			return false;
+		}
+		if (!this.getListening().contains(channel)) {
+			this.getListening().add(channel.getName());
+		}
+		if (!channel.getListening().contains(this.getUUID())) {
+			channel.getListening().add(this.getUUID());
+			this.getListening().add(channel.getName());
+			channel.sendMessage(ChatMsgs.onChannelJoin(this, channel));
+			return true;
+		} else {
+			this.sendMessage(ChatMsgs.errorAlreadyListening(channel.getName()));
+			return false;
+		}
 	}
 
 	/**
@@ -519,7 +620,61 @@ public class OfflineUser {
 	 * 
 	 * @param channels
 	 */
-	public void handleLoginChannelJoins() {}
+	public void handleLoginChannelJoins() {
+		for (Iterator<String> iterator = listening.iterator(); iterator.hasNext();) {
+			Channel channel = getChannelManager().getChannel(iterator.next());
+			if (channel != null && !(channel instanceof RegionChannel) && !channel.isBanned(this)
+					&& (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))
+					&& (canJoinDefaultChats() || channel.getOwner() != null)) {
+				channel.getListening().add(this.getUUID());
+			} else {
+				iterator.remove();
+			}
+		}
+		listening.add("#");
+		getChannelManager().getChannel("#").getListening().add(getUUID());
+		String region = getCurrentRegion().getChannelName();
+		getListening().add(region);
+		getChannelManager().getChannel(region).getListening().add(getUUID());
+		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
+			this.getListening().add("@");
+			getChannelManager().getChannel("@").getListening().add(this.getUUID());
+		}
+		String base = new StringBuilder(Color.GOOD_PLAYER.toString()).append(this.getDisplayName())
+				.append(Color.GOOD).append(" began pestering <>").append(Color.GOOD)
+				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date())).toString();
+		// Heavy loopage ensues
+		for (User user : users.getOnlineUsers()) {
+			if (!user.isOnline()) {
+				continue;
+			}
+			StringBuilder matches = new StringBuilder();
+			for (String channelName : this.getListening()) {
+				if (user.getListening().contains(channelName)) {
+					matches.append(Color.GOOD_EMPHASIS).append(channelName).append(Color.GOOD).append(", ");
+				}
+			}
+			String message;
+			if (matches.length() > 0) {
+				matches.replace(matches.length() - 3, matches.length() - 1, "");
+				StringBuilder msg = new StringBuilder(base.replace("<>", matches.toString()));
+				int comma = msg.lastIndexOf(",");
+				if (comma != -1) {
+					if (comma == msg.indexOf(",")) {
+						msg.replace(comma, comma + 1, " and");
+					} else {
+						msg.insert(comma + 1, " and");
+					}
+				}
+				message = msg.toString();
+			} else {
+				message = base.replace(" <>", "");
+			}
+			user.sendMessage(message);
+		}
+
+		Logger.getLogger("Minecraft").info(base.toString().replace("<>", StringUtils.join(getListening(), ", ")));
+	}
 
 	/**
 	 * Remove a Channel from the Player's listening List.
@@ -527,10 +682,24 @@ public class OfflineUser {
 	 * @param channelName the name of the Channel to remove
 	 */
 	public synchronized void removeListening(String channelName) {
-		if (this.currentChannel.equals(channelName)) {
-			this.currentChannel = null;
+		Channel channel = getChannelManager().getChannel(channelName);
+		if (channel == null) {
+			this.sendMessage(ChatMsgs.errorInvalidChannel(channelName));
+			this.getListening().remove(channelName);
+			return;
 		}
-		this.listening.remove(channelName);
+		if (this.getListening().remove(channelName)) {
+			if (channel instanceof NickChannel) {
+				((NickChannel) channel).removeNick(this);
+			}
+			channel.sendMessage(ChatMsgs.onChannelLeave(this, channel));
+			channel.getListening().remove(this.getUUID());
+			if (this.currentChannel != null && channelName.equals(this.getCurrentChannel().getName())) {
+				this.currentChannel = null;
+			}
+		} else {
+			this.sendMessage(Color.BAD + "You are not listening to " + Color.BAD_EMPHASIS + channelName);
+		}
 	}
 
 	/**
@@ -603,7 +772,7 @@ public class OfflineUser {
 	 * @return the last chat message sent
 	 */
 	public synchronized String getLastChat() {
-		return new String();
+		return this.lastChat;
 	}
 
 	/**
@@ -611,7 +780,9 @@ public class OfflineUser {
 	 * 
 	 * @param message the last chat message sent
 	 */
-	public synchronized void setLastChat(String message) {}
+	public synchronized void setLastChat(String message) {
+		this.lastChat = message;
+	}
 
 	/**
 	 * Gets the Player's chat violation level.
@@ -619,7 +790,7 @@ public class OfflineUser {
 	 * @return the violation level
 	 */
 	public int getChatViolationLevel() {
-		return 0;
+		return violationLevel.get();
 	}
 
 	/**
@@ -627,7 +798,9 @@ public class OfflineUser {
 	 * 
 	 * @param violationLevel the violation level
 	 */
-	public void setChatViolationLevel(int violationLevel) {}
+	public void setChatViolationLevel(int violationLevel) {
+		this.violationLevel.set(violationLevel);
+	}
 
 	/**
 	 * Gets whether or not the Player has been warned to not spam.
@@ -635,7 +808,7 @@ public class OfflineUser {
 	 * @return true if the Player has been warned
 	 */
 	public boolean getChatWarnStatus() {
-		return false;
+		return spamWarned.get();
 	}
 
 	/**
@@ -643,7 +816,9 @@ public class OfflineUser {
 	 * 
 	 * @param warned whether or not the Player has been warned
 	 */
-	public void setChatWarnStatus(boolean warned) {}
+	public void setChatWarnStatus(boolean warned) {
+		spamWarned.set(warned);
+	}
 
 	/**
 	 * Gets whether or not the Player can join Sblock default chats.
@@ -660,7 +835,97 @@ public class OfflineUser {
 	 * @return true if the Player can chat in #
 	 */
 	public boolean getComputerAccess() {
-		return false;
+		if (!isOnline()) {
+			return false;
+		}
+		if (!Chat.getComputerRequired()) {
+			// Overrides the computer limitation for pre-Entry shenanigans
+			return true;
+		}
+		Effects effects = getPlugin().getModule(Effects.class);
+		return effects.getAllEffects(getPlayer()).containsKey(effects.getEffect("Computer"))
+				|| machines.isByComputer(this.getPlayer(), 10);
+	}
+
+	/**
+	 * Check if the User is in server mode.
+	 * 
+	 * @return true if the User is in server mode
+	 */
+	public boolean isServer() {
+		return this.isServer;
+	}
+
+	public void startServerMode() {
+		if (this.isServer || !this.isOnline()) {
+			return;
+		}
+		Player player = this.getPlayer();
+		if (getClient() == null) {
+			player.sendMessage(Color.BAD + "You must have a client to enter server mode!"
+					+ "+\nAsk someone with " + Color.COMMAND + "/requestclient <player>");
+			return;
+		}
+		if (!Bukkit.getOfflinePlayer(getClient()).isOnline()) {
+			player.sendMessage(Color.BAD + "You should wait for your client before progressing!");
+			return;
+		}
+		User clientUser = users.getUser(getClient());
+		if (!clientUser.getPrograms().contains("SburbClient")) {
+			player.sendMessage(Color.BAD + clientUser.getPlayerName() + " does not have the Sburb Client installed!");
+			return;
+		}
+		Pair<Machine, ConfigurationSection> pair = machines.getComputer(getClient());
+		if (pair == null) {
+			player.sendMessage(Color.BAD + clientUser.getPlayerName() + " has not placed their computer in their house!");
+			return;
+		}
+		Spectators spectators = getPlugin().getModule(Spectators.class);
+		if (spectators.isSpectator(getUUID())) {
+			spectators.removeSpectator(player);
+		}
+		this.serverDisableTeleport = player.getLocation();
+		if (!machines.isByComputer(clientUser.getPlayer(), 25)) {
+			player.teleport(pair.getLeft().getKey(pair.getRight()));
+		} else {
+			player.teleport(clientUser.getPlayer());
+		}
+		this.isServer = true;
+		this.updateFlight();
+		player.setNoDamageTicks(Integer.MAX_VALUE);
+		InventoryManager.storeAndClearInventory(player);
+		player.getInventory().addItem(machines.getMachineByName("Computer").getUniqueDrop());
+		player.getInventory().addItem(machines.getMachineByName("Cruxtruder").getUniqueDrop());
+		player.getInventory().addItem(machines.getMachineByName("PunchDesignix").getUniqueDrop());
+		player.getInventory().addItem(machines.getMachineByName("TotemLathe").getUniqueDrop());
+		player.getInventory().addItem(machines.getMachineByName("Alchemiter").getUniqueDrop());
+		for (Material mat : getPlugin().getModule(ServerMode.class).getApprovedSet()) {
+			player.getInventory().addItem(new ItemStack(mat));
+		}
+		player.sendMessage(Color.GOOD + "Server mode enabled!");
+	}
+
+	public void stopServerMode() {
+		if (!this.isServer) {
+			return;
+		}
+		if (Bukkit.getOfflinePlayer(getClient()).isOnline()) {
+			Player clientPlayer = Bukkit.getPlayer(getClient());
+			for (ItemStack is : getPlayer().getInventory()) {
+				if (Captcha.isPunch(is)) {
+					clientPlayer.getWorld().dropItem(clientPlayer.getLocation(), is).setPickupDelay(0);
+					break;
+				}
+			}
+		}
+		this.isServer = false;
+		this.updateFlight();
+		Player p = this.getPlayer();
+		p.teleport(serverDisableTeleport);
+		p.setFallDistance(0);
+		p.setNoDamageTicks(0);
+		InventoryManager.restoreInventory(p);
+		p.sendMessage(Color.GOOD + "Server program closed!");
 	}
 
 	/**
@@ -893,8 +1158,8 @@ public class OfflineUser {
 		if (object == this) {
 			return true;
 		}
-		if (object instanceof OfflineUser) {
-			OfflineUser u = (OfflineUser) object;
+		if (object instanceof User) {
+			User u = (User) object;
 			return u.getUUID().equals(getUUID());
 		}
 		return false;
@@ -902,15 +1167,6 @@ public class OfflineUser {
 
 	public boolean isOnline() {
 		return Bukkit.getOfflinePlayer(getUUID()).isOnline();
-	}
-
-	public OnlineUser getOnlineUser() {
-		OnlineUser user = Users.getOnlineUser(getUUID());
-		if (user != null) {
-			return user;
-		}
-		return new OnlineUser(getPlugin(), getUUID(), Bukkit.getPlayer(uuid).getAddress().getHostString(),
-				yaml, getPreviousLocation(), getPrograms(), currentChannel, getListening());
 	}
 
 	protected YamlConfiguration getYamlConfiguration() {
@@ -927,12 +1183,9 @@ public class OfflineUser {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to save data for " + getUUID().toString(), e);
 		}
-		Player player = this instanceof OnlineUser ? this.getPlayer() : Bukkit.getPlayer(getUUID());
-		yaml.set("name", player != null ? getPlayerName() : Bukkit.getOfflinePlayer(getUUID()).getName());
+		yaml.set("name", getPlayerName());
 		yaml.set("ip", getUserIP());
-		if (player != null) {
-			yaml.set("playtime", getTimePlayed());
-		}
+		yaml.set("playtime", getTimePlayed());
 		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(getPreviousLocation()));
 		yaml.set("previousRegion", null);
 		yaml.set("progression.programs", getPrograms());
@@ -955,24 +1208,22 @@ public class OfflineUser {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static OfflineUser load(Sblock plugin, final UUID uuid) {
+	protected static User load(Sblock plugin, final UUID uuid) {
 		File file;
 		try {
 			file = new File(plugin.getUserDataFolder(), uuid.toString() + ".yml");
 			if (!file.exists()) {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player == null) {
-					return new OfflineUser(plugin, uuid, "null", new YamlConfiguration());
+					return new User(plugin, uuid, "null", new YamlConfiguration());
 				}
 				player.teleport(Users.getSpawnLocation());
 
-				OfflineUser offline = new OfflineUser(plugin, uuid, player.getAddress().getHostString(), new YamlConfiguration());
-				offline.setCurrentChannel("#"); // Reverse come Entry
-				offline.getListening().add(Region.EARTH.getChannelName());
-				OnlineUser user = offline.getOnlineUser();
+				User user = new User(plugin, uuid, player.getAddress().getHostString(), new YamlConfiguration());
+				user.setCurrentChannel("#"); // Reverse come Entry
+				user.getListening().add(Region.EARTH.getChannelName());
 				user.updateCurrentRegion(Region.EARTH);
 				player.setResourcePack(Region.EARTH.getResourcePackURL());
-				Users.addUser(user);
 
 				if (!player.hasPlayedBefore()) {
 					// Our data file may have just been deleted - reset planned for Entry, etc.
@@ -989,7 +1240,7 @@ public class OfflineUser {
 			throw new RuntimeException("Unable to load data for " + uuid, e);
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		OfflineUser user = new OfflineUser(plugin, uuid, yaml.getString("ip", "null"), yaml);
+		User user = new User(plugin, uuid, yaml.getString("ip", "null"), yaml);
 		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
 		//yaml.getString("previousRegion");
 		Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("location"));
@@ -1019,30 +1270,5 @@ public class OfflineUser {
 			yaml.set("previousname", name);
 			Bukkit.broadcastMessage(Color.HAL + Bukkit.getOfflinePlayer(uuid).getName() + " was previously known as " + name);
 		}
-	}
-
-	public static OfflineUser fromOnline(OnlineUser online) {
-		OfflineUser user = OfflineUser.load(online.getPlugin(), online.getUUID());
-
-		user.setUserClass(online.getUserClass().name());
-		user.setUserAspect(online.getUserAspect().name());
-		user.setMediumPlanet(online.getMediumPlanet().name());
-		user.setDreamPlanet(online.getDreamPlanet().name());
-		user.setPreviousLocation(online.getPreviousLocation());
-		// User may have logged out and not been unloaded properly
-		if (user.isOnline()) {
-			user.getYamlConfiguration().set("location", BukkitSerializer.locationToBlockCenterString(online.getCurrentLocation()));
-			user.getYamlConfiguration().set("nickname", online.getDisplayName());
-			user.setCurrentRegion(online.getCurrentRegion());
-		}
-		user.setProgression(online.getProgression());
-		user.setServer(online.getServer());
-		user.setClient(online.getClient());
-		user.programs = online.getPrograms();
-		user.setCurrentChannel(online.getCurrentChannel());
-		user.listening = online.getListening();
-		user.setSuppression(user.getSuppression());
-
-		return user;
 	}
 }

@@ -25,13 +25,15 @@ import co.sblock.users.Users;
 public class HalBotCommand extends SblockCommand {
 
 	private final Chat chat;
+	private final Users users;
 
 	public HalBotCommand(Sblock plugin) {
 		super(plugin, "halbot");
+		this.chat = plugin.getModule(Chat.class);
+		this.users = plugin.getModule(Users.class);
 		this.setDescription("Trigger a Lil Hal response.");
 		this.setUsage("/halbot [channel] <seed mesage>");
 		this.setPermissionLevel("felt");
-		this.chat = plugin.getModule(Chat.class);
 	}
 
 	@Override
@@ -45,7 +47,7 @@ public class HalBotCommand extends SblockCommand {
 			specifiedTarget = true;
 		} else {
 			if (sender instanceof Player) {
-				target = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId()).getCurrentChannel();
+				target = users.getUser(((Player) sender).getUniqueId()).getCurrentChannel();
 				if (target == null) {
 					return true;
 				}

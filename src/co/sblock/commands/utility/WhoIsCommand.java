@@ -23,8 +23,11 @@ import co.sblock.users.Users;
  */
 public class WhoIsCommand extends SblockAsynchronousCommand {
 
+	private final Users users;
+
 	public WhoIsCommand(Sblock plugin) {
 		super(plugin, "whois");
+		this.users = plugin.getModule(Users.class);
 		this.setAliases("profile");
 		this.setDescription("Check data stored for a player.");
 		this.setUsage("/whois <player>");
@@ -51,9 +54,9 @@ public class WhoIsCommand extends SblockAsynchronousCommand {
 			return true;
 		}
 		if (sender.hasPermission("sblock.command.whois.detail")) {
-			sender.sendMessage(Users.getGuaranteedUser(((Sblock) getPlugin()), uuid).getWhois());
+			sender.sendMessage(users.getUser(uuid).getWhois());
 		} else {
-			sender.sendMessage(Users.getGuaranteedUser(((Sblock) getPlugin()), uuid).getProfile());
+			sender.sendMessage(users.getUser(uuid).getProfile());
 		}
 		return true;
 	}

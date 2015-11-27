@@ -4,9 +4,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import co.sblock.Sblock;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
-import co.sblock.users.Users;
+import co.sblock.users.User;
 
 public class RegionChannel extends Channel {
 
@@ -26,7 +24,7 @@ public class RegionChannel extends Channel {
 	@Override
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			OfflineUser u = Users.getGuaranteedUser(getPlugin(), userID);
+			User u = getUsers().getUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;
@@ -69,30 +67,30 @@ public class RegionChannel extends Channel {
 	/**
 	 * Owners and moderators are permission-based for regional channels.
 	 * 
-	 * @see co.sblock.chat.channel.Channel#isOwner(co.sblock.users.OfflineUser)
+	 * @see co.sblock.chat.channel.Channel#isOwner(co.sblock.users.User)
 	 */
 	@Override
-	public boolean isOwner(OfflineUser user) {
-		return user instanceof OnlineUser && ((OnlineUser) user).getPlayer().hasPermission("sblock.denizen");
+	public boolean isOwner(User user) {
+		return user != null && user.getPlayer().hasPermission("sblock.denizen");
 	}
 
 	/**
 	 * Owners and moderators are permission-based for regional channels.
 	 * 
-	 * @see co.sblock.chat.channel.Channel#isModerator(co.sblock.users.OfflineUser)
+	 * @see co.sblock.chat.channel.Channel#isModerator(co.sblock.users.User)
 	 */
 	@Override
-	public boolean isModerator(OfflineUser user) {
-		return user instanceof OnlineUser && ((OnlineUser) user).getPlayer().hasPermission("sblock.felt");
+	public boolean isModerator(User user) {
+		return user != null && user.getPlayer().hasPermission("sblock.felt");
 	}
 
 	/**
 	 * All users are approved to focus on regional channels.
 	 * 
-	 * @see co.sblock.chat.channel.Channel#isApproved(co.sblock.users.OfflineUser)
+	 * @see co.sblock.chat.channel.Channel#isApproved(co.sblock.users.User)
 	 */
 	@Override
-	public boolean isApproved(OfflineUser user) {
+	public boolean isApproved(User user) {
 		return true;
 	}
 
@@ -100,10 +98,10 @@ public class RegionChannel extends Channel {
 	 * Users cannot be banned from regional channels; they should be muted if they are that much of
 	 * an issue.
 	 * 
-	 * @see co.sblock.chat.channel.Channel#isBanned(co.sblock.users.OfflineUser)
+	 * @see co.sblock.chat.channel.Channel#isBanned(co.sblock.users.User)
 	 */
 	@Override
-	public boolean isBanned(OfflineUser user) {
+	public boolean isBanned(User user) {
 		return false;
 	}
 }

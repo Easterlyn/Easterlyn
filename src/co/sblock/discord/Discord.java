@@ -62,11 +62,12 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class Discord extends Module {
 
+	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final DiscordAPI discord;
 	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private final Map<String, DiscordCommand> commands;
-	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	private LoadingCache<Object, Object> authentications;
+	private final LoadingCache<Object, Object> authentications;
+	private Users users;
 	private MessageBuilder builder;
 	private Pattern mention;
 	private ChannelManager manager;
@@ -82,12 +83,26 @@ public class Discord extends Module {
 			discord = null;
 			queue = null;
 			commands = null;
+			authentications = null;
 			return;
 		}
 
 		discord = new DiscordBuilder(login, password).build();
 		queue = new ConcurrentLinkedQueue<>();
 		commands = new HashMap<>();
+
+		authentications = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES)
+				.build(new CacheLoader<Object, Object>() {
+					@Override
+					public Object load(Object key) throws Exception {
+						if (!(key instanceof UUID)) {
+							return null;
+						}
+						String code = generateUniqueCode();
+						authentications.put(code, key);
+						return code;
+					};
+				});
 
 		Reflections reflections = new Reflections("co.sblock.discord.commands");
 		Set<Class<? extends DiscordCommand>> cmds = reflections.getSubTypesOf(DiscordCommand.class);
@@ -117,6 +132,8 @@ public class Discord extends Module {
 			this.disable();
 		}
 
+		this.users = getPlugin().getModule(Users.class);
+
 		discord.getEventManager().registerListener(new DiscordLoadedListener(this));
 
 		try {
@@ -128,19 +145,6 @@ public class Discord extends Module {
 		}
 
 		manager = getPlugin().getModule(Chat.class).getChannelManager();
-
-		authentications = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES)
-				.build(new CacheLoader<Object, Object>() {
-					@Override
-					public Object load(Object key) throws Exception {
-						if (!(key instanceof UUID)) {
-							return null;
-						}
-						String code = generateUniqueCode();
-						authentications.put(code, key);
-						return code;
-					};
-				});
 		// future modify MessageBuilder to allow custom name clicks (OPEN_URL www.sblock.co/discord)
 		builder = new MessageBuilder(getPlugin()).setNameClick("@# ").setChannelClick("@# ")
 				.setChannel(manager.getChannel("#discord"))
@@ -332,14 +336,14 @@ public class Discord extends Module {
 	}
 
 	protected void postMessageFor(UserChatEvent event, Player player) {
-		builder.setSender(Users.getGuaranteedUser(getPlugin(), player.getUniqueId()))
+		builder.setSender(users.getUser(player.getUniqueId()))
 				.setMessage(sanitize(event.getMsg().getMessage())).setChannel(manager.getChannel("#discord"));
 		if (!builder.canBuild(false)) {
 			event.getMsg().deleteMessage();
 			return;
 		}
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
-		players.removeIf(p -> Users.getGuaranteedUser(getPlugin(), p.getUniqueId()).getSuppression());
+		players.removeIf(p -> users.getUser(p.getUniqueId()).getSuppression());
 		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, builder.toMessage()));
 	}
 

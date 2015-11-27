@@ -17,7 +17,7 @@ import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -27,15 +27,17 @@ import co.sblock.users.Users;
  */
 public class ChatFocusCommand extends SblockCommand {
 
+	private final Users users;
 	private final ChannelManager manager;
 
 	public ChatFocusCommand(Sblock plugin) {
 		super(plugin, "focus");
+		this.users = plugin.getModule(Users.class);
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		setDescription("Join or focus on a chat channel.");
 		setUsage(Color.COMMAND + "/join <channel>"
 				+ Color.GOOD + ": Join or focus on <channel>.");
 		setAliases("join", "current");
-		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -47,7 +49,7 @@ public class ChatFocusCommand extends SblockCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
+		User user = users.getUser(((Player) sender).getUniqueId());
 		Channel channel = manager.getChannel(args[0]);
 		if (channel == null) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));

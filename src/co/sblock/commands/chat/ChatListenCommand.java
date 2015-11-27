@@ -17,7 +17,7 @@ import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -27,14 +27,16 @@ import co.sblock.users.Users;
  */
 public class ChatListenCommand extends SblockCommand {
 
+	private final Users users;
 	private final ChannelManager manager;
 
 	public ChatListenCommand(Sblock plugin) {
 		super(plugin, "listen");
+		this.users = plugin.getModule(Users.class);
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		setDescription("Join a chat channel without focusing on it.");
 		setUsage(Color.COMMAND + "/listen <channel>"
 				+ Color.GOOD + ": Listen to <channel>.");
-		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class ChatListenCommand extends SblockCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
+		User user = users.getUser(((Player) sender).getUniqueId());
 		Channel channel = manager.getChannel(args[0]);
 		if (channel == null) {
 			user.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));

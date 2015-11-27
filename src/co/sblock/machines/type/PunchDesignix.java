@@ -26,9 +26,8 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.progression.Entry;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.Users;
 import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -85,7 +84,7 @@ public class PunchDesignix extends Machine {
 		if (event.getPlayer().isSneaking()) {
 			return false;
 		}
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
+		User user = getUsers().getUser(event.getPlayer().getUniqueId());
 		if (user != null && (user.getProgression() != ProgressionState.NONE
 				|| entry.isEntering(user))) {
 			openInventory(event.getPlayer(), storage);

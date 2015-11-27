@@ -20,7 +20,7 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.channel.RPChannel;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
@@ -33,9 +33,11 @@ import net.md_5.bungee.api.ChatColor;
 public class ChatNickCommand extends SblockCommand {
 
 	private final Chat chat;
+	private final Users users;
 
 	public ChatNickCommand(Sblock plugin) {
 		super(plugin, "nick");
+		this.users = plugin.getModule(Users.class);
 		setDescription(Color.COMMAND + "/nick remove|list|<nick choice>"
 				+ Color.GOOD + ": Set a nick in a Nick/RP channel.");
 		setUsage("/nick name");
@@ -52,7 +54,7 @@ public class ChatNickCommand extends SblockCommand {
 		if (chat.testForMute(player)) {
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
+		User user = users.getUser(player.getUniqueId());
 		Channel channel = user.getCurrentChannel();
 		if (channel == null) {
 			user.sendMessage(ChatMsgs.errorCurrentChannelNull());
@@ -116,7 +118,7 @@ public class ChatNickCommand extends SblockCommand {
 			nickname = ChatColor.translateAlternateColorCodes('&', nickname);
 			cleanName = ChatColor.stripColor(nickname);
 		}
-		OfflineUser nickOwner = nickChannel.getNickOwner(nickname);
+		User nickOwner = nickChannel.getNickOwner(nickname);
 		if (nickOwner != null) {
 			if (!nickOwner.getUUID().equals(user.getUUID())) {
 				sender.sendMessage(ChatMsgs.errorNickTaken(cleanName));
@@ -137,7 +139,7 @@ public class ChatNickCommand extends SblockCommand {
 		if (!(sender instanceof Player) || args.length > 1) {
 			return ImmutableList.of();
 		}
-		if (Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId()).getCurrentChannel() instanceof RPChannel) {
+		if (users.getUser(((Player) sender).getUniqueId()).getCurrentChannel() instanceof RPChannel) {
 			ArrayList<String> matches = new ArrayList<>();
 			args[0] = args[0].toLowerCase();
 			for (CanonNick nick : CanonNick.values()) {

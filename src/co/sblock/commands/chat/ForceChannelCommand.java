@@ -17,7 +17,7 @@ import co.sblock.chat.ChatMsgs;
 import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -27,15 +27,17 @@ import co.sblock.users.Users;
  */
 public class ForceChannelCommand extends SblockCommand {
 
+	private final Users users;
 	private final ChannelManager manager;
 
 	public ForceChannelCommand(Sblock plugin) {
 		super(plugin, "forcechannel");
+		this.users = plugin.getModule(Users.class);
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.setDescription("Help people find their way.");
 		this.setUsage("/forcechannel <channel> <player>");
 		this.setPermissionMessage("Try /join <channel>");
 		this.setPermissionLevel("felt");
-		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class ForceChannelCommand extends SblockCommand {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
+		User user = users.getUser(player.getUniqueId());
 		user.setCurrentChannel(channel);
 		sender.sendMessage(Color.GOOD + "Channel forced!");
 		return true;

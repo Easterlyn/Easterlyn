@@ -36,8 +36,7 @@ import co.sblock.micromodules.Meteorite;
 import co.sblock.micromodules.ParticleUtils;
 import co.sblock.module.Dependency;
 import co.sblock.module.Module;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
@@ -59,6 +58,7 @@ public class Entry extends Module {
 	private Captcha captcha;
 	private Machines machines;
 	private ParticleUtils particles;
+	private Users users;
 
 	public Entry(Sblock plugin) {
 		super(plugin);
@@ -71,12 +71,13 @@ public class Entry extends Module {
 		this.captcha = getPlugin().getModule(Captcha.class);
 		this.machines = getPlugin().getModule(Machines.class);
 		this.particles = getPlugin().getModule(ParticleUtils.class);
+		this.users = getPlugin().getModule(Users.class);
 	}
 
 	@Override
 	protected void onDisable() {
 		for (UUID uuid : data.keySet().toArray(new UUID[data.size()])) {
-			OfflineUser user = Users.getGuaranteedUser(getPlugin(), uuid);
+			User user = users.getUser(uuid);
 
 			// Complete success sans animation if player logs out
 			if (user.getProgression() == ProgressionState.ENTRY_COMPLETING) {
@@ -90,7 +91,7 @@ public class Entry extends Module {
 		}
 	}
 
-	public boolean canStart(OfflineUser user) {
+	public boolean canStart(User user) {
 		if (!data.containsKey(user.getUUID()) && user.getPrograms().contains("SburbClient")
 				&& user.getProgression() == ProgressionState.NONE) {
 			return true;
@@ -99,12 +100,12 @@ public class Entry extends Module {
 		return false;
 	}
 
-	public boolean isEntering(OfflineUser user) {
+	public boolean isEntering(User user) {
 		return data.containsKey(user.getUUID());
 	}
 
 
-	public void startEntry(OfflineUser user, Location cruxtruder) {
+	public void startEntry(User user, Location cruxtruder) {
 		if (!canStart(user)) {
 			return;
 		}
@@ -125,9 +126,7 @@ public class Entry extends Module {
 		im.setDisplayName(ChatColor.AQUA + "Cruxite " + InventoryUtils.getMaterialDataName(is.getType(), is.getDurability()));
 		is.setItemMeta(im);
 		is = captcha.captchaToPunch(captcha.itemToCaptcha(is));
-		if (Bukkit.getOfflinePlayer(user.getServer()).isOnline()
-				&& Users.getGuaranteedUser(getPlugin(), user.getServer()) instanceof OnlineUser
-				&& ((OnlineUser) Users.getGuaranteedUser(getPlugin(), user.getServer())).isServer()) {
+		if (users.getUser(user.getServer()).isServer()) {
 			Bukkit.getPlayer(user.getServer()).getInventory().addItem(is);
 		} else {
 			Player player = user.getPlayer();
@@ -136,7 +135,7 @@ public class Entry extends Module {
 		data.put(user.getUUID(), new ImmutableTriple<>(meteorite, task, material));
 	}
 
-	private void finish(OfflineUser user) {
+	private void finish(User user) {
 		if (!isEntering(user)) {
 			return;
 		}
@@ -148,13 +147,14 @@ public class Entry extends Module {
 		}
 
 		// Kicks the server out of server mode
-		OfflineUser server = Users.getGuaranteedUser(getPlugin(), user.getServer());
-		if (server instanceof OnlineUser && ((OnlineUser) server).isServer()) {
-			((OnlineUser) server).stopServerMode();
-		}
+		users.getUser(user.getServer()).stopServerMode();
 	}
 
-	public void fail(OfflineUser user) {
+	public void fail(UUID uuid) {
+		fail(users.getUser(uuid));
+	}
+
+	public void fail(User user) {
 
 		if (user == null) {
 			return;
@@ -174,7 +174,7 @@ public class Entry extends Module {
 		}
 	}
 
-	public void succeed(final OfflineUser user) {
+	public void succeed(final User user) {
 		finish(user);
 
 		user.setProgression(ProgressionState.ENTRY_COMPLETING);
@@ -207,7 +207,7 @@ public class Entry extends Module {
 		}, 40L);
 	}
 
-	public void finalizeSuccess(Player player, OfflineUser user) {
+	public void finalizeSuccess(Player player, User user) {
 		user.setProgression(ProgressionState.ENTRY);
 		Location target = getEntryLocation(user.getMediumPlanet());
 		player.teleport(target);

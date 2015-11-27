@@ -29,8 +29,7 @@ import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.progression.Entry;
 import co.sblock.progression.ServerMode;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.Experience;
 import co.sblock.utilities.InventoryUtils;
@@ -52,6 +51,7 @@ public class InteractListener extends SblockListener {
 	private final Machines machines;
 	private final ServerMode serverMode;
 	private final SleepVote sleep;
+	private final Users users;
 
 	public InteractListener(Sblock plugin) {
 		super(plugin);
@@ -63,6 +63,7 @@ public class InteractListener extends SblockListener {
 		this.machines = plugin.getModule(Machines.class);
 		this.serverMode = plugin.getModule(ServerMode.class);
 		this.sleep = plugin.getModule(SleepVote.class);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -101,8 +102,8 @@ public class InteractListener extends SblockListener {
 			// Right clicking air is cancelled by default as there is no result.
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		User user = users.getUser(event.getPlayer().getUniqueId());
+		if (user.isServer()) {
 			// No interaction with any blocks while out of range.
 			if (event.getAction().name().contains("BLOCK") && !serverMode.isWithinRange(
 					user, event.getClickedBlock())) {
@@ -196,7 +197,7 @@ public class InteractListener extends SblockListener {
 					head = b.getRelative(relative).getLocation();
 				}
 
-				switch (Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId()).getCurrentRegion()) {
+				switch (user.getCurrentRegion()) {
 				case EARTH:
 				case PROSPIT:
 				case LOFAF:

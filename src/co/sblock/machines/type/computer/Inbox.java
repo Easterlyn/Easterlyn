@@ -26,10 +26,12 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Inbox extends Program {
 
+	private final Users users;
 	private final ItemStack icon;
 
 	public Inbox(Machines machines) {
 		super(machines);
+		this.users = machines.getPlugin().getModule(Users.class);
 		icon = new ItemStack(Material.WRITTEN_BOOK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "Read Mail");
@@ -48,7 +50,7 @@ public class Inbox extends Program {
 		boolean atComputer = !meta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE);
 		if (!meta.hasLore() || atComputer) {
 			Inventory inventory = ((Computer) getMachines().getMachineByName("Computer")).getInventory(54);
-			List<ItemStack> items = Users.getGuaranteedUser(getMachines().getPlugin(), player.getUniqueId()).getMailItems();
+			List<ItemStack> items = users.getUser(player.getUniqueId()).getMailItems();
 			ItemStack nope = ((Nope) Programs.getProgramByName("Nope")).getIconFor(
 					ChatColor.WHITE + "Computer access is required",
 					ChatColor.WHITE + "to collect items from mail.");

@@ -115,7 +115,7 @@ public class Sblock extends JavaPlugin {
 		addModule(new Captcha(this));
 		addModule(new Entry(this));
 		addModule(new Holograms(this));
-		// Machines depends on Captcha, Effects, Entry, and Holograms to construct
+		// Machines depends on Captcha, Effects, Entry, Holograms, and Users to construct
 		addModule(new Machines(this));
 
 		addModule(new ServerMode(this));

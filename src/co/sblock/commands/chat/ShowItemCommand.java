@@ -17,7 +17,7 @@ import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
 
@@ -31,8 +31,11 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class ShowItemCommand extends SblockCommand {
 
+	private final Users users;
+
 	public ShowItemCommand(Sblock plugin) {
 		super(plugin, "show");
+		this.users = plugin.getModule(Users.class);
 		this.setDescription("Displays an item in chat.");
 		this.setUsage("/show");
 		this.setAliases("showitem");
@@ -53,7 +56,7 @@ public class ShowItemCommand extends SblockCommand {
 			return true;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
+		User user = users.getUser(player.getUniqueId());
 
 		TextComponent item = new TextComponent(JSONUtil.fromLegacyText(hand.getItemMeta().getDisplayName()));
 		item.setColor(ChatColor.AQUA);

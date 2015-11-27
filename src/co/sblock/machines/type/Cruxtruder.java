@@ -16,9 +16,8 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.progression.Entry;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.ProgressionState;
-import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -62,7 +61,7 @@ public class Cruxtruder extends Machine {
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
 		Location broken = event.getBlock().getLocation();
 		if (getKey(storage).add(new Vector(0, 1, 0)).equals(broken)) {
-			OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
+			User user = getUsers().getUser(event.getPlayer().getUniqueId());
 			if (entry.canStart(user)) {
 				entry.startEntry(user, event.getBlock().getLocation());
 			}

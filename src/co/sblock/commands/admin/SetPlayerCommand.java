@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.commands.SblockAsynchronousCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.UserAspect;
 import co.sblock.users.UserClass;
@@ -23,10 +23,12 @@ import co.sblock.users.Users;
  */
 public class SetPlayerCommand extends SblockAsynchronousCommand {
 
+	private final Users users;
 	private final String[] primaryArgs;
 
 	public SetPlayerCommand(Sblock plugin) {
 		super(plugin, "setplayer");
+		this.users = plugin.getModule(Users.class);
 		this.setDescription("Set player data manually.");
 		this.setUsage("/setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>");
 		this.setPermissionLevel("denizen");
@@ -43,7 +45,7 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 			sender.sendMessage(args[0] + " has never played on this server.");
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser((Sblock) getPlugin(), uuid);
+		User user = users.getUser(uuid);
 		args[1] = args[1].toLowerCase();
 		if(args[1].equals("class"))
 			user.setUserClass(args[2]);

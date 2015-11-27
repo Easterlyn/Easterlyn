@@ -15,8 +15,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Spectators;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -27,9 +26,12 @@ import co.sblock.users.Users;
 public class SpectateCommand extends SblockCommand {
 
 	private final Spectators spectators;
+	private final Users users;
 
 	public SpectateCommand(Sblock plugin) {
 		super(plugin, "spectate");
+		this.spectators = plugin.getModule(Spectators.class);
+		this.users = plugin.getModule(Users.class);
 		this.setAliases("spec", "spectator");
 		this.setDescription("Player: Become the ghost (toggles spectator mode)");
 		this.setUsage("To toggle spectate mode, use no arguments.\n"
@@ -45,7 +47,6 @@ public class SpectateCommand extends SblockCommand {
 		}
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock.helper", true).recalculatePermissibles();
-		this.spectators = plugin.getModule(Spectators.class);
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class SpectateCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
+		User user = users.getUser(player.getUniqueId());
 		if (args.length > 0) {
 			args[0] = args[0].toLowerCase();
 			if (args[0].equals("on") || args[0].equals("allow") || args[0].equals("true")) {
@@ -73,7 +74,7 @@ public class SpectateCommand extends SblockCommand {
 			sender.sendMessage(this.getUsage());
 			return true;
 		}
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		if (user.isServer()) {
 			sender.sendMessage(Color.BAD + "Perhaps you should focus on helping your client!");
 			return true;
 		}

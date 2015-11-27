@@ -18,8 +18,7 @@ import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -30,10 +29,12 @@ import co.sblock.users.Users;
 public class PlaceListener extends SblockListener {
 
 	private final Machines machines;
+	private final Users users;
 
 	public PlaceListener(Sblock plugin) {
 		super(plugin);
 		this.machines = plugin.getModule(Machines.class);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -54,8 +55,8 @@ public class PlaceListener extends SblockListener {
 		}
 
 		// Server mode placement
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		User user = users.getUser(event.getPlayer().getUniqueId());
+		if (user.isServer()) {
 			if (event.getItemInHand().isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
 				event.setCancelled(true);
 			} else {

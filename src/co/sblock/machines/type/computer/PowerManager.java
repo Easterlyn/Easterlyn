@@ -17,7 +17,7 @@ import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.InventoryUtils;
 
@@ -31,12 +31,14 @@ import net.md_5.bungee.api.ChatColor;
 public class PowerManager extends Program {
 
 	private final Effects effects;
+	private final Users users;
 	private final ItemStack icon;
 	private final ItemStack installer; // GODTIER: remove this post-testing
 
 	public PowerManager(Machines machines) {
 		super(machines);
 		this.effects = machines.getPlugin().getModule(Effects.class);
+		this.users = machines.getPlugin().getModule(Users.class);
 		icon = new ItemStack(Material.FIREWORK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "PowerManager");
@@ -61,7 +63,7 @@ public class PowerManager extends Program {
 			player.openInventory(top);
 		}
 		top.clear();
-		OfflineUser user = Users.getGuaranteedUser(getMachines().getPlugin(), player.getUniqueId());
+		User user = users.getUser(player.getUniqueId());
 		int active = 0, passive = 0;
 		List<String> enabledEffects = user.getGodtierEffects();
 		GodtierToggle toggle = (GodtierToggle) Programs.getProgramByName("GodtierToggle");

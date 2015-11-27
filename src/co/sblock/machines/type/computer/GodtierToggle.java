@@ -15,7 +15,7 @@ import co.sblock.effects.Effects;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.Effect;
 import co.sblock.machines.Machines;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.UserAspect;
 import co.sblock.users.Users;
 
@@ -29,11 +29,13 @@ import net.md_5.bungee.api.ChatColor;
 public class GodtierToggle extends Program {
 
 	private final Effects effects;
+	private final Users users;
 	private final ItemStack icon, icoff;
 
 	public GodtierToggle(Machines machines) {
 		super(machines);
 		this.effects = machines.getPlugin().getModule(Effects.class);
+		this.users = machines.getPlugin().getModule(Users.class);
 		Wool wool = new Wool();
 		wool.setColor(DyeColor.LIME);
 		icon = wool.toItemStack();
@@ -56,7 +58,7 @@ public class GodtierToggle extends Program {
 				|| clicked.getItemMeta().getLore().isEmpty()) {
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(getMachines().getPlugin(), player.getUniqueId());
+		User user = users.getUser(player.getUniqueId());
 		String effectName = clicked.getItemMeta().getLore().get(0).replaceFirst("..toggle ", "");
 		Effect effect = effects.getEffect(effectName);
 		if (effect == null) {

@@ -5,8 +5,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -16,8 +15,11 @@ import co.sblock.users.Users;
  */
 public class InteractEntityListener extends SblockListener {
 
+	private final Users users;
+
 	public InteractEntityListener(Sblock plugin) {
 		super(plugin);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -27,8 +29,8 @@ public class InteractEntityListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		User user = users.getUser(event.getPlayer().getUniqueId());
+		if (user.isServer()) {
 			event.setCancelled(true);
 			return;
 		}

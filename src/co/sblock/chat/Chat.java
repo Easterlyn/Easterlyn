@@ -24,6 +24,7 @@ public class Chat extends Module {
 	private final ChannelManager channelManager;
 	private final DummyPlayer buffer;
 
+	private Users users;
 	private CleverHal cleverHal;
 	private Halculator halculator;
 
@@ -35,6 +36,7 @@ public class Chat extends Module {
 
 	@Override
 	protected void onEnable() {
+		this.users = getPlugin().getModule(Users.class);
 		this.cleverHal = new CleverHal(getPlugin());
 		this.halculator = new Halculator(getPlugin());
 		this.channelManager.loadAllChannels();
@@ -89,7 +91,7 @@ public class Chat extends Module {
 			throw new IllegalArgumentException("Given channel does not exist!");
 		}
 		MessageBuilder builder = new MessageBuilder(getPlugin())
-				.setSender(Users.getGuaranteedUser(getPlugin(), sender.getUniqueId())).setChannel(channel)
+				.setSender(users.getUser(sender.getUniqueId())).setChannel(channel)
 				.setMessage(msg).setChannel(channel);
 		Message message = builder.toMessage();
 

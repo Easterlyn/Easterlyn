@@ -6,8 +6,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -17,8 +16,11 @@ import co.sblock.users.Users;
  */
 public class FoodLevelChangeListener extends SblockListener {
 
+	private final Users users;
+
 	public FoodLevelChangeListener(Sblock plugin) {
 		super(plugin);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -32,8 +34,8 @@ public class FoodLevelChangeListener extends SblockListener {
 			return;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getEntity().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		User user = users.getUser(event.getEntity().getUniqueId());
+		if (user.isServer()) {
 			event.setCancelled(true);
 			return;
 		}

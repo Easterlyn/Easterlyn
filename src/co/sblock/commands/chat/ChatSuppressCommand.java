@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
@@ -22,8 +22,11 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class ChatSuppressCommand extends SblockCommand {
 
+	private final Users users;
+
 	public ChatSuppressCommand(Sblock plugin) {
 		super(plugin, "suppress");
+		this.users = plugin.getModule(Users.class);
 		setDescription("Toggle chat suppression.");
 		setUsage(ChatColor.AQUA + "/suppress");
 	}
@@ -34,7 +37,7 @@ public class ChatSuppressCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
+		User user = users.getUser(((Player) sender).getUniqueId());
 		user.setSuppression(!user.getSuppression());
 		user.sendMessage(Color.GOOD + "Suppression toggled " + (user.getSuppression() ? "on" : "off") + "!");
 		return true;

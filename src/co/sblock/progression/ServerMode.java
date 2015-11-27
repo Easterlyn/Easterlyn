@@ -15,7 +15,7 @@ import co.sblock.Sblock;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.module.Module;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 
 /**
  * 
@@ -97,7 +97,7 @@ public class ServerMode extends Module {
 		return is;
 	}
 
-	public boolean isWithinRange(OfflineUser server, Block broken) {
+	public boolean isWithinRange(User server, Block broken) {
 		Pair<Machine, ConfigurationSection> pair = machines.getComputer(server.getClient());
 		return pair != null && pair.getLeft().getKey(pair.getRight()).distanceSquared(broken.getLocation()) <= 625;
 	}

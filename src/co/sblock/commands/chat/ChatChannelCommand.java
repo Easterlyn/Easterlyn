@@ -24,7 +24,7 @@ import co.sblock.chat.channel.ChannelType;
 import co.sblock.chat.channel.NormalChannel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockAsynchronousCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
@@ -36,6 +36,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class ChatChannelCommand extends SblockAsynchronousCommand {
 
+	private final Users users;
+	private final ChannelManager manager;
 	private final String[] defaultArgs = new String[] {"info", "list", "listeners", "listening", "new"};
 	private final String[] modArgs = new String[] {"approve", "ban", "deapprove", "kick"};
 	private final String modHelp = Color.GOOD_EMPHASIS + "Channel moderation commands:\n"
@@ -53,10 +55,11 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			+ Color.GOOD + ": (Un)bans a user from the channel\n"
 			+ Color.COMMAND + "/channel disband"
 			+ Color.GOOD + ": Delete the channel!";
-	private final ChannelManager manager;
 
 	public ChatChannelCommand(Sblock plugin) {
 		super(plugin, "channel");
+		this.users = plugin.getModule(Users.class);
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		setDescription("Check or manipulate channel data.");
 		setUsage(Color.GOOD_EMPHASIS + "Channel information/manipulation\n"
 				+ Color.COMMAND + "/channel listeners"
@@ -79,7 +82,6 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		}
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock.helper", true).recalculatePermissibles();
-		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -89,7 +91,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			return true;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
+		User user = users.getUser(((Player) sender).getUniqueId());
 		Channel channel = user.getCurrentChannel();
 
 		if (args.length == 0) {
@@ -116,7 +118,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			sb = new StringBuilder().append(Color.GOOD);
 			sb.append("Channel members: ");
 			for (UUID userID : channel.getListening()) {
-				OfflineUser u = Users.getGuaranteedUser(((Sblock) getPlugin()), userID);
+				User u = users.getUser(userID);
 				if (channel.equals(u.getCurrentChannel())) {
 					sb.append(Color.GOOD_PLAYER);
 				} else {
@@ -320,7 +322,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		}
 		args[0] = args[0].toLowerCase();
 		ArrayList<String> matches = new ArrayList<>();
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
+		User user = users.getUser(((Player) sender).getUniqueId());
 		if (args.length == 1) {
 			for (String subcommand : defaultArgs) {
 				if (subcommand.startsWith(args[0])) {

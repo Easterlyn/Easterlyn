@@ -17,7 +17,7 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.channel.RPChannel;
 import co.sblock.chat.channel.RegionChannel;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
@@ -91,7 +91,7 @@ public class MessageBuilder {
 	private final Sblock plugin;
 	private final ChannelManager manager;
 
-	private OfflineUser sender = null;
+	private User sender = null;
 	private String senderName = null;
 	private Channel channel = null;
 	private String message = null;
@@ -106,7 +106,7 @@ public class MessageBuilder {
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
-	public MessageBuilder setSender(OfflineUser sender) {
+	public MessageBuilder setSender(User sender) {
 		if (this.sender != null || this.senderName != null) {
 			throw new IllegalArgumentException("Sender is already set!");
 		}
@@ -173,8 +173,9 @@ public class MessageBuilder {
 		if (channel != null && channel.getOwner() == null && !(channel instanceof NickChannel)
 				&& (player == null || !player.hasPermission("sblock.felt"))) {
 			ArrayList<String> names = new ArrayList<String>();
+			Users users = plugin.getModule(Users.class);
 			channel.getListening().forEach(uuid -> {
-				names.add(Users.getGuaranteedUser(plugin, uuid).getPlayerName());
+				names.add(users.getUser(uuid).getPlayerName());
 			});
 			StringBuilder sb = new StringBuilder();
 			for (String word : Normalizer.normalize(message, Normalizer.Form.NFD).split(" ")) {

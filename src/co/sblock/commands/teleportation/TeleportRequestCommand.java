@@ -17,7 +17,7 @@ import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.Spectators;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Region;
 import co.sblock.users.Users;
 
@@ -30,6 +30,7 @@ public class TeleportRequestCommand extends SblockCommand {
 
 	private final Cooldowns cooldowns;
 	private final Spectators spectators;
+	private final Users users;
 	private final SimpleDateFormat time =  new SimpleDateFormat("m:ss");
 	private final HashMap<UUID, TeleportRequest> pending = new HashMap<>();
 
@@ -37,6 +38,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		super(plugin, "tpa");
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.spectators = plugin.getModule(Spectators.class);
+		this.users = plugin.getModule(Users.class);
 		this.setDescription("Handle a teleport request");
 		this.setUsage("/tpa name, /tpahere name, /tpaccept, /tpdecline");
 		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno");
@@ -112,8 +114,8 @@ public class TeleportRequestCommand extends SblockCommand {
 			sender.sendMessage(Color.BAD_PLAYER + target.getName() + Color.BAD + " cannot accept teleport requests!");
 			return;
 		}
-		OfflineUser targetUser = Users.getGuaranteedUser(((Sblock) getPlugin()), target.getUniqueId());
-		OfflineUser sourceUser = Users.getGuaranteedUser(((Sblock) getPlugin()), sender.getUniqueId());
+		User targetUser = users.getUser(target.getUniqueId());
+		User sourceUser = users.getUser(sender.getUniqueId());
 		boolean targetSpectating = spectators.isSpectator(targetUser.getUUID());
 		boolean sourceSpectating = spectators.isSpectator(sourceUser.getUUID());
 		if (!here && targetSpectating && !sourceSpectating || here && !targetSpectating && sourceSpectating) {
@@ -160,8 +162,8 @@ public class TeleportRequestCommand extends SblockCommand {
 			toArriveAt.sendMessage(message);
 			return;
 		}
-		Region rTarget = Users.getGuaranteedUser(((Sblock) getPlugin()), toArriveAt.getUniqueId()).getCurrentRegion();
-		Region rSource = Users.getGuaranteedUser(((Sblock) getPlugin()), toTeleport.getUniqueId()).getCurrentRegion();
+		Region rTarget = users.getUser(toArriveAt.getUniqueId()).getCurrentRegion();
+		Region rSource = users.getUser(toTeleport.getUniqueId()).getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
 			String message = Color.BAD + "Teleports cannot be initiated from different planets!";
 			toTeleport.sendMessage(message);

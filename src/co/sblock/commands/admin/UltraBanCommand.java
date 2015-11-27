@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -22,8 +22,11 @@ import co.sblock.users.Users;
  */
 public class UltraBanCommand extends SblockCommand {
 
+	private final Users users;
+
 	public UltraBanCommand(Sblock plugin) {
 		super(plugin, "ultraban");
+		this.users = plugin.getModule(Users.class);
 		this.setDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.");
 		this.setUsage("/ultraban <target>");
 		this.setPermissionLevel("horrorterror");
@@ -38,7 +41,7 @@ public class UltraBanCommand extends SblockCommand {
 
 		Player p = Bukkit.getPlayer(args[0]);
 		if (p != null) {
-			OfflineUser victim = Users.getGuaranteedUser((Sblock) getPlugin(), p.getUniqueId());
+			User victim = users.getUser(p.getUniqueId());
 			File file;
 			try {
 				file = new File(((Sblock) getPlugin()).getUserDataFolder(), victim.getUUID().toString() + ".yml");

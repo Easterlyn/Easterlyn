@@ -7,8 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.Users;
+import co.sblock.users.User;
 
 /**
  * Defines nick channel behavior
@@ -33,7 +32,7 @@ public class NickChannel extends NormalChannel {
 	 * @param user the OfflineUser
 	 * @param nick the nickname
 	 */
-	public void setNick(OfflineUser user, String nick) {
+	public void setNick(User user, String nick) {
 		nickList.put(user.getUUID(), nick);
 	}
 
@@ -43,7 +42,7 @@ public class NickChannel extends NormalChannel {
 	 * @param user the OfflineUser
 	 * @return the nick in use, or null if none.
 	 */
-	public String removeNick(OfflineUser user) {
+	public String removeNick(User user) {
 		if (nickList.containsKey(user.getUUID())) {
 			return nickList.remove(user.getUUID());
 		}
@@ -56,7 +55,7 @@ public class NickChannel extends NormalChannel {
 	 * @param user the OfflinePlayer
 	 * @return the nickname
 	 */
-	public String getNick(OfflineUser user) {
+	public String getNick(User user) {
 		return nickList.containsKey(user.getUUID()) ? nickList.get(user.getUUID())
 				: user.isOnline() ? user.getPlayer().getDisplayName() : user.getPlayerName();
 	}
@@ -67,7 +66,7 @@ public class NickChannel extends NormalChannel {
 	 * @param sender the OfflineUser
 	 * @return true if a nickname is set
 	 */
-	public boolean hasNick(OfflineUser sender) {
+	public boolean hasNick(User sender) {
 		return nickList.containsKey(sender.getUUID());
 	}
 
@@ -77,7 +76,7 @@ public class NickChannel extends NormalChannel {
 	 * @param nick the nickname to reverse lookup
 	 * @return the owner of the provided nickname
 	 */
-	public OfflineUser getNickOwner(String nick) {
+	public User getNickOwner(String nick) {
 		if (!nickList.containsValue(nick)) {
 			return null;
 		}
@@ -88,7 +87,7 @@ public class NickChannel extends NormalChannel {
 					remove = entry.getKey();
 					break;
 				}
-				return Users.getGuaranteedUser(getPlugin(), entry.getKey());
+				return getUsers().getUser(entry.getKey());
 			}
 		}
 		if (remove != null) {

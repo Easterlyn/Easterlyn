@@ -16,8 +16,8 @@ import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.packets.WrapperPlayServerPlayerListHeaderFooter;
 import co.sblock.micromodules.Godule;
-import co.sblock.users.OnlineUser;
 import co.sblock.users.Region;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
@@ -31,12 +31,14 @@ public class JoinListener extends SblockListener {
 
 	private final Discord discord;
 	private final Events events;
+	private final Users users;
 	private final WrapperPlayServerPlayerListHeaderFooter list;
 
 	public JoinListener(Sblock plugin) {
 		super(plugin);
 		this.discord = plugin.getModule(Discord.class);
 		this.events = plugin.getModule(Events.class);
+		this.users = plugin.getModule(Users.class);
 		list = new WrapperPlayServerPlayerListHeaderFooter();
 		list.setHeader(WrappedChatComponent.fromText(ChatColor.DARK_AQUA + "Welcome to " + ChatColor.GOLD + "Sblock Alpha"));
 		list.setFooter(WrappedChatComponent.fromText(ChatColor.YELLOW + "Enjoy your stay!"));
@@ -51,7 +53,7 @@ public class JoinListener extends SblockListener {
 	public void onPlayerJoin(final PlayerJoinEvent event) {
 		event.setJoinMessage(null);
 		// CHAT: check message beforehand and don't announce channels if muted
-		Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
+		users.getUser(event.getPlayer().getUniqueId());
 
 		events.addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
 
@@ -67,8 +69,7 @@ public class JoinListener extends SblockListener {
 				if (player == null) {
 					return;
 				}
-				Users.team(player);
-				OnlineUser user = Users.getGuaranteedUser(getPlugin(), player.getUniqueId()).getOnlineUser();
+				User user = users.getUser(player.getUniqueId());
 				user.handleLoginChannelJoins();
 				user.handleNameChange();
 				Region region = user.getCurrentRegion();

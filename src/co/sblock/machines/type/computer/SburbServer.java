@@ -6,8 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.machines.Machines;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
@@ -19,10 +18,12 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class SburbServer extends Program {
 
+	private final Users users;
 	private final ItemStack icon;
 
 	public SburbServer(Machines machines) {
 		super(machines);
+		this.users = machines.getPlugin().getModule(Users.class);
 		icon = new ItemStack(Material.ENDER_PORTAL_FRAME);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "SburbServer");
@@ -31,19 +32,18 @@ public class SburbServer extends Program {
 
 	@Override
 	public void execute(Player player, ItemStack clicked, boolean verified) {
-		OfflineUser user = Users.getGuaranteedUser(getMachines().getPlugin(), player.getUniqueId());
+		User user = users.getUser(player.getUniqueId());
 		if (!user.isOnline()) {
 			return;
 		}
-		OnlineUser onUser = user.getOnlineUser();
-		if (!verified && !onUser.isServer()) {
+		if (!verified && !user.isServer()) {
 			((Verification) Programs.getProgramByName("Verification")).openInventory(player, "SburbServer");
 			return;
 		}
-		if (onUser.isServer()) {
-			onUser.stopServerMode();
+		if (user.isServer()) {
+			user.stopServerMode();
 		} else {
-			onUser.startServerMode();
+			user.startServerMode();
 		}
 	}
 

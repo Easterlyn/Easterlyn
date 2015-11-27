@@ -22,8 +22,7 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.type.computer.Program;
 import co.sblock.machines.type.computer.Programs;
 import co.sblock.machines.utilities.Shape;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.Users;
+import co.sblock.users.User;
 import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -107,7 +106,7 @@ public class Computer extends Machine implements InventoryHolder {
 				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 					event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
 				}
-				OfflineUser u = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
+				User u = getUsers().getUser(event.getPlayer().getUniqueId());
 				u.addProgram(program.getName());
 				return true;
 			}
@@ -129,7 +128,7 @@ public class Computer extends Machine implements InventoryHolder {
 
 	public void openInventory(Player player) {
 		Inventory inventory = getInventory();
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), player.getUniqueId());
+		User user = getUsers().getUser(player.getUniqueId());
 		for (Program program : Programs.getPrograms()) {
 			if (program.isDefault()) {
 				inventory.addItem(program.getIcon());

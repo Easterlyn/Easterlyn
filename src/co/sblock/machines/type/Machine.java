@@ -34,8 +34,7 @@ import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -47,6 +46,7 @@ public abstract class Machine {
 
 	private final Sblock plugin;
 	private final Machines machines;
+	private final Users users;
 	private final Shape shape;
 
 	/**
@@ -58,6 +58,7 @@ public abstract class Machine {
 	Machine(Sblock plugin, Machines machines, Shape shape) {
 		this.plugin = plugin;
 		this.machines = machines;
+		this.users = plugin.getModule(Users.class);
 		this.shape = shape;
 	}
 
@@ -77,6 +78,15 @@ public abstract class Machine {
 	 */
 	public Machines getMachines() {
 		return this.machines;
+	}
+
+	/**
+	 * Gets the Users instance used to check User data.
+	 * 
+	 * @return the Users
+	 */
+	public Users getUsers() {
+		return this.users;
 	}
 
 	/**
@@ -169,9 +179,8 @@ public abstract class Machine {
 			}
 		}
 		this.assemble(key, direction, storage);
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
-				&& user.getUUID().toString().equals(storage.getString("owner"))) {
+		User user = getUsers().getUser(event.getPlayer().getUniqueId());
+		if (user.isServer() && user.getUUID().toString().equals(storage.getString("owner"))) {
 			storage.set("owner", user.getClient().toString());
 		}
 	}

@@ -22,7 +22,7 @@ import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.WrappedSenderPlayer;
 
@@ -35,16 +35,18 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class MessageCommand extends SblockCommand {
 
-	private final HashMap<GameProfile, GameProfile> reply;
+	private final Users users;
 	private final ChannelManager manager;
+	private final HashMap<GameProfile, GameProfile> reply;
 
 	public MessageCommand(Sblock plugin) {
 		super(plugin, "m");
+		this.users = plugin.getModule(Users.class);
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
+		this.reply = new HashMap<>();
 		this.setDescription("Send a private message");
 		this.setUsage("/m <name> <message> or /r <reply to last message>");
 		this.setAliases("w", "t", "pm", "msg", "tell", "whisper", "r", "reply");
-		this.reply = new HashMap<>();
-		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -52,11 +54,11 @@ public class MessageCommand extends SblockCommand {
 		label = label.toLowerCase();
 
 		Player senderPlayer = null;
-		OfflineUser senderUser = null;
+		User senderUser = null;
 		GameProfile senderProfile;
 		if (sender instanceof Player) {
 			senderPlayer = (Player) sender;
-			senderUser = Users.getGuaranteedUser(((Sblock) getPlugin()), senderPlayer.getUniqueId());
+			senderUser = users.getUser(senderPlayer.getUniqueId());
 			senderProfile = new GameProfile(senderPlayer.getUniqueId(), senderPlayer.getName());
 		} else {
 			senderProfile = ((Sblock) getPlugin()).getFakeGameProfile(sender.getName());

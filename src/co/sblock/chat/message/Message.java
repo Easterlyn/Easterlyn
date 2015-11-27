@@ -16,7 +16,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.micromodules.Cooldowns;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
 
@@ -34,7 +34,7 @@ public class Message {
 	private static final String DISCORD_FORMAT = "%s: %s";
 	private static final String DISCORD_FORMAT_THIRD = "* %s *%s*";
 
-	private final OfflineUser sender;
+	private final User sender;
 	private final Channel channel;
 	private final String name;
 	private final boolean thirdPerson;
@@ -42,7 +42,7 @@ public class Message {
 	private String consoleFormat, unformattedMessage;
 	private TextComponent messageComponent;
 
-	Message(OfflineUser sender, String name, Channel channel, String message, String consoleFormat,
+	Message(User sender, String name, Channel channel, String message, String consoleFormat,
 			boolean thirdPerson, TextComponent channelComponent,
 			TextComponent channelHighlightComponent, TextComponent nameComponent,
 			TextComponent messageComponent) {
@@ -58,7 +58,7 @@ public class Message {
 		this.messageComponent = messageComponent;
 	}
 
-	public OfflineUser getSender() {
+	public User getSender() {
 		return sender;
 	}
 
@@ -137,6 +137,7 @@ public class Message {
 		}
 
 		Sblock plugin = channel.getPlugin();
+		Users users = plugin.getModule(Users.class);
 		Cooldowns cooldowns = plugin.getModule(Cooldowns.class);
 
 		for (T object : recipients) {
@@ -152,7 +153,7 @@ public class Message {
 				throw new RuntimeException("Invalid recipient type: " + object.getClass());
 			}
 
-			OfflineUser u = Users.getGuaranteedUser(plugin, uuid);
+			User u = users.getUser(uuid);
 			if (player == null || !u.isOnline() || player.spigot() == null
 					|| channel instanceof RegionChannel && u.getSuppression()) {
 				continue;

@@ -5,8 +5,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -16,8 +15,11 @@ import co.sblock.users.Users;
  */
 public class PickupItemListener extends SblockListener {
 
+	private final Users users;
+
 	public PickupItemListener(Sblock plugin) {
 		super(plugin);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -27,12 +29,7 @@ public class PickupItemListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		OfflineUser offUser = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
-		if (!(offUser instanceof OnlineUser)) {
-			return;
-		}
-		OnlineUser user = (OnlineUser) offUser;
-
+		User user = users.getUser(event.getPlayer().getUniqueId());
 		if (user.isServer()) {
 			event.setCancelled(true);
 			return;

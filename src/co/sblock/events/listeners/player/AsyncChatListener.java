@@ -29,7 +29,7 @@ import co.sblock.discord.Discord;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.Cooldowns;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.RegexUtils;
@@ -59,6 +59,7 @@ public class AsyncChatListener extends SblockListener {
 
 	private final Cooldowns cooldowns;
 	private final Discord discord;
+	private final Users users;
 	private final List<HalMessageHandler> halFunctions;
 	private final boolean handleGriefPrevention;
 	private final Pattern claimPattern, trappedPattern, yoooooooooooooooooooooooooooooooooooooooo;
@@ -68,6 +69,7 @@ public class AsyncChatListener extends SblockListener {
 		super(plugin);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.discord = plugin.getModule(Discord.class);
+		this.users = plugin.getModule(Users.class);
 		Permission permission;
 		try {
 			permission = new Permission("sblock.spam.chat", PermissionDefault.OP);
@@ -131,7 +133,7 @@ public class AsyncChatListener extends SblockListener {
 		} else {
 			try {
 				MessageBuilder mb = new MessageBuilder(getPlugin())
-						.setSender(Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId()))
+						.setSender(users.getUser(event.getPlayer().getUniqueId()))
 						.setMessage(event.getMessage());
 				// Ensure message can be sent
 				if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
@@ -189,7 +191,7 @@ public class AsyncChatListener extends SblockListener {
 			}
 		}
 
-		final OfflineUser sender = message.getSender();
+		final User sender = message.getSender();
 
 		// Spam detection and handling, woo!
 		if (checkSpam && sender != null && !message.getChannel().getName().equals("#halchat")
@@ -338,7 +340,7 @@ public class AsyncChatListener extends SblockListener {
 
 	private boolean detectSpam(AsyncPlayerChatEvent event, Message message) {
 		final Player player = event.getPlayer();
-		final OfflineUser sender = message.getSender();
+		final User sender = message.getSender();
 		if (sender == null || player.hasPermission("sblock.spam.chat")) {
 			return false;
 		}

@@ -29,8 +29,7 @@ import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.computer.EmailWriter;
 import co.sblock.machines.type.computer.Programs;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.InventoryUtils;
 
@@ -45,6 +44,7 @@ public class InventoryClickListener extends SblockListener {
 
 	private final Captcha captcha;
 	private final Machines machines;
+	private final Users users;
 	private final ItemStack computer;
 	private final EmailWriter mail;
 
@@ -52,6 +52,7 @@ public class InventoryClickListener extends SblockListener {
 		super(plugin);
 		this.captcha = plugin.getModule(Captcha.class);
 		this.machines = plugin.getModule(Machines.class);
+		this.users = plugin.getModule(Users.class);
 		this.computer = machines.getMachineByName("Computer").getUniqueDrop();
 		this.mail = (EmailWriter) Programs.getProgramByName("EmailWriter");
 	}
@@ -220,8 +221,8 @@ public class InventoryClickListener extends SblockListener {
 		}
 
 		// Server: Click computer icon -> open computer interface
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getWhoClicked().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		User user = users.getUser(event.getWhoClicked().getUniqueId());
+		if (user.isServer()) {
 			if (computer.isSimilar(event.getCurrentItem())) {
 				// Right click air: Open computer
 				event.setCancelled(true);
@@ -270,9 +271,8 @@ public class InventoryClickListener extends SblockListener {
 		}
 
 		// Server: No picking up computer icon
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getWhoClicked().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
-				&& computer.isSimilar(event.getCurrentItem())) {
+		User user = users.getUser(event.getWhoClicked().getUniqueId());
+		if (user.isServer() && computer.isSimilar(event.getCurrentItem())) {
 			event.setCancelled(true);
 			return;
 		}
@@ -295,8 +295,8 @@ public class InventoryClickListener extends SblockListener {
 			return;
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getWhoClicked().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()
+		User user = users.getUser(event.getWhoClicked().getUniqueId());
+		if (user.isServer()
 				&& (computer.isSimilar(event.getCurrentItem()) || computer.isSimilar(hotbar))) {
 			event.setCancelled(true);
 			return;

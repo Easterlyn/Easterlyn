@@ -11,8 +11,7 @@ import org.bukkit.Bukkit;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.Users;
+import co.sblock.users.User;
 
 /**
  * Defines normal channel behavior.
@@ -27,8 +26,8 @@ public class NormalChannel extends Channel {
 	protected final Set<UUID> banList;
 	private final AtomicLong lastAccessed;
 
-	public NormalChannel(Sblock sblock, String name, AccessLevel access, UUID creator, long lastAccessed) {
-		super(sblock, name, creator);
+	public NormalChannel(Sblock plugin, String name, AccessLevel access, UUID creator, long lastAccessed) {
+		super(plugin, name, creator);
 		this.access = access;
 		approvedList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 		modList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
@@ -63,9 +62,8 @@ public class NormalChannel extends Channel {
 	 * @return if this user is an owner (created channel / set by previous owner, or is a denizen)
 	 */
 	@Override
-	public boolean isOwner(OfflineUser user) {
-		return user != null && (user.getUUID().equals(owner)
-				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("sblock.denizen"));
+	public boolean isOwner(User user) {
+		return user != null && (user.getUUID().equals(owner) || user.getPlayer().hasPermission("sblock.denizen"));
 	}
 
 	/**
@@ -73,9 +71,9 @@ public class NormalChannel extends Channel {
 	 * @return whether this user has permission to moderate the channel
 	 */
 	@Override
-	public boolean isModerator(OfflineUser user) {
+	public boolean isModerator(User user) {
 		return user != null && (isOwner(user) || modList.contains(user.getUUID())
-				|| user.isOnline() && user.getOnlineUser().getPlayer().hasPermission("sblock.felt"));
+				|| user.getPlayer().hasPermission("sblock.felt"));
 	}
 
 	/**
@@ -85,7 +83,7 @@ public class NormalChannel extends Channel {
 	 * @return whether this user is banned
 	 */
 	@Override
-	public boolean isBanned(OfflineUser user) {
+	public boolean isBanned(User user) {
 		return banList.contains(user.getUUID()) && !isOwner(user);
 	}
 
@@ -118,12 +116,12 @@ public class NormalChannel extends Channel {
 	 * @param sender the person attempting to apply moderator status to another
 	 * @param userID the ID of the person who may become a mod
 	 */
-	public void addMod(OfflineUser sender, UUID userID) {
+	public void addMod(User sender, UUID userID) {
 		if (!isModerator(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
+		User user = getUsers().getUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -144,12 +142,12 @@ public class NormalChannel extends Channel {
 	 * @param sender the person attempting to remove moderator status from another
 	 * @param userID the ID of the person who may lose mod status
 	 */
-	public void removeMod(OfflineUser sender, UUID userID) {
+	public void removeMod(User sender, UUID userID) {
 		if (!this.isModerator(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
+		User user = getUsers().getUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -170,12 +168,12 @@ public class NormalChannel extends Channel {
 	 * @param sender the user attempting to kick
 	 * @param userID the user who might be kicked
 	 */
-	public void kickUser(OfflineUser sender, UUID userID) {
+	public void kickUser(User sender, UUID userID) {
 		if (!this.isModerator(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
+		User user = getUsers().getUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -192,12 +190,12 @@ public class NormalChannel extends Channel {
 		}
 	}
 
-	public void banUser(OfflineUser sender, UUID userID) {
+	public void banUser(User sender, UUID userID) {
 		if (!this.isModerator(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
+		User user = getUsers().getUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -220,12 +218,12 @@ public class NormalChannel extends Channel {
 		}
 	}
 
-	public void unbanUser(OfflineUser sender, UUID userID) {
+	public void unbanUser(User sender, UUID userID) {
 		if (!this.isOwner(sender)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 			return;
 		}
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), userID);
+		User user = getUsers().getUser(userID);
 		if (user == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
@@ -240,12 +238,12 @@ public class NormalChannel extends Channel {
 		}
 	}
 
-	public void approveUser(OfflineUser sender, UUID target) {
+	public void approveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			OfflineUser targ = Users.getGuaranteedUser(getPlugin(), target);
+			User targ = getUsers().getUser(target);
 			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
 			if (this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -257,12 +255,12 @@ public class NormalChannel extends Channel {
 		}
 	}
 
-	public void disapproveUser(OfflineUser sender, UUID target) {
+	public void disapproveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
 			return;
 		} else {
-			OfflineUser targ = Users.getGuaranteedUser(getPlugin(), target);
+			User targ = getUsers().getUser(target);
 			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
 			if (!this.isApproved(targ)) {
 				sender.sendMessage(message);
@@ -279,7 +277,7 @@ public class NormalChannel extends Channel {
 	}
 
 	@Override
-	public boolean isApproved(OfflineUser user) {
+	public boolean isApproved(User user) {
 		return access == AccessLevel.PUBLIC || approvedList.contains(user.getUUID()) || isModerator(user);
 	}
 
@@ -303,7 +301,7 @@ public class NormalChannel extends Channel {
 		return this.lastAccessed.get();
 	}
 
-	public void disband(OfflineUser sender) {
+	public void disband(User sender) {
 		if (this.owner == null) {
 			sender.sendMessage(ChatMsgs.errorDisbandDefault());
 			return;
@@ -314,7 +312,7 @@ public class NormalChannel extends Channel {
 		}
 		this.sendMessage(ChatMsgs.onChannelDisband(this.getName()));
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			Users.getGuaranteedUser(getPlugin(), userID).removeListeningSilent(this);
+			getUsers().getUser(userID).removeListeningSilent(this);
 		}
 		getChannelManager().dropChannel(this.name);
 	}
@@ -322,7 +320,7 @@ public class NormalChannel extends Channel {
 	@Override
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			OfflineUser u = Users.getGuaranteedUser(getPlugin(), userID);
+			User u = getUsers().getUser(userID);
 			if (u == null) {
 				listening.remove(userID);
 				continue;

@@ -3,10 +3,8 @@ package co.sblock.events.listeners.player;
 import java.util.Iterator;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
@@ -19,8 +17,7 @@ import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.micromodules.Spectators;
 import co.sblock.progression.Entry;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.InventoryManager;
@@ -39,6 +36,7 @@ public class QuitListener extends SblockListener {
 	private final FreeCart carts;
 	private final SleepVote sleep;
 	private final Spectators spectators;
+	private final Users users;
 
 	public QuitListener(Sblock plugin) {
 		super(plugin);
@@ -49,6 +47,7 @@ public class QuitListener extends SblockListener {
 		carts = plugin.getModule(FreeCart.class);
 		sleep = plugin.getModule(SleepVote.class);
 		spectators = plugin.getModule(Spectators.class);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -93,7 +92,7 @@ public class QuitListener extends SblockListener {
 		Users.unteam(event.getPlayer());
 
 		final UUID uuid = event.getPlayer().getUniqueId();
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), uuid);
+		User user = users.getUser(uuid);
 		user.save();
 
 		// Disable "god" effect, if any
@@ -102,8 +101,8 @@ public class QuitListener extends SblockListener {
 		}
 
 		// Remove Server status
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
-			((OnlineUser) user).stopServerMode();
+		if (user.isServer()) {
+			user.stopServerMode();
 		}
 
 		// Complete success sans animation if player logs out
@@ -122,16 +121,6 @@ public class QuitListener extends SblockListener {
 				iterator.remove();
 			}
 		}
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				// A player chatting during an unload will cause the recipient's OnlineUser to be re-created.
-				// To combat this, we attempt to unload the user after they should no longer be online.
-				if (!Bukkit.getOfflinePlayer(uuid).isOnline()) {
-					Users.unloadUser(uuid);
-				}
-			}
-		}.runTask(getPlugin());
 	}
+
 }

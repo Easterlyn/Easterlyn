@@ -4,8 +4,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import co.sblock.Sblock;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.Users;
+import co.sblock.users.User;
 
 /**
  * Defines RP channel behavior
@@ -22,7 +21,7 @@ public class RPChannel extends NickChannel {
 	 * @see co.sblock.chat.channel.Channel#setNick(ChatUser, String)
 	 */
 	@Override
-	public void setNick(OfflineUser sender, String nick) {
+	public void setNick(User sender, String nick) {
 		CanonNick name = CanonNick.getNick(nick);
 		if (name == null) {
 			return;
@@ -37,7 +36,7 @@ public class RPChannel extends NickChannel {
 	 * @return the owner of the provided nickname
 	 */
 	@Override
-	public OfflineUser getNickOwner(String nick) {
+	public User getNickOwner(String nick) {
 		CanonNick name = CanonNick.getNick(nick);
 		if (name == null) {
 			return null;
@@ -50,7 +49,7 @@ public class RPChannel extends NickChannel {
 					remove = entry.getKey();
 					break;
 				}
-				return Users.getGuaranteedUser(getPlugin(), entry.getKey());
+				return getUsers().getUser(entry.getKey());
 			}
 		}
 		if (remove != null) {

@@ -7,8 +7,7 @@ import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.type.computer.EmailWriter;
 import co.sblock.machines.type.computer.Programs;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
@@ -20,10 +19,12 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class DropItemListener extends SblockListener {
 
+	private final Users users;
 	private final EmailWriter email;
 
 	public DropItemListener(Sblock plugin) {
 		super(plugin);
+		this.users = plugin.getModule(Users.class);
 		this.email = (EmailWriter) Programs.getProgramByName("EmailWriter");
 	}
 
@@ -48,12 +49,12 @@ public class DropItemListener extends SblockListener {
 		}
 
 		// valid SblockUser required for all events below this point
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
+		User user = users.getUser(event.getPlayer().getUniqueId());
 		if (user == null) {
 			return;
 		}
 
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		if (user.isServer()) {
 			event.setCancelled(true);
 			return;
 		}

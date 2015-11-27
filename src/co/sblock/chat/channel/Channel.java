@@ -11,7 +11,8 @@ import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
+import co.sblock.users.Users;
 
 /**
  * Defines default channel behavior
@@ -21,6 +22,7 @@ import co.sblock.users.OfflineUser;
 public abstract class Channel {
 
 	private final Sblock plugin;
+	private final Users users;
 	private final ChannelManager manager;
 	/* Immutable Data regarding the channel */
 	protected final String name;
@@ -33,6 +35,7 @@ public abstract class Channel {
 	 */
 	public Channel(Sblock plugin, String name, UUID creator) {
 		this.plugin = plugin;
+		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.name = name;
 		this.owner = creator;
@@ -69,13 +72,13 @@ public abstract class Channel {
 	 * @param user a user
 	 * @return if this user is an owner
 	 */
-	public abstract boolean isOwner(OfflineUser user);
+	public abstract boolean isOwner(User user);
 
 	/**
 	 * @param user a user
 	 * @return whether this user has permission to moderate the channel
 	 */
-	public abstract boolean isModerator(OfflineUser user);
+	public abstract boolean isModerator(User user);
 
 
 	/**
@@ -84,7 +87,7 @@ public abstract class Channel {
 	 * @param user a user
 	 * @return whether this user is banned
 	 */
-	public abstract boolean isApproved(OfflineUser user);
+	public abstract boolean isApproved(User user);
 
 	/**
 	 * Check if the given OfflineUser is banned.
@@ -92,7 +95,7 @@ public abstract class Channel {
 	 * @param user the OfflineUser
 	 * @return true if the OfflineUser is banned
 	 */
-	public abstract boolean isBanned(OfflineUser user);
+	public abstract boolean isBanned(User user);
 
 	/**
 	 * Check if the channel has been recently accessed and should not be deleted.
@@ -129,6 +132,15 @@ public abstract class Channel {
 	 */
 	public Sblock getPlugin() {
 		return this.plugin;
+	}
+
+	/**
+	 * Gets the Users instance used to fetch Users.
+	 * 
+	 * @return the Users
+	 */
+	protected Users getUsers() {
+		return users;
 	}
 
 	@Override

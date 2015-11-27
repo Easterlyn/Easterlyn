@@ -15,8 +15,11 @@ import co.sblock.users.Users;
  */
 public class ChatTabCompleteListener extends SblockListener {
 
+	private final Users users;
+
 	public ChatTabCompleteListener(Sblock plugin) {
 		super(plugin);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -26,12 +29,12 @@ public class ChatTabCompleteListener extends SblockListener {
 			return;
 		}
 		if (event.getChatMessage().isEmpty()) {
-			for (String channel : Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId()).getListening()) {
+			for (String channel : users.getUser(event.getPlayer().getUniqueId()).getListening()) {
 				event.getTabCompletions().add("@" + channel);
 			}
 		} else if (event.getLastToken().charAt(0) == '@') {
 			String completing = event.getLastToken().substring(1);
-			for (String channel : Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId()).getListening()) {
+			for (String channel : users.getUser(event.getPlayer().getUniqueId()).getListening()) {
 				if (StringUtil.startsWithIgnoreCase(channel, completing)) {
 					event.getTabCompletions().add("@" + channel);
 				}

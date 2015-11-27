@@ -72,7 +72,6 @@ public class InventoryCreativeListener extends SblockListener {
 			cleanedItem.setAmount(1);
 		}
 
-		// TODO this may be irrelevant: https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/nms-patches/PlayerConnection.patch#1329
 		event.setCursor(cleanedItem);
 	}
 }

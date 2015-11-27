@@ -20,7 +20,7 @@ import co.sblock.chat.Color;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.type.computer.EmailWriter;
 import co.sblock.machines.type.computer.Programs;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.RegexUtils;
 
@@ -32,11 +32,13 @@ import co.sblock.utilities.RegexUtils;
 public class BookEditListener extends SblockListener {
 
 	private final Chat chat;
+	private final Users users;
 	private final EmailWriter email;
 
 	public BookEditListener(Sblock plugin) {
 		super(plugin);
 		this.chat = plugin.getModule(Chat.class);
+		this.users = plugin.getModule(Users.class);
 		this.email = (EmailWriter) Programs.getProgramByName("EmailWriter");
 	}
 
@@ -104,7 +106,7 @@ public class BookEditListener extends SblockListener {
 							senderPlayer.getInventory().setItem(event.getSlot(), letter);
 							return;
 						}
-						OfflineUser user = Users.getGuaranteedUser(getPlugin(), player.getUniqueId());
+						User user = users.getUser(player.getUniqueId());
 						List<ItemStack> items = user.getMailItems();
 						if (items.size() > 44) {
 							Player senderPlayer = Bukkit.getPlayer(sender);

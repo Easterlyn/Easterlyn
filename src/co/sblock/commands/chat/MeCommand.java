@@ -19,7 +19,7 @@ import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -29,8 +29,11 @@ import co.sblock.users.Users;
  */
 public class MeCommand extends SblockAsynchronousCommand {
 
+	private final Users users;
+
 	public MeCommand(Sblock plugin) {
 		super(plugin, "me");
+		this.users = plugin.getModule(Users.class);
 		this.setDescription("/me does an action");
 		this.setUsage("YOU FOOKIN WOT M8? /me (@channel) <message> Channel optional, defaults current.");
 	}
@@ -46,7 +49,7 @@ public class MeCommand extends SblockAsynchronousCommand {
 		}
 		Player player = (Player) sender;
 		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin()).setThirdPerson(true)
-				.setSender(Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId()))
+				.setSender(users.getUser(player.getUniqueId()))
 				.setMessage(StringUtils.join(args, ' ', 0, args.length));
 
 		if (!builder.canBuild(true) || !builder.isSenderInChannel(true)) {
@@ -71,7 +74,7 @@ public class MeCommand extends SblockAsynchronousCommand {
  		if (args.length > 1 || !args[0].isEmpty() && args[0].charAt(0) != '@') {
 			return super.tabComplete(sender, alias, args);
 		}
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId());
+		User user = users.getUser(((Player) sender).getUniqueId());
 		ArrayList<String> matches = new ArrayList<>();
 		String toMatch = args.length == 0 || args[0].isEmpty() ? new String() : args[0].substring(1);
 		for (String s : user.getListening()) {

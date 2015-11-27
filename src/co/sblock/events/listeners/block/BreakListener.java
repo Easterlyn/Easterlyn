@@ -14,8 +14,7 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.micromodules.Spectators;
 import co.sblock.progression.ServerMode;
-import co.sblock.users.OfflineUser;
-import co.sblock.users.OnlineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
@@ -31,6 +30,7 @@ public class BreakListener extends SblockListener {
 	private final Machines machines;
 	private final ServerMode serverMode;
 	private final Spectators spectators;
+	private final Users users;
 
 	public BreakListener(Sblock plugin) {
 		super(plugin);
@@ -38,6 +38,7 @@ public class BreakListener extends SblockListener {
 		this.machines = plugin.getModule(Machines.class);
 		this.serverMode = plugin.getModule(ServerMode.class);
 		this.spectators = plugin.getModule(Spectators.class);
+		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -58,8 +59,8 @@ public class BreakListener extends SblockListener {
 			event.setCancelled(pair.getLeft().handleBreak(event, pair.getRight()));
 		}
 
-		OfflineUser user = Users.getGuaranteedUser(getPlugin(), event.getPlayer().getUniqueId());
-		if (user instanceof OnlineUser && ((OnlineUser) user).isServer()) {
+		User user = users.getUser(event.getPlayer().getUniqueId());
+		if (user.isServer()) {
 			event.setCancelled(event.isCancelled() || !serverMode.isWithinRange(user, event.getBlock()));
 		}
 	}

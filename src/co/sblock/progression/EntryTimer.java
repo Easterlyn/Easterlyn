@@ -10,8 +10,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
-import co.sblock.users.Users;
-
 /**
  * A small BukkitRunnable for managing the Cruxtruder's 4:13 countdown.
  * 
@@ -40,7 +38,7 @@ public class EntryTimer extends BukkitRunnable {
 		hologram.clearLines();
 		hologram.appendTextLine(format.format(timeRemaining > 0 ? timeRemaining : 0));
 		if (timeRemaining == 0) {
-			entry.fail(Users.getGuaranteedUser(entry.getPlugin(), uuid));
+			entry.fail(uuid);
 		}
 		if (timeRemaining < -1) {
 			cancel();

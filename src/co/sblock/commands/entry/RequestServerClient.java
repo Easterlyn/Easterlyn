@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -25,14 +25,16 @@ import co.sblock.users.Users;
  */
 public class RequestServerClient extends SblockCommand {
 
+	private final Users users;
 	private final Map<UUID, Pair<UUID, Boolean>> pending;
+
 	public RequestServerClient(Sblock plugin) {
 		super(plugin, "reqserver");
+		this.users = plugin.getModule(Users.class);
+		this.pending = new HashMap<>();
 		this.setDescription("Accept an open request!");
 		this.setUsage("/acceptrequest");
 		this.setAliases("reqclient", "reqyes", "reqno");
-
-		pending = new HashMap<>();
 	}
 
 	@Override
@@ -69,19 +71,17 @@ public class RequestServerClient extends SblockCommand {
 			return;
 		}
 		Pair<UUID, Boolean> pair = pending.remove(player.getUniqueId());
-		OfflineUser server = Users.getGuaranteedUser(((Sblock) getPlugin()), pair.getRight() ? player.getUniqueId() : pair.getLeft());
-		OfflineUser client = Users.getGuaranteedUser(((Sblock) getPlugin()), pair.getRight() ? pair.getLeft() : player.getUniqueId());
+		User server = users.getUser(pair.getRight() ? player.getUniqueId() : pair.getLeft());
+		User client = users.getUser(pair.getRight() ? pair.getLeft() : player.getUniqueId());
 
 		if (server.getClient() != null) {
-			Users.getGuaranteedUser(((Sblock) getPlugin()), server.getClient()).setServer(null);
+			users.getUser(server.getClient()).setServer(null);
 		}
 		server.setClient(client.getUUID());
 		if (client.getServer() != null) {
-			OfflineUser oldServer = Users.getGuaranteedUser(((Sblock) getPlugin()), client.getServer());
+			User oldServer = users.getUser(client.getServer());
 			oldServer.setClient(null);
-			if (oldServer.isOnline()) {
-				oldServer.getOnlineUser().stopServerMode();
-			}
+			oldServer.stopServerMode();
 		}
 		client.setServer(server.getUUID());
 		server.sendMessage(Color.GOOD_PLAYER + client.getPlayerName() + Color.GOOD + " is now your client!");

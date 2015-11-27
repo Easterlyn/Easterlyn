@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.UserAspect;
 import co.sblock.users.Users;
 
@@ -23,8 +23,11 @@ import co.sblock.users.Users;
  */
 public class AspectWarpCommand extends SblockCommand {
 
+	private final Users users;
+
 	public AspectWarpCommand(Sblock plugin) {
 		super(plugin, "aspectwarp");
+		this.users = plugin.getModule(Users.class);
 		this.setDescription("Warps player if aspect matches warp name.");
 		this.setUsage("/aspectwarp <warp> <player>");
 		this.setPermissionLevel("felt");
@@ -35,13 +38,13 @@ public class AspectWarpCommand extends SblockCommand {
 		if (args == null || args.length < 2) {
 			return false;
 		}
-		Player p = Bukkit.getPlayer(args[1]);
-		if (p == null) {
+		Player player = Bukkit.getPlayer(args[1]);
+		if (player == null) {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
 			return true;
 		}
-		OfflineUser u = Users.getGuaranteedUser(((Sblock) getPlugin()), p.getUniqueId());
-		if (!u.getUserAspect().name().equalsIgnoreCase(args[0])) {
+		User user = users.getUser(player.getUniqueId());
+		if (!user.getUserAspect().name().equalsIgnoreCase(args[0])) {
 			return true;
 		}
 		sender.getServer().dispatchCommand(sender, "warp " + args[0] + " " + args[1]);

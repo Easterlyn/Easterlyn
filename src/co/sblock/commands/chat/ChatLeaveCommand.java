@@ -25,15 +25,17 @@ import co.sblock.users.Users;
  */
 public class ChatLeaveCommand extends SblockCommand {
 
+	private final Users users;
 	private final ChannelManager manager;
 
 	public ChatLeaveCommand(Sblock plugin) {
 		super(plugin, "leave");
+		this.users = plugin.getModule(Users.class);
+		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		setDescription("Leave a chat channel.");
 		setUsage(Color.COMMAND + "/leave <channel>"
 				+ Color.GOOD + ": Stop listening to <channel>.");
 		setAliases("quit");
-		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
 	@Override
@@ -49,7 +51,7 @@ public class ChatLeaveCommand extends SblockCommand {
 			sender.sendMessage(ChatMsgs.errorRegionChannelLeave());
 			return true;
 		}
-		Users.getGuaranteedUser(((Sblock) getPlugin()), ((Player) sender).getUniqueId()).removeListening(args[0]);
+		users.getUser(((Player) sender).getUniqueId()).removeListening(args[0]);
 		return true;
 	}
 

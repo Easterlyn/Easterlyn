@@ -1,9 +1,8 @@
 package co.sblock.users;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
@@ -16,14 +15,16 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.module.Module;
+import co.sblock.utilities.CollectionConversions;
 
 /**
  * Class that keeps track of players currently logged on to the game.
@@ -32,36 +33,46 @@ import co.sblock.module.Module;
  */
 public class Users extends Module {
 
-	/* The Map of Player UUID and relevant SblockUsers currently online. */
-	private static final Map<UUID, OfflineUser> users = new ConcurrentHashMap<>();
-	private static final Cache<UUID, OfflineUser> userCache = CacheBuilder.newBuilder()
-			.expireAfterAccess(5L, TimeUnit.MINUTES)
-			.removalListener(new RemovalListener<UUID, OfflineUser>() {
-				@Override
-				public void onRemoval(RemovalNotification<UUID, OfflineUser> notification) {
-					notification.getValue().save();
-				}
-			}).build();
+	/* The Cache of Player UUID and relevant Users. */
+	private final LoadingCache<UUID, User> userCache;
 
 	public Users(Sblock plugin) {
 		super(plugin);
+		this.userCache = CacheBuilder.newBuilder()
+				.expireAfterAccess(30L, TimeUnit.MINUTES)
+				.removalListener(new RemovalListener<UUID, User>() {
+					@Override
+					public void onRemoval(RemovalNotification<UUID, User> notification) {
+						User user = notification.getValue();
+						user.save();
+						unteam(user.getPlayer());
+					}
+				}).build(new CacheLoader<UUID, User>() {
+					@Override
+					public User load(UUID uuid) throws Exception {
+						if (uuid == null) {
+							throw new NullPointerException();
+						}
+						User user = User.load(getPlugin(), uuid);
+						team(user.getPlayer());
+						return user;
+					}
+				});
 	}
 
 	@Override
 	protected void onEnable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			getGuaranteedUser(getPlugin(), p.getUniqueId());
+			getUser(p.getUniqueId());
 			team(p);
 		}
 	}
 
 	@Override
 	protected void onDisable() {
-		for (OfflineUser u : Users.getUsers().toArray(new OfflineUser[0])) {
-			unloadUser(u.getUUID());
+		for (User u : userCache.asMap().values()) {
 			unteam(u.getUUID().toString().replace("-", "").substring(0, 16));
 		}
-		// When unloaded, all users are added to the userCache.
 		// Invalidating and cleaning up causes our removal listener to save all cached users.
 		userCache.invalidateAll();
 		userCache.cleanUp();
@@ -73,75 +84,22 @@ public class Users extends Module {
 	}
 
 	/**
-	 * User is not guaranteed to be online, but an OfflineUser will be fetched no matter what.
+	 * Fetch a User. A User is always returned, even if the Player by the given UUID is not online.
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return the User
 	 */
-	public static OfflineUser getGuaranteedUser(Sblock plugin, UUID uuid) {
-		if (users.containsKey(uuid)) {
-			return users.get(uuid);
+	public User getUser(UUID uuid) {
+		try {
+			return userCache.get(uuid);
+		} catch (ExecutionException e) {
+			// This shouldn't be possible, fail hard and fast.
+			throw new RuntimeException(e);
 		}
-		OfflineUser user = userCache.getIfPresent(uuid);
-		if (user == null) {
-			user = OfflineUser.load(plugin, uuid);
-		}
-		if (!(user instanceof OnlineUser) && user.isOnline()) {
-			user = user.getOnlineUser();
-			userCache.invalidate(uuid);
-			users.put(uuid, user);
-		} else {
-			return user;
-		}
-		return user;
 	}
 
-	protected static OnlineUser getOnlineUser(UUID uuid) {
-		if (users.containsKey(uuid)) {
-			OfflineUser user = users.get(uuid);
-			if (user instanceof OnlineUser) {
-				return (OnlineUser) user;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Adds the given User.
-	 * 
-	 * @param user the User to add
-	 */
-	public static void addUser(OfflineUser user) {
-		users.put(user.getUUID(), user);
-	}
-
-	/**
-	 * Moves an OfflineUser from the active users list into the user cache.
-	 * 
-	 * @param player the name of the Player to remove
-	 * @return the SblockUser for the removed player, if any
-	 */
-	public static OfflineUser unloadUser(UUID userID) {
-		if (!users.containsKey(userID)) {
-			return null;
-		}
-		OfflineUser user = users.remove(userID);
-		
-		if (user instanceof OnlineUser) {
-			userCache.put(userID, OfflineUser.fromOnline((OnlineUser) user));
-		} else {
-			userCache.put(userID, user);
-		}
-		return users.remove(userID);
-	}
-
-	/**
-	 * Gets a Collection of OfflineUsers currently loaded.
-	 * 
-	 * @return the OfflineUsers
-	 */
-	public static Collection<OfflineUser> getUsers() {
-		return users.values();
+	public Set<User> getOnlineUsers() {
+		return CollectionConversions.toSet(Bukkit.getOnlinePlayers(), player -> getUser(player.getUniqueId()));
 	}
 
 	/**
@@ -187,10 +145,6 @@ public class Users extends Module {
 		}
 		team.setPrefix(prefixBuilder.toString());
 		team.addEntry(player.getName());
-		String name = player.getDisplayName();
-		if (name != null && name.length() <= 16) {
-			team.addEntry(name);
-		}
 
 		Objective objective = board.getObjective("deaths");
 		if (objective == null) {

@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -26,8 +26,11 @@ import co.sblock.users.Users;
  */
 public class LoginCommandsCommand extends SblockCommand {
 
+	private final Users users;
+
 	public LoginCommandsCommand(Sblock plugin) {
 		super(plugin, "onlogin");
+		this.users = plugin.getModule(Users.class);
 		this.setDescription("Manipulate commands executed on login.");
 		this.setUsage("/onlogin list\n/onlogin add /command additional arguments\n"
 				+ "/onlogin delete [number]");
@@ -55,7 +58,7 @@ public class LoginCommandsCommand extends SblockCommand {
 		}
 
 		Player player = (Player) sender;
-		OfflineUser user = Users.getGuaranteedUser(((Sblock) getPlugin()), player.getUniqueId());
+		User user = users.getUser(player.getUniqueId());
 		args[0] = args[0].toLowerCase();
 
 		if (args[0].equals("list")) {
@@ -112,7 +115,7 @@ public class LoginCommandsCommand extends SblockCommand {
 		return matches;
 	}
 
-	private void delete(Player player, OfflineUser user, String[] args) {
+	private void delete(Player player, User user, String[] args) {
 		try {
 			int line = Integer.parseInt(args[1]);
 			ArrayList<String> commands = new ArrayList<>(user.getLoginCommands());
@@ -134,7 +137,7 @@ public class LoginCommandsCommand extends SblockCommand {
 		}
 	}
 
-	private void add(Player player, OfflineUser user, String[] args) {
+	private void add(Player player, User user, String[] args) {
 		ArrayList<String> commands = new ArrayList<String>(user.getLoginCommands());
 		if (!player.hasPermission("sblock.command.onlogin.more") && commands.size() >= 2) {
 			player.sendMessage(Color.BAD + "You cannot set more than two commands on login.");

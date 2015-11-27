@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import co.sblock.chat.channel.Channel;
-import co.sblock.users.OfflineUser;
+import co.sblock.users.User;
 
 /**
  * A container for all messages sent to <code>Player</code>s from various Chat subsections.
@@ -32,11 +32,11 @@ public class ChatMsgs {
 			+ "You cannot leave a region channel! Use " + Color.COMMAND + "/suppress" + Color.BAD
 			+ " to ignore all regional channels.";
 
-	public static String onChannelJoin(OfflineUser user, Channel channel) {
+	public static String onChannelJoin(User user, Channel channel) {
 		return String.format(CHANNEL_JOIN, user.getDisplayName(), channel.getName(), TIME_24.format(new Date()));
 	}
 
-	public static String onChannelLeave(OfflineUser user, Channel channel) {
+	public static String onChannelLeave(User user, Channel channel) {
 		return ChatMsgs.onChannelJoin(user, channel).replaceAll("began", "ceased");
 	}
 
