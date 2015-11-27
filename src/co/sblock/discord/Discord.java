@@ -1,6 +1,11 @@
 package co.sblock.discord;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -18,6 +23,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import org.reflections.Reflections;
+
 import com.google.common.collect.HashBiMap;
 
 import co.sblock.Sblock;
@@ -26,6 +33,7 @@ import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
+import co.sblock.discord.commands.DiscordCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
@@ -53,6 +61,7 @@ public class Discord extends Module {
 
 	private final DiscordAPI discord;
 	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
+	private final Map<String, DiscordCommand> commands;
 	private HashBiMap<UUID, String> authentications;
 	private MessageBuilder builder;
 	private Pattern mention;
@@ -68,11 +77,33 @@ public class Discord extends Module {
 			getLogger().severe("Unable to connect to Discord, no username or password!");
 			discord = null;
 			queue = null;
+			commands = null;
 			return;
 		}
 
 		discord = new DiscordBuilder(login, password).build();
 		queue = new ConcurrentLinkedQueue<>();
+		commands = new HashMap<>();
+
+		Reflections reflections = new Reflections("co.sblock.discord.commands");
+		Set<Class<? extends DiscordCommand>> cmds = reflections.getSubTypesOf(DiscordCommand.class);
+		for (Class<? extends DiscordCommand> command : cmds) {
+			if (Modifier.isAbstract(command.getModifiers())) {
+				continue;
+			}
+			if (!Sblock.areDependenciesPresent(command)) {
+				getLogger().warning(command.getSimpleName() + " is missing dependencies, skipping.");
+				continue;
+			}
+			try {
+				Constructor<? extends DiscordCommand> constructor = command.getConstructor(getClass());
+				DiscordCommand cmd = constructor.newInstance(this);
+				commands.put('/' + cmd.getName(), cmd);
+			} catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -82,7 +113,7 @@ public class Discord extends Module {
 			this.disable();
 		}
 
-		discord.getEventManager().registerListener(new DiscordLoadedListener(this, discord));
+		discord.getEventManager().registerListener(new DiscordLoadedListener(this));
 
 		try {
 			discord.login();
@@ -102,7 +133,7 @@ public class Discord extends Module {
 						+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
 						+ Color.GOOD + "Channel: #main"));
 		mention = Pattern.compile("<@(\\d+)>");
-		discord.getEventManager().registerListener(new DiscordListener(this, discord));
+		discord.getEventManager().registerListener(new DiscordListener(this));
 	}
 
 	@Override
@@ -130,6 +161,10 @@ public class Discord extends Module {
 				group.sendMessage(triple.getRight());
 			}
 		}.runTaskTimerAsynchronously(getPlugin(), 20L, 20L);
+	}
+
+	public DiscordAPI getAPI() {
+		return this.discord;
 	}
 
 	public void logMessage(String message) {
@@ -187,12 +222,19 @@ public class Discord extends Module {
 		return "Discord";
 	}
 
-	protected DiscordPlayer getPlayerFor(GroupUser user) {
-		String uuidString = getPlugin().getConfig().getString("discord.users." + user.getUser().getId());
+	public UUID getUUIDOf(User user) {
+		String uuidString = getPlugin().getConfig().getString("discord.users." + user.getId());
 		if (uuidString == null) {
 			return null;
 		}
-		UUID uuid = UUID.fromString(uuidString);
+		return UUID.fromString(uuidString);
+	}
+
+	protected DiscordPlayer getPlayerFor(GroupUser user) {
+		UUID uuid = getUUIDOf(user.getUser());
+		if (uuid == null) {
+			return null;
+		}
 		Player player = PlayerLoader.getPlayer(uuid);
 		if (player instanceof DiscordPlayer) {
 			return (DiscordPlayer) player;
@@ -203,9 +245,22 @@ public class Discord extends Module {
 		return dplayer;
 	}
 
-	protected void handleCommandFor(DiscordPlayer player, String command, Group group) {
+	protected boolean handleDiscordCommandFor(String command, GroupUser user, Group group) {
+		String[] split = command.split("\\s");
+		if (!commands.containsKey(split[0])) {
+			return false;
+		}
+		String[] args = new String[split.length - 1];
+		if (args.length > 0) {
+			System.arraycopy(split, 1, args, 0, args.length);
+		}
+		commands.get(split[0]).execute(user, group, args);
+		return true;
+	}
+
+	protected void handleMinecraftCommandFor(DiscordPlayer player, String command, Group group) {
 		if (player.hasPendingCommand()) {
-			postMessage("Sbot", "You alread have a pending command. Please be patient.", group.getId());
+			postMessage("Sbot", "You already have a pending command. Please be patient.", group.getId());
 			return;
 		}
 		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getPlugin(),
@@ -251,7 +306,7 @@ public class Discord extends Module {
 
 	protected void postMessageFor(UserChatEvent event, Player player) {
 		builder.setSender(Users.getGuaranteedUser(getPlugin(), player.getUniqueId()))
-				.setMessage(sanitize(event.getMsg())).setChannel(manager.getChannel("#discord"));
+				.setMessage(sanitize(event.getMsg().getMessage())).setChannel(manager.getChannel("#discord"));
 		if (!builder.canBuild(false)) {
 			event.getMsg().deleteMessage();
 			return;
@@ -261,8 +316,7 @@ public class Discord extends Module {
 		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, builder.toMessage()));
 	}
 
-	private String sanitize(me.itsghost.jdiscord.message.Message msg) {
-		String message = msg.getMessage();
+	public String sanitize(String message) {
 		Matcher matcher = mention.matcher(message);
 		StringBuilder sb = new StringBuilder();
 		int lastMatch = 0;

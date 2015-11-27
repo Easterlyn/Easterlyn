@@ -8,7 +8,6 @@ import com.google.common.cache.CacheBuilder;
 
 import co.sblock.Sblock;
 
-import me.itsghost.jdiscord.DiscordAPI;
 import me.itsghost.jdiscord.event.EventListener;
 import me.itsghost.jdiscord.events.UserChatEvent;
 
@@ -20,12 +19,10 @@ import me.itsghost.jdiscord.events.UserChatEvent;
 public class DiscordListener implements EventListener {
 
 	private final Discord discord;
-	private final DiscordAPI api;
 	private final Cache<String, Boolean> warnings;
 
-	public DiscordListener(Discord discord, DiscordAPI api) {
+	public DiscordListener(Discord discord) {
 		this.discord = discord;
-		this.api = api;
 		this.warnings = CacheBuilder.newBuilder().weakKeys().weakValues()
 				.expireAfterWrite(2, TimeUnit.MINUTES).build();
 	}
@@ -35,7 +32,7 @@ public class DiscordListener implements EventListener {
 			// Additional context for links, etc.
 			return;
 		}
-		if (event.getUser().getUser().getId().equals(api.getSelfInfo().getId())) {
+		if (event.getUser().getUser().getId().equals(discord.getAPI().getSelfInfo().getId())) {
 			return;
 		}
 		Sblock sblock = discord.getPlugin();
@@ -59,6 +56,11 @@ public class DiscordListener implements EventListener {
 		if (!main && !command) {
 			return;
 		}
+		if (command) {
+			if (discord.handleDiscordCommandFor(msg, event.getUser(), event.getGroup())) {
+				return;
+			}
+		}
 		DiscordPlayer sender = discord.getPlayerFor(event.getUser());
 		if (sender == null) {
 			if (main) {
@@ -74,7 +76,7 @@ public class DiscordListener implements EventListener {
 			return;
 		}
 		if (command) {
-			discord.handleCommandFor(sender, msg.substring(1), event.getGroup());
+			discord.handleMinecraftCommandFor(sender, msg.substring(1), event.getGroup());
 			return;
 		}
 		if (main) {
