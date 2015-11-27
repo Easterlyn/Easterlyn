@@ -18,15 +18,18 @@ import co.sblock.module.Dependency;
 @Dependency("dynmap")
 public class DynmapWebChatListener extends SblockListener {
 
-	private final AetherCommand aether;
+	private AetherCommand aether;
 
 	public DynmapWebChatListener(Sblock plugin) {
 		super(plugin);
-		aether = (AetherCommand) plugin.getCommandMap().getCommand("sblock:aether");
+		
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onDynmapWebChat(DynmapWebChatEvent event) {
+		if (aether == null) {
+			aether = (AetherCommand) getPlugin().getCommandMap().getCommand("sblock:aether");
+		}
 		aether.sendAether(event.getName(), event.getMessage(), false);
 		event.setProcessed();
 	}
