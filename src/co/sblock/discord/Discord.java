@@ -316,7 +316,7 @@ public class Discord extends Module {
 		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, builder.toMessage()));
 	}
 
-	public String sanitize(String message) {
+	private String sanitize(String message) {
 		Matcher matcher = mention.matcher(message);
 		StringBuilder sb = new StringBuilder();
 		int lastMatch = 0;

@@ -28,7 +28,7 @@ public class IngameNameCommand extends DiscordCommand {
 	protected boolean onCommand(GroupUser sender, Group group, String[] args) {
 		User target;
 		if (args.length > 0) {
-			String name = getDiscord().sanitize(StringUtils.join(args, ' '));
+			String name = StringUtils.join(args, ' ').replaceAll("<@(\\d+)>", "$1");
 			target = getDiscord().getAPI().getUserByUsername(name);
 			if (target == null) {
 				target = getDiscord().getAPI().getUserById(name);
@@ -47,8 +47,7 @@ public class IngameNameCommand extends DiscordCommand {
 		} else {
 			getDiscord().postMessage(getName(), target.getUsername() + "'s IGN is " + player.getName() + ".", group.getId());
 		}
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }
