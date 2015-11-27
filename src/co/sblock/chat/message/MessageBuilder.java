@@ -107,10 +107,8 @@ public class MessageBuilder {
 	}
 
 	public MessageBuilder setSender(User sender) {
-		if (this.sender != null || this.senderName != null) {
-			throw new IllegalArgumentException("Sender is already set!");
-		}
 		this.sender = sender;
+		this.senderName = sender.getDisplayName();
 		if (this.channel == null) {
 			this.channel = sender.getCurrentChannel();
 		}
@@ -118,10 +116,8 @@ public class MessageBuilder {
 	}
 
 	public MessageBuilder setSender(String name) {
-		if (this.sender != null || this.senderName != null) {
-			throw new IllegalArgumentException("Sender is already set!");
-		}
 		this.senderName = name;
+		this.sender = null;
 		return this;
 	}
 
