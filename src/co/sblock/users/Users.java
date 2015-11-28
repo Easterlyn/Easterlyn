@@ -108,6 +108,9 @@ public class Users extends Module {
 	 * @param player the Player
 	 */
 	public static void team(Player player) {
+		if (player == null) {
+			return;
+		}
 		StringBuilder prefixBuilder = new StringBuilder();
 		for (net.md_5.bungee.api.ChatColor color : Color.COLORS) {
 			if (player.hasPermission("sblockchat." + color.name().toLowerCase())) {

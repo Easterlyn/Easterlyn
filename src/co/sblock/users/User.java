@@ -1247,11 +1247,11 @@ public class User {
 		if (currentLoc == null) {
 			currentLoc = Users.getSpawnLocation();
 		}
-		Region current = Region.getRegion(currentLoc.getWorld().getName());
-		if (current.isDream()) {
-			current = user.getDreamPlanet();
+		Region currentRegion = Region.getRegion(currentLoc.getWorld().getName());
+		if (currentRegion.isDream()) {
+			currentRegion = user.getDreamPlanet();
 		}
-		user.setCurrentRegion(current);
+		user.setCurrentRegion(currentRegion);
 		user.getPrograms().addAll((HashSet<String>) yaml.get("progression.programs"));
 		if (yaml.getString("progression.server") != null) {
 			user.setServer(UUID.fromString(yaml.getString("progression.server")));
@@ -1266,7 +1266,6 @@ public class User {
 				user.getListening().add(currentChannel.getName());
 			}
 		}
-		user.setCurrentChannel(yaml.getString("chat.current", "#"));
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
 		return user;
 	}
