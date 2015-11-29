@@ -1185,7 +1185,6 @@ public class User {
 		}
 		yaml.set("name", getPlayerName());
 		yaml.set("ip", getUserIP());
-		yaml.set("playtime", getTimePlayed());
 		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(getPreviousLocation()));
 		yaml.set("previousRegion", null);
 		yaml.set("progression.programs", getPrograms());
