@@ -45,7 +45,7 @@ public class Users extends Module {
 					public void onRemoval(RemovalNotification<UUID, User> notification) {
 						User user = notification.getValue();
 						user.save();
-						unteam(user.getPlayer());
+						unteam(user.getPlayerName());
 					}
 				}).build(new CacheLoader<UUID, User>() {
 					@Override
