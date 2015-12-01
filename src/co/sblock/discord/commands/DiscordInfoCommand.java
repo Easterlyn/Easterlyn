@@ -71,7 +71,7 @@ public class DiscordInfoCommand extends DiscordCommand {
 			builder.append("none");
 		}
 		getDiscord().postMessage(getName(), builder.toString(), group.getId());
-		return false;
+		return true;
 	}
 
 }
