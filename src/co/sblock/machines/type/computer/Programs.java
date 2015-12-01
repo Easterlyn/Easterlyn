@@ -82,7 +82,7 @@ public class Programs {
 	}
 
 	/**
-	 * Compares two ItemStacks, ignoring lore.
+	 * Compares two ItemStacks by name or material.
 	 * 
 	 * @param is1 the first ItemStack
 	 * @param is2 the second ItemStack
