@@ -17,10 +17,12 @@ import me.itsghost.jdiscord.events.UserChatEvent;
  */
 public class DiscordListener implements EventListener {
 
+	private final Sblock plugin;
 	private final Discord discord;
 	private final Cache<String, Boolean> warnings;
 
 	public DiscordListener(Discord discord) {
+		this.plugin = discord.getPlugin();
 		this.discord = discord;
 		this.warnings = CacheBuilder.newBuilder().weakKeys().weakValues()
 				.expireAfterWrite(2, TimeUnit.MINUTES).build();
@@ -34,7 +36,6 @@ public class DiscordListener implements EventListener {
 		if (event.getUser().getUser().getId().equals(discord.getAPI().getSelfInfo().getId())) {
 			return;
 		}
-		Sblock sblock = discord.getPlugin();
 		String msg = event.getMsg().getMessage();
 		if (msg.startsWith("/link ")) {
 			String register = msg.substring(6);
@@ -46,13 +47,13 @@ public class DiscordListener implements EventListener {
 			discord.postMessage("Sbot", "Registration complete!", event.getGroup().getId());
 			discord.getAuthCodes().invalidate(uuid);
 			discord.getAuthCodes().invalidate(register);
-			sblock.getConfig().set("discord.users." + event.getUser().getUser().getId(), uuid.toString());
-			sblock.saveConfig();
+			plugin.getConfig().set("discord.users." + event.getUser().getUser().getId(), uuid.toString());
+			plugin.saveConfig();
 			return;
 		}
 		boolean main = event.getServer() != null
-				&& sblock.getConfig().getString("discord.server").equals(event.getServer().getId())
-				&& sblock.getConfig().getString("discord.chat.main").equals(event.getGroup().getId());
+				&& plugin.getConfig().getString("discord.server").equals(event.getServer().getId())
+				&& plugin.getConfig().getString("discord.chat.main").equals(event.getGroup().getId());
 		boolean command = msg.length() > 0 && msg.charAt(0) == '/';
 		if (!main && !command) {
 			return;

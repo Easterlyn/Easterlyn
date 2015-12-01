@@ -165,6 +165,9 @@ public class Users extends Module {
 	}
 
 	private static void unteam(String teamName) {
+		if (teamName == null) {
+			return;
+		}
 		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
 		if (team != null) {
 			team.unregister();

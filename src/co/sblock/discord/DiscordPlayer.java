@@ -32,7 +32,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 
 	@Override
 	public String getDisplayName() {
-		return displayName;
+		return displayName != null ? displayName : getName();
 	}
 
 	public synchronized boolean hasPendingCommand() {
