@@ -168,21 +168,12 @@ public class ChannelManager {
 
 	protected void createDefaultSet() {
 		channelList.put("#", new RegionChannel(chat.getPlugin(), "#"));
+		channelList.put("#Aether", new RegionChannel(chat.getPlugin(), "#Aether"));
+		channelList.put("#discord", new RegionChannel(chat.getPlugin(), "#discord"));
 		channelList.put("#rp", new RPChannel(chat.getPlugin(), "#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#fanrp", new NickChannel(chat.getPlugin(), "#fanrp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#EARTH", new RegionChannel(chat.getPlugin(), "#EARTH"));
-		channelList.put("#DERSPIT", new RegionChannel(chat.getPlugin(), "#DERSPIT"));
-		channelList.put("#INNERCIRCLE", new RegionChannel(chat.getPlugin(), "#INNERCIRCLE"));
-		channelList.put("#OUTERCIRCLE", new RegionChannel(chat.getPlugin(), "#OUTERCIRCLE"));
-		channelList.put("#FURTHESTRING", new RegionChannel(chat.getPlugin(), "#FURTHESTRING"));
-		channelList.put("#LOWAS", new RegionChannel(chat.getPlugin(), "#LOWAS"));
-		channelList.put("#LOLAR", new RegionChannel(chat.getPlugin(), "#LOLAR"));
-		channelList.put("#LOHAC", new RegionChannel(chat.getPlugin(), "#LOHAC"));
-		channelList.put("#LOFAF", new RegionChannel(chat.getPlugin(), "#LOFAF"));
-		channelList.put("#Aether", new RegionChannel(chat.getPlugin(), "#Aether"));
 		channelList.put("#halchat", new NormalChannel(chat.getPlugin(), "#halchat", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		channelList.put("#gods", new NormalChannel(chat.getPlugin(), "#gods", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#discord", new RegionChannel(chat.getPlugin(), "#discord"));
 		// People may use unicode characters in private messages
 		channelList.put("#pm", new NickChannel(chat.getPlugin(), "#pm", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
 		// Show true sign contents

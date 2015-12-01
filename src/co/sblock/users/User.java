@@ -45,7 +45,6 @@ import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
-import co.sblock.machines.Machines;
 import co.sblock.utilities.PlayerLoader;
 
 import net.md_5.bungee.api.ChatColor;
@@ -58,7 +57,6 @@ import net.md_5.bungee.api.ChatColor;
 public class User {
 
 	private final Sblock plugin;
-	private final Machines machines;
 	private final Users users;
 	private final ChannelManager manager;
 	private final YamlConfiguration yaml;
@@ -82,7 +80,6 @@ public class User {
 			Location previousLocation, Set<String> programs, String currentChannel,
 			Set<String> listening) {
 		this.plugin = plugin;
-		this.machines = plugin.getModule(Machines.class);
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.uuid = userID;
@@ -330,22 +327,6 @@ public class User {
 			getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
 		} else {
 			getPlayer().resetPlayerTime();
-		}
-		if (oldRegion != null && newRegion == oldRegion) {
-			if (canJoinDefaultChats() && !getListening().contains(oldRegion.getChannelName())) {
-				Channel channel = getChannelManager().getChannel(oldRegion.getChannelName());
-				addListening(channel);
-			}
-			return;
-		}
-		if (currentChannel == null || oldRegion != null && currentChannel.equals(oldRegion.getChannelName())) {
-			currentChannel = newRegion.getChannelName();
-		}
-		if (oldRegion != null && !oldRegion.getChannelName().equals(newRegion.getChannelName())) {
-			removeListening(oldRegion.getChannelName());
-		}
-		if (!getListening().contains(newRegion.getChannelName()) && canJoinDefaultChats()) {
-			addListening(getChannelManager().getChannel(newRegion.getChannelName()));
 		}
 		if (oldRegion == null || !oldRegion.getResourcePackURL().equals(newRegion.getResourcePackURL())) {
 			getPlayer().setResourcePack(newRegion.getResourcePackURL());
@@ -608,9 +589,6 @@ public class User {
 		}
 		listening.add("#");
 		getChannelManager().getChannel("#").getListening().add(getUUID());
-		String region = getCurrentRegion().getChannelName();
-		getListening().add(region);
-		getChannelManager().getChannel(region).getListening().add(getUUID());
 		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
 			this.getListening().add("@");
 			getChannelManager().getChannel("@").getListening().add(this.getUUID());
@@ -802,24 +780,6 @@ public class User {
 	 */
 	public boolean canJoinDefaultChats() {
 		return yaml.getBoolean("chat.joindefault", true);
-	}
-
-	/**
-	 * Checks if the Player is close enough to a Computer to chat in #.
-	 * 
-	 * @return true if the Player can chat in #
-	 */
-	public boolean getComputerAccess() {
-		if (!isOnline()) {
-			return false;
-		}
-		if (!Chat.getComputerRequired()) {
-			// Overrides the computer limitation for pre-Entry shenanigans
-			return true;
-		}
-		Effects effects = getPlugin().getModule(Effects.class);
-		return effects.getAllEffects(getPlayer()).containsKey(effects.getEffect("Computer"))
-				|| machines.isByComputer(this.getPlayer(), 10);
 	}
 
 	/**
@@ -1111,10 +1071,8 @@ public class User {
 				player.teleport(Users.getSpawnLocation());
 
 				User user = new User(plugin, uuid, player.getAddress().getHostString(), new YamlConfiguration());
-				user.setCurrentChannel("#"); // Reverse come Entry
-				user.getListening().add(Region.EARTH.getChannelName());
+				user.setCurrentChannel("#");
 				user.updateCurrentRegion(Region.EARTH);
-				player.setResourcePack(Region.EARTH.getResourcePackURL());
 
 				if (!player.hasPlayedBefore()) {
 					// Our data file may have just been deleted - reset planned for Entry, etc.
@@ -1142,7 +1100,7 @@ public class User {
 		if (currentRegion.isDream()) {
 			currentRegion = user.getDreamPlanet();
 		}
-		user.setCurrentRegion(currentRegion);
+		user.updateCurrentRegion(currentRegion);
 		user.getPrograms().addAll((HashSet<String>) yaml.get("progression.programs"));
 		if (yaml.getString("progression.server") != null) {
 			user.setServer(UUID.fromString(yaml.getString("progression.server")));

@@ -7,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -45,27 +44,6 @@ public class Computer extends Machine implements InventoryHolder {
 		drop.setItemMeta(meta);
 
 		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
-	}
-
-	/**
-	 * Players can only have one computer, and servers cannot place them for the client.
-	 * 
-	 * @see co.sblock.machines.type.Machine#assemble()
-	 */
-	@Override
-	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
-		if (getMachines().hasComputer(event.getPlayer(), getKey(storage))) {
-			if (event.getPlayer().hasPermission("sblock.horrorterror")) {
-				event.getPlayer().sendMessage("Bypassing Computer cap. You devilish admin you.");
-			} else {
-				event.setCancelled(true);
-				event.getBlock().setType(Material.AIR);
-				event.getPlayer().sendMessage(Color.BAD + "You can only have one Computer placed!");
-				this.assemblyFailed(storage);
-				return;
-			}
-		}
-		super.assemble(event, storage);
 	}
 
 	@Override

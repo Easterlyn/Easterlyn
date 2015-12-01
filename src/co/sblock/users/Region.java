@@ -8,21 +8,20 @@ import net.md_5.bungee.api.ChatColor;
  * @author Jikoo, Dublek
  */
 public enum Region {
-	EARTH("Earth", "Earth", "#EARTH", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock.zip", false, false),
-	DERSE("Derse", "Derspit", "#DERSPIT", ChatColor.DARK_PURPLE, "http://sblock.co/rpack/Derse.zip", false, true),
-	PROSPIT("Prospit", "Derspit", "#DERSPIT", ChatColor.YELLOW, "http://sblock.co/rpack/Prospit.zip", false, true),
-	FURTHESTRING("FurthestRing", "FurthestRing", "#FURTHESTRING", ChatColor.BLACK, "http://sblock.co/rpack/Sblock.zip", false, false),
-	LOFAF("LOFAF", "LOFAF", "#LOFAF", ChatColor.WHITE, "http://sblock.co/rpack/Sblock.zip", true, false),
-	LOHAC("LOHAC", "LOHAC", "#LOHAC", ChatColor.RED, "http://sblock.co/rpack/Sblock.zip", true, false),
-	LOLAR("LOLAR", "LOLAR", "#LOLAR", ChatColor.AQUA, "http://sblock.co/rpack/Sblock.zip", true, false),
-	LOWAS("LOWAS", "LOWAS", "#LOWAS", ChatColor.GRAY, "http://sblock.co/rpack/Sblock.zip", true, false),
-	DUNGEON("Dungeon", "Dungeon", "#EARTH", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock.zip", false, false),
-	UNKNOWN("Second Earth", "Earth", "#Aether", ChatColor.DARK_GRAY, "http://sblock.co/rpack/Sblock.zip", false, false);
+	EARTH("Earth", "Earth", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock.zip", false, false),
+	DERSE("Derse", "Derspit", ChatColor.DARK_PURPLE, "http://sblock.co/rpack/Derse.zip", false, true),
+	PROSPIT("Prospit", "Derspit", ChatColor.YELLOW, "http://sblock.co/rpack/Prospit.zip", false, true),
+	FURTHESTRING("FurthestRing", "FurthestRing", ChatColor.BLACK, "http://sblock.co/rpack/Sblock.zip", false, false),
+	LOFAF("LOFAF", "LOFAF", ChatColor.WHITE, "http://sblock.co/rpack/Sblock.zip", true, false),
+	LOHAC("LOHAC", "LOHAC", ChatColor.RED, "http://sblock.co/rpack/Sblock.zip", true, false),
+	LOLAR("LOLAR", "LOLAR", ChatColor.AQUA, "http://sblock.co/rpack/Sblock.zip", true, false),
+	LOWAS("LOWAS", "LOWAS", ChatColor.GRAY, "http://sblock.co/rpack/Sblock.zip", true, false),
+	DUNGEON("Dungeon", "Dungeon", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock.zip", false, false),
+	UNKNOWN("Second Earth", "Earth", ChatColor.DARK_GRAY, "http://sblock.co/rpack/Sblock.zip", false, false);
 
 	/* INNER FIELDS */
 	private final String displayName;
 	private final String worldName;
-	private final String channelName;
 	private final String resourcePack;
 	private final ChatColor worldChatColor;
 	private final boolean isMedium;
@@ -36,10 +35,9 @@ public enum Region {
 	 * @param isMedium true if the planet is in the Medium
 	 * @param isDream true if the planet is a dream planet
 	 */
-	private Region(String displayName, String worldName, String channelName, ChatColor color, String sourceURL, boolean isMedium, boolean isDream) {
+	private Region(String displayName, String worldName, ChatColor color, String sourceURL, boolean isMedium, boolean isDream) {
 		this.displayName = displayName;
 		this.worldName = worldName;
-		this.channelName = channelName;
 		this.resourcePack = sourceURL;
 		this.worldChatColor = color;
 		this.isMedium = isMedium;
@@ -60,15 +58,6 @@ public enum Region {
 	 */
 	public String getWorldName() {
 		return this.worldName;
-	}
-
-	/**
-	 * Gets the name of the Region's Channel.
-	 * 
-	 * @return Region.name() in lower case
-	 */
-	public String getChannelName() {
-		return channelName;
 	}
 
 	/**

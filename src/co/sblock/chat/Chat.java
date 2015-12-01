@@ -19,8 +19,6 @@ import co.sblock.utilities.DummyPlayer;
 
 public class Chat extends Module {
 
-	private static boolean computersRequired = false; //Hardcoded override, will be set to true come Entry
-
 	private final ChannelManager channelManager;
 	private final DummyPlayer buffer;
 
@@ -61,10 +59,6 @@ public class Chat extends Module {
 	 */
 	public Halculator getHalculator() {
 		return halculator;
-	}
-
-	public static boolean getComputerRequired() {
-		return computersRequired;
 	}
 
 	@Override

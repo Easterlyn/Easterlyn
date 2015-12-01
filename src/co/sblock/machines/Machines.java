@@ -21,7 +21,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.reflections.Reflections;
@@ -360,67 +359,6 @@ public class Machines extends Module {
 			return exploded.get(block);
 		}
 		return true;
-	}
-
-	/**
-	 * Check to see if the Player in question has placed a Computer.
-	 * <p>
-	 * For use in assembling a new Computer - Players are only allowed one.
-	 * 
-	 * @see co.sblock.Machines.Type.Computer#assemble(org.bukkit.event.block.BlockPlaceEvent)
-	 * 
-	 * @param player the Player
-	 * @param key the location of the Computer just assembled
-	 * 
-	 * @return true if the Player has placed a Computer
-	 */
-	public boolean hasComputer(Player player, Location key) {
-		String keyPath = stringFromLoc(key);
-		for (String path : storage.getKeys(false)) {
-			if (path.equals(keyPath) || !storage.getString(path + ".type").equals("Computer")) {
-				continue;
-			}
-			if (storage.getString(path + ".owner").equals(player.getUniqueId().toString())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Gets the Computer owned by a particular Player.
-	 * 
-	 * @param playerID the UUID of the Player
-	 * 
-	 * @return the matching Machine and ConfigurationSection, or null if the Player has no computer.
-	 */
-	public Pair<Machine, ConfigurationSection> getComputer(UUID playerID) {
-		for (String path : storage.getKeys(false)) {
-			if (!"Computer".equals(storage.getString(path + ".type"))) {
-				continue;
-			}
-			if (playerID.toString().equals(storage.getString(path + ".owner"))) {
-				return new ImmutablePair<Machine, ConfigurationSection>(byName.get("Computer"), storage);
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Check if a Player is within the specified radius of their Computer.
-	 * 
-	 * @param p the Player
-	 * @param distance the radius to search
-	 * 
-	 * @return true if the Player is within the radius
-	 */
-	public boolean isByComputer(Player p, int distance) {
-		for (ConfigurationSection data : this.getMachinesInProximity(p.getLocation(), distance, "Computer", true)) {
-			if (data.getString("owner").equals(p.getUniqueId().toString())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
