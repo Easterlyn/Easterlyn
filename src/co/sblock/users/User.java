@@ -74,7 +74,7 @@ public class User {
 
 	/* General player data */
 	private final UUID uuid;
-	private final String userIP;
+	private String userIP;
 	private Location previousLocation;
 
 	/* Various data Sblock tracks for progression purposes */
@@ -88,7 +88,7 @@ public class User {
 	public String currentChannel;
 	private final Set<String> listening;
 
-	protected User(Sblock plugin, UUID userID, String ip, YamlConfiguration yaml,
+	private User(Sblock plugin, UUID userID, String ip, YamlConfiguration yaml,
 			Location previousLocation, Set<String> programs, String currentChannel,
 			Set<String> listening) {
 		this.plugin = plugin;
@@ -156,6 +156,10 @@ public class User {
 	 */
 	public String getUserIP() {
 		return this.userIP;
+	}
+
+	public void setUserIP(String userIP) {
+		this.userIP = userIP;
 	}
 
 	/**

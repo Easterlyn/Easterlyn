@@ -1,9 +1,11 @@
 package co.sblock.discord.commands;
 
+import java.util.HashSet;
 import java.util.List;
 
 import co.sblock.discord.Discord;
 
+import me.itsghost.jdiscord.Role;
 import me.itsghost.jdiscord.Server;
 import me.itsghost.jdiscord.talkable.Group;
 import me.itsghost.jdiscord.talkable.GroupUser;
@@ -55,8 +57,19 @@ public class DiscordInfoCommand extends DiscordCommand {
 		} else {
 			builder.append("none");
 		}
-		// builder.append("\nRoles:\n");
-		// future jDiscord update
+		HashSet<Role> visibleRoles = new HashSet<>();
+		for (GroupUser user : server.getConnectedClients()) {
+			visibleRoles.addAll(user.getRoles());
+		}
+		builder.append("\nRoles:\n");
+		if (visibleRoles.size() > 0) {
+			for (Role role : visibleRoles) {
+				builder.append(role.getId()).append(" (").append(role.getName()).append("), ");
+			}
+			builder.delete(builder.length() - 2, builder.length());
+		} else {
+			builder.append("none");
+		}
 		getDiscord().postMessage(getName(), builder.toString(), group.getId());
 		return false;
 	}

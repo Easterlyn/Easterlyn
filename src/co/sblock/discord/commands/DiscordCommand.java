@@ -1,9 +1,11 @@
 package co.sblock.discord.commands;
 
+import java.util.Collection;
 import java.util.List;
 
 import co.sblock.discord.Discord;
 
+import me.itsghost.jdiscord.Role;
 import me.itsghost.jdiscord.talkable.Group;
 import me.itsghost.jdiscord.talkable.GroupUser;
 
@@ -35,7 +37,7 @@ public abstract class DiscordCommand {
 	}
 
 	public void execute(GroupUser sender, Group group, String[] args) {
-		if (roles != null && (sender.getRole() == null || !roles.contains(sender.getRole()))) {
+		if (!hasRequiredRole(sender.getRoles())) {
 			discord.postMessage(getName(), "<@" + sender.getUser().getId()
 					+ ">, you do not have access to this command.", group.getId());
 			return;
@@ -44,6 +46,22 @@ public abstract class DiscordCommand {
 		if (!onCommand(sender, group, args)) {
 			discord.postMessage(getName(), usage, group.getId());
 		}
+	}
+
+	private boolean hasRequiredRole(Collection<Role> userRoles) {
+		if (roles == null || roles.isEmpty()) {
+			// No roles required
+			return true;
+		}
+		if (userRoles.isEmpty()) {
+			return false;
+		}
+		for (Role role : userRoles) {
+			if (roles.contains(role.getId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected abstract boolean onCommand(GroupUser sender, Group group, String[] args);

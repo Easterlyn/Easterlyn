@@ -1,5 +1,6 @@
 package co.sblock.discord;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import co.sblock.utilities.PermissiblePlayer;
@@ -15,6 +16,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 
 	private final Discord discord;
 	private final GroupUser user;
+	private String displayName;
 	private StringBuilder messages;
 
 	public DiscordPlayer(Discord discord, GroupUser user, Player player) {
@@ -24,8 +26,13 @@ public class DiscordPlayer extends PermissiblePlayer {
 	}
 
 	@Override
+	public void setDisplayName(String arg0) {
+		this.displayName = ChatColor.stripColor(arg0);
+	}
+
+	@Override
 	public String getDisplayName() {
-		return discord.getGroupColor(user) + getName();
+		return displayName;
 	}
 
 	public synchronized boolean hasPendingCommand() {
@@ -52,6 +59,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 	@Override
 	public void sendMessage(String arg0) {
 		if (messages == null) {
+			discord.postMessage("Sbot", arg0, user.getUser().getGroup().getId());
 			return;
 		}
 		if (messages.length() > 0) {

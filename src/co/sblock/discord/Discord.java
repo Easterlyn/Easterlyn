@@ -366,22 +366,4 @@ public class Discord extends Module {
 		return sb.toString();
 	}
 
-	public ChatColor getGroupColor(GroupUser user) {
-		// future when jDiscord updates, multiple roles will be supported
-		switch (user.getRole()) {
-		case "@horrorterror":
-			return Color.RANK_HORRORTERROR;
-		case "@denizen":
-			return Color.RANK_DENIZEN;
-		case "@felt":
-			return Color.RANK_FELT;
-		case "@helper":
-			return Color.RANK_HELPER;
-		case "@donator":
-			return Color.RANK_DONATOR;
-		default:
-			return Color.RANK_HERO;
-		}
-	}
-
 }
