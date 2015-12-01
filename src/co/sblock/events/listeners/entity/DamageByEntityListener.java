@@ -16,8 +16,6 @@ import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.MeteoriteComponent;
-import co.sblock.users.User;
-import co.sblock.users.Users;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 
@@ -30,13 +28,11 @@ public class DamageByEntityListener extends SblockListener {
 
 	private final Effects effects;
 	private final Events events;
-	private final Users users;
 
 	public DamageByEntityListener(Sblock plugin) {
 		super(plugin);
 		this.effects = plugin.getModule(Effects.class);
 		this.events = plugin.getModule(Events.class);
-		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -82,13 +78,6 @@ public class DamageByEntityListener extends SblockListener {
 		final UUID damaged = event.getEntity().getUniqueId();
 		if (damaged.equals(damager)) {
 			// Deserved.
-			return;
-		}
-
-		User damagerUser = users.getUser(damager);
-		User damagedUser = users.getUser(damaged);
-		if (damagerUser.isServer() || damagedUser.isServer()) {
-			event.setCancelled(true);
 			return;
 		}
 

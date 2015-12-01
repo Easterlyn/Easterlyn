@@ -16,9 +16,7 @@ import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.micromodules.Spectators;
-import co.sblock.progression.Entry;
 import co.sblock.users.User;
-import co.sblock.users.ProgressionState;
 import co.sblock.users.Users;
 import co.sblock.utilities.InventoryManager;
 
@@ -31,7 +29,6 @@ public class QuitListener extends SblockListener {
 
 	private final Discord discord;
 	private final Effects effects;
-	private final Entry entry;
 	private final Events events;
 	private final FreeCart carts;
 	private final SleepVote sleep;
@@ -42,7 +39,6 @@ public class QuitListener extends SblockListener {
 		super(plugin);
 		discord = plugin.getModule(Discord.class);
 		effects = plugin.getModule(Effects.class);
-		entry = plugin.getModule(Entry.class);
 		events = plugin.getModule(Events.class);
 		carts = plugin.getModule(FreeCart.class);
 		sleep = plugin.getModule(SleepVote.class);
@@ -98,21 +94,6 @@ public class QuitListener extends SblockListener {
 		// Disable "god" effect, if any
 		if (event.getPlayer().hasPermission("sblock.god")) {
 			Godule.getInstance().disable(user.getUserAspect());
-		}
-
-		// Remove Server status
-		if (user.isServer()) {
-			user.stopServerMode();
-		}
-
-		// Complete success sans animation if player logs out
-		if (user.getProgression() == ProgressionState.ENTRY_COMPLETING) {
-			entry.finalizeSuccess(event.getPlayer(), user);
-		}
-
-		// Fail Entry if in progress
-		if (user.getProgression() == ProgressionState.ENTRY_UNDERWAY) {
-			entry.fail(user);
 		}
 
 		// Inform channels that the player is no longer listening to them

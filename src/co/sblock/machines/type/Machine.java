@@ -34,7 +34,6 @@ import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
-import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -179,10 +178,6 @@ public abstract class Machine {
 			}
 		}
 		this.assemble(key, direction, storage);
-		User user = getUsers().getUser(event.getPlayer().getUniqueId());
-		if (user.isServer() && user.getUUID().toString().equals(storage.getString("owner"))) {
-			storage.set("owner", user.getClient().toString());
-		}
 	}
 
 	/**

@@ -74,10 +74,6 @@ public class SpectateCommand extends SblockCommand {
 			sender.sendMessage(this.getUsage());
 			return true;
 		}
-		if (user.isServer()) {
-			sender.sendMessage(Color.BAD + "Perhaps you should focus on helping your client!");
-			return true;
-		}
 		if (spectators.isSpectator(player.getUniqueId())) {
 			sender.sendMessage(Color.GOOD + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
 			spectators.removeSpectator(player);

@@ -38,10 +38,7 @@ import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.module.Module;
-import co.sblock.users.User;
-import co.sblock.users.ProgressionState;
 import co.sblock.users.UserAspect;
-import co.sblock.users.Users;
 import co.sblock.utilities.Roman;
 
 import net.md_5.bungee.api.ChatColor;
@@ -59,7 +56,6 @@ public class Effects extends Module {
 	private final Pattern effectPattern = Pattern.compile("^\\" + ChatColor.COLOR_CHAR + "7(.*) ([IVXLCDM]+)$");
 
 	private Cooldowns cooldowns;
-	private Users users;
 
 	public Effects(Sblock plugin) {
 		super(plugin);
@@ -68,7 +64,6 @@ public class Effects extends Module {
 	@Override
 	protected void onEnable() {
 		this.cooldowns = getPlugin().getModule(Cooldowns.class);
-		this.users = getPlugin().getModule(Users.class);
 		Reflections reflections = new Reflections("co.sblock.effects.effect");
 		Set<Class<? extends Effect>> allEffects = reflections.getSubTypesOf(Effect.class);
 		for (Class<? extends Effect> effect : allEffects) {
@@ -167,18 +162,14 @@ public class Effects extends Module {
 			return applicableEffects;
 		}
 
-		User user = users.getUser(entity.getUniqueId());
-		if (user.getProgression().ordinal() < ProgressionState.GODTIER.ordinal()) {
-			return applicableEffects;
-		}
-
-		for (String effectType : user.getGodtierEffects()) {
-			Effect effect = getEffect(user.getUserAspect().name() + effectType);
-			if (effect == null) {
-				continue;
-			}
-			applicableEffects.merge(effect, 1, (v1, v2) -> v1 + v2);
-		}
+		// TODO Godtier effects
+//		for (String effectType : user.getGodtierEffects()) {
+//			Effect effect = getEffect(user.getUserAspect().name() + effectType);
+//			if (effect == null) {
+//				continue;
+//			}
+//			applicableEffects.merge(effect, 1, (v1, v2) -> v1 + v2);
+//		}
 
 		return applicableEffects;
 	}
@@ -198,19 +189,18 @@ public class Effects extends Module {
 		} else {
 			effects = getEffects(bypassMax, entity.getEquipment().getItemInHand());
 		}
-		if (entity instanceof Player) {
-			User user = users.getUser(entity.getUniqueId());
-			if (user.getProgression().ordinal() >= ProgressionState.GODTIER.ordinal()) {
-				for (String effectType : user.getGodtierEffects()) {
-					Effect effect = getEffect(user.getUserAspect().name() + effectType);
-					if (effect == null || effect instanceof BehaviorPassive
-							|| !reactive && !(effect instanceof BehaviorReactive)) {
-						continue;
-					}
-					effects.merge(effect, 1, (v1, v2) -> v1 + v2);
-				}
-			}
-		}
+		// TODO Godtier effects
+//		if (entity instanceof Player) {
+//			User user = users.getUser(entity.getUniqueId());
+//				for (String effectType : user.getGodtierEffects()) {
+//					Effect effect = getEffect(effectType);
+//					if (effect == null || effect instanceof BehaviorPassive
+//							|| !reactive && !(effect instanceof BehaviorReactive)) {
+//						continue;
+//					}
+//					effects.merge(effect, 1, (v1, v2) -> v1 + v2);
+//				}
+//		}
 		if (effects.isEmpty()) {
 			return;
 		}

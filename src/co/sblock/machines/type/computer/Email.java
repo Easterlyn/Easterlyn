@@ -15,7 +15,6 @@ import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Computer;
 import co.sblock.users.Region;
-import co.sblock.users.Users;
 import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -28,13 +27,11 @@ import net.md_5.bungee.api.ChatColor;
 public class Email extends Program {
 
 	private final Effects effects;
-	private final Users users;
 	private final ItemStack icon;
 
 	public Email(Machines machines) {
 		super(machines);
 		this.effects = machines.getPlugin().getModule(Effects.class);
-		this.users = machines.getPlugin().getModule(Users.class);
 		icon = new ItemStack(Material.WRITTEN_BOOK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "Email");
@@ -54,11 +51,6 @@ public class Email extends Program {
 		if (player.getGameMode() != GameMode.SURVIVAL) {
 			player.closeInventory();
 			player.sendMessage(Color.BAD + "You can only manage your mail while playing normally.");
-			return;
-		}
-		if (users.getUser(player.getUniqueId()).isServer()) {
-			player.closeInventory();
-			player.sendMessage(Color.BAD + "You're too busy helping your client to check your email.");
 			return;
 		}
 

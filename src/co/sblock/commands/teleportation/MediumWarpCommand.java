@@ -10,9 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
-import co.sblock.users.User;
-import co.sblock.users.ProgressionState;
 import co.sblock.users.Region;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -51,10 +50,6 @@ public class MediumWarpCommand extends SblockCommand {
 			return false;
 		}
 		User user = users.getUser(player.getUniqueId());
-		if (user.getProgression().ordinal() < ProgressionState.ENTRY.ordinal()) {
-			sender.sendMessage(Color.BAD + "Entry not completed.");
-			return false;
-		}
 		if (!user.getCurrentRegion().isMedium()) {
 			if (player.getInventory().removeItem(new ItemStack(Material.NETHER_STAR)).size() > 0) {
 				player.sendMessage(Color.BAD + "You must have a nether star to fuel your journey to the Medium.");

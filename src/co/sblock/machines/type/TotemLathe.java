@@ -22,9 +22,6 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.progression.Entry;
-import co.sblock.users.User;
-import co.sblock.users.ProgressionState;
 import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -36,13 +33,11 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class TotemLathe extends Machine	{
 
-	private final Entry entry;
 	private final MachineInventoryTracker tracker;
 	private final ItemStack drop;
 
 	public TotemLathe(Sblock plugin, Machines machines) {
 		super(plugin, machines, new Shape());
-		entry = plugin.getModule(Entry.class);
 		tracker = machines.getInventoryTracker();
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 2);
@@ -84,10 +79,7 @@ public class TotemLathe extends Machine	{
 		if (event.getPlayer().isSneaking()) {
 			return false;
 		}
-		User user = getUsers().getUser(event.getPlayer().getUniqueId());
-		if (user != null && (user.getProgression() != ProgressionState.NONE || entry.isEntering(user))) {
-			openInventory(event.getPlayer(), storage);
-		}
+		openInventory(event.getPlayer(), storage);
 		return true;
 	}
 

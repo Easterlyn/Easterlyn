@@ -23,18 +23,12 @@ import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
-import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.SleepVote;
-import co.sblock.progression.Entry;
-import co.sblock.progression.ServerMode;
-import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.Experience;
 import co.sblock.utilities.InventoryUtils;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for PlayerInteractEvents.
@@ -46,10 +40,8 @@ public class InteractListener extends SblockListener {
 	private final Captcha captcha;
 	private final Cooldowns cooldowns;
 	private final Effects effects;
-	private final Entry entry;
 	private final Events events;
 	private final Machines machines;
-	private final ServerMode serverMode;
 	private final SleepVote sleep;
 	private final Users users;
 
@@ -58,10 +50,8 @@ public class InteractListener extends SblockListener {
 		this.captcha = plugin.getModule(Captcha.class);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.effects = plugin.getModule(Effects.class);
-		this.entry = plugin.getModule(Entry.class);
 		this.events = plugin.getModule(Events.class);
 		this.machines = plugin.getModule(Machines.class);
-		this.serverMode = plugin.getModule(ServerMode.class);
 		this.sleep = plugin.getModule(SleepVote.class);
 		this.users = plugin.getModule(Users.class);
 	}
@@ -101,47 +91,6 @@ public class InteractListener extends SblockListener {
 		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
 			// Right clicking air is cancelled by default as there is no result.
 			return;
-		}
-		User user = users.getUser(event.getPlayer().getUniqueId());
-		if (user.isServer()) {
-			// No interaction with any blocks while out of range.
-			if (event.getAction().name().contains("BLOCK") && !serverMode.isWithinRange(
-					user, event.getClickedBlock())) {
-				event.getPlayer().sendMessage(Color.BAD + "Block out of range!");
-				event.setCancelled(true);
-				return;
-			}
-			// Breaking and placing blocks is acceptable, instabreak blocks in approved list.
-			if (event.getAction() == Action.LEFT_CLICK_BLOCK
-					&& serverMode.isApproved(event.getClickedBlock().getType())
-					&& !machines.isMachine(event.getClickedBlock())) {
-				event.getClickedBlock().setType(Material.AIR);
-			} else if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getItem() != null) {
-				if (serverMode.isApproved(event.getMaterial())) {
-					// Right click air: Cycle to next approved material
-					serverMode.cycleData(event.getItem());
-				} else if (event.getItem().isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
-					// Right click air: Open computer
-					((Computer) machines.getMachineByName("Computer")).openInventory(event.getPlayer());
-				}
-			}
-			return;
-		}
-
-		//Entry Trigger Items
-		if (event.getItem() != null) {
-			for (Material m : entry.getMaterialList()) {
-				if (event.getItem().getType() == m && event.getItem().getItemMeta().hasDisplayName() 
-						&& event.getItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
-					if (entry.isEntering(user)) {
-						if (m == entry.getData().get(user).getRight()) {
-							entry.succeed(user);
-						}
-					}
-					event.getPlayer().setItemInHand(null);
-					return;
-				}
-			}
 		}
 
 		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
@@ -197,7 +146,7 @@ public class InteractListener extends SblockListener {
 					head = b.getRelative(relative).getLocation();
 				}
 
-				switch (user.getCurrentRegion()) {
+				switch (users.getUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
 				case EARTH:
 				case PROSPIT:
 				case LOFAF:

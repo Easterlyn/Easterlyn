@@ -25,9 +25,6 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.progression.Entry;
-import co.sblock.users.User;
-import co.sblock.users.ProgressionState;
 import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -44,13 +41,11 @@ public class PunchDesignix extends Machine {
 
 	private final ItemStack drop;
 	private final Captcha captcha;
-	private final Entry entry;
 	private final MachineInventoryTracker tracker;
 
 	public PunchDesignix(Sblock plugin, Machines machines) {
 		super(plugin, machines, new Shape());
 		this.captcha = plugin.getModule(Captcha.class);
-		this.entry = plugin.getModule(Entry.class);
 		tracker = machines.getInventoryTracker();
 		Shape shape = getShape();
 		shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "upperstair"));
@@ -84,11 +79,7 @@ public class PunchDesignix extends Machine {
 		if (event.getPlayer().isSneaking()) {
 			return false;
 		}
-		User user = getUsers().getUser(event.getPlayer().getUniqueId());
-		if (user != null && (user.getProgression() != ProgressionState.NONE
-				|| entry.isEntering(user))) {
-			openInventory(event.getPlayer(), storage);
-		}
+		openInventory(event.getPlayer(), storage);
 		return true;
 	}
 

@@ -4,13 +4,10 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
@@ -18,8 +15,6 @@ import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Direction;
-import co.sblock.users.User;
-import co.sblock.users.Users;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -29,12 +24,10 @@ import co.sblock.users.Users;
 public class PlaceListener extends SblockListener {
 
 	private final Machines machines;
-	private final Users users;
 
 	public PlaceListener(Sblock plugin) {
 		super(plugin);
 		this.machines = plugin.getModule(Machines.class);
-		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -52,25 +45,6 @@ public class PlaceListener extends SblockListener {
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(Color.BAD + "You decide against fussing with the internals of this machine.");
-		}
-
-		// Server mode placement
-		User user = users.getUser(event.getPlayer().getUniqueId());
-		if (user.isServer()) {
-			if (event.getItemInHand().isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
-				event.setCancelled(true);
-			} else {
-				final int slot = event.getPlayer().getInventory().getHeldItemSlot();
-				final ItemStack placed = event.getItemInHand().clone();
-				final Player player = event.getPlayer();
-				Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
-					@Override
-					public void run() {
-						player.getInventory().setItem(slot, placed);
-						player.updateInventory();
-					}
-				});
-			}
 		}
 
 		// Machine place logic

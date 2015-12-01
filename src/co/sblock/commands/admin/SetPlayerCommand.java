@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.users.User;
-import co.sblock.users.ProgressionState;
 import co.sblock.users.UserAspect;
 import co.sblock.users.UserClass;
 import co.sblock.users.Users;
@@ -55,8 +54,6 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 			user.setMediumPlanet(args[2]);
 		else if(args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream"))
 			user.setDreamPlanet(args[2]);
-		else if(args[1].equals("progression"))
-			user.setProgression(ProgressionState.valueOf(args[2].toUpperCase()));
 		else if (args[1].equals("prevloc")) {
 			user.setPreviousLocation(user.getPlayer().getLocation());
 		} else {
@@ -116,15 +113,6 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 			for (String dream : new String[]{"PROSPIT", "DERSE"}) {
 				if (dream.startsWith(args[2])) {
 					matches.add(dream);
-				}
-			}
-			return matches;
-		}
-		if (args[1].equals("progression") && args.length == 3) {
-			args[2] = args[2].toUpperCase();
-			for (ProgressionState state : ProgressionState.values()) {
-				if (state.name().startsWith(args[2])) {
-					matches.add(state.name());
 				}
 			}
 			return matches;

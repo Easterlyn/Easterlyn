@@ -27,9 +27,6 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.progression.Entry;
-import co.sblock.users.User;
-import co.sblock.users.ProgressionState;
 import co.sblock.utilities.Experience;
 import co.sblock.utilities.InventoryUtils;
 
@@ -46,7 +43,6 @@ public class Alchemiter extends Machine {
 
 	private final Captcha captcha;
 	private final Effects effects;
-	private final Entry entry;
 	private final MachineInventoryTracker tracker;
 	private final ItemStack drop;
 
@@ -54,7 +50,6 @@ public class Alchemiter extends Machine {
 		super(plugin, machines, new Shape());
 		this.captcha = plugin.getModule(Captcha.class);
 		this.effects = plugin.getModule(Effects.class);
-		this.entry = plugin.getModule(Entry.class);
 		this.tracker = machines.getInventoryTracker();
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 1);
@@ -102,12 +97,8 @@ public class Alchemiter extends Machine {
 		if (event.getPlayer().isSneaking()) {
 			return false;
 		}
-		User user = getUsers().getUser(event.getPlayer().getUniqueId());
-		if (user.getProgression() != ProgressionState.NONE || entry.isEntering(user)) {
-			tracker.openVillagerInventory(event.getPlayer(), this,
-					getKey(storage));
-			InventoryUtils.updateVillagerTrades(event.getPlayer(), getExampleRecipes());
-		}
+		tracker.openVillagerInventory(event.getPlayer(), this, getKey(storage));
+		InventoryUtils.updateVillagerTrades(event.getPlayer(), getExampleRecipes());
 		return true;
 	}
 

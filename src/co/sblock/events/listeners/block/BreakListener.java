@@ -13,9 +13,6 @@ import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.micromodules.Spectators;
-import co.sblock.progression.ServerMode;
-import co.sblock.users.User;
-import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -28,17 +25,13 @@ public class BreakListener extends SblockListener {
 
 	private final Effects effects;
 	private final Machines machines;
-	private final ServerMode serverMode;
 	private final Spectators spectators;
-	private final Users users;
 
 	public BreakListener(Sblock plugin) {
 		super(plugin);
 		this.effects = plugin.getModule(Effects.class);
 		this.machines = plugin.getModule(Machines.class);
-		this.serverMode = plugin.getModule(ServerMode.class);
 		this.spectators = plugin.getModule(Spectators.class);
-		this.users = plugin.getModule(Users.class);
 	}
 
 	/**
@@ -57,11 +50,6 @@ public class BreakListener extends SblockListener {
 		Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(event.getBlock());
 		if (pair != null) {
 			event.setCancelled(pair.getLeft().handleBreak(event, pair.getRight()));
-		}
-
-		User user = users.getUser(event.getPlayer().getUniqueId());
-		if (user.isServer()) {
-			event.setCancelled(event.isCancelled() || !serverMode.isWithinRange(user, event.getBlock()));
 		}
 	}
 

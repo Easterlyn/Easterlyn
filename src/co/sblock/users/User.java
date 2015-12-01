@@ -19,22 +19,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.captcha.Captcha;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.ChatMsgs;
@@ -50,10 +46,6 @@ import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.machines.Machines;
-import co.sblock.machines.type.Machine;
-import co.sblock.micromodules.Spectators;
-import co.sblock.progression.ServerMode;
-import co.sblock.utilities.InventoryManager;
 import co.sblock.utilities.PlayerLoader;
 
 import net.md_5.bungee.api.ChatColor;
@@ -70,7 +62,6 @@ public class User {
 	private final Users users;
 	private final ChannelManager manager;
 	private final YamlConfiguration yaml;
-	private Location serverDisableTeleport;
 
 	/* General player data */
 	private final UUID uuid;
@@ -79,7 +70,6 @@ public class User {
 
 	/* Various data Sblock tracks for progression purposes */
 	private final Set<String> programs;
-	private boolean isServer;
 
 	/* Chat data*/
 	private String lastChat;
@@ -111,7 +101,6 @@ public class User {
 		this.currentChannel = currentChannel;
 		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 		this.listening.addAll(listening);
-		this.isServer = false;
 		this.lastChat = new String();
 		this.violationLevel = new AtomicInteger();
 		this.spamWarned = new AtomicBoolean();
@@ -263,24 +252,6 @@ public class User {
 	}
 
 	/**
-	 * Gets the User's game progression.
-	 * 
-	 * @return the ProgressionState
-	 */
-	public ProgressionState getProgression() {
-		return ProgressionState.valueOf(yaml.getString("progression.progression", "NONE"));
-	}
-
-	/**
-	 * Sets the User's game progression.
-	 * 
-	 * @param progression the new ProgressionState
-	 */
-	public void setProgression(ProgressionState progression) {
-		yaml.set("progression.progression", progression.name());
-	}
-
-	/**
 	 * Check if the User can fly.
 	 * 
 	 * @return true if flight should be enabled
@@ -299,7 +270,7 @@ public class User {
 				boolean allowFlight = getPlayer() != null
 						&& (getPlayer().getWorld().getName().equals("Derspit")
 								|| getPlayer().getGameMode() == GameMode.CREATIVE
-								|| getPlayer().getGameMode() == GameMode.SPECTATOR || isServer);
+								|| getPlayer().getGameMode() == GameMode.SPECTATOR);
 				if (getPlayer() != null) {
 					getPlayer().setAllowFlight(allowFlight);
 					getPlayer().setFlying(allowFlight);
@@ -852,87 +823,6 @@ public class User {
 	}
 
 	/**
-	 * Check if the User is in server mode.
-	 * 
-	 * @return true if the User is in server mode
-	 */
-	public boolean isServer() {
-		return this.isServer;
-	}
-
-	public void startServerMode() {
-		if (this.isServer || !this.isOnline()) {
-			return;
-		}
-		Player player = this.getPlayer();
-		if (getClient() == null) {
-			player.sendMessage(Color.BAD + "You must have a client to enter server mode!"
-					+ "+\nAsk someone with " + Color.COMMAND + "/requestclient <player>");
-			return;
-		}
-		if (!Bukkit.getOfflinePlayer(getClient()).isOnline()) {
-			player.sendMessage(Color.BAD + "You should wait for your client before progressing!");
-			return;
-		}
-		User clientUser = users.getUser(getClient());
-		if (!clientUser.getPrograms().contains("SburbClient")) {
-			player.sendMessage(Color.BAD + clientUser.getPlayerName() + " does not have the Sburb Client installed!");
-			return;
-		}
-		Pair<Machine, ConfigurationSection> pair = machines.getComputer(getClient());
-		if (pair == null) {
-			player.sendMessage(Color.BAD + clientUser.getPlayerName() + " has not placed their computer in their house!");
-			return;
-		}
-		Spectators spectators = getPlugin().getModule(Spectators.class);
-		if (spectators.isSpectator(getUUID())) {
-			spectators.removeSpectator(player);
-		}
-		this.serverDisableTeleport = player.getLocation();
-		if (!machines.isByComputer(clientUser.getPlayer(), 25)) {
-			player.teleport(pair.getLeft().getKey(pair.getRight()));
-		} else {
-			player.teleport(clientUser.getPlayer());
-		}
-		this.isServer = true;
-		this.updateFlight();
-		player.setNoDamageTicks(Integer.MAX_VALUE);
-		InventoryManager.storeAndClearInventory(player);
-		player.getInventory().addItem(machines.getMachineByName("Computer").getUniqueDrop());
-		player.getInventory().addItem(machines.getMachineByName("Cruxtruder").getUniqueDrop());
-		player.getInventory().addItem(machines.getMachineByName("PunchDesignix").getUniqueDrop());
-		player.getInventory().addItem(machines.getMachineByName("TotemLathe").getUniqueDrop());
-		player.getInventory().addItem(machines.getMachineByName("Alchemiter").getUniqueDrop());
-		for (Material mat : getPlugin().getModule(ServerMode.class).getApprovedSet()) {
-			player.getInventory().addItem(new ItemStack(mat));
-		}
-		player.sendMessage(Color.GOOD + "Server mode enabled!");
-	}
-
-	public void stopServerMode() {
-		if (!this.isServer) {
-			return;
-		}
-		if (Bukkit.getOfflinePlayer(getClient()).isOnline()) {
-			Player clientPlayer = Bukkit.getPlayer(getClient());
-			for (ItemStack is : getPlayer().getInventory()) {
-				if (Captcha.isPunch(is)) {
-					clientPlayer.getWorld().dropItem(clientPlayer.getLocation(), is).setPickupDelay(0);
-					break;
-				}
-			}
-		}
-		this.isServer = false;
-		this.updateFlight();
-		Player p = this.getPlayer();
-		p.teleport(serverDisableTeleport);
-		p.setFallDistance(0);
-		p.setNoDamageTicks(0);
-		InventoryManager.restoreInventory(p);
-		p.sendMessage(Color.GOOD + "Server program closed!");
-	}
-
-	/**
 	 * Gets the List of all items currently saved in a Player's mail.
 	 * 
 	 * @return the List of ItemStacks
@@ -1121,10 +1011,8 @@ public class User {
 				.append(Color.GOOD).append(", Prev region: ").append(Color.GOOD_EMPHASIS)
 				.append(Region.getRegion(getPreviousLocation().getWorld().getName())).append('\n');
 
-		// Progression: PROGRESSION, Programs: [list]
-		sb.append(Color.GOOD).append("Progression: ").append(Color.GOOD_EMPHASIS)
-				.append(getProgression().name()).append(Color.GOOD)
-				.append(", Programs: ").append(Color.GOOD_EMPHASIS)
+		// Programs: [list]
+		sb.append(Color.GOOD).append(", Programs: ").append(Color.GOOD_EMPHASIS)
 				.append(getPrograms()).append('\n');
 
 		// Server: UUID, Client: UUID

@@ -62,8 +62,6 @@ import co.sblock.micromodules.Spectators;
 import co.sblock.module.Dependencies;
 import co.sblock.module.Dependency;
 import co.sblock.module.Module;
-import co.sblock.progression.Entry;
-import co.sblock.progression.ServerMode;
 import co.sblock.users.Users;
 import co.sblock.utilities.RegexUtils;
 
@@ -113,12 +111,10 @@ public class Sblock extends JavaPlugin {
 
 		addModule(new Effects(this));
 		addModule(new Captcha(this));
-		addModule(new Entry(this));
 		addModule(new Holograms(this));
-		// Machines depends on Captcha, Effects, Entry, Holograms, and Users to construct
+		// Machines depends on Captcha, Effects, Holograms, and Users to construct
 		addModule(new Machines(this));
 
-		addModule(new ServerMode(this));
 
 		addModule(new Meteors(this));
 		addModule(new SleepVote(this));

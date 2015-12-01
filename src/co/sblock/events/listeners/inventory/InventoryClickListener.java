@@ -25,12 +25,9 @@ import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
-import co.sblock.machines.type.Computer;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.computer.EmailWriter;
 import co.sblock.machines.type.computer.Programs;
-import co.sblock.users.User;
-import co.sblock.users.Users;
 import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -44,16 +41,12 @@ public class InventoryClickListener extends SblockListener {
 
 	private final Captcha captcha;
 	private final Machines machines;
-	private final Users users;
-	private final ItemStack computer;
 	private final EmailWriter mail;
 
 	public InventoryClickListener(Sblock plugin) {
 		super(plugin);
 		this.captcha = plugin.getModule(Captcha.class);
 		this.machines = plugin.getModule(Machines.class);
-		this.users = plugin.getModule(Users.class);
-		this.computer = machines.getMachineByName("Computer").getUniqueDrop();
 		this.mail = (EmailWriter) Programs.getProgramByName("EmailWriter");
 	}
 
@@ -220,16 +213,6 @@ public class InventoryClickListener extends SblockListener {
 			return;
 		}
 
-		// Server: Click computer icon -> open computer interface
-		User user = users.getUser(event.getWhoClicked().getUniqueId());
-		if (user.isServer()) {
-			if (computer.isSimilar(event.getCurrentItem())) {
-				// Right click air: Open computer
-				event.setCancelled(true);
-				((Computer) machines.getMachineByName("Computer")).openInventory((Player) event.getWhoClicked());
-			}
-			return;
-		}
 	}
 
 	// add bottom
@@ -241,13 +224,6 @@ public class InventoryClickListener extends SblockListener {
 		// Letters cannot be moved. The lore specifically warns against attempting to.
 		if (mail.isLetter(event.getCurrentItem())) {
 			event.setCurrentItem(null);
-			return;
-		}
-
-		// Cruxite items should not be tradeable.
-		if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta().hasDisplayName()
-				&& event.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
-			event.setCancelled(true);
 			return;
 		}
 
@@ -270,13 +246,6 @@ public class InventoryClickListener extends SblockListener {
 			return;
 		}
 
-		// Server: No picking up computer icon
-		User user = users.getUser(event.getWhoClicked().getUniqueId());
-		if (user.isServer() && computer.isSimilar(event.getCurrentItem())) {
-			event.setCancelled(true);
-			return;
-		}
-
 		// Captcha: attempt to captcha item on cursor
 		captcha.handleCaptcha(event);
 	}
@@ -292,13 +261,6 @@ public class InventoryClickListener extends SblockListener {
 		}
 		if (mail.isLetter(hotbar)) {
 			event.getView().getBottomInventory().setItem(event.getHotbarButton(), null);
-			return;
-		}
-
-		User user = users.getUser(event.getWhoClicked().getUniqueId());
-		if (user.isServer()
-				&& (computer.isSimilar(event.getCurrentItem()) || computer.isSimilar(hotbar))) {
-			event.setCancelled(true);
 			return;
 		}
 

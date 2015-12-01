@@ -13,8 +13,6 @@ import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.Spectators;
-import co.sblock.users.User;
-import co.sblock.users.Users;
 
 /**
  * Listener for PlayerCommandPreprocessEvents.
@@ -26,7 +24,6 @@ public class CommandPreprocessListener extends SblockListener {
 	private final Chat chat;
 	private final Discord discord;
 	private final Spectators spectators;
-	private final Users users;
 	private final SimpleCommandMap map;
 
 	public CommandPreprocessListener(Sblock plugin) {
@@ -34,7 +31,6 @@ public class CommandPreprocessListener extends SblockListener {
 		this.chat = plugin.getModule(Chat.class);
 		this.discord = plugin.getModule(Discord.class);
 		this.spectators = plugin.getModule(Spectators.class);
-		this.users = plugin.getModule(Users.class);
 		map = plugin.getCommandMap();
 	}
 
@@ -70,9 +66,8 @@ public class CommandPreprocessListener extends SblockListener {
 			return;
 		}
 
-		User user = users.getUser(event.getPlayer().getUniqueId());
-		if ((user.isServer() || spectators.isSpectator(event.getPlayer().getUniqueId()))
-				&& (cmd.getName().equals("sethome"))) {
+		if (spectators.isSpectator(event.getPlayer().getUniqueId())
+				&& cmd.getName().equals("sethome")) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(Color.BAD + "You hear a fizzling noise as your spell fails.");
 			return;

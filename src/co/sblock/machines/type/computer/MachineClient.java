@@ -15,15 +15,15 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class SburbClient extends Program {
+public class MachineClient extends Program {
 
 	private final ItemStack icon;
 
-	public SburbClient(Machines machines) {
+	public MachineClient(Machines machines) {
 		super(machines);
 		icon = new ItemStack(Material.WORKBENCH);
 		ItemMeta meta = icon.getItemMeta();
-		meta.setDisplayName(ChatColor.GREEN + "SburbClient");
+		meta.setDisplayName(ChatColor.GREEN + "MachineClient");
 		icon.setItemMeta(meta);
 	}
 
