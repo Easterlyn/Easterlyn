@@ -1121,9 +1121,12 @@ public class User {
 
 	public void handleNameChange() {
 		String name = yaml.getString("name");
-		if (name != null && !name.equalsIgnoreCase(Bukkit.getOfflinePlayer(uuid).getName())) {
+		OfflinePlayer offline = getOfflinePlayer();
+		if (name != null && !name.equalsIgnoreCase(offline.getName())) {
 			yaml.set("previousname", name);
-			Bukkit.broadcastMessage(Color.HAL + Bukkit.getOfflinePlayer(uuid).getName() + " was previously known as " + name);
+			String previous = offline.getName() + " was previously known as " + name;
+			Bukkit.broadcastMessage(Color.HAL + previous);
+			getPlugin().getModule(Discord.class).postMessage(offline.getName(), previous, true);
 		}
 	}
 }

@@ -63,6 +63,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class Discord extends Module {
 
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	private final Pattern toEscape = Pattern.compile("([\\_~*])");
 	private final DiscordAPI discord;
 	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private final Map<String, DiscordCommand> commands;
@@ -226,8 +227,9 @@ public class Discord extends Module {
 		if (!isEnabled()) {
 			return;
 		}
+		// TODO allow formatting codes in any chat? Could support markdown rather than &codes.
 		name = ChatColor.stripColor(name);
-		message = ChatColor.stripColor(message);
+		message = ChatColor.stripColor(toEscape.matcher(message).replaceAll("\\\\$1"));
 		for (String channel : channels) {
 			queue.add(new ImmutableTriple<>(channel, name, message));
 		}

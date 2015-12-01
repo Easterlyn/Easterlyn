@@ -90,7 +90,7 @@ public class Message {
 		// Names will only contain underscores, messages may contain additional formatting.
 		// In the future we may allow formatting for all users.
 		return String.format(thirdPerson ? DISCORD_FORMAT_THIRD : DISCORD_FORMAT,
-				name.replace("_", "\\_"), unformattedMessage.replaceAll("([\\_~*])", "\\\\$1"));
+				name, unformattedMessage);
 	}
 
 	public void setConsoleFormat(String consoleFormat) {
