@@ -123,7 +123,7 @@ public abstract class Machine {
 	 * @return the Location
 	 */
 	public Location getKey(ConfigurationSection storage) {
-		return Machines.locFromString(storage.getCurrentPath());
+		return Machines.locFromPath(storage.getCurrentPath());
 	}
 
 	/**

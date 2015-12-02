@@ -5,9 +5,10 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,7 +18,9 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,6 +35,7 @@ import co.sblock.Sblock;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.module.Module;
+import co.sblock.users.Region;
 
 /**
  * A Module for handling Block structures with special functions.
@@ -80,7 +84,7 @@ public class Machines extends Module {
 
 	@Override
 	protected void onEnable() {
-		this.loadAllMachines();
+		this.loadMachines();
 
 		new BukkitRunnable() {
 			@Override
@@ -107,11 +111,13 @@ public class Machines extends Module {
 	 * 
 	 * @return the Machine created
 	 */
-	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type, UUID owner, Direction direction) {
-		if (!byName.containsKey(type)) {
+	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type,
+			UUID owner, Direction direction) {
+		if (!byName.containsKey(type)
+				|| location.getWorld().getName().equals(Region.DERSE.getWorldName())) {
 			return null;
 		}
-		ConfigurationSection section = storage.createSection(stringFromLoc(location));
+		ConfigurationSection section = storage.createSection(pathFromLoc(location));
 		section.set("type", type);
 		section.set("owner", owner.toString());
 		section.set("direction", direction.name());
@@ -125,7 +131,7 @@ public class Machines extends Module {
 	 * @param section the ConfigurationSection
 	 * @return the Machine type loaded
 	 */
-	public Pair<Machine, ConfigurationSection> loadMachine(Location key, ConfigurationSection section) {
+	private Pair<Machine, ConfigurationSection> loadMachine(Location key, ConfigurationSection section) {
 		if (!byName.containsKey(section.getString("type"))) {
 			return null;
 		}
@@ -137,32 +143,94 @@ public class Machines extends Module {
 		return new ImmutablePair<>(type, section);
 	}
 
-	void addMachineBlock(Location key, Location block) {
-		machineBlocks.put(key, block);
+	public void loadChunkMachines(Chunk chunk) {
+		String worldName = chunk.getWorld().getName();
+		if (!storage.isSet(worldName) || worldName.equals(Region.DERSE.getWorldName())) {
+			// No machines in Derspit.
+			return;
+		}
+		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
+				.append(chunk.getX()).append('_').append(chunk.getZ()).toString();
+		if (!storage.isConfigurationSection(path)) {
+			return;
+		}
+		ConfigurationSection chunkSection = storage.getConfigurationSection(path);
+		Set<String> chunkKeys = chunkSection.getKeys(false);
+		for (Iterator<String> iterator = chunkKeys.iterator(); iterator.hasNext();) {
+			String xyz = iterator.next();
+			String[] split = xyz.split("_");
+			try {
+				Location key = new Location(chunk.getWorld(), Integer.valueOf(split[0]),
+						Integer.valueOf(split[1]), Integer.valueOf(split[2]));
+				Pair<Machine, ConfigurationSection> machine = loadMachine(key, chunkSection.getConfigurationSection(xyz));
+				if (machine == null) {
+					iterator.remove();
+				}
+			} catch (NumberFormatException e) {
+				getLogger().warning("Coordinates cannot be parsed from " + Arrays.toString(split));
+			}
+		}
+		if (chunkKeys.isEmpty()) {
+			storage.set(path, null);
+		}
+	}
+
+	public void unloadChunkMachines(Chunk chunk) {
+		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
+				.append(chunk.getX()).append('_').append(chunk.getZ()).toString();
+		ConfigurationSection chunkSection = storage.getConfigurationSection(path);
+		if (chunkSection == null) {
+			return;
+		}
+		Set<String> chunkKeys = chunkSection.getKeys(false);
+		for (Iterator<String> iterator = chunkKeys.iterator(); iterator.hasNext();) {
+			String xyz = iterator.next();
+			String[] split = xyz.split("_");
+			try {
+				Location key = new Location(chunk.getWorld(), Integer.valueOf(split[0]),
+						Integer.valueOf(split[1]), Integer.valueOf(split[2]));
+				Pair<Machine, ConfigurationSection> machine = getMachineByLocation(key);
+				if (machine == null) {
+					iterator.remove();
+				}
+				machineBlocks.removeAll(key);
+			} catch (NumberFormatException e) {
+				getLogger().warning("Coordinates cannot be parsed from " + Arrays.toString(split));
+			}
+		}
+		if (chunkKeys.isEmpty()) {
+			storage.set(path, null);
+		}
+	}
+
+	/**
+	 * Delete all Machines stored in a Chunk. Does not unload them if loaded.
+	 * <p>
+	 * This method is purely for use in the RegioneratorChunkDeleteListener, chunks (and, therefore,
+	 * the machines in them) should not be loaded.
+	 * 
+	 * @param world the World
+	 * @param chunkX the Chunk X
+	 * @param chunkZ the Chunk Z
+	 */
+	public void deleteChunkMachines(World world, int chunkX, int chunkZ) {
+		storage.set(new StringBuilder(world.getName()).append('.').append(chunkX).append('_')
+				.append(chunkZ).toString(), null);
 	}
 
 	/**
 	 * Loads all Machine data from file.
 	 */
-	public void loadAllMachines() {
-		File file;
-		try {
-			file = new File(getPlugin().getDataFolder(), "Machines.yml");
-			if (!file.exists()) {
-				file.createNewFile();
-				storage = new YamlConfiguration();
-				return;
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load machine data!", e);
+	private void loadMachines() {
+		File file = new File(getPlugin().getDataFolder(), "machines.yml");
+		if (file.exists()) {
+			storage = YamlConfiguration.loadConfiguration(file);
+		} else {
+			storage = new YamlConfiguration();
 		}
-		storage = YamlConfiguration.loadConfiguration(file);
-		for (String machineLocation : storage.getKeys(false)) {
-			try {
-				loadMachine(locFromString(machineLocation), storage.getConfigurationSection(machineLocation));
-			} catch (Exception e) {
-				getLogger().warning("Unable to load machine for section " + machineLocation);
-				e.printStackTrace();
+		for (World world : Bukkit.getWorlds()) {
+			for (Chunk chunk : world.getLoadedChunks()) {
+				loadChunkMachines(chunk);
 			}
 		}
 	}
@@ -170,15 +238,15 @@ public class Machines extends Module {
 	/**
 	 * Saves all Machine data to file.
 	 */
-	public void saveAllMachines() {
+	private void saveAllMachines() {
 		File file;
 		try {
-			file = new File(getPlugin().getDataFolder(), "Machines.yml");
+			file = new File(getPlugin().getDataFolder(), "machines.yml");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to load machine data!", e);
+			throw new RuntimeException("Unable to create file saving machine data!", e);
 		}
 		try {
 			storage.save(file);
@@ -236,7 +304,7 @@ public class Machines extends Module {
 			return null;
 		}
 
-		ConfigurationSection section = storage.getConfigurationSection(stringFromLoc(key));
+		ConfigurationSection section = storage.getConfigurationSection(pathFromLoc(key));
 		if (section == null) {
 			return null;
 		}
@@ -293,7 +361,7 @@ public class Machines extends Module {
 		if (key == null) {
 			return;
 		}
-		String path = stringFromLoc(key);
+		String path = pathFromLoc(key);
 		ConfigurationSection section = storage.getConfigurationSection(path);
 		if (section == null) {
 			return;
@@ -362,59 +430,6 @@ public class Machines extends Module {
 	}
 
 	/**
-	 * Returns a Set of Machines within a specified radius. If no Machines match the specified
-	 * conditions, an empty Set is returned.
-	 * 
-	 * @param current the current Location (presumably of a Player)
-	 * @param searchDistance the radius from current that is acceptable
-	 * @param keyRequired true if the key Location must be within the radius. Less intensive search.
-	 * @param mt the MachineType to search for
-	 * 
-	 * @return all machines of the correct type within the specified radius
-	 */
-	public Set<ConfigurationSection> getMachinesInProximity(Location current, int searchDistance,
-			String type, boolean keyRequired) {
-		Set<ConfigurationSection> machines = new HashSet<>();
-		if (type != null) {
-			if (!byName.containsKey(type)) {
-				return machines;
-			}
-		}
-		// distance^2 once > blocks to check * root(distance from current)
-		searchDistance = (int) Math.pow(searchDistance, 2);
-		for (Location location : machineBlocks.keySet()) {
-			if (location.getWorld().equals(current.getWorld())
-					&& current.distanceSquared(location) <= searchDistance) {
-				Pair<Machine, ConfigurationSection> pair = this.getMachineByLocation(location);
-				if (type == null || type.equals(pair.getRight().getString("type"))) {
-					machines.add(pair.getRight());
-				}
-			}
-		}
-		return machines;
-	}
-
-	/**
-	 * Gets all machines with the Player's UUID for data.
-	 * 
-	 * @param playerID the Player's UUID
-	 * 
-	 * @return the Set of Machines
-	 */
-	public Set<Pair<Machine, ConfigurationSection>> getMachines(UUID playerID) {
-		HashSet<Pair<Machine, ConfigurationSection>> machines = new HashSet<>();
-		for (String path : storage.getKeys(false)) {
-			if (!"Computer".equals(storage.getString(path + ".type"))) {
-				continue;
-			}
-			if (playerID.toString().equals(storage.getString(path + ".owner"))) {
-				machines.add(new ImmutablePair<Machine, ConfigurationSection>(byName.get("Computer"), storage));
-			}
-		}
-		return machines;
-	}
-
-	/**
 	 * Gets a Map of instances of Machines stored by name.
 	 * 
 	 * @return the Map of all Machine instances stored by name
@@ -447,14 +462,16 @@ public class Machines extends Module {
 		return "Sblock Machines";
 	}
 
-	public static String stringFromLoc(Location location) {
-		return new StringBuilder(location.getWorld().getName()).append(';')
-				.append(location.getBlockX()).append(';').append(location.getBlockY()).append(';')
-				.append(location.getBlockZ()).toString();
+	public static String pathFromLoc(Location location) {
+		return new StringBuilder(location.getWorld().getName()).append('.')
+				.append(location.getBlockX() >> 4).append('_').append(location.getBlockZ() >> 4)
+				.append('.').append(location.getBlockX()).append('_').append(location.getBlockY())
+				.append('_').append(location.getBlockZ()).toString();
 	}
 
-	public static Location locFromString(String string) {
-		String[] split = string.split(";");
-		return new Location(Bukkit.getWorld(split[0]), Integer.valueOf(split[1]), Integer.valueOf(split[2]), Integer.valueOf(split[3]));
+	public static Location locFromPath(String string) {
+		String[] pathSplit = string.split("\\.");
+		String[] xyz = pathSplit[2].split("_");
+		return new Location(Bukkit.getWorld(pathSplit[0]), Integer.valueOf(xyz[0]), Integer.valueOf(xyz[1]), Integer.valueOf(xyz[2]));
 	}
 }
