@@ -24,6 +24,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.reflections.Reflections;
@@ -74,6 +76,14 @@ public class Machines extends Module {
 					continue;
 				}
 				byName.put(type.getSimpleName(), machine);
+				ItemStack item = machine.getUniqueDrop();
+				if (item == null || !item.hasItemMeta()) {
+					continue;
+				}
+				ItemMeta meta = item.getItemMeta();
+				if (meta.hasDisplayName()) {
+					byName.put(meta.getDisplayName(), machine);
+				}
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
 					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				// Improperly set up Machine

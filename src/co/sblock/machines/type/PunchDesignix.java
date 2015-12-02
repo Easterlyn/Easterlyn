@@ -122,10 +122,13 @@ public class PunchDesignix extends Machine {
 				crafts -= InventoryUtils.getAddFailures(event.getWhoClicked().getInventory().addItem(result));
 			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR
 					|| (event.getCursor().isSimilar(result)
-							&& event.getCursor().getAmount() + result.getAmount()
+							&& (crafts = event.getCursor().getAmount() + result.getAmount())
 							<= event.getCursor().getMaxStackSize())) {
 				// Single click. Attempting to pick up a single item (even if right click)
-				crafts = 1;
+				// If crafts is 0, it was not set by similar result check
+				if (crafts == 0) {
+					crafts = 1;
+				}
 
 				// Set cursor to single stack
 				event.setCursor(result);

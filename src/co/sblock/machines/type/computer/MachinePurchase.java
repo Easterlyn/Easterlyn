@@ -19,8 +19,14 @@ import co.sblock.utilities.Experience;
  */
 public class MachinePurchase extends Program {
 
+	private final ItemStack icon;
+
 	public MachinePurchase(Machines machines) {
 		super(machines);
+		icon = new ItemStack(Material.DIRT);
+		ItemMeta meta = icon.getItemMeta();
+		meta.setDisplayName(Color.GOOD + "Purchase");
+		icon.setItemMeta(meta);
 	}
 
 	@Override
@@ -33,8 +39,12 @@ public class MachinePurchase extends Program {
 		if (!meta.hasLore()) {
 			return;
 		}
-		Machine machine = getMachines().getMachineByName(meta.getLore().get(0).substring(2));
+		Machine machine = getMachines().getMachineByName(meta.getLore().get(0));
 		if (machine == null) {
+			return;
+		}
+		if (Experience.getExp(player) < machine.getCost()) {
+			player.sendMessage(Color.BAD + "You don't have enough grist!");
 			return;
 		}
 		Experience.changeExp(player, - machine.getCost());
@@ -43,7 +53,7 @@ public class MachinePurchase extends Program {
 
 	@Override
 	public ItemStack getIcon() {
-		return new ItemStack(Material.DIRT);
+		return icon;
 	}
 
 	public ItemStack getIconForMachine(Machine machine) {

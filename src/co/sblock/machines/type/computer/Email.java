@@ -73,7 +73,7 @@ public class Email extends Program {
 
 	@Override
 	public boolean isDefault() {
-		return true;
+		return false;
 	}
 
 	@Override

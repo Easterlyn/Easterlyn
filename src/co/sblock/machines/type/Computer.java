@@ -68,13 +68,6 @@ public class Computer extends Machine implements InventoryHolder {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return true;
 		}
-		if (!event.getPlayer().getUniqueId().equals(getOwner(storage))) {
-			if (event.getPlayer().hasPermission("sblock.denizen")) {
-				event.getPlayer().sendMessage("Allowing admin override for interaction with Computer.");
-			} else {
-				return true;
-			}
-		}
 		if (event.getMaterial().name().contains("RECORD")) { // prevent non-program Icons from being registered
 			event.setCancelled(true);
 			Program program = Programs.getProgramByInstaller(event.getItem());
@@ -90,7 +83,7 @@ public class Computer extends Machine implements InventoryHolder {
 			}
 		}
 		if (event.getPlayer().isSneaking()) {
-			return false;
+			return event.isCancelled();
 		}
 		openInventory(event.getPlayer());
 		return true;

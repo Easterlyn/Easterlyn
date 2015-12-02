@@ -422,10 +422,11 @@ public class Captcha extends Module {
 		if (item == null || item.getType() == Material.AIR) {
 			return false;
 		}
-		if (item.isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
-			// Computers can (and should) be alchemized.
-			return true;
-		}
+		// TODO lorecards and the active Computer effect
+//		if (item.isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
+//			// Computers can (and should) be alchemized.
+//			return true;
+//		}
 		for (ItemStack is : InventoryUtils.getUniqueItems(getPlugin())) {
 			if (is.isSimilar(item)) {
 				return false;

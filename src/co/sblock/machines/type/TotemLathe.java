@@ -2,6 +2,9 @@ package co.sblock.machines.type;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,6 +35,8 @@ import net.md_5.bungee.api.ChatColor;
  * @author Dublek, Jikoo
  */
 public class TotemLathe extends Machine	{
+
+	private static Triple<ItemStack, ItemStack, ItemStack> exampleRecipes;
 
 	private final MachineInventoryTracker tracker;
 	private final ItemStack drop;
@@ -90,6 +95,7 @@ public class TotemLathe extends Machine	{
 	 */
 	public void openInventory(Player player, ConfigurationSection storage) {
 		tracker.openVillagerInventory(player, this, getKey(storage));
+		InventoryUtils.updateVillagerTrades(player, getExampleRecipes());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -170,7 +176,9 @@ public class TotemLathe extends Machine	{
 				}
 				// Set items
 				open.setItem(2, result);
-				player.updateInventory();
+				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
+						new ImmutableTriple<>(open.getItem(0), open.getItem(1), result));
+				InventoryUtils.updateWindowSlot(player, 2);
 			}
 		});
 	}
@@ -179,4 +187,39 @@ public class TotemLathe extends Machine	{
 	public ItemStack getUniqueDrop() {
 		return drop;
 	}
+
+	/**
+	 * Singleton for getting usage help ItemStacks.
+	 */
+	public static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
+		if (exampleRecipes == null) {
+			exampleRecipes = createExampleRecipes();
+		}
+		return exampleRecipes;
+	}
+
+	/**
+	 * Creates the ItemStacks used in displaying usage help.
+	 * 
+	 * @return
+	 */
+	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
+		ItemStack is1 = new ItemStack(Material.NETHER_BRICK_ITEM);
+		ItemMeta im = is1.getItemMeta();
+		im.setDisplayName(ChatColor.GOLD + "Cruxite Totem");
+		is1.setItemMeta(im);
+
+		ItemStack is2 = new ItemStack(Material.BOOK);
+		im = is2.getItemMeta();
+		im.setDisplayName(ChatColor.GOLD + "Punchcard");
+		is2.setItemMeta(im);
+
+		ItemStack is3 = new ItemStack(Material.BOOK);
+		im = is3.getItemMeta();
+		im.setDisplayName(ChatColor.GOLD + "Carved Totem");
+		is3.setItemMeta(im);
+
+		return new ImmutableTriple<>(is1, is2, is3);
+	}
+
 }
