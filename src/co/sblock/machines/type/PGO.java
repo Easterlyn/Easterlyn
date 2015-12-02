@@ -30,6 +30,8 @@ public class PGO extends Machine {
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Perfectly Generic Object");
 		drop.setItemMeta(meta);
+
+		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
 	}
 
 	@Override
@@ -108,7 +110,6 @@ public class PGO extends Machine {
 		case IRON_FENCE:
 		case IRON_ORE:
 		case JACK_O_LANTERN:
-		case JUKEBOX:
 		case JUNGLE_WOOD_STAIRS:
 		case LAPIS_BLOCK:
 		case LAPIS_ORE:
@@ -123,7 +124,6 @@ public class PGO extends Machine {
 		case NETHER_BRICK:
 		case NETHER_BRICK_STAIRS:
 		case NETHER_FENCE:
-		case NOTE_BLOCK:
 		case OBSIDIAN:
 		case PACKED_ICE:
 		case PRISMARINE:
@@ -153,7 +153,6 @@ public class PGO extends Machine {
 		case STONE_SLAB2:
 		case THIN_GLASS:
 		case TNT:
-		case TRIPWIRE:
 		case WEB:
 		case WOOD:
 		case WOOD_DOUBLE_STEP:

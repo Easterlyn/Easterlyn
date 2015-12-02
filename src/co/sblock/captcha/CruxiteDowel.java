@@ -13,7 +13,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Repairable;
 
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.Effect;
@@ -27,7 +26,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class CruxiteDowel {
 
-	private static HashMap<String, Integer> grist;
+	private static HashMap<Material, Integer> grist;
 	private static final ItemStack DOWEL_ITEM;
 
 	static {
@@ -65,7 +64,7 @@ public class CruxiteDowel {
 	}
 
 	public static int expCost(Effects effects, ItemStack toCreate) {
-		int cost = getGrist().get(toCreate.getType().name());
+		int cost = getGrist().get(toCreate.getType());
 		if (Captcha.isCaptcha(toCreate)) {
 			cost = Integer.MAX_VALUE;
 		}
@@ -75,17 +74,21 @@ public class CruxiteDowel {
 		}
 
 		for (Entry<Enchantment, Integer> entry : toCreate.getEnchantments().entrySet()) {
+			// Note: All level values are from 1.7
 			// (16 - weight) * level * 20 seems to be a good rate.
 			// Sharpness 5: 6 * 5 * 20 = 300 exp, 0-26
 			// silk touch 1: 15 * 1 * 20 = 300 exp
 			// fortune 3: 14 * 3 * 20 = 840 exp, 0-30
-			cost += (16 - getWeight(entry.getKey())) * entry.getValue() * 20;
+			// Rebalanced to *40, removed 2x multiplier from final cost
+			cost += (16 - getWeight(entry.getKey())) * entry.getValue() * 40;
+			if (toCreate.getType().getMaxDurability() > 0) {
+				cost *= 4;
+			}
 		}
 
 		if (toCreate.getItemMeta().hasDisplayName()) {
-			// Naming an unenchanted item in an anvil costs 5 levels.
-			// 0-5 is 85 exp.
-			cost += 85;
+			// Naming an unenchanted item in an anvil costs 1 additional level in 1.8
+			cost += 15;
 		}
 
 		int effectCost = 0;
@@ -93,19 +96,17 @@ public class CruxiteDowel {
 			effectCost += effect.getKey().getCost() * effect.getValue();
 		}
 		// if item contains special lore and doesn't need repair, raise price
-		if (!(toCreate.getItemMeta() instanceof Repairable)) {
+		if (toCreate.getType().getMaxDurability() > 0) {
 			effectCost *= 4;
 		}
 		cost += effectCost;
 
-		// 2 exp/boondollar seems reasonable.
-		// Puts a stack of cobble at lvl 0-13, nether star at 0-42.
-		cost *= 2 * toCreate.getAmount();
+		cost *= toCreate.getAmount();
 
 		return cost;
 	}
 
-	public static HashMap<String, Integer> getGrist() {
+	public static HashMap<Material, Integer> getGrist() {
 		if (grist == null) {
 			grist = createBaseGrist();
 			fillFromRecipes();
@@ -113,12 +114,13 @@ public class CruxiteDowel {
 		return grist;
 	}
 
-	private static HashMap<String, Integer> createBaseGrist() {
-		HashMap<String, Integer> materialValues = new HashMap<>();
+	private static HashMap<Material, Integer> createBaseGrist() {
+		HashMap<Material, Integer> materialValues = new HashMap<>();
 
-		for (Material m : Material.values()) {
-			switch(m) {
+		for (Material material : Material.values()) {
+			switch(material) {
 			case CLAY_BALL:
+			case COOKIE:
 			case DEAD_BUSH:
 			case DIRT:
 			case GRAVEL:
@@ -129,7 +131,7 @@ public class CruxiteDowel {
 			case SAND:
 			case SEEDS:
 			case SNOW_BALL:
-				materialValues.put(m.name(), 1);
+				materialValues.put(material, 1);
 				break;
 			case CACTUS:
 			case CARROT_ITEM:
@@ -145,7 +147,7 @@ public class CruxiteDowel {
 			case WHEAT:
 			case WATER_LILY:
 			case YELLOW_FLOWER:
-				materialValues.put(m.name(), 2);
+				materialValues.put(material, 2);
 				break;
 			case BROWN_MUSHROOM:
 			case NETHERRACK:
@@ -154,25 +156,26 @@ public class CruxiteDowel {
 			case POTATO_ITEM:
 			case ROTTEN_FLESH:
 			case STONE:
-				materialValues.put(m.name(), 3);
+				materialValues.put(material, 3);
 				break;
 			case ARROW:
 			case DOUBLE_PLANT:
 			case FEATHER:
 			case RAW_CHICKEN:
-				materialValues.put(m.name(), 4);
+				materialValues.put(material, 4);
 				break;
 			case CLAY_BRICK:
 			case FLINT:
 			case RABBIT:
 			case RAW_FISH:
 			case WOOL:
-				materialValues.put(m.name(), 5);
+				materialValues.put(material, 5);
 				break;
 			case BAKED_POTATO:
 			case EGG:
 			case NETHER_BRICK:
-				materialValues.put(m.name(), 6);
+			case PUMPKIN:
+				materialValues.put(material, 6);
 				break;
 			case COOKED_CHICKEN:
 			case LOG:
@@ -181,13 +184,13 @@ public class CruxiteDowel {
 			case RAW_BEEF:
 			case REDSTONE:
 			case STRING:
-				materialValues.put(m.name(), 8);
+				materialValues.put(material, 8);
 				break;
 			case COOKED_FISH:
 			case NETHER_WARTS:
 			case NETHER_STALK: // Same thing as warts in 1.8 inventories
 			case PRISMARINE_SHARD:
-				materialValues.put(m.name(), 9);
+				materialValues.put(material, 9);
 				break;
 			case ENDER_STONE:
 			case GLOWSTONE_DUST:
@@ -198,63 +201,62 @@ public class CruxiteDowel {
 			case PORK:
 			case SLIME_BALL:
 			case STAINED_GLASS:
-				materialValues.put(m.name(), 10);
+				materialValues.put(material, 10);
 				break;
 			case APPLE:
 			case BONE:
 			case COAL:
 			case COOKED_BEEF:
 			case GOLD_NUGGET:
-			case PUMPKIN:
 			case RABBIT_FOOT:
 			case SPIDER_EYE:
-				materialValues.put(m.name(), 12);
+				materialValues.put(material, 12);
 				break;
 			case STAINED_CLAY:
-				materialValues.put(m.name(), 13);
+				materialValues.put(material, 13);
 				break;
 			case GRILLED_PORK:
-				materialValues.put(m.name(), 14);
+				materialValues.put(material, 14);
 				break;
 			case SAPLING:
 			case SADDLE:
-				materialValues.put(m.name(), 16);
+				materialValues.put(material, 16);
 				break;
 			case SULPHUR:
 			case MAP: // Not crafted, right click
 			case MYCEL:
-				materialValues.put(m.name(), 20);
+				materialValues.put(material, 20);
 				break;
 			case ENCHANTED_BOOK:
-				materialValues.put(m.name(), 25);
+				materialValues.put(material, 25);
 				break;
 			case PACKED_ICE:
-				materialValues.put(m.name(), 28);
+				materialValues.put(material, 28);
 				break;
 			case BLAZE_ROD:
 			case GRASS:
-				materialValues.put(m.name(), 30);
+				materialValues.put(material, 30);
 				break;
 			case BANNER:
 			case GHAST_TEAR:
 			case PRISMARINE_CRYSTALS:
-				materialValues.put(m.name(), 35);
+				materialValues.put(material, 35);
 				break;
 			case QUARTZ:
-				materialValues.put(m.name(), 37);
+				materialValues.put(material, 37);
 				break;
 			case IRON_INGOT:
-				materialValues.put(m.name(), 41);
+				materialValues.put(material, 41);
 				break;
 			case COAL_ORE:
 			case QUARTZ_ORE:
-				materialValues.put(m.name(), 44);
+				materialValues.put(material, 44);
 				break;
 			case GOLD_RECORD:
 			case GREEN_RECORD:
 			case IRON_ORE:
 			case POTION: // Flat high price to account for regen etc.
-				materialValues.put(m.name(), 50);
+				materialValues.put(material, 50);
 				break;
 			case RECORD_10:
 			case RECORD_11:
@@ -266,60 +268,61 @@ public class CruxiteDowel {
 			case RECORD_7:
 			case RECORD_8:
 			case RECORD_9:
-				materialValues.put(m.name(), 70);
+				materialValues.put(material, 70);
 				break;
 			case PISTON_BASE:
 			case OBSIDIAN:
 			case REDSTONE_ORE:
-				materialValues.put(m.name(), 81);
+				materialValues.put(material, 81);
 				break;
 			case ENDER_PEARL:
 			case PISTON_STICKY_BASE:
-				materialValues.put(m.name(), 90);
+				materialValues.put(material, 90);
 				break;
 			case GOLD_INGOT:
-				materialValues.put(m.name(), 108);
+				materialValues.put(material, 108);
 				break;
 			case GOLD_ORE:
 			case LAVA_BUCKET:
 			case MILK_BUCKET:
 			case WATER_BUCKET:
 			case WEB:
-				materialValues.put(m.name(), 138);
+				materialValues.put(material, 138);
 				break;
 			case DIAMOND:
-				materialValues.put(m.name(), 167);
+				materialValues.put(material, 167);
 				break;
 			case DIAMOND_ORE:
-				materialValues.put(m.name(), 187);
+				materialValues.put(material, 187);
 				break;
 			case IRON_BARDING:
-				materialValues.put(m.name(), 261);
+				materialValues.put(material, 261);
 				break;
 			case NAME_TAG:
-				materialValues.put(m.name(), 405);
+				materialValues.put(material, 405);
 				break;
 			case CHAINMAIL_BOOTS:
-				materialValues.put(m.name(), 600);
+				materialValues.put(material, 600);
 				break;
 			case GOLD_BARDING:
-				materialValues.put(m.name(), 663);
+				materialValues.put(material, 663);
 				break;
 			case CHAINMAIL_HELMET:
-				materialValues.put(m.name(), 750);
+				materialValues.put(material, 750);
 				break;
 			case DIAMOND_BARDING:
-				materialValues.put(m.name(), 1000);
+				materialValues.put(material, 1000);
 				break;
 			case CHAINMAIL_LEGGINGS:
-				materialValues.put(m.name(), 1050);
+				materialValues.put(material, 1050);
 				break;
 			case CHAINMAIL_CHESTPLATE:
-				materialValues.put(m.name(), 1200);
+				materialValues.put(material, 1200);
 				break;
-			case DRAGON_EGG:
 			case NETHER_STAR:
-				materialValues.put(m.name(), 16000);
+				materialValues.put(material, 10000);
+			case DRAGON_EGG:
+				materialValues.put(material, 32000);
 				break;
 			// Unobtainable, don't bother searching recipes
 			case AIR:
@@ -363,7 +366,7 @@ public class CruxiteDowel {
 			case STATIONARY_WATER:
 			case WATER:
 			case WRITTEN_BOOK: // Can't be captcha'd
-				materialValues.put(m.name(), Integer.MAX_VALUE);
+				materialValues.put(material, Integer.MAX_VALUE);
 			default:
 				break;
 			}
@@ -372,17 +375,21 @@ public class CruxiteDowel {
 	}
 
 	private static void fillFromRecipes() {
-		for (Material m : Material.values()) {
-			grist.put(m.name(), getRecipeCost(m));
+		for (Material material : Material.values()) {
+			grist.put(material, getRecipeCost(material));
 		}
 	}
 
-	private static int getRecipeCost(Material m) {
-		if (grist.containsKey(m.name())) {
-			return grist.get(m.name());
+	private static int getRecipeCost(Material material) {
+		if (grist.containsKey(material)) {
+			return grist.get(material);
 		}
 		int minimum = Integer.MAX_VALUE;
-		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(m))) {
+		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(material))) {
+			int amount = r.getResult().getAmount();
+			if (amount < 1) {
+				continue;
+			}
 			int newMin;
 			if (r instanceof FurnaceRecipe) {
 				newMin = 2 + getRecipeCost(((FurnaceRecipe) r).getInput().getType());
@@ -420,29 +427,33 @@ public class CruxiteDowel {
 				}
 			} else {
 				// Recipe is injected custom recipe
-				newMin = Integer.MAX_VALUE;
+				continue;
 			}
+			if (newMin == Integer.MAX_VALUE) {
+				continue;
+			}
+			newMin /= amount;
 			if (newMin < minimum) {
 				minimum = newMin;
 			}
 		}
-		return minimum;
+		return minimum < 1 ? 1 : minimum;
 	}
 
-	public static int getWeight(Enchantment e) {
-		if (e == Enchantment.PROTECTION_ENVIRONMENTAL || e == Enchantment.DAMAGE_ALL
-				|| e == Enchantment.DIG_SPEED || e == Enchantment.ARROW_DAMAGE) {
+	public static int getWeight(Enchantment enchantment) {
+		if (enchantment.equals(Enchantment.PROTECTION_ENVIRONMENTAL) || enchantment.equals(Enchantment.DAMAGE_ALL)
+				|| enchantment.equals(Enchantment.DIG_SPEED) || enchantment.equals(Enchantment.ARROW_DAMAGE)) {
 			return 10;
 		}
-		if (e == Enchantment.WATER_WORKER || e == Enchantment.PROTECTION_EXPLOSIONS
-				|| e == Enchantment.OXYGEN || e == Enchantment.FIRE_ASPECT
-				|| e == Enchantment.LOOT_BONUS_MOBS || e == Enchantment.LOOT_BONUS_BLOCKS
-				|| e == Enchantment.ARROW_FIRE || e == Enchantment.ARROW_KNOCKBACK
-				|| e == Enchantment.DEPTH_STRIDER) {
+		if (enchantment.equals(Enchantment.WATER_WORKER) || enchantment.equals(Enchantment.PROTECTION_EXPLOSIONS)
+				|| enchantment.equals(Enchantment.OXYGEN) || enchantment.equals(Enchantment.FIRE_ASPECT)
+				|| enchantment.equals(Enchantment.LOOT_BONUS_MOBS) || enchantment.equals(Enchantment.LOOT_BONUS_BLOCKS)
+				|| enchantment.equals(Enchantment.ARROW_FIRE) || enchantment.equals(Enchantment.ARROW_KNOCKBACK)
+				|| enchantment.equals(Enchantment.DEPTH_STRIDER)) {
 			return 2;
 		}
-		if (e == Enchantment.THORNS || e == Enchantment.SILK_TOUCH
-				|| e == Enchantment.ARROW_INFINITE) {
+		if (enchantment.equals(Enchantment.THORNS) || enchantment.equals(Enchantment.SILK_TOUCH)
+				|| enchantment.equals(Enchantment.ARROW_INFINITE)) {
 			return 1;
 		}
 		return 5;

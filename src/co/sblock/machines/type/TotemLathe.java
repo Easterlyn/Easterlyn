@@ -214,7 +214,7 @@ public class TotemLathe extends Machine	{
 		im.setDisplayName(ChatColor.GOLD + "Punchcard");
 		is2.setItemMeta(im);
 
-		ItemStack is3 = new ItemStack(Material.BOOK);
+		ItemStack is3 = new ItemStack(Material.NETHER_BRICK_ITEM);
 		im = is3.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Carved Totem");
 		is3.setItemMeta(im);

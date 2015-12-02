@@ -21,6 +21,7 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
+import co.sblock.chat.Color;
 import co.sblock.effects.Effects;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.Machines;
@@ -44,7 +45,7 @@ public class Alchemiter extends Machine {
 	private final Captcha captcha;
 	private final Effects effects;
 	private final MachineInventoryTracker tracker;
-	private final ItemStack drop;
+	private final ItemStack drop, barrier;
 
 	public Alchemiter(Sblock plugin, Machines machines) {
 		super(plugin, machines, new Shape());
@@ -84,6 +85,10 @@ public class Alchemiter extends Machine {
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Alchemiter");
 		drop.setItemMeta(meta);
+
+		barrier = new ItemStack(Material.BARRIER);
+		meta.setDisplayName(Color.BAD_EMPHASIS + "No Result");
+		barrier.setItemMeta(meta);
 	}
 
 	@Override
@@ -116,6 +121,9 @@ public class Alchemiter extends Machine {
 		}
 		if (event.getSlot() == 2 && event.getCurrentItem() != null
 				&& event.getCurrentItem().getType() != Material.AIR) {
+			if (event.getCurrentItem().getType() == Material.BARRIER) {
+				return true;
+			}
 			// Item is being crafted
 			Inventory top = event.getView().getTopInventory();
 			Player player = (Player) event.getWhoClicked();
@@ -174,7 +182,7 @@ public class Alchemiter extends Machine {
 					ItemMeta im = expCost.getItemMeta();
 					int playerExp = Experience.getExp(player);
 					int remainder = playerExp - exp;
-					ChatColor color = remainder > 0 ? ChatColor.GREEN : ChatColor.DARK_RED;
+					ChatColor color = remainder >= 0 ? ChatColor.GREEN : ChatColor.DARK_RED;
 					im.setDisplayName(color + "Grist cost: " + exp);
 					ArrayList<String> lore = new ArrayList<>();
 					lore.add(ChatColor.GOLD + "Current: " + playerExp);
@@ -194,7 +202,7 @@ public class Alchemiter extends Machine {
 				open.setItem(1, expCost);
 				open.setItem(2, result);
 				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-						new ImmutableTriple<>(input, expCost, result));
+						new ImmutableTriple<>(input, expCost, result == null ? barrier : result));
 				player.updateInventory();
 			}
 		});
