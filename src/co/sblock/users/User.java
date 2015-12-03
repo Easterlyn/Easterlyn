@@ -63,7 +63,6 @@ public class User {
 
 	/* General player data */
 	private final UUID uuid;
-	private String userIP;
 	private Location previousLocation;
 
 	/* Various data Sblock tracks for progression purposes */
@@ -76,17 +75,13 @@ public class User {
 	public String currentChannel;
 	private final Set<String> listening;
 
-	private User(Sblock plugin, UUID userID, String ip, YamlConfiguration yaml,
-			Location previousLocation, Set<String> programs, String currentChannel,
-			Set<String> listening) {
+	private User(Sblock plugin, UUID uuid, YamlConfiguration yaml) {
 		this.plugin = plugin;
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
-		this.uuid = userID;
-		this.userIP = ip;
+		this.uuid = uuid;
 		this.yaml = yaml;
-		this.previousLocation = previousLocation;
-		if (previousLocation == null) {
+		if (this.previousLocation == null) {
 			World earth = Bukkit.getWorld("Earth");
 			if (earth != null) {
 				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
@@ -94,18 +89,11 @@ public class User {
 				this.previousLocation = Bukkit.getWorlds().get(0).getSpawnLocation();
 			}
 		}
-		this.programs = programs;
-		this.currentChannel = currentChannel;
+		this.programs = new HashSet<>();
 		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-		this.listening.addAll(listening);
 		this.lastChat = new String();
 		this.violationLevel = new AtomicInteger();
 		this.spamWarned = new AtomicBoolean();
-	}
-
-	private User(Sblock plugin, UUID uuid, String ip, YamlConfiguration yaml) {
-		this(plugin, uuid, ip, yaml, null, new HashSet<>(), ip, new HashSet<>());
-		this.listening.add("#");
 	}
 
 	/**
@@ -141,11 +129,11 @@ public class User {
 	 * @return the Player's IP
 	 */
 	public String getUserIP() {
-		return this.userIP;
+		return yaml.getString("ip", "null");
 	}
 
 	public void setUserIP(String userIP) {
-		this.userIP = userIP;
+		yaml.set("ip", userIP);
 	}
 
 	/**
@@ -1066,11 +1054,12 @@ public class User {
 			if (!file.exists()) {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player == null) {
-					return new User(plugin, uuid, "null", new YamlConfiguration());
+					return new User(plugin, uuid, new YamlConfiguration());
 				}
 				player.teleport(Users.getSpawnLocation());
 
-				User user = new User(plugin, uuid, player.getAddress().getHostString(), new YamlConfiguration());
+				User user = new User(plugin, uuid, new YamlConfiguration());
+				user.setUserIP(player.getAddress().getHostString());
 				user.setCurrentChannel("#");
 				user.updateCurrentRegion(Region.EARTH);
 
@@ -1089,25 +1078,21 @@ public class User {
 			throw new RuntimeException("Unable to load data for " + uuid, e);
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		User user = new User(plugin, uuid, yaml.getString("ip", "null"), yaml);
+		User user = new User(plugin, uuid, yaml);
 		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
-		//yaml.getString("previousRegion");
-		Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("location"));
-		if (currentLoc == null) {
-			currentLoc = Users.getSpawnLocation();
+		if (user.isOnline()) {
+			Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("location"));
+			if (currentLoc == null) {
+				currentLoc = Users.getSpawnLocation();
+			}
+			Region currentRegion = Region.getRegion(currentLoc.getWorld().getName());
+			if (currentRegion.isDream()) {
+				currentRegion = user.getDreamPlanet();
+			}
+			user.setUserIP(user.getPlayer().getAddress().getHostString());
+			user.updateCurrentRegion(currentRegion);
 		}
-		Region currentRegion = Region.getRegion(currentLoc.getWorld().getName());
-		if (currentRegion.isDream()) {
-			currentRegion = user.getDreamPlanet();
-		}
-		user.updateCurrentRegion(currentRegion);
 		user.getPrograms().addAll((HashSet<String>) yaml.get("progression.programs"));
-		if (yaml.getString("progression.server") != null) {
-			user.setServer(UUID.fromString(yaml.getString("progression.server")));
-		}
-		if (yaml.getString("progression.client") != null) {
-			user.setClient(UUID.fromString(yaml.getString("progression.client")));
-		}
 		Channel currentChannel = user.manager.getChannel(yaml.getString("chat.current", "#"));
 		if (currentChannel != null && !currentChannel.isBanned(user) && currentChannel.isApproved(user)) {
 			user.currentChannel = currentChannel.getName();
