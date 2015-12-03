@@ -153,7 +153,7 @@ public class Discord extends Module {
 						+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
 						+ Color.GOOD + "Channel: #main"));
 		mention = Pattern.compile("<@(\\d+)>");
-		discord.getEventManager().registerListener(new DiscordListener(this));
+		discord.getEventManager().registerListener(new DiscordChatListener(this));
 	}
 
 	private String generateUniqueCode() {

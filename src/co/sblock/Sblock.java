@@ -238,13 +238,10 @@ public class Sblock extends JavaPlugin {
 			Dye dyeMaterial = new Dye(Material.INK_SACK);
 			dyeMaterial.setColor(dye);
 
-			for (Material material : new Material[] { Material.WOOL, Material.STAINED_CLAY,
-					Material.STAINED_GLASS, Material.STAINED_GLASS_PANE }) {
-				Dye resultDye = new Dye(material);
-				resultDye.setColor(dye);
-
+			for (Material material : new Material[] { Material.CARPET, Material.STAINED_CLAY,
+					Material.STAINED_GLASS, Material.STAINED_GLASS_PANE, Material.WOOL }) {
 				// Dye 8 of an item at a time just like stained glass, allows for re-dyeing
-				shaped = new ShapedRecipe(resultDye.toItemStack(8));
+				shaped = new ShapedRecipe(new ItemStack(material, 8, dye.getWoolData()));
 				shaped.shape("XXX", "XYX", "XXX");
 				shaped.setIngredient('X', material, Short.MAX_VALUE).setIngredient('Y', dyeMaterial);
 				getServer().addRecipe(shaped);

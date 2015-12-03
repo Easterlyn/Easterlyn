@@ -15,13 +15,13 @@ import me.itsghost.jdiscord.events.UserChatEvent;
  * 
  * @author Jikoo
  */
-public class DiscordListener implements EventListener {
+public class DiscordChatListener implements EventListener {
 
 	private final Sblock plugin;
 	private final Discord discord;
 	private final Cache<String, Boolean> warnings;
 
-	public DiscordListener(Discord discord) {
+	public DiscordChatListener(Discord discord) {
 		this.plugin = discord.getPlugin();
 		this.discord = discord;
 		this.warnings = CacheBuilder.newBuilder().weakKeys().weakValues()
