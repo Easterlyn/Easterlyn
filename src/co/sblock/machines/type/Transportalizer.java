@@ -203,7 +203,7 @@ public class Transportalizer extends Machine {
 		if (signBlock.getType() != Material.WALL_SIGN) {
 			event.getPlayer().sendMessage(Color.BAD
 					+ "Please place a sign on your transportalizer between the buttons to use it."
-					+ "\nThe third row should contain your desired coordinates in x,y,x format."
+					+ "\nThe third row should contain your desired coordinates in x, y, x format."
 					+ "\nAll the other rows can contain whatever you like.");
 			return false;
 		}

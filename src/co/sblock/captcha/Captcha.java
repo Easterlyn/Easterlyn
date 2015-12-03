@@ -342,15 +342,6 @@ public class Captcha extends Module {
 		captcha = itemToCaptcha(item);
 		ItemMeta im = captcha.getItemMeta();
 		im.setDisplayName("Punchcard");
-		List<String> newlore = new ArrayList<>();
-		// If the captcha doesn't have the correct lore, we've got issues already.
-		for (String lore : im.getLore()) {
-			if (lore.startsWith(HASH_PREFIX)) {
-				newlore.add(lore);
-				break;
-			}
-		}
-		im.setLore(newlore);
 		captcha.setItemMeta(im);
 		return captcha;
 	}

@@ -86,74 +86,76 @@ public class PunchDesignix extends Machine {
 	@Override
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
-		if (event.getSlot() == 2 && event.getRawSlot() == event.getView().convertSlot(event.getRawSlot())
-				&& event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
-			// Clicking an item in result slot
-
-			Inventory merchant = event.getInventory();
-
-			// Possible results:
-			// 1) slot 0 is Captcha, slot 1 is null. Result: slot 2 = punch 0. 0, 1 consumed.
-			// 2) slot 0 is Punch, slot 1 is Captcha. Result: slot 2 = copy 0. 1 consumed.
-			// 3) slot 0 is Punch, slot 1 is Punch. Result: slot 2 = combine 0, 1. 0, 1 consumed.
-			ItemStack result;
-			if (Captcha.isCaptcha(merchant.getItem(1))) {
-				// Copies and punches first, ignores lore of second.
-				result = captcha.createCombinedPunch(merchant.getItem(0), null);
-			} else {
-				// Combine cards (or, if second is null, punch first)
-				result = captcha.createCombinedPunch(merchant.getItem(0), merchant.getItem(1));
-			}
-
-			int crafts = 0;
-
-			// Clicking a villager result slot with vanilla client treats right clicks as left clicks.
-			if (event.getClick().name().contains("SHIFT")) {
-				// Shift-clicks are craft-max attempts.
-				if (Captcha.isPunch(merchant.getItem(0)) && Captcha.isCaptcha(merchant.getItem(1))) {
-					crafts = merchant.getItem(1).getAmount();
-				} else {
-					crafts = getMaximumCrafts(merchant.getItem(0), merchant.getItem(1));
-				}
-				result.setAmount(crafts);
-
-				// Decrement number of crafts by number of items that failed to be added
-				// This is only works because the result will always be a single item that stacks to 64
-				crafts -= InventoryUtils.getAddFailures(event.getWhoClicked().getInventory().addItem(result));
-			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR
-					|| (event.getCursor().isSimilar(result)
-							&& (crafts = event.getCursor().getAmount() + result.getAmount())
-							<= event.getCursor().getMaxStackSize())) {
-				// Single click. Attempting to pick up a single item (even if right click)
-				// If crafts is 0, it was not set by similar result check
-				if (crafts == 0) {
-					crafts = 1;
-				}
-
-				// Set cursor to single stack
-				event.setCursor(result);
-			} else {
-				// Invalid craft, cancel and update result
-				updateInventory(event.getWhoClicked().getUniqueId());
-				return true;
-			}
-
-			// This will be recalculated in the synchronous delayed inventory update task.
-			event.setCurrentItem(null);
-
-			// If second item is a captcha, first item is a punchcard being copied. Do not decrement.
-			if (!Captcha.isCaptcha(merchant.getItem(1))) {
-				merchant.setItem(0, InventoryUtils.decrement(merchant.getItem(0), crafts));
-			}
-
-			// In all cases (combine, punch single, copy punch) if second is not null it decrements.
-			merchant.setItem(1, InventoryUtils.decrement(merchant.getItem(1), crafts));
-
+		if (event.getSlot() != 2 || event.getRawSlot() != event.getView().convertSlot(event.getRawSlot())) {
+			updateInventory(event.getWhoClicked().getUniqueId());
+			return false;
+		}
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 			updateInventory(event.getWhoClicked().getUniqueId());
 			return true;
 		}
+		// Clicking an item in result slot
+
+		Inventory merchant = event.getInventory();
+
+		// Possible results:
+		// 1) slot 0 is Captcha, slot 1 is null. Result: slot 2 = punch 0. 0, 1 consumed.
+		// 2) slot 0 is Punch, slot 1 is Captcha. Result: slot 2 = copy 0. 1 consumed.
+		// 3) slot 0 is Punch, slot 1 is Punch. Result: slot 2 = combine 0, 1. 0, 1 consumed.
+		ItemStack result;
+		if (Captcha.isCaptcha(merchant.getItem(1))) {
+			// Copies and punches first, ignores lore of second.
+			result = captcha.createCombinedPunch(merchant.getItem(0), null);
+		} else {
+			// Combine cards (or, if second is null, punch first)
+			result = captcha.createCombinedPunch(merchant.getItem(0), merchant.getItem(1));
+		}
+
+		if (result == null) {
+			updateInventory(event.getWhoClicked().getUniqueId());
+			return true;
+		}
+
+		int crafts = 1;
+
+		// Clicking a villager result slot with vanilla client treats right clicks as left clicks.
+		if (event.getClick().name().contains("SHIFT")) {
+			// Shift-clicks are craft-max attempts.
+			if (Captcha.isPunch(merchant.getItem(0)) && Captcha.isCaptcha(merchant.getItem(1))) {
+				crafts = merchant.getItem(1).getAmount();
+			} else {
+				crafts = getMaximumCrafts(merchant.getItem(0), merchant.getItem(1));
+			}
+			result.setAmount(crafts);
+
+			// Decrement number of crafts by number of items that failed to be added
+			// This is only works because the result will always be a single item that stacks to 64
+			crafts -= InventoryUtils.getAddFailures(event.getWhoClicked().getInventory().addItem(result));
+		} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR
+				|| event.getCursor().isSimilar(result)
+				&& event.getCursor().getAmount() < event.getCursor().getType().getMaxStackSize()) {
+			// Set cursor to single stack
+			result.setAmount(event.getCursor() == null ? 1 : event.getCursor().getAmount() + 1);
+			event.setCursor(result);
+		} else {
+			// Invalid craft, cancel and update result
+			updateInventory(event.getWhoClicked().getUniqueId());
+			return true;
+		}
+
+		// This will be recalculated in the synchronous delayed inventory update task.
+		event.setCurrentItem(InventoryUtils.decrement(result, crafts));
+
+		// If second item is a captcha, first item is a punchcard being copied. Do not decrement.
+		if (!Captcha.isCaptcha(merchant.getItem(1))) {
+			merchant.setItem(0, InventoryUtils.decrement(merchant.getItem(0), crafts));
+		}
+
+		// In all cases (combine, punch single, copy punch) if second is not null it decrements.
+		merchant.setItem(1, InventoryUtils.decrement(merchant.getItem(1), crafts));
+
 		updateInventory(event.getWhoClicked().getUniqueId());
-		return false;
+		return true;
 	}
 
 	/**
@@ -184,18 +186,20 @@ public class PunchDesignix extends Machine {
 					return;
 				}
 				Inventory open = player.getOpenInventory().getTopInventory();
-				ItemStack result;
-				if (Captcha.isCaptcha(open.getItem(1))) {
-					if (!Captcha.isPunch(open.getItem(0))) {
-						result = null;
-					}
-					result = captcha.createCombinedPunch(open.getItem(0), null);
-				} else {
-					result = captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
-				}
+				ItemStack result = captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
 				open.setItem(2, result);
+				ItemStack inputSlot1 = open.getItem(0);
+				if (inputSlot1 != null) {
+					inputSlot1 = inputSlot1.clone();
+					inputSlot1.setAmount(1);
+				}
+				ItemStack inputSlot2 = open.getItem(1);
+				if (inputSlot2 != null) {
+					inputSlot2 = inputSlot2.clone();
+					inputSlot2.setAmount(1);
+				}
 				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-						new ImmutableTriple<>(open.getItem(0), open.getItem(1), result));
+						new ImmutableTriple<>(inputSlot1, inputSlot2, result));
 				InventoryUtils.updateWindowSlot(player, 2);
 			}
 		});

@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import co.sblock.effects.Effects;
@@ -73,18 +74,29 @@ public class CruxiteDowel {
 			return cost;
 		}
 
-		for (Entry<Enchantment, Integer> entry : toCreate.getEnchantments().entrySet()) {
-			// Note: All level values are from 1.7
-			// (16 - weight) * level * 20 seems to be a good rate.
-			// Sharpness 5: 6 * 5 * 20 = 300 exp, 0-26
-			// silk touch 1: 15 * 1 * 20 = 300 exp
-			// fortune 3: 14 * 3 * 20 = 840 exp, 0-30
-			// Rebalanced to *40, removed 2x multiplier from final cost
-			cost += (16 - getWeight(entry.getKey())) * entry.getValue() * 40;
-			if (toCreate.getType().getMaxDurability() > 0) {
+		ItemMeta meta = toCreate.getItemMeta();
+
+		if (meta.hasEnchants()) {
+			for (Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
+				// Note: All level values are from 1.7
+				// (16 - weight) * level * 20 seems to be a good rate.
+				// Sharpness 5: 6 * 5 * 20 = 300 exp, 0-26
+				// silk touch 1: 15 * 1 * 20 = 300 exp
+				// fortune 3: 14 * 3 * 20 = 840 exp, 0-30
+				// Rebalanced to *40, removed 2x multiplier from final cost
+				cost += (20 - getWeight(entry.getKey())) * Math.abs(entry.getValue()) * 45;
+			}
+			if (toCreate.getType().getMaxDurability() == 0) {
 				cost *= 4;
 			}
 		}
+
+		if (meta instanceof EnchantmentStorageMeta) {
+			for (Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta) meta).getStoredEnchants().entrySet()) {
+				cost += (16 - getWeight(entry.getKey())) * entry.getValue() * 40;
+			}
+		}
+
 
 		if (toCreate.getItemMeta().hasDisplayName()) {
 			// Naming an unenchanted item in an anvil costs 1 additional level in 1.8
