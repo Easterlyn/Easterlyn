@@ -15,10 +15,12 @@ import org.bukkit.permissions.PermissionDefault;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+import co.sblock.machines.Machines;
+import co.sblock.machines.type.Transportalizer;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.Spectators;
-import co.sblock.users.User;
 import co.sblock.users.Region;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -31,6 +33,7 @@ public class TeleportRequestCommand extends SblockCommand {
 	private final Cooldowns cooldowns;
 	private final Spectators spectators;
 	private final Users users;
+	private final Transportalizer transportalizer;
 	private final SimpleDateFormat time =  new SimpleDateFormat("m:ss");
 	private final HashMap<UUID, TeleportRequest> pending = new HashMap<>();
 
@@ -39,6 +42,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
+		this.transportalizer = (Transportalizer) plugin.getModule(Machines.class).getMachineByName("Transportalizer");
 		this.setDescription("Handle a teleport request");
 		this.setUsage("/tpa name, /tpahere name, /tpaccept, /tpdecline");
 		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno");
@@ -52,9 +56,6 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock.helper", true).recalculatePermissibles();
-		// entry
-//		this.setPermissionLevel("hero");
-//		this.setPermissionMessage("You must complete classpect selection before you can teleport!");
 	}
 
 	@Override
@@ -146,7 +147,9 @@ public class TeleportRequestCommand extends SblockCommand {
 	private void accept(Player sender) {
 		TeleportRequest request = pending.remove(sender.getUniqueId());
 		if (request == null || request.getExpiry() < System.currentTimeMillis()) {
-			sender.sendMessage(Color.BAD + "You do not have any pending teleport requests.");
+			if (!transportalizer.doPendingTransportalization(sender, true)) {
+				sender.sendMessage(Color.BAD + "You do not have any pending teleport requests.");
+			}
 			return;
 		}
 		Player toTeleport = Bukkit.getPlayer(request.isHere() ? request.getTarget() : request.getSource());
@@ -189,7 +192,9 @@ public class TeleportRequestCommand extends SblockCommand {
 	private void decline(Player sender) {
 		TeleportRequest request = pending.remove(sender.getUniqueId());
 		if (request == null || request.getExpiry() < System.currentTimeMillis()) {
-			sender.sendMessage(Color.BAD + "You do not have any pending teleport requests.");
+			if (!transportalizer.doPendingTransportalization(sender, false)) {
+				sender.sendMessage(Color.BAD + "You do not have any pending teleport requests.");
+			}
 			return;
 		}
 		sender.sendMessage(Color.GOOD + "Request declined!");

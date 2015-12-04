@@ -110,20 +110,22 @@ public class Shape {
 		switch (direction) {
 		case EAST:
 			double newZ = vector.getX();
-			vector.setX(vector.getBlockZ());
+			vector.setX(vector.getZ());
 			vector.setZ(newZ);
 			return vector;
 		case SOUTH:
-			vector.setX(-vector.getX());
+			vector.setX(-2 * vector.getBlockX() + vector.getX());
+			int blockZ = (int) vector.getZ();
+			vector.setZ(blockZ + vector.getZ() - blockZ);
 			return vector;
 		case WEST:
-			double newZ1 = -vector.getX();
-			vector.setX(-vector.getBlockZ());
+			double newZ1 = -2 * vector.getBlockX() + vector.getX();
+			vector.setX(-2 * vector.getBlockZ() + vector.getZ());
 			vector.setZ(newZ1);
 			return vector;
 		case NORTH:
 		default:
-			vector.setZ(-vector.getZ());
+			vector.setZ(-2 * vector.getBlockZ() + vector.getZ());
 			return vector;
 		}
 	}

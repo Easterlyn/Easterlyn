@@ -434,7 +434,14 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Used to trigger cleanup when a Machine listing is removed on plugin disable.
+	 * Used to trigger additional setup when a machine listing is loaded.
+	 */
+	public void enable(ConfigurationSection storage) {
+		// Most machines do not do anything when enabled.
+	}
+
+	/**
+	 * Used to trigger cleanup when a Machine listing is removed.
 	 */
 	public void disable(ConfigurationSection storage) {
 		// Most machines do not do anything when disabled.

@@ -176,6 +176,7 @@ public class Machines extends Module {
 				if (machine == null) {
 					iterator.remove();
 				}
+				machine.getLeft().enable(machine.getRight());
 			} catch (NumberFormatException e) {
 				getLogger().warning("Coordinates cannot be parsed from " + Arrays.toString(split));
 			}

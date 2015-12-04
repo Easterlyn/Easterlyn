@@ -40,5 +40,6 @@
 	<classpathentry kind="lib" path="bundle/chatter-bot-api-1.3.3.jar"/>
 	<classpathentry kind="lib" path="bundle/jdiscord-1.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/Regionerator-1.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/worldguard-6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

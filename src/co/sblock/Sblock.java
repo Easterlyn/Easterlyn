@@ -56,6 +56,7 @@ import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.Holograms;
 import co.sblock.micromodules.Meteors;
 import co.sblock.micromodules.ParticleUtils;
+import co.sblock.micromodules.Protections;
 import co.sblock.micromodules.RawAnnouncer;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.micromodules.Spectators;
@@ -112,7 +113,8 @@ public class Sblock extends JavaPlugin {
 		addModule(new Effects(this));
 		addModule(new Captcha(this));
 		addModule(new Holograms(this));
-		// Machines depends on Captcha, Effects, Holograms, and Users to construct
+		addModule(new Protections(this));
+		// Machines depends on Captcha, Effects, Holograms, Protections, and Users to construct
 		addModule(new Machines(this));
 
 

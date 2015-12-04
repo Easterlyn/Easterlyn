@@ -1,7 +1,12 @@
 package co.sblock.machines.type;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -11,7 +16,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -30,6 +39,8 @@ import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.micromodules.Holograms;
+import co.sblock.micromodules.Protections;
+import co.sblock.micromodules.protectionhooks.ProtectionHook;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -45,12 +56,15 @@ import net.md_5.bungee.api.ChatColor;
 public class Transportalizer extends Machine {
 
 	private final Holograms holograms;
+	private final Protections protections;
 	private final ItemStack drop;
+	private final Map<UUID, TransportalizationRequest> requests;
 
 	@SuppressWarnings("deprecation")
 	public Transportalizer(Sblock plugin, Machines machines) {
 		super(plugin, machines, new Shape());
 		this.holograms = plugin.getModule(Holograms.class);
+		this.protections = plugin.getModule(Protections.class);
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER, Direction.SOUTH, "chest");
 		shape.setVectorData(new Vector(0, 0, 0), m);
@@ -85,6 +99,7 @@ public class Transportalizer extends Machine {
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Transportalizer");
 		drop.setItemMeta(meta);
+		this.requests = new HashMap<>();
 	}
 
 	@Override
@@ -93,7 +108,7 @@ public class Transportalizer extends Machine {
 	}
 
 	private Location getHoloLocation(ConfigurationSection storage) {
-		return getKey(storage).add(Shape.getRelativeVector(getDirection(storage), new Vector(0.5, 1.5, 0.5)));
+		return getKey(storage).add(Shape.getRelativeVector(getDirection(storage), new Vector(0.5, 1.6, 1.5)));
 	}
 
 	public void setFuel(ConfigurationSection storage, long fuel) {
@@ -259,20 +274,57 @@ public class Transportalizer extends Machine {
 			source = remote;
 			target = pad.getLocation();
 		}
-		for (Entity e : key.getWorld().getEntities()) {
-			if (e.getLocation().getBlock().equals(source.getBlock())) {
-				source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
-				target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
-				setFuel(storage, fuel - cost);
-				e.teleport(new Location(target.getWorld(), target.getX() + .5, target.getY(), target.getZ() + .5,
-						e.getLocation().getYaw(), e.getLocation().getPitch()));
-				key.getWorld().playSound(key, Sound.NOTE_PIANO, 5, 2);
-				source.getWorld().playEffect(source, Effect.ENDER_SIGNAL, 4);
-				source.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 4);
-				return false;
+		for (Entity entity : key.getWorld().getEntities()) {
+			if (!entity.getLocation().getBlock().equals(source.getBlock())) {
+				continue;
 			}
+			if (entity instanceof Player) {
+				for (ProtectionHook hook : protections.getHooks()) {
+					if (!hook.canUseButtonsAt(event.getPlayer(), remote)) {
+						event.getPlayer().sendMessage(Color.BAD + "You do not have access to the location specified!");
+						return false;
+					}
+				}
+				if (source == remote && !event.getPlayer().getUniqueId().equals(entity.getUniqueId())) {
+					Player targetPlayer = (Player) entity;
+					event.getPlayer().sendMessage(String.format("%1$sConfirming transportalization with %2$s%3$s%1$s!",
+							Color.GOOD, Color.GOOD_EMPHASIS, targetPlayer.getDisplayName()));
+					targetPlayer.sendMessage(String.format("%1$s%2$s %3$swould like to transportalize you!"
+							+ "\nTo accept, use %4$s/tpyes%3$s. To decline, use %4$s/tpno%3$s.", Color.GOOD_EMPHASIS,
+							event.getPlayer().getDisplayName(), Color.GOOD, Color.COMMAND));
+					requests.put(targetPlayer.getUniqueId(), new TransportalizationRequest(storage, source, target, cost));
+					return false;
+				}
+			} else if (entity instanceof Monster || entity instanceof TNTPrimed) {
+				for (ProtectionHook hook : protections.getHooks()) {
+					if (!hook.canBuildAt(event.getPlayer(), remote)) {
+						event.getPlayer().sendMessage(Color.BAD + "You do not have access to the location specified!");
+						return false;
+					}
+				}
+			}
+			setFuel(storage, fuel - cost);
+			teleport(entity, source, target);
+			return false;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
+		if (!meetsAdditionalBreakConditions(event, storage) && !event.getPlayer().hasPermission("sblock.denizen")) {
+			return true;
+		}
+		Location key = getKey(storage);
+		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !isFree()) {
+			key.getWorld().dropItemNaturally(key, getUniqueDrop());
+			int fuel = (int) (getFuel(storage) / getValue(Material.BLAZE_POWDER));
+			if (fuel > 0) {
+				key.getWorld().dropItemNaturally(key, new ItemStack(Material.BLAZE_POWDER, fuel));
+			}
+		}
+		remove(storage);
+		return true;
 	}
 
 	@Override
@@ -281,12 +333,67 @@ public class Transportalizer extends Machine {
 	}
 
 	@Override
-	public void disable(ConfigurationSection section) {
-		holograms.removeHologram(getHoloLocation(section));
+	public void enable(ConfigurationSection storage) {
+		Hologram hologram = holograms.getHologram(getHoloLocation(storage));
+		if (hologram != null) {
+			hologram.clearLines();
+			hologram.appendTextLine(String.valueOf(getFuel(storage)));
+		}
+	}
+
+	@Override
+	public void disable(ConfigurationSection storage) {
+		holograms.removeHologram(getHoloLocation(storage));
 	}
 
 	@Override
 	public ItemStack getUniqueDrop() {
 		return drop;
+	}
+
+	private void teleport(Entity entity, Location source, Location target) {
+			source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
+			target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
+			entity.teleport(new Location(target.getWorld(), target.getX() + .5, target.getY(), target.getZ() + .5,
+					entity.getLocation().getYaw(), entity.getLocation().getPitch()));
+			source.getWorld().playEffect(source, Effect.ENDER_SIGNAL, 4);
+			source.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 4);
+	}
+
+	public boolean doPendingTransportalization(Player player, boolean accept) {
+		if (requests.containsKey(player.getUniqueId())) {
+			if (accept) {
+				requests.remove(player.getUniqueId()).doTeleport(player);
+			} else {
+				requests.remove(player.getUniqueId());
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private class TransportalizationRequest {
+
+		private final ConfigurationSection storage;
+		private final Location from, to;
+		private final long cost;
+
+		public TransportalizationRequest(ConfigurationSection storage,
+				Location from, Location to, long cost) {
+			this.storage = storage;
+			this.from = from;
+			this.to = to;
+			this.cost = cost;
+		}
+
+		public void doTeleport(Player player) {
+			long fuel = getFuel(storage);
+			if (fuel < cost) {
+				player.sendMessage("The transportalizer is too low on fuel to pull you to it!");
+				return;
+			}
+			setFuel(storage, fuel - cost);
+			teleport(player, from, to);
+		}
 	}
 }
