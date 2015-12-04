@@ -331,6 +331,8 @@ public class CruxiteDowel {
 			case CHAINMAIL_CHESTPLATE:
 				materialValues.put(material, 1200);
 				break;
+			case SKULL_ITEM:
+				materialValues.put(material, 3000);
 			case NETHER_STAR:
 				materialValues.put(material, 10000);
 			case DRAGON_EGG:
@@ -370,7 +372,6 @@ public class CruxiteDowel {
 			case POTATO: // plant
 			case PUMPKIN_STEM: // plant
 			case SKULL:
-			case SKULL_ITEM: // Can't be captcha'd
 			case SNOW:
 			case SOIL:
 			case SPONGE:
