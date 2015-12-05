@@ -9,12 +9,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import co.sblock.Sblock;
 import co.sblock.effects.Effects;
+import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.micromodules.Spectators;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for BlockBreakEvents.
@@ -26,12 +25,14 @@ public class BreakListener extends SblockListener {
 	private final Effects effects;
 	private final Machines machines;
 	private final Spectators spectators;
+	private final BehaviorActive spectatorsDeserveFun;
 
 	public BreakListener(Sblock plugin) {
 		super(plugin);
 		this.effects = plugin.getModule(Effects.class);
 		this.machines = plugin.getModule(Machines.class);
 		this.spectators = plugin.getModule(Spectators.class);
+		this.spectatorsDeserveFun = (BehaviorActive) effects.getEffect("SpectateKillOres");
 	}
 
 	/**
@@ -41,9 +42,8 @@ public class BreakListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (event.getBlock().getType().name().endsWith("_ORE") && !spectators.canMineOre(event.getPlayer())) {
-			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "You cannot mine ore shortly after exiting spectate mode!");
+		if (!spectators.canMineOre(event.getPlayer())) {
+			spectatorsDeserveFun.handleEvent(event, event.getPlayer(), 1);
 			return;
 		}
 

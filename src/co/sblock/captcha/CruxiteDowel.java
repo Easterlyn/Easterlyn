@@ -267,7 +267,6 @@ public class CruxiteDowel {
 			case GOLD_RECORD:
 			case GREEN_RECORD:
 			case IRON_ORE:
-			case POTION: // Flat high price to account for regen etc.
 				materialValues.put(material, 50);
 				break;
 			case RECORD_10:
@@ -370,6 +369,7 @@ public class CruxiteDowel {
 			case PISTON_MOVING_PIECE:
 			case PORTAL:
 			case POTATO: // plant
+			case POTION: // Removed until effects are accounted for
 			case PUMPKIN_STEM: // plant
 			case SKULL:
 			case SNOW:

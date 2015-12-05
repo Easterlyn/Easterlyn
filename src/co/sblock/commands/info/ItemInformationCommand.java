@@ -10,7 +10,9 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
+import co.sblock.captcha.CruxiteDowel;
 import co.sblock.commands.SblockCommand;
+import co.sblock.effects.Effects;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -40,7 +42,9 @@ public class ItemInformationCommand extends SblockCommand {
 			return true;
 		}
 		sender.sendMessage(ChatColor.stripColor(hand.toString()));
-		sender.sendMessage("Hash: " + ((Sblock) getPlugin()).getModule(Captcha.class).getHash(hand));
+		Sblock plugin = (Sblock) getPlugin();
+		sender.sendMessage("Hash: " + plugin.getModule(Captcha.class).getHash(hand));
+		sender.sendMessage("Grist: " + CruxiteDowel.expCost(plugin.getModule(Effects.class), hand));
 		return true;
 	}
 

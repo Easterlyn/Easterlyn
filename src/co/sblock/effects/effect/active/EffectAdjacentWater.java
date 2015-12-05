@@ -13,7 +13,7 @@ import co.sblock.Sblock;
  * 
  * @author Jikoo
  */
-public class EffectAdjacentWater extends EffectAdjacentBlockModifier {
+public class EffectAdjacentWater extends EffectAdjacentBlockPlacement {
 
 	public EffectAdjacentWater(Sblock plugin) {
 		super(plugin, 400, "Liquid Cooled");

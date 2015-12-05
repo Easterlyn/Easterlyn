@@ -12,7 +12,7 @@ import co.sblock.Sblock;
  * 
  * @author Jikoo
  */
-public class EffectAdjacentFreeze extends EffectAdjacentBlockModifier {
+public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement {
 
 	public EffectAdjacentFreeze(Sblock plugin) {
 		super(plugin, 400, "Eternally Frozen");
