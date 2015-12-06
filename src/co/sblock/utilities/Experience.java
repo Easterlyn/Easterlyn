@@ -18,11 +18,13 @@ public class Experience {
 	 * @return the amount of exp the Player has
 	 */
 	public static int getExp(Player player) {
-		return getLevelExp(player.getLevel())
+		return getExpFromLevel(player.getLevel())
 				+ Math.round(getExpToNext(player.getLevel()) * player.getExp());
 	}
 
 	/**
+	 * Calculates total experience based on level.
+	 * 
 	 * @see http://minecraft.gamepedia.com/Experience#Leveling_up
 	 * 
 	 * "One can determine how much experience has been collected to reach a level using the equations:
@@ -30,8 +32,12 @@ public class Experience {
 	 *  Total Experience = [Level]2 + 6[Level] (at levels 0-15)
 	 *                     2.5[Level]2 - 40.5[Level] + 360 (at levels 16-30)
 	 *                     4.5[Level]2 - 162.5[Level] + 2220 (at level 31+)"
+	 * 
+	 * @param level the level
+	 * 
+	 * @return the total experience calculated
 	 */
-	private static int getLevelExp(int level) {
+	public static int getExpFromLevel(int level) {
 		if (level > 30) {
 			return (int) (4.5 * level * level - 162.5 * level + 2220);
 		}
@@ -39,6 +45,26 @@ public class Experience {
 			return (int) (2.5 * level * level - 40.5 * level + 360);
 		}
 		return level * level + 6 * level;
+	}
+
+	/**
+	 * Calculates level based on total experience.
+	 * 
+	 * @param exp the total experience
+	 * 
+	 * @return the level calculated
+	 */
+	public static double getLevelFromExp(int exp) {
+		if (exp > 1395) {
+			return (Math.sqrt(72 * exp - 51425) + 325) / 18;
+		}
+		if (exp > 315) {
+			return Math.sqrt(40 * exp - 7839) / 10 + 8.1;
+		}
+		if (exp > 0) {
+			return Math.sqrt(exp + 9) - 3;
+		}
+		return 0;
 	}
 
 	/**
@@ -75,19 +101,10 @@ public class Experience {
 			exp = 0;
 		}
 
-		int level = 0;
-		float expRemaining = 0;
-		while (exp > 0) {
-			int expTillNext = getExpToNext(level);
-			if (exp >= expTillNext) {
-				level++;
-			} else {
-				expRemaining = exp / (float) expTillNext;
-			}
-			exp -= expTillNext;
-		}
+		double levelAndExp = getLevelFromExp(exp);
 
+		int level = (int) levelAndExp;
 		player.setLevel(level);
-		player.setExp(expRemaining);
+		player.setExp((float) (levelAndExp - level));
 	}
 }
