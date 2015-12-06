@@ -309,14 +309,14 @@ public class User {
 	 * 
 	 * @param newR the Region being transitioned into
 	 */
-	public void updateCurrentRegion(Region newRegion) {
-		Region oldRegion = getCurrentRegion();
+	public void updateCurrentRegion(Region newRegion, boolean force) {
 		if (newRegion.isDream()) {
 			getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
 		} else {
 			getPlayer().resetPlayerTime();
 		}
-		if (oldRegion == null || !oldRegion.getResourcePackURL().equals(newRegion.getResourcePackURL())) {
+		if (isOnline() && (force
+				|| !getCurrentRegion().getResourcePackURL().equals(newRegion.getResourcePackURL()))) {
 			getPlayer().setResourcePack(newRegion.getResourcePackURL());
 		}
 		setCurrentRegion(newRegion);
@@ -376,48 +376,6 @@ public class User {
 	 */
 	public void addProgram(String id) {
 		this.programs.add(id);
-	}
-
-	/**
-	 * Set the User's server player.
-	 * 
-	 * @param userID the UUID of the server
-	 */
-	public void setServer(UUID userID) {
-		yaml.set("progression.server", userID != null ? userID.toString() : null);
-	}
-
-	/**
-	 * Get the User's server's UUID.
-	 * 
-	 * @return the saved server UUID
-	 */
-	public UUID getServer() {
-		if (yaml.getString("progression.server") != null) {
-			return UUID.fromString(yaml.getString("progression.server"));
-		}
-		return null;
-	}
-
-	/**
-	 * Set the User's client player.
-	 * 
-	 * @param s the name of the Player to set as the client player.
-	 */
-	public void setClient(UUID userID) {
-		yaml.set("progression.client", userID != null ? userID.toString() : null);
-	}
-
-	/**
-	 * Get the User's client player.
-	 * 
-	 * @return the saved client player
-	 */
-	public UUID getClient() {
-		if (yaml.getString("progression.client") != null) {
-			return UUID.fromString(yaml.getString("progression.client"));
-		}
-		return null;
 	}
 
 	/**
@@ -963,12 +921,6 @@ public class User {
 		sb.append(Color.GOOD).append(", Programs: ").append(Color.GOOD_EMPHASIS)
 				.append(getPrograms()).append('\n');
 
-		// Server: UUID, Client: UUID
-		sb.append(Color.GOOD).append("Server: ").append(Color.GOOD_EMPHASIS)
-				.append(getServer() != null ? getServer() : "null").append(Color.GOOD)
-				.append(", Client: ").append(Color.GOOD_EMPHASIS)
-				.append(getClient() != null ? getClient() : "null").append('\n');
-
 		// Pestering: current, Listening: [list]
 		sb.append(Color.GOOD).append("Pestering: ").append(Color.GOOD_EMPHASIS)
 				.append(getCurrentChannel() != null ? getCurrentChannel().getName() : "null")
@@ -1060,8 +1012,16 @@ public class User {
 
 				User user = new User(plugin, uuid, new YamlConfiguration());
 				user.setUserIP(player.getAddress().getHostString());
-				user.setCurrentChannel("#");
-				user.updateCurrentRegion(Region.EARTH);
+
+				// Manually set channel - using setCurrentChannel results in recursive User load
+				// It's not guaranteed that this is happening during the PlayerJoinEvent either,
+				// so we can't count on User#handleLoginChannelJoins being called.
+				user.currentChannel = "#";
+				user.listening.add("#");
+				Channel hash = user.manager.getChannel("#");
+				hash.getListening().add(uuid);
+
+				user.updateCurrentRegion(Region.EARTH, true);
 
 				if (!player.hasPlayedBefore()) {
 					// Our data file may have just been deleted - reset planned for Entry, etc.
@@ -1090,7 +1050,7 @@ public class User {
 				currentRegion = user.getDreamPlanet();
 			}
 			user.setUserIP(user.getPlayer().getAddress().getHostString());
-			user.updateCurrentRegion(currentRegion);
+			user.updateCurrentRegion(currentRegion, true);
 		}
 		user.getPrograms().addAll((HashSet<String>) yaml.get("progression.programs"));
 		Channel currentChannel = user.manager.getChannel(yaml.getString("chat.current", "#"));

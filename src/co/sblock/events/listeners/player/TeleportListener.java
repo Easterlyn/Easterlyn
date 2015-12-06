@@ -14,8 +14,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.events.listeners.SblockListener;
-import co.sblock.users.User;
 import co.sblock.users.Region;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -100,7 +100,7 @@ public class TeleportListener extends SblockListener {
 				} else {
 					target = Region.getRegion(event.getTo().getWorld().getName());
 				}
-				user.updateCurrentRegion(target);
+				user.updateCurrentRegion(target, false);
 				user.updateFlight();
 			}
 		}.runTask(getPlugin());

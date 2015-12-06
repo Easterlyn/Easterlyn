@@ -24,13 +24,9 @@ public class RegionChannel extends Channel {
 	@Override
 	public void sendMessage(String message) {
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User u = getUsers().getUser(userID);
-			if (u == null) {
-				listening.remove(userID);
-				continue;
-			}
-			if (!u.getSuppression()) {
-				u.sendMessage(message);
+			User user = getUsers().getUser(userID);
+			if (!user.getSuppression()) {
+				user.sendMessage(message);
 			}
 		}
 		Logger.getLogger("Minecraft").info(message);

@@ -72,10 +72,12 @@ public class JoinListener extends SblockListener {
 				User user = users.getUser(player.getUniqueId());
 				user.handleLoginChannelJoins();
 				user.handleNameChange();
-				Region region = user.getCurrentRegion();
-				user.updateCurrentRegion(region);
-				// On login, conditions for setting rpack are not met, must be done here
-				player.setResourcePack(region.getResourcePackURL());
+				Region region = Region.getRegion(player.getWorld().getName());
+				if (region.isDream()) {
+					Region old = user.getCurrentRegion();
+					region = old.isDream() ? old : user.getDreamPlanet();
+				}
+				user.updateCurrentRegion(region, true);
 				user.updateFlight();
 				events.getInvisibilityManager().updateVisibility(player);
 				for (String command : user.getLoginCommands()) {
