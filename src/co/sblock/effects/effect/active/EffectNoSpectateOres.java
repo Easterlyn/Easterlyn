@@ -10,14 +10,14 @@ import org.bukkit.event.block.BlockBreakEvent;
 import co.sblock.Sblock;
 
 /**
- * 
+ * Effect for removing all ores adjacent to a mined block.
  * 
  * @author Jikoo
  */
-public class EffectNoSpectateXray extends EffectAdjacentBlockPlacement {
+public class EffectNoSpectateOres extends EffectAdjacentBlockPlacement {
 
-	protected EffectNoSpectateXray(Sblock plugin) {
-		super(plugin, Integer.MAX_VALUE, "SpectateKillOres");
+	public EffectNoSpectateOres(Sblock plugin) {
+		super(plugin, Integer.MAX_VALUE, "Unlucky");
 	}
 
 	@Override
@@ -29,6 +29,10 @@ public class EffectNoSpectateXray extends EffectAdjacentBlockPlacement {
 
 	@Override
 	protected void handleAdjacentBlock(Player player, Block block) {
+		if (block.getType() == Material.QUARTZ_ORE) {
+			block.setType(Material.NETHERRACK);
+			return;
+		}
 		if (block.getType().name().endsWith("_ORE")) {
 			block.setType(Material.STONE);
 		}

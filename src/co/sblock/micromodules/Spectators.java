@@ -43,15 +43,32 @@ public class Spectators extends Module {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					if (isSpectator(player.getUniqueId())
-							&& cooldowns.getRemainder(player, getName()) == 0) {
+				nextSpectator: for (Player player : Bukkit.getOnlinePlayers()) {
+					if (!isSpectator(player.getUniqueId())) {
+						continue;
+					}
+					if (cooldowns.getRemainder(player, getName()) == 0) {
 						removeSpectator(player);
 						player.sendMessage(Color.GOOD + "As your link to the astral plane fades, you awaken with a jolt.");
 					}
+					// 100 blocks from starting location
+					if (spectators.get(player.getUniqueId()).distanceSquared(player.getLocation()) < 10000) {
+						continue;
+					}
+					// 100 blocks from any player
+					for (Player nearby : player.getWorld().getPlayers()) {
+						if (nearby.equals(player)) {
+							continue;
+						}
+						if (player.getLocation().distanceSquared(nearby.getLocation()) < 10000) {
+							continue nextSpectator;
+						}
+					}
+					removeSpectator(player);
+					player.sendMessage(Color.GOOD + "With no one around to maintain your connection to the astral plane, you snap back to reality.");
 				}
 			}
-		}.runTaskTimer(getPlugin(), 600, 600);
+		}.runTaskTimer(getPlugin(), 100, 100);
 	}
 
 	@Override
