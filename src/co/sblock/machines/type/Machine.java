@@ -22,6 +22,7 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -394,6 +395,22 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
+		event.setResult(Result.DENY);
+		return true;
+	}
+
+	/**
+	 * Handles Inventory clicks for the Machine.
+	 * <p>
+	 * N.B.: Due to the way Machines that are detected via InventoryHolder status are detected,
+	 * Machines that directly extend InventoryHolder may be passed a null storage
+	 * ConfigurationSection.
+	 * 
+	 * @param event the InventoryClickEvent
+	 * 
+	 * @return true if event should be cancelled
+	 */
+	public boolean handleClick(InventoryDragEvent event, ConfigurationSection storage) {
 		event.setResult(Result.DENY);
 		return true;
 	}

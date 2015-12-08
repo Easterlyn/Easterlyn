@@ -56,7 +56,7 @@ public class Experience {
 	 */
 	public static double getLevelFromExp(int exp) {
 		if (exp > 1395) {
-			return (Math.sqrt(72 * exp - 51425) + 325) / 18;
+			return (Math.sqrt(72 * exp - 54215) + 325) / 18;
 		}
 		if (exp > 315) {
 			return Math.sqrt(40 * exp - 7839) / 10 + 8.1;

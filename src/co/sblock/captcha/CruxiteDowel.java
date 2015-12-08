@@ -372,7 +372,6 @@ public class CruxiteDowel {
 			case POTION: // Removed until effects are accounted for
 			case PUMPKIN_STEM: // plant
 			case SKULL:
-			case SNOW:
 			case SOIL:
 			case SPONGE:
 			case STATIONARY_LAVA:

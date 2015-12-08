@@ -365,7 +365,7 @@ public class InventoryUtils {
 	}
 
 	public static boolean isUniqueItem(Sblock plugin, ItemStack toCheck) {
-		if (Captcha.isCaptcha(toCheck) || CruxiteDowel.isDowel(toCheck)) {
+		if (Captcha.isCard(toCheck) || CruxiteDowel.isDowel(toCheck)) {
 			return true;
 		}
 
