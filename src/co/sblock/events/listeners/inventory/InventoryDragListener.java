@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
@@ -16,7 +17,7 @@ import co.sblock.machines.type.Machine;
 import co.sblock.utilities.InventoryUtils;
 
 /**
- * 
+ * Listener for InventoryDragEvents.
  * 
  * @author Jikoo
  */
@@ -29,6 +30,7 @@ public class InventoryDragListener extends SblockListener {
 		this.machines = plugin.getModule(Machines.class);
 	}
 
+	@EventHandler(ignoreCancelled = true)
 	public void onInventoryDrag(InventoryDragEvent event) {
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
 
@@ -59,7 +61,7 @@ public class InventoryDragListener extends SblockListener {
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
-				&& InventoryUtils.isUniqueItem(getPlugin(), event.getCursor())) {
+				&& InventoryUtils.isUniqueItem(getPlugin(), event.getOldCursor())) {
 			event.setCancelled(true);
 			return;
 		}

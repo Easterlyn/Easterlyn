@@ -32,7 +32,7 @@ public class BreakListener extends SblockListener {
 		this.effects = plugin.getModule(Effects.class);
 		this.machines = plugin.getModule(Machines.class);
 		this.spectators = plugin.getModule(Spectators.class);
-		this.spectatorsDeserveFun = (BehaviorActive) effects.getEffect("SpectateKillOres");
+		this.spectatorsDeserveFun = (BehaviorActive) effects.getEffect("Unlucky");
 	}
 
 	/**
