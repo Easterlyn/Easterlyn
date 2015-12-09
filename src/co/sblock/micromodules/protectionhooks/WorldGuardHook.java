@@ -20,6 +20,15 @@ public class WorldGuardHook extends ProtectionHook {
 	}
 
 	@Override
+	public boolean isProctected(Location location) {
+		if (!isHookUsable()) {
+			return false;
+		}
+		RegionQuery query = WGBukkit.getPlugin().getRegionContainer().createQuery();
+		return query.getApplicableRegions(location).size() > 0;
+	}
+
+	@Override
 	public boolean canUseButtonsAt(Player player, Location location) {
 		if (!isHookUsable()) {
 			return true;

@@ -135,7 +135,7 @@ public class SblockTravelAgent implements TravelAgent {
 	@Override
 	public Location findOrCreate(Location location) {
 		Location destination = findPortal(location);
-		if (destination == null) {
+		if (destination == null || destination.equals(destination.getWorld().getSpawnLocation())) {
 			destination = location.clone();
 			createPortal(destination);
 		}
@@ -145,8 +145,8 @@ public class SblockTravelAgent implements TravelAgent {
 	@Override
 	public Location findPortal(Location location) {
 		Block block = location.getBlock();
-		for (int dx = -this.searchRadius; dx <= this.searchRadius; dx++) {
-			for (int dz = -this.searchRadius; dz <= this.searchRadius; dz++) {
+		for (int dx = -searchRadius; dx <= searchRadius; dx++) {
+			for (int dz = -searchRadius; dz <= searchRadius; dz++) {
 				Block portal = block.getRelative(dx, 0, dz);
 				if (portal.getType() == Material.PORTAL) {
 					Location center = findCenter(portal);

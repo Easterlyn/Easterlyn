@@ -19,6 +19,14 @@ public class GriefPreventionHook extends ProtectionHook {
 	}
 
 	@Override
+	public boolean isProctected(Location location) {
+		if (!isHookUsable()) {
+			return false;
+		}
+		return GriefPrevention.instance.dataStore.getClaimAt(location, true, null) != null;
+	}
+
+	@Override
 	public boolean canUseButtonsAt(Player player, Location location) {
 		if (!isHookUsable()) {
 			return true;

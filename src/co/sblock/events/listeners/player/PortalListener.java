@@ -8,8 +8,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerPortalEvent;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.region.SblockTravelAgent;
+import co.sblock.micromodules.Protections;
+import co.sblock.micromodules.protectionhooks.ProtectionHook;
 
 /**
  * Listener for PlayerPortalEvents.
@@ -18,11 +21,13 @@ import co.sblock.events.region.SblockTravelAgent;
  */
 public class PortalListener extends SblockListener {
 
+	private final Protections protections;
 	private final SblockTravelAgent agent;
 
 	public PortalListener(Sblock plugin) {
 		super(plugin);
-		agent = new SblockTravelAgent();
+		this.protections = plugin.getModule(Protections.class);
+		this.agent = new SblockTravelAgent();
 	}
 
 	/**
@@ -41,34 +46,45 @@ public class PortalListener extends SblockListener {
 		}
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
 		agent.reset();
-		Block portal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
-		Location center = agent.findCenter(portal);
-		if (portal == null && fromEnvironment != Environment.THE_END) {
+		Block fromPortal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
+		Location fromCenter = agent.findCenter(fromPortal);
+		if (fromPortal == null && fromEnvironment != Environment.THE_END) {
 			event.setCancelled(true);
 			return;
 		}
 		if (fromEnvironment == Environment.THE_END) {
-			if (center.getBlock().getType() == Material.PORTAL) {
+			if (fromCenter.getBlock().getType() == Material.PORTAL) {
 				// No using nether portals in the End
 				event.setCancelled(true);
 			}
-			// TODO Medium End return?
+			// If we do another End implementation (Medium, etc.), it belongs here.
 			return;
 		}
 		if (fromEnvironment == Environment.NETHER) {
 			agent.setSearchRadius(8);
 		}
-		center.setPitch(event.getFrom().getPitch());
-		center.setYaw(event.getFrom().getYaw());
+		fromCenter.setPitch(event.getFrom().getPitch());
+		fromCenter.setYaw(event.getFrom().getYaw());
 		event.setPortalTravelAgent(agent);
-		event.setFrom(center);
-		agent.setFrom(center.getBlock());
+		event.setFrom(fromCenter);
+		agent.setFrom(fromCenter.getBlock());
 		Location to = agent.getTo(event.getFrom());
 		if (to == null) {
 			event.setCancelled(true);
 			return;
 		}
-		event.setTo(to);
+		Location toPortal = agent.findPortal(to);
+		if (toPortal == null) {
+			for (ProtectionHook hook : protections.getHooks()) {
+				if (!hook.canBuildAt(event.getPlayer(), to)) {
+					event.setCancelled(true);
+					event.getPlayer().sendMessage(Color.BAD + "Your destination is inside a protected area!"
+							+ "\nYou'll have to build your portal elsewhere.");
+					return;
+				}
+			}
+		}
+		event.setTo(toPortal != null ? toPortal : to);
 	}
 
 }

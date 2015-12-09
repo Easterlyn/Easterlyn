@@ -25,6 +25,8 @@ public abstract class ProtectionHook {
 		return Bukkit.getPluginManager().isPluginEnabled(pluginName);
 	}
 
+	public abstract boolean isProctected(Location location);
+
 	public abstract boolean canUseButtonsAt(Player player, Location location);
 
 	public abstract boolean canBuildAt(Player player, Location location);

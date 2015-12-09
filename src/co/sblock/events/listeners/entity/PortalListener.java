@@ -9,6 +9,8 @@ import org.bukkit.event.entity.EntityPortalEvent;
 import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.region.SblockTravelAgent;
+import co.sblock.micromodules.Protections;
+import co.sblock.micromodules.protectionhooks.ProtectionHook;
 
 /**
  * Listener for EntityPortalEvents.
@@ -17,10 +19,12 @@ import co.sblock.events.region.SblockTravelAgent;
  */
 public class PortalListener extends SblockListener {
 
+	private final Protections protections;
 	private final SblockTravelAgent agent;
 
 	public PortalListener(Sblock plugin) {
 		super(plugin);
+		this.protections = plugin.getModule(Protections.class);
 		agent = new SblockTravelAgent();
 	}
 
@@ -40,8 +44,8 @@ public class PortalListener extends SblockListener {
 			return;
 		}
 		agent.reset();
-		Block portal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
-		if (portal == null) {
+		Block fromPortal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
+		if (fromPortal == null) {
 			event.setCancelled(true);
 			return;
 		}
@@ -51,15 +55,24 @@ public class PortalListener extends SblockListener {
 			agent.setSearchRadius(1);
 		}
 		event.setPortalTravelAgent(agent);
-		Location center = agent.findCenter(portal);
-		center.setPitch(event.getFrom().getPitch());
-		center.setYaw(event.getFrom().getYaw());
-		event.setFrom(center);
-		agent.setFrom(center.getBlock());
+		Location fromCenter = agent.findCenter(fromPortal);
+		fromCenter.setPitch(event.getFrom().getPitch());
+		fromCenter.setYaw(event.getFrom().getYaw());
+		event.setFrom(fromCenter);
+		agent.setFrom(fromCenter.getBlock());
 		Location to = agent.getTo(event.getFrom());
 		if (to == null) {
 			event.setCancelled(true);
 			return;
+		}
+		Location toPortal = agent.findPortal(to);
+		if (toPortal == null) {
+			for (ProtectionHook hook : protections.getHooks()) {
+				if (hook.isProctected(to)) {
+					event.setCancelled(true);
+					return;
+				}
+			}
 		}
 		event.setTo(to);
 	}
