@@ -325,7 +325,11 @@ public class AsyncChatListener extends SblockListener {
 		Iterator<Player> iterator = event.getRecipients().iterator();
 		PlayerData data = dataStore.getPlayerData(player.getUniqueId());
 		while (iterator.hasNext()) {
-			UUID uuid = iterator.next().getUniqueId();
+			Player recipient = iterator.next();
+			UUID uuid = recipient.getUniqueId();
+			if (recipient.hasPermission("griefprevention.notignorable")) {
+				continue;
+			}
 			if (data.ignoredPlayers.containsKey(uuid)) {
 				iterator.remove();
 				continue;

@@ -25,7 +25,7 @@ public class GristCommand extends SblockCommand {
 		super(plugin, "grist");
 		this.effects = plugin.getModule(Effects.class);
 		this.setDescription("Grist-related operations.");
-		this.setUsage("/grist [cost|(level)L|experience], no arguments for hand's grist cost");
+		this.setUsage("/grist [cost|(level)L|experience], no arguments for current grist");
 	}
 
 	@Override
