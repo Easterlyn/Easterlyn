@@ -40,7 +40,7 @@ public class JoinListener extends SblockListener {
 		this.events = plugin.getModule(Events.class);
 		this.users = plugin.getModule(Users.class);
 		list = new WrapperPlayServerPlayerListHeaderFooter();
-		list.setHeader(WrappedChatComponent.fromText(ChatColor.DARK_AQUA + "Welcome to " + ChatColor.GOLD + "Sblock Alpha"));
+		list.setHeader(WrappedChatComponent.fromText(ChatColor.GOLD + "Welcome to " + ChatColor.DARK_AQUA + "Sblock Beta"));
 		list.setFooter(WrappedChatComponent.fromText(ChatColor.YELLOW + "Enjoy your stay!"));
 	}
 

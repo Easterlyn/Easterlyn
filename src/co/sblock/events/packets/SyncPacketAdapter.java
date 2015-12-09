@@ -28,7 +28,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 		this.events = plugin.getModule(Events.class);
 
 		// Sblock Alpha: 1.8 - X/Y
-		version = ChatColor.GOLD + "Sblock Alpha" + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY
+		version = ChatColor.DARK_AQUA + "Sblock Beta" + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY
 				+ "1.8" + ChatColor.DARK_GRAY + " - %s%s" + ChatColor.DARK_GRAY + "/"
 				+ ChatColor.GREEN + "%s";
 	}

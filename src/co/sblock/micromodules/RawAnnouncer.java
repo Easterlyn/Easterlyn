@@ -256,10 +256,10 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		component = new TextComponent("ALPHA");
-		component.setColor(ChatColor.GOLD);
+		component = new TextComponent("beta");
+		component.setColor(ChatColor.DARK_AQUA);
 		component.setBold(true);
-		hover.setText("We reserve the right to fuck up badly.");
+		hover.setText("We reserve the right to fuck up a little.");
 		hover.setColor(ChatColor.DARK_RED);
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/report "));
