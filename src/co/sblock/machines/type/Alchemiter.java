@@ -12,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -150,9 +151,15 @@ public class Alchemiter extends Machine {
 			// Color code + "Grist cost: " = 14 chars
 			int expCost = Integer.valueOf(top.getItem(1).getItemMeta().getDisplayName().substring(14));
 			Experience.changeExp(player, -expCost);
-			player.updateInventory();
 		}
 		return false;
+	}
+
+	@Override
+	public boolean handleClick(InventoryDragEvent event, ConfigurationSection storage) {
+		updateInventory(event.getWhoClicked().getUniqueId());
+		// Raw slot 1 = second slot of top inventory
+		return event.getRawSlots().contains(1);
 	}
 
 	/**

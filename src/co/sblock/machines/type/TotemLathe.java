@@ -11,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -145,6 +146,12 @@ public class TotemLathe extends Machine	{
 		top.setItem(1, InventoryUtils.decrement(top.getItem(1), decrement));
 		player.updateInventory();
 		return true;
+	}
+
+	@Override
+	public boolean handleClick(InventoryDragEvent event, ConfigurationSection storage) {
+		updateInventory(event.getWhoClicked().getUniqueId());
+		return false;
 	}
 
 	/**
