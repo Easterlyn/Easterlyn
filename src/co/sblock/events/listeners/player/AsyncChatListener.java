@@ -319,22 +319,23 @@ public class AsyncChatListener extends SblockListener {
 			}
 		}
 
-		// Fix for GP issue: SoftMuted players cannot ignore others - don't return as soon as softmute is handled.
-
 		// Don't send messages to players ignoring sender or who the sender is ignoring
 		Iterator<Player> iterator = event.getRecipients().iterator();
-		PlayerData data = dataStore.getPlayerData(player.getUniqueId());
+		PlayerData senderData = dataStore.getPlayerData(player.getUniqueId());
+		boolean ignorable = !player.hasPermission("griefprevention.notignorable");
 		while (iterator.hasNext()) {
 			Player recipient = iterator.next();
 			UUID uuid = recipient.getUniqueId();
-			if (recipient.hasPermission("griefprevention.notignorable")) {
-				continue;
+			if (ignorable) {
+				if (dataStore.getPlayerData(uuid).ignoredPlayers.containsKey(player.getUniqueId())) {
+					iterator.remove();
+					continue;
+				}
+				if (recipient.hasPermission("griefprevention.notignorable")) {
+					continue;
+				}
 			}
-			if (data.ignoredPlayers.containsKey(uuid)) {
-				iterator.remove();
-				continue;
-			}
-			if (dataStore.getPlayerData(uuid).ignoredPlayers.containsKey(player.getUniqueId())) {
+			if (senderData.ignoredPlayers.containsKey(uuid)) {
 				iterator.remove();
 				continue;
 			}
