@@ -42,7 +42,7 @@ public class SpectateCommand extends SblockCommand {
 			permission = new Permission("sblock.command.spectate.nocooldown", PermissionDefault.OP);
 			Bukkit.getPluginManager().addPermission(permission);
 		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.spectate.nocooldown");
+			permission = Bukkit.getPluginManager().getPermission("sblock.command.spectate.unrestricted");
 			permission.setDefault(PermissionDefault.OP);
 		}
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
