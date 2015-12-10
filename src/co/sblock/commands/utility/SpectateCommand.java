@@ -39,7 +39,7 @@ public class SpectateCommand extends SblockCommand {
 				+ "To allow players to spectate to you, use /spectate allow");
 		Permission permission;
 		try {
-			permission = new Permission("sblock.command.spectate.nocooldown", PermissionDefault.OP);
+			permission = new Permission("sblock.command.spectate.unrestricted", PermissionDefault.OP);
 			Bukkit.getPluginManager().addPermission(permission);
 		} catch (IllegalArgumentException e) {
 			permission = Bukkit.getPluginManager().getPermission("sblock.command.spectate.unrestricted");
