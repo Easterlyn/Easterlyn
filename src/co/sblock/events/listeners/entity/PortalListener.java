@@ -68,7 +68,7 @@ public class PortalListener extends SblockListener {
 		Location toPortal = agent.findPortal(to);
 		if (toPortal == null) {
 			for (ProtectionHook hook : protections.getHooks()) {
-				if (hook.isProctected(to)) {
+				if (hook.isProtected(to)) {
 					event.setCancelled(true);
 					return;
 				}

@@ -15,10 +15,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.ComplexEntityPart;
+import org.bukkit.entity.ComplexLivingEntity;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Explosive;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -278,29 +282,13 @@ public class Transportalizer extends Machine {
 			if (!entity.getLocation().getBlock().equals(source.getBlock())) {
 				continue;
 			}
-			if (entity instanceof Player) {
-				for (ProtectionHook hook : protections.getHooks()) {
-					if (!hook.canUseButtonsAt(event.getPlayer(), remote)) {
-						event.getPlayer().sendMessage(Color.BAD + "You do not have access to the location specified!");
-						return false;
-					}
-				}
-				if (source == remote && !event.getPlayer().getUniqueId().equals(entity.getUniqueId())) {
-					Player targetPlayer = (Player) entity;
-					event.getPlayer().sendMessage(String.format("%1$sConfirming transportalization with %2$s%3$s%1$s!",
-							Color.GOOD, Color.GOOD_EMPHASIS, targetPlayer.getDisplayName()));
-					targetPlayer.sendMessage(String.format("%1$s%2$s %3$swould like to transportalize you!"
-							+ "\nTo accept, use %4$s/tpyes%3$s. To decline, use %4$s/tpno%3$s.", Color.GOOD_EMPHASIS,
-							event.getPlayer().getDisplayName(), Color.GOOD, Color.COMMAND));
-					requests.put(targetPlayer.getUniqueId(), new TransportalizationRequest(storage, source, target, cost));
+			if (source == remote) {
+				if (!canPull(event.getPlayer(), entity, source, target, storage, cost)) {
 					return false;
 				}
-			} else if (entity instanceof Monster || entity instanceof TNTPrimed) {
-				for (ProtectionHook hook : protections.getHooks()) {
-					if (!hook.canBuildAt(event.getPlayer(), remote)) {
-						event.getPlayer().sendMessage(Color.BAD + "You do not have access to the location specified!");
-						return false;
-					}
+			} else {
+				if (!canPush(event.getPlayer(), entity, target)) {
+					return false;
 				}
 			}
 			setFuel(storage, fuel - cost);
@@ -308,6 +296,76 @@ public class Transportalizer extends Machine {
 			return false;
 		}
 		return false;
+	}
+
+	private boolean canPush(Player player, Entity entity, Location to) {
+		if (entity instanceof Player) {
+			// Sender must have button access to send players
+			for (ProtectionHook hook : protections.getHooks()) {
+				if (!hook.canUseButtonsAt(player, to)) {
+					player.sendMessage(Color.BAD + "You do not have access to the location specified!");
+					return false;
+				}
+			}
+			return true;
+		}
+		if (entity instanceof Monster || entity instanceof Explosive || entity instanceof ExplosiveMinecart) {
+			// Hostiles, TNT, wither projectiles, fireballs, etc. require build permissions
+			for (ProtectionHook hook : protections.getHooks()) {
+				if (!hook.canBuildAt(player, to)) {
+					player.sendMessage(Color.BAD + "You do not have access to the location specified!");
+					return false;
+				}
+			}
+			return true;
+		}
+		// Ender dragon or ender dragon parts
+		if (entity instanceof ComplexLivingEntity || entity instanceof ComplexEntityPart) {
+			player.sendMessage(Color.BAD + "Great effort, but you can't transportalize a dragon.");
+			return false;
+		}
+		for (ProtectionHook hook : protections.getHooks()) {
+			if (!hook.canMobsSpawn(to) && !hook.canBuildAt(player, to)) {
+				player.sendMessage(Color.BAD + "Transportalizers cannot send non-players to the location specified.!");
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean canPull(Player player, Entity entity, Location from, Location to,
+			ConfigurationSection storage, int cost) {
+		if (entity instanceof Player) {
+			if (!player.getUniqueId().equals(entity.getUniqueId())) {
+				Player targetPlayer = (Player) entity;
+				player.sendMessage(String.format("%1$sConfirming transportalization with %2$s%3$s%1$s!",
+						Color.GOOD, Color.GOOD_EMPHASIS, targetPlayer.getDisplayName()));
+				targetPlayer.sendMessage(String.format("%1$s%2$s %3$swould like to transportalize you!"
+						+ "\nTo accept, use %4$s/tpyes%3$s. To decline, use %4$s/tpno%3$s.",
+						Color.GOOD_EMPHASIS, player.getDisplayName(), Color.GOOD, Color.COMMAND));
+				requests.put(targetPlayer.getUniqueId(), new TransportalizationRequest(storage, from, to, cost));
+				return false;
+			}
+			return true;
+		}
+		if (entity instanceof ArmorStand) {
+			// Pulling armor stands from an area requires build trust
+			for (ProtectionHook hook : protections.getHooks()) {
+				if (!hook.canBuildAt(player, to)) {
+					player.sendMessage(Color.BAD + "You do not have access to the location specified!");
+					return false;
+				}
+			}
+			return true;
+		}
+		// Pulling out of a protected area requires container access
+		for (ProtectionHook hook : protections.getHooks()) {
+			if (!hook.canOpenChestsAt(player, to)) {
+				player.sendMessage(Color.BAD + "You do not have access to the location specified!");
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
