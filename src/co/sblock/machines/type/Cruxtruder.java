@@ -60,10 +60,9 @@ public class Cruxtruder extends Machine {
 				event.getBlock().setType(Material.GLASS);
 			}
 			broken.getWorld().dropItemNaturally(broken.add(0.5, 1, 0.5), CruxiteDowel.getDowel());
-		} else {
-			super.handleBreak(event, storage);
+			return true;
 		}
-		return true;
+		return super.handleBreak(event, storage);
 	}
 
 	@Override

@@ -4,7 +4,9 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -15,6 +17,7 @@ import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Direction;
+import co.sblock.utilities.InventoryUtils;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -38,27 +41,30 @@ public class PlaceListener extends SblockListener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 
+		Player player = event.getPlayer();
 		Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(event.getBlock());
 		if (pair != null) {
 			// Block registered as part of a machine. Most likely removed by explosion or similar.
 			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(Color.BAD + "You decide against fussing with the internals of this machine.");
+			player.sendMessage(Color.BAD + "You decide against fussing with the internals of this machine.");
 		}
 
 		// Machine place logic
 		for (Entry<String, Machine> entry : machines.getMachinesByName().entrySet()) {
 			if (entry.getValue().getUniqueDrop().isSimilar(event.getItemInHand())) {
-				try {
-					pair = machines.addMachine(event.getBlock().getLocation(),
-							entry.getKey(), event.getPlayer().getUniqueId(),
-							Direction.getFacingDirection(event.getPlayer()));
-					pair.getLeft().assemble(event, pair.getRight());
-				} catch (NullPointerException e) {
-					event.setBuild(false);
-					event.setCancelled(true);
+				pair = machines.addMachine(event.getBlock().getLocation(),
+						entry.getKey(), event.getPlayer().getUniqueId(),
+						Direction.getFacingDirection(event.getPlayer()));
+				event.setCancelled(true);
+				if (pair == null) {
+					return;
 				}
+				if (player.getGameMode() != GameMode.CREATIVE) {
+					player.setItemInHand(InventoryUtils.decrement(player.getItemInHand(), 1));
+				}
+				pair.getLeft().assemble(event, pair.getRight());
 				break;
 			}
 		}

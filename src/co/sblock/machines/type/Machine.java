@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
@@ -187,13 +188,40 @@ public abstract class Machine {
 	protected void assemble(Location key, Direction direction, ConfigurationSection storage) {
 		HashMap<Location, MaterialData> buildData = shape.getBuildLocations(key, direction);
 		for (Entry<Location, MaterialData> entry : buildData.entrySet()) {
-			Block block = entry.getKey().getBlock();
-			if (block.isEmpty()) {
-				block.setType(entry.getValue().getItemType(), false);
+			if (key.equals(entry.getKey())) {
+				// Key cannot be set instantly, it must be set on a delay
+				// A cancelled BlockPlaceEvent results in the block being restored to its previous state.
+				// Additionally, keys with tile entities (Looking at you, Transportalizer)
+				// can cause damage which is not fixed until the tile entity is accessed.
+				assembleKeyLater(key, entry.getValue(), storage);
+				continue;
 			}
-			block.getState().setData(entry.getValue());
+			Block block = entry.getKey().getBlock();
+			block.setType(entry.getValue().getItemType(), false);
+			BlockState state = block.getState();
+			if (!state.getData().equals(entry.getValue())) {
+				state.setData(entry.getValue());
+				state.update(true);
+			}
 		}
-		this.triggerPostAssemble(buildData, storage);
+	}
+
+	protected void assembleKeyLater(Location key, MaterialData data, ConfigurationSection storage) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Block block = key.getBlock();
+				if (!getMachines().isMachine(block)) {
+					return;
+				}
+				block.setType(data.getItemType(), false);
+				BlockState state = block.getState();
+				if (!state.getData().equals(data)) {
+					state.setData(data);
+					state.update(true);
+				}
+			}
+		}.runTask(getPlugin());
 	}
 
 	/**
@@ -257,9 +285,9 @@ public abstract class Machine {
 		if (!meetsAdditionalBreakConditions(event, storage) && !event.getPlayer().hasPermission("sblock.denizen")) {
 			return true;
 		}
-		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !isFree()) {
+		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
 			Location key = getKey(storage);
-			key.getWorld().dropItemNaturally(key, getUniqueDrop());
+			key.getWorld().dropItemNaturally(key.add(0.5, 0, 0.5), getUniqueDrop());
 		}
 		remove(storage);
 		return true;
@@ -413,28 +441,6 @@ public abstract class Machine {
 	public boolean handleClick(InventoryDragEvent event, ConfigurationSection storage) {
 		event.setResult(Result.DENY);
 		return true;
-	}
-
-	/**
-	 * Triggers postAssemble method on a synchronous 0 tick delay.
-	 */
-	private void triggerPostAssemble(HashMap<Location, MaterialData> buildData, ConfigurationSection storage) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			@Override
-			public void run() {
-				for (Entry<Location, MaterialData> entry : buildData.entrySet()) {
-					Block block = entry.getKey().getBlock();
-					if (block.getType() != entry.getValue().getItemType()) {
-						block.setType(entry.getValue().getItemType(), false);
-					}
-					BlockState state = block.getState();
-					if (!state.getData().equals(entry.getValue())) {
-						state.setData(entry.getValue());
-					}
-					state.update(true);
-				}
-			}
-		});
 	}
 
 	/**

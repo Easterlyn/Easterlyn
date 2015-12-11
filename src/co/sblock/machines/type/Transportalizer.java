@@ -145,7 +145,7 @@ public class Transportalizer extends Machine {
 		} else {
 			event.getItem().teleport(
 					key.add(Shape.getRelativeVector(
-							getDirection(storage).getRelativeDirection(Direction.SOUTH),
+							getDirection(storage).getRelativeDirection(Direction.NORTH),
 							new Vector(0.5, 0.5, -1.5))));
 		}
 		return true;
