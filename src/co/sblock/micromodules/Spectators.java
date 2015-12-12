@@ -55,7 +55,9 @@ public class Spectators extends Module {
 						player.sendMessage(Color.GOOD + "As your link to the astral plane fades, you awaken with a jolt.");
 					}
 					// 100 blocks from starting location
-					if (spectators.get(player.getUniqueId()).distanceSquared(player.getLocation()) < 10000) {
+					Location start = spectators.get(player.getUniqueId());
+					if (start.getWorld().equals(player.getWorld())
+							&& start.distanceSquared(player.getLocation()) < 10000) {
 						continue;
 					}
 					// 100 blocks from any player
@@ -63,7 +65,14 @@ public class Spectators extends Module {
 						if (nearby.equals(player)) {
 							continue;
 						}
-						if (player.getLocation().distanceSquared(nearby.getLocation()) < 10000) {
+						Location playerLoc;
+						if (isSpectator(nearby.getUniqueId())) {
+							playerLoc = spectators.get(nearby.getUniqueId());
+						} else {
+							playerLoc = nearby.getLocation();
+						}
+						if (playerLoc.getWorld().equals(player.getWorld())
+								&& player.getLocation().distanceSquared(playerLoc) < 10000) {
 							continue nextSpectator;
 						}
 					}
