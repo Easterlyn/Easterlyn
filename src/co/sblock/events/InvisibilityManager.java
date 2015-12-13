@@ -68,7 +68,7 @@ public class InvisibilityManager {
 	private void setInvisible(Player player, int duration) {
 		Team team = player.getScoreboard().getEntryTeam(player.getName());
 		if (team == null) {
-			Users.team(player);
+			Users.team(player, null);
 			team = player.getScoreboard().getEntryTeam(player.getName());
 		}
 		team.setNameTagVisibility(NameTagVisibility.NEVER);
@@ -88,7 +88,7 @@ public class InvisibilityManager {
 	private void setVisible(Player player) {
 		Team team = player.getScoreboard().getEntryTeam(player.getName());
 		if (team == null) {
-			Users.team(player);
+			Users.team(player, null);
 			team = player.getScoreboard().getEntryTeam(player.getName());
 		}
 		team.setNameTagVisibility(NameTagVisibility.ALWAYS);

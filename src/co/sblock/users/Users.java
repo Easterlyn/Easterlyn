@@ -2,7 +2,6 @@ package co.sblock.users;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
@@ -49,12 +48,9 @@ public class Users extends Module {
 					}
 				}).build(new CacheLoader<UUID, User>() {
 					@Override
-					public User load(UUID uuid) throws Exception {
-						if (uuid == null) {
-							throw new NullPointerException();
-						}
+					public User load(UUID uuid) {
 						User user = User.load(getPlugin(), uuid);
-						team(user.getPlayer());
+						team(user.getPlayer(), null);
 						return user;
 					}
 				});
@@ -62,9 +58,9 @@ public class Users extends Module {
 
 	@Override
 	protected void onEnable() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			getUser(p.getUniqueId());
-			team(p);
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			getUser(player.getUniqueId());
+			team(player, null);
 		}
 	}
 
@@ -87,15 +83,11 @@ public class Users extends Module {
 	 * Fetch a User. A User is always returned, even if the Player by the given UUID is not online.
 	 * 
 	 * @param uuid
+	 * 
 	 * @return the User
 	 */
 	public User getUser(UUID uuid) {
-		try {
-			return userCache.get(uuid);
-		} catch (ExecutionException e) {
-			// This shouldn't be possible, fail hard and fast.
-			throw new RuntimeException(e);
-		}
+		return userCache.getUnchecked(uuid);
 	}
 
 	public Set<User> getOnlineUsers() {
@@ -103,15 +95,18 @@ public class Users extends Module {
 	}
 
 	/**
-	 * Add a Player to their group's Team.
+	 * Add a Player to a Team colored based on permissions.
 	 * 
 	 * @param player the Player
 	 */
-	public static void team(Player player) {
+	public static void team(Player player, String prefix) {
 		if (player == null) {
 			return;
 		}
 		StringBuilder prefixBuilder = new StringBuilder();
+		if (prefix != null && !prefix.isEmpty()) {
+			prefixBuilder.append(prefix);
+		}
 		for (net.md_5.bungee.api.ChatColor color : Color.COLORS) {
 			if (player.hasPermission("sblockchat." + color.name().toLowerCase())) {
 				prefixBuilder.append(color);
@@ -146,7 +141,9 @@ public class Users extends Module {
 		if (team == null) {
 			team = board.registerNewTeam(teamName);
 		}
-		team.setPrefix(prefixBuilder.toString());
+		prefix = prefixBuilder.length() <= 16 ? prefixBuilder.toString()
+				: prefixBuilder.substring(prefixBuilder.length() - 16, prefixBuilder.length());
+		team.setPrefix(prefix);
 		team.addEntry(player.getName());
 
 		Objective objective = board.getObjective("deaths");
