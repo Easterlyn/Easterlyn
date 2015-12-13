@@ -50,6 +50,7 @@ import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.machines.Machines;
+import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
@@ -104,6 +105,7 @@ public class Sblock extends JavaPlugin {
 		addModule(new Discord(this));
 		addModule(new Chat(this));
 		addModule(new RawAnnouncer(this));
+		addModule(new AwayFromKeyboard(this));
 
 		addModule(new Users(this));
 

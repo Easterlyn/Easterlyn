@@ -28,6 +28,7 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.machines.type.computer.EmailWriter;
 import co.sblock.machines.type.computer.Programs;
+import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -39,12 +40,14 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class InventoryClickListener extends SblockListener {
 
+	private final AwayFromKeyboard afk;
 	private final Captcha captcha;
 	private final Machines machines;
 	private final EmailWriter mail;
 
 	public InventoryClickListener(Sblock plugin) {
 		super(plugin);
+		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.captcha = plugin.getModule(Captcha.class);
 		this.machines = plugin.getModule(Machines.class);
 		this.mail = (EmailWriter) Programs.getProgramByName("EmailWriter");
@@ -278,6 +281,10 @@ public class InventoryClickListener extends SblockListener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onInventoryClickLowestPriority(InventoryClickEvent event) {
+		if (event.getWhoClicked() instanceof Player) {
+			afk.extendActivity((Player) event.getWhoClicked());
+		}
+
 		ItemStack clicked = event.getCurrentItem();
 		if (event.getWhoClicked().hasPermission("sblock.felt")) {
 			return;

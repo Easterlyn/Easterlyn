@@ -28,6 +28,7 @@ import co.sblock.chat.message.MessageBuilder;
 import co.sblock.discord.Discord;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.events.listeners.SblockListener;
+import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.users.User;
 import co.sblock.users.Users;
@@ -57,6 +58,7 @@ public class AsyncChatListener extends SblockListener {
 			"Testing complete. Proceeding with operation.", "A critical fault has been discovered while testing.",
 			"Error: Test results contaminated.", "tset", "PONG."};
 
+	private final AwayFromKeyboard afk;
 	private final Cooldowns cooldowns;
 	private final Discord discord;
 	private final Users users;
@@ -67,6 +69,7 @@ public class AsyncChatListener extends SblockListener {
 
 	public AsyncChatListener(Sblock plugin) {
 		super(plugin);
+		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.discord = plugin.getModule(Discord.class);
 		this.users = plugin.getModule(Users.class);
@@ -124,6 +127,8 @@ public class AsyncChatListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
+		afk.extendActivity(event.getPlayer());
+
 		Message message;
 		boolean checkSpam = true;
 		if (event instanceof SblockAsyncChatEvent) {

@@ -109,11 +109,7 @@ public class OopsCommand extends SblockCommand {
 			}
 		}
 
-		// Allow more fuzziness for longer commands
-		if (matchLevel < (3 + correctCommandName.length() / 4)) {
-			return correctCommandName;
-		}
-		return null;
+		return correctCommandName;
 	}
 
 	private List<String> getAllAliases(Command command) {

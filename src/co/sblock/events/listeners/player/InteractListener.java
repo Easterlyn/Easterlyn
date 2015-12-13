@@ -24,6 +24,7 @@ import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
+import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.micromodules.SleepVote;
 import co.sblock.users.Users;
@@ -37,6 +38,7 @@ import co.sblock.utilities.InventoryUtils;
  */
 public class InteractListener extends SblockListener {
 
+	private final AwayFromKeyboard afk;
 	private final Captcha captcha;
 	private final Cooldowns cooldowns;
 	private final Effects effects;
@@ -47,6 +49,7 @@ public class InteractListener extends SblockListener {
 
 	public InteractListener(Sblock plugin) {
 		super(plugin);
+		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.captcha = plugin.getModule(Captcha.class);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.effects = plugin.getModule(Effects.class);
@@ -88,6 +91,8 @@ public class InteractListener extends SblockListener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		afk.extendActivity(event.getPlayer());
+
 		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
 			// Right clicking air is cancelled by default as there is no result.
 			return;

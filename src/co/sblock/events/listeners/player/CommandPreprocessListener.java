@@ -12,6 +12,7 @@ import co.sblock.commands.utility.OopsCommand;
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
 import co.sblock.events.listeners.SblockListener;
+import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.Spectators;
 
 /**
@@ -21,6 +22,7 @@ import co.sblock.micromodules.Spectators;
  */
 public class CommandPreprocessListener extends SblockListener {
 
+	private final AwayFromKeyboard afk;
 	private final Chat chat;
 	private final Discord discord;
 	private final Spectators spectators;
@@ -28,6 +30,7 @@ public class CommandPreprocessListener extends SblockListener {
 
 	public CommandPreprocessListener(Sblock plugin) {
 		super(plugin);
+		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.chat = plugin.getModule(Chat.class);
 		this.discord = plugin.getModule(Discord.class);
 		this.spectators = plugin.getModule(Spectators.class);
@@ -41,6 +44,8 @@ public class CommandPreprocessListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		afk.extendActivity(event.getPlayer());
+
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
 		if (!event.getPlayer().hasPermission("sblock.denizen") && 0 < colon && (colon < space || space < 0)) {
