@@ -57,14 +57,15 @@ public class PlaceListener extends SblockListener {
 				pair = machines.addMachine(event.getBlock().getLocation(),
 						entry.getKey(), event.getPlayer().getUniqueId(),
 						Direction.getFacingDirection(event.getPlayer()));
-				event.setCancelled(true);
 				if (pair == null) {
+					event.setCancelled(true);
 					return;
 				}
-				if (player.getGameMode() != GameMode.CREATIVE) {
+				pair.getLeft().assemble(event, pair.getRight());
+				if (!event.isCancelled() && player.getGameMode() != GameMode.CREATIVE) {
 					player.setItemInHand(InventoryUtils.decrement(player.getItemInHand(), 1));
 				}
-				pair.getLeft().assemble(event, pair.getRight());
+				event.setCancelled(true);
 				break;
 			}
 		}
