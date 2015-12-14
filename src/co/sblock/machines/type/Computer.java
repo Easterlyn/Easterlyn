@@ -2,11 +2,13 @@ package co.sblock.machines.type;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -44,6 +46,27 @@ public class Computer extends Machine implements InventoryHolder {
 		drop.setItemMeta(meta);
 
 		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
+	}
+
+	/**
+	 * Handles Machine deconstruction.
+	 * 
+	 * @param event the BlockBreakEvent
+	 * 
+	 * @return true if event should be cancelled
+	 */
+	@Override
+	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
+		if (!getOwner(storage).equals(event.getPlayer().getUniqueId())
+				&& !event.getPlayer().hasPermission("sblock.denizen")) {
+			return true;
+		}
+		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+			Location key = getKey(storage);
+			key.getWorld().dropItemNaturally(key.add(0.5, 0, 0.5), getUniqueDrop());
+		}
+		remove(storage);
+		return true;
 	}
 
 	@Override

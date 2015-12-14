@@ -370,9 +370,6 @@ public class Transportalizer extends Machine {
 
 	@Override
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
-		if (!meetsAdditionalBreakConditions(event, storage) && !event.getPlayer().hasPermission("sblock.denizen")) {
-			return true;
-		}
 		Location key = getKey(storage);
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !isFree()) {
 			key.getWorld().dropItemNaturally(key, getUniqueDrop());

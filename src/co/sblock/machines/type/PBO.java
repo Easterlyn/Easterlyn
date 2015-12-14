@@ -3,7 +3,6 @@ package co.sblock.machines.type;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -33,11 +32,6 @@ public class PBO extends Machine {
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Perfect Building Object");
 		drop.setItemMeta(meta);
-	}
-
-	@Override
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event, ConfigurationSection storage) {
-		return true;
 	}
 
 	@Override

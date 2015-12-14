@@ -2,7 +2,6 @@ package co.sblock.machines.type;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -49,11 +48,6 @@ public class PGO extends Machine {
 		}
 		// Future features: Make wall signs etc. valid and copy text
 		super.assemble(event, storage);
-	}
-
-	@Override
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event, ConfigurationSection storage) {
-		return true;
 	}
 
 	@Override

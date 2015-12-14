@@ -149,19 +149,6 @@ public abstract class Machine {
 	}
 
 	/**
-	 * If a Player attempts to break a Machine, this condition must be met.
-	 * <p>
-	 * For most Machines, placing Player name is compared to the owner.
-	 * 
-	 * @param event the BlockPlaceEvent
-	 * @return boolean
-	 */
-	public boolean meetsAdditionalBreakConditions(BlockBreakEvent event, ConfigurationSection storage) {
-		return this.isFree() || event.getPlayer().hasPermission("sblock.denizen")
-				|| event.getPlayer().getUniqueId().toString().equals(storage.getString("owner"));
-	}
-
-	/**
 	 * Sets up the Machine Block configuration using a BlockPlaceEvent.
 	 * 
 	 * @param event the BlockPlaceEvent
@@ -282,9 +269,6 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
-		if (!meetsAdditionalBreakConditions(event, storage) && !event.getPlayer().hasPermission("sblock.denizen")) {
-			return true;
-		}
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
 			Location key = getKey(storage);
 			key.getWorld().dropItemNaturally(key.add(0.5, 0, 0.5), getUniqueDrop());
