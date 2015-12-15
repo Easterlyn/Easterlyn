@@ -7,14 +7,17 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
+import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.users.User;
 import co.sblock.users.Users;
@@ -137,8 +140,9 @@ public class Message {
 		}
 
 		Sblock plugin = channel.getPlugin();
-		Users users = plugin.getModule(Users.class);
+		AwayFromKeyboard afk = plugin.getModule(AwayFromKeyboard.class);
 		Cooldowns cooldowns = plugin.getModule(Cooldowns.class);
+		Users users = plugin.getModule(Users.class);
 
 		for (T object : recipients) {
 			UUID uuid;
@@ -183,7 +187,13 @@ public class Message {
 				patternString.append(highlightString);
 			}
 			patternString.append(")(\\W|$)");
-			Pattern pattern = Pattern.compile(patternString.toString(), Pattern.CASE_INSENSITIVE);
+			Pattern pattern;
+			try {
+				pattern = Pattern.compile(patternString.toString(), Pattern.CASE_INSENSITIVE);
+			} catch (PatternSyntaxException e) {
+				// Display name most likely contains unescaped characters in a nick channel
+				pattern = Pattern.compile(u.getPlayerName(), Pattern.CASE_INSENSITIVE);
+			}
 			for (BaseComponent component : message.getExtra()) {
 				TextComponent text = (TextComponent) component;
 				String componentMessage = text.getText();
@@ -204,6 +214,13 @@ public class Message {
 				components.add(new TextComponent(componentMessage.substring(lastEnd)));
 				text.setText("");
 				text.setExtra(components);
+			}
+
+			if (sender != null && highlight && !afk.isActive(player)) {
+				sender.sendMessage(String.format("%s%s %sis away and may not respond!",
+						Color.BAD_PLAYER, player.getDisplayName() != null ? player.getDisplayName()
+								: player.getName(), Color.BAD));
+				// TODO Discord support
 			}
 
 			if (highlight && cooldowns.getRemainder(player, "highlight") == 0

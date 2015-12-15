@@ -41,6 +41,7 @@ import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
 import co.sblock.utilities.PlayerLoader;
+import co.sblock.utilities.RegexUtils;
 
 import me.itsghost.jdiscord.DiscordAPI;
 import me.itsghost.jdiscord.DiscordBuilder;
@@ -229,7 +230,19 @@ public class Discord extends Module {
 		}
 		// TODO allow formatting codes in any chat? Could support markdown rather than &codes.
 		name = ChatColor.stripColor(name);
-		message = ChatColor.stripColor(toEscape.matcher(message).replaceAll("\\\\$1"));
+		message = ChatColor.stripColor(message);
+		if (message.trim().isEmpty()) {
+			return;
+		}
+		StringBuilder builder = new StringBuilder();
+		for (String word : ChatColor.stripColor(message).split("\\s")) {
+			if (!RegexUtils.URL_PATTERN.matcher(word).find()) {
+				word = toEscape.matcher(word).replaceAll("\\\\$1");
+			}
+			builder.append(word).append(' ');
+		}
+		// This is safe, the message must contain at least 1 word
+		message = builder.deleteCharAt(builder.length() - 1).toString();
 		for (String channel : channels) {
 			queue.add(new ImmutableTriple<>(channel, name, message));
 		}

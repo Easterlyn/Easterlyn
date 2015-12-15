@@ -19,6 +19,7 @@ public class AFKCommand extends SblockCommand {
 	public AFKCommand(Sblock plugin) {
 		super(plugin, "afk");
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
+		this.setAliases("away");
 		this.setDescription("Toggle AFK status.");
 		this.setUsage("/afk");
 	}

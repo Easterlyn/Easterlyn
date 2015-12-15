@@ -1,7 +1,11 @@
 package co.sblock.micromodules;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Color;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
 
@@ -19,13 +24,15 @@ import co.sblock.users.Users;
  */
 public class AwayFromKeyboard extends Module {
 
-	private final HashMap<UUID, Location> lastLocations;
+	private final Map<UUID, Location> lastLocations;
+	private final Set<UUID> afkUUIDs;
 
 	private Cooldowns cooldowns;
 
 	public AwayFromKeyboard(Sblock plugin) {
 		super(plugin);
 		this.lastLocations = new HashMap<>();
+		this.afkUUIDs = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 	}
 
 	@Override
@@ -38,17 +45,19 @@ public class AwayFromKeyboard extends Module {
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					checkInactive(player);
 					lastLocations.put(player.getUniqueId(), player.getLocation());
-					// TODO get cooldown, if 0 set -> AFK
+					if (cooldowns.getRemainder(player, getName()) == 0) {
+						setInactive(player);
+					}
 				}
 			}
-		}.runTaskTimer(getPlugin(), 100L, 100L);
+		}.runTaskTimer(getPlugin(), 20L, 20L);
 	}
 
 	private void checkInactive(Player player) {
 		Location last = lastLocations.get(player.getUniqueId());
 		if (last == null) {
 			// New player, not AFK
-			setActive(player, false);
+			setActive(player);
 			return;
 		}
 
@@ -69,7 +78,13 @@ public class AwayFromKeyboard extends Module {
 		double dY = Math.abs(last.getY() - current.getBlockY());
 		double dZ = Math.abs(last.getZ() - current.getBlockZ());
 
-		if (dX <= 5 && dY <= 5 && dZ <= 5) {
+		if (dX < 1 && dY < 1 && dZ < 1) {
+			// Very short move, becoming afk
+			return;
+		}
+
+		if (dX <= 4 && dY <= 4 && dZ <= 4) {
+			// Short move, don't go afk if not afk
 			extendActivity(player);
 			return;
 		}
@@ -86,36 +101,50 @@ public class AwayFromKeyboard extends Module {
 	 */
 	public boolean extendActivity(Player player) {
 		if (cooldowns.getRemainder(player, getName()) > 0) {
-			setActive(player, false);
+			setActive(player);
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Mark a player as not AFK or extend their time before becoming AFK.
+	 * Mark a Player as not AFK or extend their time before becoming AFK.
 	 * 
 	 * @param player the Player
 	 */
 	public void setActive(Player player) {
-		setActive(player, true);
-	}
-
-	private void setActive(Player player, boolean setTeam) {
-		if (setTeam && cooldowns.getRemainder(player, getName()) == 0) {
+		if (afkUUIDs.contains(player.getUniqueId())) {
 			Users.team(player, null);
+			afkUUIDs.remove(player.getUniqueId());
+			player.sendMessage(Color.GOOD + "You are no longer marked as away!");
 		}
 		cooldowns.addCooldown(player, getName(), 300000L);
-		// TODO set -> not AFK
 	}
 
+	/**
+	 * Gets whether or not a Player is AFK.
+	 * 
+	 * @param player the Player
+	 * 
+	 * @return true if the player is not AFK.
+	 */
 	public boolean isActive(Player player) {
-		return cooldowns.getRemainder(player, getName()) > 0;
+		return !afkUUIDs.contains(player.getUniqueId());
 	}
 
+	/**
+	 * Mark a Player as AFK.
+	 * 
+	 * @param player the Player
+	 */
 	public void setInactive(Player player) {
+		if (afkUUIDs.contains(player.getUniqueId())) {
+			return;
+		}
+		afkUUIDs.add(player.getUniqueId());
 		cooldowns.clearCooldown(player, getName());
-		// TODO decision
+		player.sendMessage(Color.GOOD + "You have been marked as away!");
+		Users.team(player, Color.GOOD_EMPHASIS + "[AFK] ");
 	}
 
 	@Override

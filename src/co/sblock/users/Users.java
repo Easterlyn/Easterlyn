@@ -113,7 +113,7 @@ public class Users extends Module {
 				break;
 			}
 		}
-		if (prefixBuilder.length() > 0) {
+		if (prefixBuilder.length() > (prefix == null ? 0 : prefix.length())) {
 			// Do nothing, we've got a fancy override going on
 		} else if (player.hasPermission("sblock.horrorterror")) {
 			prefixBuilder.append(Color.RANK_HORRORTERROR.toString());
