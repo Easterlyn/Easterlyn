@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
@@ -33,6 +34,13 @@ public class AwayFromKeyboard extends Module {
 		super(plugin);
 		this.lastLocations = new HashMap<>();
 		this.afkUUIDs = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+
+		Permission permission = Bukkit.getPluginManager().getPermission("sblock.afk.auto");
+		if (permission == null) {
+			permission = new Permission("sblock.afk.auto");
+			Bukkit.getPluginManager().addPermission(permission);
+		}
+		permission.addParent("sblock.default", true).recalculatePermissibles();
 	}
 
 	@Override
@@ -45,7 +53,8 @@ public class AwayFromKeyboard extends Module {
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					checkInactive(player);
 					lastLocations.put(player.getUniqueId(), player.getLocation());
-					if (cooldowns.getRemainder(player, getName()) == 0) {
+					if (player.hasPermission("sblock.afk.auto")
+							&& cooldowns.getRemainder(player, getName()) == 0) {
 						setInactive(player);
 					}
 				}
