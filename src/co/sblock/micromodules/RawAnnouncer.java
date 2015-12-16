@@ -269,7 +269,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(ChatColor.RED);
 		components.add(component);
 
-		builder.setMessage("Remember, we are in ALPHA! We reserve the right to fuck up badly.",
+		builder.setMessage("Remember, we are in beta! We reserve the right to fuck up a little.",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
