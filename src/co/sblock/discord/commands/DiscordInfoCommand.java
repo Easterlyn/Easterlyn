@@ -70,6 +70,16 @@ public class DiscordInfoCommand extends DiscordCommand {
 		} else {
 			builder.append("none");
 		}
+		List<GroupUser> users = server.getConnectedClients();
+		builder.append("\nClients:\n");
+		if (users.size() > 0) {
+			for (GroupUser user : users) {
+				builder.append(user.getUser().getId()).append(" (").append(user.getUser().getUsername()).append("), ");
+			}
+			builder.delete(builder.length() - 2, builder.length());
+		} else {
+			builder.append("none");
+		}
 		getDiscord().postMessage(getName(), builder.toString(), group.getId());
 		return true;
 	}

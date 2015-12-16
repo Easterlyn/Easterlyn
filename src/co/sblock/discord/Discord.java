@@ -242,7 +242,7 @@ public class Discord extends Module {
 			builder.append(word).append(' ');
 		}
 		// This is safe, the message must contain at least 1 word
-		message = builder.deleteCharAt(builder.length() - 1).toString();
+		message = builder.deleteCharAt(builder.length() - 1).toString().replaceAll("\n", "\n\n");
 		for (String channel : channels) {
 			queue.add(new ImmutableTriple<>(channel, name, message));
 		}
