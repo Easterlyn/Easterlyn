@@ -84,7 +84,7 @@ public class MessageBuilder {
 		NAME_HOVER[8] = component;
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("%1$2s[%2$2s%3$2s%1$2s]%4$2s <%5$2s%6$2s%4$2s> ").append(ChatColor.WHITE).append("%6$2s");
+		sb.append("%1$s[%2$s%3$s%1$s]%4$s <%5$s%6$s%4$s> ").append(ChatColor.WHITE).append("%6$s");
 		CONSOLE_FORMAT = sb.toString();
 		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
 	}
