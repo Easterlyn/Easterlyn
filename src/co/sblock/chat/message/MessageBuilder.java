@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
@@ -454,8 +455,14 @@ public class MessageBuilder {
 			}
 			// Override rank color with scoreboard color if possible
 			try {
-				globalRank = ChatColor.getByChar(Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName()).getPrefix().charAt(1));
-			} catch (IllegalStateException | IllegalArgumentException | NullPointerException e) {
+				Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName());
+				if (team != null && team.getPrefix() != null) {
+					ChatColor color = ChatColor.getByChar(team.getPrefix().charAt(team.getPrefix().length() - 1));
+					if (color != null) {
+						globalRank = color;
+					}
+				}
+			} catch (IllegalStateException | IllegalArgumentException e) {
 				// Scoreboard's screwed up, all good. Rank color will display.
 			}
 			StringBuilder nameBuilder = new StringBuilder();

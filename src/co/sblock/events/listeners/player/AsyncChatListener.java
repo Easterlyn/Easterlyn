@@ -127,7 +127,7 @@ public class AsyncChatListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-		afk.extendActivity(event.getPlayer());
+		afk.setActive(event.getPlayer());
 
 		Message message;
 		boolean checkSpam = true;
