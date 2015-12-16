@@ -31,8 +31,6 @@ import co.sblock.machines.type.computer.Programs;
 import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.utilities.InventoryUtils;
 
-import net.md_5.bungee.api.ChatColor;
-
 /**
  * Listener for InventoryClickEvents.
  * 
@@ -170,18 +168,13 @@ public class InventoryClickListener extends SblockListener {
 
 	// add top
 	private void itemAddTop(InventoryClickEvent event) {
-		// Cruxite items should not be tradeable.
-		if (event.getCursor() != null && event.getCursor().getItemMeta().hasDisplayName()
-				&& event.getCursor().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
-			event.setCancelled(true);
-			return;
-		}
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
 				&& InventoryUtils.isUniqueItem(getPlugin(), event.getCursor())) {
 			event.setResult(Result.DENY);
 		}
+
 	}
 
 	// move top to bottom
@@ -189,12 +182,6 @@ public class InventoryClickListener extends SblockListener {
 
 	// switch top
 	private void itemSwapIntoTop(InventoryClickEvent event) {
-		// Cruxite items should not be tradeable.
-		if (event.getCursor() != null && event.getCursor().getItemMeta().hasDisplayName()
-				&& event.getCursor().getItemMeta().getDisplayName().startsWith(ChatColor.AQUA + "Cruxite ")) {
-			event.setCancelled(true);
-			return;
-		}
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
@@ -281,17 +268,21 @@ public class InventoryClickListener extends SblockListener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onInventoryClickLowestPriority(InventoryClickEvent event) {
+
+		// Extend non-afk status
 		if (event.getWhoClicked() instanceof Player) {
 			afk.extendActivity((Player) event.getWhoClicked());
 		}
 
+		// Remove negative stacks clicked by non-felt
 		ItemStack clicked = event.getCurrentItem();
 		if (event.getWhoClicked().hasPermission("sblock.felt")) {
 			return;
 		}
-		if (clicked != null && clicked.getAmount() < 0) {
+		if (clicked != null && clicked.getAmount() < 1) {
 			event.setCurrentItem(null);
 		}
+
 	}
 
 	/**

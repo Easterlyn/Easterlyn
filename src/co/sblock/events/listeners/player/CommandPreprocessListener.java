@@ -78,11 +78,7 @@ public class CommandPreprocessListener extends SblockListener {
 			return;
 		}
 
-		if (cmd.getName().equals("afk")) {
-			if (chat.testForMute(event.getPlayer())) {
-				event.setCancelled(true);
-			}
-		} else if (cmd.getName().equals("mail")) {
+		if (cmd.getName().equals("mail")) {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("send")
 					&& chat.testForMute(event.getPlayer())) {
 				event.setCancelled(true);
