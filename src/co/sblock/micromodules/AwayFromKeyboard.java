@@ -156,6 +156,23 @@ public class AwayFromKeyboard extends Module {
 		Users.team(player, Color.GOOD_EMPHASIS + "[AFK] ");
 	}
 
+	/**
+	 * Clear a Player's AFK status and tracking.
+	 * 
+	 * @param player the Player
+	 */
+	public void clearActivity(Player player) {
+		UUID uuid = player.getUniqueId();
+		if (afkUUIDs.contains(uuid)) {
+			afkUUIDs.remove(uuid);
+			Users.team(player, null);
+		}
+		if (lastLocations.containsKey(uuid)) {
+			lastLocations.remove(uuid);
+		}
+		cooldowns.clearCooldown(player, getName());
+	}
+
 	@Override
 	protected void onDisable() {
 		for (Player player : Bukkit.getOnlinePlayers()) {

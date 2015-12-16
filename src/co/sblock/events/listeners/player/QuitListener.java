@@ -12,6 +12,7 @@ import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
+import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.SleepVote;
@@ -27,6 +28,7 @@ import co.sblock.utilities.InventoryManager;
  */
 public class QuitListener extends SblockListener {
 
+	private final AwayFromKeyboard afk;
 	private final Discord discord;
 	private final Effects effects;
 	private final Events events;
@@ -37,12 +39,13 @@ public class QuitListener extends SblockListener {
 
 	public QuitListener(Sblock plugin) {
 		super(plugin);
-		discord = plugin.getModule(Discord.class);
-		effects = plugin.getModule(Effects.class);
-		events = plugin.getModule(Events.class);
-		carts = plugin.getModule(FreeCart.class);
-		sleep = plugin.getModule(SleepVote.class);
-		spectators = plugin.getModule(Spectators.class);
+		this.afk = plugin.getModule(AwayFromKeyboard.class);
+		this.discord = plugin.getModule(Discord.class);
+		this.effects = plugin.getModule(Effects.class);
+		this.events = plugin.getModule(Events.class);
+		this.carts = plugin.getModule(FreeCart.class);
+		this.sleep = plugin.getModule(SleepVote.class);
+		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
 	}
 
@@ -57,6 +60,9 @@ public class QuitListener extends SblockListener {
 		if (event.getQuitMessage() != null) {
 			event.setQuitMessage(Color.BAD_PLAYER + event.getPlayer().getDisplayName() + Color.BAD + " ollies outie");
 		}
+
+		// Clear AFK status of player
+		afk.clearActivity(event.getPlayer());
 
 		// Handle reactive Effects that use quits
 		effects.handleEvent(event, event.getPlayer(), true);
