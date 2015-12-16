@@ -64,14 +64,14 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class Discord extends Module {
 
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	private final Pattern toEscape = Pattern.compile("([\\_~*])");
+	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
+			spaceword = Pattern.compile("(\\s*)(\\S*)"), mention = Pattern.compile("<@(\\d+)>");
 	private final DiscordAPI discord;
 	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private Users users;
 	private MessageBuilder builder;
-	private Pattern mention;
 	private ChannelManager manager;
 
 	public Discord(Sblock plugin) {
@@ -153,7 +153,6 @@ public class Discord extends Module {
 				.setNameHover(TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
 						+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
 						+ Color.GOOD + "Channel: #main"));
-		mention = Pattern.compile("<@(\\d+)>");
 		discord.getEventManager().registerListener(new DiscordChatListener(this));
 	}
 
@@ -235,14 +234,17 @@ public class Discord extends Module {
 			return;
 		}
 		StringBuilder builder = new StringBuilder();
-		for (String word : ChatColor.stripColor(message).split("\\s")) {
+		Matcher matcher = spaceword.matcher(message);
+		while (matcher.find()) {
+			builder.append(matcher.group(1));
+			String word = matcher.group(2);
 			if (!RegexUtils.URL_PATTERN.matcher(word).find()) {
 				word = toEscape.matcher(word).replaceAll("\\\\$1");
 			}
-			builder.append(word).append(' ');
+			builder.append(word);
 		}
 		// This is safe, the message must contain at least 1 word
-		message = builder.deleteCharAt(builder.length() - 1).toString().replaceAll("\n", "\n\n");
+		message = builder.deleteCharAt(builder.length() - 1).toString();
 		for (String channel : channels) {
 			queue.add(new ImmutableTriple<>(channel, name, message));
 		}
