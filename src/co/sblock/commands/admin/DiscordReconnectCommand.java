@@ -26,7 +26,7 @@ public class DiscordReconnectCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (discord.reconnect()) {
+		if (discord.disable().enable().isEnabled()) {
 			sender.sendMessage("Reconnected successfully.");
 		} else {
 			sender.sendMessage("Reconnection failed. Check console.");

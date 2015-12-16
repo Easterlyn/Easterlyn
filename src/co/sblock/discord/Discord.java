@@ -67,31 +67,18 @@ public class Discord extends Module {
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
 			spaceword = Pattern.compile("(\\s*)(\\S*)"), mention = Pattern.compile("<@(\\d+)>");
-	private final DiscordAPI discord;
 	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
+	private DiscordAPI discord;
 	private Users users;
-	private MessageBuilder builder;
 	private ChannelManager manager;
+	private MessageBuilder builder;
 	private BukkitTask postTask;
 
 	public Discord(Sblock plugin) {
 		super(plugin);
 
-		String login = getPlugin().getConfig().getString("discord.login");
-		String password = getPlugin().getConfig().getString("discord.password");
-
-		if (login == null || password == null) {
-			getLogger().severe("Unable to connect to Discord, no username or password!");
-			discord = null;
-			queue = null;
-			commands = null;
-			authentications = null;
-			return;
-		}
-
-		discord = new DiscordBuilder(login, password).build();
 		queue = new ConcurrentLinkedQueue<>();
 		commands = new HashMap<>();
 
@@ -131,6 +118,15 @@ public class Discord extends Module {
 
 	@Override
 	protected void onEnable() {
+		String login = getPlugin().getConfig().getString("discord.login");
+		String password = getPlugin().getConfig().getString("discord.password");
+
+		if (login == null || password == null) {
+			getLogger().severe("Unable to connect to Discord, no username or password!");
+			discord = null;
+		}
+
+		discord = new DiscordBuilder(login, password).build();
 
 		if (discord == null) {
 			this.disable();
@@ -156,18 +152,6 @@ public class Discord extends Module {
 						+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
 						+ Color.GOOD + "Channel: #main"));
 		discord.getEventManager().registerListener(new DiscordChatListener(this));
-	}
-
-	public boolean reconnect() {
-		this.postTask.cancel();
-		this.discord.stop();
-		try {
-			this.discord.login();
-		} catch (NoLoginDetailsException | BadUsernamePasswordException | DiscordFailedToConnectException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
 	}
 
 	private String generateUniqueCode() {
