@@ -23,6 +23,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import org.reflections.Reflections;
 
@@ -73,6 +74,7 @@ public class Discord extends Module {
 	private Users users;
 	private MessageBuilder builder;
 	private ChannelManager manager;
+	private BukkitTask postTask;
 
 	public Discord(Sblock plugin) {
 		super(plugin);
@@ -156,6 +158,18 @@ public class Discord extends Module {
 		discord.getEventManager().registerListener(new DiscordChatListener(this));
 	}
 
+	public boolean reconnect() {
+		this.postTask.cancel();
+		this.discord.stop();
+		try {
+			this.discord.login();
+		} catch (NoLoginDetailsException | BadUsernamePasswordException | DiscordFailedToConnectException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	private String generateUniqueCode() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 6; i++) {
@@ -174,7 +188,10 @@ public class Discord extends Module {
 	}
 
 	protected void startPostingMessages() {
-		new BukkitRunnable() {
+		if (postTask != null && postTask.getTaskId() != -1) {
+			return;
+		}
+		postTask = new BukkitRunnable() {
 			@Override
 			public void run() {
 				if (!isEnabled()) {
@@ -243,8 +260,6 @@ public class Discord extends Module {
 			}
 			builder.append(word);
 		}
-		// This is safe, the message must contain at least 1 word
-		message = builder.deleteCharAt(builder.length() - 1).toString();
 		for (String channel : channels) {
 			queue.add(new ImmutableTriple<>(channel, name, message));
 		}
