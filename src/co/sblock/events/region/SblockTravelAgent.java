@@ -151,7 +151,7 @@ public class SblockTravelAgent implements TravelAgent {
 				if (portal.getType() == Material.PORTAL) {
 					Location center = findCenter(portal);
 					center.setYaw(location.getYaw());
-					center.setYaw(location.getPitch());
+					center.setPitch(location.getPitch());
 					return center;
 				}
 			}
@@ -206,7 +206,7 @@ public class SblockTravelAgent implements TravelAgent {
 	}
 
 	public TravelAgent reset() {
-		searchRadius = 0;
+		searchRadius = 1;
 		creationRadius = 0;
 		canCreatePortal = true;
 		from = null;

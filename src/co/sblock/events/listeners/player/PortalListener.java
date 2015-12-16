@@ -41,7 +41,7 @@ public class PortalListener extends SblockListener {
 			return;
 		}
 		if (event.getTo().getWorld().getEnvironment() == Environment.THE_END) {
-			// TODO Medium End?
+			// future Medium End?
 			return;
 		}
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
@@ -62,6 +62,8 @@ public class PortalListener extends SblockListener {
 		}
 		if (fromEnvironment == Environment.NETHER) {
 			agent.setSearchRadius(8);
+		} else {
+			agent.setSearchRadius(1);
 		}
 		fromCenter.setPitch(event.getFrom().getPitch());
 		fromCenter.setYaw(event.getFrom().getYaw());
@@ -78,6 +80,10 @@ public class PortalListener extends SblockListener {
 			for (ProtectionHook hook : protections.getHooks()) {
 				if (!hook.canBuildAt(event.getPlayer(), to)) {
 					event.setCancelled(true);
+					System.out.println(String.format("%s preventing portalling for %s from %s %s, %s, %s to %s %s, %s, %s",
+							hook.getPluginName(), event.getPlayer().getName(), fromCenter.getWorld().getName(),
+							fromCenter.getBlockX(), fromCenter.getBlockY(), fromCenter.getBlockZ(),
+							to.getWorld().getName(), to.getBlockX(), to.getBlockY(), to.getBlockZ()));
 					event.getPlayer().sendMessage(Color.BAD + "Your destination is inside a protected area!"
 							+ "\nYou'll have to build your portal elsewhere.");
 					return;
