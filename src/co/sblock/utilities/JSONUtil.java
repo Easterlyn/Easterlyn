@@ -170,12 +170,43 @@ public class JSONUtil {
 		return components.toArray(new TextComponent[components.size()]);
 	}
 
-	public static TextComponent getItemText(ItemStack item) {
+	public static TextComponent getItemComponent(ItemStack item) {
 		net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-		return new TextComponent(nmsStack.save(new NBTTagCompound()).toString());
+		String name = null;
+		if (nmsStack.getTag() != null && nmsStack.getTag().hasKeyOfType("display", 10)) {
+			NBTTagCompound nbttagcompound = nmsStack.getTag().getCompound("display");
+			if (nbttagcompound.hasKeyOfType("Name", 8)) {
+				name = nbttagcompound.getString("Name");
+			}
+		}
+		boolean named = name != null;
+		if (!named) {
+			name = nmsStack.getItem().a(nmsStack);
+		}
+		TextComponent component = new TextComponent(JSONUtil.fromLegacyText(nmsStack.getName()));
+		for (int i = 0; i < component.getExtra().size(); i++) {
+			BaseComponent baseExtra = component.getExtra().get(i);
+			if (baseExtra.hasFormatting()) {
+				break;
+			}
+			baseExtra.setColor(ChatColor.AQUA);
+			if (named) {
+				baseExtra.setItalic(true);
+			}
+		}
+		component.setHoverEvent(getItemHover(nmsStack));
+		return component;
 	}
 
-	public static HoverEvent getItemHover(ItemStack item) {
+	public static TextComponent getItemText(ItemStack item) {
+		return getItemText(CraftItemStack.asNMSCopy(item));
+	}
+
+	private static TextComponent getItemText(net.minecraft.server.v1_8_R3.ItemStack item) {
+		return new TextComponent(item.save(new NBTTagCompound()).toString());
+	}
+
+	private static HoverEvent getItemHover(net.minecraft.server.v1_8_R3.ItemStack item) {
 		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { getItemText(item) });
 	}
 }

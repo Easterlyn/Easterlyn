@@ -21,7 +21,6 @@ import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
@@ -58,13 +57,9 @@ public class ShowItemCommand extends SblockCommand {
 
 		User user = users.getUser(player.getUniqueId());
 
-		TextComponent item = new TextComponent(JSONUtil.fromLegacyText(hand.getItemMeta().getDisplayName()));
-		item.setColor(ChatColor.AQUA);
-		item.setHoverEvent(JSONUtil.getItemHover(hand));
-
-		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin()).setSender(user)
-				.setThirdPerson(true)
-				.setMessage(new TextComponent("shows off "), item, new TextComponent("."));
+		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin())
+				.setSender(user).setThirdPerson(true).setMessage(new TextComponent("shows off "),
+						JSONUtil.getItemComponent(hand), new TextComponent("."));
 
 		if (!builder.canBuild(true) || !builder.isSenderInChannel(true)) {
 			return true;
