@@ -1,9 +1,7 @@
 package co.sblock.commands.chat;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -15,7 +13,6 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
@@ -56,12 +53,7 @@ public class MeCommand extends SblockAsynchronousCommand {
 			return true;
 		}
 
-		Message message = builder.toMessage();
-
-		Set<Player> players = new HashSet<>();
-		message.getChannel().getListening().forEach(uuid -> players.add(Bukkit.getPlayer(uuid)));
-
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, message));
+		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, builder.toMessage()));
 		return true;
 	}
 

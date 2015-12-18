@@ -966,14 +966,17 @@ public class User {
 	}
 
 	public void save() {
-		File file;
-		try {
-			file = new File(getPlugin().getUserDataFolder(), getUUID().toString() + ".yml");
-			if (!file.exists()) {
+		File folder = new File(getPlugin().getDataFolder(), "users");
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		File file = new File(folder, getUUID().toString() + ".yml");
+		if (!file.exists()) {
+			try {
 				file.createNewFile();
+			} catch (IOException e) {
+				throw new RuntimeException("Unable to save data for " + getUUID().toString(), e);
 			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save data for " + getUUID().toString(), e);
 		}
 		yaml.set("name", getPlayerName());
 		yaml.set("ip", getUserIP());
@@ -1000,42 +1003,41 @@ public class User {
 
 	@SuppressWarnings("unchecked")
 	protected static User load(Sblock plugin, final UUID uuid) {
-		File file;
-		try {
-			file = new File(plugin.getUserDataFolder(), uuid.toString() + ".yml");
-			if (!file.exists()) {
-				Player player = Bukkit.getPlayer(uuid);
-				if (player == null) {
-					return new User(plugin, uuid, new YamlConfiguration());
-				}
-				player.teleport(Users.getSpawnLocation());
-
-				User user = new User(plugin, uuid, new YamlConfiguration());
-				user.setUserIP(player.getAddress().getHostString());
-
-				// Manually set channel - using setCurrentChannel results in recursive User load
-				// It's not guaranteed that this is happening during the PlayerJoinEvent either,
-				// so we can't count on User#handleLoginChannelJoins being called.
-				user.currentChannel = "#";
-				user.listening.add("#");
-				Channel hash = user.manager.getChannel("#");
-				hash.getListening().add(uuid);
-
-				user.updateCurrentRegion(Region.EARTH, true);
-
-				if (!player.hasPlayedBefore()) {
-					// Our data file may have just been deleted - reset planned for Entry, etc.
-					Bukkit.broadcastMessage(Color.HAL + "It would seem that " + player.getName()
-							+ " is joining us for the first time! Please welcome them.");
-					plugin.getModule(Discord.class).postMessage(player.getName(), player.getName()
-							+ " is new! Please welcome them.", true);
-				} else {
-					player.sendMessage(Color.HAL + "We've reset classpect since you last played. Please re-select now!");
-				}
-				return user;
+		File folder = new File(plugin.getDataFolder(), "users");
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		File file = new File(folder, uuid.toString() + ".yml");
+		if (!file.exists()) {
+			Player player = Bukkit.getPlayer(uuid);
+			if (player == null) {
+				return new User(plugin, uuid, new YamlConfiguration());
 			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load data for " + uuid, e);
+			player.teleport(Users.getSpawnLocation());
+
+			User user = new User(plugin, uuid, new YamlConfiguration());
+			user.setUserIP(player.getAddress().getHostString());
+
+			// Manually set channel - using setCurrentChannel results in recursive User load
+			// It's not guaranteed that this is happening during the PlayerJoinEvent either,
+			// so we can't count on User#handleLoginChannelJoins being called.
+			user.currentChannel = "#";
+			user.listening.add("#");
+			Channel hash = user.manager.getChannel("#");
+			hash.getListening().add(uuid);
+
+			user.updateCurrentRegion(Region.EARTH, true);
+
+			if (!player.hasPlayedBefore()) {
+				// Our data file may have just been deleted - reset planned for Entry, etc.
+				Bukkit.broadcastMessage(Color.HAL + "It would seem that " + player.getName()
+						+ " is joining us for the first time! Please welcome them.");
+				plugin.getModule(Discord.class).postMessage(player.getName(), player.getName()
+						+ " is new! Please welcome them.", true);
+			} else {
+				player.sendMessage(Color.HAL + "We've reset classpect since you last played. Please re-select now!");
+			}
+			return user;
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		User user = new User(plugin, uuid, yaml);

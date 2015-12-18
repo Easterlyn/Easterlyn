@@ -50,6 +50,7 @@ public abstract class Machine {
 	private final Machines machines;
 	private final Users users;
 	private final Shape shape;
+	private final String name;
 
 	/**
 	 * Constructor for a Machine.
@@ -58,11 +59,21 @@ public abstract class Machine {
 	 * @param machines the Machines instance loading the Machine
 	 * @param shape the in-world representation of the machine
 	 */
-	Machine(Sblock plugin, Machines machines, Shape shape) {
+	Machine(Sblock plugin, Machines machines, Shape shape, String name) {
 		this.plugin = plugin;
 		this.machines = machines;
 		this.users = plugin.getModule(Users.class);
 		this.shape = shape;
+		this.name = name;
+	}
+
+	/**
+	 * Gets the name of this Machine.
+	 * 
+	 * @return the name
+	 */
+	public String getName() {
+		return this.name;
 	}
 
 	/**
@@ -70,7 +81,7 @@ public abstract class Machine {
 	 * 
 	 * @return the Sblock
 	 */
-	public Sblock getPlugin() {
+	protected Sblock getPlugin() {
 		return this.plugin;
 	}
 
@@ -79,7 +90,7 @@ public abstract class Machine {
 	 * 
 	 * @return the Machines
 	 */
-	public Machines getMachines() {
+	protected Machines getMachines() {
 		return this.machines;
 	}
 
@@ -88,7 +99,7 @@ public abstract class Machine {
 	 * 
 	 * @return the Users
 	 */
-	public Users getUsers() {
+	protected Users getUsers() {
 		return this.users;
 	}
 

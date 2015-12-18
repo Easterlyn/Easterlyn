@@ -397,7 +397,7 @@ public class Effects extends Module {
 
 	@Override
 	public String getName() {
-		return "Sblock Effects";
+		return "Effects";
 	}
 
 }

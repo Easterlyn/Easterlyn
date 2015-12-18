@@ -24,7 +24,7 @@ public class PGO extends Machine {
 	private final ItemStack drop;
 
 	public PGO(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Perfectly Generic Object");
 		drop = new ItemStack(Material.DIRT);
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Perfectly Generic Object");

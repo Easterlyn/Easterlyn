@@ -26,7 +26,7 @@ public class PBO extends Machine {
 	private final ItemStack drop;
 
 	public PBO(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Perfect Building Object");
 		getShape().setVectorData(new Vector(0, 0, 0), new MaterialData(Material.DIAMOND_BLOCK));
 		drop = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta meta = drop.getItemMeta();

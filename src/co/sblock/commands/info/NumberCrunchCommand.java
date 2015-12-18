@@ -1,7 +1,6 @@
 package co.sblock.commands.info;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,38 +40,36 @@ public class NumberCrunchCommand extends SblockCommand {
 				counts.put(region.getDisplayName(), new AtomicInteger(0));
 			}
 		}
-		try {
-			File dataDir = ((Sblock) getPlugin()).getUserDataFolder();
-			String[] files = dataDir.list();
-			for (String fileName : files) {
-				YamlConfiguration player = YamlConfiguration.loadConfiguration(new File(dataDir, fileName));
-				counts.get(player.getString("classpect.class", "Heir")).incrementAndGet();
-				counts.get(player.getString("classpect.aspect", "Breath")).incrementAndGet();
-				counts.get(player.getString("classpect.medium", "LOWAS")).incrementAndGet();
-				counts.get(player.getString("classpect.dream", "Prospit")).incrementAndGet();
-			}
-			sender.sendMessage("Total files: " + files.length);
-			sender.sendMessage("\nCLASS:");
-			for (UserClass userClass : UserClass.values()) {
-				int count = counts.get(userClass.getDisplayName()).get();
-				sender.sendMessage(userClass.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
-			}
-			sender.sendMessage("\nASPECT:");
-			for (UserAspect userAspect : UserAspect.values()) {
-				int count = counts.get(userAspect.getDisplayName()).get();
-				sender.sendMessage(userAspect.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
-			}
-			sender.sendMessage("\nDREAM/REGION:");
-			for (Region region : Region.values()) {
-				if (region.isDream() || region.isMedium()) {
-					int count = counts.get(region.getDisplayName()).get();
-					sender.sendMessage(region.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
-				}
-			}
+		File folder = new File(getPlugin().getDataFolder(), "users");
+		if (!folder.exists()) {
 			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		return false;
+		String[] files = folder.list();
+		for (String fileName : files) {
+			YamlConfiguration player = YamlConfiguration.loadConfiguration(new File(folder, fileName));
+			counts.get(player.getString("classpect.class", "Heir")).incrementAndGet();
+			counts.get(player.getString("classpect.aspect", "Breath")).incrementAndGet();
+			counts.get(player.getString("classpect.medium", "LOWAS")).incrementAndGet();
+			counts.get(player.getString("classpect.dream", "Prospit")).incrementAndGet();
+		}
+		sender.sendMessage("Total files: " + files.length);
+		sender.sendMessage("\nCLASS:");
+		for (UserClass userClass : UserClass.values()) {
+			int count = counts.get(userClass.getDisplayName()).get();
+			sender.sendMessage(userClass.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
+		}
+		sender.sendMessage("\nASPECT:");
+		for (UserAspect userAspect : UserAspect.values()) {
+			int count = counts.get(userAspect.getDisplayName()).get();
+			sender.sendMessage(userAspect.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
+		}
+		sender.sendMessage("\nDREAM/REGION:");
+		for (Region region : Region.values()) {
+			if (region.isDream() || region.isMedium()) {
+				int count = counts.get(region.getDisplayName()).get();
+				sender.sendMessage(region.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
+			}
+		}
+		return true;
 	}
 }

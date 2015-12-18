@@ -86,7 +86,11 @@ public class Captcha extends Module {
 
 	public boolean saveItemStack(String hash, ItemStack item) {
 		try {
-			File file = new File(getPlugin().getCaptchaDataFolder(), hash);
+			File folder = new File(getPlugin().getDataFolder(), "captcha");
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			File file = new File(folder, hash);
 			if (file.exists()) {
 				return false;
 			}
@@ -120,7 +124,11 @@ public class Captcha extends Module {
 			return hashCache.get(hash).clone();
 		}
 		try {
-			File file = new File(getPlugin().getCaptchaDataFolder(), hash);
+			File folder = new File(getPlugin().getDataFolder(), "captcha");
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			File file = new File(folder, hash);
 			if (!file.exists()) {
 				return null;
 			}
@@ -230,7 +238,7 @@ public class Captcha extends Module {
 
 	@Override
 	public String getName() {
-		return "Sblock Captcha";
+		return "Captcha";
 	}
 
 	/**

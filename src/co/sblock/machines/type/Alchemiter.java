@@ -49,7 +49,7 @@ public class Alchemiter extends Machine {
 	private final ItemStack drop, barrier;
 
 	public Alchemiter(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Alchemiter");
 		this.captcha = plugin.getModule(Captcha.class);
 		this.effects = plugin.getModule(Effects.class);
 		this.tracker = machines.getInventoryTracker();

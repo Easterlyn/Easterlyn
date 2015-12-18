@@ -1,6 +1,5 @@
 package co.sblock.events.event;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -8,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import co.sblock.chat.message.Message;
+import co.sblock.utilities.CollectionConversions;
 
 /**
  * Event wrapper allowing us to more easily manage our channeled chat system.
@@ -21,17 +21,12 @@ public class SblockAsyncChatEvent extends AsyncPlayerChatEvent {
 	private final boolean checkSpam;
 
 	public SblockAsyncChatEvent(boolean async, Player who, Message message) {
-		this(async, who, new HashSet<>(), message, true);
+		this(async, who, message, true);
 	}
 
 	public SblockAsyncChatEvent(boolean async, Player who, Message message, boolean checkSpam) {
-		this(async, who, new HashSet<>(), message, checkSpam);
-		message.getChannel().getListening().forEach(uuid -> {
-			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				getRecipients().add(who);
-			}
-		});
+		this(async, who, CollectionConversions.toSet(message.getChannel().getListening(),
+				uuid -> Bukkit.getPlayer(uuid)), message, checkSpam);
 	}
 
 	public SblockAsyncChatEvent(boolean async, Player who, Set<Player> players, Message message) {

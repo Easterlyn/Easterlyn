@@ -1,8 +1,5 @@
 package co.sblock.chat;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -63,7 +60,7 @@ public class Chat extends Module {
 
 	@Override
 	public String getName() {
-		return "Sblock Chat";
+		return "Chat";
 	}
 
 	public boolean testForMute(Player sender) {
@@ -89,17 +86,9 @@ public class Chat extends Module {
 				.setMessage(msg).setChannel(channel);
 		Message message = builder.toMessage();
 
-		Set<Player> players = new HashSet<>();
-		channel.getListening().forEach(uuid -> {
-			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				players.add(player);
-			}
-		});
+		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, sender, message, false);
 		// Add a dummy player so WG doesn't cancel the event if there are no recipients
-		players.add(buffer);
-
-		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, sender, players, message, false);
+		event.getRecipients().add(buffer);
 
 		Bukkit.getPluginManager().callEvent(event);
 

@@ -1,5 +1,7 @@
 package co.sblock.discord;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -19,7 +21,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -70,6 +72,7 @@ public class Discord extends Module {
 	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
+	private final YamlConfiguration discordData;
 	private DiscordAPI discord;
 	private Users users;
 	private ChannelManager manager;
@@ -82,8 +85,8 @@ public class Discord extends Module {
 		queue = new ConcurrentLinkedQueue<>();
 		commands = new HashMap<>();
 
-		authentications = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES)
-				.build(new CacheLoader<Object, Object>() {
+		authentications = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build(
+				new CacheLoader<Object, Object>() {
 					@Override
 					public Object load(Object key) throws Exception {
 						if (!(key instanceof UUID)) {
@@ -94,6 +97,13 @@ public class Discord extends Module {
 						return code;
 					};
 				});
+
+		File file = new File(plugin.getDataFolder(), "DiscordData.yml");
+		if (file.exists()) {
+			discordData = YamlConfiguration.loadConfiguration(file);
+		} else {
+			discordData = new YamlConfiguration();
+		}
 
 		Reflections reflections = new Reflections("co.sblock.discord.commands");
 		Set<Class<? extends DiscordCommand>> cmds = reflections.getSubTypesOf(DiscordCommand.class);
@@ -118,8 +128,8 @@ public class Discord extends Module {
 
 	@Override
 	protected void onEnable() {
-		String login = getPlugin().getConfig().getString("discord.login");
-		String password = getPlugin().getConfig().getString("discord.password");
+		String login = getConfig().getString("discord.login");
+		String password = getConfig().getString("discord.password");
 
 		if (login == null || password == null) {
 			getLogger().severe("Unable to connect to Discord, no username or password!");
@@ -201,26 +211,24 @@ public class Discord extends Module {
 	}
 
 	public void logMessage(String message) {
-		postMessage("Sbot", message, getPlugin().getConfig().getString("discord.chat.log"));
+		postMessage("Sbot", message, getConfig().getString("discord.chat.log"));
 	}
 
 	public void postMessage(Message message, boolean global) {
-		FileConfiguration config = getPlugin().getConfig();
 		if (global) {
 			postMessage(message.getSenderName(), message.getDiscordMessage(),
-					config.getString("discord.chat.main"));
+					getConfig().getString("discord.chat.main"));
 		}
 		postMessage(message.getSenderName(), message.getConsoleMessage(),
-				config.getString("discord.chat.log"));
+				getConfig().getString("discord.chat.log"));
 	}
 
 	public void postMessage(String name, String message, boolean global) {
-		FileConfiguration config = getPlugin().getConfig();
 		if (global) {
-			postMessage(name, message, config.getString("discord.chat.main"),
-					config.getString("discord.chat.log"));
+			postMessage(name, message, getConfig().getString("discord.chat.main"),
+					getConfig().getString("discord.chat.log"));
 		} else {
-			postMessage(name, message, config.getString("discord.chat.log"));
+			postMessage(name, message, getConfig().getString("discord.chat.log"));
 		}
 	}
 
@@ -250,7 +258,7 @@ public class Discord extends Module {
 	}
 
 	public void postReport(String name, String message) {
-		postMessage(name, message, getPlugin().getConfig().getString("discord.chat.reports"));
+		postMessage(name, message, getConfig().getString("discord.chat.reports"));
 	}
 
 	public LoadingCache<Object, Object> getAuthCodes() {
@@ -262,6 +270,11 @@ public class Discord extends Module {
 		if (discord != null) {
 			discord.stop();
 		}
+		try {
+			discordData.save(new File(getPlugin().getDataFolder(), "DiscordData.yml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -270,11 +283,15 @@ public class Discord extends Module {
 	}
 
 	public UUID getUUIDOf(User user) {
-		String uuidString = getPlugin().getConfig().getString("discord.users." + user.getId());
+		String uuidString = discordData.getString("users." + user.getId());
 		if (uuidString == null) {
 			return null;
 		}
 		return UUID.fromString(uuidString);
+	}
+
+	public void addLink(UUID uuid, User user) {
+		discordData.set("users." + user.getId(), uuid.toString());
 	}
 
 	protected DiscordPlayer getPlayerFor(GroupUser user) {
@@ -351,7 +368,7 @@ public class Discord extends Module {
 		}.runTaskAsynchronously(getPlugin());
 	}
 
-	protected void postMessageFor(UserChatEvent event, Player player) {
+	protected void handleChatToMinecraft(UserChatEvent event, Player player) {
 		builder.setSender(users.getUser(player.getUniqueId()))
 				.setMessage(sanitize(event.getMsg().getMessage())).setChannel(manager.getChannel("#discord"));
 		if (!builder.canBuild(false)) {

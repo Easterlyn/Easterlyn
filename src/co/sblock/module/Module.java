@@ -1,6 +1,10 @@
 package co.sblock.module;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
+
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import co.sblock.Sblock;
 import co.sblock.utilities.RegexUtils;
@@ -13,29 +17,14 @@ import co.sblock.utilities.RegexUtils;
  */
 public abstract class Module {
 
-	private boolean enabled = false;
 	private final Sblock plugin;
+
+	private boolean enabled = false;
+	private YamlConfiguration configuration;
 
 	public Module(Sblock plugin) {
 		this.plugin = plugin;
-		getLogger().info("Initializing module " + getName());
 	}
-
-	/**
-	 * Called when the Module is enabled.
-	 */
-	protected abstract void onEnable();
-
-	/**
-	 * Called when the Module is disabled before handlers are unassigned.
-	 */
-	protected abstract void onDisable();
-
-	/**
-	 * To be used instead of the reflective class.getSimpleName() method
-	 * @return the name of this module
-	 */
-	public abstract String getName();
 
 	/**
 	 * Enables the Module.
@@ -45,19 +34,24 @@ public abstract class Module {
 	public final Module enable() {
 		this.getLogger().info("Enabling module " + this.getName());
 
-		if (!Sblock.areDependenciesPresent(getClass())) {
+		if (!Sblock.areDependenciesPresent(this.getClass())) {
 			return this;
 		}
 
 		try {
 			this.onEnable();
-			enabled = true;
+			this.enabled = true;
 		} catch (Exception e) {
-			getLogger().severe("Unhandled exception in module " + this.getName() + ". Module failed to enable.");
-			getLogger().severe(RegexUtils.getTrace(e));
+			this.getLogger().severe("Unhandled exception in module " + this.getName() + ". Module failed to enable.");
+			this.getLogger().severe(RegexUtils.getTrace(e));
 		}
 		return this;
 	}
+
+	/**
+	 * Called when the Module is enabled.
+	 */
+	protected abstract void onEnable();
 
 	/**
 	 * Disables the Module.
@@ -65,16 +59,22 @@ public abstract class Module {
 	 * @return the Module disabled
 	 */
 	public final Module disable() {
-		this.getLogger().info("Disabled module " + this.getName());
+		this.getLogger().info("Disabling module " + this.getName());
+		this.saveConfig();
 		try {
 			this.onDisable();
-			enabled = false;
+			this.enabled = false;
 		} catch (Exception e) {
-			getLogger().severe("Unhandled exception in module " + this.getClass().getSimpleName() + ". Module failed to disable.");
-			getLogger().severe(RegexUtils.getTrace(e));
+			this.getLogger().severe("Unhandled exception in module " + this.getName() + ". Module failed to disable.");
+			this.getLogger().severe(RegexUtils.getTrace(e));
 		}
 		return this;
 	}
+
+	/**
+	 * Called when the Module is disabled before handlers are unassigned.
+	 */
+	protected abstract void onDisable();
 
 	/**
 	 * Gets whether or not the Module is enabled.
@@ -82,8 +82,15 @@ public abstract class Module {
 	 * @return true if the Module is enabled
 	 */
 	public boolean isEnabled() {
-		return enabled;
+		return this.enabled;
 	}
+
+	/**
+	 * Get the simple name of the Module.
+	 * 
+	 * @return the name of this Module
+	 */
+	public abstract String getName();
 
 	/**
 	 * Gets a Logger that the plugin may use whose name is the same as this
@@ -103,4 +110,47 @@ public abstract class Module {
 	public final Sblock getPlugin() {
 		return this.plugin;
 	}
+
+	/**
+	 * Gets the YamlConfiguration for data specific to this Module.
+	 * 
+	 * @return the YamlConfiguration
+	 */
+	public final YamlConfiguration getConfig() {
+		if (this.configuration == null) {
+			return loadConfig();
+		}
+		return this.configuration;
+	}
+
+	/**
+	 * Loads the YamlConfiguration for data specific to this Module.
+	 * 
+	 * @return the YamlConfiguration
+	 */
+	public final YamlConfiguration loadConfig() {
+		File file = new File(getPlugin().getDataFolder(), this.getName().replaceAll("\\W", "") + ".yml");
+		if (file.exists()) {
+			this.configuration = YamlConfiguration.loadConfiguration(file);
+		} else {
+			this.configuration = new YamlConfiguration();
+		}
+		return this.configuration;
+	}
+
+	/**
+	 * Saves this Module's YamlConfiguration if it has been loaded.
+	 */
+	public final void saveConfig() {
+		if (this.configuration != null) {
+			File file = new File(getPlugin().getDataFolder(), this.getName().replaceAll("\\W", "") + ".yml");
+			try {
+				this.configuration.save(file);
+			} catch (IOException e) {
+				getLogger().severe("Unhandled exception in module " + this.getName() + ". Module failed to disable.");
+				e.printStackTrace();
+			}
+		}
+	}
+
 }

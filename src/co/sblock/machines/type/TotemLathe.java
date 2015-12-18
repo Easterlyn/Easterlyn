@@ -43,7 +43,7 @@ public class TotemLathe extends Machine	{
 	private final ItemStack drop;
 
 	public TotemLathe(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Totem Lathe");
 		tracker = machines.getInventoryTracker();
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 2);

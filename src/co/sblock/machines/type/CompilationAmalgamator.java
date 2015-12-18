@@ -19,7 +19,7 @@ public class CompilationAmalgamator extends Machine {
 	private final ItemStack drop;
 
 	public CompilationAmalgamator(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Compilation Amalgamator");
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER);
 		shape.setVectorData(new Vector(0, 2, 0), m);

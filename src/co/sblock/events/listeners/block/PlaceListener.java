@@ -55,7 +55,7 @@ public class PlaceListener extends SblockListener {
 		for (Entry<String, Machine> entry : machines.getMachinesByName().entrySet()) {
 			if (entry.getValue().getUniqueDrop().isSimilar(event.getItemInHand())) {
 				pair = machines.addMachine(event.getBlock().getLocation(),
-						entry.getKey(), event.getPlayer().getUniqueId(),
+						entry.getValue().getName(), event.getPlayer().getUniqueId(),
 						Direction.getFacingDirection(event.getPlayer()));
 				if (pair == null) {
 					event.setCancelled(true);

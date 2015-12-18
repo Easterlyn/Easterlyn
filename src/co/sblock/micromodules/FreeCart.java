@@ -84,6 +84,6 @@ public class FreeCart extends Module {
 
 	@Override
 	public String getName() {
-		return "Sblock FreeCart";
+		return "FreeCart";
 	}
 }

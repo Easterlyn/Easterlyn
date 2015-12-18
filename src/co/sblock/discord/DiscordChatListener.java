@@ -1,11 +1,10 @@
 package co.sblock.discord;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import co.sblock.Sblock;
 
 import me.itsghost.jdiscord.event.EventListener;
 import me.itsghost.jdiscord.events.UserChatEvent;
@@ -17,12 +16,10 @@ import me.itsghost.jdiscord.events.UserChatEvent;
  */
 public class DiscordChatListener implements EventListener {
 
-	private final Sblock plugin;
 	private final Discord discord;
 	private final Cache<String, Boolean> warnings;
 
 	public DiscordChatListener(Discord discord) {
-		this.plugin = discord.getPlugin();
 		this.discord = discord;
 		this.warnings = CacheBuilder.newBuilder().weakKeys().weakValues()
 				.expireAfterWrite(2, TimeUnit.MINUTES).build();
@@ -40,20 +37,19 @@ public class DiscordChatListener implements EventListener {
 		if (msg.startsWith("/link ")) {
 			String register = msg.substring(6);
 			Object uuid = discord.getAuthCodes().getIfPresent(register);
-			if (uuid == null) {
+			if (uuid == null || !(uuid instanceof UUID)) {
 				discord.postMessage("Sbot", "Invalid registration code!", event.getGroup().getId());
 				return;
 			}
 			discord.postMessage("Sbot", "Registration complete!", event.getGroup().getId());
 			discord.getAuthCodes().invalidate(uuid);
 			discord.getAuthCodes().invalidate(register);
-			plugin.getConfig().set("discord.users." + event.getUser().getUser().getId(), uuid.toString());
-			plugin.saveConfig();
+			discord.addLink((UUID) uuid, event.getUser().getUser());
 			return;
 		}
 		boolean main = event.getServer() != null
-				&& plugin.getConfig().getString("discord.server").equals(event.getServer().getId())
-				&& plugin.getConfig().getString("discord.chat.main").equals(event.getGroup().getId());
+				&& discord.getConfig().getString("discord.server").equals(event.getServer().getId())
+				&& discord.getConfig().getString("discord.chat.main").equals(event.getGroup().getId());
 		boolean command = msg.length() > 0 && msg.charAt(0) == '/';
 		if (!main && !command) {
 			return;
@@ -82,7 +78,7 @@ public class DiscordChatListener implements EventListener {
 			return;
 		}
 		if (main) {
-			discord.postMessageFor(event, sender);
+			discord.handleChatToMinecraft(event, sender);
 			return;
 		}
 	}

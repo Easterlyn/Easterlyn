@@ -1,7 +1,5 @@
 package co.sblock.machines;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -23,7 +21,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -54,8 +51,6 @@ public class Machines extends Module {
 	private final Map<Block, Boolean> exploded;
 	/* The MachineInventoryTracker. */
 	private final MachineInventoryTracker tracker;
-	/* The YamlConfiguration containing all stored data. */
-	private YamlConfiguration storage;
 
 	public Machines(Sblock plugin) {
 		super(plugin);
@@ -76,6 +71,7 @@ public class Machines extends Module {
 					continue;
 				}
 				byName.put(type.getSimpleName(), machine);
+				byName.put(machine.getName(), machine);
 				ItemStack item = machine.getUniqueDrop();
 				if (item == null || !item.hasItemMeta()) {
 					continue;
@@ -99,16 +95,14 @@ public class Machines extends Module {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				saveAllMachines();
+				saveConfig();
 			}
 		}.runTaskTimerAsynchronously(getPlugin(), 6000L, 6000L);
 		// Saving async should ideally not be a problem - we do not ever load or modify the data elsewhere.
 	}
 
 	@Override
-	protected void onDisable() {
-		this.saveAllMachines();
-	}
+	protected void onDisable() { }
 
 	/**
 	 * Adds a Machine with the given parameters.
@@ -127,7 +121,7 @@ public class Machines extends Module {
 				|| location.getWorld().getName().equals(Region.DERSE.getWorldName())) {
 			return null;
 		}
-		ConfigurationSection section = storage.createSection(pathFromLoc(location));
+		ConfigurationSection section = getConfig().createSection(pathFromLoc(location));
 		section.set("type", type);
 		section.set("owner", owner.toString());
 		section.set("direction", direction.name());
@@ -155,16 +149,16 @@ public class Machines extends Module {
 
 	public void loadChunkMachines(Chunk chunk) {
 		String worldName = chunk.getWorld().getName();
-		if (!storage.isSet(worldName) || worldName.equals(Region.DERSE.getWorldName())) {
+		if (!getConfig().isSet(worldName) || worldName.equals(Region.DERSE.getWorldName())) {
 			// No machines in Derspit.
 			return;
 		}
 		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
 				.append(chunk.getX()).append('_').append(chunk.getZ()).toString();
-		if (!storage.isConfigurationSection(path)) {
+		if (!getConfig().isConfigurationSection(path)) {
 			return;
 		}
-		ConfigurationSection chunkSection = storage.getConfigurationSection(path);
+		ConfigurationSection chunkSection = getConfig().getConfigurationSection(path);
 		Set<String> chunkKeys = chunkSection.getKeys(false);
 		for (Iterator<String> iterator = chunkKeys.iterator(); iterator.hasNext();) {
 			String xyz = iterator.next();
@@ -182,14 +176,14 @@ public class Machines extends Module {
 			}
 		}
 		if (chunkKeys.isEmpty()) {
-			storage.set(path, null);
+			getConfig().set(path, null);
 		}
 	}
 
 	public void unloadChunkMachines(Chunk chunk) {
 		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
 				.append(chunk.getX()).append('_').append(chunk.getZ()).toString();
-		ConfigurationSection chunkSection = storage.getConfigurationSection(path);
+		ConfigurationSection chunkSection = getConfig().getConfigurationSection(path);
 		if (chunkSection == null) {
 			return;
 		}
@@ -210,7 +204,7 @@ public class Machines extends Module {
 			}
 		}
 		if (chunkKeys.isEmpty()) {
-			storage.set(path, null);
+			getConfig().set(path, null);
 		}
 	}
 
@@ -225,7 +219,7 @@ public class Machines extends Module {
 	 * @param chunkZ the Chunk Z
 	 */
 	public void deleteChunkMachines(World world, int chunkX, int chunkZ) {
-		storage.set(new StringBuilder(world.getName()).append('.').append(chunkX).append('_')
+		getConfig().set(new StringBuilder(world.getName()).append('.').append(chunkX).append('_')
 				.append(chunkZ).toString(), null);
 	}
 
@@ -233,36 +227,10 @@ public class Machines extends Module {
 	 * Loads all Machine data from file.
 	 */
 	private void loadMachines() {
-		File file = new File(getPlugin().getDataFolder(), "machines.yml");
-		if (file.exists()) {
-			storage = YamlConfiguration.loadConfiguration(file);
-		} else {
-			storage = new YamlConfiguration();
-		}
 		for (World world : Bukkit.getWorlds()) {
 			for (Chunk chunk : world.getLoadedChunks()) {
 				loadChunkMachines(chunk);
 			}
-		}
-	}
-
-	/**
-	 * Saves all Machine data to file.
-	 */
-	private void saveAllMachines() {
-		File file;
-		try {
-			file = new File(getPlugin().getDataFolder(), "machines.yml");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to create file saving machine data!", e);
-		}
-		try {
-			storage.save(file);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save all machines!", e);
 		}
 	}
 
@@ -315,7 +283,7 @@ public class Machines extends Module {
 			return null;
 		}
 
-		ConfigurationSection section = storage.getConfigurationSection(pathFromLoc(key));
+		ConfigurationSection section = getConfig().getConfigurationSection(pathFromLoc(key));
 		if (section == null) {
 			return null;
 		}
@@ -373,12 +341,12 @@ public class Machines extends Module {
 			return;
 		}
 		String path = pathFromLoc(key);
-		ConfigurationSection section = storage.getConfigurationSection(path);
+		ConfigurationSection section = getConfig().getConfigurationSection(path);
 		if (section == null) {
 			return;
 		}
 		machineBlocks.removeAll(key);
-		storage.set(path, null);
+		getConfig().set(path, null);
 	}
 
 	/**
@@ -470,7 +438,7 @@ public class Machines extends Module {
 
 	@Override
 	public String getName() {
-		return "Sblock Machines";
+		return "Machines";
 	}
 
 	public static String pathFromLoc(Location location) {

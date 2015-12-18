@@ -1,8 +1,6 @@
 package co.sblock.commands.chat;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -13,7 +11,6 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
-import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
@@ -65,12 +62,7 @@ public class ShowItemCommand extends SblockCommand {
 			return true;
 		}
 
-		Message message = builder.toMessage();
-
-		Set<Player> players = new HashSet<>();
-		message.getChannel().getListening().forEach(uuid -> players.add(Bukkit.getPlayer(uuid)));
-
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, player, players, message));
+		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, player, builder.toMessage()));
 		return true;
 	}
 

@@ -294,6 +294,6 @@ public class Events extends Module {
 
 	@Override
 	public String getName() {
-		return "Sblock Events";
+		return "Events";
 	}
 }

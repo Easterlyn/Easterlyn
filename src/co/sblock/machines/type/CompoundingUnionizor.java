@@ -19,7 +19,7 @@ public class CompoundingUnionizor extends Machine {
 	private final ItemStack drop;
 
 	public CompoundingUnionizor(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Compounding Unionizer");
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER);
 		shape.setVectorData(new Vector(0, 2, 0), m);

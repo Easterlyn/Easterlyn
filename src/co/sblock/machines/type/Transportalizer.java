@@ -66,7 +66,7 @@ public class Transportalizer extends Machine {
 
 	@SuppressWarnings("deprecation")
 	public Transportalizer(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Transportalizer");
 		this.holograms = plugin.getModule(Holograms.class);
 		this.protections = plugin.getModule(Protections.class);
 		Shape shape = getShape();

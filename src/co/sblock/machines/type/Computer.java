@@ -38,7 +38,7 @@ public class Computer extends Machine implements InventoryHolder {
 	private final ItemStack drop;
 
 	public Computer(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Computer");
 
 		drop = new ItemStack(Material.JUKEBOX);
 		ItemMeta meta = drop.getItemMeta();

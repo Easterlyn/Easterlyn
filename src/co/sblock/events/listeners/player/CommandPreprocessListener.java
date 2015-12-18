@@ -55,7 +55,7 @@ public class CommandPreprocessListener extends SblockListener {
 		String command = event.getMessage().substring(1, space > 0 ? space : event.getMessage().length()).toLowerCase();
 
 		if (!event.getPlayer().hasPermission("sblock.felt")
-				&& !getPlugin().getConfig().getStringList("discord.command-blacklist").contains(command)) {
+				&& !discord.getConfig().getStringList("discord.command-log-blacklist").contains(command)) {
 			discord.logMessage(event.getPlayer().getName() + " issued command: " + event.getMessage());
 		}
 
@@ -102,7 +102,7 @@ public class CommandPreprocessListener extends SblockListener {
 		}
 
 		if (event.getPlayer() instanceof DiscordPlayer) {
-			if (!getPlugin().getConfig().getStringList("discord.command-whitelist").contains(cmd.getName())) {
+			if (!discord.getConfig().getStringList("discord.command-whitelist").contains(cmd.getName())) {
 				event.getPlayer().sendMessage('/' + cmd.getName() + " isn't allowed from Discord, sorry!");
 				event.setCancelled(true);
 			}

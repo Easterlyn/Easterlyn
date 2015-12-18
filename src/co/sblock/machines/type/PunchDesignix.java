@@ -45,7 +45,7 @@ public class PunchDesignix extends Machine {
 	private final MachineInventoryTracker tracker;
 
 	public PunchDesignix(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Punch Designix");
 		this.captcha = plugin.getModule(Captcha.class);
 		tracker = machines.getInventoryTracker();
 		Shape shape = getShape();

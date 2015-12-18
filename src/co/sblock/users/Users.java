@@ -76,7 +76,7 @@ public class Users extends Module {
 
 	@Override
 	public String getName() {
-		return "Sblock UserManager";
+		return "Users";
 	}
 
 	/**

@@ -1,9 +1,7 @@
 package co.sblock.commands.chat;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -18,7 +16,6 @@ import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
-import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
@@ -118,25 +115,18 @@ public class MessageCommand extends SblockCommand {
 			return true;
 		}
 
-		Message message = builder.toMessage();
-
-		Set<Player> players = new HashSet<Player>();
-		if (senderPlayer != null) {
-			players.add(senderPlayer);
-		} else {
+		if (senderPlayer == null) {
 			senderPlayer = new WrappedSenderPlayer((Sblock) getPlugin(), sender);
 		}
-		if (recipientPlayer != null) {
-			players.add(recipientPlayer);
-		}
-		message.getChannel().getListening().forEach(uuid -> {
-			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				players.add(player);
-			}
-		});
 
-		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, senderPlayer, players, message);
+		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, senderPlayer, builder.toMessage());
+
+		if (!(senderPlayer instanceof WrappedSenderPlayer)) {
+			event.getRecipients().add(senderPlayer);
+		}
+		if (recipientPlayer != null) {
+			event.getRecipients().add(recipientPlayer);
+		}
 
 		Bukkit.getPluginManager().callEvent(event);
 

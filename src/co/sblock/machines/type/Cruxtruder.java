@@ -28,7 +28,7 @@ public class Cruxtruder extends Machine {
 	private final ItemStack drop;
 
 	public Cruxtruder(Sblock plugin, Machines machines) {
-		super(plugin, machines, new Shape());
+		super(plugin, machines, new Shape(), "Cruxtruder");
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.SEA_LANTERN);
 		shape.setVectorData(new Vector(0, 0, 0), m);

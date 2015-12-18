@@ -1,7 +1,5 @@
 package co.sblock.chat;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,16 +26,7 @@ public class ChannelManager {
 	}
 
 	protected void loadAllChannels() {
-		final File file;
-		try {
-			file = new File(chat.getPlugin().getDataFolder(), "ChatChannels.yml");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load channel data!", e);
-		}
-		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		final YamlConfiguration yaml = chat.getConfig();
 		final ArrayList<String> drop = new ArrayList<>();
 		for (String channelName : yaml.getKeys(false)) {
 			final Channel channel = chat.getChannelManager().loadChannel(channelName,
@@ -59,26 +48,12 @@ public class ChannelManager {
 			channelList.remove(channelName);
 		}
 		if (drop.size() > 0) {
-			try {
-				yaml.save(file);
-			} catch (IOException e) {
-				chat.getLogger().warning("Unable to save when dropping old channels!");
-				e.printStackTrace();
-			}
+			chat.saveConfig();
 		}
 	}
 
 	protected void saveAllChannels() {
-		final File file;
-		try {
-			file = new File(chat.getPlugin().getDataFolder(), "ChatChannels.yml");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save all channel data!", e);
-		}
-		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		final YamlConfiguration yaml = chat.getConfig();
 		for (Channel channel : channelList.values()) {
 			if (channel.getOwner() == null || !(channel instanceof NormalChannel)) {
 				// Default channel
@@ -100,11 +75,7 @@ public class ChannelManager {
 			yaml.set(name + ".approved", approved);
 			yaml.set(name + ".lastAccess", normal.getLastAccess());
 		}
-		try {
-			yaml.save(file);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save all channel data!", e);
-		}
+		chat.saveConfig();
 	}
 
 	protected void saveChannel(Channel channel) {
@@ -112,16 +83,7 @@ public class ChannelManager {
 			return;
 		}
 		NormalChannel normal = (NormalChannel) channel;
-		final File file;
-		try {
-			file = new File(chat.getPlugin().getDataFolder(), "ChatChannels.yml");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save data for channel " + normal.getName(), e);
-		}
-		final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		final YamlConfiguration yaml = chat.getConfig();
 		final String name = normal.getName();
 		yaml.set(name + ".owner", normal.getOwner().toString());
 		yaml.set(name + ".type", normal.getClass().getSimpleName().replace("Channel", "").toUpperCase());
@@ -136,11 +98,7 @@ public class ChannelManager {
 		normal.getApprovedUsers().forEach(uuid -> approved.add(uuid.toString()));
 		yaml.set(name + ".approved", approved);
 		yaml.set(name + ".lastAccess", normal.getLastAccess());
-		try {
-			yaml.save(file);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save data for channel " + normal.getName(), e);
-		}
+		chat.saveConfig();
 	}
 
 	public void createNewChannel(String name, AccessLevel access, UUID creator, ChannelType channelType) {
@@ -185,18 +143,8 @@ public class ChannelManager {
 
 	public void dropChannel(String channelName) {
 		channelList.remove(channelName);
-		File file;
-		file = new File(chat.getPlugin().getDataFolder(), "ChatChannels.yml");
-		if (!file.exists()) {
-			return;
-		}
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-		yaml.set(channelName, null);
-		try {
-			yaml.save(file);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to delete channel " + channelName, e);
-		}
+		chat.getConfig().set(channelName, null);
+		chat.saveConfig();
 	}
 
 	public Map<String, Channel> getChannelList() {

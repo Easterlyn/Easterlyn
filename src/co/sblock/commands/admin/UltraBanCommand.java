@@ -1,10 +1,7 @@
 package co.sblock.commands.admin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -28,30 +25,28 @@ public class UltraBanCommand extends SblockCommand {
 		super(plugin, "ultraban");
 		this.users = plugin.getModule(Users.class);
 		this.setDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.");
-		this.setUsage("/ultraban <target>");
 		this.setPermissionLevel("horrorterror");
+		this.setUsage("/ultraban <target>");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (!Bukkit.dispatchCommand(sender, "sban " + StringUtils.join(args, ' '))) {
+		if (!((Sblock) getPlugin()).getCommandMap().getCommand("sban").execute(sender, label, args)) {
 			// sban will return its own usage failure, no need to double message.
 			return true;
 		}
 
-		Player p = Bukkit.getPlayer(args[0]);
-		if (p != null) {
-			User victim = users.getUser(p.getUniqueId());
-			File file;
-			try {
-				file = new File(((Sblock) getPlugin()).getUserDataFolder(), victim.getUUID().toString() + ".yml");
+		Player player = Bukkit.getPlayer(args[0]);
+		if (player != null) {
+			User victim = users.getUser(player.getUniqueId());
+			File folder = new File(getPlugin().getDataFolder(), "captcha");
+			if (folder.exists()) {
+				File file = new File(folder, victim.getUUID().toString() + ".yml");
 				if (file.exists()) {
 					file.delete();
 				}
-			} catch (IOException e) {
-				((Sblock) getPlugin()).getModule(Users.class).getLogger().warning("Unable to delete data for " + victim.getUUID());
 			}
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + p.getUniqueId());
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + player.getUniqueId());
 		}
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lwc admin purge " + args[0]);
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "deleteallclaims " + args[0]);

@@ -1,7 +1,5 @@
 package co.sblock;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -387,22 +385,6 @@ public class Sblock extends JavaPlugin {
 		@SuppressWarnings("unchecked")
 		HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
 		return ImmutableList.copyOf(cmdMapKnownCommands.keySet());
-	}
-
-	public File getUserDataFolder() throws IOException {
-		File file = new File(getDataFolder(), "UserData");
-		if (!file.exists()) {
-			file.mkdirs();
-		}
-		return file;
-	}
-
-	public File getCaptchaDataFolder() throws IOException {
-		File file = new File(getDataFolder(), "captcha");
-		if (!file.exists()) {
-			file.mkdirs();
-		}
-		return file;
 	}
 
 	public GameProfile getFakeGameProfile(String name) {
