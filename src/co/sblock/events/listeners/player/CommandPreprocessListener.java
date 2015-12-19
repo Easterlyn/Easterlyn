@@ -34,7 +34,7 @@ public class CommandPreprocessListener extends SblockListener {
 		this.chat = plugin.getModule(Chat.class);
 		this.discord = plugin.getModule(Discord.class);
 		this.spectators = plugin.getModule(Spectators.class);
-		map = plugin.getCommandMap();
+		this.map = plugin.getCommandMap();
 	}
 
 	/**
@@ -53,9 +53,10 @@ public class CommandPreprocessListener extends SblockListener {
 		}
 
 		String command = event.getMessage().substring(1, space > 0 ? space : event.getMessage().length()).toLowerCase();
+		Command cmd = map.getCommand(command);
 
-		if (!event.getPlayer().hasPermission("sblock.felt")
-				&& !discord.getConfig().getStringList("discord.command-log-blacklist").contains(command)) {
+		if (!event.getPlayer().hasPermission("sblock.felt") && cmd != null
+				&& !discord.getConfig().getStringList("discord.command-log-blacklist").contains(cmd.getName())) {
 			discord.logMessage(event.getPlayer().getName() + " issued command: " + event.getMessage());
 		}
 
@@ -66,7 +67,6 @@ public class CommandPreprocessListener extends SblockListener {
 			return;
 		}
 
-		Command cmd = map.getCommand(command);
 		if (cmd == null) {
 			return;
 		}
