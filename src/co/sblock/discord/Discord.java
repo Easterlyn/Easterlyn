@@ -369,8 +369,21 @@ public class Discord extends Module {
 	}
 
 	protected void handleChatToMinecraft(UserChatEvent event, Player player) {
+		String message = event.getMsg().getMessage();
+		if (!player.hasPermission("sblock.discord.filterexempt")) {
+			int newline = message.indexOf('\n');
+			if (newline > 0) {
+				postMessage("Sbot", "Newlines are not allowed in messages to Minecraft, <@"
+						+ event.getUser().getUser().getId() + ">", event.getGroup().getId());
+				return;
+			}
+			if (message.length() > 255) {
+				postMessage("Sbot", "Messages from Discord may not be over 255 characters, <@"
+						+ event.getUser().getUser().getId() + ">", event.getGroup().getId());
+			}
+		}
 		builder.setSender(users.getUser(player.getUniqueId()))
-				.setMessage(sanitize(event.getMsg().getMessage())).setChannel(manager.getChannel("#discord"));
+				.setMessage(sanitize(message)).setChannel(manager.getChannel("#discord"));
 		if (!builder.canBuild(false)) {
 			event.getMsg().deleteMessage();
 			return;
