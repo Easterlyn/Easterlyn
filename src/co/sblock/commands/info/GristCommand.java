@@ -13,7 +13,7 @@ import co.sblock.utilities.Experience;
 import co.sblock.utilities.InventoryUtils;
 
 /**
- * 
+ * SblockCommand for getting information about grist costs and totals.
  * 
  * @author Jikoo
  */
@@ -25,39 +25,40 @@ public class GristCommand extends SblockCommand {
 		super(plugin, "grist");
 		this.effects = plugin.getModule(Effects.class);
 		this.setDescription("Grist-related operations.");
-		this.setUsage("/grist [cost|(level)L|experience], no arguments for current grist");
+		this.setUsage("/grist <cost|current|(level)L|(exp points)>");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (args.length > 0) {
-			try {
-				if (args[0].length() > 1) {
-					char lastChar = args[0].charAt(args[0].length() - 1);
-					if (lastChar == 'L' || lastChar == 'l') {
-						int level = Integer.parseInt(args[0].substring(0, args[0].length() - 1));
-						sender.sendMessage(String.format("%1$sLevel %3$s is %2$s%4$s %1$sgrist.",
-								Color.GOOD, Color.GOOD_EMPHASIS, level,
-								Experience.getExpFromLevel(level)));
-						return true;
-					}
+		if (args.length < 1) {
+			return false;
+		}
+		try {
+			if (args[0].length() > 1) {
+				char lastChar = args[0].charAt(args[0].length() - 1);
+				if (lastChar == 'L' || lastChar == 'l') {
+					int level = Integer.parseInt(args[0].substring(0, args[0].length() - 1));
+					sender.sendMessage(String.format("%1$sLevel %3$s is %2$s%4$s %1$sgrist.",
+							Color.GOOD, Color.GOOD_EMPHASIS, level,
+							Experience.getExpFromLevel(level)));
+					return true;
 				}
-				int grist = Integer.parseInt(args[0]);
-				sender.sendMessage(String.format("%1$s%3$s grist is level %2$s%4$.3f.",
-						Color.GOOD, Color.GOOD_EMPHASIS, grist, Experience.getLevelFromExp(grist)));
-				return true;
-			} catch (NumberFormatException e) {
-				if (!args[0].equalsIgnoreCase("cost")) {
-					return false;
-				}
+			}
+			int grist = Integer.parseInt(args[0]);
+			sender.sendMessage(String.format("%1$s%3$s grist is level %2$s%4$.3f.",
+					Color.GOOD, Color.GOOD_EMPHASIS, grist, Experience.getLevelFromExp(grist)));
+			return true;
+		} catch (NumberFormatException e) {
+			if (!args[0].equalsIgnoreCase("cost") && !args[0].equalsIgnoreCase("current")) {
+				return false;
 			}
 		}
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("/grist <exp|(level)L>");
+			sender.sendMessage("/grist <(exp)|(level)L>");
 			return true;
 		}
 		Player player = (Player) sender;
-		if (args.length == 0) {
+		if (args[0].equalsIgnoreCase("current")) {
 			sender.sendMessage(String.format("%1$sYou have %2$s%3$s %1$sgrist.", Color.GOOD,
 					Color.GOOD_EMPHASIS, Experience.getExp(player)));
 			return true;
