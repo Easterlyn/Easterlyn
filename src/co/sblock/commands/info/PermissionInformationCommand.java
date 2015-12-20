@@ -30,10 +30,10 @@ public class PermissionInformationCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		Permission permission = null;
-		if (args.length > 0) {
-			permission = Bukkit.getPluginManager().getPermission(args[0]);
+		if (args.length < 1) {
+			return false;
 		}
+		Permission permission = Bukkit.getPluginManager().getPermission(args[0]);
 		if (permission == null) {
 			sender.sendMessage(Color.BAD + args[0] + " is not a valid permission.");
 			return true;
