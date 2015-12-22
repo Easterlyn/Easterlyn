@@ -102,7 +102,7 @@ public class AwayFromKeyboard extends Module {
 	}
 
 	/**
-	 * If a player is not AFK, extend their time before becoming AFK.
+	 * If a Player is not AFK, extend their time before becoming AFK.
 	 * 
 	 * @param player the Player
 	 * 
@@ -127,6 +127,7 @@ public class AwayFromKeyboard extends Module {
 			afkUUIDs.remove(player.getUniqueId());
 			player.sendMessage(Color.GOOD + "You are no longer marked as away!");
 		}
+		player.setSleepingIgnored(false);
 		cooldowns.addCooldown(player, getName(), 300000L);
 	}
 
@@ -147,11 +148,13 @@ public class AwayFromKeyboard extends Module {
 	 * @param player the Player
 	 */
 	public void setInactive(Player player) {
+		if (cooldowns.getRemainder(player, getName()) == 0) {
+			player.setSleepingIgnored(true);
+		}
 		if (afkUUIDs.contains(player.getUniqueId())) {
 			return;
 		}
 		afkUUIDs.add(player.getUniqueId());
-		cooldowns.clearCooldown(player, getName());
 		player.sendMessage(Color.GOOD + "You have been marked as away!");
 		Users.team(player, Color.GOOD_EMPHASIS + "[AFK] ");
 	}
