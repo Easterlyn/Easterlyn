@@ -370,8 +370,8 @@ public class Transportalizer extends Machine {
 
 	@Override
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
-		Location key = getKey(storage);
-		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && !isFree()) {
+		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+			Location key = getKey(storage);
 			key.getWorld().dropItemNaturally(key, getUniqueDrop());
 			int fuel = (int) (getFuel(storage) / getValue(Material.BLAZE_POWDER));
 			if (fuel > 0) {

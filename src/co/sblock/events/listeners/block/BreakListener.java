@@ -42,14 +42,15 @@ public class BreakListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!spectators.canMineOre(event.getPlayer())) {
-			spectatorsDeserveFun.handleEvent(event, event.getPlayer(), 1);
-			return;
-		}
-
 		Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(event.getBlock());
 		if (pair != null) {
 			event.setCancelled(pair.getLeft().handleBreak(event, pair.getRight()));
+			return;
+		}
+
+		if (!spectators.canMineOre(event.getPlayer())) {
+			spectatorsDeserveFun.handleEvent(event, event.getPlayer(), 1);
+			return;
 		}
 	}
 

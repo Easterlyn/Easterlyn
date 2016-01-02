@@ -49,6 +49,7 @@ public class PlaceListener extends SblockListener {
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
 			event.setCancelled(true);
 			player.sendMessage(Color.BAD + "You decide against fussing with the internals of this machine.");
+			return;
 		}
 
 		// Machine place logic
