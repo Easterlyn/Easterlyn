@@ -33,7 +33,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 	private final BlockFace[] faces;
 	private final BlockFace[] levels;
 	public EffectTunnelBore(Sblock plugin) {
-		super(plugin, 2500, 1, 1, "Tunnel Bore");
+		super(plugin, 1500, 1, 1, "Tunnel Bore");
 		faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
 				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST,
 				BlockFace.SOUTH_WEST, BlockFace.SOUTH_EAST };
