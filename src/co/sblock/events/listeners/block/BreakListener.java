@@ -57,5 +57,6 @@ public class BreakListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBlockBreakOccurred(BlockBreakEvent event) {
 		effects.handleEvent(event, event.getPlayer(), false);
+		effects.handleEvent(event, event.getPlayer(), true);
 	}
 }

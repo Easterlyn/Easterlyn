@@ -1,4 +1,4 @@
-package co.sblock.effects.effect.godtier.active;
+package co.sblock.effects.effect.godtier.reactive;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockExpEvent;
 
 import co.sblock.Sblock;
-import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorGodtier;
+import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
 
@@ -22,10 +22,10 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class EffectBonusBlockExperience extends Effect implements BehaviorActive, BehaviorGodtier {
+public class EffectBonusBlockExperience extends Effect implements BehaviorReactive, BehaviorGodtier {
 
 	public EffectBonusBlockExperience(Sblock plugin) {
-		super(plugin, Integer.MAX_VALUE, 5, 5, "Inquisitor");
+		super(plugin, 200, 5, 5, "Inquisitor");
 	}
 
 	@Override

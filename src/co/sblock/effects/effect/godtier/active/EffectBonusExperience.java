@@ -26,7 +26,7 @@ import net.md_5.bungee.api.ChatColor;
 public class EffectBonusExperience extends Effect implements BehaviorActive, BehaviorGodtier {
 
 	public EffectBonusExperience(Sblock plugin) {
-		super(plugin, Integer.MAX_VALUE, 5, 5, "Veteran");
+		super(plugin, 250, 5, 5, "Veteran");
 	}
 
 	@Override

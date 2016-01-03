@@ -24,7 +24,7 @@ public class FurnaceExtractListener extends SblockListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
-		effects.handleEvent(event, event.getPlayer(), false);
+		effects.handleEvent(event, event.getPlayer(), true);
 	}
 
 }
