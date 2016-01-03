@@ -95,6 +95,10 @@ public class Experience {
 	 * @param exp the amount of experience to add or remove
 	 */
 	public static void changeExp(Player player, int exp) {
+		if (exp == 0) {
+			return;
+		}
+
 		exp += getExp(player);
 
 		if (exp < 0) {

@@ -84,6 +84,13 @@ public class DeathListener extends SblockListener {
 		// TODO post deaths (sans coordinates) to global chat
 		if (events.getPVPTasks().containsKey(player.getUniqueId())) {
 			event.setDroppedExp(Experience.getExp(player));
+			int dropped = Experience.getExp(player) / 10;
+			if (dropped > 30) {
+				dropped = 30;
+			}
+			event.setDroppedExp(dropped);
+			Experience.changeExp(player, -dropped);
+			event.setKeepLevel(true);
 			event.setKeepInventory(true);
 			events.getPVPTasks().remove(player.getUniqueId()).cancel();
 			Player killer = player.getKiller();
