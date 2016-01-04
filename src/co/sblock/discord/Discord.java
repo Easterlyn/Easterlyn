@@ -133,14 +133,11 @@ public class Discord extends Module {
 
 		if (login == null || password == null) {
 			getLogger().severe("Unable to connect to Discord, no username or password!");
-			discord = null;
+			this.disable();
+			return;
 		}
 
 		discord = new DiscordBuilder(login, password).build();
-
-		if (discord == null) {
-			this.disable();
-		}
 
 		this.users = getPlugin().getModule(Users.class);
 
@@ -150,7 +147,7 @@ public class Discord extends Module {
 			discord.login();
 		} catch (NoLoginDetailsException | BadUsernamePasswordException | DiscordFailedToConnectException e) {
 			e.printStackTrace();
-			disable();
+			this.disable();
 			return;
 		}
 
