@@ -348,6 +348,11 @@ public class Transportalizer extends Machine {
 			}
 			return true;
 		}
+		// Ender dragon or ender dragon parts
+		if (entity instanceof ComplexLivingEntity || entity instanceof ComplexEntityPart) {
+			player.sendMessage(Color.BAD + "Great effort, but you can't transportalize a dragon.");
+			return false;
+		}
 		if (entity instanceof ArmorStand) {
 			// Pulling armor stands from an area requires build trust
 			for (ProtectionHook hook : protections.getHooks()) {
