@@ -489,10 +489,10 @@ public class Captcha extends Module {
 		List<String> lore;
 		if (item2 != null && item2.hasItemMeta() && item2.getItemMeta().hasLore()) {
 			lore = effects.organizeEffectLore(item.getItemMeta().getLore(), false,
-					false, item2.getItemMeta().getLore().toArray(new String[0]));
+					false, true, item2.getItemMeta().getLore().toArray(new String[0]));
 		} else {
 			lore = effects.organizeEffectLore(item.getItemMeta().getLore(), false,
-					false);
+					false, true);
 		}
 		ItemMeta im = item.getItemMeta();
 		im.setLore(lore);

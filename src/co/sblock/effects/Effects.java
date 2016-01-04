@@ -268,7 +268,19 @@ public class Effects extends Module {
 		return applicableEffects;
 	}
 
-	public List<String> organizeEffectLore(List<String> lore, boolean ignoreCase, boolean overwrite, String... toAdd) {
+	/**
+	 * Organize and correct Effects in ItemStack lore.
+	 * 
+	 * @param lore the List of lore containing Effects
+	 * @param ignoreCase whether lore matching should ignore case
+	 * @param overwrite whether any duplicate Effects in toAdd should be ignored
+	 * @param cap whether Effect levels should be capped to the maximum
+	 * @param toAdd additional Strings to be merged with the lore
+	 * 
+	 * @return the organized lore
+	 */
+	public List<String> organizeEffectLore(List<String> lore, boolean ignoreCase,
+			boolean overwrite, boolean cap, String... toAdd) {
 		ArrayList<String> oldLore = new ArrayList<>();
 		if (lore != null) {
 			oldLore.addAll(lore);
@@ -305,6 +317,9 @@ public class Effects extends Module {
 		for (Map.Entry<Effect, Integer> entry : applicableEffects.entrySet()) {
 			if (entry.getValue() < 1) {
 				continue;
+			}
+			if (cap) {
+				entry.setValue(Math.min(entry.getKey().getMaxLevel(), entry.getValue()));
 			}
 			newLore.add(new StringBuilder().append(ChatColor.GRAY)
 					.append(entry.getKey().getName()).append(' ')

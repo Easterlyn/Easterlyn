@@ -94,7 +94,7 @@ public class EffectsCommand extends SblockCommand {
 			return true;
 		}
 
-		meta.setLore(effects.organizeEffectLore(meta.getLore(), true, true, loreString));
+		meta.setLore(effects.organizeEffectLore(meta.getLore(), true, true, false, loreString));
 		hand.setItemMeta(meta);
 		sender.sendMessage(Color.GOOD + "Added " + loreString);
 		return true;
