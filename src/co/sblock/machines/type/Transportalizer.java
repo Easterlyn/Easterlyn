@@ -239,18 +239,19 @@ public class Transportalizer extends Machine {
 
 		// Parse remote location. Do not allow invalid height or coords.
 		WorldBorder border = key.getWorld().getWorldBorder();
-		String[] locString = line3.split(", ?");
+		double borderRadius = border.getSize() / 2;
+		String[] locString = line3.split("( |, ?)");
 		int x0 = Integer.parseInt(locString[0]);
-		int max = (int) (border.getCenter().getX() + border.getSize());
+		int max = (int) (border.getCenter().getX() + borderRadius);
 		int x = Math.max(-max, Math.min(max, x0));
 		int y0 = Integer.parseInt(locString[1]);
 		int y = Math.max(1, Math.min(255, y0));
 		int z0 = Integer.parseInt(locString[2]);
-		max = (int) (border.getCenter().getZ() + border.getSize());
+		max = (int) (border.getCenter().getZ() + borderRadius);
 		int z = Math.max(-max, Math.min(max, z0));
 		if (x != x0 | y != y0 || z != z0) {
 			sign.setLine(2, x + ", " + y + ", " + z);
-			sign.update();
+			sign.update(true);
 		}
 		Location remote = new Location(event.getClickedBlock().getWorld(), x, y, z);
 
@@ -412,12 +413,22 @@ public class Transportalizer extends Machine {
 	}
 
 	private void teleport(Entity entity, Location source, Location target) {
-			source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
-			target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
-			entity.teleport(new Location(target.getWorld(), target.getX() + .5, target.getY(), target.getZ() + .5,
-					entity.getLocation().getYaw(), entity.getLocation().getPitch()));
-			source.getWorld().playEffect(source, Effect.ENDER_SIGNAL, 4);
-			source.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 4);
+		source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
+		target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
+		Location current = entity.getLocation();
+		target.setPitch(current.getPitch());
+		target.setYaw(current.getYaw());
+		/*
+		 * Pad the location. Padding X and Z cause the player to arrive in the center of the target
+		 * block. Padding the Y axis allows players to arrive on top of carpet, etc. and helps
+		 * prevent players with higher latency arriving in unloaded chunks getting stuck in blocks.
+		 * More y padding results in suffocation damage in 2-block high areas, as the character is
+		 * 1.8 blocks tall.
+		 */
+		target.add(0.5, 0.2, 0.5);
+		entity.teleport(target);
+		source.getWorld().playEffect(source, Effect.ENDER_SIGNAL, 4);
+		source.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 4);
 	}
 
 	public boolean doPendingTransportalization(Player player, boolean accept) {
