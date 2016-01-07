@@ -230,7 +230,7 @@ public class Transportalizer extends Machine {
 		Sign sign = (Sign) signBlock.getState();
 		// Check sign for proper format - sign lines are 0-3, third line is line 2
 		String line3 = sign.getLine(2);
-		if (!line3.matches("\\-?[0-9]+, ?[0-9]+, ?\\-?[0-9]+")) {
+		if (!line3.matches("\\-?[0-9]+(\\s|,\\s?)[0-9]+(\\s|,\\s?)\\-?[0-9]+")) {
 			event.getPlayer().sendMessage(Color.BAD
 					+ "The third line of your transportalizer sign must contain "
 					+ "your desired destination in x, y, z format. Ex: 0, 64, 0");
@@ -240,7 +240,7 @@ public class Transportalizer extends Machine {
 		// Parse remote location. Do not allow invalid height or coords.
 		WorldBorder border = key.getWorld().getWorldBorder();
 		double borderRadius = border.getSize() / 2;
-		String[] locString = line3.split("( |, ?)");
+		String[] locString = line3.split("(\\s|,\\s?)");
 		int x0 = Integer.parseInt(locString[0]);
 		int max = (int) (border.getCenter().getX() + borderRadius);
 		int x = Math.max(-max, Math.min(max, x0));
