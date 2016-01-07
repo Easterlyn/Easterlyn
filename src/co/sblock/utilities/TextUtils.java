@@ -11,11 +11,12 @@ import org.bukkit.entity.Skeleton.SkeletonType;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * A collection of useful regex functions.
+ * A collection of useful String-altering functions. Not named StringUtils for ease due to our use
+ * of the Apache class by the same name.
  * 
  * @author Jikoo
  */
-public class RegexUtils {
+public class TextUtils {
 
 	public static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-z]{2,4}))((#|/)\\S*)?$", Pattern.CASE_INSENSITIVE);
 

@@ -22,7 +22,7 @@ import co.sblock.machines.type.computer.EmailWriter;
 import co.sblock.machines.type.computer.Programs;
 import co.sblock.users.User;
 import co.sblock.users.Users;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 
 /**
  * Listener for PlayerEditBookEvents.
@@ -71,7 +71,7 @@ public class BookEditListener extends SblockListener {
 
 		String title = sendable.getTitle();
 		if (title == null || title.length() < 3 || title.length() > 16
-				|| RegexUtils.stripNonAlphanumerics(title).length() < title.length()) {
+				|| TextUtils.stripNonAlphanumerics(title).length() < title.length()) {
 			sendable.setTitle(null);
 			event.setSigning(false);
 			event.getPlayer().sendMessage(Color.BAD + "Invalid name! The title of the letter must be the full name of the recipient.");

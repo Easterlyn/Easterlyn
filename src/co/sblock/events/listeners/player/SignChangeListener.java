@@ -10,7 +10,7 @@ import org.bukkit.permissions.PermissionDefault;
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.events.listeners.SblockListener;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -53,7 +53,7 @@ public class SignChangeListener extends SblockListener {
 
 		for (int i = 0; i < event.getLines().length; i++) {
 			event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));
-			if (empty && !RegexUtils.appearsEmpty(event.getLine(i))) {
+			if (empty && !TextUtils.appearsEmpty(event.getLine(i))) {
 				empty = false;
 			}
 		}
@@ -68,7 +68,7 @@ public class SignChangeListener extends SblockListener {
 				.append(block.getWorld().getName()).append(' ').append(block.getX()).append("x, ")
 				.append(block.getY()).append("y, ").append(block.getZ()).append("z\n");
 		for (String line : event.getLines()) {
-			if (!RegexUtils.appearsEmpty(line)) {
+			if (!TextUtils.appearsEmpty(line)) {
 				msg.append(line).append(ChatColor.GRAY).append('\n');
 			}
 		}

@@ -33,7 +33,7 @@ import co.sblock.micromodules.Cooldowns;
 import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 import co.sblock.utilities.WrappedSenderPlayer;
 
 import me.ryanhamshire.GriefPrevention.DataStore;
@@ -374,7 +374,7 @@ public class AsyncChatListener extends SblockListener {
 				msgBuilder.append(prefix);
 			}
 			for (String word : msg.split(" ")) {
-				if (RegexUtils.URL_PATTERN.matcher(word).find()) {
+				if (TextUtils.URL_PATTERN.matcher(word).find()) {
 					msgBuilder.append(word);
 				} else {
 					msgBuilder.append(word.toLowerCase());
@@ -428,7 +428,7 @@ public class AsyncChatListener extends SblockListener {
 		int length = msg.length();
 		int symbols = 0;
 		for (String word : words) {
-			if (RegexUtils.URL_PATTERN.matcher(word).find()) {
+			if (TextUtils.URL_PATTERN.matcher(word).find()) {
 				length -= word.length();
 				spaces--;
 				continue;

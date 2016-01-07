@@ -21,7 +21,7 @@ import co.sblock.chat.channel.RegionChannel;
 import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -179,13 +179,13 @@ public class MessageBuilder {
 				if (word.isEmpty()) {
 					continue;
 				}
-				if (RegexUtils.URL_PATTERN.matcher(word).find()) {
+				if (TextUtils.URL_PATTERN.matcher(word).find()) {
 					sb.append(word).append(' ');
 					continue;
 				}
 
 				// Anything goes as long as it's the name of a recipient
-				if (names.contains(RegexUtils.stripEndPunctuation(word))) {
+				if (names.contains(TextUtils.stripEndPunctuation(word))) {
 					sb.append(word).append(' ');
 					continue;
 				}
@@ -213,7 +213,7 @@ public class MessageBuilder {
 		}
 
 		// Trim whitespace created by formatting codes, etc.
-		message = RegexUtils.trimExtraWhitespace(message);
+		message = TextUtils.trimExtraWhitespace(message);
 
 		this.message = message;
 		return this;
@@ -301,7 +301,7 @@ public class MessageBuilder {
 		}
 
 		// No sending of blank messages.
-		if (RegexUtils.appearsEmpty(this.message)) {
+		if (TextUtils.appearsEmpty(this.message)) {
 			if (informSender) {
 				this.sender.sendMessage(ChatMsgs.errorEmptyMessage());
 			}

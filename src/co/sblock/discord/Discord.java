@@ -44,7 +44,7 @@ import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
 import co.sblock.utilities.PlayerLoader;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 
 import me.itsghost.jdiscord.DiscordAPI;
 import me.itsghost.jdiscord.DiscordBuilder;
@@ -244,7 +244,7 @@ public class Discord extends Module {
 		while (matcher.find()) {
 			builder.append(matcher.group(1));
 			String word = matcher.group(2);
-			if (!RegexUtils.URL_PATTERN.matcher(word).find()) {
+			if (!TextUtils.URL_PATTERN.matcher(word).find()) {
 				word = toEscape.matcher(word).replaceAll("\\\\$1");
 			}
 			builder.append(word);

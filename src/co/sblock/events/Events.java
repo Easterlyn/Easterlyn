@@ -38,7 +38,7 @@ import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
 import co.sblock.module.Module;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -115,7 +115,7 @@ public class Events extends Module {
 			yaml.save(file);
 		} catch (IOException e) {
 			getLogger().warning("Failed to save IP cache!");
-			getLogger().warning(RegexUtils.getTrace(e));
+			getLogger().warning(TextUtils.getTrace(e));
 		}
 	}
 
@@ -214,7 +214,7 @@ public class Events extends Module {
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			getLogger().warning(RegexUtils.getTrace(e));
+			getLogger().warning(TextUtils.getTrace(e));
 		}
 		sleep.put(p.getUniqueId(), new SleepTeleport(getPlugin(), p.getUniqueId()).runTaskLater(getPlugin(), 100L));
 	}
@@ -232,7 +232,7 @@ public class Events extends Module {
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
 		} catch (InvocationTargetException e) {
-			getLogger().warning(RegexUtils.getTrace(e));
+			getLogger().warning(TextUtils.getTrace(e));
 		}
 
 		BukkitTask task = sleep.remove(p.getUniqueId());

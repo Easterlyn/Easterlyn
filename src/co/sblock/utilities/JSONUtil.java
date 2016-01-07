@@ -48,7 +48,7 @@ public class JSONUtil {
 		ArrayList<BaseComponent> components = new ArrayList<BaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
-		Matcher urlMatcher = RegexUtils.URL_PATTERN.matcher(message);
+		Matcher urlMatcher = TextUtils.URL_PATTERN.matcher(message);
 		Matcher channelMatcher = CHANNEL_PATTERN.matcher(message);
 
 		for (int i = 0; i < message.length(); i++) {

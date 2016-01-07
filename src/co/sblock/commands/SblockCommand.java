@@ -12,7 +12,7 @@ import org.bukkit.plugin.Plugin;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.discord.Discord;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -77,7 +77,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 		} catch (Exception e) {
 			sender.sendMessage(Color.BAD + "An error occurred processing this command. Please make sure your parameters are correct.");
 			plugin.getModule(Discord.class).postReport(sender.getName(), "Error processing command: /"
-					+ getName() + " " + StringUtils.join(args, ' ') + '\n' + RegexUtils.getTrace(e, 5));
+					+ getName() + " " + StringUtils.join(args, ' ') + '\n' + TextUtils.getTrace(e, 5));
 			e.printStackTrace();
 		}
 		sender.sendMessage(this.getUsage());

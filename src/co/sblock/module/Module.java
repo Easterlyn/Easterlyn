@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import co.sblock.Sblock;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 
 /**
  * The base class for all plugin modules, allowing separate components of the
@@ -43,7 +43,7 @@ public abstract class Module {
 			this.enabled = true;
 		} catch (Exception e) {
 			this.getLogger().severe("Unhandled exception in module " + this.getName() + ". Module failed to enable.");
-			this.getLogger().severe(RegexUtils.getTrace(e));
+			this.getLogger().severe(TextUtils.getTrace(e));
 		}
 		return this;
 	}
@@ -66,7 +66,7 @@ public abstract class Module {
 			this.enabled = false;
 		} catch (Exception e) {
 			this.getLogger().severe("Unhandled exception in module " + this.getName() + ". Module failed to disable.");
-			this.getLogger().severe(RegexUtils.getTrace(e));
+			this.getLogger().severe(TextUtils.getTrace(e));
 		}
 		return this;
 	}

@@ -63,7 +63,7 @@ import co.sblock.module.Dependencies;
 import co.sblock.module.Dependency;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
-import co.sblock.utilities.RegexUtils;
+import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -92,7 +92,7 @@ public class Sblock extends JavaPlugin {
 		} catch (IllegalArgumentException | IllegalAccessException | SecurityException
 				| NoSuchMethodException | InvocationTargetException e) {
 			getLogger().severe("Could not fetch SimpleCommandMap from CraftServer, Sblock commands will fail to register.");
-			getLogger().severe(RegexUtils.getTrace(e));
+			getLogger().severe(TextUtils.getTrace(e));
 		}
 
 		createBasePermissions();
@@ -212,7 +212,7 @@ public class Sblock extends JavaPlugin {
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
 					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				getLogger().severe("Unable to register command " + command.getName());
-				getLogger().severe(RegexUtils.getTrace(e));
+				getLogger().severe(TextUtils.getTrace(e));
 			}
 		}
 	}
@@ -356,7 +356,7 @@ public class Sblock extends JavaPlugin {
 			}
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			getLogger().severe("Unable to modify SimpleCommandMap.knownCommands! Commands cannot be unregistered!");
-			getLogger().severe(RegexUtils.getTrace(e));
+			getLogger().severe(TextUtils.getTrace(e));
 		}
 	}
 
@@ -412,6 +412,12 @@ public class Sblock extends JavaPlugin {
 					Logger.getLogger("Sblock").severe("Dependency " + pluginName + " is not enabled!");
 					return false;
 				}
+			}
+		} else if (clazz.isAnnotationPresent(Dependency.class)) {
+			String pluginName = clazz.getAnnotation(Dependency.class).value();
+			if (!Bukkit.getPluginManager().isPluginEnabled(pluginName)) {
+				Logger.getLogger("Sblock").severe("Dependency " + pluginName + " is not enabled!");
+				return false;
 			}
 		}
 		return true;
