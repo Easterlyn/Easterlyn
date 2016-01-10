@@ -17,7 +17,6 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -348,18 +347,6 @@ public abstract class Machine {
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleIgnite(BlockIgniteEvent event, ConfigurationSection storage) {
-		return true;
-	}
-
-	/**
-	 * Handles physics on Blocks in the Machine.
-	 * 
-	 * @param event the BlockPhysicsEvent
-	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
-	 * @return true if event should be cancelled
-	 */
-	public boolean handlePhysics(BlockPhysicsEvent event, ConfigurationSection storage) {
 		return true;
 	}
 

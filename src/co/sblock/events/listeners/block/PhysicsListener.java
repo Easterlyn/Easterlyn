@@ -1,15 +1,11 @@
 package co.sblock.events.listeners.block;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPhysicsEvent;
 
 import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
-import co.sblock.machines.type.Machine;
 
 /**
  * Listener for BlockPhysicsEvents.
@@ -32,9 +28,8 @@ public class PhysicsListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPhysics(BlockPhysicsEvent event) {
-		Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(event.getBlock());
-		if (pair != null) {
-			event.setCancelled(pair.getLeft().handlePhysics(event, pair.getRight()));
+		if (machines.isMachine(event.getBlock())) {
+			event.setCancelled(true);
 		}
 	}
 }
