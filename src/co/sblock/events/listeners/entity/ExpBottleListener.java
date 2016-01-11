@@ -1,8 +1,10 @@
 package co.sblock.events.listeners.entity;
 
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ExpBottleEvent;
+
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
 
 /**
  * Listener for ExpBottleEvents.
@@ -12,7 +14,11 @@ import org.bukkit.event.entity.ExpBottleEvent;
  * 
  * @author Jikoo
  */
-public class ExpBottleListener implements Listener {
+public class ExpBottleListener extends SblockListener {
+
+	public ExpBottleListener(Sblock plugin) {
+		super(plugin);
+	}
 
 	@EventHandler
 	public void onExpBottle(ExpBottleEvent event) {
