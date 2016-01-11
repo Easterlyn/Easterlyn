@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-
 import co.sblock.Sblock;
 import co.sblock.chat.ChatMsgs;
 import co.sblock.users.User;
@@ -200,7 +198,7 @@ public class NormalChannel extends Channel {
 			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
 			return;
 		}
-		String message = ChatMsgs.onUserBanAnnounce(Bukkit.getPlayer(userID).getName(), this.name);
+		String message = ChatMsgs.onUserBanAnnounce(user.getPlayerName(), this.name);
 		if (this.isOwner(user)) {
 			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
 		} else if (!this.isBanned(user)) {

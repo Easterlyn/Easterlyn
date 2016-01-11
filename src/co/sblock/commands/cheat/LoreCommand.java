@@ -123,7 +123,7 @@ public class LoreCommand extends SblockCommand {
 		ArrayList<String> matches = new ArrayList<>();
 		if (args.length == 2) {
 			if (args[0].equals("delete")) {
-				for (int i = 0; i < 4; i++) { // This will need changing if more args are added
+				for (int i = 0; i < primaryArgs.length; i++) {
 					if (primaryArgs[i].startsWith(args[1].toLowerCase())) {
 						matches.add(primaryArgs[i]);
 					}

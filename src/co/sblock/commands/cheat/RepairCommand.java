@@ -15,16 +15,16 @@ import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
- * SblockCommand for repairing an item
+ * SblockCommand for repairing an item.
  * 
  * @author Jikoo
  */
-public class FullRepairCommand extends SblockCommand {
+public class RepairCommand extends SblockCommand {
 
-	public FullRepairCommand(Sblock plugin) {
-		super(plugin, "fullrepair");
+	public RepairCommand(Sblock plugin) {
+		super(plugin, "repair");
 		this.setDescription("Fully repairs an item, including wiping the anvil tag.");
-		this.setUsage("Run /fullrepair while holding an item.");
+		this.setUsage("Run /repair [full] while holding an item.");
 		this.setPermissionLevel("denizen");
 	}
 
@@ -42,19 +42,23 @@ public class FullRepairCommand extends SblockCommand {
 		if (hand.getType().getMaxDurability() > 0) {
 			hand.setDurability((short) 0);
 		}
-		if (hand.hasItemMeta()) {
+		if (args.length > 0 && hand.hasItemMeta() && args[0].equalsIgnoreCase("full")) {
 			ItemMeta meta = hand.getItemMeta();
 			Repairable repairable = (Repairable) meta;
 			repairable.setRepairCost(0);
 			hand.setItemMeta(meta);
 		}
 		player.setItemInHand(hand);
-		player.sendMessage(Color.GOOD + "Fully repaired!");
+		player.sendMessage(Color.GOOD + "Repaired!");
 		return true;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-		return ImmutableList.of();
+		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
+			return ImmutableList.of();
+		}
+		return ImmutableList.of("full");
 	}
+
 }

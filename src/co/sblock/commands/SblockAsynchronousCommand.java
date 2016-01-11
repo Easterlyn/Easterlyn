@@ -54,7 +54,7 @@ public abstract class SblockAsynchronousCommand extends SblockCommand {
 		}
 		@SuppressWarnings("deprecation")
 		OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-		if (player.hasPlayedBefore()) {
+		if (player != null && player.hasPlayedBefore()) {
 			return player.getUniqueId();
 		}
 		return null;

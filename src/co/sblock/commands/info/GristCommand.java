@@ -1,8 +1,13 @@
 package co.sblock.commands.info;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.CruxiteDowel;
@@ -73,6 +78,22 @@ public class GristCommand extends SblockCommand {
 				InventoryUtils.getMaterialDataName(hand.getType(), hand.getDurability()),
 				CruxiteDowel.expCost(effects, hand)));
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
+			return ImmutableList.of();
+		}
+		args[0] = args[0].toLowerCase();
+		List<String> completions = new ArrayList<>();
+		if ("cost".startsWith(args[0])) {
+			completions.add("cost");
+		}
+		if ("current".startsWith(args[0])) {
+			completions.add("current");
+		}
+		return completions;
 	}
 
 }
