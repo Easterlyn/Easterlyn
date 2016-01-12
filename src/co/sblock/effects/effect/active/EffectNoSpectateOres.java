@@ -28,14 +28,16 @@ public class EffectNoSpectateOres extends EffectAdjacentBlockPlacement {
 	}
 
 	@Override
-	protected void handleAdjacentBlock(Player player, Block block) {
+	protected boolean handleAdjacentBlock(Player player, Block block) {
 		if (block.getType() == Material.QUARTZ_ORE) {
 			block.setType(Material.NETHERRACK);
-			return;
+			return true;
 		}
 		if (block.getType().name().endsWith("_ORE")) {
 			block.setType(Material.STONE);
+			return true;
 		}
+		return false;
 	}
 
 }

@@ -19,6 +19,8 @@ import org.bukkit.permissions.PermissionAttachment;
 import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.Effect;
+import co.sblock.events.BlockUpdateManager;
+import co.sblock.events.Events;
 import co.sblock.events.event.SblockBreakEvent;
 import co.sblock.utilities.BlockDrops;
 import co.sblock.utilities.Experience;
@@ -30,14 +32,17 @@ import co.sblock.utilities.Experience;
  */
 public class EffectTunnelBore extends Effect implements BehaviorActive {
 
+	private final BlockUpdateManager budManager;
 	private final BlockFace[] faces;
 	private final BlockFace[] levels;
+
 	public EffectTunnelBore(Sblock plugin) {
 		super(plugin, 1500, 1, 1, "Tunnel Bore");
-		faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
-				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST,
-				BlockFace.SOUTH_WEST, BlockFace.SOUTH_EAST };
-		levels = new BlockFace[] {BlockFace.DOWN, BlockFace.SELF, BlockFace.UP};
+		this.budManager = plugin.getModule(Events.class).getBlockUpdateManager();
+		this.faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
+				BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST, BlockFace.SOUTH_WEST,
+				BlockFace.SOUTH_EAST };
+		this.levels = new BlockFace[] { BlockFace.DOWN, BlockFace.SELF, BlockFace.UP };
 	}
 
 	@Override
@@ -97,7 +102,8 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 			return false;
 		}
 		if (player.getGameMode() == GameMode.CREATIVE) {
-			block.setType(Material.AIR);
+			block.setType(Material.AIR, false);
+			budManager.queueBlock(block);
 			return false;
 		}
 		ItemStack hand = player.getItemInHand();
@@ -107,7 +113,8 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 				|| Math.random() < 1.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 2))) {
 			hand.setDurability((short) (hand.getDurability() + 1));
 		}
-		block.setType(Material.AIR);
+		block.setType(Material.AIR, false);
+		budManager.queueBlock(block);
 		for (ItemStack is : drops) {
 			player.getWorld().dropItem(player.getLocation(), is).setPickupDelay(0);
 		}

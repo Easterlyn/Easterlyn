@@ -15,14 +15,15 @@ import org.bukkit.permissions.PermissionAttachment;
 import co.sblock.Sblock;
 
 /**
- * 
+ * A base for effects that respect protection plugins by simulating block placements when modifying
+ * adjacent blocks.
  * 
  * @author Jikoo
  */
 public abstract class EffectAdjacentBlockPlacement extends EffectAdjacentBlockModifier {
 
-	protected EffectAdjacentBlockPlacement(Sblock plugin, int cost, String name) {
-		super(plugin, cost, name);
+	protected EffectAdjacentBlockPlacement(Sblock plugin, int cost, String name, Material... updateMaterials) {
+		super(plugin, cost, name, updateMaterials);
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public abstract class EffectAdjacentBlockPlacement extends EffectAdjacentBlockMo
 			state.update(true, false);
 			return false;
 		}
-		block.getState().update();
+		block.getState().update(false);
 		return true;
 	}
 

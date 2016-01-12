@@ -52,13 +52,16 @@ public class Events extends Module {
 	private final HashMap<UUID, BukkitTask> sleep;
 	private final LinkedHashMap<String, String> ipcache;
 	private final HashMap<UUID, BukkitTask> pvp;
-	private InvisibilityManager invisibilityManager;
+	private final InvisibilityManager invisibilityManager;
+	private final BlockUpdateManager blockUpdateManager;
 
 	public Events(Sblock plugin) {
 		super(plugin);
 		this.sleep = new HashMap<>();
 		this.pvp = new HashMap<>();
 		this.ipcache = new LinkedHashMap<>();
+		this.invisibilityManager = new InvisibilityManager(plugin);
+		this.blockUpdateManager = new BlockUpdateManager(plugin);
 	}
 
 	@Override
@@ -92,8 +95,6 @@ public class Events extends Module {
 		}
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new SyncPacketAdapter(getPlugin()));
-
-		invisibilityManager = new InvisibilityManager(getPlugin());
 
 		initiateRegionChecks();
 	}
@@ -282,6 +283,10 @@ public class Events extends Module {
 
 	public InvisibilityManager getInvisibilityManager() {
 		return invisibilityManager;
+	}
+
+	public BlockUpdateManager getBlockUpdateManager() {
+		return blockUpdateManager;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package co.sblock.effects.effect.active;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
@@ -13,6 +14,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.Effect;
+import co.sblock.events.BlockUpdateManager;
+import co.sblock.events.Events;
 import co.sblock.events.event.SblockBreakEvent;
 
 /**
@@ -22,12 +25,16 @@ import co.sblock.events.event.SblockBreakEvent;
  */
 public abstract class EffectAdjacentBlockModifier extends Effect implements BehaviorActive {
 
+	private final BlockUpdateManager budManager;
 	private final BlockFace[] faces;
+	private final Material[] updateMaterials;
 
-	protected EffectAdjacentBlockModifier(Sblock plugin, int cost, String name) {
+	protected EffectAdjacentBlockModifier(Sblock plugin, int cost, String name, Material... updateMaterials) {
 		super(plugin, cost, 1, 1, name);
-		faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
+		this.budManager = plugin.getModule(Events.class).getBlockUpdateManager();
+		this.faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
 				BlockFace.EAST, BlockFace.WEST };
+		this.updateMaterials = updateMaterials;
 	}
 
 	@Override
@@ -40,9 +47,20 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Beha
 		BlockBreakEvent breakEvent = (BlockBreakEvent) event;
 		Player player = breakEvent.getPlayer();
 		for (BlockFace face : faces) {
-			handleAdjacentBlock(player, breakEvent.getBlock().getRelative(face));
+			Block relative = breakEvent.getBlock().getRelative(face);
+			if (handleAdjacentBlock(player, relative) && updateMaterials.length > 0) {
+				for (BlockFace toUpdateFace : faces) {
+					Block toUpdate = relative.getRelative(toUpdateFace);
+					for (Material material : updateMaterials) {
+						if (material == toUpdate.getType()) {
+							budManager.queueBlock(toUpdate);
+						}
+					}
+				}
+			}
 		}
 	}
 
-	protected abstract void handleAdjacentBlock(Player player, Block block);
+	protected abstract boolean handleAdjacentBlock(Player player, Block block);
+
 }

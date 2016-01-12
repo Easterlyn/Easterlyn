@@ -15,17 +15,18 @@ import co.sblock.Sblock;
 public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement {
 
 	public EffectAdjacentFreeze(Sblock plugin) {
-		super(plugin, 400, "Eternally Frozen");
+		super(plugin, 400, "Eternally Frozen", Material.STATIONARY_WATER);
 	}
 
 	@Override
-	protected void handleAdjacentBlock(Player player, Block block) {
+	protected boolean handleAdjacentBlock(Player player, Block block) {
 		if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
 			if (handleBlockSet(player, block, Material.ICE)) {
 				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.SPLASH2, 16, 1);
+				return true;
 			}
-			return;
 		}
+		return false;
 	}
 
 }
