@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 /**
- * 
+ * A Queue which ensures that elements are unique.
  * 
  * @author Jikoo
  */

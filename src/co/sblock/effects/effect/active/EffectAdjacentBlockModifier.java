@@ -49,11 +49,12 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Beha
 		for (BlockFace face : faces) {
 			Block relative = breakEvent.getBlock().getRelative(face);
 			if (handleAdjacentBlock(player, relative) && updateMaterials.length > 0) {
-				for (BlockFace toUpdateFace : faces) {
+				checkRelative: for (BlockFace toUpdateFace : faces) {
 					Block toUpdate = relative.getRelative(toUpdateFace);
 					for (Material material : updateMaterials) {
 						if (material == toUpdate.getType()) {
-							budManager.queueBlock(toUpdate);
+							budManager.queueBlock(relative);
+							break checkRelative;
 						}
 					}
 				}

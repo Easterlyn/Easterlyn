@@ -67,20 +67,20 @@ public class CoordsCommand extends SblockAsynchronousCommand {
 			target = (Player) sender;
 		}
 		Location loc = target.getLocation();
-		String baseMessage = String.format("%1$sCurrent location: %2$s%3$.1d%1$s, %2$s%4$.1d%1$s, "
-					+ "%2$s%5$.1d%1$s with %2$s%6$.1f%1$s pitch and %2$s%7$.1f%1$s yaw",
+		String baseMessage = String.format("%1$sOn %2$s%3$s%1$s at %2$s%4$.1f%1$s, "
+					+ "%2$s%5$.1f%1$s, %2$s%6$.1f%1$s, %2$s%7$.1f%1$s pitch, and %2$s%8$.1f%1$s yaw.",
 			Color.GOOD, Color.GOOD_EMPHASIS, loc.getWorld().getName(), loc.getX(),
 			loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw());
 		if (!(sender instanceof Player) || sender instanceof DiscordPlayer) {
 			sender.sendMessage(baseMessage);
 			return true;
 		}
-		((Player) sender).spigot().sendMessage();
 		TextComponent raw = new TextComponent(TextComponent.fromLegacyText(baseMessage));
 		raw.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-				String.format("%1$s %2$.0d %2$.0d %2$.0d %2$.0f %2$.0f", loc.getWorld().getName(),
+				String.format("%1$s %2$.0f %3$.0f %4$.0f %5$.0f %6$.0f", loc.getWorld().getName(),
 						loc.getX(), loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw())));
 		raw.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Click to insert into chat!")));
+		((Player) sender).spigot().sendMessage(raw);
 		return true;
 	}
 

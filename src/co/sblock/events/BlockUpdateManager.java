@@ -21,30 +21,31 @@ public class BlockUpdateManager {
 
 	private final Sblock plugin;
 	private final Queue<Block> pending;
-	private final BlockFace[] surrounding;
 	private BukkitTask queueDrain;
+	private final BlockFace[] adjacent;
 
 	public BlockUpdateManager(Sblock plugin) {
 		this.plugin = plugin;
 		this.pending = new HashQueue<>();
-		this.surrounding = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH,
+		this.adjacent = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH,
 				BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
 	}
 
-	public void queueSurroundingBlocks(Block block) {
-		for (BlockFace face : surrounding) {
-			Block relative = block.getRelative(face);
-			if (relative.getType() != Material.AIR) {
-				pending.add(relative);
+	public void queueBlock(Block block) {
+		// Only update blocks with adjacent non-air blocks
+		if (block.getType() == Material.AIR) {
+			boolean update = false;
+			for (BlockFace face : adjacent) {
+				update = block.getRelative(face).getType() != Material.AIR;
+				if (update) {
+					break;
+				}
+			}
+			if (!update) {
+				return;
 			}
 		}
-		startTask();
-	}
-
-	public void queueBlock(Block block) {
-		if (block.getType() != Material.AIR) {
-			pending.add(block);
-		}
+		pending.add(block);
 		startTask();
 	}
 
@@ -58,10 +59,8 @@ public class BlockUpdateManager {
 		@Override
 		public void run() {
 			for (int i = 0; i < 50 && !pending.isEmpty(); i++) {
-				Block block = pending.poll();
-				if (!block.isEmpty()) {
-					block.getState().update(false);
-				}
+				System.out.println("updating " + pending.peek().getLocation());
+				pending.poll().getState().update(true, true);
 			}
 			if (pending.isEmpty()) {
 				this.cancel();
