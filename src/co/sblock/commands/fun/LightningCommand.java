@@ -1,4 +1,4 @@
-package co.sblock.commands.entry;
+package co.sblock.commands.fun;
 
 import java.util.List;
 

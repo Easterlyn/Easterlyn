@@ -1,4 +1,4 @@
-package co.sblock.commands.chat;
+package co.sblock.commands.admin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

@@ -8,7 +8,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import co.sblock.Sblock;
-import co.sblock.commands.entry.CrotchRocketCommand;
+import co.sblock.commands.fun.CrotchRocketCommand;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.Effect;
