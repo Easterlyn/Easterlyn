@@ -11,6 +11,11 @@ import org.bukkit.scheduler.BukkitTask;
 import co.sblock.Sblock;
 import co.sblock.utilities.HashQueue;
 
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
+
+import net.minecraft.server.v1_8_R3.BlockPosition;
+
 /**
  * Manager for queuing block updates to prevent redundant block updates by Effects such as Tunnel
  * Bore and Liquid Cooled.
@@ -56,11 +61,18 @@ public class BlockUpdateManager {
 	}
 
 	private class QueueDrainRunnable extends BukkitRunnable {
+		@SuppressWarnings("deprecation")
 		@Override
 		public void run() {
 			for (int i = 0; i < 50 && !pending.isEmpty(); i++) {
-				System.out.println("updating " + pending.peek().getLocation());
-				pending.poll().getState().update(true, true);
+				// Sadly, using the API does not work: pending.poll().getState().update(true, true);
+				// Blocks that are currently air cannot be updated at all to fix adjacent blocks,
+				// and certain other edge cases also will not trigger updates.
+				// Instead, we manually force an update using NMS.
+				Block block = pending.poll();
+				((CraftWorld) block.getWorld()).getHandle().applyPhysics(
+						new BlockPosition(block.getX(), block.getY(), block.getZ()),
+						CraftMagicNumbers.getBlock(block).fromLegacyData(block.getData()).getBlock());
 			}
 			if (pending.isEmpty()) {
 				this.cancel();
