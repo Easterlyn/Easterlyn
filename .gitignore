@@ -2,27 +2,39 @@
 ## Sblock Additions
 #############
 
-# For those who wish, ant target location, among other things, can be personalized.
+# We don't want passwords to end up public, so keep config.yml out
+src/main/resources/config.yml
+
+# For those who wish, target location, among other things, can be personalized.
 custom.properties
 
 testenv/
 
-# We don't want passwords to end up public, so keep config.yml out
-src/config.yml
-/bin
+# There's a DMCA, having compiled versions of Spigot could actually result in a takedown.
+# Compile Spigot, then use mvn install to add it to your local repository.
+repo/org/spigotmc/
+
 *.jardesc
 #.gitignore
 *.stackdump
 
 #################
+## Maven
+#################
+
+dependency-reduced-pom.xml
+/target/
+
+#################
 ## Eclipse
 #################
 
-*.pydevproject
 .project
+.classpath
 .metadata
 bin/
 tmp/
+*.pydevproject
 *.tmp
 *.bak
 *.swp

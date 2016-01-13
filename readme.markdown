@@ -1,11 +1,16 @@
 ##### About
-Sblock is dedicated to recreating a Sburb session in Minecraft with no client modifications required.
+Sblock draws inspiration for its gameplay from HomeStuck's Sburb.
 
 ##### Issues
 If you have an issue relevant to Sblock, please [open a ticket](https://github.com/SblockCo/Sblock/issues/new).
 
 ##### Contributing
-We accept pull requests that fit in with our vision for the project. We use Java 8. Please attempt to match our formatting style.
+We accept pull requests that fit in with our vision for the project. Please attempt to match our formatting style.
 
 ##### Compiling
-Clone the repository and run build.xml
+* Compile Spigot using [BuildTools](https://www.spigotmc.org/wiki/buildtools/)
+* Install spigot.jar into your local repository
+
+        mvn install:install-file -Dfile=path/to/spigot.jar -DgroupId=org.spigotmc \
+            -DartifactId=spigot -Dversion=<version> -Dpackaging=jar
+* Clone the repository and run `mvn clean install`
