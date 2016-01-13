@@ -13,7 +13,7 @@ import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 /**
- * 
+ * SblockCommand for toggling or setting flight status.
  * 
  * @author Jikoo
  */
@@ -93,6 +93,13 @@ public class FlyCommand extends SblockCommand {
 		}
 		player.setAllowFlight(fly);
 		player.setFlying(fly);
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return super.tabComplete(sender, alias, args);
 	}
 
 }

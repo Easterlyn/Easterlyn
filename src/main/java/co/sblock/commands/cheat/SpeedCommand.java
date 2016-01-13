@@ -110,4 +110,11 @@ public class SpeedCommand extends SblockCommand {
 		}
 	}
 
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return super.tabComplete(sender, alias, args);
+	}
+
 }
