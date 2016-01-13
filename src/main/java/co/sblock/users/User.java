@@ -25,6 +25,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -252,14 +254,20 @@ public class User {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				boolean allowFlight = getPlayer() != null
-						&& (getPlayer().getWorld().getName().equals("Derspit")
-								|| getPlayer().getGameMode() == GameMode.CREATIVE
-								|| getPlayer().getGameMode() == GameMode.SPECTATOR);
-				if (getPlayer() != null) {
-					getPlayer().setAllowFlight(allowFlight);
-					getPlayer().setFlying(allowFlight);
+				Player player = getPlayer();
+				if (player == null) {
+					getYamlConfiguration().set("flying", false);
+					return;
 				}
+				boolean allowFlight = player.getWorld().getName().equals("Derspit")
+								|| player.getGameMode() == GameMode.CREATIVE
+								|| player.getGameMode() == GameMode.SPECTATOR;
+				if (!allowFlight && player.hasPermission("sblock.command.fly.safe")) {
+					Block block = player.getLocation().getBlock();
+					allowFlight = block.isEmpty() && block.getRelative(BlockFace.DOWN).isEmpty();
+				}
+				player.setAllowFlight(allowFlight);
+				player.setFlying(allowFlight);
 				getYamlConfiguration().set("flying", allowFlight);
 			}
 		}.runTask(getPlugin());}

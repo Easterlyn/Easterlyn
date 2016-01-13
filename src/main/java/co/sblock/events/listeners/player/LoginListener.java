@@ -23,7 +23,7 @@ public class LoginListener extends SblockListener {
 
 	public LoginListener(Sblock plugin) {
 		super(plugin);
-		pattern = Pattern.compile("\\W");
+		pattern = Pattern.compile("[^a-zA-Z_0-9]");
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class LoginListener extends SblockListener {
 				&& pattern.matcher(event.getPlayer().getName()).find()) {
 			event.setResult(Result.KICK_BANNED);
 			event.setKickMessage("Your name contains invalid characters. Valid characters are [a-zA-Z_0-9]."
-					+ "\nPlease contact Mojang about this issue.");
+					+ "\nTry restarting your client.\n\nIf the issue persists, please contact Mojang.");
 			return;
 		}
 		switch (event.getResult()) {
