@@ -11,7 +11,7 @@ import co.sblock.Sblock;
 import co.sblock.commands.SblockCommandAlias;
 
 /**
- * 
+ * SblockCommandAlias for teleporting a player to oneself.
  * 
  * @author Jikoo
  */

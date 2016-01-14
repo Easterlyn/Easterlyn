@@ -20,7 +20,6 @@ public abstract class SblockCommandAlias extends SblockCommand {
 		if (command == null) {
 			throw new IllegalStateException("Command cannot be null");
 		}
-		this.setAliases(command.getAliases());
 		this.setDescription(command.getDescription());
 		this.setPermission(command.getPermission());
 		this.setPermissionMessage(command.getPermissionMessage());
