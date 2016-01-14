@@ -431,7 +431,8 @@ public class Captcha extends Module {
 				return false;
 			}
 		}
-		return !isUsedCaptcha(item) || !item.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$");
+		return !CruxiteDowel.isDowel(item) && !isUsedCaptcha(item)
+				|| !item.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$");
 	}
 
 	/**

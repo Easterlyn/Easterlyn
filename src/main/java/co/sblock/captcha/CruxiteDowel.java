@@ -66,7 +66,7 @@ public class CruxiteDowel {
 
 	public static int expCost(Effects effects, ItemStack toCreate) {
 		int cost = getGrist().get(toCreate.getType());
-		if (Captcha.isCaptcha(toCreate)) {
+		if (Captcha.isCaptcha(toCreate) || isDowel(toCreate)) {
 			cost = Integer.MAX_VALUE;
 		}
 		if (cost == Integer.MAX_VALUE) {
