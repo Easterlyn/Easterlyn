@@ -5,6 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
 
   <properties>
+    <!-- Wrap the build timestamp in another property so we can use it when adding properties to files. -->
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd@HH:mm</maven.build.timestamp.format>
   </properties>
@@ -23,10 +24,22 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>ca.pjer</groupId>
       <artifactId>chatter-bot-api</artifactId>
-      <scope>compile</scope>
       <version>1.3.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.reactivex</groupId>
+      <artifactId>rxjava</artifactId>
+      <version>1.1.0</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.reflections</groupId>
@@ -39,6 +52,7 @@
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
       <version>3.20.0-GA</version>
+      <scope>compile</scope>
     </dependency>
     <!-- Ghost's repo seems to be a little unreliable. Local repo instead. -->
     <dependency>
@@ -64,6 +78,7 @@
       <groupId>com.comphenix.protocol</groupId>
       <artifactId>ProtocolLib</artifactId>
       <version>3.6.5-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Local repo plugin dependencies -->
     <dependency>
@@ -180,6 +195,7 @@
           <artifactSet>
             <includes>
               <include>ca.pjer:*</include>
+              <include>io.reactivex:*</include>
               <include>org.reflections:*</include>
               <include>org.javassist:*</include>
               <include>me.itsghost:*</include>

@@ -13,4 +13,5 @@ We accept pull requests that fit in with our vision for the project. Please atte
 
         mvn install:install-file -Dfile=path/to/spigot.jar -DgroupId=org.spigotmc \
             -DartifactId=spigot -Dversion=<version> -Dpackaging=jar
+* Install [Project Lombok](https://projectlombok.org/).
 * Clone the repository and run `mvn clean install`
