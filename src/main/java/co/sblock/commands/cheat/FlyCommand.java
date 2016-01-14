@@ -1,5 +1,6 @@
 package co.sblock.commands.cheat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -7,6 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.util.StringUtil;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
@@ -98,8 +102,21 @@ public class FlyCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return super.tabComplete(sender, alias, args);
+		if (!sender.hasPermission(this.getPermission()) || args.length > 2
+				|| (!sender.hasPermission("sblock.command.fly.other") && args.length > 1)) {
+			return ImmutableList.of();
+		}
+		List<String> matches = new ArrayList<>();
+		if (StringUtil.startsWithIgnoreCase("true", args[0])) {
+			matches.add("true");
+		}
+		if (StringUtil.startsWithIgnoreCase("false", args[0])) {
+			matches.add("false");
+		}
+		if (args.length == 1 && sender.hasPermission("sblock.command.fly.other")) {
+			matches.addAll(super.tabComplete(sender, alias, args));
+		}
+		return matches;
 	}
 
 }

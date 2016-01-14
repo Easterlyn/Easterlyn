@@ -1,5 +1,6 @@
 package co.sblock.commands.cheat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -7,6 +8,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
+
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
@@ -113,8 +117,29 @@ public class SpeedCommand extends SblockCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return super.tabComplete(sender, alias, args);
+		if (!sender.hasPermission(this.getPermission()) || args.length > 3) {
+			return ImmutableList.of();
+		}
+		String current = args[args.length - 1];
+		List<String> matches = new ArrayList<>();
+		if (args.length == 3 || current.length() == 0) {
+			matches.add("-1");
+			matches.add("0");
+			matches.add("1");
+			if (args.length == 3) {
+				return matches;
+			}
+		}
+		if (StringUtil.startsWithIgnoreCase("walk", current)) {
+			matches.add("walk");
+		}
+		if (StringUtil.startsWithIgnoreCase("fly", current)) {
+			matches.add("fly");
+		}
+		if (args.length == 1) {
+			matches.addAll(super.tabComplete(sender, alias, args));
+		}
+		return matches;
 	}
 
 }
