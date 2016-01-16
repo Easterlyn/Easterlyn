@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-
 /**
  * A Queue which ensures that elements are unique.
  * 
@@ -70,14 +69,13 @@ public class HashQueue<E> implements Queue<E> {
 		return set.containsAll(c);
 	}
 
-	/**
-	 * Implementation is too annoying to care about for internal Sblock usage.
-	 * 
-	 * @throws UnsupportedOperationException.
-	 */
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
-		throw new UnsupportedOperationException("addAll");
+		boolean addAll = true;
+		for (E e : c) {
+			addAll = add(e) && addAll;
+		}
+		return addAll;
 	}
 
 	@Override
