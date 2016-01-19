@@ -1,5 +1,7 @@
 package co.sblock.commands.cheat;
 
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -45,6 +47,15 @@ public class SkullCommand extends SblockCommandAlias {
 		getCommand().execute(sender, label, newArgs);
 		// This being a SblockCommand, it will handle its own permissions and usage when execute fails.
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+			throws IllegalArgumentException {
+		if (args.length == 1) {
+			return super.tabComplete(sender, alias, args);
+		}
+		return com.google.common.collect.ImmutableList.of();
 	}
 
 }
