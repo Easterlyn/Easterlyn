@@ -196,6 +196,11 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			break;
 		}
 
+		if (channel == null) {
+			sender.sendMessage(ChatMsgs.errorCurrentChannelNull());
+			return true;
+		}
+
 		if (!channel.isModerator(user)) {
 			return false;
 		}
