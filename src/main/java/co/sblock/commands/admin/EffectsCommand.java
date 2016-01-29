@@ -19,7 +19,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.effects.Effects;
-import co.sblock.utilities.Roman;
+import co.sblock.utilities.NumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -87,7 +87,7 @@ public class EffectsCommand extends SblockCommand {
 		}
 
 		String loreString = new StringBuilder().append(ChatColor.GRAY).append(effectName).append(' ')
-				.append(Roman.fromInt(level)).toString();
+				.append(NumberUtils.romanFromInt(level)).toString();
 
 		if (effects.getEffectFromLore(loreString, true) == null) {
 			sender.sendMessage(Color.BAD + "Invalid effect " + loreString + Color.BAD + "! Try tab completing.");

@@ -31,9 +31,9 @@ import co.sblock.Sblock;
 import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.module.Module;
-import co.sblock.utilities.Base;
 import co.sblock.utilities.InventoryUtils;
 import co.sblock.utilities.JSONUtil;
+import co.sblock.utilities.NumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -69,6 +69,7 @@ public class Captcha extends Module {
 
 		saveItemStack("00000000", machines.getMachineByName("PGO").getUniqueDrop());
 
+		// TODO use a LoadingCache instead, set max size and retention time
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -106,12 +107,12 @@ public class Captcha extends Module {
 
 	public String getHash(ItemStack item) {
 		String itemString = JSONUtil.getItemText(item).toString();
-		BigInteger hash = Base.md5(itemString);
-		String itemHash = Base.getBase(hash, 62, 8);
+		BigInteger hash = NumberUtils.md5(itemString);
+		String itemHash = NumberUtils.getBase(hash, 62, 8);
 		ItemStack captcha;
 		while ((captcha = getItemStack(itemHash)) != null && !captcha.equals(item)) {
 			hash = hash.add(BigInteger.ONE);
-			itemHash = Base.getBase(hash, 62, 8);
+			itemHash = NumberUtils.getBase(hash, 62, 8);
 		}
 		hashCache.put(itemHash, item);
 		hashCacheAccess.put(System.currentTimeMillis(), itemHash);

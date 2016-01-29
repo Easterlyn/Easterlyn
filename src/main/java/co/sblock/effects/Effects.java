@@ -39,7 +39,7 @@ import co.sblock.effects.effect.Effect;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.module.Module;
 import co.sblock.users.UserAspect;
-import co.sblock.utilities.Roman;
+import co.sblock.utilities.NumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -248,7 +248,7 @@ public class Effects extends Module {
 				}
 				int level;
 				try {
-					level = Roman.fromString(match.group(2));
+					level = NumberUtils.intFromRoman(match.group(2));
 				} catch (NumberFormatException e) {
 					continue;
 				}
@@ -323,7 +323,7 @@ public class Effects extends Module {
 			}
 			newLore.add(new StringBuilder().append(ChatColor.GRAY)
 					.append(entry.getKey().getName()).append(' ')
-					.append(Roman.fromInt(entry.getValue())).toString());
+					.append(NumberUtils.romanFromInt(entry.getValue())).toString());
 		}
 		newLore.addAll(oldLore);
 
@@ -360,7 +360,7 @@ public class Effects extends Module {
 			}
 		}
 		try {
-			return new ImmutablePair<>(effect, Roman.fromString(match.group(2)));
+			return new ImmutablePair<>(effect, NumberUtils.intFromRoman(match.group(2)));
 		} catch (NumberFormatException e) {
 			return null;
 		}
