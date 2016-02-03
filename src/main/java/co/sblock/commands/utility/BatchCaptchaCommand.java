@@ -73,6 +73,10 @@ public class BatchCaptchaCommand extends SblockCommand {
 		} else {
 			max = 0;
 			for (int i = 0; i < inventory.getSize(); i++) {
+				if (i == inventory.getHeldItemSlot()) {
+					// Skip hand, it's the target stack.
+					continue;
+				}
 				ItemStack slot = inventory.getItem(i);
 				if (blankCaptcha.isSimilar(slot)) {
 					max += slot.getAmount();
