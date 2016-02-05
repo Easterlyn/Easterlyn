@@ -234,11 +234,13 @@ public class Discord extends Module {
 			return;
 		}
 		// TODO allow formatting codes in any chat? Could support markdown rather than &codes.
-		name = ChatColor.stripColor(name);
+		name = ChatColor.stripColor(toEscape.matcher(name).replaceAll("\\\\$1"));
 		message = ChatColor.stripColor(message);
 		if (message.trim().isEmpty()) {
 			return;
 		}
+		// Discord is case-sensitive. This prevents an @everyone alert without altering content.
+		message = message.replace("@everyone", "@Everyone");
 		StringBuilder builder = new StringBuilder();
 		Matcher matcher = spaceword.matcher(message);
 		while (matcher.find()) {
@@ -250,7 +252,7 @@ public class Discord extends Module {
 			builder.append(word);
 		}
 		for (String channel : channels) {
-			queue.add(new ImmutableTriple<>(channel, name, message));
+			queue.add(new ImmutableTriple<>(channel, name, builder.toString()));
 		}
 	}
 
