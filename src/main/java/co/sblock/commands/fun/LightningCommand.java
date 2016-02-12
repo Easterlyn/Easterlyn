@@ -32,6 +32,7 @@ public class LightningCommand extends SblockCommand {
 		this.setAliases("shock", "smite", "thor");
 		this.setDescription("Strike lightning at coordinates, cursor, or a player.");
 		this.setUsage("/lightning [<player>|[world] <x> <y> <z>]");
+		this.setPermissionLevel("felt");
 	}
 
 	@Override

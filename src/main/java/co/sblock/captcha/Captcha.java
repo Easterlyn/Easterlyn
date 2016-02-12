@@ -218,10 +218,12 @@ public class Captcha extends Module {
 		}
 
 		// Captcha recipe. Most excellent.
-		ShapedRecipe captcha = new ShapedRecipe(blankCaptchaCard());
-		captcha.shape("AA", "AA", "AA");
-		captcha.setIngredient('A', Material.PAPER);
-		Bukkit.addRecipe(captcha);
+		ItemStack captchaItem = blankCaptchaCard();
+		captchaItem.setAmount(3);
+		ShapedRecipe captchaRecipe = new ShapedRecipe(captchaItem);
+		captchaRecipe.shape("AA", "AA", "AA");
+		captchaRecipe.setIngredient('A', Material.PAPER);
+		Bukkit.addRecipe(captchaRecipe);
 
 		// Re-add the pre-existing recipes so they have higher priority.
 		Collections.reverse(recipes);
