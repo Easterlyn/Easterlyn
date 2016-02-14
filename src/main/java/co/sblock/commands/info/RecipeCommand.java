@@ -77,7 +77,7 @@ public class RecipeCommand extends SblockCommand {
 
 	private void showInInventory(Player player, Recipe recipe, String name) {
 		if (recipe instanceof ShapelessRecipe) {
-			CraftingInventory inv = (CraftingInventory) Bukkit.createInventory(null, InventoryType.CRAFTING, name);
+			CraftingInventory inv = (CraftingInventory) Bukkit.createInventory(null, InventoryType.WORKBENCH, name);
 			for (ItemStack item : ((ShapelessRecipe) recipe).getIngredientList()) {
 				inv.addItem(item);
 			}
