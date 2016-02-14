@@ -9,9 +9,9 @@ import org.bukkit.OfflinePlayer;
 
 import co.sblock.discord.Discord;
 
-import me.itsghost.jdiscord.talkable.Group;
-import me.itsghost.jdiscord.talkable.GroupUser;
-import me.itsghost.jdiscord.talkable.User;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.handle.obj.IUser;
 
 /**
  * A command for checking a user's ingame name, if registered.
@@ -25,27 +25,32 @@ public class IngameNameCommand extends DiscordCommand {
 	}
 
 	@Override
-	protected boolean onCommand(GroupUser sender, Group group, String[] args) {
-		User target;
+	protected boolean onCommand(IUser sender, IChannel group, String[] args) {
+		IUser target;
 		if (args.length > 0) {
 			String name = StringUtils.join(args, ' ').replaceAll("<@(\\d+)>", "$1");
-			target = getDiscord().getAPI().getUserByUsername(name);
-			if (target == null) {
-				target = getDiscord().getAPI().getUserById(name);
+			target = getDiscord().getAPI().getUserByID(name);
+			if (target == null && !(group instanceof IPrivateChannel)) {
+				for (IUser user : group.getGuild().getUsers()) {
+					if (user.getName().equalsIgnoreCase(name)) {
+						target = user;
+						break;
+					}
+				}
 			}
 			if (target == null) {
-				getDiscord().postMessage(getName(), "Unknown user!", group.getId());
+				getDiscord().postMessage(getName(), "Unknown user!", group.getID());
 				return true;
 			}
 		} else {
-			target = sender.getUser();
+			target = sender;
 		}
 		UUID uuid = getDiscord().getUUIDOf(target);
 		OfflinePlayer player = uuid == null ? null : Bukkit.getOfflinePlayer(uuid);
 		if (player == null) {
-			getDiscord().postMessage(getName(), target.getUsername() + " has not linked their Minecraft account!", group.getId());
+			getDiscord().postMessage(getName(), target.getName() + " has not linked their Minecraft account!", group.getID());
 		} else {
-			getDiscord().postMessage(getName(), target.getUsername() + "'s IGN is " + player.getName() + ".", group.getId());
+			getDiscord().postMessage(getName(), target.getName() + "'s IGN is " + player.getName() + ".", group.getID());
 		}
 		return true;
 	}

@@ -54,11 +54,10 @@
       <version>3.20.0-GA</version>
       <scope>compile</scope>
     </dependency>
-    <!-- Ghost's repo seems to be a little unreliable. Local repo instead. -->
     <dependency>
-      <groupId>me.itsghost</groupId>
-      <artifactId>jDiscord</artifactId>
-      <version>2.1.1</version>
+      <groupId>sx.blah</groupId>
+      <artifactId>Discord4J</artifactId>
+      <version>2.2.4</version>
       <scope>compile</scope>
     </dependency>
     <!-- Plugin dependencies -->
@@ -135,6 +134,14 @@
     <repository>
       <id>local-repo</id>
       <url>file://${project.basedir}/repo</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>bintray-austinv11-maven</id>
+      <name>bintray</name>
+      <url>http://dl.bintray.com/austinv11/maven</url>
     </repository>
   </repositories>
 

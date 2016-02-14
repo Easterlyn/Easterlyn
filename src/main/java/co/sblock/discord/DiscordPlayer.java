@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import co.sblock.utilities.PermissiblePlayer;
 
-import me.itsghost.jdiscord.talkable.GroupUser;
+import sx.blah.discord.handle.obj.IUser;
 
 /**
  * Wrapper for a Player for replying to Discord.
@@ -15,11 +15,11 @@ import me.itsghost.jdiscord.talkable.GroupUser;
 public class DiscordPlayer extends PermissiblePlayer {
 
 	private final Discord discord;
-	private final GroupUser user;
+	private final IUser user;
 	private String displayName;
 	private StringBuilder messages;
 
-	public DiscordPlayer(Discord discord, GroupUser user, Player player) {
+	public DiscordPlayer(Discord discord, IUser user, Player player) {
 		super(player);
 		this.discord = discord;
 		this.user = user;
@@ -59,7 +59,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 	@Override
 	public void sendMessage(String arg0) {
 		if (messages == null) {
-			discord.postMessage("Sbot", arg0, user.getUser().getGroup().getId());
+			discord.postMessage("Sbot", arg0, user.getID());
 			return;
 		}
 		if (messages.length() > 0) {

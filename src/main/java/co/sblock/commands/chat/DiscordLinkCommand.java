@@ -19,9 +19,10 @@ import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.Discord;
 
-import me.itsghost.jdiscord.talkable.User;
-
 import net.md_5.bungee.api.ChatColor;
+
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 
 /**
  * Command for linking a Discord account to Minecraft.
@@ -60,9 +61,16 @@ public class DiscordLinkCommand extends SblockCommand {
 				return true;
 			}
 			String discordID = StringUtils.join(args, ' ', 1, args.length);
-			User user = discord.getAPI().getUserByUsername(discordID);
+			IUser user = discord.getAPI().getUserByID(discordID);
 			if (user == null) {
-				user = discord.getAPI().getUserById(discordID);
+				for (IGuild guild : discord.getAPI().getGuilds()) {
+					for (IUser iUser : guild.getUsers()) {
+						if (iUser.getName().equalsIgnoreCase(discordID)) {
+							user = iUser;
+							break;
+						}
+					}
+				}
 			}
 			if (user == null) {
 				sender.sendMessage(Color.BAD + "Unknown Discord user. /link [UUID] [DiscordUser/ID]");

@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -46,18 +47,18 @@ import co.sblock.users.Users;
 import co.sblock.utilities.PlayerLoader;
 import co.sblock.utilities.TextUtils;
 
-import me.itsghost.jdiscord.DiscordAPI;
-import me.itsghost.jdiscord.DiscordBuilder;
-import me.itsghost.jdiscord.events.UserChatEvent;
-import me.itsghost.jdiscord.exception.BadUsernamePasswordException;
-import me.itsghost.jdiscord.exception.DiscordFailedToConnectException;
-import me.itsghost.jdiscord.exception.NoLoginDetailsException;
-import me.itsghost.jdiscord.talkable.Group;
-import me.itsghost.jdiscord.talkable.GroupUser;
-import me.itsghost.jdiscord.talkable.User;
-
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+
+import sx.blah.discord.api.ClientBuilder;
+import sx.blah.discord.api.DiscordException;
+import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.MissingPermissionsException;
+import sx.blah.discord.handle.EventDispatcher;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.HTTP429Exception;
 
 /**
  * A Module for managing messaging to and from Discord.
@@ -73,7 +74,9 @@ public class Discord extends Module {
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
-	private DiscordAPI discord;
+	private final Optional<String> login, password;
+
+	private IDiscordClient client;
 	private Users users;
 	private ChannelManager manager;
 	private MessageBuilder builder;
@@ -105,6 +108,9 @@ public class Discord extends Module {
 			discordData = new YamlConfiguration();
 		}
 
+		login = Optional.of(getConfig().getString("discord.login"));
+		password = Optional.of(getConfig().getString("discord.password"));
+
 		Reflections reflections = new Reflections("co.sblock.discord.commands");
 		Set<Class<? extends DiscordCommand>> cmds = reflections.getSubTypesOf(DiscordCommand.class);
 		for (Class<? extends DiscordCommand> command : cmds) {
@@ -128,37 +134,35 @@ public class Discord extends Module {
 
 	@Override
 	protected void onEnable() {
-		String login = getConfig().getString("discord.login");
-		String password = getConfig().getString("discord.password");
-
 		if (login == null || password == null) {
 			getLogger().severe("Unable to connect to Discord, no username or password!");
 			this.disable();
 			return;
 		}
 
-		discord = new DiscordBuilder(login, password).build();
-
 		this.users = getPlugin().getModule(Users.class);
 
-		discord.getEventManager().registerListener(new DiscordLoadedListener(this));
-
 		try {
-			discord.login();
-		} catch (NoLoginDetailsException | BadUsernamePasswordException | DiscordFailedToConnectException e) {
+			this.client = new ClientBuilder().withLogin(this.login.get(), this.password.get()).build();
+			EventDispatcher dispatcher = this.client.getDispatcher();
+			dispatcher.registerListener(new DiscordReadyListener(this));
+
+			this.client.login();
+
+			dispatcher.registerListener(new DiscordMessageReceivedListener(this));
+		} catch (DiscordException e) {
 			e.printStackTrace();
 			this.disable();
 			return;
 		}
 
-		manager = getPlugin().getModule(Chat.class).getChannelManager();
+		this.manager = getPlugin().getModule(Chat.class).getChannelManager();
 		// future modify MessageBuilder to allow custom name clicks (OPEN_URL www.sblock.co/discord)
-		builder = new MessageBuilder(getPlugin()).setNameClick("@# ").setChannelClick("@# ")
-				.setChannel(manager.getChannel("#discord"))
+		this.builder = new MessageBuilder(getPlugin()).setNameClick("@# ").setChannelClick("@# ")
+				.setChannel(this.manager.getChannel("#discord"))
 				.setNameHover(TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
 						+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
 						+ Color.GOOD + "Channel: #main"));
-		discord.getEventManager().registerListener(new DiscordChatListener(this));
 	}
 
 	private String generateUniqueCode() {
@@ -175,7 +179,7 @@ public class Discord extends Module {
 
 	@Override
 	public boolean isEnabled() {
-		return super.isEnabled() && this.discord != null;
+		return super.isEnabled() && this.client != null;
 	}
 
 	protected void startPostingMessages() {
@@ -193,18 +197,36 @@ public class Discord extends Module {
 					return;
 				}
 				Triple<String, String, String> triple = queue.poll();
-				Group group = discord.getGroupById(triple.getLeft());
+				IChannel group = client.getChannelByID(triple.getLeft());
 				if (group == null) {
-					return;
+					IUser user = client.getUserByID(triple.getLeft());
+					if (user == null) {
+						return;
+					}
+					try {
+						group = client.getOrCreatePMChannel(user);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-				discord.getSelfInfo().setUsername(triple.getMiddle());
-				group.sendMessage(triple.getRight());
+				try {
+					client.changeAccountInfo(Optional.of(triple.getMiddle()), login, password,
+							Optional.empty());
+				} catch (HTTP429Exception | DiscordException e) {
+					// Trivial issue
+				}
+				try {
+					group.sendMessage(triple.getRight());
+				} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}.runTaskTimerAsynchronously(getPlugin(), 20L, 20L);
 	}
 
-	public DiscordAPI getAPI() {
-		return this.discord;
+	public IDiscordClient getAPI() {
+		return this.client;
 	}
 
 	public void logMessage(String message) {
@@ -266,8 +288,12 @@ public class Discord extends Module {
 
 	@Override
 	protected void onDisable() {
-		if (discord != null) {
-			discord.stop();
+		if (client != null) {
+			try {
+				client.logout();
+			} catch (HTTP429Exception | DiscordException e) {
+				e.printStackTrace();
+			}
 		}
 		try {
 			discordData.save(new File(getPlugin().getDataFolder(), "DiscordData.yml"));
@@ -281,20 +307,20 @@ public class Discord extends Module {
 		return "Discord";
 	}
 
-	public UUID getUUIDOf(User user) {
-		String uuidString = discordData.getString("users." + user.getId());
+	public UUID getUUIDOf(IUser user) {
+		String uuidString = discordData.getString("users." + user.getID());
 		if (uuidString == null) {
 			return null;
 		}
 		return UUID.fromString(uuidString);
 	}
 
-	public void addLink(UUID uuid, User user) {
-		discordData.set("users." + user.getId(), uuid.toString());
+	public void addLink(UUID uuid, IUser user) {
+		discordData.set("users." + user.getID(), uuid.toString());
 	}
 
-	protected DiscordPlayer getPlayerFor(GroupUser user) {
-		UUID uuid = getUUIDOf(user.getUser());
+	protected DiscordPlayer getPlayerFor(IUser user) {
+		UUID uuid = getUUIDOf(user);
 		if (uuid == null) {
 			return null;
 		}
@@ -308,7 +334,7 @@ public class Discord extends Module {
 		return dplayer;
 	}
 
-	protected boolean handleDiscordCommandFor(String command, GroupUser user, Group group) {
+	protected boolean handleDiscordCommandFor(String command, IUser user, IChannel channel) {
 		String[] split = command.split("\\s");
 		if (!commands.containsKey(split[0])) {
 			return false;
@@ -317,13 +343,13 @@ public class Discord extends Module {
 		if (args.length > 0) {
 			System.arraycopy(split, 1, args, 0, args.length);
 		}
-		commands.get(split[0]).execute(user, group, args);
+		commands.get(split[0]).execute(user, channel, args);
 		return true;
 	}
 
-	protected void handleMinecraftCommandFor(DiscordPlayer player, String command, Group group) {
+	protected void handleMinecraftCommandFor(DiscordPlayer player, String command, IChannel channel) {
 		if (player.hasPendingCommand()) {
-			postMessage("Sbot", "You already have a pending command. Please be patient.", group.getId());
+			postMessage("Sbot", "You already have a pending command. Please be patient.", channel.getID());
 			return;
 		}
 		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getPlugin(),
@@ -351,7 +377,7 @@ public class Discord extends Module {
 					count++;
 				}
 				if (future.isCancelled() || !future.isDone()) {
-					postMessage("Sbot", "Command " + command + " from " + player.getName() + " timed out.", group.getId());
+					postMessage("Sbot", "Command " + command + " from " + player.getName() + " timed out.", channel.getID());
 					player.stopMessages();
 					return;
 				}
@@ -362,29 +388,41 @@ public class Discord extends Module {
 				if (message.isEmpty()) {
 					return;
 				}
-				postMessage("Sbot", message, group.getId());
+				postMessage("Sbot", message, channel.getID());
 			}
 		}.runTaskAsynchronously(getPlugin());
 	}
 
-	protected void handleChatToMinecraft(UserChatEvent event, Player player) {
-		String message = event.getMsg().getMessage();
+	protected void handleChatToMinecraft(IMessage message, Player player) {
+		String content = message.getContent();
 		if (!player.hasPermission("sblock.discord.filterexempt")) {
-			int newline = message.indexOf('\n');
+			int newline = content.indexOf('\n');
+			boolean delete = false;
 			if (newline > 0) {
 				postMessage("Sbot", "Newlines are not allowed in messages to Minecraft, <@"
-						+ event.getUser().getUser().getId() + ">", event.getGroup().getId());
-				return;
-			}
-			if (message.length() > 255) {
+						+ message.getAuthor().getID() + ">", message.getChannel().getID());
+				delete = true;
+			} else if (content.length() > 255) {
 				postMessage("Sbot", "Messages from Discord may not be over 255 characters, <@"
-						+ event.getUser().getUser().getId() + ">", event.getGroup().getId());
+						+ message.getAuthor().getID() + ">", message.getChannel().getID());
+				delete = true;
+			}
+			if (delete) {
+				try {
+					message.delete();
+				} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
+					// Trivial
+				}
 			}
 		}
 		builder.setSender(users.getUser(player.getUniqueId()))
-				.setMessage(sanitize(message)).setChannel(manager.getChannel("#discord"));
+				.setMessage(sanitize(content)).setChannel(manager.getChannel("#discord"));
 		if (!builder.canBuild(false)) {
-			event.getMsg().deleteMessage();
+			try {
+				message.delete();
+			} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
+				// Trivial
+			}
 			return;
 		}
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
@@ -399,11 +437,11 @@ public class Discord extends Module {
 		while (matcher.find()) {
 			sb.append(message.substring(lastMatch, matcher.start())).append('@');
 			String id = matcher.group(1);
-			User user = discord.getUserById(id);
+			IUser user = client.getUserByID(id);
 			if (user == null) {
 				sb.append(id);
 			} else {
-				sb.append(discord.getUserById(id).getUsername());
+				sb.append(client.getUserByID(id).getName());
 			}
 			lastMatch = matcher.end();
 		}

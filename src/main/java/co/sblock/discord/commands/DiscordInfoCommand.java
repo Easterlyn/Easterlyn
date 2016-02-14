@@ -5,10 +5,11 @@ import java.util.List;
 
 import co.sblock.discord.Discord;
 
-import me.itsghost.jdiscord.Role;
-import me.itsghost.jdiscord.Server;
-import me.itsghost.jdiscord.talkable.Group;
-import me.itsghost.jdiscord.talkable.GroupUser;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
 
 /**
  * A command for printing out information about Discord.
@@ -22,65 +23,65 @@ public class DiscordInfoCommand extends DiscordCommand {
 	}
 
 	@Override
-	protected boolean onCommand(GroupUser sender, Group group, String[] args) {
-		Server server;
+	protected boolean onCommand(IUser sender, IChannel channel, String[] args) {
+		IGuild guild;
 		if (args.length > 0) {
-			server = getDiscord().getAPI().getServerById(args[0]);
-			if (server == null) {
-				for (Server srv : getDiscord().getAPI().getAvailableServers()) {
-					if (srv.getName().equalsIgnoreCase(args[0])) {
-						server = srv;
+			guild = getDiscord().getAPI().getGuildByID(args[0]);
+			if (guild == null) {
+				for (IGuild server : getDiscord().getAPI().getGuilds()) {
+					if (server.getName().equalsIgnoreCase(args[0])) {
+						guild = server;
 						break;
 					}
 				}
 			}
 		} else {
-			server = group.getServer();
+			guild = channel instanceof IPrivateChannel ? null : channel.getGuild();
 		}
-		if (server == null) {
+		if (guild == null) {
 			StringBuilder builder = new StringBuilder("Invalid server! Valid servers: ");
-			for (Server srv : getDiscord().getAPI().getAvailableServers()) {
-				builder.append(srv.getId()).append(" (").append(srv.getName()).append("), ");
+			for (IGuild server : getDiscord().getAPI().getGuilds()) {
+				builder.append(server.getID()).append(" (").append(server.getName()).append("), ");
 			}
 			builder.delete(builder.length() - 2, builder.length());
-			getDiscord().postMessage(getName(), builder.toString(), group.getId());
+			getDiscord().postMessage(getName(), builder.toString(), channel.getID());
 			return true;
 		}
-		StringBuilder builder = new StringBuilder("Server ").append(server.getId())
-				.append(" (").append(server.getName()).append(")\nGroups:\n");
-		List<Group> groups = server.getGroups();
-		if (groups.size() > 0) {
-			for (Group grp : groups) {
-				builder.append(grp.getId()).append(" (").append(grp.getName()).append("), ");
+		StringBuilder builder = new StringBuilder("Server ").append(guild.getID())
+				.append(" (").append(guild.getName()).append(")\nGroups:\n");
+		List<IChannel> channels = guild.getChannels();
+		if (channels.size() > 0) {
+			for (IChannel chan : channels) {
+				builder.append(chan.getID()).append(" (").append(chan.getName()).append("), ");
 			}
 			builder.delete(builder.length() - 2, builder.length());
 		} else {
 			builder.append("none");
 		}
-		HashSet<Role> visibleRoles = new HashSet<>();
-		for (GroupUser user : server.getConnectedClients()) {
-			visibleRoles.addAll(user.getRoles());
+		HashSet<IRole> visibleRoles = new HashSet<>();
+		for (IUser user : guild.getUsers()) {
+			visibleRoles.addAll(user.getRolesForGuild(guild.getID()));
 		}
 		builder.append("\nRoles:\n");
 		if (visibleRoles.size() > 0) {
-			for (Role role : visibleRoles) {
-				builder.append(role.getId()).append(" (").append(role.getName()).append("), ");
+			for (IRole role : visibleRoles) {
+				builder.append(role.getID()).append(" (").append(role.getName()).append("), ");
 			}
 			builder.delete(builder.length() - 2, builder.length());
 		} else {
 			builder.append("none");
 		}
-		List<GroupUser> users = server.getConnectedClients();
+		List<IUser> users = guild.getUsers();
 		builder.append("\nClients:\n");
 		if (users.size() > 0) {
-			for (GroupUser user : users) {
-				builder.append(user.getUser().getId()).append(" (").append(user.getUser().getUsername()).append("), ");
+			for (IUser user : users) {
+				builder.append(user.getID()).append(" (").append(user.getName()).append("), ");
 			}
 			builder.delete(builder.length() - 2, builder.length());
 		} else {
 			builder.append("none");
 		}
-		getDiscord().postMessage(getName(), builder.toString(), group.getId());
+		getDiscord().postMessage(getName(), builder.toString(), channel.getID());
 		return true;
 	}
 

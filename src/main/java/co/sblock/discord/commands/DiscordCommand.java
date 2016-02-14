@@ -5,9 +5,10 @@ import java.util.List;
 
 import co.sblock.discord.Discord;
 
-import me.itsghost.jdiscord.Role;
-import me.itsghost.jdiscord.talkable.Group;
-import me.itsghost.jdiscord.talkable.GroupUser;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
 
 /**
  * A base for all Discord-specific commands.
@@ -36,34 +37,38 @@ public abstract class DiscordCommand {
 		return command;
 	}
 
-	public void execute(GroupUser sender, Group group, String[] args) {
-		if (!hasRequiredRole(sender.getRoles())) {
-			discord.postMessage(getName(), "<@" + sender.getUser().getId()
-					+ ">, you do not have access to this command.", group.getId());
+	public void execute(IUser sender, IChannel channel, String[] args) {
+		if (!hasRequiredRole(sender, channel)) {
+			discord.postMessage(getName(), "<@" + sender.getID()
+					+ ">, you do not have access to this command.", channel.getID());
 			return;
 		}
 
-		if (!onCommand(sender, group, args)) {
-			discord.postMessage(getName(), usage, group.getId());
+		if (!onCommand(sender, channel, args)) {
+			discord.postMessage(getName(), usage, channel.getID());
 		}
 	}
 
-	private boolean hasRequiredRole(Collection<Role> userRoles) {
+	private boolean hasRequiredRole(IUser sender, IChannel channel) {
 		if (roles == null || roles.isEmpty()) {
 			// No roles required
 			return true;
 		}
+		if (channel instanceof IPrivateChannel) {
+			return false;
+		}
+		Collection<IRole> userRoles = sender.getRolesForGuild(channel.getGuild().getID());
 		if (userRoles.isEmpty()) {
 			return false;
 		}
-		for (Role role : userRoles) {
-			if (roles.contains(role.getId())) {
+		for (IRole role : userRoles) {
+			if (roles.contains(role.getID())) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	protected abstract boolean onCommand(GroupUser sender, Group group, String[] args);
+	protected abstract boolean onCommand(IUser sender, IChannel group, String[] args);
 
 }
