@@ -68,8 +68,7 @@ public class QuitListener extends SblockListener {
 		effects.handleEvent(event, event.getPlayer(), true);
 
 		// Discord integration
-		discord.postMessage(event.getPlayer().getName(),
-				event.getPlayer().getName() + " logs out.", true);
+		discord.postMessage("Sbot", event.getPlayer().getName() + " logs out.", true);
 
 		// Update vote
 		sleep.updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
