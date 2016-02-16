@@ -209,11 +209,13 @@ public class Discord extends Module {
 						e.printStackTrace();
 					}
 				}
-				try {
-					client.changeAccountInfo(Optional.of(triple.getMiddle()), login, password,
-							Optional.empty());
-				} catch (HTTP429Exception | DiscordException e) {
-					// Trivial issue
+				if (!client.getOurUser().getName().equals(triple.getMiddle())) {
+					try {
+						client.changeAccountInfo(Optional.of(triple.getMiddle()), login, password,
+								Optional.empty());
+					} catch (HTTP429Exception | DiscordException e) {
+						// Trivial issue
+					}
 				}
 				try {
 					group.sendMessage(triple.getRight());
