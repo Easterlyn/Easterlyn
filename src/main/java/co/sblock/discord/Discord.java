@@ -257,8 +257,8 @@ public class Discord extends Module {
 		if (!isEnabled()) {
 			return;
 		}
+		name = ChatColor.stripColor(name);
 		// TODO allow formatting codes in any chat? Could support markdown rather than &codes.
-		name = ChatColor.stripColor(toEscape.matcher(name).replaceAll("\\\\$1"));
 		message = ChatColor.stripColor(message);
 		if (message.trim().isEmpty()) {
 			return;

@@ -1081,7 +1081,7 @@ public class User {
 			yaml.set("previousname", name);
 			String previous = offline.getName() + " was previously known as " + name;
 			Bukkit.broadcastMessage(Color.HAL + previous);
-			getPlugin().getModule(Discord.class).postMessage(offline.getName(), previous, true);
+			getPlugin().getModule(Discord.class).postMessage("Sbot", previous, true);
 		}
 	}
 }
