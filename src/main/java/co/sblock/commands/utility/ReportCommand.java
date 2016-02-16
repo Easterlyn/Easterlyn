@@ -53,7 +53,7 @@ public class ReportCommand extends SblockCommand {
 		StringBuilder sb = new StringBuilder("Report by ").append(player.getName()).append(" at ")
 				.append(BukkitSerializer.locationToBlockCenterString(player.getLocation()))
 				.append('\n').append(StringUtils.join(args, ' '));
-		discord.postReport(player.getName(), sb.toString());
+		discord.postReport(sb.toString());
 		player.sendMessage(Color.GOOD + "Report sent! Thanks for alerting us.");
 		return true;
 	}

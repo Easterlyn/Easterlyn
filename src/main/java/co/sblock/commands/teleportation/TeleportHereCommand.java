@@ -19,6 +19,7 @@ public class TeleportHereCommand extends SblockCommandAlias {
 
 	public TeleportHereCommand(Sblock plugin) {
 		super(plugin, "tphere", "minecraft:tp");
+		this.setPermissionLevel("felt");
 	}
 
 	@Override

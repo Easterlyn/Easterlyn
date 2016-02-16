@@ -76,8 +76,8 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 			}
 		} catch (Exception e) {
 			sender.sendMessage(Color.BAD + "An error occurred processing this command. Please make sure your parameters are correct.");
-			plugin.getModule(Discord.class).postReport(sender.getName(), "Error processing command: /"
-					+ getName() + " " + StringUtils.join(args, ' ') + '\n' + TextUtils.getTrace(e, 5));
+			plugin.getModule(Discord.class).postReport("Error processing command by " + sender.getName()
+					+ ": /" + getName() + " " + StringUtils.join(args, ' ') + '\n' + TextUtils.getTrace(e, 5));
 			e.printStackTrace();
 		}
 		sender.sendMessage(this.getUsage());

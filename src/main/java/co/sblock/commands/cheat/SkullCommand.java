@@ -21,6 +21,7 @@ public class SkullCommand extends SblockCommandAlias {
 		// TODO this uses our own /lore, there may need to be a safer way to do this to ensure it's loaded first.
 		super(plugin, "skull", "lore");
 		this.setAliases("head");
+		this.setUsage("/skull <player>");
 	}
 
 	@Override

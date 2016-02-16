@@ -238,7 +238,7 @@ public class Discord extends Module {
 			postMessage(message.getSenderName(), message.getDiscordMessage(),
 					getConfig().getString("discord.chat.main"));
 		}
-		postMessage(message.getSenderName(), message.getConsoleMessage(),
+		postMessage("Sbot", message.getConsoleMessage(),
 				getConfig().getString("discord.chat.log"));
 	}
 
@@ -278,8 +278,8 @@ public class Discord extends Module {
 		}
 	}
 
-	public void postReport(String name, String message) {
-		postMessage(name, message, getConfig().getString("discord.chat.reports"));
+	public void postReport(String message) {
+		postMessage("Sbot", message, getConfig().getString("discord.chat.reports"));
 	}
 
 	public LoadingCache<Object, Object> getAuthCodes() {

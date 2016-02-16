@@ -18,12 +18,18 @@ public abstract class SblockCommandAlias extends SblockCommand {
 		super(plugin, name);
 		this.command = plugin.getCommandMap().getCommand(originalCommand);
 		if (command == null) {
-			throw new IllegalStateException("Command cannot be null");
+			throw new IllegalStateException(originalCommand + " is not a registered command!");
 		}
-		this.setDescription(command.getDescription());
+		if (command.getDescription() != null) {
+			this.setDescription(command.getDescription());
+		}
 		this.setPermission(command.getPermission());
-		this.setPermissionMessage(command.getPermissionMessage());
-		this.setUsage(command.getUsage());
+		if (command.getPermissionMessage() != null) {
+			this.setPermissionMessage(command.getPermissionMessage());
+		}
+		if (command.getUsage() != null) {
+			this.setUsage(command.getUsage());
+		}
 	}
 
 	/**

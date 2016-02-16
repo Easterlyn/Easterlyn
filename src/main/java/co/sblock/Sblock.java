@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 
@@ -34,6 +34,7 @@ import org.bukkit.material.Dye;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import org.reflections.Reflections;
 
@@ -44,6 +45,7 @@ import com.mojang.authlib.GameProfile;
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
+import co.sblock.commands.SblockCommandAlias;
 import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.events.Events;
@@ -130,7 +132,45 @@ public class Sblock extends JavaPlugin {
 		}
 
 		createRecipes();
-		registerAllCommands();
+
+		final HashMap<String, Command> cmdMapKnownCommands;
+		try {
+			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
+			field.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			HashMap<String, Command> map = (HashMap<String, Command>) field.get(cmdMap);
+			// For some reason, the compiler just hates directly doing this.
+			cmdMapKnownCommands = map;
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			getLogger().severe("Unable to modify SimpleCommandMap.knownCommands! No commands will be registered!");
+			e.printStackTrace();
+			return;
+		}
+
+		Reflections reflections = new Reflections("co.sblock.commands");
+		Map<Object, List<Class<? extends SblockCommand>>> commands = reflections.getSubTypesOf(SblockCommand.class).stream().collect(Collectors.groupingBy(clazz -> {
+			if (Modifier.isAbstract(clazz.getModifiers())) {
+				return "abstract";
+			}
+			if (SblockCommandAlias.class.isAssignableFrom(clazz)) {
+				return "alias";
+			}
+			return "command";
+		}));
+
+		// Set up basic commands. These only depend on our own internals.
+		registerAllCommands(cmdMapKnownCommands, commands.get("command"));
+
+		/*
+		 * Set up aliases with custom behavior after all other plugins. This is done to guarantee
+		 * that all commands and their aliases are completely registered.
+		 */
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				registerAllCommands(cmdMapKnownCommands, commands.get("alias"));
+			}
+		}.runTaskLater(this, 1L);
 	}
 
 	private void addModule(Module module) {
@@ -164,26 +204,11 @@ public class Sblock extends JavaPlugin {
 		}
 	}
 
-	private void registerAllCommands() {
-		HashMap<String, Command> cmdMapKnownCommands;
-		try {
-			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
-			field.setAccessible(true);
-			@SuppressWarnings("unchecked")
-			HashMap<String, Command> map = (HashMap<String, Command>) field.get(cmdMap);
-			// For some reason, the compiler just hates directly doing this.
-			cmdMapKnownCommands = map;
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			getLogger().severe("Unable to modify SimpleCommandMap.knownCommands! No commands will be registered!");
-			e.printStackTrace();
+	private void registerAllCommands(HashMap<String, Command> knownCommands, List<Class<? extends SblockCommand>> commands) {
+		if (commands == null) {
 			return;
 		}
-		Reflections reflections = new Reflections("co.sblock.commands");
-		Set<Class<? extends SblockCommand>> commands = reflections.getSubTypesOf(SblockCommand.class);
 		for (Class<? extends SblockCommand> command : commands) {
-			if (Modifier.isAbstract(command.getModifiers())) {
-				continue;
-			}
 			if (!areDependenciesPresent(command)) {
 				getLogger().warning(command.getSimpleName() + " is missing dependencies, skipping.");
 				continue;
@@ -191,15 +216,15 @@ public class Sblock extends JavaPlugin {
 			try {
 				Constructor<? extends SblockCommand> constructor = command.getConstructor(this.getClass());
 				SblockCommand cmd = constructor.newInstance(this);
-				if (cmdMapKnownCommands.containsKey(cmd.getName())) {
-					Command overwritten = cmdMapKnownCommands.remove(cmd.getName());
+				if (knownCommands.containsKey(cmd.getName())) {
+					Command overwritten = knownCommands.remove(cmd.getName());
 					getLogger().info("Overriding " + cmd.getName() + " by "
 					+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
 					+ ". Aliases: " + overwritten.getAliases().toString());
 				}
 				for (String alias : cmd.getAliases()) {
-					if (cmdMapKnownCommands.containsKey(alias)) {
-						Command overwritten = cmdMapKnownCommands.remove(alias);
+					if (knownCommands.containsKey(alias)) {
+						Command overwritten = knownCommands.remove(alias);
 						getLogger().info("Overriding " + alias + " by "
 						+ (overwritten instanceof PluginIdentifiableCommand ? ((PluginIdentifiableCommand) overwritten).getPlugin().getName() : "Vanilla/Spigot")
 						+ ". Aliases: " + overwritten.getAliases().toString());

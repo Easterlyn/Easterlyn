@@ -20,6 +20,7 @@ public class ItemCommand extends SblockCommandAlias {
 	public ItemCommand(Sblock plugin) {
 		super(plugin, "item", "minecraft:give");
 		this.setAliases("i");
+		this.setPermissionLevel("felt");
 	}
 
 	@Override

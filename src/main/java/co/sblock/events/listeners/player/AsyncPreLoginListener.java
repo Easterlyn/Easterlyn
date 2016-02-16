@@ -83,8 +83,7 @@ public class AsyncPreLoginListener extends SblockListener {
 					+"\nPlease visit https://www.spamhaus.org/query/ip/" + ip + " to learn why."
 					+ "\n\nIf you have a dynamic IP and this is a recurring problem,"
 					+ "\nplease create a /report at your earliest convenience.");
-			discord.postReport(event.getUniqueId().toString(),
-					ip + " is flagged as unsafe by spamhaus.org/xbl, disconnecting " + event.getUniqueId());
+			discord.postReport(ip + " is flagged as unsafe by spamhaus.org/xbl, disconnecting " + event.getUniqueId());
 			return;
 		}
 	}
