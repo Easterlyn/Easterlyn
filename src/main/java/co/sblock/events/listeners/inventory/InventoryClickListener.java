@@ -26,8 +26,6 @@ import co.sblock.captcha.Captcha;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
-import co.sblock.machines.type.computer.EmailWriter;
-import co.sblock.machines.type.computer.Programs;
 import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.utilities.InventoryUtils;
 
@@ -41,14 +39,12 @@ public class InventoryClickListener extends SblockListener {
 	private final AwayFromKeyboard afk;
 	private final Captcha captcha;
 	private final Machines machines;
-	private final EmailWriter mail;
 
 	public InventoryClickListener(Sblock plugin) {
 		super(plugin);
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.captcha = plugin.getModule(Captcha.class);
 		this.machines = plugin.getModule(Machines.class);
-		this.mail = (EmailWriter) Programs.getProgramByName("EmailWriter");
 	}
 
 	/**
@@ -195,27 +191,13 @@ public class InventoryClickListener extends SblockListener {
 	}
 
 	// remove bottom
-	private void itemRemoveBottom(InventoryClickEvent event) {
-
-		// Letters cannot be moved. The lore specifically warns against attempting to.
-		if (mail.isLetter(event.getCurrentItem())) {
-			event.setCurrentItem(null);
-			return;
-		}
-
-	}
+	private void itemRemoveBottom(InventoryClickEvent event) {}
 
 	// add bottom
 	private void itemAddBottom(InventoryClickEvent event) {}
 
 	// move bottom to top
 	private void itemShiftBottomToTop(InventoryClickEvent event) {
-
-		// Letters cannot be moved. The lore specifically warns against attempting to.
-		if (mail.isLetter(event.getCurrentItem())) {
-			event.setCurrentItem(null);
-			return;
-		}
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
@@ -228,14 +210,6 @@ public class InventoryClickListener extends SblockListener {
 	// switch bottom
 	private void itemSwapIntoBottom(InventoryClickEvent event) {
 
-		// Letters cannot be moved. The lore specifically warns against attempting to.
-		if (mail.isLetter(event.getCurrentItem())) {
-			event.setCurrentItem(null);
-			// This is now an attempt to add an item to the bottom inventory rather than a swap.
-			itemAddBottom(event);
-			return;
-		}
-
 		// Captcha: attempt to captcha item on cursor
 		captcha.handleCaptcha(event);
 	}
@@ -243,16 +217,6 @@ public class InventoryClickListener extends SblockListener {
 	// hotbar with inv
 	private void itemSwapToHotbar(InventoryClickEvent event) {
 		ItemStack hotbar = event.getView().getBottomInventory().getItem(event.getHotbarButton());
-
-		// Letters cannot be moved. The lore specifically warns against attempting to.
-		if (mail.isLetter(event.getCurrentItem())) {
-			event.setCurrentItem(null);
-			return;
-		}
-		if (mail.isLetter(hotbar)) {
-			event.getView().getBottomInventory().setItem(event.getHotbarButton(), null);
-			return;
-		}
 
 		// No putting special Sblock items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL

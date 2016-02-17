@@ -29,7 +29,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
@@ -503,7 +502,7 @@ public class User {
 		if (channel == null) {
 			return false;
 		}
-		if (channel.isBanned(this) || !canJoinDefaultChats() && channel.getOwner() == null) {
+		if (channel.isBanned(this)) {
 			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()));
 			return false;
 		}
@@ -534,8 +533,7 @@ public class User {
 		for (Iterator<String> iterator = listening.iterator(); iterator.hasNext();) {
 			Channel channel = getChannelManager().getChannel(iterator.next());
 			if (channel != null && !(channel instanceof RegionChannel) && !channel.isBanned(this)
-					&& (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))
-					&& (canJoinDefaultChats() || channel.getOwner() != null)) {
+					&& (channel.getAccess() != AccessLevel.PRIVATE || channel.isApproved(this))) {
 				channel.getListening().add(this.getUUID());
 			} else {
 				iterator.remove();
@@ -725,43 +723,6 @@ public class User {
 	 */
 	public void setChatWarnStatus(boolean warned) {
 		spamWarned.set(warned);
-	}
-
-	/**
-	 * Gets whether or not the Player can join Sblock default chats.
-	 * 
-	 * @return true if the Player can join Sblock default chats.
-	 */
-	public boolean canJoinDefaultChats() {
-		return yaml.getBoolean("chat.joindefault", true);
-	}
-
-	/**
-	 * Gets the List of all items currently saved in a Player's mail.
-	 * 
-	 * @return the List of ItemStacks
-	 */
-	public List<ItemStack> getMailItems() {
-		List<?> list = yaml.getList("chat.mail.items");
-		ArrayList<ItemStack> items = new ArrayList<>();
-		if (list == null || list.isEmpty()) {
-			return items;
-		}
-		for (Object object : yaml.getList("chat.mail.items")) {
-			if (object instanceof ItemStack) {
-				items.add((ItemStack) object);
-			}
-		}
-		return items;
-	}
-
-	/**
-	 * Sets the Player's saved mail items.
-	 * 
-	 * @param items the List of ItemStacks
-	 */
-	public void setMailItems(List<ItemStack> items) {
-		yaml.set("chat.mail.items", items);
 	}
 
 	/**
