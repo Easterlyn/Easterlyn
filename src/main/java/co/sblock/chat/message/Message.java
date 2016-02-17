@@ -34,9 +34,6 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class Message {
 
-	private static final String DISCORD_FORMAT = "%s";
-	private static final String DISCORD_FORMAT_THIRD = "* *%s*";
-
 	private final User sender;
 	private final Channel channel;
 	private final String name;
@@ -90,10 +87,8 @@ public class Message {
 	}
 
 	public String getDiscordMessage() {
-		// Names will only contain underscores, messages may contain additional formatting.
 		// In the future we may allow formatting for all users.
-		return String.format(thirdPerson ? DISCORD_FORMAT_THIRD : DISCORD_FORMAT,
-				unformattedMessage);
+		return unformattedMessage;
 	}
 
 	public void setConsoleFormat(String consoleFormat) {

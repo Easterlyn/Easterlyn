@@ -887,7 +887,7 @@ public class User {
 				.append(Region.getRegion(getPreviousLocation().getWorld().getName())).append('\n');
 
 		// Programs: [list]
-		sb.append(Color.GOOD).append(", Programs: ").append(Color.GOOD_EMPHASIS)
+		sb.append(Color.GOOD).append("Programs: ").append(Color.GOOD_EMPHASIS)
 				.append(getPrograms()).append('\n');
 
 		// Pestering: current, Listening: [list]

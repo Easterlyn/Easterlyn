@@ -237,8 +237,8 @@ public class Discord extends Module {
 
 	public void postMessage(Message message, boolean global) {
 		if (global) {
-			postMessage(message.getSenderName(), message.getDiscordMessage(),
-					getConfig().getString("discord.chat.main"));
+			postMessage((message.isThirdPerson() ? "* " : "") + message.getSenderName(),
+					message.getDiscordMessage(), getConfig().getString("discord.chat.main"));
 		}
 		postMessage("Sbot", message.getConsoleMessage(),
 				getConfig().getString("discord.chat.log"));

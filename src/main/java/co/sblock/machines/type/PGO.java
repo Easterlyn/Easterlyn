@@ -70,7 +70,6 @@ public class PGO extends Machine {
 		case BRICK:
 		case BRICK_STAIRS:
 		case CACTUS:
-		case CAKE_BLOCK:
 		case CAULDRON:
 		case COAL_BLOCK:
 		case COAL_ORE:
