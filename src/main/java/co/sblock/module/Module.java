@@ -128,7 +128,7 @@ public abstract class Module {
 	 * 
 	 * @return the YamlConfiguration
 	 */
-	public final YamlConfiguration loadConfig() {
+	public YamlConfiguration loadConfig() {
 		File file = new File(getPlugin().getDataFolder(), this.getName().replaceAll("\\W", "") + ".yml");
 		if (file.exists()) {
 			this.configuration = YamlConfiguration.loadConfiguration(file);

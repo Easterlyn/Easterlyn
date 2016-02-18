@@ -59,7 +59,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 	@Override
 	public void sendMessage(String arg0) {
 		if (messages == null) {
-			discord.postMessage("Sbot", arg0, user.getID());
+			discord.postMessage(Discord.BOT_NAME, arg0, user.getID());
 			return;
 		}
 		if (messages.length() > 0) {

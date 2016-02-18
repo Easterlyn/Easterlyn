@@ -1,14 +1,14 @@
 package co.sblock.discord.commands;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.EnumSet;
 
 import co.sblock.discord.Discord;
 
+import sx.blah.discord.api.MissingPermissionsException;
+import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IPrivateChannel;
-import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
 
 /**
  * A base for all Discord-specific commands.
@@ -20,13 +20,13 @@ public abstract class DiscordCommand {
 	private final Discord discord;
 	private final String command;
 	private final String usage;
-	private final List<String> roles;
+	private final EnumSet<Permissions> permissions;
 
-	public DiscordCommand(Discord discord, String command, String usage, List<String> roles) {
+	public DiscordCommand(Discord discord, String command, String usage, EnumSet<Permissions> permissions) {
 		this.discord = discord;
 		this.command = command;
 		this.usage = usage;
-		this.roles = roles;
+		this.permissions = permissions;;
 	}
 
 	protected Discord getDiscord() {
@@ -38,37 +38,29 @@ public abstract class DiscordCommand {
 	}
 
 	public void execute(IUser sender, IChannel channel, String[] args) {
-		if (!hasRequiredRole(sender, channel)) {
-			discord.postMessage(getName(), "<@" + sender.getID()
+		if (!hasRequiredPermissions(sender, channel)) {
+			discord.postMessage(Discord.BOT_NAME, "<@" + sender.getID()
 					+ ">, you do not have access to this command.", channel.getID());
 			return;
 		}
 
 		if (!onCommand(sender, channel, args)) {
-			discord.postMessage(getName(), usage, channel.getID());
+			discord.postMessage(Discord.BOT_NAME, usage, channel.getID());
 		}
 	}
 
-	private boolean hasRequiredRole(IUser sender, IChannel channel) {
-		if (roles == null || roles.isEmpty()) {
-			// No roles required
+	private boolean hasRequiredPermissions(IUser sender, IChannel channel) {
+		if (permissions == null) {
 			return true;
 		}
-		if (channel instanceof IPrivateChannel) {
+		try {
+			DiscordUtils.checkPermissions(discord.getAPI(), channel, permissions);
+		} catch (MissingPermissionsException e) {
 			return false;
 		}
-		Collection<IRole> userRoles = sender.getRolesForGuild(channel.getGuild().getID());
-		if (userRoles.isEmpty()) {
-			return false;
-		}
-		for (IRole role : userRoles) {
-			if (roles.contains(role.getID())) {
-				return true;
-			}
-		}
-		return false;
+		return true;
 	}
 
-	protected abstract boolean onCommand(IUser sender, IChannel group, String[] args);
+	protected abstract boolean onCommand(IUser sender, IChannel channel, String[] args);
 
 }

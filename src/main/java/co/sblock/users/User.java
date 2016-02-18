@@ -1001,7 +1001,7 @@ public class User {
 				// Our data file may have just been deleted - reset planned for Entry, etc.
 				Bukkit.broadcastMessage(Color.HAL + "It would seem that " + player.getName()
 						+ " is joining us for the first time! Please welcome them.");
-				plugin.getModule(Discord.class).postMessage("Sbot", player.getName()
+				plugin.getModule(Discord.class).postMessage(Discord.BOT_NAME, player.getName()
 						+ " is new! Please welcome them.", true);
 			} else {
 				player.sendMessage(Color.HAL + "We've reset classpect since you last played. Please re-select now!");
@@ -1042,7 +1042,7 @@ public class User {
 			yaml.set("previousname", name);
 			String previous = offline.getName() + " was previously known as " + name;
 			Bukkit.broadcastMessage(Color.HAL + previous);
-			getPlugin().getModule(Discord.class).postMessage("Sbot", previous, true);
+			getPlugin().getModule(Discord.class).postMessage(Discord.BOT_NAME, previous, true);
 		}
 	}
 }

@@ -57,7 +57,7 @@ public class JoinListener extends SblockListener {
 
 		events.addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
 
-		discord.postMessage("Sbot", event.getPlayer().getName() + " logs in.", true);
+		discord.postMessage(Discord.BOT_NAME, event.getPlayer().getName() + " logs in.", true);
 
 		final UUID uuid = event.getPlayer().getUniqueId();
 

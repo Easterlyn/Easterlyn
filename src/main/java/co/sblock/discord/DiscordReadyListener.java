@@ -32,6 +32,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 		}
 
 		discord.startPostingMessages();
+		discord.startHeartbeat();
 	}
 
 }

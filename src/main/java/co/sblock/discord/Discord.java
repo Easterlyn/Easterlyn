@@ -5,8 +5,13 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -18,10 +23,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -30,9 +40,13 @@ import org.bukkit.scheduler.BukkitTask;
 
 import org.reflections.Reflections;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+import com.google.gson.Gson;
 
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
@@ -51,14 +65,23 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import sx.blah.discord.api.ClientBuilder;
+import sx.blah.discord.api.DiscordEndpoints;
 import sx.blah.discord.api.DiscordException;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.MissingPermissionsException;
+import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.EventDispatcher;
+import sx.blah.discord.handle.impl.obj.Channel;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.json.responses.MessageResponse;
 import sx.blah.discord.util.HTTP429Exception;
+import sx.blah.discord.util.Requests;
 
 /**
  * A Module for managing messaging to and from Discord.
@@ -67,6 +90,8 @@ import sx.blah.discord.util.HTTP429Exception;
  */
 public class Discord extends Module {
 
+	public static final String BOT_NAME = "Sbot";
+
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
 			spaceword = Pattern.compile("(\\s*)(\\S*)"), mention = Pattern.compile("<@(\\d+)>");
@@ -74,13 +99,15 @@ public class Discord extends Module {
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
-	private final Optional<String> login, password;
+	private final Cache<IMessage, String> pastMainMessages;
 
+	private String channelMain, channelLog, channelReports;
+	private Optional<String> login, password;
 	private IDiscordClient client;
 	private Users users;
 	private ChannelManager manager;
 	private MessageBuilder builder;
-	private BukkitTask postTask;
+	private BukkitTask heartbeatTask, postTask;
 
 	public Discord(Sblock plugin) {
 		super(plugin);
@@ -101,15 +128,28 @@ public class Discord extends Module {
 					};
 				});
 
+		pastMainMessages = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).maximumSize(20)
+				.removalListener(new RemovalListener<IMessage, String>() {
+					@Override
+					public void onRemoval(RemovalNotification<IMessage, String> notification) {
+						StringBuilder builder = new StringBuilder(notification.getValue());
+						builder.append(": ").append(notification.getKey().getContent());
+						try {
+							notification.getKey().edit(builder.toString());
+						} catch (HTTP429Exception | DiscordException e) {
+							e.printStackTrace();
+						} catch (MissingPermissionsException e) {
+							// Silently fail, not our message somehow
+						}
+					}
+				}).build();
+
 		File file = new File(plugin.getDataFolder(), "DiscordData.yml");
 		if (file.exists()) {
 			discordData = YamlConfiguration.loadConfiguration(file);
 		} else {
 			discordData = new YamlConfiguration();
 		}
-
-		login = Optional.of(getConfig().getString("discord.login"));
-		password = Optional.of(getConfig().getString("discord.password"));
 
 		Reflections reflections = new Reflections("co.sblock.discord.commands");
 		Set<Class<? extends DiscordCommand>> cmds = reflections.getSubTypesOf(DiscordCommand.class);
@@ -134,6 +174,12 @@ public class Discord extends Module {
 
 	@Override
 	protected void onEnable() {
+		login = Optional.of(getConfig().getString("discord.login"));
+		password = Optional.of(getConfig().getString("discord.password"));
+		channelMain = getConfig().getString("discord.chat.main");
+		channelLog = getConfig().getString("discord.chat.log");
+		channelReports = getConfig().getString("discord.chat.reports");
+
 		if (login == null || password == null) {
 			getLogger().severe("Unable to connect to Discord, no username or password!");
 			this.disable();
@@ -165,6 +211,19 @@ public class Discord extends Module {
 						+ Color.GOOD + "Channel: #main"));
 	}
 
+	@Override
+	public YamlConfiguration loadConfig() {
+		super.loadConfig();
+
+		login = Optional.of(getConfig().getString("discord.login"));
+		password = Optional.of(getConfig().getString("discord.password"));
+		channelMain = getConfig().getString("discord.chat.main");
+		channelLog = getConfig().getString("discord.chat.log");
+		channelReports = getConfig().getString("discord.chat.reports");
+
+		return getConfig();
+	}
+
 	private String generateUniqueCode() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 6; i++) {
@@ -182,6 +241,152 @@ public class Discord extends Module {
 		return super.isEnabled() && this.client != null;
 	}
 
+	protected void startHeartbeat() {
+		if (heartbeatTask != null && heartbeatTask.getTaskId() != -1) {
+			return;
+		}
+		heartbeatTask = new BukkitRunnable() {
+			@Override
+			public void run() {
+				if (!isEnabled()) {
+					cancel();
+					return;
+				}
+				// In case no one is on or talking, clean up messages anyway
+				pastMainMessages.cleanUp();
+
+				if (!discordData.isConfigurationSection("retention")) {
+					return;
+				}
+				ConfigurationSection retention = discordData.getConfigurationSection("retention");
+				for (IGuild guild : client.getGuilds()) {
+					System.out.println("doing guild retention for " + guild.getName());
+					if (!retention.isConfigurationSection(guild.getID())) {
+						continue;
+					}
+					ConfigurationSection retentionGuild = retention.getConfigurationSection(guild.getID());
+					for (IChannel channel : guild.getChannels()) {
+						System.out.println("doing retention for " + channel.getName());
+						if (retentionGuild.isSet(channel.getID())) {
+							doRetention(channel, retentionGuild.getLong(channel.getID()));
+						}
+					}
+				}
+			}
+		}.runTaskTimerAsynchronously(getPlugin(), 0L, 12000L); // 10 minutes between checks
+	}
+
+	/**
+	 * This method is blocking and will run until either the bot is rate limited or messages old
+	 * enough have been deleted.
+	 * 
+	 * @param channel the IChannel to do retention for
+	 * @param duration the duration in seconds
+	 */
+	private void doRetention(IChannel channel, long duration) {
+		if (!(channel instanceof Channel)) {
+			return;
+		}
+		// This method requires touching a lot of Discord4J internals. TODO open a PR?
+		try {
+			if (!(channel instanceof IPrivateChannel) && !(channel instanceof IVoiceChannel)) {
+				DiscordUtils.checkPermissions(client, channel, EnumSet.of(Permissions.READ_MESSAGE_HISTORY, Permissions.MANAGE_MESSAGES));
+			}
+		} catch (MissingPermissionsException e) {
+			getLogger().warning("Unable to do retention for channel " + channel.mention() + " - cannot read history and delete messages!");
+			return;
+		}
+		LocalDateTime latestAllowed = LocalDateTime.now().minusSeconds(duration);
+		String earliestMessageID = null;
+		LocalDateTime earliestTimestamp = null;
+		boolean more = true;
+		while (more) {
+			try {
+				Collection<IMessage> pastMessages = getPastMessages((Channel) channel, 50, earliestMessageID, null);
+				if (pastMessages.size() <= 50) {
+					System.out.println("pls no mas");
+					more = false;
+				}
+				for (IMessage message : pastMessages) {
+					System.out.println("cheque 4 " + message.getTimestamp());
+					if (earliestTimestamp == null || earliestTimestamp.isAfter(message.getTimestamp())) {
+						earliestMessageID = message.getID();
+						earliestTimestamp = message.getTimestamp();
+					}
+					if (latestAllowed.isAfter(message.getTimestamp())) {
+						try {
+							message.delete();
+						} catch (MissingPermissionsException | DiscordException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (HTTP429Exception e) {
+				break;
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private Collection<IMessage> getPastMessages(Channel channel, @Nullable Integer limit, @Nullable String before, @Nullable String after) throws HTTP429Exception {
+		StringBuilder request = new StringBuilder(DiscordEndpoints.CHANNELS).append(channel.getID()).append("/messages");
+		if (limit == null && before == null && after == null) {
+			if (channel.getMessages().size() >= 50) {
+				// 50 is the default size returned. With no parameters, don't bother with a useless lookup.
+				return channel.getMessages();
+			} else {
+				return getPastMessages(channel, request.toString());
+			}
+		}
+		StringBuilder options = new StringBuilder("?");
+		if (limit != null) {
+			options.append("limit=").append(limit);
+		}
+		if (before != null) {
+			if (options.length() > 1) {
+				options.append('&');
+			}
+			options.append("before=").append(before);
+		}
+		if (after != null) {
+			if (options.length() > 1) {
+				options.append('&');
+			}
+			options.append("after=").append(after);
+		}
+		return getPastMessages(channel, request.append(options).toString());
+	}
+
+	private Collection<IMessage> getPastMessages(Channel channel, String request) throws HTTP429Exception {
+		List<IMessage> messages = new ArrayList<>();
+		String response;
+		try {
+			System.out.println("o fuk we making GET " + request);
+			response = Requests.GET.makeRequest(request, new BasicNameValuePair("authorization", client.getToken()));
+		} catch (DiscordException e) {
+			e.printStackTrace();
+			return messages;
+		}
+
+		if (response == null) {
+			return messages;
+		}
+
+		MessageResponse[] msgs = new Gson().fromJson(response, MessageResponse[].class);
+
+		for (MessageResponse message : msgs) {
+			IMessage msg = DiscordUtils.getMessageFromJSON(client, channel, message);
+			channel.addMessage(msg);
+			messages.add(DiscordUtils.getMessageFromJSON(client, channel, message));
+		}
+
+		return messages;
+	}
+
 	protected void startPostingMessages() {
 		if (postTask != null && postTask.getTaskId() != -1) {
 			return;
@@ -196,7 +401,8 @@ public class Discord extends Module {
 				if (queue.isEmpty()) {
 					return;
 				}
-				Triple<String, String, String> triple = queue.poll();
+				// Retrieve but do not yet remove the first element in the queue
+				Triple<String, String, String> triple = queue.element();
 				IChannel group = client.getChannelByID(triple.getLeft());
 				if (group == null) {
 					IUser user = client.getUserByID(triple.getLeft());
@@ -218,11 +424,14 @@ public class Discord extends Module {
 					}
 				}
 				try {
-					group.sendMessage(triple.getRight());
-				} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
-					// TODO Auto-generated catch block
+					IMessage posted = group.sendMessage(triple.getRight());
+					if (triple.getLeft().equals(channelMain) && !triple.getMiddle().equals(BOT_NAME)) {
+						pastMainMessages.put(posted, triple.getMiddle());
+					}
+				} catch (MissingPermissionsException | DiscordException | HTTP429Exception e) {
 					e.printStackTrace();
 				}
+				queue.remove();
 			}
 		}.runTaskTimerAsynchronously(getPlugin(), 20L, 20L);
 	}
@@ -232,24 +441,22 @@ public class Discord extends Module {
 	}
 
 	public void logMessage(String message) {
-		postMessage("Sbot", message, getConfig().getString("discord.chat.log"));
+		postMessage(BOT_NAME, message, channelLog);
 	}
 
 	public void postMessage(Message message, boolean global) {
 		if (global) {
 			postMessage((message.isThirdPerson() ? "* " : "") + message.getSenderName(),
-					message.getDiscordMessage(), getConfig().getString("discord.chat.main"));
+					message.getDiscordMessage(), channelMain);
 		}
-		postMessage("Sbot", message.getConsoleMessage(),
-				getConfig().getString("discord.chat.log"));
+		postMessage(BOT_NAME, message.getConsoleMessage(), channelLog);
 	}
 
 	public void postMessage(String name, String message, boolean global) {
 		if (global) {
-			postMessage(name, message, getConfig().getString("discord.chat.main"),
-					getConfig().getString("discord.chat.log"));
+			postMessage(name, message, channelMain, channelLog);
 		} else {
-			postMessage(name, message, getConfig().getString("discord.chat.log"));
+			postMessage(name, message, channelLog);
 		}
 	}
 
@@ -281,15 +488,20 @@ public class Discord extends Module {
 	}
 
 	public void postReport(String message) {
-		postMessage("Sbot", message, getConfig().getString("discord.chat.reports"));
+		postMessage(Discord.BOT_NAME, message, channelReports);
 	}
 
 	public LoadingCache<Object, Object> getAuthCodes() {
 		return authentications;
 	}
 
+	public Configuration getDataStore() {
+		return discordData;
+	}
+
 	@Override
 	protected void onDisable() {
+		pastMainMessages.invalidateAll();
 		if (client != null) {
 			try {
 				client.logout();
@@ -341,6 +553,10 @@ public class Discord extends Module {
 		if (!commands.containsKey(split[0])) {
 			return false;
 		}
+		String log = String.format("Command in #%s[%s] from %s[%s]: %s",
+				channel.getName(), channel.getID(), user.getName(), user.getID(), command);
+		logMessage(log);
+		getLogger().info(log);
 		String[] args = new String[split.length - 1];
 		if (args.length > 0) {
 			System.arraycopy(split, 1, args, 0, args.length);
@@ -351,7 +567,7 @@ public class Discord extends Module {
 
 	protected void handleMinecraftCommandFor(DiscordPlayer player, String command, IChannel channel) {
 		if (player.hasPendingCommand()) {
-			postMessage("Sbot", "You already have a pending command. Please be patient.", channel.getID());
+			postMessage(Discord.BOT_NAME, "You already have a pending command. Please be patient.", channel.getID());
 			return;
 		}
 		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getPlugin(),
@@ -379,7 +595,7 @@ public class Discord extends Module {
 					count++;
 				}
 				if (future.isCancelled() || !future.isDone()) {
-					postMessage("Sbot", "Command " + command + " from " + player.getName() + " timed out.", channel.getID());
+					postMessage(Discord.BOT_NAME, "Command " + command + " from " + player.getName() + " timed out.", channel.getID());
 					player.stopMessages();
 					return;
 				}
@@ -390,7 +606,7 @@ public class Discord extends Module {
 				if (message.isEmpty()) {
 					return;
 				}
-				postMessage("Sbot", message, channel.getID());
+				postMessage(Discord.BOT_NAME, message, channel.getID());
 			}
 		}.runTaskAsynchronously(getPlugin());
 	}
@@ -401,11 +617,11 @@ public class Discord extends Module {
 			int newline = content.indexOf('\n');
 			boolean delete = false;
 			if (newline > 0) {
-				postMessage("Sbot", "Newlines are not allowed in messages to Minecraft, <@"
+				postMessage(Discord.BOT_NAME, "Newlines are not allowed in messages to Minecraft, <@"
 						+ message.getAuthor().getID() + ">", message.getChannel().getID());
 				delete = true;
 			} else if (content.length() > 255) {
-				postMessage("Sbot", "Messages from Discord may not be over 255 characters, <@"
+				postMessage(Discord.BOT_NAME, "Messages from Discord may not be over 255 characters, <@"
 						+ message.getAuthor().getID() + ">", message.getChannel().getID());
 				delete = true;
 			}
