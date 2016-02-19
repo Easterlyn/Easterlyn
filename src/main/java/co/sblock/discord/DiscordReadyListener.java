@@ -31,7 +31,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 			sb.delete(0, sb.length());
 		}
 
-		discord.startPostingMessages();
+		discord.startQueueDrain();
 		discord.startHeartbeat();
 	}
 

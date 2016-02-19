@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.Bukkit;
@@ -95,7 +95,7 @@ public class Discord extends Module {
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
 			spaceword = Pattern.compile("(\\s*)(\\S*)"), mention = Pattern.compile("<@(\\d+)>");
-	private final ConcurrentLinkedQueue<Triple<String, String, String>> queue;
+	private final ConcurrentLinkedQueue<Pair<Runnable, Boolean>> queue;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
@@ -133,15 +133,22 @@ public class Discord extends Module {
 				.removalListener(new RemovalListener<IMessage, String>() {
 					@Override
 					public void onRemoval(RemovalNotification<IMessage, String> notification) {
-						StringBuilder builder = new StringBuilder(notification.getValue());
-						builder.append(": ").append(notification.getKey().getContent());
-						try {
-							notification.getKey().edit(builder.toString());
-						} catch (HTTP429Exception | DiscordException e) {
-							e.printStackTrace();
-						} catch (MissingPermissionsException e) {
-							// Silently fail, not our message somehow
-						}
+						queue.add(new ImmutablePair<>(new Runnable() {
+							@Override
+							public void run() {
+								resetBotName();
+								StringBuilder builder = new StringBuilder()
+										.append(toEscape.matcher(notification.getValue()).replaceAll("\\\\$1"))
+										.append(": ").append(notification.getKey().getContent());
+								try {
+									notification.getKey().edit(builder.toString());
+								} catch (HTTP429Exception | DiscordException e) {
+									e.printStackTrace();
+								} catch (MissingPermissionsException e) {
+									// Silently fail, not our message somehow
+								}
+							}
+						}, true));
 					}
 				}).build();
 
@@ -244,6 +251,16 @@ public class Discord extends Module {
 		return getConfig();
 	}
 
+	private void resetBotName() {
+		if (!client.getOurUser().getName().equals(BOT_NAME)) {
+			try {
+				client.changeAccountInfo(Optional.of(BOT_NAME), login, password, Optional.empty());
+			} catch (HTTP429Exception | DiscordException e) {
+				// Nothing we can do about this, really
+			}
+		}
+	}
+
 	private String generateUniqueCode() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 6; i++) {
@@ -302,7 +319,7 @@ public class Discord extends Module {
 	 * @param duration the duration in seconds
 	 */
 	private void doRetention(IChannel channel, long duration) {
-		// This method requires touching a lot of Discord4J internals. TODO open a PR?
+		// This method requires touching a lot of Discord4J internals.
 		if (duration == -1 || !(channel instanceof Channel)) {
 			return;
 		}
@@ -326,29 +343,51 @@ public class Discord extends Module {
 		LocalDateTime latestAllowed = LocalDateTime.now().minusSeconds(duration);
 		IMessage earliestMessage = null;
 		LocalDateTime earliestAcceptableTimestamp = null;
-		// TODO reduce duplicate code, this is a shitshow
-		if (!channelRetentionData.containsKey(channel.getID())) {
-			boolean more = true;
-			while (more) {
-				Collection<IMessage> pastMessages;
-				try {
+		boolean haveEarliest = channelRetentionData.containsKey(channel.getID());
+		if (haveEarliest) {
+			earliestMessage = channelRetentionData.get(channel.getID());
+		}
+		boolean more = true;
+		while (more) {
+			Collection<IMessage> pastMessages;
+			try {
+				if (haveEarliest) {
 					pastMessages = getPastMessages((Channel) channel, 50,
 							earliestMessage == null ? null : earliestMessage.getID(), null);
-				} catch (HTTP429Exception e1) {
-					System.out.println("Rate limited, repeating request in a second.");
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						break;
+				} else {
+					pastMessages = getPastMessages((Channel) channel, 50, null,
+							earliestMessage == null ? channelRetentionData.get(channel.getID()).getID() : earliestMessage.getID());
+				}
+			} catch (HTTP429Exception e1) {
+				System.out.println("Rate limited, repeating request in a second.");
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					break;
+				}
+				continue;
+			}
+			if (pastMessages.size() < 50) {
+				more = false;
+			}
+			for (IMessage message : pastMessages) {
+				LocalDateTime messageTime = message.getTimestamp();
+				if (haveEarliest) {
+					// Check if earliest is after, aka earlier, but latest is before, aka still later.
+					// If so, we've got a new latest allowed stamp.
+					if (earliestAcceptableTimestamp == null || earliestMessage.getTimestamp().isAfter(messageTime)) {
+						earliestMessage = message;
+						earliestAcceptableTimestamp = messageTime;
 					}
-					continue;
-				}
-				if (pastMessages.size() < 50) {
+					// Check if message was posted before our latest allowed timestamp.
+					if (latestAllowed.isAfter(messageTime)) {
+						channelHistory.add(message);
+						continue;
+					}
+					// Message found that is current enough to be kept, no need to keep searching
 					more = false;
-				}
-				for (IMessage message : pastMessages) {
-					LocalDateTime messageTime = message.getTimestamp();
+				} else {
 					// Check if message was posted before our latest allowed timestamp.
 					if (latestAllowed.isAfter(messageTime)) {
 						channelHistory.add(message);
@@ -362,55 +401,24 @@ public class Discord extends Module {
 						continue;
 					}
 				}
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			channelRetentionData.put(channel.getID(), earliestMessage);
-		} else {
-			boolean more = true;
-			while (more) {
-				Collection<IMessage> pastMessages;
-				try {
-					pastMessages = getPastMessages((Channel) channel, 50, null,
-							earliestMessage == null ? channelRetentionData.get(channel.getID()).getID() : earliestMessage.getID());
-				} catch (HTTP429Exception e1) {
-					System.out.println("Rate limited, repeating request in a second.");
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						break;
-					}
-					continue;
-				}
-				if (pastMessages.size() < 50) {
-					more = false;
-				}
-				for (IMessage message : pastMessages) {
-					LocalDateTime messageTime = message.getTimestamp();
-					// Check if earliest is after, aka earlier, but latest is before, aka still later.
-					// If so, we've got a new latest allowed stamp.
-					if (earliestAcceptableTimestamp == null || earliestMessage.getTimestamp().isAfter(messageTime)) {
-						earliestMessage = message;
-					}
-					// Check if message was posted before our latest allowed timestamp.
-					if (latestAllowed.isAfter(messageTime)) {
-						channelHistory.add(message);
-						continue;
-					}
-					// Message found that is current enough to be kept, no need to keep searching
-					more = false;
-				}
 			}
 
-			// If we're deleting our earliest message, we can't use it for lookups later.
-			if (channelHistory.contains(earliestMessage)) {
-				channelRetentionData.remove(channel.getID());
-			} else {
+			if (haveEarliest) {
+				// If we're deleting our earliest message, we can't use it for lookups later.
+				if (channelHistory.contains(earliestMessage)) {
+					channelRetentionData.remove(channel.getID());
+				} else {
+					channelRetentionData.put(channel.getID(), earliestMessage);
+				}
+			} else if (earliestMessage != null) {
 				channelRetentionData.put(channel.getID(), earliestMessage);
+			}
+
+			// 1 second pause to assist with rate limiting prevention
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 
@@ -419,25 +427,21 @@ public class Discord extends Module {
 		while (iterator.hasNext()) {
 			IMessage message = iterator.next();
 			iterator.remove();
-			boolean undeleted = true;
-			while (undeleted) {
-				try {
-					message.delete();
-				} catch (MissingPermissionsException | DiscordException e) {
-					e.printStackTrace();
-				} catch (HTTP429Exception e) {
-					e.printStackTrace();
+			queue.add(new ImmutablePair<>(new Runnable() {
+				@Override
+				public void run() {
 					try {
-						System.out.println("Rate limited, repeating request in a second.");
-						Thread.sleep(1000);
-					} catch (InterruptedException e1) {
+						message.delete();
+					} catch (MissingPermissionsException | DiscordException e) {
 						e.printStackTrace();
-						break;
+					} catch (HTTP429Exception e) {
+						e.printStackTrace();
+						return;
 					}
-					continue;
+					// To ensure that messages are deleted, we manually remove our entry, the first, from the queue
+					queue.poll();
 				}
-				break;
-			}
+			}, false));
 		}
 	}
 
@@ -496,7 +500,7 @@ public class Discord extends Module {
 		return messages;
 	}
 
-	protected void startPostingMessages() {
+	protected void startQueueDrain() {
 		if (postTask != null && postTask.getTaskId() != -1) {
 			return;
 		}
@@ -510,39 +514,13 @@ public class Discord extends Module {
 				if (queue.isEmpty()) {
 					return;
 				}
-				// Retrieve but do not yet remove the first element in the queue
-				Triple<String, String, String> triple = queue.element();
-				IChannel group = client.getChannelByID(triple.getLeft());
-				if (group == null) {
-					IUser user = client.getUserByID(triple.getLeft());
-					if (user == null) {
-						return;
-					}
-					try {
-						group = client.getOrCreatePMChannel(user);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				Pair<Runnable, Boolean> pair = queue.peek();
+				if (pair.getRight()) {
+					queue.remove();
 				}
-				if (!client.getOurUser().getName().equals(triple.getMiddle())) {
-					try {
-						client.changeAccountInfo(Optional.of(triple.getMiddle()), login, password,
-								Optional.empty());
-					} catch (HTTP429Exception | DiscordException e) {
-						// Trivial issue
-					}
-				}
-				try {
-					IMessage posted = group.sendMessage(triple.getRight());
-					if (triple.getLeft().equals(channelMain) && !triple.getMiddle().equals(BOT_NAME)) {
-						pastMainMessages.put(posted, triple.getMiddle());
-					}
-				} catch (MissingPermissionsException | DiscordException | HTTP429Exception e) {
-					e.printStackTrace();
-				}
-				queue.remove();
+				pair.getLeft().run();
 			}
-		}.runTaskTimerAsynchronously(getPlugin(), 20L, 20L);
+		}.runTaskTimerAsynchronously(getPlugin(), 5L, 5L);
 	}
 
 	public IDiscordClient getAPI() {
@@ -592,8 +570,45 @@ public class Discord extends Module {
 			builder.append(word);
 		}
 		for (String channel : channels) {
-			queue.add(new ImmutableTriple<>(channel, name, builder.toString()));
+			addMessageToQueue(channel, name, builder.toString());
 		}
+	}
+
+	private void addMessageToQueue(final String channel, final String name, final String message) {
+		queue.add(new ImmutablePair<>(new Runnable() {
+			@Override
+			public void run() {
+				IChannel group = client.getChannelByID(channel);
+				if (group == null) {
+					IUser user = client.getUserByID(channel);
+					if (user == null) {
+						return;
+					}
+					try {
+						group = client.getOrCreatePMChannel(user);
+					} catch (Exception e) {
+						e.printStackTrace();
+						return;
+					}
+				}
+				if (!client.getOurUser().getName().equals(name)) {
+					try {
+						client.changeAccountInfo(Optional.of(name), login, password,
+								Optional.empty());
+					} catch (HTTP429Exception | DiscordException e) {
+						// Trivial issue
+					}
+				}
+				try {
+					IMessage posted = group.sendMessage(message);
+					if (channel.equals(channelMain) && !name.equals(BOT_NAME)) {
+						pastMainMessages.put(posted, name);
+					}
+				} catch (MissingPermissionsException | DiscordException | HTTP429Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}, true));
 	}
 
 	public void postReport(String message) {
