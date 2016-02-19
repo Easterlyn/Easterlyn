@@ -34,14 +34,16 @@ public class RetentionCommand extends DiscordCommand {
 		if (args.length < 1) {
 			return false;
 		}
+		if (args[0].equalsIgnoreCase("null") || args[0].equalsIgnoreCase("off")) {
+			getDiscord().setRetention(channel.getGuild(), channel, null);
+		}
 		Pair<String, Long> pair;
 		try {
 			pair = NumberUtils.parseAndRemoveFirstTime(StringUtils.join(args, ' '));
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		getDiscord().getDataStore().set("retention." + channel.getGuild().getID() + '.' + channel.getID(),
-				pair.getRight() / 1000);
+		getDiscord().setRetention(channel.getGuild(), channel, pair.getRight() / 1000);
 		getDiscord().postMessage(Discord.BOT_NAME,
 				"Channel retention set to " + (pair.getRight() / 1000) + " seconds.",
 				channel.getID());

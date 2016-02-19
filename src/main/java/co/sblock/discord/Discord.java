@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +31,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -100,6 +100,7 @@ public class Discord extends Module {
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
 	private final Cache<IMessage, String> pastMainMessages;
+	private final Map<String, IMessage> channelRetentionData;
 
 	private String channelMain, channelLog, channelReports;
 	private Optional<String> login, password;
@@ -143,6 +144,8 @@ public class Discord extends Module {
 						}
 					}
 				}).build();
+
+		this.channelRetentionData = new HashMap<>();
 
 		File file = new File(plugin.getDataFolder(), "DiscordData.yml");
 		if (file.exists()) {
@@ -212,6 +215,23 @@ public class Discord extends Module {
 	}
 
 	@Override
+	protected void onDisable() {
+		pastMainMessages.invalidateAll();
+		if (client != null) {
+			try {
+				client.logout();
+			} catch (HTTP429Exception | DiscordException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			discordData.save(new File(getPlugin().getDataFolder(), "DiscordData.yml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
 	public YamlConfiguration loadConfig() {
 		super.loadConfig();
 
@@ -259,16 +279,14 @@ public class Discord extends Module {
 					return;
 				}
 				ConfigurationSection retention = discordData.getConfigurationSection("retention");
-				for (IGuild guild : client.getGuilds()) {
-					System.out.println("doing guild retention for " + guild.getName());
-					if (!retention.isConfigurationSection(guild.getID())) {
+				for (String guildID : retention.getKeys(false)) {
+					if (!retention.isConfigurationSection(guildID)) {
 						continue;
 					}
-					ConfigurationSection retentionGuild = retention.getConfigurationSection(guild.getID());
-					for (IChannel channel : guild.getChannels()) {
-						System.out.println("doing retention for " + channel.getName());
-						if (retentionGuild.isSet(channel.getID())) {
-							doRetention(channel, retentionGuild.getLong(channel.getID()));
+					ConfigurationSection retentionGuild = retention.getConfigurationSection(guildID);
+					for (String channelID : retentionGuild.getKeys(false)) {
+						if (retentionGuild.isSet(channelID)) {
+							doRetention(client.getChannelByID(channelID), retentionGuild.getLong(channelID, -1));
 						}
 					}
 				}
@@ -284,10 +302,12 @@ public class Discord extends Module {
 	 * @param duration the duration in seconds
 	 */
 	private void doRetention(IChannel channel, long duration) {
-		if (!(channel instanceof Channel)) {
+		// This method requires touching a lot of Discord4J internals. TODO open a PR?
+		if (duration == -1 || !(channel instanceof Channel)) {
 			return;
 		}
-		// This method requires touching a lot of Discord4J internals. TODO open a PR?
+
+		// Ensure we can read history and delete messages
 		try {
 			if (!(channel instanceof IPrivateChannel) && !(channel instanceof IVoiceChannel)) {
 				DiscordUtils.checkPermissions(client, channel, EnumSet.of(Permissions.READ_MESSAGE_HISTORY, Permissions.MANAGE_MESSAGES));
@@ -296,38 +316,127 @@ public class Discord extends Module {
 			getLogger().warning("Unable to do retention for channel " + channel.mention() + " - cannot read history and delete messages!");
 			return;
 		}
+
+		// Here, we get funky. Channel history must be populated.
+		// To reduce our usage of Discord's API, we store the ID of the last retained message in channels with retention policies.
+
+		// TODO Check if it's possible to look up a single message by ID
+
+		List<IMessage> channelHistory = new ArrayList<>();
 		LocalDateTime latestAllowed = LocalDateTime.now().minusSeconds(duration);
-		String earliestMessageID = null;
-		LocalDateTime earliestTimestamp = null;
-		boolean more = true;
-		while (more) {
-			try {
-				Collection<IMessage> pastMessages = getPastMessages((Channel) channel, 50, earliestMessageID, null);
-				if (pastMessages.size() <= 50) {
-					System.out.println("pls no mas");
+		IMessage earliestMessage = null;
+		LocalDateTime earliestAcceptableTimestamp = null;
+		// TODO reduce duplicate code, this is a shitshow
+		if (!channelRetentionData.containsKey(channel.getID())) {
+			boolean more = true;
+			while (more) {
+				Collection<IMessage> pastMessages;
+				try {
+					pastMessages = getPastMessages((Channel) channel, 50,
+							earliestMessage == null ? null : earliestMessage.getID(), null);
+				} catch (HTTP429Exception e1) {
+					System.out.println("Rate limited, repeating request in a second.");
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						break;
+					}
+					continue;
+				}
+				if (pastMessages.size() < 50) {
 					more = false;
 				}
 				for (IMessage message : pastMessages) {
-					System.out.println("cheque 4 " + message.getTimestamp());
-					if (earliestTimestamp == null || earliestTimestamp.isAfter(message.getTimestamp())) {
-						earliestMessageID = message.getID();
-						earliestTimestamp = message.getTimestamp();
+					LocalDateTime messageTime = message.getTimestamp();
+					// Check if message was posted before our latest allowed timestamp.
+					if (latestAllowed.isAfter(messageTime)) {
+						channelHistory.add(message);
+						continue;
 					}
-					if (latestAllowed.isAfter(message.getTimestamp())) {
-						try {
-							message.delete();
-						} catch (MissingPermissionsException | DiscordException e) {
-							e.printStackTrace();
-						}
+					// Check if earliest is after, aka earlier, but latest is before, aka still later.
+					// If so, we've got a new latest allowed stamp.
+					if ((earliestAcceptableTimestamp == null || earliestMessage.getTimestamp().isAfter(messageTime))
+							&& latestAllowed.isBefore(messageTime)) {
+						earliestMessage = message;
+						continue;
 					}
 				}
-			} catch (HTTP429Exception e) {
-				break;
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			channelRetentionData.put(channel.getID(), earliestMessage);
+		} else {
+			boolean more = true;
+			while (more) {
+				Collection<IMessage> pastMessages;
+				try {
+					pastMessages = getPastMessages((Channel) channel, 50, null,
+							earliestMessage == null ? channelRetentionData.get(channel.getID()).getID() : earliestMessage.getID());
+				} catch (HTTP429Exception e1) {
+					System.out.println("Rate limited, repeating request in a second.");
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						break;
+					}
+					continue;
+				}
+				if (pastMessages.size() < 50) {
+					more = false;
+				}
+				for (IMessage message : pastMessages) {
+					LocalDateTime messageTime = message.getTimestamp();
+					// Check if earliest is after, aka earlier, but latest is before, aka still later.
+					// If so, we've got a new latest allowed stamp.
+					if (earliestAcceptableTimestamp == null || earliestMessage.getTimestamp().isAfter(messageTime)) {
+						earliestMessage = message;
+					}
+					// Check if message was posted before our latest allowed timestamp.
+					if (latestAllowed.isAfter(messageTime)) {
+						channelHistory.add(message);
+						continue;
+					}
+					// Message found that is current enough to be kept, no need to keep searching
+					more = false;
+				}
+			}
+
+			// If we're deleting our earliest message, we can't use it for lookups later.
+			if (channelHistory.contains(earliestMessage)) {
+				channelRetentionData.remove(channel.getID());
+			} else {
+				channelRetentionData.put(channel.getID(), earliestMessage);
+			}
+		}
+
+		// Delete all the messages we've collected
+		Iterator<IMessage> iterator = channelHistory.iterator();
+		while (iterator.hasNext()) {
+			IMessage message = iterator.next();
+			iterator.remove();
+			boolean undeleted = true;
+			while (undeleted) {
+				try {
+					message.delete();
+				} catch (MissingPermissionsException | DiscordException e) {
+					e.printStackTrace();
+				} catch (HTTP429Exception e) {
+					e.printStackTrace();
+					try {
+						System.out.println("Rate limited, repeating request in a second.");
+						Thread.sleep(1000);
+					} catch (InterruptedException e1) {
+						e.printStackTrace();
+						break;
+					}
+					continue;
+				}
+				break;
 			}
 		}
 	}
@@ -365,7 +474,7 @@ public class Discord extends Module {
 		List<IMessage> messages = new ArrayList<>();
 		String response;
 		try {
-			System.out.println("o fuk we making GET " + request);
+			System.out.println("GET " + request);
 			response = Requests.GET.makeRequest(request, new BasicNameValuePair("authorization", client.getToken()));
 		} catch (DiscordException e) {
 			e.printStackTrace();
@@ -491,34 +600,15 @@ public class Discord extends Module {
 		postMessage(Discord.BOT_NAME, message, channelReports);
 	}
 
+	public void setRetention(IGuild guild, IChannel channel, Long duration) {
+		if (channelRetentionData.containsKey(channel.getID())) {
+			channelRetentionData.remove(channel.getID());
+		}
+		discordData.set("retention." + guild.getID() + '.' + channel.getID(), duration);
+	}
+
 	public LoadingCache<Object, Object> getAuthCodes() {
 		return authentications;
-	}
-
-	public Configuration getDataStore() {
-		return discordData;
-	}
-
-	@Override
-	protected void onDisable() {
-		pastMainMessages.invalidateAll();
-		if (client != null) {
-			try {
-				client.logout();
-			} catch (HTTP429Exception | DiscordException e) {
-				e.printStackTrace();
-			}
-		}
-		try {
-			discordData.save(new File(getPlugin().getDataFolder(), "DiscordData.yml"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public String getName() {
-		return "Discord";
 	}
 
 	public UUID getUUIDOf(IUser user) {
@@ -665,6 +755,11 @@ public class Discord extends Module {
 		}
 		sb.append(message.substring(lastMatch));
 		return sb.toString();
+	}
+
+	@Override
+	public String getName() {
+		return "Discord";
 	}
 
 }
