@@ -3,6 +3,7 @@ package co.sblock.events.listeners.player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +61,7 @@ public class AsyncPreLoginListener extends SblockListener {
 		final String ip = event.getAddress().getHostAddress();
 		Boolean allowed = ipCache.getIfPresent(ip);
 		if (allowed == null) {
-			allowed = isAllowed(ip);
+			allowed = isAllowed(ip, event.getUniqueId());
 			ipCache.put(ip, allowed);
 		}
 		if (!allowed) {
@@ -70,6 +71,14 @@ public class AsyncPreLoginListener extends SblockListener {
 				ipCache.put(ip, allowed);
 			}
 		}
+		if (!allowed) {
+			event.setLoginResult(Result.KICK_OTHER);
+			event.setKickMessage("Your IP address is flagged as unsafe by the Spamhaus XBL."
+					+"\nPlease visit https://www.spamhaus.org/query/ip/" + ip + " to learn why."
+					+ "\n\nIf you have a dynamic IP and this is a recurring problem,"
+					+ "\nplease create a /report at your earliest convenience.");
+			return;
+		}
 		Collection<String> ips = events.getIPsFor(event.getUniqueId());
 		if (ips.size() > 1) {
 			OfflinePlayer offline = Bukkit.getOfflinePlayer(event.getUniqueId());
@@ -77,18 +86,9 @@ public class AsyncPreLoginListener extends SblockListener {
 			Bukkit.getConsoleSender().sendMessage( ips.size() + " IPs on record for " + name
 					+ ": " + StringUtils.join(ips.toArray(new String[ips.size()]), ", "));
 		}
-		if (!allowed) {
-			event.setLoginResult(Result.KICK_OTHER);
-			event.setKickMessage("Your IP address is flagged as unsafe by the Spamhaus XBL."
-					+"\nPlease visit https://www.spamhaus.org/query/ip/" + ip + " to learn why."
-					+ "\n\nIf you have a dynamic IP and this is a recurring problem,"
-					+ "\nplease create a /report at your earliest convenience.");
-			discord.postReport(ip + " is flagged as unsafe by spamhaus.org/xbl, disconnecting " + event.getUniqueId());
-			return;
-		}
 	}
 
-	private boolean isAllowed(String ip) {
+	private boolean isAllowed(String ip, UUID uuid) {
 		if (ip.contains("127.0.0.1")) {
 			return true;
 		}
@@ -106,6 +106,7 @@ public class AsyncPreLoginListener extends SblockListener {
 		} catch (UnknownHostException e) {
 			return true;
 		}
+		discord.postReport(ip + " is flagged as unsafe by spamhaus.org/xbl, disconnecting " + uuid);
 		return true;
 	}
 }
