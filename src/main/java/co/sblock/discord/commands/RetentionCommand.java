@@ -36,6 +36,8 @@ public class RetentionCommand extends DiscordCommand {
 		}
 		if (args[0].equalsIgnoreCase("null") || args[0].equalsIgnoreCase("off")) {
 			getDiscord().setRetention(channel.getGuild(), channel, null);
+			getDiscord().postMessage(Discord.BOT_NAME, "Channel retention unset.", channel.getID());
+			return true;
 		}
 		Pair<String, Long> pair;
 		try {
