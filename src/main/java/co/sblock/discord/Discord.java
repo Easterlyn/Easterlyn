@@ -137,9 +137,12 @@ public class Discord extends Module {
 							@Override
 							public void run() {
 								resetBotName();
-								StringBuilder builder = new StringBuilder()
-										.append(toEscape.matcher(notification.getValue()).replaceAll("\\\\$1"))
-										.append(": ").append(notification.getKey().getContent());
+								StringBuilder builder = new StringBuilder().append("**")
+										.append(toEscape.matcher(notification.getValue()).replaceAll("\\\\$1"));
+								if (!notification.getValue().startsWith("* ")) {
+									builder.append(':');
+								}
+								builder.append("** ").append(notification.getKey().getContent());
 								try {
 									notification.getKey().edit(builder.toString());
 								} catch (HTTP429Exception | DiscordException e) {
