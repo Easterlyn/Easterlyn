@@ -104,7 +104,8 @@ public class Discord extends Module {
 	private Users users;
 	private ChannelManager manager;
 	private MessageBuilder builder;
-	private BukkitTask heartbeatTask, postTask;
+	private BukkitTask heartbeatTask;
+	private Thread queueDrainThread;
 
 	public Discord(Sblock plugin) {
 		super(plugin);
@@ -310,6 +311,11 @@ public class Discord extends Module {
 	 * This method is blocking and will run until either the bot is rate limited or messages old
 	 * enough have been deleted.
 	 * 
+	 * TODO: FIX
+	 * Issues of note:
+	 * Empty channel = keep re-querying. Only query when channel not empty (store data)
+	 * Querying un-queried channel with many old messages: hit cap, stop, re-queries newer messages
+	 * 
 	 * @param channel the IChannel to do retention for
 	 * @param duration the duration in seconds
 	 */
@@ -495,41 +501,49 @@ public class Discord extends Module {
 	}
 
 	protected void startQueueDrain() {
-		if (postTask != null && postTask.getTaskId() != -1) {
+		if (queueDrainThread != null && queueDrainThread.isAlive()) {
 			return;
 		}
-		postTask = new BukkitRunnable() {
+		queueDrainThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				if (!isEnabled()) {
-					cancel();
-					return;
-				}
-				if (queue.isEmpty()) {
-					return;
-				}
-				DiscordCallable callable = queue.element();
-				try {
-					callable.call();
-				} catch (DiscordException e) {
-					if (callable.retryOnException()) {
-						// Don't log when retrying, we only retry because of a Discord4J fault generally.
-						return;
-					}
-					e.printStackTrace();
-				} catch (HTTP429Exception e) {
+				while (isEnabled()) {
+					// Sleep for 1/4 of a second
 					try {
-						// Pause a full second, we're rate limited.
-						Thread.sleep(1000);
-					} catch (InterruptedException ie) {
-						ie.printStackTrace();
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				} catch (MissingPermissionsException e) {
-					e.printStackTrace();
+
+					if (queue.isEmpty()) {
+						continue;
+					}
+
+					DiscordCallable callable = queue.element();
+					try {
+						callable.call();
+					} catch (DiscordException e) {
+						if (callable.retryOnException()) {
+							// Don't log when retrying, we only retry because of a Discord4J fault generally.
+							continue;
+						}
+						e.printStackTrace();
+					} catch (HTTP429Exception e) {
+						try {
+							// Pause, we're rate limited.
+							Thread.sleep(e.getRetryDelay());
+						} catch (InterruptedException ie) {
+							ie.printStackTrace();
+						}
+					} catch (MissingPermissionsException e) {
+						e.printStackTrace();
+					}
+					queue.remove();
 				}
-				queue.remove();
 			}
-		}.runTaskTimerAsynchronously(getPlugin(), 5L, 5L);
+		}, "Sblock-DiscordQueue");
+
+		queueDrainThread.start();
 	}
 
 	public IDiscordClient getAPI() {
