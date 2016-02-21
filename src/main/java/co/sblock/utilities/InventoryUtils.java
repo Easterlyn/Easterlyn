@@ -143,6 +143,15 @@ public class InventoryUtils {
 		if (getItems().containsKey(key)) {
 			return items.get(key);
 		}
+		/*
+		 * This special case is mostly for banners. While their color is affected by their data
+		 * value, it can actually be completely overwritten by the base color in the tile entity NBT
+		 * tag. Because of that, we can't specify banner color based on data value.
+		 */
+		key = m.name() + ":0";
+		if (getItems().containsKey(key)) {
+			return items.get(key);
+		}
 		return "Unknown item. Please report this!";
 	}
 
