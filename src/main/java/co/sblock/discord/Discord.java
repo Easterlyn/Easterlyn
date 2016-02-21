@@ -225,6 +225,7 @@ public class Discord extends Module {
 	protected void onDisable() {
 		pastMainMessages.invalidateAll();
 		if (client != null) {
+			resetBotName();
 			try {
 				client.logout();
 			} catch (HTTP429Exception | DiscordException e) {
@@ -289,6 +290,7 @@ public class Discord extends Module {
 					cancel();
 					return;
 				}
+				resetBotName();
 				// In case no one is on or talking, clean up messages anyway
 				pastMainMessages.cleanUp();
 
@@ -342,10 +344,11 @@ public class Discord extends Module {
 		List<IMessage> channelHistory = new ArrayList<>();
 		LocalDateTime latestAllowed = LocalDateTime.now().minusSeconds(duration);
 		IMessage earliestMessage = null;
-		LocalDateTime earliestAcceptableTimestamp = null;
+		LocalDateTime earliestTimestamp = null;
 		boolean haveEarliest = channelRetentionData.containsKey(channel.getID());
 		if (haveEarliest) {
 			earliestMessage = channelRetentionData.get(channel.getID());
+			earliestTimestamp = earliestMessage.getTimestamp();
 		}
 		boolean more = true;
 		while (more) {
@@ -356,7 +359,7 @@ public class Discord extends Module {
 							earliestMessage == null ? null : earliestMessage.getID(), null);
 				} else {
 					pastMessages = getPastMessages((Channel) channel, 50, null,
-							earliestMessage == null ? channelRetentionData.get(channel.getID()).getID() : earliestMessage.getID());
+							earliestMessage == null ? null : earliestMessage.getID());
 				}
 			} catch (HTTP429Exception e1) {
 				System.out.println("Rate limited, repeating request in a second.");
@@ -376,9 +379,9 @@ public class Discord extends Module {
 				if (haveEarliest) {
 					// Check if earliest is after, aka earlier, but latest is before, aka still later.
 					// If so, we've got a new latest allowed stamp.
-					if (earliestAcceptableTimestamp == null || earliestMessage.getTimestamp().isAfter(messageTime)) {
+					if (earliestMessage.getTimestamp().isAfter(messageTime)) {
 						earliestMessage = message;
-						earliestAcceptableTimestamp = messageTime;
+						earliestTimestamp = messageTime;
 					}
 					// Check if message was posted before our latest allowed timestamp.
 					if (latestAllowed.isAfter(messageTime)) {
@@ -395,7 +398,7 @@ public class Discord extends Module {
 					}
 					// Check if earliest is after, aka earlier, but latest is before, aka still later.
 					// If so, we've got a new latest allowed stamp.
-					if ((earliestAcceptableTimestamp == null || earliestMessage.getTimestamp().isAfter(messageTime))
+					if ((earliestTimestamp == null || earliestMessage.getTimestamp().isAfter(messageTime))
 							&& latestAllowed.isBefore(messageTime)) {
 						earliestMessage = message;
 						continue;
