@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.Bukkit;
@@ -95,7 +93,7 @@ public class Discord extends Module {
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
 			spaceword = Pattern.compile("(\\s*)(\\S*)"), mention = Pattern.compile("<@(\\d+)>");
-	private final ConcurrentLinkedQueue<Pair<Runnable, Boolean>> queue;
+	private final ConcurrentLinkedQueue<Runnable> queue;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
@@ -129,29 +127,35 @@ public class Discord extends Module {
 					};
 				});
 
-		pastMainMessages = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).maximumSize(20)
+		pastMainMessages = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).maximumSize(10)
 				.removalListener(new RemovalListener<IMessage, String>() {
 					@Override
 					public void onRemoval(RemovalNotification<IMessage, String> notification) {
-						queue.add(new ImmutablePair<>(new Runnable() {
+						queue.add(new Runnable() {
 							@Override
 							public void run() {
+								// Editing messages causes them to use the current name.
 								resetBotName();
-								StringBuilder builder = new StringBuilder().append("**")
-										.append(toEscape.matcher(notification.getValue()).replaceAll("\\\\$1"));
-								if (!notification.getValue().startsWith("* ")) {
-									builder.append(':');
-								}
-								builder.append("** ").append(notification.getKey().getContent());
 								try {
-									notification.getKey().edit(builder.toString());
-								} catch (HTTP429Exception | DiscordException e) {
-									e.printStackTrace();
+									notification.getKey().edit(notification.getValue());
+								} catch (HTTP429Exception e) {
+									// Rate limited, don't poll, wait it out.
+									try {
+										Thread.sleep(1000);
+									} catch (InterruptedException ie) {
+										ie.printStackTrace();
+									}
+									return;
+								} catch (DiscordException e) {
+									// Don't poll if we encountered a DiscordException
+									return;
 								} catch (MissingPermissionsException e) {
-									// Silently fail, not our message somehow
+									// Silently fail, not our message.
 								}
+								// Poll queue to remove this runnable
+								queue.poll();
 							}
-						}, true));
+						});
 					}
 				}).build();
 
@@ -352,6 +356,10 @@ public class Discord extends Module {
 		if (haveEarliest) {
 			earliestMessage = channelRetentionData.get(channel.getID());
 			earliestTimestamp = earliestMessage.getTimestamp();
+			if (earliestTimestamp.isAfter(latestAllowed)) {
+				// Earliest message timestamp is later than our limit, no need to query
+				return;
+			}
 		}
 		boolean more = true;
 		while (more) {
@@ -433,7 +441,7 @@ public class Discord extends Module {
 		while (iterator.hasNext()) {
 			IMessage message = iterator.next();
 			iterator.remove();
-			queue.add(new ImmutablePair<>(new Runnable() {
+			queue.add(new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -441,13 +449,17 @@ public class Discord extends Module {
 					} catch (MissingPermissionsException | DiscordException e) {
 						e.printStackTrace();
 					} catch (HTTP429Exception e) {
-						e.printStackTrace();
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException ie) {
+							ie.printStackTrace();
+						}
 						return;
 					}
 					// To ensure that messages are deleted, we manually remove our entry, the first, from the queue
 					queue.poll();
 				}
-			}, false));
+			});
 		}
 	}
 
@@ -520,11 +532,8 @@ public class Discord extends Module {
 				if (queue.isEmpty()) {
 					return;
 				}
-				Pair<Runnable, Boolean> pair = queue.peek();
-				if (pair.getRight()) {
-					queue.remove();
-				}
-				pair.getLeft().run();
+				// NOTE: Each runnable is responsible for removing itself from the queue when considered complete.
+				queue.element().run();
 			}
 		}.runTaskTimerAsynchronously(getPlugin(), 5L, 5L);
 	}
@@ -581,7 +590,7 @@ public class Discord extends Module {
 	}
 
 	private void addMessageToQueue(final String channel, final String name, final String message) {
-		queue.add(new ImmutablePair<>(new Runnable() {
+		queue.add(new Runnable() {
 			@Override
 			public void run() {
 				IChannel group = client.getChannelByID(channel);
@@ -594,6 +603,7 @@ public class Discord extends Module {
 						group = client.getOrCreatePMChannel(user);
 					} catch (Exception e) {
 						e.printStackTrace();
+						queue.poll();
 						return;
 					}
 				}
@@ -608,13 +618,40 @@ public class Discord extends Module {
 				try {
 					IMessage posted = group.sendMessage(message);
 					if (channel.equals(channelMain) && !name.equals(BOT_NAME)) {
-						pastMainMessages.put(posted, name);
+						StringBuilder builder = new StringBuilder().append("**")
+								.append(toEscape.matcher(name).replaceAll("\\\\$1"));
+						if (!name.startsWith("* ")) {
+							builder.append(':');
+						}
+						builder.append("** ").append(message);
+						pastMainMessages.put(posted, builder.toString());
 					}
-				} catch (MissingPermissionsException | DiscordException | HTTP429Exception e) {
+				} catch (MissingPermissionsException | DiscordException e) {
+					e.printStackTrace();
+				} catch (HTTP429Exception e) {
+					try {
+						// Pause a full second, we're rate limited.
+						Thread.sleep(1000);
+					} catch (InterruptedException ie) {
+						ie.printStackTrace();
+					}
+					return;
+				}
+				try {
+					/*
+					 * Sleep .75 seconds after posting a message to avoid being rate limited. This
+					 * will still get us hit when continuously posting, but it allows for much more
+					 * responsive chat. As we're a small server and chat is often calm, I'm not
+					 * going to worry about it.
+					 */
+					Thread.sleep(750);
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				// Remove from queue
+				queue.poll();
 			}
-		}, true));
+		});
 	}
 
 	public void postReport(String message) {
