@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.Bukkit;
@@ -96,7 +98,7 @@ public class Discord extends Module {
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
 	private final Cache<IMessage, String> pastMainMessages;
-	private final Map<String, IMessage> channelRetentionData;
+	private final Map<String, Pair<IMessage, Boolean>> channelRetentionData;
 
 	private String channelMain, channelLog, channelReports;
 	private Optional<String> login, password;
@@ -311,11 +313,6 @@ public class Discord extends Module {
 	 * This method is blocking and will run until either the bot is rate limited or messages old
 	 * enough have been deleted.
 	 * 
-	 * TODO: FIX
-	 * Issues of note:
-	 * Empty channel = keep re-querying. Only query when channel not empty (store data)
-	 * Querying un-queried channel with many old messages: hit cap, stop, re-queries newer messages
-	 * 
 	 * @param channel the IChannel to do retention for
 	 * @param duration the duration in seconds
 	 */
@@ -333,26 +330,28 @@ public class Discord extends Module {
 			return;
 		}
 
-		// Here, we get funky. Channel history must be populated.
-		// To reduce our usage of Discord's API, we store the ID of the last retained message in channels with retention policies.
-
-		// TODO Check if it's possible to look up a single message by ID
+		/*
+		 * Channel history must be populated here. To reduce our usage of Discord's API, we have 2
+		 * search modes. When searching backwards, we store the last found valid message and proceed
+		 * farther back until we run out of messages. When searching forwards, we use our stored
+		 * last valid message to search (if needed) until a timestamp within the retention period is
+		 * encountered.
+		 */
 
 		List<IMessage> channelHistory = new ArrayList<>();
-		LocalDateTime latestAllowed = LocalDateTime.now().minusSeconds(duration);
-		IMessage earliestMessage = null;
-		LocalDateTime earliestTimestamp = null;
-		boolean haveEarliest = channelRetentionData.containsKey(channel.getID());
-		if (haveEarliest) {
-			earliestMessage = channelRetentionData.get(channel.getID());
-			earliestTimestamp = earliestMessage.getTimestamp();
-			if (earliestTimestamp.isAfter(latestAllowed)) {
-				// Earliest message timestamp is later than our limit, no need to query
+		LocalDateTime latestAllowedTime = LocalDateTime.now().minusSeconds(duration);
+		IMessage earliestRemaining = null, currentTarget = null;
+		boolean searchBack = true;
+		if (channelRetentionData.containsKey(channel.getID())) {
+			Pair<IMessage, Boolean> triple = channelRetentionData.get(channel.getID());
+			currentTarget = triple.getLeft();
+			searchBack = triple.getRight();
+			if (!searchBack && currentTarget.getTimestamp().isAfter(latestAllowedTime)) {
 				return;
 			}
 		}
 		boolean more = true;
-		while (more && channelHistory.size() < 5000) {
+		while (more && channelHistory.size() < 2000) {
 			// Pause for a second to prevent rate limiting
 			try {
 				Thread.sleep(1000);
@@ -362,69 +361,81 @@ public class Discord extends Module {
 			}
 			Collection<IMessage> pastMessages;
 			try {
-				if (haveEarliest) {
-					pastMessages = getPastMessages((Channel) channel, 50,
-							earliestMessage == null ? null : earliestMessage.getID(), null);
-				} else {
-					pastMessages = getPastMessages((Channel) channel, 50, null,
-							earliestMessage == null ? null : earliestMessage.getID());
-				}
-			} catch (HTTP429Exception e1) {
-				System.out.println("Rate limited, repeating request in a second.");
+				pastMessages = getPastMessages((Channel) channel, currentTarget, searchBack);
+			} catch (HTTP429Exception e) {
 				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					break;
+					Thread.sleep(e.getRetryDelay());
+				} catch (InterruptedException ie) {
+					ie.printStackTrace();
 				}
 				continue;
-			}
-			if (pastMessages.size() < 50) {
-				more = false;
-			}
-			for (IMessage message : pastMessages) {
-				LocalDateTime messageTime = message.getTimestamp();
-				if (haveEarliest) {
-					// Check if earliest is after, aka earlier, but latest is before, aka still later.
-					// If so, we've got a new latest allowed stamp.
-					if (earliestMessage.getTimestamp().isAfter(messageTime)) {
-						earliestMessage = message;
-						earliestTimestamp = messageTime;
-					}
-					// Check if message was posted before our latest allowed timestamp.
-					if (latestAllowed.isAfter(messageTime)) {
-						channelHistory.add(message);
-						continue;
-					}
-					// Message found that is current enough to be kept, no need to keep searching
-					more = false;
-				} else {
-					// Check if message was posted before our latest allowed timestamp.
-					if (latestAllowed.isAfter(messageTime)) {
-						channelHistory.add(message);
-						continue;
-					}
-					// Check if earliest is after, aka earlier, but latest is before, aka still later.
-					// If so, we've got a new latest allowed stamp.
-					if ((earliestTimestamp == null || earliestMessage.getTimestamp().isAfter(messageTime))
-							&& latestAllowed.isBefore(messageTime)) {
-						earliestMessage = message;
-						continue;
-					}
-				}
+			} catch (DiscordException e) {
+				// An error occurred fetching past messages.
+				// This usually means the message ID being used to search is invalid.
+				channelRetentionData.remove(channel.getID());
+				return;
 			}
 
-			if (haveEarliest) {
-				// If we're deleting our earliest message, we can't use it for lookups later.
-				if (channelHistory.contains(earliestMessage)) {
-					channelRetentionData.remove(channel.getID());
-				} else {
-					channelRetentionData.put(channel.getID(), earliestMessage);
+			if (pastMessages.size() == 0) {
+				/*
+				 * Channel has no messages.
+				 * 
+				 * The reason we do not store this data and not re-query is that the vast majority
+				 * of channels with retention will not have short enough retention periods to ever
+				 * fully drain. The only channel that regularly will be able to is #main at night.
+				 * 
+				 * Basically, it's a very minor evil that costs me more labor to account for than
+				 * it's worth. We make hundreds of Discord queries, one more every ten minutes
+				 * won't make or break this.
+				 */
+				return;
+			}
+
+			// Channel has under 50 messages or search back is complete
+			if (pastMessages.size() < 50) {
+				more = false;
+				searchBack = false;
+			}
+
+			for (IMessage message : pastMessages) {
+				LocalDateTime messageTime = message.getTimestamp();
+				if (currentTarget == null) {
+					currentTarget = message;
 				}
-			} else if (earliestMessage != null) {
-				channelRetentionData.put(channel.getID(), earliestMessage);
+				if (searchBack) {
+					// Earlier timestamp found, farther back we go.
+					if (currentTarget.getTimestamp().isAfter(messageTime)) {
+						currentTarget = message;
+					}
+				}
+				// Too old, delete
+				if (latestAllowedTime.isAfter(messageTime)) {
+					channelHistory.add(message);
+					continue;
+				}
+				if (!searchBack) {
+					// Message found that is current enough to be kept, no need to keep searching
+					more = false;
+				}
+				// Not too old, set to current if none specified or if older than current
+				if (earliestRemaining == null || earliestRemaining.getTimestamp().isBefore(messageTime)) {
+					earliestRemaining = message;
+					if (!searchBack) {
+						currentTarget = message;
+					}
+					continue;
+				}
 			}
 		}
+
+		if (currentTarget != null) {
+			if (channelHistory.contains(currentTarget)) {
+				// Current target is being deleted, use earliest remaining instead to avoid re-determining
+				currentTarget = earliestRemaining;
+			}
+		}
+
+		channelRetentionData.put(channel.getID(), new ImmutablePair<>(currentTarget, searchBack));
 
 		// Delete all the messages we've collected
 		Iterator<IMessage> iterator = channelHistory.iterator();
@@ -445,8 +456,17 @@ public class Discord extends Module {
 		}
 	}
 
-	private Collection<IMessage> getPastMessages(Channel channel, @Nullable Integer limit, @Nullable String before, @Nullable String after) throws HTTP429Exception {
-		StringBuilder request = new StringBuilder(DiscordEndpoints.CHANNELS).append(channel.getID()).append("/messages");
+	private Collection<IMessage> getPastMessages(Channel channel, IMessage message, boolean back)
+			throws HTTP429Exception, DiscordException {
+		return getPastMessages(channel, 50, back && message != null ? message.getID() : null, back
+				&& message != null ? message.getID() : null);
+	}
+
+	private Collection<IMessage> getPastMessages(Channel channel, @Nullable Integer limit,
+			@Nullable String before, @Nullable String after)
+					throws HTTP429Exception, DiscordException {
+		StringBuilder request = new StringBuilder(DiscordEndpoints.CHANNELS)
+				.append(channel.getID()).append("/messages");
 		if (limit == null && before == null && after == null) {
 			if (channel.getMessages().size() >= 50) {
 				// 50 is the default size returned. With no parameters, don't bother with a useless lookup.
@@ -474,16 +494,11 @@ public class Discord extends Module {
 		return getPastMessages(channel, request.append(options).toString());
 	}
 
-	private Collection<IMessage> getPastMessages(Channel channel, String request) throws HTTP429Exception {
+	private Collection<IMessage> getPastMessages(Channel channel, String request) throws HTTP429Exception, DiscordException {
 		List<IMessage> messages = new ArrayList<>();
 		String response;
-		try {
-			System.out.println("GET " + request);
-			response = Requests.GET.makeRequest(request, new BasicNameValuePair("authorization", client.getToken()));
-		} catch (DiscordException e) {
-			e.printStackTrace();
-			return messages;
-		}
+		System.out.println("GET " + request);
+		response = Requests.GET.makeRequest(request, new BasicNameValuePair("authorization", client.getToken()));
 
 		if (response == null) {
 			return messages;
@@ -535,7 +550,8 @@ public class Discord extends Module {
 						} catch (InterruptedException ie) {
 							ie.printStackTrace();
 						}
-					} catch (MissingPermissionsException e) {
+					} catch (Exception e) {
+						// Likely permissions, but can be malformed JSON when odd responses are received
 						e.printStackTrace();
 					}
 					queue.remove();
