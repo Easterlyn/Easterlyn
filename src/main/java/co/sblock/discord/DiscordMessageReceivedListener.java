@@ -66,6 +66,16 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			return;
 		}
 		if (command) {
+			discord.queue(new DiscordCallable() {
+				@Override
+				public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
+					event.getMessage().delete();
+				}
+				@Override
+				public boolean retryOnException() {
+					return false;
+				}
+			});
 			if (discord.handleDiscordCommandFor(msg, author, channel)) {
 				return;
 			}

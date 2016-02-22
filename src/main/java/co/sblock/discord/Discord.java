@@ -226,6 +226,7 @@ public class Discord extends Module {
 	protected void onDisable() {
 		pastMainMessages.invalidateAll();
 		if (client != null) {
+			resetBotName();
 			try {
 				client.logout();
 			} catch (HTTP429Exception | DiscordException e) {
@@ -408,9 +409,6 @@ public class Discord extends Module {
 			}
 
 			for (IMessage message : pastMessages) {
-				if (message.getID().equals(channel.getLastReadMessageID())) {
-					more = false;
-				}
 				LocalDateTime messageTime = message.getTimestamp();
 				if (currentTarget == null) {
 					currentTarget = message;
@@ -420,6 +418,8 @@ public class Discord extends Module {
 					if (currentTarget.getTimestamp().isAfter(messageTime)) {
 						currentTarget = message;
 					}
+				} else if (message.getID().equals(channel.getLastReadMessageID())) {
+					more = false;
 				}
 				// Too old, delete
 				if (latestAllowedTime.isAfter(messageTime)) {
@@ -552,6 +552,10 @@ public class Discord extends Module {
 			drainMessageQueueThread = new QueueDrainThread(this, messageQueue, 250, "Sblock-DiscordMessageQueue");
 			drainMessageQueueThread.start();
 		}
+	}
+
+	public void queue(DiscordCallable call) {
+		queue.add(call);
 	}
 
 	public IDiscordClient getClient() {
