@@ -21,7 +21,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 	@Override
 	public void handle(ReadyEvent event) {
 		StringBuilder sb = new StringBuilder();
-		for (IGuild guild : discord.getAPI().getGuilds()) {
+		for (IGuild guild : discord.getClient().getGuilds()) {
 			discord.getLogger().info("Available channels in " + guild.getName() + " (" + guild.getID() + "):");
 			for (IChannel channel : guild.getChannels()) {
 				sb.append(channel.getName()).append(':').append(channel.getID()).append(' ');

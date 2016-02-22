@@ -93,7 +93,7 @@ public class Discord extends Module {
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
 			spaceword = Pattern.compile("(\\s*)(\\S*)"), mention = Pattern.compile("<@(\\d+)>");
-	private final ConcurrentLinkedQueue<DiscordCallable> queue;
+	private final ConcurrentLinkedQueue<DiscordCallable> queue, messageQueue;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
@@ -107,12 +107,13 @@ public class Discord extends Module {
 	private ChannelManager manager;
 	private MessageBuilder builder;
 	private BukkitTask heartbeatTask;
-	private Thread queueDrainThread;
+	private Thread drainQueueThread, drainMessageQueueThread;
 
 	public Discord(Sblock plugin) {
 		super(plugin);
 
 		queue = new ConcurrentLinkedQueue<>();
+		messageQueue = new ConcurrentLinkedQueue<>();
 		commands = new HashMap<>();
 
 		authentications = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build(
@@ -132,7 +133,7 @@ public class Discord extends Module {
 				.removalListener(new RemovalListener<IMessage, String>() {
 					@Override
 					public void onRemoval(RemovalNotification<IMessage, String> notification) {
-						queue.add(new DiscordCallable() {
+						messageQueue.add(new DiscordCallable() {
 							@Override
 							public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
 								// Editing messages causes them to use the current name.
@@ -317,8 +318,8 @@ public class Discord extends Module {
 	 * @param duration the duration in seconds
 	 */
 	private void doRetention(IChannel channel, long duration) {
-		// This method requires touching a lot of Discord4J internals.
-		if (duration == -1 || !(channel instanceof Channel)) {
+		// Skip retention if queue is too large; it won't have time to drain.
+		if (duration == -1 || !(channel instanceof Channel) || queue.size() > 1500) {
 			return;
 		}
 
@@ -346,7 +347,8 @@ public class Discord extends Module {
 			Pair<IMessage, Boolean> triple = channelRetentionData.get(channel.getID());
 			currentTarget = triple.getLeft();
 			searchBack = triple.getRight();
-			if (!searchBack && currentTarget.getTimestamp().isAfter(latestAllowedTime)) {
+			if (!searchBack && currentTarget != null
+					&& currentTarget.getTimestamp().isAfter(latestAllowedTime)) {
 				return;
 			}
 		}
@@ -398,6 +400,9 @@ public class Discord extends Module {
 			}
 
 			for (IMessage message : pastMessages) {
+				if (message.getID().equals(channel.getLastReadMessageID())) {
+					more = false;
+				}
 				LocalDateTime messageTime = message.getTimestamp();
 				if (currentTarget == null) {
 					currentTarget = message;
@@ -458,7 +463,7 @@ public class Discord extends Module {
 
 	private Collection<IMessage> getPastMessages(Channel channel, IMessage message, boolean back)
 			throws HTTP429Exception, DiscordException {
-		return getPastMessages(channel, 50, back && message != null ? message.getID() : null, back
+		return getPastMessages(channel, 50, back && message != null ? message.getID() : null, !back
 				&& message != null ? message.getID() : null);
 	}
 
@@ -516,53 +521,17 @@ public class Discord extends Module {
 	}
 
 	protected void startQueueDrain() {
-		if (queueDrainThread != null && queueDrainThread.isAlive()) {
-			return;
+		if (drainQueueThread == null || !drainQueueThread.isAlive()) {
+			drainQueueThread = new QueueDrainThread(this, queue, 100, "Sblock-DiscordQueue");
+			drainQueueThread.start();
 		}
-		queueDrainThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (isEnabled()) {
-					// Sleep for 1/4 of a second
-					try {
-						Thread.sleep(250);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-					if (queue.isEmpty()) {
-						continue;
-					}
-
-					DiscordCallable callable = queue.element();
-					try {
-						callable.call();
-					} catch (DiscordException e) {
-						if (callable.retryOnException()) {
-							// Don't log when retrying, we only retry because of a Discord4J fault generally.
-							continue;
-						}
-						e.printStackTrace();
-					} catch (HTTP429Exception e) {
-						try {
-							// Pause, we're rate limited.
-							Thread.sleep(e.getRetryDelay());
-						} catch (InterruptedException ie) {
-							ie.printStackTrace();
-						}
-					} catch (Exception e) {
-						// Likely permissions, but can be malformed JSON when odd responses are received
-						e.printStackTrace();
-					}
-					queue.remove();
-				}
-			}
-		}, "Sblock-DiscordQueue");
-
-		queueDrainThread.start();
+		if (drainMessageQueueThread == null || !drainMessageQueueThread.isAlive()) {
+			drainMessageQueueThread = new QueueDrainThread(this, messageQueue, 250, "Sblock-DiscordMessageQueue");
+			drainMessageQueueThread.start();
+		}
 	}
 
-	public IDiscordClient getAPI() {
+	public IDiscordClient getClient() {
 		return this.client;
 	}
 
@@ -614,7 +583,7 @@ public class Discord extends Module {
 	}
 
 	private void addMessageToQueue(final String channel, final String name, final String message) {
-		queue.add(new DiscordCallable() {
+		messageQueue.add(new DiscordCallable() {
 			@Override
 			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
 				IChannel group = client.getChannelByID(channel);

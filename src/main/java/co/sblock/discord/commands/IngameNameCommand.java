@@ -29,7 +29,7 @@ public class IngameNameCommand extends DiscordCommand {
 		IUser target;
 		if (args.length > 0) {
 			String name = StringUtils.join(args, ' ').replaceAll("<@(\\d+)>", "$1");
-			target = getDiscord().getAPI().getUserByID(name);
+			target = getDiscord().getClient().getUserByID(name);
 			if (target == null && !(group instanceof IPrivateChannel)) {
 				for (IUser user : group.getGuild().getUsers()) {
 					if (user.getName().equalsIgnoreCase(name)) {

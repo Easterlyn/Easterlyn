@@ -26,7 +26,7 @@ public abstract class DiscordCommand {
 		this.discord = discord;
 		this.command = command;
 		this.usage = usage;
-		this.permissions = permissions;;
+		this.permissions = permissions;
 	}
 
 	protected Discord getDiscord() {
@@ -34,7 +34,7 @@ public abstract class DiscordCommand {
 	}
 
 	public String getName() {
-		return command;
+		return this.command;
 	}
 
 	public void execute(IUser sender, IChannel channel, String[] args) {
@@ -54,7 +54,7 @@ public abstract class DiscordCommand {
 			return true;
 		}
 		try {
-			DiscordUtils.checkPermissions(discord.getAPI(), channel, permissions);
+			DiscordUtils.checkPermissions(channel.getModifiedPermissions(sender), permissions);
 		} catch (MissingPermissionsException e) {
 			return false;
 		}

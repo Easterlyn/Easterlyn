@@ -26,9 +26,9 @@ public class DiscordInfoCommand extends DiscordCommand {
 	protected boolean onCommand(IUser sender, IChannel channel, String[] args) {
 		IGuild guild;
 		if (args.length > 0) {
-			guild = getDiscord().getAPI().getGuildByID(args[0]);
+			guild = getDiscord().getClient().getGuildByID(args[0]);
 			if (guild == null) {
-				for (IGuild server : getDiscord().getAPI().getGuilds()) {
+				for (IGuild server : getDiscord().getClient().getGuilds()) {
 					if (server.getName().equalsIgnoreCase(args[0])) {
 						guild = server;
 						break;
@@ -40,7 +40,7 @@ public class DiscordInfoCommand extends DiscordCommand {
 		}
 		if (guild == null) {
 			StringBuilder builder = new StringBuilder("Invalid server! Valid servers: ");
-			for (IGuild server : getDiscord().getAPI().getGuilds()) {
+			for (IGuild server : getDiscord().getClient().getGuilds()) {
 				builder.append(server.getID()).append(" (").append(server.getName()).append("), ");
 			}
 			builder.delete(builder.length() - 2, builder.length());

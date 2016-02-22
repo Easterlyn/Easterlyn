@@ -61,9 +61,9 @@ public class DiscordLinkCommand extends SblockCommand {
 				return true;
 			}
 			String discordID = StringUtils.join(args, ' ', 1, args.length);
-			IUser user = discord.getAPI().getUserByID(discordID);
+			IUser user = discord.getClient().getUserByID(discordID);
 			if (user == null) {
-				for (IGuild guild : discord.getAPI().getGuilds()) {
+				for (IGuild guild : discord.getClient().getGuilds()) {
 					for (IUser iUser : guild.getUsers()) {
 						if (iUser.getName().equalsIgnoreCase(discordID)) {
 							user = iUser;

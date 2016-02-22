@@ -39,7 +39,7 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			// Don't know if it's a problem with Discord4J yet
 			return;
 		}
-		if (author.getID().equals(discord.getAPI().getOurUser().getID())) {
+		if (author.getID().equals(discord.getClient().getOurUser().getID())) {
 			// More jDiscord handling - no clue if MessageRecieved is fired when our messages are acknowledged
 			return;
 		}
