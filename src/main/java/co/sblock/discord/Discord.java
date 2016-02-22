@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -99,6 +101,7 @@ public class Discord extends Module {
 	private final YamlConfiguration discordData;
 	private final Cache<IMessage, String> pastMainMessages;
 	private final Map<String, Pair<IMessage, Boolean>> channelRetentionData;
+	private final Set<String> channelsUndergoingRetention;
 
 	private String channelMain, channelLog, channelReports;
 	private Optional<String> login, password;
@@ -150,6 +153,7 @@ public class Discord extends Module {
 				}).build();
 
 		this.channelRetentionData = new HashMap<>();
+		this.channelsUndergoingRetention = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
 		File file = new File(plugin.getDataFolder(), "DiscordData.yml");
 		if (file.exists()) {
@@ -287,6 +291,9 @@ public class Discord extends Module {
 					cancel();
 					return;
 				}
+				// In case either queue has encountered an error, attempt to restart them
+				startQueueDrain();
+
 				resetBotName();
 				// In case no one is on or talking, clean up messages anyway
 				pastMainMessages.cleanUp();
@@ -307,7 +314,7 @@ public class Discord extends Module {
 					}
 				}
 			}
-		}.runTaskTimerAsynchronously(getPlugin(), 20L, 12000L); // 10 minutes between checks
+		}.runTaskTimerAsynchronously(getPlugin(), 20L, 6000L); // 5 minutes between checks
 	}
 
 	/**
@@ -319,7 +326,7 @@ public class Discord extends Module {
 	 */
 	private void doRetention(IChannel channel, long duration) {
 		// Skip retention if queue is too large; it won't have time to drain.
-		if (duration == -1 || !(channel instanceof Channel) || queue.size() > 1500) {
+		if (duration == -1 || !(channel instanceof Channel) || channelsUndergoingRetention.contains(channel.getID())) {
 			return;
 		}
 
@@ -339,6 +346,8 @@ public class Discord extends Module {
 		 * encountered.
 		 */
 
+		this.channelsUndergoingRetention.add(channel.getID());
+
 		List<IMessage> channelHistory = new ArrayList<>();
 		LocalDateTime latestAllowedTime = LocalDateTime.now().minusSeconds(duration);
 		IMessage earliestRemaining = null, currentTarget = null;
@@ -353,7 +362,7 @@ public class Discord extends Module {
 			}
 		}
 		boolean more = true;
-		while (more && channelHistory.size() < 2000) {
+		while (more && channelHistory.size() < 1000) {
 			// Pause for a second to prevent rate limiting
 			try {
 				Thread.sleep(1000);
@@ -440,6 +449,9 @@ public class Discord extends Module {
 			}
 		}
 
+		System.out.println(String.format("Deleting %s messages from #%s[%s]",
+				channelHistory.size(), channel.getName(), channel.getID()));
+
 		channelRetentionData.put(channel.getID(), new ImmutablePair<>(currentTarget, searchBack));
 
 		// Delete all the messages we've collected
@@ -459,11 +471,23 @@ public class Discord extends Module {
 				}
 			});
 		}
+
+		queue.add(new DiscordCallable() {
+			@Override
+			public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
+				channelsUndergoingRetention.remove(channel.getID());
+				System.out.println("Done with deletion in " + channel.getID());
+			}
+			@Override
+			public boolean retryOnException() {
+				return false;
+			}
+		});
 	}
 
 	private Collection<IMessage> getPastMessages(Channel channel, IMessage message, boolean back)
 			throws HTTP429Exception, DiscordException {
-		return getPastMessages(channel, 50, back && message != null ? message.getID() : null, !back
+		return getPastMessages(channel, 100, back && message != null ? message.getID() : null, !back
 				&& message != null ? message.getID() : null);
 	}
 
@@ -474,7 +498,7 @@ public class Discord extends Module {
 				.append(channel.getID()).append("/messages");
 		if (limit == null && before == null && after == null) {
 			if (channel.getMessages().size() >= 50) {
-				// 50 is the default size returned. With no parameters, don't bother with a useless lookup.
+				// 50 is the default size returned. With no parameters, don't bother with a lookup.
 				return channel.getMessages();
 			} else {
 				return getPastMessages(channel, request.toString());
@@ -522,7 +546,7 @@ public class Discord extends Module {
 
 	protected void startQueueDrain() {
 		if (drainQueueThread == null || !drainQueueThread.isAlive()) {
-			drainQueueThread = new QueueDrainThread(this, queue, 100, "Sblock-DiscordQueue");
+			drainQueueThread = new QueueDrainThread(this, queue, 150, "Sblock-DiscordQueue");
 			drainQueueThread.start();
 		}
 		if (drainMessageQueueThread == null || !drainMessageQueueThread.isAlive()) {
