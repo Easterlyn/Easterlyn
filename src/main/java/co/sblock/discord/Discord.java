@@ -226,7 +226,6 @@ public class Discord extends Module {
 	protected void onDisable() {
 		pastMainMessages.invalidateAll();
 		if (client != null) {
-			resetBotName();
 			try {
 				client.logout();
 			} catch (HTTP429Exception | DiscordException e) {

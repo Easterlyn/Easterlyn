@@ -345,21 +345,21 @@ public class CruxiteDowel {
 			case BOOK_AND_QUILL:
 			case BURNING_FURNACE:
 			case CARROT: // plant
-			case CAKE_BLOCK:
+			case CAKE_BLOCK: // No infinite food
 			case COCOA: // plant
 			case COMMAND:
 			case COMMAND_MINECART:
 			case CROPS: // plant
 			case EMERALD: // Money
 			case EMERALD_BLOCK: // Money
-			case EMERALD_ORE: // Money
+			case EMERALD_ORE: // Can't be captcha'd
 			case ENDER_PORTAL:
 			case ENDER_PORTAL_FRAME:
-			case EXP_BOTTLE: // Stupid to make exp with exp
+			case EXP_BOTTLE: // Can't be captcha'd
 			case FIRE:
 			case GLOWING_REDSTONE_ORE:
 			case LAPIS_BLOCK: // Money
-			case LAPIS_ORE: // Money
+			case LAPIS_ORE: // Can't be captcha'd
 			case LAVA:
 			case MELON_STEM: // plant
 			case MOB_SPAWNER:
@@ -377,7 +377,7 @@ public class CruxiteDowel {
 			case STATIONARY_LAVA:
 			case STATIONARY_WATER:
 			case WATER:
-			case WRITTEN_BOOK: // Duplicate via other means, not alchemy
+			case WRITTEN_BOOK: // Can't be captcha'd
 				materialValues.put(material, Integer.MAX_VALUE);
 			default:
 				break;
