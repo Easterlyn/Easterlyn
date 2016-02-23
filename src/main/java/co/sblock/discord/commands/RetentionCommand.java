@@ -11,6 +11,7 @@ import co.sblock.utilities.NumberUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
 
 /**
@@ -26,7 +27,7 @@ public class RetentionCommand extends DiscordCommand {
 
 	@Override
 	protected boolean onCommand(IUser sender, IChannel channel, String[] args) {
-		if (channel instanceof IPrivateChannel) {
+		if (channel instanceof IPrivateChannel || channel instanceof IVoiceChannel) {
 			getDiscord().postMessage(Discord.BOT_NAME,
 					"You cannot set a retention policy on private messages.", channel.getID());
 			return true;

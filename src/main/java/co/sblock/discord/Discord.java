@@ -77,7 +77,9 @@ import sx.blah.discord.handle.impl.obj.Channel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.json.responses.MessageResponse;
 import sx.blah.discord.util.HTTP429Exception;
@@ -325,8 +327,9 @@ public class Discord extends Module {
 	 * @param duration the duration in seconds
 	 */
 	private void doRetention(IChannel channel, long duration) {
-		// Skip retention if queue is too large; it won't have time to drain.
-		if (duration == -1 || !(channel instanceof Channel) || channelsUndergoingRetention.contains(channel.getID())) {
+		if (duration == -1 || channel instanceof IVoiceChannel
+				|| channel instanceof IPrivateChannel || !(channel instanceof Channel)
+				|| channelsUndergoingRetention.contains(channel.getID())) {
 			return;
 		}
 
@@ -381,13 +384,14 @@ public class Discord extends Module {
 				}
 				continue;
 			} catch (DiscordException e) {
-				// An error occurred fetching past messages.
-				// This usually means the message ID being used to search is invalid.
-				channelRetentionData.remove(channel.getID());
-				return;
+				/*
+				 * An error occurred fetching past messages. This usually means the message ID being
+				 * used to search is invalid or there are no messages beyond the one specified.
+				 */
+				break;
 			}
 
-			if (pastMessages.size() == 0) {
+			if (currentTarget == null && pastMessages.size() == 0) {
 				/*
 				 * Channel has no messages.
 				 * 
@@ -399,7 +403,7 @@ public class Discord extends Module {
 				 * it's worth. We make hundreds of Discord queries, one more every ten minutes
 				 * won't make or break this.
 				 */
-				return;
+				break;
 			}
 
 			// Channel has under 50 messages or search back is complete
@@ -418,20 +422,18 @@ public class Discord extends Module {
 					if (currentTarget.getTimestamp().isAfter(messageTime)) {
 						currentTarget = message;
 					}
-				} else if (message.getID().equals(channel.getLastReadMessageID())) {
-					more = false;
 				}
 				// Too old, delete
 				if (latestAllowedTime.isAfter(messageTime)) {
 					channelHistory.add(message);
 					continue;
 				}
-				if (!searchBack) {
+				if (!searchBack){
 					// Message found that is current enough to be kept, no need to keep searching
 					more = false;
 				}
 				// Not too old, set to current if none specified or if older than current
-				if (earliestRemaining == null || earliestRemaining.getTimestamp().isBefore(messageTime)) {
+				if (earliestRemaining == null || earliestRemaining.getTimestamp().isAfter(messageTime)) {
 					earliestRemaining = message;
 					if (!searchBack) {
 						currentTarget = message;
@@ -448,16 +450,17 @@ public class Discord extends Module {
 			}
 		}
 
-		System.out.println(String.format("Deleting %s messages from #%s[%s]",
-				channelHistory.size(), channel.getName(), channel.getID()));
-
 		channelRetentionData.put(channel.getID(), new ImmutablePair<>(currentTarget, searchBack));
+
+		if (channelHistory.size() < 1) {
+			channelsUndergoingRetention.remove(channel.getID());
+			return;
+		}
 
 		// Delete all the messages we've collected
 		Iterator<IMessage> iterator = channelHistory.iterator();
 		while (iterator.hasNext()) {
 			IMessage message = iterator.next();
-			iterator.remove();
 			queue.add(new DiscordCallable() {
 				@Override
 				public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
@@ -471,11 +474,15 @@ public class Discord extends Module {
 			});
 		}
 
+		// All we care about later is the message size, no need to continue to store the list
+		final int amount = channelHistory.size();
+
 		queue.add(new DiscordCallable() {
 			@Override
 			public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
 				channelsUndergoingRetention.remove(channel.getID());
-				System.out.println("Done with deletion in " + channel.getID());
+				getLogger().info(String.format("Retention deleted %s messages from #%s[%s]",
+						amount, channel.getName(), channel.getID()));
 			}
 			@Override
 			public boolean retryOnException() {
@@ -525,7 +532,6 @@ public class Discord extends Module {
 	private Collection<IMessage> getPastMessages(Channel channel, String request) throws HTTP429Exception, DiscordException {
 		List<IMessage> messages = new ArrayList<>();
 		String response;
-		System.out.println("GET " + request);
 		response = Requests.GET.makeRequest(request, new BasicNameValuePair("authorization", client.getToken()));
 
 		if (response == null) {
