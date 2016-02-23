@@ -1,4 +1,4 @@
-package co.sblock.discord;
+package co.sblock.discord.abstraction;
 
 import sx.blah.discord.api.DiscordException;
 import sx.blah.discord.api.MissingPermissionsException;

@@ -5,38 +5,20 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
+import org.apache.commons.lang3.Validate;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.message.BasicNameValuePair;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -48,42 +30,29 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
-import com.google.gson.Gson;
 
 import co.sblock.Sblock;
-import co.sblock.chat.ChannelManager;
-import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
 import co.sblock.chat.message.Message;
-import co.sblock.chat.message.MessageBuilder;
-import co.sblock.discord.commands.DiscordCommand;
-import co.sblock.events.event.SblockAsyncChatEvent;
+import co.sblock.discord.abstraction.DiscordCallable;
+import co.sblock.discord.abstraction.DiscordCommand;
+import co.sblock.discord.abstraction.DiscordModule;
+import co.sblock.discord.listeners.DiscordMessageReceivedListener;
+import co.sblock.discord.listeners.DiscordReadyListener;
 import co.sblock.module.Module;
-import co.sblock.users.Users;
 import co.sblock.utilities.PlayerLoader;
 import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.TextComponent;
 
 import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.DiscordEndpoints;
 import sx.blah.discord.api.DiscordException;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.MissingPermissionsException;
-import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.EventDispatcher;
-import sx.blah.discord.handle.impl.obj.Channel;
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IVoiceChannel;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.json.responses.MessageResponse;
 import sx.blah.discord.util.HTTP429Exception;
-import sx.blah.discord.util.Requests;
 
 /**
  * A Module for managing messaging to and from Discord.
@@ -96,29 +65,28 @@ public class Discord extends Module {
 
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
-			spaceword = Pattern.compile("(\\s*)(\\S*)"), mention = Pattern.compile("<@(\\d+)>");
+			spaceword = Pattern.compile("(\\s*)(\\S*)");
 	private final ConcurrentLinkedQueue<DiscordCallable> queue, messageQueue;
+	private final Map<Class<? extends DiscordModule>, DiscordModule> modules;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
 	private final Cache<IMessage, String> pastMainMessages;
-	private final Map<String, Pair<IMessage, Boolean>> channelRetentionData;
-	private final Set<String> channelsUndergoingRetention;
 
 	private String channelMain, channelLog, channelReports;
 	private Optional<String> login, password;
 	private IDiscordClient client;
-	private Users users;
-	private ChannelManager manager;
-	private MessageBuilder builder;
 	private BukkitTask heartbeatTask;
 	private Thread drainQueueThread, drainMessageQueueThread;
+
+	private boolean lock = false;
 
 	public Discord(Sblock plugin) {
 		super(plugin);
 
 		queue = new ConcurrentLinkedQueue<>();
 		messageQueue = new ConcurrentLinkedQueue<>();
+		modules = new HashMap<>();
 		commands = new HashMap<>();
 
 		authentications = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build(
@@ -154,34 +122,11 @@ public class Discord extends Module {
 					}
 				}).build();
 
-		this.channelRetentionData = new HashMap<>();
-		this.channelsUndergoingRetention = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-
 		File file = new File(plugin.getDataFolder(), "DiscordData.yml");
 		if (file.exists()) {
 			discordData = YamlConfiguration.loadConfiguration(file);
 		} else {
 			discordData = new YamlConfiguration();
-		}
-
-		Reflections reflections = new Reflections("co.sblock.discord.commands");
-		Set<Class<? extends DiscordCommand>> cmds = reflections.getSubTypesOf(DiscordCommand.class);
-		for (Class<? extends DiscordCommand> command : cmds) {
-			if (Modifier.isAbstract(command.getModifiers())) {
-				continue;
-			}
-			if (!Sblock.areDependenciesPresent(command)) {
-				getLogger().warning(command.getSimpleName() + " is missing dependencies, skipping.");
-				continue;
-			}
-			try {
-				Constructor<? extends DiscordCommand> constructor = command.getConstructor(getClass());
-				DiscordCommand cmd = constructor.newInstance(this);
-				commands.put('/' + cmd.getName(), cmd);
-			} catch (NoSuchMethodException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -199,8 +144,6 @@ public class Discord extends Module {
 			return;
 		}
 
-		this.users = getPlugin().getModule(Users.class);
-
 		try {
 			this.client = new ClientBuilder().withLogin(this.login.get(), this.password.get()).build();
 			EventDispatcher dispatcher = this.client.getDispatcher();
@@ -215,13 +158,52 @@ public class Discord extends Module {
 			return;
 		}
 
-		this.manager = getPlugin().getModule(Chat.class).getChannelManager();
-		// future modify MessageBuilder to allow custom name clicks (OPEN_URL www.sblock.co/discord)
-		this.builder = new MessageBuilder(getPlugin()).setNameClick("@# ").setChannelClick("@# ")
-				.setChannel(this.manager.getChannel("#discord"))
-				.setNameHover(TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
-						+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
-						+ Color.GOOD + "Channel: #main"));
+		// Only load modules and whatnot once, no matter how many times we re-enable
+		if (lock) {
+			return;
+		}
+
+		lock = true;
+
+		Reflections reflections = new Reflections("co.sblock.discord.modules");
+		Set<Class<? extends DiscordModule>> moduleClazzes = reflections.getSubTypesOf(DiscordModule.class);
+		for (Class<? extends DiscordModule> clazz : moduleClazzes) {
+			if (Modifier.isAbstract(clazz.getModifiers())) {
+				continue;
+			}
+			if (!Sblock.areDependenciesPresent(clazz)) {
+				getLogger().warning(clazz.getSimpleName() + " is missing dependencies, skipping.");
+				continue;
+			}
+			try {
+				Constructor<? extends DiscordModule> constructor = clazz.getConstructor(getClass());
+				DiscordModule module = constructor.newInstance(this);
+				modules.put(clazz, module);
+			} catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+
+		reflections = new Reflections("co.sblock.discord.commands");
+		Set<Class<? extends DiscordCommand>> commandClazzes = reflections.getSubTypesOf(DiscordCommand.class);
+		for (Class<? extends DiscordCommand> clazz : commandClazzes) {
+			if (Modifier.isAbstract(clazz.getModifiers())) {
+				continue;
+			}
+			if (!Sblock.areDependenciesPresent(clazz)) {
+				getLogger().warning(clazz.getSimpleName() + " is missing dependencies, skipping.");
+				continue;
+			}
+			try {
+				Constructor<? extends DiscordCommand> constructor = clazz.getConstructor(getClass());
+				DiscordCommand command = constructor.newInstance(this);
+				commands.put('/' + command.getName(), command);
+			} catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -282,7 +264,11 @@ public class Discord extends Module {
 		return super.isEnabled() && this.client != null;
 	}
 
-	protected void startHeartbeat() {
+	public YamlConfiguration getDatastore() {
+		return discordData;
+	}
+
+	public void startHeartbeat() {
 		if (heartbeatTask != null && heartbeatTask.getTaskId() != -1) {
 			return;
 		}
@@ -300,256 +286,14 @@ public class Discord extends Module {
 				// In case no one is on or talking, clean up messages anyway
 				pastMainMessages.cleanUp();
 
-				if (!discordData.isConfigurationSection("retention")) {
-					return;
-				}
-				ConfigurationSection retention = discordData.getConfigurationSection("retention");
-				for (String guildID : retention.getKeys(false)) {
-					if (!retention.isConfigurationSection(guildID)) {
-						continue;
-					}
-					ConfigurationSection retentionGuild = retention.getConfigurationSection(guildID);
-					for (String channelID : retentionGuild.getKeys(false)) {
-						if (retentionGuild.isSet(channelID)) {
-							doRetention(client.getChannelByID(channelID), retentionGuild.getLong(channelID, -1));
-						}
-					}
+				for (DiscordModule module : modules.values()) {
+					module.doHeartbeat();
 				}
 			}
 		}.runTaskTimerAsynchronously(getPlugin(), 20L, 6000L); // 5 minutes between checks
 	}
 
-	/**
-	 * This method is blocking and will run until either the bot is rate limited or messages old
-	 * enough have been deleted.
-	 * 
-	 * @param channel the IChannel to do retention for
-	 * @param duration the duration in seconds
-	 */
-	private void doRetention(IChannel channel, long duration) {
-		if (duration == -1 || channel instanceof IVoiceChannel
-				|| channel instanceof IPrivateChannel || !(channel instanceof Channel)
-				|| channelsUndergoingRetention.contains(channel.getID())) {
-			return;
-		}
-
-		// Ensure we can read history and delete messages
-		try {
-			DiscordUtils.checkPermissions(client, channel, EnumSet.of(Permissions.READ_MESSAGE_HISTORY, Permissions.MANAGE_MESSAGES));
-		} catch (MissingPermissionsException e) {
-			getLogger().warning("Unable to do retention for channel " + channel.mention() + " - cannot read history and delete messages!");
-			return;
-		}
-
-		/*
-		 * Channel history must be populated here. To reduce our usage of Discord's API, we have 2
-		 * search modes. When searching backwards, we store the last found valid message and proceed
-		 * farther back until we run out of messages. When searching forwards, we use our stored
-		 * last valid message to search (if needed) until a timestamp within the retention period is
-		 * encountered.
-		 */
-
-		this.channelsUndergoingRetention.add(channel.getID());
-
-		List<IMessage> channelHistory = new ArrayList<>();
-		LocalDateTime latestAllowedTime = LocalDateTime.now().minusSeconds(duration);
-		IMessage earliestRemaining = null, currentTarget = null;
-		boolean searchBack = true;
-		if (channelRetentionData.containsKey(channel.getID())) {
-			Pair<IMessage, Boolean> triple = channelRetentionData.get(channel.getID());
-			currentTarget = triple.getLeft();
-			searchBack = triple.getRight();
-			if (!searchBack && currentTarget != null
-					&& currentTarget.getTimestamp().isAfter(latestAllowedTime)) {
-				return;
-			}
-		}
-		boolean more = true;
-		while (more && channelHistory.size() < 1000) {
-			// Pause for a second to prevent rate limiting
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
-			}
-			Collection<IMessage> pastMessages;
-			try {
-				pastMessages = getPastMessages((Channel) channel, currentTarget, searchBack);
-			} catch (HTTP429Exception e) {
-				try {
-					Thread.sleep(e.getRetryDelay());
-				} catch (InterruptedException ie) {
-					ie.printStackTrace();
-				}
-				continue;
-			} catch (DiscordException e) {
-				/*
-				 * An error occurred fetching past messages. This usually means the message ID being
-				 * used to search is invalid or there are no messages beyond the one specified.
-				 */
-				break;
-			}
-
-			if (currentTarget == null && pastMessages.size() == 0) {
-				/*
-				 * Channel has no messages.
-				 * 
-				 * The reason we do not store this data and not re-query is that the vast majority
-				 * of channels with retention will not have short enough retention periods to ever
-				 * fully drain. The only channel that regularly will be able to is #main at night.
-				 * 
-				 * Basically, it's a very minor evil that costs me more labor to account for than
-				 * it's worth. We make hundreds of Discord queries, one more every ten minutes
-				 * won't make or break this.
-				 */
-				break;
-			}
-
-			// Channel has under 50 messages or search back is complete
-			if (pastMessages.size() < 50) {
-				more = false;
-				searchBack = false;
-			}
-
-			for (IMessage message : pastMessages) {
-				LocalDateTime messageTime = message.getTimestamp();
-				if (currentTarget == null) {
-					currentTarget = message;
-				}
-				if (searchBack) {
-					// Earlier timestamp found, farther back we go.
-					if (currentTarget.getTimestamp().isAfter(messageTime)) {
-						currentTarget = message;
-					}
-				}
-				// Too old, delete
-				if (latestAllowedTime.isAfter(messageTime)) {
-					channelHistory.add(message);
-					continue;
-				}
-				if (!searchBack){
-					// Message found that is current enough to be kept, no need to keep searching
-					more = false;
-				}
-				// Not too old, set to current if none specified or if older than current
-				if (earliestRemaining == null || earliestRemaining.getTimestamp().isAfter(messageTime)) {
-					earliestRemaining = message;
-					if (!searchBack) {
-						currentTarget = message;
-					}
-					continue;
-				}
-			}
-		}
-
-		if (currentTarget != null) {
-			if (channelHistory.contains(currentTarget)) {
-				// Current target is being deleted, use earliest remaining instead to avoid re-determining
-				currentTarget = earliestRemaining;
-			}
-		}
-
-		channelRetentionData.put(channel.getID(), new ImmutablePair<>(currentTarget, searchBack));
-
-		if (channelHistory.size() < 1) {
-			channelsUndergoingRetention.remove(channel.getID());
-			return;
-		}
-
-		// Delete all the messages we've collected
-		Iterator<IMessage> iterator = channelHistory.iterator();
-		while (iterator.hasNext()) {
-			IMessage message = iterator.next();
-			queue.add(new DiscordCallable() {
-				@Override
-				public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
-					message.delete();
-				}
-
-				@Override
-				public boolean retryOnException() {
-					return false;
-				}
-			});
-		}
-
-		// All we care about later is the message size, no need to continue to store the list
-		final int amount = channelHistory.size();
-
-		queue.add(new DiscordCallable() {
-			@Override
-			public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
-				channelsUndergoingRetention.remove(channel.getID());
-				getLogger().info(String.format("Retention deleted %s messages from #%s[%s]",
-						amount, channel.getName(), channel.getID()));
-			}
-			@Override
-			public boolean retryOnException() {
-				return false;
-			}
-		});
-	}
-
-	private Collection<IMessage> getPastMessages(Channel channel, IMessage message, boolean back)
-			throws HTTP429Exception, DiscordException {
-		return getPastMessages(channel, 100, back && message != null ? message.getID() : null, !back
-				&& message != null ? message.getID() : null);
-	}
-
-	private Collection<IMessage> getPastMessages(Channel channel, @Nullable Integer limit,
-			@Nullable String before, @Nullable String after)
-					throws HTTP429Exception, DiscordException {
-		StringBuilder request = new StringBuilder(DiscordEndpoints.CHANNELS)
-				.append(channel.getID()).append("/messages");
-		if (limit == null && before == null && after == null) {
-			if (channel.getMessages().size() >= 50) {
-				// 50 is the default size returned. With no parameters, don't bother with a lookup.
-				return channel.getMessages();
-			} else {
-				return getPastMessages(channel, request.toString());
-			}
-		}
-		StringBuilder options = new StringBuilder("?");
-		if (limit != null) {
-			options.append("limit=").append(limit);
-		}
-		if (before != null) {
-			if (options.length() > 1) {
-				options.append('&');
-			}
-			options.append("before=").append(before);
-		}
-		if (after != null) {
-			if (options.length() > 1) {
-				options.append('&');
-			}
-			options.append("after=").append(after);
-		}
-		return getPastMessages(channel, request.append(options).toString());
-	}
-
-	private Collection<IMessage> getPastMessages(Channel channel, String request) throws HTTP429Exception, DiscordException {
-		List<IMessage> messages = new ArrayList<>();
-		String response;
-		response = Requests.GET.makeRequest(request, new BasicNameValuePair("authorization", client.getToken()));
-
-		if (response == null) {
-			return messages;
-		}
-
-		MessageResponse[] msgs = new Gson().fromJson(response, MessageResponse[].class);
-
-		for (MessageResponse message : msgs) {
-			IMessage msg = DiscordUtils.getMessageFromJSON(client, channel, message);
-			//channel.addMessage(msg);
-			messages.add(msg);
-		}
-
-		return messages;
-	}
-
-	protected void startQueueDrain() {
+	private void startQueueDrain() {
 		if (drainQueueThread == null || !drainQueueThread.isAlive()) {
 			drainQueueThread = new QueueDrainThread(this, queue, 150, "Sblock-DiscordQueue");
 			drainQueueThread.start();
@@ -564,27 +308,62 @@ public class Discord extends Module {
 		queue.add(call);
 	}
 
+	public void queueMessageDeletion(IMessage message) {
+		queue.add(new DiscordCallable() {
+			@Override
+			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
+				message.delete();
+			}
+
+			@Override
+			public boolean retryOnException() {
+				return false;
+			}
+		});
+	}
+
 	public IDiscordClient getClient() {
 		return this.client;
 	}
 
-	public void logMessage(String message) {
-		postMessage(BOT_NAME, message, channelLog);
+	public String getMainChannel() {
+		return this.channelMain;
+	}
+
+	public String getLogChannel() {
+		return this.channelLog;
+	}
+
+	public String getReportChannel() {
+		return this.channelReports;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends DiscordModule> T getModule(Class<T> clazz) throws IllegalArgumentException {
+		Validate.isTrue(Module.class.isAssignableFrom(clazz), clazz.getName() + " is not a DiscordModule.");
+		Validate.isTrue(modules.containsKey(clazz), "Module not enabled!");
+		Object object = modules.get(clazz);
+		Validate.isTrue(clazz.isAssignableFrom(object.getClass()));
+		return (T) object;
+	}
+
+	public void log(String message) {
+		postMessage(BOT_NAME, message, getLogChannel());
 	}
 
 	public void postMessage(Message message, boolean global) {
 		if (global) {
 			postMessage((message.isThirdPerson() ? "* " : "") + message.getSenderName(),
-					message.getDiscordMessage(), channelMain);
+					message.getDiscordMessage(), getMainChannel());
 		}
-		postMessage(BOT_NAME, message.getConsoleMessage(), channelLog);
+		postMessage(BOT_NAME, message.getConsoleMessage(), getLogChannel());
 	}
 
 	public void postMessage(String name, String message, boolean global) {
 		if (global) {
-			postMessage(name, message, channelMain, channelLog);
+			postMessage(name, message, getMainChannel(), getLogChannel());
 		} else {
-			postMessage(name, message, channelLog);
+			postMessage(name, message, getLogChannel());
 		}
 	}
 
@@ -641,7 +420,7 @@ public class Discord extends Module {
 					}
 				}
 				IMessage posted = group.sendMessage(message);
-				if (channel.equals(channelMain) && !name.equals(BOT_NAME)) {
+				if (channel.equals(getMainChannel()) && !name.equals(BOT_NAME)) {
 					StringBuilder builder = new StringBuilder().append("**")
 							.append(toEscape.matcher(name).replaceAll("\\\\$1"));
 					if (!name.startsWith("* ")) {
@@ -671,14 +450,7 @@ public class Discord extends Module {
 	}
 
 	public void postReport(String message) {
-		postMessage(Discord.BOT_NAME, message, channelReports);
-	}
-
-	public void setRetention(IGuild guild, IChannel channel, Long duration) {
-		if (channelRetentionData.containsKey(channel.getID())) {
-			channelRetentionData.remove(channel.getID());
-		}
-		discordData.set("retention." + guild.getID() + '.' + channel.getID(), duration);
+		postMessage(Discord.BOT_NAME, message, getReportChannel());
 	}
 
 	public LoadingCache<Object, Object> getAuthCodes() {
@@ -697,7 +469,7 @@ public class Discord extends Module {
 		discordData.set("users." + user.getID(), uuid.toString());
 	}
 
-	protected DiscordPlayer getPlayerFor(IUser user) {
+	public DiscordPlayer getDiscordPlayerFor(IUser user) {
 		UUID uuid = getUUIDOf(user);
 		if (uuid == null) {
 			return null;
@@ -712,123 +484,17 @@ public class Discord extends Module {
 		return dplayer;
 	}
 
-	protected boolean handleDiscordCommandFor(String command, IUser user, IChannel channel) {
+	public boolean handleDiscordCommand(String command, IUser user, IChannel channel) {
 		String[] split = command.split("\\s");
 		if (!commands.containsKey(split[0])) {
 			return false;
 		}
-		String log = String.format("Command in #%s[%s] from %s[%s]: %s",
-				channel.getName(), channel.getID(), user.getName(), user.getID(), command);
-		logMessage(log);
-		getLogger().info(log);
 		String[] args = new String[split.length - 1];
 		if (args.length > 0) {
 			System.arraycopy(split, 1, args, 0, args.length);
 		}
-		commands.get(split[0]).execute(user, channel, args);
+		commands.get(split[0]).execute(user, channel, command, args);
 		return true;
-	}
-
-	protected void handleMinecraftCommandFor(DiscordPlayer player, String command, IChannel channel) {
-		if (player.hasPendingCommand()) {
-			postMessage(Discord.BOT_NAME, "You already have a pending command. Please be patient.", channel.getID());
-			return;
-		}
-		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getPlugin(),
-				new Callable<Boolean>() {
-					@Override
-					public Boolean call() throws Exception {
-						player.startMessages();
-						PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, "/" + command);
-						Bukkit.getPluginManager().callEvent(event);
-						return !event.isCancelled() && Bukkit.dispatchCommand(player, event.getMessage().substring(1));
-					}
-				});
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				int count = 0;
-				while (!future.isDone() && count < 20) {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						future.cancel(false);
-						break;
-					}
-					count++;
-				}
-				if (future.isCancelled() || !future.isDone()) {
-					postMessage(Discord.BOT_NAME, "Command " + command + " from " + player.getName() + " timed out.", channel.getID());
-					player.stopMessages();
-					return;
-				}
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) { }
-				String message = player.stopMessages();
-				if (message.isEmpty()) {
-					return;
-				}
-				postMessage(Discord.BOT_NAME, message, channel.getID());
-			}
-		}.runTaskAsynchronously(getPlugin());
-	}
-
-	protected void handleChatToMinecraft(IMessage message, Player player) {
-		String content = message.getContent();
-		if (!player.hasPermission("sblock.discord.filterexempt")) {
-			int newline = content.indexOf('\n');
-			boolean delete = false;
-			if (newline > 0) {
-				postMessage(Discord.BOT_NAME, "Newlines are not allowed in messages to Minecraft, <@"
-						+ message.getAuthor().getID() + ">", message.getChannel().getID());
-				delete = true;
-			} else if (content.length() > 255) {
-				postMessage(Discord.BOT_NAME, "Messages from Discord may not be over 255 characters, <@"
-						+ message.getAuthor().getID() + ">", message.getChannel().getID());
-				delete = true;
-			}
-			if (delete) {
-				try {
-					message.delete();
-				} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
-					// Trivial
-				}
-			}
-		}
-		builder.setSender(users.getUser(player.getUniqueId()))
-				.setMessage(sanitize(content)).setChannel(manager.getChannel("#discord"));
-		if (!builder.canBuild(false)) {
-			try {
-				message.delete();
-			} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
-				// Trivial
-			}
-			return;
-		}
-		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
-		players.removeIf(p -> users.getUser(p.getUniqueId()).getSuppression());
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, builder.toMessage()));
-	}
-
-	private String sanitize(String message) {
-		Matcher matcher = mention.matcher(message);
-		StringBuilder sb = new StringBuilder();
-		int lastMatch = 0;
-		while (matcher.find()) {
-			sb.append(message.substring(lastMatch, matcher.start())).append('@');
-			String id = matcher.group(1);
-			IUser user = client.getUserByID(id);
-			if (user == null) {
-				sb.append(id);
-			} else {
-				sb.append(client.getUserByID(id).getName());
-			}
-			lastMatch = matcher.end();
-		}
-		sb.append(message.substring(lastMatch));
-		return sb.toString();
 	}
 
 	@Override

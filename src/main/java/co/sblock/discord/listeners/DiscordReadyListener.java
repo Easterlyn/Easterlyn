@@ -1,4 +1,6 @@
-package co.sblock.discord;
+package co.sblock.discord.listeners;
+
+import co.sblock.discord.Discord;
 
 import sx.blah.discord.handle.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
@@ -14,7 +16,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 
 	private final Discord discord;
 
-	protected DiscordReadyListener(Discord discord) {
+	public DiscordReadyListener(Discord discord) {
 		this.discord = discord;
 	}
 
@@ -31,7 +33,6 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 			sb.delete(0, sb.length());
 		}
 
-		discord.startQueueDrain();
 		discord.startHeartbeat();
 	}
 

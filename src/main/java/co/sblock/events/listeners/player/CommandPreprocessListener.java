@@ -57,7 +57,7 @@ public class CommandPreprocessListener extends SblockListener {
 
 		if (!event.getPlayer().hasPermission("sblock.felt") && cmd != null
 				&& !discord.getConfig().getStringList("discord.command-log-blacklist").contains(cmd.getName())) {
-			discord.logMessage(event.getPlayer().getName() + " issued command: " + event.getMessage());
+			discord.log(event.getPlayer().getName() + " issued command: " + event.getMessage());
 		}
 
 		if (((OopsCommand) map.getCommand("oops"))

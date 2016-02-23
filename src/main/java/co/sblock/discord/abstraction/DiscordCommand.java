@@ -1,4 +1,4 @@
-package co.sblock.discord.commands;
+package co.sblock.discord.abstraction;
 
 import java.util.EnumSet;
 
@@ -37,16 +37,24 @@ public abstract class DiscordCommand {
 		return this.command;
 	}
 
-	public void execute(IUser sender, IChannel channel, String[] args) {
+	public void execute(IUser sender, IChannel channel, String original, String[] args) {
 		if (!hasRequiredPermissions(sender, channel)) {
 			discord.postMessage(Discord.BOT_NAME, "<@" + sender.getID()
 					+ ">, you do not have access to this command.", channel.getID());
+			String log = String.format("%s[%s] was denied access to command in #%s[%s]: %s",
+					sender.getName(), sender.getID(), channel.getName(), channel.getID(), original);
+			discord.log(log);
+			discord.getLogger().info(log);
 			return;
 		}
 
 		if (!onCommand(sender, channel, args)) {
 			discord.postMessage(Discord.BOT_NAME, usage, channel.getID());
 		}
+		String log = String.format("Command in #%s[%s] from %s[%s]: %s",
+				channel.getName(), channel.getID(), sender.getName(), sender.getID(), original);
+		discord.log(log);
+		discord.getLogger().info(log);
 	}
 
 	private boolean hasRequiredPermissions(IUser sender, IChannel channel) {

@@ -3,7 +3,7 @@ package co.sblock.commands.admin;
 import org.bukkit.command.CommandSender;
 
 import co.sblock.Sblock;
-import co.sblock.commands.SblockCommand;
+import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.discord.Discord;
 
 /**
@@ -11,7 +11,7 @@ import co.sblock.discord.Discord;
  * 
  * @author Jikoo
  */
-public class DiscordReconnectCommand extends SblockCommand {
+public class DiscordReconnectCommand extends SblockAsynchronousCommand {
 
 	private final Discord discord;
 

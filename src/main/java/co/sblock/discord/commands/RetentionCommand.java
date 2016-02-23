@@ -6,6 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import co.sblock.discord.Discord;
+import co.sblock.discord.abstraction.DiscordCommand;
+import co.sblock.discord.modules.RetentionModule;
 import co.sblock.utilities.NumberUtils;
 
 import sx.blah.discord.handle.obj.IChannel;
@@ -27,6 +29,13 @@ public class RetentionCommand extends DiscordCommand {
 
 	@Override
 	protected boolean onCommand(IUser sender, IChannel channel, String[] args) {
+		RetentionModule module;
+		try {
+			module = getDiscord().getModule(RetentionModule.class);
+		} catch (IllegalArgumentException e1) {
+			getDiscord().postMessage(Discord.BOT_NAME, "Retention is not enabled.", channel.getID());
+			return true;
+		}
 		if (channel instanceof IPrivateChannel || channel instanceof IVoiceChannel) {
 			getDiscord().postMessage(Discord.BOT_NAME,
 					"You cannot set a retention policy on private messages.", channel.getID());
@@ -36,7 +45,7 @@ public class RetentionCommand extends DiscordCommand {
 			return false;
 		}
 		if (args[0].equalsIgnoreCase("null") || args[0].equalsIgnoreCase("off")) {
-			getDiscord().setRetention(channel.getGuild(), channel, null);
+			module.setRetention(channel.getGuild(), channel, null);
 			getDiscord().postMessage(Discord.BOT_NAME, "Channel retention unset.", channel.getID());
 			return true;
 		}
@@ -46,7 +55,7 @@ public class RetentionCommand extends DiscordCommand {
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		getDiscord().setRetention(channel.getGuild(), channel, pair.getRight() / 1000);
+		module.setRetention(channel.getGuild(), channel, pair.getRight() / 1000);
 		getDiscord().postMessage(Discord.BOT_NAME,
 				"Channel retention set to " + (pair.getRight() / 1000) + " seconds.",
 				channel.getID());

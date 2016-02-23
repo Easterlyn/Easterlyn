@@ -1,4 +1,4 @@
-package co.sblock.discord;
+package co.sblock.discord.listeners;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -6,14 +6,14 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import sx.blah.discord.api.DiscordException;
-import sx.blah.discord.api.MissingPermissionsException;
+import co.sblock.discord.Discord;
+import co.sblock.discord.DiscordPlayer;
+import co.sblock.discord.modules.MinecraftChatModule;
+
 import sx.blah.discord.handle.IListener;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.HTTP429Exception;
 
 /**
  * IListener for MessageRecievedEvents.
@@ -24,6 +24,8 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 
 	private final Discord discord;
 	private final Cache<String, Boolean> warnings;
+
+	private MinecraftChatModule minecraft;
 
 	public DiscordMessageReceivedListener(Discord discord) {
 		this.discord = discord;
@@ -58,36 +60,22 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			return;
 		}
 		IChannel channel = event.getMessage().getChannel();
-		boolean main = !(channel instanceof IPrivateChannel)
-				&& discord.getConfig().getString("discord.server").equals(channel.getGuild().getID())
-				&& discord.getConfig().getString("discord.chat.main").equals(channel.getID());
+		boolean main = discord.getMainChannel().equals(channel.getID());
 		boolean command = msg.length() > 0 && msg.charAt(0) == '/';
 		if (!main && !command) {
 			return;
 		}
 		if (command) {
-			discord.queue(new DiscordCallable() {
-				@Override
-				public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
-					event.getMessage().delete();
-				}
-				@Override
-				public boolean retryOnException() {
-					return false;
-				}
-			});
-			if (discord.handleDiscordCommandFor(msg, author, channel)) {
+			discord.queueMessageDeletion(event.getMessage());
+			if (discord.handleDiscordCommand(msg, author, channel)) {
 				return;
 			}
 		}
-		DiscordPlayer sender = discord.getPlayerFor(author);
+		
+		DiscordPlayer sender = discord.getDiscordPlayerFor(author);
 		if (sender == null) {
 			if (main) {
-				try {
-					event.getMessage().delete();
-				} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
-					discord.getLogger().warning("Unable to delete messages in main chat!");
-				}
+				discord.queueMessageDeletion(event.getMessage());
 			}
 			String id = author.getID();
 			if (warnings.getIfPresent(id) != null) {
@@ -99,13 +87,20 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			return;
 		}
 		if (command) {
-			discord.handleMinecraftCommandFor(sender, msg.substring(1), channel);
+			getMCModule().handleCommand(sender, msg.substring(1), channel);
 			return;
 		}
 		if (main) {
-			discord.handleChatToMinecraft(event.getMessage(), sender);
+			getMCModule().handleChat(event.getMessage(), sender);
 			return;
 		}
+	}
+
+	private MinecraftChatModule getMCModule() {
+		if (minecraft == null) {
+			minecraft = discord.getModule(MinecraftChatModule.class);
+		}
+		return minecraft;
 	}
 
 }

@@ -2,6 +2,8 @@ package co.sblock.discord;
 
 import java.util.Queue;
 
+import co.sblock.discord.abstraction.DiscordCallable;
+
 import sx.blah.discord.api.DiscordException;
 import sx.blah.discord.util.HTTP429Exception;
 

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import co.sblock.discord.Discord;
+import co.sblock.discord.abstraction.DiscordCommand;
 
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
