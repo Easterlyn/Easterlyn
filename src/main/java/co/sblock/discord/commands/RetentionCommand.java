@@ -32,7 +32,7 @@ public class RetentionCommand extends DiscordCommand {
 		RetentionModule module;
 		try {
 			module = getDiscord().getModule(RetentionModule.class);
-		} catch (IllegalArgumentException e1) {
+		} catch (IllegalArgumentException e) {
 			getDiscord().postMessage(Discord.BOT_NAME, "Retention is not enabled.", channel.getID());
 			return true;
 		}

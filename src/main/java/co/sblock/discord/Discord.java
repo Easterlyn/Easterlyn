@@ -340,7 +340,7 @@ public class Discord extends Module {
 
 	@SuppressWarnings("unchecked")
 	public <T extends DiscordModule> T getModule(Class<T> clazz) throws IllegalArgumentException {
-		Validate.isTrue(Module.class.isAssignableFrom(clazz), clazz.getName() + " is not a DiscordModule.");
+		Validate.isTrue(DiscordModule.class.isAssignableFrom(clazz), clazz.getName() + " is not a DiscordModule.");
 		Validate.isTrue(modules.containsKey(clazz), "Module not enabled!");
 		Object object = modules.get(clazz);
 		Validate.isTrue(clazz.isAssignableFrom(object.getClass()));

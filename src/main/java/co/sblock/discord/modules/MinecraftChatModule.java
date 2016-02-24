@@ -71,8 +71,9 @@ public class MinecraftChatModule extends DiscordModule {
 					@Override
 					public Boolean call() throws Exception {
 						player.startMessages();
-						PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, "/" + command);
+						PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, command);
 						Bukkit.getPluginManager().callEvent(event);
+						getDiscord().getLogger().info(event.getPlayer().getName() + " issued server command: " + event.getMessage());
 						return !event.isCancelled() && Bukkit.dispatchCommand(player, event.getMessage().substring(1));
 					}
 				});

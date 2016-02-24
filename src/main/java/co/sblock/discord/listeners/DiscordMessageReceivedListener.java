@@ -87,7 +87,7 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			return;
 		}
 		if (command) {
-			getMCModule().handleCommand(sender, msg.substring(1), channel);
+			getMCModule().handleCommand(sender, msg, channel);
 			return;
 		}
 		if (main) {
