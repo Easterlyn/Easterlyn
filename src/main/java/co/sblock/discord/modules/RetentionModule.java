@@ -23,6 +23,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.google.gson.Gson;
 
 import co.sblock.discord.Discord;
+import co.sblock.discord.abstraction.CallType;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordModule;
 
@@ -122,11 +123,10 @@ public class RetentionModule extends DiscordModule {
 		IMessage earliestRemaining = null, currentTarget = null;
 		boolean searchBack = true;
 		if (channelRetentionData.containsKey(channel.getID())) {
-			Pair<IMessage, Boolean> triple = channelRetentionData.get(channel.getID());
-			currentTarget = triple.getLeft();
-			searchBack = triple.getRight();
-			if (!searchBack && currentTarget != null
-					&& currentTarget.getTimestamp().isAfter(latestAllowedTime)) {
+			Pair<IMessage, Boolean> pair = channelRetentionData.get(channel.getID());
+			currentTarget = pair.getLeft();
+			searchBack = pair.getRight() || currentTarget != null;
+			if (!searchBack && currentTarget.getTimestamp().isBefore(latestAllowedTime)) {
 				channelsUndergoingRetention.remove(channel.getID());
 				return;
 			}
@@ -134,17 +134,11 @@ public class RetentionModule extends DiscordModule {
 
 		boolean more = true;
 		while (more && channelHistory.size() < 1000) {
-			// Pause for a second to prevent rate limiting
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
-			}
 			Collection<IMessage> pastMessages;
 			try {
 				pastMessages = getPastMessages((Channel) channel, currentTarget, searchBack);
 			} catch (HTTP429Exception e) {
+				System.out.println("Rate limited doing history lookup: " + e.getRetryDelay());
 				try {
 					Thread.sleep(e.getRetryDelay());
 				} catch (InterruptedException ie) {
@@ -168,7 +162,7 @@ public class RetentionModule extends DiscordModule {
 				 * fully drain. The only channel that regularly will be able to is #main at night.
 				 * 
 				 * Basically, it's a very minor evil that costs me more labor to account for than
-				 * it's worth. We make hundreds of Discord queries, one more every ten minutes
+				 * it's worth. We make hundreds of Discord queries, one more every few minutes
 				 * won't make or break this.
 				 */
 				break;
@@ -206,8 +200,11 @@ public class RetentionModule extends DiscordModule {
 
 			// Channel has under 50 messages or search back is complete
 			if (pastMessages.size() < 50) {
-				more = false;
-				searchBack = false;
+				if (!searchBack) {
+					more = false;
+				} else {
+					searchBack = false;
+				}
 			}
 		}
 
@@ -245,6 +242,11 @@ public class RetentionModule extends DiscordModule {
 			@Override
 			public boolean retryOnException() {
 				return false;
+			}
+
+			@Override
+			public CallType getCallType() {
+				return CallType.OTHER;
 			}
 		});
 	}
