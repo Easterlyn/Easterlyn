@@ -117,7 +117,6 @@ public class RetentionModule extends DiscordModule {
 		 * encountered.
 		 */
 
-
 		// Lock channel as undergoing retention
 		this.channelsUndergoingRetention.add(channel.getID());
 
@@ -129,7 +128,8 @@ public class RetentionModule extends DiscordModule {
 			Pair<IMessage, Boolean> pair = channelRetentionData.get(channel.getID());
 			currentTarget = pair.getLeft();
 			searchBack = pair.getRight() || currentTarget != null;
-			if (!searchBack && currentTarget.getTimestamp().isBefore(latestAllowedTime)) {
+			if (!searchBack && currentTarget != null
+					&& currentTarget.getTimestamp().isBefore(latestAllowedTime)) {
 				channelsUndergoingRetention.remove(channel.getID());
 				return;
 			}
@@ -207,6 +207,10 @@ public class RetentionModule extends DiscordModule {
 					more = false;
 				} else {
 					searchBack = false;
+					if (earliestRemaining == null) {
+						break;
+					}
+					currentTarget = earliestRemaining;
 				}
 			}
 		}

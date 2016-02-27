@@ -165,7 +165,7 @@ public class Discord extends Module {
 					client = null;
 				}
 			}
-		}, "Sblock-DiscordLogout").start();
+		}, "Sblock-DiscordLogin").start();
 
 		// Only load modules and whatnot once, no matter how many times we re-enable
 		if (lock) {
