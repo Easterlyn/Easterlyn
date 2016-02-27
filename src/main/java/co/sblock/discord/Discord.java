@@ -146,17 +146,26 @@ public class Discord extends Module {
 
 		try {
 			this.client = new ClientBuilder().withLogin(this.login.get(), this.password.get()).build();
-			EventDispatcher dispatcher = this.client.getDispatcher();
-			dispatcher.registerListener(new DiscordReadyListener(this));
-
-			this.client.login();
-
-			dispatcher.registerListener(new DiscordMessageReceivedListener(this));
 		} catch (DiscordException e) {
 			e.printStackTrace();
 			this.disable();
 			return;
 		}
+
+		EventDispatcher dispatcher = this.client.getDispatcher();
+		dispatcher.registerListener(new DiscordReadyListener(this));
+		dispatcher.registerListener(new DiscordMessageReceivedListener(this));
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					client.login();
+				} catch (DiscordException e) {
+					client = null;
+				}
+			}
+		}, "Sblock-DiscordLogout").start();
 
 		// Only load modules and whatnot once, no matter how many times we re-enable
 		if (lock) {
@@ -211,11 +220,23 @@ public class Discord extends Module {
 		pastMainMessages.invalidateAll();
 		if (client != null) {
 			resetBotName();
-			try {
-				client.logout();
-			} catch (HTTP429Exception | DiscordException e) {
-				e.printStackTrace();
-			}
+			/*
+			 * Discord4J calls Thread#interrupt when finishing DiscordClientImpl#logout. Spawning
+			 * new threads when shutting down is a bad idea, but we can't do much else. In case
+			 * we're not stopping and are instead reloading the Discord module, we need to keep a
+			 * reference to the current client to be able to log it out.
+			 */
+			final IDiscordClient oldClient = client;
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						oldClient.logout();
+					} catch (HTTP429Exception | DiscordException e) {
+						e.printStackTrace();
+					}
+				}
+			}, "Sblock-DiscordLogout").start();
 		}
 		try {
 			discordData.save(new File(getPlugin().getDataFolder(), "DiscordData.yml"));

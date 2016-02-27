@@ -10,6 +10,8 @@ import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.modules.RetentionModule;
 import co.sblock.utilities.NumberUtils;
 
+import sx.blah.discord.api.MissingPermissionsException;
+import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
@@ -24,7 +26,7 @@ import sx.blah.discord.handle.obj.Permissions;
 public class RetentionCommand extends DiscordCommand {
 
 	public RetentionCommand(Discord discord) {
-		super(discord, "retention", "/retention <duration>", EnumSet.of(Permissions.MANAGE_CHANNEL));
+		super(discord, "retention", "/retention [guild] <duration>", EnumSet.of(Permissions.MANAGE_CHANNEL));
 	}
 
 	@Override
@@ -44,8 +46,24 @@ public class RetentionCommand extends DiscordCommand {
 		if (args.length < 1) {
 			return false;
 		}
+		boolean guild = false;
+		try {
+			DiscordUtils.checkPermissions(channel.getModifiedPermissions(sender), EnumSet.of(Permissions.MANAGE_SERVER));
+			for (String arg : args) {
+				if (arg.equalsIgnoreCase("server") || arg.equalsIgnoreCase("guild")) {
+					guild = true;
+					break;
+				}
+			}
+		} catch (MissingPermissionsException e) {
+			guild = false;
+		}
 		if (args[0].equalsIgnoreCase("null") || args[0].equalsIgnoreCase("off")) {
-			module.setRetention(channel.getGuild(), channel, null);
+			if (guild) {
+				module.setRetention(channel.getGuild(), null);
+			} else {
+				module.setRetention(channel, null);
+			}
 			getDiscord().postMessage(Discord.BOT_NAME, "Channel retention unset.", channel.getID());
 			return true;
 		}
@@ -55,9 +73,14 @@ public class RetentionCommand extends DiscordCommand {
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		module.setRetention(channel.getGuild(), channel, pair.getRight() / 1000);
-		getDiscord().postMessage(Discord.BOT_NAME,
-				"Channel retention set to " + (pair.getRight() / 1000) + " seconds.",
+		long seconds = pair.getRight() / 1000;
+		if (guild) {
+			module.setRetention(channel.getGuild(), seconds);
+		} else {
+			module.setRetention(channel, seconds);
+		}
+		this.getDiscord().postMessage(Discord.BOT_NAME,
+				(guild ? "Guild" : "Channel") + " retention set to " + seconds + " seconds.",
 				channel.getID());
 		return true;
 	}

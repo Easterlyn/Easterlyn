@@ -67,19 +67,24 @@ public class RetentionModule extends DiscordModule {
 				continue;
 			}
 			ConfigurationSection retentionGuild = retention.getConfigurationSection(guildID);
+			long defaultRetention = retentionGuild.getLong("default", -1);
 			for (String channelID : retentionGuild.getKeys(false)) {
 				if (retentionGuild.isSet(channelID)) {
-					doRetention(getDiscord().getClient().getChannelByID(channelID), retentionGuild.getLong(channelID, -1));
+					doRetention(getDiscord().getClient().getChannelByID(channelID), retentionGuild.getLong(channelID, defaultRetention));
 				}
 			}
 		}
 	}
 
-	public void setRetention(IGuild guild, IChannel channel, Long duration) {
+	public void setRetention(IGuild guild, Long duration) {
+		getDiscord().getDatastore().set("retention." + guild.getID() + ".default", duration);
+	}
+
+	public void setRetention(IChannel channel, Long duration) {
 		if (channelRetentionData.containsKey(channel.getID())) {
 			channelRetentionData.remove(channel.getID());
 		}
-		getDiscord().getDatastore().set("retention." + guild.getID() + '.' + channel.getID(), duration);
+		getDiscord().getDatastore().set("retention." + channel.getGuild().getID() + '.' + channel.getID(), duration);
 	}
 
 	/**
