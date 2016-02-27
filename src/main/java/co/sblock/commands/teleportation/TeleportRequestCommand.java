@@ -1,6 +1,7 @@
 package co.sblock.commands.teleportation;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -100,13 +101,11 @@ public class TeleportRequestCommand extends SblockCommand {
 					+ Color.BAD_EMPHASIS + time.format(new Date(remainder)) + Color.BAD + ".");
 			return;
 		}
-		List<Player> matches = Bukkit.matchPlayer(args[0]);
-		matches.removeIf(target -> !sender.canSee(target));
-		if (matches.isEmpty()) {
+		Player target = looseMatch(sender, args[0]);
+		if (target == null) {
 			sender.sendMessage(Color.BAD + "No player by that name could be found!");
 			return;
 		}
-		Player target = matches.get(0);
 		if (target.getUniqueId().equals(sender.getUniqueId())) {
 			sender.sendMessage(Color.GOOD + "If I told you I just teleported you to yourself would you believe me?");
 			return;
@@ -228,6 +227,31 @@ public class TeleportRequestCommand extends SblockCommand {
 		public long getExpiry() {
 			return expiry;
 		}
+	}
+
+	private Player looseMatch(Player sender, String name) {
+		List<Player> matches = Bukkit.matchPlayer(name);
+		matches.removeIf(target -> !sender.canSee(target));
+		if (!matches.isEmpty()) {
+			return matches.get(0);
+		}
+		name = name.toLowerCase();
+		matches = new ArrayList<>();
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			if (!sender.canSee(player) || player.getDisplayName() == null) {
+				continue;
+			}
+			if (player.getDisplayName().equalsIgnoreCase(name)) {
+				return player;
+			}
+			if (player.getDisplayName().toLowerCase().startsWith(name)) {
+				matches.add(player);
+			}
+		}
+		if (!matches.isEmpty()) {
+			return matches.get(0);
+		}
+		return null;
 	}
 
 	@Override

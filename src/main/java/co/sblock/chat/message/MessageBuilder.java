@@ -470,7 +470,7 @@ public class MessageBuilder {
 			if (hasNick) {
 				nameBuilder.append(((NickChannel) channel).getNick(sender)).append(" (");
 			}
-			nameBuilder.append(sender.getPlayerName());
+			nameBuilder.append(sender.getDisplayName());
 			if (hasNick) {
 				nameBuilder.append(')');
 			}

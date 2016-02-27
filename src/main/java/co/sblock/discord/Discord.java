@@ -33,7 +33,6 @@ import com.google.common.cache.RemovalNotification;
 
 import co.sblock.Sblock;
 import co.sblock.chat.message.Message;
-import co.sblock.discord.abstraction.CallType;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.abstraction.DiscordModule;
@@ -118,11 +117,6 @@ public class Discord extends Module {
 							@Override
 							public boolean retryOnException() {
 								return true;
-							}
-
-							@Override
-							public CallType getCallType() {
-								return CallType.EDIT;
 							}
 						});
 					}
@@ -325,11 +319,6 @@ public class Discord extends Module {
 			public boolean retryOnException() {
 				return false;
 			}
-
-			@Override
-			public CallType getCallType() {
-				return CallType.DELETE;
-			}
 		});
 	}
 
@@ -440,27 +429,11 @@ public class Discord extends Module {
 					builder.append("** ").append(message);
 					pastMainMessages.put(posted, builder.toString());
 				}
-//				try {
-//					/*
-//					 * Sleep .75 seconds after posting a message to avoid being rate limited. This
-//					 * will still get us hit when continuously posting, but it allows for much more
-//					 * responsive chat. As we're a small server and chat is often calm, I'm not
-//					 * going to worry about it.
-//					 */
-//					Thread.sleep(750);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
 			}
 
 			@Override
 			public boolean retryOnException() {
 				return false;
-			}
-
-			@Override
-			public CallType getCallType() {
-				return CallType.MESSAGE;
 			}
 		});
 	}

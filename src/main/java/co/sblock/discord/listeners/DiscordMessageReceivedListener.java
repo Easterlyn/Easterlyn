@@ -8,7 +8,7 @@ import com.google.common.cache.CacheBuilder;
 
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
-import co.sblock.discord.modules.MinecraftChatModule;
+import co.sblock.discord.modules.MinecraftModule;
 
 import sx.blah.discord.handle.IListener;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
@@ -25,7 +25,7 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 	private final Discord discord;
 	private final Cache<String, Boolean> warnings;
 
-	private MinecraftChatModule minecraft;
+	private MinecraftModule minecraft;
 
 	public DiscordMessageReceivedListener(Discord discord) {
 		this.discord = discord;
@@ -96,9 +96,9 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 		}
 	}
 
-	private MinecraftChatModule getMCModule() {
+	private MinecraftModule getMCModule() {
 		if (minecraft == null) {
-			minecraft = discord.getModule(MinecraftChatModule.class);
+			minecraft = discord.getModule(MinecraftModule.class);
 		}
 		return minecraft;
 	}

@@ -36,10 +36,9 @@ public class Message {
 
 	private final User sender;
 	private final Channel channel;
-	private final String name;
 	private final boolean thirdPerson;
 	private final TextComponent channelComponent, channelHighlightComponent, nameComponent;
-	private String consoleFormat, unformattedMessage;
+	private String name, consoleFormat, unformattedMessage;
 	private TextComponent messageComponent;
 
 	Message(User sender, String name, Channel channel, String message, String consoleFormat,
@@ -132,6 +131,20 @@ public class Message {
 	public <T> void send(Collection<T> recipients, boolean normalChat) {
 		if (!normalChat || !(channel instanceof RegionChannel)) {
 			Logger.getLogger("Minecraft").info(getConsoleMessage());
+		}
+
+		// Support plugins changing the sender's display name in the between Message construction and sending.
+		if (this.sender != null && !this.name.equals(this.sender.getDisplayName())) {
+			String newName = this.sender.getDisplayName();
+			Pattern namePattern = Pattern.compile("(\\s*)\\Q" + this.name + "\\E(\\s*)");
+			for (BaseComponent component : nameComponent.getExtra()) {
+				if (!(component instanceof TextComponent)) {
+					continue;
+				}
+				TextComponent textComponent = (TextComponent) component;
+				textComponent.setText(namePattern.matcher(textComponent.getText()).replaceAll("$1" + newName.replace("$", "\\$") + "$2"));
+			}
+			this.name = newName;
 		}
 
 		Sblock plugin = channel.getPlugin();

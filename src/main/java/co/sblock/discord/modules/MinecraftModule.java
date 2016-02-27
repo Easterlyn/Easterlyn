@@ -37,14 +37,14 @@ import sx.blah.discord.util.HTTP429Exception;
  * 
  * @author Jikoo
  */
-public class MinecraftChatModule extends DiscordModule {
+public class MinecraftModule extends DiscordModule {
 
 	private final Users users;
 	private final ChannelManager manager;
 	private final MessageBuilder builder;
 	private final Pattern mention = Pattern.compile("<([@#])(\\d+)>");
 
-	public MinecraftChatModule(Discord discord) {
+	public MinecraftModule(Discord discord) {
 		super(discord);
 
 		this.users = discord.getPlugin().getModule(Users.class);

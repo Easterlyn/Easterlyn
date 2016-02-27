@@ -23,8 +23,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.google.gson.Gson;
 
 import co.sblock.discord.Discord;
-import co.sblock.discord.abstraction.CallType;
-import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordModule;
 
 import sx.blah.discord.api.DiscordEndpoints;
@@ -227,28 +225,6 @@ public class RetentionModule extends DiscordModule {
 		while (iterator.hasNext()) {
 			getDiscord().queueMessageDeletion(iterator.next());
 		}
-
-		// All we care about later is the message size, no need to continue to store the list
-		final int amount = channelHistory.size();
-
-		getDiscord().queue(new DiscordCallable() {
-			@Override
-			public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
-				channelsUndergoingRetention.remove(channel.getID());
-				getDiscord().getLogger().info(String.format("Retention deleted %s messages from #%s[%s]",
-						amount, channel.getName(), channel.getID()));
-			}
-
-			@Override
-			public boolean retryOnException() {
-				return false;
-			}
-
-			@Override
-			public CallType getCallType() {
-				return CallType.OTHER;
-			}
-		});
 	}
 
 	private Collection<IMessage> getPastMessages(Channel channel, IMessage message, boolean back)

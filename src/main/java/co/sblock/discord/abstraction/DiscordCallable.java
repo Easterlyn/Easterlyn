@@ -15,6 +15,4 @@ public abstract class DiscordCallable {
 
 	public abstract boolean retryOnException();
 
-	public abstract CallType getCallType();
-
 }

@@ -57,8 +57,6 @@ public class JoinListener extends SblockListener {
 
 		events.addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
 
-		discord.postMessage(Discord.BOT_NAME, event.getPlayer().getName() + " logs in.", true);
-
 		final UUID uuid = event.getPlayer().getUniqueId();
 
 		new BukkitRunnable() {
@@ -68,6 +66,9 @@ public class JoinListener extends SblockListener {
 				if (player == null) {
 					return;
 				}
+
+				discord.postMessage(Discord.BOT_NAME, player.getDisplayName() + " logs in.", true);
+
 				User user = users.getUser(player.getUniqueId());
 				user.handleLoginChannelJoins();
 				user.handleNameChange();
