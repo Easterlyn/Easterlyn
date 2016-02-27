@@ -174,14 +174,14 @@ public class Message {
 
 			boolean highlight = false;
 
-			StringBuilder patternString = new StringBuilder("(^|\\W)(");
+			StringBuilder patternString = new StringBuilder("(^|\\W)(\\Q");
 			for (String highlightString : u.getHighlights(getChannel())) {
 				if (patternString.length() > 8) {
-					patternString.append('|');
+					patternString.append("\\E|\\Q");
 				}
 				patternString.append(highlightString);
 			}
-			patternString.append(")(\\W|$)");
+			patternString.append("\\E)(\\W|$)");
 			Pattern pattern;
 			try {
 				pattern = Pattern.compile(patternString.toString(), Pattern.CASE_INSENSITIVE);

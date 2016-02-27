@@ -438,7 +438,7 @@ public class User {
 		HashSet<String> highlights = new HashSet<>();
 		if (this.getHighlight()) {
 			if (this.isOnline() && channel instanceof NickChannel) {
-				highlights.add(((NickChannel) channel).getNick(this));
+				highlights.add(ChatColor.stripColor(((NickChannel) channel).getNick(this)));
 			}
 			highlights.add(getPlayerName());
 			highlights.add(getDisplayName());
