@@ -188,8 +188,9 @@ public class Message {
 			boolean highlight = false;
 
 			StringBuilder patternString = new StringBuilder("(^|\\W)(\\Q");
+			int baseLength = patternString.length();
 			for (String highlightString : u.getHighlights(getChannel())) {
-				if (patternString.length() > 8) {
+				if (patternString.length() > baseLength) {
 					patternString.append("\\E|\\Q");
 				}
 				patternString.append(highlightString);

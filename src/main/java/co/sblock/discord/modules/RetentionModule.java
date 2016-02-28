@@ -129,7 +129,7 @@ public class RetentionModule extends DiscordModule {
 			currentTarget = pair.getLeft();
 			searchBack = pair.getRight() || currentTarget != null;
 			if (!searchBack && currentTarget != null
-					&& currentTarget.getTimestamp().isBefore(latestAllowedTime)) {
+					&& currentTarget.getTimestamp().isAfter(latestAllowedTime)) {
 				channelsUndergoingRetention.remove(channel.getID());
 				return;
 			}

@@ -440,8 +440,8 @@ public class User {
 			if (this.isOnline() && channel instanceof NickChannel) {
 				highlights.add(ChatColor.stripColor(((NickChannel) channel).getNick(this)));
 			}
-			highlights.add(getPlayerName());
-			highlights.add(getDisplayName());
+			highlights.add(this.getPlayerName());
+			highlights.add(ChatColor.stripColor(this.getDisplayName()));
 		}
 		return highlights;
 	}
