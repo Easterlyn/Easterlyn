@@ -9,6 +9,7 @@ import com.google.common.cache.CacheBuilder;
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
 import co.sblock.discord.modules.MinecraftModule;
+import co.sblock.discord.modules.RetentionModule;
 
 import sx.blah.discord.handle.IListener;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
@@ -26,6 +27,7 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 	private final Cache<String, Boolean> warnings;
 
 	private MinecraftModule minecraft;
+	private RetentionModule retention;
 
 	public DiscordMessageReceivedListener(Discord discord) {
 		this.discord = discord;
@@ -42,9 +44,12 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			return;
 		}
 		if (author.getID().equals(discord.getClient().getOurUser().getID())) {
-			// More jDiscord handling - no clue if MessageRecieved is fired when our messages are acknowledged
+			// More jDiscord handling - no clue if MessageReceived is fired when our messages are acknowledged
 			return;
 		}
+
+		this.getRetentionModule().handleNewMessage(event.getMessage());
+
 		String msg = event.getMessage().getContent();
 		if (msg.startsWith("/link ")) {
 			String register = msg.substring(6);
@@ -71,7 +76,6 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 				return;
 			}
 		}
-		
 		DiscordPlayer sender = discord.getDiscordPlayerFor(author);
 		if (sender == null) {
 			if (main) {
@@ -91,6 +95,10 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			return;
 		}
 		if (main) {
+			if (msg.equalsIgnoreCase("cough")) {
+				// Fuck you, Rob. Just use /list or say hi like a normal person.
+				return;
+			}
 			getMCModule().handleChat(event.getMessage(), sender);
 			return;
 		}
@@ -101,6 +109,13 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			minecraft = discord.getModule(MinecraftModule.class);
 		}
 		return minecraft;
+	}
+
+	private RetentionModule getRetentionModule() {
+		if (retention == null) {
+			retention = discord.getModule(RetentionModule.class);
+		}
+		return retention;
 	}
 
 }

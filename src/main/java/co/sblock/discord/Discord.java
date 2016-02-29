@@ -36,6 +36,7 @@ import co.sblock.chat.message.Message;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.abstraction.DiscordModule;
+import co.sblock.discord.listeners.DiscordMessageDeleteListener;
 import co.sblock.discord.listeners.DiscordMessageReceivedListener;
 import co.sblock.discord.listeners.DiscordReadyListener;
 import co.sblock.module.Module;
@@ -155,6 +156,7 @@ public class Discord extends Module {
 		EventDispatcher dispatcher = this.client.getDispatcher();
 		dispatcher.registerListener(new DiscordReadyListener(this));
 		dispatcher.registerListener(new DiscordMessageReceivedListener(this));
+		dispatcher.registerListener(new DiscordMessageDeleteListener(this));
 
 		new Thread(new Runnable() {
 			@Override

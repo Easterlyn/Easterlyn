@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,6 +23,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.google.gson.Gson;
 
 import co.sblock.discord.Discord;
+import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordModule;
 
 import sx.blah.discord.api.DiscordEndpoints;
@@ -47,13 +48,101 @@ import sx.blah.discord.util.Requests;
  */
 public class RetentionModule extends DiscordModule {
 
-	private final Map<String, Pair<IMessage, Boolean>> channelRetentionData;
-	private final Set<String> channelsUndergoingRetention;
+	private class RetentionData {
+
+		private final AtomicBoolean lock;
+		@Getter private final Channel channel;
+		@Getter private final List<IMessage> messages;
+		@Getter @Setter private boolean fullyPopulated;
+
+		public RetentionData(Channel channel) {
+			this.channel = channel;
+			this.messages = new LinkedList<>();
+			this.fullyPopulated = false;
+			this.lock = new AtomicBoolean();
+		}
+
+		public boolean isLocked() {
+			return this.lock.get();
+		}
+
+		public void setLocked(boolean value) {
+			this.lock.set(value);
+		}
+
+		public void addMessage(IMessage message) {
+			synchronized (lock) {
+				this.messages.add(0, message);
+			}
+		}
+
+		public void addMessages(Collection<IMessage> messages) {
+			synchronized (lock) {
+				this.messages.addAll(messages);
+			}
+		}
+
+		public void removeDeletedMessage(IMessage message) {
+			synchronized (lock) {
+				this.messages.remove(message);
+			}
+		}
+
+		public void sortMessages() {
+			synchronized (lock) {
+				Collections.sort(this.messages, (IMessage msg1, IMessage msg2) ->
+						msg1.getTimestamp().compareTo(msg2.getTimestamp()));
+			}
+		}
+
+		public IMessage getEarliestMessage() {
+			synchronized (lock) {
+				return this.messages.isEmpty() ? null : this.messages.get(this.messages.size() - 1);
+			}
+		}
+
+		public IMessage removeEarliestMessageIfBefore(LocalDateTime time) {
+			synchronized (lock) {
+				if (messages.isEmpty()) {
+					return null;
+				}
+				int index = messages.size() - 1;
+				if (messages.get(index).getTimestamp().isBefore(time)) {
+					return messages.remove(index);
+				}
+				return null;
+			}
+		}
+
+	}
+
+	private final Map<String, RetentionData> channelData;
 
 	public RetentionModule(Discord discord) {
 		super(discord);
-		this.channelRetentionData = new HashMap<>();
-		this.channelsUndergoingRetention = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+		this.channelData = new ConcurrentHashMap<>();
+	}
+
+	public void setRetention(IGuild guild, Long duration) {
+		getDiscord().getDatastore().set("retention." + guild.getID() + ".default", duration);
+	}
+
+	public void setRetention(IChannel channel, Long duration) {
+		getDiscord().getDatastore().set("retention." + channel.getGuild().getID() + '.' + channel.getID(), duration);
+	}
+
+	public void handleMessageDelete(IMessage message) {
+		String channelID = message.getChannel().getID();
+		if (channelData.containsKey(channelID)) {
+			channelData.get(channelID).removeDeletedMessage(message);
+		}
+	}
+
+	public void handleNewMessage(IMessage message) {
+		String channelID = message.getChannel().getID();
+		if (channelData.containsKey(channelID)) {
+			channelData.get(channelID).addMessage(message);
+		}
 	}
 
 	@Override
@@ -66,38 +155,29 @@ public class RetentionModule extends DiscordModule {
 			if (!retention.isConfigurationSection(guildID)) {
 				continue;
 			}
+			IGuild guild = this.getDiscord().getClient().getGuildByID(guildID);
+			if (guild == null) {
+				retention.set(guildID, null);
+				continue;
+			}
 			ConfigurationSection retentionGuild = retention.getConfigurationSection(guildID);
 			long defaultRetention = retentionGuild.getLong("default", -1);
-			for (String channelID : retentionGuild.getKeys(false)) {
-				if (retentionGuild.isSet(channelID)) {
-					doRetention(getDiscord().getClient().getChannelByID(channelID), retentionGuild.getLong(channelID, defaultRetention));
-				}
+			for (IChannel channel : guild.getChannels()) {
+				doRetention(channel, retentionGuild.getLong(channel.getID(), defaultRetention));
 			}
 		}
 	}
 
-	public void setRetention(IGuild guild, Long duration) {
-		getDiscord().getDatastore().set("retention." + guild.getID() + ".default", duration);
-	}
-
-	public void setRetention(IChannel channel, Long duration) {
-		if (channelRetentionData.containsKey(channel.getID())) {
-			channelRetentionData.remove(channel.getID());
-		}
-		getDiscord().getDatastore().set("retention." + channel.getGuild().getID() + '.' + channel.getID(), duration);
-	}
-
 	/**
-	 * This method is blocking and will run until either the bot is rate limited or messages old
-	 * enough have been deleted.
+	 * This method is potentially blocking. If the channel data is not populated, it will hang until
+	 * 1000 messages have been looked up.
 	 * 
 	 * @param channel the IChannel to do retention for
 	 * @param duration the duration in seconds
 	 */
 	private void doRetention(IChannel channel, long duration) {
 		if (duration == -1 || channel instanceof IVoiceChannel
-				|| channel instanceof IPrivateChannel || !(channel instanceof Channel)
-				|| channelsUndergoingRetention.contains(channel.getID())) {
+				|| channel instanceof IPrivateChannel || !(channel instanceof Channel)) {
 			return;
 		}
 
@@ -109,39 +189,72 @@ public class RetentionModule extends DiscordModule {
 			return;
 		}
 
-		/*
-		 * Channel history must be populated here. To reduce our usage of Discord's API, we have 2
-		 * search modes. When searching backwards, we store the last found valid message and proceed
-		 * farther back until we run out of messages. When searching forwards, we use our stored
-		 * last valid message to search (if needed) until a timestamp within the retention period is
-		 * encountered.
-		 */
-
-		// Lock channel as undergoing retention
-		this.channelsUndergoingRetention.add(channel.getID());
-
-		List<IMessage> channelHistory = new ArrayList<>();
-		LocalDateTime latestAllowedTime = LocalDateTime.now().minusSeconds(duration);
-		IMessage earliestRemaining = null, currentTarget = null;
-		boolean searchBack = true;
-		if (channelRetentionData.containsKey(channel.getID())) {
-			Pair<IMessage, Boolean> pair = channelRetentionData.get(channel.getID());
-			currentTarget = pair.getLeft();
-			searchBack = pair.getRight() || currentTarget != null;
-			if (!searchBack && currentTarget != null
-					&& currentTarget.getTimestamp().isAfter(latestAllowedTime)) {
-				channelsUndergoingRetention.remove(channel.getID());
+		RetentionData data;
+		if (channelData.containsKey(channel.getID())) {
+			data = channelData.get(channel.getID());
+		} else {
+			if (channel == null || channel instanceof IPrivateChannel || channel instanceof IVoiceChannel) {
 				return;
 			}
+			data = new RetentionData((Channel) channel);
+			this.channelData.put(channel.getID(), data);
 		}
 
-		boolean more = true;
-		while (more && channelHistory.size() < 1000) {
-			Collection<IMessage> pastMessages;
+		// Channel is already undergoing retention, return.
+		if (data.isLocked()) {
+			return;
+		}
+
+		// Lock while we look up past messages and potentially while we do retention later
+		data.setLocked(true);
+
+		// Populate up to 1000 past messages
+		this.populateChannel(data);
+
+		LocalDateTime retention = LocalDateTime.now().minusSeconds(duration);
+
+		// If channel has no deletion-eligible messages, unlock and return.
+		IMessage earliest = data.getEarliestMessage();
+		if (earliest == null && data.isFullyPopulated()
+				|| earliest != null && retention.isBefore(earliest.getTimestamp())) {
+			data.setLocked(false);
+			return;
+		}
+
+		IMessage message = null;
+		while ((message = data.removeEarliestMessageIfBefore(retention)) != null) {
+			this.getDiscord().queueMessageDeletion(message);
+		}
+
+		// Queue retention unlock after 
+		this.getDiscord().queue(new DiscordCallable() {
+			@Override
+			public boolean retryOnException() {
+				return false;
+			}
+
+			@Override
+			public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
+				data.setLocked(false);
+			}
+		});
+	}
+
+	private void populateChannel(RetentionData data) {
+		if (data.isFullyPopulated()) {
+			return;
+		}
+
+		// Load a maximum of 1000 messages per iteration
+		for (int i = 0; i < 10 && !data.isFullyPopulated(); ++i) {
+
+			List<IMessage> pastMessages;
 			try {
-				pastMessages = getPastMessages((Channel) channel, currentTarget, searchBack);
+				pastMessages = getPastMessages(data.getChannel(), data.getEarliestMessage(), true);
 			} catch (HTTP429Exception e) {
-				System.out.println("Rate limited doing history lookup: " + e.getRetryDelay());
+				this.getDiscord().getLogger().warning("Rate limited doing history lookup: " + e.getRetryDelay());
+				// Decrease total try count
+				--i;
 				try {
 					Thread.sleep(e.getRetryDelay());
 				} catch (InterruptedException ie) {
@@ -156,93 +269,25 @@ public class RetentionModule extends DiscordModule {
 				break;
 			}
 
-			if (currentTarget == null && pastMessages.size() == 0) {
-				/*
-				 * Channel has no messages.
-				 * 
-				 * The reason we do not store this data and not re-query is that the vast majority
-				 * of channels with retention will not have short enough retention periods to ever
-				 * fully drain. The only channel that regularly will be able to is #main at night.
-				 * 
-				 * Basically, it's a very minor evil that costs me more labor to account for than
-				 * it's worth. We make hundreds of Discord queries, one more every few minutes
-				 * won't make or break this.
-				 */
-				break;
-			}
-
-			for (IMessage message : pastMessages) {
-				LocalDateTime messageTime = message.getTimestamp();
-				if (currentTarget == null) {
-					currentTarget = message;
-				}
-				if (searchBack) {
-					// Earlier timestamp found, farther back we go.
-					if (currentTarget.getTimestamp().isAfter(messageTime)) {
-						currentTarget = message;
-					}
-				}
-				// Too old, delete
-				if (latestAllowedTime.isAfter(messageTime)) {
-					channelHistory.add(message);
-					continue;
-				}
-				if (!searchBack){
-					// Message found that is current enough to be kept, no need to keep searching
-					more = false;
-				}
-				// Not too old, set to current if none specified or if older than current
-				if (earliestRemaining == null || earliestRemaining.getTimestamp().isAfter(messageTime)) {
-					earliestRemaining = message;
-					if (!searchBack) {
-						currentTarget = message;
-					}
-					continue;
-				}
-			}
-
-			// Channel has under 50 messages or search back is complete
 			if (pastMessages.size() < 50) {
-				if (!searchBack) {
-					more = false;
-				} else {
-					searchBack = false;
-					if (earliestRemaining == null) {
-						break;
-					}
-					currentTarget = earliestRemaining;
-				}
+				data.setFullyPopulated(true);
 			}
+
+			data.addMessages(pastMessages);
 		}
 
-		if (currentTarget != null) {
-			if (channelHistory.contains(currentTarget)) {
-				// Current target is being deleted, use earliest remaining instead to avoid re-determining
-				currentTarget = earliestRemaining;
-			}
-		}
-
-		channelRetentionData.put(channel.getID(), new ImmutablePair<>(currentTarget, searchBack));
-
-		if (channelHistory.size() < 1) {
-			channelsUndergoingRetention.remove(channel.getID());
-			return;
-		}
-
-		// Delete all the messages we've collected
-		Iterator<IMessage> iterator = channelHistory.iterator();
-		while (iterator.hasNext()) {
-			getDiscord().queueMessageDeletion(iterator.next());
-		}
+		// There's no guarantee that Discord will return messages in any order.
+		// While they currently do, that may change. To be safe, we sort the messages ourselves.
+		data.sortMessages();
 	}
 
-	private Collection<IMessage> getPastMessages(Channel channel, IMessage message, boolean back)
+	private List<IMessage> getPastMessages(Channel channel, IMessage message, boolean back)
 			throws HTTP429Exception, DiscordException {
 		return getPastMessages(channel, 100, back && message != null ? message.getID() : null, !back
 				&& message != null ? message.getID() : null);
 	}
 
-	private Collection<IMessage> getPastMessages(Channel channel, @Nullable Integer limit,
+	private List<IMessage> getPastMessages(Channel channel, @Nullable Integer limit,
 			@Nullable String before, @Nullable String after)
 					throws HTTP429Exception, DiscordException {
 		StringBuilder request = new StringBuilder(DiscordEndpoints.CHANNELS)
@@ -274,7 +319,7 @@ public class RetentionModule extends DiscordModule {
 		return getPastMessages(channel, request.append(options).toString());
 	}
 
-	private Collection<IMessage> getPastMessages(Channel channel, String request) throws HTTP429Exception, DiscordException {
+	private List<IMessage> getPastMessages(Channel channel, String request) throws HTTP429Exception, DiscordException {
 		List<IMessage> messages = new ArrayList<>();
 		String response;
 		response = Requests.GET.makeRequest(request, new BasicNameValuePair("authorization", getDiscord().getClient().getToken()));

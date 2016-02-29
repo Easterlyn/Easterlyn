@@ -34,7 +34,6 @@ import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.SyncPacketAdapter;
 import co.sblock.events.packets.WrapperPlayServerAnimation;
 import co.sblock.events.packets.WrapperPlayServerBed;
-import co.sblock.events.region.RegionCheck;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
 import co.sblock.module.Module;
@@ -95,8 +94,6 @@ public class Events extends Module {
 		}
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new SyncPacketAdapter(getPlugin()));
-
-		initiateRegionChecks();
 	}
 
 	/**
@@ -287,14 +284,6 @@ public class Events extends Module {
 
 	public BlockUpdateManager getBlockUpdateManager() {
 		return blockUpdateManager;
-	}
-
-	/**
-	 * Schedules the RegionCheck to update the Region for each Player online
-	 * every 5 seconds of game time (100 ticks).
-	 */
-	public void initiateRegionChecks() {
-		new RegionCheck().runTaskTimer(getPlugin(), 20L, 20L);
 	}
 
 	@Override
