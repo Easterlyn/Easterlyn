@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -75,7 +74,7 @@ public class Discord extends Module {
 	private final Cache<IMessage, String> pastMainMessages;
 
 	private String channelMain, channelLog, channelReports;
-	private Optional<String> login, password;
+	private String login, password;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
 	private Thread drainQueueThread, drainMessageQueueThread;
@@ -133,8 +132,8 @@ public class Discord extends Module {
 
 	@Override
 	protected void onEnable() {
-		login = Optional.of(getConfig().getString("discord.login"));
-		password = Optional.of(getConfig().getString("discord.password"));
+		login = getConfig().getString("discord.login");
+		password = getConfig().getString("discord.password");
 		channelMain = getConfig().getString("discord.chat.main");
 		channelLog = getConfig().getString("discord.chat.log");
 		channelReports = getConfig().getString("discord.chat.reports");
@@ -146,7 +145,7 @@ public class Discord extends Module {
 		}
 
 		try {
-			this.client = new ClientBuilder().withLogin(this.login.get(), this.password.get()).build();
+			this.client = new ClientBuilder().withLogin(this.login, this.password).build();
 		} catch (DiscordException e) {
 			e.printStackTrace();
 			this.disable();
@@ -251,8 +250,8 @@ public class Discord extends Module {
 	public YamlConfiguration loadConfig() {
 		super.loadConfig();
 
-		login = Optional.of(getConfig().getString("discord.login"));
-		password = Optional.of(getConfig().getString("discord.password"));
+		login = getConfig().getString("discord.login");
+		password = getConfig().getString("discord.password");
 		channelMain = getConfig().getString("discord.chat.main");
 		channelLog = getConfig().getString("discord.chat.log");
 		channelReports = getConfig().getString("discord.chat.reports");
@@ -263,7 +262,7 @@ public class Discord extends Module {
 	private void resetBotName() {
 		if (!client.getOurUser().getName().equals(BOT_NAME)) {
 			try {
-				client.changeAccountInfo(Optional.of(BOT_NAME), login, password, Optional.empty());
+				client.changeUsername(BOT_NAME);
 			} catch (HTTP429Exception | DiscordException e) {
 				// Nothing we can do about this, really
 			}
@@ -436,8 +435,7 @@ public class Discord extends Module {
 				}
 				if (!client.getOurUser().getName().equals(name)) {
 					try {
-						client.changeAccountInfo(Optional.of(name), login, password,
-								Optional.empty());
+						client.changeUsername(name);
 					} catch (HTTP429Exception | DiscordException e) {
 						// Trivial issue
 					}

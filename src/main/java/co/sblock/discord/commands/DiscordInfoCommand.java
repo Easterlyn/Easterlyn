@@ -61,7 +61,7 @@ public class DiscordInfoCommand extends DiscordCommand {
 		}
 		HashSet<IRole> visibleRoles = new HashSet<>();
 		for (IUser user : guild.getUsers()) {
-			visibleRoles.addAll(user.getRolesForGuild(guild.getID()));
+			visibleRoles.addAll(user.getRolesForGuild(guild));
 		}
 		builder.append("\nRoles:\n");
 		if (visibleRoles.size() > 0) {
