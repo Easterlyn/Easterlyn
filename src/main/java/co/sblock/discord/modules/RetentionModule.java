@@ -23,6 +23,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.google.gson.Gson;
 
 import co.sblock.discord.Discord;
+import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordModule;
 
@@ -91,7 +92,7 @@ public class RetentionModule extends DiscordModule {
 		public void sortMessages() {
 			synchronized (lock) {
 				Collections.sort(this.messages, (IMessage msg1, IMessage msg2) ->
-						msg1.getTimestamp().compareTo(msg2.getTimestamp()));
+						msg2.getTimestamp().compareTo(msg1.getTimestamp()));
 			}
 		}
 
@@ -122,6 +123,9 @@ public class RetentionModule extends DiscordModule {
 		super(discord);
 		this.channelData = new ConcurrentHashMap<>();
 	}
+
+	@Override
+	public void doSetup() { }
 
 	public void setRetention(IGuild guild, Long duration) {
 		getDiscord().getDatastore().set("retention." + guild.getID() + ".default", duration);
@@ -223,16 +227,15 @@ public class RetentionModule extends DiscordModule {
 
 		IMessage message = null;
 		while ((message = data.removeEarliestMessageIfBefore(retention)) != null) {
-			this.getDiscord().queueMessageDeletion(message);
+			this.getDiscord().queueMessageDeletion(message, CallPriority.LOW);
 		}
 
-		// Queue retention unlock after 
-		this.getDiscord().queue(new DiscordCallable() {
-			@Override
-			public boolean retryOnException() {
-				return false;
-			}
-
+		/*
+		 * Queue retention unlock. We use CallPriority.LOWEST so that all retention deletion has a
+		 * chance to complete before we start another cycle. Sure, it deletes backed up old messages
+		 * a little slower, but it also more evenly distributes deletion.
+		 */
+		this.getDiscord().queue(new DiscordCallable(CallPriority.LOWEST) {
 			@Override
 			public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
 				data.setLocked(false);

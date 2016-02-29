@@ -19,6 +19,18 @@ public abstract class DiscordModule {
 		return discord;
 	}
 
+	/**
+	 * A method for handling any post-load setup that needs to happen.
+	 * 
+	 * Anything that requires calls to Discord should be done here, as this method is called when
+	 * the DiscordClient has successfully logged in.
+	 */
+	public abstract void doSetup();
+
+	/**
+	 * A method for handling any periodic checks. This is called at regular intervals by the Discord
+	 * module.
+	 */
 	public abstract void doHeartbeat();
 
 }

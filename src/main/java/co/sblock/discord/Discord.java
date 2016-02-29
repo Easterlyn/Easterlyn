@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +31,7 @@ import com.google.common.cache.RemovalNotification;
 
 import co.sblock.Sblock;
 import co.sblock.chat.message.Message;
+import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.abstraction.DiscordModule;
@@ -66,7 +66,6 @@ public class Discord extends Module {
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
 			spaceword = Pattern.compile("(\\s*)(\\S*)");
-	private final ConcurrentLinkedQueue<DiscordCallable> queue, messageQueue;
 	private final Map<Class<? extends DiscordModule>, DiscordModule> modules;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
@@ -77,15 +76,13 @@ public class Discord extends Module {
 	private String login, password;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
-	private Thread drainQueueThread, drainMessageQueueThread;
+	private QueueDrainThread drainQueueThread;
 
 	private boolean lock = false;
 
 	public Discord(Sblock plugin) {
 		super(plugin);
 
-		queue = new ConcurrentLinkedQueue<>();
-		messageQueue = new ConcurrentLinkedQueue<>();
 		modules = new HashMap<>();
 		commands = new HashMap<>();
 
@@ -106,17 +103,12 @@ public class Discord extends Module {
 				.removalListener(new RemovalListener<IMessage, String>() {
 					@Override
 					public void onRemoval(RemovalNotification<IMessage, String> notification) {
-						messageQueue.add(new DiscordCallable() {
+						drainQueueThread.queue(new DiscordCallable(CallPriority.HIGH, true) {
 							@Override
 							public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
 								// Editing messages causes them to use the current name.
 								resetBotName();
 								notification.getKey().edit(notification.getValue());
-							}
-
-							@Override
-							public boolean retryOnException() {
-								return true;
 							}
 						});
 					}
@@ -317,29 +309,20 @@ public class Discord extends Module {
 
 	private void startQueueDrain() {
 		if (drainQueueThread == null || !drainQueueThread.isAlive()) {
-			drainQueueThread = new QueueDrainThread(this, queue, 150, "Sblock-DiscordQueue");
+			drainQueueThread = new QueueDrainThread(this, 150, "Sblock-DiscordQueue");
 			drainQueueThread.start();
-		}
-		if (drainMessageQueueThread == null || !drainMessageQueueThread.isAlive()) {
-			drainMessageQueueThread = new QueueDrainThread(this, messageQueue, 250, "Sblock-DiscordMessageQueue");
-			drainMessageQueueThread.start();
 		}
 	}
 
 	public void queue(DiscordCallable call) {
-		queue.add(call);
+		drainQueueThread.queue(call);
 	}
 
-	public void queueMessageDeletion(IMessage message) {
-		queue.add(new DiscordCallable() {
+	public void queueMessageDeletion(IMessage message, CallPriority priority) {
+		drainQueueThread.queue(new DiscordCallable(priority, false) {
 			@Override
 			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
 				message.delete();
-			}
-
-			@Override
-			public boolean retryOnException() {
-				return false;
 			}
 		});
 	}
@@ -417,7 +400,7 @@ public class Discord extends Module {
 	}
 
 	private void addMessageToQueue(final String channel, final String name, final String message) {
-		messageQueue.add(new DiscordCallable() {
+		drainQueueThread.queue(new DiscordCallable(CallPriority.HIGH) {
 			@Override
 			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
 				IChannel group = client.getChannelByID(channel);
@@ -450,11 +433,6 @@ public class Discord extends Module {
 					builder.append("** ").append(message);
 					pastMainMessages.put(posted, builder.toString());
 				}
-			}
-
-			@Override
-			public boolean retryOnException() {
-				return false;
 			}
 		});
 	}

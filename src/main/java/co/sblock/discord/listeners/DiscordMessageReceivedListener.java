@@ -8,6 +8,7 @@ import com.google.common.cache.CacheBuilder;
 
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
+import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.modules.MinecraftModule;
 import co.sblock.discord.modules.RetentionModule;
 
@@ -71,15 +72,15 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			return;
 		}
 		if (command) {
-			discord.queueMessageDeletion(event.getMessage());
+			discord.queueMessageDeletion(event.getMessage(), CallPriority.MEDIUM);
 			if (discord.handleDiscordCommand(msg, author, channel)) {
 				return;
 			}
 		}
 		DiscordPlayer sender = discord.getDiscordPlayerFor(author);
 		if (sender == null) {
-			if (main) {
-				discord.queueMessageDeletion(event.getMessage());
+			if (main && !command) {
+				discord.queueMessageDeletion(event.getMessage(), CallPriority.MEDIUM);
 			}
 			String id = author.getID();
 			if (warnings.getIfPresent(id) != null) {

@@ -59,6 +59,9 @@ public class MinecraftModule extends DiscordModule {
 	}
 
 	@Override
+	public void doSetup() { }
+
+	@Override
 	public void doHeartbeat() { }
 
 	public void handleCommand(DiscordPlayer player, String command, IChannel channel) {

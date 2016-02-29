@@ -1,6 +1,7 @@
 package co.sblock.discord;
 
 import java.util.Queue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import co.sblock.discord.abstraction.DiscordCallable;
 
@@ -18,10 +19,10 @@ public class QueueDrainThread extends Thread {
 	private final Queue<DiscordCallable> queue;
 	private final long delay;
 
-	public QueueDrainThread(Discord discord, Queue<DiscordCallable> queue, long delay, String threadName) {
+	public QueueDrainThread(Discord discord, long delay, String threadName) {
 		super(threadName);
 		this.discord = discord;
-		this.queue = queue;
+		this.queue = new PriorityBlockingQueue<>();
 		this.delay = delay;
 	}
 
@@ -63,6 +64,10 @@ public class QueueDrainThread extends Thread {
 			}
 			queue.remove();
 		}
+	}
+
+	public void queue(DiscordCallable callable) {
+		this.queue.add(callable);
 	}
 
 }
