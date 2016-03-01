@@ -106,7 +106,7 @@ public class MachineInventoryTracker {
 		}
 
 		@Override
-		public void a_(ItemStack paramItemStack) {
+		public void a(ItemStack paramItemStack) {
 			// reduces remaining trades and makes yes/no noises
 		}
 
