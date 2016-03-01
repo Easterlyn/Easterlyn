@@ -106,6 +106,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 			budManager.queueBlock(block);
 			return false;
 		}
+		// TODO 1.9
 		ItemStack hand = player.getItemInHand();
 		Collection<ItemStack> drops = BlockDrops.getDrops(getPlugin(), player, hand, block);
 		int exp = BlockDrops.getExp(hand, block);

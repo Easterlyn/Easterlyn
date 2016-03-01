@@ -53,7 +53,7 @@ public class EffectVacuum extends Effect implements BehaviorActive {
 					}
 					near.getWorld().playEffect(near.getLocation(), org.bukkit.Effect.FLYING_GLYPH, 0);
 					near.teleport(player);
-					player.playSound(near.getLocation(), Sound.ENDERDRAGON_WINGS, 0.2F, 1.5F);
+					player.playSound(near.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.2F, 1.5F);
 					Item item = (Item) near;
 					if (item.getPickupDelay() < 1000) {
 						item.setPickupDelay(0);

@@ -45,10 +45,10 @@ public class ShowItemCommand extends SblockCommand {
 		}
 
 		Player player = (Player) sender;
-		ItemStack hand = player.getItemInHand();
+		ItemStack hand = player.getInventory().getItemInMainHand();
 
 		if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasDisplayName() || !hand.getItemMeta().hasEnchants()) {
-			sender.sendMessage(Color.BAD + "You do not have anything named and enchanted in your hand!");
+			sender.sendMessage(Color.BAD + "You do not have anything named and enchanted in your main hand!");
 			return true;
 		}
 

@@ -25,7 +25,7 @@ public class ItemInformationCommand extends SblockCommand {
 
 	public ItemInformationCommand(Sblock plugin) {
 		super(plugin, "iteminfo");
-		this.setDescription("Serializes item in hand and prints the result.");
+		this.setDescription("Serializes item in main hand and prints the result.");
 		this.setUsage("/iteminfo");
 		this.setPermissionLevel("felt");
 	}
@@ -36,7 +36,7 @@ public class ItemInformationCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		ItemStack hand = ((Player) sender).getItemInHand();
+		ItemStack hand = ((Player) sender).getInventory().getItemInMainHand();
 		if (hand == null) {
 			sender.sendMessage("NULL");
 			return true;

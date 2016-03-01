@@ -30,8 +30,14 @@ public class ShearEntityListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerShearEntity(PlayerShearEntityEvent event) {
-		ItemStack hand = event.getPlayer().getItemInHand();
-		if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasEnchants()
+		ItemStack hand;
+		if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.SHEARS) {
+			hand = event.getPlayer().getInventory().getItemInMainHand();
+		} else {
+			hand = event.getPlayer().getInventory().getItemInOffHand();
+		}
+		if (hand == null || !hand.hasItemMeta()
+				|| !hand.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)
 				|| hand.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) < 1) {
 			return;
 		}

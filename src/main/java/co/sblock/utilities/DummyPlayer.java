@@ -17,21 +17,22 @@ import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
+import org.bukkit.Particle;
 import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EntityEquipment;
@@ -306,21 +307,6 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public void setRemoveWhenFarAway(boolean arg0) { }
-
-	@Override
-	public Arrow shootArrow() {
-		return null;
-	}
-
-	@Override
-	public Egg throwEgg() {
-		return null;
-	}
-
-	@Override
-	public Snowball throwSnowball() {
-		return null;
-	}
 
 	@Override
 	public boolean eject() {
@@ -1064,5 +1050,105 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public void setSpectatorTarget(Entity arg0) {}
+
+	@Override
+	public InventoryView openMerchant(Villager trader, boolean force) {
+		return null;
+	}
+
+	@Override
+	@Deprecated
+	public int _INVALID_getLastDamage() {
+		return 0;
+	}
+
+	@Override
+	@Deprecated
+	public void _INVALID_setLastDamage(int damage) {}
+
+	@Override
+	public AttributeInstance getAttribute(Attribute attribute) {
+		return null;
+	}
+
+	@Override
+	public boolean isGlowing() {
+		return false;
+	}
+
+	@Override
+	public void setGlowing(boolean flag) {}
+
+	@Override
+	@Deprecated
+	public void _INVALID_damage(int amount) {}
+
+	@Override
+	@Deprecated
+	public void _INVALID_damage(int amount, Entity source) {}
+
+	@Override
+	@Deprecated
+	public int _INVALID_getHealth() {
+		return 0;
+	}
+
+	@Override
+	@Deprecated
+	public int _INVALID_getMaxHealth() {
+		return 0;
+	}
+
+	@Override
+	@Deprecated
+	public void _INVALID_setHealth(int health) {}
+
+	@Override
+	@Deprecated
+	public void _INVALID_setMaxHealth(int health) {}
+
+	@Override
+	public void spawnParticle(Particle particle, Location location, int count) {}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, Location location, int count, T data) {}
+
+	@Override
+	public void spawnParticle(Particle particle, double x, double y, double z, int count) {}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, T data) {}
+
+	@Override
+	public void spawnParticle(Particle particle, Location location, int count, double offsetX,
+			double offsetY, double offsetZ) {}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, Location location, int count, double offsetX,
+			double offsetY, double offsetZ, T data) {}
+
+	@Override
+	public void spawnParticle(Particle particle, Location location, int count, double offsetX,
+			double offsetY, double offsetZ, double extra) {}
+
+	@Override
+	public void spawnParticle(Particle particle, double x, double y, double z, int count,
+			double offsetX, double offsetY, double offsetZ) {}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, Location location, int count, double offsetX,
+			double offsetY, double offsetZ, double extra, T data) {}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
+			double offsetX, double offsetY, double offsetZ, T data) {}
+
+	@Override
+	public void spawnParticle(Particle particle, double x, double y, double z, int count,
+			double offsetX, double offsetY, double offsetZ, double extra) {}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
+			double offsetX, double offsetY, double offsetZ, double extra, T data) {}
 
 }

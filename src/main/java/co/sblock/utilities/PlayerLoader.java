@@ -12,11 +12,11 @@ import com.google.common.cache.CacheBuilder;
 
 import com.mojang.authlib.GameProfile;
 
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
 
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.PlayerInteractManager;
+import net.minecraft.server.v1_9_R1.EntityPlayer;
+import net.minecraft.server.v1_9_R1.MinecraftServer;
+import net.minecraft.server.v1_9_R1.PlayerInteractManager;
 
 /**
  * Utility for accessing offline Players as if they were online.

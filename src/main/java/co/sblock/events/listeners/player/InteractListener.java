@@ -88,7 +88,6 @@ public class InteractListener extends SblockListener {
 	 * 
 	 * @param event the PlayerInteractEvent
 	 */
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		afk.extendActivity(event.getPlayer());
@@ -174,9 +173,13 @@ public class InteractListener extends SblockListener {
 			}
 		}
 
+		// TODO TODO this is hairy
+		// Check item in main hand, if it has a right click function and isn't captcha/exp bugger off
+		// Check item in off hand normally after if we did nothing
+
 		if (event.getPlayer().getItemInHand() != null
 				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE
-				&& cooldowns.getRemainder(event.getPlayer(), "PotionDrink") == 0) {
+				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottle") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight((java.util.Set<Material>) null, 4)) {
 				if (block.getType().isOccluding()) {
 					// Stairs, steps, etc. can be clicked through. Only occluding blocks are guaranteed safe.

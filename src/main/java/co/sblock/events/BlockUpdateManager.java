@@ -11,10 +11,10 @@ import org.bukkit.scheduler.BukkitTask;
 import co.sblock.Sblock;
 import co.sblock.utilities.HashQueue;
 
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R1.util.CraftMagicNumbers;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_9_R1.BlockPosition;
 
 /**
  * Manager for queuing block updates to prevent redundant block updates by Effects such as Tunnel

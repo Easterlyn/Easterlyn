@@ -155,7 +155,7 @@ public class Effects extends Module {
 		boolean bypassMax = entity.hasPermission("sblock.effects.bypassmax");
 		Map<Effect, Integer> applicableEffects = getEffects(bypassMax, entity.getEquipment().getArmorContents());
 
-		getEffects(false, entity.getEquipment().getItemInHand()).forEach(
+		getEffects(false, entity.getEquipment().getItemInMainHand(), entity.getEquipment().getItemInOffHand()).forEach(
 				(key, value) -> applicableEffects.merge(key, value, (v1, v2) -> v1 + v2));
 
 		if (!(entity instanceof Player)) {
@@ -187,7 +187,8 @@ public class Effects extends Module {
 		if (reactive) {
 			effects = getEffects(bypassMax, entity.getEquipment().getArmorContents());
 		} else {
-			effects = getEffects(bypassMax, entity.getEquipment().getItemInHand());
+			effects = getEffects(bypassMax, entity.getEquipment().getItemInMainHand(),
+					entity.getEquipment().getItemInOffHand());
 		}
 		// TODO Godtier effects
 //		if (entity instanceof Player) {

@@ -3,21 +3,17 @@ package co.sblock.utilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.Player;
 
-import org.bukkit.craftbukkit.v1_8_R3.CraftChunk;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.Chunk;
-import net.minecraft.server.v1_8_R3.EnumSkyBlock;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMapChunkBulk;
+import net.minecraft.server.v1_9_R1.BlockPosition;
+import net.minecraft.server.v1_9_R1.Chunk;
+import net.minecraft.server.v1_9_R1.EnumSkyBlock;
 
 /**
  * http://forums.bukkit.org/threads/resource-server-side-lighting-no-it-isnt-just-client-side.154503/
@@ -66,13 +62,14 @@ public class LightSource {
 			}
 		}
 
-		PacketPlayOutMapChunkBulk packet = new PacketPlayOutMapChunkBulk(chunks);
-
-		for (Player player : l.getWorld().getPlayers()) {
-			if (player.getLocation().distance(l) <= Bukkit.getServer().getViewDistance() * 16) {
-				((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-			}
-		}
+		// TODO 1.9
+//		PacketPlayOutMapChunkBulk packet = new PacketPlayOutMapChunkBulk(chunks);
+//
+//		for (Player player : l.getWorld().getPlayers()) {
+//			if (player.getLocation().distance(l) <= Bukkit.getServer().getViewDistance() * 16) {
+//				((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+//			}
+//		}
 	}
 
 }

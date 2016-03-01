@@ -1,7 +1,7 @@
 package co.sblock.discord.abstraction;
 
 /**
- * 
+ * Enum defining priorities for DiscordCallables.
  * 
  * @author Jikoo
  */

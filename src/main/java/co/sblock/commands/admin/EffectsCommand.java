@@ -69,7 +69,7 @@ public class EffectsCommand extends SblockCommand {
 		}
 
 		Player player = (Player) sender;
-		ItemStack hand = player.getItemInHand();
+		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null || hand.getType() == Material.AIR) {
 			sender.sendMessage(Color.BAD + "You need an item in hand to use this command!");
 			return true;

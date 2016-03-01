@@ -97,6 +97,7 @@ public class Computer extends Machine implements InventoryHolder {
 			if (program != null) {
 				event.getPlayer().sendMessage(Color.GOOD + "Installed "
 						+ event.getItem().getItemMeta().getDisplayName() + Color.GOOD + "!");
+				// TODO 1.9
 				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 					event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
 				}

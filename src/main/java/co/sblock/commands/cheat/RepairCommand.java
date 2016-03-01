@@ -24,7 +24,7 @@ public class RepairCommand extends SblockCommand {
 	public RepairCommand(Sblock plugin) {
 		super(plugin, "repair");
 		this.setDescription("Fully repairs an item, including wiping the anvil tag.");
-		this.setUsage("Run /repair [full] while holding an item.");
+		this.setUsage("Run /repair [full] while holding an item in main hand.");
 		this.setPermissionLevel("denizen");
 	}
 
@@ -35,7 +35,7 @@ public class RepairCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		ItemStack hand = player.getItemInHand();
+		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null) {
 			return false;
 		}
@@ -48,7 +48,7 @@ public class RepairCommand extends SblockCommand {
 			repairable.setRepairCost(0);
 			hand.setItemMeta(meta);
 		}
-		player.setItemInHand(hand);
+		player.getInventory().setItemInMainHand(hand);
 		player.sendMessage(Color.GOOD + "Repaired!");
 		return true;
 	}

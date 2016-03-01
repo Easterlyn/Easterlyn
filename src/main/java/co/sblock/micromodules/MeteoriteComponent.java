@@ -4,10 +4,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
 
-import net.minecraft.server.v1_8_R3.Block;
-import net.minecraft.server.v1_8_R3.EntityFallingBlock;
+import net.minecraft.server.v1_9_R1.Block;
+import net.minecraft.server.v1_9_R1.DamageSource;
+import net.minecraft.server.v1_9_R1.EntityFallingBlock;
 
 /**
  * Wrapper for EntityFallingBlock to allow easier detection of Meteorite components.
@@ -33,11 +34,11 @@ public class MeteoriteComponent extends EntityFallingBlock {
 	}
 
 	@Override
-	public boolean aW() {
+	public boolean isInvulnerable(DamageSource source) {
 		/*
 		 * Cancelling damage no longer prevents physics applying to EntityTNTPrimed and
 		 * EntityFallingBlock. As a workaround, we set the MeteoriteComponent invincible.
 		 */
-		return bore;
+		return bore && source != DamageSource.OUT_OF_WORLD;
 	}
 }

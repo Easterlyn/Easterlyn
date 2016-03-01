@@ -23,7 +23,7 @@ public class CaptchaHashCommand extends SblockCommand {
 	public CaptchaHashCommand(Sblock plugin) {
 		super(plugin, "hash");
 		this.setDescription("Create a new hash for your item in hand, or get a captcha for a specific hash.");
-		this.setUsage("/hash get <hash> | With item in hand, /hash add <hash>");
+		this.setUsage("/hash get <hash> | With item in main hand, /hash add <hash>");
 		this.setPermissionLevel("denizen");
 		this.setPermissionMessage(ChatColor.GOLD + "BROWNS!");
 		captcha = plugin.getModule(Captcha.class);
@@ -45,7 +45,7 @@ public class CaptchaHashCommand extends SblockCommand {
 		args[0] = args[0].toLowerCase();
 		Player player = (Player) sender;
 		if (args[0].equals("add")) {
-			ItemStack item = player.getItemInHand();
+			ItemStack item = player.getInventory().getItemInMainHand();
 			if (item == null) {
 				return false;
 			}

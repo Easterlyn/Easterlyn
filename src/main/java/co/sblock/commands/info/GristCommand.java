@@ -68,7 +68,7 @@ public class GristCommand extends SblockCommand {
 					Color.GOOD_EMPHASIS, Experience.getExp(player)));
 			return true;
 		}
-		ItemStack hand = player.getItemInHand();
+		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null) {
 			sender.sendMessage(Color.BAD + "Nothing in life is free.");
 			return true;

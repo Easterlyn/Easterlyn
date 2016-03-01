@@ -22,7 +22,7 @@ public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement {
 	protected boolean handleAdjacentBlock(Player player, Block block) {
 		if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
 			if (handleBlockSet(player, block, Material.ICE)) {
-				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.SPLASH2, 16, 1);
+				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.ENTITY_GENERIC_SWIM, 16, 1);
 				return true;
 			}
 		}

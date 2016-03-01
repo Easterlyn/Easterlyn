@@ -18,18 +18,19 @@ import co.sblock.Sblock;
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.Effect;
 
-import org.bukkit.craftbukkit.v1_8_R3.CraftChunk;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_9_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R1.util.CraftMagicNumbers;
 
-import net.minecraft.server.v1_8_R3.BlockCocoa;
-import net.minecraft.server.v1_8_R3.BlockCrops;
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.Blocks;
-import net.minecraft.server.v1_8_R3.GameProfileSerializer;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.TileEntitySkull;
+import net.minecraft.server.v1_9_R1.BlockCocoa;
+import net.minecraft.server.v1_9_R1.BlockCrops;
+import net.minecraft.server.v1_9_R1.BlockPosition;
+import net.minecraft.server.v1_9_R1.Blocks;
+import net.minecraft.server.v1_9_R1.GameProfileSerializer;
+import net.minecraft.server.v1_9_R1.IBlockData;
+import net.minecraft.server.v1_9_R1.Item;
+import net.minecraft.server.v1_9_R1.NBTTagCompound;
+import net.minecraft.server.v1_9_R1.TileEntitySkull;
 
 /**
  * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
@@ -157,14 +158,15 @@ public class BlockDrops {
 
 	@SuppressWarnings("deprecation")
 	private static boolean doDrops(Material tool, Material block) {
-		net.minecraft.server.v1_8_R3.Block nmsBlock = net.minecraft.server.v1_8_R3.Block.getById(block.getId());
+		net.minecraft.server.v1_9_R1.Block nmsBlock = net.minecraft.server.v1_9_R1.Block.getById(block.getId());
 		if (nmsBlock == null) {
 			return false;
 		}
-		if (nmsBlock.getMaterial().isAlwaysDestroyable()) {
+		IBlockData data = nmsBlock.getBlockData();
+		if (data.getMaterial().isAlwaysDestroyable()) {
 			return true;
 		}
-		return tool != null && Item.getById(tool.getId()).canDestroySpecialBlock(nmsBlock);
+		return tool != null && Item.getById(tool.getId()).canDestroySpecialBlock(data);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -278,7 +280,7 @@ public class BlockDrops {
 	private static Collection<ItemStack> getDefaultDrops(Material tool, Block block) {
 		List<ItemStack> drops = new ArrayList<>();
 
-		net.minecraft.server.v1_8_R3.Block nmsBlock = net.minecraft.server.v1_8_R3.Block.getById(block.getTypeId());
+		net.minecraft.server.v1_9_R1.Block nmsBlock = net.minecraft.server.v1_9_R1.Block.getById(block.getTypeId());
 		if (nmsBlock == Blocks.AIR || !doDrops(tool, block.getType())) {
 			return drops;
 		}
@@ -311,8 +313,8 @@ public class BlockDrops {
 		if (Blocks.SKULL == nmsBlock) {
 			CraftChunk obcChunk = (CraftChunk) block.getChunk();
 			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
-			net.minecraft.server.v1_8_R3.ItemStack nmsStack = new net.minecraft.server.v1_8_R3.ItemStack(
-					item, count, nmsBlock.getDropData(obcChunk.getHandle().getWorld(), position));
+			net.minecraft.server.v1_9_R1.ItemStack nmsStack = new net.minecraft.server.v1_9_R1.ItemStack(
+					item, count, nmsBlock.getDropData(nmsBlock.getBlockData()));
 			TileEntitySkull tileentityskull = (TileEntitySkull) obcChunk.getHandle()
 					.getWorld().getTileEntity(position);
 

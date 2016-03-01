@@ -38,9 +38,9 @@ public class SkullCommand extends SblockCommandAlias {
 		newArgs[0] = "owner";
 		newArgs[1] = args[0];
 		Player player = (Player) sender;
-		ItemStack hand = player.getItemInHand();
+		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null || hand.getType() != Material.SKULL_ITEM) {
-			player.setItemInHand(new ItemStack(Material.SKULL_ITEM, 1, (short) 3));
+			player.getInventory().setItemInMainHand(new ItemStack(Material.SKULL_ITEM, 1, (short) 3));
 			if (hand != null) {
 				player.getLocation().getWorld().dropItem(player.getLocation(), hand).setPickupDelay(0);
 			}

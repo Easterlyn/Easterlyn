@@ -17,21 +17,22 @@ import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
+import org.bukkit.Particle;
 import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EntityEquipment;
@@ -114,6 +115,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public ItemStack getItemInHand() {
 		return player.getItemInHand();
 	}
@@ -154,6 +156,11 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public InventoryView openMerchant(Villager paramVillager, boolean paramBoolean) {
+		return player.openMerchant(paramVillager, paramBoolean);
+	}
+
+	@Override
 	public InventoryView openInventory(Inventory inventory) {
 		return player.openInventory(inventory);
 	}
@@ -174,6 +181,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public void setItemInHand(ItemStack item) {
 		player.setItemInHand(item);
 	}
@@ -364,24 +372,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void setRemoveWhenFarAway(boolean remove) {
 		player.setRemoveWhenFarAway(remove);
-	}
-
-	@Override
-	@Deprecated
-	public Arrow shootArrow() {
-		return player.shootArrow();
-	}
-
-	@Override
-	@Deprecated
-	public Egg throwEgg() {
-		return player.throwEgg();
-	}
-
-	@Override
-	@Deprecated
-	public Snowball throwSnowball() {
-		return player.throwSnowball();
 	}
 
 	@Override
@@ -1302,6 +1292,137 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void updateInventory() {
 		player.updateInventory();
+	}
+
+	@Override
+	@Deprecated
+	public int _INVALID_getLastDamage() {
+		return player._INVALID_getLastDamage();
+	}
+
+	@Override
+	@Deprecated
+	public void _INVALID_setLastDamage(int damage) {
+		player._INVALID_setLastDamage(damage);
+	}
+
+	@Override
+	@Deprecated
+	public void _INVALID_damage(int amount) {
+		player._INVALID_damage(amount);
+	}
+
+	@Override
+	@Deprecated
+	public void _INVALID_damage(int amount, Entity source) {
+		player._INVALID_damage(amount, source);
+	}
+
+	@Override
+	@Deprecated
+	public int _INVALID_getHealth() {
+		return player._INVALID_getHealth();
+	}
+
+	@Override
+	@Deprecated
+	public int _INVALID_getMaxHealth() {
+		return player._INVALID_getMaxHealth();
+	}
+
+	@Override
+	@Deprecated
+	public void _INVALID_setHealth(int health) {
+		player._INVALID_setHealth(health);
+	}
+
+	@Override
+	@Deprecated
+	public void _INVALID_setMaxHealth(int health) {
+		player._INVALID_setMaxHealth(health);
+	}
+
+	@Override
+	public AttributeInstance getAttribute(Attribute attribute) {
+		return player.getAttribute(attribute);
+	}
+
+	@Override
+	public boolean isGlowing() {
+		return player.isGlowing();
+	}
+
+	@Override
+	public void setGlowing(boolean flag) {
+		player.setGlowing(flag);
+	}
+
+	@Override
+	public void spawnParticle(Particle particle, Location location, int count) {
+		player.spawnParticle(particle, location, count);
+	}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, Location location, int count, T data) {
+		player.spawnParticle(particle, location, count, data);
+	}
+
+	@Override
+	public void spawnParticle(Particle particle, double x, double y, double z, int count) {
+		player.spawnParticle(particle, x, y, z, count);
+	}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, T data) {
+		player.spawnParticle(particle, x, y, z, count,  data);
+	}
+
+	@Override
+	public void spawnParticle(Particle particle, Location location, int count, double offsetX,
+			double offsetY, double offsetZ) {
+		player.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ);
+	}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, Location location, int count, double offsetX,
+			double offsetY, double offsetZ, T data) {
+		player.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, data);
+	}
+
+	@Override
+	public void spawnParticle(Particle particle, Location location, int count, double offsetX,
+			double offsetY, double offsetZ, double extra) {
+		player.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, extra);
+	}
+
+	@Override
+	public void spawnParticle(Particle particle, double x, double y, double z, int count,
+			double offsetX, double offsetY, double offsetZ) {
+		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ);
+	}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, Location location, int count, double offsetX,
+			double offsetY, double offsetZ, double extra, T data) {
+		player.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, extra, data);
+	}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
+			double offsetX, double offsetY, double offsetZ, T data) {
+		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, data);
+	}
+
+	@Override
+	public void spawnParticle(Particle particle, double x, double y, double z, int count,
+			double offsetX, double offsetY, double offsetZ, double extra) {
+		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, extra);
+	}
+
+	@Override
+	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
+			double offsetX, double offsetY, double offsetZ, double extra, T data) {
+		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, extra, data);
 	}
 
 }

@@ -30,8 +30,8 @@ public class BatchCaptchaCommand extends SblockCommand {
 	public BatchCaptchaCommand(Sblock plugin) {
 		super(plugin, "baptcha");
 		this.setAliases("batchcap", "capbatch", "batchcaptcha", "captchabatch");
-		this.setDescription("Captchalogues all items in your inventory matching your item in hand!");
-		this.setUsage("Hold an item, run /baptcha. Batch captcha!");
+		this.setDescription("Captchalogues all items in your inventory matching your item in main hand!");
+		this.setUsage("Hold an item in main hand, run /baptcha. Batch captcha!");
 
 		Permission permission;
 		try {
@@ -52,22 +52,22 @@ public class BatchCaptchaCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
-		Player p = (Player) sender;
-		ItemStack item = p.getItemInHand();
+		Player player = (Player) sender;
+		ItemStack item = player.getInventory().getItemInMainHand();
 		if (item == null) {
 			return false;
 		}
 
 		if (!captcha.canCaptcha(item)) {
-			p.sendMessage(Color.BAD + "That item cannot be put in a captcha!");
+			player.sendMessage(Color.BAD + "That item cannot be put in a captcha!");
 			return true;
 		}
 
-		PlayerInventory inventory = p.getInventory();
+		PlayerInventory inventory = player.getInventory();
 		ItemStack blankCaptcha = Captcha.blankCaptchaCard();
 
 		int max;
-		if (p.getGameMode() == GameMode.CREATIVE || p.hasPermission("sblock.command.baptcha.free")
+		if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("sblock.command.baptcha.free")
 				&& args.length > 0 && args[0].equals("free")) {
 			max = Integer.MAX_VALUE;
 		} else {
@@ -85,7 +85,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		}
 
 		if (max == 0) {
-			p.sendMessage(Color.BAD + "You don't have any blank captchas to use!");
+			player.sendMessage(Color.BAD + "You don't have any blank captchas to use!");
 			return true;
 		}
 
@@ -111,8 +111,8 @@ public class BatchCaptchaCommand extends SblockCommand {
 		}
 		item = captcha.itemToCaptcha(item);
 		item.setAmount(count);
-		p.getInventory().addItem(item);
-		p.sendMessage(Color.GOOD + "Used " + count + " captchas to store items.");
+		player.getInventory().addItem(item);
+		player.sendMessage(Color.GOOD + "Used " + count + " captchas to store items.");
 		return true;
 	}
 

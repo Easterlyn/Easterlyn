@@ -15,20 +15,20 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import co.sblock.machines.type.Alchemiter;
 import co.sblock.machines.type.Machine;
 
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 
-import net.minecraft.server.v1_8_R3.ChatComponentText;
-import net.minecraft.server.v1_8_R3.Container;
-import net.minecraft.server.v1_8_R3.ContainerMerchant;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.EntityVillager;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.ItemStack;
-import net.minecraft.server.v1_8_R3.MerchantRecipe;
-import net.minecraft.server.v1_8_R3.MerchantRecipeList;
-import net.minecraft.server.v1_8_R3.PacketPlayOutOpenWindow;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R1.ChatComponentText;
+import net.minecraft.server.v1_9_R1.Container;
+import net.minecraft.server.v1_9_R1.ContainerMerchant;
+import net.minecraft.server.v1_9_R1.EntityHuman;
+import net.minecraft.server.v1_9_R1.EntityPlayer;
+import net.minecraft.server.v1_9_R1.EntityVillager;
+import net.minecraft.server.v1_9_R1.IChatBaseComponent;
+import net.minecraft.server.v1_9_R1.ItemStack;
+import net.minecraft.server.v1_9_R1.MerchantRecipe;
+import net.minecraft.server.v1_9_R1.MerchantRecipeList;
+import net.minecraft.server.v1_9_R1.PacketPlayOutOpenWindow;
+import net.minecraft.server.v1_9_R1.World;
 
 /**
  * brb going insane because of NMS
@@ -92,7 +92,7 @@ public class MachineInventoryTracker {
 	public class FakeNMSVillager extends EntityVillager {
 		public FakeNMSVillager(EntityPlayer player, World world) {
 			super(world);
-			a_(player);
+			setTradingPlayer(player);
 		}
 
 		@Override

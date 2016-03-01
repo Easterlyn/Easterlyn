@@ -24,18 +24,18 @@ public class EffectAdjacentWater extends EffectAdjacentBlockPlacement {
 	protected boolean handleAdjacentBlock(Player player, Block block) {
 		if (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA) {
 			if (block.getWorld().getEnvironment() == Environment.NETHER) {
-				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 4, 1);
+				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.BLOCK_LAVA_EXTINGUISH, 4, 1);
 				return true;
 			}
 			if ((block.getData() == 0 && handleBlockSet(player, block, Material.OBSIDIAN))
 					|| (block.getData() != 0 && handleBlockSet(player, block, Material.COBBLESTONE))) {
-				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 4, 1);
+				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.BLOCK_LAVA_EXTINGUISH, 4, 1);
 			}
 			return true;
 		}
 		if (block.getType() == Material.FIRE) {
 			if (handleBlockSet(player, block, Material.AIR)) {
-				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.FIZZ, 4, 1);
+				block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.BLOCK_FIRE_EXTINGUISH, 4, 1);
 			}
 			return true;
 		}

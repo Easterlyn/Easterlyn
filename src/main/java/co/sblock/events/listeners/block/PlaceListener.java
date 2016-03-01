@@ -76,7 +76,11 @@ public class PlaceListener extends SblockListener {
 				}
 				pair.getLeft().assemble(event, pair.getRight());
 				if (!event.isCancelled() && player.getGameMode() != GameMode.CREATIVE) {
-					player.setItemInHand(InventoryUtils.decrement(player.getItemInHand(), 1));
+					if (player.getInventory().getItemInMainHand().equals(event.getItemInHand())) {
+						player.getInventory().setItemInMainHand(InventoryUtils.decrement(event.getItemInHand(), 1));
+					} else {
+						player.getInventory().setItemInOffHand(InventoryUtils.decrement(event.getItemInHand(), 1));
+					}
 				}
 				event.setCancelled(true);
 				break;

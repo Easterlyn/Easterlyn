@@ -237,17 +237,17 @@ public class Message {
 				// Fun sound effects! Sadly, ender dragon kill is a little long even at 2x
 				switch ((int) (Math.random() * 20)) {
 				case 0:
-					player.playSound(player.getLocation(), Sound.ENDERMAN_STARE, 1, 2);
+					player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_STARE, 1, 2);
 					break;
 				case 1:
-					player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1, 2);
+					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 2);
 					break;
 				case 2:
 				case 3:
-					player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1, 1);
+					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
 					break;
 				default:
-					player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 2);
+					player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 2);
 				}
 				cooldowns.addCooldown(player, "highlight", 30000);
 			}

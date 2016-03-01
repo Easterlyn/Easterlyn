@@ -37,7 +37,7 @@ public class UnbreakableCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		ItemStack hand = player.getItemInHand();
+		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null || hand.getType().getMaxDurability() == 0) {
 			player.sendMessage(Color.GOOD + "Toot toot!");
 			return true;

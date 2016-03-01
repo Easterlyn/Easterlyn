@@ -124,7 +124,7 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 		}
 		Player player = evt.getPlayer();
 		boolean reseed = false;
-		for (ItemStack drop : BlockDrops.getDrops(getPlugin(), player, player.getItemInHand(), clicked)) {
+		for (ItemStack drop : BlockDrops.getDrops(getPlugin(), player, evt.getItem(), clicked)) {
 			if (drop.getType() == seed && !reseed) {
 				// Re-seed cost
 				drop = InventoryUtils.decrement(drop, 1);
@@ -146,7 +146,7 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 				break;
 			}
 		}
-		clicked.getWorld().playSound(clicked.getLocation(), Sound.DIG_GRASS, 1, 1);
+		clicked.getWorld().playSound(clicked.getLocation(), Sound.BLOCK_GRASS_BREAK, 1, 1);
 		clicked.getWorld().spigot().playEffect(clicked.getLocation().add(0.5, 0, 0.5), org.bukkit.Effect.TILE_BREAK,
 				clicked.getTypeId(), clicked.getData(), 0.5F, 0.5F, 0.5F, 0, 10, 1);
 		if (reseed) {

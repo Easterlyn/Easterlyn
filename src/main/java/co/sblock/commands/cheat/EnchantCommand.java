@@ -26,7 +26,7 @@ public class EnchantCommand extends SblockCommand {
 
 	public EnchantCommand(Sblock plugin) {
 		super(plugin, "enchant");
-		this.setDescription("Enchant the item in your hand.");
+		this.setDescription("Enchant the item in your main hand.");
 		this.setPermissionLevel("denizen");
 		this.setUsage("/enchant <enchantment> <level> [-flags]"
 				+ "\nFlags:\n -b: Don't turn books into enchanted books"
@@ -45,7 +45,7 @@ public class EnchantCommand extends SblockCommand {
 		}
 
 		Player player = (Player) sender;
-		ItemStack hand = player.getItemInHand();
+		ItemStack hand = player.getInventory().getItemInMainHand();
 
 		if (hand == null) {
 			return false;

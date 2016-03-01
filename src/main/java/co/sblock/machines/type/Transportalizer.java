@@ -140,7 +140,7 @@ public class Transportalizer extends Machine {
 		Location key = getKey(storage);
 		if (hasValue(inserted.getType())) {
 			setFuel(storage, getFuel(storage) + getValue(inserted.getType()) * inserted.getAmount());
-			key.getWorld().playSound(key, Sound.ORB_PICKUP, 10, 1);
+			key.getWorld().playSound(key, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 1);
 			event.getItem().remove();
 		} else {
 			event.getItem().teleport(
@@ -264,7 +264,7 @@ public class Transportalizer extends Machine {
 					+ "The Transportalizer begins humming through standard teleport procedure,"
 					+ " when all of a sudden it growls to a halt."
 					+ "\nPerhaps it requires more fuel?");
-			key.getWorld().playSound(key, Sound.WOLF_GROWL, 16, 0);
+			key.getWorld().playSound(key, Sound.ENTITY_WOLF_GROWL, 16, 0);
 			return false;
 		}
 
@@ -413,8 +413,8 @@ public class Transportalizer extends Machine {
 	}
 
 	private void teleport(Entity entity, Location source, Location target) {
-		source.getWorld().playSound(source, Sound.NOTE_PIANO, 5, 2);
-		target.getWorld().playSound(target, Sound.NOTE_PIANO, 5, 2);
+		source.getWorld().playSound(source, Sound.BLOCK_NOTE_PLING, 5, 2);
+		target.getWorld().playSound(target, Sound.BLOCK_NOTE_PLING, 5, 2);
 		Location current = entity.getLocation();
 		target.setPitch(current.getPitch());
 		target.setYaw(current.getYaw());

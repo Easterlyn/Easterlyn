@@ -1,4 +1,4 @@
-package co.sblock.commands.teleportation;
+package co.sblock.commands.cheat;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class MoreCommand extends SblockCommand {
 
 	public MoreCommand(Sblock plugin) {
 		super(plugin, "more");
-		this.setDescription("Have all the things! Increase or decrease item in hand.");
+		this.setDescription("Have all the things! Increase or decrease item in main hand.");
 		this.setUsage("/more [optional amount]");
 		this.setPermissionLevel("felt");
 	}
@@ -34,7 +34,7 @@ public class MoreCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		ItemStack stack = player.getItemInHand();
+		ItemStack stack = player.getInventory().getItemInMainHand();
 		if (stack == null || stack.getType() == Material.AIR) {
 			return false;
 		}
@@ -58,7 +58,7 @@ public class MoreCommand extends SblockCommand {
 			// Default 64 for unstackable stuff or when people use /more 0
 			amount = 64;
 		}
-		player.getItemInHand().setAmount(amount);
+		stack.setAmount(amount);
 		player.sendMessage(Color.GOOD + "Stack in hand set to " + Color.GOOD_EMPHASIS + amount);
 		return true;
 	}

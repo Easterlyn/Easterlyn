@@ -59,9 +59,9 @@ public class LoreCommand extends SblockCommand {
 		}
 		args[0] = args[0].toLowerCase();
 		Player player = (Player) sender;
-		ItemStack hand = player.getItemInHand();
+		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null || hand.getType() == Material.AIR) {
-			player.sendMessage(Color.BAD + "You need an item in hand to use this command!");
+			player.sendMessage(Color.BAD + "You need an item in main hand to use this command!");
 			return true;
 		}
 		if (!hand.hasItemMeta() && hand.getItemMeta() == null) {
