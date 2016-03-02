@@ -354,6 +354,22 @@
 195	JUNGLE_DOOR	0	Jungle Door Block	jungle_door
 196	ACACIA_DOOR	0	Acacia Door Block	acacia_door
 197	DARK_OAK_DOOR	0	Dark Oak Door Block	dark_oak_door
+198	END_ROD 0	End Rod	end_rod
+199	CHORUS_PLANT	0	Chorus Plant	chorus_plant
+200	CHORUS_FLOWER	0	Chorus Flower	chorus_flower
+201	PURPUR_BLOCK	0	Purpur Block	purpur_block
+202	PURPUR_PILLAR	0	Purpur Pillar	purpur_pillar
+203	PURPUR_STAIRS	0	Purpur Stairs	purpur_stairs
+204	PURPUR_DOUBLE_SLAB	0	Purpur Double Slab	purpur_double_slab
+205	PURPUR_SLAB	0	Purpur Slab	purpur_slab
+206	END_BRICKS	0	End Bricks	end_bricks
+207	BEETROOT_BLOCK	0	Beetroot Block	beetroot_block
+208	GRASS_PATH	0	Grass Path	grass_path
+209	END_GATEWAY	0	End Gateway end_gateway
+210	COMMAND_REPEATING	0	Command Block (Repeating)	repeating_command_block
+211	COMMAND_CHAIN	0	Command Block (Chain)	chain_command_block
+212	FROSTED_ICE	0	Frosted Ice	frosted_ice
+255	STRUCTURE_BLOCK	0	Structure Block	structure_block
 256	IRON_SPADE	0	Iron Shovel	iron_shovel
 257	IRON_PICKAXE	0	Iron Pickaxe	iron_pickaxe
 258	IRON_AXE	0	Iron Axe	iron_axe
@@ -433,7 +449,7 @@
 330	IRON_DOOR	0	Iron Door	iron_door
 331	REDSTONE	0	Redstone	redstone
 332	SNOW_BALL	0	Snowball	snowball
-333	BOAT	0	Boat	boat
+333	BOAT	0	Oak Boat	boat
 334	LEATHER	0	Leather	leather
 335	MILK_BUCKET	0	Milk Bucket	milk_bucket
 336	CLAY_BRICK	0	Brick	brick
@@ -575,11 +591,29 @@
 423	MUTTON	0	Raw Mutton	mutton
 424	COOKED_MUTTON	0	Cooked Mutton	cooked_mutton
 425	BANNER	0	Banner	banner
+426	END_CRYSTAL	0	End Crystal	end_crystal
 427	SPRUCE_DOOR_ITEM	0	Spruce Door	spruce_door
 428	BIRCH_DOOR_ITEM	0	Birch Door	birch_door
 429	JUNGLE_DOOR_ITEM	0	Jungle Door	jungle_door
 430	ACACIA_DOOR_ITEM	0	Acacia Door	acacia_door
 431	DARK_OAK_DOOR_ITEM	0	Dark Oak Door	dark_oak_door
+432	CHORUS_FRUIT	0	Chorus Fruit	chorus_fruit
+433	CHORUS_FRUIT_POPPED	0	Popped Chorus Fruit	chorus_fruit_popped
+434	BEETROOT	0	Beetroot	beetroot
+435	BEETROOT_SEEDS	0	Beetroot Seeds	beetroot_seeds
+436	BEETROOT_SOUP	0	Beetroot Soup	beetroot_soup
+437	DRAGONS_BREATH	0	Dragon's Breath	dragon_breath
+438	SPLASH_POTION	0	Splash Potion	splash_potion
+439	SPECTRAL_ARROW	0	Spectral Arrow	spectral_arrow
+440	TIPPED_ARROW	0	Tipped Arrow	tipped_arrow
+441	LINGERING_POTION	0	Lingering Potion	lingering_potion
+442	SHIELD	0	Shield	shield
+443	ELYTRA	0	Elytra	elytra
+444	BOAT_SPRUCE	0	Spruce Boat	spruce_boat
+445	BOAT_BIRCH	0	Birch Boat	birch_boat
+446	BOAT_JUNGLE	0	Jungle Boat	jungle_boat
+447	BOAT_ACAIA	0	Acacia Boat	acacia_boat
+448	BOAT_DARK_OAK	0	Dark Oak Boat	dark_oak_boat
 2256	GOLD_RECORD	0	13 Disc	record_13
 2257	GREEN_RECORD	0	Cat Disc	record_cat
 2258	RECORD_3	0	Blocks Disc	record_blocks
