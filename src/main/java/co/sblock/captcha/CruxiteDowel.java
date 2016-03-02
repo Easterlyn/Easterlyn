@@ -1,7 +1,9 @@
 package co.sblock.captcha;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -370,6 +372,9 @@ public class CruxiteDowel {
 			case PORTAL:
 			case POTATO: // plant
 			case POTION: // Removed until effects are accounted for
+			case TIPPED_ARROW: // ^
+			case SPLASH_POTION: // ^
+			case LINGERING_POTION: // ^
 			case PUMPKIN_STEM: // plant
 			case SKULL:
 			case SOIL:
@@ -387,24 +392,30 @@ public class CruxiteDowel {
 	}
 
 	private static void fillFromRecipes() {
+		List<Material> pastMaterials = new ArrayList<>();
 		for (Material material : Material.values()) {
-			grist.put(material, getRecipeCost(material));
+			grist.put(material, getRecipeCost(material, pastMaterials));
+			pastMaterials.clear();
 		}
 	}
 
-	private static int getRecipeCost(Material material) {
+	private static int getRecipeCost(Material material, List<Material> pastMaterials) {
 		if (grist.containsKey(material)) {
 			return grist.get(material);
 		}
+		if (pastMaterials.contains(material)) {
+			return Integer.MAX_VALUE;
+		}
+		pastMaterials.add(material);
 		int minimum = Integer.MAX_VALUE;
-		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(material))) {
+		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(material, 1, (short) -1))) {
 			int amount = r.getResult().getAmount();
 			if (amount < 1) {
 				continue;
 			}
 			int newMin;
 			if (r instanceof FurnaceRecipe) {
-				newMin = 2 + getRecipeCost(((FurnaceRecipe) r).getInput().getType());
+				newMin = 2 + getRecipeCost(((FurnaceRecipe) r).getInput().getType(), pastMaterials);
 			} else if (r instanceof ShapedRecipe) {
 				newMin = 0;
 				HashMap<Character, Integer> materialQuantity = new HashMap<>();
@@ -422,20 +433,20 @@ public class CruxiteDowel {
 					if (is == null) {
 						continue;
 					}
-					if (is.getType() == r.getResult().getType()) {
+					if (pastMaterials.contains(is.getType())) {
 						newMin = Integer.MAX_VALUE;
 						break;
 					}
-					newMin += getRecipeCost(is.getType()) * e.getValue();
+					newMin += getRecipeCost(is.getType(), pastMaterials) * e.getValue();
 				}
-			} else  if (r instanceof ShapelessRecipe) {
+			} else if (r instanceof ShapelessRecipe) {
 				newMin = 0;
 				for (ItemStack is : ((ShapelessRecipe) r).getIngredientList()) {
-					if (is.getType() == r.getResult().getType()) {
+					if (pastMaterials.contains(is.getType())) {
 						newMin = Integer.MAX_VALUE;
 						break;
 					}
-					newMin += getRecipeCost(is.getType());
+					newMin += getRecipeCost(is.getType(), pastMaterials);
 				}
 			} else {
 				// Recipe is injected custom recipe
@@ -453,6 +464,12 @@ public class CruxiteDowel {
 	}
 
 	public static int getWeight(Enchantment enchantment) {
+		if (enchantment.equals(Enchantment.MENDING)) {
+			return 50;
+		}
+		if (enchantment.equals(Enchantment.LUCK) || enchantment.equals(Enchantment.FROST_WALKER)) {
+			return 20;
+		}
 		if (enchantment.equals(Enchantment.PROTECTION_ENVIRONMENTAL) || enchantment.equals(Enchantment.DAMAGE_ALL)
 				|| enchantment.equals(Enchantment.DIG_SPEED) || enchantment.equals(Enchantment.ARROW_DAMAGE)) {
 			return 10;
