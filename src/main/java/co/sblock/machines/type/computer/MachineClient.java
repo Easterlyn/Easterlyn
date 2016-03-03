@@ -52,6 +52,7 @@ public class MachineClient extends Program {
 		top.setItem(2, purchase.getIconForMachine(getMachines().getMachineByName("TotemLathe")));
 		top.setItem(3, purchase.getIconForMachine(getMachines().getMachineByName("Alchemiter")));
 		top.setItem(4, purchase.getIconForMachine(getMachines().getMachineByName("Transportalizer")));
+		top.setItem(5, purchase.getIconForMachine(getMachines().getMachineByName("Elevator")));
 
 		top.setItem(8, Programs.getProgramByName("Back").getIcon());
 		InventoryUtils.changeWindowName(player, "Machine Client");

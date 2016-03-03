@@ -176,7 +176,8 @@ public abstract class Machine {
 		Direction direction = getDirection(storage);
 		for (Location location : shape.getBuildLocations(key, direction).keySet()) {
 			if (!location.equals(key) && (!location.getBlock().isEmpty()
-					|| getMachines().isExploded(location.getBlock()))) {
+					|| getMachines().isExploded(location.getBlock()))
+					|| location.getBlockY() > 255) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(Color.BAD + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed(storage);

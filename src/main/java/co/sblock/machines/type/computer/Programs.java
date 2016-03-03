@@ -78,11 +78,16 @@ public class Programs {
 				return program;
 			}
 		}
+		for (Program program : byName.values()) {
+			if (icon.getType() == program.getIcon().getType()) {
+				return program;
+			}
+		}
 		return null;
 	}
 
 	/**
-	 * Compares two ItemStacks by name or material.
+	 * Compares two ItemStacks by name or material data.
 	 * 
 	 * @param is1 the first ItemStack
 	 * @param is2 the second ItemStack
@@ -97,7 +102,7 @@ public class Programs {
 				return true;
 			}
 		}
-		return is1.getType() == is2.getType();
+		return is1.getData().equals(is2.getData());
 	}
 
 	/**
