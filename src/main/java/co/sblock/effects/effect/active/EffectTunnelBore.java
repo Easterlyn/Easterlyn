@@ -106,8 +106,8 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 			budManager.queueBlock(block);
 			return false;
 		}
-		// TODO 1.9
-		ItemStack hand = player.getItemInHand();
+		// Item breaking blocks has to be in main hand
+		ItemStack hand = player.getInventory().getItemInMainHand();
 		Collection<ItemStack> drops = BlockDrops.getDrops(getPlugin(), player, hand, block);
 		int exp = BlockDrops.getExp(hand, block);
 		if (hand.getType().getMaxDurability() > 0 && (!hand.containsEnchantment(Enchantment.DURABILITY)

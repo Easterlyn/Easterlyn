@@ -99,7 +99,7 @@ public class Computer extends Machine implements InventoryHolder {
 						+ event.getItem().getItemMeta().getDisplayName() + Color.GOOD + "!");
 				// TODO 1.9
 				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-					event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
+					InventoryUtils.decrementHeldItem(event, 1);
 				}
 				User u = getUsers().getUser(event.getPlayer().getUniqueId());
 				u.addProgram(program.getName());

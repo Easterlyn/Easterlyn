@@ -9,8 +9,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.Team.Option;
+import org.bukkit.scoreboard.Team.OptionStatus;
 
 import co.sblock.Sblock;
 import co.sblock.users.Users;
@@ -71,7 +72,7 @@ public class InvisibilityManager {
 			Users.team(player, null);
 			team = player.getScoreboard().getEntryTeam(player.getName());
 		}
-		team.setNameTagVisibility(NameTagVisibility.NEVER);
+		team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
 		final UUID uuid = player.getUniqueId();
 		tasks.put(uuid, new BukkitRunnable() {
 			@Override
@@ -91,6 +92,6 @@ public class InvisibilityManager {
 			Users.team(player, null);
 			team = player.getScoreboard().getEntryTeam(player.getName());
 		}
-		team.setNameTagVisibility(NameTagVisibility.ALWAYS);
+		team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.ALWAYS);
 	}
 }

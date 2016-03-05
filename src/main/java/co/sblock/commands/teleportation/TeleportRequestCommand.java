@@ -24,6 +24,8 @@ import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.Users;
 
+import net.md_5.bungee.api.ChatColor;
+
 /**
  * Essentials' TPA just won't cut it.
  * 
@@ -241,10 +243,11 @@ public class TeleportRequestCommand extends SblockCommand {
 			if (!sender.canSee(player) || player.getDisplayName() == null) {
 				continue;
 			}
-			if (player.getDisplayName().equalsIgnoreCase(name)) {
+			String display = ChatColor.stripColor(player.getDisplayName());
+			if (display.equalsIgnoreCase(name)) {
 				return player;
 			}
-			if (player.getDisplayName().toLowerCase().startsWith(name)) {
+			if (display.toLowerCase().startsWith(name)) {
 				matches.add(player);
 			}
 		}

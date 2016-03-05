@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.Bed;
 
 import co.sblock.Sblock;
@@ -173,12 +174,20 @@ public class InteractListener extends SblockListener {
 			}
 		}
 
+		PlayerInventory inv = event.getPlayer().getInventory();
+		boolean mainHand = InventoryUtils.isMainHand(event);
+		ItemStack held = InventoryUtils.getHeldItem(inv, mainHand);
+
+		// Nothing in current hand, bail
+		if (held == null) {
+			return;
+		}
+
 		// TODO TODO this is hairy
 		// Check item in main hand, if it has a right click function and isn't captcha/exp bugger off
 		// Check item in off hand normally after if we did nothing
 
-		if (event.getPlayer().getItemInHand() != null
-				&& event.getPlayer().getItemInHand().getType() == Material.GLASS_BOTTLE
+		if (held.getType() == Material.GLASS_BOTTLE
 				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottle") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight((java.util.Set<Material>) null, 4)) {
 				if (block.getType().isOccluding()) {
@@ -193,7 +202,7 @@ public class InteractListener extends SblockListener {
 			int exp = Experience.getExp(event.getPlayer());
 			if (exp >= 11) {
 				Experience.changeExp(event.getPlayer(), -11);
-				event.getPlayer().setItemInHand(InventoryUtils.decrement(event.getPlayer().getItemInHand(), 1));
+				InventoryUtils.setHeldItem(inv, mainHand, InventoryUtils.decrement(held, 1));
 				event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(),
 						new ItemStack(Material.EXP_BOTTLE, 1)).setPickupDelay(0);
 				return;
@@ -201,10 +210,10 @@ public class InteractListener extends SblockListener {
 		}
 
 		// Uncaptcha
-		if (Captcha.isUsedCaptcha(event.getItem())) {
-			ItemStack captchaStack = captcha.captchaToItem(event.getItem());
-			if (event.getItem().getAmount() > 1) {
-				event.getItem().setAmount(event.getItem().getAmount() - 1);
+		if (Captcha.isUsedCaptcha(held)) {
+			ItemStack captchaStack = captcha.captchaToItem(held);
+			if (held.getAmount() > 1) {
+				held.setAmount(held.getAmount() - 1);
 				if (event.getPlayer().getInventory().firstEmpty() != -1) {
 					event.getPlayer().getInventory().addItem(captchaStack);
 				} else {
@@ -212,7 +221,7 @@ public class InteractListener extends SblockListener {
 							.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
 				}
 			} else {
-				event.getPlayer().setItemInHand(captchaStack);
+				InventoryUtils.setHeldItem(inv, mainHand, captchaStack);
 			}
 			event.getPlayer().updateInventory();
 		}

@@ -25,10 +25,13 @@ import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
@@ -57,15 +60,15 @@ import co.sblock.machines.type.Machine;
 
 import net.md_5.bungee.api.ChatColor;
 
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
-
 import net.minecraft.server.v1_9_R1.EntityPlayer;
 import net.minecraft.server.v1_9_R1.MerchantRecipe;
 import net.minecraft.server.v1_9_R1.MerchantRecipeList;
 import net.minecraft.server.v1_9_R1.PacketDataSerializer;
 import net.minecraft.server.v1_9_R1.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_9_R1.PacketPlayOutSetSlot;
+
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 
 /**
  * A set of useful methods for inventory functions.
@@ -77,35 +80,6 @@ public class InventoryUtils {
 	private static HashMap<String, String> items;
 	private static HashMultimap<String, String> itemsReverse;
 	private static HashSet<ItemStack> uniques;
-	private static final HashMap<Integer, String> potionEffects = new HashMap<>();
-
-	static {
-		potionEffects.put(0, "Mundane Potion");
-		potionEffects.put(1, "Potion of Regeneration");
-		potionEffects.put(2, "Potion of Swiftness");
-		potionEffects.put(3, "Potion of Fire Resistance");
-		potionEffects.put(4, "Potion of Poison");
-		potionEffects.put(5, "Potion of Healing");
-		potionEffects.put(6, "Potion of Night Vision");
-		potionEffects.put(7, "Clear Potion");
-		potionEffects.put(8, "Potion of Weakness");
-		potionEffects.put(9, "Potion of Strength");
-		potionEffects.put(10, "Potion of Slowness");
-		potionEffects.put(11, "Potion of Leaping");
-		potionEffects.put(12, "Potion of Harming");
-		potionEffects.put(13, "Potion of Water Breathing");
-		potionEffects.put(14, "Potion of Invisibility");
-		potionEffects.put(15, "Thin Potion");
-		potionEffects.put(16, "Awkward Potion");
-		potionEffects.put(23, "Bungling Potion");
-		potionEffects.put(31, "Debonair Potion");
-		potionEffects.put(32, "Thick Potion");
-		potionEffects.put(39, "Charming Potion");
-		potionEffects.put(47, "Sparkling Potion");
-		potionEffects.put(48, "Potent Potion");
-		potionEffects.put(55, "Rank Potion");
-		potionEffects.put(63, "Stinky Potion");
-	}
 
 	private static HashMap<String, String> getItems() {
 		if (items != null) {
@@ -133,46 +107,36 @@ public class InventoryUtils {
 	}
 
 	public static String getMaterialDataName(Material m, short durability) {
-		if (m == Material.POTION) {
-			return getPotionName(durability);
-		} if (m.getMaxDurability() > 0) {
+		if (m.getMaxDurability() > 0) {
 			// Degradable item
 			durability = 0;
 		}
 		String key = m.name() + ":" + durability;
+		String name = null;
 		if (getItems().containsKey(key)) {
-			return items.get(key);
+			name = items.get(key);
 		}
 		/*
 		 * This special case is mostly for banners. While their color is affected by their data
 		 * value, it can actually be completely overwritten by the base color in the tile entity NBT
 		 * tag. Because of that, we can't specify banner color based on data value.
 		 */
-		key = m.name() + ":0";
-		if (getItems().containsKey(key)) {
-			return items.get(key);
+		if (name == null) {
+			key = m.name() + ":0";
+			if (getItems().containsKey(key)) {
+				name = items.get(key);
+			}
+		}
+		if (m == Material.POTION || m == Material.SPLASH_POTION || m == Material.LINGERING_POTION
+				|| m == Material.TIPPED_ARROW) {
+			// TODO
+			return getPotionName(durability);
 		}
 		return "Unknown item. Please report this!";
 	}
 
 	private static String getPotionName(short durability) {
-		StringBuilder potion = new StringBuilder();
-		if (((durability >> 6) & 1) == 1) {
-			potion.append("Extended ");
-		}
-		if (((durability >> 14) & 1) == 1) {
-			potion.append("Splash ");
-		}
-		int remainder = durability % 64;
-		if (potionEffects.containsKey(remainder)) {
-			potion.append(potionEffects.get(remainder));
-		} else {
-			potion.append(potionEffects.get(remainder % 16));
-		}
-		if (((durability >> 5) & 1) == 1) {
-			potion.append(" II");
-		}
-		return potion.toString();
+		return "TODO";
 	}
 
 	@SuppressWarnings("deprecation")
@@ -414,6 +378,28 @@ public class InventoryUtils {
 			is = null;
 		}
 		return is;
+	}
+
+	public static void decrementHeldItem(PlayerInteractEvent event, int amount) {
+		boolean main = isMainHand(event);
+		PlayerInventory inv = event.getPlayer().getInventory();
+		setHeldItem(inv, main, decrement(getHeldItem(inv, main), amount));
+	}
+
+	public static boolean isMainHand(PlayerInteractEvent event) {
+		return event.getHand() == EquipmentSlot.HAND;
+	}
+
+	public static ItemStack getHeldItem(PlayerInventory inv, boolean mainHand) {
+		return mainHand ? inv.getItemInMainHand() : inv.getItemInOffHand();
+	}
+
+	public static void setHeldItem(PlayerInventory inv, boolean mainHand, ItemStack item) {
+		if (mainHand) {
+			inv.setItemInMainHand(item);
+		} else {
+			inv.setItemInOffHand(item);
+		}
 	}
 
 	/**
