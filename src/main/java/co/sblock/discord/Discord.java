@@ -35,6 +35,7 @@ import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.abstraction.DiscordModule;
+import co.sblock.discord.listeners.DiscordMessageAcknowledgedListener;
 import co.sblock.discord.listeners.DiscordMessageDeleteListener;
 import co.sblock.discord.listeners.DiscordMessageReceivedListener;
 import co.sblock.discord.listeners.DiscordReadyListener;
@@ -99,7 +100,7 @@ public class Discord extends Module {
 					};
 				});
 
-		pastMainMessages = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).maximumSize(10)
+		pastMainMessages = CacheBuilder.newBuilder().expireAfterWrite(15L, TimeUnit.SECONDS).maximumSize(5)
 				.removalListener(new RemovalListener<IMessage, String>() {
 					@Override
 					public void onRemoval(RemovalNotification<IMessage, String> notification) {
@@ -148,6 +149,7 @@ public class Discord extends Module {
 		dispatcher.registerListener(new DiscordReadyListener(this));
 		dispatcher.registerListener(new DiscordMessageReceivedListener(this));
 		dispatcher.registerListener(new DiscordMessageDeleteListener(this));
+		dispatcher.registerListener(new DiscordMessageAcknowledgedListener(this));
 
 		new Thread(new Runnable() {
 			@Override
