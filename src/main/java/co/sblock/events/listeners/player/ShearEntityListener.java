@@ -8,6 +8,7 @@ import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Wool;
 
 import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
@@ -60,10 +61,9 @@ public class ShearEntityListener extends SblockListener {
 		event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation().add(0, .5, 0), is);
 	}
 
-	@SuppressWarnings("deprecation")
 	private ItemStack getDrop(Entity entity) {
 		if (entity.getType() == EntityType.SHEEP) {
-			return new ItemStack(Material.WOOL, (int) (Math.random() * 3) + 1, ((Sheep) entity).getColor().getWoolData());
+			return new Wool(((Sheep) entity).getColor()).toItemStack((int) (Math.random() * 3) + 1);
 		}
 		if (entity.getType() == EntityType.MUSHROOM_COW) {
 			return new ItemStack(Material.RED_MUSHROOM, 5);

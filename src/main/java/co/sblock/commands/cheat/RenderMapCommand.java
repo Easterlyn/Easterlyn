@@ -31,7 +31,6 @@ public class RenderMapCommand extends SblockCommand {
 		setAliases("centermap");
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
