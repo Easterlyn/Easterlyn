@@ -1,22 +1,26 @@
 package co.sblock.utilities;
 
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import com.mojang.authlib.GameProfile;
 
-import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
-
 import net.minecraft.server.v1_9_R1.EntityPlayer;
 import net.minecraft.server.v1_9_R1.MinecraftServer;
 import net.minecraft.server.v1_9_R1.PlayerInteractManager;
+
+import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
 
 /**
  * Utility for accessing offline Players as if they were online.
@@ -29,6 +33,10 @@ public class PlayerLoader {
 			.expireAfterAccess(5, TimeUnit.MINUTES).build();
 
 	public static Player getPlayer(UUID uuid) {
+		return getPlayer(null, uuid);
+	}
+
+	public static Player getPlayer(Plugin plugin, UUID uuid) {
 		Player player = Bukkit.getPlayer(uuid);
 		if (player != null) {
 			// Online, life is easy.
@@ -38,6 +46,42 @@ public class PlayerLoader {
 		if (player != null) {
 			return player;
 		}
+		if (Bukkit.isPrimaryThread()) {
+			return getPlayerFor(uuid);
+		} else if (plugin == null) {
+			throw new IllegalStateException("Asynchronous player load must use PlayerLoader#getPlayer(Plugin, UUID)");
+		}
+		Future<Player> future = Bukkit.getScheduler().callSyncMethod(plugin,
+				new Callable<Player>() {
+					@Override
+					public Player call() throws Exception {
+						return getPlayer(uuid);
+					}
+				});
+
+		int ticks = 0;
+		while (!future.isDone() && !future.isCancelled() && ticks < 10) {
+			++ticks;
+			try {
+				Thread.sleep(50L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		if (!future.isDone() || future.isCancelled()) {
+			return null;
+		}
+		try {
+			return future.get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static Player getPlayerFor(UUID uuid) {
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 		if (offlinePlayer == null || offlinePlayer.getName() == null) {
 			// Player has not logged in.
@@ -48,7 +92,7 @@ public class PlayerLoader {
 				new GameProfile(uuid, offlinePlayer.getName()),
 				new PlayerInteractManager(server.getWorldServer(0)));
 
-		player = (nmsPlayer == null) ? null : nmsPlayer.getBukkitEntity();
+		Player player = (nmsPlayer == null) ? null : nmsPlayer.getBukkitEntity();
 		if (player == null) {
 			return null;
 		}

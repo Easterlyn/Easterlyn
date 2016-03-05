@@ -462,7 +462,7 @@ public class Discord extends Module {
 		if (uuid == null) {
 			return null;
 		}
-		Player player = PlayerLoader.getPlayer(uuid);
+		Player player = PlayerLoader.getPlayer(this.getPlugin(), uuid);
 		if (player instanceof DiscordPlayer) {
 			return (DiscordPlayer) player;
 		}
