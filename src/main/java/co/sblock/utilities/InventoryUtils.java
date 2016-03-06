@@ -132,7 +132,7 @@ public class InventoryUtils {
 			// TODO
 			return getPotionName(durability);
 		}
-		return "Unknown item. Please report this!";
+		return name != null ? name : "Unknown item. Please report this!";
 	}
 
 	private static String getPotionName(short durability) {
