@@ -29,7 +29,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 
 		// Sblock Alpha: 1.8 - X/Y
 		version = ChatColor.DARK_AQUA + "Sblock Beta" + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY
-				+ "1.8" + ChatColor.DARK_GRAY + " - %s%s" + ChatColor.DARK_GRAY + "/"
+				+ "1.9" + ChatColor.DARK_GRAY + " - %s%s" + ChatColor.DARK_GRAY + "/"
 				+ ChatColor.GREEN + "%s";
 	}
 
