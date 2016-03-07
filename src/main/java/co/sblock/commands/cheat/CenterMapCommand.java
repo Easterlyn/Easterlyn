@@ -22,15 +22,15 @@ import co.sblock.commands.SblockCommand;
  * 
  * @author Jikoo
  */
-public class RenderMapCommand extends SblockCommand {
+public class CenterMapCommand extends SblockCommand {
 
-	public RenderMapCommand(Sblock plugin) {
-		super(plugin, "rendermap");
+	public CenterMapCommand(Sblock plugin) {
+		super(plugin, "centermap");
 		setPermissionLevel("helper");
 		setUsage("/centermap [x] [z] [world]");
-		setAliases("centermap");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -38,9 +38,9 @@ public class RenderMapCommand extends SblockCommand {
 			return true;
 		}
 		Player player = (Player) sender;
-		ItemStack mapItem = player.getItemInHand();
+		ItemStack mapItem = player.getInventory().getItemInMainHand();
 		if (mapItem.getType() != Material.EMPTY_MAP) {
-			sender.sendMessage(Color.BAD + "You must be holding a blank map in your hand.");
+			sender.sendMessage(Color.BAD + "You must be holding a blank map in your main hand.");
 			return true;
 		}
 		MapView view = Bukkit.createMap(player.getWorld());
@@ -51,13 +51,13 @@ public class RenderMapCommand extends SblockCommand {
 				x = Integer.valueOf(args[0]);
 				z = Integer.valueOf(args[1]);
 			} catch (NumberFormatException e) {
-				sender.sendMessage(Color.BAD + "Invalid coordinates! Ex. /rendermap 0 0");
+				sender.sendMessage(Color.BAD + "Invalid coordinates! Ex. /centermap 0 0");
 				return true;
 			}
 			if (args.length > 2) {
 				World world = Bukkit.getWorld(args[2]);
 				if (world == null) {
-					sender.sendMessage(Color.BAD + "Invalid world! Ex. /rendermap 0 0 Earth_the_end");
+					sender.sendMessage(Color.BAD + "Invalid world! Ex. /centermap 0 0 Earth_the_end");
 					return true;
 				}
 				view.setWorld(world);
@@ -68,10 +68,7 @@ public class RenderMapCommand extends SblockCommand {
 		}
 		view.setCenterX(x);
 		view.setCenterZ(z);
-		player.setItemInHand(new ItemStack(Material.MAP, 1, view.getId()));
-		// future: render whole map
-		//((org.bukkit.craftbukkit.v1_8_R1.map.CraftMapView) view).render((org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer) player);
-		//player.sendMap(view);
+		player.getInventory().setItemInMainHand(new ItemStack(Material.MAP, 1, view.getId()));
 		return true;
 	}
 

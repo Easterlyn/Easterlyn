@@ -1,6 +1,5 @@
 package co.sblock.chat.ai;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +15,7 @@ import com.google.code.chatterbotapi.ChatterBot;
 import com.google.code.chatterbotapi.ChatterBotFactory;
 import com.google.code.chatterbotapi.ChatterBotSession;
 import com.google.code.chatterbotapi.ChatterBotType;
+import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
@@ -77,11 +77,14 @@ public class CleverHal extends HalMessageHandler {
 				+ "for anything Hal says.\n\n" + Color.BAD_EMPHASIS + "Unless it's awesome.\n\n"
 				+ Color.COMMAND + "/join #halchat" + Color.BAD + " to spam usage.");
 
-		noSpam = new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + "Lil Hal")
-				.setNameClick("/join #halchat").setNameHover(hover).setChannelClick("@#halchat ")
-				.setMessage(JSONUtil.fromLegacyText(ChatColor.RED + "To spam with me, join #halchat."));
+		noSpam = getHalBase().setMessage(JSONUtil.fromLegacyText(ChatColor.RED + "To spam with me, join #halchat."));
 
 		dummy = new DummyPlayer();
+	}
+
+	private MessageBuilder getHalBase() {
+		return new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + getPlugin().getBotName())
+				.setNameClick("/join #halchat").setNameHover(hover).setChannelClick("@#halchat ");
 	}
 
 	@Override
@@ -96,7 +99,8 @@ public class CleverHal extends HalMessageHandler {
 		if (exactPattern.matcher(message).matches()) {
 			// Set sender on fire or some shit
 			if (msg.getSender() != null) {
-				msg.getSender().sendMessage(Color.HAL.replaceFirst("#", msg.getChannel().getName()) + "What?");
+				this.getHalBase().setChannel(msg.getChannel()).setMessage("What?").toMessage()
+						.send(ImmutableList.of(msg.getSender()), false, false);
 			}
 			return true;
 		}
@@ -107,8 +111,8 @@ public class CleverHal extends HalMessageHandler {
 					return true;
 				}
 				// Spammy, warn a bitch
-				noSpam.setChannel(msg.getChannel());
-				noSpam.toMessage().send(Arrays.asList(msg.getSender().getPlayer()));
+				noSpam.setChannel(msg.getChannel()).toMessage()
+						.send(ImmutableList.of(msg.getSender().getPlayer()));
 				Logger.getLogger("CleverHal").info("Warned " + msg.getSender().getPlayerName() + " about spamming Hal");
 			} else {
 				cooldowns.addGlobalCooldown("cleverhal" + channel, 2500L);
@@ -135,16 +139,17 @@ public class CleverHal extends HalMessageHandler {
 				for (Pattern pattern : ignoreMatches) {
 					msg = pattern.matcher(msg).replaceAll("");
 				}
+				if (msg.isEmpty()) {
+					msg = "I am playing on Sblock";
+				}
 				try {
 					msg = bot.think(msg);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return;
 				}
-				Message message = new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + "Lil Hal")
-						.setMessage(ChatColor.RED + msg).setChannel(channel)
-						.setChannelClick("@#halchat ").setNameClick("/join #halchat")
-						.setNameHover(hover).toMessage();
+				Message message = getHalBase().setChannel(channel)
+						.setMessage(ChatColor.RED + msg).toMessage();
 				Set<Player> players = new HashSet<>();
 				recipients.forEach(uuid -> {
 					Player player = Bukkit.getPlayer(uuid);

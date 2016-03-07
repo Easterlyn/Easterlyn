@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -28,7 +30,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.wrappers.BlockPosition;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Chat;
+import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.SyncPacketAdapter;
@@ -38,6 +41,8 @@ import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
 import co.sblock.module.Module;
 import co.sblock.utilities.TextUtils;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -53,6 +58,7 @@ public class Events extends Module {
 	private final HashMap<UUID, BukkitTask> pvp;
 	private final InvisibilityManager invisibilityManager;
 	private final BlockUpdateManager blockUpdateManager;
+	private final EnumSet<Material> creativeBlacklist;
 
 	public Events(Sblock plugin) {
 		super(plugin);
@@ -61,6 +67,14 @@ public class Events extends Module {
 		this.ipcache = new LinkedHashMap<>();
 		this.invisibilityManager = new InvisibilityManager(plugin);
 		this.blockUpdateManager = new BlockUpdateManager(plugin);
+
+		creativeBlacklist = EnumSet.of(Material.ACTIVATOR_RAIL, Material.BARRIER, Material.BEDROCK,
+				Material.COMMAND, Material.COMMAND_CHAIN, Material.COMMAND_MINECART,
+				Material.COMMAND_REPEATING, Material.DETECTOR_RAIL, Material.ENDER_PORTAL,
+				Material.ENDER_PORTAL_FRAME, Material.EXPLOSIVE_MINECART, Material.HOPPER_MINECART,
+				Material.JUKEBOX, Material.MINECART, Material.MOB_SPAWNER, Material.MONSTER_EGG,
+				Material.MONSTER_EGGS, Material.POWERED_MINECART, Material.POWERED_RAIL,
+				Material.RAILS, Material.STORAGE_MINECART, Material.TNT);
 	}
 
 	@Override
@@ -132,36 +146,47 @@ public class Events extends Module {
 	}
 
 	/**
+	 * Gets the creative material blacklist.
+	 */
+	public Set<Material> getCreativeBlacklist() {
+		return this.creativeBlacklist;
+	}
+
+	/**
 	 * Gets the player name stored for an IP.
 	 */
 	public String getIPName(String ip) {
-		if (ipcache.containsKey(ip)) {
-			return ipcache.get(ip);
+		synchronized (ipcache) {
+			if (ipcache.containsKey(ip)) {
+				return ipcache.get(ip);
+			}
+			return "Player";
 		}
-		return "Player";
 	}
 
 	/**
 	 * Cache a player name for an IP. Resets cache position for existing IPs.
 	 */
 	public void addCachedIP(String ip, String name) {
-		if (ipcache.containsKey(ip)) {
-			// LinkedHashMaps replace the existing element, preserving order. We want latest logins last.
-			ipcache.remove(ip);
-		}
-		ipcache.put(ip, name);
-		// Clear oldest cached IPs
-		int surplus = ipcache.size() - 1500;
-		if (surplus < 1) {
-			return;
-		}
-		for (Object entry : ipcache.entrySet().toArray()) {
-			if (surplus <= 0) {
-				break;
+		synchronized (ipcache) {
+			if (ipcache.containsKey(ip)) {
+				// LinkedHashMaps replace the existing element, preserving order. We want latest logins last.
+				ipcache.remove(ip);
 			}
-			--surplus;
+			ipcache.put(ip, name);
+			// Clear oldest cached IPs
+			int surplus = ipcache.size() - 1500;
+			if (surplus < 1) {
+				return;
+			}
+			for (Object entry : ipcache.entrySet().toArray()) {
+				if (surplus <= 0) {
+					break;
+				}
+				--surplus;
 
-			ipcache.remove(((Entry<?, ?>) entry).getKey());
+				ipcache.remove(((Entry<?, ?>) entry).getKey());
+			}
 		}
 	}
 
@@ -187,14 +212,16 @@ public class Events extends Module {
 	 * 
 	 * @return a Collection of all matching IPs.
 	 */
-	public synchronized Collection<String> getIPsFor(String name) {
-		ArrayList<String> list = new ArrayList<>();
-		for (Map.Entry<String, String> entry : ipcache.entrySet()) {
-			if (entry.getValue().equals(name)) {
-				list.add(entry.getKey());
+	public Collection<String> getIPsFor(String name) {
+		synchronized (ipcache) {
+			ArrayList<String> list = new ArrayList<>();
+			for (Map.Entry<String, String> entry : ipcache.entrySet()) {
+				if (entry.getValue().equals(name)) {
+					list.add(entry.getKey());
+				}
 			}
+			return list;
 		}
-		return list;
 	}
 
 	/**
@@ -265,7 +292,10 @@ public class Events extends Module {
 			announcement = this.status.getAllClear();
 		}
 		if (announcement != null) {
-			Bukkit.broadcastMessage(Color.HAL + announcement);
+			new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + getPlugin().getBotName())
+					.setNameClick("/report ").setNameHover(ChatColor.RED + "Artifical Intelligence")
+					.setChannel(getPlugin().getModule(Chat.class).getChannelManager().getChannel("#"))
+					.setMessage(announcement).toMessage().send(Bukkit.getOnlinePlayers(), true, false);
 			statusResample = 0;
 		}
 		this.status = status;

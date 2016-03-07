@@ -48,9 +48,6 @@ public class Color {
 	public static final ChatColor[] FORMATS = { ChatColor.MAGIC, ChatColor.BOLD,
 			ChatColor.STRIKETHROUGH, ChatColor.UNDERLINE, ChatColor.ITALIC };
 
-	public static final String HAL = ChatColor.WHITE + "[" + ChatColor.RED + "#" + ChatColor.WHITE
-			+ "] <" + ChatColor.DARK_RED + "Lil Hal" + ChatColor.WHITE + "> " + ChatColor.RED;
-
 	public static String listColors() {
 		StringBuilder sb = new StringBuilder();
 		for (ChatColor c : ChatColor.values()) {

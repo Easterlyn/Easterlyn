@@ -31,6 +31,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.collect.ImmutableList;
+
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
@@ -40,6 +42,7 @@ import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.channel.RegionChannel;
+import co.sblock.chat.message.MessageBuilder;
 import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.BehaviorGodtier;
@@ -997,14 +1000,20 @@ public class User {
 
 			user.updateCurrentRegion(Region.EARTH, true);
 
+			Chat chat = plugin.getModule(Chat.class);
+			MessageBuilder base = chat.getHalBase().setChannel(chat.getChannelManager().getChannel("#"));
+
 			if (!player.hasPlayedBefore()) {
 				// Our data file may have just been deleted - reset planned for Entry, etc.
-				Bukkit.broadcastMessage(Color.HAL + "It would seem that " + player.getName()
-						+ " is joining us for the first time! Please welcome them.");
-				plugin.getModule(Discord.class).postMessage(Discord.BOT_NAME, player.getName()
+				base.setMessage("It would seem that " + player.getName()
+						+ " is joining us for the first time! Please welcome them.")
+						.toMessage().send(Bukkit.getOnlinePlayers(), false);
+				Discord discord = plugin.getModule(Discord.class);
+				discord.postMessage(discord.getBotName(), player.getName()
 						+ " is new! Please welcome them.", true);
 			} else {
-				player.sendMessage(Color.HAL + "We've reset classpect since you last played. Please re-select now!");
+				base.setMessage("We've reset classpect since you last played. Please re-select now!")
+						.toMessage().send(ImmutableList.of(player), false);
 			}
 			return user;
 		}
@@ -1041,8 +1050,11 @@ public class User {
 		if (name != null && !name.equalsIgnoreCase(offline.getName())) {
 			yaml.set("previousname", name);
 			String previous = offline.getName() + " was previously known as " + name;
-			Bukkit.broadcastMessage(Color.HAL + previous);
-			getPlugin().getModule(Discord.class).postMessage(Discord.BOT_NAME, previous, true);
+			Chat chat = plugin.getModule(Chat.class);
+			chat.getHalBase().setChannel(chat.getChannelManager().getChannel("#"))
+					.setMessage(previous).toMessage().send(Bukkit.getOnlinePlayers(), false);
+			Discord discord = getPlugin().getModule(Discord.class);
+			discord.postMessage(discord.getBotName(), previous, true);
 		}
 	}
 }

@@ -66,7 +66,7 @@ public class MinecraftModule extends DiscordModule {
 
 	public void handleCommand(DiscordPlayer player, String command, IChannel channel) {
 		if (player.hasPendingCommand()) {
-			getDiscord().postMessage(Discord.BOT_NAME, "You already have a pending command. Please be patient.", channel.getID());
+			getDiscord().postMessage(getDiscord().getBotName(), "You already have a pending command. Please be patient.", channel.getID());
 			return;
 		}
 		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getDiscord().getPlugin(),
@@ -95,7 +95,7 @@ public class MinecraftModule extends DiscordModule {
 					count++;
 				}
 				if (future.isCancelled() || !future.isDone()) {
-					getDiscord().postMessage(Discord.BOT_NAME, "Command " + command + " from " + player.getName() + " timed out.", channel.getID());
+					getDiscord().postMessage(getDiscord().getBotName(), "Command " + command + " from " + player.getName() + " timed out.", channel.getID());
 					player.stopMessages();
 					return;
 				}
@@ -106,7 +106,7 @@ public class MinecraftModule extends DiscordModule {
 				if (message.isEmpty()) {
 					return;
 				}
-				getDiscord().postMessage(Discord.BOT_NAME, message, channel.getID());
+				getDiscord().postMessage(getDiscord().getBotName(), message, channel.getID());
 			}
 		}.runTaskAsynchronously(getDiscord().getPlugin());
 	}
@@ -117,11 +117,11 @@ public class MinecraftModule extends DiscordModule {
 			int newline = content.indexOf('\n');
 			boolean delete = false;
 			if (newline > 0) {
-				getDiscord().postMessage(Discord.BOT_NAME, "Newlines are not allowed in messages to Minecraft, <@"
+				getDiscord().postMessage(getDiscord().getBotName(), "Newlines are not allowed in messages to Minecraft, <@"
 						+ message.getAuthor().getID() + ">", message.getChannel().getID());
 				delete = true;
 			} else if (content.length() > 255) {
-				getDiscord().postMessage(Discord.BOT_NAME, "Messages from Discord may not be over 255 characters, <@"
+				getDiscord().postMessage(getDiscord().getBotName(), "Messages from Discord may not be over 255 characters, <@"
 						+ message.getAuthor().getID() + ">", message.getChannel().getID());
 				delete = true;
 			}

@@ -25,7 +25,7 @@ public class Halculator extends HalMessageHandler {
 
 	public Halculator(Sblock plugin) {
 		super(plugin);
-		hal = new MessageBuilder(plugin).setSender(ChatColor.DARK_RED + "Lil Hal").setNameClick("/halc ")
+		hal = new MessageBuilder(plugin).setSender(ChatColor.DARK_RED + plugin.getBotName()).setNameClick("/halc ")
 				.setNameHover(JSONUtil.fromLegacyText(ChatColor.RED + "Calculator\n"
 						+ ChatColor.DARK_RED + "For long or multiple\nequations, use /halc"));
 	}

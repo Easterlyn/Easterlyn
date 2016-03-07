@@ -14,6 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.discord.Discord;
+import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
@@ -29,11 +30,13 @@ import co.sblock.utilities.InventoryUtils;
 public class PlaceListener extends SblockListener {
 
 	private final Discord discord;
+	private final Events events;
 	private final Machines machines;
 
 	public PlaceListener(Sblock plugin) {
 		super(plugin);
 		this.discord = plugin.getModule(Discord.class);
+		this.events = plugin.getModule(Events.class);
 		this.machines = plugin.getModule(Machines.class);
 	}
 
@@ -46,6 +49,13 @@ public class PlaceListener extends SblockListener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 
 		Player player = event.getPlayer();
+
+		if (player.getGameMode() == GameMode.CREATIVE && !player.hasPermission("sblock.felt")
+				&& events.getCreativeBlacklist().contains(event.getItemInHand().getType())) {
+			event.setCancelled(true);
+			return;
+		}
+
 		Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(event.getBlock());
 		if (pair != null) {
 			// Block registered as part of a machine. Most likely removed by explosion or similar.

@@ -67,7 +67,7 @@ public class JoinListener extends SblockListener {
 					return;
 				}
 
-				discord.postMessage(Discord.BOT_NAME, player.getDisplayName() + " logs in.", true);
+				discord.postMessage(discord.getBotName(), player.getDisplayName() + " logs in.", true);
 
 				User user = users.getUser(player.getUniqueId());
 				user.handleLoginChannelJoins();

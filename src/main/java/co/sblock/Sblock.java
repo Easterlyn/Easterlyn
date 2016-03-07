@@ -42,29 +42,11 @@ import com.google.common.collect.ImmutableList;
 
 import com.mojang.authlib.GameProfile;
 
-import co.sblock.captcha.Captcha;
-import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
 import co.sblock.commands.SblockCommandAlias;
-import co.sblock.discord.Discord;
-import co.sblock.effects.Effects;
-import co.sblock.events.Events;
-import co.sblock.machines.Machines;
-import co.sblock.micromodules.AwayFromKeyboard;
-import co.sblock.micromodules.Cooldowns;
-import co.sblock.micromodules.FreeCart;
-import co.sblock.micromodules.Godule;
-import co.sblock.micromodules.Holograms;
-import co.sblock.micromodules.Meteors;
-import co.sblock.micromodules.ParticleUtils;
-import co.sblock.micromodules.Protections;
-import co.sblock.micromodules.RawAnnouncer;
-import co.sblock.micromodules.SleepVote;
-import co.sblock.micromodules.Spectators;
 import co.sblock.module.Dependencies;
 import co.sblock.module.Dependency;
 import co.sblock.module.Module;
-import co.sblock.users.Users;
 import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -97,35 +79,25 @@ public class Sblock extends JavaPlugin {
 			getLogger().severe(TextUtils.getTrace(e));
 		}
 
+		saveDefaultConfig();
+
 		createBasePermissions();
 
 		modules = new LinkedHashMap<>();
 
-		addModule(new Cooldowns(this));
-		addModule(new Discord(this));
-		addModule(new Chat(this));
-		addModule(new RawAnnouncer(this));
-		addModule(new AwayFromKeyboard(this));
-
-		addModule(new Users(this));
-
-		addModule(new ParticleUtils(this));
-		addModule(new FreeCart(this));
-
-		addModule(new Effects(this));
-		addModule(new Captcha(this));
-		addModule(new Holograms(this));
-		addModule(new Protections(this));
-		// Machines depends on Captcha, Effects, Holograms, Protections, and Users to construct
-		addModule(new Machines(this));
-
-
-		addModule(new Meteors(this));
-		addModule(new SleepVote(this));
-		addModule(new Spectators(this));
-		addModule(new Godule(this));
-
-		addModule(new Events(this));
+		for (String moduleClazzName : getConfig().getStringList("modules")) {
+			try {
+				@SuppressWarnings("unchecked")
+				Class<Module> moduleClazz = (Class<Module>) Class.forName(moduleClazzName);
+				Constructor<Module> constructor = moduleClazz.getConstructor(this.getClass());
+				addModule(constructor.newInstance(this));
+			} catch (ClassNotFoundException | ClassCastException | NoSuchMethodException
+					| SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException e) {
+				getLogger().severe("Unable to load module with class " + moduleClazzName);
+				getLogger().severe(TextUtils.getTrace(e));
+			}
+		}
 
 		for (Module module : modules.values()) {
 			module.enable();
@@ -143,7 +115,7 @@ public class Sblock extends JavaPlugin {
 			cmdMapKnownCommands = map;
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			getLogger().severe("Unable to modify SimpleCommandMap.knownCommands! No commands will be registered!");
-			e.printStackTrace();
+			getLogger().severe(TextUtils.getTrace(e));
 			return;
 		}
 
@@ -410,6 +382,10 @@ public class Sblock extends JavaPlugin {
 		@SuppressWarnings("unchecked")
 		HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
 		return ImmutableList.copyOf(cmdMapKnownCommands.keySet());
+	}
+
+	public String getBotName() {
+		return getConfig().getString("bot name", "Lil Hal");
 	}
 
 	public GameProfile getFakeGameProfile(String name) {

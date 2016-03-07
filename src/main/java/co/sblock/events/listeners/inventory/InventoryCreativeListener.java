@@ -6,6 +6,7 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
+import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.utilities.InventoryUtils;
 
@@ -17,16 +18,11 @@ import co.sblock.utilities.InventoryUtils;
  */
 public class InventoryCreativeListener extends SblockListener {
 
-	private final Material[] blacklist = new Material[] { Material.ACTIVATOR_RAIL,
-			Material.BARRIER, Material.BEDROCK, Material.COMMAND, Material.COMMAND_MINECART,
-			Material.DETECTOR_RAIL, Material.ENDER_PORTAL, Material.ENDER_PORTAL_FRAME,
-			Material.EXPLOSIVE_MINECART, Material.HOPPER_MINECART, Material.JUKEBOX,
-			Material.MINECART, Material.MOB_SPAWNER, Material.MONSTER_EGG, Material.MONSTER_EGGS,
-			Material.POWERED_MINECART, Material.POWERED_RAIL, Material.RAILS,
-			Material.STORAGE_MINECART, Material.TNT };
+	private final Events events;
 
 	public InventoryCreativeListener(Sblock plugin) {
 		super(plugin);
+		this.events = plugin.getModule(Events.class);
 	}
 
 	/**
@@ -48,10 +44,9 @@ public class InventoryCreativeListener extends SblockListener {
 		}
 
 		// Blacklist
-		for (Material m : blacklist) {
-			if (event.getCursor().getType() == m) {
-				event.setCancelled(true);
-			}
+		if (events.getCreativeBlacklist().contains(event.getCursor().getType())) {
+			event.setCancelled(true);
+			return;
 		}
 
 		ItemStack cleanedItem = InventoryUtils.cleanNBT(event.getCursor());

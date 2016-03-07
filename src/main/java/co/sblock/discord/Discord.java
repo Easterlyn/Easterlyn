@@ -62,8 +62,6 @@ import sx.blah.discord.util.HTTP429Exception;
  */
 public class Discord extends Module {
 
-	public static final String BOT_NAME = "Sbot";
-
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
 			spaceword = Pattern.compile("(\\s*)(\\S*)");
@@ -73,7 +71,7 @@ public class Discord extends Module {
 	private final YamlConfiguration discordData;
 	private final Cache<IMessage, String> pastMainMessages;
 
-	private String channelMain, channelLog, channelReports;
+	private String botName, channelMain, channelLog, channelReports;
 	private String login, password;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
@@ -125,6 +123,7 @@ public class Discord extends Module {
 
 	@Override
 	protected void onEnable() {
+		botName = getConfig().getString("discord.username", "Sbot");
 		login = getConfig().getString("discord.login");
 		password = getConfig().getString("discord.password");
 		channelMain = getConfig().getString("discord.chat.main");
@@ -244,6 +243,7 @@ public class Discord extends Module {
 	public YamlConfiguration loadConfig() {
 		super.loadConfig();
 
+		botName = getConfig().getString("discord.username", "Sbot");
 		login = getConfig().getString("discord.login");
 		password = getConfig().getString("discord.password");
 		channelMain = getConfig().getString("discord.chat.main");
@@ -253,10 +253,14 @@ public class Discord extends Module {
 		return getConfig();
 	}
 
+	public String getBotName() {
+		return botName;
+	}
+
 	private void resetBotName() {
-		if (!client.getOurUser().getName().equals(BOT_NAME)) {
+		if (!client.getOurUser().getName().equals(this.getBotName())) {
 			try {
-				client.changeUsername(BOT_NAME);
+				client.changeUsername(this.getBotName());
 			} catch (HTTP429Exception | DiscordException e) {
 				// Nothing we can do about this, really
 			}
@@ -355,7 +359,7 @@ public class Discord extends Module {
 	}
 
 	public void log(String message) {
-		postMessage(BOT_NAME, message, getLogChannel());
+		postMessage(this.getBotName(), message, getLogChannel());
 	}
 
 	public void postMessage(Message message, boolean global) {
@@ -363,7 +367,7 @@ public class Discord extends Module {
 			postMessage((message.isThirdPerson() ? "* " : "") + message.getSenderName(),
 					message.getDiscordMessage(), getMainChannel());
 		}
-		postMessage(BOT_NAME, message.getConsoleMessage(), getLogChannel());
+		postMessage(this.getBotName(), message.getConsoleMessage(), getLogChannel());
 	}
 
 	public void postMessage(String name, String message, boolean global) {
@@ -426,7 +430,7 @@ public class Discord extends Module {
 					}
 				}
 				IMessage posted = group.sendMessage(message);
-				if (channel.equals(getMainChannel()) && !name.equals(BOT_NAME)) {
+				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
 					StringBuilder builder = new StringBuilder().append("**")
 							.append(toEscape.matcher(name).replaceAll("\\\\$1"));
 					if (!name.startsWith("* ")) {
@@ -440,7 +444,7 @@ public class Discord extends Module {
 	}
 
 	public void postReport(String message) {
-		postMessage(Discord.BOT_NAME, message, getReportChannel());
+		postMessage(this.getBotName(), message, getReportChannel());
 	}
 
 	public LoadingCache<Object, Object> getAuthCodes() {

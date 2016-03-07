@@ -53,7 +53,7 @@ public class HalCommand extends SblockCommand {
 				}
 				message = announcer.getMessages().get(msgNum - 1);
 			} catch (NumberFormatException e) {
-				message = new MessageBuilder((Sblock) getPlugin()).setSender(ChatColor.DARK_RED + "Lil Hal")
+				message = new MessageBuilder((Sblock) getPlugin()).setSender(ChatColor.DARK_RED + ((Sblock) getPlugin()).getBotName())
 						.setChannel(manager.getChannel("#")).setNameClick("/report ")
 						.setMessage(StringUtils.join(args, ' ')).toMessage();
 			}

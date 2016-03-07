@@ -13,6 +13,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
@@ -23,8 +24,11 @@ import co.sblock.commands.SblockCommand;
  */
 public class UnSuperBanCommand extends SblockCommand {
 
+	private final Chat chat;
+
 	public UnSuperBanCommand(Sblock plugin) {
 		super(plugin, "unban");
+		this.chat = plugin.getModule(Chat.class);
 		this.setAliases("unsban", "pardon", "unbanip", "pardonip");
 		this.setDescription("DO THE WINDY THING.");
 		this.setUsage("/unsban <UUID|name|IP>");
@@ -54,7 +58,9 @@ public class UnSuperBanCommand extends SblockCommand {
 			sender.sendMessage(Color.GOOD + "Not globally announcing unban: " + args[0]
 					+ " may be an IP.");
 		} else {
-			Bukkit.broadcastMessage(Color.HAL + args[0] + " has been unbanned.");
+			chat.getHalBase().setChannel(chat.getChannelManager().getChannel("#"))
+					.setMessage(args[0] + " has been unbanned.").toMessage()
+					.send(Bukkit.getOnlinePlayers(), false);
 		}
 		return true;
 	}

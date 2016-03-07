@@ -18,10 +18,13 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.collect.ImmutableList;
+
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Color;
 import co.sblock.chat.ai.HalMessageHandler;
+import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -32,7 +35,6 @@ import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.users.User;
 import co.sblock.users.Users;
-import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.TextUtils;
 import co.sblock.utilities.WrappedSenderPlayer;
 
@@ -59,6 +61,7 @@ public class AsyncChatListener extends SblockListener {
 			"Error: Test results contaminated.", "tset", "PONG."};
 
 	private final AwayFromKeyboard afk;
+	private final Chat chat;
 	private final Cooldowns cooldowns;
 	private final Discord discord;
 	private final Users users;
@@ -70,6 +73,7 @@ public class AsyncChatListener extends SblockListener {
 	public AsyncChatListener(Sblock plugin) {
 		super(plugin);
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
+		this.chat = plugin.getModule(Chat.class);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.discord = plugin.getModule(Discord.class);
 		this.users = plugin.getModule(Users.class);
@@ -177,8 +181,8 @@ public class AsyncChatListener extends SblockListener {
 			}
 
 			if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
-				player.sendMessage(Color.HAL
-						+ "RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
+				messageLater(player, message.getChannel(),
+						"RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
 				event.setCancelled(true);
 				return;
 			}
@@ -205,8 +209,8 @@ public class AsyncChatListener extends SblockListener {
 			event.getRecipients().clear();
 			event.getRecipients().add(player);
 			if (sender.getChatViolationLevel() > 8 && sender.getChatWarnStatus()) {
-				sendMessageOnDelay(player, Color.HAL.replace("#", message.getChannel().getName())
-						+ "You were asked not to spam. This mute will last 5 minutes.");
+				messageLater(player, message.getChannel(),
+						"You were asked not to spam. This mute will last 5 minutes.");
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 						String.format("mute %s 5m", player.getName()));
 				discord.postReport("Automatically muted " + player.getName()
@@ -215,8 +219,7 @@ public class AsyncChatListener extends SblockListener {
 				return;
 			}
 			if (sender.getChatViolationLevel() > 3 && !sender.getChatWarnStatus()) {
-				sendMessageOnDelay(player, Color.HAL.replace("#", message.getChannel().getName())
-						+ "You appear to be spamming. Please slow down chat.");
+				messageLater(player, message.getChannel(), "You appear to be spamming. Please slow down chat.");
 				sender.setChatWarnStatus(true);
 			}
 		}
@@ -243,7 +246,7 @@ public class AsyncChatListener extends SblockListener {
 		}
 
 		// Manually send messages to each player so we can wrap links, etc.
-		message.send(event.getRecipients(), !(event instanceof SblockAsyncChatEvent));
+		message.send(event.getRecipients(), event instanceof SblockAsyncChatEvent, true);
 
 		// Post messages to Discord
 		discord.postMessage(message, publishGlobally);
@@ -296,12 +299,12 @@ public class AsyncChatListener extends SblockListener {
 
 		if (!world.equals("Derspit") && !world.equals("DreamBubble")
 				&& claimPattern.matcher(message.getMessage()).find()) {
-			sendMessageOnDelay(player,Color.GOOD
-					+ "For information about claims, watch https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1");
+			messageLater(player, message.getChannel(),
+					"For information about claims, watch https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1");
 		}
 		if (trappedPattern.matcher(message.getMessage()).find()) {
 			// Improvement over GP: Pattern ignores case and matches in substrings of words
-			sendMessageOnDelay(player, Color.GOOD + "Trapped in someone's land claim? Try "
+			messageLater(player, message.getChannel(), "Trapped in someone's land claim? Try "
 					+ Color.COMMAND + "/trapped");
 		}
 
@@ -459,18 +462,21 @@ public class AsyncChatListener extends SblockListener {
 		return false;
 	}
 
-	private void sendMessageOnDelay(final Player player, final String message) {
+	private void messageLater(final Player player, final Channel channel, final String message) {
 		if (player.spigot() == null) {
 			return;
 		}
+		final UUID uuid = player.getUniqueId();
 		new BukkitRunnable() {
 			@Override
 			public void run() {
+				Player player = Bukkit.getPlayer(uuid);
 				if (player != null) {
-					player.spigot().sendMessage(JSONUtil.fromLegacyText(message));
+					chat.getHalBase().setChannel(channel).setMessage(message).toMessage()
+							.send(ImmutableList.of(player));
 				}
 			}
-		}.runTaskLater(getPlugin(), 5L);
+		}.runTaskLater(getPlugin(), 1L);
 	}
 
 	private void unregisterChatListeners() {

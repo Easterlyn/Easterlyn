@@ -14,6 +14,8 @@ import co.sblock.module.Module;
 import co.sblock.users.Users;
 import co.sblock.utilities.DummyPlayer;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class Chat extends Module {
 
 	private final ChannelManager channelManager;
@@ -45,6 +47,11 @@ public class Chat extends Module {
 
 	public ChannelManager getChannelManager() {
 		return channelManager;
+	}
+
+	public MessageBuilder getHalBase() {
+		return new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + getPlugin().getBotName())
+				.setNameClick("/report ").setNameHover(ChatColor.RED + "Artifical Intelligence");
 	}
 
 	public CleverHal getHal() {

@@ -39,7 +39,7 @@ public abstract class DiscordCommand {
 
 	public void execute(IUser sender, IChannel channel, String original, String[] args) {
 		if (!hasRequiredPermissions(sender, channel)) {
-			discord.postMessage(Discord.BOT_NAME, "<@" + sender.getID()
+			discord.postMessage(discord.getBotName(), "<@" + sender.getID()
 					+ ">, you do not have access to this command.", channel.getID());
 			String log = String.format("%s[%s] was denied access to command in #%s[%s]: %s",
 					sender.getName(), sender.getID(), channel.getName(), channel.getID(), original);
@@ -49,7 +49,7 @@ public abstract class DiscordCommand {
 		}
 
 		if (!onCommand(sender, channel, args)) {
-			discord.postMessage(Discord.BOT_NAME, usage, channel.getID());
+			discord.postMessage(discord.getBotName(), usage, channel.getID());
 		}
 		String log = String.format("Command in #%s[%s] from %s[%s]: %s",
 				channel.getName(), channel.getID(), sender.getName(), sender.getID(), original);

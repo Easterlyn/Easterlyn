@@ -95,7 +95,7 @@
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
       <artifactId>ProtocolLib</artifactId>
-      <version>3.6.5-SNAPSHOT</version>
+      <version>3.6.6-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <!-- Local repo plugin dependencies -->

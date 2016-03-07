@@ -18,8 +18,9 @@ public class FillMapCommand extends SblockAsynchronousCommand {
 
 	public FillMapCommand(Sblock plugin) {
 		super(plugin, "fillmap");
-		setPermissionLevel("denizen");
-		setUsage("/fillmap <map id>");
+		this.setAliases("rendermap");
+		this.setPermissionLevel("denizen");
+		this.setUsage("/fillmap <map id>");
 	}
 
 	@Override

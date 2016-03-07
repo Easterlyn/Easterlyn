@@ -125,11 +125,15 @@ public class Message {
 	}
 
 	public <T> void send(Collection<T> recipients) {
-		this.send(recipients, false);
+		this.send(recipients, true, true);
 	}
 
-	public <T> void send(Collection<T> recipients, boolean normalChat) {
-		if (!normalChat || !(channel instanceof RegionChannel)) {
+	public <T> void send(Collection<T> recipients, boolean highlight) {
+		this.send(recipients, true, highlight);
+	}
+
+	public <T> void send(Collection<T> recipients, boolean log, boolean doHighlight) {
+		if (log || !(channel instanceof RegionChannel)) {
 			Logger.getLogger("Minecraft").info(getConsoleMessage());
 		}
 
@@ -165,22 +169,22 @@ public class Message {
 				throw new RuntimeException("Invalid recipient type: " + object.getClass());
 			}
 
-			User u = users.getUser(uuid);
-			if (player == null || !u.isOnline() || player.spigot() == null
-					|| channel instanceof RegionChannel && u.getSuppression()) {
+			User recipient = users.getUser(uuid);
+			if (player == null || !recipient.isOnline() || player.spigot() == null
+					|| channel instanceof RegionChannel && recipient.getSuppression()) {
 				continue;
 			}
 
 			BaseComponent message = messageComponent.duplicate();
 
-			if (channel.equals(u.getCurrentChannel())) {
+			if (channel.equals(recipient.getCurrentChannel())) {
 				message.setColor(ChatColor.WHITE);
 			} else {
 				message.setColor(ChatColor.GRAY);
 			}
 
-			if (sender != null && (sender.equals(u) || !sender.getHighlight())) {
-				// No self-highlight.
+			if (!doHighlight || sender != null && (sender.equals(recipient) || !recipient.getHighlight())) {
+				// Highlights are disabled for this message or the sender is this recipient.
 				player.spigot().sendMessage(channelComponent, nameComponent, message);
 				continue;
 			}
@@ -189,7 +193,7 @@ public class Message {
 
 			StringBuilder patternString = new StringBuilder("(^|\\W)(\\Q");
 			int baseLength = patternString.length();
-			for (String highlightString : u.getHighlights(getChannel())) {
+			for (String highlightString : recipient.getHighlights(getChannel())) {
 				if (patternString.length() > baseLength) {
 					patternString.append("\\E|\\Q");
 				}
@@ -201,7 +205,7 @@ public class Message {
 				pattern = Pattern.compile(patternString.toString(), Pattern.CASE_INSENSITIVE);
 			} catch (PatternSyntaxException e) {
 				// Display name most likely contains unescaped characters in a nick channel
-				pattern = Pattern.compile(u.getPlayerName(), Pattern.CASE_INSENSITIVE);
+				pattern = Pattern.compile(recipient.getPlayerName(), Pattern.CASE_INSENSITIVE);
 			}
 			for (BaseComponent component : message.getExtra()) {
 				TextComponent text = (TextComponent) component;
