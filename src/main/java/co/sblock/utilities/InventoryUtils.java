@@ -390,6 +390,10 @@ public class InventoryUtils {
 		return event.getHand() == EquipmentSlot.HAND;
 	}
 
+	public static ItemStack getHeldItem(PlayerInteractEvent event) {
+		return getHeldItem(event.getPlayer().getInventory(), isMainHand(event));
+	}
+
 	public static ItemStack getHeldItem(PlayerInventory inv, boolean mainHand) {
 		return mainHand ? inv.getItemInMainHand() : inv.getItemInOffHand();
 	}

@@ -20,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -39,6 +40,7 @@ import co.sblock.effects.effect.Effect;
 import co.sblock.micromodules.Cooldowns;
 import co.sblock.module.Module;
 import co.sblock.users.UserAspect;
+import co.sblock.utilities.InventoryUtils;
 import co.sblock.utilities.NumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -186,9 +188,10 @@ public class Effects extends Module {
 		Map<Effect, Integer> effects;
 		if (reactive) {
 			effects = getEffects(bypassMax, entity.getEquipment().getArmorContents());
+		} else if (event instanceof PlayerInteractEvent) {
+			effects = getEffects(bypassMax, InventoryUtils.getHeldItem((PlayerInteractEvent) event));
 		} else {
-			effects = getEffects(bypassMax, entity.getEquipment().getItemInMainHand(),
-					entity.getEquipment().getItemInOffHand());
+			effects = getEffects(bypassMax, entity.getEquipment().getItemInMainHand());
 		}
 		// TODO Godtier effects
 //		if (entity instanceof Player) {

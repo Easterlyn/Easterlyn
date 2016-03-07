@@ -1,5 +1,8 @@
 package co.sblock.events.listeners.player;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
@@ -47,6 +50,7 @@ public class InteractListener extends SblockListener {
 	private final Machines machines;
 	private final SleepVote sleep;
 	private final Users users;
+	private final Set<Material> bypassable;
 
 	public InteractListener(Sblock plugin) {
 		super(plugin);
@@ -58,6 +62,13 @@ public class InteractListener extends SblockListener {
 		this.machines = plugin.getModule(Machines.class);
 		this.sleep = plugin.getModule(SleepVote.class);
 		this.users = plugin.getModule(Users.class);
+
+		bypassable = new HashSet<>();
+		for (Material material : Material.values()) {
+			if (!material.isOccluding() && material != Material.WATER && material != Material.STATIONARY_WATER) {
+				bypassable.add(material);
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -190,10 +201,6 @@ public class InteractListener extends SblockListener {
 		if (held.getType() == Material.GLASS_BOTTLE
 				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottle") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight((java.util.Set<Material>) null, 4)) {
-				if (block.getType().isOccluding()) {
-					// Stairs, steps, etc. can be clicked through. Only occluding blocks are guaranteed safe.
-					break;
-				}
 				if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
 					return;
 				}
