@@ -6,7 +6,7 @@ author: Sblock Co.
 authors: [Jikoo, Dublek, FireNG, tmathmeyer]
 description: Sblock's sexy mainframe
 depend: [GriefPrevention, ProtocolLib, WorldEdit, WorldGuard]
-softdepend: [CreeperHeal, dynmap, HolographicDisplays, Regionerator, zPermissions]
+softdepend: [CreeperHeal, dynmap, Regionerator, zPermissions]
 
 permissions:
  sblock.ask.adam.before.touching:

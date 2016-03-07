@@ -34,8 +34,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.machines.Machines;
@@ -116,11 +114,8 @@ public class Transportalizer extends Machine {
 	}
 
 	public void setFuel(ConfigurationSection storage, long fuel) {
-		Hologram hologram = holograms.getHologram(getHoloLocation(storage));
-		if (hologram != null) {
-			hologram.clearLines();
-			hologram.appendTextLine(String.valueOf(fuel));
-		}
+		ArmorStand hologram = holograms.getOrCreateHologram(getHoloLocation(storage));
+		hologram.setCustomName(String.valueOf(fuel));
 		storage.set("fuel", fuel);
 	}
 
@@ -395,16 +390,16 @@ public class Transportalizer extends Machine {
 
 	@Override
 	public void enable(ConfigurationSection storage) {
-		Hologram hologram = holograms.getHologram(getHoloLocation(storage));
-		if (hologram != null) {
-			hologram.clearLines();
-			hologram.appendTextLine(String.valueOf(getFuel(storage)));
-		}
+		ArmorStand hologram = holograms.getOrCreateHologram(getHoloLocation(storage));
+		hologram.setCustomName(String.valueOf(getFuel(storage)));
 	}
 
 	@Override
 	public void disable(ConfigurationSection storage) {
-		holograms.removeHologram(getHoloLocation(storage));
+		ArmorStand hologram = holograms.getHologram(getHoloLocation(storage));
+		if (hologram != null) {
+			hologram.remove();
+		}
 	}
 
 	@Override
