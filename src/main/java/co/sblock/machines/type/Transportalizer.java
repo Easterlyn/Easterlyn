@@ -110,7 +110,7 @@ public class Transportalizer extends Machine {
 	}
 
 	private Location getHoloLocation(ConfigurationSection storage) {
-		return getKey(storage).add(Shape.getRelativeVector(getDirection(storage), new Vector(0.5, 1.0, 1.5)));
+		return getKey(storage).add(Shape.getRelativeVector(getDirection(storage), new Vector(0.5, 1.1, 1.5)));
 	}
 
 	public void setFuel(ConfigurationSection storage, long fuel) {

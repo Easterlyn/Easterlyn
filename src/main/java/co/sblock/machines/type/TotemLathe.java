@@ -173,18 +173,28 @@ public class TotemLathe extends Machine	{
 				Inventory open = player.getOpenInventory().getTopInventory();
 				ItemStack card = null;
 				ItemStack result = null;
-				if (CruxiteDowel.isBlankDowel(open.getItem(0))) {
-					card = open.getItem(1);
-				} else if (CruxiteDowel.isBlankDowel(open.getItem(1))) {
-					card = open.getItem(0);
+				ItemStack slot0 = open.getItem(0);
+				ItemStack slot1 = open.getItem(1);
+				if (CruxiteDowel.isBlankDowel(slot0)) {
+					card = slot1;
+				} else if (CruxiteDowel.isBlankDowel(slot1)) {
+					card = slot0;
 				}
 				if (Captcha.isPunch(card)) {
 					result = CruxiteDowel.carve(card);
 				}
+				if (slot0 != null) {
+					slot0 = slot0.clone();
+					slot0.setAmount(1);
+				}
+				if (slot1 != null) {
+					slot1 = slot1.clone();
+					slot1.setAmount(1);
+				}
 				// Set items
 				open.setItem(2, result);
 				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-						new ImmutableTriple<>(open.getItem(0), open.getItem(1), result));
+						new ImmutableTriple<>(slot0, slot1, result));
 				InventoryUtils.updateWindowSlot(player, 2);
 			}
 		});

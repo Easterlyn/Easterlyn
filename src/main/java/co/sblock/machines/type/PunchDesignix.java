@@ -193,6 +193,7 @@ public class PunchDesignix extends Machine {
 					return;
 				}
 				Inventory open = player.getOpenInventory().getTopInventory();
+				// TODO this seems to fail to update properly when punch in slot 0 is re-punched
 				ItemStack result = captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
 				open.setItem(2, result);
 				ItemStack inputSlot1 = open.getItem(0);

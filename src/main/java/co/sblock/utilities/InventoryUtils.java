@@ -440,8 +440,8 @@ public class InventoryUtils {
 		}
 		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 		nmsPlayer.playerConnection.sendPacket(
-				new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, 0,
-						nmsPlayer.activeContainer.getSlot(0).getItem()));
+				new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, slot,
+						nmsPlayer.activeContainer.getSlot(slot).getItem()));
 	}
 
 	public static void changeWindowName(Player player, String name) {

@@ -1,7 +1,9 @@
 package co.sblock.micromodules;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -24,7 +26,15 @@ public class Holograms extends Module {
 	protected void onEnable() { }
 
 	@Override
-	protected void onDisable() { }
+	protected void onDisable() {
+		for (World world : Bukkit.getWorlds()) {
+			for (Entity entity : world.getEntities()) {
+				if (isHologram(entity)) {
+					entity.remove();
+				}
+			}
+		}
+	}
 
 	public ArmorStand makeHologram(Location location) {
 		ArmorStand stand = location.getWorld().spawn(location, ArmorStand.class);
@@ -53,7 +63,7 @@ public class Holograms extends Module {
 	}
 
 	private ArmorStand getHologram(Location location, boolean create) {
-		for (Entity entity : location.getWorld().getNearbyEntities(location, 0, 0, 0)) {
+		for (Entity entity : location.getWorld().getNearbyEntities(location, 0.1, 0.1, 0.1)) {
 			if (isHologram(entity)) {
 				return (ArmorStand) entity;
 			}
