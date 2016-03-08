@@ -145,6 +145,7 @@ public class Users extends Module {
 				: prefixBuilder.substring(prefixBuilder.length() - 16, prefixBuilder.length());
 		team.setPrefix(prefix);
 		team.addEntry(player.getName());
+		team.addEntry(player.getPlayerListName());
 
 		Objective objective = board.getObjective("deaths");
 		if (objective == null) {
