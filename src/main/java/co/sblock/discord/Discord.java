@@ -22,12 +22,9 @@ import org.bukkit.scheduler.BukkitTask;
 
 import org.reflections.Reflections;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 
 import co.sblock.Sblock;
 import co.sblock.chat.message.Message;
@@ -69,7 +66,6 @@ public class Discord extends Module {
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
-	private final Cache<IMessage, String> pastMainMessages;
 
 	private String botName, channelMain, channelLog, channelReports;
 	private String login, password;
@@ -97,21 +93,6 @@ public class Discord extends Module {
 						return code;
 					};
 				});
-
-		pastMainMessages = CacheBuilder.newBuilder().expireAfterWrite(15L, TimeUnit.SECONDS).maximumSize(5)
-				.removalListener(new RemovalListener<IMessage, String>() {
-					@Override
-					public void onRemoval(RemovalNotification<IMessage, String> notification) {
-						drainQueueThread.queue(new DiscordCallable(CallPriority.HIGH, true) {
-							@Override
-							public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
-								// Editing messages causes them to use the current name.
-								resetBotName();
-								notification.getKey().edit(notification.getValue());
-							}
-						});
-					}
-				}).build();
 
 		File file = new File(plugin.getDataFolder(), "DiscordData.yml");
 		if (file.exists()) {
@@ -211,7 +192,6 @@ public class Discord extends Module {
 
 	@Override
 	protected void onDisable() {
-		pastMainMessages.invalidateAll();
 		if (client != null) {
 			resetBotName();
 			/*
@@ -303,8 +283,6 @@ public class Discord extends Module {
 				startQueueDrain();
 
 				resetBotName();
-				// In case no one is on or talking, clean up messages anyway
-				pastMainMessages.cleanUp();
 
 				for (DiscordModule module : modules.values()) {
 					module.doHeartbeat();
@@ -437,7 +415,14 @@ public class Discord extends Module {
 						builder.append(':');
 					}
 					builder.append("** ").append(message);
-					pastMainMessages.put(posted, builder.toString());
+					drainQueueThread.queue(new DiscordCallable(CallPriority.MEDIUM, true) {
+						@Override
+						public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
+							// Editing messages causes them to use the current name.
+							resetBotName();
+							posted.edit(builder.toString());
+						}
+					});
 				}
 			}
 		});
