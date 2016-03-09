@@ -49,6 +49,17 @@ public class QueueDrainThread extends Thread {
 					// Don't log when retrying, we only retry because of a Discord4J fault generally.
 					continue;
 				}
+				if ("Bot has not signed in yet!".equals(e.getErrorMessage())) {
+					try {
+						discord.getClient().login();
+						Thread.sleep(1000);
+						continue;
+					} catch (DiscordException de) {
+						break;
+					} catch (InterruptedException ie) {
+						ie.printStackTrace();
+					}
+				}
 				e.printStackTrace();
 			} catch (HTTP429Exception e) {
 				try {
