@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -82,36 +81,54 @@ public class InventoryUtils {
 	private static HashMap<String, String> items;
 	private static HashMultimap<String, String> itemsReverse;
 	private static HashSet<ItemStack> uniques;
-	private static final HashMap<Integer, Triple<PotionEffectType, Triple<Integer, Integer, Integer>, Integer>> potionEffects;
+	private static final HashMap<Integer, PotionEffectType> legacyPotionIDs;
+	private static final HashMap<PotionEffectType, Integer> potionEffectLevels;
 
 	static {
-		potionEffects = new HashMap<>();
-		potionEffects.put(1, new ImmutableTriple<>(PotionEffectType.REGENERATION,
-				new ImmutableTriple<>(1800, 3600, 9600), 1));
-		potionEffects.put(2, new ImmutableTriple<>(PotionEffectType.SPEED,
-				new ImmutableTriple<>(1800, 3600, 9600), 1));
-		potionEffects.put(3, new ImmutableTriple<>(PotionEffectType.FIRE_RESISTANCE,
-				new ImmutableTriple<>(3600, 3600, 9600), 0));
-		potionEffects.put(4, new ImmutableTriple<>(PotionEffectType.POISON,
-				new ImmutableTriple<>(420, 900, 1800), 1));
-		potionEffects.put(5, new ImmutableTriple<>(PotionEffectType.HEAL,
-				new ImmutableTriple<>(1, 1, 1), 1));
-		potionEffects.put(6, new ImmutableTriple<>(PotionEffectType.NIGHT_VISION,
-				new ImmutableTriple<>(3600, 3600, 9600), 0));
-		potionEffects.put(8, new ImmutableTriple<>(PotionEffectType.WEAKNESS,
-				new ImmutableTriple<>(1800, 1800, 4800), 0));
-		potionEffects.put(9, new ImmutableTriple<>(PotionEffectType.INCREASE_DAMAGE,
-				new ImmutableTriple<>(1800, 3600, 9600), 1));
-		potionEffects.put(10, new ImmutableTriple<>(PotionEffectType.SLOW,
-				new ImmutableTriple<>(1800, 1800, 4800), 0));
-		potionEffects.put(11, new ImmutableTriple<>(PotionEffectType.JUMP,
-				new ImmutableTriple<>(1800, 3600, 9600), 1));
-		potionEffects.put(12, new ImmutableTriple<>(PotionEffectType.HARM,
-				new ImmutableTriple<>(1, 1, 1), 1));
-		potionEffects.put(13, new ImmutableTriple<>(PotionEffectType.WATER_BREATHING,
-				new ImmutableTriple<>(3600, 3600, 9600), 0));
-		potionEffects.put(14, new ImmutableTriple<>(PotionEffectType.INVISIBILITY,
-				new ImmutableTriple<>(3600, 3600, 9600), 0));
+		legacyPotionIDs = new HashMap<>();
+		legacyPotionIDs.put(1, PotionEffectType.REGENERATION);
+		legacyPotionIDs.put(2, PotionEffectType.SPEED);
+		legacyPotionIDs.put(3, PotionEffectType.FIRE_RESISTANCE);
+		legacyPotionIDs.put(4, PotionEffectType.POISON);
+		legacyPotionIDs.put(5, PotionEffectType.HEAL);
+		legacyPotionIDs.put(6, PotionEffectType.NIGHT_VISION);
+		legacyPotionIDs.put(8, PotionEffectType.WEAKNESS);
+		legacyPotionIDs.put(9, PotionEffectType.INCREASE_DAMAGE);
+		legacyPotionIDs.put(10, PotionEffectType.SLOW);
+		legacyPotionIDs.put(11, PotionEffectType.JUMP);
+		legacyPotionIDs.put(12, PotionEffectType.HARM);
+		legacyPotionIDs.put(13, PotionEffectType.WATER_BREATHING);
+		legacyPotionIDs.put(14, PotionEffectType.INVISIBILITY);
+
+		potionEffectLevels = new HashMap<>();
+		// For unobtainable effect types, "max amplifier" is based on whether or not amplifier has any effect
+		potionEffectLevels.put(PotionEffectType.ABSORPTION, 1);
+		potionEffectLevels.put(PotionEffectType.BLINDNESS, 0);
+		potionEffectLevels.put(PotionEffectType.CONFUSION, 0);
+		potionEffectLevels.put(PotionEffectType.DAMAGE_RESISTANCE, 1);
+		potionEffectLevels.put(PotionEffectType.FAST_DIGGING, 1);
+		potionEffectLevels.put(PotionEffectType.FIRE_RESISTANCE, 0);
+		potionEffectLevels.put(PotionEffectType.GLOWING, 0);
+		potionEffectLevels.put(PotionEffectType.HARM, 1);
+		potionEffectLevels.put(PotionEffectType.HEAL, 1);
+		potionEffectLevels.put(PotionEffectType.HEALTH_BOOST, 0);
+		potionEffectLevels.put(PotionEffectType.HUNGER, 0);
+		potionEffectLevels.put(PotionEffectType.INCREASE_DAMAGE, 1);
+		potionEffectLevels.put(PotionEffectType.INVISIBILITY, 0);
+		potionEffectLevels.put(PotionEffectType.JUMP, 1);
+		potionEffectLevels.put(PotionEffectType.LEVITATION, 1);
+		potionEffectLevels.put(PotionEffectType.LUCK, 1);
+		potionEffectLevels.put(PotionEffectType.NIGHT_VISION, 0);
+		potionEffectLevels.put(PotionEffectType.POISON, 1);
+		potionEffectLevels.put(PotionEffectType.REGENERATION, 1);
+		potionEffectLevels.put(PotionEffectType.SATURATION, 1);
+		potionEffectLevels.put(PotionEffectType.SLOW, 0);
+		potionEffectLevels.put(PotionEffectType.SLOW_DIGGING, 1);
+		potionEffectLevels.put(PotionEffectType.SPEED, 1);
+		potionEffectLevels.put(PotionEffectType.UNLUCK, 1);
+		potionEffectLevels.put(PotionEffectType.WATER_BREATHING, 0);
+		potionEffectLevels.put(PotionEffectType.WEAKNESS, 0);
+		potionEffectLevels.put(PotionEffectType.WITHER, 1);
 	}
 
 	public static ItemStack convertLegacyPotion(ItemStack item) {
@@ -125,26 +142,28 @@ public class InventoryUtils {
 			return potion;
 		}
 
-		Triple<PotionEffectType, Triple<Integer, Integer, Integer>, Integer> data;
-		data = potionEffects.get(durability % 16);
+		PotionEffectType type = legacyPotionIDs.get(durability % 16);
 
-		if (data == null) {
+		if (type == null) {
 			potion.setItemMeta(potionMeta);
 			return potion;
 		}
 
-		int duration = data.getMiddle().getMiddle(), power = 0;
-		if (((durability >> 5) & 1) == 1) {
-			// Power is amplified
-			duration = data.getMiddle().getLeft();
-			power = data.getRight();
-		}
-		if (((durability >> 6) & 1) == 1) {
-			// Duration is extended
-			duration = data.getMiddle().getRight();
+		int power = potionEffectLevels.get(type);
+		double duration = 3600 * type.getDurationModifier();
+
+		if (!type.isInstant()) {
+			if (((durability >> 5) & 1) == 1 && power == 1) {
+				// Power is amplified, decrease duration
+				duration /= 2D;
+			}
+			if (((durability >> 6) & 1) == 1) {
+				// Duration is extended
+				duration *= 8D / 3D;
+			}
 		}
 
-		potionMeta.addCustomEffect(new PotionEffect(data.getLeft(), duration, power), true);
+		potionMeta.addCustomEffect(new PotionEffect(type, (int) duration, power), true);
 		potion.setItemMeta(potionMeta);
 
 		return potion;
@@ -175,12 +194,14 @@ public class InventoryUtils {
 		return items;
 	}
 
-	public static String getMaterialDataName(Material m, short durability) {
-		if (m.getMaxDurability() > 0) {
+	public static String getItemName(ItemStack item) {
+		Material material = item.getType();
+		short durability = item.getDurability();
+		if (material.getMaxDurability() > 0) {
 			// Degradable item
 			durability = 0;
 		}
-		String key = m.name() + ":" + durability;
+		String key = material.name() + ":" + durability;
 		String name = null;
 		if (getItems().containsKey(key)) {
 			name = items.get(key);
@@ -191,38 +212,70 @@ public class InventoryUtils {
 		 * tag. Because of that, we can't specify banner color based on data value.
 		 */
 		if (name == null) {
-			key = m.name() + ":0";
+			key = material.name() + ":0";
 			if (getItems().containsKey(key)) {
 				name = items.get(key);
 			}
 		}
-		if (m == Material.POTION || m == Material.SPLASH_POTION || m == Material.LINGERING_POTION
-				|| m == Material.TIPPED_ARROW) {
-			// TODO
-			return getPotionName(durability);
-		} else if (m == Material.MONSTER_EGG) {
-			// TODO
+		if (name == null) {
+			// Even special-cased materials should have an entry.
+			return "Unknown item. Please report this!";
 		}
-		return name != null ? name : "Unknown item. Please report this!";
+		if (material == Material.POTION || material == Material.SPLASH_POTION || material == Material.LINGERING_POTION
+				|| material == Material.TIPPED_ARROW) {
+			if (!item.hasItemMeta()) {
+				return name;
+			}
+			ItemMeta meta = item.getItemMeta();
+			if (meta instanceof PotionMeta) {
+				return TextUtils.getFriendlyName(material.name()) + " of " + getPotionName((PotionMeta) meta);
+			}
+			return name;
+		} else if (material == Material.MONSTER_EGG) {
+			return name;
+			// TODO Spigot's API does not yet support this.
+//			if (!item.hasItemMeta()) {
+//				return name;
+//			}
+//			ItemMeta meta = item.getItemMeta();
+//			if (meta instanceof SpawnEggMeta) {
+//				return TextUtils.getFriendlyName(((SpawnEggMeta) meta).getEntityType().name()) + name;
+//			}
+		}
+		return name;
 	}
 
-	private static String getPotionName(short durability) {
-		return "TODO";
+	private static String getPotionName(PotionMeta meta) {
+		if (!meta.hasCustomEffects()) {
+			return "No Effect";
+		}
+		if (meta.getCustomEffects().size() > 1) {
+			return "Multiple Effects";
+		}
+		PotionEffect effect = meta.getCustomEffects().get(0);
+		PotionEffectType type = effect.getType();
+		boolean extended = !type.isInstant() && effect.getDuration() > 3600 * type.getDurationModifier();
+		StringBuilder name = new StringBuilder();
+		if (extended) {
+			name.append("Extended ");
+		}
+		name.append(TextUtils.getFriendlyName(type.getName()));
+		if (effect.getAmplifier() > 0) {
+			// Effect power is 0-indexed
+			name.append(' ').append(NumberUtils.romanFromInt(effect.getAmplifier() + 1));
+		}
+		return name.toString();
 	}
 
-	@SuppressWarnings("deprecation")
-	public static boolean isMisleadinglyNamed(String name, Material m, short durability) {
+	public static boolean isMisleadinglyNamed(String name, Material material, short durability) {
 		getItems();
-		String id = m.getId() + ":" + durability;
+		String id = material.name() + ":" + durability;
 		boolean match = false;
 		for (String storedId : itemsReverse.get(name)) {
 			if (storedId.equals(id)) {
 				return false;
 			}
 			match = true;
-		}
-		if (!match) {
-			return name.matches("(\\w+ ){0,2}Potion of \\w+");
 		}
 		return match;
 	}

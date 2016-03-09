@@ -169,7 +169,7 @@ public class Captcha extends Module {
 		} else if (meta.hasDisplayName() && !InventoryUtils.isMisleadinglyNamed(meta.getDisplayName(), item.getType(), item.getDurability())) {
 			builder.append(meta.getDisplayName());
 		} else {
-			builder.append(InventoryUtils.getMaterialDataName(item.getType(), item.getDurability()));
+			builder.append(InventoryUtils.getItemName(item));
 		}
 		cardLore.add(builder.toString());
 		if (item.getType().getMaxDurability() > 0) {

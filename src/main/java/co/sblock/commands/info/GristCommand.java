@@ -75,7 +75,7 @@ public class GristCommand extends SblockCommand {
 		}
 		sender.sendMessage(String.format("%1$sYour %2$s%3$s%1$s would cost %2$s%4$s grist %1$sto recreate.",
 				Color.GOOD, Color.GOOD_EMPHASIS,
-				InventoryUtils.getMaterialDataName(hand.getType(), hand.getDurability()),
+				InventoryUtils.getItemName(hand),
 				CruxiteDowel.expCost(effects, hand)));
 		return true;
 	}

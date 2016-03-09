@@ -32,7 +32,7 @@ public class RecipeCommand extends SblockCommand {
 	public RecipeCommand(Sblock plugin) {
 		super(plugin, "recipe");
 		this.setDescription("Check a recipe");
-		this.setUsage("/recipe <material> [page] - check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
+		this.setUsage("/recipe <material>[:data] [page] - check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class RecipeCommand extends SblockCommand {
 		}
 		ItemStack result = new ItemStack(type.getLeft(), 1, type.getRight());
 		List<Recipe> recipes = Bukkit.getRecipesFor(result);
-		String friendlyName = InventoryUtils.getMaterialDataName(type.getLeft(), type.getRight());
+		String friendlyName = InventoryUtils.getItemName(result);
 		if (recipes.isEmpty()) {
 			sender.sendMessage(Color.BAD + "No recipes found for " + friendlyName);
 			return true;
