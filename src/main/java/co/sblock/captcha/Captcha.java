@@ -8,11 +8,10 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -23,9 +22,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 
 import co.sblock.Sblock;
 import co.sblock.effects.Effects;
@@ -46,17 +50,62 @@ public class Captcha extends Module {
 
 	protected static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
 
-	private final Map<Long, String> hashCacheAccess;
-	private final Map<String, ItemStack> hashCache;
+	private final LoadingCache<String, ItemStack> cache;
 
 	private Effects effects;
 	private Machines machines;
 
 	public Captcha(Sblock plugin) {
 		super(plugin);
+		this.cache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES)
+				.removalListener(new RemovalListener<String, ItemStack>() {
 
-		hashCacheAccess = new TreeMap<>();
-		hashCache = new HashMap<>();
+					@Override
+					public void onRemoval(RemovalNotification<String, ItemStack> notification) {
+
+						try {
+							File folder = new File(getPlugin().getDataFolder(), "captcha");
+							if (!folder.exists()) {
+								folder.mkdirs();
+							}
+							File file = new File(folder, notification.getKey());
+							if (file.exists()) {
+							}
+							try (BukkitObjectOutputStream stream = new BukkitObjectOutputStream(new FileOutputStream(file))) {
+								stream.writeObject(notification.getValue());
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+
+				})
+				.build(new CacheLoader<String, ItemStack>() {
+
+					@Override
+					public ItemStack load(String hash) throws Exception {
+						File folder = new File(getPlugin().getDataFolder(), "captcha");
+						if (!folder.exists()) {
+							folder.mkdirs();
+						}
+						File file = new File(folder, hash);
+						if (!file.exists()) {
+							return null;
+						}
+						try (BukkitObjectInputStream stream = new BukkitObjectInputStream(
+								new FileInputStream(file))) {
+							ItemStack item = (ItemStack) stream.readObject();
+							if (item.getType() == Material.POTION) {
+								item = InventoryUtils.convertLegacyPotion(item);
+							}
+							return item.clone();
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+							return null;
+						}
+					}
+
+				});
 	}
 
 	@Override
@@ -67,89 +116,46 @@ public class Captcha extends Module {
 		effects = getPlugin().getModule(Effects.class);
 		machines = getPlugin().getModule(Machines.class);
 
-		saveItemStack("00000000", machines.getMachineByName("PGO").getUniqueDrop());
-
-		// TODO use a LoadingCache instead, set max size and retention time
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				long then = System.currentTimeMillis() - 600000;
-				for (long time : hashCacheAccess.keySet().toArray(new Long[hashCacheAccess.size()])) {
-					if (time > then) {
-						break;
-					}
-					String hash = hashCacheAccess.remove(time);
-					saveItemStack(hash, hashCache.remove(hash));
-				}
-			}
-		}.runTaskTimer(getPlugin(), 600L, 600L);
+		addCustomHash("00000000", machines.getMachineByName("PGO").getUniqueDrop());
 	}
 
-	public boolean saveItemStack(String hash, ItemStack item) {
-		try {
-			File folder = new File(getPlugin().getDataFolder(), "captcha");
-			if (!folder.exists()) {
-				folder.mkdirs();
-			}
-			File file = new File(folder, hash);
-			if (file.exists()) {
-				return false;
-			}
-			try (BukkitObjectOutputStream stream = new BukkitObjectOutputStream(new FileOutputStream(file))) {
-				stream.writeObject(item);
-			}
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
+	public boolean addCustomHash(String hash, ItemStack item) {
+		if (getItemByHash(hash) != null) {
 			return false;
 		}
+		cache.put(hash, item);
+		return true;
 	}
 
-	public String getHash(ItemStack item) {
+	public String calculateHashFor(ItemStack item) {
 		String itemString = JSONUtil.getItemText(item).toString();
 		BigInteger hash = NumberUtils.md5(itemString);
 		String itemHash = NumberUtils.getBase(hash, 62, 8);
 		ItemStack captcha;
-		while ((captcha = getItemStack(itemHash)) != null && !captcha.equals(item)) {
+		while ((captcha = getItemByHash(itemHash)) != null && !captcha.equals(item)) {
 			hash = hash.add(BigInteger.ONE);
 			itemHash = NumberUtils.getBase(hash, 62, 8);
 		}
-		hashCache.put(itemHash, item);
-		hashCacheAccess.put(System.currentTimeMillis(), itemHash);
 		return itemHash;
 	}
 
-	public ItemStack getItemStack(String hash) {
-		if (hashCache.containsKey(hash)) {
-			hashCacheAccess.put(System.currentTimeMillis(), hash);
-			return hashCache.get(hash).clone();
-		}
+	public String getHashByItem(ItemStack item) {
+		String itemHash = calculateHashFor(item);
+		cache.put(itemHash, item);
+		return itemHash;
+	}
+
+	public ItemStack getItemByHash(String hash) {
 		try {
-			File folder = new File(getPlugin().getDataFolder(), "captcha");
-			if (!folder.exists()) {
-				folder.mkdirs();
-			}
-			File file = new File(folder, hash);
-			if (!file.exists()) {
-				return null;
-			}
-			try (BukkitObjectInputStream stream = new BukkitObjectInputStream(new FileInputStream(file))) {
-				ItemStack item = (ItemStack) stream.readObject();
-				hashCache.put(hash, item);
-				hashCacheAccess.put(System.currentTimeMillis(), hash);
-				return item.clone();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				return null;
-			}
-		} catch (IOException e) {
+			return cache.get(hash);
+		} catch (ExecutionException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
 	public ItemStack getCaptchaFor(String hash) {
-		ItemStack item = getItemStack(hash);
+		ItemStack item = getItemByHash(hash);
 		if (item == null) {
 			return null;
 		}
@@ -234,9 +240,7 @@ public class Captcha extends Module {
 
 	@Override
 	protected void onDisable() {
-		for (Map.Entry<String, ItemStack> entry : hashCache.entrySet()) {
-			saveItemStack(entry.getKey(), entry.getValue());
-		}
+		cache.invalidateAll();
 	}
 
 	@Override
@@ -255,7 +259,7 @@ public class Captcha extends Module {
 		if (item.isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
 			return createLorecard(ChatColor.GRAY + "Computer I");
 		}
-		return getCaptchaFor(getHash(item));
+		return getCaptchaFor(getHashByItem(item));
 	}
 
 	/**
@@ -313,7 +317,7 @@ public class Captcha extends Module {
 			if (!lore.matches("[0-9A-Za-z]{8,}")) {
 				continue;
 			}
-			ItemStack item = getItemStack(lore);
+			ItemStack item = getItemByHash(lore);
 			if (item != null) {
 				return item;
 			}

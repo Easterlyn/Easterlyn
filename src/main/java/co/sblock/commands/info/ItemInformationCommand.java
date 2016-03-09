@@ -43,7 +43,7 @@ public class ItemInformationCommand extends SblockCommand {
 		}
 		sender.sendMessage(ChatColor.stripColor(hand.toString()));
 		Sblock plugin = (Sblock) getPlugin();
-		sender.sendMessage("Hash: " + plugin.getModule(Captcha.class).getHash(hand));
+		sender.sendMessage("Hash: " + plugin.getModule(Captcha.class).calculateHashFor(hand));
 		sender.sendMessage("Grist: " + CruxiteDowel.expCost(plugin.getModule(Effects.class), hand));
 		return true;
 	}

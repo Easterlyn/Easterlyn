@@ -49,7 +49,7 @@ public class CaptchaHashCommand extends SblockCommand {
 			if (item == null) {
 				return false;
 			}
-			if (captcha.saveItemStack(args[1], item)) {
+			if (captcha.addCustomHash(args[1], item)) {
 				sender.sendMessage(Color.GOOD + "Saved to " + args[1]);
 				return true;
 			} else {

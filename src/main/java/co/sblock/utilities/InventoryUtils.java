@@ -114,10 +114,14 @@ public class InventoryUtils {
 				new ImmutableTriple<>(3600, 3600, 9600), 0));
 	}
 
-	public static ItemStack getLegacyPotion(short durability) {
+	public static ItemStack convertLegacyPotion(ItemStack item) {
+		short durability = item.getDurability();
 		ItemStack potion = new ItemStack(((durability >> 14) & 1) == 1 ? Material.SPLASH_POTION : Material.POTION);
 
-		if (durability < 1) {
+		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+
+		if (durability < 1 || potionMeta.hasCustomEffects()) {
+			potion.setItemMeta(potionMeta);
 			return potion;
 		}
 
@@ -125,6 +129,7 @@ public class InventoryUtils {
 		data = potionEffects.get(durability % 16);
 
 		if (data == null) {
+			potion.setItemMeta(potionMeta);
 			return potion;
 		}
 
@@ -139,7 +144,6 @@ public class InventoryUtils {
 			duration = data.getMiddle().getRight();
 		}
 
-		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
 		potionMeta.addCustomEffect(new PotionEffect(data.getLeft(), duration, power), true);
 		potion.setItemMeta(potionMeta);
 
