@@ -574,35 +574,4 @@ public class Captcha extends Module {
 		return card;
 	}
 
-	public int convert(Player player) {
-		int conversions = 0;
-		nextItem: for (int i = 0; i < player.getInventory().getSize(); i++) {
-			ItemStack is = player.getInventory().getItem(i);
-			if (!Captcha.isUsedCaptcha(is)) {
-				continue;
-			}
-			for (String lore : is.getItemMeta().getLore()) {
-				if (!lore.startsWith(HASH_PREFIX)) {
-					continue;
-				}
-				lore = lore.substring(HASH_PREFIX.length());
-				if (lore.matches("[0-9A-Za-z]{8,}")) {
-					// Modern format
-					continue nextItem;
-				}
-			}
-			ItemStack internal = LegacyCaptcha.captchaToItem(is);
-			if (isCaptcha(internal)) {
-				// Properly convert contents of double captchas
-				int amount = internal.getAmount();
-				internal = itemToCaptcha(LegacyCaptcha.captchaToItem(internal));
-				internal.setAmount(amount);
-			}
-			ItemStack captchas = itemToCaptcha(internal);
-			captchas.setAmount(is.getAmount());
-			conversions += is.getAmount();
-			player.getInventory().setItem(i, captchas);
-		}
-		return conversions;
-	}
 }
