@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TravelAgent;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
@@ -145,14 +146,18 @@ public class SblockTravelAgent implements TravelAgent {
 	@Override
 	public Location findPortal(Location location) {
 		Block block = location.getBlock();
-		for (int dx = -searchRadius; dx <= searchRadius; dx++) {
-			for (int dz = -searchRadius; dz <= searchRadius; dz++) {
-				Block portal = block.getRelative(dx, 0, dz);
-				if (portal.getType() == Material.PORTAL) {
-					Location center = findCenter(portal);
-					center.setYaw(location.getYaw());
-					center.setPitch(location.getPitch());
-					return center;
+		for (int dX = -searchRadius; dX <= searchRadius; dX++) {
+			// When travelling to the overworld, allow 2 blocks of y-forgiveness in case of rounding errors
+			int searchY = location.getWorld().getEnvironment() == Environment.NORMAL ? 3 : 1;
+			for (int dY = 0; dY < searchY; ++dY) {
+				for (int dZ = -searchRadius; dZ <= searchRadius; dZ++) {
+					Block portal = block.getRelative(dX, dY, dZ);
+					if (portal.getType() == Material.PORTAL) {
+						Location center = findCenter(portal);
+						center.setYaw(location.getYaw());
+						center.setPitch(location.getPitch());
+						return center;
+					}
 				}
 			}
 		}
@@ -303,6 +308,20 @@ public class SblockTravelAgent implements TravelAgent {
 			z *= 8;
 			break;
 		default:
+			if (from.getWorld().getEnvironment() == Environment.NORMAL) {
+				world = Bukkit.getWorld(from.getWorld().getName() + "_nether");
+				x = from.getX() / 8;
+				y = from.getY() / 2.05;
+				z = from.getZ() / 8;
+			} else if (from.getWorld().getEnvironment() == Environment.NETHER) {
+				world = Bukkit.getWorld(from.getWorld().getName().replaceAll("_.*", ""));
+				if (world == null || world.equals(from.getWorld())) {
+					return null;
+				}
+				x = from.getX() * 8;
+				y = from.getY() * 2.05;
+				z = from.getZ() * 8;
+			}
 			x = y = z = 0;
 		}
 		if (world == null) {
