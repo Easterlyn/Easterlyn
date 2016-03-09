@@ -214,4 +214,14 @@ public class BlockInventoryWrapper implements Inventory {
 		inventory.setMaxStackSize(size);
 	}
 
+	@Override
+	public ItemStack[] getStorageContents() {
+		return inventory.getStorageContents();
+	}
+
+	@Override
+	public void setStorageContents(ItemStack[] arg0) throws IllegalArgumentException {
+		inventory.setStorageContents(arg0);
+	}
+
 }
