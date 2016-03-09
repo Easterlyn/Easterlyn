@@ -518,33 +518,7 @@
 380	CAULDRON_ITEM	0	Cauldron	cauldron
 381	EYE_OF_ENDER	0	Eye of Ender	ender_eye
 382	SPECKLED_MELON	0	Glistering Melon	speckled_melon
-383	MONSTER_EGG	50	Spawn Creeper	spawn_egg
-383	MONSTER_EGG	51	Spawn Skeleton	spawn_egg
-383	MONSTER_EGG	52	Spawn Spider	spawn_egg
-383	MONSTER_EGG	54	Spawn Zombie	spawn_egg
-383	MONSTER_EGG	55	Spawn Slime	spawn_egg
-383	MONSTER_EGG	56	Spawn Ghast	spawn_egg
-383	MONSTER_EGG	57	Spawn Pigman	spawn_egg
-383	MONSTER_EGG	58	Spawn Enderman	spawn_egg
-383	MONSTER_EGG	59	Spawn Cave Spider	spawn_egg
-383	MONSTER_EGG	60	Spawn Silverfish	spawn_egg
-383	MONSTER_EGG	61	Spawn Blaze	spawn_egg
-383	MONSTER_EGG	62	Spawn Magma Cube	spawn_egg
-383	MONSTER_EGG	65	Spawn Bat	spawn_egg
-383	MONSTER_EGG	66	Spawn Witch	spawn_egg
-383	MONSTER_EGG	67	Spawn Endermite	spawn_egg
-383	MONSTER_EGG	68	Spawn Guardian	spawn_egg
-383	MONSTER_EGG	90	Spawn Pig	spawn_egg
-383	MONSTER_EGG	91	Spawn Sheep	spawn_egg
-383	MONSTER_EGG	92	Spawn Cow	spawn_egg
-383	MONSTER_EGG	93	Spawn Chicken	spawn_egg
-383	MONSTER_EGG	94	Spawn Squid	spawn_egg
-383	MONSTER_EGG	95	Spawn Wolf	spawn_egg
-383	MONSTER_EGG	96	Spawn Mooshroom	spawn_egg
-383	MONSTER_EGG	98	Spawn Ocelot	spawn_egg
-383	MONSTER_EGG	100	Spawn Horse	spawn_egg
-383	MONSTER_EGG	101	Spawn Rabbit	spawn_egg
-383	MONSTER_EGG	120	Spawn Villager	spawn_egg
+383	MONSTER_EGG	0	Spawn Egg	spawn_egg
 384	EXP_BOTTLE	0	Bottle o' Enchanting	experience_bottle
 385	FIREBALL	0	Fire Charge	fire_charge
 386	BOOK_AND_QUILL	0	Book and Quill	writable_book

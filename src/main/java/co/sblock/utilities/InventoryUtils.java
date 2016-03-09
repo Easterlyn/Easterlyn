@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -41,6 +42,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.io.BukkitObjectInputStream;
 
 import com.google.common.collect.HashMultimap;
@@ -80,6 +82,69 @@ public class InventoryUtils {
 	private static HashMap<String, String> items;
 	private static HashMultimap<String, String> itemsReverse;
 	private static HashSet<ItemStack> uniques;
+	private static final HashMap<Integer, Triple<PotionEffectType, Triple<Integer, Integer, Integer>, Integer>> potionEffects;
+
+	static {
+		potionEffects = new HashMap<>();
+		potionEffects.put(1, new ImmutableTriple<>(PotionEffectType.REGENERATION,
+				new ImmutableTriple<>(1800, 3600, 9600), 1));
+		potionEffects.put(2, new ImmutableTriple<>(PotionEffectType.SPEED,
+				new ImmutableTriple<>(1800, 3600, 9600), 1));
+		potionEffects.put(3, new ImmutableTriple<>(PotionEffectType.FIRE_RESISTANCE,
+				new ImmutableTriple<>(3600, 3600, 9600), 0));
+		potionEffects.put(4, new ImmutableTriple<>(PotionEffectType.POISON,
+				new ImmutableTriple<>(420, 900, 1800), 1));
+		potionEffects.put(5, new ImmutableTriple<>(PotionEffectType.HEAL,
+				new ImmutableTriple<>(1, 1, 1), 1));
+		potionEffects.put(6, new ImmutableTriple<>(PotionEffectType.NIGHT_VISION,
+				new ImmutableTriple<>(3600, 3600, 9600), 0));
+		potionEffects.put(8, new ImmutableTriple<>(PotionEffectType.WEAKNESS,
+				new ImmutableTriple<>(1800, 1800, 4800), 0));
+		potionEffects.put(9, new ImmutableTriple<>(PotionEffectType.INCREASE_DAMAGE,
+				new ImmutableTriple<>(1800, 3600, 9600), 1));
+		potionEffects.put(10, new ImmutableTriple<>(PotionEffectType.SLOW,
+				new ImmutableTriple<>(1800, 1800, 4800), 0));
+		potionEffects.put(11, new ImmutableTriple<>(PotionEffectType.JUMP,
+				new ImmutableTriple<>(1800, 3600, 9600), 1));
+		potionEffects.put(12, new ImmutableTriple<>(PotionEffectType.HARM,
+				new ImmutableTriple<>(1, 1, 1), 1));
+		potionEffects.put(13, new ImmutableTriple<>(PotionEffectType.WATER_BREATHING,
+				new ImmutableTriple<>(3600, 3600, 9600), 0));
+		potionEffects.put(14, new ImmutableTriple<>(PotionEffectType.INVISIBILITY,
+				new ImmutableTriple<>(3600, 3600, 9600), 0));
+	}
+
+	public static ItemStack getLegacyPotion(short durability) {
+		ItemStack potion = new ItemStack(((durability >> 14) & 1) == 1 ? Material.SPLASH_POTION : Material.POTION);
+
+		if (durability < 1) {
+			return potion;
+		}
+
+		Triple<PotionEffectType, Triple<Integer, Integer, Integer>, Integer> data;
+		data = potionEffects.get(durability % 16);
+
+		if (data == null) {
+			return potion;
+		}
+
+		int duration = data.getMiddle().getMiddle(), power = 0;
+		if (((durability >> 5) & 1) == 1) {
+			// Power is amplified
+			duration = data.getMiddle().getLeft();
+			power = data.getRight();
+		}
+		if (((durability >> 6) & 1) == 1) {
+			// Duration is extended
+			duration = data.getMiddle().getRight();
+		}
+
+		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+		potionMeta.addCustomEffect(new PotionEffect(data.getLeft(), duration, power), true);
+		potion.setItemMeta(potionMeta);
+
+		return potion;
+	}
 
 	private static HashMap<String, String> getItems() {
 		if (items != null) {
@@ -131,6 +196,8 @@ public class InventoryUtils {
 				|| m == Material.TIPPED_ARROW) {
 			// TODO
 			return getPotionName(durability);
+		} else if (m == Material.MONSTER_EGG) {
+			// TODO
 		}
 		return name != null ? name : "Unknown item. Please report this!";
 	}
