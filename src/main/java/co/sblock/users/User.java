@@ -985,7 +985,10 @@ public class User {
 			if (player == null) {
 				return new User(plugin, uuid, new YamlConfiguration());
 			}
-			player.teleport(Users.getSpawnLocation());
+			Location to = Users.getSpawnLocation();
+			if (to.getWorld() != null) {
+				player.teleport(Users.getSpawnLocation());
+			}
 
 			User user = new User(plugin, uuid, new YamlConfiguration());
 			user.setUserIP(player.getAddress().getHostString());

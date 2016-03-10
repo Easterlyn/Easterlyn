@@ -10,7 +10,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerAction;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
 
 import co.sblock.Sblock;
-import co.sblock.events.Events;
+import co.sblock.micromodules.DreamTeleport;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -19,13 +19,13 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class SyncPacketAdapter extends PacketAdapter {
 
-	private final Events events;
+	private final DreamTeleport dream;
 	private final String version;
 
 	public SyncPacketAdapter(Sblock plugin) {
 		super(plugin, PacketType.Status.Server.OUT_SERVER_INFO, PacketType.Play.Client.ENTITY_ACTION,
 				PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Client.TAB_COMPLETE);
-		this.events = plugin.getModule(Events.class);
+		this.dream = plugin.getModule(DreamTeleport.class);
 
 		// Sblock Alpha: 1.8 - X/Y
 		version = ChatColor.DARK_AQUA + "Sblock Beta" + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY
@@ -81,10 +81,10 @@ public class SyncPacketAdapter extends PacketAdapter {
 	@Override
 	public void onPacketReceiving(PacketEvent event) {
 		if (event.getPacket().getType() == PacketType.Play.Client.ENTITY_ACTION) {
-			if (event.getPacket().getPlayerActions().read(0) == PlayerAction.STOP_SLEEPING
-					&& events.getSleepTasks().containsKey(event.getPlayer().getUniqueId())) {
+			if (dream.isEnabled() && event.getPacket().getPlayerActions().read(0) == PlayerAction.STOP_SLEEPING
+					&& dream.getSleepTasks().containsKey(event.getPlayer().getUniqueId())) {
 				event.setCancelled(true);
-				events.fakeWakeUp(event.getPlayer());
+				dream.fakeWakeUp(event.getPlayer());
 			}
 			return;
 		} else if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {

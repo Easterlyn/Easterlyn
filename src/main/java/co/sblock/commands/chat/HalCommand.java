@@ -42,7 +42,11 @@ public class HalCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Message message;
-		if (args.length > 0) {
+		if (!announcer.isEnabled()) {
+			message = new MessageBuilder((Sblock) getPlugin()).setSender(ChatColor.DARK_RED + ((Sblock) getPlugin()).getBotName())
+					.setChannel(manager.getChannel("#")).setNameClick("/report ")
+					.setMessage(StringUtils.join(args, ' ')).toMessage();
+		} else if (args.length > 0) {
 			try {
 				int msgNum = Integer.valueOf(args[0]);
 				if (msgNum > announcer.getMessages().size()) {

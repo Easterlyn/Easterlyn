@@ -15,11 +15,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.reflections.Reflections;
@@ -27,16 +25,12 @@ import org.reflections.Reflections;
 import com.google.common.collect.ImmutableList;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.wrappers.BlockPosition;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.events.listeners.SblockListener;
-import co.sblock.events.packets.SleepTeleport;
 import co.sblock.events.packets.SyncPacketAdapter;
-import co.sblock.events.packets.WrapperPlayServerAnimation;
-import co.sblock.events.packets.WrapperPlayServerBed;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
 import co.sblock.module.Module;
@@ -53,7 +47,6 @@ public class Events extends Module {
 
 	private Status status;
 	private int statusResample = 0;
-	private final HashMap<UUID, BukkitTask> sleep;
 	private final LinkedHashMap<String, String> ipcache;
 	private final HashMap<UUID, BukkitTask> pvp;
 	private final InvisibilityManager invisibilityManager;
@@ -62,7 +55,6 @@ public class Events extends Module {
 
 	public Events(Sblock plugin) {
 		super(plugin);
-		this.sleep = new HashMap<>();
 		this.pvp = new HashMap<>();
 		this.ipcache = new LinkedHashMap<>();
 		this.invisibilityManager = new InvisibilityManager(plugin);
@@ -129,13 +121,6 @@ public class Events extends Module {
 			getLogger().warning("Failed to save IP cache!");
 			getLogger().warning(TextUtils.getTrace(e));
 		}
-	}
-
-	/**
-	 * Gets the HashMap of all SleepTeleports scheduled for players by UUID.
-	 */
-	public HashMap<UUID, BukkitTask> getSleepTasks() {
-		return sleep;
 	}
 
 	/**
@@ -221,48 +206,6 @@ public class Events extends Module {
 				}
 			}
 			return list;
-		}
-	}
-
-	/**
-	 * Sends a Player a fake packet for starting sleeping and schedules them to
-	 * be teleported to their DreamPlanet.
-	 * 
-	 * @param p the Player
-	 * @param bed the Location of the bed to sleep in
-	 */
-	public void fakeSleepDream(Player p, Location bed) {
-		WrapperPlayServerBed packet = new WrapperPlayServerBed();
-		packet.setEntityId(p.getEntityId());
-		packet.setLocation(new BlockPosition(bed.getBlockX(), bed.getBlockY(), bed.getBlockZ()));
-
-		try {
-			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
-		} catch (InvocationTargetException e) {
-			getLogger().warning(TextUtils.getTrace(e));
-		}
-		sleep.put(p.getUniqueId(), new SleepTeleport(getPlugin(), p.getUniqueId()).runTaskLater(getPlugin(), 100L));
-	}
-
-	/**
-	 * Sends a Player a fake packet for waking up.
-	 * 
-	 * @param p the Player
-	 */
-	public void fakeWakeUp(Player p) {
-		WrapperPlayServerAnimation packet = new WrapperPlayServerAnimation();
-		packet.setEntityId(p.getEntityId());
-		packet.setAnimation(2); // http://wiki.vg/Protocol#Animation_2
-
-		try {
-			ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet.getHandle());
-		} catch (InvocationTargetException e) {
-			getLogger().warning(TextUtils.getTrace(e));
-		}
-
-		BukkitTask task = sleep.remove(p.getUniqueId());
-		if (task != null) {
-			task.cancel();
 		}
 	}
 

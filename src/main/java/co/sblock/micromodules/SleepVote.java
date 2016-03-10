@@ -30,9 +30,14 @@ public class SleepVote extends Module {
 	protected void onEnable() { }
 
 	@Override
-	protected void onDisable() { }
+	protected void onDisable() {
+		this.votes.clear();
+	}
 
 	public void sleepVote(World world, Player p) {
+		if (!isEnabled()) {
+			return;
+		}
 		if (!votes.containsKey(world.getName())) {
 			votes.put(world.getName(), new HashSet<String>());
 			resetVote(world);
@@ -50,6 +55,9 @@ public class SleepVote extends Module {
 	 * @return true if the count has changed
 	 */
 	public boolean updateVoteCount(final String world, String player) {
+		if (!isEnabled()) {
+			return false;
+		}
 		if (!votes.containsKey(world)) {
 			return false;
 		}
@@ -62,6 +70,9 @@ public class SleepVote extends Module {
 	}
 
 	public void updateVotes(World world, String player) {
+		if (!isEnabled()) {
+			return;
+		}
 		if (!votes.containsKey(world.getName())) {
 			// No vote running in this world, nothing to update.
 			return;
@@ -99,6 +110,9 @@ public class SleepVote extends Module {
 	}
 
 	public void resetVote(final World world) {
+		if (!isEnabled()) {
+			return;
+		}
 		new BukkitRunnable() {
 			@Override
 			public void run() {

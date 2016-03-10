@@ -10,9 +10,9 @@ import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
-import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.AwayFromKeyboard;
+import co.sblock.micromodules.DreamTeleport;
 import co.sblock.micromodules.FreeCart;
 import co.sblock.micromodules.Godule;
 import co.sblock.micromodules.SleepVote;
@@ -30,8 +30,8 @@ public class QuitListener extends SblockListener {
 
 	private final AwayFromKeyboard afk;
 	private final Discord discord;
+	private final DreamTeleport dream;
 	private final Effects effects;
-	private final Events events;
 	private final FreeCart carts;
 	private final SleepVote sleep;
 	private final Spectators spectators;
@@ -41,8 +41,8 @@ public class QuitListener extends SblockListener {
 		super(plugin);
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.discord = plugin.getModule(Discord.class);
+		this.dream = plugin.getModule(DreamTeleport.class);
 		this.effects = plugin.getModule(Effects.class);
-		this.events = plugin.getModule(Events.class);
 		this.carts = plugin.getModule(FreeCart.class);
 		this.sleep = plugin.getModule(SleepVote.class);
 		this.spectators = plugin.getModule(Spectators.class);
@@ -82,8 +82,8 @@ public class QuitListener extends SblockListener {
 		}
 
 		// Stop scheduled sleep teleport
-		if (events.getSleepTasks().containsKey(event.getPlayer().getName())) {
-			events.getSleepTasks().remove(event.getPlayer().getName()).cancel();
+		if (dream.getSleepTasks().containsKey(event.getPlayer().getName())) {
+			dream.getSleepTasks().remove(event.getPlayer().getName()).cancel();
 		}
 
 		// Restore inventory if still preserved

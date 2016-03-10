@@ -6,11 +6,9 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,14 +22,13 @@ import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Color;
 import co.sblock.effects.Effects;
-import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.Cooldowns;
+import co.sblock.micromodules.DreamTeleport;
 import co.sblock.micromodules.SleepVote;
-import co.sblock.users.Users;
 import co.sblock.utilities.Experience;
 import co.sblock.utilities.InventoryUtils;
 
@@ -45,11 +42,10 @@ public class InteractListener extends SblockListener {
 	private final AwayFromKeyboard afk;
 	private final Captcha captcha;
 	private final Cooldowns cooldowns;
+	private final DreamTeleport dream;
 	private final Effects effects;
-	private final Events events;
 	private final Machines machines;
 	private final SleepVote sleep;
-	private final Users users;
 	private final Set<Material> bypassable;
 
 	public InteractListener(Sblock plugin) {
@@ -57,11 +53,10 @@ public class InteractListener extends SblockListener {
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.captcha = plugin.getModule(Captcha.class);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
+		this.dream = plugin.getModule(DreamTeleport.class);
 		this.effects = plugin.getModule(Effects.class);
-		this.events = plugin.getModule(Events.class);
 		this.machines = plugin.getModule(Machines.class);
 		this.sleep = plugin.getModule(SleepVote.class);
-		this.users = plugin.getModule(Users.class);
 
 		bypassable = new HashSet<>();
 		for (Material material : Material.values()) {
@@ -122,7 +117,7 @@ public class InteractListener extends SblockListener {
 					return;
 				}
 				// Sleep voting
-				if (event.getPlayer().isSneaking()) {
+				if (sleep.isEnabled() && event.getPlayer().isSneaking()) {
 					if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
 						sleep.sleepVote(b.getWorld(), event.getPlayer());
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
@@ -135,45 +130,8 @@ public class InteractListener extends SblockListener {
 				}
 
 				// Sleep teleport
-				Bed bed = (Bed) b.getState().getData();
-				Location head;
-				if (bed.isHeadOfBed()) {
-					head = b.getLocation();
-				} else {
-					// bed.getFacing does not return correctly in most cases.
-					BlockFace relative;
-					switch (bed.getData()) {
-					case 0:
-						relative = BlockFace.SOUTH;
-						break;
-					case 1:
-						relative = BlockFace.WEST;
-						break;
-					case 2:
-						relative = BlockFace.EAST;
-						break;
-					case 3:
-						relative = BlockFace.NORTH;
-						break;
-					default:
-						relative = BlockFace.SELF;
-						break;
-					}
-					head = b.getRelative(relative).getLocation();
-				}
-
-				switch (users.getUser(event.getPlayer().getUniqueId()).getCurrentRegion()) {
-				case EARTH:
-				case PROSPIT:
-				case LOFAF:
-				case LOHAC:
-				case LOLAR:
-				case LOWAS:
-				case DERSE:
-					events.fakeSleepDream(event.getPlayer(), head);
+				if (dream.handleBedInteract(event.getPlayer(), b, (Bed) b.getState().getData())) {
 					event.setCancelled(true);
-					return;
-				default:
 					return;
 				}
 			}

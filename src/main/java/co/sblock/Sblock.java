@@ -42,11 +42,30 @@ import com.google.common.collect.ImmutableList;
 
 import com.mojang.authlib.GameProfile;
 
+import co.sblock.captcha.Captcha;
+import co.sblock.chat.Chat;
 import co.sblock.commands.SblockCommand;
 import co.sblock.commands.SblockCommandAlias;
+import co.sblock.discord.Discord;
+import co.sblock.effects.Effects;
+import co.sblock.events.Events;
+import co.sblock.machines.Machines;
+import co.sblock.micromodules.AwayFromKeyboard;
+import co.sblock.micromodules.Cooldowns;
+import co.sblock.micromodules.DreamTeleport;
+import co.sblock.micromodules.FreeCart;
+import co.sblock.micromodules.Godule;
+import co.sblock.micromodules.Holograms;
+import co.sblock.micromodules.Meteors;
+import co.sblock.micromodules.ParticleUtils;
+import co.sblock.micromodules.Protections;
+import co.sblock.micromodules.RawAnnouncer;
+import co.sblock.micromodules.SleepVote;
+import co.sblock.micromodules.Spectators;
 import co.sblock.module.Dependencies;
 import co.sblock.module.Dependency;
 import co.sblock.module.Module;
+import co.sblock.users.Users;
 import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -85,22 +104,41 @@ public class Sblock extends JavaPlugin {
 
 		modules = new LinkedHashMap<>();
 
-		for (String moduleClazzName : getConfig().getStringList("modules")) {
-			try {
-				@SuppressWarnings("unchecked")
-				Class<Module> moduleClazz = (Class<Module>) Class.forName(moduleClazzName);
-				Constructor<Module> constructor = moduleClazz.getConstructor(this.getClass());
-				addModule(constructor.newInstance(this));
-			} catch (ClassNotFoundException | ClassCastException | NoSuchMethodException
-					| SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException e) {
-				getLogger().severe("Unable to load module with class " + moduleClazzName);
-				getLogger().severe(TextUtils.getTrace(e));
-			}
-		}
+		addModule(new Cooldowns(this));
 
+		addModule(new Chat(this));
+
+		// Non-critical chat-based modules
+		addModule(new Discord(this));
+		addModule(new RawAnnouncer(this));
+		addModule(new AwayFromKeyboard(this));
+
+		addModule(new Users(this));
+
+		addModule(new Effects(this));
+		addModule(new Captcha(this));
+		addModule(new Holograms(this));
+		addModule(new Protections(this));
+
+		// Machines depends on Captcha, Effects, Holograms, Protections, and Users to construct.
+		addModule(new Machines(this));
+
+		// Misc. event-driven modules
+		addModule(new DreamTeleport(this));
+		addModule(new ParticleUtils(this));
+		addModule(new FreeCart(this));
+		addModule(new Meteors(this));
+		addModule(new SleepVote(this));
+		addModule(new Spectators(this));
+		addModule(new Godule(this));
+
+		addModule(new Events(this));
+
+		List<String> disabledModules = getConfig().getStringList("disabled-modules");
 		for (Module module : modules.values()) {
-			module.enable();
+			if (!disabledModules.contains(module.getName())) {
+				module.enable();
+			}
 		}
 
 		createRecipes();

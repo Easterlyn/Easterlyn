@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.events.Events;
-import co.sblock.users.User;
+import co.sblock.micromodules.DreamTeleport;
 import co.sblock.users.Region;
+import co.sblock.users.User;
 import co.sblock.users.Users;
 
 /**
@@ -20,7 +20,7 @@ import co.sblock.users.Users;
  */
 public class SleepTeleport extends BukkitRunnable {
 
-	private final Events events;
+	private final DreamTeleport dream;
 	private final Users users;
 	private final UUID uuid;
 
@@ -28,7 +28,7 @@ public class SleepTeleport extends BukkitRunnable {
 	 * @param p the Player to teleport
 	 */
 	public SleepTeleport(Sblock plugin, UUID uuid) {
-		this.events = plugin.getModule(Events.class);
+		this.dream = plugin.getModule(DreamTeleport.class);
 		this.users = plugin.getModule(Users.class);
 		this.uuid = uuid;
 	}
@@ -36,7 +36,7 @@ public class SleepTeleport extends BukkitRunnable {
 	@Override
 	public void run() {
 		Player player = Bukkit.getPlayer(uuid);
-		if (player == null || !events.getSleepTasks().containsKey(player.getUniqueId())) {
+		if (player == null || !dream.getSleepTasks().containsKey(player.getUniqueId())) {
 			return;
 		}
 		User user = users.getUser(player.getUniqueId());
@@ -57,6 +57,6 @@ public class SleepTeleport extends BukkitRunnable {
 			}
 		}
 		user.setPreviousLocation(location);
-		events.fakeWakeUp(player);
+		dream.fakeWakeUp(player);
 	}
 }
