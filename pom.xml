@@ -55,11 +55,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>sx.blah</groupId>
+      <groupId>com.github.austinv11</groupId>
       <artifactId>Discord4J</artifactId>
-      <version>2.3.0</version>
-      <!-- For now, we use the fully shaded jar, but that may change. -->
-      <classifier>shaded</classifier>
+      <version>2.3.1</version>
       <scope>compile</scope>
     </dependency>
     <!-- Bukkit uses java.util.logging, so slf4j should be bound to that. -->
@@ -145,16 +143,12 @@
       <url>http://repo.dmulloy2.net/content/groups/public/</url>
     </repository>
     <repository>
-      <id>local-repo</id>
-      <url>file://${project.basedir}/repo</url>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
     </repository>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>bintray-austinv11-maven</id>
-      <name>bintray</name>
-      <url>http://dl.bintray.com/austinv11/maven</url>
+      <id>local-repo</id>
+      <url>file://${project.basedir}/repo</url>
     </repository>
   </repositories>
 

@@ -31,6 +31,15 @@ public class QueueDrainThread extends Thread {
 
 		while (discord.isEnabled()) {
 
+			if (!discord.isReady()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				continue;
+			}
+
 			if (queue.isEmpty()) {
 				// Sleep for duration specified
 				try {
@@ -41,25 +50,36 @@ public class QueueDrainThread extends Thread {
 				continue;
 			}
 
-			DiscordCallable callable = queue.element();
+			DiscordCallable callable = queue.remove();
 			try {
 				callable.call();
 			} catch (DiscordException e) {
-				if (callable.retryOnException()) {
-					// Don't log when retrying, we only retry because of a Discord4J fault generally.
-					continue;
-				}
 				if ("Bot has not signed in yet!".equals(e.getErrorMessage())) {
+					discord.getLogger().warning("Bot has been logged out. Attempting to log back in.");
 					try {
 						discord.getClient().login();
 						Thread.sleep(1000);
 						continue;
 					} catch (DiscordException de) {
 						de.printStackTrace();
+						discord.getLogger().severe("Unable to log bot back in. Attempting more drastic measures.");
+						discord.enable();
 						break;
 					} catch (InterruptedException ie) {
 						ie.printStackTrace();
 					}
+					continue;
+				}
+				if (callable.retryOnException()) {
+					// Don't log when retrying, we only retry because of a Discord4J fault generally.
+					/*
+					 * Rather than skip removal in this case to preserve order, we re-add the
+					 * DiscordCallable. This does ruin order in the case of messages sent, however,
+					 * sent messages do not currently retry. It also allows us to modify the queue from inside
+					 * the callables safely.
+					 */
+					queue.add(callable);
+					continue;
 				}
 				e.printStackTrace();
 			} catch (HTTP429Exception e) {
@@ -74,7 +94,6 @@ public class QueueDrainThread extends Thread {
 				// Likely permissions, but can be malformed JSON when odd responses are received
 				e.printStackTrace();
 			}
-			queue.remove();
 		}
 	}
 

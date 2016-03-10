@@ -52,6 +52,10 @@ public class DiscordLinkCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
+		if (!discord.isEnabled() || !discord.isReady()) {
+			sender.sendMessage(Color.BAD + "Discord link is currently nonfunctional!");
+			return true;
+		}
 		if (args.length > 1 && sender.hasPermission("sblock.command.link.force")) {
 			UUID uuid;
 			try {
@@ -80,10 +84,6 @@ public class DiscordLinkCommand extends SblockCommand {
 		}
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("Console support not offered at this time.");
-			return true;
-		}
-		if (!discord.isEnabled()) {
-			sender.sendMessage(Color.BAD + "Discord link is currently nonfunctional!");
 			return true;
 		}
 		UUID uuid = ((Player) sender).getUniqueId();

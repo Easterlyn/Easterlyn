@@ -28,6 +28,7 @@ public class DiscordMessageAcknowledgedListener implements IListener<MessageAckn
 
 		getRetentionModule().handleNewMessage(message);
 
+		// The logic for editing in names should probably be moved here
 //		String botName = discord.getClient().getOurUser().getName();
 //		if (!botName.equals(discord.getBotName())
 //				&& message.getChannel().getID().equals(discord.getMainChannel())) {

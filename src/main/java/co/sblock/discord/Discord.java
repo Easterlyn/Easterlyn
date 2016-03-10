@@ -72,6 +72,7 @@ public class Discord extends Module {
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
 	private QueueDrainThread drainQueueThread;
+	private boolean ready = false;
 
 	private boolean lock = false;
 
@@ -264,11 +265,20 @@ public class Discord extends Module {
 		return super.isEnabled() && this.client != null;
 	}
 
+	public void ready() {
+		startHeartbeat();
+		this.ready = true;
+	}
+
+	public boolean isReady() {
+		return this.ready;
+	}
+
 	public YamlConfiguration getDatastore() {
 		return discordData;
 	}
 
-	public void startHeartbeat() {
+	private void startHeartbeat() {
 		if (heartbeatTask != null && heartbeatTask.getTaskId() != -1) {
 			return;
 		}
@@ -299,10 +309,12 @@ public class Discord extends Module {
 	}
 
 	public void queue(DiscordCallable call) {
+		startQueueDrain();
 		drainQueueThread.queue(call);
 	}
 
 	public void queueMessageDeletion(IMessage message, CallPriority priority) {
+		startQueueDrain();
 		drainQueueThread.queue(new DiscordCallable(priority, false) {
 			@Override
 			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
@@ -407,23 +419,23 @@ public class Discord extends Module {
 						// Trivial issue
 					}
 				}
-				group.sendMessage(message);
-//				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
-//					StringBuilder builder = new StringBuilder().append("**")
-//							.append(toEscape.matcher(name).replaceAll("\\\\$1"));
-//					if (!name.startsWith("* ")) {
-//						builder.append(':');
-//					}
-//					builder.append("** ").append(message);
-//					drainQueueThread.queue(new DiscordCallable(CallPriority.MEDIUM, true) {
-//						@Override
-//						public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
-//							// Editing messages causes them to use the current name.
-//							resetBotName();
-//							posted.edit(builder.toString());
-//						}
-//					});
-//				}
+				IMessage posted = group.sendMessage(message);
+				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
+					StringBuilder builder = new StringBuilder().append("**")
+							.append(toEscape.matcher(name).replaceAll("\\\\$1"));
+					if (!name.startsWith("* ")) {
+						builder.append(':');
+					}
+					builder.append("** ").append(message);
+					drainQueueThread.queue(new DiscordCallable(CallPriority.MEDIUM, true) {
+						@Override
+						public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
+							// Editing messages causes them to use the current name.
+							resetBotName();
+							posted.edit(builder.toString());
+						}
+					});
+				}
 			}
 		});
 	}
