@@ -2,6 +2,7 @@ package co.sblock.captcha;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -90,7 +91,7 @@ public class Captcha extends Module {
 						}
 						File file = new File(folder, hash);
 						if (!file.exists()) {
-							return null;
+							throw new FileNotFoundException();
 						}
 						try (BukkitObjectInputStream stream = new BukkitObjectInputStream(
 								new FileInputStream(file))) {
@@ -99,9 +100,6 @@ public class Captcha extends Module {
 								item = InventoryUtils.convertLegacyPotion(item);
 							}
 							return item.clone();
-						} catch (ClassNotFoundException e) {
-							e.printStackTrace();
-							return null;
 						}
 					}
 
@@ -147,9 +145,11 @@ public class Captcha extends Module {
 
 	public ItemStack getItemByHash(String hash) {
 		try {
-			return cache.get(hash);
+			return cache.get(hash).clone();
 		} catch (ExecutionException e) {
-			e.printStackTrace();
+			if (!(e.getCause() instanceof FileNotFoundException)) {
+				e.printStackTrace();
+			}
 			return null;
 		}
 	}

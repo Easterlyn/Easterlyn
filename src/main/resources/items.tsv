@@ -354,7 +354,7 @@
 195	JUNGLE_DOOR	0	Jungle Door Block	jungle_door
 196	ACACIA_DOOR	0	Acacia Door Block	acacia_door
 197	DARK_OAK_DOOR	0	Dark Oak Door Block	dark_oak_door
-198	END_ROD 0	End Rod	end_rod
+198	END_ROD	0	End Rod	end_rod
 199	CHORUS_PLANT	0	Chorus Plant	chorus_plant
 200	CHORUS_FLOWER	0	Chorus Flower	chorus_flower
 201	PURPUR_BLOCK	0	Purpur Block	purpur_block
@@ -537,6 +537,7 @@
 397	SKULL_ITEM	2	Zombie Head	skull
 397	SKULL_ITEM	3	Player Head	skull
 397	SKULL_ITEM	4	Creeper Head	skull
+397	SKULL_ITEM	4	Dragon Head	skull
 398	CARROT_STICK	0	Carrot on a Stick	carrot_on_a_stick
 399	NETHER_STAR	0	Nether Star	nether_star
 400	PUMPKIN_PIE	0	Pumpkin Pie	pumpkin_pie

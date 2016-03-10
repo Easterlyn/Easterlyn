@@ -68,6 +68,9 @@ public class CruxiteDowel {
 
 	public static int expCost(Effects effects, ItemStack toCreate) {
 		int cost = getGrist().get(toCreate.getType());
+		if (toCreate.getType() == Material.SKULL_ITEM && toCreate.getDurability() == 5) {
+			cost += 29000;
+		}
 		if (Captcha.isCaptcha(toCreate) || isDowel(toCreate)) {
 			cost = Integer.MAX_VALUE;
 		}
@@ -161,6 +164,7 @@ public class CruxiteDowel {
 			case WHEAT:
 			case WATER_LILY:
 			case YELLOW_FLOWER:
+			case CHORUS_FRUIT:
 				materialValues.put(material, 2);
 				break;
 			case BROWN_MUSHROOM:
@@ -334,8 +338,13 @@ public class CruxiteDowel {
 				break;
 			case SKULL_ITEM:
 				materialValues.put(material, 3000);
+				break;
 			case NETHER_STAR:
 				materialValues.put(material, 10000);
+				break;
+			case ELYTRA:
+				materialValues.put(material, 3142);
+				break;
 			case DRAGON_EGG:
 				materialValues.put(material, 32000);
 				break;
