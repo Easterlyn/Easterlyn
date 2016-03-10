@@ -32,10 +32,6 @@ public class PlayerLoader {
 	private static final Cache<UUID, Player> PLAYER_CACHE = CacheBuilder.newBuilder().weakValues()
 			.expireAfterAccess(5, TimeUnit.MINUTES).build();
 
-	public static Player getPlayer(UUID uuid) {
-		return getPlayer(null, uuid);
-	}
-
 	public static Player getPlayer(Plugin plugin, UUID uuid) {
 		Player player = Bukkit.getPlayer(uuid);
 		if (player != null) {
@@ -55,7 +51,7 @@ public class PlayerLoader {
 				new Callable<Player>() {
 					@Override
 					public Player call() throws Exception {
-						return getPlayer(uuid);
+						return getPlayerFor(uuid);
 					}
 				});
 

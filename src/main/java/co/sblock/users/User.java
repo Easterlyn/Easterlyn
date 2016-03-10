@@ -115,7 +115,7 @@ public class User {
 	 * @return the Player
 	 */
 	public Player getPlayer() {
-		return PlayerLoader.getPlayer(getUUID());
+		return PlayerLoader.getPlayer(plugin, getUUID());
 	}
 
 	/**
