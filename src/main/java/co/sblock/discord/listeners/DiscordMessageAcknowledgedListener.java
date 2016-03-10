@@ -5,6 +5,7 @@ import co.sblock.discord.modules.RetentionModule;
 
 import sx.blah.discord.handle.IListener;
 import sx.blah.discord.handle.impl.events.MessageAcknowledgedEvent;
+import sx.blah.discord.handle.obj.IMessage;
 
 /**
  * IListener for MessageAcknowledgeEvents.
@@ -23,7 +24,22 @@ public class DiscordMessageAcknowledgedListener implements IListener<MessageAckn
 
 	@Override
 	public void handle(MessageAcknowledgedEvent event) {
-		getRetentionModule().handleNewMessage(event.getAcknowledgedMessage());
+		IMessage message = event.getAcknowledgedMessage();
+
+		getRetentionModule().handleNewMessage(message);
+
+//		String botName = discord.getClient().getOurUser().getName();
+//		if (!botName.equals(discord.getBotName())
+//				&& message.getChannel().getID().equals(discord.getMainChannel())) {
+//			discord.queue(new DiscordCallable(CallPriority.MEDIUM, true) {
+//				@Override
+//				public void call() throws DiscordException, HTTP429Exception,
+//						MissingPermissionsException {
+//					message.edit("**" + botName + "**" + (botName.charAt(0) == '*' ? " " : ": ")
+//							+ message.getContent());
+//				}
+//			});
+//		}
 	}
 
 	private RetentionModule getRetentionModule() {

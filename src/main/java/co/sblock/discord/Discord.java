@@ -407,23 +407,23 @@ public class Discord extends Module {
 						// Trivial issue
 					}
 				}
-				IMessage posted = group.sendMessage(message);
-				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
-					StringBuilder builder = new StringBuilder().append("**")
-							.append(toEscape.matcher(name).replaceAll("\\\\$1"));
-					if (!name.startsWith("* ")) {
-						builder.append(':');
-					}
-					builder.append("** ").append(message);
-					drainQueueThread.queue(new DiscordCallable(CallPriority.MEDIUM, true) {
-						@Override
-						public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
-							// Editing messages causes them to use the current name.
-							resetBotName();
-							posted.edit(builder.toString());
-						}
-					});
-				}
+				group.sendMessage(message);
+//				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
+//					StringBuilder builder = new StringBuilder().append("**")
+//							.append(toEscape.matcher(name).replaceAll("\\\\$1"));
+//					if (!name.startsWith("* ")) {
+//						builder.append(':');
+//					}
+//					builder.append("** ").append(message);
+//					drainQueueThread.queue(new DiscordCallable(CallPriority.MEDIUM, true) {
+//						@Override
+//						public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
+//							// Editing messages causes them to use the current name.
+//							resetBotName();
+//							posted.edit(builder.toString());
+//						}
+//					});
+//				}
 			}
 		});
 	}
