@@ -57,15 +57,16 @@ public class Elevator extends Machine {
 		return storage.getInt("duration");
 	}
 
-	public void adjustBlockBoost(ConfigurationSection storage, int difference) {
+	public int adjustBlockBoost(ConfigurationSection storage, int difference) {
 		int boost = getCurrentBoost(storage) + difference;
 		if (boost < 0) {
-			return;
+			return 0;
 		}
 		if (boost > 50) {
 			boost = 50;
 		}
-		storage.set("duration", boost * 20 / 19);
+		storage.set("duration", boost);
+		return boost;
 	}
 
 	@Override
