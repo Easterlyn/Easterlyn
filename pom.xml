@@ -67,16 +67,6 @@
       <version>1.7.16</version>
       <scope>compile</scope>
     </dependency>
-    <!--
-      - InternalHttpClient requires commons-logging.
-      - It's shaded into Discord4J, but we may not use the shaded jar forever.
-     -->
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.2</version>
-      <scope>compile</scope>
-    </dependency>
     <!-- Plugin dependencies -->
     <dependency>
       <groupId>com.sk89q.worldedit</groupId>
@@ -205,27 +195,7 @@
         <artifactId>maven-shade-plugin</artifactId>
         <version>2.4.3</version>
         <configuration>
-          <minimizeJar>true</minimizeJar>
-          <artifactSet>
-            <includes>
-              <include>ca.pjer:*</include>
-              <include>commons-logging:*</include>
-              <include>io.reactivex:*</include>
-              <include>org.reflections:*</include>
-              <include>org.javassist:*</include>
-              <include>org.slf4j:*</include>
-              <include>sx.blah:*</include>
-            </includes>
-          </artifactSet>
           <filters>
-            <!-- Because we minimize the jar, we must explicitly require commons logging implementation. -->
-            <filter>
-              <artifact>commons-logging:commons-logging</artifact>
-              <includes>
-                <include>org/apache/commons/logging/**</include>
-              </includes>
-            </filter>
-
             <!-- Filter unwanted clutter from other resources, we don't distribute the compiled plugin. -->
             <filter>
               <artifact>*:*</artifact>
