@@ -113,8 +113,6 @@ public class Meteorite {
 							particles.addEntity(new MeteoriteComponent(location, material, explodeBlocks, bore).getBukkitEntity(),
 									new ParticleEffectWrapper(Effect.LAVA_POP, 1));
 						}
-						Meteors.getInstance().getLogger().info(
-								"Meteor: " + skyTarget.getBlockX() + ", " + skyTarget.getBlockZ());
 					}
 				}.runTask(plugin);
 			}

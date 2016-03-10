@@ -99,6 +99,9 @@ public class Spectators extends Module {
 	 * @param player the player to add
 	 */
 	public void addSpectator(Player player) {
+		if (!this.isEnabled()) {
+			return;
+		}
 		player.closeInventory();
 		player.setGameMode(GameMode.SPECTATOR);
 		if (sleep.updateVoteCount(player.getWorld().getName(), player.getName())) {
@@ -132,6 +135,9 @@ public class Spectators extends Module {
 	 * @param player
 	 */
 	public void removeSpectator(Player player) {
+		if (!this.isEnabled() || !this.isSpectator(player.getUniqueId())) {
+			return;
+		}
 		cooldowns.clearCooldown(player, getName());
 		player.teleport(spectators.remove(player.getUniqueId()));
 		player.setGameMode(GameMode.SURVIVAL);
@@ -139,6 +145,11 @@ public class Spectators extends Module {
 			// 8 minutes, 8 * 60 * 1000 ms
 			cooldowns.addCooldown(player, "spectatore", 480000L);
 		}
+	}
+
+	@Override
+	public boolean isRequired() {
+		return false;
 	}
 
 	@Override

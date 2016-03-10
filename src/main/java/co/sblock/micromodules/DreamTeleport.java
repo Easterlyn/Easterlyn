@@ -164,6 +164,11 @@ public class DreamTeleport extends Module {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return false;
+	}
+
+	@Override
 	public String getName() {
 		return "DreamTeleport";
 	}

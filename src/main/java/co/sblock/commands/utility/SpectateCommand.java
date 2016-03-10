@@ -55,6 +55,10 @@ public class SpectateCommand extends SblockCommand {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
+		if (!spectators.isEnabled()) {
+			sender.sendMessage("Spectate module is not enabled!");
+			return true;
+		}
 		Player player = (Player) sender;
 		User user = users.getUser(player.getUniqueId());
 		if (args.length > 0) {

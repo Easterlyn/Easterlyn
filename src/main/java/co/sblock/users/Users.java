@@ -66,12 +66,14 @@ public class Users extends Module {
 
 	@Override
 	protected void onDisable() {
-		for (User u : userCache.asMap().values()) {
-			unteam(u.getUUID().toString().replace("-", "").substring(0, 16));
-		}
 		// Invalidating and cleaning up causes our removal listener to save all cached users.
 		userCache.invalidateAll();
 		userCache.cleanUp();
+	}
+
+	@Override
+	public boolean isRequired() {
+		return true;
 	}
 
 	@Override

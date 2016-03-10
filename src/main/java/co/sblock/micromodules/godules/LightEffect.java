@@ -13,10 +13,14 @@ import co.sblock.users.UserAspect;
  */
 public class LightEffect extends AspectEffect {
 
+	public LightEffect(Godule godule) {
+		super(godule);
+	}
+
 	@Override
 	protected void enable() {
 		World prime = Bukkit.getWorlds().get(0);
-		if (Godule.getInstance().isEnabled(UserAspect.VOID)) {
+		if (getGodule().isEnabled(UserAspect.VOID)) {
 			prime.setGameRuleValue("doDaylightCycle", "true");
 		} else {
 			prime.setGameRuleValue("doDaylightCycle", "false");
@@ -26,9 +30,9 @@ public class LightEffect extends AspectEffect {
 
 	@Override
 	protected void disable() {
-		if (Godule.getInstance().isEnabled(UserAspect.VOID)) {
+		if (getGodule().isEnabled(UserAspect.VOID)) {
 			// Forcibly re-enable Light if present
-			Godule.getInstance().getAspectEffect(UserAspect.VOID).enable();
+			getGodule().getAspectEffect(UserAspect.VOID).enable();
 		} else {
 			Bukkit.getWorlds().get(0).setGameRuleValue("doDaylightCycle", "true");
 		}

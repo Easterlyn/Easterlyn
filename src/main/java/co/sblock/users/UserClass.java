@@ -25,7 +25,8 @@ public enum UserClass {
 	SYLPH("Sylph", 1),
 	THIEF("Thief", 5),
 	WASTE("Waste", 3),
-	WITCH("Witch", 6);
+	WITCH("Witch", 6),
+	DEFAULT("Default", 4);
 
 	private final String name;
 	private final int activity;

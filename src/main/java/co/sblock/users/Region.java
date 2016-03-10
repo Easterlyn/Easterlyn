@@ -17,7 +17,7 @@ public enum Region {
 	LOLAR("LOLAR", "LOLAR", ChatColor.AQUA, "http://sblock.co/rpack/Sblock.zip", true, false),
 	LOWAS("LOWAS", "LOWAS", ChatColor.GRAY, "http://sblock.co/rpack/Sblock.zip", true, false),
 	DUNGEON("Dungeon", "Dungeon", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock.zip", false, false),
-	UNKNOWN("Second Earth", "Earth", ChatColor.DARK_GRAY, "http://sblock.co/rpack/Sblock.zip", false, false);
+	DEFAULT("Second Earth", "Earth", ChatColor.DARK_GREEN, null, false, false);
 
 	/* INNER FIELDS */
 	private final String displayName;
@@ -119,7 +119,7 @@ public enum Region {
 					return region;
 				}
 			}
-			return UNKNOWN;
+			return DEFAULT;
 		}
 	}
 }

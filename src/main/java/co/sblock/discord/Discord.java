@@ -289,7 +289,7 @@ public class Discord extends Module {
 					cancel();
 					return;
 				}
-				// In case either queue has encountered an error, attempt to restart them
+				// In case the queue has encountered an error, attempt to restart them
 				startQueueDrain();
 
 				resetBotName();
@@ -486,6 +486,11 @@ public class Discord extends Module {
 		}
 		commands.get(split[0]).execute(user, channel, command, args);
 		return true;
+	}
+
+	@Override
+	public boolean isRequired() {
+		return false;
 	}
 
 	@Override

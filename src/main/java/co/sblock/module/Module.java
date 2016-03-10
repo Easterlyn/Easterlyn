@@ -86,6 +86,13 @@ public abstract class Module {
 	}
 
 	/**
+	 * Gets whether or not the Module needs to be enabled for the plugin to function.
+	 * 
+	 * @return true if the Module is essential and cannot be disabled.
+	 */
+	public abstract boolean isRequired();
+
+	/**
 	 * Get the simple name of the Module.
 	 * 
 	 * @return the name of this Module

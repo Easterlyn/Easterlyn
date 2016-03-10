@@ -184,6 +184,11 @@ public class AwayFromKeyboard extends Module {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return false;
+	}
+
+	@Override
 	public String getName() {
 		return "AFK";
 	}

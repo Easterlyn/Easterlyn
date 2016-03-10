@@ -15,8 +15,11 @@ import co.sblock.micromodules.Meteors;
  */
 public class ChangeBlockListener extends SblockListener {
 
+	private final Meteors meteors;
+
 	public ChangeBlockListener(Sblock plugin) {
 		super(plugin);
+		this.meteors = plugin.getModule(Meteors.class);
 	}
 
 	/**
@@ -29,6 +32,6 @@ public class ChangeBlockListener extends SblockListener {
 		if (event.getEntityType() != EntityType.FALLING_BLOCK) {
 			return;
 		}
-		Meteors.getInstance().handlePotentialMeteorite(event);
+		meteors.handlePotentialMeteorite(event);
 	}
 }

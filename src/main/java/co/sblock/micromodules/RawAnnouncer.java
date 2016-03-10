@@ -264,6 +264,11 @@ public class RawAnnouncer extends Module {
 	protected void onDisable() { }
 
 	@Override
+	public boolean isRequired() {
+		return false;
+	}
+
+	@Override
 	public String getName() {
 		return "RawAnnouncer";
 	}

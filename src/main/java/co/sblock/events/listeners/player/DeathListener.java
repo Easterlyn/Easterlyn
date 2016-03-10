@@ -32,12 +32,14 @@ public class DeathListener extends SblockListener {
 
 	private final Events events;
 	private final FreeCart carts;
+	private final Godule godule;
 	private final ItemStack facts;
 
 	public DeathListener(Sblock plugin) {
 		super(plugin);
 		this.events = plugin.getModule(Events.class);
 		this.carts = plugin.getModule(FreeCart.class);
+		this.godule = plugin.getModule(Godule.class);
 		facts = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta meta = (BookMeta) facts.getItemMeta();
 		meta.setTitle("Wither Facts");
@@ -99,7 +101,7 @@ public class DeathListener extends SblockListener {
 			}
 			Bukkit.getConsoleSender().sendMessage(player.getName() + " died to "
 					+ killer.getName() + "." + location);
-			if (Godule.getInstance().isEnabled(UserAspect.BREATH)) {
+			if (godule.isEnabled(UserAspect.BREATH)) {
 				ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) skull.getItemMeta();
 				meta.setOwner(player.getName());

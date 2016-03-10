@@ -244,6 +244,11 @@ public class Captcha extends Module {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return false;
+	}
+
+	@Override
 	public String getName() {
 		return "Captcha";
 	}
@@ -512,6 +517,9 @@ public class Captcha extends Module {
 
 	@SuppressWarnings("deprecation")
 	public void handleCaptcha(InventoryClickEvent event) {
+		if (!this.isEnabled()) {
+			return;
+		}
 		boolean hotbar = event.getAction().name().contains("HOTBAR");
 		ItemStack blankCaptcha;
 		ItemStack toCaptcha;

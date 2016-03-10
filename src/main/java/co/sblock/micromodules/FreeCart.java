@@ -83,6 +83,11 @@ public class FreeCart extends Module {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return false;
+	}
+
+	@Override
 	public String getName() {
 		return "FreeCart";
 	}

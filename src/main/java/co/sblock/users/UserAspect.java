@@ -24,7 +24,8 @@ public enum UserAspect {
 	SPACE("Space", ChatColor.DARK_GRAY),
 	TEARS("Tears", ChatColor.AQUA),
 	TIME("Time", ChatColor.RED),
-	VOID("Void", ChatColor.DARK_BLUE);
+	VOID("Void", ChatColor.DARK_BLUE),
+	DEFAULT("Default", ChatColor.WHITE);
 
 	private final String name;
 	private final ChatColor chatColor;

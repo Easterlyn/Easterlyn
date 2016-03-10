@@ -33,6 +33,7 @@ public class QuitListener extends SblockListener {
 	private final DreamTeleport dream;
 	private final Effects effects;
 	private final FreeCart carts;
+	private final Godule godule;
 	private final SleepVote sleep;
 	private final Spectators spectators;
 	private final Users users;
@@ -44,6 +45,7 @@ public class QuitListener extends SblockListener {
 		this.dream = plugin.getModule(DreamTeleport.class);
 		this.effects = plugin.getModule(Effects.class);
 		this.carts = plugin.getModule(FreeCart.class);
+		this.godule = plugin.getModule(Godule.class);
 		this.sleep = plugin.getModule(SleepVote.class);
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
@@ -98,7 +100,7 @@ public class QuitListener extends SblockListener {
 
 		// Disable "god" effect, if any
 		if (event.getPlayer().hasPermission("sblock.god")) {
-			Godule.getInstance().disable(user.getUserAspect());
+			godule.disable(user.getUserAspect());
 		}
 
 		// Inform channels that the player is no longer listening to them

@@ -1,5 +1,7 @@
 package co.sblock.micromodules.godules;
 
+import co.sblock.micromodules.Godule;
+
 /**
  * Effect for the Breath "god" entering the game.
  * <p>
@@ -8,6 +10,10 @@ package co.sblock.micromodules.godules;
  * @author Jikoo
  */
 public class BreathEffect extends AspectEffect {
+
+	public BreathEffect(Godule godule) {
+		super(godule);
+	}
 
 	@Override
 	protected void enable() {}

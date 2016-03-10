@@ -33,6 +33,10 @@ public class TemporaryCart extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
+		if (!carts.isEnabled()) {
+			sender.sendMessage("FreeCart module is disabled!");
+			return true;
+		}
 		if (args == null || args.length < 6) {
 			return false;
 		}

@@ -117,7 +117,7 @@ public class Machines extends Module {
 	 */
 	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type,
 			UUID owner, Direction direction) {
-		if (!byName.containsKey(type)
+		if (!this.isEnabled() || !byName.containsKey(type)
 				|| location.getWorld().getName().equals(Region.DERSE.getWorldName())) {
 			return null;
 		}
@@ -136,7 +136,7 @@ public class Machines extends Module {
 	 * @return the Machine type loaded
 	 */
 	private Pair<Machine, ConfigurationSection> loadMachine(Location key, ConfigurationSection section) {
-		if (!byName.containsKey(section.getString("type"))) {
+		if (!this.isEnabled() || !byName.containsKey(section.getString("type"))) {
 			return null;
 		}
 		Machine type = byName.get(section.getString("type"));
@@ -148,6 +148,9 @@ public class Machines extends Module {
 	}
 
 	public void loadChunkMachines(Chunk chunk) {
+		if (!this.isEnabled()) {
+			return;
+		}
 		String worldName = chunk.getWorld().getName();
 		if (!getConfig().isSet(worldName) || worldName.equals(Region.DERSE.getWorldName())) {
 			// No machines in Derspit.
@@ -181,6 +184,9 @@ public class Machines extends Module {
 	}
 
 	public void unloadChunkMachines(Chunk chunk) {
+		if (!this.isEnabled()) {
+			return;
+		}
 		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
 				.append(chunk.getX()).append('_').append(chunk.getZ()).toString();
 		ConfigurationSection chunkSection = getConfig().getConfigurationSection(path);
@@ -434,6 +440,11 @@ public class Machines extends Module {
 	 */
 	public MachineInventoryTracker getInventoryTracker() {
 		return this.tracker;
+	}
+
+	@Override
+	public boolean isRequired() {
+		return false;
 	}
 
 	@Override

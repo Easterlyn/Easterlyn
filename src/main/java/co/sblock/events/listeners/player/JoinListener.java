@@ -31,6 +31,7 @@ public class JoinListener extends SblockListener {
 
 	private final Discord discord;
 	private final Events events;
+	private final Godule godule;
 	private final Users users;
 	private final WrapperPlayServerPlayerListHeaderFooter list;
 
@@ -38,6 +39,7 @@ public class JoinListener extends SblockListener {
 		super(plugin);
 		this.discord = plugin.getModule(Discord.class);
 		this.events = plugin.getModule(Events.class);
+		this.godule = plugin.getModule(Godule.class);
 		this.users = plugin.getModule(Users.class);
 		list = new WrapperPlayServerPlayerListHeaderFooter();
 		list.setHeader(WrappedChatComponent.fromText(ChatColor.GOLD + "Welcome to " + ChatColor.DARK_AQUA + "Sblock Beta"));
@@ -87,7 +89,7 @@ public class JoinListener extends SblockListener {
 				list.sendPacket(player);
 
 				if (player.hasPermission("sblock.god")) {
-					Godule.getInstance().enable(user.getUserAspect());
+					godule.enable(user.getUserAspect());
 				}
 			}
 		}.runTaskLater(getPlugin(), 2L);

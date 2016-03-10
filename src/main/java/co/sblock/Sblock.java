@@ -136,7 +136,7 @@ public class Sblock extends JavaPlugin {
 
 		List<String> disabledModules = getConfig().getStringList("disabled-modules");
 		for (Module module : modules.values()) {
-			if (!disabledModules.contains(module.getName())) {
+			if (module.isRequired() || !disabledModules.contains(module.getName())) {
 				module.enable();
 			}
 		}

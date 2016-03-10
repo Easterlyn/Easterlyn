@@ -9,10 +9,10 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import co.sblock.Sblock;
 import co.sblock.module.Module;
 
+import net.minecraft.server.v1_9_R1.Explosion;
+
 import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
-
-import net.minecraft.server.v1_9_R1.Explosion;
 
 /**
  * A Module for creating falling explosive spheres.
@@ -20,9 +20,6 @@ import net.minecraft.server.v1_9_R1.Explosion;
  * @author Dublek, Jikoo
  */
 public class Meteors extends Module {
-
-	/* The Meteors instance. */
-	private static Meteors instance;
 
 	public Meteors(Sblock plugin) {
 		super(plugin);
@@ -32,26 +29,13 @@ public class Meteors extends Module {
 	 * @see Module#onEnable()
 	 */
 	@Override
-	public void onEnable() {
-		instance = this;
-	}
+	public void onEnable() { }
 
 	/**
 	 * @see Module#onDisable()
 	 */
 	@Override
-	public void onDisable() {
-		instance = null;
-	}
-
-	/**
-	 * Gets the MeteorMod instance.
-	 * 
-	 * @return the MeteorMod instance
-	 */
-	public static Meteors getInstance() {
-		return instance;
-	}
+	public void onDisable() { }
 
 	/**
 	 * Deals with EntityChangeBlockEvents to keep all related NMS/OBC access in one area.
@@ -62,7 +46,7 @@ public class Meteors extends Module {
 		net.minecraft.server.v1_9_R1.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
 		if (nmsEntity instanceof MeteoriteComponent) {
 			event.setCancelled(true);
-			Meteors.getInstance().explode(event.getBlock().getLocation(), event.getEntity(),
+			explode(event.getBlock().getLocation(), event.getEntity(),
 					false, ((MeteoriteComponent) nmsEntity).shouldExplode());
 			event.getEntity().remove();
 			event.getBlock().setType(Material.AIR);
@@ -81,6 +65,12 @@ public class Meteors extends Module {
 		explosion.a();
 		explosion.a(true);
 		loc.getWorld().playEffect(loc, Effect.EXPLOSION_HUGE, 4);
+	}
+
+	@Override
+	public boolean isRequired() {
+		// Due to poor design, the Meteors module is fragmented to a point where it's not feasible to disable.
+		return true;
 	}
 
 	@Override

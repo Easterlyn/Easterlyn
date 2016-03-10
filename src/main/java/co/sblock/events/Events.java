@@ -260,6 +260,11 @@ public class Events extends Module {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return true;
+	}
+
+	@Override
 	public String getName() {
 		return "Events";
 	}

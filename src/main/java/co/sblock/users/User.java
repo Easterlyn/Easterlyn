@@ -325,7 +325,7 @@ public class User {
 		} else {
 			getPlayer().resetPlayerTime();
 		}
-		if (isOnline() && (force
+		if (isOnline() && newRegion.getResourcePackURL() != null && (force
 				|| !getCurrentRegion().getResourcePackURL().equals(newRegion.getResourcePackURL()))) {
 			getPlayer().setResourcePack(newRegion.getResourcePackURL());
 		}

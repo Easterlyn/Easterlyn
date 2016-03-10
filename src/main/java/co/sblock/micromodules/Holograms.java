@@ -76,6 +76,11 @@ public class Holograms extends Module {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return true;
+	}
+
+	@Override
 	public String getName() {
 		return "Holograms";
 	}

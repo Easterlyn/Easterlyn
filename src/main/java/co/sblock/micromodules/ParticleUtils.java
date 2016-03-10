@@ -145,6 +145,11 @@ public class ParticleUtils extends Module {
 	}
 
 	@Override
+	public boolean isRequired() {
+		return true;
+	}
+
+	@Override
 	public String getName() {
 		return "Particles";
 	}

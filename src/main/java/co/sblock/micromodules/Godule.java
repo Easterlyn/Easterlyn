@@ -1,5 +1,7 @@
 package co.sblock.micromodules;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,8 +17,6 @@ import co.sblock.users.UserAspect;
  */
 public class Godule extends Module {
 
-	private static Godule instance;
-
 	private Map<UserAspect, AspectEffect> aspeffects;
 
 	public Godule(Sblock plugin) {
@@ -25,30 +25,34 @@ public class Godule extends Module {
 
 	@Override
 	protected void onEnable() {
-		instance = this;
 		aspeffects = new HashMap<>();
 	}
 
 	@Override
 	protected void onDisable() {
-		instance = null;
 		for (AspectEffect aspeffect : aspeffects.values()) {
 			aspeffect.onDisable();
 		}
 	}
 
 	public void enable(UserAspect aspect) {
+		if (!this.isEnabled()) {
+			return;
+		}
 		if (aspeffects.containsKey(aspect)) {
 			aspeffects.get(aspect).onEnable();
 			return;
 		}
 		try {
 			Class<?> clazz = Class.forName(getClass().getPackage() + ".godules." + aspect.getDisplayName() + "Effect");
-			AspectEffect aspeffect = (AspectEffect) clazz.newInstance();
+			Constructor<?> constructor = clazz.getConstructor(this.getClass());
+			AspectEffect aspeffect = (AspectEffect) constructor.newInstance(this);
 			aspeffect.onEnable();
 			aspeffects.put(aspect, aspeffect);
 			return;
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+		} catch (ClassCastException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException | NoSuchMethodException | SecurityException
+				| IllegalArgumentException | InvocationTargetException e) {
 			// For now, catch silently - Not all aspects have plans
 			return;
 		}
@@ -69,12 +73,13 @@ public class Godule extends Module {
 	}
 
 	@Override
-	public String getName() {
-		return "GodManager";
+	public boolean isRequired() {
+		return false;
 	}
 
-	public static Godule getInstance() {
-		return instance;
+	@Override
+	public String getName() {
+		return "GodManager";
 	}
 
 }

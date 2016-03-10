@@ -58,6 +58,7 @@ public class Effects extends Module {
 	private final Pattern effectPattern = Pattern.compile("^\\" + ChatColor.COLOR_CHAR + "7(.*) ([IVXLCDM]+)$");
 
 	private Cooldowns cooldowns;
+	private boolean lock = false;
 
 	public Effects(Sblock plugin) {
 		super(plugin);
@@ -65,6 +66,13 @@ public class Effects extends Module {
 
 	@Override
 	protected void onEnable() {
+
+		if (lock) {
+			return;
+		}
+
+		lock = true;
+
 		this.cooldowns = getPlugin().getModule(Cooldowns.class);
 		Reflections reflections = new Reflections("co.sblock.effects.effect");
 		Set<Class<? extends Effect>> allEffects = reflections.getSubTypesOf(Effect.class);
@@ -130,6 +138,9 @@ public class Effects extends Module {
 	 * @param entity the LivingEntity
 	 */
 	public void applyAllEffects(LivingEntity entity) {
+		if (!this.isEnabled()) {
+			return;
+		}
 		for (Map.Entry<Effect, Integer> entry : getAllEffects(entity).entrySet()) {
 			if (!(entry.getKey() instanceof BehaviorPassive)) {
 				continue;
@@ -184,6 +195,9 @@ public class Effects extends Module {
 	 * @param reactive true if the Effect is reactive
 	 */
 	public void handleEvent(Event event, LivingEntity entity, boolean reactive) {
+		if (!this.isEnabled()) {
+			return;
+		}
 		boolean bypassMax = entity.hasPermission("sblock.effects.bypassmax");
 		Map<Effect, Integer> effects;
 		if (reactive) {
@@ -413,6 +427,11 @@ public class Effects extends Module {
 
 	@Override
 	protected void onDisable() { }
+
+	@Override
+	public boolean isRequired() {
+		return false;
+	}
 
 	@Override
 	public String getName() {
