@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
@@ -36,8 +37,8 @@ public class ExplodeListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityExplode(EntityExplodeEvent event) {
 		if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")
-				&& CreeperConfig.getWorld(event.getLocation().getWorld().getName()).shouldReplace(
-						event.getEntity())) {
+				&& CreeperConfig.getWorld(event.getLocation().getWorld().getName()).shouldReplace(event.getEntity())
+						&& event.getEntityType() != EntityType.ENDER_DRAGON) {
 
 			ArrayList<Block> affected = new ArrayList<>();
 			for (Block block : event.blockList()) {
