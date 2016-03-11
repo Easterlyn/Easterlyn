@@ -71,12 +71,12 @@ public class CruxiteDowel {
 		if (toCreate.getType() == Material.SKULL_ITEM && toCreate.getDurability() == 5) {
 			cost += 29000;
 		}
-		if (Captcha.isCaptcha(toCreate) || isDowel(toCreate)) {
-			cost = Integer.MAX_VALUE;
-		}
-		if (cost == Integer.MAX_VALUE) {
-			// Item cannot be made with grist, we're done here.
+		if (cost == Integer.MAX_VALUE || !toCreate.hasItemMeta()) {
+			// Item cannot be made with grist or has no additional costs, we're done here.
 			return cost;
+		}
+		if (Captcha.isCaptcha(toCreate) || isDowel(toCreate)) {
+			return Integer.MAX_VALUE;
 		}
 
 		ItemMeta meta = toCreate.getItemMeta();
@@ -103,7 +103,6 @@ public class CruxiteDowel {
 			}
 		}
 
-
 		if (toCreate.getItemMeta().hasDisplayName()) {
 			// Naming an unenchanted item in an anvil costs 1 additional level in 1.8
 			cost += 15;
@@ -114,7 +113,7 @@ public class CruxiteDowel {
 			effectCost += effect.getKey().getCost() * effect.getValue();
 		}
 		// if item contains special lore and doesn't need repair, raise price
-		if (toCreate.getType().getMaxDurability() > 0) {
+		if (toCreate.getType().getMaxDurability() == 0) {
 			effectCost *= 4;
 		}
 		cost += effectCost;
@@ -445,7 +444,7 @@ public class CruxiteDowel {
 					}
 					if (pastMaterials.contains(is.getType())) {
 						newMin = Integer.MAX_VALUE;
-						break;
+						continue;
 					}
 					newMin += getRecipeCost(is.getType(), pastMaterials) * e.getValue();
 				}
@@ -454,7 +453,7 @@ public class CruxiteDowel {
 				for (ItemStack is : ((ShapelessRecipe) r).getIngredientList()) {
 					if (pastMaterials.contains(is.getType())) {
 						newMin = Integer.MAX_VALUE;
-						break;
+						continue;
 					}
 					newMin += getRecipeCost(is.getType(), pastMaterials);
 				}
