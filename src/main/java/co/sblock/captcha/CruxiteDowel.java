@@ -89,7 +89,8 @@ public class CruxiteDowel {
 				// silk touch 1: 15 * 1 * 20 = 300 exp
 				// fortune 3: 14 * 3 * 20 = 840 exp, 0-30
 				// Rebalanced to *40, removed 2x multiplier from final cost
-				cost += (20 - getWeight(entry.getKey())) * Math.abs(entry.getValue()) * 45;
+				// Rebalanced weights to account for mending/frostwalker being rarer
+				cost += (40 - getWeight(entry.getKey())) * Math.abs(entry.getValue()) * 45;
 			}
 			if (toCreate.getType().getMaxDurability() == 0) {
 				cost *= 4;
@@ -98,7 +99,7 @@ public class CruxiteDowel {
 
 		if (meta instanceof EnchantmentStorageMeta) {
 			for (Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta) meta).getStoredEnchants().entrySet()) {
-				cost += (16 - getWeight(entry.getKey())) * entry.getValue() * 40;
+				cost += (36 - getWeight(entry.getKey())) * entry.getValue() * 40;
 			}
 		}
 
@@ -120,7 +121,7 @@ public class CruxiteDowel {
 
 		cost *= toCreate.getAmount();
 
-		return cost;
+		return cost > 0 ? cost : Integer.MAX_VALUE;
 	}
 
 	public static HashMap<Material, Integer> getGrist() {
@@ -474,26 +475,26 @@ public class CruxiteDowel {
 
 	public static int getWeight(Enchantment enchantment) {
 		if (enchantment.equals(Enchantment.MENDING)) {
-			return 50;
+			return 0;
 		}
-		if (enchantment.equals(Enchantment.LUCK) || enchantment.equals(Enchantment.FROST_WALKER)) {
-			return 20;
+		if (enchantment.equals(Enchantment.FROST_WALKER)) {
+			return 5;
 		}
 		if (enchantment.equals(Enchantment.PROTECTION_ENVIRONMENTAL) || enchantment.equals(Enchantment.DAMAGE_ALL)
 				|| enchantment.equals(Enchantment.DIG_SPEED) || enchantment.equals(Enchantment.ARROW_DAMAGE)) {
-			return 10;
+			return 30;
 		}
 		if (enchantment.equals(Enchantment.WATER_WORKER) || enchantment.equals(Enchantment.PROTECTION_EXPLOSIONS)
 				|| enchantment.equals(Enchantment.OXYGEN) || enchantment.equals(Enchantment.FIRE_ASPECT)
 				|| enchantment.equals(Enchantment.LOOT_BONUS_MOBS) || enchantment.equals(Enchantment.LOOT_BONUS_BLOCKS)
 				|| enchantment.equals(Enchantment.ARROW_FIRE) || enchantment.equals(Enchantment.ARROW_KNOCKBACK)
 				|| enchantment.equals(Enchantment.DEPTH_STRIDER)) {
-			return 2;
+			return 22;
 		}
 		if (enchantment.equals(Enchantment.THORNS) || enchantment.equals(Enchantment.SILK_TOUCH)
 				|| enchantment.equals(Enchantment.ARROW_INFINITE)) {
-			return 1;
+			return 21;
 		}
-		return 5;
+		return 25;
 	}
 }
