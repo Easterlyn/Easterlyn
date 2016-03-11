@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -1009,14 +1010,16 @@ public class User {
 			if (!player.hasPlayedBefore()) {
 				// Our data file may have just been deleted - reset planned for Entry, etc.
 				base.setMessage("It would seem that " + player.getName()
-						+ " is joining us for the first time! Please welcome them.")
-						.toMessage().send(Bukkit.getOnlinePlayers(), false);
+						+ " is joining us for the first time! Please welcome them.").toMessage()
+						.send(Bukkit.getOnlinePlayers().stream()
+								.filter(online -> !online.getUniqueId().equals(player.getUniqueId()))
+								.collect(Collectors.toCollection(ArrayList<Object>::new)), false);
 				Discord discord = plugin.getModule(Discord.class);
 				discord.postMessage(discord.getBotName(), player.getName()
 						+ " is new! Please welcome them.", true);
 			} else {
 				base.setMessage("We've reset classpect since you last played. Please re-select now!")
-						.toMessage().send(ImmutableList.of(player), false);
+						.toMessage().send(ImmutableList.of(user), false);
 			}
 			return user;
 		}

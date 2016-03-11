@@ -59,7 +59,7 @@ public class BadButton extends Program {
 					break;
 				}
 				Elevator elevator = (Elevator) machine.getLeft();
-				int amount = elevator.adjustBlockBoost(machine.getRight(), 1);
+				int amount = elevator.adjustBlockBoost(machine.getRight(), -1);
 				ItemStack gauge = top.getItem(4);
 				if (gauge != null) {
 					gauge.setAmount(amount);
