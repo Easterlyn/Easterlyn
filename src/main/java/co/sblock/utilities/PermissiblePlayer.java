@@ -40,6 +40,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.InventoryView.Property;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
@@ -1423,6 +1424,21 @@ public class PermissiblePlayer implements Player {
 	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
 			double offsetX, double offsetY, double offsetZ, double extra, T data) {
 		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, extra, data);
+	}
+
+	@Override
+	public MainHand getMainHand() {
+		return player.getMainHand();
+	}
+
+	@Override
+	public boolean isGliding() {
+		return player.isGliding();
+	}
+
+	@Override
+	public void setGliding(boolean arg0) {
+		player.setGliding(arg0);
 	}
 
 }

@@ -40,6 +40,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.InventoryView.Property;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
@@ -1150,5 +1151,18 @@ public class DummyPlayer implements Player {
 	@Override
 	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
 			double offsetX, double offsetY, double offsetZ, double extra, T data) {}
+
+	@Override
+	public MainHand getMainHand() {
+		return null;
+	}
+
+	@Override
+	public boolean isGliding() {
+		return false;
+	}
+
+	@Override
+	public void setGliding(boolean arg0) {}
 
 }

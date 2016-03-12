@@ -443,7 +443,6 @@ public class CruxiteDowel {
 						continue;
 					}
 					if (pastMaterials.contains(is.getType())) {
-						newMin = Integer.MAX_VALUE;
 						continue;
 					}
 					newMin += getRecipeCost(is.getType(), pastMaterials) * e.getValue();
@@ -452,7 +451,6 @@ public class CruxiteDowel {
 				newMin = 0;
 				for (ItemStack is : ((ShapelessRecipe) r).getIngredientList()) {
 					if (pastMaterials.contains(is.getType())) {
-						newMin = Integer.MAX_VALUE;
 						continue;
 					}
 					newMin += getRecipeCost(is.getType(), pastMaterials);
