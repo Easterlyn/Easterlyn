@@ -50,17 +50,7 @@ public class QueueDrainThread extends Thread {
 				continue;
 			}
 
-			DiscordCallable callable = queue.remove();
-			try {
-				callable.call();
-			} catch (NullPointerException e) {
-				/*
-				 * Rather than skip removal in this case to preserve order, we re-add the
-				 * DiscordCallable. This does ruin order in the case of messages sent, however,
-				 * sent messages do not currently retry. It also allows us to modify the queue from inside
-				 * the callables safely.
-				 */
-				e.printStackTrace();
+			if (!discord.getClient().isReady()) {
 				discord.getLogger().warning("Bot has likely been logged out. Attempting to log back in.");
 				try {
 					discord.getClient().login();
@@ -74,11 +64,21 @@ public class QueueDrainThread extends Thread {
 				} catch (InterruptedException ie) {
 					ie.printStackTrace();
 				}
-				continue;
+			}
+
+			DiscordCallable callable = queue.remove();
+			try {
+				callable.call();
 			} catch (DiscordException e) {
 				if (callable.retryOnException()) {
-					// Don't log when retrying, we only retry because of a Discord4J fault generally.
+					/*
+					 * Rather than skip removal in this case to preserve order, we re-add the
+					 * DiscordCallable. This does ruin order in the case of messages sent, however,
+					 * sent messages do not currently retry. It also allows us to modify the queue from inside
+					 * the callables safely.
+					 */
 					queue.add(callable);
+					// Don't log when retrying, we only retry because of a Discord4J fault generally.
 					continue;
 				}
 				e.printStackTrace();
