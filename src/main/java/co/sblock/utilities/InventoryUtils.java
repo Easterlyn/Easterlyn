@@ -150,9 +150,12 @@ public class InventoryUtils {
 		}
 
 		int power = potionEffectLevels.get(type);
-		double duration = 3600 * type.getDurationModifier();
+		double duration;
 
-		if (!type.isInstant()) {
+		if (type.isInstant()) {
+			duration = 1;
+		} else {
+			duration = 3600D * type.getDurationModifier();
 			if (((durability >> 5) & 1) == 1 && power == 1) {
 				// Power is amplified, decrease duration
 				duration /= 2D;

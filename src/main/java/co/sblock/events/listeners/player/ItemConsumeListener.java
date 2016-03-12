@@ -4,8 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionEffect;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 
 import co.sblock.Sblock;
@@ -39,17 +39,15 @@ public class ItemConsumeListener extends SblockListener {
 			return;
 		}
 
-		Potion potion = Potion.fromItemStack(event.getItem());
-		boolean invisibility = false;
-		for (PotionEffect effect : potion.getEffects()) {
-			if (effect.getType().equals(PotionEffectType.INVISIBILITY)) {
-				invisibility = true;
-				break;
-			}
-		}
-		if (!invisibility) {
+		if (!event.getItem().hasItemMeta()) {
 			return;
 		}
-		events.getInvisibilityManager().lazyVisibilityUpdate(event.getPlayer());
+		ItemMeta meta = event.getItem().getItemMeta();
+		if (!(meta instanceof PotionMeta)) {
+			return;
+		}
+		if (((PotionMeta) meta).hasCustomEffect(PotionEffectType.INVISIBILITY)) {
+			events.getInvisibilityManager().lazyVisibilityUpdate(event.getPlayer());
+		}
 	}
 }
