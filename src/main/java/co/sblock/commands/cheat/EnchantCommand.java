@@ -47,7 +47,7 @@ public class EnchantCommand extends SblockCommand {
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (hand == null) {
+		if (hand == null || hand.getType() == Material.AIR) {
 			return false;
 		}
 
