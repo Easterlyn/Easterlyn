@@ -994,19 +994,12 @@ public class User {
 			User user = new User(plugin, uuid, new YamlConfiguration());
 			user.setUserIP(player.getAddress().getHostString());
 
-			// Manually set channel - using setCurrentChannel results in recursive User load
-			// It's not guaranteed that this is happening during the PlayerJoinEvent either,
-			// so we can't count on User#handleLoginChannelJoins being called.
-			user.currentChannel = "#";
-			user.listening.add("#");
-			Channel hash = user.manager.getChannel("#");
-			hash.getListening().add(uuid);
-
 			user.updateCurrentRegion(Region.EARTH, true);
 
 			Chat chat = plugin.getModule(Chat.class);
 			MessageBuilder base = chat.getHalBase().setChannel(chat.getChannelManager().getChannel("#"));
 
+			// Message must be sent before player is added to channel to prevent recursive load
 			if (!player.hasPlayedBefore()) {
 				// Our data file may have just been deleted - reset planned for Entry, etc.
 				base.setMessage("It would seem that " + player.getName()
@@ -1021,6 +1014,15 @@ public class User {
 				base.setMessage("We've reset classpect since you last played. Please re-select now!")
 						.toMessage().send(ImmutableList.of(user), false);
 			}
+
+			// Manually set channel - using setCurrentChannel results in recursive User load
+			// It's not guaranteed that this is happening during the PlayerJoinEvent either,
+			// so we can't count on User#handleLoginChannelJoins being called.
+			user.currentChannel = "#";
+			user.listening.add("#");
+			Channel hash = user.manager.getChannel("#");
+			hash.getListening().add(uuid);
+
 			return user;
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
