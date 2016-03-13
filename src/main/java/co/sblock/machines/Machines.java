@@ -52,8 +52,11 @@ public class Machines extends Module {
 	/* The MachineInventoryTracker. */
 	private final MachineInventoryTracker tracker;
 
+	private final boolean TODO_FIXME;
+
 	public Machines(Sblock plugin) {
 		super(plugin);
+		this.TODO_FIXME = true;
 		byName = new HashMap<>();
 		this.machineBlocks = HashMultimap.create();
 		this.exploded = new HashMap<>();
@@ -136,7 +139,7 @@ public class Machines extends Module {
 	 * @return the Machine type loaded
 	 */
 	private Pair<Machine, ConfigurationSection> loadMachine(Location key, ConfigurationSection section) {
-		if (!this.isEnabled() || !byName.containsKey(section.getString("type"))) {
+		if (!byName.containsKey(section.getString("type"))) {
 			return null;
 		}
 		Machine type = byName.get(section.getString("type"));
@@ -148,7 +151,7 @@ public class Machines extends Module {
 	}
 
 	public void loadChunkMachines(Chunk chunk) {
-		if (!this.isEnabled()) {
+		if (TODO_FIXME || !this.isEnabled()) {
 			return;
 		}
 		String worldName = chunk.getWorld().getName();
@@ -184,7 +187,7 @@ public class Machines extends Module {
 	}
 
 	public void unloadChunkMachines(Chunk chunk) {
-		if (!this.isEnabled()) {
+		if (TODO_FIXME || !this.isEnabled()) {
 			return;
 		}
 		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
@@ -233,9 +236,45 @@ public class Machines extends Module {
 	 * Loads all Machine data from file.
 	 */
 	private void loadMachines() {
-		for (World world : Bukkit.getWorlds()) {
-			for (Chunk chunk : world.getLoadedChunks()) {
-				loadChunkMachines(chunk);
+		if (TODO_FIXME) {
+			for (World world : Bukkit.getWorlds()) {
+				String worldName = world.getName();
+				if (!getConfig().isConfigurationSection(worldName)
+						|| worldName.equals(Region.DERSE.getWorldName())) {
+					// No machines in Derspit.
+					continue;
+				}
+				ConfigurationSection worldSection = getConfig().getConfigurationSection(worldName);
+				for (String chunkPath : worldSection.getKeys(false)) {
+					if (!worldSection.isConfigurationSection(chunkPath)) {
+						continue;
+					}
+					ConfigurationSection chunkSection = worldSection.getConfigurationSection(chunkPath);
+					Set<String> chunkKeys = chunkSection.getKeys(false);
+					for (Iterator<String> iterator = chunkKeys.iterator(); iterator.hasNext();) {
+						String xyz = iterator.next();
+						String[] split = xyz.split("_");
+						try {
+							Location key = new Location(world, Integer.valueOf(split[0]),
+									Integer.valueOf(split[1]), Integer.valueOf(split[2]));
+							Pair<Machine, ConfigurationSection> machine = loadMachine(key, chunkSection.getConfigurationSection(xyz));
+							if (machine == null) {
+								iterator.remove();
+								System.out.println("Deleting broken machine at " + key);
+								continue;
+							}
+							machine.getLeft().enable(machine.getRight());
+						} catch (NumberFormatException e) {
+							getLogger().warning("Coordinates cannot be parsed from " + Arrays.toString(split));
+						}
+					}
+				}
+			}
+		} else {
+			for (World world : Bukkit.getWorlds()) {
+				for (Chunk chunk : world.getLoadedChunks()) {
+					loadChunkMachines(chunk);
+				}
 			}
 		}
 	}
