@@ -32,10 +32,10 @@ import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.abstraction.DiscordModule;
-import co.sblock.discord.listeners.DiscordMessageAcknowledgedListener;
 import co.sblock.discord.listeners.DiscordMessageDeleteListener;
 import co.sblock.discord.listeners.DiscordMessageReceivedListener;
 import co.sblock.discord.listeners.DiscordReadyListener;
+import co.sblock.discord.modules.RetentionModule;
 import co.sblock.module.Module;
 import co.sblock.utilities.PlayerLoader;
 import co.sblock.utilities.TextUtils;
@@ -130,7 +130,6 @@ public class Discord extends Module {
 		dispatcher.registerListener(new DiscordReadyListener(this));
 		dispatcher.registerListener(new DiscordMessageReceivedListener(this));
 		dispatcher.registerListener(new DiscordMessageDeleteListener(this));
-		dispatcher.registerListener(new DiscordMessageAcknowledgedListener(this));
 
 		new Thread(new Runnable() {
 			@Override
@@ -420,6 +419,7 @@ public class Discord extends Module {
 					}
 				}
 				IMessage posted = group.sendMessage(message);
+				getModule(RetentionModule.class).handleNewMessage(posted);
 				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
 					StringBuilder builder = new StringBuilder().append("**")
 							.append(toEscape.matcher(name).replaceAll("\\\\$1"));
