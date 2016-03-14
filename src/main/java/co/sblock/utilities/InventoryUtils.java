@@ -496,7 +496,7 @@ public class InventoryUtils {
 	 * @return the reduced ItemStack
 	 */
 	public static ItemStack decrement(ItemStack is, int amount) {
-		if (is == null) {
+		if (is == null || is.getType() == Material.AIR) {
 			return null;
 		}
 		if (is.getAmount() > amount) {
@@ -542,7 +542,7 @@ public class InventoryUtils {
 	 * @return true if the ItemStack can be fully added
 	 */
 	public static boolean hasSpaceFor(ItemStack is, Inventory inv) {
-		if (is == null) {
+		if (is == null || is.getType() == Material.AIR) {
 			return true;
 		}
 		ItemStack toAdd = is.clone();

@@ -3,6 +3,7 @@ package co.sblock.commands.info;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -69,7 +70,7 @@ public class GristCommand extends SblockCommand {
 			return true;
 		}
 		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand == null) {
+		if (hand == null || hand.getType() == Material.AIR) {
 			sender.sendMessage(Color.BAD + "Nothing in life is free.");
 			return true;
 		}

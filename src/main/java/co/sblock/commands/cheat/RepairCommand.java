@@ -2,6 +2,7 @@ package co.sblock.commands.cheat;
 
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +37,7 @@ public class RepairCommand extends SblockCommand {
 		}
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand == null) {
+		if (hand == null || hand.getType() == Material.AIR) {
 			return false;
 		}
 		if (hand.getType().getMaxDurability() > 0) {

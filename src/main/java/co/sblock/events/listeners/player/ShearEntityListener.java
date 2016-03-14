@@ -31,8 +31,8 @@ public class ShearEntityListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerShearEntity(PlayerShearEntityEvent event) {
-		ItemStack hand;
-		if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.SHEARS) {
+		ItemStack hand = event.getPlayer().getInventory().getItemInMainHand();
+		if (hand != null && hand.getType() == Material.SHEARS) {
 			hand = event.getPlayer().getInventory().getItemInMainHand();
 		} else {
 			hand = event.getPlayer().getInventory().getItemInOffHand();

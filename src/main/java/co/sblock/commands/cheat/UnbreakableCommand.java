@@ -2,6 +2,7 @@ package co.sblock.commands.cheat;
 
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -25,7 +26,6 @@ public class UnbreakableCommand extends SblockCommand {
 		super(plugin, "traindon'tstop");
 		this.setDescription("No brakes on this abuse caboose.");
 		this.setUsage("/traindon'tstop [choochoo|oshitthecops]");
-		this.setAliases("cleannbt");
 		this.setPermissionLevel("denizen");
 		this.setPermissionMessage(Color.BAD + "SEND HELP, THE BRAKES DON'T WORK! PLEASE!");
 	}
@@ -38,7 +38,7 @@ public class UnbreakableCommand extends SblockCommand {
 		}
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand == null || hand.getType().getMaxDurability() == 0) {
+		if (hand == null || hand.getType() == Material.AIR || hand.getType().getMaxDurability() == 0) {
 			player.sendMessage(Color.GOOD + "Toot toot!");
 			return true;
 		}

@@ -1,5 +1,6 @@
 package co.sblock.commands.admin;
 
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +47,7 @@ public class CaptchaHashCommand extends SblockCommand {
 		Player player = (Player) sender;
 		if (args[0].equals("add")) {
 			ItemStack item = player.getInventory().getItemInMainHand();
-			if (item == null) {
+			if (item == null || item.getType() == Material.AIR) {
 				return false;
 			}
 			if (captcha.addCustomHash(args[1], item)) {

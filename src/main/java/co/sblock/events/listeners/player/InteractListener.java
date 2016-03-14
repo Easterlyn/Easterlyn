@@ -148,7 +148,7 @@ public class InteractListener extends SblockListener {
 		ItemStack held = InventoryUtils.getHeldItem(inv, mainHand);
 
 		// Nothing in current hand, bail
-		if (held == null) {
+		if (held == null || held.getType() == Material.AIR) {
 			return;
 		}
 

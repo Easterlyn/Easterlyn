@@ -2,6 +2,7 @@ package co.sblock.commands.info;
 
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -37,7 +38,7 @@ public class ItemInformationCommand extends SblockCommand {
 			return true;
 		}
 		ItemStack hand = ((Player) sender).getInventory().getItemInMainHand();
-		if (hand == null) {
+		if (hand == null || hand.getType() == Material.AIR) {
 			sender.sendMessage("NULL");
 			return true;
 		}

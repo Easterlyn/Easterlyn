@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -54,7 +55,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		}
 		Player player = (Player) sender;
 		ItemStack item = player.getInventory().getItemInMainHand();
-		if (item == null) {
+		if (item == null || item.getType() == Material.AIR) {
 			return false;
 		}
 
