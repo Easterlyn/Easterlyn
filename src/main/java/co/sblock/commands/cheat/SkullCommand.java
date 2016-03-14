@@ -41,7 +41,7 @@ public class SkullCommand extends SblockCommandAlias {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null || hand.getType() != Material.SKULL_ITEM) {
 			player.getInventory().setItemInMainHand(new ItemStack(Material.SKULL_ITEM, 1, (short) 3));
-			if (hand != null) {
+			if (hand != null && hand.getType() != Material.AIR) {
 				player.getLocation().getWorld().dropItem(player.getLocation(), hand).setPickupDelay(0);
 			}
 		}
