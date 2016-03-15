@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -267,7 +268,8 @@ public class User {
 								|| player.getGameMode() == GameMode.SPECTATOR;
 				if (!allowFlight && player.hasPermission("sblock.command.fly.safe")) {
 					Block block = player.getLocation().getBlock();
-					allowFlight = block.isEmpty() && block.getRelative(BlockFace.DOWN).isEmpty();
+					allowFlight = block.getType() == Material.AIR
+							&& block.getRelative(BlockFace.DOWN).getType() == Material.AIR;
 				}
 				player.setAllowFlight(allowFlight);
 				player.setFlying(allowFlight);
