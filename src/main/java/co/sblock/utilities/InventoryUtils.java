@@ -40,8 +40,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.util.io.BukkitObjectInputStream;
 
 import com.google.common.collect.HashMultimap;
@@ -81,54 +83,23 @@ public class InventoryUtils {
 	private static HashMap<String, String> items;
 	private static HashMultimap<String, String> itemsReverse;
 	private static HashSet<ItemStack> uniques;
-	private static final HashMap<Integer, PotionEffectType> legacyPotionIDs;
-	private static final HashMap<PotionEffectType, Integer> potionEffectLevels;
+	private static final HashMap<Integer, PotionType> legacyPotionIDs;
 
 	static {
 		legacyPotionIDs = new HashMap<>();
-		legacyPotionIDs.put(1, PotionEffectType.REGENERATION);
-		legacyPotionIDs.put(2, PotionEffectType.SPEED);
-		legacyPotionIDs.put(3, PotionEffectType.FIRE_RESISTANCE);
-		legacyPotionIDs.put(4, PotionEffectType.POISON);
-		legacyPotionIDs.put(5, PotionEffectType.HEAL);
-		legacyPotionIDs.put(6, PotionEffectType.NIGHT_VISION);
-		legacyPotionIDs.put(8, PotionEffectType.WEAKNESS);
-		legacyPotionIDs.put(9, PotionEffectType.INCREASE_DAMAGE);
-		legacyPotionIDs.put(10, PotionEffectType.SLOW);
-		legacyPotionIDs.put(11, PotionEffectType.JUMP);
-		legacyPotionIDs.put(12, PotionEffectType.HARM);
-		legacyPotionIDs.put(13, PotionEffectType.WATER_BREATHING);
-		legacyPotionIDs.put(14, PotionEffectType.INVISIBILITY);
-
-		potionEffectLevels = new HashMap<>();
-		// For unobtainable effect types, "max amplifier" is based on whether or not amplifier has any effect
-		potionEffectLevels.put(PotionEffectType.ABSORPTION, 1);
-		potionEffectLevels.put(PotionEffectType.BLINDNESS, 0);
-		potionEffectLevels.put(PotionEffectType.CONFUSION, 0);
-		potionEffectLevels.put(PotionEffectType.DAMAGE_RESISTANCE, 1);
-		potionEffectLevels.put(PotionEffectType.FAST_DIGGING, 1);
-		potionEffectLevels.put(PotionEffectType.FIRE_RESISTANCE, 0);
-		potionEffectLevels.put(PotionEffectType.GLOWING, 0);
-		potionEffectLevels.put(PotionEffectType.HARM, 1);
-		potionEffectLevels.put(PotionEffectType.HEAL, 1);
-		potionEffectLevels.put(PotionEffectType.HEALTH_BOOST, 0);
-		potionEffectLevels.put(PotionEffectType.HUNGER, 0);
-		potionEffectLevels.put(PotionEffectType.INCREASE_DAMAGE, 1);
-		potionEffectLevels.put(PotionEffectType.INVISIBILITY, 0);
-		potionEffectLevels.put(PotionEffectType.JUMP, 1);
-		potionEffectLevels.put(PotionEffectType.LEVITATION, 1);
-		potionEffectLevels.put(PotionEffectType.LUCK, 1);
-		potionEffectLevels.put(PotionEffectType.NIGHT_VISION, 0);
-		potionEffectLevels.put(PotionEffectType.POISON, 1);
-		potionEffectLevels.put(PotionEffectType.REGENERATION, 1);
-		potionEffectLevels.put(PotionEffectType.SATURATION, 1);
-		potionEffectLevels.put(PotionEffectType.SLOW, 0);
-		potionEffectLevels.put(PotionEffectType.SLOW_DIGGING, 1);
-		potionEffectLevels.put(PotionEffectType.SPEED, 1);
-		potionEffectLevels.put(PotionEffectType.UNLUCK, 1);
-		potionEffectLevels.put(PotionEffectType.WATER_BREATHING, 0);
-		potionEffectLevels.put(PotionEffectType.WEAKNESS, 0);
-		potionEffectLevels.put(PotionEffectType.WITHER, 1);
+		legacyPotionIDs.put(1, PotionType.REGEN);
+		legacyPotionIDs.put(2, PotionType.SPEED);
+		legacyPotionIDs.put(3, PotionType.FIRE_RESISTANCE);
+		legacyPotionIDs.put(4, PotionType.POISON);
+		legacyPotionIDs.put(5, PotionType.INSTANT_HEAL);
+		legacyPotionIDs.put(6, PotionType.NIGHT_VISION);
+		legacyPotionIDs.put(8, PotionType.WEAKNESS);
+		legacyPotionIDs.put(9, PotionType.STRENGTH);
+		legacyPotionIDs.put(10, PotionType.SLOWNESS);
+		legacyPotionIDs.put(11, PotionType.JUMP);
+		legacyPotionIDs.put(12, PotionType.INSTANT_DAMAGE);
+		legacyPotionIDs.put(13, PotionType.WATER_BREATHING);
+		legacyPotionIDs.put(14, PotionType.INVISIBILITY);
 	}
 
 	public static ItemStack convertLegacyPotion(ItemStack item) {
@@ -137,36 +108,27 @@ public class InventoryUtils {
 
 		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
 
-		if (durability < 1 || potionMeta.hasCustomEffects()) {
+		PotionData data;
+		if (durability < 1) {
+			data = new PotionData(PotionType.WATER);
+			potionMeta.setBasePotionData(data);
 			potion.setItemMeta(potionMeta);
 			return potion;
 		}
 
-		PotionEffectType type = legacyPotionIDs.get(durability % 16);
+		PotionType type = legacyPotionIDs.get(durability % 16);
 
 		if (type == null) {
+			potionMeta.setBasePotionData(new PotionData(PotionType.AWKWARD));
 			potion.setItemMeta(potionMeta);
 			return potion;
 		}
 
-		int power = potionEffectLevels.get(type);
-		double duration;
+		data = new PotionData(type,
+				/* extended bit */ ((durability >> 6) & 1) == 1,
+				/* amplified bit */ ((durability >> 5) & 1) == 1);
 
-		if (type.isInstant()) {
-			duration = 1;
-		} else {
-			duration = 3600D * type.getDurationModifier();
-			if (((durability >> 5) & 1) == 1 && power == 1) {
-				// Power is amplified, decrease duration
-				duration /= 2D;
-			}
-			if (((durability >> 6) & 1) == 1) {
-				// Duration is extended
-				duration *= 8D / 3D;
-			}
-		}
-
-		potionMeta.addCustomEffect(new PotionEffect(type, (int) duration, power), true);
+		potionMeta.setBasePotionData(data);
 		potion.setItemMeta(potionMeta);
 
 		return potion;
@@ -249,6 +211,18 @@ public class InventoryUtils {
 	}
 
 	private static String getPotionName(PotionMeta meta) {
+		PotionData base = meta.getBasePotionData();
+		if (base.getType() != PotionType.UNCRAFTABLE) {
+			StringBuilder name = new StringBuilder();
+			if (base.isExtended()) {
+				name.append("Extended ");
+			}
+			name.append(TextUtils.getFriendlyName(base.getType().name()));
+			if (base.isUpgraded()) {
+				name.append(" II");
+			}
+			return name.toString();
+		}
 		if (!meta.hasCustomEffects()) {
 			return "No Effect";
 		}
