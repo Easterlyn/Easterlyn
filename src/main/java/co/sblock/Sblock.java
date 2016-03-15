@@ -283,14 +283,6 @@ public class Sblock extends JavaPlugin {
 				shaped.setIngredient('X', material, Short.MAX_VALUE).setIngredient('Y', dyeMaterial);
 				getServer().addRecipe(shaped);
 			}
-
-			// Allow dyeing of panes
-			Dye resultDye = new Dye(Material.STAINED_GLASS_PANE);
-			resultDye.setColor(dye);
-			shaped = new ShapedRecipe(resultDye.toItemStack(8));
-			shaped.shape("XXX", "XYX", "XXX");
-			shaped.setIngredient('X', Material.THIN_GLASS).setIngredient('Y', dyeMaterial);
-			getServer().addRecipe(shaped);
 		}
 
 		// General: Packed ice = 2 snow 2 ice
