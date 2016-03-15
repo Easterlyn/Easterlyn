@@ -85,15 +85,15 @@ public class PGO extends Machine {
 		case EMERALD_ORE:
 		case ENCHANTMENT_TABLE:
 		case ENDER_STONE:
+		case END_BRICKS:
 		case FENCE:
 		case FENCE_GATE:
 		case GLASS:
 		case GLOWING_REDSTONE_ORE:
-		case GLOWSTONE:
 		case GOLD_BLOCK:
 		case GOLD_ORE:
 		case GRASS:
-//		case GRAVEL:
+		case GRASS_PATH:
 		case HARD_CLAY:
 		case HAY_BLOCK:
 		case HUGE_MUSHROOM_1:
@@ -102,7 +102,6 @@ public class PGO extends Machine {
 		case IRON_BLOCK:
 		case IRON_FENCE:
 		case IRON_ORE:
-		case JACK_O_LANTERN:
 		case JUNGLE_WOOD_STAIRS:
 		case LAPIS_BLOCK:
 		case LAPIS_ORE:
@@ -121,6 +120,11 @@ public class PGO extends Machine {
 		case PACKED_ICE:
 		case PRISMARINE:
 		case PUMPKIN:
+		case PURPUR_BLOCK:
+		case PURPUR_DOUBLE_SLAB:
+		case PURPUR_PILLAR:
+		case PURPUR_SLAB:
+		case PURPUR_STAIRS:
 		case QUARTZ_BLOCK:
 		case QUARTZ_ORE:
 		case QUARTZ_STAIRS:
@@ -128,15 +132,12 @@ public class PGO extends Machine {
 		case RED_SANDSTONE_STAIRS:
 		case REDSTONE_BLOCK:
 		case REDSTONE_ORE:
-//		case SAND:
 		case SANDSTONE:
 		case SANDSTONE_STAIRS:
-		case SEA_LANTERN:
 		case SMOOTH_BRICK:
 		case SMOOTH_STAIRS:
 		case SNOW_BLOCK:
 		case SOUL_SAND:
-//		case SPONGE:
 		case SPRUCE_WOOD_STAIRS:
 		case STAINED_CLAY:
 		case STAINED_GLASS:

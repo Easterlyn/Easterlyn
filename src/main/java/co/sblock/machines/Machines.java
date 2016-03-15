@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,8 +44,10 @@ public class Machines extends Module {
 
 	/* A Map of Machine names to instances. */
 	private final Map<String, Machine> byName;
+	/* A Map of Machine Block Locations to keys */
+	private final Map<Integer, Map<Integer, Map<Integer, Map<String, Location>>>> blocksToKeys;
 	/* A Map of Machine key Locations to the corresponding Block Locations. */
-	private final Multimap<Location, Location> machineBlocks;
+	private final Multimap<Location, Location> keysToBlocks;
 	/* A Map of all exploded blocks. */
 	private final Map<Block, Boolean> exploded;
 	/* The MachineInventoryTracker. */
@@ -58,7 +59,8 @@ public class Machines extends Module {
 		super(plugin);
 		this.TODO_FIXME = true;
 		byName = new HashMap<>();
-		this.machineBlocks = HashMultimap.create();
+		this.blocksToKeys = new HashMap<>();
+		this.keysToBlocks = HashMultimap.create();
 		this.exploded = new HashMap<>();
 		this.tracker = new MachineInventoryTracker(this);
 		Reflections reflections = new Reflections("co.sblock.machines.type");
@@ -145,7 +147,7 @@ public class Machines extends Module {
 		Machine type = byName.get(section.getString("type"));
 		Direction direction = type.getDirection(section);
 		for (Location location : type.getShape().getBuildLocations(key, direction).keySet()) {
-			machineBlocks.put(key, location);
+			this.addMachineBlock(location, key);
 		}
 		return new ImmutablePair<>(type, section);
 	}
@@ -207,7 +209,7 @@ public class Machines extends Module {
 				if (machine == null) {
 					iterator.remove();
 				}
-				machineBlocks.removeAll(key);
+				this.removeMachineBlocks(key);
 			} catch (NumberFormatException e) {
 				getLogger().warning("Coordinates cannot be parsed from " + Arrays.toString(split));
 			}
@@ -279,6 +281,82 @@ public class Machines extends Module {
 		}
 	}
 
+	private void addMachineBlock(Location block, Location key) {
+		this.keysToBlocks.put(key, block);
+		int x = (int) block.getX();
+		int y = (int) block.getY();
+		int z = (int) block.getZ();
+		Map<Integer, Map<Integer, Map<String, Location>>> yzworld;
+		if (this.blocksToKeys.containsKey(x)) {
+			yzworld = this.blocksToKeys.get(x);
+		} else {
+			yzworld = new HashMap<>();
+			this.blocksToKeys.put(x, yzworld);
+		}
+		Map<Integer, Map<String, Location>> zworld;
+		if (yzworld.containsKey(y)) {
+			zworld = yzworld.get(y);
+		} else {
+			zworld = new HashMap<>();
+			yzworld.put(y, zworld);
+		}
+		Map<String, Location> world;
+		if (zworld.containsKey(z)) {
+			world = zworld.get(z);
+		} else {
+			world = new HashMap<>();
+			zworld.put(z, world);
+		}
+		world.put(block.getWorld().getName(), key);
+	}
+
+	private void removeMachineBlocks(Location key) {
+		if (!this.keysToBlocks.containsKey(key)) {
+			return;
+		}
+		String worldName = key.getWorld().getName();
+		for (Location block : this.keysToBlocks.removeAll(key)) {
+
+			int x = (int) block.getX();
+			if (!this.blocksToKeys.containsKey(x)) {
+				continue;
+			}
+
+			int y = (int) block.getY();
+			Map<Integer, Map<Integer, Map<String, Location>>> yzworld = this.blocksToKeys.get(x);
+			if (!yzworld.containsKey(y)) {
+				continue;
+			}
+
+			int z = (int) block.getZ();
+			Map<Integer, Map<String, Location>> zworld = yzworld.get(y);
+			if (!zworld.containsKey(z)) {
+				continue;
+			}
+
+			Map<String, Location> world = zworld.get(z);
+			if (!world.containsKey(worldName)) {
+				continue;
+			}
+
+			world.remove(worldName);
+
+			// Clean up empty maps
+			if (!world.isEmpty()) {
+				continue;
+			}
+			zworld.remove(z);
+			if (!zworld.isEmpty()) {
+				continue;
+			}
+			yzworld.remove(y);
+			if (!yzworld.isEmpty()) {
+				continue;
+			}
+			this.blocksToKeys.remove(x);
+		}
+	}
+
 	/**
 	 * Checks a Block to see if it is part of a Machine.
 	 * 
@@ -287,7 +365,7 @@ public class Machines extends Module {
 	 * @return true if the Block is a Machine
 	 */
 	public boolean isMachine(Block block) {
-		return isMachine(block.getLocation());
+		return isMachine(block.getX(), block.getY(), block.getZ(), block.getWorld().getName());
 	}
 
 	/**
@@ -298,7 +376,33 @@ public class Machines extends Module {
 	 * @return true if the Location is a Machine
 	 */
 	public boolean isMachine(Location location) {
-		return machineBlocks.containsValue(location);
+		return isMachine((int) location.getX(), (int) location.getY(), (int) location.getZ(),
+				location.getWorld().getName());
+	}
+
+	/**
+	 * Checks coordinates to see if a Machine is present.
+	 * 
+	 * @param x the Block X coordinate
+	 * @param y the Block Y coordinate
+	 * @param z the Block Z coordinate
+	 * @param worldName the name of the World
+	 * 
+	 * @return true if the coordinates are part of a Machine
+	 */
+	private boolean isMachine(int x, int y, int z, String worldName) {
+		if (!this.blocksToKeys.containsKey(x)) {
+			return false;
+		}
+		Map<Integer, Map<Integer, Map<String, Location>>> yzworld = this.blocksToKeys.get(x);
+		if (!yzworld.containsKey(y)) {
+			return false;
+		}
+		Map<Integer, Map<String, Location>> zworld = yzworld.get(y);
+		if (!zworld.containsKey(z)) {
+			return false;
+		}
+		return zworld.get(z).containsKey(worldName);
 	}
 
 	/**
@@ -320,7 +424,7 @@ public class Machines extends Module {
 	 * @return the Machine
 	 */
 	public Pair<Machine, ConfigurationSection> getMachineByLocation(Location location) {
-		if (location == null || !machineBlocks.containsValue(location)) {
+		if (location == null) {
 			return null;
 		}
 		Location key = getKeyLocation(location);
@@ -344,7 +448,7 @@ public class Machines extends Module {
 	public Collection<Location> getMachineBlocks(Location location) {
 		location = getKeyLocation(location);
 		if (location != null) {
-			return machineBlocks.get(location);
+			return keysToBlocks.get(location);
 		}
 		return null;
 	}
@@ -356,18 +460,36 @@ public class Machines extends Module {
 	 * @return the key location, or null if the location is not a Machine.
 	 */
 	private Location getKeyLocation(Location location) {
-		if (location == null || !machineBlocks.containsValue(location)) {
+		if (location == null) {
 			return null;
 		}
-		if (machineBlocks.containsKey(location)) {
+		if (this.keysToBlocks.containsKey(location)) {
 			return location;
 		}
-		for (Entry<Location, Location> entry : machineBlocks.entries()) {
-			if (location.equals(entry.getValue())) {
-				return entry.getKey();
-			}
+
+		int x = (int) location.getX();
+		if (!this.blocksToKeys.containsKey(x)) {
+			return null;
 		}
-		return null;
+
+		int y = (int) location.getY();
+		Map<Integer, Map<Integer, Map<String, Location>>> yzworld = this.blocksToKeys.get(x);
+		if (!yzworld.containsKey(y)) {
+			return null;
+		}
+
+		int z = (int) location.getZ();
+		Map<Integer, Map<String, Location>> zworld = yzworld.get(y);
+		if (!zworld.containsKey(z)) {
+			return null;
+		}
+
+		Map<String, Location> world = zworld.get(z);
+		String worldName = location.getWorld().getName();
+		if (!world.containsKey(worldName)) {
+			return null;
+		}
+		return world.get(worldName);
 	}
 
 	/**
@@ -378,7 +500,7 @@ public class Machines extends Module {
 	 * @param location the key Location
 	 */
 	public void deleteMachine(Location location) {
-		if (!machineBlocks.containsKey(location)) {
+		if (!blocksToKeys.containsKey(location)) {
 			return;
 		}
 		Location key = getKeyLocation(location);
@@ -390,7 +512,7 @@ public class Machines extends Module {
 		if (section == null) {
 			return;
 		}
-		machineBlocks.removeAll(key);
+		this.removeMachineBlocks(key);
 		getConfig().set(path, null);
 	}
 
