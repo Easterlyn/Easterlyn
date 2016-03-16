@@ -241,7 +241,7 @@ public class Discord extends Module {
 		if (!client.getOurUser().getName().equals(this.getBotName())) {
 			try {
 				client.changeUsername(this.getBotName());
-			} catch (HTTP429Exception | DiscordException e) {
+			} catch (HTTP429Exception | DiscordException | IllegalStateException e) {
 				// Nothing we can do about this, really
 			}
 		}
@@ -414,7 +414,7 @@ public class Discord extends Module {
 				if (!client.getOurUser().getName().equals(name)) {
 					try {
 						client.changeUsername(name);
-					} catch (HTTP429Exception | DiscordException e) {
+					} catch (HTTP429Exception | DiscordException | IllegalStateException e) {
 						// Trivial issue
 					}
 				}
