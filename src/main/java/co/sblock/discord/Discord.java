@@ -238,13 +238,14 @@ public class Discord extends Module {
 	}
 
 	private void resetBotName() {
-		if (!client.getOurUser().getName().equals(this.getBotName())) {
-			try {
-				client.changeUsername(this.getBotName());
-			} catch (HTTP429Exception | DiscordException | IllegalStateException e) {
-				// Nothing we can do about this, really
-			}
-		}
+		// TODO Discord4J update
+//		if (!client.getOurUser().getName().equals(this.getBotName())) {
+//			try {
+//				client.changeUsername(this.getBotName());
+//			} catch (HTTP429Exception | DiscordException e) {
+//				// Nothing we can do about this, really
+//			}
+//		}
 	}
 
 	private String generateUniqueCode() {
@@ -411,13 +412,14 @@ public class Discord extends Module {
 						return;
 					}
 				}
-				if (!client.getOurUser().getName().equals(name)) {
-					try {
-						client.changeUsername(name);
-					} catch (HTTP429Exception | DiscordException | IllegalStateException e) {
-						// Trivial issue
-					}
-				}
+				// TODO Discord4J update
+//				if (!client.getOurUser().getName().equals(name)) {
+//					try {
+//						client.changeUsername(name);
+//					} catch (HTTP429Exception | DiscordException e) {
+//						// Trivial issue
+//					}
+//				}
 				IMessage posted = group.sendMessage(message);
 				getModule(RetentionModule.class).handleNewMessage(posted);
 				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
