@@ -68,12 +68,16 @@ public class CruxiteDowel {
 
 	public static int expCost(Effects effects, ItemStack toCreate) {
 		int cost = getGrist().get(toCreate.getType());
+		if (cost == Integer.MAX_VALUE) {
+			// Item cannot be made with grist
+			return cost;
+		}
 		if (toCreate.getType() == Material.SKULL_ITEM && toCreate.getDurability() == 5) {
 			cost += 29000;
 		}
-		if (cost == Integer.MAX_VALUE || !toCreate.hasItemMeta()) {
-			// Item cannot be made with grist or has no additional costs, we're done here.
-			return cost;
+		if (!toCreate.hasItemMeta()) {
+			// No additional costs from meta, finish fast.
+			return cost * toCreate.getAmount();
 		}
 		if (Captcha.isCaptcha(toCreate) || isDowel(toCreate)) {
 			return Integer.MAX_VALUE;
