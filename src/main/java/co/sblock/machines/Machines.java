@@ -500,19 +500,16 @@ public class Machines extends Module {
 	 * @param location the key Location
 	 */
 	public void deleteMachine(Location location) {
-		if (!blocksToKeys.containsKey(location)) {
-			return;
-		}
 		Location key = getKeyLocation(location);
 		if (key == null) {
 			return;
 		}
+		this.removeMachineBlocks(key);
 		String path = pathFromLoc(key);
 		ConfigurationSection section = getConfig().getConfigurationSection(path);
 		if (section == null) {
 			return;
 		}
-		this.removeMachineBlocks(key);
 		getConfig().set(path, null);
 	}
 
