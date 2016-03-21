@@ -18,10 +18,7 @@ import co.sblock.Sblock;
 import co.sblock.effects.Effects;
 import co.sblock.effects.effect.Effect;
 
-import org.bukkit.craftbukkit.v1_9_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_9_R1.util.CraftMagicNumbers;
-
+import net.minecraft.server.v1_9_R1.BlockBanner;
 import net.minecraft.server.v1_9_R1.BlockCocoa;
 import net.minecraft.server.v1_9_R1.BlockCrops;
 import net.minecraft.server.v1_9_R1.BlockPosition;
@@ -29,8 +26,15 @@ import net.minecraft.server.v1_9_R1.Blocks;
 import net.minecraft.server.v1_9_R1.GameProfileSerializer;
 import net.minecraft.server.v1_9_R1.IBlockData;
 import net.minecraft.server.v1_9_R1.Item;
+import net.minecraft.server.v1_9_R1.Items;
 import net.minecraft.server.v1_9_R1.NBTTagCompound;
+import net.minecraft.server.v1_9_R1.TileEntity;
+import net.minecraft.server.v1_9_R1.TileEntityBanner;
 import net.minecraft.server.v1_9_R1.TileEntitySkull;
+
+import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R1.util.CraftMagicNumbers;
 
 /**
  * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
@@ -281,6 +285,7 @@ public class BlockDrops {
 		List<ItemStack> drops = new ArrayList<>();
 
 		net.minecraft.server.v1_9_R1.Block nmsBlock = net.minecraft.server.v1_9_R1.Block.getById(block.getTypeId());
+		net.minecraft.server.v1_9_R1.WorldServer nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
 		if (nmsBlock == Blocks.AIR || !doDrops(tool, block.getType())) {
 			return drops;
 		}
@@ -292,44 +297,70 @@ public class BlockDrops {
 			return drops;
 		}
 
+		if (Blocks.COCOA == nmsBlock) {
+			// Cocoa: drop Item is null rather than a dye
+			int age = nmsBlock.fromLegacyData(data).get(BlockCocoa.AGE).intValue();
+			int dropAmount = (age >= 2) ? 3 : 1;
+			drops.add(new ItemStack(Material.INK_SACK, dropAmount, DyeColor.BROWN.getDyeData()));
+			return drops;
+		}
+
+		if (nmsBlock instanceof BlockBanner) {
+			// Banner: Set data based on tile entity. See BlockBanner#dropNaturally
+			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
+			TileEntity localTileEntity = nmsWorld.getTileEntity(position);
+			if (localTileEntity instanceof TileEntityBanner) {
+				net.minecraft.server.v1_9_R1.ItemStack nmsStack = new net.minecraft.server.v1_9_R1.ItemStack(
+						Items.BANNER, 1, ((TileEntityBanner) localTileEntity).b());
+
+				NBTTagCompound localNBTTagCompound = new NBTTagCompound();
+				localTileEntity.save(localNBTTagCompound);
+				localNBTTagCompound.remove("x");
+				localNBTTagCompound.remove("y");
+				localNBTTagCompound.remove("z");
+				localNBTTagCompound.remove("id");
+				nmsStack.a("BlockEntityTag", localNBTTagCompound);
+
+				drops.add(CraftItemStack.asBukkitCopy(nmsStack));
+				return drops;
+			}
+		}
+
+		if (Blocks.SKULL == nmsBlock) {
+			// Skull: Set data based on tile entity. See BlockSkull#dropNaturally
+			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
+			TileEntity tileentity = nmsWorld.getTileEntity(position);
+			net.minecraft.server.v1_9_R1.ItemStack nmsStack;
+			if (tileentity instanceof TileEntitySkull) {
+				TileEntitySkull tileEntitySkull = (TileEntitySkull) tileentity;
+				int skullData = ((TileEntitySkull) tileentity).getSkullType();
+
+				nmsStack = new net.minecraft.server.v1_9_R1.ItemStack(
+						Items.SKULL, 1, skullData);
+
+				if (skullData == 3 && tileEntitySkull.getGameProfile() != null) {
+					nmsStack.setTag(new NBTTagCompound());
+					NBTTagCompound nbttagcompound = new NBTTagCompound();
+
+					GameProfileSerializer.serialize(nbttagcompound, tileEntitySkull.getGameProfile());
+					nmsStack.getTag().set("SkullOwner", nbttagcompound);
+				}
+			} else {
+				nmsStack = new net.minecraft.server.v1_9_R1.ItemStack(
+						Items.SKULL, 1, 0);
+			}
+
+			drops.add(CraftItemStack.asBukkitCopy(nmsStack));
+			return drops;
+		}
+
 		int count = nmsBlock.getDropCount(0, RAND);
 		if (count == 0) {
 			return drops;
 		}
 
-		if (Blocks.COCOA == nmsBlock) {
-			// Cocoa: drop Item is null rather than a dye
-			int age = nmsBlock.fromLegacyData(data).get(BlockCocoa.AGE).intValue();
-			int dropAmount = (age >= 2) ? 3 : 1;
-			drops.add(new ItemStack(Material.INK_SACK, count * dropAmount, DyeColor.BROWN.getDyeData()));
-			return drops;
-		}
-
 		Item item = nmsBlock.getDropType(nmsBlock.fromLegacyData(data), RAND, 0);
 		if (item == null) {
-			return drops;
-		}
-
-		if (Blocks.SKULL == nmsBlock) {
-			CraftChunk obcChunk = (CraftChunk) block.getChunk();
-			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
-			net.minecraft.server.v1_9_R1.ItemStack nmsStack = new net.minecraft.server.v1_9_R1.ItemStack(
-					item, count, nmsBlock.getDropData(nmsBlock.getBlockData()));
-			TileEntitySkull tileentityskull = (TileEntitySkull) obcChunk.getHandle()
-					.getWorld().getTileEntity(position);
-
-			if ((tileentityskull.getSkullType() == 3)
-					&& (tileentityskull.getGameProfile() != null)) {
-				nmsStack.setTag(new NBTTagCompound());
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-
-				GameProfileSerializer.serialize(nbttagcompound,
-						tileentityskull.getGameProfile());
-				nmsStack.getTag().set("SkullOwner", nbttagcompound);
-			}
-			nmsStack.count = count;
-
-			drops.add(CraftItemStack.asBukkitCopy(nmsStack));
 			return drops;
 		}
 
