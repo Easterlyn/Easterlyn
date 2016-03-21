@@ -295,6 +295,33 @@ public class User {
 		return yaml.getBoolean("spectatable", true);
 	}
 
+	/**
+	 * Gets a Location to teleport the Player to on login.
+	 * 
+	 * @return the Location, or null if none is set.
+	 */
+	public Location getLoginLocation() {
+		Object location = yaml.get("loginLocation");
+		if (location instanceof Location) {
+			return (Location) location;
+		}
+		return null;
+	}
+
+	/**
+	 * Sets a Location to teleport the Player to when logging in.
+	 * 
+	 * @param location
+	 */
+	public void setLoginLocation(Location location) {
+		yaml.set("loginLocation", location);
+	}
+
+	/**
+	 * Gets the Player's current location.
+	 * 
+	 * @return the Location the user is at
+	 */
 	public Location getCurrentLocation() {
 		return getPlayer().getLocation();
 	}
@@ -533,9 +560,9 @@ public class User {
 	/**
 	 * Begin listening to a Set of channels. Used on login.
 	 * 
-	 * @param channels
+	 * @param announce true if joins are not to be announced.
 	 */
-	public void handleLoginChannelJoins() {
+	public void handleLoginChannelJoins(boolean announce) {
 		for (Iterator<String> iterator = listening.iterator(); iterator.hasNext();) {
 			Channel channel = getChannelManager().getChannel(iterator.next());
 			if (channel != null && !(channel instanceof RegionChannel) && !channel.isBanned(this)
@@ -554,6 +581,13 @@ public class User {
 		String base = new StringBuilder(Color.GOOD_PLAYER.toString()).append(this.getDisplayName())
 				.append(Color.GOOD).append(" began pestering <>").append(Color.GOOD)
 				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date())).toString();
+
+		Logger.getLogger("Minecraft").info(base.toString().replace("<>", StringUtils.join(getListening(), ", ")));
+
+		if (!announce) {
+			return;
+		}
+
 		// Heavy loopage ensues
 		for (User user : users.getOnlineUsers()) {
 			if (!user.isOnline()) {
@@ -583,8 +617,6 @@ public class User {
 			}
 			user.sendMessage(message);
 		}
-
-		Logger.getLogger("Minecraft").info(base.toString().replace("<>", StringUtils.join(getListening(), ", ")));
 	}
 
 	/**
@@ -1067,4 +1099,5 @@ public class User {
 			discord.postMessage(discord.getBotName(), previous, true);
 		}
 	}
+
 }

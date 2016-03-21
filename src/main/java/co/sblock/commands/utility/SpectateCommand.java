@@ -80,7 +80,7 @@ public class SpectateCommand extends SblockCommand {
 		}
 		if (spectators.isSpectator(player.getUniqueId())) {
 			sender.sendMessage(Color.GOOD + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
-			spectators.removeSpectator(player);
+			spectators.removeSpectator(player, false);
 		} else {
 			if (player.getGameMode() != GameMode.SURVIVAL) {
 				sender.sendMessage(Color.BAD + "You can only enter spectate mode from survival.");

@@ -396,6 +396,10 @@ public class Discord extends Module {
 	}
 
 	private void addMessageToQueue(final String channel, final String name, final String message) {
+		if (drainQueueThread == null) {
+			// Bot has not finished logging in. Forget it, it's just some chat.
+			return;
+		}
 		drainQueueThread.queue(new DiscordCallable(CallPriority.HIGH) {
 			@Override
 			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {

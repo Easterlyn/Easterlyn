@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
 import co.sblock.module.Module;
+import co.sblock.users.Users;
 
 /**
  * Module for managing players in spectator mode. Designed to allow players
@@ -29,6 +30,7 @@ public class Spectators extends Module {
 	private Cooldowns cooldowns;
 	/* The SleepVote instance used to discount spectators from sleeping. */
 	private SleepVote sleep;
+	private Users users;
 
 	public Spectators(Sblock plugin) {
 		super(plugin);
@@ -39,6 +41,7 @@ public class Spectators extends Module {
 	protected void onEnable() {
 		cooldowns = getPlugin().getModule(Cooldowns.class);
 		sleep = getPlugin().getModule(SleepVote.class);
+		users = getPlugin().getModule(Users.class);
 
 		new BukkitRunnable() {
 			@Override
@@ -51,7 +54,7 @@ public class Spectators extends Module {
 						continue;
 					}
 					if (cooldowns.getRemainder(player, getName()) == 0) {
-						removeSpectator(player);
+						removeSpectator(player, false);
 						player.sendMessage(Color.GOOD + "As your link to the astral plane fades, you awaken with a jolt.");
 					}
 					// 100 blocks from starting location
@@ -76,7 +79,7 @@ public class Spectators extends Module {
 							continue nextSpectator;
 						}
 					}
-					removeSpectator(player);
+					removeSpectator(player, false);
 					player.sendMessage(Color.GOOD + "With no one around to maintain your connection to the astral plane, you snap back to reality.");
 				}
 			}
@@ -88,7 +91,7 @@ public class Spectators extends Module {
 		for (UUID uuid : spectators.keySet().toArray(new UUID[0])) {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player != null) {
-				this.removeSpectator(player);
+				this.removeSpectator(player, false);
 			}
 		}
 	}
@@ -125,26 +128,39 @@ public class Spectators extends Module {
 		return spectators.containsKey(userID);
 	}
 
+	/**
+	 * Check to see if a Player is not on spectate ore mining cooldown.
+	 * 
+	 * @param player the Player
+	 * 
+	 * @return true if the Player is not disallowed to mine ore
+	 */
 	public boolean canMineOre(Player player) {
 		return cooldowns.getRemainder(player, "spectatore") <= 0;
 	}
 
 	/**
-	 * Removes a player's spectator status.
+	 * Removes a Player's spectator status.
 	 * 
-	 * @param player
+	 * @param player the Player
+	 * @param logout whether or not the player is logging out
 	 */
-	public void removeSpectator(Player player) {
+	public void removeSpectator(Player player, boolean logout) {
 		if (!this.isEnabled() || !this.isSpectator(player.getUniqueId())) {
 			return;
 		}
 		cooldowns.clearCooldown(player, getName());
-		player.teleport(spectators.remove(player.getUniqueId()));
-		player.setGameMode(GameMode.SURVIVAL);
 		if (!player.hasPermission("sblock.command.spectate.unrestricted")) {
 			// 8 minutes, 8 * 60 * 1000 ms
 			cooldowns.addCooldown(player, "spectatore", 480000L);
 		}
+		Location teleport = spectators.remove(player.getUniqueId());
+		if (logout) {
+			users.getUser(player.getUniqueId()).setLoginLocation(teleport);
+			return;
+		}
+		player.teleport(teleport);
+		player.setGameMode(GameMode.SURVIVAL);
 	}
 
 	@Override

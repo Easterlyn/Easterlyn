@@ -80,7 +80,7 @@ public class QuitListener extends SblockListener {
 
 		// Remove Spectator status
 		if (spectators.isSpectator(event.getPlayer().getUniqueId())) {
-			spectators.removeSpectator(event.getPlayer());
+			spectators.removeSpectator(event.getPlayer(), true);
 		}
 
 		// Stop scheduled sleep teleport

@@ -271,9 +271,6 @@ public class Effects extends Module {
 					continue;
 				}
 				Effect effect = effects.get(effectName);
-				if (!bypassMax && level > effect.getMaxLevel()) {
-					level = effect.getMaxLevel();
-				}
 				if (applicableEffects.containsKey(effect)) {
 					level += applicableEffects.get(effect);
 				}

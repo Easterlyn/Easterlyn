@@ -3,8 +3,10 @@ package co.sblock.events.listeners.player;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -51,8 +53,9 @@ public class JoinListener extends SblockListener {
 	 * 
 	 * @param event the PlayerJoinEvent
 	 */
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(final PlayerJoinEvent event) {
+		final boolean spamSilenced = event.getJoinMessage() == null;
 		event.setJoinMessage(null);
 		// CHAT: check message beforehand and don't announce channels if muted
 		users.getUser(event.getPlayer().getUniqueId());
@@ -72,7 +75,13 @@ public class JoinListener extends SblockListener {
 				discord.postMessage(discord.getBotName(), player.getDisplayName() + " logs in.", true);
 
 				User user = users.getUser(player.getUniqueId());
-				user.handleLoginChannelJoins();
+
+				Location teleport = user.getLoginLocation();
+				if (teleport != null) {
+					player.teleport(teleport);
+					user.setLoginLocation(null);
+				}
+				user.handleLoginChannelJoins(spamSilenced);
 				user.handleNameChange();
 				Region region = Region.getRegion(player.getWorld().getName());
 				if (region.isDream()) {
