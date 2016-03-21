@@ -55,9 +55,8 @@ public class JoinListener extends SblockListener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(final PlayerJoinEvent event) {
-		final boolean spamSilenced = event.getJoinMessage() == null;
+		final boolean announce = event.getJoinMessage() != null;
 		event.setJoinMessage(null);
-		// CHAT: check message beforehand and don't announce channels if muted
 		users.getUser(event.getPlayer().getUniqueId());
 
 		events.addCachedIP(event.getPlayer().getAddress().getHostString(), event.getPlayer().getName());
@@ -81,7 +80,7 @@ public class JoinListener extends SblockListener {
 					player.teleport(teleport);
 					user.setLoginLocation(null);
 				}
-				user.handleLoginChannelJoins(spamSilenced);
+				user.handleLoginChannelJoins(announce);
 				user.handleNameChange();
 				Region region = Region.getRegion(player.getWorld().getName());
 				if (region.isDream()) {

@@ -560,7 +560,7 @@ public class User {
 	/**
 	 * Begin listening to a Set of channels. Used on login.
 	 * 
-	 * @param announce true if joins are not to be announced.
+	 * @param announce true if joins are to be announced.
 	 */
 	public void handleLoginChannelJoins(boolean announce) {
 		for (Iterator<String> iterator = listening.iterator(); iterator.hasNext();) {
@@ -582,7 +582,9 @@ public class User {
 				.append(Color.GOOD).append(" began pestering <>").append(Color.GOOD)
 				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date())).toString();
 
-		Logger.getLogger("Minecraft").info(base.toString().replace("<>", StringUtils.join(getListening(), ", ")));
+		String all = base.toString().replace("<>", StringUtils.join(getListening(), ", "));
+		Logger.getLogger("Minecraft").info(all);
+		this.sendMessage(all);
 
 		if (!announce) {
 			return;
@@ -590,9 +592,10 @@ public class User {
 
 		// Heavy loopage ensues
 		for (User user : users.getOnlineUsers()) {
-			if (!user.isOnline()) {
+			if (!user.isOnline() || user == this) {
 				continue;
 			}
+			// TODO support ignore, softmute
 			StringBuilder matches = new StringBuilder();
 			for (String channelName : this.getListening()) {
 				if (user.getListening().contains(channelName)) {
