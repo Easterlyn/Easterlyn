@@ -584,33 +584,47 @@ public class Captcha extends Module {
 
 	public int convert(Player player) {
 		int conversions = 0;
-		nextItem: for (int i = 0; i < player.getInventory().getSize(); i++) {
+		for (int i = 0; i < player.getInventory().getSize(); i++) {
 			ItemStack is = player.getInventory().getItem(i);
 			if (!Captcha.isUsedCaptcha(is)) {
 				continue;
 			}
-			for (String lore : is.getItemMeta().getLore()) {
-				if (!lore.startsWith(HASH_PREFIX)) {
-					continue;
-				}
-				lore = lore.substring(HASH_PREFIX.length());
-				if (lore.matches("[0-9A-Za-z]{8,}")) {
-					// Modern format
-					continue nextItem;
-				}
-			}
-			ItemStack internal = LegacyCaptcha.captchaToItem(is);
-			if (isCaptcha(internal)) {
+			String hash = findHashIfPresent(is.getItemMeta().getLore());
+			ItemStack storedItem = hash == null ? LegacyCaptcha.captchaToItem(is) : this.getItemByHash(hash);
+			if (Captcha.isUsedCaptcha(storedItem)) {
 				// Properly convert contents of double captchas
-				int amount = internal.getAmount();
-				internal = itemToCaptcha(LegacyCaptcha.captchaToItem(internal));
-				internal.setAmount(amount);
+				int amount = storedItem.getAmount();
+				String internalHash = this.findHashIfPresent(storedItem.getItemMeta().getLore());
+				String newInternalHash = this.getHashByItem(internalHash == null
+						? LegacyCaptcha.captchaToItem(storedItem)
+								: this.getItemByHash(internalHash));
+				storedItem = this.getCaptchaFor(newInternalHash);
+				storedItem.setAmount(amount);
 			}
-			ItemStack captchas = itemToCaptcha(internal);
-			captchas.setAmount(is.getAmount());
-			conversions += is.getAmount();
-			player.getInventory().setItem(i, captchas);
+			String newHash = this.getHashByItem(storedItem);
+			if (!newHash.equals(hash)) {
+				int amount = is.getAmount();
+				ItemStack captchas = this.itemToCaptcha(storedItem);
+				captchas.setAmount(amount);
+				player.getInventory().setItem(i, captchas);
+				conversions += amount;
+			}
 		}
 		return conversions;
 	}
+
+	private String findHashIfPresent(List<String> lore) {
+		for (String line : lore) {
+			if (!line.startsWith(HASH_PREFIX)) {
+				continue;
+			}
+			line = line.substring(HASH_PREFIX.length());
+			if (line.matches("[0-9A-Za-z]{8,}")) {
+				// Modern format
+				return line;
+			}
+		}
+		return null;
+	}
+
 }
