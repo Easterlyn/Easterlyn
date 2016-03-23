@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.inventory.ItemStack;
 
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.CanonNick;
 
 import net.md_5.bungee.api.ChatColor;
@@ -16,9 +16,9 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
-
 import net.minecraft.server.v1_9_R1.NBTTagCompound;
+
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 
 /**
  * A modified version of vanilla's raw message creation.
@@ -139,10 +139,10 @@ public class JSONUtil {
 				String channelString = channelMatcher.group(1);
 				int end = channelMatcher.end(1);
 				component.setText(message.substring(i, end));
-				component.setColor(Color.GOOD_EMPHASIS);
+				component.setColor(Language.getColor("emphasis.good"));
 				component.setUnderlined(true);
 				component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT,
-						TextComponent.fromLegacyText(Color.COMMAND + "/join " + Color.GOOD_EMPHASIS + channelString)));
+						TextComponent.fromLegacyText(Language.getColor("command") + "/join " + Language.getColor("emphasis.good") + channelString)));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelString));
 				components.add(component);
 

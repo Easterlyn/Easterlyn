@@ -14,7 +14,7 @@ import org.bukkit.map.MapView.Scale;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -34,13 +34,13 @@ public class CenterMapCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		Player player = (Player) sender;
 		ItemStack mapItem = player.getInventory().getItemInMainHand();
 		if (mapItem.getType() != Material.EMPTY_MAP) {
-			sender.sendMessage(Color.BAD + "You must be holding a blank map in your main hand.");
+			sender.sendMessage(Language.getColor("bad") + "You must be holding a blank map in your main hand.");
 			return true;
 		}
 		MapView view = Bukkit.createMap(player.getWorld());
@@ -51,13 +51,13 @@ public class CenterMapCommand extends SblockCommand {
 				x = Integer.valueOf(args[0]);
 				z = Integer.valueOf(args[1]);
 			} catch (NumberFormatException e) {
-				sender.sendMessage(Color.BAD + "Invalid coordinates! Ex. /centermap 0 0");
+				sender.sendMessage(Language.getColor("bad") + "Invalid coordinates! Ex. /centermap 0 0");
 				return true;
 			}
 			if (args.length > 2) {
 				World world = Bukkit.getWorld(args[2]);
 				if (world == null) {
-					sender.sendMessage(Color.BAD + "Invalid world! Ex. /centermap 0 0 Earth_the_end");
+					sender.sendMessage(Language.getColor("bad") + "Invalid world! Ex. /centermap 0 0 Earth_the_end");
 					return true;
 				}
 				view.setWorld(world);

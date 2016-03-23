@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
 
@@ -34,14 +34,14 @@ public class Spectators extends Module {
 
 	public Spectators(Sblock plugin) {
 		super(plugin);
-		spectators = new HashMap<>();
+		this.spectators = new HashMap<>();
 	}
 
 	@Override
 	protected void onEnable() {
-		cooldowns = getPlugin().getModule(Cooldowns.class);
-		sleep = getPlugin().getModule(SleepVote.class);
-		users = getPlugin().getModule(Users.class);
+		this.cooldowns = getPlugin().getModule(Cooldowns.class);
+		this.sleep = getPlugin().getModule(SleepVote.class);
+		this.users = getPlugin().getModule(Users.class);
 
 		new BukkitRunnable() {
 			@Override
@@ -55,7 +55,7 @@ public class Spectators extends Module {
 					}
 					if (cooldowns.getRemainder(player, getName()) == 0) {
 						removeSpectator(player, false);
-						player.sendMessage(Color.GOOD + "As your link to the astral plane fades, you awaken with a jolt.");
+						player.sendMessage(Language.getColor("neutral") + "As your link to the astral plane fades, you awaken with a jolt.");
 					}
 					// 100 blocks from starting location
 					Location start = spectators.get(player.getUniqueId());
@@ -80,7 +80,7 @@ public class Spectators extends Module {
 						}
 					}
 					removeSpectator(player, false);
-					player.sendMessage(Color.GOOD + "With no one around to maintain your connection to the astral plane, you snap back to reality.");
+					player.sendMessage(Language.getColor("neutral") + "With no one around to maintain your connection to the astral plane, you snap back to reality.");
 				}
 			}
 		}.runTaskTimer(getPlugin(), 100, 100);
@@ -108,7 +108,7 @@ public class Spectators extends Module {
 		player.closeInventory();
 		player.setGameMode(GameMode.SPECTATOR);
 		if (sleep.updateVoteCount(player.getWorld().getName(), player.getName())) {
-			player.sendMessage(Color.BAD + "You're no longer sleeping. You'll have to use a bed again to count towards the total.");
+			player.sendMessage(Language.getColor("bad") + "You're no longer sleeping. You'll have to use a bed again to count towards the total.");
 		}
 		spectators.put(player.getUniqueId(), player.getLocation().add(0, .1, 0));
 		if (!player.hasPermission("sblock.command.spectate.unrestricted")) {

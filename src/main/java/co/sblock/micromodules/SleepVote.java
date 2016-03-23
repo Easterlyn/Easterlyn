@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.module.Module;
 
 /**
@@ -86,12 +86,12 @@ public class SleepVote extends Module {
 			}
 		});
 		if (player != null) {
-			sb.append(Color.GOOD_PLAYER).append(player).append(Color.GOOD).append(" has gone to bed. ");
+			sb.append(Language.getColor("player.neutral")).append(player).append(Language.getColor("neutral")).append(" has gone to bed. ");
 		} else {
 			worldSize.decrementAndGet();
 		}
 		int percent = worldSize.get() == 0 ? 100 : 100 * votes.get(world.getName()).size() / worldSize.get();
-		sb.append(Color.GOOD).append(percent).append("% of players have slept.");
+		sb.append(Language.getColor("neutral")).append(percent).append("% of players have slept.");
 		if (percent >= 50) {
 			sb.append('\n').append("Time to get up, a new day awaits!");
 			world.setTime(0);

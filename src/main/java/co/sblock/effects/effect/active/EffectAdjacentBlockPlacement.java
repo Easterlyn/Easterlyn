@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
 
@@ -39,7 +40,7 @@ public abstract class EffectAdjacentBlockPlacement extends EffectAdjacentBlockMo
 		// Capture state and change block - prevents certain plugins assuming block being placed is of the replaced material
 		BlockState state = block.getState();
 		block.setType(toMaterial, false);
-		BlockPlaceEvent event = new BlockPlaceEvent(block, state, block, new ItemStack(toMaterial), player, true);
+		BlockPlaceEvent event = new BlockPlaceEvent(block, state, block, new ItemStack(toMaterial), player, true, EquipmentSlot.HAND);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
 			// Revert block changes if cancelled

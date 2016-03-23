@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -59,7 +59,7 @@ public class MoreCommand extends SblockCommand {
 			amount = 64;
 		}
 		stack.setAmount(amount);
-		player.sendMessage(Color.GOOD + "Stack in hand set to " + Color.GOOD_EMPHASIS + amount);
+		player.sendMessage(Language.getColor("good") + "Stack in hand set to " + Language.getColor("emphasis.good") + amount);
 		return true;
 	}
 

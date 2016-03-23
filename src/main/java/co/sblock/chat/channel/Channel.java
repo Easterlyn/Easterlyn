@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
 import co.sblock.users.User;
 import co.sblock.users.Users;
 
@@ -145,9 +144,8 @@ public abstract class Channel {
 
 	@Override
 	public String toString() {
-		return Color.GOOD_EMPHASIS + this.getName() + Color.GOOD + ": Access: " + Color.GOOD_EMPHASIS
-				+ this.getAccess() + Color.GOOD + " Type: " + Color.GOOD_EMPHASIS + this.getClass().getSimpleName()
-				+ "\n" + Color.GOOD + "Owner: " + Color.GOOD_EMPHASIS
-				+ (this.owner != null ? Bukkit.getOfflinePlayer(this.getOwner()).getName() : "Sblock default");
+		return this.getName() + ": Access: " + this.getAccess() + " Type: "
+				+ this.getClass().getSimpleName() + "\nOwner: "
+				+ (this.owner != null ? Bukkit.getOfflinePlayer(this.getOwner()).getName() : "default");
 	}
 }

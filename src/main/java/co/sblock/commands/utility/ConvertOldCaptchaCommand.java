@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -34,9 +34,9 @@ public class ConvertOldCaptchaCommand extends SblockCommand {
 		Player player = (Player) sender;
 		int conversions = ((Sblock) getPlugin()).getModule(Captcha.class).convert(player);
 		if (conversions > 0) {
-			player.sendMessage(Color.GOOD + "Converted " + conversions + " captchas.");
+			player.sendMessage(Language.getColor("good") + "Converted " + conversions + " captchas.");
 		} else {
-			player.sendMessage(Color.BAD + "No old captchacards found!");
+			player.sendMessage(Language.getColor("bad") + "No old captchacards found!");
 		}
 		return true;
 	}

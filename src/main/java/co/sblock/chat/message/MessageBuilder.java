@@ -11,8 +11,7 @@ import org.bukkit.scoreboard.Team;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.CanonNick;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
@@ -51,13 +50,13 @@ public class MessageBuilder {
 
 		// +-- Name --+
 		TextComponent component = new TextComponent("+--");
-		component.setColor(Color.GOOD);
+		component.setColor(Language.getColor("neutral"));
 		component.setStrikethrough(true);
 		NAME_HOVER[0] = component;
 		component = new TextComponent(" %s ");
 		NAME_HOVER[1] = component;
 		component = new TextComponent("--+\n");
-		component.setColor(Color.GOOD);
+		component.setColor(Language.getColor("neutral"));
 		component.setStrikethrough(true);
 		NAME_HOVER[2] = component;
 
@@ -71,14 +70,14 @@ public class MessageBuilder {
 
 		// Dream: Dream
 		component = new TextComponent("Dream: ");
-		component.setColor(Color.GOOD);
+		component.setColor(Language.getColor("neutral"));
 		NAME_HOVER[5] = component;
 		component = new TextComponent("%s\n");
 		NAME_HOVER[6] = component;
 
 		// Medium: Medium
 		component = new TextComponent("Medium: ");
-		component.setColor(Color.GOOD);
+		component.setColor(Language.getColor("neutral"));
 		NAME_HOVER[7] = component;
 		component = new TextComponent("%s");
 		NAME_HOVER[8] = component;
@@ -90,6 +89,7 @@ public class MessageBuilder {
 	}
 
 	private final Sblock plugin;
+	private final Language lang;
 	private final ChannelManager manager;
 
 	private User sender = null;
@@ -104,6 +104,7 @@ public class MessageBuilder {
 
 	public MessageBuilder(Sblock plugin) {
 		this.plugin = plugin;
+		this.lang = plugin.getModule(Language.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 	}
 
@@ -240,8 +241,7 @@ public class MessageBuilder {
 	}
 
 	private boolean isCharacterGloballyLegal(char character) {
-		//  character >= ' ' and character <= }
-		return character > '\u001F' && character < '\u007E';
+		return character >= ' ' && character <= '}';
 	}
 
 	public MessageBuilder setThirdPerson(boolean thirdPerson) {
@@ -293,9 +293,9 @@ public class MessageBuilder {
 		// Channel must exist
 		if (this.channel == null) {
 			if (informSender && this.atChannel != null) {
-				this.sender.sendMessage(ChatMsgs.errorInvalidChannel(atChannel));
+				this.sender.sendMessage(this.lang.getValue("chat.error.invalidChannel").replace("{CHANNEL}", this.atChannel));
 			} else if (informSender) {
-				this.sender.sendMessage(ChatMsgs.errorCurrentChannelNull());
+				this.sender.sendMessage(this.lang.getValue("chat.error.noCurrentChannel"));
 			}
 			return false;
 		}
@@ -303,7 +303,7 @@ public class MessageBuilder {
 		// No sending of blank messages.
 		if (TextUtils.appearsEmpty(this.message)) {
 			if (informSender) {
-				this.sender.sendMessage(ChatMsgs.errorEmptyMessage());
+				this.sender.sendMessage(this.lang.getValue("chat.error.emptyMessage"));
 			}
 			return false;
 		}
@@ -385,8 +385,8 @@ public class MessageBuilder {
 		} else {
 			channelBracket = ChatColor.WHITE;
 		}
-		ChatColor channelRank = channel.isOwner(sender) ? Color.CHANNEL_OWNER
-				: channel.isModerator(sender) ? Color.CHANNEL_MOD : Color.CHANNEL_MEMBER;
+		ChatColor channelRank = channel.isOwner(sender) ? Language.getColor("channel.owner")
+				: channel.isModerator(sender) ? Language.getColor("channel.mod") : Language.getColor("channel.member");
 
 		LinkedList<TextComponent> channelHighlightComponents = new LinkedList<>();
 		LinkedList<TextComponent> components = new LinkedList<>();
@@ -431,26 +431,26 @@ public class MessageBuilder {
 		String rankName;
 		if (player != null) {
 			// Permission-based rank colors
-			if (player.hasPermission("group.horrorterror")) {
-				globalRank = Color.RANK_HORRORTERROR;
+			if (player.hasPermission("sblock.horrorterror")) {
+				globalRank = Language.getColor("rank.horrorterror");
 				rankName = "Horrorterror";
 			} else if (player.hasPermission("sblock.denizen")) {
-				globalRank = Color.RANK_DENIZEN;
+				globalRank = Language.getColor("rank.denizen");
 				rankName = "Denizen";
 			} else if (player.hasPermission("sblock.felt")) {
-				globalRank = Color.RANK_FELT;
+				globalRank = Language.getColor("rank.felt");
 				rankName = "Felt";
 			} else if (player.hasPermission("sblock.helper")) {
-				globalRank = Color.RANK_HELPER;
+				globalRank = Language.getColor("rank.helper");
 				rankName = "Helper";
 			} else if (player.hasPermission("sblock.donator")) {
-				globalRank = Color.RANK_DONATOR;
+				globalRank = Language.getColor("rank.donator");
 				rankName = "Donator";
 			} else if (player.hasPermission("sblock.godtier")) {
-				globalRank = Color.RANK_GODTIER;
+				globalRank = Language.getColor("rank.godtier");
 				rankName = "Godtier";
 			} else {
-				globalRank = Color.RANK_HERO;
+				globalRank = Language.getColor("rank.hero");
 				rankName = "Hero";
 			}
 			// Override rank color with scoreboard color if possible
@@ -572,8 +572,8 @@ public class MessageBuilder {
 		String consoleFormat = String.format(thirdPerson ? CONSOLE_FORMAT_THIRD : CONSOLE_FORMAT,
 				channelBracket, channelRank, channel.getName(), region, globalRank, "%s");
 
-		return new Message(this.sender, this.senderName, this.channel, this.message, consoleFormat,
-				this.thirdPerson, channelComponent, channelHighlightComponent, nameComponent,
-				messageComponent);
+		return new Message(this.lang, this.sender, this.senderName, this.channel, this.message,
+				consoleFormat, this.thirdPerson, channelComponent, channelHighlightComponent,
+				nameComponent, messageComponent);
 	}
 }

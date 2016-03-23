@@ -58,8 +58,6 @@ public class VoiceTextModule extends DiscordModule {
 		if (!(channel instanceof IVoiceChannel)) {
 			return;
 		}
-		IVoiceChannel voice = (IVoiceChannel) channel;
-		// TODO any way to get clients already in the channel?
 	}
 
 }

@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.Repairable;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -50,7 +50,7 @@ public class RepairCommand extends SblockCommand {
 			hand.setItemMeta(meta);
 		}
 		player.getInventory().setItemInMainHand(hand);
-		player.sendMessage(Color.GOOD + "Repaired!");
+		player.sendMessage(Language.getColor("good") + "Repaired!");
 		return true;
 	}
 

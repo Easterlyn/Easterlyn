@@ -22,7 +22,7 @@ import org.bukkit.util.Vector;
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.effects.Effects;
 import co.sblock.machines.MachineInventoryTracker;
 import co.sblock.machines.Machines;
@@ -88,7 +88,7 @@ public class Alchemiter extends Machine {
 		drop.setItemMeta(meta);
 
 		barrier = new ItemStack(Material.BARRIER);
-		meta.setDisplayName(Color.BAD_EMPHASIS + "No Result");
+		meta.setDisplayName(Language.getColor("emphasis.bad") + "No Result");
 		barrier.setItemMeta(meta);
 	}
 

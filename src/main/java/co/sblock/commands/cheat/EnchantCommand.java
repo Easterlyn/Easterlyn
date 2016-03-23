@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -36,7 +36,7 @@ public class EnchantCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 
@@ -87,10 +87,10 @@ public class EnchantCommand extends SblockCommand {
 		// Unless flag is set, remove enchantment if level is under 1.
 		if (level < 1 && !flagForceLevel) {
 			removeEnchantment(hand, enchantment);
-			sender.sendMessage(Color.GOOD + "Enchantment removed!");
+			sender.sendMessage(Language.getColor("good") + "Enchantment removed!");
 		} else {
 			setEnchantment(hand, enchantment, level);
-			sender.sendMessage(Color.GOOD + "Enchantment set!");
+			sender.sendMessage(Language.getColor("good") + "Enchantment set!");
 		}
 		return true;
 	}

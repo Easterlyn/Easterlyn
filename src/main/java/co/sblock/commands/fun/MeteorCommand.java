@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Meteorite;
 
@@ -63,7 +63,7 @@ public class MeteorCommand extends SblockCommand {
 				try {
 					radius = Integer.parseInt(argument);
 				} catch (NumberFormatException e) {
-					sender.sendMessage(Color.BAD + "Invalid radius specified, defaulting to 3");
+					sender.sendMessage(Language.getColor("bad") + "Invalid radius specified, defaulting to 3");
 				}
 				continue;
 			}
@@ -94,7 +94,7 @@ public class MeteorCommand extends SblockCommand {
 					target = block.getLocation();
 				}
 				if (target == null) {
-					sender.sendMessage(Color.BAD + "Block on crosshair too far away! Aim closer or specify target!");
+					sender.sendMessage(Language.getColor("bad") + "Block on crosshair too far away! Aim closer or specify target!");
 					return false;
 				}
 			} else {
@@ -104,7 +104,7 @@ public class MeteorCommand extends SblockCommand {
 		}
 		if (radius > 10) {
 			radius = 10;
-			sender.sendMessage(Color.BAD_EMPHASIS + "Very large meteors cause quite a bit of lag. Keep it down.");
+			sender.sendMessage(Language.getColor("emphasis.bad") + "Very large meteors cause quite a bit of lag. Keep it down.");
 		}
 		new Meteorite((Sblock) getPlugin(), target, material, radius, blockDamage, bore).dropMeteorite();
 		return true;

@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.Discord;
 import co.sblock.users.BukkitSerializer;
@@ -37,11 +37,11 @@ public class ReportCommand extends SblockCommand {
 			return false;
 		}
 		if (args.length < 4) {
-			sender.sendMessage(Color.BAD + "More descriptive, please!");
+			sender.sendMessage(Language.getColor("bad") + "More descriptive, please!");
 			return true;
 		}
 		if (!discord.isEnabled()) {
-			sender.sendMessage(Color.BAD + "Reporting is disabled at this time, sorry! Please /mail an admin instead.");
+			sender.sendMessage(Language.getColor("bad") + "Reporting is disabled at this time, sorry! Please /mail an admin instead.");
 			return true;
 		}
 		Player player = (Player) sender;
@@ -54,7 +54,7 @@ public class ReportCommand extends SblockCommand {
 				.append(BukkitSerializer.locationToBlockCenterString(player.getLocation()))
 				.append('\n').append(StringUtils.join(args, ' '));
 		discord.postReport(sb.toString());
-		player.sendMessage(Color.GOOD + "Report sent! Thanks for alerting us.");
+		player.sendMessage(Language.getColor("good") + "Report sent! Thanks for alerting us.");
 		return true;
 	}
 

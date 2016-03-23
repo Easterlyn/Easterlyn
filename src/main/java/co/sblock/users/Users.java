@@ -22,6 +22,7 @@ import com.google.common.cache.RemovalNotification;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.module.Module;
 import co.sblock.utilities.CollectionConversions;
 
@@ -118,19 +119,19 @@ public class Users extends Module {
 		if (prefixBuilder.length() > (prefix == null ? 0 : prefix.length())) {
 			// Do nothing, we've got a fancy override going on
 		} else if (player.hasPermission("sblock.horrorterror")) {
-			prefixBuilder.append(Color.RANK_HORRORTERROR.toString());
+			prefixBuilder.append(Language.getColor("rank.HORRORTERROR"));
 		} else if (player.hasPermission("sblock.denizen")) {
-			prefixBuilder.append(Color.RANK_DENIZEN.toString());
+			prefixBuilder.append(Language.getColor("rank.DENIZEN"));
 		} else if (player.hasPermission("sblock.felt")) {
-			prefixBuilder.append(Color.RANK_FELT.toString());
+			prefixBuilder.append(Language.getColor("rank.FELT"));
 		} else if (player.hasPermission("sblock.helper")) {
-			prefixBuilder.append(Color.RANK_HELPER.toString());
+			prefixBuilder.append(Language.getColor("rank.HELPER"));
 		} else if (player.hasPermission("sblock.donator")) {
-			prefixBuilder.append(Color.RANK_DONATOR.toString());
+			prefixBuilder.append(Language.getColor("rank.DONATOR"));
 		} else if (player.hasPermission("sblock.godtier")) {
-			prefixBuilder.append(Color.RANK_GODTIER.toString());
+			prefixBuilder.append(Language.getColor("rank.GODTIER"));
 		} else {
-			prefixBuilder.append(Color.RANK_HERO.toString());
+			prefixBuilder.append(Language.getColor("rank.HERO"));
 		}
 		for (net.md_5.bungee.api.ChatColor color : Color.FORMATS) {
 			if (player.hasPermission("sblockchat." + color.name().toLowerCase())) {

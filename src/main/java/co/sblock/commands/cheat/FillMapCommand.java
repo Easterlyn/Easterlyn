@@ -6,7 +6,6 @@ import org.bukkit.map.MapView;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
 import co.sblock.commands.SblockAsynchronousCommand;
 
 /**
@@ -43,7 +42,7 @@ public class FillMapCommand extends SblockAsynchronousCommand {
 		MapView view = Bukkit.getMap(id);
 
 		if (view == null) {
-			sender.sendMessage(Color.BAD + "Invalid map ID!");
+			sender.sendMessage("Invalid map ID!");
 			return true;
 		}
 		Renderer render = new Renderer(view);

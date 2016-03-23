@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.computer.Program;
 import co.sblock.machines.type.computer.Programs;
@@ -95,8 +95,8 @@ public class Computer extends Machine implements InventoryHolder {
 			event.setCancelled(true);
 			Program program = Programs.getProgramByInstaller(event.getItem());
 			if (program != null) {
-				event.getPlayer().sendMessage(Color.GOOD + "Installed "
-						+ event.getItem().getItemMeta().getDisplayName() + Color.GOOD + "!");
+				event.getPlayer().sendMessage(Language.getColor("good") + "Installed "
+						+ event.getItem().getItemMeta().getDisplayName() + Language.getColor("good") + "!");
 				// TODO 1.9
 				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 					InventoryUtils.decrementHeldItem(event, 1);

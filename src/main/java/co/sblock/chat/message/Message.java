@@ -14,7 +14,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.micromodules.AwayFromKeyboard;
@@ -34,6 +34,7 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class Message {
 
+	private final Language lang;
 	private final User sender;
 	private final Channel channel;
 	private final boolean thirdPerson;
@@ -41,10 +42,11 @@ public class Message {
 	private String name, consoleFormat, unformattedMessage;
 	private TextComponent messageComponent;
 
-	Message(User sender, String name, Channel channel, String message, String consoleFormat,
-			boolean thirdPerson, TextComponent channelComponent,
+	Message(Language lang, User sender, String name, Channel channel, String message,
+			String consoleFormat, boolean thirdPerson, TextComponent channelComponent,
 			TextComponent channelHighlightComponent, TextComponent nameComponent,
 			TextComponent messageComponent) {
+		this.lang = lang;
 		this.sender = sender;
 		this.name = name;
 		this.channel = channel;
@@ -230,9 +232,7 @@ public class Message {
 			}
 
 			if (sender != null && highlight && !afk.isActive(player)) {
-				sender.sendMessage(String.format("%s%s %sis away and may not respond!",
-						Color.BAD_PLAYER, player.getDisplayName() != null ? player.getDisplayName()
-								: player.getName(), Color.BAD));
+				sender.sendMessage(lang.getValue("chat.user.away").replace("{PLAYER}", player.getDisplayName()));
 				// TODO Discord support
 			}
 

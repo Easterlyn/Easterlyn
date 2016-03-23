@@ -15,7 +15,7 @@ import com.mojang.authlib.GameProfile;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
@@ -70,7 +70,7 @@ public class MessageCommand extends SblockCommand {
 				return false;
 			}
 			if (!reply.containsKey(senderProfile)) {
-				sender.sendMessage(Color.BAD + "You do not have anyone to reply to!");
+				sender.sendMessage(Language.getColor("bad") + "You do not have anyone to reply to!");
 				return true;
 			}
 			recipientProfile = reply.get(senderProfile);
@@ -79,7 +79,7 @@ public class MessageCommand extends SblockCommand {
 			if (reply.hasPlayedBefore()) {
 				// Ensure that they're online
 				if (!reply.isOnline()) {
-					sender.sendMessage(Color.BAD + "The person you were talking to has logged out!");
+					sender.sendMessage(Language.getColor("bad") + "The person you were talking to has logged out!");
 					return true;
 				}
 				recipientPlayer = reply.getPlayer();
@@ -93,7 +93,7 @@ public class MessageCommand extends SblockCommand {
 			} else {
 				List<Player> players = Bukkit.matchPlayer(args[0]);
 				if (players.size() == 0) {
-					sender.sendMessage(Color.BAD + "That player is not online!");
+					sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 					return true;
 				}
 				recipientPlayer = players.get(0);

@@ -1,0 +1,127 @@
+# The great language migration
+
+# Color definitions. Any value in this section must be a ChatColor name.
+# Custom values can be defined, however, the defaults are used internally for various purposes.
+# Any custom values can then be used in other language sections via {COLOR:subpath}
+# For example, {COLOR:rank.horrorterror} refers to ChatColor.DARK_RED by default.
+color:
+  bot_name: 'DARK_RED'
+  bot_text: 'RED'
+  link_color: 'BLUE'
+  link_format: 'UNDERLINE'
+  default: 'WHITE'
+  command: 'AQUA'
+  good: 'GREEN'
+  neutral: 'YELLOW'
+  bad: 'RED'
+  player:
+    good: 'GOLD'
+    neutral: 'GREEN'
+    bad: 'DARK_AQUA'
+  emphasis:
+    good: 'DARK_GREEN'
+    neutral: 'GOLD'
+    bad: 'DARK_RED'
+  rank:
+    horrorterror: 'DARK_RED'
+    denizen: 'BLUE'
+    felt: 'GREEN'
+    helper: 'DARK_GRAY'
+    donator: 'DARK_GREEN'
+    godtier: 'GOLD'
+    hero: 'WHITE'
+  channel:
+    owner: 'RED'
+    mod: 'AQUA'
+    member: 'GOLD'
+
+core:
+  bot_name: '{COLOR:bot_name}Lil Hal'
+  error:
+    invalidUser: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has not played on this server before.'
+
+chat:
+  spamChannel: '#halchat'
+  server:
+    quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}ollies outie'
+  ai:
+    cleverbot:
+      name: '{COLOR:bot_name}Lil Hal'
+      hover: |
+        {COLOR:bot_text}Artificial Intelligence
+        {COLOR:emphasis.bad}Sblock is not responsible
+        {COLOR:emphasis.bad}for anything Hal says.
+        
+        {COLOR:emphasis.bad}Unless it's awesome.
+        
+        {COLOR:command}/join #halchat {COLOR:emphasis.bad}to spam usage.
+  user:
+    away: '{COLOR:player.bad}{PLAYER} {COLOR:bad}is away and may not respond!'
+    discordHover: |
+      {COLOR:emphasis.good}Discord Chat
+      {COLOR:link_color}{COLOR:link_underline}www.sblock.co/discord
+      {COLOR:good}Channel: #main
+  channel:
+    join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}began pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'
+    quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}ceased pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'
+    setcurrent: '{COLOR:neutral}Current channel set to {COLOR:emphasis.neutral}{CHANNEL}'
+    disband: '{COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}has been disbanded. These are dark times indeed.'
+    kick: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been kicked from {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
+    ban: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been banned from {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
+    unban: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}has been unbanned from {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
+    approve: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}has been approved in {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
+    deapprove: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been deapproved in {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
+    mod: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}has been modded in {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
+    demod: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been demodded in {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
+    nick: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}is now known as {NICK} in {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
+    denick: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}no longer known as {NICK} in {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
+  error:
+    emptyMessage: '{COLOR:bad}You cannot send empty messages!'
+    alreadyListening: '{COLOR:bad}You are already listening to {COLOR:emphasis.bad}{CHANNEL}'
+    notListening: '{COLOR:bad}You are not listening to {COLOR:emphasis.bad}{CHANNEL}'
+    noCurrentChannel: |
+      {COLOR:bad}You do not have a current channel set!
+      {COLOR:good}Focus on the main channel with {COLOR:command}/join #
+    invalidChannel: '{COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}does not exist! Did you forget the #?'
+    unsupportedOperation: '{COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}does not support that operation!'
+    permissionLow: '{COLOR:bad}You do not have high enough access in {COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}to perform that action!'
+    banned: '{COLOR:bad}You are banned from {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}. Request an unban from channel mods.'
+    private: '{COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}is a private channel! {COLOR:neutral}Ask a channel mod for access.!'
+    defaultDisband: '{COLOR:bad}Hardcoded default channels cannot be disbanded.'
+    globalJoin: '{COLOR:bad}You cannot join the global channel! If you''re not in it, relog.'
+    globalQuit: '{COLOR:bad}You cannot leave the global channel! Use {COLOR:command}/suppress {COLOR:bad}to ignore it.'
+    nickTaken: '{COLOR:emphasis.bad}{NICK} {COLOR:bad}is already in use!'
+    nickNotCanon: |
+      {COLOR:emphasis.bad}{NICK} {COLOR:bad}is not a canon nickame!
+      {COLOR:neutral}Use {COLOR:command}/nick list {COLOR:neutral}for a list.
+
+command:
+  general:
+    noConsole: 'Console support not offered at this time.'
+    needItemInHand: '{COLOR:bad}You do not have an item in your main hand!'
+    noMeta: '{COLOR:bad}This item does not have meta!'
+    noMetaSupport: '{COLOR:bad}This item does not support meta!'
+    invalidParameters: '{COLOR:bad}Invalid parameter: {PARAMETER}; try tab completion.'
+  ban:
+    description: 'YOU CAN''T ESCAPE THE RED MILES.'
+    usage: '/ban <target> [optional reason]'
+    announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been wiped from the face of the multiverse. {COLOR:emphasis.bad}{REASON}'
+  hash:
+    description: 'Create a new hash for your item in hand or get a captcha for a specific hash.'
+    usage: '/hash get <hash> | With item in main hand, /hash add <hash>'
+    requirements: '{COLOR:bad}Hashes must be 8 or more characters containing only 0-9, A-Z, a-z.'
+    used: '{COLOR:bad}Hash {TARGET} is in use. Manually delete the file if there will be no conflict.'
+    unused: '{COLOR:bad}No item is stored by that hash.'
+    success_save: '{COLOR:good}Saved to {TARGET}'
+    success_load: '{COLOR:good}Loaded captcha item for {TARGET}'
+  tempban:
+    announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been temporarily banned. {COLOR:emphasis.bad}{REASON}'
+  aether:
+    hover: |
+      {COLOR:emphasis.good}IRC Chat
+      {COLOR:good}Server: irc.freenode.net
+      {COLOR:good}Channel: #sblockserver
+  me:
+    description: '/me does an action'
+    usage: 'YOU FOOKIN WOT M8? /me (@channel) <message> Channel optional, defaults current.'
+

@@ -31,14 +31,12 @@ public class MeCommand extends SblockAsynchronousCommand {
 	public MeCommand(Sblock plugin) {
 		super(plugin, "me");
 		this.users = plugin.getModule(Users.class);
-		this.setDescription("/me does an action");
-		this.setUsage("YOU FOOKIN WOT M8? /me (@channel) <message> Channel optional, defaults current.");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		if (args.length == 0) {

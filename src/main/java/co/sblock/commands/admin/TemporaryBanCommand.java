@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.utilities.NumberUtils;
 
@@ -70,9 +69,8 @@ public class TemporaryBanCommand extends SblockCommand {
 						if (player.isOnline()) {
 							player.getPlayer().kickPlayer(reason);
 						}
-						Bukkit.broadcastMessage(Color.BAD_PLAYER + player.getName() + Color.BAD
-								+ " has been temporarily banned. " + Color.BAD_EMPHASIS
-								+ reason.toString());
+						Bukkit.broadcastMessage(getLang().getValue("command.tempban.announce")
+								.replace("{PLAYER}", player.getName()).replace("{REASON}", reason.toString()));
 					}
 				}.runTask(getPlugin());
 			}

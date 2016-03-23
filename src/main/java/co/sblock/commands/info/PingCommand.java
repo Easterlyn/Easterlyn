@@ -11,7 +11,7 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -50,11 +50,12 @@ public class PingCommand extends SblockCommand {
 			target = Bukkit.getPlayer(args[0]);
 		}
 		if (target == null) {
-			sender.sendMessage(Color.BAD + "Unknown player " + args[0] + "!");
+			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return true;
 		}
-		sender.sendMessage(Color.GOOD_PLAYER + target.getName() + Color.GOOD +"'s ping is " +
-			((org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer) target).getHandle().ping + "ms!");
+		sender.sendMessage(Language.getColor("player.good") + target.getName()
+				+ Language.getColor("good") + "'s ping is "
+				+ ((org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer) target).getHandle().ping + "ms!");
 		return true;
 	}
 

@@ -10,7 +10,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.discord.Discord;
 import co.sblock.utilities.TextUtils;
 
@@ -25,12 +25,14 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 
 	private String permissionLevel;
 	private final Sblock plugin;
+	private final Language lang;
 
 	public SblockCommand(Sblock plugin, String name) {
 		super(name);
 		this.plugin = plugin;
-		this.setDescription("A Sblock command.");
-		this.setUsage("/" + name);
+		this.lang = plugin.getModule(Language.class);
+		this.setDescription(lang.getValue("command." + name + ".description"));
+		this.setUsage("command." + name + ".usage");
 		this.setPermission("sblock.command." + name);
 		this.setPermissionLevel("default");
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");
@@ -38,12 +40,12 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 
 	@Override
 	public Command setUsage(String usage) {
-		return super.setUsage(Color.BAD + ChatColor.translateAlternateColorCodes('&', usage));
+		return super.setUsage(Language.getColor("bad") + ChatColor.translateAlternateColorCodes('&', usage));
 	}
 
 	@Override
 	public Command setDescription(String description) {
-		return super.setDescription(Color.GOOD + ChatColor.translateAlternateColorCodes('&', description));
+		return super.setDescription(Language.getColor("neutral") + ChatColor.translateAlternateColorCodes('&', description));
 	}
 
 	public Command setPermissionLevel(String group) {
@@ -57,7 +59,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 
 	@Override
 	public Command setPermissionMessage(String permissionMessage) {
-		return super.setPermissionMessage(Color.BAD + ChatColor.translateAlternateColorCodes('&', permissionMessage));
+		return super.setPermissionMessage(Language.getColor("bad") + ChatColor.translateAlternateColorCodes('&', permissionMessage));
 	}
 
 	public Command setAliases(String... aliases) {
@@ -75,7 +77,8 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 				return true;
 			}
 		} catch (Exception e) {
-			sender.sendMessage(Color.BAD + "An error occurred processing this command. Please make sure your parameters are correct.");
+			sender.sendMessage(Language.getColor("bad") + "An error occurred processing this command. Please make sure your parameters are correct.");
+			sender.sendMessage(this.getUsage());
 			plugin.getModule(Discord.class).postReport("Error processing command by " + sender.getName()
 					+ ": /" + getName() + " " + StringUtils.join(args, ' ') + '\n' + TextUtils.getTrace(e, 5));
 			e.printStackTrace();
@@ -99,4 +102,9 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 	public final Plugin getPlugin() {
 		return plugin;
 	}
+
+	protected final Language getLang() {
+		return this.lang;
+	}
+
 }

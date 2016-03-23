@@ -6,17 +6,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
+import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -40,19 +42,27 @@ public class ShowItemCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasDisplayName() || !hand.getItemMeta().hasEnchants()) {
-			sender.sendMessage(Color.BAD + "You do not have anything named and enchanted in your main hand!");
+		ItemMeta handMeta;
+		if (hand == null || !hand.hasItemMeta()
+				|| !(handMeta = hand.getItemMeta()).hasDisplayName() || !handMeta.hasEnchants()) {
+			sender.sendMessage(Language.getColor("bad") + "You do not have anything named and enchanted in your main hand!");
 			return true;
 		}
 
 		User user = users.getUser(player.getUniqueId());
+
+		if (!player.hasPermission("sblock.felt") && "#".equals(user.getCurrentChannel())
+				&& !TextUtils.isOnlyAscii(handMeta.getDisplayName())) {
+			sender.sendMessage(Language.getColor("bad")
+					+ "You may not show items with names containing characters normalized by the main chat!");
+		}
 
 		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin())
 				.setSender(user).setThirdPerson(true).setMessage(new TextComponent("shows off "),

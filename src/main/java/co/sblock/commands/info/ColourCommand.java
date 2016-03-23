@@ -7,8 +7,9 @@ import org.bukkit.command.CommandSender;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * SblockCommand for /color
@@ -26,7 +27,12 @@ public class ColourCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		sender.sendMessage(Color.listColors());
+		StringBuilder sb = new StringBuilder();
+		for (ChatColor c : ChatColor.values()) {
+			sb.append(c).append('&').append(c.toString().substring(1)).append(' ');
+			sb.append(c.name().toLowerCase()).append(ChatColor.RESET).append(' ');
+		}
+		sender.sendMessage(sb.toString());
 		return true;
 	}
 

@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.FreeCart;
@@ -43,7 +43,7 @@ public class DeathListener extends SblockListener {
 		facts = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta meta = (BookMeta) facts.getItemMeta();
 		meta.setTitle("Wither Facts");
-		meta.setAuthor(Color.RANK_DENIZEN + "Pete");
+		meta.setAuthor(Language.getColor("rank.denizen") + "Pete");
 		meta.addPage("Withers are awesome.");
 		facts.setItemMeta(meta);
 	}
@@ -67,7 +67,7 @@ public class DeathListener extends SblockListener {
 				.append(player.getLocation().getBlockX()).append("x ")
 				.append(player.getLocation().getBlockY()).append("y ")
 				.append(player.getLocation().getBlockZ()).append('z').toString();
-		player.sendMessage(Color.BAD + message + location);
+		player.sendMessage(Language.getColor("bad") + message + location);
 
 		EntityDamageEvent lastDamage = player.getLastDamageCause();
 		if (lastDamage.getCause() == DamageCause.WITHER

@@ -17,7 +17,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -49,7 +49,7 @@ public class LightningCommand extends SblockCommand {
 					}
 				}
 				if (block == null || block.getType() == Material.AIR) {
-					sender.sendMessage(Color.BAD + "No target block within 64 blocks!");
+					sender.sendMessage(Language.getColor("bad") + "No target block within 64 blocks!");
 					return true;
 				}
 				block.getWorld().strikeLightning(block.getLocation());
@@ -62,7 +62,7 @@ public class LightningCommand extends SblockCommand {
 		if (args.length == 1) {
 			List<Player> matches = Bukkit.matchPlayer(args[0]);
 			if (matches.size() == 0) {
-				sender.sendMessage(Color.BAD + "Invalid target player!");
+				sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 				return false;
 			}
 			Player target = matches.get(0);

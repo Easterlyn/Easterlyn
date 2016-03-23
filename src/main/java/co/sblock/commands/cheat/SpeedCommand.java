@@ -13,7 +13,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -60,7 +60,7 @@ public class SpeedCommand extends SblockCommand {
 
 		if (args.length == 1) {
 			setSpeed((Player) sender, fly, speed);
-			sender.sendMessage(Color.GOOD + "Speed set!");
+			sender.sendMessage(Language.getColor("good") + "Speed set!");
 			return true;
 		}
 
@@ -70,11 +70,11 @@ public class SpeedCommand extends SblockCommand {
 		if (fly == null && args.length == 2 && sender instanceof Player) {
 			if (args[0].equalsIgnoreCase("fly")) {
 				setSpeed((Player) sender, true, speed);
-				sender.sendMessage(Color.GOOD + "Speed set!");
+				sender.sendMessage(Language.getColor("good") + "Speed set!");
 				return true;
 			} else if (args[0].equalsIgnoreCase("walk")) {
 				setSpeed((Player) sender, false, speed);
-				sender.sendMessage(Color.GOOD + "Speed set!");
+				sender.sendMessage(Language.getColor("good") + "Speed set!");
 				return true;
 			}
 		}
@@ -87,17 +87,17 @@ public class SpeedCommand extends SblockCommand {
 		if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("fly")) {
 				setSpeed(target, true, speed);
-				sender.sendMessage(Color.GOOD + "Speed set!");
+				sender.sendMessage(Language.getColor("good") + "Speed set!");
 				return true;
 			} else if (args[0].equalsIgnoreCase("walk")) {
 				setSpeed(target, false, speed);
-				sender.sendMessage(Color.GOOD + "Speed set!");
+				sender.sendMessage(Language.getColor("good") + "Speed set!");
 				return true;
 			}
 			return false;
 		}
 		setSpeed(target, fly, speed);
-		sender.sendMessage(Color.GOOD + "Speed set!");
+		sender.sendMessage(Language.getColor("good") + "Speed set!");
 		return true;
 	}
 

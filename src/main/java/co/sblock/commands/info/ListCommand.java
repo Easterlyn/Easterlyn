@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 import net.md_5.bungee.api.ChatColor;
@@ -73,14 +73,14 @@ public class ListCommand extends SblockCommand {
 		}
 
 		sender.sendMessage(String.format("%1$s%2$s+---------- %3$s%4$s%1$s/%3$s%5$s %1$sonline %2$s----------+",
-				Color.GOOD, ChatColor.STRIKETHROUGH, Color.GOOD_EMPHASIS, total, Bukkit.getMaxPlayers()));
+				Language.getColor("good"), ChatColor.STRIKETHROUGH, Language.getColor("emphasis.good"), total, Bukkit.getMaxPlayers()));
 
 		for (String groupName : groupNames) {
 			List<String> group = groups.get(groupName);
 			if (group.isEmpty()) {
 				continue;
 			}
-			sender.sendMessage(Color.GOOD + groupName + ": " + StringUtils.join(group, Color.GOOD + ", "));
+			sender.sendMessage(Language.getColor("good") + groupName + ": " + StringUtils.join(group, Language.getColor("good") + ", "));
 			// Clear list for next use
 			group.clear();
 		}

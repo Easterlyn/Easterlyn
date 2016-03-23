@@ -11,7 +11,7 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -47,7 +47,7 @@ public class HealCommand extends SblockCommand {
 		}
 		if (args.length == 0 || !sender.hasPermission("sblock.command.heal.other")) {
 			heal((Player) sender, label);
-			sender.sendMessage(Color.GOOD + "All patched up!");
+			sender.sendMessage(Language.getColor("good") + "All patched up!");
 			return true;
 		}
 		List<Player> players = Bukkit.matchPlayer(args[0]);
@@ -55,7 +55,7 @@ public class HealCommand extends SblockCommand {
 			return false;
 		}
 		heal(players.get(0), label);
-		sender.sendMessage(Color.GOOD + "All patched up!");
+		sender.sendMessage(Language.getColor("good") + "All patched up!");
 		return true;
 	}
 

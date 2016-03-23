@@ -15,7 +15,7 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.Discord;
 
@@ -53,7 +53,7 @@ public class DiscordLinkCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!discord.isEnabled() || !discord.isReady()) {
-			sender.sendMessage(Color.BAD + "Discord link is currently nonfunctional!");
+			sender.sendMessage(Language.getColor("bad") + "Discord link is currently nonfunctional!");
 			return true;
 		}
 		if (args.length > 1 && sender.hasPermission("sblock.command.link.force")) {
@@ -61,7 +61,7 @@ public class DiscordLinkCommand extends SblockCommand {
 			try {
 				uuid = UUID.fromString(args[0]);
 			} catch (IllegalArgumentException e) {
-				sender.sendMessage(Color.BAD + "Invalid UUID. /link [UUID] [DiscordUser/ID]");
+				sender.sendMessage(Language.getColor("bad") + "Invalid UUID. /link [UUID] [DiscordUser/ID]");
 				return true;
 			}
 			String discordID = StringUtils.join(args, ' ', 1, args.length);
@@ -77,7 +77,7 @@ public class DiscordLinkCommand extends SblockCommand {
 				}
 			}
 			if (user == null) {
-				sender.sendMessage(Color.BAD + "Unknown Discord user. /link [UUID] [DiscordUser/ID]");
+				sender.sendMessage(Language.getColor("bad") + "Unknown Discord user. /link [UUID] [DiscordUser/ID]");
 			}
 			discord.addLink(uuid, user);
 			return true;
@@ -94,9 +94,9 @@ public class DiscordLinkCommand extends SblockCommand {
 			// Just re-throw the exception to use our automatic report creation feature
 			throw new RuntimeException(e);
 		}
-		sender.sendMessage(Color.GOOD + "Message the Discord bot \"" + Color.GOOD_EMPHASIS
-				+ "/link " + code + Color.GOOD + "\" to complete linking your Discord account!\n"
-				+ Color.BAD + "This code will expire in a minute.");
+		sender.sendMessage(Language.getColor("good") + "Message the Discord bot \"" + Language.getColor("command")
+				+ "/link " + code + Language.getColor("good") + "\" to complete linking your Discord account!\n"
+				+ Language.getColor("bad") + "This code will expire in a minute.");
 		return true;
 	}
 

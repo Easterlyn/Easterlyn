@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
@@ -50,7 +50,7 @@ public class HalCommand extends SblockCommand {
 			try {
 				int msgNum = Integer.valueOf(args[0]);
 				if (msgNum > announcer.getMessages().size()) {
-					sender.sendMessage(Color.BAD.toString()
+					sender.sendMessage(Language.getColor("bad").toString()
 							+ announcer.getMessages().size()
 							+ " announcements exist currently.");
 					msgNum = announcer.getMessages().size();

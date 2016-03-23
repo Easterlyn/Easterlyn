@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.discord.Discord;
 import co.sblock.effects.Effects;
 import co.sblock.events.listeners.SblockListener;
@@ -34,6 +34,7 @@ public class QuitListener extends SblockListener {
 	private final Effects effects;
 	private final FreeCart carts;
 	private final Godule godule;
+	private final Language lang;
 	private final SleepVote sleep;
 	private final Spectators spectators;
 	private final Users users;
@@ -46,6 +47,7 @@ public class QuitListener extends SblockListener {
 		this.effects = plugin.getModule(Effects.class);
 		this.carts = plugin.getModule(FreeCart.class);
 		this.godule = plugin.getModule(Godule.class);
+		this.lang = plugin.getModule(Language.class);
 		this.sleep = plugin.getModule(SleepVote.class);
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
@@ -60,7 +62,7 @@ public class QuitListener extends SblockListener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		// Our very own custom quits!
 		if (event.getQuitMessage() != null) {
-			event.setQuitMessage(Color.BAD_PLAYER + event.getPlayer().getDisplayName() + Color.BAD + " ollies outie");
+			event.setQuitMessage(lang.getValue("chat.server.quit").replace("{PLAYER}", event.getPlayer().getDisplayName()));
 		}
 
 		// Clear AFK status of player

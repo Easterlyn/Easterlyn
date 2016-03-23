@@ -12,8 +12,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockCommand;
@@ -35,14 +34,14 @@ public class ChatListenCommand extends SblockCommand {
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		setDescription("Join a chat channel without focusing on it.");
-		setUsage(Color.COMMAND + "/listen <channel>"
-				+ Color.GOOD + ": Listen to <channel>.");
+		setUsage(Language.getColor("command") + "/listen <channel>"
+				+ Language.getColor("good") + ": Listen to <channel>.");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		if (args.length == 0) {
@@ -51,11 +50,11 @@ public class ChatListenCommand extends SblockCommand {
 		User user = users.getUser(((Player) sender).getUniqueId());
 		Channel channel = manager.getChannel(args[0]);
 		if (channel == null) {
-			user.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
+			user.sendMessage(getLang().getValue("chat.error.invalidChannel").replace("{CHANNEL}", args[0]));
 			return true;
 		}
 		if (channel instanceof RegionChannel) {
-			user.sendMessage(ChatMsgs.errorRegionChannelJoin());
+			user.sendMessage(getLang().getValue("chat.error.globalJoin"));
 			return true;
 		}
 		user.addListening(channel);

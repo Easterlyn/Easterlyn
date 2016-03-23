@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.ChatMsgs;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.User;
 import co.sblock.users.UserAspect;
@@ -40,7 +39,7 @@ public class AspectWarpCommand extends SblockCommand {
 		}
 		Player player = Bukkit.getPlayer(args[1]);
 		if (player == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
+			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[1]));
 			return true;
 		}
 		User user = users.getUser(player.getUniqueId());

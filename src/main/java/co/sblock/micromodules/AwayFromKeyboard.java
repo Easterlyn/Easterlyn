@@ -14,7 +14,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
 
@@ -125,7 +125,7 @@ public class AwayFromKeyboard extends Module {
 		if (afkUUIDs.contains(player.getUniqueId())) {
 			Users.team(player, null);
 			afkUUIDs.remove(player.getUniqueId());
-			player.sendMessage(Color.GOOD + "You are no longer marked as away!");
+			player.sendMessage(Language.getColor("neutral") + "You are no longer marked as away!");
 		}
 		player.setSleepingIgnored(false);
 		cooldowns.addCooldown(player, getName(), 300000L);
@@ -155,8 +155,8 @@ public class AwayFromKeyboard extends Module {
 			return;
 		}
 		afkUUIDs.add(player.getUniqueId());
-		player.sendMessage(Color.GOOD + "You have been marked as away!");
-		Users.team(player, Color.GOOD_EMPHASIS + "[AFK] ");
+		player.sendMessage(Language.getColor("neutral") + "You have been marked as away!");
+		Users.team(player, Language.getColor("emphasis.neutral") + "[AFK] ");
 	}
 
 	/**

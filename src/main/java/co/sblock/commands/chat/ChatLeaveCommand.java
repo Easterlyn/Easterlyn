@@ -12,8 +12,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.Users;
@@ -33,22 +32,22 @@ public class ChatLeaveCommand extends SblockCommand {
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		setDescription("Leave a chat channel.");
-		setUsage(Color.COMMAND + "/leave <channel>"
-				+ Color.GOOD + ": Stop listening to <channel>.");
+		setUsage(Language.getColor("command") + "/leave <channel>"
+				+ Language.getColor("good") + ": Stop listening to <channel>.");
 		setAliases("quit");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		if (args.length == 0) {
 			return false;
 		}
 		if (manager.getChannel(args[0]) instanceof RegionChannel) {
-			sender.sendMessage(ChatMsgs.errorRegionChannelLeave());
+			sender.sendMessage(getLang().getValue("chat.error.defaultLeave"));
 			return true;
 		}
 		users.getUser(((Player) sender).getUniqueId()).removeListening(args[0]);

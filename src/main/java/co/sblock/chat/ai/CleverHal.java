@@ -18,7 +18,7 @@ import com.google.code.chatterbotapi.ChatterBotType;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
 import co.sblock.chat.message.Message;
@@ -28,7 +28,6 @@ import co.sblock.micromodules.Cooldowns;
 import co.sblock.utilities.DummyPlayer;
 import co.sblock.utilities.JSONUtil;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -41,6 +40,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class CleverHal extends HalMessageHandler {
 
 	private final Cooldowns cooldowns;
+	private final Language lang;
 	private final Pattern anyPattern, exactPattern, whitespacePattern;
 	private final ChatterBotSession bot;
 	private final Set<Pattern> ignoreMatches;
@@ -51,6 +51,7 @@ public class CleverHal extends HalMessageHandler {
 	public CleverHal(Sblock plugin) {
 		super(plugin);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
+		this.lang = plugin.getModule(Language.class);
 		ChatterBot chatterBot = null;
 		try {
 			chatterBot = new ChatterBotFactory().create(ChatterBotType.CLEVERBOT);
@@ -69,22 +70,23 @@ public class CleverHal extends HalMessageHandler {
 
 		ignoreMatches = new HashSet<>();
 		ignoreMatches.add(Pattern.compile("(baby|bang|due|fuck|pregnant|r(@|4|a)pe|sex)\\s?", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("(g|b)\\s?f\\s?", Pattern.CASE_INSENSITIVE));
+		ignoreMatches.add(Pattern.compile("(girl|boy)\\s?(friend)?\\s?", Pattern.CASE_INSENSITIVE));
 		ignoreMatches.add(Pattern.compile("mo(ther|m+y?\\s?)", Pattern.CASE_INSENSITIVE));
 		ignoreMatches.add(Pattern.compile("dad+y?\\s?", Pattern.CASE_INSENSITIVE));
 
-		hover = TextComponent.fromLegacyText(ChatColor.RED + "Artificial Intelligence\n"
-				+ Color.BAD_EMPHASIS + "Sblock is not responsible\n" + Color.BAD_EMPHASIS
-				+ "for anything Hal says.\n\n" + Color.BAD_EMPHASIS + "Unless it's awesome.\n\n"
-				+ Color.COMMAND + "/join #halchat" + Color.BAD + " to spam usage.");
+		hover = TextComponent.fromLegacyText(lang.getValue("chat.ai.cleverbot.hover"));
 
-		noSpam = getHalBase().setMessage(JSONUtil.fromLegacyText(ChatColor.RED + "To spam with me, join #halchat."));
+		noSpam = getHalBase().setMessage(JSONUtil.fromLegacyText(Language.getColor("bot_text")
+				+ "To spam with me, join " + lang.getValue("chat.spamChannel") + "."));
 
 		dummy = new DummyPlayer();
 	}
 
 	private MessageBuilder getHalBase() {
-		return new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + getPlugin().getBotName())
-				.setNameClick("/join #halchat").setNameHover(hover).setChannelClick("@#halchat ");
+		String spamChannel = lang.getValue("chat.spamChannel");
+		return new MessageBuilder(getPlugin()).setSender(lang.getValue("chat.ai.cleverbot.name"))
+				.setNameClick("/join " + spamChannel).setNameHover(hover).setChannelClick("@" + spamChannel + " ");
 	}
 
 	@Override
@@ -92,7 +94,7 @@ public class CleverHal extends HalMessageHandler {
 		if (bot == null || msg.getChannel() instanceof NickChannel) {
 			return true;
 		}
-		String message = ChatColor.stripColor(msg.getMessage());
+		String message = net.md_5.bungee.api.ChatColor.stripColor(msg.getMessage());
 		if (!whitespacePattern.matcher(message).find()) {
 			return true;
 		}
@@ -140,7 +142,7 @@ public class CleverHal extends HalMessageHandler {
 					msg = pattern.matcher(msg).replaceAll("");
 				}
 				if (msg.isEmpty()) {
-					msg = "I am playing on Sblock";
+					msg = "I am playing Minecraft.";
 				}
 				try {
 					msg = bot.think(msg);
@@ -149,7 +151,7 @@ public class CleverHal extends HalMessageHandler {
 					return;
 				}
 				Message message = getHalBase().setChannel(channel)
-						.setMessage(ChatColor.RED + msg).toMessage();
+						.setMessage(Language.getColor("bot_text") + msg).toMessage();
 				Set<Player> players = new HashSet<>();
 				recipients.forEach(uuid -> {
 					Player player = Bukkit.getPlayer(uuid);

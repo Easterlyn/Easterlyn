@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.User;
 import co.sblock.users.Users;
@@ -29,8 +28,6 @@ public class BanCommand extends SblockCommand {
 		super(plugin, "ban");
 		this.users = plugin.getModule(Users.class);
 		this.setAliases("sban", "banip");
-		this.setDescription("YOU CAN'T ESCAPE THE RED MILES.");
-		this.setUsage("/ban <target> [optional reason]");
 		this.setPermissionLevel("denizen");
 	}
 
@@ -53,9 +50,8 @@ public class BanCommand extends SblockCommand {
 		if (target.matches("([0-9]{1,3}\\.){3}[0-9]{1,3}")) { // IPs probably shouldn't be announced.
 			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, sender.getName());
 		} else {
-			Bukkit.broadcastMessage(Color.BAD_PLAYER + target + Color.BAD
-					+ " has been wiped from the face of the multiverse. "
-					+ Color.BAD_EMPHASIS + reason.toString());
+			Bukkit.broadcastMessage(getLang().getValue("command.ban.announce")
+					.replace("{PLAYER}", target).replace("{REASON}", reason.toString()));
 			banByName(sender, target, reason.toString());
 		}
 		return true;

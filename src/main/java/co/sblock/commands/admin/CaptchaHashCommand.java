@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
-import co.sblock.chat.Color;
 import co.sblock.commands.SblockCommand;
 
 import net.md_5.bungee.api.ChatColor;
@@ -23,8 +22,6 @@ public class CaptchaHashCommand extends SblockCommand {
 
 	public CaptchaHashCommand(Sblock plugin) {
 		super(plugin, "hash");
-		this.setDescription("Create a new hash for your item in hand, or get a captcha for a specific hash.");
-		this.setUsage("/hash get <hash> | With item in main hand, /hash add <hash>");
 		this.setPermissionLevel("denizen");
 		this.setPermissionMessage(ChatColor.GOLD + "BROWNS!");
 		captcha = plugin.getModule(Captcha.class);
@@ -40,7 +37,7 @@ public class CaptchaHashCommand extends SblockCommand {
 			return false;
 		}
 		if (!args[1].matches("[0-9A-Za-z]{8,}")) {
-			sender.sendMessage(Color.BAD + "Hashes must be 8 or more characters containing only 0-9, A-Z, a-z.");
+			sender.sendMessage(getLang().getValue("command.hash.requirements"));
 			return true;
 		}
 		args[0] = args[0].toLowerCase();
@@ -51,22 +48,21 @@ public class CaptchaHashCommand extends SblockCommand {
 				return false;
 			}
 			if (captcha.addCustomHash(args[1], item)) {
-				sender.sendMessage(Color.GOOD + "Saved to " + args[1]);
+				sender.sendMessage(getLang().getValue("command.hash.success_save").replace("{TARGET}", args[1]));
 				return true;
 			} else {
-				sender.sendMessage(Color.BAD + "Hash " + args[1]
-						+ " is already in use. Manually delete the file if you're sure there will be no conflict.");
+				sender.sendMessage(getLang().getValue("command.hash.used").replace("{TARGET}", args[1]));
 				return true;
 			}
 		}
 		if (args[0].equals("get")) {
 			ItemStack item = captcha.getCaptchaFor(args[1]);
 			if (item == null) {
-				sender.sendMessage(Color.BAD + "No item is stored by that hash.");
+				sender.sendMessage(getLang().getValue("command.hash.unused"));
 				return true;
 			}
 			player.getWorld().dropItem(player.getLocation(), item).setPickupDelay(0);
-			player.sendMessage(Color.GOOD + "Loaded captcha of item for " + args[1]);
+			player.sendMessage(getLang().getValue("command.hash.success_load").replace("{TARGET}", args[1]));
 			return true;
 		}
 		return false;

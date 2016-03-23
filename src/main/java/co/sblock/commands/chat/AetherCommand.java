@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
@@ -45,9 +44,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		this.setPermissionLevel("horrorterror");
 		this.setPermissionMessage("The aetherial realm eludes your grasp once more.");
 
-		hover = TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "IRC Chat\n"
-				+ Color.GOOD + "Server: irc.freenode.net\n"
-				+ Color.GOOD + "Channel: #sblockserver");
+		hover = TextComponent.fromLegacyText(getLang().getValue("command.aether.hover"));
 		sender = new WrappedSenderPlayer(plugin, Bukkit.getConsoleSender());
 		aether = plugin.getModule(Chat.class).getChannelManager().getChannel("#Aether");
 	}
@@ -55,7 +52,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (args.length < 2) {
-			sender.sendMessage(Color.BAD + "Hey Planar, stop faking empty IRC messages.");
+			sender.sendMessage("Hey Adam, stop faking empty IRC messages.");
 			return true;
 		}
 

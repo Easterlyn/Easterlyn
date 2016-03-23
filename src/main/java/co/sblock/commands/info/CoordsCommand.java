@@ -11,7 +11,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.discord.DiscordPlayer;
 
@@ -54,13 +54,8 @@ public class CoordsCommand extends SblockAsynchronousCommand {
 		final Player target;
 		if (other) {
 			final UUID uuid = getUniqueId(args[0]);
-			if (uuid == null) {
-				sender.sendMessage(Color.BAD_PLAYER + args[0] + Color.BAD + " has never played on this server.");
-				return true;
-			}
-			target = Bukkit.getPlayer(uuid);
-			if (target == null) {
-				sender.sendMessage(Color.BAD_PLAYER + args[0] + Color.BAD + " is not online!");
+			if (uuid == null || (target = Bukkit.getPlayer(uuid)) == null) {
+				sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 				return true;
 			}
 		} else {
@@ -69,7 +64,7 @@ public class CoordsCommand extends SblockAsynchronousCommand {
 		Location loc = target.getLocation();
 		String baseMessage = String.format("%1$sOn %2$s%3$s%1$s at %2$s%4$.1f%1$s, "
 					+ "%2$s%5$.1f%1$s, %2$s%6$.1f%1$s, %2$s%7$.1f%1$s pitch, and %2$s%8$.1f%1$s yaw.",
-			Color.GOOD, Color.GOOD_EMPHASIS, loc.getWorld().getName(), loc.getX(),
+			Language.getColor("good"), Language.getColor("emphasis.good"), loc.getWorld().getName(), loc.getX(),
 			loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw());
 		if (!(sender instanceof Player) || sender instanceof DiscordPlayer) {
 			sender.sendMessage(baseMessage);
@@ -79,7 +74,7 @@ public class CoordsCommand extends SblockAsynchronousCommand {
 		raw.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 				String.format("%1$s %2$.0f %3$.0f %4$.0f %5$.0f %6$.0f", loc.getWorld().getName(),
 						loc.getX(), loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw())));
-		raw.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Click to insert into chat!")));
+		raw.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText(Language.getColor("good") + "Click to insert into chat!")));
 		((Player) sender).spigot().sendMessage(raw);
 		return true;
 	}

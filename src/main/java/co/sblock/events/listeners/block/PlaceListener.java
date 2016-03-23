@@ -12,7 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.discord.Discord;
 import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
@@ -62,7 +62,7 @@ public class PlaceListener extends SblockListener {
 			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
 			event.setCancelled(true);
-			player.sendMessage(Color.BAD + "You decide against fussing with the internals of this machine.");
+			player.sendMessage(Language.getColor("bad") + "You decide against fussing with the internals of this machine.");
 			// If the blocks are not exploded, there's a larger issue. Rather than shaft the person
 			// who found it, generate a report and repair it.
 			if (!machines.isExploded(event.getBlock())) {

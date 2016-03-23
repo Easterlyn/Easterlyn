@@ -14,7 +14,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Transportalizer;
@@ -63,15 +63,16 @@ public class TeleportRequestCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
+		// TODO may want to move all of the text into lang
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		label = label.toLowerCase();
 		Player player = (Player) sender;
 		if (label.equals("tpa") || label.equals("tpask") || label.equals("call")) {
 			if (args.length == 0) {
-				sender.sendMessage(Color.COMMAND + "/tpa <player>" + Color.GOOD + ": Request to teleport to a player");
+				sender.sendMessage(Language.getColor("command") + "/tpa <player>" + Language.getColor("good") + ": Request to teleport to a player");
 				return true;
 			}
 			ask(player, args, false);
@@ -79,7 +80,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		if (label.equals("tpahere") || label.equals("tpaskhere") || label.equals("callhere")) {
 			if (args.length == 0) {
-				sender.sendMessage(Color.COMMAND + "/tpahere <player>" + Color.GOOD + ": Request to teleport another player to you");
+				sender.sendMessage(Language.getColor("command") + "/tpahere <player>" + Language.getColor("good") + ": Request to teleport another player to you");
 				return true;
 			}
 			ask(player, args, true);
@@ -99,21 +100,21 @@ public class TeleportRequestCommand extends SblockCommand {
 	private void ask(Player sender, String[] args, boolean here) {
 		long remainder = cooldowns.getRemainder(sender, "teleportRequest");
 		if (remainder > 0) {
-			sender.sendMessage(Color.BAD + "You cannot send a teleport request for another "
-					+ Color.BAD_EMPHASIS + time.format(new Date(remainder)) + Color.BAD + ".");
+			sender.sendMessage(Language.getColor("bad") + "You cannot send a teleport request for another "
+					+ Language.getColor("emphasis.bad") + time.format(new Date(remainder)) + Language.getColor("bad") + ".");
 			return;
 		}
 		Player target = looseMatch(sender, args[0]);
 		if (target == null) {
-			sender.sendMessage(Color.BAD + "No player by that name could be found!");
+			sender.sendMessage(getLang().getValue("core.error.invalidUser"));
 			return;
 		}
 		if (target.getUniqueId().equals(sender.getUniqueId())) {
-			sender.sendMessage(Color.GOOD + "If I told you I just teleported you to yourself would you believe me?");
+			sender.sendMessage(Language.getColor("good") + "If I told you I just teleported you to yourself would you believe me?");
 			return;
 		}
 		if (!target.hasPermission(getPermission())) {
-			sender.sendMessage(Color.BAD_PLAYER + target.getName() + Color.BAD + " cannot accept teleport requests!");
+			sender.sendMessage(Language.getColor("player.bad") + target.getName() + Language.getColor("bad") + " cannot accept teleport requests!");
 			return;
 		}
 		User targetUser = users.getUser(target.getUniqueId());
@@ -121,47 +122,48 @@ public class TeleportRequestCommand extends SblockCommand {
 		boolean targetSpectating = spectators.isSpectator(targetUser.getUUID());
 		boolean sourceSpectating = spectators.isSpectator(sourceUser.getUUID());
 		if (!here && targetSpectating && !sourceSpectating || here && !targetSpectating && sourceSpectating) {
-			sender.sendMessage(Color.BAD + "Corporeal players cannot teleport to incorporeal players!");
+			sender.sendMessage(Language.getColor("bad") + "Corporeal players cannot teleport to incorporeal players!");
 			return;
 		}
 		Region rTarget = targetUser.getCurrentRegion();
 		Region rSource = sourceUser.getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
-			sender.sendMessage(Color.BAD + "Teleports cannot be initiated from different planets!");
+			sender.sendMessage(Language.getColor("bad") + "Teleports cannot be initiated from different planets!");
 			return;
 		}
 		if (pending.containsKey(target.getUniqueId()) && pending.get(target.getUniqueId()).getExpiry() > System.currentTimeMillis()) {
-			sender.sendMessage(Color.BAD_PLAYER + target.getDisplayName() +  Color.BAD + " has a pending request already.");
+			sender.sendMessage(Language.getColor("player.bad") + target.getDisplayName() +  Language.getColor("bad") + " has a pending request already.");
 			return;
 		}
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
 		if (!sender.hasPermission("sblock.command.tpa.nocooldown")) {
 			cooldowns.addCooldown(sender, "teleportRequest", 480000L);
 		}
-		sender.sendMessage(Color.GOOD + "Request sent!");
-		target.sendMessage(Color.GOOD_PLAYER + sender.getDisplayName() + Color.GOOD + " is requesting to teleport " + (here ? "you to them." : "to you."));
-		target.sendMessage(Color.GOOD + "To accept, use " + Color.COMMAND + "/tpyes"
-				+ Color.GOOD + ". To decline, use " + Color.COMMAND + "/tpno" + Color.GOOD + ".");
-		target.sendMessage(Color.GOOD + "This request will expire in 60 seconds.");
+		sender.sendMessage(Language.getColor("good") + "Request sent!");
+		target.sendMessage(Language.getColor("player.good") + sender.getDisplayName() + Language.getColor("good") + " is requesting to teleport " + (here ? "you to them." : "to you."));
+		target.sendMessage(Language.getColor("good") + "To accept, use " + Language.getColor("command") + "/tpyes"
+				+ Language.getColor("good") + ". To decline, use " + Language.getColor("command") + "/tpno" + Language.getColor("good") + ".");
+		target.sendMessage(Language.getColor("good") + "This request will expire in 60 seconds.");
 	}
 
 	private void accept(Player sender) {
 		TeleportRequest request = pending.remove(sender.getUniqueId());
 		if (request == null || request.getExpiry() < System.currentTimeMillis()) {
 			if (!transportalizer.doPendingTransportalization(sender, true)) {
-				sender.sendMessage(Color.BAD + "You do not have any pending teleport requests.");
+				sender.sendMessage(Language.getColor("bad") + "You do not have any pending teleport requests.");
 			}
 			return;
 		}
 		Player toTeleport = Bukkit.getPlayer(request.isHere() ? request.getTarget() : request.getSource());
 		Player toArriveAt = Bukkit.getPlayer(request.isHere() ? request.getSource() : request.getTarget());
 		if (toTeleport == null || toArriveAt == null) {
-			sender.sendMessage(Color.BAD + "The issuer of the request seems to have logged off.");
+			sender.sendMessage(Language.getColor("bad") + "The issuer of the request seems to have logged off.");
 			return;
 		}
 		if (spectators.isSpectator(toArriveAt.getUniqueId())
 				&& !spectators.isSpectator(toTeleport.getUniqueId())) {
-			String message = Color.BAD + "Corporeal players cannot teleport to incorporeal players!";
+			getLang();
+			String message = Language.getColor("bad") + "Corporeal players cannot teleport to incorporeal players!";
 			toTeleport.sendMessage(message);
 			toArriveAt.sendMessage(message);
 			return;
@@ -169,16 +171,17 @@ public class TeleportRequestCommand extends SblockCommand {
 		Region rTarget = users.getUser(toArriveAt.getUniqueId()).getCurrentRegion();
 		Region rSource = users.getUser(toTeleport.getUniqueId()).getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
-			String message = Color.BAD + "Teleports cannot be initiated from different planets!";
+			getLang();
+			String message = Language.getColor("bad") + "Teleports cannot be initiated from different planets!";
 			toTeleport.sendMessage(message);
 			toArriveAt.sendMessage(message);
 			return;
 		}
 		toTeleport.teleport(toArriveAt);
-		toTeleport.sendMessage(Color.GOOD + "Teleporting to " + Color.GOOD_PLAYER
-				+ toArriveAt.getDisplayName() + Color.GOOD + ".");
-		toArriveAt.sendMessage(Color.GOOD + "Teleported " + Color.GOOD_PLAYER
-				+ toTeleport.getDisplayName() + Color.GOOD + " to you.");
+		toTeleport.sendMessage(Language.getColor("good") + "Teleporting to " + Language.getColor("player.good")
+				+ toArriveAt.getDisplayName() + Language.getColor("good") + ".");
+		toArriveAt.sendMessage(Language.getColor("good") + "Teleported " + Language.getColor("player.good")
+				+ toTeleport.getDisplayName() + Language.getColor("good") + " to you.");
 
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
 		Player issuer = request.isHere() ? toArriveAt : toTeleport;
@@ -194,14 +197,14 @@ public class TeleportRequestCommand extends SblockCommand {
 		TeleportRequest request = pending.remove(sender.getUniqueId());
 		if (request == null || request.getExpiry() < System.currentTimeMillis()) {
 			if (!transportalizer.doPendingTransportalization(sender, false)) {
-				sender.sendMessage(Color.BAD + "You do not have any pending teleport requests.");
+				sender.sendMessage(Language.getColor("bad") + "You do not have any pending teleport requests.");
 			}
 			return;
 		}
-		sender.sendMessage(Color.GOOD + "Request declined!");
+		sender.sendMessage(Language.getColor("good") + "Request declined!");
 		Player issuer = Bukkit.getPlayer(request.getSource());
 		if (issuer != null) {
-			issuer.sendMessage(Color.BAD_PLAYER + sender.getDisplayName() + Color.BAD + " declined your request!");
+			issuer.sendMessage(Language.getColor("player.bad") + sender.getDisplayName() + Language.getColor("bad") + " declined your request!");
 			cooldowns.clearCooldown(issuer, "teleportRequest");
 		}
 	}

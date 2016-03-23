@@ -38,8 +38,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.NickChannel;
@@ -63,6 +62,7 @@ import net.md_5.bungee.api.ChatColor;
 public class User {
 
 	private final Sblock plugin;
+	private final Language lang;
 	private final Users users;
 	private final ChannelManager manager;
 	private final YamlConfiguration yaml;
@@ -83,6 +83,7 @@ public class User {
 
 	private User(Sblock plugin, UUID uuid, YamlConfiguration yaml) {
 		this.plugin = plugin;
+		this.lang = plugin.getModule(Language.class);
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.uuid = uuid;
@@ -486,22 +487,22 @@ public class User {
 	 */
 	public synchronized void setCurrentChannel(Channel channel) {
 		if (channel == null) {
-			this.sendMessage(ChatMsgs.errorInvalidChannel("null"));
+			this.sendMessage(lang.getValue("chat.error.invalidChannel").replace("{CHANNEL}", "null"));
 			return;
 		}
 		if (channel.isBanned(this)) {
-			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()));
+			this.sendMessage(lang.getValue("chat.error.banned").replace("{CHANNEL}", channel.getName()));
 			return;
 		}
 		if (!channel.isApproved(this)) {
-			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(channel.getName()));
+			this.sendMessage(lang.getValue("chat.error.private").replace("{CHANNEL}", channel.getName()));
 			return;
 		}
 		currentChannel = channel.getName();
 		if (!this.getListening().contains(channel.getName())) {
 			this.addListening(channel);
 		} else {
-			this.sendMessage(ChatMsgs.onChannelSetCurrent(channel.getName()));
+			this.sendMessage(lang.getValue("chat.channel.setcurrent").replace("{CHANNEL}", channel.getName()));
 		}
 	}
 
@@ -536,11 +537,11 @@ public class User {
 			return false;
 		}
 		if (channel.isBanned(this)) {
-			this.sendMessage(ChatMsgs.onUserBanAnnounce(this.getPlayerName(), channel.getName()));
+			this.sendMessage(lang.getValue("chat.error.banned").replace("{CHANNEL}", channel.getName()));
 			return false;
 		}
 		if (!channel.isApproved(this)) {
-			this.sendMessage(ChatMsgs.onUserDeniedPrivateAccess(channel.getName()));
+			this.sendMessage(lang.getValue("chat.error.private").replace("{CHANNEL}", channel.getName()));
 			return false;
 		}
 		if (!this.getListening().contains(channel)) {
@@ -549,10 +550,10 @@ public class User {
 		if (!channel.getListening().contains(this.getUUID())) {
 			channel.getListening().add(this.getUUID());
 			this.getListening().add(channel.getName());
-			channel.sendMessage(ChatMsgs.onChannelJoin(this, channel));
+			channel.sendMessage(lang.getValue("chat.channel.join", true).replace("{CHANNEL}", channel.getName()));
 			return true;
 		} else {
-			this.sendMessage(ChatMsgs.errorAlreadyListening(channel.getName()));
+			this.sendMessage(lang.getValue("chat.error.alreadyListening").replace("{CHANNEL}", channel.getName()));
 			return false;
 		}
 	}
@@ -578,11 +579,9 @@ public class User {
 			this.getListening().add("@");
 			getChannelManager().getChannel("@").getListening().add(this.getUUID());
 		}
-		String base = new StringBuilder(Color.GOOD_PLAYER.toString()).append(this.getDisplayName())
-				.append(Color.GOOD).append(" began pestering <>").append(Color.GOOD)
-				.append(" at ").append(new SimpleDateFormat("HH:mm").format(new Date())).toString();
+		String base = lang.getValue("chat.channel.join", true);
 
-		String all = base.toString().replace("<>", StringUtils.join(getListening(), ", "));
+		String all = base.toString().replace("{CHANNEL}", StringUtils.join(getListening(), ", "));
 		Logger.getLogger("Minecraft").info(all);
 		this.sendMessage(all);
 
@@ -599,13 +598,13 @@ public class User {
 			StringBuilder matches = new StringBuilder();
 			for (String channelName : this.getListening()) {
 				if (user.getListening().contains(channelName)) {
-					matches.append(Color.GOOD_EMPHASIS).append(channelName).append(Color.GOOD).append(", ");
+					matches.append(Language.getColor("emphasis.neutral")).append(channelName).append(Language.getColor("neutral")).append(", ");
 				}
 			}
 			String message;
 			if (matches.length() > 0) {
 				matches.replace(matches.length() - 3, matches.length() - 1, "");
-				StringBuilder msg = new StringBuilder(base.replace("<>", matches.toString()));
+				StringBuilder msg = new StringBuilder(base.replace("{CHANNEL}", matches.toString()));
 				int comma = msg.lastIndexOf(",");
 				if (comma != -1) {
 					if (comma == msg.indexOf(",")) {
@@ -616,7 +615,7 @@ public class User {
 				}
 				message = msg.toString();
 			} else {
-				message = base.replace(" <>", "");
+				message = base.replace(" {CHANNEL}", "");
 			}
 			user.sendMessage(message);
 		}
@@ -630,7 +629,7 @@ public class User {
 	public synchronized void removeListening(String channelName) {
 		Channel channel = getChannelManager().getChannel(channelName);
 		if (channel == null) {
-			this.sendMessage(ChatMsgs.errorInvalidChannel(channelName));
+			this.sendMessage(lang.getValue("chat.error.invalidChannel").replace("{CHANNEL}", channelName));
 			this.getListening().remove(channelName);
 			return;
 		}
@@ -638,13 +637,14 @@ public class User {
 			if (channel instanceof NickChannel) {
 				((NickChannel) channel).removeNick(this);
 			}
-			channel.sendMessage(ChatMsgs.onChannelLeave(this, channel));
+			channel.sendMessage(lang.getValue("chat.channel.quit")
+					.replace("{PLAYER}", this.getDisplayName()).replace("{CHANNEL}", channelName));
 			channel.getListening().remove(this.getUUID());
 			if (this.currentChannel != null && channelName.equals(this.getCurrentChannel().getName())) {
 				this.currentChannel = null;
 			}
 		} else {
-			this.sendMessage(Color.BAD + "You are not listening to " + Color.BAD_EMPHASIS + channelName);
+			this.sendMessage(lang.getValue("chat.error.notListening").replace("{CHANNEL}", channelName));
 		}
 	}
 
@@ -872,15 +872,15 @@ public class User {
 	 * @return the profile information
 	 */
 	public String getProfile() {
-		return new StringBuilder().append(Color.GOOD).append(ChatColor.STRIKETHROUGH)
-				.append("+---").append(Color.GOOD_EMPHASIS).append(' ').append(getPlayerName())
-				.append(' ').append(Color.GOOD).append(ChatColor.STRIKETHROUGH)
-				.append("---+\n").append(Color.GOOD).append(getUserClass().getDisplayName())
-				.append(Color.GOOD_EMPHASIS).append(" of ").append(getUserAspect().getColor())
-				.append(getUserAspect().getDisplayName()).append('\n').append(Color.GOOD_EMPHASIS)
+		return new StringBuilder().append(Language.getColor("neutral")).append(ChatColor.STRIKETHROUGH)
+				.append("+---").append(Language.getColor("emphasis.neutral")).append(' ').append(getPlayerName())
+				.append(' ').append(Language.getColor("neutral")).append(ChatColor.STRIKETHROUGH)
+				.append("---+\n").append(Language.getColor("neutral")).append(getUserClass().getDisplayName())
+				.append(Language.getColor("emphasis.neutral")).append(" of ").append(getUserAspect().getColor())
+				.append(getUserAspect().getDisplayName()).append('\n').append(Language.getColor("emphasis.neutral"))
 				.append("Medium: ").append(getMediumPlanet().getColor())
 				.append(getMediumPlanet().getDisplayName()).append('\n')
-				.append(Color.GOOD_EMPHASIS).append("Dream: ").append(getDreamPlanet().getColor())
+				.append(Language.getColor("emphasis.neutral")).append("Dream: ").append(getDreamPlanet().getColor())
 				.append(getDreamPlanet().getDisplayName()).toString();
 	}
 
@@ -892,60 +892,60 @@ public class User {
 	public String getWhois() {
 		StringBuilder sb = new StringBuilder();
 		//+-- Name from IP --+
-		sb.append(Color.GOOD).append(ChatColor.STRIKETHROUGH).append("+--")
-				.append(Color.GOOD_EMPHASIS).append(' ').append(getPlayerName())
-				.append(Color.GOOD).append(" from ").append(Color.GOOD_EMPHASIS)
-				.append(getUserIP()).append(Color.GOOD).append(' ')
+		sb.append(Language.getColor("neutral")).append(ChatColor.STRIKETHROUGH).append("+--")
+				.append(Language.getColor("emphasis.neutral")).append(' ').append(getPlayerName())
+				.append(Language.getColor("neutral")).append(" from ").append(Language.getColor("emphasis.neutral"))
+				.append(getUserIP()).append(Language.getColor("neutral")).append(' ')
 				.append(ChatColor.STRIKETHROUGH).append("--+\n");
 
 		// UUID: uuid
-		sb.append(Color.GOOD).append("UUID: ").append(getUUID()).append('\n');
+		sb.append(Language.getColor("neutral")).append("UUID: ").append(getUUID()).append('\n');
 
 		// If stored, Previously known as: Name
 		if (yaml.getString("previousname") != null) {
-			sb.append(Color.GOOD).append("Previously known as: ").append(Color.GOOD_EMPHASIS)
+			sb.append(Language.getColor("neutral")).append("Previously known as: ").append(Language.getColor("emphasis.neutral"))
 					.append(yaml.getString("previousname")).append('\n');
 		}
 
 		// Class of Aspect, dream, planet
-		sb.append(Color.GOOD_EMPHASIS).append(getUserClass().getDisplayName())
-				.append(Color.GOOD).append(" of ").append(Color.GOOD_EMPHASIS)
-				.append(getUserAspect().getDisplayName()).append(Color.GOOD).append(", ")
-				.append(Color.GOOD_EMPHASIS).append(getDreamPlanet().getDisplayName())
-				.append(Color.GOOD).append(", ").append(Color.GOOD_EMPHASIS)
+		sb.append(Language.getColor("emphasis.neutral")).append(getUserClass().getDisplayName())
+				.append(Language.getColor("neutral")).append(" of ").append(Language.getColor("emphasis.neutral"))
+				.append(getUserAspect().getDisplayName()).append(Language.getColor("neutral")).append(", ")
+				.append(Language.getColor("emphasis.neutral")).append(getDreamPlanet().getDisplayName())
+				.append(Language.getColor("neutral")).append(", ").append(Language.getColor("emphasis.neutral"))
 				.append(getMediumPlanet().getDisplayName()).append('\n');
 
 		// Loc: current location, Region: region
-		sb.append(Color.GOOD).append("Loc: ").append(Color.GOOD_EMPHASIS)
+		sb.append(Language.getColor("neutral")).append("Loc: ").append(Language.getColor("emphasis.neutral"))
 				.append(BukkitSerializer.locationToBlockCenterString(getCurrentLocation()))
-				.append(Color.GOOD).append(", Region: ").append(Color.GOOD_EMPHASIS)
+				.append(Language.getColor("neutral")).append(", Region: ").append(Language.getColor("emphasis.neutral"))
 				.append(getCurrentRegion().getDisplayName()).append('\n');
 
 		// Prev loc: loc prior to change to/from dreamplanet, Prev region: region of said location
-		sb.append(Color.GOOD).append("Prev loc: ").append(Color.GOOD_EMPHASIS)
+		sb.append(Language.getColor("neutral")).append("Prev loc: ").append(Language.getColor("emphasis.neutral"))
 				.append(BukkitSerializer.locationToBlockCenterString(previousLocation))
-				.append(Color.GOOD).append(", Prev region: ").append(Color.GOOD_EMPHASIS)
+				.append(Language.getColor("neutral")).append(", Prev region: ").append(Language.getColor("emphasis.neutral"))
 				.append(Region.getRegion(getPreviousLocation().getWorld().getName())).append('\n');
 
 		// Programs: [list]
-		sb.append(Color.GOOD).append("Programs: ").append(Color.GOOD_EMPHASIS)
+		sb.append(Language.getColor("neutral")).append("Programs: ").append(Language.getColor("emphasis.neutral"))
 				.append(getPrograms()).append('\n');
 
 		// Pestering: current, Listening: [list]
-		sb.append(Color.GOOD).append("Pestering: ").append(Color.GOOD_EMPHASIS)
+		sb.append(Language.getColor("neutral")).append("Pestering: ").append(Language.getColor("emphasis.neutral"))
 				.append(getCurrentChannel() != null ? getCurrentChannel().getName() : "null")
-				.append(Color.GOOD).append(", Listening: ").append(Color.GOOD_EMPHASIS)
+				.append(Language.getColor("neutral")).append(", Listening: ").append(Language.getColor("emphasis.neutral"))
 				.append(getListening()).append('\n');
 
 		// Muted: boolean, Suppressing: boolean
-		sb.append(Color.GOOD).append("Suppressing: ").append(Color.GOOD_EMPHASIS)
+		sb.append(Language.getColor("neutral")).append("Suppressing: ").append(Language.getColor("emphasis.neutral"))
 				.append(getSuppression()).append('\n');
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm 'on' dd/MM/YY");
 		// Seen: date, Playtime: X days, XX:XX since XX:XX on XX/XX/XX
-		sb.append(Color.GOOD).append("Seen: ").append(Color.GOOD_EMPHASIS)
+		sb.append(Language.getColor("neutral")).append("Seen: ").append(Language.getColor("emphasis.neutral"))
 				.append(dateFormat.format(new Date(getOfflinePlayer().getLastPlayed())))
-				.append(Color.GOOD).append(", Ingame: ").append(Color.GOOD_EMPHASIS)
+				.append(Language.getColor("neutral")).append(", Ingame: ").append(Language.getColor("emphasis.neutral"))
 				.append(getTimePlayed()).append(" since ")
 				.append(dateFormat.format(getOfflinePlayer().getFirstPlayed()));
 

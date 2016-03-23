@@ -13,7 +13,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -52,7 +52,7 @@ public class FlyCommand extends SblockCommand {
 		// No arguments, simple toggle. Already has to be a Player.
 		if (args.length == 0) {
 			fly((Player) sender, null);
-			sender.sendMessage(Color.GOOD + "Flight toggled!");
+			sender.sendMessage(Language.getColor("good") + "Flight toggled!");
 			return true;
 		}
 
@@ -77,7 +77,7 @@ public class FlyCommand extends SblockCommand {
 			return false;
 		}
 
-		sender.sendMessage(Color.GOOD + "Flight " + (fly == null ? "toggled" : "set " + fly)
+		sender.sendMessage(Language.getColor("good") + "Flight " + (fly == null ? "toggled" : "set " + fly)
 				+ (sender.equals(player) ? "!" : " for " + player.getName() + "!"));
 		fly(player, fly);
 		return true;

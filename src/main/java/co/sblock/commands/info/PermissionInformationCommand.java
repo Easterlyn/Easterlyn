@@ -11,7 +11,7 @@ import org.bukkit.permissions.Permission;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -35,32 +35,32 @@ public class PermissionInformationCommand extends SblockCommand {
 		}
 		Permission permission = Bukkit.getPluginManager().getPermission(args[0]);
 		if (permission == null) {
-			sender.sendMessage(Color.BAD + args[0] + " is not a valid permission.");
+			sender.sendMessage(Language.getColor("bad") + args[0] + " is not a valid permission.");
 			return true;
 		}
 		if (args.length > 1) {
 			List<Player> players = Bukkit.matchPlayer(args[1]);
 			if (players.isEmpty()) {
-				sender.sendMessage(Color.BAD + "No matching players found for " + args[1]);
+				sender.sendMessage(Language.getColor("bad") + "No matching players found for " + args[1]);
 			}
-			sender.sendMessage(Color.GOOD + args[0] + " is "
+			sender.sendMessage(Language.getColor("good") + args[0] + " is "
 					+ players.get(0).hasPermission(permission) + " for " + players.get(0).getName());
 			return true;
 		}
-		sender.sendMessage(Color.GOOD + "Permission: " + Color.GOOD_EMPHASIS + permission.getName());
+		sender.sendMessage(Language.getColor("good") + "Permission: " + Language.getColor("emphasis.good") + permission.getName());
 		if (permission.getDescription() != null) {
-			sender.sendMessage(Color.GOOD + "Description: " + Color.GOOD_EMPHASIS + permission.getDescription());
+			sender.sendMessage(Language.getColor("good") + "Description: " + Language.getColor("emphasis.good") + permission.getDescription());
 		}
 		if (permission.getChildren().size() > 0) {
-			sender.sendMessage(Color.GOOD + "Children:");
+			sender.sendMessage(Language.getColor("good") + "Children:");
 			for (Entry<String, Boolean> entry : permission.getChildren().entrySet()) {
-				sender.sendMessage(new StringBuilder().append(Color.GOOD_EMPHASIS)
-						.append(entry.getKey()).append(Color.GOOD).append(": ")
-						.append(entry.getValue() ? Color.GOOD : Color.BAD)
+				sender.sendMessage(new StringBuilder().append(Language.getColor("emphasis.good"))
+						.append(entry.getKey()).append(Language.getColor("good")).append(": ")
+						.append(entry.getValue() ? Language.getColor("good") : Language.getColor("bad"))
 						.append(entry.getValue()).toString());
 			}
 		}
-		sender.sendMessage(Color.GOOD + "Default: " + Color.GOOD_EMPHASIS + permission.getDefault().name());
+		sender.sendMessage(Language.getColor("good") + "Default: " + Language.getColor("emphasis.good") + permission.getDefault().name());
 		return true;
 	}
 

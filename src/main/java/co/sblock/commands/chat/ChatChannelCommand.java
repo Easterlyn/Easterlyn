@@ -16,8 +16,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.AccessLevel;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.ChannelType;
@@ -40,38 +39,39 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 	private final ChannelManager manager;
 	private final String[] defaultArgs = new String[] {"info", "list", "listeners", "listening", "new"};
 	private final String[] modArgs = new String[] {"approve", "ban", "deapprove", "kick"};
-	private final String modHelp = Color.GOOD_EMPHASIS + "Channel moderation commands:\n"
-			+ Color.COMMAND + "/channel kick <user>"
-			+ Color.GOOD + ": Kick a user from the channel\n"
-			+ Color.COMMAND + "/channel ban <user>"
-			+ Color.GOOD + ": Ban a user from the channel\n"
-			+ Color.COMMAND + "/channel (de)approve <user>"
-			+ Color.GOOD + ": Manage allowed users.";
+	// TODO may want to move this to lang
+	private final String modHelp = Language.getColor("emphasis.good") + "Channel moderation commands:\n"
+			+ Language.getColor("command") + "/channel kick <user>"
+			+ Language.getColor("good") + ": Kick a user from the channel\n"
+			+ Language.getColor("command") + "/channel ban <user>"
+			+ Language.getColor("good") + ": Ban a user from the channel\n"
+			+ Language.getColor("command") + "/channel (de)approve <user>"
+			+ Language.getColor("good") + ": Manage allowed users.";
 	private final String[] ownerArgs = new String[] {"mod", "unban", "disband"};
-	private final String ownerHelp = Color.GOOD_EMPHASIS + "Channel owner commands:\n"
-			+ Color.COMMAND + "/channel mod <add|remove> <user>"
-			+ Color.GOOD + ": Add/remove a channel mod\n"
-			+ Color.COMMAND + "/channel unban <user>"
-			+ Color.GOOD + ": (Un)bans a user from the channel\n"
-			+ Color.COMMAND + "/channel disband"
-			+ Color.GOOD + ": Delete the channel!";
+	private final String ownerHelp = Language.getColor("emphasis.good") + "Channel owner commands:\n"
+			+ Language.getColor("command") + "/channel mod <add|remove> <user>"
+			+ Language.getColor("good") + ": Add/remove a channel mod\n"
+			+ Language.getColor("command") + "/channel unban <user>"
+			+ Language.getColor("good") + ": (Un)bans a user from the channel\n"
+			+ Language.getColor("command") + "/channel disband"
+			+ Language.getColor("good") + ": Delete the channel!";
 
 	public ChatChannelCommand(Sblock plugin) {
 		super(plugin, "channel");
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		setDescription("Check or manipulate channel data.");
-		setUsage(Color.GOOD_EMPHASIS + "Channel information/manipulation\n"
-				+ Color.COMMAND + "/channel listeners"
-				+ Color.GOOD + ": List people in the channel.\n"
-				+ Color.COMMAND + "/channel info"
-				+ Color.GOOD + ": Shows channel type, creator, etc.\n"
-				+ Color.COMMAND + "/channel listening"
-				+ Color.GOOD + ": List channels you're in.\n"
-				+ Color.COMMAND + "/channel list"
-				+ Color.GOOD + ": List all channels.\n"
-				+ Color.COMMAND + "/channel new <name> <access> <type>"
-				+ Color.GOOD + ": Create a new channel.");
+		setUsage(Language.getColor("emphasis.good") + "Channel information/manipulation\n"
+				+ Language.getColor("command") + "/channel listeners"
+				+ Language.getColor("good") + ": List people in the channel.\n"
+				+ Language.getColor("command") + "/channel info"
+				+ Language.getColor("good") + ": Shows channel type, creator, etc.\n"
+				+ Language.getColor("command") + "/channel listening"
+				+ Language.getColor("good") + ": List channels you're in.\n"
+				+ Language.getColor("command") + "/channel list"
+				+ Language.getColor("good") + ": List all channels.\n"
+				+ Language.getColor("command") + "/channel new <name> <access> <type>"
+				+ Language.getColor("good") + ": Create a new channel.");
 		Permission permission;
 		try {
 			permission = new Permission("sblock.command.channel.list.private", PermissionDefault.OP);
@@ -87,7 +87,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 
@@ -112,17 +112,17 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		switch (args[0]) {
 		case "listeners":
 			if (channel == null) {
-				user.sendMessage(ChatMsgs.errorCurrentChannelNull());
+				user.sendMessage(getLang().getValue("chat.error.noCurrentChannel"));
 				return true;
 			}
-			sb = new StringBuilder().append(Color.GOOD);
+			sb = new StringBuilder().append(Language.getColor("good"));
 			sb.append("Channel members: ");
 			for (UUID userID : channel.getListening()) {
 				User u = users.getUser(userID);
 				if (channel.equals(u.getCurrentChannel())) {
-					sb.append(Color.GOOD_PLAYER);
+					sb.append(Language.getColor("player.good"));
 				} else {
-					sb.append(Color.GOOD);
+					sb.append(Language.getColor("good"));
 				}
 				sb.append(u.getPlayerName()).append(' ');
 			}
@@ -130,13 +130,14 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			return true;
 		case "info":
 			if (channel == null) {
-				user.sendMessage(ChatMsgs.errorCurrentChannelNull());
+				user.sendMessage(getLang().getValue("chat.error.noCurrentChannel"));
 				return true;
 			}
 			user.sendMessage(channel.toString());
 			return true;
 		case "listening":
-			sb = new StringBuilder().append(Color.GOOD).append("Currently pestering: ");
+			sb = new StringBuilder().append(Language.getColor("good")).append("Currently pestering: ");
+			// CHAT don't show users ignoring
 			for (String s : user.getListening()) {
 				sb.append(s).append(' ');
 			}
@@ -144,7 +145,8 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			return true;
 		case "list":
 			sb = new StringBuilder();
-			sb.append(Color.GOOD).append("All channels: ");
+			sb.append(Language.getColor("good")).append("All channels: ");
+			// CHAT don't show banned channels
 			for (Channel c : manager.getChannelList().values()) {
 				ChatColor cc;
 				if (user.isListening(c)) {
@@ -162,28 +164,28 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 			return true;
 		case "new":
 			if (args.length != 4) {
-				user.sendMessage(Color.COMMAND + "/channel new <name> <access> <type>" + Color.GOOD
+				user.sendMessage(Language.getColor("command") + "/channel new <name> <access> <type>" + Language.getColor("good")
 						+ ": Create a new channel.\nAccess must be either PUBLIC or PRIVATE\n"
 						+ "Type must be NORMAL, NICK, or RP\nEx: /channel new #example PUBLIC NICK");
 				return true;
 			}
 			if (manager.getChannel(args[1]) != null) {
-				user.sendMessage(Color.BAD + "A channel by that name already exists!");
+				user.sendMessage(Language.getColor("bad") + "A channel by that name already exists!");
 				return true;
 			}
 			for (char c : args[1].substring(1).toCharArray()) {
 				if (c < '0' || c > '9' && c < 'A' || c > 'Z' && c < 'a' || c > 'z') {
-					user.sendMessage(Color.BAD + "Channel names must start with # and can only contain A-Z, a-z, or 0-9!");
+					user.sendMessage(Language.getColor("bad") + "Channel names must start with # and can only contain A-Z, a-z, or 0-9!");
 					return true;
 				}
 			}
 			if (args[1].length() > 16 || args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("sblock.denizen")) {
-				user.sendMessage(Color.BAD + "Channel names must start with '#' and cannot exceed 16 characters!");
+				user.sendMessage(Language.getColor("bad") + "Channel names must start with '#' and cannot exceed 16 characters!");
 			} else if (ChannelType.getType(args[3]) == null) {
-				user.sendMessage(Color.BAD_EMPHASIS + args[3] + Color.BAD
+				user.sendMessage(Language.getColor("emphasis.bad") + args[3] + Language.getColor("bad")
 						+ " is not a valid channel type!\nValid types: NORMAL, RP, NICK.");
 			} else if (AccessLevel.getAccessLevel(args[2]) == null) {
-				user.sendMessage(Color.BAD_EMPHASIS + args[2] + Color.BAD
+				user.sendMessage(Language.getColor("emphasis.bad") + args[2] + Language.getColor("bad")
 						+ " is not a valid access level!\nValid levels: PUBLIC, PRIVATE");
 			} else {
 				manager.createNewChannel(args[1], AccessLevel.getAccessLevel(args[2]),
@@ -197,7 +199,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		}
 
 		if (channel == null) {
-			sender.sendMessage(ChatMsgs.errorCurrentChannelNull());
+			sender.sendMessage(getLang().getValue("chat.error.noCurrentChannel"));
 			return true;
 		}
 
@@ -206,7 +208,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		}
 
 		if (channel instanceof RegionChannel) {
-			sender.sendMessage(Color.BAD + "Region channels do not support kicks, bans, or approval. Moderators are permissions-based.");
+			sender.sendMessage(Language.getColor("bad") + "Region channels do not support kicks, bans, or approval. Moderators are permissions-based.");
 			return false;
 		}
 
@@ -217,48 +219,48 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		case "approve":
 		case "invite":
 			if (args.length == 1) {
-				sender.sendMessage(Color.COMMAND + "/channel approve <user>" + Color.GOOD + ": Approve a user for this channel.");
+				sender.sendMessage(Language.getColor("command") + "/channel approve <user>" + Language.getColor("good") + ": Approve a user for this channel.");
 				return true;
 			}
 			target = getUniqueId(args[1]);
 			if (target == null) {
-				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
 			}
 			normal.approveUser(user, target);
 			return true;
 		case "ban":
 			if (args.length == 1) {
-				sender.sendMessage(Color.COMMAND + "/channel ban <user>" + Color.GOOD + ": Ban a user from the channel");
+				sender.sendMessage(Language.getColor("command") + "/channel ban <user>" + Language.getColor("good") + ": Ban a user from the channel");
 				return true;
 			}
 			target = getUniqueId(args[1]);
 			if (target == null) {
-				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
 			}
 			normal.banUser(user, target);
 			return true;
 		case "deapprove":
 			if (args.length == 1) {
-				sender.sendMessage(Color.COMMAND + "/channel deapprove <user>" + Color.GOOD + ": De-approve a user from this channel.");
+				sender.sendMessage(Language.getColor("command") + "/channel deapprove <user>" + Language.getColor("good") + ": De-approve a user from this channel.");
 				return true;
 			}
 			target = getUniqueId(args[1]);
 			if (target == null) {
-				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
 			}
 			normal.disapproveUser(user, target);
 			return true;
 		case "kick":
 			if (args.length == 1) {
-				sender.sendMessage(Color.COMMAND + "/channel kick <user>" + Color.GOOD + ": Kick a user from the channel");
+				sender.sendMessage(Language.getColor("command") + "/channel kick <user>" + Language.getColor("good") + ": Kick a user from the channel");
 				return true;
 			}
 			target = getUniqueId(args[1]);
 			if (target == null) {
-				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
 			}
 			normal.kickUser(user, target);
@@ -276,12 +278,12 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 		switch (args[0]) {
 		case "mod":
 			if (args.length < 3) {
-				sender.sendMessage(Color.COMMAND + "/channel mod <add|remove> <user>" + Color.GOOD + ": Add or remove a channel mod");
+				sender.sendMessage(Language.getColor("command") + "/channel mod <add|remove> <user>" + Language.getColor("good") + ": Add or remove a channel mod");
 				return true;
 			}
 			target = getUniqueId(args[2]);
 			if (target == null) {
-				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
 			}
 			if (args[1].equalsIgnoreCase("add")) {
@@ -291,17 +293,17 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				normal.removeMod(user, target);
 				return true;
 			} else {
-				sender.sendMessage(Color.COMMAND + "/channel mod <add|remove> <user>" + Color.GOOD + ": Add or remove a channel mod");
+				sender.sendMessage(Language.getColor("command") + "/channel mod <add|remove> <user>" + Language.getColor("good") + ": Add or remove a channel mod");
 				return true;
 			}
 		case "unban":
 			if (args.length < 2) {
-				sender.sendMessage(Color.COMMAND + "/channel unban <user>" + Color.GOOD + ": Unban a user from the channel");
+				sender.sendMessage(Language.getColor("command") + "/channel unban <user>" + Language.getColor("good") + ": Unban a user from the channel");
 				return true;
 			}
 			target = getUniqueId(args[1]);
 			if (target == null) {
-				sender.sendMessage(Color.BAD + "Unknown player. Check your spelling!");
+				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
 			}
 			normal.unbanUser(user, target);

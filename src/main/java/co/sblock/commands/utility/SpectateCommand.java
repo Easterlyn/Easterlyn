@@ -12,7 +12,7 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Spectators;
 import co.sblock.users.User;
@@ -65,13 +65,13 @@ public class SpectateCommand extends SblockCommand {
 			args[0] = args[0].toLowerCase();
 			if (args[0].equals("on") || args[0].equals("allow") || args[0].equals("true")) {
 				user.setSpectatable(true);
-				sender.sendMessage(Color.GOOD
+				sender.sendMessage(Language.getColor("good")
 						+ "Other players are now allowed to spectate to you!");
 				return true;
 			}
 			if (args[0].equals("off") || args[0].equals("deny") || args[0].equals("false")) {
 				user.setSpectatable(false);
-				sender.sendMessage(Color.GOOD
+				sender.sendMessage(Language.getColor("good")
 						+ "Other players are no longer allowed to spectate to you!");
 				return true;
 			}
@@ -79,14 +79,14 @@ public class SpectateCommand extends SblockCommand {
 			return true;
 		}
 		if (spectators.isSpectator(player.getUniqueId())) {
-			sender.sendMessage(Color.GOOD + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
+			sender.sendMessage(Language.getColor("good") + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
 			spectators.removeSpectator(player, false);
 		} else {
 			if (player.getGameMode() != GameMode.SURVIVAL) {
-				sender.sendMessage(Color.BAD + "You can only enter spectate mode from survival.");
+				sender.sendMessage(Language.getColor("bad") + "You can only enter spectate mode from survival.");
 				return true;
 			}
-			sender.sendMessage(Color.GOOD + "You feel a tingling sensation about your extremities as you hover up slightly.");
+			sender.sendMessage(Language.getColor("good") + "You feel a tingling sensation about your extremities as you hover up slightly.");
 			spectators.addSpectator(player);
 		}
 		return true;

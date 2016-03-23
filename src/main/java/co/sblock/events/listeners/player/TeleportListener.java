@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.users.Region;
 import co.sblock.users.User;
@@ -60,7 +60,7 @@ public class TeleportListener extends SblockListener {
 				return;
 			}
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(Color.BAD_PLAYER + player.getDisplayName() + Color.BAD
+			event.getPlayer().sendMessage(Language.getColor("player.bad") + player.getDisplayName() + Language.getColor("bad")
 					+ " has disallowed spectating! You'll need to send a tpa.");
 			return;
 		}

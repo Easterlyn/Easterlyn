@@ -14,7 +14,7 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.User;
 import co.sblock.users.Users;
@@ -64,12 +64,12 @@ public class LoginCommandsCommand extends SblockCommand {
 		if (args[0].equals("list")) {
 			List<String> commands = user.getLoginCommands();
 			if (commands.isEmpty()) {
-				sender.sendMessage(Color.GOOD + "No commands registered! Try /onlogin add /command");
+				sender.sendMessage(Language.getColor("good") + "No commands registered! Try /onlogin add /command");
 				return true;
 			}
 			for (int i = 0; i < commands.size(); i++) {
-				sender.sendMessage(new StringBuilder().append(Color.GOOD).append(i + 1)
-						.append(": ").append(Color.GOOD_EMPHASIS).append(commands.get(i)).toString());
+				sender.sendMessage(new StringBuilder().append(Language.getColor("good")).append(i + 1)
+						.append(": ").append(Language.getColor("emphasis.good")).append(commands.get(i)).toString());
 			}
 			return true;
 		}
@@ -120,19 +120,19 @@ public class LoginCommandsCommand extends SblockCommand {
 			int line = Integer.parseInt(args[1]);
 			ArrayList<String> commands = new ArrayList<>(user.getLoginCommands());
 			if (commands.size() < line) {
-				player.sendMessage(Color.BAD + "You only have " + commands.size() + " command(s), cannot delete " + line + "!");
+				player.sendMessage(Language.getColor("bad") + "You only have " + commands.size() + " command(s), cannot delete " + line + "!");
 				return;
 			}
 			if (line < 1) {
-				player.sendMessage(Color.BAD + "Index must be between 1 and " + commands.size() + "! " + line + " is invalid.");
+				player.sendMessage(Language.getColor("bad") + "Index must be between 1 and " + commands.size() + "! " + line + " is invalid.");
 				return;
 			}
 			String removed = commands.remove(line - 1);
 			user.setLoginCommands(commands);
-			player.sendMessage(Color.GOOD + "Deleted \"" + removed + "\"");
+			player.sendMessage(Language.getColor("good") + "Deleted \"" + removed + "\"");
 			return;
 		} catch (NumberFormatException e) {
-			player.sendMessage(Color.BAD + "/onlogin delete <number>");
+			player.sendMessage(Language.getColor("bad") + "/onlogin delete <number>");
 			return;
 		}
 	}
@@ -140,17 +140,21 @@ public class LoginCommandsCommand extends SblockCommand {
 	private void add(Player player, User user, String[] args) {
 		ArrayList<String> commands = new ArrayList<String>(user.getLoginCommands());
 		if (!player.hasPermission("sblock.command.onlogin.more") && commands.size() >= 2) {
-			player.sendMessage(Color.BAD + "You cannot set more than two commands on login.");
+			player.sendMessage(Language.getColor("bad") + "You cannot set more than two commands on login.");
 			return;
 		}
 		if (args.length <= 1) {
-			player.sendMessage(Color.BAD + "/onlogin add /command arguments");
+			player.sendMessage(Language.getColor("bad") + "/onlogin add /command arguments");
+			return;
+		}
+		if (args[0].charAt(0) != '/' || args[0].equalsIgnoreCase("/me")) {
+			player.sendMessage(Language.getColor("bad") + "To prevent spam, you may not add chat to your onlogin.");
 			return;
 		}
 		String command = StringUtils.join(args, ' ', 1, args.length);
 		commands.add(command);
 		user.setLoginCommands(commands);
-		player.sendMessage(Color.GOOD + "Added \"" + command + "\"");
+		player.sendMessage(Language.getColor("good") + "Added \"" + command + "\"");
 		return;
 	}
 }

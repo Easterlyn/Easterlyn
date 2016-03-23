@@ -16,7 +16,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.effects.Effects;
 import co.sblock.utilities.NumberUtils;
@@ -44,7 +44,7 @@ public class EffectsCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 
@@ -71,7 +71,7 @@ public class EffectsCommand extends SblockCommand {
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null || hand.getType() == Material.AIR) {
-			sender.sendMessage(Color.BAD + "You need an item in hand to use this command!");
+			sender.sendMessage(getLang().getValue("command.general.needItemInHand"));
 			return true;
 		}
 
@@ -79,7 +79,7 @@ public class EffectsCommand extends SblockCommand {
 		if (!hand.hasItemMeta() && hand.getItemMeta() == null) {
 			meta = Bukkit.getItemFactory().getItemMeta(hand.getType());
 			if (meta == null) {
-				sender.sendMessage(Color.BAD + "This item does not support meta.");
+				sender.sendMessage(getLang().getValue("command.general.noMetaSupport"));
 				return true;
 			}
 		} else {
@@ -90,13 +90,14 @@ public class EffectsCommand extends SblockCommand {
 				.append(NumberUtils.romanFromInt(level)).toString();
 
 		if (effects.getEffectFromLore(loreString, true) == null) {
-			sender.sendMessage(Color.BAD + "Invalid effect " + loreString + Color.BAD + "! Try tab completing.");
+			sender.sendMessage(getLang().getValue("command.general.invalidParameter")
+					.replace("{PARAMETER}", loreString));
 			return true;
 		}
 
 		meta.setLore(effects.organizeEffectLore(meta.getLore(), true, true, false, loreString));
 		hand.setItemMeta(meta);
-		sender.sendMessage(Color.GOOD + "Added " + loreString);
+		sender.sendMessage(Language.getColor("good") + "Added " + loreString);
 		return true;
 	}
 

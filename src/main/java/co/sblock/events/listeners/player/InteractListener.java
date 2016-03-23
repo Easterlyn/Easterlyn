@@ -20,7 +20,7 @@ import org.bukkit.material.Bed;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.effects.Effects;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
@@ -122,7 +122,7 @@ public class InteractListener extends SblockListener {
 						sleep.sleepVote(b.getWorld(), event.getPlayer());
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					} else {
-						event.getPlayer().sendMessage(Color.BAD + "It's not dark or raining!");
+						event.getPlayer().sendMessage(Language.getColor("bad") + "It's not dark or raining!");
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					}
 					event.setCancelled(true);

@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.utilities.InventoryUtils;
 
@@ -38,7 +38,7 @@ public class CraftItemListener extends SblockListener {
 			Player clicked = (Player) event.getWhoClicked();
 			if (Captcha.isCard(is) || CruxiteDowel.isDowel(is)) {
 				event.setCancelled(true);
-				clicked.sendMessage(Color.BAD + "Using captchas in crafting tends to lose valuables!");
+				clicked.sendMessage(Language.getColor("bad") + "Using captchas in crafting tends to lose valuables!");
 				clicked.updateInventory();
 				return;
 			}
@@ -46,8 +46,8 @@ public class CraftItemListener extends SblockListener {
 				if (is1.isSimilar(is)) {
 					event.setCancelled(true);
 					if (is.getItemMeta().hasDisplayName()) {
-						clicked.sendMessage(Color.BAD + "You can't use a "
-								+ is.getItemMeta().getDisplayName() + Color.BAD + " for that!");
+						clicked.sendMessage(Language.getColor("bad") + "You can't use a "
+								+ is.getItemMeta().getDisplayName() + Language.getColor("bad") + " for that!");
 					}
 					return;
 				}

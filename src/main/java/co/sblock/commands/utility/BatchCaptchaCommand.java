@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -60,7 +60,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		}
 
 		if (!captcha.canCaptcha(item)) {
-			player.sendMessage(Color.BAD + "That item cannot be put in a captcha!");
+			player.sendMessage(Language.getColor("bad") + "That item cannot be put in a captcha!");
 			return true;
 		}
 
@@ -86,7 +86,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		}
 
 		if (max == 0) {
-			player.sendMessage(Color.BAD + "You don't have any blank captchas to use!");
+			player.sendMessage(Language.getColor("bad") + "You don't have any blank captchas to use!");
 			return true;
 		}
 
@@ -113,7 +113,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		item = captcha.itemToCaptcha(item);
 		item.setAmount(count);
 		player.getInventory().addItem(item);
-		player.sendMessage(Color.GOOD + "Used " + count + " captchas to store items.");
+		player.sendMessage(Language.getColor("good") + "Used " + count + " captchas to store items.");
 		return true;
 	}
 

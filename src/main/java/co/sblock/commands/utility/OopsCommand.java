@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.DiscordPlayer;
 
@@ -36,7 +36,9 @@ public class OopsCommand extends SblockCommand {
 		this.setDescription("Suggests fixes to commands.");
 		this.setUsage("/oops");
 		oopsCommands = new HashMap<>();
-		oopsPrefix = Color.GOOD_EMPHASIS.toString() + ChatColor.BOLD + "Oops! " + Color.GOOD;
+		getLang();
+		getLang();
+		oopsPrefix = Language.getColor("emphasis.good").toString() + ChatColor.BOLD + "Oops! " + Language.getColor("good");
 		reusable = new ArrayList<>();
 		aliases = new ArrayList<>(this.getAllAliases(this));
 	}
@@ -59,8 +61,8 @@ public class OopsCommand extends SblockCommand {
 			}
 			return false;
 		}
-		sender.sendMessage(oopsPrefix + "Did you mean " + Color.COMMAND + '/' + command
-				+ Color.GOOD + "? Run " + Color.COMMAND + "/oops" + Color.GOOD + '!');
+		sender.sendMessage(oopsPrefix + "Did you mean " + Language.getColor("command") + '/' + command
+				+ Language.getColor("good") + "? Run " + Language.getColor("command") + "/oops" + Language.getColor("good") + '!');
 		if (aliases.contains(command)) {
 			// Don't store /oops as anyone's /oops
 			return true;

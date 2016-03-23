@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 import co.sblock.Sblock;
-import co.sblock.chat.ChatMsgs;
+import co.sblock.chat.Language;
 import co.sblock.users.User;
 
 /**
@@ -18,6 +18,7 @@ import co.sblock.users.User;
  */
 public class NormalChannel extends Channel {
 
+	private final Language lang;
 	protected final AccessLevel access;
 	protected final Set<UUID> approvedList;
 	protected final Set<UUID> modList;
@@ -26,6 +27,7 @@ public class NormalChannel extends Channel {
 
 	public NormalChannel(Sblock plugin, String name, AccessLevel access, UUID creator, long lastAccessed) {
 		super(plugin, name, creator);
+		this.lang = plugin.getModule(Language.class);
 		this.access = access;
 		approvedList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 		modList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
@@ -116,15 +118,12 @@ public class NormalChannel extends Channel {
 	 */
 	public void addMod(User sender, UUID userID) {
 		if (!isModerator(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 			return;
 		}
 		User user = getUsers().getUser(userID);
-		if (user == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
-			return;
-		}
-		String message = ChatMsgs.onChannelModAdd(user.getDisplayName(), this.name);
+		String message = lang.getValue("chat.channel.mod")
+				.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
 		if (!this.isModerator(user)) {
 			this.modList.add(userID);
 			this.sendMessage(message);
@@ -142,15 +141,12 @@ public class NormalChannel extends Channel {
 	 */
 	public void removeMod(User sender, UUID userID) {
 		if (!this.isModerator(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 			return;
 		}
 		User user = getUsers().getUser(userID);
-		if (user == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
-			return;
-		}
-		String message = ChatMsgs.onChannelModRm(user.getDisplayName(), this.name);
+		String message = lang.getValue("chat.channel.demod")
+				.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
 		if (this.modList.contains(userID) && !this.isOwner(user)) {
 			this.modList.remove(userID);
 			this.sendMessage(message);
@@ -168,17 +164,14 @@ public class NormalChannel extends Channel {
 	 */
 	public void kickUser(User sender, UUID userID) {
 		if (!this.isModerator(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 			return;
 		}
 		User user = getUsers().getUser(userID);
-		if (user == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
-			return;
-		}
-		String message = ChatMsgs.onUserKickAnnounce(user.getPlayerName(), this.name);
+		String message = lang.getValue("chat.channel.kick")
+				.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
 		if (this.isOwner(user)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 		} else if (listening.contains(user.getPlayerName())) {
 			this.sendMessage(message);
 			this.listening.remove(user.getUUID());
@@ -190,17 +183,14 @@ public class NormalChannel extends Channel {
 
 	public void banUser(User sender, UUID userID) {
 		if (!this.isModerator(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 			return;
 		}
 		User user = getUsers().getUser(userID);
-		if (user == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
-			return;
-		}
-		String message = ChatMsgs.onUserBanAnnounce(user.getPlayerName(), this.name);
+		String message = lang.getValue("chat.channel.ban")
+				.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
 		if (this.isOwner(user)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 		} else if (!this.isBanned(user)) {
 			if (modList.contains(userID)) {
 				modList.remove(userID);
@@ -218,15 +208,12 @@ public class NormalChannel extends Channel {
 
 	public void unbanUser(User sender, UUID userID) {
 		if (!this.isOwner(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 			return;
 		}
 		User user = getUsers().getUser(userID);
-		if (user == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(userID.toString()));
-			return;
-		}
-		String message = ChatMsgs.onUserUnbanAnnounce(user.getPlayerName(), this.name);
+		String message = lang.getValue("chat.channel.unban")
+				.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
 		if (banList.contains(userID)) {
 			this.banList.remove(userID);
 			user.sendMessage(message);
@@ -238,35 +225,37 @@ public class NormalChannel extends Channel {
 
 	public void approveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
-			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
+			sender.sendMessage(lang.getValue("chat.error.unsupportedOperation").replace("{CHANNEL}", this.getName()));
 			return;
 		} else {
-			User targ = getUsers().getUser(target);
-			String message = ChatMsgs.onUserApproved(targ.getPlayerName(), this.name);
-			if (this.isApproved(targ)) {
+			User user = getUsers().getUser(target);
+			String message = lang.getValue("chat.channel.approve")
+					.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
+			if (this.isApproved(user)) {
 				sender.sendMessage(message);
 				return;
 			}
 			approvedList.add(target);
 			this.sendMessage(message);
-			targ.sendMessage(message);
+			user.sendMessage(message);
 		}
 	}
 
 	public void disapproveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
-			sender.sendMessage(ChatMsgs.unsupportedOperation(this.name));
+			sender.sendMessage(lang.getValue("chat.error.unsupportedOperation").replace("{CHANNEL}", this.getName()));
 			return;
 		} else {
-			User targ = getUsers().getUser(target);
-			String message = ChatMsgs.onUserDeapproved(targ.getPlayerName(), this.name);
-			if (!this.isApproved(targ)) {
+			User user = getUsers().getUser(target);
+			String message = lang.getValue("chat.channel.deapprove")
+					.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
+			if (!this.isApproved(user)) {
 				sender.sendMessage(message);
 				return;
 			}
 			approvedList.remove(target);
 			this.sendMessage(message);
-			targ.removeListeningSilent(this);
+			user.removeListeningSilent(this);
 		}
 	}
 
@@ -301,14 +290,14 @@ public class NormalChannel extends Channel {
 
 	public void disband(User sender) {
 		if (this.owner == null) {
-			sender.sendMessage(ChatMsgs.errorDisbandDefault());
+			sender.sendMessage(lang.getValue("chat.error.defaultDisband"));
 			return;
 		}
 		if (sender != null && !this.isOwner(sender)) {
-			sender.sendMessage(ChatMsgs.onChannelCommandFail(this.name));
+			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 			return;
 		}
-		this.sendMessage(ChatMsgs.onChannelDisband(this.getName()));
+		this.sendMessage(lang.getValue("chat.channel.disband").replace("{CHANNEL}", this.getName()));
 		for (UUID userID : this.listening.toArray(new UUID[0])) {
 			getUsers().getUser(userID).removeListeningSilent(this);
 		}

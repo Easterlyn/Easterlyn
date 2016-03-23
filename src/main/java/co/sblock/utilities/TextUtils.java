@@ -103,6 +103,16 @@ public class TextUtils {
 		return sb.toString();
 	}
 
+	public static boolean isOnlyAscii(String string) {
+		// Also no tildes because I can
+		for (char character : string.toCharArray()) {
+			if (character < ' ' || character > '}') {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static String getTrace(Throwable throwable) {
 		return getTrace(throwable, 50);
 	}

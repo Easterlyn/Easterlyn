@@ -13,8 +13,7 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.ChatMsgs;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.channel.Channel;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.User;
@@ -47,17 +46,17 @@ public class ForceChannelCommand extends SblockCommand {
 		}
 		Channel channel = manager.getChannel(args[0]);
 		if (channel == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidChannel(args[0]));
+			sender.sendMessage(getLang().getValue("chat.error.invalidChannel").replace("{CHANNEL}", args[0]));
 			return true;
 		}
 		Player player = Bukkit.getPlayer(args[1]);
 		if (player == null) {
-			sender.sendMessage(ChatMsgs.errorInvalidUser(args[1]));
+			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[1]));
 			return true;
 		}
 		User user = users.getUser(player.getUniqueId());
 		user.setCurrentChannel(channel);
-		sender.sendMessage(Color.GOOD + "Channel forced!");
+		sender.sendMessage(Language.getColor("good") + "Channel forced!");
 		return true;
 	}
 

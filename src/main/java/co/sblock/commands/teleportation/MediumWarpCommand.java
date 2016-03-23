@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.Region;
 import co.sblock.users.User;
@@ -41,24 +41,24 @@ public class MediumWarpCommand extends SblockCommand {
 		}
 		Player player = Bukkit.getPlayer(args[1]);
 		if (player == null) {
-			sender.sendMessage(Color.BAD + "Invalid player.");
+			sender.sendMessage(Language.getColor("bad") + "Invalid player.");
 			return false;
 		}
 		Region medium = Region.getRegion(args[0]);
 		if (!medium.isMedium()) {
-			sender.sendMessage(Color.BAD + "Region is not in the Medium.");
+			sender.sendMessage(Language.getColor("bad") + "Region is not in the Medium.");
 			return false;
 		}
 		User user = users.getUser(player.getUniqueId());
 		if (!user.getCurrentRegion().isMedium()) {
 			if (player.getInventory().removeItem(new ItemStack(Material.NETHER_STAR)).size() > 0) {
-				player.sendMessage(Color.BAD + "You must have a nether star to fuel your journey to the Medium.");
+				player.sendMessage(Language.getColor("bad") + "You must have a nether star to fuel your journey to the Medium.");
 				return false;
 			}
 		}
 		World world = Bukkit.getWorld(medium.getWorldName());
 		if (world == null) {
-			sender.sendMessage(Color.BAD + "Nonexistant world " + medium.getWorldName());
+			sender.sendMessage(Language.getColor("bad") + "Nonexistant world " + medium.getWorldName());
 			return false;
 		}
 		player.teleport(world.getSpawnLocation());

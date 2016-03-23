@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.utility.OopsCommand;
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
@@ -74,7 +74,7 @@ public class CommandPreprocessListener extends SblockListener {
 		if (spectators.isSpectator(event.getPlayer().getUniqueId())
 				&& cmd.getName().equals("sethome")) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(Color.BAD + "You hear a fizzling noise as your spell fails.");
+			event.getPlayer().sendMessage(Language.getColor("bad") + "You hear a fizzling noise as your spell fails.");
 			return;
 		}
 
@@ -86,7 +86,7 @@ public class CommandPreprocessListener extends SblockListener {
 		} else if (cmd.getName().equals("prism")) {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
 				event.setCancelled(true);
-				event.getPlayer().sendMessage(Color.BAD + "Restore, don't undo.");
+				event.getPlayer().sendMessage(Language.getColor("bad") + "Restore, don't undo.");
 			}
 		} else if (cmd.getName().equals("fly")) {
 			if ((event.getPlayer().hasPermission("essentials.fly")

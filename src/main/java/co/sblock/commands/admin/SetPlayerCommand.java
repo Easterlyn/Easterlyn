@@ -41,7 +41,7 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 		}
 		UUID uuid = getUniqueId(args[0]);
 		if (uuid == null) {
-			sender.sendMessage(args[0] + " has never played on this server.");
+			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return true;
 		}
 		User user = users.getUser(uuid);

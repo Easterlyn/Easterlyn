@@ -22,7 +22,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.ai.HalMessageHandler;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
@@ -173,8 +173,8 @@ public class AsyncChatListener extends SblockListener {
 			for (Player recipient : event.getRecipients()) {
 				if (cleaned.equalsIgnoreCase(recipient.getName())) {
 					event.getPlayer().sendMessage(
-							Color.BAD + "Names are short and easy to include in a sentence, "
-									+ player.getDisplayName() + Color.BAD + ". Please do it.");
+							Language.getColor("bad") + "Names are short and easy to include in a sentence, "
+									+ player.getDisplayName() + Language.getColor("bad") + ". Please do it.");
 					event.setCancelled(true);
 					return;
 				}
@@ -305,7 +305,7 @@ public class AsyncChatListener extends SblockListener {
 		if (trappedPattern.matcher(message.getMessage()).find()) {
 			// Improvement over GP: Pattern ignores case and matches in substrings of words
 			messageLater(player, message.getChannel(), "Trapped in someone's land claim? Try "
-					+ Color.COMMAND + "/trapped");
+					+ Language.getColor("command") + "/trapped");
 		}
 
 		// Soft-muted chat
@@ -472,7 +472,8 @@ public class AsyncChatListener extends SblockListener {
 			public void run() {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player != null) {
-					chat.getHalBase().setChannel(channel).setMessage(message).toMessage()
+					chat.getHalBase().setChannel(channel)
+							.setMessage(Language.getColor("bot_text") + message).toMessage()
 							.send(ImmutableList.of(player));
 				}
 			}

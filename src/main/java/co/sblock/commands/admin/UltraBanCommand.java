@@ -39,7 +39,7 @@ public class UltraBanCommand extends SblockCommand {
 		Player player = Bukkit.getPlayer(args[0]);
 		if (player != null) {
 			User victim = users.getUser(player.getUniqueId());
-			File folder = new File(getPlugin().getDataFolder(), "captcha");
+			File folder = new File(getPlugin().getDataFolder(), "users");
 			if (folder.exists()) {
 				File file = new File(folder, victim.getUUID().toString() + ".yml");
 				if (file.exists()) {

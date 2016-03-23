@@ -18,7 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.computer.BadButton;
 import co.sblock.machines.type.computer.BlockInventoryWrapper;
@@ -87,7 +87,7 @@ public class Elevator extends Machine {
 		Location interacted = event.getClickedBlock().getLocation();
 		for (ProtectionHook hook : protections.getHooks()) {
 			if (!hook.canOpenChestsAt(player, interacted)) {
-				player.sendMessage(Color.BAD + "You do not have permission to adjust elevators here!");
+				player.sendMessage(Language.getColor("bad") + "You do not have permission to adjust elevators here!");
 				return true;
 			}
 		}

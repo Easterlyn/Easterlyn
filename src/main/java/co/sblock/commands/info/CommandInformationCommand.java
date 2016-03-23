@@ -10,7 +10,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -36,21 +36,21 @@ public class CommandInformationCommand extends SblockCommand {
 			command = ((Sblock) getPlugin()).getCommandMap().getCommand("cmdinfo");
 		}
 		if (command == null) {
-			sender.sendMessage(Color.BAD + "Invalid command! /cmdinfo <command>");
+			sender.sendMessage(Language.getColor("bad") + "Invalid command! /cmdinfo <command>");
 			return true;
 		}
-		sender.sendMessage(Color.GOOD + "Primary command: " + Color.GOOD_EMPHASIS + command.getName());
-		sender.sendMessage(Color.GOOD + "Description: " + Color.GOOD_EMPHASIS + command.getDescription());
-		sender.sendMessage(Color.GOOD + "Usage: " + Color.GOOD_EMPHASIS + command.getUsage());
-		sender.sendMessage(Color.GOOD + "Permission: " + Color.GOOD_EMPHASIS + command.getPermission());
+		sender.sendMessage(Language.getColor("good") + "Primary command: " + Language.getColor("emphasis.good") + command.getName());
+		sender.sendMessage(Language.getColor("good") + "Description: " + Language.getColor("emphasis.good") + command.getDescription());
+		sender.sendMessage(Language.getColor("good") + "Usage: " + Language.getColor("emphasis.good") + command.getUsage());
+		sender.sendMessage(Language.getColor("good") + "Permission: " + Language.getColor("emphasis.good") + command.getPermission());
 		if (command.getAliases().size() > 0) {
-			sender.sendMessage(Color.GOOD + "Aliases: " + Color.GOOD_EMPHASIS + command.getAliases());
+			sender.sendMessage(Language.getColor("good") + "Aliases: " + Language.getColor("emphasis.good") + command.getAliases());
 		}
 		if (command instanceof PluginIdentifiableCommand) {
-			sender.sendMessage(Color.GOOD + "Owning plugin: " + Color.GOOD_EMPHASIS + ((PluginIdentifiableCommand) command).getPlugin().getName());
+			sender.sendMessage(Language.getColor("good") + "Owning plugin: " + Language.getColor("emphasis.good") + ((PluginIdentifiableCommand) command).getPlugin().getName());
 		} else {
-			sender.sendMessage(Color.GOOD + "Command is most likely vanilla.");
-			sender.sendMessage(Color.GOOD + "Class: " + Color.GOOD_EMPHASIS + command.getClass().getName());
+			sender.sendMessage(Language.getColor("good") + "Command is most likely vanilla.");
+			sender.sendMessage(Language.getColor("good") + "Class: " + Language.getColor("emphasis.good") + command.getClass().getName());
 		}
 		return true;
 	}

@@ -17,7 +17,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.DiscordPlayer;
 import co.sblock.utilities.InventoryUtils;
@@ -55,11 +55,11 @@ public class RecipeCommand extends SblockCommand {
 		List<Recipe> recipes = Bukkit.getRecipesFor(result);
 		String friendlyName = InventoryUtils.getItemName(result);
 		if (recipes.isEmpty()) {
-			sender.sendMessage(Color.BAD + "No recipes found for " + friendlyName);
+			sender.sendMessage(Language.getColor("bad") + "No recipes found for " + friendlyName);
 			return true;
 		}
 		if (recipeNumber < 1 || recipeNumber > recipes.size()) {
-			sender.sendMessage(Color.BAD + "Invalid recipe number! Only " + recipes.size() + " recipe(s) available.");
+			sender.sendMessage(Language.getColor("bad") + "Invalid recipe number! Only " + recipes.size() + " recipe(s) available.");
 		}
 		Recipe recipe = recipes.get(recipeNumber - 1);
 		if (sender instanceof Player && !(sender instanceof DiscordPlayer)
@@ -86,7 +86,7 @@ public class RecipeCommand extends SblockCommand {
 			return;
 		}
 		if (recipe instanceof ShapedRecipe) {
-			CraftingInventory inv = (CraftingInventory) Bukkit.createInventory(null, InventoryType.CRAFTING, name);
+			CraftingInventory inv = (CraftingInventory) Bukkit.createInventory(null, InventoryType.WORKBENCH, name);
 			ShapedRecipe shaped = (ShapedRecipe) recipe;
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {

@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -51,11 +51,11 @@ public class UnSuperBanCommand extends SblockCommand {
 					.replaceAll(".*<ip=(([0-9]{1,3}\\.){3}[0-9]{1,3})>.*", "$1"));
 			pbans.pardon(args[0]);
 		} else  {
-			sender.sendMessage(Color.BAD + "No bans were found for " + args[0]);
+			sender.sendMessage(Language.getColor("bad") + "No bans were found for " + args[0]);
 			return true;
 		}
 		if (args[0].contains(".")) {
-			sender.sendMessage(Color.GOOD + "Not globally announcing unban: " + args[0]
+			sender.sendMessage(Language.getColor("good") + "Not globally announcing unban: " + args[0]
 					+ " may be an IP.");
 		} else {
 			chat.getHalBase().setChannel(chat.getChannelManager().getChannel("#"))

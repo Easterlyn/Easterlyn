@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.CruxiteDowel;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.effects.Effects;
 import co.sblock.utilities.Experience;
@@ -31,7 +31,14 @@ public class GristCommand extends SblockCommand {
 		super(plugin, "grist");
 		this.effects = plugin.getModule(Effects.class);
 		this.setDescription("Grist-related operations.");
-		this.setUsage("/grist <cost|current|(level)L|(exp points)>");
+		this.setUsage(Language.getColor("command") + "/grist cost"
+				+ Language.getColor("neutral") + ": Grist cost of item in hand.\n"
+				+ Language.getColor("command") + "/grist current"
+				+ Language.getColor("neutral") + ": Current grist.\n"
+				+ Language.getColor("command") + "/grist (level)L"
+				+ Language.getColor("neutral") + ": Grist from level. Ex: /grist 40L\n"
+				+ Language.getColor("command") + "/grist (exp points)"
+				+ Language.getColor("neutral") + ": Level from grist. Ex: /grist 100");
 	}
 
 	@Override
@@ -45,14 +52,14 @@ public class GristCommand extends SblockCommand {
 				if (lastChar == 'L' || lastChar == 'l') {
 					int level = Integer.parseInt(args[0].substring(0, args[0].length() - 1));
 					sender.sendMessage(String.format("%1$sLevel %3$s is %2$s%4$s %1$sgrist.",
-							Color.GOOD, Color.GOOD_EMPHASIS, level,
+							Language.getColor("good"), Language.getColor("emphasis.good"), level,
 							Experience.getExpFromLevel(level)));
 					return true;
 				}
 			}
 			int grist = Integer.parseInt(args[0]);
 			sender.sendMessage(String.format("%1$s%3$s grist is level %2$s%4$.3f.",
-					Color.GOOD, Color.GOOD_EMPHASIS, grist, Experience.getLevelFromExp(grist)));
+					Language.getColor("good"), Language.getColor("emphasis.good"), grist, Experience.getLevelFromExp(grist)));
 			return true;
 		} catch (NumberFormatException e) {
 			if (!args[0].equalsIgnoreCase("cost") && !args[0].equalsIgnoreCase("current")) {
@@ -65,17 +72,17 @@ public class GristCommand extends SblockCommand {
 		}
 		Player player = (Player) sender;
 		if (args[0].equalsIgnoreCase("current")) {
-			sender.sendMessage(String.format("%1$sYou have %2$s%3$s %1$sgrist.", Color.GOOD,
-					Color.GOOD_EMPHASIS, Experience.getExp(player)));
+			sender.sendMessage(String.format("%1$sYou have %2$s%3$s %1$sgrist.", Language.getColor("good"),
+					Language.getColor("emphasis.good"), Experience.getExp(player)));
 			return true;
 		}
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand == null || hand.getType() == Material.AIR) {
-			sender.sendMessage(Color.BAD + "Nothing in life is free.");
+			sender.sendMessage(Language.getColor("bad") + "Nothing in life is free.");
 			return true;
 		}
 		sender.sendMessage(String.format("%1$sYour %2$s%3$s%1$s would cost %2$s%4$s grist %1$sto recreate.",
-				Color.GOOD, Color.GOOD_EMPHASIS,
+				Language.getColor("good"), Language.getColor("emphasis.good"),
 				InventoryUtils.getItemName(hand),
 				CruxiteDowel.expCost(effects, hand)));
 		return true;

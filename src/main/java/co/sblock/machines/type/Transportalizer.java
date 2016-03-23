@@ -35,7 +35,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
@@ -215,7 +215,7 @@ public class Transportalizer extends Machine {
 		// Check for a sign in the proper location
 		Block signBlock = key.clone().add(new Vector(0, 2, 0)).getBlock();
 		if (signBlock.getType() != Material.WALL_SIGN) {
-			event.getPlayer().sendMessage(Color.BAD
+			event.getPlayer().sendMessage(Language.getColor("bad")
 					+ "Please place a sign on your transportalizer between the buttons to use it."
 					+ "\nThe third row should contain your desired coordinates in x, y, x format."
 					+ "\nAll the other rows can contain whatever you like.");
@@ -226,7 +226,7 @@ public class Transportalizer extends Machine {
 		// Check sign for proper format - sign lines are 0-3, third line is line 2
 		String line3 = sign.getLine(2);
 		if (!line3.matches("\\-?[0-9]+(\\s|,\\s?)[0-9]+(\\s|,\\s?)\\-?[0-9]+")) {
-			event.getPlayer().sendMessage(Color.BAD
+			event.getPlayer().sendMessage(Language.getColor("bad")
 					+ "The third line of your transportalizer sign must contain "
 					+ "your desired destination in x, y, z format. Ex: 0, 64, 0");
 			return false;
@@ -255,7 +255,7 @@ public class Transportalizer extends Machine {
 		// CHECK FUEL
 		long fuel = getFuel(storage);
 		if (fuel < cost) {
-			event.getPlayer().sendMessage(Color.BAD
+			event.getPlayer().sendMessage(Language.getColor("bad")
 					+ "The Transportalizer begins humming through standard teleport procedure,"
 					+ " when all of a sudden it growls to a halt."
 					+ "\nPerhaps it requires more fuel?");
@@ -299,7 +299,7 @@ public class Transportalizer extends Machine {
 			// Sender must have button access to send players
 			for (ProtectionHook hook : protections.getHooks()) {
 				if (!hook.canUseButtonsAt(player, to)) {
-					player.sendMessage(Color.BAD + "You do not have access to the location specified!");
+					player.sendMessage(Language.getColor("bad") + "You do not have access to the location specified!");
 					return false;
 				}
 			}
@@ -309,7 +309,7 @@ public class Transportalizer extends Machine {
 			// Hostiles, TNT, wither projectiles, fireballs, etc. require build permissions
 			for (ProtectionHook hook : protections.getHooks()) {
 				if (!hook.canBuildAt(player, to)) {
-					player.sendMessage(Color.BAD + "You do not have access to the location specified!");
+					player.sendMessage(Language.getColor("bad") + "You do not have access to the location specified!");
 					return false;
 				}
 			}
@@ -317,12 +317,12 @@ public class Transportalizer extends Machine {
 		}
 		// Ender dragon or ender dragon parts
 		if (entity instanceof ComplexLivingEntity || entity instanceof ComplexEntityPart) {
-			player.sendMessage(Color.BAD + "Great effort, but you can't transportalize a dragon.");
+			player.sendMessage(Language.getColor("bad") + "Great effort, but you can't transportalize a dragon.");
 			return false;
 		}
 		for (ProtectionHook hook : protections.getHooks()) {
 			if (!hook.canMobsSpawn(to) && !hook.canBuildAt(player, to)) {
-				player.sendMessage(Color.BAD + "Transportalizers cannot send non-players to the location specified.!");
+				player.sendMessage(Language.getColor("bad") + "Transportalizers cannot send non-players to the location specified.!");
 				return false;
 			}
 		}
@@ -335,10 +335,10 @@ public class Transportalizer extends Machine {
 			if (!player.getUniqueId().equals(entity.getUniqueId())) {
 				Player targetPlayer = (Player) entity;
 				player.sendMessage(String.format("%1$sConfirming transportalization with %2$s%3$s%1$s!",
-						Color.GOOD, Color.GOOD_EMPHASIS, targetPlayer.getDisplayName()));
+						Language.getColor("good"), Language.getColor("player.good"), targetPlayer.getDisplayName()));
 				targetPlayer.sendMessage(String.format("%1$s%2$s %3$swould like to transportalize you!"
 						+ "\nTo accept, use %4$s/tpyes%3$s. To decline, use %4$s/tpno%3$s.",
-						Color.GOOD_EMPHASIS, player.getDisplayName(), Color.GOOD, Color.COMMAND));
+						Language.getColor("player.good"), player.getDisplayName(), Language.getColor("good"), Language.getColor("command")));
 				requests.put(targetPlayer.getUniqueId(), new TransportalizationRequest(storage, from, to, cost));
 				return false;
 			}
@@ -346,14 +346,14 @@ public class Transportalizer extends Machine {
 		}
 		// Ender dragon or ender dragon parts
 		if (entity instanceof ComplexLivingEntity || entity instanceof ComplexEntityPart) {
-			player.sendMessage(Color.BAD + "Great effort, but you can't transportalize a dragon.");
+			player.sendMessage(Language.getColor("bad") + "Great effort, but you can't transportalize a dragon.");
 			return false;
 		}
 		if (entity instanceof ArmorStand) {
 			// Pulling armor stands from an area requires build trust
 			for (ProtectionHook hook : protections.getHooks()) {
 				if (!hook.canBuildAt(player, to)) {
-					player.sendMessage(Color.BAD + "You do not have access to the location specified!");
+					player.sendMessage(Language.getColor("bad") + "You do not have access to the location specified!");
 					return false;
 				}
 			}
@@ -362,7 +362,7 @@ public class Transportalizer extends Machine {
 		// Pulling out of a protected area requires container access
 		for (ProtectionHook hook : protections.getHooks()) {
 			if (!hook.canOpenChestsAt(player, to)) {
-				player.sendMessage(Color.BAD + "You do not have access to the location specified!");
+				player.sendMessage(Language.getColor("bad") + "You do not have access to the location specified!");
 				return false;
 			}
 		}

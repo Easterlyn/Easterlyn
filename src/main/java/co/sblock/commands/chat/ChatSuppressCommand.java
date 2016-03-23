@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.User;
 import co.sblock.users.Users;
@@ -34,12 +34,12 @@ public class ChatSuppressCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		User user = users.getUser(((Player) sender).getUniqueId());
 		user.setSuppression(!user.getSuppression());
-		user.sendMessage(Color.GOOD + "Suppression toggled " + (user.getSuppression() ? "on" : "off") + "!");
+		user.sendMessage(Language.getColor("good") + "Suppression toggled " + (user.getSuppression() ? "on" : "off") + "!");
 		return true;
 	}
 

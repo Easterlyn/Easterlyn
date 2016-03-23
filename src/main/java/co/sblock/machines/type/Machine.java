@@ -32,7 +32,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.machines.utilities.Shape;
@@ -46,6 +46,7 @@ import co.sblock.users.Users;
 public abstract class Machine {
 
 	private final Sblock plugin;
+	private final Language lang;
 	private final Machines machines;
 	private final Users users;
 	private final Shape shape;
@@ -60,6 +61,7 @@ public abstract class Machine {
 	 */
 	Machine(Sblock plugin, Machines machines, Shape shape, String name) {
 		this.plugin = plugin;
+		this.lang = plugin.getModule(Language.class);
 		this.machines = machines;
 		this.users = plugin.getModule(Users.class);
 		this.shape = shape;
@@ -82,6 +84,15 @@ public abstract class Machine {
 	 */
 	protected Sblock getPlugin() {
 		return this.plugin;
+	}
+
+	/**
+	 * Gets the Language instance.
+	 * 
+	 * @return the Language
+	 */
+	protected Language getLang() {
+		return this.lang;
 	}
 
 	/**
@@ -179,7 +190,7 @@ public abstract class Machine {
 					|| getMachines().isExploded(location.getBlock()))
 					|| location.getBlockY() > 255) {
 				event.setCancelled(true);
-				event.getPlayer().sendMessage(Color.BAD + "There isn't enough space to build this Machine here.");
+				event.getPlayer().sendMessage(Language.getColor("bad") + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed(storage);
 				return;
 			}
@@ -400,7 +411,7 @@ public abstract class Machine {
 	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
 		for (Location l : getMachines().getMachineBlocks(getKey(storage))) {
 			if (getMachines().isExploded(l.getBlock())) {
-				event.getPlayer().sendMessage(Color.BAD + "This machine is too damaged to use!");
+				event.getPlayer().sendMessage(Language.getColor("bad") + "This machine is too damaged to use!");
 				return true;
 			}
 		}

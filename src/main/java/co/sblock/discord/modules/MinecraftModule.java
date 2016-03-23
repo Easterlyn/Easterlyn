@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
@@ -22,7 +22,6 @@ import co.sblock.discord.abstraction.DiscordModule;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import sx.blah.discord.api.DiscordException;
@@ -51,11 +50,10 @@ public class MinecraftModule extends DiscordModule {
 		this.manager = discord.getPlugin().getModule(Chat.class).getChannelManager();
 
 		// future modify MessageBuilder to allow custom name clicks (OPEN_URL www.sblock.co/discord)
-		this.builder = new MessageBuilder(discord.getPlugin()).setNameClick("@# ").setChannelClick("@# ")
-				.setChannel(this.manager.getChannel("#discord"))
-				.setNameHover(TextComponent.fromLegacyText(Color.GOOD_EMPHASIS + "Discord Chat\n"
-						+ ChatColor.BLUE + ChatColor.UNDERLINE + "www.sblock.co/discord\n"
-						+ Color.GOOD + "Channel: #main"));
+		this.builder = new MessageBuilder(discord.getPlugin()).setNameClick("@# ")
+				.setChannelClick("@# ").setChannel(this.manager.getChannel("#discord"))
+				.setNameHover(TextComponent.fromLegacyText(discord.getPlugin()
+						.getModule(Language.class).getValue("chat.user.discordHover")));
 	}
 
 	@Override

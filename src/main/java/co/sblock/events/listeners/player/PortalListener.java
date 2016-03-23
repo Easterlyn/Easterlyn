@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerPortalEvent;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.region.SblockTravelAgent;
 import co.sblock.micromodules.Protections;
@@ -84,7 +84,7 @@ public class PortalListener extends SblockListener {
 							hook.getPluginName(), event.getPlayer().getName(), fromCenter.getWorld().getName(),
 							fromCenter.getBlockX(), fromCenter.getBlockY(), fromCenter.getBlockZ(),
 							to.getWorld().getName(), to.getBlockX(), to.getBlockY(), to.getBlockZ()));
-					event.getPlayer().sendMessage(Color.BAD + "Your destination is inside a protected area!"
+					event.getPlayer().sendMessage(Language.getColor("bad") + "Your destination is inside a protected area!"
 							+ "\nYou'll have to build your portal elsewhere.");
 					return;
 				}

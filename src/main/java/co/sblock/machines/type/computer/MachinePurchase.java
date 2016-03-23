@@ -7,10 +7,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import co.sblock.chat.Color;
+import co.sblock.chat.Language;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.utilities.Experience;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Program for purchasing a Machine.
@@ -25,7 +27,7 @@ public class MachinePurchase extends Program {
 		super(machines);
 		icon = new ItemStack(Material.DIRT);
 		ItemMeta meta = icon.getItemMeta();
-		meta.setDisplayName(Color.GOOD + "Purchase");
+		meta.setDisplayName(ChatColor.GREEN + "Purchase");
 		icon.setItemMeta(meta);
 	}
 
@@ -44,7 +46,7 @@ public class MachinePurchase extends Program {
 			return;
 		}
 		if (Experience.getExp(player) < machine.getCost()) {
-			player.sendMessage(Color.BAD + "You don't have enough grist!");
+			player.sendMessage(Language.getColor("bad") + "You don't have enough grist!");
 			return;
 		}
 		Experience.changeExp(player, - machine.getCost());
@@ -60,8 +62,8 @@ public class MachinePurchase extends Program {
 		ItemStack item = machine.getUniqueDrop().clone();
 		ItemMeta meta = item.getItemMeta();
 		meta.setLore(Arrays.asList(meta.getDisplayName(),
-				Color.GOOD_EMPHASIS.toString() + machine.getCost() + Color.GOOD + " grist"));
-		meta.setDisplayName(Color.GOOD + "Purchase");
+				Language.getColor("emphasis.good").toString() + machine.getCost() + Language.getColor("good") + " grist"));
+		meta.setDisplayName(Language.getColor("good") + "Purchase");
 		item.setItemMeta(meta);
 		return item;
 	}

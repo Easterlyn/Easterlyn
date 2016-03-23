@@ -44,6 +44,7 @@ import com.mojang.authlib.GameProfile;
 
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Chat;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.commands.SblockCommandAlias;
 import co.sblock.discord.Discord;
@@ -104,16 +105,16 @@ public class Sblock extends JavaPlugin {
 
 		modules = new LinkedHashMap<>();
 
+		// Critical base modules
+		addModule(new Language(this));
 		addModule(new Cooldowns(this));
-
 		addModule(new Chat(this));
+		addModule(new Users(this));
 
 		// Non-critical chat-based modules
 		addModule(new Discord(this));
 		addModule(new RawAnnouncer(this));
 		addModule(new AwayFromKeyboard(this));
-
-		addModule(new Users(this));
 
 		addModule(new Effects(this));
 		addModule(new Captcha(this));
