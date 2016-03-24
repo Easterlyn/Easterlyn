@@ -33,6 +33,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Language;
 import co.sblock.effects.Effects;
 import co.sblock.machines.Machines;
 import co.sblock.module.Module;
@@ -111,10 +112,10 @@ public class Captcha extends Module {
 		CruxiteDowel.getGrist();
 		insertCaptchaRecipe();
 
-		effects = getPlugin().getModule(Effects.class);
-		machines = getPlugin().getModule(Machines.class);
+		this.effects = this.getPlugin().getModule(Effects.class);
+		this.machines = this.getPlugin().getModule(Machines.class);
 
-		addCustomHash("00000000", machines.getMachineByName("PGO").getUniqueDrop());
+		addCustomHash("00000000", this.machines.getMachineByName("PGO").getUniqueDrop());
 	}
 
 	public boolean addCustomHash(String hash, ItemStack item) {
@@ -163,7 +164,7 @@ public class Captcha extends Module {
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta meta = item.getItemMeta();
 		ArrayList<String> cardLore = new ArrayList<String>();
-		StringBuilder builder = new StringBuilder().append(ChatColor.DARK_AQUA).append(item.getAmount()).append(' ');
+		StringBuilder builder = new StringBuilder().append(Language.getColor("emphasis.neutral")).append(item.getAmount()).append(' ');
 		if (isCaptcha(item)) {
 			builder.append("Captcha of ").append(meta.getLore().get(0));
 		} else if (meta.hasDisplayName() && !InventoryUtils.isMisleadinglyNamed(meta.getDisplayName(), item.getType(), item.getDurability())) {
@@ -174,9 +175,9 @@ public class Captcha extends Module {
 		cardLore.add(builder.toString());
 		if (item.getType().getMaxDurability() > 0) {
 			builder.delete(0, builder.length());
-			builder.append(ChatColor.YELLOW).append("Durability: ").append(ChatColor.DARK_AQUA)
+			builder.append(Language.getColor("neutral")).append("Durability: ").append(Language.getColor("emphasis.neutral"))
 					.append(item.getType().getMaxDurability() - item.getDurability())
-					.append(ChatColor.YELLOW).append("/").append(ChatColor.DARK_AQUA)
+					.append(Language.getColor("neutral")).append("/").append(Language.getColor("emphasis.neutral"))
 					.append(item.getType().getMaxDurability());
 			cardLore.add(builder.toString());
 		}

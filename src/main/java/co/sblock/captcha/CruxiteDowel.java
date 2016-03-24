@@ -450,6 +450,10 @@ public class CruxiteDowel {
 						continue;
 					}
 					newMin += getRecipeCost(is.getType(), pastMaterials) * e.getValue();
+					// Special case: Buckets are not consumed when crafting
+					if (is.getType().name().endsWith("_BUCKET")) {
+						newMin -= getRecipeCost(Material.BUCKET, pastMaterials) * e.getValue();
+					}
 				}
 			} else if (r instanceof ShapelessRecipe) {
 				newMin = 0;
@@ -458,6 +462,10 @@ public class CruxiteDowel {
 						continue;
 					}
 					newMin += getRecipeCost(is.getType(), pastMaterials);
+					// Special case: Buckets are not consumed when crafting
+					if (is.getType().name().endsWith("_BUCKET")) {
+						newMin -= getRecipeCost(Material.BUCKET, pastMaterials);
+					}
 				}
 			} else {
 				// Recipe is injected custom recipe
