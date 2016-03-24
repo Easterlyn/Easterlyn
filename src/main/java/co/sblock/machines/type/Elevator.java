@@ -13,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -79,9 +80,11 @@ public class Elevator extends Machine {
 		if (event.getAction() == Action.PHYSICAL) {
 			event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(),
 					Sound.ENTITY_ENDERDRAGON_FLAP, 0.2F, 0F);
+			int duration = storage.getInt("duration");
 			// Effect power is 0-indexed.
-			player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, storage.getInt("duration"),
-					19, true), true);
+			player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, duration, 19, true), true);
+			PermissionAttachment attachment = player.addAttachment(getPlugin(), duration);
+			attachment.setPermission("nocheatplus.checks.moving.creativefly", true);
 			return true;
 		}
 		Location interacted = event.getClickedBlock().getLocation();
