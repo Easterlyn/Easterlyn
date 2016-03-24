@@ -8,19 +8,23 @@ color:
   bot_name: 'DARK_RED'
   bot_text: 'RED'
   link_color: 'BLUE'
+  link_channel: 'GOLD'
   link_format: 'UNDERLINE'
   default: 'WHITE'
   command: 'AQUA'
-  good: 'GREEN'
+#  good: 'GREEN'
+  good: 'YELLOW'
   neutral: 'YELLOW'
   bad: 'RED'
   player:
-    good: 'GOLD'
+#    good: 'GOLD'
+    good: 'GREEN'
     neutral: 'GREEN'
     bad: 'DARK_AQUA'
   emphasis:
-    good: 'DARK_GREEN'
-    neutral: 'GOLD'
+#    good: 'DARK_GREEN'
+    good: 'GOLD'
+    neutral: 'DARK_AQUA'
     bad: 'DARK_RED'
   rank:
     horrorterror: 'DARK_RED'
@@ -55,11 +59,27 @@ chat:
         {COLOR:emphasis.bad}Unless it's awesome.
         
         {COLOR:command}/join #halchat {COLOR:emphasis.bad}to spam usage.
+      trigger: '(hal|dirk)'
+      ignore: |
+        (love|date|baby|bang|due|fuck|pregnant|r(@|4|a)pe|sex)\s?
+        (g|b)\s?f\s?
+        (girl|boy)\s?(friend)?\s?
+        mo(ther|m+y?)\s?
+        dad+y?\s?
+    calculator:
+      name: '{COLOR:bot_name}Lil Hal'
+      hover: |
+        {COLOR:bot_text}Calculator
+        {COLOR:emphasis.bad}For long or multiple
+        {COLOR:emphasis.bad}equations, use /halc
+      replies: |
+        ((di|co)c?k|pe(en|nis)|(we[ie]n|(schl|d)ong)(er)?|willy|(trouser ?)?snake|lizard){RESPONSE}Sorry, your equation is too tiny for me to read.
+        life.*universe.*everything{RESPONSE}{INPUT} = 42
   user:
     away: '{COLOR:player.bad}{PLAYER} {COLOR:bad}is away and may not respond!'
     discordHover: |
       {COLOR:emphasis.good}Discord Chat
-      {COLOR:link_color}{COLOR:link_underline}www.sblock.co/discord
+      {COLOR:link_color}{COLOR:link_format}www.sblock.co/discord
       {COLOR:good}Channel: #main
   channel:
     join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}began pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'

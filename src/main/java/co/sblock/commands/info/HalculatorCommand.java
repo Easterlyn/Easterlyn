@@ -1,10 +1,12 @@
 package co.sblock.commands.info;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,8 +38,9 @@ public class HalculatorCommand extends SblockCommand {
 		if (args.length == 0) {
 			sender.sendMessage("Please enter an equation! Ex. /halc (1+1)^(2/3) + 10");
 		} else {
+			UUID uuid = sender instanceof Player ? ((Player) sender).getUniqueId() : null;
 			sender.sendMessage(ChatColor.RED + "Evhaluation: " + ChatColor.GRAY
-					+ chat.getHalculator().evhaluate(StringUtils.join(args, ' ')));
+					+ chat.getHalculator().evhaluate(uuid, StringUtils.join(args, ' ')));
 		}
 		return true;
 	}

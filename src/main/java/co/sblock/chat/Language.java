@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -14,6 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import co.sblock.Sblock;
+import co.sblock.discord.Discord;
 import co.sblock.module.Module;
 
 import net.md_5.bungee.api.ChatColor;
@@ -31,6 +34,8 @@ public class Language extends Module {
 	private final Pattern specialContent = Pattern.compile("\\{([A-Z]+):(.*?)\\}");
 	private final Map<String, String> translatedValues;
 
+	private Discord discord;
+
 	public Language(Sblock plugin) {
 		super(plugin);
 		this.translatedValues = new HashMap<>();
@@ -40,8 +45,13 @@ public class Language extends Module {
 		YamlConfiguration defaultStrings = YamlConfiguration.loadConfiguration(reader);
 		YamlConfiguration config = this.getConfig();
 		boolean changed = false;
-		Set<String> paths = defaultStrings.getKeys(true);
-		for (String path : paths) {
+		Set<String> paths = new HashSet<String>(defaultStrings.getKeys(true));
+		for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
+			String path = iterator.next();
+			if (!defaultStrings.isString(path)) {
+				iterator.remove();
+				continue;
+			}
 			if (!config.isString(path)) {
 				config.set(path, defaultStrings.get(path));
 				changed = true;
@@ -64,7 +74,9 @@ public class Language extends Module {
 	}
 
 	@Override
-	protected void onEnable() { }
+	protected void onEnable() {
+		this.discord = this.getPlugin().getModule(Discord.class);
+	}
 
 	/**
 	 * Gets a ChatColor by its definition.
@@ -105,6 +117,7 @@ public class Language extends Module {
 		String value = this.translatedValues.get(path);
 		if (value == null) {
 			value = path;
+			discord.postReport("Invalid lang path: " + path);
 		}
 		if (addExtraValues) {
 			return value.replace("{TIME}", TIME_24.format(new Date()));
@@ -116,14 +129,17 @@ public class Language extends Module {
 		if (this.translatedValues.containsKey(path)) {
 			return;
 		}
-		YamlConfiguration config = this.getConfig();
-		String content = config.getString(path);
-		Matcher matcher = specialContent.matcher(content);
+		String content = this.getConfig().getString(path);
+		Matcher matcher = this.specialContent.matcher(content);
+		int lastIndex = 0;
+		StringBuilder builder = new StringBuilder();
 		while (matcher.find()) {
-			content = matcher.replaceFirst(this.getSpecialContent(matcher.group(1), matcher.group(2)));
+			builder.append(content.substring(lastIndex, matcher.start()));
+			builder.append(this.getSpecialContent(matcher.group(1), matcher.group(2)));
+			lastIndex = matcher.end();
 		}
-		content = content.replace("\\n", "\n");
-		this.translatedValues.put(path, content);
+		builder.append(content.substring(lastIndex));
+		this.translatedValues.put(path, builder.toString().replace("\\n", "\n"));
 	}
 
 	private String getSpecialContent(String type, String value) {

@@ -14,13 +14,12 @@ import co.sblock.module.Module;
 import co.sblock.users.Users;
 import co.sblock.utilities.DummyPlayer;
 
-import net.md_5.bungee.api.ChatColor;
-
 public class Chat extends Module {
 
 	private final ChannelManager channelManager;
 	private final DummyPlayer buffer;
 
+	private Language lang;
 	private Users users;
 	private CleverHal cleverHal;
 	private Halculator halculator;
@@ -33,36 +32,37 @@ public class Chat extends Module {
 
 	@Override
 	protected void onEnable() {
-		this.users = getPlugin().getModule(Users.class);
-		this.cleverHal = new CleverHal(getPlugin());
-		this.halculator = new Halculator(getPlugin());
+		this.lang = this.getPlugin().getModule(Language.class);
+		this.users = this.getPlugin().getModule(Users.class);
+		this.cleverHal = new CleverHal(this.getPlugin());
+		this.halculator = new Halculator(this.getPlugin());
 		this.channelManager.loadAllChannels();
 		this.channelManager.createDefaultSet();
 	}
 
 	@Override
 	protected void onDisable() {
-		channelManager.saveAllChannels();
+		this.channelManager.saveAllChannels();
 	}
 
 	public ChannelManager getChannelManager() {
-		return channelManager;
+		return this.channelManager;
 	}
 
 	public MessageBuilder getHalBase() {
-		return new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + getPlugin().getBotName())
-				.setNameClick("/report ").setNameHover(ChatColor.RED + "Artifical Intelligence");
+		return new MessageBuilder(this.getPlugin()).setSender(lang.getValue("core.bot_name"))
+				.setNameClick("/report ").setNameHover(Language.getColor("bot_text") + "Artifical Intelligence");
 	}
 
 	public CleverHal getHal() {
-		return cleverHal;
+		return this.cleverHal;
 	}
 
 	/**
 	 * @return the halculator
 	 */
 	public Halculator getHalculator() {
-		return halculator;
+		return this.halculator;
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class Chat extends Module {
 	}
 
 	public boolean testForMute(Player sender) {
-		return testForMute(sender, "Mute test.", "@test@");
+		return this.testForMute(sender, "Mute test.", "@test@");
 	}
 
 	public synchronized boolean testForMute(Player sender, String msg, String channelName) {
@@ -89,18 +89,18 @@ public class Chat extends Module {
 			return true;
 		}
 
-		Channel channel = getChannelManager().getChannel(channelName);
+		Channel channel = this.getChannelManager().getChannel(channelName);
 		if (channel == null) {
 			throw new IllegalArgumentException("Given channel does not exist!");
 		}
-		MessageBuilder builder = new MessageBuilder(getPlugin())
-				.setSender(users.getUser(sender.getUniqueId())).setChannel(channel)
+		MessageBuilder builder = new MessageBuilder(this.getPlugin())
+				.setSender(this.users.getUser(sender.getUniqueId())).setChannel(channel)
 				.setMessage(msg).setChannel(channel);
 		Message message = builder.toMessage();
 
 		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, sender, message, false);
 		// Add a dummy player so WG doesn't cancel the event if there are no recipients
-		event.getRecipients().add(buffer);
+		event.getRecipients().add(this.buffer);
 
 		Bukkit.getPluginManager().callEvent(event);
 

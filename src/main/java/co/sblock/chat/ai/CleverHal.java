@@ -64,16 +64,14 @@ public class CleverHal extends HalMessageHandler {
 			bot = null;
 		}
 
-		anyPattern = Pattern.compile("(hal|dirk)", Pattern.CASE_INSENSITIVE);
+		anyPattern = Pattern.compile(lang.getValue("chat.ai.cleverbot.trigger"), Pattern.CASE_INSENSITIVE);
 		exactPattern = Pattern.compile('^' + anyPattern.pattern() + '$', anyPattern.flags());
 		whitespacePattern = Pattern.compile("(^|\\W)" + anyPattern.pattern() + "(\\W|$)", anyPattern.flags());
 
 		ignoreMatches = new HashSet<>();
-		ignoreMatches.add(Pattern.compile("(baby|bang|due|fuck|pregnant|r(@|4|a)pe|sex)\\s?", Pattern.CASE_INSENSITIVE));
-		ignoreMatches.add(Pattern.compile("(g|b)\\s?f\\s?", Pattern.CASE_INSENSITIVE));
-		ignoreMatches.add(Pattern.compile("(girl|boy)\\s?(friend)?\\s?", Pattern.CASE_INSENSITIVE));
-		ignoreMatches.add(Pattern.compile("mo(ther|m+y?\\s?)", Pattern.CASE_INSENSITIVE));
-		ignoreMatches.add(Pattern.compile("dad+y?\\s?", Pattern.CASE_INSENSITIVE));
+		for (String split : lang.getValue("chat.ai.cleverbot.ignore").split("\\n")) {
+			ignoreMatches.add(Pattern.compile(split, Pattern.CASE_INSENSITIVE));
+		}
 
 		hover = TextComponent.fromLegacyText(lang.getValue("chat.ai.cleverbot.hover"));
 
