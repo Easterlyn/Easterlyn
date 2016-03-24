@@ -161,17 +161,23 @@ public class Message {
 		for (T object : recipients) {
 			UUID uuid;
 			Player player;
+			User recipient;
 			if (object instanceof UUID) {
 				uuid = (UUID) object;
 				player = Bukkit.getPlayer(uuid);
+				recipient = users.getUser(uuid);
 			} else if (object instanceof Player) {
 				player = (Player) object;
 				uuid = player.getUniqueId();
+				recipient = users.getUser(uuid);
+			} else if (object instanceof User) {
+				recipient = (User) object;
+				uuid = recipient.getUUID();
+				player = recipient.getPlayer();
 			} else {
 				throw new RuntimeException("Invalid recipient type: " + object.getClass());
 			}
 
-			User recipient = users.getUser(uuid);
 			if (player == null || !recipient.isOnline() || player.spigot() == null
 					|| channel instanceof RegionChannel && recipient.getSuppression()) {
 				continue;

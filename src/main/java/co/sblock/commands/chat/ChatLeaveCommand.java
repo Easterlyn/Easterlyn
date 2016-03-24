@@ -47,7 +47,7 @@ public class ChatLeaveCommand extends SblockCommand {
 			return false;
 		}
 		if (manager.getChannel(args[0]) instanceof RegionChannel) {
-			sender.sendMessage(getLang().getValue("chat.error.defaultLeave"));
+			sender.sendMessage(getLang().getValue("chat.error.globalLeave"));
 			return true;
 		}
 		users.getUser(((Player) sender).getUniqueId()).removeListening(args[0]);

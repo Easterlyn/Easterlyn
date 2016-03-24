@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -550,7 +549,9 @@ public class User {
 		if (!channel.getListening().contains(this.getUUID())) {
 			channel.getListening().add(this.getUUID());
 			this.getListening().add(channel.getName());
-			channel.sendMessage(lang.getValue("chat.channel.join", true).replace("{CHANNEL}", channel.getName()));
+			channel.sendMessage(lang.getValue("chat.channel.join", true)
+					.replace("{PLAYER}", this.getDisplayName())
+					.replace("{CHANNEL}", channel.getName()));
 			return true;
 		} else {
 			this.sendMessage(lang.getValue("chat.error.alreadyListening").replace("{CHANNEL}", channel.getName()));
@@ -579,7 +580,7 @@ public class User {
 			this.getListening().add("@");
 			getChannelManager().getChannel("@").getListening().add(this.getUUID());
 		}
-		String base = lang.getValue("chat.channel.join", true);
+		String base = lang.getValue("chat.channel.join", true).replace("{PLAYER}", this.getDisplayName());
 
 		String all = base.toString().replace("{CHANNEL}", StringUtils.join(getListening(), ", "));
 		Logger.getLogger("Minecraft").info(all);
@@ -1034,20 +1035,18 @@ public class User {
 			user.updateCurrentRegion(Region.EARTH, true);
 
 			Chat chat = plugin.getModule(Chat.class);
-			MessageBuilder base = chat.getHalBase().setChannel(chat.getChannelManager().getChannel("#"));
+			Channel hash = chat.getChannelManager().getChannel("#");
+			MessageBuilder base = chat.getHalBase().setChannel(hash);
 
-			// Message must be sent before player is added to channel to prevent recursive load
 			if (!player.hasPlayedBefore()) {
-				// Our data file may have just been deleted - reset planned for Entry, etc.
 				base.setMessage("It would seem that " + player.getName()
 						+ " is joining us for the first time! Please welcome them.").toMessage()
-						.send(Bukkit.getOnlinePlayers().stream()
-								.filter(online -> !online.getUniqueId().equals(player.getUniqueId()))
-								.collect(Collectors.toCollection(ArrayList<Object>::new)), false);
+						.send(plugin.getModule(Users.class).getOnlineUsers(), false);
 				Discord discord = plugin.getModule(Discord.class);
 				discord.postMessage(discord.getBotName(), player.getName()
 						+ " is new! Please welcome them.", true);
 			} else {
+				// Our data file may have just been deleted - reset planned for Entry, etc.
 				base.setMessage("We've reset classpect since you last played. Please re-select now!")
 						.toMessage().send(ImmutableList.of(user), false);
 			}
@@ -1057,7 +1056,6 @@ public class User {
 			// so we can't count on User#handleLoginChannelJoins being called.
 			user.currentChannel = "#";
 			user.listening.add("#");
-			Channel hash = user.manager.getChannel("#");
 			hash.getListening().add(uuid);
 
 			return user;

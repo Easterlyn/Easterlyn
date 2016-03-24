@@ -119,19 +119,19 @@ public class Users extends Module {
 		if (prefixBuilder.length() > (prefix == null ? 0 : prefix.length())) {
 			// Do nothing, we've got a fancy override going on
 		} else if (player.hasPermission("sblock.horrorterror")) {
-			prefixBuilder.append(Language.getColor("rank.HORRORTERROR"));
+			prefixBuilder.append(Language.getColor("rank.horrorterror"));
 		} else if (player.hasPermission("sblock.denizen")) {
-			prefixBuilder.append(Language.getColor("rank.DENIZEN"));
+			prefixBuilder.append(Language.getColor("rank.denizen"));
 		} else if (player.hasPermission("sblock.felt")) {
-			prefixBuilder.append(Language.getColor("rank.FELT"));
+			prefixBuilder.append(Language.getColor("rank.felt"));
 		} else if (player.hasPermission("sblock.helper")) {
-			prefixBuilder.append(Language.getColor("rank.HELPER"));
+			prefixBuilder.append(Language.getColor("rank.helper"));
 		} else if (player.hasPermission("sblock.donator")) {
-			prefixBuilder.append(Language.getColor("rank.DONATOR"));
+			prefixBuilder.append(Language.getColor("rank.donator"));
 		} else if (player.hasPermission("sblock.godtier")) {
-			prefixBuilder.append(Language.getColor("rank.GODTIER"));
+			prefixBuilder.append(Language.getColor("rank.godtier"));
 		} else {
-			prefixBuilder.append(Language.getColor("rank.HERO"));
+			prefixBuilder.append(Language.getColor("rank.hero"));
 		}
 		for (net.md_5.bungee.api.ChatColor color : Color.FORMATS) {
 			if (player.hasPermission("sblockchat." + color.name().toLowerCase())) {
