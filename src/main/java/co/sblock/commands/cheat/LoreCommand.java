@@ -31,6 +31,7 @@ public class LoreCommand extends SblockCommand {
 
 	private final String[] primaryArgs;
 
+	// TODO lang
 	public LoreCommand(Sblock plugin) {
 		super(plugin, "lore");
 		this.setDescription("Sblock's lore manipulation command.");

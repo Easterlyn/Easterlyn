@@ -31,9 +31,7 @@ public class LoginCommandsCommand extends SblockCommand {
 	public LoginCommandsCommand(Sblock plugin) {
 		super(plugin, "onlogin");
 		this.users = plugin.getModule(Users.class);
-		this.setDescription("Manipulate commands executed on login.");
-		this.setUsage("/onlogin list\n/onlogin add /command additional arguments\n"
-				+ "/onlogin delete [number]");
+
 		Permission permission;
 		try {
 			permission = new Permission("sblock.command.onlogin.more", PermissionDefault.OP);
@@ -49,7 +47,7 @@ public class LoginCommandsCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		if (args.length == 0) {
@@ -64,12 +62,12 @@ public class LoginCommandsCommand extends SblockCommand {
 		if (args[0].equals("list")) {
 			List<String> commands = user.getLoginCommands();
 			if (commands.isEmpty()) {
-				sender.sendMessage(Language.getColor("good") + "No commands registered! Try /onlogin add /command");
+				sender.sendMessage(getLang().getValue("command.onlogin.error.list.noCommands"));
 				return true;
 			}
 			for (int i = 0; i < commands.size(); i++) {
-				sender.sendMessage(new StringBuilder().append(Language.getColor("good")).append(i + 1)
-						.append(": ").append(Language.getColor("emphasis.good")).append(commands.get(i)).toString());
+				sender.sendMessage(new StringBuilder().append(Language.getColor("emphasis.neutral")).append(i + 1)
+						.append(": ").append(Language.getColor("neutral")).append(commands.get(i)).toString());
 			}
 			return true;
 		}
@@ -119,42 +117,40 @@ public class LoginCommandsCommand extends SblockCommand {
 		try {
 			int line = Integer.parseInt(args[1]);
 			ArrayList<String> commands = new ArrayList<>(user.getLoginCommands());
-			if (commands.size() < line) {
-				player.sendMessage(Language.getColor("bad") + "You only have " + commands.size() + " command(s), cannot delete " + line + "!");
-				return;
-			}
-			if (line < 1) {
-				player.sendMessage(Language.getColor("bad") + "Index must be between 1 and " + commands.size() + "! " + line + " is invalid.");
+			if (line < 1 || commands.size() < line) {
+				player.sendMessage(getLang().getValue("command.onlogin.delete.bounds")
+						.replace("{COUNT}", String.valueOf(commands.size()))
+						.replace("{PARAMETER}", args[1]));
 				return;
 			}
 			String removed = commands.remove(line - 1);
 			user.setLoginCommands(commands);
-			player.sendMessage(Language.getColor("good") + "Deleted \"" + removed + "\"");
+			player.sendMessage(getLang().getValue("command.onlogin.delete").replace("{PARAMETER}", removed));
 			return;
 		} catch (NumberFormatException e) {
-			player.sendMessage(Language.getColor("bad") + "/onlogin delete <number>");
+			player.sendMessage(getLang().getValue("command.onlogin.delete.usage"));
 			return;
 		}
 	}
 
 	private void add(Player player, User user, String[] args) {
 		ArrayList<String> commands = new ArrayList<String>(user.getLoginCommands());
-		if (!player.hasPermission("sblock.command.onlogin.more") && commands.size() >= 2) {
-			player.sendMessage(Language.getColor("bad") + "You cannot set more than two commands on login.");
+		if (!player.hasPermission("sblock.command.onlogin.more") && commands.size() >= 2 || commands.size() > 9) {
+			player.sendMessage(getLang().getValue("command.onlogin.error.add.maximum"));
 			return;
 		}
 		if (args.length <= 1) {
-			player.sendMessage(Language.getColor("bad") + "/onlogin add /command arguments");
+			player.sendMessage(getLang().getValue("command.onlogin.error.add.usage"));
 			return;
 		}
-		if (args[0].charAt(0) != '/' || args[0].equalsIgnoreCase("/me")) {
-			player.sendMessage(Language.getColor("bad") + "To prevent spam, you may not add chat to your onlogin.");
+		if (args[1].charAt(0) != '/' || args[1].equalsIgnoreCase("/me")) {
+			player.sendMessage(getLang().getValue("command.onlogin.error.add.noChat"));
 			return;
 		}
 		String command = StringUtils.join(args, ' ', 1, args.length);
 		commands.add(command);
 		user.setLoginCommands(commands);
-		player.sendMessage(Language.getColor("good") + "Added \"" + command + "\"");
+		player.sendMessage(getLang().getValue("command.onlogin.add").replace("{PARAMETER}", command));
 		return;
 	}
 }

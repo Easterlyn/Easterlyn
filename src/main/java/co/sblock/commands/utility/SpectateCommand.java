@@ -12,7 +12,6 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Spectators;
 import co.sblock.users.User;
@@ -33,10 +32,6 @@ public class SpectateCommand extends SblockCommand {
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
 		this.setAliases("spec", "spectator");
-		this.setDescription("Player: Become the ghost (toggles spectator mode)");
-		this.setUsage("To toggle spectate mode, use no arguments.\n"
-				+ "To prevent players from spectating to you, use /spectate deny\n"
-				+ "To allow players to spectate to you, use /spectate allow");
 		Permission permission;
 		try {
 			permission = new Permission("sblock.command.spectate.unrestricted", PermissionDefault.OP);
@@ -52,11 +47,11 @@ public class SpectateCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		if (!spectators.isEnabled()) {
-			sender.sendMessage("Spectate module is not enabled!");
+			sender.sendMessage(getLang().getValue("core.error.moduleDisabled").replace("{MODULE}", "Spectate"));
 			return true;
 		}
 		Player player = (Player) sender;
@@ -65,28 +60,26 @@ public class SpectateCommand extends SblockCommand {
 			args[0] = args[0].toLowerCase();
 			if (args[0].equals("on") || args[0].equals("allow") || args[0].equals("true")) {
 				user.setSpectatable(true);
-				sender.sendMessage(Language.getColor("good")
-						+ "Other players are now allowed to spectate to you!");
+				player.sendMessage(getLang().getValue("command.spectate.allow"));
 				return true;
 			}
 			if (args[0].equals("off") || args[0].equals("deny") || args[0].equals("false")) {
 				user.setSpectatable(false);
-				sender.sendMessage(Language.getColor("good")
-						+ "Other players are no longer allowed to spectate to you!");
+				player.sendMessage(getLang().getValue("command.spectate.deny"));
 				return true;
 			}
 			sender.sendMessage(this.getUsage());
 			return true;
 		}
 		if (spectators.isSpectator(player.getUniqueId())) {
-			sender.sendMessage(Language.getColor("good") + "Suddenly, you snap back to reality. It was all a dream... wasn't it?");
+			player.sendMessage(getLang().getValue("spectators.return.standard"));
 			spectators.removeSpectator(player, false);
 		} else {
-			if (player.getGameMode() != GameMode.SURVIVAL) {
-				sender.sendMessage(Language.getColor("bad") + "You can only enter spectate mode from survival.");
+			if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.SPECTATOR) {
+				player.sendMessage(getLang().getValue("command.spectate.gamemode"));
 				return true;
 			}
-			sender.sendMessage(Language.getColor("good") + "You feel a tingling sensation about your extremities as you hover up slightly.");
+			player.sendMessage(getLang().getValue("spectators.initiate"));
 			spectators.addSpectator(player);
 		}
 		return true;

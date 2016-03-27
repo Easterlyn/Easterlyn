@@ -25,7 +25,7 @@ public class TeleportHereCommand extends SblockCommandAlias {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		if (args.length == 0) {

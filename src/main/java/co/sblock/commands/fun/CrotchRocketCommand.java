@@ -30,8 +30,6 @@ public class CrotchRocketCommand extends SblockCommand {
 
 	public CrotchRocketCommand(Sblock plugin) {
 		super(plugin, "crotchrocket");
-		this.setDescription("Uncomfortably fun!");
-		this.setUsage("/crotchrocket");
 		this.setPermissionLevel("felt");
 		this.particles = plugin.getModule(ParticleUtils.class);
 	}
@@ -39,7 +37,7 @@ public class CrotchRocketCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		return launch((LivingEntity) sender);

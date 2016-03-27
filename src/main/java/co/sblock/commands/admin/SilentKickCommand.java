@@ -20,8 +20,6 @@ public class SilentKickCommand extends SblockCommand {
 
 	public SilentKickCommand(Sblock plugin) {
 		super(plugin, "silentkick");
-		this.setDescription("Kicks a player without an announcement.");
-		this.setUsage("/silentkick <player> [reason]");
 		this.setPermissionLevel("denizen");
 	}
 

@@ -29,6 +29,7 @@ public class AwayFromKeyboard extends Module {
 	private final Set<UUID> afkUUIDs;
 
 	private Cooldowns cooldowns;
+	private Language lang;
 
 	public AwayFromKeyboard(Sblock plugin) {
 		super(plugin);
@@ -45,7 +46,8 @@ public class AwayFromKeyboard extends Module {
 
 	@Override
 	protected void onEnable() {
-		this.cooldowns = getPlugin().getModule(Cooldowns.class);
+		this.cooldowns = this.getPlugin().getModule(Cooldowns.class);
+		this.lang = this.getPlugin().getModule(Language.class);
 
 		new BukkitRunnable() {
 			@Override
@@ -63,17 +65,17 @@ public class AwayFromKeyboard extends Module {
 	}
 
 	private void checkInactive(Player player) {
-		Location last = lastLocations.get(player.getUniqueId());
+		Location last = this.lastLocations.get(player.getUniqueId());
 		if (last == null) {
 			// New player, not AFK
-			setActive(player);
+			this.setActive(player);
 			return;
 		}
 
 		Location current = player.getLocation();
 
 		if (!current.getWorld().equals(last.getWorld())) {
-			setActive(player);
+			this.setActive(player);
 			return;
 		}
 
@@ -94,11 +96,11 @@ public class AwayFromKeyboard extends Module {
 
 		if (dX <= 4 && dY <= 4 && dZ <= 4) {
 			// Short move, don't go afk if not afk
-			extendActivity(player);
+			this.extendActivity(player);
 			return;
 		}
 
-		setActive(player);
+		this.setActive(player);
 	}
 
 	/**
@@ -109,8 +111,8 @@ public class AwayFromKeyboard extends Module {
 	 * @return true if time has been extended
 	 */
 	public boolean extendActivity(Player player) {
-		if (cooldowns.getRemainder(player, getName()) > 0) {
-			setActive(player);
+		if (this.cooldowns.getRemainder(player, getName()) > 0) {
+			this.setActive(player);
 			return true;
 		}
 		return false;
@@ -122,10 +124,10 @@ public class AwayFromKeyboard extends Module {
 	 * @param player the Player
 	 */
 	public void setActive(Player player) {
-		if (afkUUIDs.contains(player.getUniqueId())) {
+		if (this.afkUUIDs.contains(player.getUniqueId())) {
 			Users.team(player, null);
-			afkUUIDs.remove(player.getUniqueId());
-			player.sendMessage(Language.getColor("neutral") + "You are no longer marked as away!");
+			this.afkUUIDs.remove(player.getUniqueId());
+			player.sendMessage(this.lang.getValue("afk.back"));
 		}
 		player.setSleepingIgnored(false);
 		cooldowns.addCooldown(player, getName(), 300000L);
@@ -139,7 +141,7 @@ public class AwayFromKeyboard extends Module {
 	 * @return true if the player is not AFK.
 	 */
 	public boolean isActive(Player player) {
-		return !afkUUIDs.contains(player.getUniqueId());
+		return !this.afkUUIDs.contains(player.getUniqueId());
 	}
 
 	/**
@@ -148,15 +150,15 @@ public class AwayFromKeyboard extends Module {
 	 * @param player the Player
 	 */
 	public void setInactive(Player player) {
-		if (cooldowns.getRemainder(player, getName()) == 0) {
+		if (this.cooldowns.getRemainder(player, getName()) == 0) {
 			player.setSleepingIgnored(true);
 		}
-		if (afkUUIDs.contains(player.getUniqueId())) {
+		if (this.afkUUIDs.contains(player.getUniqueId())) {
 			return;
 		}
-		afkUUIDs.add(player.getUniqueId());
-		player.sendMessage(Language.getColor("neutral") + "You have been marked as away!");
-		Users.team(player, Language.getColor("emphasis.neutral") + "[AFK] ");
+		this.afkUUIDs.add(player.getUniqueId());
+		player.sendMessage(this.lang.getValue("afk.away"));
+		Users.team(player, this.lang.getValue("afk.prefix"));
 	}
 
 	/**
@@ -166,14 +168,14 @@ public class AwayFromKeyboard extends Module {
 	 */
 	public void clearActivity(Player player) {
 		UUID uuid = player.getUniqueId();
-		if (afkUUIDs.contains(uuid)) {
-			afkUUIDs.remove(uuid);
+		if (this.afkUUIDs.contains(uuid)) {
+			this.afkUUIDs.remove(uuid);
 			Users.team(player, null);
 		}
-		if (lastLocations.containsKey(uuid)) {
-			lastLocations.remove(uuid);
+		if (this.lastLocations.containsKey(uuid)) {
+			this.lastLocations.remove(uuid);
 		}
-		cooldowns.clearCooldown(player, getName());
+		this.cooldowns.clearCooldown(player, getName());
 	}
 
 	@Override

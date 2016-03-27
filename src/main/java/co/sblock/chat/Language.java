@@ -30,6 +30,12 @@ public class Language extends Module {
 
 	private static final Map<String, ChatColor> COLOR_DEF = new HashMap<>();
 
+	static {
+		for (ChatColor color : ChatColor.values()) {
+			COLOR_DEF.put(color.getName().toLowerCase(), color);
+		}
+	}
+
 	private final SimpleDateFormat TIME_24 = new SimpleDateFormat("HH:mm");
 	private final Pattern specialContent = Pattern.compile("\\{([A-Z]+):(.*?)\\}");
 	private final Map<String, String> translatedValues;
@@ -98,10 +104,22 @@ public class Language extends Module {
 	 * 
 	 * @param path the identifying path
 	 * 
-	 * @return the String, or a String "null" if nonexistant.
+	 * @return the String represented or the given path if nonexistent
 	 */
 	public String getValue(String path) {
-		return this.getValue(path, false);
+		return this.getValue(path, path, false);
+	}
+
+	/**
+	 * Gets a customizable String for the given path.
+	 * 
+	 * @param path the identifying path
+	 * @param defaultValue the default value to use if the path is not present
+	 * 
+	 * @return the String represented or the given path if nonexistent
+	 */
+	public String getValue(String path, String defaultValue) {
+		return this.getValue(path, defaultValue, false);
 	}
 
 	/**
@@ -111,13 +129,29 @@ public class Language extends Module {
 	 * @param path the identifying path
 	 * @param addExtraValues true if additional replacement is to be done
 	 * 
-	 * @return the String, or a String "null" if nonexistant.
+	 * @return the String represented or the given path if nonexistent
 	 */
 	public String getValue(String path, boolean addExtraValues) {
+		return this.getValue(path, path, addExtraValues);
+	}
+
+	/**
+	 * Gets a customizable String for the given path with the option to do additional replacements
+	 * for various variables.
+	 * 
+	 * @param path the identifying path
+	 * @param defaultValue the default value to use if the path is not present
+	 * @param addExtraValues true if additional replacement is to be done
+	 * 
+	 * @return the String represented or the given path if nonexistent
+	 */
+	public String getValue(String path, String defaultValue, boolean addExtraValues) {
 		String value = this.translatedValues.get(path);
 		if (value == null) {
-			value = path;
-			discord.postReport("Invalid lang path: " + path);
+			value = defaultValue;
+			if (defaultValue == path) {
+				discord.postReport("Invalid lang path: " + path);
+			}
 		}
 		if (addExtraValues) {
 			return value.replace("{TIME}", TIME_24.format(new Date()));

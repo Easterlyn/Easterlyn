@@ -39,6 +39,7 @@ public class ChatSuppressCommand extends SblockCommand {
 		}
 		User user = users.getUser(((Player) sender).getUniqueId());
 		user.setSuppression(!user.getSuppression());
+		// TODO convert to lang
 		user.sendMessage(Language.getColor("good") + "Suppression toggled " + (user.getSuppression() ? "on" : "off") + "!");
 		return true;
 	}

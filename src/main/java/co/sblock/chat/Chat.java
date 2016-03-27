@@ -51,7 +51,8 @@ public class Chat extends Module {
 
 	public MessageBuilder getHalBase() {
 		return new MessageBuilder(this.getPlugin()).setSender(lang.getValue("core.bot_name"))
-				.setNameClick("/report ").setNameHover(Language.getColor("bot_text") + "Artifical Intelligence");
+				.setNameClick("/report ").setNameHover(lang.getValue("core.bot_hover"))
+				.setChannel(this.channelManager.getChannel("#"));
 	}
 
 	public CleverHal getHal() {

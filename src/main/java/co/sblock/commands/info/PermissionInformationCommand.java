@@ -43,24 +43,24 @@ public class PermissionInformationCommand extends SblockCommand {
 			if (players.isEmpty()) {
 				sender.sendMessage(Language.getColor("bad") + "No matching players found for " + args[1]);
 			}
-			sender.sendMessage(Language.getColor("good") + args[0] + " is "
+			sender.sendMessage(Language.getColor("neutral") + args[0] + " is "
 					+ players.get(0).hasPermission(permission) + " for " + players.get(0).getName());
 			return true;
 		}
-		sender.sendMessage(Language.getColor("good") + "Permission: " + Language.getColor("emphasis.good") + permission.getName());
+		sender.sendMessage(Language.getColor("emphasis.neutral") + "Permission: " + Language.getColor("neutral") + permission.getName());
 		if (permission.getDescription() != null) {
-			sender.sendMessage(Language.getColor("good") + "Description: " + Language.getColor("emphasis.good") + permission.getDescription());
+			sender.sendMessage(Language.getColor("emphasis.neutral") + "Description: " + Language.getColor("neutral") + permission.getDescription());
 		}
 		if (permission.getChildren().size() > 0) {
-			sender.sendMessage(Language.getColor("good") + "Children:");
+			sender.sendMessage(Language.getColor("emphasis.neutral") + "Children:");
 			for (Entry<String, Boolean> entry : permission.getChildren().entrySet()) {
-				sender.sendMessage(new StringBuilder().append(Language.getColor("emphasis.good"))
-						.append(entry.getKey()).append(Language.getColor("good")).append(": ")
+				sender.sendMessage(new StringBuilder().append(Language.getColor("neutral"))
+						.append(entry.getKey()).append(Language.getColor("emphasis.neutral")).append(": ")
 						.append(entry.getValue() ? Language.getColor("good") : Language.getColor("bad"))
 						.append(entry.getValue()).toString());
 			}
 		}
-		sender.sendMessage(Language.getColor("good") + "Default: " + Language.getColor("emphasis.good") + permission.getDefault().name());
+		sender.sendMessage(Language.getColor("emphasis.neutral") + "Default: " + Language.getColor("neutral") + permission.getDefault().name());
 		return true;
 	}
 

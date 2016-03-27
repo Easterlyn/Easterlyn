@@ -10,6 +10,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerAction;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Language;
 import co.sblock.micromodules.DreamTeleport;
 
 import net.md_5.bungee.api.ChatColor;
@@ -27,10 +28,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 				PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Client.TAB_COMPLETE);
 		this.dream = plugin.getModule(DreamTeleport.class);
 
-		// Sblock Alpha: 1.8 - X/Y
-		version = ChatColor.DARK_AQUA + "Sblock Beta" + ChatColor.DARK_GRAY + ": " + ChatColor.GRAY
-				+ "1.9" + ChatColor.DARK_GRAY + " - %s%s" + ChatColor.DARK_GRAY + "/"
-				+ ChatColor.GREEN + "%s";
+		version = plugin.getModule(Language.class).getValue("events.packet.serverList");
 	}
 
 	/**
@@ -57,7 +55,8 @@ public class SyncPacketAdapter extends PacketAdapter {
 					: ChatColor.GREEN;
 
 			// Format and away we go
-			serverping.setVersionName(String.format(version, percentColor, online, max));
+			serverping.setVersionName(version.replace("{PERCENT}", percentColor.toString())
+					.replace("{ONLINE}", String.valueOf(online)).replace("{MAX}", String.valueOf(max)));
 		} else if (event.getPacketType() == PacketType.Play.Server.TAB_COMPLETE) {
 			if (event.getPlayer().hasPermission("sblock.denizen")) {
 				return;

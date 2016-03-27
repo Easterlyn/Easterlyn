@@ -22,12 +22,16 @@ public class SleepVote extends Module {
 
 	private final HashMap<String, HashSet<String>> votes = new HashMap<String, HashSet<String>>();
 
+	private Language lang;
+
 	public SleepVote(Sblock plugin) {
 		super(plugin);
 	}
 
 	@Override
-	protected void onEnable() { }
+	protected void onEnable() {
+		this.lang = this.getPlugin().getModule(Language.class);
+	}
 
 	@Override
 	protected void onDisable() {
@@ -86,14 +90,14 @@ public class SleepVote extends Module {
 			}
 		});
 		if (player != null) {
-			sb.append(Language.getColor("player.neutral")).append(player).append(Language.getColor("neutral")).append(" has gone to bed. ");
+			sb.append(lang.getValue("sleep.player").replace("{PLAYER}", player)).append(' ');
 		} else {
 			worldSize.decrementAndGet();
 		}
 		int percent = worldSize.get() == 0 ? 100 : 100 * votes.get(world.getName()).size() / worldSize.get();
-		sb.append(Language.getColor("neutral")).append(percent).append("% of players have slept.");
+		sb.append(lang.getValue("sleep.percent").replace("{PERCENT}", String.valueOf(percent)));
 		if (percent >= 50) {
-			sb.append('\n').append("Time to get up, a new day awaits!");
+			sb.append('\n').append(lang.getValue("sleep.success"));
 			world.setTime(0);
 			world.setStorm(false);
 			world.setWeatherDuration(world.getWeatherDuration() > 12000 ? world.getWeatherDuration() : 12000);

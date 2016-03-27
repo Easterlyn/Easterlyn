@@ -1,15 +1,14 @@
 package co.sblock.commands.utility;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.Discord;
-import co.sblock.users.BukkitSerializer;
 
 /**
  * Command allowing users to report issues directly to moderators, even if none are online.
@@ -22,39 +21,35 @@ public class ReportCommand extends SblockCommand {
 
 	public ReportCommand(Sblock plugin) {
 		super(plugin, "report");
-		this.setDescription("Report an issue to the moderators. Be descriptive!");
-		this.setUsage("/report Your issue here. Be descriptive!");
 		this.discord = plugin.getModule(Discord.class);
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		if (args.length == 0) {
 			return false;
 		}
 		if (args.length < 4) {
-			sender.sendMessage(Language.getColor("bad") + "More descriptive, please!");
+			sender.sendMessage(getLang().getValue("command.report.more"));
 			return true;
 		}
 		if (!discord.isEnabled()) {
-			sender.sendMessage(Language.getColor("bad") + "Reporting is disabled at this time, sorry! Please /mail an admin instead.");
+			sender.sendMessage(getLang().getValue("command.report.discord"));
 			return true;
 		}
 		Player player = (Player) sender;
-		/* 
-		 * Report format:
-		 * Report by Name at Earth,x,y,z
-		 * All parameters here
-		 */
-		StringBuilder sb = new StringBuilder("Report by ").append(player.getName()).append(" at ")
-				.append(BukkitSerializer.locationToBlockCenterString(player.getLocation()))
-				.append('\n').append(StringUtils.join(args, ' '));
-		discord.postReport(sb.toString());
-		player.sendMessage(Language.getColor("good") + "Report sent! Thanks for alerting us.");
+		Location location = player.getLocation();
+		discord.postReport(getLang().getValue("command.report.send").replace("{PLAYER}", player.getDisplayName())
+				.replace("{X}", String.valueOf(location.getBlockX()))
+				.replace("{Y}", String.valueOf(location.getBlockY()))
+				.replace("{Z}", String.valueOf(location.getBlockZ()))
+				.replace("{WORLD}", location.getWorld().getName())
+				.replace("{PARAMETER}", StringUtils.join(args, ' ')));
+		player.sendMessage(getLang().getValue("command.report.success"));
 		return true;
 	}
 

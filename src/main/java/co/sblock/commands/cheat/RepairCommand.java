@@ -12,7 +12,6 @@ import org.bukkit.inventory.meta.Repairable;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -24,15 +23,13 @@ public class RepairCommand extends SblockCommand {
 
 	public RepairCommand(Sblock plugin) {
 		super(plugin, "repair");
-		this.setDescription("Fully repairs an item, including wiping the anvil tag.");
-		this.setUsage("Run /repair [full] while holding an item in main hand.");
 		this.setPermissionLevel("denizen");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		Player player = (Player) sender;
@@ -50,7 +47,7 @@ public class RepairCommand extends SblockCommand {
 			hand.setItemMeta(meta);
 		}
 		player.getInventory().setItemInMainHand(hand);
-		player.sendMessage(Language.getColor("good") + "Repaired!");
+		player.sendMessage(getLang().getValue("command.repair.success"));
 		return true;
 	}
 

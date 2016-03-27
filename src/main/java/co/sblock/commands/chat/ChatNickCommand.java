@@ -31,6 +31,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class ChatNickCommand extends SblockCommand {
 
+	// TODO convert to lang, allow setting of nick for softmuted, just don't announce
 	private final Chat chat;
 	private final Users users;
 

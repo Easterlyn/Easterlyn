@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -22,15 +21,13 @@ public class MoreCommand extends SblockCommand {
 
 	public MoreCommand(Sblock plugin) {
 		super(plugin, "more");
-		this.setDescription("Have all the things! Increase or decrease item in main hand.");
-		this.setUsage("/more [optional amount]");
 		this.setPermissionLevel("felt");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		Player player = (Player) sender;
@@ -59,7 +56,7 @@ public class MoreCommand extends SblockCommand {
 			amount = 64;
 		}
 		stack.setAmount(amount);
-		player.sendMessage(Language.getColor("good") + "Stack in hand set to " + Language.getColor("emphasis.good") + amount);
+		player.sendMessage(getLang().getValue("command.more.success").replace("{PARAMETER}", String.valueOf(amount)));
 		return true;
 	}
 

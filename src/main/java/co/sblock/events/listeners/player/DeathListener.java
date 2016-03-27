@@ -1,6 +1,7 @@
 package co.sblock.events.listeners.player;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -33,19 +34,23 @@ public class DeathListener extends SblockListener {
 	private final Events events;
 	private final FreeCart carts;
 	private final Godule godule;
+	private final Language lang;
 	private final ItemStack facts;
+	private final String[] messages;
 
 	public DeathListener(Sblock plugin) {
 		super(plugin);
 		this.events = plugin.getModule(Events.class);
 		this.carts = plugin.getModule(FreeCart.class);
 		this.godule = plugin.getModule(Godule.class);
-		facts = new ItemStack(Material.WRITTEN_BOOK);
+		this.lang = plugin.getModule(Language.class);
+		this.messages = lang.getValue("events.death.random").split("\n");
+		this.facts = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta meta = (BookMeta) facts.getItemMeta();
 		meta.setTitle("Wither Facts");
 		meta.setAuthor(Language.getColor("rank.denizen") + "Pete");
 		meta.addPage("Withers are awesome.");
-		facts.setItemMeta(meta);
+		this.facts.setItemMeta(meta);
 	}
 
 	/**
@@ -58,16 +63,16 @@ public class DeathListener extends SblockListener {
 		final Player player = event.getEntity();
 
 		// Remove free minecart if riding one
-		carts.remove(player);
+		this.carts.remove(player);
 
-		String message = new String[] {"Oh dear, you are dead.", "Crikey, that was a big 'un!",
-				"I say, my dear chap, you appear to have died a little there.", "Git rekt.",
-				"That was a fatal miscalculation."}[(int) (Math.random() * 5)];
-		String location = new StringBuilder(" Death point: ")
-				.append(player.getLocation().getBlockX()).append("x ")
-				.append(player.getLocation().getBlockY()).append("y ")
-				.append(player.getLocation().getBlockZ()).append('z').toString();
-		player.sendMessage(Language.getColor("bad") + message + location);
+		Location location = player.getLocation();
+		String randomMessage = messages[getPlugin().getRandom().nextInt(messages.length)];
+		String locString = this.lang.getValue("events.death.message")
+				.replace("{X}", String.valueOf(location.getBlockX()))
+				.replace("{Y}", String.valueOf(location.getBlockY()))
+				.replace("{Z}", String.valueOf(location.getBlockZ()));
+		player.sendMessage(Language.getColor("bad") + locString.replaceAll("\\{WORLD\\}\\s?", "").replace("{OPTION}", randomMessage));
+		locString = locString.replace("{WORLD}", location.getWorld().getName()).replaceAll("\\{OPTION\\}\\s?", "");
 
 		EntityDamageEvent lastDamage = player.getLastDamageCause();
 		if (lastDamage.getCause() == DamageCause.WITHER
@@ -84,7 +89,7 @@ public class DeathListener extends SblockListener {
 		}
 
 		// TODO post deaths (sans coordinates) to global chat
-		if (events.getPVPTasks().containsKey(player.getUniqueId())) {
+		if (this.events.getPVPTasks().containsKey(player.getUniqueId())) {
 			event.setDroppedExp(Experience.getExp(player));
 			int dropped = Experience.getExp(player) / 10;
 			if (dropped > 30) {
@@ -94,13 +99,13 @@ public class DeathListener extends SblockListener {
 			Experience.changeExp(player, -dropped);
 			event.setKeepLevel(true);
 			event.setKeepInventory(true);
-			events.getPVPTasks().remove(player.getUniqueId()).cancel();
+			this.events.getPVPTasks().remove(player.getUniqueId()).cancel();
 			Player killer = player.getKiller();
 			if (killer == null) {
 				return;
 			}
-			Bukkit.getConsoleSender().sendMessage(player.getName() + " died to "
-					+ killer.getName() + "." + location);
+			Bukkit.getConsoleSender().sendMessage(
+					player.getName() + " died to " + killer.getName() + "." + locString);
 			if (godule.isEnabled(UserAspect.BREATH)) {
 				ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) skull.getItemMeta();
@@ -110,7 +115,7 @@ public class DeathListener extends SblockListener {
 			}
 		} else {
 			Bukkit.getConsoleSender().sendMessage(player.getName() + " died to "
-					+ player.getLastDamageCause().getCause().name() + "." + location);
+					+ player.getLastDamageCause().getCause().name() + "." + locString);
 		}
 	}
 }

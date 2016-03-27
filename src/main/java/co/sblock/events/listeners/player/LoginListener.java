@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Language;
 import co.sblock.events.listeners.SblockListener;
 
 /**
@@ -19,11 +20,13 @@ import co.sblock.events.listeners.SblockListener;
  */
 public class LoginListener extends SblockListener {
 
+	private final Language lang;
 	private final Pattern pattern;
 
 	public LoginListener(Sblock plugin) {
 		super(plugin);
-		pattern = Pattern.compile("[^a-zA-Z_0-9]");
+		this.lang = plugin.getModule(Language.class);
+		this.pattern = Pattern.compile("[^a-zA-Z_0-9]");
 	}
 
 	/**
@@ -37,10 +40,16 @@ public class LoginListener extends SblockListener {
 			return;
 		}
 		if (event.getPlayer().getName() != null
-				&& pattern.matcher(event.getPlayer().getName()).find()) {
+				&& this.pattern.matcher(event.getPlayer().getName()).find()) {
+			/*
+			 * One day we had a guy log in who had a space after his name. Played hell with plugins
+			 * and couldn't be targeted by commands. Good times. Luckily, he wasn't malicious and
+			 * probably didn't even realize how badly he could have screwed us over.
+			 * 
+			 * If Mojang screws up again, I am not dealing with it.
+			 */
 			event.setResult(Result.KICK_BANNED);
-			event.setKickMessage("Your name contains invalid characters. Valid characters are [a-zA-Z_0-9]."
-					+ "\nTry restarting your client.\n\nIf the issue persists, please contact Mojang.");
+			event.setKickMessage(this.lang.getValue("events.login.illegalName"));
 			return;
 		}
 		switch (event.getResult()) {

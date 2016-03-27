@@ -25,10 +25,12 @@ import co.sblock.users.Users;
  */
 public class TeleportListener extends SblockListener {
 
+	private final Language lang;
 	private final Users users;
 
 	public TeleportListener(Sblock plugin) {
 		super(plugin);
+		this.lang = plugin.getModule(Language.class);
 		this.users = plugin.getModule(Users.class);
 	}
 
@@ -60,8 +62,7 @@ public class TeleportListener extends SblockListener {
 				return;
 			}
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(Language.getColor("player.bad") + player.getDisplayName() + Language.getColor("bad")
-					+ " has disallowed spectating! You'll need to send a tpa.");
+			event.getPlayer().sendMessage(lang.getValue("spectate.disallowed"));
 			return;
 		}
 	}

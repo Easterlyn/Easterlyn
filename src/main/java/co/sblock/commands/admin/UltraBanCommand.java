@@ -24,9 +24,7 @@ public class UltraBanCommand extends SblockCommand {
 	public UltraBanCommand(Sblock plugin) {
 		super(plugin, "ultraban");
 		this.users = plugin.getModule(Users.class);
-		this.setDescription("YOU REALLY CAN'T ESCAPE THE RED MILES.");
 		this.setPermissionLevel("horrorterror");
-		this.setUsage("/ultraban <target>");
 	}
 
 	@Override

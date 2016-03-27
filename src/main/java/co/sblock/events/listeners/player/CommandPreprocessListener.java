@@ -25,6 +25,7 @@ public class CommandPreprocessListener extends SblockListener {
 	private final AwayFromKeyboard afk;
 	private final Chat chat;
 	private final Discord discord;
+	private final Language lang;
 	private final Spectators spectators;
 	private final SimpleCommandMap map;
 
@@ -33,6 +34,7 @@ public class CommandPreprocessListener extends SblockListener {
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.chat = plugin.getModule(Chat.class);
 		this.discord = plugin.getModule(Discord.class);
+		this.lang = plugin.getModule(Language.class);
 		this.spectators = plugin.getModule(Spectators.class);
 		this.map = plugin.getCommandMap();
 	}
@@ -74,7 +76,7 @@ public class CommandPreprocessListener extends SblockListener {
 		if (spectators.isSpectator(event.getPlayer().getUniqueId())
 				&& cmd.getName().equals("sethome")) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(Language.getColor("bad") + "You hear a fizzling noise as your spell fails.");
+			event.getPlayer().sendMessage(lang.getValue("events.command.spectatefail"));
 			return;
 		}
 
@@ -86,7 +88,7 @@ public class CommandPreprocessListener extends SblockListener {
 		} else if (cmd.getName().equals("prism")) {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
 				event.setCancelled(true);
-				event.getPlayer().sendMessage(Language.getColor("bad") + "Restore, don't undo.");
+				event.getPlayer().sendMessage(lang.getValue("events.command.prismUndoCrash"));
 			}
 		} else if (cmd.getName().equals("fly")) {
 			if ((event.getPlayer().hasPermission("essentials.fly")

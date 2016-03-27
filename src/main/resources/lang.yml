@@ -1,9 +1,9 @@
-# The great language migration
-
 # Color definitions. Any value in this section must be a ChatColor name.
 # Custom values can be defined, however, the defaults are used internally for various purposes.
 # Any custom values can then be used in other language sections via {COLOR:subpath}
 # For example, {COLOR:rank.horrorterror} refers to ChatColor.DARK_RED by default.
+# All ChatColor names are also supported, e.g. {COLOR:aqua} is ChatColor.AQUA.
+# Using specific colors should be avoided where possible to keep things consistent.
 color:
   bot_name: 'DARK_RED'
   bot_text: 'RED'
@@ -12,18 +12,15 @@ color:
   link_format: 'UNDERLINE'
   default: 'WHITE'
   command: 'AQUA'
-#  good: 'GREEN'
-  good: 'YELLOW'
+  good: 'GREEN'
   neutral: 'YELLOW'
   bad: 'RED'
   player:
-#    good: 'GOLD'
-    good: 'GREEN'
+    good: 'GOLD'
     neutral: 'GREEN'
     bad: 'DARK_AQUA'
   emphasis:
-#    good: 'DARK_GREEN'
-    good: 'GOLD'
+    good: 'DARK_GREEN'
     neutral: 'DARK_AQUA'
     bad: 'DARK_RED'
   rank:
@@ -41,8 +38,10 @@ color:
 
 core:
   bot_name: '{COLOR:bot_name}Lil Hal'
+  bot_hover: '{COLOR:bot_text}Artifical Intelligence'
   error:
     invalidUser: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has not played on this server before.'
+    moduleDisabled: '{COLOR:bad}{MODULE} is currently not enabled!'
 
 chat:
   spamChannel: '#halchat'
@@ -84,7 +83,7 @@ chat:
   channel:
     join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}began pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'
     quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}ceased pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'
-    setcurrent: '{COLOR:neutral}Current channel set to {COLOR:emphasis.neutral}{CHANNEL}'
+    setcurrent: '{COLOR:neutral}Current channel set to {COLOR:link_channel}{CHANNEL}'
     disband: '{COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}has been disbanded. These are dark times indeed.'
     kick: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been kicked from {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
     ban: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been banned from {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
@@ -135,6 +134,8 @@ command:
     success_save: '{COLOR:good}Saved to {TARGET}'
     success_load: '{COLOR:good}Loaded captcha item for {TARGET}'
   tempban:
+    description: 'You can escape the orange miles. It just takes time.'
+    usage: '/tempban <target> <duration> [optional reason]'
     announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been temporarily banned. {COLOR:emphasis.bad}{REASON}'
   aether:
     hover: |
@@ -144,4 +145,266 @@ command:
   me:
     description: '/me does an action'
     usage: 'YOU FOOKIN WOT M8? /me (@channel) <message> Channel optional, defaults current.'
+  effects:
+    description: 'Effects! Similar to /enchant.'
+    usage: '/effects <type> [level]'
+  silentkick:
+    description: 'Kicks a player without an announcement.'
+    usage: '/silentkick <player> [reason]'
+  ultraban:
+    description: 'YOU REALLY CAN''T ESCAPE THE RED MILES.'
+    usage: '/ultraban <target>'
+  unban:
+    description: 'DO THE WINDY THING.'
+    usage: '/unsban <UUID|name|IP>'
+    unfound: '{COLOR:bad}No bans were found for {TARGET}'
+    possibleIP: '{COLOR:neutral}Not globally announcing unban, {TARGET} may be an IP.'
+    unban: '{COLOR:bot_text}{TARGET} has been unbanned.'
+  afk:
+    description: 'Toggle AFK status.'
+    usage: '/afk'
+  totalfocus:
+    description: 'Knock knock. Come on in.'
+    usage: '/totalfocus <channel> <player>'
+  focus:
+    description: 'Join or focus on a chat channel.'
+    usage: '{COLOR:command}/join <channel>{COLOR:neutral}: Join or focus on <channel>.'
+  leave:
+    description: 'Leave a chat channel.'
+    usage: '{COLOR:command}/leave <channel>{COLOR:neutral}: Stop listening to <channel>.'
+  listen:
+    description: 'Join a chat channel without focusing on it.'
+    usage: '{COLOR:command}/listen <channel>{COLOR:neutral}: Listen to <channel>.'
+  link:
+    description: 'Generate a code to link your Discord account with Minecraft'
+    usage: '/link [UUID] [DiscordUser/ID]'
+    success: |
+      {COLOR:neutral}Message the Discord bot "{COLOR:command}/link {CODE}{COLOR:good}" to complete linking your Discord account!
+      {COLOR:bad}This code will expire in a minute.
+  m:
+    description: 'Send a private message.'
+    usage: '/m <name> <message> or /r <reply to last message>'
+    replyUnset: '{COLOR:bad}You do not have anyone to reply to!'
+    replyMissing: '{COLOR:bad}The person you were talking to has logged out!'
+  show:
+    description: 'Displays an item in chat.'
+    usage: '/show'
+    requirements: '{COLOR:bad}You do not have anything named and enchanted in your main hand!'
+    invalidCharacters: '{COLOR:bad}You may not show items with names containing characters normalized by the main chat!'
+  enchant:
+    description: 'Enchant the item in your main hand.'
+    usage: |
+      /enchant <enchantment> <level> [-flags]
+      Flags:
+      -b: Don't turn books into enchanted books
+      -l: Levels < 1 will not remove the enchantment
+    success:
+      remove: '{COLOR:good}Enchantment removed!'
+      add: '{COLOR:good}Enchantment set!'
+  heal:
+    description: 'Heal yourself or another player.'
+    usage: '/<heal|feed> [player]'
+    success: '{COLOR:good}All patched up!'
+  more:
+    description: 'Have all the things! Increase or decrease item in main hand.'
+    usage: '/more [optional amount]'
+    success: '{COLOR:neutral}Stack in hand set to {COLOR:emphasis.neutral}{PARAMETER}{COLOR:neutral}!'
+  repair:
+    description: 'Fully repairs an item, including wiping the anvil tag.'
+    usage: 'Run /repair [full] while holding an item in main hand.'
+    success: '{COLOR:good}Repaired!'
+  crotchrocket:
+    description: 'Uncomfortably fun!'
+    usage: '/crotchrocket'
+  grist:
+    description: 'Grist-related operations.'
+    usage: |
+      {COLOR:command}/grist cost{COLOR:neutral}: Grist cost of item in hand.
+      {COLOR:command}/grist current{COLOR:neutral}: Current grist.
+      {COLOR:command}/grist (level)L{COLOR:neutral}: Grist from level. Ex: /grist 40L
+      {COLOR:command}/grist (exp points){COLOR:neutral}: Level from grist. Ex: /grist 100
+    level: '{COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist is {COLOR:emphasis.neutral}{LEVEL}{COLOR:neutral} levels.'
+    exp: '{COLOR:neutral}Level {COLOR:emphasis.neutral}{LEVEL}{COLOR:neutral} is {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist.'
+    current: '{COLOR:neutral}You have {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist.'
+    nothing: '{COLOR:bad}Nothing in life is free.'
+    cost: '{COLOR:neutral}Your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral} would cost {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist to recreate.'
+  halculate:
+    description: 'Halculate an equation privately.'
+    usage: 'Enter an equation! Ex. /halc (1+1)^(2/3) + 10'
+    success: '{COLOR:bot_text}Evhaluation: {COLOR:gray}{VALUE}'
+  tpa:
+    description: 'Handle a teleport request'
+    usage: '/tpa name, /tpahere name, /tpaccept, /tpdecline'
+    help:
+      request: '{COLOR:command}/tpa <player>{COLOR:neutral}: Request to teleport to a player'
+      here: '{COLOR:command}/tpahere <player>{COLOR:neutral}: Request to teleport another player to you'
+      yes: '{COLOR:command}/tpa <player>{COLOR:good}: Request to teleport to a player'
+      no: '{COLOR:command}/tpa <player>{COLOR:good}: Request to teleport to a player'
+    self: '{COLOR:neutral}If I told you I just teleported you to yourself would you believe me?'
+    reset: '{COLOR:bad}If you''re on cooldown due to official business, use {COLOR:command}/tpreset{COLOR:bad}'
+    error:
+      recipientPermission: '{COLOR:player.bad}{PLAYER}{COLOR:bad} cannot accept teleport requests!'
+      cooldown: '{COLOR:bad}You cannot send a teleport request for another {COLOR:emphasis.bad}{TIME}{COLOR:bad}.'
+      toSpectator: '{COLOR:bad}Corporeal players cannot teleport to incorporeal players!'
+      crossRegion: '{COLOR:bad}Teleports cannot be initiated from different planets!'
+      recipientPending: '{COLOR:player.bad}{PLAYER}{COLOR:bad} has a pending request already.'
+      noPending: '{COLOR:bad}You do not have any pending teleport requests.'
+      senderMissing: '{COLOR:bad}The issuer of the request seems to have logged off.'
+    success:
+      sent: '{COLOR:neutral}Request sent!'
+      recieve: |
+        {COLOR:player.neutral}{PLAYER}{COLOR:neutral} is requesting to teleport {OPTION}.
+        {COLOR:neutral}To accept, use {COLOR:command}/tpyes{COLOR:neutral}. To decline, use {COLOR:command}/tpno{COLOR:neutral}.
+        {COLOR:neutral}This request will expire in a minute.
+      recieveToSender: 'you to them'
+      recieveToTarget: 'to you'
+      arrive:
+        teleported: '{COLOR:good}Teleported you to {COLOR:player.good}{PLAYER}{COLOR:good}.'
+        target: '{COLOR:good}Teleported {COLOR:player.good}{PLAYER}{COLOR:good} to you.'
+    decline:
+      self: '{COLOR:neutral}Request declined!'
+      other: '{COLOR:player.bad}{PLAYER}{COLOR:bad} declined your request!'
+  baptcha:
+    description: 'Captchalogues all items in your inventory matching your item in main hand!'
+    usage: 'Hold an item in main hand, run /baptcha. Batch captcha!'
+    noCaptchas: '{COLOR:bad}You don''t have any blank captchas to use!'
+    success: '{COLOR:neutral}Used {COUNT} captchas to store items.'
+  convert:
+    description: 'Converts captchacards from paper to plastic.'
+    usage: 'Run /convert with old captchacards in your inventory.'
+    success: '{COLOR:good}Converted {COUNT} captchas!'
+    failure: '{COLOR:bad}No old captchacards found!'
+  onlogin:
+    description: 'Manipulate commands executed on login.'
+    usage: |
+      /onlogin list
+      /onlogin add </command> [command arguments]
+      /onlogin delete <number>
+    error:
+      list:
+        noCommands: '{COLOR:neutral}No commands registered! Try /onlogin add /command'
+      delete:
+        bounds: '{COLOR:bad}Index must be 1 to {COUNT}, cannot delete {PARAMETER}!'
+        usage: '{COLOR:bad}/onlogin delete <number>'
+      add:
+        maximum: '{COLOR:bad}You''ve reached your maximum login commands!'
+        noChat: '{COLOR:bad}To prevent spam, you may not add chat to your onlogin.'
+        usage: '{COLOR:bad}/onlogin add /command arguments'
+    delete: '{COLOR:neutral}Deleted "{PARAMETER}"'
+    add: '{COLOR:neutral}Added "{PARAMETER}"'
+  oops:
+    description: 'Suggests fixes to commands.'
+    usage: '/oops'
+    message: '{COLOR:emphasis.neutral}{COLOR:bold}Oops!{COLOR:neutral} Did you mean {COLOR:command}/{COMMAND}{COLOR:neutral}? Run {COLOR:command}/oops{COLOR:neutral}!'
+  report:
+    description: 'Report an issue to the moderators. Be descriptive!'
+    usage: '/report Your issue here. Be descriptive!'
+    more: '{COLOR:bad}More descriptive, please! We''d like a better understanding of the problem.'
+    discord: '{COLOR:bad}Reporting is disabled at this time, sorry! Please /mail an admin instead.'
+    success: '{COLOR:good}Report sent! Thanks for alerting us.'
+    send: |
+      Report by {PLAYER} (/silenttp {X} {Y} {Z} 0 0 {WORLD})
+      {PARAMETER}
+  spectate:
+    description: 'Player: Become the ghost (toggle spectator mode)'
+    usage: |
+      To toggle spectate mode, use no arguments.
+      To prevent players from spectating to you, use /spectate deny
+      To allow players to spectate to you, use /spectate allow
+      To spectate to a player, navigate to them using your number bar.
+    gamemode: '{COLOR:bad}You can only enter spectate mode from survival.'
+    allow: '{COLOR:neutral}Other players are now allowed to spectate to you!'
+    deny: '{COLOR:neutral}Other players are no longer allowed to spectate to you!'
 
+afk:
+  away: '{COLOR:neutral}You have been marked as away!'
+  prefix: '{COLOR:emphasis.neutral}[AFK] '
+  back: '{COLOR:neutral}You are no longer marked as away!'
+
+captcha:
+  uncaptchable: '{COLOR:bad}That item cannot be put in a captcha!'
+
+events:
+  craft:
+    captcha: '{COLOR:bad}Using captchas in crafting tends to lose valuables!'
+    unique: '{COLOR:bad}You can''t use a {PARAMETER}{COLOR:bad} for that!'
+  chat:
+    test: |
+      It is certain.
+      It is decidedly so.
+      Without a doubt.
+      Yes, definitely.
+      You may rely on it.
+      As I see, yes.
+      Most likely.
+      Outlook good.
+      Yes.
+      Signs point to yes.
+      Reply hazy, try again.
+      Ask again later.
+      Better not tell you now.
+      Cannot predict now.
+      Concentrate and ask again.
+      Don't count on it.
+      My reply is no.
+      My sources say no.
+      Outlook not so good.
+      Very doubtful.
+      Testing complete. Proceeding with operation.
+      A critical fault has been discovered while testing.
+      Error: Test results contaminated.
+      tset
+      PONG.
+    filter: |
+      (^|\s)rap(ed?|ing)(\W|\s|$)
+    ping: '{COLOR:bad}It''s easy and polite to relay information while highlighting someone, {PLAYER}. Please do so.'
+    rp: '{COLOR:bad}RP is not allowed in the main chat. Join #rp or #fanrp using /focus!'
+    spam: '{COLOR:bad}You appear to be spamming. Please slow down chat.'
+    mute: '{COLOR:bad}You were asked not to spam. This mute will last 5 minutes.'
+    gp:
+      claims: '{COLOR:bad}For information about claims, watch https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1'
+      trapped: '{COLOR:bad}Trapped in someone''s land claim? Try {COLOR:command}/trapped'
+  command:
+    spectatefail: '{COLOR:bad}You hear a fizzling noise as your spell fails. You can''t summon the strength to cast it in this form.'
+    prismUndoCrash: '{COLOR:bad}Restore, don''t undo.'
+  death:
+    random: |
+      Oh dear, you are dead.
+      Crikey, that was a big 'un!
+      Git rekt.
+      I say, my dear chap, you appear to have died a little there.
+      That was a fatal miscalculation.
+    message: '{OPTION} Death point: {WORLD} {X}x {Y}y {Z}z'
+  interact:
+    daySleep: '{COLOR:bad}It''s not dark or raining!'
+  join:
+    tab:
+      header: '{COLOR:gold}Welcome to {COLOR:dark_aqua}Sblock Beta'
+      footer: '{COLOR:neutral}Enjoy your stay!'
+  login:
+    illegalName: |
+      Your name contains invalid characters. Valid characters are [a-zA-Z_0-9].
+      Try restarting your client.
+      
+      If the issue persists, please contact Mojang.
+  portal:
+    protected: '{COLOR:bad}Your destination is inside a protected area! You''ll have to build your portal elsewhere.'
+  packet:
+    serverList: '{COLOR:dark_aqua}Sblock Beta{COLOR:dark_gray}: {COLOR:gray}1.9{COLOR:dark_gray} - {PERCENT}{ONLINE}{COLOR:dark_gray}/{COLOR:green}{MAX}'
+
+machines:
+  noTouch: '{COLOR:bad}You decide against fussing with the internals of this machine.'
+
+sleep:
+  interrupt: '{COLOR:bad}You''re no longer sleeping. You''ll have to use a bed again to count towards the total.'
+  player: '{COLOR:player.neutral}{PLAYER}{COLOR:neutral} has gone to bed.'
+  percent: '{COLOR:neutral}{PERCENT}% of players have slept.'
+  success: '{COLOR:neutral}Time to get up, a new day awaits!'
+
+spectators:
+  initiate: '{COLOR:neutral}You feel a tingling sensation about your extremities as you hover up slightly.'
+  disallowed: '{COLOR:player.bad}{PLAYER}{COLOR:bad} has disallowed spectating! You''ll need to send a tpa.'
+  return:
+    standard: '{COLOR:neutral}Suddenly, you snap back to reality. It was all a dream... wasn''t it?'
+    time: '{COLOR:neutral}With each passing moment, maintaining your link becomes harder. You awaken with a jolt.'
+    distance: '{COLOR:neutral}With no one around to bolster your connection to the astral plane, you quickly run out of strength.'

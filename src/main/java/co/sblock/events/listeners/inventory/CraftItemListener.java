@@ -20,8 +20,11 @@ import co.sblock.utilities.InventoryUtils;
  */
 public class CraftItemListener extends SblockListener {
 
+	private final Language lang;
+
 	public CraftItemListener(Sblock plugin) {
 		super(plugin);
+		this.lang = this.getPlugin().getModule(Language.class);
 	}
 
 	/**
@@ -38,7 +41,7 @@ public class CraftItemListener extends SblockListener {
 			Player clicked = (Player) event.getWhoClicked();
 			if (Captcha.isCard(is) || CruxiteDowel.isDowel(is)) {
 				event.setCancelled(true);
-				clicked.sendMessage(Language.getColor("bad") + "Using captchas in crafting tends to lose valuables!");
+				clicked.sendMessage(lang.getValue("events.craft.captcha"));
 				clicked.updateInventory();
 				return;
 			}
@@ -46,8 +49,8 @@ public class CraftItemListener extends SblockListener {
 				if (is1.isSimilar(is)) {
 					event.setCancelled(true);
 					if (is.getItemMeta().hasDisplayName()) {
-						clicked.sendMessage(Language.getColor("bad") + "You can't use a "
-								+ is.getItemMeta().getDisplayName() + Language.getColor("bad") + " for that!");
+						clicked.sendMessage(lang.getValue("events.craft.captcha")
+								.replace("{PARAMETER}", is.getItemMeta().getDisplayName()));
 					}
 					return;
 				}

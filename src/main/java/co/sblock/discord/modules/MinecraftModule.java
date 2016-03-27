@@ -41,7 +41,7 @@ public class MinecraftModule extends DiscordModule {
 	private final Users users;
 	private final ChannelManager manager;
 	private final MessageBuilder builder;
-	private final Pattern mention = Pattern.compile("<([@#])(\\d+)>");
+	private final Pattern mention = Pattern.compile("<([@#])(.+?)>");
 
 	public MinecraftModule(Discord discord) {
 		super(discord);
@@ -115,12 +115,12 @@ public class MinecraftModule extends DiscordModule {
 			int newline = content.indexOf('\n');
 			boolean delete = false;
 			if (newline > 0) {
-				getDiscord().postMessage(getDiscord().getBotName(), "Newlines are not allowed in messages to Minecraft, <@"
-						+ message.getAuthor().getID() + ">", message.getChannel().getID());
+				getDiscord().postMessage(getDiscord().getBotName(), "Newlines are not allowed in messages to Minecraft, "
+						+ message.getAuthor().mention(), message.getChannel().getID());
 				delete = true;
 			} else if (content.length() > 255) {
-				getDiscord().postMessage(getDiscord().getBotName(), "Messages from Discord may not be over 255 characters, <@"
-						+ message.getAuthor().getID() + ">", message.getChannel().getID());
+				getDiscord().postMessage(getDiscord().getBotName(), "Messages from Discord may not be over 255 characters, "
+						+ message.getAuthor().mention(), message.getChannel().getID());
 				delete = true;
 			}
 			if (delete) {
@@ -155,9 +155,14 @@ public class MinecraftModule extends DiscordModule {
 			String id = matcher.group(2);
 			IUser user = getDiscord().getClient().getUserByID(id);
 			if (user == null) {
-				sb.append(id);
+				IChannel channel = getDiscord().getClient().getChannelByID(id);
+				if (channel == null) {
+					sb.append(id);
+				} else {
+					sb.append(channel.getName());
+				}
 			} else {
-				sb.append(getDiscord().getClient().getUserByID(id).getName());
+				sb.append(user.getName());
 			}
 			lastMatch = matcher.end();
 		}

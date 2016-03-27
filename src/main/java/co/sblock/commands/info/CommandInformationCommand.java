@@ -39,18 +39,18 @@ public class CommandInformationCommand extends SblockCommand {
 			sender.sendMessage(Language.getColor("bad") + "Invalid command! /cmdinfo <command>");
 			return true;
 		}
-		sender.sendMessage(Language.getColor("good") + "Primary command: " + Language.getColor("emphasis.good") + command.getName());
-		sender.sendMessage(Language.getColor("good") + "Description: " + Language.getColor("emphasis.good") + command.getDescription());
-		sender.sendMessage(Language.getColor("good") + "Usage: " + Language.getColor("emphasis.good") + command.getUsage());
-		sender.sendMessage(Language.getColor("good") + "Permission: " + Language.getColor("emphasis.good") + command.getPermission());
+		sender.sendMessage(Language.getColor("emphasis.neutral") + "Primary command: " + Language.getColor("neutral") + command.getName());
+		sender.sendMessage(Language.getColor("emphasis.neutral") + "Description: " + Language.getColor("neutral") + command.getDescription());
+		sender.sendMessage(Language.getColor("emphasis.neutral") + "Usage: " + Language.getColor("neutral") + command.getUsage());
+		sender.sendMessage(Language.getColor("emphasis.neutral") + "Permission: " + Language.getColor("neutral") + command.getPermission());
 		if (command.getAliases().size() > 0) {
-			sender.sendMessage(Language.getColor("good") + "Aliases: " + Language.getColor("emphasis.good") + command.getAliases());
+			sender.sendMessage(Language.getColor("emphasis.neutral") + "Aliases: " + Language.getColor("neutral") + command.getAliases());
 		}
 		if (command instanceof PluginIdentifiableCommand) {
-			sender.sendMessage(Language.getColor("good") + "Owning plugin: " + Language.getColor("emphasis.good") + ((PluginIdentifiableCommand) command).getPlugin().getName());
+			sender.sendMessage(Language.getColor("emphasis.neutral") + "Owning plugin: " + Language.getColor("neutral") + ((PluginIdentifiableCommand) command).getPlugin().getName());
 		} else {
-			sender.sendMessage(Language.getColor("good") + "Command is most likely vanilla.");
-			sender.sendMessage(Language.getColor("good") + "Class: " + Language.getColor("emphasis.good") + command.getClass().getName());
+			sender.sendMessage(Language.getColor("emphasis.neutral") + "Command is most likely vanilla.");
+			sender.sendMessage(Language.getColor("emphasis.neutral") + "Class: " + Language.getColor("neutral") + command.getClass().getName());
 		}
 		return true;
 	}

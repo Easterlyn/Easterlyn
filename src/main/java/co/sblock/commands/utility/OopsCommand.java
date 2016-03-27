@@ -12,11 +12,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.DiscordPlayer;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Command to fix mistakes in the name of the last issued command.
@@ -27,18 +24,12 @@ public class OopsCommand extends SblockCommand {
 
 	// The reason for not using UUIDs is that this storage is trivial and should work for console.
 	private final HashMap<String, String> oopsCommands;
-	private final String oopsPrefix;
 	private final List<String> aliases, reusable;
 
 	public OopsCommand(Sblock plugin) {
 		super(plugin, "oops");
 		this.setAliases("fuck", "opps");
-		this.setDescription("Suggests fixes to commands.");
-		this.setUsage("/oops");
 		oopsCommands = new HashMap<>();
-		getLang();
-		getLang();
-		oopsPrefix = Language.getColor("emphasis.good").toString() + ChatColor.BOLD + "Oops! " + Language.getColor("good");
 		reusable = new ArrayList<>();
 		aliases = new ArrayList<>(this.getAllAliases(this));
 	}
@@ -61,8 +52,7 @@ public class OopsCommand extends SblockCommand {
 			}
 			return false;
 		}
-		sender.sendMessage(oopsPrefix + "Did you mean " + Language.getColor("command") + '/' + command
-				+ Language.getColor("good") + "? Run " + Language.getColor("command") + "/oops" + Language.getColor("good") + '!');
+		sender.sendMessage(getLang().getValue("command.oops.message").replace("{COMMAND}", command));
 		if (aliases.contains(command)) {
 			// Don't store /oops as anyone's /oops
 			return true;

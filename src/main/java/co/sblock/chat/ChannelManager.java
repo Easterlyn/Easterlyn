@@ -125,7 +125,9 @@ public class ChannelManager {
 	}
 
 	protected void createDefaultSet() {
-		channelList.put("#", new RegionChannel(chat.getPlugin(), "#"));
+		Channel main = new RegionChannel(chat.getPlugin(), "#");
+		channelList.put("#", main);
+		channelList.put("#main", main);
 		channelList.put("#Aether", new RegionChannel(chat.getPlugin(), "#Aether"));
 		channelList.put("#discord", new RegionChannel(chat.getPlugin(), "#discord"));
 		channelList.put("#rp", new RPChannel(chat.getPlugin(), "#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));

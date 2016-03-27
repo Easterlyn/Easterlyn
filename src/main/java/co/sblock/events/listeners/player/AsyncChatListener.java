@@ -51,6 +51,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class AsyncChatListener extends SblockListener {
 
+	// TODO -> lang, events.chat.test
 	private static final String[] TEST = new String[] {"It is certain.", "It is decidedly so.",
 			"Without a doubt.", "Yes, definitely.", "You may rely on it.", "As I see, yes.",
 			"Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
@@ -64,6 +65,7 @@ public class AsyncChatListener extends SblockListener {
 	private final Chat chat;
 	private final Cooldowns cooldowns;
 	private final Discord discord;
+	private final Language lang;
 	private final Users users;
 	private final List<HalMessageHandler> halFunctions;
 	private final boolean handleGriefPrevention;
@@ -76,6 +78,7 @@ public class AsyncChatListener extends SblockListener {
 		this.chat = plugin.getModule(Chat.class);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.discord = plugin.getModule(Discord.class);
+		this.lang = plugin.getModule(Language.class);
 		this.users = plugin.getModule(Users.class);
 		Permission permission;
 		try {
@@ -116,8 +119,9 @@ public class AsyncChatListener extends SblockListener {
 		yoooooooooooooooooooooooooooooooooooooooo = Pattern.compile("[Yy][Oo]+");
 
 		doNotSayThat = new ArrayList<>();
-		// Generally, anything including a variant of "rape" is in incredibly poor taste.
-		doNotSayThat.add(Pattern.compile("(^|\\s)rap(ed?|ing)(\\W|\\s|$)"));
+		for (String pattern : lang.getValue("events.chat.filter").split("\n")) {
+			doNotSayThat.add(Pattern.compile(pattern));
+		}
 	}
 
 	/**
@@ -172,17 +176,16 @@ public class AsyncChatListener extends SblockListener {
 
 			for (Player recipient : event.getRecipients()) {
 				if (cleaned.equalsIgnoreCase(recipient.getName())) {
-					event.getPlayer().sendMessage(
-							Language.getColor("bad") + "Names are short and easy to include in a sentence, "
-									+ player.getDisplayName() + Language.getColor("bad") + ". Please do it.");
+					this.messageLater(player, message.getChannel(),
+							lang.getValue("events.chat.ping").replace("{PLAYER}",
+									player.getDisplayName()));
 					event.setCancelled(true);
 					return;
 				}
 			}
 
 			if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
-				messageLater(player, message.getChannel(),
-						"RP is not allowed in the main chat. Join #rp or #fanrp using /focus!");
+				this.messageLater(player, message.getChannel(), lang.getValue("events.chat.rp"));
 				event.setCancelled(true);
 				return;
 			}
@@ -203,14 +206,13 @@ public class AsyncChatListener extends SblockListener {
 		final User sender = message.getSender();
 
 		// Spam detection and handling, woo!
-		if (checkSpam && sender != null && !message.getChannel().getName().equals("#halchat")
+		if (checkSpam && sender != null && !message.getChannel().getName().equals(lang.getValue("chat.spamChannel"))
 				&& detectSpam(event, message)) {
 			publishGlobally = false;
 			event.getRecipients().clear();
 			event.getRecipients().add(player);
 			if (sender.getChatViolationLevel() > 8 && sender.getChatWarnStatus()) {
-				messageLater(player, message.getChannel(),
-						"You were asked not to spam. This mute will last 5 minutes.");
+				messageLater(player, message.getChannel(), lang.getValue("events.chat.mute"));
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 						String.format("mute %s 5m", player.getName()));
 				discord.postReport("Automatically muted " + player.getName()
@@ -219,7 +221,7 @@ public class AsyncChatListener extends SblockListener {
 				return;
 			}
 			if (sender.getChatViolationLevel() > 3 && !sender.getChatWarnStatus()) {
-				messageLater(player, message.getChannel(), "You appear to be spamming. Please slow down chat.");
+				this.messageLater(player, message.getChannel(), lang.getValue("events.chat.spam"));
 				sender.setChatWarnStatus(true);
 			}
 		}
@@ -299,13 +301,11 @@ public class AsyncChatListener extends SblockListener {
 
 		if (!world.equals("Derspit") && !world.equals("DreamBubble")
 				&& claimPattern.matcher(message.getMessage()).find()) {
-			messageLater(player, message.getChannel(),
-					"For information about claims, watch https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1");
+			messageLater(player, message.getChannel(), lang.getValue("events.chat.gp.claims"));
 		}
 		if (trappedPattern.matcher(message.getMessage()).find()) {
 			// Improvement over GP: Pattern ignores case and matches in substrings of words
-			messageLater(player, message.getChannel(), "Trapped in someone's land claim? Try "
-					+ Language.getColor("command") + "/trapped");
+			messageLater(player, message.getChannel(), lang.getValue("events.chat.gp.trapped"));
 		}
 
 		// Soft-muted chat

@@ -28,6 +28,7 @@ public class Spectators extends Module {
 
 	/* The Cooldowns instance used to manage whether someone has recently been spectating. */
 	private Cooldowns cooldowns;
+	private Language lang;
 	/* The SleepVote instance used to discount spectators from sleeping. */
 	private SleepVote sleep;
 	private Users users;
@@ -40,6 +41,7 @@ public class Spectators extends Module {
 	@Override
 	protected void onEnable() {
 		this.cooldowns = getPlugin().getModule(Cooldowns.class);
+		this.lang = getPlugin().getModule(Language.class);
 		this.sleep = getPlugin().getModule(SleepVote.class);
 		this.users = getPlugin().getModule(Users.class);
 
@@ -55,7 +57,7 @@ public class Spectators extends Module {
 					}
 					if (cooldowns.getRemainder(player, getName()) == 0) {
 						removeSpectator(player, false);
-						player.sendMessage(Language.getColor("neutral") + "As your link to the astral plane fades, you awaken with a jolt.");
+						player.sendMessage(lang.getValue("spectators.return.time"));
 					}
 					// 100 blocks from starting location
 					Location start = spectators.get(player.getUniqueId());
@@ -80,7 +82,7 @@ public class Spectators extends Module {
 						}
 					}
 					removeSpectator(player, false);
-					player.sendMessage(Language.getColor("neutral") + "With no one around to maintain your connection to the astral plane, you snap back to reality.");
+					player.sendMessage(lang.getValue("spectators.return.distance"));
 				}
 			}
 		}.runTaskTimer(getPlugin(), 100, 100);
@@ -108,7 +110,7 @@ public class Spectators extends Module {
 		player.closeInventory();
 		player.setGameMode(GameMode.SPECTATOR);
 		if (sleep.updateVoteCount(player.getWorld().getName(), player.getName())) {
-			player.sendMessage(Language.getColor("bad") + "You're no longer sleeping. You'll have to use a bed again to count towards the total.");
+			player.sendMessage(lang.getValue("sleep.interrupt"));
 		}
 		spectators.put(player.getUniqueId(), player.getLocation().add(0, .1, 0));
 		if (!player.hasPermission("sblock.command.spectate.unrestricted")) {
@@ -133,7 +135,7 @@ public class Spectators extends Module {
 	 * 
 	 * @param player the Player
 	 * 
-	 * @return true if the Player is not disallowed to mine ore
+	 * @return true if the Player is allowed to mine ore
 	 */
 	public boolean canMineOre(Player player) {
 		return cooldowns.getRemainder(player, "spectatore") <= 0;

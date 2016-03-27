@@ -14,7 +14,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -26,11 +25,7 @@ public class EnchantCommand extends SblockCommand {
 
 	public EnchantCommand(Sblock plugin) {
 		super(plugin, "enchant");
-		this.setDescription("Enchant the item in your main hand.");
 		this.setPermissionLevel("denizen");
-		this.setUsage("/enchant <enchantment> <level> [-flags]"
-				+ "\nFlags:\n -b: Don't turn books into enchanted books"
-				+ "\n -l: Levels < 1 will not remove the enchantment");
 	}
 
 	@Override
@@ -54,7 +49,8 @@ public class EnchantCommand extends SblockCommand {
 		Enchantment enchantment = Enchantment.getByName(args[0].toUpperCase());
 
 		if (enchantment == null) {
-			return false;
+			sender.sendMessage(getLang().getValue("command.general.invalidParameters").replace("{PARAMETER}", args[0]));
+			return true;
 		}
 
 		int level;
@@ -87,10 +83,10 @@ public class EnchantCommand extends SblockCommand {
 		// Unless flag is set, remove enchantment if level is under 1.
 		if (level < 1 && !flagForceLevel) {
 			removeEnchantment(hand, enchantment);
-			sender.sendMessage(Language.getColor("good") + "Enchantment removed!");
+			sender.sendMessage(getLang().getValue("command.enchant.success.remove"));
 		} else {
 			setEnchantment(hand, enchantment, level);
-			sender.sendMessage(Language.getColor("good") + "Enchantment set!");
+			sender.sendMessage(getLang().getValue("command.enchant.success.add"));
 		}
 		return true;
 	}

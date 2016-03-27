@@ -23,6 +23,7 @@ import co.sblock.commands.SblockCommand;
  */
 public class SpeedCommand extends SblockCommand {
 
+	// TODO lang, possibly change to -10 to 10 system
 	public SpeedCommand(Sblock plugin) {
 		super(plugin, "speed");
 		this.setAliases("flyspeed", "walkspeed");

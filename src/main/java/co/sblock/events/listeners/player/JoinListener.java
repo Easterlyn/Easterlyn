@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Language;
 import co.sblock.discord.Discord;
 import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
@@ -21,8 +22,6 @@ import co.sblock.micromodules.Godule;
 import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.Users;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for PlayerJoinEvents.
@@ -43,9 +42,10 @@ public class JoinListener extends SblockListener {
 		this.events = plugin.getModule(Events.class);
 		this.godule = plugin.getModule(Godule.class);
 		this.users = plugin.getModule(Users.class);
-		list = new WrapperPlayServerPlayerListHeaderFooter();
-		list.setHeader(WrappedChatComponent.fromText(ChatColor.GOLD + "Welcome to " + ChatColor.DARK_AQUA + "Sblock Beta"));
-		list.setFooter(WrappedChatComponent.fromText(ChatColor.YELLOW + "Enjoy your stay!"));
+		Language lang = plugin.getModule(Language.class);
+		this.list = new WrapperPlayServerPlayerListHeaderFooter();
+		this.list.setHeader(WrappedChatComponent.fromText(lang.getValue("events.join.tab.header")));
+		this.list.setFooter(WrappedChatComponent.fromText(lang.getValue("events.join.tab.footer")));
 	}
 
 	/**

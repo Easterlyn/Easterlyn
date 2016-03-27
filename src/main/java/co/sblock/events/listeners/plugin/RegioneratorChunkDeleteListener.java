@@ -7,12 +7,14 @@ import com.github.jikoo.regionerator.event.RegioneratorChunkDeleteEvent;
 import co.sblock.Sblock;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
+import co.sblock.module.Dependency;
 
 /**
  * Listener for RegioneratorChunkDeleteEvents.
  * 
  * @author Jikoo
  */
+@Dependency("Regionerator")
 public class RegioneratorChunkDeleteListener extends SblockListener {
 
 	private final Machines machines;

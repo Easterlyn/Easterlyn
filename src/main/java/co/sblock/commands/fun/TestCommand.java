@@ -3,10 +3,9 @@ package co.sblock.commands.fun;
 import org.bukkit.command.CommandSender;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.listeners.player.AsyncChatListener;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * DAMN IT ALL, BASEMENTHERO, FINE.
@@ -21,7 +20,7 @@ public class TestCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		sender.sendMessage(ChatColor.RED + AsyncChatListener.test());
+		sender.sendMessage(Language.getColor("bad") + AsyncChatListener.test());
 		return true;
 	}
 

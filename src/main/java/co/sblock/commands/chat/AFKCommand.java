@@ -20,14 +20,12 @@ public class AFKCommand extends SblockCommand {
 		super(plugin, "afk");
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.setAliases("away");
-		this.setDescription("Toggle AFK status.");
-		this.setUsage("/afk");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		Player player = (Player) sender;

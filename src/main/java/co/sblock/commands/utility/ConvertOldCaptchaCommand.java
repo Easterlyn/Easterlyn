@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -21,22 +20,20 @@ public class ConvertOldCaptchaCommand extends SblockCommand {
 
 	public ConvertOldCaptchaCommand(Sblock plugin) {
 		super(plugin, "convert");
-		this.setDescription("Converts captchacards from paper to plastic.");
-		this.setUsage("Run /convert with old captchacards in your inventory.");
 	}
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		Player player = (Player) sender;
 		int conversions = ((Sblock) getPlugin()).getModule(Captcha.class).convert(player);
 		if (conversions > 0) {
-			player.sendMessage(Language.getColor("good") + "Converted " + conversions + " captchas.");
+			player.sendMessage(getLang().getValue("command.convert.success").replace("{COUNT}", String.valueOf(conversions)));
 		} else {
-			player.sendMessage(Language.getColor("bad") + "No old captchacards found!");
+			player.sendMessage(getLang().getValue("command.convert.failure"));
 		}
 		return true;
 	}

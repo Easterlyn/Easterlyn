@@ -15,11 +15,8 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.discord.Discord;
-
-import net.md_5.bungee.api.ChatColor;
 
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -35,8 +32,6 @@ public class DiscordLinkCommand extends SblockCommand {
 
 	public DiscordLinkCommand(Sblock plugin) {
 		super(plugin, "link");
-		setDescription("Generate a code to link your Discord account with Minecraft");
-		setUsage(ChatColor.AQUA + "/link");
 		this.discord = plugin.getModule(Discord.class);
 		Permission permission;
 		try {
@@ -53,7 +48,7 @@ public class DiscordLinkCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!discord.isEnabled() || !discord.isReady()) {
-			sender.sendMessage(Language.getColor("bad") + "Discord link is currently nonfunctional!");
+			sender.sendMessage(getLang().getValue("core.error.moduleDisabled").replace("{MODULE}", "Discord"));
 			return true;
 		}
 		if (args.length > 1 && sender.hasPermission("sblock.command.link.force")) {
@@ -61,8 +56,7 @@ public class DiscordLinkCommand extends SblockCommand {
 			try {
 				uuid = UUID.fromString(args[0]);
 			} catch (IllegalArgumentException e) {
-				sender.sendMessage(Language.getColor("bad") + "Invalid UUID. /link [UUID] [DiscordUser/ID]");
-				return true;
+				return false;
 			}
 			String discordID = StringUtils.join(args, ' ', 1, args.length);
 			IUser user = discord.getClient().getUserByID(discordID);
@@ -77,7 +71,7 @@ public class DiscordLinkCommand extends SblockCommand {
 				}
 			}
 			if (user == null) {
-				sender.sendMessage(Language.getColor("bad") + "Unknown Discord user. /link [UUID] [DiscordUser/ID]");
+				return false;
 			}
 			discord.addLink(uuid, user);
 			return true;
@@ -94,9 +88,7 @@ public class DiscordLinkCommand extends SblockCommand {
 			// Just re-throw the exception to use our automatic report creation feature
 			throw new RuntimeException(e);
 		}
-		sender.sendMessage(Language.getColor("good") + "Message the Discord bot \"" + Language.getColor("command")
-				+ "/link " + code + Language.getColor("good") + "\" to complete linking your Discord account!\n"
-				+ Language.getColor("bad") + "This code will expire in a minute.");
+		sender.sendMessage(getLang().getValue("command.link.success").replace("{CODE}", code.toString()));
 		return true;
 	}
 

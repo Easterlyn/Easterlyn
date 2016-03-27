@@ -11,7 +11,6 @@ import org.bukkit.permissions.PermissionDefault;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -24,9 +23,7 @@ public class HealCommand extends SblockCommand {
 	public HealCommand(Sblock plugin) {
 		super(plugin, "heal");
 		this.setAliases("eat", "feed");
-		this.setDescription("Heal yourself or another player.");
 		this.setPermissionLevel("felt");
-		this.setUsage("/<heal|feed> [player]");
 		Permission permission;
 		try {
 			permission = new Permission("sblock.command.heal.other", PermissionDefault.OP);
@@ -47,7 +44,7 @@ public class HealCommand extends SblockCommand {
 		}
 		if (args.length == 0 || !sender.hasPermission("sblock.command.heal.other")) {
 			heal((Player) sender, label);
-			sender.sendMessage(Language.getColor("good") + "All patched up!");
+			sender.sendMessage(getLang().getValue("command.heal.success"));
 			return true;
 		}
 		List<Player> players = Bukkit.matchPlayer(args[0]);
@@ -55,7 +52,7 @@ public class HealCommand extends SblockCommand {
 			return false;
 		}
 		heal(players.get(0), label);
-		sender.sendMessage(Language.getColor("good") + "All patched up!");
+		sender.sendMessage(getLang().getValue("command.heal.success"));
 		return true;
 	}
 

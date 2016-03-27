@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableList;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Language;
 import co.sblock.chat.channel.Channel;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockCommand;
@@ -33,9 +32,6 @@ public class ChatFocusCommand extends SblockCommand {
 		super(plugin, "focus");
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
-		setDescription("Join or focus on a chat channel.");
-		setUsage(Language.getColor("command") + "/join <channel>"
-				+ Language.getColor("good") + ": Join or focus on <channel>.");
 		setAliases("join", "current");
 	}
 

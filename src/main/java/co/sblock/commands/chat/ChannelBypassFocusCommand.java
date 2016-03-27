@@ -33,8 +33,6 @@ public class ChannelBypassFocusCommand extends SblockCommand {
 		super(plugin, "totalfocus");
 		this.users = plugin.getModule(Users.class);
 		manager = plugin.getModule(Chat.class).getChannelManager();
-		this.setDescription("Knock knock. Come on in.");
-		this.setUsage("/totalfocus <channel> <player>");
 		this.setPermissionMessage("Try /join <channel>");
 		this.setPermissionLevel("felt");
 	}

@@ -34,12 +34,12 @@ public class ItemInformationCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		ItemStack hand = ((Player) sender).getInventory().getItemInMainHand();
 		if (hand == null || hand.getType() == Material.AIR) {
-			sender.sendMessage("NULL");
+			sender.sendMessage(getLang().getValue("command.general.needItemInHand"));
 			return true;
 		}
 		sender.sendMessage(ChatColor.stripColor(hand.toString()));

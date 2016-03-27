@@ -35,8 +35,6 @@ public class EffectsCommand extends SblockCommand {
 	public EffectsCommand(Sblock plugin) {
 		super(plugin, "effects");
 		this.effects = plugin.getModule(Effects.class);
-		this.setDescription("Effects! Similar to /enchant.");
-		this.setUsage("/effects <type> [level]");
 		this.setAliases("fx");
 		this.setPermissionLevel("denizen");
 	}

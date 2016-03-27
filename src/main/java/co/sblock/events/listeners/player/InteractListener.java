@@ -44,6 +44,7 @@ public class InteractListener extends SblockListener {
 	private final Cooldowns cooldowns;
 	private final DreamTeleport dream;
 	private final Effects effects;
+	private final Language lang;
 	private final Machines machines;
 	private final SleepVote sleep;
 	private final Set<Material> bypassable;
@@ -55,13 +56,14 @@ public class InteractListener extends SblockListener {
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.dream = plugin.getModule(DreamTeleport.class);
 		this.effects = plugin.getModule(Effects.class);
+		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
 		this.sleep = plugin.getModule(SleepVote.class);
 
-		bypassable = new HashSet<>();
+		this.bypassable = new HashSet<>();
 		for (Material material : Material.values()) {
 			if (!material.isOccluding() && material != Material.WATER && material != Material.STATIONARY_WATER) {
-				bypassable.add(material);
+				this.bypassable.add(material);
 			}
 		}
 	}
@@ -78,7 +80,7 @@ public class InteractListener extends SblockListener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onPlayerInteractLow(PlayerInteractEvent event) {
+	public void onPlayerInteractHigh(PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.PHYSICAL) {
 			return;
 		}
@@ -109,20 +111,20 @@ public class InteractListener extends SblockListener {
 		}
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			Block b = event.getClickedBlock();
+			Block block = event.getClickedBlock();
 
-			if (b.getType().equals(Material.BED_BLOCK)) {
-				if (b.getWorld().getEnvironment() == Environment.NETHER || b.getWorld().getEnvironment() == Environment.THE_END) {
+			if (block.getType().equals(Material.BED_BLOCK)) {
+				if (block.getWorld().getEnvironment() == Environment.NETHER || block.getWorld().getEnvironment() == Environment.THE_END) {
 					// Vanilla bed explosions!
 					return;
 				}
 				// Sleep voting
 				if (sleep.isEnabled() && event.getPlayer().isSneaking()) {
-					if (b.getWorld().getTime() > 12000 || b.getWorld().hasStorm()) {
-						sleep.sleepVote(b.getWorld(), event.getPlayer());
+					if (block.getWorld().getTime() > 12000 || block.getWorld().hasStorm()) {
+						sleep.sleepVote(block.getWorld(), event.getPlayer());
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					} else {
-						event.getPlayer().sendMessage(Language.getColor("bad") + "It's not dark or raining!");
+						event.getPlayer().sendMessage(this.lang.getValue("events.interact.daySleep"));
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					}
 					event.setCancelled(true);
@@ -130,7 +132,7 @@ public class InteractListener extends SblockListener {
 				}
 
 				// Sleep teleport
-				if (dream.handleBedInteract(event.getPlayer(), b, (Bed) b.getState().getData())) {
+				if (dream.handleBedInteract(event.getPlayer(), block, (Bed) block.getState().getData())) {
 					event.setCancelled(true);
 					return;
 				}
@@ -151,10 +153,6 @@ public class InteractListener extends SblockListener {
 		if (held == null || held.getType() == Material.AIR) {
 			return;
 		}
-
-		// TODO TODO this is hairy
-		// Check item in main hand, if it has a right click function and isn't captcha/exp bugger off
-		// Check item in off hand normally after if we did nothing
 
 		if (held.getType() == Material.GLASS_BOTTLE
 				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottle") == 0) {
@@ -195,18 +193,21 @@ public class InteractListener extends SblockListener {
 	/**
 	 * Check if a Block has a right click action.
 	 * 
-	 * @param b the Block to check
+	 * @param block the Block to check
 	 * 
 	 * @return true if right clicking the block without sneaking will cause 
 	 */
-	private boolean hasRightClickFunction(Block b) {
-		switch (b.getType()) {
+	private boolean hasRightClickFunction(Block block) {
+		switch (block.getType()) {
 		case BOOKSHELF:
 			// Awww yiss BookShelf <3
 			return Bukkit.getPluginManager().isPluginEnabled("BookShelf");
 		case IRON_DOOR_BLOCK:
 		case IRON_TRAPDOOR:
 			return Bukkit.getPluginManager().isPluginEnabled("LWC");
+		case ENDER_STONE:
+			// Special case: player is probably attempting to bottle dragon's breath
+			return block.getWorld().getEnvironment() == Environment.THE_END;
 		case ACACIA_DOOR:
 		case ACACIA_FENCE_GATE:
 		case ANVIL:

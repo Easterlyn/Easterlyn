@@ -21,11 +21,13 @@ import co.sblock.micromodules.protectionhooks.ProtectionHook;
  */
 public class PortalListener extends SblockListener {
 
+	private final Language lang;
 	private final Protections protections;
 	private final SblockTravelAgent agent;
 
 	public PortalListener(Sblock plugin) {
 		super(plugin);
+		this.lang = plugin.getModule(Language.class);
 		this.protections = plugin.getModule(Protections.class);
 		this.agent = new SblockTravelAgent();
 	}
@@ -38,10 +40,7 @@ public class PortalListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerPortal(PlayerPortalEvent event) {
 		if (!event.useTravelAgent()) {
-			return;
-		}
-		if (event.getTo().getWorld().getEnvironment() == Environment.THE_END) {
-			// future Medium End?
+			// Generally, end portals do not use travel agents, nether portals do.
 			return;
 		}
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
@@ -80,12 +79,7 @@ public class PortalListener extends SblockListener {
 			for (ProtectionHook hook : protections.getHooks()) {
 				if (!hook.canBuildAt(event.getPlayer(), to)) {
 					event.setCancelled(true);
-					System.out.println(String.format("%s preventing portalling for %s from %s %s, %s, %s to %s %s, %s, %s",
-							hook.getPluginName(), event.getPlayer().getName(), fromCenter.getWorld().getName(),
-							fromCenter.getBlockX(), fromCenter.getBlockY(), fromCenter.getBlockZ(),
-							to.getWorld().getName(), to.getBlockX(), to.getBlockY(), to.getBlockZ()));
-					event.getPlayer().sendMessage(Language.getColor("bad") + "Your destination is inside a protected area!"
-							+ "\nYou'll have to build your portal elsewhere.");
+					event.getPlayer().sendMessage(lang.getValue("events.portal.protected"));
 					return;
 				}
 			}

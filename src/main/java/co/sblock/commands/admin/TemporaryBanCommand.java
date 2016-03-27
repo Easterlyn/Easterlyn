@@ -25,8 +25,6 @@ public class TemporaryBanCommand extends SblockCommand {
 	public TemporaryBanCommand(Sblock plugin) {
 		super(plugin, "tempban");
 		this.setAliases("tempbanip");
-		this.setDescription("You can escape the orange miles. It just takes time.");
-		this.setUsage("/tempban <target> <duration> [optional reason]");
 		this.setPermissionLevel("felt");
 	}
 

@@ -104,17 +104,15 @@ public class InventoryUtils {
 
 	public static ItemStack convertLegacyPotion(ItemStack item) {
 		short durability = item.getDurability();
+
+		if (durability < 1) {
+			// May be a current potion, no API-safe way to check
+			return item;
+		}
+
 		ItemStack potion = new ItemStack(((durability >> 14) & 1) == 1 ? Material.SPLASH_POTION : Material.POTION);
 
 		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
-
-		PotionData data;
-		if (durability < 1) {
-			data = new PotionData(PotionType.WATER);
-			potionMeta.setBasePotionData(data);
-			potion.setItemMeta(potionMeta);
-			return potion;
-		}
 
 		PotionType type = legacyPotionIDs.get(durability % 16);
 
@@ -127,7 +125,7 @@ public class InventoryUtils {
 		// This is a rare case I don't mind breaking
 		potionMeta.removeCustomEffect(type.getEffectType());
 
-		data = new PotionData(type,
+		PotionData data = new PotionData(type,
 				type.isExtendable() && ((durability >> 6) & 1) == 1,
 				type.isUpgradeable() && ((durability >> 5) & 1) == 1);
 

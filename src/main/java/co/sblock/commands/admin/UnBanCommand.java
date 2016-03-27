@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -22,16 +21,14 @@ import co.sblock.commands.SblockCommand;
  * 
  * @author Jikoo
  */
-public class UnSuperBanCommand extends SblockCommand {
+public class UnBanCommand extends SblockCommand {
 
 	private final Chat chat;
 
-	public UnSuperBanCommand(Sblock plugin) {
+	public UnBanCommand(Sblock plugin) {
 		super(plugin, "unban");
 		this.chat = plugin.getModule(Chat.class);
 		this.setAliases("unsban", "pardon", "unbanip", "pardonip");
-		this.setDescription("DO THE WINDY THING.");
-		this.setUsage("/unsban <UUID|name|IP>");
 		this.setPermissionLevel("denizen");
 	}
 
@@ -51,16 +48,14 @@ public class UnSuperBanCommand extends SblockCommand {
 					.replaceAll(".*<ip=(([0-9]{1,3}\\.){3}[0-9]{1,3})>.*", "$1"));
 			pbans.pardon(args[0]);
 		} else  {
-			sender.sendMessage(Language.getColor("bad") + "No bans were found for " + args[0]);
+			sender.sendMessage(getLang().getValue("command.unban.unfound").replace("{TARGET}", args[0]));
 			return true;
 		}
 		if (args[0].contains(".")) {
-			sender.sendMessage(Language.getColor("good") + "Not globally announcing unban: " + args[0]
-					+ " may be an IP.");
+			sender.sendMessage(getLang().getValue("command.unban.possibleIP").replace("{TARGET}", args[0]));
 		} else {
-			chat.getHalBase().setChannel(chat.getChannelManager().getChannel("#"))
-					.setMessage(args[0] + " has been unbanned.").toMessage()
-					.send(Bukkit.getOnlinePlayers(), false);
+			chat.getHalBase().setMessage(getLang().getValue("command.unban.unban").replace("{TARGET}", args[0]))
+					.toMessage().send(Bukkit.getOnlinePlayers(), false);
 		}
 		return true;
 	}

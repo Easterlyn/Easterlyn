@@ -31,12 +31,14 @@ public class PlaceListener extends SblockListener {
 
 	private final Discord discord;
 	private final Events events;
+	private final Language lang;
 	private final Machines machines;
 
 	public PlaceListener(Sblock plugin) {
 		super(plugin);
 		this.discord = plugin.getModule(Discord.class);
 		this.events = plugin.getModule(Events.class);
+		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
 	}
 
@@ -62,7 +64,7 @@ public class PlaceListener extends SblockListener {
 			// Prevents place PGO as diamond block, blow up PGO, place and break dirt in PGO's
 			// location to unregister, wait for CreeperHeal to regenerate diamond block for profit.
 			event.setCancelled(true);
-			player.sendMessage(Language.getColor("bad") + "You decide against fussing with the internals of this machine.");
+			player.sendMessage(lang.getValue("machines.noTouch"));
 			// If the blocks are not exploded, there's a larger issue. Rather than shaft the person
 			// who found it, generate a report and repair it.
 			if (!machines.isExploded(event.getBlock())) {

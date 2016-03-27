@@ -14,7 +14,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 import co.sblock.machines.Machines;
 import co.sblock.machines.type.Transportalizer;
@@ -46,9 +45,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
 		this.transportalizer = (Transportalizer) plugin.getModule(Machines.class).getMachineByName("Transportalizer");
-		this.setDescription("Handle a teleport request");
-		this.setUsage("/tpa name, /tpahere name, /tpaccept, /tpdecline");
-		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno");
+		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno", "tpreset");
 		Permission permission;
 		try {
 			permission = new Permission("sblock.command.tpa.nocooldown", PermissionDefault.OP);
@@ -72,7 +69,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		Player player = (Player) sender;
 		if (label.equals("tpa") || label.equals("tpask") || label.equals("call")) {
 			if (args.length == 0) {
-				sender.sendMessage(Language.getColor("command") + "/tpa <player>" + Language.getColor("good") + ": Request to teleport to a player");
+				sender.sendMessage(getLang().getValue("command.tpa.help.request"));
 				return true;
 			}
 			ask(player, args, false);
@@ -80,7 +77,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		if (label.equals("tpahere") || label.equals("tpaskhere") || label.equals("callhere")) {
 			if (args.length == 0) {
-				sender.sendMessage(Language.getColor("command") + "/tpahere <player>" + Language.getColor("good") + ": Request to teleport another player to you");
+				sender.sendMessage(getLang().getValue("command.tpa.help.here"));
 				return true;
 			}
 			ask(player, args, true);
@@ -94,27 +91,36 @@ public class TeleportRequestCommand extends SblockCommand {
 			decline(player);
 			return true;
 		}
+		if (label.equals("tpreset")) {
+			if (player.hasPermission("sblock.command.tpa.nocooldown")) {
+				cooldowns.clearCooldown(player, "teleportRequest");
+			}
+		}
 		return true;
 	}
 
 	private void ask(Player sender, String[] args, boolean here) {
 		long remainder = cooldowns.getRemainder(sender, "teleportRequest");
 		if (remainder > 0) {
-			sender.sendMessage(Language.getColor("bad") + "You cannot send a teleport request for another "
-					+ Language.getColor("emphasis.bad") + time.format(new Date(remainder)) + Language.getColor("bad") + ".");
+			sender.sendMessage(getLang().getValue("command.tpa.error.cooldown")
+					.replace("{TIME}", time.format(new Date(remainder))));
+			if (sender.hasPermission("sblock.command.tpa.nocooldown")) {
+				sender.sendMessage(getLang().getValue("command.tpa.reset"));
+			}
 			return;
 		}
 		Player target = looseMatch(sender, args[0]);
 		if (target == null) {
-			sender.sendMessage(getLang().getValue("core.error.invalidUser"));
+			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return;
 		}
 		if (target.getUniqueId().equals(sender.getUniqueId())) {
-			sender.sendMessage(Language.getColor("good") + "If I told you I just teleported you to yourself would you believe me?");
+			sender.sendMessage(getLang().getValue("command.tpa.self"));
 			return;
 		}
 		if (!target.hasPermission(getPermission())) {
-			sender.sendMessage(Language.getColor("player.bad") + target.getName() + Language.getColor("bad") + " cannot accept teleport requests!");
+			sender.sendMessage(getLang().getValue("command.tpa.error.recipientPermission")
+					.replace("{PLAYER}", target.getDisplayName()));
 			return;
 		}
 		User targetUser = users.getUser(target.getUniqueId());
@@ -122,48 +128,48 @@ public class TeleportRequestCommand extends SblockCommand {
 		boolean targetSpectating = spectators.isSpectator(targetUser.getUUID());
 		boolean sourceSpectating = spectators.isSpectator(sourceUser.getUUID());
 		if (!here && targetSpectating && !sourceSpectating || here && !targetSpectating && sourceSpectating) {
-			sender.sendMessage(Language.getColor("bad") + "Corporeal players cannot teleport to incorporeal players!");
+			sender.sendMessage(getLang().getValue("command.tpa.error.toSpectator"));
 			return;
 		}
 		Region rTarget = targetUser.getCurrentRegion();
 		Region rSource = sourceUser.getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
-			sender.sendMessage(Language.getColor("bad") + "Teleports cannot be initiated from different planets!");
+			sender.sendMessage(getLang().getValue("command.tpa.error.crossRegion"));
 			return;
 		}
 		if (pending.containsKey(target.getUniqueId()) && pending.get(target.getUniqueId()).getExpiry() > System.currentTimeMillis()) {
-			sender.sendMessage(Language.getColor("player.bad") + target.getDisplayName() +  Language.getColor("bad") + " has a pending request already.");
+			sender.sendMessage(getLang().getValue("command.tpa.error.recipientPending")
+					.replace("{PLAYER}", target.getDisplayName()));
 			return;
 		}
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
-		if (!sender.hasPermission("sblock.command.tpa.nocooldown")) {
-			cooldowns.addCooldown(sender, "teleportRequest", 480000L);
-		}
-		sender.sendMessage(Language.getColor("good") + "Request sent!");
-		target.sendMessage(Language.getColor("player.good") + sender.getDisplayName() + Language.getColor("good") + " is requesting to teleport " + (here ? "you to them." : "to you."));
-		target.sendMessage(Language.getColor("good") + "To accept, use " + Language.getColor("command") + "/tpyes"
-				+ Language.getColor("good") + ". To decline, use " + Language.getColor("command") + "/tpno" + Language.getColor("good") + ".");
-		target.sendMessage(Language.getColor("good") + "This request will expire in 60 seconds.");
+		cooldowns.addCooldown(sender, "teleportRequest", getPlugin().getConfig().getLong("command.tpa.ignored", 480000L));
+		sender.sendMessage(getLang().getValue("command.tpa.success.sent"));
+		target.sendMessage(getLang().getValue("command.tpa.success.recieve")
+				.replace("{PLAYER}", sender.getDisplayName())
+				.replace("{OPTION}",
+						here ? getLang().getValue("command.tpa.success.recieveToSender")
+								: getLang().getValue("command.tpa.success.recieveToSender")));
 	}
 
 	private void accept(Player sender) {
 		TeleportRequest request = pending.remove(sender.getUniqueId());
 		if (request == null || request.getExpiry() < System.currentTimeMillis()) {
 			if (!transportalizer.doPendingTransportalization(sender, true)) {
-				sender.sendMessage(Language.getColor("bad") + "You do not have any pending teleport requests.");
+				sender.sendMessage(getLang().getValue("command.tpa.error.noPending"));
 			}
 			return;
 		}
 		Player toTeleport = Bukkit.getPlayer(request.isHere() ? request.getTarget() : request.getSource());
 		Player toArriveAt = Bukkit.getPlayer(request.isHere() ? request.getSource() : request.getTarget());
 		if (toTeleport == null || toArriveAt == null) {
-			sender.sendMessage(Language.getColor("bad") + "The issuer of the request seems to have logged off.");
+			sender.sendMessage(getLang().getValue("command.tpa.error.senderMissing"));
 			return;
 		}
 		if (spectators.isSpectator(toArriveAt.getUniqueId())
 				&& !spectators.isSpectator(toTeleport.getUniqueId())) {
 			getLang();
-			String message = Language.getColor("bad") + "Corporeal players cannot teleport to incorporeal players!";
+			String message = getLang().getValue("command.tpa.error.toSpectator");
 			toTeleport.sendMessage(message);
 			toArriveAt.sendMessage(message);
 			return;
@@ -172,24 +178,23 @@ public class TeleportRequestCommand extends SblockCommand {
 		Region rSource = users.getUser(toTeleport.getUniqueId()).getCurrentRegion();
 		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
 			getLang();
-			String message = Language.getColor("bad") + "Teleports cannot be initiated from different planets!";
+			String message = getLang().getValue("command.tpa.error.crossRegion");
 			toTeleport.sendMessage(message);
 			toArriveAt.sendMessage(message);
 			return;
 		}
 		toTeleport.teleport(toArriveAt);
-		toTeleport.sendMessage(Language.getColor("good") + "Teleporting to " + Language.getColor("player.good")
-				+ toArriveAt.getDisplayName() + Language.getColor("good") + ".");
-		toArriveAt.sendMessage(Language.getColor("good") + "Teleported " + Language.getColor("player.good")
-				+ toTeleport.getDisplayName() + Language.getColor("good") + " to you.");
+		toTeleport.sendMessage(getLang().getValue("command.tpa.success.arrive.teleported")
+						.replace("{PLAYER}", toArriveAt.getDisplayName()));
+		toArriveAt.sendMessage(getLang().getValue("command.tpa.success.arrive.target")
+				.replace("{PLAYER}", toTeleport.getDisplayName()));
 
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
 		Player issuer = request.isHere() ? toArriveAt : toTeleport;
-		if (issuer.hasPermission("sblock.command.tpa.nocooldown")
-				|| spectators.isSpectator(toTeleport.getUniqueId())) {
+		if (spectators.isSpectator(toTeleport.getUniqueId())) {
 			cooldowns.clearCooldown(issuer, "teleportRequest");
 		} else {
-			cooldowns.addCooldown(issuer, "teleportRequest", 3600000L);
+			cooldowns.addCooldown(issuer, "teleportRequest", getPlugin().getConfig().getLong("command.tpa.cooldown", 3600000L));
 		}
 	}
 
@@ -197,14 +202,15 @@ public class TeleportRequestCommand extends SblockCommand {
 		TeleportRequest request = pending.remove(sender.getUniqueId());
 		if (request == null || request.getExpiry() < System.currentTimeMillis()) {
 			if (!transportalizer.doPendingTransportalization(sender, false)) {
-				sender.sendMessage(Language.getColor("bad") + "You do not have any pending teleport requests.");
+				sender.sendMessage(getLang().getValue("command.tpa.error.noPending"));
 			}
 			return;
 		}
-		sender.sendMessage(Language.getColor("good") + "Request declined!");
+		sender.sendMessage(getLang().getValue("command.tpa.decline.self"));
 		Player issuer = Bukkit.getPlayer(request.getSource());
 		if (issuer != null) {
-			issuer.sendMessage(Language.getColor("player.bad") + sender.getDisplayName() + Language.getColor("bad") + " declined your request!");
+			issuer.sendMessage(getLang().getValue("command.tpa.decline.other")
+					.replace("{PLAYER}", sender.getDisplayName()));
 			cooldowns.clearCooldown(issuer, "teleportRequest");
 		}
 	}

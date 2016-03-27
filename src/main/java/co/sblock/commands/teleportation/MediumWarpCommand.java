@@ -41,7 +41,7 @@ public class MediumWarpCommand extends SblockCommand {
 		}
 		Player player = Bukkit.getPlayer(args[1]);
 		if (player == null) {
-			sender.sendMessage(Language.getColor("bad") + "Invalid player.");
+			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[1]));
 			return false;
 		}
 		Region medium = Region.getRegion(args[0]);

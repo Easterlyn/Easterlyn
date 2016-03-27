@@ -23,6 +23,7 @@ import co.sblock.commands.SblockCommand;
  */
 public class FlyCommand extends SblockCommand {
 
+	// TODO convert to lang
 	public FlyCommand(Sblock plugin) {
 		super(plugin, "fly");
 		this.setDescription("Toggle flight for yourself or another player.");
@@ -56,9 +57,14 @@ public class FlyCommand extends SblockCommand {
 			return true;
 		}
 
-		String lastArg = args[args.length - 1].toLowerCase();
 		// Set flight toggle based on last argument
-		Boolean fly = lastArg.equals("true") ? true : lastArg.equals("false") ? false : null;
+		String lastArg = args[args.length - 1].toLowerCase();
+		Boolean fly = null;
+		if (lastArg.equals("true")) {
+			fly = true;
+		} else if (lastArg.equals("false")) {
+			fly = false;
+		}
 
 		// Fetch target player
 		Player player = null;

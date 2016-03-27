@@ -11,7 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
-import co.sblock.chat.Language;
+import co.sblock.chat.Chat;
+import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
@@ -34,8 +35,6 @@ public class ShowItemCommand extends SblockCommand {
 	public ShowItemCommand(Sblock plugin) {
 		super(plugin, "show");
 		this.users = plugin.getModule(Users.class);
-		this.setDescription("Displays an item in chat.");
-		this.setUsage("/show");
 		this.setAliases("showitem");
 	}
 
@@ -52,19 +51,27 @@ public class ShowItemCommand extends SblockCommand {
 		ItemMeta handMeta;
 		if (hand == null || !hand.hasItemMeta()
 				|| !(handMeta = hand.getItemMeta()).hasDisplayName() || !handMeta.hasEnchants()) {
-			sender.sendMessage(Language.getColor("bad") + "You do not have anything named and enchanted in your main hand!");
+			sender.sendMessage(getLang().getValue("command.show.requirements"));
 			return true;
 		}
 
 		User user = users.getUser(player.getUniqueId());
+		Channel channel;
+		if (args.length > 0) {
+			channel = ((Sblock) this.getPlugin()).getModule(Chat.class).getChannelManager().getChannel(args[0]);
+			if (channel == null) {
+				sender.sendMessage(getLang().getValue("chat.error.invalidChannel").replace("{CHANNEL}", args[0]));
+			}
+		} else {
+			channel = user.getCurrentChannel();
+		}
 
 		if (!player.hasPermission("sblock.felt") && "#".equals(user.getCurrentChannel())
 				&& !TextUtils.isOnlyAscii(handMeta.getDisplayName())) {
-			sender.sendMessage(Language.getColor("bad")
-					+ "You may not show items with names containing characters normalized by the main chat!");
+			sender.sendMessage(getLang().getValue("command.show.invalidCharacters"));
 		}
 
-		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin())
+		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin()).setChannel(channel)
 				.setSender(user).setThirdPerson(true).setMessage(new TextComponent("shows off "),
 						JSONUtil.getItemComponent(hand), new TextComponent("."));
 

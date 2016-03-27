@@ -15,7 +15,6 @@ import com.mojang.authlib.GameProfile;
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
-import co.sblock.chat.Language;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 import co.sblock.events.event.SblockAsyncChatEvent;
@@ -41,8 +40,6 @@ public class MessageCommand extends SblockCommand {
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.reply = new HashMap<>();
-		this.setDescription("Send a private message");
-		this.setUsage("/m <name> <message> or /r <reply to last message>");
 		this.setAliases("w", "t", "pm", "msg", "tell", "whisper", "r", "reply");
 	}
 
@@ -70,7 +67,7 @@ public class MessageCommand extends SblockCommand {
 				return false;
 			}
 			if (!reply.containsKey(senderProfile)) {
-				sender.sendMessage(Language.getColor("bad") + "You do not have anyone to reply to!");
+				sender.sendMessage(getLang().getValue("command.m.replyUnset"));
 				return true;
 			}
 			recipientProfile = reply.get(senderProfile);
@@ -79,7 +76,7 @@ public class MessageCommand extends SblockCommand {
 			if (reply.hasPlayedBefore()) {
 				// Ensure that they're online
 				if (!reply.isOnline()) {
-					sender.sendMessage(Language.getColor("bad") + "The person you were talking to has logged out!");
+					sender.sendMessage(getLang().getValue("command.m.replyMissing"));
 					return true;
 				}
 				recipientPlayer = reply.getPlayer();

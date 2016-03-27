@@ -16,7 +16,6 @@ import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
-import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
 
 /**
@@ -31,8 +30,6 @@ public class BatchCaptchaCommand extends SblockCommand {
 	public BatchCaptchaCommand(Sblock plugin) {
 		super(plugin, "baptcha");
 		this.setAliases("batchcap", "capbatch", "batchcaptcha", "captchabatch");
-		this.setDescription("Captchalogues all items in your inventory matching your item in main hand!");
-		this.setUsage("Hold an item in main hand, run /baptcha. Batch captcha!");
 
 		Permission permission;
 		try {
@@ -50,7 +47,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
 		Player player = (Player) sender;
@@ -60,7 +57,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		}
 
 		if (!captcha.canCaptcha(item)) {
-			player.sendMessage(Language.getColor("bad") + "That item cannot be put in a captcha!");
+			player.sendMessage(getLang().getValue("captcha.uncaptchable"));
 			return true;
 		}
 
@@ -86,7 +83,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		}
 
 		if (max == 0) {
-			player.sendMessage(Language.getColor("bad") + "You don't have any blank captchas to use!");
+			player.sendMessage(getLang().getValue("command.baptcha.noCaptchas"));
 			return true;
 		}
 
@@ -113,7 +110,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		item = captcha.itemToCaptcha(item);
 		item.setAmount(count);
 		player.getInventory().addItem(item);
-		player.sendMessage(Language.getColor("good") + "Used " + count + " captchas to store items.");
+		player.sendMessage(getLang().getValue("command.baptcha.success").replace("{COUNT}", String.valueOf(count)));
 		return true;
 	}
 

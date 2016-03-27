@@ -21,12 +21,13 @@ import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
- * 
+ * SblockCommand for getting your current coordinates.
  * 
  * @author Jikoo
  */
 public class CoordsCommand extends SblockAsynchronousCommand {
 
+	// TODO lang
 	public CoordsCommand(Sblock plugin) {
 		super(plugin, "coords");
 		this.setAliases("getpos", "loc", "pos", "whereami");
@@ -64,7 +65,7 @@ public class CoordsCommand extends SblockAsynchronousCommand {
 		Location loc = target.getLocation();
 		String baseMessage = String.format("%1$sOn %2$s%3$s%1$s at %2$s%4$.1f%1$s, "
 					+ "%2$s%5$.1f%1$s, %2$s%6$.1f%1$s, %2$s%7$.1f%1$s pitch, and %2$s%8$.1f%1$s yaw.",
-			Language.getColor("good"), Language.getColor("emphasis.good"), loc.getWorld().getName(), loc.getX(),
+			Language.getColor("neutral"), Language.getColor("emphasis.neutral"), loc.getWorld().getName(), loc.getX(),
 			loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw());
 		if (!(sender instanceof Player) || sender instanceof DiscordPlayer) {
 			sender.sendMessage(baseMessage);
