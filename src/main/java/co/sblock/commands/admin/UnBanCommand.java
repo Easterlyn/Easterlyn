@@ -40,8 +40,6 @@ public class UnBanCommand extends SblockCommand {
 		BanList bans = Bukkit.getBanList(Type.IP);
 		BanList pbans = Bukkit.getBanList(Type.NAME);
 		if (bans.isBanned(args[0])) {
-			pbans.pardon(bans.getBanEntry(args[0]).getReason()
-					.replaceAll(".*<name=(\\w{1,16}+)>.*", "$1"));
 			bans.pardon(args[0]);
 		} else if (pbans.isBanned(args[0])) {
 			bans.pardon(pbans.getBanEntry(args[0]).getReason()
