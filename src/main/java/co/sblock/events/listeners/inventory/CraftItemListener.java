@@ -49,7 +49,7 @@ public class CraftItemListener extends SblockListener {
 				if (is1.isSimilar(is)) {
 					event.setCancelled(true);
 					if (is.getItemMeta().hasDisplayName()) {
-						clicked.sendMessage(lang.getValue("events.craft.captcha")
+						clicked.sendMessage(lang.getValue("events.craft.unique")
 								.replace("{PARAMETER}", is.getItemMeta().getDisplayName()));
 					}
 					return;

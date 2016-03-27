@@ -145,11 +145,11 @@ public class TeleportRequestCommand extends SblockCommand {
 		pending.put(target.getUniqueId(), new TeleportRequest(sender.getUniqueId(), target.getUniqueId(), here));
 		cooldowns.addCooldown(sender, "teleportRequest", getPlugin().getConfig().getLong("command.tpa.ignored", 480000L));
 		sender.sendMessage(getLang().getValue("command.tpa.success.sent"));
-		target.sendMessage(getLang().getValue("command.tpa.success.recieve")
+		target.sendMessage(getLang().getValue("command.tpa.success.receive")
 				.replace("{PLAYER}", sender.getDisplayName())
 				.replace("{OPTION}",
-						here ? getLang().getValue("command.tpa.success.recieveToSender")
-								: getLang().getValue("command.tpa.success.recieveToSender")));
+						here ? getLang().getValue("command.tpa.success.receiveToSender")
+								: getLang().getValue("command.tpa.success.receiveToSender")));
 	}
 
 	private void accept(Player sender) {

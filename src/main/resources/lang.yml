@@ -252,12 +252,12 @@ command:
       senderMissing: '{COLOR:bad}The issuer of the request seems to have logged off.'
     success:
       sent: '{COLOR:neutral}Request sent!'
-      recieve: |
+      receive: |
         {COLOR:player.neutral}{PLAYER}{COLOR:neutral} is requesting to teleport {OPTION}.
         {COLOR:neutral}To accept, use {COLOR:command}/tpyes{COLOR:neutral}. To decline, use {COLOR:command}/tpno{COLOR:neutral}.
         {COLOR:neutral}This request will expire in a minute.
-      recieveToSender: 'you to them'
-      recieveToTarget: 'to you'
+      receiveToSender: 'you to them'
+      receiveToTarget: 'to you'
       arrive:
         teleported: '{COLOR:good}Teleported you to {COLOR:player.good}{PLAYER}{COLOR:good}.'
         target: '{COLOR:good}Teleported {COLOR:player.good}{PLAYER}{COLOR:good} to you.'
@@ -357,7 +357,7 @@ events:
       PONG.
     filter: |
       (^|\s)rap(ed?|ing)(\W|\s|$)
-    ping: '{COLOR:bad}It''s easy and polite to relay information while highlighting someone, {PLAYER}. Please do so.'
+    ping: '{COLOR:bad}Don''t just highlight someone, {PLAYER}. It''s easy and polite to say what you plan to say once you have their attention in the same sentence.'
     rp: '{COLOR:bad}RP is not allowed in the main chat. Join #rp or #fanrp using /focus!'
     spam: '{COLOR:bad}You appear to be spamming. Please slow down chat.'
     mute: '{COLOR:bad}You were asked not to spam. This mute will last 5 minutes.'
