@@ -71,7 +71,6 @@ public class PlayerLoader {
 		try {
 			return future.get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

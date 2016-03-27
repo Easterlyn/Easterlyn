@@ -124,9 +124,12 @@ public class InventoryUtils {
 			return potion;
 		}
 
+		// This is a rare case I don't mind breaking
+		potionMeta.removeCustomEffect(type.getEffectType());
+
 		data = new PotionData(type,
-				/* extended bit */ ((durability >> 6) & 1) == 1,
-				/* amplified bit */ ((durability >> 5) & 1) == 1);
+				type.isExtendable() && ((durability >> 6) & 1) == 1,
+				type.isUpgradeable() && ((durability >> 5) & 1) == 1);
 
 		potionMeta.setBasePotionData(data);
 		potion.setItemMeta(potionMeta);
@@ -211,7 +214,13 @@ public class InventoryUtils {
 	}
 
 	private static String getPotionName(PotionMeta meta) {
-		PotionData base = meta.getBasePotionData();
+		PotionData base;
+		try {
+			base = meta.getBasePotionData();
+		} catch (IllegalArgumentException e) {
+			// This can be thrown by Spigot when converting a valid potion with odd data values.
+			return "Questionable Validity";
+		}
 		if (base.getType() != PotionType.UNCRAFTABLE) {
 			StringBuilder name = new StringBuilder();
 			if (base.isExtended()) {

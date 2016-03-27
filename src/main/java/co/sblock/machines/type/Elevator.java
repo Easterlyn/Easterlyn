@@ -75,7 +75,7 @@ public class Elevator extends Machine {
 		Player player = event.getPlayer();
 		// Allow sneaking players to cross or place blocks, but don't allow elevators to trigger redstone devices.
 		if (player.isSneaking()) {
-			return event.getAction() != Action.PHYSICAL;
+			return event.getAction() == Action.PHYSICAL;
 		}
 		if (event.getAction() == Action.PHYSICAL) {
 			event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(),
@@ -83,7 +83,7 @@ public class Elevator extends Machine {
 			int duration = storage.getInt("duration");
 			// Effect power is 0-indexed.
 			player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, duration, 19, true), true);
-			PermissionAttachment attachment = player.addAttachment(getPlugin(), duration);
+			PermissionAttachment attachment = player.addAttachment(getPlugin(), (int) (duration * 1.5));
 			attachment.setPermission("nocheatplus.checks.moving.creativefly", true);
 			return true;
 		}
@@ -112,7 +112,7 @@ public class Elevator extends Machine {
 			event.getPlayer().openInventory(inventory);
 			InventoryUtils.changeWindowName(event.getPlayer(), "Elevator Configuration");
 		}
-		return false;
+		return true;
 	}
 
 	@Override

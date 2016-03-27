@@ -1441,4 +1441,24 @@ public class PermissiblePlayer implements Player {
 		player.setGliding(arg0);
 	}
 
+	@Override
+	public boolean hasAI() {
+		return player.hasAI();
+	}
+
+	@Override
+	public void setAI(boolean arg0) {
+		player.setAI(arg0);
+	}
+
+	@Override
+	public boolean isInvulnerable() {
+		return player.isInvulnerable();
+	}
+
+	@Override
+	public void setInvulnerable(boolean arg0) {
+		player.setInvulnerable(arg0);
+	}
+
 }

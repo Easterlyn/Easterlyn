@@ -1165,4 +1165,20 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setGliding(boolean arg0) {}
 
+	@Override
+	public boolean hasAI() {
+		return false;
+	}
+
+	@Override
+	public void setAI(boolean arg0) {}
+
+	@Override
+	public boolean isInvulnerable() {
+		return false;
+	}
+
+	@Override
+	public void setInvulnerable(boolean arg0) {}
+
 }

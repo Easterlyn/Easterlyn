@@ -12,8 +12,6 @@ import co.sblock.machines.Machines;
 import co.sblock.machines.type.Machine;
 import co.sblock.utilities.Experience;
 
-import net.md_5.bungee.api.ChatColor;
-
 /**
  * Program for purchasing a Machine.
  * 
@@ -27,7 +25,7 @@ public class MachinePurchase extends Program {
 		super(machines);
 		icon = new ItemStack(Material.DIRT);
 		ItemMeta meta = icon.getItemMeta();
-		meta.setDisplayName(ChatColor.GREEN + "Purchase");
+		meta.setDisplayName(Language.getColor("good") + "Purchase");
 		icon.setItemMeta(meta);
 	}
 
