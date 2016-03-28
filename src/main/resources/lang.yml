@@ -145,9 +145,9 @@ command:
     announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been temporarily banned. {COLOR:emphasis.bad}{REASON}'
   aether:
     hover: |
-      {COLOR:emphasis.good}IRC Chat
-      {COLOR:good}Server: irc.freenode.net
-      {COLOR:good}Channel: #sblockserver
+      {COLOR:emphasis.neutral}IRC Chat
+      {COLOR:neutral}Server: irc.freenode.net
+      {COLOR:neutral}Channel: #sblockserver
   me:
     description: '/me does an action'
     usage: 'YOU FOOKIN WOT M8? /me (@channel) <message> Channel optional, defaults current.'
