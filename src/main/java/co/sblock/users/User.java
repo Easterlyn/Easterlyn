@@ -584,6 +584,10 @@ public class User {
 		String base = lang.getValue("chat.channel.join", true).replace("{PLAYER}", this.getDisplayName());
 
 		String all = base.toString().replace("{CHANNEL}", StringUtils.join(getListening(), ", "));
+		int lastComma = all.lastIndexOf(',');
+		if (lastComma > -1) {
+			all = all.substring(0, lastComma) + " and" + all.substring(lastComma + 1);
+		}
 		Logger.getLogger("Minecraft").info(all);
 		this.sendMessage(all);
 

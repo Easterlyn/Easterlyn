@@ -149,7 +149,7 @@ public class MessageBuilder {
 		Player player = sender != null ? sender.getPlayer() : null;
 		// Strip characters that are not allowed in default channels and partial caps
 		if (channel != null && channel.getOwner() == null && !(channel instanceof NickChannel)
-				&& (player == null || !player.hasPermission("sblock.felt"))) {
+				&& player != null && !player.hasPermission("sblock.felt")) {
 			ArrayList<String> names = new ArrayList<String>();
 			Users users = plugin.getModule(Users.class);
 			channel.getListening().forEach(uuid -> {

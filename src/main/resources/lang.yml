@@ -77,9 +77,9 @@ chat:
   user:
     away: '{COLOR:player.bad}{PLAYER} {COLOR:bad}is away and may not respond!'
     discordHover: |
-      {COLOR:emphasis.good}Discord Chat
+      {COLOR:emphasis.neutral}Discord Chat
       {COLOR:link_color}{COLOR:link_format}www.sblock.co/discord
-      {COLOR:good}Channel: #main
+      {COLOR:neutral}Channel: #main
     hover: |
       {COLOR:neutral}{COLOR:strikethrough}+--{COLOR:rank.hero} {PLAYER} {COLOR:neutral}{COLOR:strikethrough}--+
       {COLOR:rank.hero}{RANK}
@@ -87,8 +87,8 @@ chat:
       {COLOR:neutral}Dream: {COLOR:rank.hero}{DREAM}
       {COLOR:neutral}Medium: {COLOR:rank.hero}{MEDIUM}
   channel:
-    join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}began pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'
-    quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}ceased pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'
+    join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}began pestering {COLOR:link_channel}{CHANNEL} {COLOR:neutral}at {TIME}'
+    quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}ceased pestering {COLOR:link_channel}{CHANNEL} {COLOR:neutral}at {TIME}'
     setcurrent: '{COLOR:neutral}Current channel set to {COLOR:link_channel}{CHANNEL}'
     disband: '{COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}has been disbanded. These are dark times indeed.'
     kick: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been kicked from {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
