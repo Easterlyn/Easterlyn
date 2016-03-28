@@ -3,6 +3,8 @@ package co.sblock.chat.message;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -38,54 +40,25 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class MessageBuilder {
 
 	private static final TextComponent HIGHLIGHTED_BRACKET;
-	private static final String CONSOLE_FORMAT;
-	private static final String CONSOLE_FORMAT_THIRD;
-	private static final BaseComponent[] NAME_HOVER;
+	private static final String CONSOLE_FORMAT, CONSOLE_FORMAT_THIRD;
+	private static final Pattern NAME_PATTERN, RANK_PATTERN, CLASS_PATTERN, ASPECT_PATTERN, DREAM_PATTERN, MEDIUM_PATTERN;
+	private static BaseComponent[] NAME_HOVER;
 
 	static {
 		HIGHLIGHTED_BRACKET = new TextComponent("!!");
 		HIGHLIGHTED_BRACKET.setColor(ChatColor.AQUA);
 
-		NAME_HOVER = new TextComponent[9];
-
-		// +-- Name --+
-		TextComponent component = new TextComponent("+--");
-		component.setColor(Language.getColor("neutral"));
-		component.setStrikethrough(true);
-		NAME_HOVER[0] = component;
-		component = new TextComponent(" %s ");
-		NAME_HOVER[1] = component;
-		component = new TextComponent("--+\n");
-		component.setColor(Language.getColor("neutral"));
-		component.setStrikethrough(true);
-		NAME_HOVER[2] = component;
-
-		// Rank (Normal server rank)
-		component = new TextComponent("%s\n");
-		NAME_HOVER[3] = component;
-
-		// Class of Aspect
-		component = new TextComponent("%s of %s\n");
-		NAME_HOVER[4] = component;
-
-		// Dream: Dream
-		component = new TextComponent("Dream: ");
-		component.setColor(Language.getColor("neutral"));
-		NAME_HOVER[5] = component;
-		component = new TextComponent("%s\n");
-		NAME_HOVER[6] = component;
-
-		// Medium: Medium
-		component = new TextComponent("Medium: ");
-		component.setColor(Language.getColor("neutral"));
-		NAME_HOVER[7] = component;
-		component = new TextComponent("%s");
-		NAME_HOVER[8] = component;
-
 		StringBuilder sb = new StringBuilder();
 		sb.append("%1$s[%2$s%3$s%1$s]%4$s <%5$s%6$s%4$s> ").append(ChatColor.WHITE).append("%6$s");
 		CONSOLE_FORMAT = sb.toString();
 		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
+
+		NAME_PATTERN = Pattern.compile("\\{PLAYER\\}");
+		RANK_PATTERN = Pattern.compile("\\{RANK\\}");
+		CLASS_PATTERN = Pattern.compile("\\{CLASS\\}");
+		ASPECT_PATTERN = Pattern.compile("\\{ASPECT\\}");
+		DREAM_PATTERN = Pattern.compile("\\{DREAM\\}");
+		MEDIUM_PATTERN = Pattern.compile("\\{MEDIUM\\}");
 	}
 
 	private final Sblock plugin;
@@ -106,6 +79,13 @@ public class MessageBuilder {
 		this.plugin = plugin;
 		this.lang = plugin.getModule(Language.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
+		this.setup();
+	}
+
+	private void setup() {
+		if (NAME_HOVER == null) {
+			NAME_HOVER = TextComponent.fromLegacyText(lang.getValue("chat.user.hover"));
+		}
 	}
 
 	public MessageBuilder setSender(User sender) {
@@ -495,44 +475,48 @@ public class MessageBuilder {
 		if (nameHover == null && sender != null) {
 			nameHover = new BaseComponent[NAME_HOVER.length];
 
-			nameHover[0] = NAME_HOVER[0];
+			for (int i = 0; i < NAME_HOVER.length; i++) {
+				TextComponent hoverElement = (TextComponent) NAME_HOVER[i].duplicate();
+				String text = hoverElement.getText();
 
-			// Set name and global rank color
-			component = (TextComponent) NAME_HOVER[1].duplicate();
-			component.setText(String.format(component.getText(), senderName));
-			component.setColor(globalRank);
-			nameHover[1] = component;
+				Matcher matcher = NAME_PATTERN.matcher(text);
+				if (matcher.find()) {
+					text = matcher.replaceAll(senderName);
+					hoverElement.setColor(globalRank);
+				}
 
-			nameHover[2] = NAME_HOVER[2];
+				matcher = RANK_PATTERN.matcher(text);
+				if (matcher.find()) {
+					text = matcher.replaceAll(rankName);
+					hoverElement.setColor(globalRank);
+				}
 
-			// Global rank descriptor
-			component = (TextComponent) NAME_HOVER[3].duplicate();
-			component.setText(String.format(component.getText(), rankName));
-			component.setColor(globalRank);
-			nameHover[3] = component;
+				matcher = CLASS_PATTERN.matcher(text);
+				if (matcher.find()) {
+					text = matcher.replaceAll(sender.getUserClass().getDisplayName());
+				}
 
-			// Class of Aspect
-			component = (TextComponent) NAME_HOVER[4].duplicate();
-			component.setText(String.format(component.getText(), sender.getUserClass()
-					.getDisplayName(), sender.getUserAspect().getDisplayName()));
-			component.setColor(sender.getUserAspect().getColor());
-			nameHover[4] = component;
+				matcher = ASPECT_PATTERN.matcher(text);
+				if (matcher.find()) {
+					text = matcher.replaceAll(sender.getUserAspect().getDisplayName());
+					hoverElement.setColor(sender.getUserAspect().getColor());
+				}
 
-			nameHover[5] = NAME_HOVER[5];
+				matcher = DREAM_PATTERN.matcher(text);
+				if (matcher.find()) {
+					text = matcher.replaceAll(sender.getDreamPlanet().getDisplayName());
+					hoverElement.setColor(sender.getDreamPlanet().getColor());
+				}
 
-			// Dream planet
-			component = (TextComponent) NAME_HOVER[6].duplicate();
-			component.setText(String.format(component.getText(), sender.getDreamPlanet().getDisplayName()));
-			component.setColor(sender.getDreamPlanet().getColor());
-			nameHover[6] = component;
+				matcher = MEDIUM_PATTERN.matcher(text);
+				if (matcher.find()) {
+					text = matcher.replaceAll(sender.getMediumPlanet().getDisplayName());
+					hoverElement.setColor(sender.getMediumPlanet().getColor());
+				}
 
-			nameHover[7] = NAME_HOVER[7];
-
-			// Medium planet
-			component = (TextComponent) NAME_HOVER[8].duplicate();
-			component.setText(String.format(component.getText(), sender.getMediumPlanet().getDisplayName()));
-			component.setColor(sender.getMediumPlanet().getColor());
-			nameHover[8] = component;
+				hoverElement.setText(text);
+				nameHover[i] = hoverElement;
+			}
 
 			/*
 			 * Yes, this is stupid.

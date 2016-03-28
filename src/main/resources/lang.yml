@@ -80,6 +80,12 @@ chat:
       {COLOR:emphasis.good}Discord Chat
       {COLOR:link_color}{COLOR:link_format}www.sblock.co/discord
       {COLOR:good}Channel: #main
+    hover: |
+      {COLOR:neutral}{COLOR:strikethrough}+--{COLOR:rank.hero} {PLAYER} {COLOR:neutral}{COLOR:strikethrough}--+
+      {COLOR:rank.hero}{RANK}
+      {COLOR:rank.hero}{CLASS} of {ASPECT}
+      {COLOR:neutral}Dream: {COLOR:rank.hero}{DREAM}
+      {COLOR:neutral}Medium: {COLOR:rank.hero}{MEDIUM}
   channel:
     join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}began pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'
     quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}ceased pestering {COLOR:emphasis.neutral}{CHANNEL} {COLOR:neutral}at {TIME}'

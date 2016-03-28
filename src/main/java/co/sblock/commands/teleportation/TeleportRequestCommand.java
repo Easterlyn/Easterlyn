@@ -149,7 +149,7 @@ public class TeleportRequestCommand extends SblockCommand {
 				.replace("{PLAYER}", sender.getDisplayName())
 				.replace("{OPTION}",
 						here ? getLang().getValue("command.tpa.success.receiveToSender")
-								: getLang().getValue("command.tpa.success.receiveToSender")));
+								: getLang().getValue("command.tpa.success.receiveToTarget")));
 	}
 
 	private void accept(Player sender) {

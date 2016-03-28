@@ -88,7 +88,7 @@ public class EffectsCommand extends SblockCommand {
 				.append(NumberUtils.romanFromInt(level)).toString();
 
 		if (effects.getEffectFromLore(loreString, true) == null) {
-			sender.sendMessage(getLang().getValue("command.general.invalidParameter")
+			sender.sendMessage(getLang().getValue("command.general.invalidParameters")
 					.replace("{PARAMETER}", loreString));
 			return true;
 		}
