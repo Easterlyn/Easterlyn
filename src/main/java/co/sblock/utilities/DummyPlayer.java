@@ -1181,4 +1181,12 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setInvulnerable(boolean arg0) {}
 
+	@Override
+	public boolean isCollidable() {
+		return false;
+	}
+
+	@Override
+	public void setCollidable(boolean arg0) {}
+
 }

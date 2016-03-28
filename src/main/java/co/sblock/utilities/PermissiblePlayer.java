@@ -1461,4 +1461,14 @@ public class PermissiblePlayer implements Player {
 		player.setInvulnerable(arg0);
 	}
 
+	@Override
+	public boolean isCollidable() {
+		return player.isCollidable();
+	}
+
+	@Override
+	public void setCollidable(boolean arg0) {
+		player.setCollidable(arg0);
+	}
+
 }
