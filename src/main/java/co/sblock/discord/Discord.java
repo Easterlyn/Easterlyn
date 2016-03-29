@@ -303,7 +303,7 @@ public class Discord extends Module {
 
 	private void startQueueDrain() {
 		if (drainQueueThread == null || !drainQueueThread.isAlive()) {
-			drainQueueThread = new QueueDrainThread(this, 150, "Sblock-DiscordQueue");
+			drainQueueThread = new QueueDrainThread(this, 350, "Sblock-DiscordQueue");
 			drainQueueThread.start();
 		}
 	}
@@ -416,32 +416,17 @@ public class Discord extends Module {
 						return;
 					}
 				}
-				// TODO Discord4J update
-//				if (!client.getOurUser().getName().equals(name)) {
-//					try {
-//						client.changeUsername(name);
-//					} catch (HTTP429Exception | DiscordException e) {
-//						// Trivial issue
-//					}
-//				}
-				IMessage posted = group.sendMessage(message);
-				getModule(RetentionModule.class).handleNewMessage(posted);
+				StringBuilder builder = new StringBuilder();
 				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
-					StringBuilder builder = new StringBuilder().append("**")
-							.append(toEscape.matcher(name).replaceAll("\\\\$1"));
+					builder.append("**").append(toEscape.matcher(name).replaceAll("\\\\$1"));
 					if (!name.startsWith("* ")) {
 						builder.append(':');
 					}
-					builder.append("** ").append(message);
-					drainQueueThread.queue(new DiscordCallable(CallPriority.MEDIUM, true) {
-						@Override
-						public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
-							// Editing messages causes them to use the current name.
-							resetBotName();
-							posted.edit(builder.toString());
-						}
-					});
+					builder.append("** ");
 				}
+				builder.append(message);
+				IMessage posted = group.sendMessage(builder.toString());
+				getModule(RetentionModule.class).handleNewMessage(posted);
 			}
 		});
 	}
