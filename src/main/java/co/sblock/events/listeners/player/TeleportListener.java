@@ -62,7 +62,8 @@ public class TeleportListener extends SblockListener {
 				return;
 			}
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(lang.getValue("spectate.disallowed"));
+			event.getPlayer().sendMessage(lang.getValue("spectators.disallowed")
+					.replace("{PLAYER}", player.getDisplayName()));
 			return;
 		}
 	}

@@ -276,7 +276,8 @@ public class User {
 				player.setFlying(allowFlight);
 				getYamlConfiguration().set("flying", allowFlight);
 			}
-		}.runTask(getPlugin());}
+		}.runTaskLater(getPlugin(), 1L);
+	}
 
 	/**
 	 * Set whether or not a user can be spectated to.
@@ -643,7 +644,7 @@ public class User {
 			if (channel instanceof NickChannel) {
 				((NickChannel) channel).removeNick(this);
 			}
-			channel.sendMessage(lang.getValue("chat.channel.quit")
+			channel.sendMessage(lang.getValue("chat.channel.quit", true)
 					.replace("{PLAYER}", this.getDisplayName()).replace("{CHANNEL}", channelName));
 			channel.getListening().remove(this.getUUID());
 			if (this.currentChannel != null && channelName.equals(this.getCurrentChannel().getName())) {
@@ -1071,16 +1072,18 @@ public class User {
 		User user = new User(plugin, uuid, yaml);
 		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
 		if (user.isOnline()) {
-			Location currentLoc = BukkitSerializer.locationFromString(yaml.getString("location"));
+			user.setUserIP(user.getPlayer().getAddress().getHostString());
+			Location currentLoc = user.getCurrentLocation();
 			if (currentLoc == null) {
 				currentLoc = Users.getSpawnLocation();
 			}
-			Region currentRegion = Region.getRegion(currentLoc.getWorld().getName());
-			if (currentRegion.isDream()) {
-				currentRegion = user.getDreamPlanet();
+			if (currentLoc != null) {
+				Region currentRegion = Region.getRegion(currentLoc.getWorld().getName());
+				if (currentRegion.isDream()) {
+					currentRegion = user.getDreamPlanet();
+				}
+				user.updateCurrentRegion(currentRegion, true);
 			}
-			user.setUserIP(user.getPlayer().getAddress().getHostString());
-			user.updateCurrentRegion(currentRegion, true);
 		}
 		user.getPrograms().addAll((HashSet<String>) yaml.get("progression.programs"));
 		Channel currentChannel = user.manager.getChannel(yaml.getString("chat.current", "#"));
