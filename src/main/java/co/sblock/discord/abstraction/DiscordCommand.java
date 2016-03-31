@@ -4,11 +4,11 @@ import java.util.EnumSet;
 
 import co.sblock.discord.Discord;
 
-import sx.blah.discord.api.MissingPermissionsException;
 import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * A base for all Discord-specific commands.

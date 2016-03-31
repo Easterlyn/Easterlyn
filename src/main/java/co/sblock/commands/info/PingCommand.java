@@ -5,8 +5,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
@@ -25,16 +23,7 @@ public class PingCommand extends SblockCommand {
 		super(plugin, "ping");
 		this.setDescription("Get your ping.");
 		this.setUsage("/ping <player>");
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.ping.other", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.ping.other");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.helper", true).recalculatePermissibles();
+		this.addExtraPermission("other", "helper");
 	}
 
 	@Override

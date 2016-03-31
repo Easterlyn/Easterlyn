@@ -24,7 +24,7 @@ public class CaptchaHashCommand extends SblockCommand {
 		super(plugin, "hash");
 		this.setPermissionLevel("denizen");
 		this.setPermissionMessage(ChatColor.GOLD + "BROWNS!");
-		captcha = plugin.getModule(Captcha.class);
+		this.captcha = plugin.getModule(Captcha.class);
 	}
 
 	@Override

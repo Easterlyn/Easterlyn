@@ -12,7 +12,7 @@ import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.modules.MinecraftModule;
 import co.sblock.discord.modules.RetentionModule;
 
-import sx.blah.discord.handle.IListener;
+import sx.blah.discord.api.IListener;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;

@@ -6,8 +6,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
@@ -29,18 +27,7 @@ public class FlyCommand extends SblockCommand {
 		this.setDescription("Toggle flight for yourself or another player.");
 		this.setPermissionLevel("helper");
 		this.setUsage("/fly [player] [true|false]");
-		Permission permission;
-		for (String permName : new String[] {"sblock.command.fly.other", "sblock.command.fly.safe"}) {
-			try {
-				permission = new Permission(permName, PermissionDefault.OP);
-				Bukkit.getPluginManager().addPermission(permission);
-			} catch (IllegalArgumentException e) {
-				permission = Bukkit.getPluginManager().getPermission(permName);
-				permission.setDefault(PermissionDefault.OP);
-			}
-			permission.addParent("sblock.command.*", true).recalculatePermissibles();
-			permission.addParent("sblock.felt", true).recalculatePermissibles();
-		}
+		this.addExtraPermission("other", "felt");
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package co.sblock.discord.listeners;
 
 import co.sblock.discord.Discord;
 
-import sx.blah.discord.handle.IListener;
+import sx.blah.discord.api.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;

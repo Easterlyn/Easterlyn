@@ -6,11 +6,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
@@ -33,16 +30,7 @@ public class DiscordLinkCommand extends SblockCommand {
 	public DiscordLinkCommand(Sblock plugin) {
 		super(plugin, "link");
 		this.discord = plugin.getModule(Discord.class);
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.link.force", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.link.force");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.felt", true).recalculatePermissibles();
+		this.addExtraPermission("force", "felt");
 	}
 
 	@Override

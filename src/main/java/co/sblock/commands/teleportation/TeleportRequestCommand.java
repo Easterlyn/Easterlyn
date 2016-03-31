@@ -10,8 +10,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
@@ -46,16 +44,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		this.users = plugin.getModule(Users.class);
 		this.transportalizer = (Transportalizer) plugin.getModule(Machines.class).getMachineByName("Transportalizer");
 		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno", "tpreset");
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.tpa.nocooldown", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.tpa.nocooldown");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.helper", true).recalculatePermissibles();
+		this.addExtraPermission("reset", "helper");
 	}
 
 	@Override
@@ -92,7 +81,7 @@ public class TeleportRequestCommand extends SblockCommand {
 			return true;
 		}
 		if (label.equals("tpreset")) {
-			if (player.hasPermission("sblock.command.tpa.nocooldown")) {
+			if (player.hasPermission("sblock.command.tpa.reset")) {
 				cooldowns.clearCooldown(player, "teleportRequest");
 			}
 		}
@@ -104,7 +93,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		if (remainder > 0) {
 			sender.sendMessage(getLang().getValue("command.tpa.error.cooldown")
 					.replace("{TIME}", time.format(new Date(remainder))));
-			if (sender.hasPermission("sblock.command.tpa.nocooldown")) {
+			if (sender.hasPermission("sblock.command.tpa.reset")) {
 				sender.sendMessage(getLang().getValue("command.tpa.reset"));
 			}
 			return;

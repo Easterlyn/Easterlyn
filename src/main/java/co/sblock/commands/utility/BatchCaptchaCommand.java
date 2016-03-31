@@ -2,15 +2,12 @@ package co.sblock.commands.utility;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
@@ -30,17 +27,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 	public BatchCaptchaCommand(Sblock plugin) {
 		super(plugin, "baptcha");
 		this.setAliases("batchcap", "capbatch", "batchcaptcha", "captchabatch");
-
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.baptcha.free", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.baptcha.free");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.denizen", true).recalculatePermissibles();
+		this.addExtraPermission("free", "denizen");
 		this.captcha = plugin.getModule(Captcha.class);
 	}
 

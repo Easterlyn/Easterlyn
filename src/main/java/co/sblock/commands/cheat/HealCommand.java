@@ -5,8 +5,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
@@ -14,7 +12,7 @@ import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 
 /**
- * 
+ * SblockCommand for restoring health and saturation.
  * 
  * @author Jikoo
  */
@@ -24,16 +22,7 @@ public class HealCommand extends SblockCommand {
 		super(plugin, "heal");
 		this.setAliases("eat", "feed");
 		this.setPermissionLevel("felt");
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.heal.other", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.heal.other");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.denizen", true).recalculatePermissibles();
+		this.addExtraPermission("other", "denizen");
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package co.sblock.discord.abstraction;
 
-import sx.blah.discord.api.DiscordException;
-import sx.blah.discord.api.MissingPermissionsException;
+import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.HTTP429Exception;
+import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * A simple abstraction allowing for easier handling of Discord API calls.
@@ -36,12 +36,12 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 	@Override
 	public int compareTo(DiscordCallable o) {
 		if (priority.ordinal() < o.priority.ordinal()) {
-			return -1;
+			return 1;
 		}
 		if (priority.ordinal() == o.priority.ordinal()) {
 			return 0;
 		}
-		return 1;
+		return -1;
 	}
 
 }

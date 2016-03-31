@@ -2,7 +2,7 @@ package co.sblock.discord.commands;
 
 import java.util.EnumSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import co.sblock.discord.Discord;
@@ -10,13 +10,13 @@ import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.modules.RetentionModule;
 import co.sblock.utilities.NumberUtils;
 
-import sx.blah.discord.api.MissingPermissionsException;
 import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * DiscordCommand for setting retention duration on a channel.

@@ -43,14 +43,14 @@ import co.sblock.utilities.TextUtils;
 import net.md_5.bungee.api.ChatColor;
 
 import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.DiscordException;
+import sx.blah.discord.api.EventDispatcher;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.MissingPermissionsException;
-import sx.blah.discord.handle.EventDispatcher;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.HTTP429Exception;
+import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * A Module for managing messaging to and from Discord.
@@ -67,8 +67,7 @@ public class Discord extends Module {
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
 
-	private String botName, channelMain, channelLog, channelReports;
-	private String login, password;
+	private String botName, token, channelMain, channelLog, channelReports;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
 	private QueueDrainThread drainQueueThread;
@@ -106,20 +105,19 @@ public class Discord extends Module {
 	@Override
 	protected void onEnable() {
 		botName = getConfig().getString("discord.username", "Sbot");
-		login = getConfig().getString("discord.login");
-		password = getConfig().getString("discord.password");
+		token = getConfig().getString("discord.token");
 		channelMain = getConfig().getString("discord.chat.main");
 		channelLog = getConfig().getString("discord.chat.log");
 		channelReports = getConfig().getString("discord.chat.reports");
 
-		if (login == null || password == null) {
-			getLogger().severe("Unable to connect to Discord, no username or password!");
+		if (token == null) {
+			getLogger().severe("Unable to connect to Discord, no token provided!");
 			this.disable();
 			return;
 		}
 
 		try {
-			this.client = new ClientBuilder().withLogin(this.login, this.password).build();
+			this.client = new ClientBuilder().withToken(this.token).build();
 		} catch (DiscordException e) {
 			e.printStackTrace();
 			this.disable();
@@ -193,7 +191,6 @@ public class Discord extends Module {
 	@Override
 	protected void onDisable() {
 		if (client != null) {
-			resetBotName();
 			/*
 			 * Discord4J calls Thread#interrupt when finishing DiscordClientImpl#logout. Spawning
 			 * new threads when shutting down is a bad idea, but we can't do much else. In case
@@ -224,8 +221,7 @@ public class Discord extends Module {
 		super.loadConfig();
 
 		botName = getConfig().getString("discord.username", "Sbot");
-		login = getConfig().getString("discord.login");
-		password = getConfig().getString("discord.password");
+		this.token = this.getConfig().getString("discord.token");
 		channelMain = getConfig().getString("discord.chat.main");
 		channelLog = getConfig().getString("discord.chat.log");
 		channelReports = getConfig().getString("discord.chat.reports");
@@ -235,17 +231,6 @@ public class Discord extends Module {
 
 	public String getBotName() {
 		return botName;
-	}
-
-	private void resetBotName() {
-		// TODO Discord4J update
-//		if (!client.getOurUser().getName().equals(this.getBotName())) {
-//			try {
-//				client.changeUsername(this.getBotName());
-//			} catch (HTTP429Exception | DiscordException e) {
-//				// Nothing we can do about this, really
-//			}
-//		}
 	}
 
 	private String generateUniqueCode() {
@@ -289,10 +274,8 @@ public class Discord extends Module {
 					cancel();
 					return;
 				}
-				// In case the queue has encountered an error, attempt to restart them
+				// In case the queue has encountered an error, attempt to restart
 				startQueueDrain();
-
-				resetBotName();
 
 				for (DiscordModule module : modules.values()) {
 					module.doHeartbeat();

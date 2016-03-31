@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
@@ -72,16 +69,8 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				+ Language.getColor("neutral") + ": List all channels.\n"
 				+ Language.getColor("command") + "/channel new <name> <access> <type>"
 				+ Language.getColor("neutral") + ": Create a new channel.");
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.channel.list.private", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.channel.list.private");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.helper", true).recalculatePermissibles();
+
+		this.addExtraPermission("list.private", "helper");
 	}
 
 	@Override

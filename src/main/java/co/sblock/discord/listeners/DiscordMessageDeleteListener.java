@@ -3,7 +3,7 @@ package co.sblock.discord.listeners;
 import co.sblock.discord.Discord;
 import co.sblock.discord.modules.RetentionModule;
 
-import sx.blah.discord.handle.IListener;
+import sx.blah.discord.api.IListener;
 import sx.blah.discord.handle.impl.events.MessageDeleteEvent;
 
 /**

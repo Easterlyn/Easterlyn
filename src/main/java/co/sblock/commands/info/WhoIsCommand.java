@@ -3,11 +3,8 @@ package co.sblock.commands.info;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
@@ -30,16 +27,7 @@ public class WhoIsCommand extends SblockAsynchronousCommand {
 		this.setAliases("profile");
 		this.setDescription("Check data stored for a player.");
 		this.setUsage("/whois <player>");
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.whois.detail", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.whois.detail");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.felt", true).recalculatePermissibles();
+		this.addExtraPermission("detail", "felt");
 	}
 
 	@Override

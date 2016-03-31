@@ -24,12 +24,12 @@ import co.sblock.users.Users;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
-import sx.blah.discord.api.DiscordException;
-import sx.blah.discord.api.MissingPermissionsException;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.HTTP429Exception;
+import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * DiscordModule for interacting with the Minecraft server from Discord.

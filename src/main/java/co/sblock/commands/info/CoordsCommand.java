@@ -7,8 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Language;
@@ -33,16 +31,7 @@ public class CoordsCommand extends SblockAsynchronousCommand {
 		this.setAliases("getpos", "loc", "pos", "whereami");
 		this.setDescription("Get your current coordinates.");
 		this.setUsage("/coords [player]");
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.coords.other", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.coords.other");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.felt", true).recalculatePermissibles();
+		this.addExtraPermission("other", "felt");
 	}
 
 	@Override

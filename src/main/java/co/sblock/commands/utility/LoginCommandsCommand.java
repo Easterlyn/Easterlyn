@@ -3,13 +3,10 @@ package co.sblock.commands.utility;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import com.google.common.collect.ImmutableList;
 
@@ -31,17 +28,7 @@ public class LoginCommandsCommand extends SblockCommand {
 	public LoginCommandsCommand(Sblock plugin) {
 		super(plugin, "onlogin");
 		this.users = plugin.getModule(Users.class);
-
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.onlogin.more", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.onlogin.more");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.helper", true).recalculatePermissibles();
+		this.addExtraPermission("more", "helper");
 	}
 
 	@Override
