@@ -179,6 +179,9 @@ public class SblockTravelAgent implements TravelAgent {
 	}
 
 	public Location findCenter(Block portal) {
+		if (portal == null) {
+			return null;
+		}
 		double minX = 0;
 		while (portal.getRelative((int) minX - 1, 0, 0).getType() == Material.PORTAL) {
 			minX -= 1;
