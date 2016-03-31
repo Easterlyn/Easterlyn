@@ -242,7 +242,7 @@ command:
     description: 'List nearby players.'
     usage: '/near [radius]'
     base: '{COLOR:neutral}Players nearby: '
-    player: '{COLOR:emphasis.player}{PLAYER} {COLOR:neutral}({COLOR:emphasis.neutral}{DISTANCE}m{COLOR:neutral})'
+    player: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}({COLOR:emphasis.neutral}{DISTANCE}m{COLOR:neutral})'
   tpa:
     description: 'Handle a teleport request'
     usage: '/tpa name, /tpahere name, /tpaccept, /tpdecline'

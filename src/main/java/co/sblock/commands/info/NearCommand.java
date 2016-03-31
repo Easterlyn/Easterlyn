@@ -18,7 +18,7 @@ public class NearCommand extends SblockCommand {
 
 	private final int maxRadius = 200;
 
-	public NearCommand(Sblock plugin, String name) {
+	public NearCommand(Sblock plugin) {
 		super(plugin, "near");
 		this.addExtraPermission("far", "felt");
 		this.addExtraPermission("invisible", "felt");
