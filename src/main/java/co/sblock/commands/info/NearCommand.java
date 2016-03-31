@@ -50,7 +50,8 @@ public class NearCommand extends SblockCommand {
 		StringBuilder builder = new StringBuilder(getLang().getValue("command.near.base"));
 
 		for (Player target : location.getWorld().getPlayers()) {
-			if (!player.canSee(target) || target.getGameMode() == GameMode.SPECTATOR
+			if (player.getUniqueId().equals(target.getUniqueId()) || !player.canSee(target)
+					|| target.getGameMode() == GameMode.SPECTATOR
 					|| !showInvisible && target.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 				continue;
 			}
