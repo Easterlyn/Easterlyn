@@ -173,7 +173,7 @@ public class Language extends Module {
 			lastIndex = matcher.end();
 		}
 		builder.append(content.substring(lastIndex));
-		this.translatedValues.put(path, builder.toString().trim());
+		this.translatedValues.put(path, builder.toString().replaceAll("\n+$", ""));
 	}
 
 	private String getSpecialContent(String type, String value) {

@@ -15,6 +15,7 @@ import co.sblock.chat.Language;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockCommand;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -42,14 +43,14 @@ public class RSSUpdateCommand extends SblockCommand {
 			return false;
 		}
 
-		TextComponent[] text = (TextComponent[]) TextComponent.fromLegacyText(
+		BaseComponent[] text = TextComponent.fromLegacyText(
 				Language.getColor("link_color").toString() + Language.getColor("link_format")
 				+ StringUtils.join(args, ' ', 2, args.length));
 		ClickEvent click = new ClickEvent(ClickEvent.Action.OPEN_URL, args[1]);
 		HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 				TextComponent.fromLegacyText(Language.getColor("link_color").toString()
 						+ Language.getColor("link_format") + args[0]));
-		for (TextComponent component : text) {
+		for (BaseComponent component : text) {
 			component.setClickEvent(click);
 			component.setHoverEvent(hover);
 		}
@@ -57,7 +58,7 @@ public class RSSUpdateCommand extends SblockCommand {
 		new MessageBuilder((Sblock) getPlugin()).setSender(Language.getColor("neutral") + args[0])
 				.setNameHover(Language.getColor("neutral") + "RSS Feed")
 				.setChannel(((Sblock) getPlugin()).getModule(Chat.class).getChannelManager().getChannel("#"))
-				.setMessage(text).toMessage().send(Bukkit.getOnlinePlayers(), false);
+				.setMessage(new TextComponent(text)).toMessage().send(Bukkit.getOnlinePlayers(), false);
 
 		return true;
 	}
