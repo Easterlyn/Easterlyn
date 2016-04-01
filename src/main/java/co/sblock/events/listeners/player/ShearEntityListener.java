@@ -46,14 +46,7 @@ public class ShearEntityListener extends SblockListener {
 		if (is == null) {
 			return;
 		}
-		int fortune = hand.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
-		double extradropchance = fortune == 1 ? .3 : fortune == 2 ? .25 : .2;
-		int total = 0;
-		for (int i = 0; i < fortune; i++) {
-			if (Math.random() < extradropchance) {
-				total++;
-			}
-		}
+		int total = getPlugin().getRandom().nextInt(hand.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + 1);
 		if (total == 0) {
 			return;
 		}
@@ -63,10 +56,10 @@ public class ShearEntityListener extends SblockListener {
 
 	private ItemStack getDrop(Entity entity) {
 		if (entity.getType() == EntityType.SHEEP) {
-			return new Wool(((Sheep) entity).getColor()).toItemStack((int) (Math.random() * 3) + 1);
+			return new Wool(((Sheep) entity).getColor()).toItemStack();
 		}
 		if (entity.getType() == EntityType.MUSHROOM_COW) {
-			return new ItemStack(Material.RED_MUSHROOM, 5);
+			return new ItemStack(Material.RED_MUSHROOM);
 		}
 		return null;
 	}
