@@ -22,6 +22,7 @@ public class NearCommand extends SblockCommand {
 		super(plugin, "near");
 		this.addExtraPermission("far", "felt");
 		this.addExtraPermission("invisible", "felt");
+		this.addExtraPermission("spectate", "felt");
 	}
 
 	@Override
@@ -44,6 +45,7 @@ public class NearCommand extends SblockCommand {
 
 		Player player = (Player) sender;
 		Location location = player.getLocation();
+		boolean showSpectate = player.hasPermission("sblock.command.near.spectate");
 		boolean showInvisible = player.hasPermission("sblock.command.near.invisible");
 		double squared = Math.pow(radius, 2);
 
@@ -51,7 +53,7 @@ public class NearCommand extends SblockCommand {
 
 		for (Player target : location.getWorld().getPlayers()) {
 			if (player.getUniqueId().equals(target.getUniqueId()) || !player.canSee(target)
-					|| target.getGameMode() == GameMode.SPECTATOR
+					|| !showSpectate && target.getGameMode() == GameMode.SPECTATOR
 					|| !showInvisible && target.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 				continue;
 			}

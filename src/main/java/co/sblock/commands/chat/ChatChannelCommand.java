@@ -147,7 +147,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				} else if (channel.getAccess() == AccessLevel.PUBLIC) {
 					color = Language.getColor("neutral");
 				} else if (channel.isApproved(user)) {
-					color = Language.getColor("neutral.emphasis");
+					color = Language.getColor("emphasis.neutral");
 				} else if (sender.hasPermission("sblock.command.channel.list.private")) {
 					color = Language.getColor("bad");
 				} else {
