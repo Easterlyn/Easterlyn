@@ -553,10 +553,6 @@ public class InventoryUtils {
 	}
 
 	public static void changeWindowName(Player player, String name) {
-		if (name.length() > 32) {
-			name = name.substring(0, 32);
-		}
-
 		Inventory top = player.getOpenInventory().getTopInventory();
 		if (top == null) {
 			return;
@@ -582,8 +578,12 @@ public class InventoryUtils {
 			Object iinventory = method.invoke(top);
 			method = iinventory.getClass().getMethod("getContainerName");
 			containerName = (String) method.invoke(iinventory);
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException | ClassCastException e) {
+		} catch (NoSuchMethodException e) {
+			// TODO Custom containers do not have a method getContainerName
+			// Should probably mimic behavior and just fetch based on InventoryType
+			containerName = "minecraft:container";
+		} catch (SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | ClassCastException e) {
 			e.printStackTrace();
 			containerName = "minecraft:container";
 		}
