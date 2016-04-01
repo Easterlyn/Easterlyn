@@ -35,7 +35,7 @@ public class InventoryMoveItemListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryMoveItem(InventoryMoveItemEvent event) {
 		InventoryHolder ih = event.getDestination().getHolder();
-		// TODO: check sending inv as well
+		// For now, sending inv is not checked, as no machines require it.
 		if (ih != null && ih instanceof BlockState) {
 			Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(((BlockState) ih).getBlock());
 			if (pair != null) {

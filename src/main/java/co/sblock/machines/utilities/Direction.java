@@ -1,6 +1,7 @@
 package co.sblock.machines.utilities;
 
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 /**
@@ -80,6 +81,26 @@ public enum Direction {
 			return (byte) (stair + 4);
 		default:
 			return 0;
+		}
+	}
+
+	/**
+	 * Gets the Bukkit BlockFace corresponding with this Direction.
+	 * 
+	 * @return the BlockFace
+	 */
+	public BlockFace toBlockFace() {
+		switch(this) {
+		case EAST:
+			return BlockFace.EAST;
+		case NORTH:
+			return BlockFace.NORTH;
+		case SOUTH:
+			return BlockFace.SOUTH;
+		case WEST:
+			return BlockFace.WEST;
+		default:
+			return BlockFace.SELF;
 		}
 	}
 

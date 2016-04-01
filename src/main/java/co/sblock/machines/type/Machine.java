@@ -24,6 +24,7 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
@@ -474,6 +475,17 @@ public abstract class Machine {
 	public boolean handleClick(InventoryDragEvent event, ConfigurationSection storage) {
 		event.setResult(Result.DENY);
 		return true;
+	}
+
+	/**
+	 * Handles Inventory opening for blocks inside the Machine. This is not fired by interaction
+	 * opening custom inventories handled by the MachineInventoryTracker.
+	 * 
+	 * @param event the InventoryOpenEvent
+	 * @param storage the ConfigurationSection of data specific to the given Machine
+	 */
+	public boolean handleOpen(InventoryOpenEvent event, ConfigurationSection storage) {
+		return false;
 	}
 
 	/**

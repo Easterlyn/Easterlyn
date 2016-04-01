@@ -576,11 +576,22 @@ public class InventoryUtils {
 			e.printStackTrace();
 			return;
 		}
+		String containerName;
+		try {
+			Method method = top.getClass().getMethod("getInventory");
+			Object iinventory = method.invoke(top);
+			method = iinventory.getClass().getMethod("getContainerName");
+			containerName = (String) method.invoke(iinventory);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException | ClassCastException e) {
+			e.printStackTrace();
+			containerName = "minecraft:container";
+		}
 
 		ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 		PacketContainer packet = manager.createPacket(PacketType.Play.Server.OPEN_WINDOW);
 		packet.getIntegers().write(0, containerCounter);
-		packet.getStrings().write(0, "minecraft:container");
+		packet.getStrings().write(0, containerName);
 		packet.getChatComponents().write(0,
 				WrappedChatComponent.fromJson("{\"text\": \"" + name + "\"}"));
 		packet.getIntegers().write(1, slots);
