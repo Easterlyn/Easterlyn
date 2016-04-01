@@ -1048,14 +1048,15 @@ public class User {
 				Discord discord = plugin.getModule(Discord.class);
 				discord.postMessage(discord.getBotName(), player.getName()
 						+ " is new! Please welcome them.", true);
-				base.setMessage("It would seem that " + player.getName()
+				base.setMessage(Language.getColor("bot_text") + "It would seem that " + player.getName()
 						+ " is joining us for the first time! Please welcome them.").toMessage()
 						.send(Bukkit.getOnlinePlayers().stream()
 								.filter(online -> !online.getUniqueId().equals(player.getUniqueId()))
 								.collect(Collectors.toCollection(ArrayList<Object>::new)), false);
 			} else {
 				// Our data file may have just been deleted - reset planned for Entry, etc.
-				base.setMessage("We've reset classpect since you last played. Please re-select now!")
+				base.setMessage(Language.getColor("bot_text")
+						+ "We've reset classpect since you last played. Please re-select now!")
 						.toMessage().send(ImmutableList.of(user), false);
 			}
 
@@ -1105,7 +1106,8 @@ public class User {
 			String previous = offline.getName() + " was previously known as " + name;
 			Chat chat = plugin.getModule(Chat.class);
 			chat.getHalBase().setChannel(chat.getChannelManager().getChannel("#"))
-					.setMessage(previous).toMessage().send(Bukkit.getOnlinePlayers(), false);
+					.setMessage(Language.getColor("bot_text") + previous).toMessage()
+					.send(Bukkit.getOnlinePlayers(), false);
 			Discord discord = getPlugin().getModule(Discord.class);
 			discord.postMessage(discord.getBotName(), previous, true);
 		}

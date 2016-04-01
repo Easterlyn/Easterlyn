@@ -114,9 +114,9 @@ public class JSONUtil {
 				String urlString = message.substring(i, pos);
 				urlString = urlString.startsWith("http") ? urlString : "http://" + urlString;
 				component.setText('[' + urlMatcher.group(2).toLowerCase() + ']');
-				component.setColor(ChatColor.BLUE);
+				component.setColor(Language.getColor("link_color"));
 				TextComponent[] hover = { new TextComponent(urlString) };
-				hover[0].setColor(ChatColor.BLUE);
+				hover[0].setColor(Language.getColor("link_color"));
 				component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, hover));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, urlString));
 				components.add(component);
@@ -139,10 +139,10 @@ public class JSONUtil {
 				String channelString = channelMatcher.group(1);
 				int end = channelMatcher.end(1);
 				component.setText(message.substring(i, end));
-				component.setColor(Language.getColor("emphasis.good"));
+				component.setColor(Language.getColor("link_channel"));
 				component.setUnderlined(true);
 				component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT,
-						TextComponent.fromLegacyText(Language.getColor("command") + "/join " + Language.getColor("emphasis.good") + channelString)));
+						TextComponent.fromLegacyText(Language.getColor("command") + "/join " + Language.getColor("link_channel") + channelString)));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelString));
 				components.add(component);
 
