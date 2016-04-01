@@ -26,7 +26,7 @@ import co.sblock.effects.effect.Effect;
 public class EffectVacuum extends Effect implements BehaviorActive {
 
 	public EffectVacuum(Sblock plugin) {
-		super(plugin, 300, 1, 3, "Vacuum");
+		super(plugin, 300, 3, 3, "Vacuum");
 	}
 
 	@Override
