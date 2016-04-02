@@ -191,6 +191,11 @@ public class Discord extends Module {
 
 	@Override
 	protected void onDisable() {
+		try {
+			discordData.save(new File(getPlugin().getDataFolder(), "DiscordData.yml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (client != null) {
 			/*
 			 * Discord4J calls Thread#interrupt when finishing DiscordClientImpl#logout. Spawning
@@ -209,11 +214,6 @@ public class Discord extends Module {
 					}
 				}
 			}, "Sblock-DiscordLogout").start();
-		}
-		try {
-			discordData.save(new File(getPlugin().getDataFolder(), "DiscordData.yml"));
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

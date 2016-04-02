@@ -161,7 +161,6 @@ public class RetentionModule extends DiscordModule {
 			}
 			IGuild guild = this.getDiscord().getClient().getGuildByID(guildID);
 			if (guild == null) {
-				retention.set(guildID, null);
 				continue;
 			}
 			ConfigurationSection retentionGuild = retention.getConfigurationSection(guildID);
