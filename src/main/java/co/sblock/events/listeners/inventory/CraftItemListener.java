@@ -1,7 +1,9 @@
 package co.sblock.events.listeners.inventory;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,7 +12,9 @@ import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
 import co.sblock.chat.Language;
+import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
+import co.sblock.machines.Machines;
 import co.sblock.utilities.InventoryUtils;
 
 /**
@@ -20,11 +24,36 @@ import co.sblock.utilities.InventoryUtils;
  */
 public class CraftItemListener extends SblockListener {
 
+	private final Events events;
 	private final Language lang;
+	private final Machines machines;
 
 	public CraftItemListener(Sblock plugin) {
 		super(plugin);
-		this.lang = this.getPlugin().getModule(Language.class);
+		this.events = plugin.getModule(Events.class);
+		this.lang = plugin.getModule(Language.class);
+		this.machines = plugin.getModule(Machines.class);
+	}
+
+
+	/**
+	 * EventHandler for CraftItemEvents on monitor priority.
+	 * 
+	 * @param event the CraftItemEvent
+	 */
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onCraftItemMonitor(final CraftItemEvent event) {
+
+		if (event.getClick().isShiftClick()) {
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					((Player) event.getWhoClicked()).updateInventory();
+				}
+			}.runTask(getPlugin());
+		}
+
+		// TODO if Compounding Unionizer, set recipe
 	}
 
 	/**
@@ -34,6 +63,13 @@ public class CraftItemListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onCraftItem(final CraftItemEvent event) {
+		if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE
+				&& !event.getWhoClicked().hasPermission("sblock.felt")
+				&& events.getCreativeBlacklist().contains(event.getCurrentItem().getType())) {
+			event.setCancelled(true);
+			return;
+		}
+
 		for (ItemStack is : event.getInventory().getMatrix()) {
 			if (is == null) {
 				continue;
@@ -42,7 +78,6 @@ public class CraftItemListener extends SblockListener {
 			if (Captcha.isCard(is) || CruxiteDowel.isDowel(is)) {
 				event.setCancelled(true);
 				clicked.sendMessage(lang.getValue("events.craft.captcha"));
-				clicked.updateInventory();
 				return;
 			}
 			for (ItemStack is1 : InventoryUtils.getUniqueItems(getPlugin())) {
@@ -55,15 +90,6 @@ public class CraftItemListener extends SblockListener {
 					return;
 				}
 			}
-		}
-
-		if (event.getClick().isShiftClick()) {
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					((Player) event.getWhoClicked()).updateInventory();
-				}
-			}.runTask(getPlugin());
 		}
 	}
 }
