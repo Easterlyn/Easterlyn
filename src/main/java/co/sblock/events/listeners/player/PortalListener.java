@@ -47,8 +47,11 @@ public class PortalListener extends SblockListener {
 		agent.reset();
 		Block fromPortal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
 		Location fromCenter = agent.findCenter(fromPortal);
-		if (fromPortal == null && fromEnvironment != Environment.THE_END) {
-			event.setCancelled(true);
+		if (fromPortal == null) {
+			if (fromEnvironment != Environment.THE_END
+					&& event.getTo().getWorld().getEnvironment() != Environment.THE_END) {
+				event.setCancelled(true);
+			}
 			return;
 		}
 		if (fromEnvironment == Environment.THE_END) {
