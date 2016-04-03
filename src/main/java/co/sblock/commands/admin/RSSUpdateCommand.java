@@ -49,7 +49,7 @@ public class RSSUpdateCommand extends SblockCommand {
 		ClickEvent click = new ClickEvent(ClickEvent.Action.OPEN_URL, args[1]);
 		HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 				TextComponent.fromLegacyText(Language.getColor("link_color").toString()
-						+ Language.getColor("link_format") + args[0]));
+						+ Language.getColor("link_format") + args[1]));
 		for (BaseComponent component : text) {
 			component.setClickEvent(click);
 			component.setHoverEvent(hover);

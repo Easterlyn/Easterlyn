@@ -26,7 +26,14 @@ public class DiscordReconnectCommand extends SblockAsynchronousCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (discord.disable().enable().isEnabled()) {
+		discord.disable();
+		try {
+			// Hooray for asynchronous commands
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		if (discord.enable().isEnabled()) {
 			sender.sendMessage("Reconnected successfully.");
 		} else {
 			sender.sendMessage("Reconnection failed. Check console.");

@@ -35,7 +35,7 @@ public class QueueDrainThread extends Thread {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					break;
 				}
 				continue;
 			}
@@ -45,7 +45,7 @@ public class QueueDrainThread extends Thread {
 				try {
 					Thread.sleep(delay);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					break;
 				}
 				continue;
 			}
@@ -59,10 +59,16 @@ public class QueueDrainThread extends Thread {
 				} catch (DiscordException de) {
 					de.printStackTrace();
 					discord.getLogger().severe("Unable to log bot back in. Attempting more drastic measures.");
+					discord.disable();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						break;
+					}
 					discord.enable();
 					break;
 				} catch (InterruptedException ie) {
-					ie.printStackTrace();
+					break;
 				}
 			}
 
@@ -70,6 +76,15 @@ public class QueueDrainThread extends Thread {
 			try {
 				callable.call();
 			} catch (DiscordException e) {
+				try {
+					// Currently, Discord4J is firing all exceptions as DiscordExceptions
+					// That means we're being rate limited and forcibly logged out because
+					// it isn't properly informing us when rate limiting occurs.
+					// If we encounter an exception, assume it's rate limiting and pause.
+					Thread.sleep(500L);
+				} catch (InterruptedException ie) {
+					break;
+				}
 				if (callable.retryOnException()) {
 					/*
 					 * Rather than skip removal in this case to preserve order, we re-add the
@@ -87,7 +102,7 @@ public class QueueDrainThread extends Thread {
 					// Pause, we're rate limited.
 					Thread.sleep(e.getRetryDelay());
 				} catch (InterruptedException ie) {
-					ie.printStackTrace();
+					break;
 				}
 				continue;
 			} catch (Exception e) {

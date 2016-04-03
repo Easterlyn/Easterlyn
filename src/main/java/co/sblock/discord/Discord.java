@@ -191,6 +191,7 @@ public class Discord extends Module {
 
 	@Override
 	protected void onDisable() {
+		this.ready = false;
 		try {
 			discordData.save(new File(getPlugin().getDataFolder(), "DiscordData.yml"));
 		} catch (IOException e) {
