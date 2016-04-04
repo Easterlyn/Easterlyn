@@ -113,21 +113,23 @@ public class BlockDrops {
 		case DIAMOND_ORE:
 		case EMERALD_ORE:
 		case ENDER_CHEST:
-		case HUGE_MUSHROOM_1:
-		case HUGE_MUSHROOM_2:
 		case LAPIS_ORE:
 		case QUARTZ_ORE:
 		case REDSTONE_ORE:
 		case SNOW_BLOCK:
 		case STONE:
 			if (isUsableTool(tool.getType(), material.getItemType())) {
-				drops.add(new ItemStack(material.getItemType()));
+				drops.add(material.toItemStack());
 			}
 			return drops;
 		case GLOWING_REDSTONE_ORE:
 			if (isUsableTool(tool.getType(), Material.GLOWING_REDSTONE_ORE)) {
 				drops.add(new ItemStack(Material.REDSTONE_ORE));
 			}
+			return drops;
+		case HUGE_MUSHROOM_1:
+		case HUGE_MUSHROOM_2:
+			drops.add(new ItemStack(material.getItemType()));
 			return drops;
 		case BOOKSHELF:
 		case CLAY:
@@ -143,7 +145,7 @@ public class BlockDrops {
 		case STAINED_GLASS:
 		case STAINED_GLASS_PANE:
 		case THIN_GLASS:
-			drops.add(new ItemStack(material.getItemType(), 1, material.getData()));
+			drops.add(material.toItemStack());
 			return drops;
 		case LEAVES:
 		case LEAVES_2:
@@ -241,7 +243,7 @@ public class BlockDrops {
 			return drops;
 		}
 
-		if (Blocks.WEB == nmsBlock && tool == Material.SHEARS) {
+		if (Blocks.WEB == nmsBlock && tool != null && tool == Material.SHEARS) {
 			drops.add(new ItemStack(Material.WEB));
 			return drops;
 		}
