@@ -296,15 +296,9 @@ public class BlockDrops {
 			return drops;
 		}
 
-		if (nmsBlock instanceof BlockCrops && data >= 7) {
-			int seeds = 0;
+		if (nmsBlock instanceof BlockCrops && data >= ((BlockCrops) nmsBlock).g()) {
 			// Base max of 3 seeds
-			fortune += 3;
-			for (int i = 0; i < fortune; i++) {
-				if (random.nextInt(15) <= data) {
-					++seeds;
-				}
-			}
+			int seeds = random.nextInt(4 + fortune);
 			if (seeds == 0) {
 				drops.add(drop);
 				return drops;

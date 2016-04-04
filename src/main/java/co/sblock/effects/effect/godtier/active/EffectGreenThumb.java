@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.CropState;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NetherWartsState;
 import org.bukkit.Sound;
@@ -16,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
 import org.bukkit.material.CocoaPlant.CocoaPlantSize;
@@ -73,25 +73,39 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 	@SuppressWarnings("deprecation")
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
-		PlayerInteractEvent evt = (PlayerInteractEvent) event;
-		if (!evt.hasBlock() || evt.getAction() == Action.LEFT_CLICK_BLOCK) {
+		PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
+		if (!interactEvent.hasBlock() || interactEvent.getAction() == Action.LEFT_CLICK_BLOCK) {
 			return;
 		}
 
-		Block clicked = evt.getClickedBlock();
+		Block clicked = interactEvent.getClickedBlock();
 		BlockState state = clicked.getState();
 		MaterialData data = state.getData();
-		Material seed;
+		Material seed = null;
+		Short seedData = 0;
 
-		if (data.getItemType() == Material.CROPS && data instanceof Crops) {
-			// Futureproofing: Currently, potatoes/carrots are not Crops
-			// This should change, as they all extend BlockCrops
+		if (data instanceof Crops) {
 			Crops crops = (Crops) data;
 			if (crops.getState() != CropState.RIPE) {
 				return;
 			}
 			crops.setState(CropState.SEEDED);
-			seed = Material.SEEDS;
+			switch (crops.getItemType()) {
+			case BEETROOT_BLOCK:
+				seed = Material.BEETROOT_SEEDS;
+				break;
+			case CARROT:
+				seed = Material.CARROT_ITEM;
+				break;
+			case CROPS:
+				seed = Material.SEEDS;
+				break;
+			case POTATO:
+				seed = Material.POTATO_ITEM;
+				break;
+			default:
+				break;
+			}
 		} else if (data instanceof CocoaPlant) {
 			CocoaPlant cocoa = (CocoaPlant) data;
 			if (cocoa.getSize() != CocoaPlantSize.LARGE) {
@@ -99,33 +113,22 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 			}
 			cocoa.setSize(CocoaPlantSize.SMALL);
 			seed = Material.INK_SACK;
+			seedData = (short) DyeColor.BROWN.getDyeData();
 		} else if (data instanceof NetherWarts) {
-			// Separate? Could be a neat Doom thing
 			NetherWarts warts = (NetherWarts) data;
 			if (warts.getState() != NetherWartsState.RIPE) {
 				return;
 			}
 			warts.setState(NetherWartsState.SEEDED);
 			seed = Material.NETHER_STALK;
-		} else if (data.getItemType() == Material.POTATO) {
-			if (data.getData() < 7) {
-				return;
-			}
-			data.setData((byte) 0);
-			seed = Material.POTATO_ITEM;
-		} else if (data.getItemType() == Material.CARROT) {
-			if (data.getData() < 7) {
-				return;
-			}
-			data.setData((byte) 0);
-			seed = Material.CARROT_ITEM;
 		} else {
 			return;
 		}
-		Player player = evt.getPlayer();
+
+		Player player = interactEvent.getPlayer();
 		boolean reseed = false;
-		for (ItemStack drop : BlockDrops.getDrops(getPlugin(), player, evt.getItem(), clicked)) {
-			if (drop.getType() == seed && !reseed) {
+		for (ItemStack drop : BlockDrops.getDrops(getPlugin(), player, interactEvent.getItem(), clicked)) {
+			if (seed != null && drop.getType() == seed && !reseed) {
 				// Re-seed cost
 				drop = InventoryUtils.decrement(drop, 1);
 				reseed = true;
@@ -134,21 +137,13 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 				player.getWorld().dropItem(player.getLocation(), drop).setPickupDelay(0);
 			}
 		}
-		if (!reseed) {
-			Inventory inventory = player.getInventory();
-			for (int i = 0; i < inventory.getSize(); i++) {
-				ItemStack item = inventory.getItem(i);
-				if (item == null || item.getType() != seed) {
-					continue;
-				}
-				inventory.setItem(i, InventoryUtils.decrement(item, 1));
-				reseed = true;
-				break;
-			}
+		if (!reseed && seed != null) {
+			reseed = player.getInventory().removeItem(new ItemStack(seed, 1, seedData)).size() < 1;
 		}
+
 		clicked.getWorld().playSound(clicked.getLocation(), Sound.BLOCK_GRASS_BREAK, 1, 1);
-		clicked.getWorld().spigot().playEffect(clicked.getLocation().add(0.5, 0, 0.5), org.bukkit.Effect.TILE_BREAK,
-				clicked.getTypeId(), clicked.getData(), 0.5F, 0.5F, 0.5F, 0, 10, 1);
+		clicked.getWorld().playEffect(clicked.getLocation(), org.bukkit.Effect.TILE_BREAK, new MaterialData(data.getItemType(), data.getData()));
+
 		if (reseed) {
 			state.setData(data);
 			state.update(true);
