@@ -254,6 +254,7 @@ public class Discord extends Module {
 	}
 
 	public void ready() {
+		startQueueDrain();
 		startHeartbeat();
 		this.ready = true;
 	}
@@ -284,7 +285,7 @@ public class Discord extends Module {
 					module.doHeartbeat();
 				}
 			}
-		}.runTaskTimerAsynchronously(getPlugin(), 20L, 6000L); // 5 minutes between checks
+		}.runTaskTimerAsynchronously(getPlugin(), 100L, 6000L); // 5 minutes between checks
 	}
 
 	private void startQueueDrain() {

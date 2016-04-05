@@ -51,25 +51,8 @@ public class QueueDrainThread extends Thread {
 			}
 
 			if (!discord.getClient().isReady()) {
-				discord.getLogger().warning("Bot has likely been logged out. Attempting to log back in.");
-				try {
-					discord.getClient().login();
-					Thread.sleep(1000);
-					continue;
-				} catch (DiscordException de) {
-					de.printStackTrace();
-					discord.getLogger().severe("Unable to log bot back in. Attempting more drastic measures.");
-					discord.disable();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						break;
-					}
-					discord.enable();
-					break;
-				} catch (InterruptedException ie) {
-					break;
-				}
+				discord.getLogger().warning("Discord client is not ready, but the module claims to be.");
+				break;
 			}
 
 			DiscordCallable callable = queue.remove();
@@ -113,7 +96,9 @@ public class QueueDrainThread extends Thread {
 	}
 
 	public void queue(DiscordCallable callable) {
-		this.queue.add(callable);
+		if (this.isAlive()) {
+			this.queue.add(callable);
+		}
 	}
 
 }
