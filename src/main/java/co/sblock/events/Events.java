@@ -60,14 +60,14 @@ public class Events extends Module {
 		this.invisibilityManager = new InvisibilityManager(plugin);
 		this.blockUpdateManager = new BlockUpdateManager(plugin);
 
-		creativeBlacklist = EnumSet.of(Material.ACTIVATOR_RAIL, Material.BARRIER, Material.BEDROCK,
-				Material.COMMAND, Material.COMMAND_CHAIN, Material.COMMAND_MINECART,
-				Material.COMMAND_REPEATING, Material.DETECTOR_RAIL, Material.ENDER_PORTAL,
-				Material.ENDER_PORTAL_FRAME, Material.END_CRYSTAL, Material.EXPLOSIVE_MINECART,
-				Material.HOPPER_MINECART, Material.JUKEBOX, Material.MINECART,
-				Material.MOB_SPAWNER, Material.MONSTER_EGG, Material.MONSTER_EGGS,
-				Material.POWERED_MINECART, Material.POWERED_RAIL, Material.RAILS,
-				Material.STORAGE_MINECART, Material.TNT);
+		creativeBlacklist = EnumSet.of(Material.ACTIVATOR_RAIL, Material.BARRIER, Material.BEACON,
+				Material.BEDROCK, Material.COMMAND, Material.COMMAND_CHAIN,
+				Material.COMMAND_MINECART, Material.COMMAND_REPEATING, Material.DETECTOR_RAIL,
+				Material.ENDER_PORTAL, Material.ENDER_PORTAL_FRAME, Material.END_CRYSTAL,
+				Material.EXPLOSIVE_MINECART, Material.HOPPER_MINECART, Material.JUKEBOX,
+				Material.MINECART, Material.MOB_SPAWNER, Material.MONSTER_EGG,
+				Material.MONSTER_EGGS, Material.POWERED_MINECART, Material.POWERED_RAIL,
+				Material.RAILS, Material.STORAGE_MINECART, Material.TNT);
 	}
 
 	@Override
