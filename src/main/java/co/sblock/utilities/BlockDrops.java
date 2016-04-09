@@ -119,7 +119,7 @@ public class BlockDrops {
 		case SNOW_BLOCK:
 		case STONE:
 			if (isUsableTool(tool.getType(), material.getItemType())) {
-				drops.add(material.toItemStack());
+				drops.add(material.toItemStack(1));
 			}
 			return drops;
 		case GLOWING_REDSTONE_ORE:
@@ -145,7 +145,7 @@ public class BlockDrops {
 		case STAINED_GLASS:
 		case STAINED_GLASS_PANE:
 		case THIN_GLASS:
-			drops.add(material.toItemStack());
+			drops.add(material.toItemStack(1));
 			return drops;
 		case LEAVES:
 		case LEAVES_2:
