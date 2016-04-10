@@ -194,10 +194,10 @@ public class CompilationAmalgamator extends Machine {
 			return;
 		}
 
+		ItemStack newCaptcha = this.captcha.itemToCaptcha(captchaTarget);
 		inventory.removeItem(captchaTarget);
-		captchaTarget = this.captcha.itemToCaptcha(captchaTarget);
 
-		this.ejectItem(inventory.getLocation(), captchaTarget, storage);
+		this.ejectItem(inventory.getLocation(), newCaptcha, storage);
 	}
 
 	private void cleanHopperLater(Inventory inventory, ConfigurationSection storage) {
