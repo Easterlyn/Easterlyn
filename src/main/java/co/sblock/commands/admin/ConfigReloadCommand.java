@@ -27,6 +27,11 @@ public class ConfigReloadCommand extends SblockCommand {
 			sender.sendMessage("Reloaded main configuration.");
 			return true;
 		}
+		if (args[0].equalsIgnoreCase("rpack")) {
+			((Sblock) getPlugin()).reloadResourceHashes();
+			sender.sendMessage("Reloaded resource pack hashes.");
+			return true;
+		}
 		try {
 			Class<?> clazz = Class.forName(args[0]);
 			if (Module.class.isAssignableFrom(clazz)) {

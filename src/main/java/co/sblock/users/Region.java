@@ -1,5 +1,16 @@
 package co.sblock.users;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.bukkit.entity.Player;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+
+import co.sblock.Sblock;
+
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -8,21 +19,20 @@ import net.md_5.bungee.api.ChatColor;
  * @author Jikoo, Dublek
  */
 public enum Region {
-	EARTH("Earth", "Earth", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock.zip", false, false),
-	DERSE("Derse", "Derspit", ChatColor.DARK_PURPLE, "http://sblock.co/rpack/Derse.zip", false, true),
-	PROSPIT("Prospit", "Derspit", ChatColor.YELLOW, "http://sblock.co/rpack/Prospit.zip", false, true),
-	FURTHESTRING("FurthestRing", "FurthestRing", ChatColor.BLACK, "http://sblock.co/rpack/Sblock.zip", false, false),
-	LOFAF("LOFAF", "LOFAF", ChatColor.WHITE, "http://sblock.co/rpack/Sblock.zip", true, false),
-	LOHAC("LOHAC", "LOHAC", ChatColor.RED, "http://sblock.co/rpack/Sblock.zip", true, false),
-	LOLAR("LOLAR", "LOLAR", ChatColor.AQUA, "http://sblock.co/rpack/Sblock.zip", true, false),
-	LOWAS("LOWAS", "LOWAS", ChatColor.GRAY, "http://sblock.co/rpack/Sblock.zip", true, false),
-	DUNGEON("Dungeon", "Dungeon", ChatColor.DARK_GREEN, "http://sblock.co/rpack/Sblock.zip", false, false),
-	DEFAULT("Second Earth", "Earth", ChatColor.DARK_GREEN, null, false, false);
+	EARTH("Earth", "Earth", ChatColor.DARK_GREEN, false, false),
+	DERSE("Derse", "Derspit", ChatColor.DARK_PURPLE, false, true),
+	PROSPIT("Prospit", "Derspit", ChatColor.YELLOW, false, true),
+	FURTHESTRING("FurthestRing", "FurthestRing", ChatColor.BLACK, false, false),
+	LOFAF("LOFAF", "LOFAF", ChatColor.WHITE, true, false),
+	LOHAC("LOHAC", "LOHAC", ChatColor.RED, true, false),
+	LOLAR("LOLAR", "LOLAR", ChatColor.AQUA, true, false),
+	LOWAS("LOWAS", "LOWAS", ChatColor.GRAY, true, false),
+	DUNGEON("Dungeon", "Dungeon", ChatColor.DARK_GREEN, false, false),
+	DEFAULT("Second Earth", "Earth", ChatColor.DARK_GREEN, false, false);
 
 	/* INNER FIELDS */
 	private final String displayName;
 	private final String worldName;
-	private final String resourcePack;
 	private final ChatColor worldChatColor;
 	private final boolean isMedium;
 	private final boolean isDream;
@@ -35,10 +45,9 @@ public enum Region {
 	 * @param isMedium true if the planet is in the Medium
 	 * @param isDream true if the planet is a dream planet
 	 */
-	private Region(String displayName, String worldName, ChatColor color, String sourceURL, boolean isMedium, boolean isDream) {
+	private Region(String displayName, String worldName, ChatColor color, boolean isMedium, boolean isDream) {
 		this.displayName = displayName;
 		this.worldName = worldName;
-		this.resourcePack = sourceURL;
 		this.worldChatColor = color;
 		this.isMedium = isMedium;
 		this.isDream = isDream;
@@ -61,16 +70,26 @@ public enum Region {
 	}
 
 	/**
-	 * @return the url of the resource pack to be used
+	 * Sets a Player's resource pack to this Region's resource pack.
 	 */
-	public String getResourcePackURL() {
-		return this.resourcePack;
+	public void setResourcePack(Sblock sblock, Player player) {
+		if (this == DEFAULT) {
+			return;
+		}
+
+		PacketContainer packet = new PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND);
+		packet.getStrings().write(0, "http://sblock.co/rpack/" + this.displayName + ".zip");
+		packet.getStrings().write(1, sblock.getResourceHashes().getString(this.displayName, "null"));
+
+		try {
+			ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Gets the ChatColor that indicates users are in a specific Region.
-	 * 
-	 * @param r the Region to get the ChatColor of
 	 * 
 	 * @return the relevant ChatColor
 	 */
@@ -95,27 +114,27 @@ public enum Region {
 	/**
 	 * Case-insensitive alternative to valueOf.
 	 * 
-	 * @param s the String to match
+	 * @param name the String to match
 	 * 
 	 * @return the Region that matches, Region.UNKNOWN if invalid.
 	 */
-	public static Region getRegion(String s) {
-		s = s.toUpperCase().replace("_NETHER", "").replace("_THE_END", "");
+	public static Region getRegion(String name) {
+		name = name.toUpperCase().replace("_NETHER", "").replace("_THE_END", "");
 		try {
-			return (Region.valueOf(s));
+			return (Region.valueOf(name));
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			// Compatibility for old dream planet saving
-			if (s.equalsIgnoreCase("INNERCIRCLE")) {
+			if (name.equals("INNERCIRCLE")) {
 				return PROSPIT;
 			}
-			if (s.equalsIgnoreCase("OUTERCIRCLE")) {
+			if (name.equals("OUTERCIRCLE")) {
 				return DERSE;
 			}
-			if (s.equalsIgnoreCase("Derspit")) {
-				return Math.random() >= .5 ? DERSE : PROSPIT;
+			if (name.equals("DERSPIT")) {
+				return ThreadLocalRandom.current().nextInt() >= .5 ? DERSE : PROSPIT;
 			}
 			for (Region region : values()) {
-				if (region.getDisplayName().toUpperCase().equals(s)) {
+				if (region.getDisplayName().toUpperCase().equals(name)) {
 					return region;
 				}
 			}

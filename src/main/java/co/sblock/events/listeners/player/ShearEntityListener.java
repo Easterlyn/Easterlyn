@@ -1,5 +1,7 @@
 package co.sblock.events.listeners.player;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -46,7 +48,7 @@ public class ShearEntityListener extends SblockListener {
 		if (is == null) {
 			return;
 		}
-		int total = getPlugin().getRandom().nextInt(hand.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + 1);
+		int total = ThreadLocalRandom.current().nextInt(hand.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + 1);
 		if (total == 0) {
 			return;
 		}

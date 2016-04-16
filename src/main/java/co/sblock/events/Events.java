@@ -28,15 +28,13 @@ import com.comphenix.protocol.ProtocolLibrary;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
-import co.sblock.chat.message.MessageBuilder;
+import co.sblock.chat.Language;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.packets.SyncPacketAdapter;
 import co.sblock.events.session.Status;
 import co.sblock.events.session.StatusCheck;
 import co.sblock.module.Module;
 import co.sblock.utilities.TextUtils;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -45,13 +43,15 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Events extends Module {
 
-	private Status status;
-	private int statusResample = 0;
 	private final LinkedHashMap<String, String> ipcache;
 	private final HashMap<UUID, BukkitTask> pvp;
 	private final InvisibilityManager invisibilityManager;
 	private final BlockUpdateManager blockUpdateManager;
 	private final EnumSet<Material> creativeBlacklist;
+
+	private Chat chat;
+	private Status status;
+	private int statusResample = 0;
 
 	public Events(Sblock plugin) {
 		super(plugin);
@@ -72,6 +72,7 @@ public class Events extends Module {
 
 	@Override
 	protected void onEnable() {
+		this.chat = this.getPlugin().getModule(Chat.class);
 		File file = new File(getPlugin().getDataFolder(), "ipcache.yml");
 		if (file.exists()) {
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
@@ -236,11 +237,9 @@ public class Events extends Module {
 			announcement = this.status.getAllClear();
 		}
 		if (announcement != null) {
-			new MessageBuilder(getPlugin()).setSender(ChatColor.DARK_RED + getPlugin().getBotName())
-					.setNameClick("/report ").setNameHover(ChatColor.RED + "Artifical Intelligence")
-					.setChannel(getPlugin().getModule(Chat.class).getChannelManager().getChannel("#"))
-					.setMessage(announcement).toMessage().send(Bukkit.getOnlinePlayers(), true, false);
-			statusResample = 0;
+			this.chat.getHalBase().setMessage(Language.getColor("bot_text") + announcement)
+					.toMessage().send(Bukkit.getOnlinePlayers(), true, false);
+			this.statusResample = 0;
 		}
 		this.status = status;
 	}

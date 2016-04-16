@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -60,10 +61,10 @@ public class BlockDrops {
 			bonus = 0;
 		}
 
-		return getDrops(tool, block, bonus, plugin.getRandom());
+		return getDrops(tool, block, bonus);
 	}
 
-	private static Collection<ItemStack> getDrops(ItemStack tool, Block block, int fortuneBonus, Random random) {
+	private static Collection<ItemStack> getDrops(ItemStack tool, Block block, int fortuneBonus) {
 
 		if (tool != null && tool.containsEnchantment(Enchantment.SILK_TOUCH) && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
 			Collection<ItemStack> drops = getSilkDrops(tool, block.getState().getData());
@@ -76,7 +77,7 @@ public class BlockDrops {
 			fortuneBonus += tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
 		}
 
-		return getDrops(tool != null ? tool.getType() : null, block, fortuneBonus, random);
+		return getDrops(tool != null ? tool.getType() : null, block, fortuneBonus);
 	}
 
 	public static int getExp(ItemStack tool, Block block) {
@@ -170,7 +171,8 @@ public class BlockDrops {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static Collection<ItemStack> getDrops(Material tool, Block block, int fortune, Random random) {
+	private static Collection<ItemStack> getDrops(Material tool, Block block, int fortune) {
+		Random random = ThreadLocalRandom.current();
 		List<ItemStack> drops = new ArrayList<>();
 
 		net.minecraft.server.v1_9_R1.Block nmsBlock = net.minecraft.server.v1_9_R1.Block.getById(block.getTypeId());

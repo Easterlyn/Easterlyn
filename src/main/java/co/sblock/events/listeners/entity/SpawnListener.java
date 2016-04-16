@@ -1,5 +1,7 @@
 package co.sblock.events.listeners.entity;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Rabbit;
 import org.bukkit.entity.Rabbit.Type;
@@ -32,7 +34,7 @@ public class SpawnListener extends SblockListener {
 		if (event.getSpawnReason() != SpawnReason.CHUNK_GEN && event.getSpawnReason() != SpawnReason.NATURAL) {
 			return;
 		}
-		if (getPlugin().getRandom().nextInt(1000) > 1) {
+		if (ThreadLocalRandom.current().nextInt(1000) > 1) {
 			return;
 		}
 		Rabbit rabbit = (Rabbit) event.getEntity();

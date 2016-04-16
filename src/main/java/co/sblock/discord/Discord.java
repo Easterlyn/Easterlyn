@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -239,7 +240,7 @@ public class Discord extends Module {
 	private String generateUniqueCode() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 6; i++) {
-			sb.append(chars.charAt(getPlugin().getRandom().nextInt(chars.length())));
+			sb.append(chars.charAt(ThreadLocalRandom.current().nextInt(chars.length())));
 		}
 		String code = sb.toString();
 		if (authentications.getIfPresent(code) != null) {

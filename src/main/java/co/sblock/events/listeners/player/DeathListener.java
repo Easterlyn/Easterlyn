@@ -1,5 +1,7 @@
 package co.sblock.events.listeners.player;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -66,7 +68,7 @@ public class DeathListener extends SblockListener {
 		this.carts.remove(player);
 
 		Location location = player.getLocation();
-		String randomMessage = messages[getPlugin().getRandom().nextInt(messages.length)];
+		String randomMessage = messages[ThreadLocalRandom.current().nextInt(messages.length)];
 		String locString = this.lang.getValue("events.death.message")
 				.replace("{X}", String.valueOf(location.getBlockX()))
 				.replace("{Y}", String.valueOf(location.getBlockY()))

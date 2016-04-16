@@ -1,6 +1,7 @@
 package co.sblock.machines.type;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 import org.bukkit.Location;
@@ -108,7 +109,7 @@ public class CompoundingUnionizor extends Machine {
 		BlockFace face = facing.toBlockFace();
 
 		// See net.minecraft.server.DispenseBehaviorItem
-		Random random = getPlugin().getRandom();
+		Random random = ThreadLocalRandom.current();
 		double motionRandom = random.nextDouble() * 0.1D + 0.2D;
 		// 0.007499999832361937D * 6
 		double motX = face.getModX() * motionRandom + random.nextGaussian() * 0.044999998994171622D;

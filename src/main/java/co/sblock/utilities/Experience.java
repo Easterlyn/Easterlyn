@@ -54,7 +54,7 @@ public class Experience {
 	 * 
 	 * @return the level calculated
 	 */
-	public static double getLevelFromExp(int exp) {
+	public static double getLevelFromExp(long exp) {
 		if (exp > 1395) {
 			return (Math.sqrt(72 * exp - 54215) + 325) / 18;
 		}

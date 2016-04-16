@@ -1,5 +1,6 @@
 package co.sblock;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -25,6 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
@@ -85,8 +86,7 @@ public class Sblock extends JavaPlugin {
 	/* A reference to Bukkit's internal CommandMap. */
 	private SimpleCommandMap cmdMap;
 
-	/* A Random for use in all modules. */
-	private final Random random = new Random();
+	private YamlConfiguration resourceHashes;
 
 	@Override
 	public void onEnable() {
@@ -100,6 +100,7 @@ public class Sblock extends JavaPlugin {
 		}
 
 		saveDefaultConfig();
+		this.reloadResourceHashes();
 
 		createBasePermissions();
 
@@ -415,10 +416,6 @@ public class Sblock extends JavaPlugin {
 		return ImmutableList.copyOf(cmdMapKnownCommands.keySet());
 	}
 
-	public String getBotName() {
-		return getConfig().getString("bot name", "Lil Hal");
-	}
-
 	public GameProfile getFakeGameProfile(String name) {
 		String uuidString = getConfig().getString("uuid." + name);
 		UUID uuid;
@@ -432,8 +429,20 @@ public class Sblock extends JavaPlugin {
 		return new GameProfile(uuid, name);
 	}
 
-	public Random getRandom() {
-		return random;
+	/**
+	 * Gets the YamlConfiguration containing resource pack hashes.
+	 * 
+	 * @return the YamlConfiguration
+	 */
+	public YamlConfiguration getResourceHashes() {
+		return this.resourceHashes;
+	}
+
+	/**
+	 * Reloads the resource pack hash file.
+	 */
+	public void reloadResourceHashes() {
+		resourceHashes = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "hashes.yml"));
 	}
 
 	public static <T> boolean areDependenciesPresent(Class<T> clazz) {

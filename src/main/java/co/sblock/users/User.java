@@ -352,14 +352,15 @@ public class User {
 	 * @param newR the Region being transitioned into
 	 */
 	public void updateCurrentRegion(Region newRegion, boolean force) {
-		if (newRegion.isDream()) {
-			getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
-		} else {
-			getPlayer().resetPlayerTime();
-		}
-		if (isOnline() && newRegion.getResourcePackURL() != null && (force
-				|| !getCurrentRegion().getResourcePackURL().equals(newRegion.getResourcePackURL()))) {
-			getPlayer().setResourcePack(newRegion.getResourcePackURL());
+		if (isOnline()) {
+			if (newRegion.isDream()) {
+				getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
+			} else {
+				getPlayer().resetPlayerTime();
+			}
+			if (!newRegion.getDisplayName().equals(getCurrentRegion().getDisplayName())) {
+				newRegion.setResourcePack(plugin, getPlayer());
+			}
 		}
 		setCurrentRegion(newRegion);
 	}

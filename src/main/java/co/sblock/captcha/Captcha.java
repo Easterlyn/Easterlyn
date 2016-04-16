@@ -429,7 +429,10 @@ public class Captcha extends Module {
 	 * @return
 	 */
 	public boolean canCaptcha(ItemStack item) {
-		if (item == null || item.getType() == Material.AIR) {
+		if (item == null || item.getType() == Material.AIR
+				/* Book meta is very volatile, no reason to allow creation of codes that will never be reused. */
+				|| item.getType() == Material.BOOK_AND_QUILL
+				|| item.getType() == Material.WRITTEN_BOOK) {
 			return false;
 		}
 		// TODO lorecards and the active Computer effect
