@@ -19,20 +19,21 @@ import net.md_5.bungee.api.ChatColor;
  * @author Jikoo, Dublek
  */
 public enum Region {
-	EARTH("Earth", "Earth", ChatColor.DARK_GREEN, false, false),
-	DERSE("Derse", "Derspit", ChatColor.DARK_PURPLE, false, true),
-	PROSPIT("Prospit", "Derspit", ChatColor.YELLOW, false, true),
-	FURTHESTRING("FurthestRing", "FurthestRing", ChatColor.BLACK, false, false),
-	LOFAF("LOFAF", "LOFAF", ChatColor.WHITE, true, false),
-	LOHAC("LOHAC", "LOHAC", ChatColor.RED, true, false),
-	LOLAR("LOLAR", "LOLAR", ChatColor.AQUA, true, false),
-	LOWAS("LOWAS", "LOWAS", ChatColor.GRAY, true, false),
-	DUNGEON("Dungeon", "Dungeon", ChatColor.DARK_GREEN, false, false),
-	DEFAULT("Second Earth", "Earth", ChatColor.DARK_GREEN, false, false);
+	EARTH("Earth", "Earth", "Sblock", ChatColor.DARK_GREEN, false, false),
+	DERSE("Derse", "Derspit", "Derse", ChatColor.DARK_PURPLE, false, true),
+	PROSPIT("Prospit", "Derspit", "Prospit", ChatColor.YELLOW, false, true),
+	FURTHESTRING("FurthestRing", "FurthestRing", "Sblock", ChatColor.BLACK, false, false),
+	LOFAF("LOFAF", "LOFAF", "LOFAF", ChatColor.WHITE, true, false),
+	LOHAC("LOHAC", "LOHAC", "LOHAC", ChatColor.RED, true, false),
+	LOLAR("LOLAR", "LOLAR", "LOLAR", ChatColor.AQUA, true, false),
+	LOWAS("LOWAS", "LOWAS", "LOWAS", ChatColor.GRAY, true, false),
+	DUNGEON("Dungeon", "Dungeon", "Sblock", ChatColor.DARK_GREEN, false, false),
+	DEFAULT("Second Earth", "Earth", null, ChatColor.DARK_GREEN, false, false);
 
 	/* INNER FIELDS */
 	private final String displayName;
 	private final String worldName;
+	private final String resourcePackName;
 	private final ChatColor worldChatColor;
 	private final boolean isMedium;
 	private final boolean isDream;
@@ -45,9 +46,10 @@ public enum Region {
 	 * @param isMedium true if the planet is in the Medium
 	 * @param isDream true if the planet is a dream planet
 	 */
-	private Region(String displayName, String worldName, ChatColor color, boolean isMedium, boolean isDream) {
+	private Region(String displayName, String worldName, String resourcePackName, ChatColor color, boolean isMedium, boolean isDream) {
 		this.displayName = displayName;
 		this.worldName = worldName;
+		this.resourcePackName = resourcePackName;
 		this.worldChatColor = color;
 		this.isMedium = isMedium;
 		this.isDream = isDream;
@@ -73,13 +75,13 @@ public enum Region {
 	 * Sets a Player's resource pack to this Region's resource pack.
 	 */
 	public void setResourcePack(Sblock sblock, Player player) {
-		if (this == DEFAULT) {
+		if (this == DEFAULT || this.resourcePackName == null) {
 			return;
 		}
 
 		PacketContainer packet = new PacketContainer(PacketType.Play.Server.RESOURCE_PACK_SEND);
-		packet.getStrings().write(0, "http://sblock.co/rpack/" + this.displayName + ".zip");
-		packet.getStrings().write(1, sblock.getResourceHashes().getString(this.displayName, "null"));
+		packet.getStrings().write(0, "http://sblock.co/rpack/" + this.resourcePackName + ".zip");
+		packet.getStrings().write(1, sblock.getResourceHashes().getString(this.resourcePackName, "null"));
 
 		try {
 			ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
