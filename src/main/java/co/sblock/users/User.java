@@ -347,9 +347,10 @@ public class User {
 	}
 
 	/**
-	 * Update current Region and change RegionChannel.
+	 * Update current Region.
 	 * 
-	 * @param newR the Region being transitioned into
+	 * @param newRegion the Region being transitioned into
+	 * @param force if the resource pack should be set even if it matches the old region's
 	 */
 	public void updateCurrentRegion(Region newRegion, boolean force) {
 		if (isOnline()) {
@@ -358,7 +359,8 @@ public class User {
 			} else {
 				getPlayer().resetPlayerTime();
 			}
-			if (!newRegion.getDisplayName().equals(getCurrentRegion().getDisplayName())) {
+			if (!newRegion.getResourcePackName().equals(getCurrentRegion().getResourcePackName())
+					&& newRegion.getResourcePackName() != null || force) {
 				newRegion.setResourcePack(plugin, getPlayer());
 			}
 		}

@@ -72,6 +72,15 @@ public enum Region {
 	}
 
 	/**
+	 * Gets the resource pack name for this Region.
+	 * 
+	 * @return
+	 */
+	public String getResourcePackName() {
+		return this.resourcePackName;
+	}
+
+	/**
 	 * Sets a Player's resource pack to this Region's resource pack.
 	 */
 	public void setResourcePack(Sblock sblock, Player player) {
