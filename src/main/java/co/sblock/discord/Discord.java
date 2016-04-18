@@ -255,6 +255,9 @@ public class Discord extends Module {
 	}
 
 	public void ready() {
+		for (DiscordModule module : modules.values()) {
+			module.doSetup();
+		}
 		startQueueDrain();
 		startHeartbeat();
 		this.ready = true;

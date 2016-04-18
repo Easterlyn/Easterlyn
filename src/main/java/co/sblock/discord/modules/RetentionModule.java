@@ -125,7 +125,9 @@ public class RetentionModule extends DiscordModule {
 	}
 
 	@Override
-	public void doSetup() { }
+	public void doSetup() {
+		this.channelData.clear();
+	}
 
 	public void setRetention(IGuild guild, Long duration) {
 		getDiscord().getDatastore().set("retention." + guild.getID() + ".default", duration);
