@@ -28,6 +28,7 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Beha
 	private final BlockUpdateManager budManager;
 	private final BlockFace[] faces;
 	private final Material[] updateMaterials;
+	protected int currentCount;
 
 	protected EffectAdjacentBlockModifier(Sblock plugin, int cost, String name, Material... updateMaterials) {
 		super(plugin, cost, 1, 1, name);
@@ -46,9 +47,11 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Beha
 	public void handleEvent(Event event, LivingEntity entity, int level) {
 		BlockBreakEvent breakEvent = (BlockBreakEvent) event;
 		Player player = breakEvent.getPlayer();
+		this.currentCount = 0;
 		for (BlockFace face : faces) {
 			Block relative = breakEvent.getBlock().getRelative(face);
 			if (handleAdjacentBlock(player, relative) && updateMaterials.length > 0) {
+				++this.currentCount;
 				checkRelative: for (BlockFace toUpdateFace : faces) {
 					Block toUpdate = relative.getRelative(toUpdateFace);
 					for (Material material : updateMaterials) {
