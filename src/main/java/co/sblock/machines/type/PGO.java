@@ -6,9 +6,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Language;
 import co.sblock.machines.Machines;
 import co.sblock.machines.utilities.Shape;
 
@@ -40,14 +42,18 @@ public class PGO extends Machine {
 
 	@Override
 	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
-		Material placedOn = event.getBlockAgainst().getType();
-		if (isValid(placedOn)) {
-			getShape().setVectorData(new Vector(0, 0, 0), event.getBlockAgainst().getState().getData());
-		} else {
-			getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
+		MaterialData data = event.getBlockAgainst().getState().getData();
+		if (!isValid(data.getItemType())) {
+			data = drop.getData();
 		}
-		// Future features: Make wall signs etc. valid and copy text
-		super.assemble(event, storage);
+		// Future features: Make wall signs etc. valid and copy text!location.getBlock().isEmpty()
+		if (getMachines().isExploded(event.getBlock())) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(Language.getColor("bad") + "There isn't enough space to build this Machine here.");
+			this.assemblyFailed(storage);
+			return;
+		}
+		this.assembleKeyLater(event.getBlock().getLocation(), data, storage);
 	}
 
 	@Override
