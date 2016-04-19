@@ -334,7 +334,7 @@ public class User {
 	 * @return the Region the Player is in.
 	 */
 	public Region getCurrentRegion() {
-		return Region.getRegion(yaml.getString("region", "UNKNOWN"));
+		return Region.getRegion(yaml.getString("region", Region.DEFAULT.name()));
 	}
 
 	/**
@@ -359,8 +359,9 @@ public class User {
 			} else {
 				getPlayer().resetPlayerTime();
 			}
-			if (!newRegion.getResourcePackName().equals(getCurrentRegion().getResourcePackName())
-					&& newRegion.getResourcePackName() != null || force) {
+			if (newRegion.getResourcePackName() != null
+					&& !newRegion.getResourcePackName().equals(getCurrentRegion().getResourcePackName()) 
+					|| force) {
 				newRegion.setResourcePack(plugin, getPlayer());
 			}
 		}
