@@ -138,7 +138,7 @@ public class InteractListener extends SblockListener {
 				}
 			}
 
-			if (hasRightClickFunction(event.getClickedBlock())
+			if (hasRightClickFunction(event.getClickedBlock(), event.getItem())
 					&& !event.getPlayer().isSneaking()) {
 				// Other inventory/action. Do not proceed to captcha.
 				return;
@@ -147,7 +147,7 @@ public class InteractListener extends SblockListener {
 
 		PlayerInventory inv = event.getPlayer().getInventory();
 		boolean mainHand = InventoryUtils.isMainHand(event);
-		ItemStack held = InventoryUtils.getHeldItem(inv, mainHand);
+		ItemStack held = event.getItem();
 
 		// Nothing in current hand, bail
 		if (held == null || held.getType() == Material.AIR) {
@@ -156,7 +156,7 @@ public class InteractListener extends SblockListener {
 
 		if (held.getType() == Material.GLASS_BOTTLE
 				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottle") == 0) {
-			for (Block block : event.getPlayer().getLineOfSight((java.util.Set<Material>) null, 4)) {
+			for (Block block : event.getPlayer().getLineOfSight(bypassable, 4)) {
 				if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
 					return;
 				}
@@ -197,7 +197,7 @@ public class InteractListener extends SblockListener {
 	 * 
 	 * @return true if right clicking the block without sneaking will cause 
 	 */
-	private boolean hasRightClickFunction(Block block) {
+	private boolean hasRightClickFunction(Block block, ItemStack hand) {
 		switch (block.getType()) {
 		case BOOKSHELF:
 			// Awww yiss BookShelf <3
@@ -207,7 +207,8 @@ public class InteractListener extends SblockListener {
 			return Bukkit.getPluginManager().isPluginEnabled("LWC");
 		case ENDER_STONE:
 			// Special case: player is probably attempting to bottle dragon's breath
-			return block.getWorld().getEnvironment() == Environment.THE_END;
+			return block.getWorld().getEnvironment() == Environment.THE_END
+					&& hand != null && hand.getType() == Material.GLASS_BOTTLE;
 		case ACACIA_DOOR:
 		case ACACIA_FENCE_GATE:
 		case ANVIL:

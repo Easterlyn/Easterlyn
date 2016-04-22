@@ -359,9 +359,8 @@ public class User {
 			} else {
 				getPlayer().resetPlayerTime();
 			}
-			if (newRegion.getResourcePackName() != null
-					&& !newRegion.getResourcePackName().equals(getCurrentRegion().getResourcePackName()) 
-					|| force) {
+			if (force || newRegion.getResourcePackName() != null
+					&& !newRegion.getResourcePackName().equals(getCurrentRegion().getResourcePackName())) {
 				newRegion.setResourcePack(plugin, getPlayer());
 			}
 		}
