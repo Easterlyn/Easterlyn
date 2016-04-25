@@ -24,6 +24,7 @@ public class WrappedSenderPlayer extends DummyPlayer {
 	private final CommandSender sender;
 	private final GameProfile profile;
 	private final String name;
+	private String displayName;
 
 	public WrappedSenderPlayer(Sblock plugin, CommandSender sender) {
 		this(plugin, sender, sender.getName());
@@ -121,8 +122,13 @@ public class WrappedSenderPlayer extends DummyPlayer {
 	}
 
 	@Override
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	@Override
 	public String getDisplayName() {
-		return name;
+		return this.displayName == null ? this.name : this.displayName;
 	}
 
 	@Override

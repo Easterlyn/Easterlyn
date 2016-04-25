@@ -30,7 +30,7 @@ public class DynmapWebChatListener extends SblockListener {
 		if (aether == null) {
 			aether = (AetherCommand) getPlugin().getCommandMap().getCommand("sblock:aether");
 		}
-		aether.sendAether(event.getName(), event.getMessage(), false);
+		aether.sendAether(null, event.getName(), event.getMessage(), false);
 		event.setProcessed();
 	}
 }

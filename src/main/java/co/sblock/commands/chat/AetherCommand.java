@@ -15,6 +15,7 @@ import co.sblock.chat.channel.Channel;
 import co.sblock.chat.message.Message;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.commands.SblockAsynchronousCommand;
+import co.sblock.discord.Discord;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
 import co.sblock.utilities.WrappedSenderPlayer;
@@ -30,13 +31,14 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class AetherCommand extends SblockAsynchronousCommand {
 
+	private final Discord discord;
 	private final Users users;
 	private final BaseComponent[] hover;
-	private final WrappedSenderPlayer sender;
 	private final Channel aether;
 
 	public AetherCommand(Sblock plugin) {
 		super(plugin, "aether");
+		this.discord = plugin.getModule(Discord.class);
 		this.users = plugin.getModule(Users.class);
 		this.setAliases("aetherme");
 		this.setDescription("For usage in console largely. Talks in #Aether.");
@@ -45,7 +47,6 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		this.setPermissionMessage("The aetherial realm eludes your grasp once more.");
 
 		hover = TextComponent.fromLegacyText(getLang().getValue("command.aether.hover"));
-		sender = new WrappedSenderPlayer(plugin, Bukkit.getConsoleSender());
 		aether = plugin.getModule(Chat.class).getChannelManager().getChannel("#Aether");
 	}
 
@@ -56,11 +57,11 @@ public class AetherCommand extends SblockAsynchronousCommand {
 			return true;
 		}
 
-		sendAether(args[0], StringUtils.join(args, ' ', 1, args.length), label.equals("aetherme"));
+		sendAether(sender, args[0], StringUtils.join(args, ' ', 1, args.length), label.equals("aetherme"));
 		return true;
 	}
 
-	public void sendAether(String name, String msg, boolean thirdPerson) {
+	public void sendAether(CommandSender sender, String name, String msg, boolean thirdPerson) {
 
 		// set channel before and after to prevent @channel changing while also stripping invalid characters
 		MessageBuilder builder = new MessageBuilder((Sblock) getPlugin())
@@ -77,9 +78,13 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
 		players.removeIf(p -> users.getUser(p.getUniqueId()).getSuppression());
 
-		// CHAT: Verify that this does not cause concurrency issues (It totally does)
-		sender.setDisplayName(name);
+		WrappedSenderPlayer senderPlayer = new WrappedSenderPlayer((Sblock) getPlugin(),
+				sender == null ? Bukkit.getConsoleSender() : sender, name);
 
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, sender, players, message));
+		SblockAsyncChatEvent event = new SblockAsyncChatEvent(true, senderPlayer, players, message);
+		Bukkit.getPluginManager().callEvent(event);
+		if (!event.isCancelled() || event.isGlobalCancelled()) {
+			discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannel());
+		}
 	}
 }
