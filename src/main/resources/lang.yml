@@ -279,6 +279,7 @@ command:
     description: 'Captchalogues all items in your inventory matching your item in main hand!'
     usage: 'Hold an item in main hand, run /baptcha. Batch captcha!'
     noCaptchas: '{COLOR:bad}You don''t have any blank captchas to use!'
+    stack: '{COLOR:bad}Items must be in a max-sized stack to batch captcha!'
     success: '{COLOR:neutral}Used {COUNT} captchas to store items.'
   convert:
     description: 'Converts captchacards from paper to plastic.'
@@ -326,6 +327,14 @@ command:
     gamemode: '{COLOR:bad}You can only enter spectate mode from survival.'
     allow: '{COLOR:neutral}Other players are now allowed to spectate to you!'
     deny: '{COLOR:neutral}Other players are no longer allowed to spectate to you!'
+  aspect:
+    description: 'Specify your aspect!'
+    usage: '/aspect <ASPECT>'
+    success: '{COLOR:good}Aspect set to {ASPECT}'
+  class:
+    description: 'Specify your class!'
+    usage: '/class <CLASS>'
+    success: '{COLOR:good}Class set to {COLOR:emphasis.good}{CLASS}'
 
 afk:
   away: '{COLOR:neutral}You have been marked as away!'

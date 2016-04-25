@@ -48,6 +48,11 @@ public class BatchCaptchaCommand extends SblockCommand {
 			return true;
 		}
 
+		if (item.getAmount() != item.getType().getMaxStackSize()) {
+			player.sendMessage(getLang().getValue("command.baptcha.stack"));
+			return true;
+		}
+
 		PlayerInventory inventory = player.getInventory();
 		ItemStack blankCaptcha = Captcha.blankCaptchaCard();
 
