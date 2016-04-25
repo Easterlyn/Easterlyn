@@ -69,6 +69,9 @@ public class Language extends Module {
 		ConfigurationSection colorSection = config.getConfigurationSection("color");
 		for (String path : colorSection.getKeys(true)) {
 			try {
+				if (colorSection.isConfigurationSection(path)) {
+					continue;
+				}
 				COLOR_DEF.put(path, ChatColor.valueOf(colorSection.getString(path)));
 			} catch (IllegalArgumentException e) {
 				getLogger().warning("Invalid chat color provided for path " + path);
