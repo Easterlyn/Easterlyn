@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import co.sblock.Sblock;
-import co.sblock.commands.SblockCommand;
+import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.users.Region;
 import co.sblock.users.UserAspect;
 import co.sblock.users.UserClass;
@@ -18,7 +18,7 @@ import co.sblock.users.UserClass;
  * 
  * @author Jikoo
  */
-public class NumberCrunchCommand extends SblockCommand {
+public class NumberCrunchCommand extends SblockAsynchronousCommand {
 
 	public NumberCrunchCommand(Sblock plugin) {
 		super(plugin, "numbercrunch");
