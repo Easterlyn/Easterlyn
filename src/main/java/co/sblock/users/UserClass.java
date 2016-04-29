@@ -17,6 +17,7 @@ public enum UserClass {
 	MAGE("Mage", 4),
 	MAID("Maid", 4),
 	MUSE("Muse", 0),
+	NERD("Nerd", 0),
 	ORACLE("Oracle", 4),
 	PAGE("Page", 2),
 	PRINCE("Prince", 6),
