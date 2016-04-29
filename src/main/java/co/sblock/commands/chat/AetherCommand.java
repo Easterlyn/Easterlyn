@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
@@ -82,9 +83,23 @@ public class AetherCommand extends SblockAsynchronousCommand {
 				sender == null ? Bukkit.getConsoleSender() : sender, name);
 
 		SblockAsyncChatEvent event = new SblockAsyncChatEvent(true, senderPlayer, players, message);
-		Bukkit.getPluginManager().callEvent(event);
-		if (!event.isCancelled() || event.isGlobalCancelled()) {
-			discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannel());
+
+		if (Bukkit.isPrimaryThread()) {
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					Bukkit.getPluginManager().callEvent(event);
+					if (!event.isCancelled() || event.isGlobalCancelled()) {
+						discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannel());
+					}
+				}
+			}.runTaskAsynchronously(getPlugin());
+		} else {
+			Bukkit.getPluginManager().callEvent(event);
+			if (!event.isCancelled() || event.isGlobalCancelled()) {
+				discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannel());
+			}
 		}
 	}
+
 }
