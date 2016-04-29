@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -416,7 +417,13 @@ public class Discord extends Module {
 					builder.append("** ");
 				}
 				builder.append(message);
-				IMessage posted = group.sendMessage(builder.toString());
+				IMessage posted;
+				try {
+					posted = group.sendMessage(builder.toString());
+				} catch (NoSuchElementException e) {
+					// Internal Discord fault, don't log.
+					return;
+				}
 				getModule(RetentionModule.class).handleNewMessage(posted);
 			}
 		});

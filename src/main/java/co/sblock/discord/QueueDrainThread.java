@@ -60,10 +60,7 @@ public class QueueDrainThread extends Thread {
 				callable.call();
 			} catch (DiscordException e) {
 				try {
-					// Currently, Discord4J is firing all exceptions as DiscordExceptions
-					// That means we're being rate limited and forcibly logged out because
-					// it isn't properly informing us when rate limiting occurs.
-					// If we encounter an exception, assume it's rate limiting and pause.
+					// If we encounter an exception, pause for extra security.
 					Thread.sleep(500L);
 				} catch (InterruptedException ie) {
 					break;
