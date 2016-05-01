@@ -28,7 +28,13 @@ public class InventoryOpenListener extends SblockListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
-		Location location = event.getInventory().getLocation();
+		Location location;
+		try {
+			location = event.getInventory().getLocation();
+		} catch (AbstractMethodError e) {
+			System.err.println("Caught AbstractMethodError calling Inventory#getLocation on class " + event.getInventory().getClass().getName());
+			return;
+		}
 		if (location == null) {
 			return;
 		}
