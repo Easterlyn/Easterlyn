@@ -42,7 +42,7 @@ public class TemporaryBanCommand extends SblockCommand {
 		}
 		arguments = banData.getLeft().length() > 0 ? banData.getLeft() : "Take some time to cool off.";
 		final Date expiry = new Date(System.currentTimeMillis() + banData.getRight());
-		if (target.matches("([0-9]{1,3}\\.{3}[0-9]{1,3}")) { // IPs probably shouldn't be announced.
+		if (target.matches("([0-9]{1,3}\\.){3}[0-9]{1,3}")) { // IPs probably shouldn't be announced.
 			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, arguments, expiry, sender.getName());
 		} else {
 			banByName(sender, target, arguments, expiry);
