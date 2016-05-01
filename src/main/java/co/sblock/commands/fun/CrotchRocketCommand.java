@@ -61,14 +61,14 @@ public class CrotchRocketCommand extends SblockCommand {
 
 			@Override
 			public void run() {
-				if (count > 39) {
+				if (count > 39 || firework.getLocation().getY() > 255) {
 					particles.removeAllEffects(firework);
 					firework.remove();
 					cancel();
 					return;
 				}
 				++count;
-				firework.setVelocity(new Vector(0, 2, 0));
+				firework.setVelocity(new Vector(0, 1, 0));
 			}
 		}.runTaskTimer(getPlugin(), 0L, 1L);
 		return true;
