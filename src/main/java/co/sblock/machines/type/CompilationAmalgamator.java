@@ -153,7 +153,7 @@ public class CompilationAmalgamator extends Machine {
 				continue;
 			}
 			if (item.getMaxStackSize() > 1 && item.getType().getMaxDurability() == 0 && !item.hasItemMeta()) {
-				captchaTarget = item;
+				captchaTarget = item.clone();
 				break;
 			}
 			// This is safe, no CME because we're iterating over a copied array

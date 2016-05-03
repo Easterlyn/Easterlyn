@@ -139,6 +139,7 @@ public class Captcha extends Module {
 	}
 
 	public String getHashByItem(ItemStack item) {
+		item = item.clone();
 		String itemHash = calculateHashFor(item);
 		cache.put(itemHash, item);
 		return itemHash;
