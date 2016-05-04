@@ -60,7 +60,7 @@ public class MachinePurchase extends Program {
 		ItemStack item = machine.getUniqueDrop().clone();
 		ItemMeta meta = item.getItemMeta();
 		meta.setLore(Arrays.asList(meta.getDisplayName(),
-				Language.getColor("emphasis.good").toString() + machine.getCost() + Language.getColor("good") + " grist"));
+				Language.getColor("emphasis.neutral").toString() + machine.getCost() + Language.getColor("neutral") + " grist"));
 		meta.setDisplayName(Language.getColor("good") + "Purchase");
 		item.setItemMeta(meta);
 		return item;

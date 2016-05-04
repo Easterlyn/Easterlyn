@@ -19,7 +19,6 @@ import co.sblock.micromodules.SleepVote;
 import co.sblock.micromodules.Spectators;
 import co.sblock.users.User;
 import co.sblock.users.Users;
-import co.sblock.utilities.InventoryManager;
 
 /**
  * Listener for PlayerQuitEvents.
@@ -89,9 +88,6 @@ public class QuitListener extends SblockListener {
 		if (dream.getSleepTasks().containsKey(event.getPlayer().getName())) {
 			dream.getSleepTasks().remove(event.getPlayer().getName()).cancel();
 		}
-
-		// Restore inventory if still preserved
-		InventoryManager.restoreInventory(event.getPlayer());
 
 		// Delete team for exiting player to avoid clutter
 		Users.unteam(event.getPlayer());

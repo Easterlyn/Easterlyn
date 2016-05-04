@@ -399,8 +399,13 @@ public class InventoryUtils {
 		// Potions
 		if (im instanceof PotionMeta && ((PotionMeta) im).hasCustomEffects()) {
 			PotionMeta meta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.POTION);
-			for (PotionEffect effect : ((PotionMeta) im).getCustomEffects()) {
-				meta.addCustomEffect(effect, true);
+			PotionMeta oldMeta = (PotionMeta) im;
+			meta.setBasePotionData(oldMeta.getBasePotionData());
+			for (PotionEffect effect : oldMeta.getCustomEffects()) {
+				// Custom effects are fine, but amplifiers that are way too high are not
+				if (effect.getAmplifier() < 5) {
+					meta.addCustomEffect(effect, true);
+				}
 			}
 			cleanedItem.setItemMeta(meta);
 		}
