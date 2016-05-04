@@ -59,6 +59,11 @@ public class CompilationAmalgamator extends Machine {
 	}
 
 	@Override
+	public int getCost() {
+		return 777;
+	}
+
+	@Override
 	public boolean handleOpen(InventoryOpenEvent event, ConfigurationSection storage) {
 		new BukkitRunnable() {
 			@Override

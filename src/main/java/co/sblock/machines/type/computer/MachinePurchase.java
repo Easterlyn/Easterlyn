@@ -57,6 +57,9 @@ public class MachinePurchase extends Program {
 	}
 
 	public ItemStack getIconForMachine(Machine machine) {
+		if (machine == null || machine.getUniqueDrop() == null) {
+			return null;
+		}
 		ItemStack item = machine.getUniqueDrop().clone();
 		ItemMeta meta = item.getItemMeta();
 		meta.setLore(Arrays.asList(meta.getDisplayName(),

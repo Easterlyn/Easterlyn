@@ -34,7 +34,6 @@ public class InventoryOpenListener extends SblockListener {
 		try {
 			location = inv.getLocation();
 		} catch (AbstractMethodError e) {
-			System.err.println(inv.getClass().getName());
 			System.err.println(new StringBuilder("Caught AbstractMethodError calling Inventory#getLocation on class ")
 					.append(inv.getClass().getName()).append("\nType: ").append(inv.getType())
 					.append("\nTitle: ").append(inv.getTitle()).append("\nHolder: ").append(inv.getHolder()));

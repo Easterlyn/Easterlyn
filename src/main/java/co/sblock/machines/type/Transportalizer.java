@@ -322,7 +322,7 @@ public class Transportalizer extends Machine {
 		}
 		for (ProtectionHook hook : protections.getHooks()) {
 			if (!hook.canMobsSpawn(to) && !hook.canBuildAt(player, to)) {
-				player.sendMessage(Language.getColor("bad") + "Transportalizers cannot send non-players to the location specified.!");
+				player.sendMessage(Language.getColor("bad") + "You don't have access to the location specified!");
 				return false;
 			}
 		}

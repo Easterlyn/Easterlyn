@@ -1,5 +1,6 @@
 package co.sblock.machines.type;
 
+import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -28,6 +29,10 @@ import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.utilities.InventoryUtils;
 
+import net.minecraft.server.v1_9_R1.ShapelessRecipes;
+
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftShapelessRecipe;
+
 /**
  * Combine and create.
  * 
@@ -36,6 +41,7 @@ import co.sblock.utilities.InventoryUtils;
 public class CompoundingUnionizor extends Machine {
 
 	private final ItemStack drop;
+	private Field shapelessRecipes;
 
 	public CompoundingUnionizor(Sblock plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Compounding Unionizer");
@@ -52,7 +58,31 @@ public class CompoundingUnionizor extends Machine {
 		if (!(recipe instanceof ShapelessRecipe || recipe instanceof ShapedRecipe)) {
 			return false;
 		}
+		if (recipe instanceof ShapelessRecipe && getShapelessRecipesField() != null) {
+			try {
+				Object nmsRecipe = shapelessRecipes.get(recipe);
+				if (nmsRecipe != null && !nmsRecipe.getClass().equals(ShapelessRecipes.class)) {
+					// Special shapeless recipe - armor dye, repair, banner patterns, etc.
+					return false;
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return true;
+	}
+
+	private Field getShapelessRecipesField() {
+		if (shapelessRecipes == null) {
+			try {
+				shapelessRecipes = CraftShapelessRecipe.class.getDeclaredField("recipe");
+				shapelessRecipes.setAccessible(true);
+			} catch (NoSuchFieldException | SecurityException e) {
+				e.printStackTrace();
+			}
+		}
+		return shapelessRecipes;
 	}
 
 	@Override
