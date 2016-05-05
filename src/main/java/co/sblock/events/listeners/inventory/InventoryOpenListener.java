@@ -3,6 +3,7 @@ package co.sblock.events.listeners.inventory;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Location;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -30,13 +31,15 @@ public class InventoryOpenListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		Inventory inv = event.getInventory();
+		if (!(inv.getHolder() instanceof BlockState)) {
+			return;
+		}
+
 		Location location;
 		try {
 			location = inv.getLocation();
 		} catch (AbstractMethodError e) {
-			System.err.println(new StringBuilder("Caught AbstractMethodError calling Inventory#getLocation on class ")
-					.append(inv.getClass().getName()).append("\nType: ").append(inv.getType())
-					.append("\nTitle: ").append(inv.getTitle()).append("\nHolder: ").append(inv.getHolder()));
+			// reported bug, SPIGOT-2248
 			return;
 		}
 		if (location == null) {
