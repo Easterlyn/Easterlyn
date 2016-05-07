@@ -53,11 +53,8 @@ public class Machines extends Module {
 	/* The MachineInventoryTracker. */
 	private final MachineInventoryTracker tracker;
 
-	private final boolean TODO_FIXME;
-
 	public Machines(Sblock plugin) {
 		super(plugin);
-		this.TODO_FIXME = true;
 		byName = new HashMap<>();
 		this.blocksToKeys = new HashMap<>();
 		this.keysToBlocks = HashMultimap.create();
@@ -152,8 +149,8 @@ public class Machines extends Module {
 		return new ImmutablePair<>(type, section);
 	}
 
-	public void loadChunkMachines(Chunk chunk) {
-		if (TODO_FIXME || !this.isEnabled()) {
+	public void enableChunkMachines(Chunk chunk) {
+		if (!this.isEnabled()) {
 			return;
 		}
 		String worldName = chunk.getWorld().getName();
@@ -174,9 +171,10 @@ public class Machines extends Module {
 			try {
 				Location key = new Location(chunk.getWorld(), Integer.valueOf(split[0]),
 						Integer.valueOf(split[1]), Integer.valueOf(split[2]));
-				Pair<Machine, ConfigurationSection> machine = loadMachine(key, chunkSection.getConfigurationSection(xyz));
+				Pair<Machine, ConfigurationSection> machine = getMachineByLocation(key);
 				if (machine == null) {
 					iterator.remove();
+					continue;
 				}
 				machine.getLeft().enable(machine.getRight());
 			} catch (NumberFormatException e) {
@@ -188,8 +186,8 @@ public class Machines extends Module {
 		}
 	}
 
-	public void unloadChunkMachines(Chunk chunk) {
-		if (TODO_FIXME || !this.isEnabled()) {
+	public void disableChunkMachines(Chunk chunk) {
+		if (!this.isEnabled()) {
 			return;
 		}
 		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
@@ -208,8 +206,9 @@ public class Machines extends Module {
 				Pair<Machine, ConfigurationSection> machine = getMachineByLocation(key);
 				if (machine == null) {
 					iterator.remove();
+					continue;
 				}
-				this.removeMachineBlocks(key);
+				machine.getLeft().disable(machine.getRight());
 			} catch (NumberFormatException e) {
 				getLogger().warning("Coordinates cannot be parsed from " + Arrays.toString(split));
 			}
@@ -238,44 +237,47 @@ public class Machines extends Module {
 	 * Loads all Machine data from file.
 	 */
 	private void loadMachines() {
-		if (TODO_FIXME) {
-			for (World world : Bukkit.getWorlds()) {
-				String worldName = world.getName();
-				if (!getConfig().isConfigurationSection(worldName)
-						|| worldName.equals(Region.DERSE.getWorldName())) {
-					// No machines in Derspit.
+		for (World world : Bukkit.getWorlds()) {
+			String worldName = world.getName();
+			if (!getConfig().isConfigurationSection(worldName)
+					|| worldName.equals(Region.DERSE.getWorldName())) {
+				// No machines in Derspit.
+				continue;
+			}
+			ConfigurationSection worldSection = getConfig().getConfigurationSection(worldName);
+			for (String chunkPath : worldSection.getKeys(false)) {
+				if (!worldSection.isConfigurationSection(chunkPath)) {
 					continue;
 				}
-				ConfigurationSection worldSection = getConfig().getConfigurationSection(worldName);
-				for (String chunkPath : worldSection.getKeys(false)) {
-					if (!worldSection.isConfigurationSection(chunkPath)) {
-						continue;
-					}
-					ConfigurationSection chunkSection = worldSection.getConfigurationSection(chunkPath);
-					Set<String> chunkKeys = chunkSection.getKeys(false);
-					for (Iterator<String> iterator = chunkKeys.iterator(); iterator.hasNext();) {
-						String xyz = iterator.next();
-						String[] split = xyz.split("_");
-						try {
-							Location key = new Location(world, Integer.valueOf(split[0]),
-									Integer.valueOf(split[1]), Integer.valueOf(split[2]));
-							Pair<Machine, ConfigurationSection> machine = loadMachine(key, chunkSection.getConfigurationSection(xyz));
-							if (machine == null) {
-								iterator.remove();
-								System.out.println("Deleting broken machine at " + key);
-								continue;
-							}
-							machine.getLeft().enable(machine.getRight());
-						} catch (NumberFormatException e) {
-							getLogger().warning("Coordinates cannot be parsed from " + Arrays.toString(split));
-						}
-					}
+
+				boolean chunkLoaded;
+				try {
+					String[] chunkSplit = chunkPath.split("_");
+					chunkLoaded = world.isChunkLoaded(Integer.valueOf(chunkSplit[0]), Integer.valueOf(chunkSplit[1]));
+				} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+					chunkLoaded = false;
 				}
-			}
-		} else {
-			for (World world : Bukkit.getWorlds()) {
-				for (Chunk chunk : world.getLoadedChunks()) {
-					loadChunkMachines(chunk);
+
+				ConfigurationSection chunkSection = worldSection.getConfigurationSection(chunkPath);
+				Set<String> chunkKeys = chunkSection.getKeys(false);
+				for (Iterator<String> iterator = chunkKeys.iterator(); iterator.hasNext();) {
+					String xyz = iterator.next();
+					String[] split = xyz.split("_");
+					try {
+						Location key = new Location(world, Integer.valueOf(split[0]),
+								Integer.valueOf(split[1]), Integer.valueOf(split[2]));
+						Pair<Machine, ConfigurationSection> machine = loadMachine(key, chunkSection.getConfigurationSection(xyz));
+						if (machine == null) {
+							iterator.remove();
+							System.out.println("Deleting broken machine at " + key);
+							continue;
+						}
+						if (chunkLoaded) {
+							machine.getLeft().enable(machine.getRight());
+						}
+					} catch (NumberFormatException e) {
+						getLogger().warning("Coordinates cannot be parsed from " + Arrays.toString(split));
+					}
 				}
 			}
 		}

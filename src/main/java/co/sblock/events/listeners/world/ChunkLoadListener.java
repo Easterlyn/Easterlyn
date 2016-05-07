@@ -23,7 +23,7 @@ public class ChunkLoadListener extends SblockListener {
 
 	@EventHandler
 	public void onChunkLoad(ChunkLoadEvent event) {
-		machines.loadChunkMachines(event.getChunk());
+		machines.enableChunkMachines(event.getChunk());
 	}
 
 }

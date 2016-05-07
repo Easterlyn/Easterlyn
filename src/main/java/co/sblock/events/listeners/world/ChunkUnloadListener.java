@@ -27,7 +27,7 @@ public class ChunkUnloadListener extends SblockListener {
 	@EventHandler
 	public void onChunkUnload(ChunkUnloadEvent event) {
 		holograms.removeHolograms(event.getChunk());
-		machines.unloadChunkMachines(event.getChunk());
+		machines.disableChunkMachines(event.getChunk());
 	}
 
 }
