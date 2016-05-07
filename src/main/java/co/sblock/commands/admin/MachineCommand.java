@@ -3,6 +3,8 @@ package co.sblock.commands.admin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -43,7 +45,7 @@ public class MachineCommand extends SblockCommand {
 		}
 		if (args[0].equalsIgnoreCase("get")) {
 			try {
-				((Player) sender).getInventory().addItem(machines.getMachineByName(args[1]).getUniqueDrop());
+				((Player) sender).getInventory().addItem(machines.getMachineByName(StringUtils.join(args, ' ', 1, args.length)).getUniqueDrop());
 				sender.sendMessage("Machine get!");
 			} catch (Exception e) {
 				StringBuilder sb = new StringBuilder("Valid types: ");
