@@ -287,7 +287,9 @@ public abstract class Machine {
 						((InventoryHolder) e.getKey().getBlock().getState()).getInventory().setContents(e.getValue());
 					} catch (ClassCastException e1) {
 						for (ItemStack is : e.getValue()) {
-							key.getWorld().dropItem(key, is);
+							if (is != null) {
+								key.getWorld().dropItem(key, is);
+							}
 						}
 					}
 				}

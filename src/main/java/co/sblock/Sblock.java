@@ -120,14 +120,14 @@ public class Sblock extends JavaPlugin {
 		addModule(new Effects(this));
 		addModule(new Captcha(this));
 		addModule(new Holograms(this));
+		addModule(new ParticleUtils(this));
 		addModule(new Protections(this));
 
-		// Machines depends on Captcha, Effects, Holograms, Protections, and Users to construct.
+		// Machines depends on Captcha, Effects, Holograms, ParticleUtils, Protections, and Users to construct.
 		addModule(new Machines(this));
 
 		// Misc. event-driven modules
 		addModule(new DreamTeleport(this));
-		addModule(new ParticleUtils(this));
 		addModule(new FreeCart(this));
 		addModule(new Meteors(this));
 		addModule(new SleepVote(this));
