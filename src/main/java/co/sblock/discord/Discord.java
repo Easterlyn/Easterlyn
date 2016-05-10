@@ -69,7 +69,7 @@ public class Discord extends Module {
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
 
-	private String botName, login, password, channelMain, channelLog, channelReports;
+	private String botName, token, channelMain, channelLog, channelReports;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
 	private QueueDrainThread drainQueueThread;
@@ -107,20 +107,19 @@ public class Discord extends Module {
 	@Override
 	protected void onEnable() {
 		botName = getConfig().getString("discord.username", "Sbot");
-		login = getConfig().getString("discord.login");
-		password = getConfig().getString("discord.password");
+		token = getConfig().getString("discord.token");
 		channelMain = getConfig().getString("discord.chat.main");
 		channelLog = getConfig().getString("discord.chat.log");
 		channelReports = getConfig().getString("discord.chat.reports");
 
-		if (login == null || password == null) {
+		if (token == null) {
 			getLogger().severe("Unable to connect to Discord, no connection details provided!");
 			this.disable();
 			return;
 		}
 
 		try {
-			this.client = new ClientBuilder().withLogin(login, password).build();
+			this.client = new ClientBuilder().withToken(token).build();
 		} catch (DiscordException e) {
 			e.printStackTrace();
 			this.disable();
@@ -225,8 +224,7 @@ public class Discord extends Module {
 		super.loadConfig();
 
 		botName = getConfig().getString("discord.username", "Sbot");
-		login = getConfig().getString("discord.login");
-		password = getConfig().getString("discord.password");
+		token = getConfig().getString("discord.token");
 		channelMain = getConfig().getString("discord.chat.main");
 		channelLog = getConfig().getString("discord.chat.log");
 		channelReports = getConfig().getString("discord.chat.reports");
