@@ -29,9 +29,9 @@ import co.sblock.machines.utilities.Shape;
 import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.utilities.InventoryUtils;
 
-import net.minecraft.server.v1_9_R1.ShapelessRecipes;
+import net.minecraft.server.v1_9_R2.ShapelessRecipes;
 
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftShapelessRecipe;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftShapelessRecipe;
 
 /**
  * Combine and create.

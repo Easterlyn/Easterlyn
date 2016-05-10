@@ -63,15 +63,15 @@ import co.sblock.machines.type.Machine;
 
 import net.md_5.bungee.api.ChatColor;
 
-import net.minecraft.server.v1_9_R1.EntityPlayer;
-import net.minecraft.server.v1_9_R1.MerchantRecipe;
-import net.minecraft.server.v1_9_R1.MerchantRecipeList;
-import net.minecraft.server.v1_9_R1.PacketDataSerializer;
-import net.minecraft.server.v1_9_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_9_R1.PacketPlayOutSetSlot;
+import net.minecraft.server.v1_9_R2.EntityPlayer;
+import net.minecraft.server.v1_9_R2.MerchantRecipe;
+import net.minecraft.server.v1_9_R2.MerchantRecipeList;
+import net.minecraft.server.v1_9_R2.PacketDataSerializer;
+import net.minecraft.server.v1_9_R2.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_9_R2.PacketPlayOutSetSlot;
 
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 
 /**
  * A set of useful methods for inventory functions.

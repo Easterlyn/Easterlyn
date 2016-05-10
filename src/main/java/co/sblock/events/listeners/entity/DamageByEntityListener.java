@@ -17,7 +17,7 @@ import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.MeteoriteComponent;
 
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 
 /**
  * Listener for EntityDamageByEntityEvents.
