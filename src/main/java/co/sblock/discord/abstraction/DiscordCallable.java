@@ -12,25 +12,25 @@ import sx.blah.discord.util.MissingPermissionsException;
 public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 
 	private final CallPriority priority;
-	private final boolean retryOnException;
+	private int retries;
 
 	public DiscordCallable() {
 		this(CallPriority.MEDIUM);
 	}
 
 	public DiscordCallable(CallPriority priority) {
-		this(priority, false);
+		this(priority, 0);
 	}
 
-	public DiscordCallable(CallPriority priority, boolean retryOnException) {
+	public DiscordCallable(CallPriority priority, int retries) {
 		this.priority = priority;
-		this.retryOnException = retryOnException;
+		this.retries = retries;
 	}
 
 	public abstract void call() throws DiscordException, HTTP429Exception, MissingPermissionsException;
 
 	public final boolean retryOnException() {
-		return retryOnException;
+		return --retries >= 0;
 	}
 
 	@Override

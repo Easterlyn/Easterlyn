@@ -34,6 +34,7 @@ import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.abstraction.DiscordModule;
+import co.sblock.discord.listeners.DiscordDisconnectedListener;
 import co.sblock.discord.listeners.DiscordMessageDeleteListener;
 import co.sblock.discord.listeners.DiscordMessageReceivedListener;
 import co.sblock.discord.listeners.DiscordReadyListener;
@@ -128,6 +129,7 @@ public class Discord extends Module {
 
 		EventDispatcher dispatcher = this.client.getDispatcher();
 		dispatcher.registerListener(new DiscordReadyListener(this));
+		dispatcher.registerListener(new DiscordDisconnectedListener(this));
 		dispatcher.registerListener(new DiscordMessageReceivedListener(this));
 		dispatcher.registerListener(new DiscordMessageDeleteListener(this));
 
@@ -307,7 +309,7 @@ public class Discord extends Module {
 
 	public void queueMessageDeletion(IMessage message, CallPriority priority) {
 		startQueueDrain();
-		drainQueueThread.queue(new DiscordCallable(priority, false) {
+		drainQueueThread.queue(new DiscordCallable(priority, 1) {
 			@Override
 			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
 				message.delete();

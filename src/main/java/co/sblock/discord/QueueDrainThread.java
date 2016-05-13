@@ -80,7 +80,7 @@ public class QueueDrainThread extends Thread {
 			} catch (HTTP429Exception e) {
 				try {
 					// Pause, we're rate limited.
-					Thread.sleep(e.getRetryDelay());
+					Thread.sleep(e.getRetryDelay() + 100L);
 				} catch (InterruptedException ie) {
 					break;
 				}
