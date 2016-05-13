@@ -253,13 +253,15 @@ public class Discord extends Module {
 		return super.isEnabled() && this.client != null;
 	}
 
-	public void ready() {
-		for (DiscordModule module : modules.values()) {
-			module.doSetup();
+	public void setReady(boolean ready) {
+		if (ready) {
+			for (DiscordModule module : modules.values()) {
+				module.doSetup();
+			}
+			startQueueDrain();
+			startHeartbeat();
 		}
-		startQueueDrain();
-		startHeartbeat();
-		this.ready = true;
+		this.ready = ready;
 	}
 
 	public boolean isReady() {

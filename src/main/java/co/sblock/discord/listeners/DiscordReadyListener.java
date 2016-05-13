@@ -33,7 +33,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 			sb.delete(0, sb.length());
 		}
 
-		discord.ready();
+		discord.setReady(true);
 	}
 
 }
