@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -158,12 +159,12 @@ public class RepairShrine extends Machine {
 		matData = shape.new MaterialDataValue(Material.HOPPER);
 		shape.setVectorData(new Vector(0, 0, 0), matData);
 
-		// Central lava
+		// Central carpet
 		matData = shape.new MaterialDataValue(Material.CARPET, DyeColor.RED.getWoolData());
 		shape.setVectorData(new Vector(0, 1, 0), matData);
 
 		// Central glass
-		matData = shape.new MaterialDataValue(Material.STAINED_GLASS, DyeColor.RED.getWoolData());
+		matData = shape.new MaterialDataValue(Material.GLASS);
 		shape.setVectorData(new Vector(0, 3, 0), matData);
 
 		// Decorative arch
@@ -231,6 +232,15 @@ public class RepairShrine extends Machine {
 	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
 		super.assemble(event, storage);
 		this.setFuel(storage, this.getFuel(storage));
+	}
+
+	@Override
+	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
+		if (event.getBlock().getY() > this.getKey(storage).getBlockY()) {
+			// Prevent accidental breakage - must break part of bottom layer
+			return true;
+		}
+		return super.handleBreak(event, storage);
 	}
 
 	@Override
