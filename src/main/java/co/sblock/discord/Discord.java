@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -16,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -48,6 +51,8 @@ import net.md_5.bungee.api.ChatColor;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.EventDispatcher;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.internal.DiscordEndpoints;
+import sx.blah.discord.api.internal.Requests;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -307,8 +312,63 @@ public class Discord extends Module {
 		drainQueueThread.queue(call);
 	}
 
-	public void queueMessageDeletion(IMessage message, CallPriority priority) {
+	public void queueMessageDeletion(CallPriority priority, IMessage... messages) {
+		if (messages.length == 0) {
+			return;
+		}
+
 		startQueueDrain();
+
+		if (messages.length == 1) {
+			queueSingleDelete(priority, messages[0]);
+			return;
+		}
+
+		for (int index = 0, nextIndex = 100; index < messages.length; index = nextIndex,
+				nextIndex = Math.min(nextIndex + 100, messages.length)) {
+
+			if (nextIndex - index == 1) {
+				queueSingleDelete(priority, messages[index]);
+				return;
+			}
+
+			ArrayList<IMessage> messageChunk = new ArrayList<>();
+			for (int i = index; i < nextIndex; i++) {
+				messageChunk.add(messages[i]);
+			}
+			// TODO: ensure same channel for input messages
+			queueBulkDelete(priority, messageChunk);
+		}
+	}
+
+	private void queueBulkDelete(CallPriority priority, List<IMessage> messages) {
+		if (messages.size() < 2) {
+			throw new IllegalArgumentException("Cannot bulk delete under 2 messages!");
+		}
+
+		if (messages.size() > 100) {
+			throw new IllegalArgumentException("Cannot bulk delete over 100 messages!");
+		}
+
+		String channelID = messages.get(0).getChannel().getID();
+		BasicNameValuePair[] messagePairs = new BasicNameValuePair[messages.size()];
+		for (int i = 0; i < messages.size(); i++) {
+			IMessage message = messages.get(i);
+			if (!message.getChannel().getID().equals(channelID)) {
+				throw new IllegalArgumentException("Bulk deletion requires all messsages to be in the same channel!");
+			}
+			messagePairs[i] = new BasicNameValuePair(String.format("messages[%s]", i), message.getID());
+		}
+
+		drainQueueThread.queue(new DiscordCallable(priority, 1) {
+			@Override
+			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
+				Requests.POST.makeRequest(DiscordEndpoints.CHANNELS + channelID + "/messages/bulk_delete", messagePairs);
+			}
+		});
+	}
+
+	private void queueSingleDelete(CallPriority priority, IMessage message) {
 		drainQueueThread.queue(new DiscordCallable(priority, 1) {
 			@Override
 			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
@@ -385,6 +445,7 @@ public class Discord extends Module {
 			builder.append(word);
 		}
 		for (int index = 0, nextIndex = 2000; index < builder.length(); index = nextIndex, nextIndex += 2000) {
+			// TODO: split at logical areas - spaces, dashes, etc. rather than a hard limit
 			if (nextIndex > builder.length()) {
 				nextIndex = builder.length();
 			}

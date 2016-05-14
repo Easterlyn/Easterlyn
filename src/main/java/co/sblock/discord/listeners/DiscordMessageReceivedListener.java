@@ -15,6 +15,7 @@ import co.sblock.discord.modules.RetentionModule;
 import sx.blah.discord.api.IListener;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 
 /**
@@ -72,7 +73,9 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			return;
 		}
 		if (command) {
-			discord.queueMessageDeletion(event.getMessage(), CallPriority.MEDIUM);
+			if (!(channel instanceof IPrivateChannel)) {
+				discord.queueMessageDeletion(CallPriority.MEDIUM, event.getMessage());
+			}
 			if (discord.handleDiscordCommand(msg, author, channel)) {
 				return;
 			}
@@ -80,7 +83,7 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 		DiscordPlayer sender = discord.getDiscordPlayerFor(author);
 		if (sender == null) {
 			if (main && !command) {
-				discord.queueMessageDeletion(event.getMessage(), CallPriority.MEDIUM);
+				discord.queueMessageDeletion(CallPriority.MEDIUM, event.getMessage());
 			}
 			String id = author.getID();
 			if (warnings.getIfPresent(id) != null) {

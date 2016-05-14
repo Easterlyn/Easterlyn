@@ -227,8 +227,13 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		IMessage message = null;
+		ArrayList<IMessage> messages = new ArrayList<>();
 		while ((message = data.removeEarliestMessageIfBefore(retention)) != null) {
-			this.getDiscord().queueMessageDeletion(message, CallPriority.LOW);
+			messages.add(message);
+		}
+
+		if (messages.size() > 0) {
+			this.getDiscord().queueMessageDeletion(CallPriority.LOW, messages.toArray(new IMessage[messages.size()]));
 		}
 
 		/*
