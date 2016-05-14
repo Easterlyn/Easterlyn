@@ -89,7 +89,7 @@ public class Discord extends Module {
 					@Override
 					public Object load(Object key) throws Exception {
 						if (!(key instanceof UUID)) {
-							return null;
+							throw new IllegalArgumentException("Key must be a UUID");
 						}
 						String code = generateUniqueCode();
 						authentications.put(code, key);
@@ -374,7 +374,7 @@ public class Discord extends Module {
 		}
 		// Discord is case-sensitive. This prevents an @everyone alert without altering content.
 		message = message.replace("@everyone", "@Everyone");
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(message.length());
 		Matcher matcher = spaceword.matcher(message);
 		while (matcher.find()) {
 			builder.append(matcher.group(1));
@@ -384,8 +384,14 @@ public class Discord extends Module {
 			}
 			builder.append(word);
 		}
-		for (String channel : channels) {
-			addMessageToQueue(channel, name, builder.toString());
+		for (int index = 0, nextIndex = 2000; index < builder.length(); index = nextIndex, nextIndex += 2000) {
+			if (nextIndex > builder.length()) {
+				nextIndex = builder.length();
+			}
+			message = builder.substring(index, nextIndex);
+			for (String channel : channels) {
+				addMessageToQueue(channel, name, message);
+			}
 		}
 	}
 
