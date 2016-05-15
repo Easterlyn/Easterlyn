@@ -26,6 +26,7 @@ public class DiscordDisconnectedListener implements IListener<DiscordDisconnecte
 		switch (event.getReason()) {
 		case MISSED_PINGS:
 		case TIMEOUT:
+		case UNKNOWN:
 			try {
 				discord.getClient().login();
 			} catch (DiscordException e) {
