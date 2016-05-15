@@ -42,27 +42,32 @@ public class CleverHal extends HalMessageHandler {
 	private final Cooldowns cooldowns;
 	private final Language lang;
 	private final Pattern anyPattern, exactPattern, whitespacePattern;
-	private final ChatterBotSession bot;
 	private final Set<Pattern> ignoreMatches;
 	private final BaseComponent[] hover;
 	private final MessageBuilder noSpam;
 	private final DummyPlayer dummy;
 
+	private ChatterBotSession bot;
+
 	public CleverHal(Sblock plugin) {
 		super(plugin);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.lang = plugin.getModule(Language.class);
-		ChatterBot chatterBot = null;
+		
 		try {
-			chatterBot = new ChatterBotFactory().create(ChatterBotType.CLEVERBOT);
+			ChatterBot chatterBot = new ChatterBotFactory().create(ChatterBotType.CLEVERBOT);
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					if (chatterBot != null) {
+						bot = chatterBot.createSession();
+					}
+				}
+			}.runTaskAsynchronously(getPlugin());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (chatterBot != null) {
-			bot = chatterBot.createSession();
-		} else {
-			bot = null;
-		}
+
 
 		anyPattern = Pattern.compile(lang.getValue("chat.ai.cleverbot.trigger"), Pattern.CASE_INSENSITIVE);
 		exactPattern = Pattern.compile('^' + anyPattern.pattern() + '$', anyPattern.flags());
