@@ -110,7 +110,7 @@ public class AsyncChatListener extends SblockListener {
 		if (handleGriefPrevention) {
 			unregisterChatListeners();
 			claimPattern = Pattern.compile("(^|.*\\W)how\\W.*\\W(claim|protect|lock)(\\W.*|$)", Pattern.CASE_INSENSITIVE);
-			trappedPattern = Pattern.compile("(^|\\s)(stuck|trapped(?! chest))(\\W|\\s|$)", Pattern.CASE_INSENSITIVE);
+			trappedPattern = Pattern.compile("(^|\\s)(stuck|trapped(?! (chest|horse)))(\\W|\\s|$)", Pattern.CASE_INSENSITIVE);
 		} else {
 			claimPattern = null;
 			trappedPattern = null;
