@@ -2,6 +2,7 @@ package co.sblock.discord;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -18,12 +19,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import org.json.simple.JSONObject;
 
 import org.reflections.Reflections;
 
@@ -324,8 +328,8 @@ public class Discord extends Module {
 			return;
 		}
 
-		for (int index = 0, nextIndex = 100; index < messages.length; index = nextIndex,
-				nextIndex = Math.min(nextIndex + 100, messages.length)) {
+		for (int index = 0, nextIndex; index < messages.length; index = nextIndex) {
+			nextIndex = Math.min(index + 100, messages.length);
 
 			if (nextIndex - index == 1) {
 				queueSingleDelete(priority, messages[index]);
@@ -341,6 +345,7 @@ public class Discord extends Module {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void queueBulkDelete(CallPriority priority, List<IMessage> messages) {
 		if (messages.size() < 2) {
 			throw new IllegalArgumentException("Cannot bulk delete under 2 messages!");
@@ -351,19 +356,30 @@ public class Discord extends Module {
 		}
 
 		String channelID = messages.get(0).getChannel().getID();
-		BasicNameValuePair[] messagePairs = new BasicNameValuePair[messages.size()];
-		for (int i = 0; i < messages.size(); i++) {
-			IMessage message = messages.get(i);
+		ArrayList<String> messageIDs = new ArrayList<>(messages.size());
+		for (IMessage message : messages) {
 			if (!message.getChannel().getID().equals(channelID)) {
 				throw new IllegalArgumentException("Bulk deletion requires all messsages to be in the same channel!");
 			}
-			messagePairs[i] = new BasicNameValuePair(String.format("messages[%s]", i), message.getID());
+			messageIDs.add(message.getID());
+		}
+		JSONObject body = new JSONObject();
+		body.put("messages", messageIDs);
+		StringEntity entity;
+		try {
+			entity = new StringEntity(body.toString());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return;
 		}
 
-		drainQueueThread.queue(new DiscordCallable(priority, 1) {
+		drainQueueThread.queue(new DiscordCallable(priority, 0) {
 			@Override
 			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
-				Requests.POST.makeRequest(DiscordEndpoints.CHANNELS + channelID + "/messages/bulk_delete", messagePairs);
+
+				Requests.POST.makeRequest(DiscordEndpoints.CHANNELS + channelID + "/messages/bulk_delete", entity,
+						new BasicNameValuePair("authorization", getClient().getToken()),
+						new BasicNameValuePair("content-type", "application/json"));
 			}
 		});
 	}
