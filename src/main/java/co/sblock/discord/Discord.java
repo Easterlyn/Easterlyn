@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.Validate;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -489,6 +491,17 @@ public class Discord extends Module {
 
 	public void addLink(UUID uuid, IUser user) {
 		discordData.set("users." + user.getID(), uuid.toString());
+
+		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+		if (player != null && player.getName() != null) {
+			try {
+				DiscordEndpointUtils.queueNickSet(this, CallPriority.LOW, this.getClient()
+						.getGuilds().get(0), user, player.getName());
+			} catch (MissingPermissionsException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public DiscordPlayer getDiscordPlayerFor(IUser user) {
