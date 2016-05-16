@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -52,7 +53,9 @@ import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.EventDispatcher;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.HTTP429Exception;
@@ -493,12 +496,32 @@ public class Discord extends Module {
 		discordData.set("users." + user.getID(), uuid.toString());
 
 		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+		IGuild guild = this.getClient().getGuilds().get(0);
+
+		IRole linkedRole = null;
+		if (this.getConfig().isSet("linkedRole." + guild.getID())) {
+			String roleID = this.getConfig().getString("linkedRole." + guild.getID());
+			linkedRole = guild.getRoleByID(roleID);
+		}
+		if (linkedRole != null) {
+			List<IRole> roles = user.getRolesForGuild(guild);
+			if (!roles.contains(linkedRole)) {
+				roles = new ArrayList<>(roles);
+				roles.add(linkedRole);
+				IRole[] roleArray = roles.toArray(new IRole[roles.size()]);
+				this.queue(new DiscordCallable() {
+					@Override
+					public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
+						guild.editUserRoles(user, roleArray);
+					}
+				});
+			}
+		}
+
 		if (player != null && player.getName() != null) {
 			try {
-				DiscordEndpointUtils.queueNickSet(this, CallPriority.LOW, this.getClient()
-						.getGuilds().get(0), user, player.getName());
+				DiscordEndpointUtils.queueNickSet(this, CallPriority.LOW, guild, user, player.getName());
 			} catch (MissingPermissionsException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

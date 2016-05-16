@@ -1,5 +1,7 @@
 package co.sblock.discord.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -8,12 +10,17 @@ import org.bukkit.OfflinePlayer;
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordEndpointUtils;
 import co.sblock.discord.abstraction.CallPriority;
+import co.sblock.discord.abstraction.DiscordCallable;
 
 import sx.blah.discord.api.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.HTTP429Exception;
+import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * IListener for successful Discord connection.
@@ -34,7 +41,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 		discord.setReady(true);
 
 		StringBuilder sb = new StringBuilder();
-		guild: for (IGuild guild : discord.getClient().getGuilds()) {
+		for (IGuild guild : discord.getClient().getGuilds()) {
 			discord.getLogger().info("Available channels in " + guild.getName() + " (" + guild.getID() + "):");
 			for (IChannel channel : guild.getChannels()) {
 				sb.append(channel.getName()).append(':').append(channel.getID()).append(' ');
@@ -43,19 +50,43 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 			discord.getLogger().info(sb.toString());
 			sb.delete(0, sb.length());
 
+			IRole linkedRole = null;
+			if (discord.getConfig().isSet("linkedRole." + guild.getID())) {
+				String roleID = discord.getConfig().getString("linkedRole." + guild.getID());
+				linkedRole = guild.getRoleByID(roleID);
+			}
+
+			boolean hasPermission = true;
 			for (IUser user : guild.getUsers()) {
 				UUID uuid = discord.getUUIDOf(user);
 				if (uuid == null) {
-					return;
+					continue;
+				}
+				if (linkedRole != null) {
+					List<IRole> roles = user.getRolesForGuild(guild);
+					if (!roles.contains(linkedRole)) {
+						roles = new ArrayList<>(roles);
+						roles.add(linkedRole);
+						IRole[] roleArray = roles.toArray(new IRole[roles.size()]);
+						discord.queue(new DiscordCallable() {
+							@Override
+							public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
+								guild.editUserRoles(user, roleArray);
+							}
+						});
+					}
+				}
+				if (!hasPermission) {
+					continue;
 				}
 				OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
 				if (player == null || player.getName() == null) {
-					return;
+					continue;
 				}
 				try {
 					DiscordEndpointUtils.queueNickSet(discord, CallPriority.LOW, guild, user, player.getName());
 				} catch (Exception e) {
-					continue guild;
+					hasPermission = false;
 				}
 			};
 		}
