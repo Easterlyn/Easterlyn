@@ -45,7 +45,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 			public void run() {
 				postReady();
 			}
-		}.runTaskLaterAsynchronously(discord.getPlugin(), 30L);
+		}.runTaskLaterAsynchronously(discord.getPlugin(), 150L);
 	}
 
 	private void postReady() {
