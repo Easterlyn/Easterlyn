@@ -6,7 +6,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import co.sblock.discord.abstraction.DiscordCallable;
 
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.HTTP429Exception;
+import sx.blah.discord.util.RateLimitException;
 
 /**
  * A Thread for periodically executing DiscordCallables from the given Queue.
@@ -90,7 +90,7 @@ public class QueueDrainThread extends Thread {
 					continue;
 				}
 				e.printStackTrace();
-			} catch (HTTP429Exception e) {
+			} catch (RateLimitException e) {
 				try {
 					// Pause, we're rate limited.
 					Thread.sleep(e.getRetryDelay() + 100L);

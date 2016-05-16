@@ -1,8 +1,8 @@
 package co.sblock.discord.abstraction;
 
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.HTTP429Exception;
 import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
 
 /**
  * A simple abstraction allowing for easier handling of Discord API calls.
@@ -27,7 +27,7 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 		this.retries = retries;
 	}
 
-	public abstract void call() throws DiscordException, HTTP429Exception, MissingPermissionsException;
+	public abstract void call() throws DiscordException, RateLimitException, MissingPermissionsException;
 
 	public final boolean retryOnException() {
 		return --retries >= 0;

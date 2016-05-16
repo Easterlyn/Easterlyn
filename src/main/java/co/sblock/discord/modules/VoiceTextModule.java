@@ -1,17 +1,17 @@
 package co.sblock.discord.modules;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 import co.sblock.discord.Discord;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordModule;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.HTTP429Exception;
 import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
 
 /**
  * DiscordModule for managing a text channel per voice channel.
@@ -42,7 +42,7 @@ public class VoiceTextModule extends DiscordModule {
 			IChannel textForVoice = channels.remove(channel);
 			this.getDiscord().queue(new DiscordCallable() {
 				@Override
-				public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
+				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 					textForVoice.delete();
 				}
 			});

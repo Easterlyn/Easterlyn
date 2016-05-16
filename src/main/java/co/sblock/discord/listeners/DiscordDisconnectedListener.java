@@ -2,7 +2,7 @@ package co.sblock.discord.listeners;
 
 import co.sblock.discord.Discord;
 
-import sx.blah.discord.api.IListener;
+import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
 import sx.blah.discord.util.DiscordException;
 

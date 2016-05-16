@@ -6,18 +6,39 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+
+import co.sblock.Sblock;
+import co.sblock.chat.message.Message;
+import co.sblock.discord.abstraction.CallPriority;
+import co.sblock.discord.abstraction.DiscordCallable;
+import co.sblock.discord.abstraction.DiscordCommand;
+import co.sblock.discord.abstraction.DiscordModule;
+import co.sblock.discord.listeners.DiscordDisconnectedListener;
+import co.sblock.discord.listeners.DiscordMessageReceivedListener;
+import co.sblock.discord.listeners.DiscordReadyListener;
+import co.sblock.module.Module;
+import co.sblock.utilities.PlayerLoader;
+import co.sblock.utilities.TextUtils;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import org.apache.commons.lang3.Validate;
 
@@ -30,38 +51,19 @@ import org.bukkit.scheduler.BukkitTask;
 
 import org.reflections.Reflections;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
-import co.sblock.Sblock;
-import co.sblock.chat.message.Message;
-import co.sblock.discord.abstraction.CallPriority;
-import co.sblock.discord.abstraction.DiscordCallable;
-import co.sblock.discord.abstraction.DiscordCommand;
-import co.sblock.discord.abstraction.DiscordModule;
-import co.sblock.discord.listeners.DiscordDisconnectedListener;
-import co.sblock.discord.listeners.DiscordMessageDeleteListener;
-import co.sblock.discord.listeners.DiscordMessageReceivedListener;
-import co.sblock.discord.listeners.DiscordReadyListener;
-import co.sblock.discord.modules.RetentionModule;
-import co.sblock.module.Module;
-import co.sblock.utilities.PlayerLoader;
-import co.sblock.utilities.TextUtils;
-
 import net.md_5.bungee.api.ChatColor;
 
 import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.EventDispatcher;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.HTTP429Exception;
 import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
 
 /**
  * A Module for managing messaging to and from Discord.
@@ -139,7 +141,6 @@ public class Discord extends Module {
 		dispatcher.registerListener(new DiscordReadyListener(this));
 		dispatcher.registerListener(new DiscordDisconnectedListener(this));
 		dispatcher.registerListener(new DiscordMessageReceivedListener(this));
-		dispatcher.registerListener(new DiscordMessageDeleteListener(this));
 
 		new Thread(new Runnable() {
 			@Override
@@ -221,7 +222,7 @@ public class Discord extends Module {
 				public void run() {
 					try {
 						oldClient.logout();
-					} catch (HTTP429Exception | DiscordException e) {
+					} catch (RateLimitException | DiscordException e) {
 						e.printStackTrace();
 					}
 				}
@@ -327,27 +328,41 @@ public class Discord extends Module {
 			return;
 		}
 
-		for (int index = 0, nextIndex; index < messages.length; index = nextIndex) {
-			nextIndex = Math.min(index + 100, messages.length);
+		queueMessageDeletion(priority, Arrays.asList(messages));
+	}
 
-			if (nextIndex - index == 1) {
-				queueSingleDelete(priority, messages[index]);
-				return;
+	public void queueMessageDeletion(CallPriority priority, Collection<IMessage> messages) {
+		// Collect messages by channel to ensure bulk delete will work
+		Map<IChannel, List<IMessage>> messagesByChannel = messages.stream()
+				.collect(Collectors.groupingBy(message -> message.getChannel()));
+
+		for (Map.Entry<IChannel, List<IMessage>> entry : messagesByChannel.entrySet()) {
+
+			if (entry.getValue().size() == 1) {
+				// Single message, single delete.
+				queueSingleDelete(priority, entry.getValue().get(0));
+				continue;
 			}
 
-			ArrayList<IMessage> messageChunk = new ArrayList<>();
-			for (int i = index; i < nextIndex; i++) {
-				messageChunk.add(messages[i]);
+			while (entry.getValue().size() > 0) {
+				List<IMessage> subList = entry.getValue().subList(0, Math.min(100, entry.getValue().size()));
+				List<IMessage> messageList = new ArrayList<>();
+				messageList.addAll(subList);
+				subList.clear();
+				this.queue(new DiscordCallable(priority) {
+					@Override
+					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+						entry.getKey().getMessages().bulkDelete(messageList);
+					}
+				});
 			}
-			// TODO: ensure same channel for input messages
-			DiscordEndpointUtils.queueBulkDelete(this, priority, messageChunk);
 		}
 	}
 
 	private void queueSingleDelete(CallPriority priority, IMessage message) {
 		drainQueueThread.queue(new DiscordCallable(priority, 1) {
 			@Override
-			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
+			public void call() throws MissingPermissionsException, RateLimitException, DiscordException {
 				message.delete();
 			}
 		});
@@ -439,7 +454,7 @@ public class Discord extends Module {
 		}
 		drainQueueThread.queue(new DiscordCallable(CallPriority.HIGH) {
 			@Override
-			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
+			public void call() throws MissingPermissionsException, RateLimitException, DiscordException {
 				IChannel group = client.getChannelByID(channel);
 				if (group == null) {
 					IUser user = client.getUserByID(channel);
@@ -462,14 +477,12 @@ public class Discord extends Module {
 					builder.append("** ");
 				}
 				builder.append(message);
-				IMessage posted;
 				try {
-					posted = group.sendMessage(builder.toString());
+					group.sendMessage(builder.toString());
 				} catch (NoSuchElementException e) {
 					// Internal Discord fault, don't log.
 					return;
 				}
-				getModule(RetentionModule.class).handleNewMessage(posted);
 			}
 		});
 	}
@@ -536,14 +549,14 @@ public class Discord extends Module {
 			linkedRole = guild.getRoleByID(roleID);
 		}
 		if (linkedRole != null) {
-			List<IRole> roles = user.getRolesForGuild(guild);
+			List<IRole> roles = iuser.getRolesForGuild(guild);
 			if (!roles.contains(linkedRole)) {
 				roles = new ArrayList<>(roles);
 				roles.add(linkedRole);
 				IRole[] roleArray = roles.toArray(new IRole[roles.size()]);
 				this.queue(new DiscordCallable() {
 					@Override
-					public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
+					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						guild.editUserRoles(iuser, roleArray);
 					}
 				});
@@ -557,10 +570,14 @@ public class Discord extends Module {
 		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
 
 		if (player != null && player.getName() != null) {
-			try {
-				DiscordEndpointUtils.queueNickSet(this, CallPriority.LOW, guild, user, player.getName());
-			} catch (MissingPermissionsException e) {
-				e.printStackTrace();
+			Optional<String> name = iuser.getNicknameForGuild(guild);
+			if (!name.isPresent() || !player.getName().equals(name.get())) {
+				this.queue(new DiscordCallable(CallPriority.LOW) {
+					@Override
+					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+						guild.setUserNickname(iuser, player.getName());
+					}
+				});
 			}
 		}
 		

@@ -7,11 +7,6 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Language;
@@ -22,14 +17,19 @@ import co.sblock.discord.abstraction.DiscordModule;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import net.md_5.bungee.api.chat.TextComponent;
 
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.HTTP429Exception;
 import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
 
 /**
  * DiscordModule for interacting with the Minecraft server from Discord.
@@ -126,7 +126,7 @@ public class MinecraftModule extends DiscordModule {
 			if (delete) {
 				try {
 					message.delete();
-				} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
+				} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 					// Trivial
 				}
 			}
@@ -136,7 +136,7 @@ public class MinecraftModule extends DiscordModule {
 		if (!builder.canBuild(false)) {
 			try {
 				message.delete();
-			} catch (MissingPermissionsException | HTTP429Exception | DiscordException e) {
+			} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 				// Trivial
 			}
 			return;

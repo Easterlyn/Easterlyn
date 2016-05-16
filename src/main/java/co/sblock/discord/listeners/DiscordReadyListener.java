@@ -2,11 +2,11 @@ package co.sblock.discord.listeners;
 
 import java.util.UUID;
 
-import org.bukkit.scheduler.BukkitRunnable;
-
 import co.sblock.discord.Discord;
 
-import sx.blah.discord.api.IListener;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -46,7 +46,6 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 			}
 			sb.deleteCharAt(sb.length() - 1);
 			discord.getLogger().info(sb.toString());
-			sb.delete(0, sb.length());
 
 			for (IUser user : guild.getUsers()) {
 				UUID uuid = discord.getUUIDOf(user);

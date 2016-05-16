@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import co.sblock.discord.Discord;
 
-import sx.blah.discord.api.IListener;
+import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
 
 /**

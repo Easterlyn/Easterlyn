@@ -3,16 +3,15 @@ package co.sblock.discord.listeners;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
 import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.modules.MinecraftModule;
-import co.sblock.discord.modules.RetentionModule;
 
-import sx.blah.discord.api.IListener;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
+import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IPrivateChannel;
@@ -29,7 +28,6 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 	private final Cache<String, Boolean> warnings;
 
 	private MinecraftModule minecraft;
-	private RetentionModule retention;
 
 	public DiscordMessageReceivedListener(Discord discord) {
 		this.discord = discord;
@@ -49,8 +47,6 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			// More jDiscord handling - no clue if MessageReceived is fired when our messages are acknowledged
 			return;
 		}
-
-		this.getRetentionModule().handleNewMessage(event.getMessage());
 
 		String msg = event.getMessage().getContent();
 		if (msg.startsWith("/link ")) {
@@ -113,13 +109,6 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			minecraft = discord.getModule(MinecraftModule.class);
 		}
 		return minecraft;
-	}
-
-	private RetentionModule getRetentionModule() {
-		if (retention == null) {
-			retention = discord.getModule(RetentionModule.class);
-		}
-		return retention;
 	}
 
 }

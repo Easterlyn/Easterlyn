@@ -57,8 +57,13 @@
     <dependency>
       <groupId>com.github.austinv11</groupId>
       <artifactId>Discord4J</artifactId>
-      <version>2.4.8</version>
+      <version>2.5.1</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.1</version>
     </dependency>
     <!-- Bukkit uses java.util.logging, so slf4j should be bound to that. -->
     <dependency>
