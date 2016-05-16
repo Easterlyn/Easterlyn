@@ -11,25 +11,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Nullable;
-
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.http.message.BasicNameValuePair;
-
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.google.gson.Gson;
-
 import co.sblock.discord.Discord;
+import co.sblock.discord.DiscordEndpointUtils;
 import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordModule;
 
-import sx.blah.discord.api.internal.DiscordEndpoints;
 import sx.blah.discord.api.internal.DiscordUtils;
-import sx.blah.discord.api.internal.Requests;
 import sx.blah.discord.handle.impl.obj.Channel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -37,7 +30,6 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.json.responses.MessageResponse;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.HTTP429Exception;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -259,7 +251,8 @@ public class RetentionModule extends DiscordModule {
 
 			List<IMessage> pastMessages;
 			try {
-				pastMessages = getPastMessages(data.getChannel(), data.getEarliestMessage(), true);
+				pastMessages = DiscordEndpointUtils.getPastMessages(this.getDiscord(),
+						data.getChannel(), data.getEarliestMessage(), true);
 			} catch (HTTP429Exception e) {
 				this.getDiscord().getLogger().warning("Rate limited doing history lookup: " + e.getRetryDelay());
 				// Decrease total try count
@@ -288,64 +281,6 @@ public class RetentionModule extends DiscordModule {
 		// There's no guarantee that Discord will return messages in any order.
 		// While they currently do, that may change. To be safe, we sort the messages ourselves.
 		data.sortMessages();
-	}
-
-	private List<IMessage> getPastMessages(Channel channel, IMessage message, boolean back)
-			throws HTTP429Exception, DiscordException {
-		return getPastMessages(channel, 100, back && message != null ? message.getID() : null, !back
-				&& message != null ? message.getID() : null);
-	}
-
-	private List<IMessage> getPastMessages(Channel channel, @Nullable Integer limit,
-			@Nullable String before, @Nullable String after)
-					throws HTTP429Exception, DiscordException {
-		StringBuilder request = new StringBuilder(DiscordEndpoints.CHANNELS)
-				.append(channel.getID()).append("/messages");
-		if (limit == null && before == null && after == null) {
-			if (channel.getMessages().size() >= 50) {
-				// 50 is the default size returned. With no parameters, don't bother with a lookup.
-				return channel.getMessages();
-			} else {
-				return getPastMessages(channel, request.toString());
-			}
-		}
-		StringBuilder options = new StringBuilder("?");
-		if (limit != null) {
-			options.append("limit=").append(limit);
-		}
-		if (before != null) {
-			if (options.length() > 1) {
-				options.append('&');
-			}
-			options.append("before=").append(before);
-		}
-		if (after != null) {
-			if (options.length() > 1) {
-				options.append('&');
-			}
-			options.append("after=").append(after);
-		}
-		return getPastMessages(channel, request.append(options).toString());
-	}
-
-	private List<IMessage> getPastMessages(Channel channel, String request) throws HTTP429Exception, DiscordException {
-		List<IMessage> messages = new ArrayList<>();
-		String response;
-		response = Requests.GET.makeRequest(request, new BasicNameValuePair("authorization", getDiscord().getClient().getToken()));
-
-		if (response == null) {
-			return messages;
-		}
-
-		MessageResponse[] msgs = new Gson().fromJson(response, MessageResponse[].class);
-
-		for (MessageResponse message : msgs) {
-			IMessage msg = DiscordUtils.getMessageFromJSON(getDiscord().getClient(), channel, message);
-			//channel.addMessage(msg);
-			messages.add(msg);
-		}
-
-		return messages;
 	}
 
 }

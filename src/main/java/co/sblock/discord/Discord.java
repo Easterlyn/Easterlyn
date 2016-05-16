@@ -2,13 +2,11 @@ package co.sblock.discord;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -19,15 +17,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
-import org.json.simple.JSONObject;
 
 import org.reflections.Reflections;
 
@@ -55,8 +49,6 @@ import net.md_5.bungee.api.ChatColor;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.EventDispatcher;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.internal.DiscordEndpoints;
-import sx.blah.discord.api.internal.Requests;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -341,47 +333,8 @@ public class Discord extends Module {
 				messageChunk.add(messages[i]);
 			}
 			// TODO: ensure same channel for input messages
-			queueBulkDelete(priority, messageChunk);
+			DiscordEndpointUtils.queueBulkDelete(this, priority, messageChunk);
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void queueBulkDelete(CallPriority priority, List<IMessage> messages) {
-		if (messages.size() < 2) {
-			throw new IllegalArgumentException("Cannot bulk delete under 2 messages!");
-		}
-
-		if (messages.size() > 100) {
-			throw new IllegalArgumentException("Cannot bulk delete over 100 messages!");
-		}
-
-		String channelID = messages.get(0).getChannel().getID();
-		ArrayList<String> messageIDs = new ArrayList<>(messages.size());
-		for (IMessage message : messages) {
-			if (!message.getChannel().getID().equals(channelID)) {
-				throw new IllegalArgumentException("Bulk deletion requires all messsages to be in the same channel!");
-			}
-			messageIDs.add(message.getID());
-		}
-		JSONObject body = new JSONObject();
-		body.put("messages", messageIDs);
-		StringEntity entity;
-		try {
-			entity = new StringEntity(body.toString());
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		drainQueueThread.queue(new DiscordCallable(priority, 0) {
-			@Override
-			public void call() throws MissingPermissionsException, HTTP429Exception, DiscordException {
-
-				Requests.POST.makeRequest(DiscordEndpoints.CHANNELS + channelID + "/messages/bulk_delete", entity,
-						new BasicNameValuePair("authorization", getClient().getToken()),
-						new BasicNameValuePair("content-type", "application/json"));
-			}
-		});
 	}
 
 	private void queueSingleDelete(CallPriority priority, IMessage message) {
@@ -520,6 +473,10 @@ public class Discord extends Module {
 
 	public LoadingCache<Object, Object> getAuthCodes() {
 		return authentications;
+	}
+
+	public boolean isLinked(IUser user) {
+		return discordData.isString("users." + user.getID());
 	}
 
 	public UUID getUUIDOf(IUser user) {
