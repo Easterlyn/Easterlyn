@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordEndpointUtils;
@@ -37,9 +38,17 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 
 	@Override
 	public void handle(ReadyEvent event) {
-
 		discord.setReady(true);
 
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				postReady();
+			}
+		}.runTaskLaterAsynchronously(discord.getPlugin(), 30L);
+	}
+
+	private void postReady() {
 		StringBuilder sb = new StringBuilder();
 		for (IGuild guild : discord.getClient().getGuilds()) {
 			discord.getLogger().info("Available channels in " + guild.getName() + " (" + guild.getID() + "):");
@@ -88,7 +97,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 				} catch (Exception e) {
 					hasPermission = false;
 				}
-			};
+			}
 		}
 	}
 
