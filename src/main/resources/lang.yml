@@ -234,6 +234,7 @@ command:
     current: '{COLOR:neutral}You have {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist.'
     nothing: '{COLOR:bad}Nothing in life is free.'
     cost: '{COLOR:neutral}Your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral} would cost {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist to recreate.'
+    expensive: '{COLOR:neutral}Your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral} cannot be punched.'
   halculate:
     description: 'Halculate an equation privately.'
     usage: 'Enter an equation! Ex. /halc (1+1)^(2/3) + 10'
