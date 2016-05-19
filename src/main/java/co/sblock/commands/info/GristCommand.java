@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ImmutableList;
 
 import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
 import co.sblock.commands.SblockCommand;
 import co.sblock.effects.Effects;
@@ -26,11 +27,13 @@ import co.sblock.utilities.InventoryUtils;
  */
 public class GristCommand extends SblockCommand {
 
+	private final Captcha captcha;
 	private final Effects effects;
 	private final DecimalFormat format;
 
 	public GristCommand(Sblock plugin) {
 		super(plugin, "grist");
+		this.captcha = plugin.getModule(Captcha.class);
 		this.effects = plugin.getModule(Effects.class);
 		this.format = new DecimalFormat("#,###,###,###.###");
 		this.format.setRoundingMode(RoundingMode.CEILING);
@@ -73,6 +76,9 @@ public class GristCommand extends SblockCommand {
 			return true;
 		}
 		ItemStack hand = player.getInventory().getItemInMainHand();
+		if (Captcha.isUsedCaptcha(hand) || Captcha.isPunch(hand) || CruxiteDowel.isDowel(hand)) {
+			hand = captcha.captchaToItem(hand);
+		}
 		if (hand == null || hand.getType() == Material.AIR) {
 			sender.sendMessage(this.getLang().getValue("command.grist.nothing"));
 			return true;
