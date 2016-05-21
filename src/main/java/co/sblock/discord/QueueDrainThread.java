@@ -52,7 +52,20 @@ public class QueueDrainThread extends Thread {
 
 			if (!discord.getClient().isReady()) {
 				discord.getLogger().warning("Discord client is not ready, but the module claims to be.");
-				break;
+				discord.setReady(false);
+				try {
+					discord.getClient().login();
+				} catch (DiscordException e) {
+					discord.getLogger().severe("Error reconnecting Discord bot:");
+					e.printStackTrace();
+					break;
+				}
+				try {
+					Thread.sleep(5000L);
+				} catch (InterruptedException e) {
+					break;
+				}
+				continue;
 			}
 
 			DiscordCallable callable = queue.remove();
