@@ -375,8 +375,13 @@ public class Transportalizer extends Machine {
 			Location key = getKey(storage);
 			key.getWorld().dropItemNaturally(key, getUniqueDrop());
 			int fuel = (int) (getFuel(storage) / getValue(Material.BLAZE_POWDER));
-			if (fuel > 0) {
-				key.getWorld().dropItemNaturally(key, new ItemStack(Material.BLAZE_POWDER, fuel));
+			while (fuel > 0) {
+				int dropAmount = Material.BLAZE_POWDER.getMaxStackSize();
+				if (fuel < dropAmount) {
+					dropAmount = fuel;
+				}
+				fuel -= dropAmount;
+				key.getWorld().dropItemNaturally(key, new ItemStack(Material.BLAZE_POWDER, dropAmount));
 			}
 		}
 		remove(storage);
