@@ -316,7 +316,7 @@ command:
     discord: '{COLOR:bad}Reporting is disabled at this time, sorry! Please /mail an admin instead.'
     success: '{COLOR:good}Report sent! Thanks for alerting us.'
     send: |
-      Report by {PLAYER} (/silenttp {X} {Y} {Z} 0 0 {WORLD})
+      Report by {PLAYER} - /silenttp @p {X} {Y} {Z} 0 0 {WORLD}
       {PARAMETER}
   spectate:
     description: 'Player: Become the ghost (toggle spectator mode)'
