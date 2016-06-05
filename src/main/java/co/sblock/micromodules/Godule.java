@@ -17,16 +17,15 @@ import co.sblock.users.UserAspect;
  */
 public class Godule extends Module {
 
-	private Map<UserAspect, AspectEffect> aspeffects;
+	private final Map<UserAspect, AspectEffect> aspeffects;
 
 	public Godule(Sblock plugin) {
 		super(plugin);
+		aspeffects = new HashMap<>();
 	}
 
 	@Override
-	protected void onEnable() {
-		aspeffects = new HashMap<>();
-	}
+	protected void onEnable() {}
 
 	@Override
 	protected void onDisable() {
