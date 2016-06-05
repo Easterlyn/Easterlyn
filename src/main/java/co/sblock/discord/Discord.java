@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.Validate;
 
 import org.bukkit.Bukkit;
@@ -495,7 +497,37 @@ public class Discord extends Module {
 	public void addLink(UUID uuid, IUser user) {
 		discordData.set("users." + user.getID(), uuid.toString());
 
-		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+		updateDiscordState(user, uuid);
+	}
+
+	/**
+	 * Update a linked Minecraft player's Discord account. Includes nicknaming and automatic role
+	 * management.
+	 * 
+	 * @param user the user, or null if it is to be searched for
+	 * @param uuid the UUID of the player
+	 */
+	public void updateDiscordState(@Nullable IUser user, UUID uuid) {
+
+		if (user == null) {
+			// Given player object, find user ID from UUID
+			String uuidString = uuid.toString();
+			for (String path : discordData.getConfigurationSection("users").getKeys(false)) {
+				if (uuidString.equals(discordData.getString("users." + path))) {
+					user = getClient().getUserByID(path);
+					break;
+				}
+			}
+		}
+
+		if (user == null) {
+			return;
+		}
+
+		// Yes, yes, this is final now, shut up compiler.
+		final IUser iuser = user;
+
+		// The bot's really designed for a 1-guild setup. This_is_fine.jpg
 		IGuild guild = this.getClient().getGuilds().get(0);
 
 		IRole linkedRole = null;
@@ -512,11 +544,17 @@ public class Discord extends Module {
 				this.queue(new DiscordCallable() {
 					@Override
 					public void call() throws DiscordException, HTTP429Exception, MissingPermissionsException {
-						guild.editUserRoles(user, roleArray);
+						guild.editUserRoles(iuser, roleArray);
 					}
 				});
 			}
 		}
+
+		if (!this.getConfig().getBoolean("linkName")) {
+			return;
+		}
+
+		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
 
 		if (player != null && player.getName() != null) {
 			try {
@@ -525,6 +563,7 @@ public class Discord extends Module {
 				e.printStackTrace();
 			}
 		}
+		
 	}
 
 	public DiscordPlayer getDiscordPlayerFor(IUser user) {

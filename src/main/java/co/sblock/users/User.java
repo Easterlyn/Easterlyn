@@ -1113,6 +1113,7 @@ public class User {
 					.send(Bukkit.getOnlinePlayers(), false);
 			Discord discord = getPlugin().getModule(Discord.class);
 			discord.postMessage(discord.getBotName(), previous, true);
+			discord.updateDiscordState(null, getUUID());
 		}
 	}
 
