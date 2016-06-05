@@ -1471,4 +1471,14 @@ public class PermissiblePlayer implements Player {
 		player.setCollidable(arg0);
 	}
 
+	@Override
+	public boolean isSilent() {
+		return player.isSilent();
+	}
+
+	@Override
+	public void setSilent(boolean arg0) {
+		player.setSilent(arg0);
+	}
+
 }

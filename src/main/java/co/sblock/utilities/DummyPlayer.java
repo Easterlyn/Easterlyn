@@ -1189,4 +1189,12 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setCollidable(boolean arg0) {}
 
+	@Override
+	public boolean isSilent() {
+		return false;
+	}
+
+	@Override
+	public void setSilent(boolean arg0) {}
+
 }
