@@ -53,7 +53,6 @@ public class DerspitRemovalCommand extends SblockAsynchronousCommand {
 			if (player == null) {
 				continue;
 			}
-			player.loadData();
 			World world = player.getWorld();
 			if (world == null || !world.getName().contains("Earth")) {
 				EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
