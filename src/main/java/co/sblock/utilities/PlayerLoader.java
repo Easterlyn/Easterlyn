@@ -102,7 +102,7 @@ public class PlayerLoader {
 		if (player == null) {
 			return null;
 		}
-		if (player.hasPlayedBefore()) {
+		if (offlinePlayer.hasPlayedBefore()) {
 			player.loadData();
 		}
 		// Wrap player so permissions checks will work

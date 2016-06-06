@@ -34,7 +34,7 @@ public class DerspitRemovalCommand extends SblockAsynchronousCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (args.length < 1 && !args[0].equals("confirm")) {
+		if (args.length < 1 || !args[0].equals("confirm")) {
 			return false;
 		}
 
@@ -48,11 +48,12 @@ public class DerspitRemovalCommand extends SblockAsynchronousCommand {
 				// Skip, could cause decently severe desync
 				continue;
 			}
-			// Don't use cached player - we need a CraftPlayer, and Discord caches DiscordPlayers
-			Player player = PlayerLoader.getPlayer(getPlugin(), offline.getUniqueId(), false);
+			// Don't use cached player - we need as fresh data as possible.
+			Player player = PlayerLoader.getPlayer(getPlugin(), offline.getUniqueId(), false).getPlayer();
 			if (player == null) {
 				continue;
 			}
+			player.loadData();
 			World world = player.getWorld();
 			if (world == null || !world.getName().contains("Earth")) {
 				EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
