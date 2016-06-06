@@ -244,8 +244,10 @@ public class Sblock extends JavaPlugin {
 				}
 				cmdMap.register(this.getDescription().getName(), cmd);
 				Permission permission = new Permission(cmd.getPermission());
-				permission.addParent(cmd.getPermissionLevel(), true).recalculatePermissibles();
-				permission.addParent("sblock.command.*", true).recalculatePermissibles();
+				if (!"sblock.ask.adam.before.touching".equals(cmd.getPermission())) {
+					permission.addParent(cmd.getPermissionLevel(), true).recalculatePermissibles();
+					permission.addParent("sblock.command.*", true).recalculatePermissibles();
+				}
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
 					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				getLogger().severe("Unable to register command " + command.getName());

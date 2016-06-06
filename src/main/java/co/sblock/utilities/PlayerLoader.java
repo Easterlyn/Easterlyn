@@ -30,18 +30,29 @@ import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
 public class PlayerLoader {
 
 	private static final Cache<UUID, Player> PLAYER_CACHE = CacheBuilder.newBuilder().weakValues()
-			.expireAfterAccess(5, TimeUnit.MINUTES).build();
+			.expireAfterAccess(5, TimeUnit.MINUTES).maximumSize(50).build();
 
 	public static Player getPlayer(Plugin plugin, UUID uuid) {
+		return getPlayer(plugin, uuid, true);
+	}
+
+	public static Player getPlayer(Plugin plugin, UUID uuid, boolean useCached) {
 		Player player = Bukkit.getPlayer(uuid);
 		if (player != null) {
 			// Online, life is easy.
 			return player;
 		}
-		player = PLAYER_CACHE.getIfPresent(uuid);
-		if (player != null) {
-			return player;
+
+		if (useCached) {
+			player = PLAYER_CACHE.getIfPresent(uuid);
+			if (player != null) {
+				return player;
+			}
+		} else {
+			// Invalidate cached player in case new player loaded is modified
+			PLAYER_CACHE.invalidate(uuid);
 		}
+
 		if (Bukkit.isPrimaryThread()) {
 			return getPlayerFor(uuid);
 		} else if (plugin == null) {
