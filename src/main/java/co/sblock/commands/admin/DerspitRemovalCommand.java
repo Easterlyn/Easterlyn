@@ -12,6 +12,7 @@ import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.utilities.PlayerLoader;
 
 import net.minecraft.server.v1_9_R2.EntityPlayer;
+import net.minecraft.server.v1_9_R2.WorldSettings;
 
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
@@ -58,6 +59,7 @@ public class DerspitRemovalCommand extends SblockAsynchronousCommand {
 				EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
 				entityPlayer.world = to.getHandle();
 				entityPlayer.setLocation(spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
+				entityPlayer.playerInteractManager.setGameMode(WorldSettings.EnumGamemode.SURVIVAL);
 				player.saveData();
 				Bukkit.getConsoleSender().sendMessage("Moved " + player.getName() + " to Earth's spawn.");
 				moved++;
