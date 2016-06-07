@@ -54,12 +54,13 @@ public class DerspitRemovalCommand extends SblockAsynchronousCommand {
 			if (player == null) {
 				continue;
 			}
+			EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
+			// No matter what, force survival. Survival inventories will be being loaded at the same time.
+			entityPlayer.playerInteractManager.setGameMode(WorldSettings.EnumGamemode.SURVIVAL);
 			World world = player.getWorld();
 			if (world == null || !world.getName().contains("Earth")) {
-				EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
 				entityPlayer.world = to.getHandle();
 				entityPlayer.setLocation(spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
-				entityPlayer.playerInteractManager.setGameMode(WorldSettings.EnumGamemode.SURVIVAL);
 				player.saveData();
 				Bukkit.getConsoleSender().sendMessage("Moved " + player.getName() + " to Earth's spawn.");
 				moved++;
