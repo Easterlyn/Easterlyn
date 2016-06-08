@@ -54,16 +54,25 @@ public class DerspitRemovalCommand extends SblockAsynchronousCommand {
 			if (player == null) {
 				continue;
 			}
+
 			EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
+			boolean dirty = false;
+
 			// No matter what, force survival. Survival inventories will be being loaded at the same time.
-			entityPlayer.playerInteractManager.setGameMode(WorldSettings.EnumGamemode.SURVIVAL);
+			if (entityPlayer.playerInteractManager.getGameMode() != WorldSettings.EnumGamemode.SURVIVAL) {
+				entityPlayer.playerInteractManager.setGameMode(WorldSettings.EnumGamemode.SURVIVAL);
+				dirty = true;
+			}
 			World world = player.getWorld();
 			if (world == null || !world.getName().contains("Earth")) {
 				entityPlayer.world = to.getHandle();
 				entityPlayer.setLocation(spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
-				player.saveData();
 				Bukkit.getConsoleSender().sendMessage("Moved " + player.getName() + " to Earth's spawn.");
 				moved++;
+				dirty = true;
+			}
+			if (dirty) {
+				player.saveData();
 			}
 		}
 
