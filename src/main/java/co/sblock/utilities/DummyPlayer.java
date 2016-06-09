@@ -1197,4 +1197,12 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setSilent(boolean arg0) {}
 
+	@Override
+	public boolean hasGravity() {
+		return false;
+	}
+
+	@Override
+	public void setGravity(boolean gravity) {}
+
 }

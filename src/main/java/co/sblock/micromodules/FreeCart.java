@@ -40,38 +40,40 @@ public class FreeCart extends Module {
 	}
 
 	public void spawnCart(Player p, Location location, Vector startspeed) {
+		//nocheatplus.checks.moving.vehicle.envelope
 		if (cooldowns.getRemainder(p, "freecart") > 0) {
 			return;
 		}
 		cooldowns.addCooldown(p, "freecart", 2000);
-		Minecart m = (Minecart) location.getWorld().spawnEntity(location, EntityType.MINECART);
-		m.setPassenger(p);
-		m.setVelocity(startspeed);
-		carts.add(m);
+		Minecart minecart = (Minecart) location.getWorld().spawnEntity(location, EntityType.MINECART);
+		minecart.setPassenger(p);
+		minecart.setVelocity(startspeed);
+		minecart.setMaxSpeed(10);
+		carts.add(minecart);
 	}
 
 	public boolean isFreeCart(Minecart cart) {
 		return carts.contains(cart);
 	}
 
-	public boolean isOnFreeCart(Player p) {
-		if (p.getVehicle() == null) {
+	public boolean isOnFreeCart(Player player) {
+		if (player.getVehicle() == null) {
 			return false;
 		}
-		if (p.getVehicle().getType() != EntityType.MINECART) {
+		if (player.getVehicle().getType() != EntityType.MINECART) {
 			return false;
 		}
-		return isFreeCart((Minecart) p.getVehicle());
+		return isFreeCart((Minecart) player.getVehicle());
 	}
 
-	public void remove(Player p) {
-		if (p.getVehicle() == null) {
+	public void remove(Player player) {
+		if (player.getVehicle() == null) {
 			return;
 		}
-		if (p.getVehicle().getType() != EntityType.MINECART) {
+		if (player.getVehicle().getType() != EntityType.MINECART) {
 			return;
 		}
-		remove((Minecart) p.getVehicle());
+		remove((Minecart) player.getVehicle());
 	}
 
 	public void remove(Minecart minecart) {

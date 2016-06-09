@@ -15,20 +15,20 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import co.sblock.machines.type.Alchemiter;
 import co.sblock.machines.type.Machine;
 
-import net.minecraft.server.v1_9_R2.ChatComponentText;
-import net.minecraft.server.v1_9_R2.Container;
-import net.minecraft.server.v1_9_R2.ContainerMerchant;
-import net.minecraft.server.v1_9_R2.EntityHuman;
-import net.minecraft.server.v1_9_R2.EntityPlayer;
-import net.minecraft.server.v1_9_R2.EntityVillager;
-import net.minecraft.server.v1_9_R2.IChatBaseComponent;
-import net.minecraft.server.v1_9_R2.ItemStack;
-import net.minecraft.server.v1_9_R2.MerchantRecipe;
-import net.minecraft.server.v1_9_R2.MerchantRecipeList;
-import net.minecraft.server.v1_9_R2.PacketPlayOutOpenWindow;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_10_R1.ChatComponentText;
+import net.minecraft.server.v1_10_R1.Container;
+import net.minecraft.server.v1_10_R1.ContainerMerchant;
+import net.minecraft.server.v1_10_R1.EntityHuman;
+import net.minecraft.server.v1_10_R1.EntityPlayer;
+import net.minecraft.server.v1_10_R1.EntityVillager;
+import net.minecraft.server.v1_10_R1.IChatBaseComponent;
+import net.minecraft.server.v1_10_R1.ItemStack;
+import net.minecraft.server.v1_10_R1.MerchantRecipe;
+import net.minecraft.server.v1_10_R1.MerchantRecipeList;
+import net.minecraft.server.v1_10_R1.PacketPlayOutOpenWindow;
+import net.minecraft.server.v1_10_R1.World;
 
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 
 /**
  * brb going insane because of NMS

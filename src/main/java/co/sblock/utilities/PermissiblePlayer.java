@@ -1481,4 +1481,14 @@ public class PermissiblePlayer implements Player {
 		player.setSilent(arg0);
 	}
 
+	@Override
+	public boolean hasGravity() {
+		return player.hasGravity();
+	}
+
+	@Override
+	public void setGravity(boolean gravity) {
+		player.setGravity(gravity);
+	}
+
 }

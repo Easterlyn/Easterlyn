@@ -16,9 +16,9 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_10_R1.NBTTagCompound;
 
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
 
 /**
  * A modified version of vanilla's raw message creation.
@@ -171,7 +171,7 @@ public class JSONUtil {
 	}
 
 	public static TextComponent getItemComponent(ItemStack item) {
-		net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_10_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 		String name = null;
 		if (nmsStack.getTag() != null && nmsStack.getTag().hasKeyOfType("display", 10)) {
 			NBTTagCompound nbttagcompound = nmsStack.getTag().getCompound("display");
@@ -202,11 +202,11 @@ public class JSONUtil {
 		return getItemText(CraftItemStack.asNMSCopy(item));
 	}
 
-	private static TextComponent getItemText(net.minecraft.server.v1_9_R2.ItemStack item) {
+	private static TextComponent getItemText(net.minecraft.server.v1_10_R1.ItemStack item) {
 		return new TextComponent(item.save(new NBTTagCompound()).toString());
 	}
 
-	private static HoverEvent getItemHover(net.minecraft.server.v1_9_R2.ItemStack item) {
+	private static HoverEvent getItemHover(net.minecraft.server.v1_10_R1.ItemStack item) {
 		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { getItemText(item) });
 	}
 }
