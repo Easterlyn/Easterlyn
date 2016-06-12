@@ -216,7 +216,7 @@ public class AsyncChatListener extends SblockListener {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 						String.format("mute %s 5m", player.getName()));
 				discord.postReport("Automatically muted " + player.getName()
-						+ "for spamming, violation level " + sender.getChatViolationLevel());
+						+ " for spamming, violation level " + sender.getChatViolationLevel());
 				event.setCancelled(true);
 				return;
 			}
