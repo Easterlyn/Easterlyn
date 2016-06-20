@@ -1,5 +1,14 @@
 package co.sblock.machines.type;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.machines.Machines;
+import co.sblock.machines.type.computer.Program;
+import co.sblock.machines.type.computer.Programs;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.users.User;
+import co.sblock.utilities.InventoryUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -16,15 +25,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.machines.Machines;
-import co.sblock.machines.type.computer.Program;
-import co.sblock.machines.type.computer.Programs;
-import co.sblock.machines.utilities.Shape;
-import co.sblock.users.User;
-import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -97,7 +97,6 @@ public class Computer extends Machine implements InventoryHolder {
 			if (program != null) {
 				event.getPlayer().sendMessage(Language.getColor("good") + "Installed "
 						+ event.getItem().getItemMeta().getDisplayName() + Language.getColor("good") + "!");
-				// TODO 1.9
 				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 					InventoryUtils.decrementHeldItem(event, 1);
 				}

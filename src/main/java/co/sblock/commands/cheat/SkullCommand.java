@@ -2,13 +2,13 @@ package co.sblock.commands.cheat;
 
 import java.util.List;
 
+import co.sblock.Sblock;
+import co.sblock.commands.SblockCommandAlias;
+
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import co.sblock.Sblock;
-import co.sblock.commands.SblockCommandAlias;
 
 /**
  * SblockCommandAlias for spawning or changing a skull to a particular owner.
@@ -20,6 +20,7 @@ public class SkullCommand extends SblockCommandAlias {
 	public SkullCommand(Sblock plugin) {
 		super(plugin, "skull", "lore");
 		this.setAliases("head");
+		this.setPermissionLevel("felt");
 		this.setUsage("/skull <player>");
 	}
 
@@ -29,6 +30,12 @@ public class SkullCommand extends SblockCommandAlias {
 			sender.sendMessage("Console support not offered at this time.");
 			return true;
 		}
+
+		if (this.getPermission() != null && !sender.hasPermission(this.getPermission())) {
+			sender.sendMessage(this.getPermissionMessage());
+			return true;
+		}
+
 		if (args.length == 0) {
 			return false;
 		}
@@ -45,7 +52,7 @@ public class SkullCommand extends SblockCommandAlias {
 			}
 		}
 		getCommand().execute(sender, label, newArgs);
-		// This being a SblockCommand, it will handle its own permissions and usage when execute fails.
+		// This being a SblockCommand, it will handle its own usage when execute fails.
 		return true;
 	}
 

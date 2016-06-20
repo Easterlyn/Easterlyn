@@ -3,16 +3,16 @@ package co.sblock.commands.info;
 import java.util.List;
 import java.util.Map.Entry;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.commands.SblockCommand;
+
+import com.google.common.collect.ImmutableList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
-
-import com.google.common.collect.ImmutableList;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.commands.SblockCommand;
 
 /**
  * SblockCommand for printing out information about a permission.
@@ -33,18 +33,28 @@ public class PermissionInformationCommand extends SblockCommand {
 		if (args.length < 1) {
 			return false;
 		}
-		Permission permission = Bukkit.getPluginManager().getPermission(args[0]);
-		if (permission == null) {
-			sender.sendMessage(Language.getColor("bad") + args[0] + " is not a valid permission.");
-			return true;
-		}
 		if (args.length > 1) {
+			if (args[1].equals("-find")) {
+				for (Permission perm : getPlugin().getServer().getPluginManager().getPermissions()) {
+					if (perm.getName().equals(args[0]) || perm.getChildren().keySet().contains(args[0])) {
+						sender.sendMessage(args[0] + " is influenced by " + perm.getName());
+					}
+				}
+				sender.sendMessage("Permission search complete.");
+				return true;
+			}
 			List<Player> players = Bukkit.matchPlayer(args[1]);
 			if (players.isEmpty()) {
 				sender.sendMessage(Language.getColor("bad") + "No matching players found for " + args[1]);
+				return true;
 			}
 			sender.sendMessage(Language.getColor("neutral") + args[0] + " is "
-					+ players.get(0).hasPermission(permission) + " for " + players.get(0).getName());
+					+ players.get(0).hasPermission(args[0]) + " for " + players.get(0).getName());
+			return true;
+		}
+		Permission permission = Bukkit.getPluginManager().getPermission(args[0]);
+		if (permission == null) {
+			sender.sendMessage(Language.getColor("bad") + args[0] + " is not a valid permission.");
 			return true;
 		}
 		sender.sendMessage(Language.getColor("emphasis.neutral") + "Permission: " + Language.getColor("neutral") + permission.getName());

@@ -62,7 +62,7 @@ public class LightSource {
 			}
 		}
 
-		// TODO 1.9
+		// TODO 1.10
 //		PacketPlayOutMapChunkBulk packet = new PacketPlayOutMapChunkBulk(chunks);
 //
 //		for (Player player : l.getWorld().getPlayers()) {

@@ -17,32 +17,6 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.Validate;
-
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.PluginIdentifiableCommand;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.FurnaceRecipe;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import org.reflections.Reflections;
-
-import com.google.common.collect.ImmutableList;
-
-import com.mojang.authlib.GameProfile;
-
 import co.sblock.captcha.Captcha;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Language;
@@ -69,6 +43,32 @@ import co.sblock.module.Dependency;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
 import co.sblock.utilities.TextUtils;
+
+import com.google.common.collect.ImmutableList;
+
+import com.mojang.authlib.GameProfile;
+
+import org.apache.commons.lang3.Validate;
+
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.material.Dye;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import org.reflections.Reflections;
 
 import net.md_5.bungee.api.ChatColor;
 

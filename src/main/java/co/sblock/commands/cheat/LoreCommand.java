@@ -3,6 +3,12 @@ package co.sblock.commands.cheat;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.commands.SblockCommand;
+
+import com.google.common.collect.ImmutableList;
+
 import org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.Bukkit;
@@ -13,12 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import com.google.common.collect.ImmutableList;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.commands.SblockCommand;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -41,7 +41,7 @@ public class LoreCommand extends SblockCommand {
 				+ "/lore delete owner|author|title|name|<number>: Reset a single element.\n"
 				+ "/lore clearmeta: Wipe all meta. Includes enchantments and such.\n"
 				+ "/lore add: Add a new line of lore.\n"
-				+ "/lore set|insert <number>: Set or insert a line at the specidified index.\n"
+				+ "/lore set|insert <number>: Set or insert a line at the specified index.\n"
 				+ "All /lore number parameters are 1-indexed.");
 		this.setPermissionLevel("felt");
 		// Don't forget to update delete tab completion if more pre-delete args are added.

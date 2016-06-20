@@ -1205,4 +1205,10 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setGravity(boolean gravity) {}
 
+	@Override
+	public void stopSound(Sound paramSound) {}
+
+	@Override
+	public void stopSound(String paramString) {}
+
 }

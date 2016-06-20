@@ -2,11 +2,11 @@ package co.sblock.commands.cheat;
 
 import java.util.List;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommandAlias;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * SblockCommandAlias for easy gamemode changing.
@@ -45,9 +45,11 @@ public class GamemodeCommand extends SblockCommandAlias {
 		case "adventure":
 		case "gma":
 			newArgs[0] = "adventure";
+			break;
 		case "3":
 		case "gmt":
 			newArgs[0] = "spectator";
+			break;
 		default:
 			newArgs[0] = null;
 			break;

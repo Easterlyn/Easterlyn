@@ -1491,4 +1491,14 @@ public class PermissiblePlayer implements Player {
 		player.setGravity(gravity);
 	}
 
+	@Override
+	public void stopSound(Sound paramSound) {
+		player.stopSound(paramSound);
+	}
+
+	@Override
+	public void stopSound(String paramString) {
+		player.stopSound(paramString);
+	}
+
 }
