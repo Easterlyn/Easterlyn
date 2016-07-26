@@ -96,13 +96,19 @@ public class RetentionModule extends DiscordModule {
 						lock.set(false);
 						return;
 					}
+
 					int firstDeletableIndex = list.size() - 1;
 					for (; firstDeletableIndex >= 0; --firstDeletableIndex) {
-						if (list.get(firstDeletableIndex).getTimestamp().isBefore(retention)) {
+						if (list.get(firstDeletableIndex).getTimestamp().isAfter(retention)) {
 							// Message not eligible for retention, increment back 
 							++firstDeletableIndex;
 							break;
 						}
+					}
+
+					// If all messages are deletable, index will be -1.
+					if (firstDeletableIndex < 0) {
+						firstDeletableIndex = 0;
 					}
 
 					// No eligible messages
