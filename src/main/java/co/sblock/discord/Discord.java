@@ -129,7 +129,7 @@ public class Discord extends Module {
 		}
 
 		try {
-			this.client = new ClientBuilder().withToken(token).withReconnects().build();
+			this.client = new ClientBuilder().withToken(token).build();
 		} catch (DiscordException e) {
 			e.printStackTrace();
 			this.disable();
