@@ -29,7 +29,6 @@ import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.abstraction.DiscordModule;
-import co.sblock.discord.listeners.DiscordDisconnectedListener;
 import co.sblock.discord.listeners.DiscordMessageReceivedListener;
 import co.sblock.discord.listeners.DiscordReadyListener;
 import co.sblock.module.Module;
@@ -130,7 +129,7 @@ public class Discord extends Module {
 		}
 
 		try {
-			this.client = new ClientBuilder().withToken(token).build();
+			this.client = new ClientBuilder().withToken(token).withReconnects().build();
 		} catch (DiscordException e) {
 			e.printStackTrace();
 			this.disable();
@@ -139,7 +138,6 @@ public class Discord extends Module {
 
 		EventDispatcher dispatcher = this.client.getDispatcher();
 		dispatcher.registerListener(new DiscordReadyListener(this));
-		dispatcher.registerListener(new DiscordDisconnectedListener(this));
 		dispatcher.registerListener(new DiscordMessageReceivedListener(this));
 
 		new Thread(new Runnable() {
@@ -298,7 +296,12 @@ public class Discord extends Module {
 				startQueueDrain();
 
 				for (DiscordModule module : modules.values()) {
-					module.doHeartbeat();
+					try {
+						module.doHeartbeat();
+					} catch (Exception e) {
+						// Catch any exception so everything else doesn't break
+						e.printStackTrace();
+					}
 				}
 			}
 		}.runTaskTimerAsynchronously(getPlugin(), 100L, 6000L); // 5 minutes between checks

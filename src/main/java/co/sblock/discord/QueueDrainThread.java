@@ -19,6 +19,8 @@ public class QueueDrainThread extends Thread {
 	private final Queue<DiscordCallable> queue;
 	private final long delay;
 
+	private long lastSuccess = System.currentTimeMillis();
+
 	public QueueDrainThread(Discord discord, long delay, String threadName) {
 		super(threadName);
 		this.discord = discord;
@@ -51,15 +53,11 @@ public class QueueDrainThread extends Thread {
 			}
 
 			if (!discord.getClient().isReady()) {
-				discord.getLogger().warning("Discord client is not ready, but the module claims to be.");
-				discord.setReady(false);
-				try {
-					discord.getClient().login();
-				} catch (DiscordException e) {
-					discord.getLogger().severe("Error reconnecting Discord bot:");
-					e.printStackTrace();
+				if (lastSuccess - System.currentTimeMillis() > 60000) {
+					// Bot has been offline for a full minute and reconnection has failed.
 					break;
 				}
+
 				try {
 					Thread.sleep(5000L);
 				} catch (InterruptedException e) {
@@ -67,6 +65,9 @@ public class QueueDrainThread extends Thread {
 				}
 				continue;
 			}
+
+			// Bot is connected and ready, we're good, even if an error is thrown by a call.
+			lastSuccess = System.currentTimeMillis();
 
 			DiscordCallable callable = queue.remove();
 			try {
@@ -78,7 +79,8 @@ public class QueueDrainThread extends Thread {
 				} catch (InterruptedException ie) {
 					break;
 				}
-				if (callable.retryOnException()) {
+				if (e.getErrorMessage().startsWith("502 error") && e.getErrorMessage().contains("CloudFlare")
+						|| callable.retryOnException()) {
 					/*
 					 * Rather than skip removal in this case to preserve order, we re-add the
 					 * DiscordCallable. This does ruin order in the case of messages sent, however,
