@@ -38,7 +38,7 @@ public class RetentionModule extends DiscordModule {
 
 	private class RetentionData {
 
-		// Repopulate channels hourly just in case lockDeletion failed.
+		// Repopulate channels hourly just in case deletion failed.
 		private static final long REPOPULATE_AFTER = 3600000;
 
 		private final AtomicBoolean lockDeletion, lockPopulation;
@@ -222,7 +222,7 @@ public class RetentionModule extends DiscordModule {
 	}
 
 	/**
-	 * Queue population and lockDeletion for a channel.
+	 * Queue population and deletion for a channel.
 	 * 
 	 * @param channel the IChannel to do retention for
 	 * @param duration the duration in seconds

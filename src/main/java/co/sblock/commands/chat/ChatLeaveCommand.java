@@ -3,18 +3,18 @@ package co.sblock.commands.chat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
 import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.Users;
+
+import com.google.common.collect.ImmutableList;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 /**
  * Command for leaving a chat channel.
@@ -43,7 +43,7 @@ public class ChatLeaveCommand extends SblockCommand {
 			return false;
 		}
 		if (manager.getChannel(args[0]) instanceof RegionChannel) {
-			sender.sendMessage(getLang().getValue("chat.error.globalLeave"));
+			sender.sendMessage(getLang().getValue("chat.error.globalQuit"));
 			return true;
 		}
 		users.getUser(((Player) sender).getUniqueId()).removeListening(args[0]);
