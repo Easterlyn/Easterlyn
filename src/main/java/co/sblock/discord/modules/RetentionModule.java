@@ -1,6 +1,7 @@
 package co.sblock.discord.modules;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +20,7 @@ import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.impl.obj.Channel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
@@ -36,10 +38,10 @@ public class RetentionModule extends DiscordModule {
 
 	private class RetentionData {
 
-		// Repopulate channels hourly just in case deletion failed.
+		// Repopulate channels hourly just in case lockDeletion failed.
 		private static final long REPOPULATE_AFTER = 3600000;
 
-		private final AtomicBoolean lock, populated;
+		private final AtomicBoolean lockDeletion, lockPopulation;
 		@Getter private final Channel channel;
 
 		private long nextPopulate;
@@ -47,61 +49,64 @@ public class RetentionModule extends DiscordModule {
 		public RetentionData(Channel channel) {
 			this.channel = channel;
 			this.channel.getMessages().setCacheCapacity(MessageList.UNLIMITED_CAPACITY);
-			this.lock = new AtomicBoolean();
-			this.populated = new AtomicBoolean();
+			this.lockDeletion = new AtomicBoolean();
+			this.lockPopulation = new AtomicBoolean();
 			this.nextPopulate = System.currentTimeMillis() + REPOPULATE_AFTER;
 		}
 
 		public void doRetention(long retentionDuration) {
-			synchronized (lock) {
-				if (lock.get()) {
+			synchronized (lockDeletion) {
+				if (lockDeletion.get() && lockPopulation.get()) {
 					return;
 				}
-				lock.set(true);
-				if (!populated.get() || nextPopulate < System.currentTimeMillis()) {
-					populated.set(true);
+
+				// Data populated?
+				if (!lockPopulation.get() || nextPopulate < System.currentTimeMillis()) {
+					lockPopulation.set(true);
 					nextPopulate = System.currentTimeMillis() + REPOPULATE_AFTER;
-					queuePopulation();
+					queuePopulation(retentionDuration);
 					return;
 				}
+
+				// If populated, attempt to delete.
 				queueDeletion(retentionDuration);
 			}
 		}
 
-		private void queuePopulation() {
+		private void queuePopulation(long retentionDuration) {
 			getDiscord().queue(new DiscordCallable(CallPriority.LOWEST) {
 				@Override
 				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 					try {
 						final int startSize = channel.getMessages().size();
 						if (channel.getMessages().load(100)) {
+
+							// Delete as soon as some messages are loaded, no need to wait.
+							queueDeletion(retentionDuration);
+
 							/*
-							 * If under 100 messages were added, stop checking. This can cause
-							 * issues with slow responses, but we'll be re-checking hourly.
+							 * If under 100 messages were added, stop checking. This should not be
+							 * affected by deletion, as it all runs on the same thread.
 							 */
 							if (startSize + 100 > channel.getMessages().size()) {
-								lock.set(false);
 								return;
 							}
 
-							queuePopulation();
-						} else {
-							lock.set(false);
+							queuePopulation(retentionDuration);
 						}
 
-						// Additional rate limiting
-						Thread.sleep(1500);
+						// Additional rate limiting prevention
+						Thread.sleep(2000);
+
 					} catch (RateLimitException e) {
 						// Re-throw rate limit exceptions, callable will be re-queued
 						throw e;
 					} catch (InterruptedException e) {
 						e.printStackTrace();
-						populated.set(false);
-						lock.set(false);
+						lockPopulation.set(false);
 					} catch (Exception e) {
 						// Catch and re-throw all other exceptions to ensure that lock does not get stuck
-						populated.set(false);
-						lock.set(false);
+						lockPopulation.set(false);
 						throw e;
 					}
 				}
@@ -109,59 +114,63 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		private void queueDeletion(long retentionDuration) {
+			if (this.lockDeletion.get()) {
+				return;
+			}
+
+			this.lockDeletion.set(true);
+
 			getDiscord().queue(new DiscordCallable(CallPriority.LOW, 1) {
 				@Override
 				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 					LocalDateTime retention = LocalDateTime.now().minusSeconds(retentionDuration);
 					MessageList list = channel.getMessages();
 					if (list.isEmpty()) {
-						lock.set(false);
+						lockDeletion.set(false);
 						return;
 					}
 
-					// TODO: Don't delete pinned messages
+					final ArrayList<IMessage> messages = new ArrayList<>();
 
-					int firstDeletableIndex = list.size() - 1;
-					final int maxFirstIndex = Math.max(0, list.size() - 101);
-					for (; firstDeletableIndex >= maxFirstIndex; --firstDeletableIndex) {
-						if (list.get(firstDeletableIndex).getTimestamp().isAfter(retention)) {
-							// Message not eligible for retention, increment back 
-							++firstDeletableIndex;
+					for (int i = list.size() - 1; messages.size() < 100 && i >= 0; --i) {
+						IMessage message = list.get(i);
+
+						if (message.getTimestamp().isAfter(retention)) {
+							// Message not eligible for retention, search complete.
 							break;
+						}
+
+						if (!message.isPinned()) {
+							// Don't delete pinned messages.
+							messages.add(message);
 						}
 					}
 
-					// If all messages are deletable, index will be -1.
-					if (firstDeletableIndex < 0) {
-						firstDeletableIndex = 0;
-					}
-
-					// No eligible messages
-					if (firstDeletableIndex >= list.size()) {
-						lock.set(false);
+					// No eligible messages.
+					if (messages.isEmpty()) {
+						lockDeletion.set(false);
 						return;
 					}
 
-					int endIndex = Math.min(firstDeletableIndex + 100, list.size());
-
-					if (firstDeletableIndex + 1 >= endIndex) {
-						list.delete(firstDeletableIndex);
-						lock.set(false);
+					// Bulk delete requires at least 2 messages.
+					if (messages.size() == 1) {
+						messages.get(0).delete();
+						lockDeletion.set(false);
 						return;
 					}
 
-					list.deleteFromRange(firstDeletableIndex, endIndex);
+					list.bulkDelete(messages);
 
-					// Additional sleep time to prevent rate limiting/missed messages
+					// Additional sleep time to prevent rate limiting.
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 
-					if (list.isEmpty() || !list.get(list.size() - 1).getTimestamp().isAfter(retention)) {
-						lock.set(false);
-					} else {
+					lockDeletion.set(false);
+
+					if (!list.isEmpty() && list.get(list.size() - 1).getTimestamp().isAfter(retention)) {
 						queueDeletion(retentionDuration);
 					}
 				}
@@ -213,7 +222,7 @@ public class RetentionModule extends DiscordModule {
 	}
 
 	/**
-	 * Queue population and deletion for a channel.
+	 * Queue population and lockDeletion for a channel.
 	 * 
 	 * @param channel the IChannel to do retention for
 	 * @param duration the duration in seconds
