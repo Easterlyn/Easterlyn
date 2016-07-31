@@ -3,11 +3,6 @@ package co.sblock.utilities;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Skeleton.SkeletonType;
-
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -19,6 +14,7 @@ import net.md_5.bungee.api.ChatColor;
 public class TextUtils {
 
 	public static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-z]{2,4}))((#|/)\\S*)?$", Pattern.CASE_INSENSITIVE);
+	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 
 	/**
 	 * Trims additional spaces, including ones surrounding chat colors.
@@ -53,30 +49,31 @@ public class TextUtils {
 	/**
 	 * Returns a more user-friendly version of standard Enum names.
 	 * 
+	 * @param e the Enum to prettify
+	 * 
+	 * @return the user-friendly version of the name
+	 */
+	public static String getFriendlyName(Enum<?> e) {
+		return getFriendlyName(e.name());
+	}
+
+	/**
+	 * Returns a more user-friendly version of standard Enum names.
+	 * 
 	 * @param name the name to prettify
 	 * 
 	 * @return the user-friendly version of the name
 	 */
 	public static String getFriendlyName(String name) {
-		StringBuilder sb = new StringBuilder();
-		name = name.toLowerCase();
-		Matcher m = Pattern.compile("(\\A|_)[a-z]").matcher(name);
-		int end = 0;
-		while (m.find()) {
-			sb.append(name.substring(end, m.start()));
-			sb.append(m.group().toUpperCase().replace("_", " "));
-			end = m.end();
+		Matcher matcher = ENUM_NAME_PATTERN.matcher(name);
+		StringBuilder builder = new StringBuilder();
+		while (matcher.find()) {
+			if (builder.length() > 0) {
+				builder.append(' ');
+			}
+			builder.append(matcher.group(1)).append(matcher.group(2).toLowerCase());
 		}
-		sb.append(name.substring(end));
-		return sb.toString();
-	}
-
-	public static String getFriendlyName(LivingEntity e) {
-		StringBuilder sb = new StringBuilder();
-		if (e.getType() == EntityType.SKELETON && ((Skeleton) e).getSkeletonType() == SkeletonType.WITHER) {
-			sb.append("Wither ");
-		}
-		return sb.append(getFriendlyName(e.getType().name().toLowerCase())).toString();
+		return builder.toString();
 	}
 
 	public static String stripEndPunctuation(String word) {

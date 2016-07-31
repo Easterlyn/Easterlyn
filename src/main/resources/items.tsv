@@ -79,6 +79,7 @@
 35	WOOL	13	Green Wool	wool
 35	WOOL	14	Red Wool	wool
 35	WOOL	15	Black Wool	wool
+36	PISTON_MOVING_PIECE	0	Piston Moving Piece	piston_moving_piece
 37	YELLOW_FLOWER	0	Dandelion	yellow_flower
 38	RED_ROSE	0	Poppy	red_flower
 38	RED_ROSE	1	Blue Orchid	red_flower

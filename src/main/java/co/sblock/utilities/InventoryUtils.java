@@ -14,6 +14,21 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.captcha.CruxiteDowel;
+import co.sblock.machines.Machines;
+import co.sblock.machines.type.Machine;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.io.BaseEncoding;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,21 +60,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.util.io.BukkitObjectInputStream;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.io.BaseEncoding;
-
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-
-import co.sblock.Sblock;
-import co.sblock.captcha.Captcha;
-import co.sblock.captcha.CruxiteDowel;
-import co.sblock.machines.Machines;
-import co.sblock.machines.type.Machine;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -149,10 +149,10 @@ public class InventoryUtils {
 				if (line.isEmpty()) {
 					continue;
 				}
-				String[] column = line.split("\t");
-				String id = column[1] + ":" + column[2];
-				items.put(id, column[3]);
-				itemsReverse.put(column[3], id);
+				String[] row = line.split("\t");
+				String id = row[1] + ":" + row[2];
+				items.put(id, row[3]);
+				itemsReverse.put(row[3], id);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load items from items.tsv!", e);
@@ -185,7 +185,7 @@ public class InventoryUtils {
 		}
 		if (name == null) {
 			// Even special-cased materials should have an entry.
-			return "Unknown item. Please report this!";
+			return TextUtils.getFriendlyName(material);
 		}
 		if (material == Material.POTION || material == Material.SPLASH_POTION || material == Material.LINGERING_POTION
 				|| material == Material.TIPPED_ARROW) {
@@ -194,7 +194,7 @@ public class InventoryUtils {
 			}
 			ItemMeta meta = item.getItemMeta();
 			if (meta instanceof PotionMeta) {
-				return TextUtils.getFriendlyName(material.name()) + " of " + getPotionName((PotionMeta) meta);
+				return TextUtils.getFriendlyName(material) + " of " + getPotionName((PotionMeta) meta);
 			}
 			return name;
 		} else if (material == Material.MONSTER_EGG) {
@@ -224,7 +224,7 @@ public class InventoryUtils {
 			if (base.isExtended()) {
 				name.append("Extended ");
 			}
-			name.append(TextUtils.getFriendlyName(base.getType().name()));
+			name.append(TextUtils.getFriendlyName(base.getType()));
 			if (base.isUpgraded()) {
 				name.append(" II");
 			}
