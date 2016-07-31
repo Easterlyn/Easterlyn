@@ -64,7 +64,8 @@ public class RetentionModule extends DiscordModule {
 				if (!lockPopulation.get() || nextPopulate < System.currentTimeMillis()) {
 					lockPopulation.set(true);
 					nextPopulate = System.currentTimeMillis() + REPOPULATE_AFTER;
-					channel.getMessages().clear();
+					channel.getMessages().setCacheCapacity(0);
+					channel.getMessages().setCacheCapacity(MessageList.UNLIMITED_CAPACITY);
 					queuePopulation(retentionDuration);
 					return;
 				}
