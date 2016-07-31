@@ -38,8 +38,8 @@ public class RetentionModule extends DiscordModule {
 
 	private class RetentionData {
 
-		// Repopulate channels hourly just in case deletion failed.
-		private static final long REPOPULATE_AFTER = 3600000;
+		// Repopulate channels every 6 hours in case deletion failed.
+		private static final long REPOPULATE_AFTER = 21600000;
 
 		private final AtomicBoolean lockDeletion, lockPopulation;
 		@Getter private final Channel channel;
@@ -64,6 +64,7 @@ public class RetentionModule extends DiscordModule {
 				if (!lockPopulation.get() || nextPopulate < System.currentTimeMillis()) {
 					lockPopulation.set(true);
 					nextPopulate = System.currentTimeMillis() + REPOPULATE_AFTER;
+					channel.getMessages().clear();
 					queuePopulation(retentionDuration);
 					return;
 				}
