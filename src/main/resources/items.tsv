@@ -365,7 +365,7 @@
 206	END_BRICKS	0	End Bricks	end_bricks
 207	BEETROOT_BLOCK	0	Beetroot Block	beetroot_block
 208	GRASS_PATH	0	Grass Path	grass_path
-209	END_GATEWAY	0	End Gateway end_gateway
+209	END_GATEWAY	0	End Gateway	end_gateway
 210	COMMAND_REPEATING	0	Command Block (Repeating)	repeating_command_block
 211	COMMAND_CHAIN	0	Command Block (Chain)	chain_command_block
 212	FROSTED_ICE	0	Frosted Ice	frosted_ice
