@@ -32,6 +32,7 @@ import co.sblock.discord.abstraction.DiscordModule;
 import co.sblock.discord.listeners.DiscordMessageReceivedListener;
 import co.sblock.discord.listeners.DiscordReadyListener;
 import co.sblock.module.Module;
+import co.sblock.utilities.PermissiblePlayer;
 import co.sblock.utilities.PlayerLoader;
 import co.sblock.utilities.TextUtils;
 
@@ -41,8 +42,7 @@ import com.google.common.cache.LoadingCache;
 
 import org.apache.commons.lang3.Validate;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -543,19 +543,45 @@ public class Discord extends Module {
 		// Yes, yes, this is final now, shut up compiler.
 		final IUser iuser = user;
 
-		// The bot's really designed for a 1-guild setup. This_is_fine.jpg
-		IGuild guild = this.getClient().getGuilds().get(0);
-
-		IRole linkedRole = null;
-		if (this.getConfig().isSet("linkedRole." + guild.getID())) {
-			String roleID = this.getConfig().getString("linkedRole." + guild.getID());
-			linkedRole = guild.getRoleByID(roleID);
+		// Load a permissible player
+		Player loadedPlayer = PlayerLoader.getPlayer(getPlugin(), uuid);
+		if (loadedPlayer == null) {
+			return;
 		}
-		if (linkedRole != null) {
-			List<IRole> roles = iuser.getRolesForGuild(guild);
-			if (!roles.contains(linkedRole)) {
-				roles = new ArrayList<>(roles);
-				roles.add(linkedRole);
+		if (!loadedPlayer.isOnline() && !(loadedPlayer instanceof PermissiblePlayer)) {
+			loadedPlayer = new PermissiblePlayer(loadedPlayer);
+		}
+
+		// Finalize for callable
+		final Player player = loadedPlayer;
+
+		for (IGuild guild : this.getClient().getGuilds()) {
+			ConfigurationSection guildRoles = this.getConfig().getConfigurationSection("roles." + guild.getID());
+			if (guildRoles == null) {
+				continue;
+			}
+			final List<IRole> roles = new ArrayList<>();
+			for (String roleName : guildRoles.getKeys(false)) {
+				if (!player.hasPermission("sblock." + roleName)) {
+					continue;
+				}
+
+				String roleID = guildRoles.getString(roleName);
+				IRole role = guild.getRoleByID(roleID);
+				if (role == null) {
+					continue;
+				}
+				roles.add(role);
+			}
+
+			List<IRole> currentRoles = iuser.getRolesForGuild(guild);
+			if (!currentRoles.containsAll(roles)) {
+				for (IRole role : currentRoles) {
+					if (!roles.contains(role)) {
+						roles.add(role);
+					}
+				}
+	
 				IRole[] roleArray = roles.toArray(new IRole[roles.size()]);
 				this.queue(new DiscordCallable() {
 					@Override
@@ -564,26 +590,23 @@ public class Discord extends Module {
 					}
 				});
 			}
-		}
 
-		if (!this.getConfig().getBoolean("linkName")) {
-			return;
-		}
-
-		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-
-		if (player != null && player.getName() != null) {
-			Optional<String> name = iuser.getNicknameForGuild(guild);
-			if (!name.isPresent() || !player.getName().equals(name.get())) {
-				this.queue(new DiscordCallable(CallPriority.LOW) {
-					@Override
-					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-						guild.setUserNickname(iuser, player.getName());
-					}
-				});
+			if (!this.getConfig().getBoolean("linkName")) {
+				continue;
+			}
+	
+			if (player.getName() != null) {
+				Optional<String> name = iuser.getNicknameForGuild(guild);
+				if (!name.isPresent() || !player.getName().equals(name.get())) {
+					this.queue(new DiscordCallable(CallPriority.LOW) {
+						@Override
+						public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+							guild.setUserNickname(iuser, player.getName());
+						}
+					});
+				}
 			}
 		}
-		
 	}
 
 	public DiscordPlayer getDiscordPlayerFor(IUser user) {
