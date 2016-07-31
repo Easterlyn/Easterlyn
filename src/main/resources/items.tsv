@@ -369,6 +369,11 @@
 210	COMMAND_REPEATING	0	Command Block (Repeating)	repeating_command_block
 211	COMMAND_CHAIN	0	Command Block (Chain)	chain_command_block
 212	FROSTED_ICE	0	Frosted Ice	frosted_ice
+213	MAGMA	0	Magma Block	magma
+214	NETHER_WART_BLOCK	0	Nether Wart Block	nether_wart_block
+215	RED_NETHER_BRICK	0	Red Nether Brick	red_nether_brick
+216	BONE_BLOCK	0	Bone Block	bone_block
+217	STRUCTURE_VOID	0	Structure Void	structure_void
 255	STRUCTURE_BLOCK	0	Structure Block	structure_block
 256	IRON_SPADE	0	Iron Shovel	iron_shovel
 257	IRON_PICKAXE	0	Iron Pickaxe	iron_pickaxe
