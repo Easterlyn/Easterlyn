@@ -326,6 +326,11 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public PotionEffect getPotionEffect(PotionEffectType type) {
+		return player.getPotionEffect(type);
+	}
+
+	@Override
 	public boolean isLeashed() {
 		return player.isLeashed();
 	}

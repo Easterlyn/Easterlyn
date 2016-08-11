@@ -276,6 +276,11 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
+	public PotionEffect getPotionEffect(PotionEffectType type) {
+		return null;
+	}
+
+	@Override
 	public boolean isLeashed() {
 		return false;
 	}
