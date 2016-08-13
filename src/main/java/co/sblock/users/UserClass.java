@@ -68,6 +68,11 @@ public class UserClass {
 		return 7 - activity;
 	}
 
+	@Override
+	public String toString() {
+		return this.name;
+	}
+
 	/**
 	 * Gets the UserClass.
 	 * 

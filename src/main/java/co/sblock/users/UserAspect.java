@@ -76,7 +76,7 @@ public class UserAspect {
 	 * @return the UserAspect
 	 */
 	public static UserAspect getAspect(String name) {
-		String lowname = name.toLowerCase();
+		String lowname = ChatColor.stripColor(name.toLowerCase());
 		if (REGISTRY.containsKey(lowname)) {
 			return REGISTRY.get(lowname);
 		}

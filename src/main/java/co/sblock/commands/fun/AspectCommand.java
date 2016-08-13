@@ -48,6 +48,7 @@ public class AspectCommand extends SblockCommand {
 				|| userAspect.getDisplayName().contains(String.valueOf(ChatColor.COLOR_CHAR))
 				|| userAspect.getColor() == null) {
 			sender.sendMessage(getLang().getValue("command.aspect.failure"));
+			return true;
 		}
 
 		User user = users.getUser(((Player) sender).getUniqueId());
