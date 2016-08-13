@@ -3,16 +3,18 @@ package co.sblock.commands.fun;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.users.User;
 import co.sblock.users.UserAspect;
 import co.sblock.users.Users;
+
+import com.google.common.collect.ImmutableList;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 /**
  * Donator perk command, classpect reselection on the fly.
@@ -39,15 +41,17 @@ public class AspectCommand extends SblockCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		UserAspect userAspect;
-		try {
-			userAspect = UserAspect.valueOf(args[0].toUpperCase());
-		} catch (IllegalArgumentException e) {
-			sender.sendMessage(getLang().getValue("command.general.invalidParameters").replace("{PARAMETER}", args[0]));
-			return true;
+
+		UserAspect userAspect = UserAspect.getAspect(ChatColor.translateAlternateColorCodes('&', args[0]));
+		if (userAspect == UserAspect.BREATH && !args[0].equalsIgnoreCase("breath")
+				|| userAspect.getDisplayName().length() < 2
+				|| userAspect.getDisplayName().contains(String.valueOf(ChatColor.COLOR_CHAR))
+				|| userAspect.getColor() == null) {
+			sender.sendMessage(getLang().getValue("command.aspect.failure"));
 		}
+
 		User user = users.getUser(((Player) sender).getUniqueId());
-		user.setUserAspect(userAspect.name());
+		user.setUserAspect(userAspect);
 		sender.sendMessage(getLang().getValue("command.aspect.success")
 				.replace("{ASPECT}", userAspect.getColor() + userAspect.getDisplayName()));
 		return true;
@@ -63,8 +67,8 @@ public class AspectCommand extends SblockCommand {
 		args[0] = args[0].toUpperCase();
 		ArrayList<String> matches = new ArrayList<>();
 		for (UserAspect userAspect : UserAspect.values()) {
-			if (userAspect.name().startsWith(args[0])) {
-				matches.add(userAspect.name());
+			if (StringUtil.startsWithIgnoreCase(userAspect.getDisplayName(), args[0])) {
+				matches.add(userAspect.getDisplayName());
 			}
 		}
 		return matches;

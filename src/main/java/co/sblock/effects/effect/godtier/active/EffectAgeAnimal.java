@@ -5,6 +5,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import co.sblock.Sblock;
+import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.BehaviorCooldown;
+import co.sblock.effects.effect.BehaviorGodtier;
+import co.sblock.effects.effect.Effect;
+import co.sblock.users.UserAspect;
+
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -12,13 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-
-import co.sblock.Sblock;
-import co.sblock.effects.effect.BehaviorActive;
-import co.sblock.effects.effect.BehaviorCooldown;
-import co.sblock.effects.effect.BehaviorGodtier;
-import co.sblock.effects.effect.Effect;
-import co.sblock.users.UserAspect;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -51,15 +51,10 @@ public class EffectAgeAnimal extends Effect implements BehaviorActive, BehaviorC
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		switch (aspect) {
-		case HEART:
+		if (aspect == UserAspect.HEART) {
 			list.add(aspect.getColor() + "Hearty Breakfast");
-			break;
-		case TIME:
+		} else if (aspect == UserAspect.TIME) {
 			list.add(aspect.getColor() + "Before You Know It");
-			break;
-		default:
-			break;
 		}
 		list.add(ChatColor.WHITE + "Speed up young animals' growth.");
 		list.add(ChatColor.GRAY + "Sneak and right click near baby animals.");

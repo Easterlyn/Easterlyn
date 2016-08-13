@@ -19,22 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
@@ -51,6 +35,22 @@ import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.utilities.PlayerLoader;
+
+import com.google.common.collect.ImmutableList;
+
+import org.apache.commons.lang3.StringUtils;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -173,10 +173,10 @@ public class User {
 	/**
 	 * Sets the User's UserClass.
 	 * 
-	 * @param userClassName the new UserClass
+	 * @param userClass the new UserClass
 	 */
-	public void setUserClass(String userClassName) {
-		yaml.set("classpect.class", UserClass.getClass(userClassName).getDisplayName());
+	public void setUserClass(UserClass userClass) {
+		yaml.set("classpect.class", userClass.toString());
 		yaml.set("progression.godtier.powers", null);
 	}
 
@@ -194,8 +194,8 @@ public class User {
 	 * 
 	 * @param userAspectName the new UserAspect
 	 */
-	public void setUserAspect(String userAspectName) {
-		yaml.set("classpect.aspect", UserAspect.getAspect(userAspectName).getDisplayName());
+	public void setUserAspect(UserAspect userAspect) {
+		yaml.set("classpect.aspect", userAspect.toString());
 		yaml.set("progression.godtier.powers", null);
 	}
 

@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.command.CommandSender;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.users.User;
 import co.sblock.users.UserAspect;
 import co.sblock.users.UserClass;
 import co.sblock.users.Users;
+
+import com.google.common.collect.ImmutableList;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.util.StringUtil;
 
 /**
  * SblockCommand for setting User data.
@@ -46,15 +47,15 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 		}
 		User user = users.getUser(uuid);
 		args[1] = args[1].toLowerCase();
-		if(args[1].equals("class"))
-			user.setUserClass(args[2]);
-		else if(args[1].equals("aspect"))
-			user.setUserAspect(args[2]);
-		else if(args[1].replaceAll("m(edium_?)?planet", "land").equals("land"))
+		if (args[1].equals("class")) {
+			user.setUserClass(UserClass.getClass(args[2]));
+		} else if (args[1].equals("aspect")) {
+			user.setUserAspect(UserAspect.getAspect(args[2]));
+		} else if (args[1].replaceAll("m(edium_?)?planet", "land").equals("land")) {
 			user.setMediumPlanet(args[2]);
-		else if(args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream"))
+		} else if (args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream")) {
 			user.setDreamPlanet(args[2]);
-		else if (args[1].equals("prevloc")) {
+		} else if (args[1].equals("prevloc")) {
 			user.setPreviousLocation(user.getPlayer().getLocation());
 		} else {
 			return false;
@@ -84,8 +85,8 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 		if (args[1].equals("class") && args.length == 3) {
 			args[2] = args[2].toUpperCase();
 			for (UserClass userclass : UserClass.values()) {
-				if (userclass.name().startsWith(args[2])) {
-					matches.add(userclass.name());
+				if (StringUtil.startsWithIgnoreCase(userclass.getDisplayName(), args[2])) {
+					matches.add(userclass.getDisplayName());
 				}
 			}
 			return matches;
@@ -93,8 +94,8 @@ public class SetPlayerCommand extends SblockAsynchronousCommand {
 		if (args[1].equals("aspect") && args.length == 3) {
 			args[2] = args[2].toUpperCase();
 			for (UserAspect aspect : UserAspect.values()) {
-				if (aspect.name().startsWith(args[2])) {
-					matches.add(aspect.name());
+				if (StringUtil.startsWithIgnoreCase(aspect.getDisplayName(), args[2])) {
+					matches.add(aspect.getDisplayName());
 				}
 			}
 			return matches;

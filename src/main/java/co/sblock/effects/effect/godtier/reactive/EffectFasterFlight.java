@@ -5,17 +5,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
-
 import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
+
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -38,12 +38,8 @@ public class EffectFasterFlight extends Effect implements BehaviorGodtier, Behav
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		switch (aspect) {
-		case BREATH:
+		if (aspect == UserAspect.BREATH) {
 			list.add(aspect.getColor() + "Heavenly Parasail");
-			break;
-		default:
-			break;
 		}
 		list.add(ChatColor.WHITE + "The winds are on your side.");
 		list.add(ChatColor.GRAY + "Fly faster.");

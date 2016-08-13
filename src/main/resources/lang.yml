@@ -331,10 +331,18 @@ command:
   aspect:
     description: 'Specify your aspect!'
     usage: '/aspect <ASPECT>'
+    failure: |
+      {COLOR:bad}For default aspects, use tab completion.
+      Custom aspects must start with a {COLOR:command}/color{COLOR:bad},
+      be at least 2 characters long, and contain no additional colors.
     success: '{COLOR:good}Aspect set to {ASPECT}'
   class:
     description: 'Specify your class!'
     usage: '/class <CLASS>'
+    failure: |
+      {COLOR:bad}For default classes, use tab completion.
+      Custom classes must start with a {COLOR:command}/color{COLOR:bad},
+      be at least 2 characters long, and contain no additional colors.
     success: '{COLOR:good}Class set to {COLOR:emphasis.good}{CLASS}'
 
 afk:

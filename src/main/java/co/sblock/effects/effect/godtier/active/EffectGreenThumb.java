@@ -5,6 +5,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import co.sblock.Sblock;
+import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.BehaviorGodtier;
+import co.sblock.effects.effect.Effect;
+import co.sblock.users.UserAspect;
+import co.sblock.utilities.BlockDrops;
+import co.sblock.utilities.InventoryUtils;
+
 import org.bukkit.CropState;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -23,14 +31,6 @@ import org.bukkit.material.CocoaPlant.CocoaPlantSize;
 import org.bukkit.material.Crops;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.NetherWarts;
-
-import co.sblock.Sblock;
-import co.sblock.effects.effect.BehaviorActive;
-import co.sblock.effects.effect.BehaviorGodtier;
-import co.sblock.effects.effect.Effect;
-import co.sblock.users.UserAspect;
-import co.sblock.utilities.BlockDrops;
-import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -53,12 +53,8 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		switch (aspect) {
-		case MIND:
+		if (aspect == UserAspect.LIFE) {
 			list.add(aspect.getColor() + "Harvest Goddess");
-			break;
-		default:
-			break;
 		}
 		list.add(ChatColor.WHITE + "Tending plants made easy.");
 		list.add(ChatColor.GRAY + "Right click crops to harvest and replant.");

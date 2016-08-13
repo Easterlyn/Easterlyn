@@ -5,15 +5,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockExpEvent;
-
 import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.BehaviorReactive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
+
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockExpEvent;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -36,12 +36,8 @@ public class EffectBonusBlockExperience extends Effect implements BehaviorReacti
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		switch (aspect) {
-		case MIND:
+		if (aspect == UserAspect.MIND) {
 			list.add(aspect.getColor() + "Inquiring Mind");
-			break;
-		default:
-			break;
 		}
 		list.add(ChatColor.WHITE + "Discover more.");
 		list.add(ChatColor.GRAY + "Gain bonus experience from blocks.");

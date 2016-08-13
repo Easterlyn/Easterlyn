@@ -1,5 +1,8 @@
 package co.sblock.users;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -9,23 +12,25 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author FireNG, Jikoo, tmathmeyer
  */
-public enum UserAspect {
-	BLOOD("Blood", ChatColor.DARK_RED),
-	BREATH("Breath", ChatColor.AQUA),
-	DOOM("Doom", ChatColor.DARK_GREEN),
-	HEART("Heart", ChatColor.LIGHT_PURPLE),
-	HOPE("Hope", ChatColor.GOLD),
-	LIFE("Life", ChatColor.GREEN),
-	LIGHT("Light", ChatColor.YELLOW),
-	LIPS("Lips", ChatColor.LIGHT_PURPLE),
-	MIND("Mind", ChatColor.DARK_AQUA),
-	PISS("Piss", ChatColor.YELLOW),
-	RAGE("Rage", ChatColor.DARK_PURPLE),
-	SPACE("Space", ChatColor.DARK_GRAY),
-	TEARS("Tears", ChatColor.AQUA),
-	TIME("Time", ChatColor.RED),
-	VOID("Void", ChatColor.DARK_BLUE),
-	DEFAULT("Default", ChatColor.WHITE);
+public class UserAspect {
+
+	private static final HashMap<String, UserAspect> REGISTRY = new HashMap<>();
+
+	public static final UserAspect BLOOD = addDefault("blood", new UserAspect("Blood", ChatColor.DARK_RED));
+	public static final UserAspect BREATH = addDefault("breath", new UserAspect("Breath", ChatColor.AQUA));
+	public static final UserAspect DOOM = addDefault("doom", new UserAspect("Doom", ChatColor.DARK_GREEN));
+	public static final UserAspect HEART = addDefault("heart", new UserAspect("Heart", ChatColor.LIGHT_PURPLE));
+	public static final UserAspect HOPE = addDefault("hope", new UserAspect("Hope", ChatColor.GOLD));
+	public static final UserAspect LIFE = addDefault("life", new UserAspect("Life", ChatColor.GREEN));
+	public static final UserAspect LIGHT = addDefault("light", new UserAspect("Light", ChatColor.YELLOW));
+	public static final UserAspect LIPS = addDefault("lips", new UserAspect("Lips", ChatColor.LIGHT_PURPLE));
+	public static final UserAspect MIND = addDefault("mind", new UserAspect("Mind", ChatColor.DARK_AQUA));
+	public static final UserAspect PISS = addDefault("piss", new UserAspect("Piss", ChatColor.YELLOW));
+	public static final UserAspect RAGE = addDefault("rage", new UserAspect("Rage", ChatColor.DARK_PURPLE));
+	public static final UserAspect SPACE = addDefault("space", new UserAspect("Space", ChatColor.DARK_GRAY));
+	public static final UserAspect TEARS = addDefault("tears", new UserAspect("Tears", ChatColor.AQUA));
+	public static final UserAspect TIME = addDefault("time", new UserAspect("Time", ChatColor.RED));
+	public static final UserAspect VOID = addDefault("void", new UserAspect("Void", ChatColor.DARK_BLUE));
 
 	private final String name;
 	private final ChatColor chatColor;
@@ -40,33 +45,57 @@ public enum UserAspect {
 	}
 
 	/**
-	 * Gets the display name of the PlayerAspect.
+	 * Gets the display name of the UserAspect.
 	 * 
-	 * @return The display name of this PlayerAspect.
+	 * @return The display name of this UserAspect.
 	 */
 	public String getDisplayName() {
 		return this.name;
 	}
 
 	/**
-	 * @return the color for this aspect
+	 * @return the color for this UserAspect
 	 */
 	public ChatColor getColor() {
 		return this.chatColor;
 	}
 
+	/*
+	 * Returns a String representation of this UserAspect.
+	 */
+	@Override
+	public String toString() {
+		return this.chatColor + this.name;
+	}
+
 	/**
-	 * Gets the PlayerAspect.
+	 * Gets the UserAspect.
 	 * 
 	 * @param name the name of an aspect
 	 * 
-	 * @return the PlayerAspect
+	 * @return the UserAspect
 	 */
 	public static UserAspect getAspect(String name) {
-		try {
-			return UserAspect.valueOf(name.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			return UserAspect.BREATH;
+		String lowname = name.toLowerCase();
+		if (REGISTRY.containsKey(lowname)) {
+			return REGISTRY.get(lowname);
 		}
+		return UserAspect.fromString(name);
+	}
+
+	private static UserAspect fromString(String aspect) {
+		if (aspect.length() > 2 && aspect.charAt(0) == ChatColor.COLOR_CHAR) {
+			return new UserAspect(aspect.substring(2), ChatColor.getByChar(aspect.charAt(1)));
+		}
+		return BREATH;
+	}
+
+	private static UserAspect addDefault(String ID, UserAspect aspect) {
+		REGISTRY.put(ID, aspect);
+		return aspect;
+	}
+
+	public static Collection<UserAspect> values() {
+		return REGISTRY.values();
 	}
 }

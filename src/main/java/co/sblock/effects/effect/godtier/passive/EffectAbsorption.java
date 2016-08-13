@@ -5,11 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorCooldown;
 import co.sblock.effects.effect.BehaviorGodtier;
@@ -17,6 +12,11 @@ import co.sblock.effects.effect.BehaviorPassive;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
 import co.sblock.utilities.Potions;
+
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -52,15 +52,10 @@ public class EffectAbsorption extends Effect implements BehaviorCooldown, Behavi
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		switch (aspect) {
-		case HEART:
+		if (aspect == UserAspect.HEART) {
 			list.add(aspect.getColor() + "Hale and Hearty");
-			break;
-		case TIME:
+		} else if (aspect == UserAspect.TIME) {
 			list.add(aspect.getColor() + "Futureproof");
-			break;
-		default:
-			break;
 		}
 		list.add(ChatColor.WHITE + "An apple a day keeps the doctor away.");
 		list.add(ChatColor.GRAY + "Gain extra life.");

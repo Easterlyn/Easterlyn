@@ -5,17 +5,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-
 import co.sblock.Sblock;
 import co.sblock.effects.effect.BehaviorActive;
 import co.sblock.effects.effect.BehaviorGodtier;
 import co.sblock.effects.effect.Effect;
 import co.sblock.users.UserAspect;
+
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -50,12 +50,8 @@ public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGod
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		switch (aspect) {
-		case LIGHT:
+		if (aspect == UserAspect.LIGHT) {
 			list.add(aspect.getColor() + "Fortuna");
-			break;
-		default:
-			break;
 		}
 		list.add(ChatColor.WHITE + "Fortune just isn't enough.");
 		list.add(ChatColor.GRAY + "+1 Fortune");

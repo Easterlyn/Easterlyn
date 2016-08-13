@@ -1,33 +1,37 @@
 package co.sblock.users;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 /**
  * Represents canon Classes, including those of mythological roles.
- * <p>
- * Mythological roles cannot be obtained by players without usage of admin commands.
  * 
  * @author FireNG, Jikoo
  */
-public enum UserClass {
-	BARD("Bard", 3),
-	DOUCHE("Douche", 4),
-	GENT("Gent", 3),
-	HEIR("Heir", 3),
-	KNIGHT("Knight", 5),
-	LORD("Lord", 7),
-	MAGE("Mage", 4),
-	MAID("Maid", 4),
-	MUSE("Muse", 0),
-	NERD("Nerd", 0),
-	ORACLE("Oracle", 4),
-	PAGE("Page", 2),
-	PRINCE("Prince", 6),
-	ROGUE("Rogue", 2),
-	SEER("Seer", 1),
-	SYLPH("Sylph", 1),
-	THIEF("Thief", 5),
-	WASTE("Waste", 3),
-	WITCH("Witch", 6),
-	DEFAULT("Default", 4);
+public class UserClass {
+
+	private static final HashMap<String, UserClass> REGISTRY = new HashMap<>();
+
+	static {
+		REGISTRY.put("bard", new UserClass("Bard", 3));
+		REGISTRY.put("douche", new UserClass("Douche", 4));
+		REGISTRY.put("gent", new UserClass("Gent", 3));
+		REGISTRY.put("heir", new UserClass("Heir", 3));
+		REGISTRY.put("knight", new UserClass("Knight", 5));
+		REGISTRY.put("lord", new UserClass("Lord", 7));
+		REGISTRY.put("mage", new UserClass("Mage", 4));
+		REGISTRY.put("maid", new UserClass("Maid", 4));
+		REGISTRY.put("muse", new UserClass("Muse", 0));
+		REGISTRY.put("nerd", new UserClass("Nerd", 0));
+		REGISTRY.put("page", new UserClass("Page", 2));
+		REGISTRY.put("prince", new UserClass("Prince", 6));
+		REGISTRY.put("rogue", new UserClass("Rogue", 2));
+		REGISTRY.put("seer", new UserClass("Seer", 1));
+		REGISTRY.put("sylph", new UserClass("Sylph", 1));
+		REGISTRY.put("thief", new UserClass("Thief", 5));
+		REGISTRY.put("waste", new UserClass("Waste", 3));
+		REGISTRY.put("witch", new UserClass("Witch", 6));
+	}
 
 	private final String name;
 	private final int activity;
@@ -72,10 +76,21 @@ public enum UserClass {
 	 * @return the UserClass
 	 */
 	public static UserClass getClass(String name) {
-		try {
-			return UserClass.valueOf(name.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			return UserClass.HEIR;
+		String lowName = name.toLowerCase();
+		if (REGISTRY.containsKey(lowName)) {
+			return REGISTRY.get(lowName);
 		}
+
+		return new UserClass(name, 4);
 	}
+
+	/**
+	 * Get a Collection of all registered UserClasses.
+	 * 
+	 * @return the UserClasses
+	 */
+	public static Collection<UserClass> values() {
+		return REGISTRY.values();
+	}
+
 }

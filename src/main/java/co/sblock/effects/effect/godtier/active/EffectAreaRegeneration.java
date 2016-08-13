@@ -5,6 +5,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import co.sblock.Sblock;
+import co.sblock.effects.effect.BehaviorActive;
+import co.sblock.effects.effect.BehaviorCooldown;
+import co.sblock.effects.effect.BehaviorGodtier;
+import co.sblock.effects.effect.Effect;
+import co.sblock.users.UserAspect;
+import co.sblock.utilities.Potions;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,14 +21,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import co.sblock.Sblock;
-import co.sblock.effects.effect.BehaviorActive;
-import co.sblock.effects.effect.BehaviorCooldown;
-import co.sblock.effects.effect.BehaviorGodtier;
-import co.sblock.effects.effect.Effect;
-import co.sblock.users.UserAspect;
-import co.sblock.utilities.Potions;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -53,12 +53,8 @@ public class EffectAreaRegeneration extends Effect implements BehaviorActive, Be
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		switch (aspect) {
-		case HEART:
+		if (aspect == UserAspect.HEART) {
 			list.add(aspect.getColor() + "Take Heart");
-			break;
-		default:
-			break;
 		}
 		list.add(ChatColor.WHITE + "Fortify your allies.");
 		list.add(ChatColor.GRAY + "Sneak and right click to heal nearby entities.");
