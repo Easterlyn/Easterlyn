@@ -250,7 +250,7 @@
 148	IRON_PLATE	0	Heavy Weighted Pressure Plate	heavy_weighted_pressure_plate
 149	REDSTONE_COMPARATOR_OFF	0	Redstone Comparator	unpowered_comparator
 150	REDSTONE_COMPARATOR_ON	0	Redstone Comparator	powered_comparator
-151	DAYLIGHT_DETECTOR	0	Daylight Sensor	daylight_detector
+151	DAYLIGHT_DETECTOR	0	Daylight Detector	daylight_detector
 152	REDSTONE_BLOCK	0	Redstone Block	redstone_block
 153	QUARTZ_ORE	0	Nether Quartz Ore	quartz_ore
 154	HOPPER	0	Hopper	hopper
