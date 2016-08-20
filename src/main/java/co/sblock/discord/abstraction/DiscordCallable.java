@@ -12,6 +12,7 @@ import sx.blah.discord.util.RateLimitException;
 public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 
 	private final CallPriority priority;
+	private final long queueTime;
 	private int retries;
 
 	public DiscordCallable() {
@@ -24,6 +25,7 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 
 	public DiscordCallable(CallPriority priority, int retries) {
 		this.priority = priority;
+		this.queueTime = System.currentTimeMillis();
 		this.retries = retries;
 	}
 
@@ -35,12 +37,24 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 
 	@Override
 	public int compareTo(DiscordCallable o) {
-		if (priority.ordinal() < o.priority.ordinal()) {
+		// Lower priority, return 1.
+		if (this.priority.ordinal() < o.priority.ordinal()) {
 			return 1;
 		}
-		if (priority.ordinal() == o.priority.ordinal()) {
-			return 0;
+		// Same priority, return based on queue time.
+		if (this.priority.ordinal() == o.priority.ordinal()) {
+			// Later queue time, return 1.
+			if (this.queueTime > o.queueTime) {
+				return 1;
+			}
+			// Same queue time, same priority.
+			if (this.queueTime == o.queueTime) {
+				return 0;
+			}
+			// Earlier queue time.
+			return -1;
 		}
+		// Higher queue priority.
 		return -1;
 	}
 
