@@ -129,6 +129,7 @@ public class MinecraftModule extends DiscordModule {
 				} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 					// Trivial
 				}
+				return;
 			}
 		}
 		builder.setSender(users.getUser(player.getUniqueId()))
