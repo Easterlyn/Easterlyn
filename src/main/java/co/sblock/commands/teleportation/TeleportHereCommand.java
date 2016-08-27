@@ -2,13 +2,13 @@ package co.sblock.commands.teleportation;
 
 import java.util.List;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import co.sblock.Sblock;
+import co.sblock.commands.SblockCommandAlias;
 
 import com.google.common.collect.ImmutableList;
 
-import co.sblock.Sblock;
-import co.sblock.commands.SblockCommandAlias;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * SblockCommandAlias for teleporting a player to oneself.
@@ -20,6 +20,7 @@ public class TeleportHereCommand extends SblockCommandAlias {
 	public TeleportHereCommand(Sblock plugin) {
 		super(plugin, "tphere", "minecraft:tp");
 		this.setPermissionLevel("felt");
+		this.setAliases("s");
 	}
 
 	@Override

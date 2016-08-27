@@ -7,10 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.machines.Machines;
@@ -20,6 +16,10 @@ import co.sblock.micromodules.Spectators;
 import co.sblock.users.Region;
 import co.sblock.users.User;
 import co.sblock.users.Users;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -49,7 +49,6 @@ public class TeleportRequestCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		// TODO may want to move all of the text into lang
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
