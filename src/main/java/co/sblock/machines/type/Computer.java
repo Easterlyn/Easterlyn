@@ -3,6 +3,7 @@ package co.sblock.machines.type;
 import co.sblock.Sblock;
 import co.sblock.chat.Language;
 import co.sblock.machines.Machines;
+import co.sblock.machines.type.computer.PowerManager;
 import co.sblock.machines.type.computer.Program;
 import co.sblock.machines.type.computer.Programs;
 import co.sblock.machines.utilities.Shape;
@@ -124,7 +125,7 @@ public class Computer extends Machine implements InventoryHolder {
 		Inventory inventory = getInventory();
 		User user = getUsers().getUser(player.getUniqueId());
 		for (Program program : Programs.getPrograms()) {
-			if (program.isDefault()) {
+			if (program.isDefault() || program instanceof PowerManager && player.hasPermission("sblock.godtier")) {
 				inventory.addItem(program.getIcon());
 			}
 		}

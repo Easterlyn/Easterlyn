@@ -79,6 +79,10 @@ public enum Direction {
 			return 8;
 		case "upperstair":
 			return (byte) (stair + 4);
+		case "bedfood":
+			return (byte) ((dirNum + 2) % 4); 
+		case "bedhead":
+			return (byte) ((dirNum + 2) % 4 + 8); 
 		default:
 			return 0;
 		}

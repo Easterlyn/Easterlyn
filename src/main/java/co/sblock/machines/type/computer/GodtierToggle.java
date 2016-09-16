@@ -1,6 +1,15 @@
 package co.sblock.machines.type.computer;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import co.sblock.effects.Effects;
+import co.sblock.effects.effect.BehaviorGodtier;
+import co.sblock.effects.effect.Effect;
+import co.sblock.machines.Machines;
+import co.sblock.users.User;
+import co.sblock.users.UserAspect;
+import co.sblock.users.Users;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -10,14 +19,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Wool;
-
-import co.sblock.effects.Effects;
-import co.sblock.effects.effect.BehaviorGodtier;
-import co.sblock.effects.effect.Effect;
-import co.sblock.machines.Machines;
-import co.sblock.users.User;
-import co.sblock.users.UserAspect;
-import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -54,12 +55,20 @@ public class GodtierToggle extends Program {
 
 	@Override
 	protected void execute(Player player, ItemStack clicked, boolean verified) {
-		if (!clicked.hasItemMeta() || !clicked.getItemMeta().hasLore()
-				|| clicked.getItemMeta().getLore().isEmpty()) {
+		if (!clicked.hasItemMeta()) {
 			return;
 		}
+		ItemMeta meta = clicked.getItemMeta();
+		if (!meta.hasLore()) {
+			return;
+		}
+		List<String> lore = meta.getLore();
+		if (lore.isEmpty()) {
+			return;
+		}
+
 		User user = users.getUser(player.getUniqueId());
-		String effectName = clicked.getItemMeta().getLore().get(0).replaceFirst("..toggle ", "");
+		String effectName = lore.get(0).replaceFirst("..toggle ", "");
 		Effect effect = effects.getEffect(effectName);
 		if (effect == null) {
 			return;
@@ -69,7 +78,6 @@ public class GodtierToggle extends Program {
 			user.removeGodtierEffect(effect);
 			newClicked = getIcon(effect, user.getUserAspect(), false);
 		} else if (clicked.getData().equals(icoff.getData())) {
-			
 			newClicked = getIcon(effect, user.getUserAspect(), user.addGodtierEffect(effect));
 		} else {
 			return;
