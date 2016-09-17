@@ -185,8 +185,10 @@ command:
     description: 'Generate a code to link your Discord account with Minecraft'
     usage: '/link [UUID] [DiscordUser/ID]'
     success: |
-      {COLOR:neutral}Message the Discord bot "{COLOR:command}/link {CODE}{COLOR:good}" to complete linking your Discord account!
+      {COLOR:neutral}Message the Discord bot "{COLOR:command}/link {CODE}{COLOR:neutral}" to complete linking your Discord account!
       {COLOR:bad}This code will expire in a minute.
+      {COLOR:neutral}Discord invite link: {COLOR:link_color}{COLOR:link_format}sblock.co/discord
+    basicReadingComprehension: '{COLOR:bad}This is not Discord. Complete the link via command {COLOR:emphasis.bad}in Discord{COLOR:bad}.'
   m:
     description: 'Send a private message.'
     usage: '/m <name> <message> or /r <reply to last message>'

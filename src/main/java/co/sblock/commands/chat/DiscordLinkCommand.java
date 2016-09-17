@@ -41,6 +41,7 @@ public class DiscordLinkCommand extends SblockCommand {
 			sender.sendMessage(getLang().getValue("core.error.moduleDisabled").replace("{MODULE}", "Discord"));
 			return true;
 		}
+
 		if (args.length > 1 && sender.hasPermission("sblock.command.link.force")) {
 			UUID uuid;
 			try {
@@ -72,10 +73,12 @@ public class DiscordLinkCommand extends SblockCommand {
 			discord.addLink(uuid, user);
 			return true;
 		}
+
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("Console support not offered at this time.");
+			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
+
 		UUID uuid = ((Player) sender).getUniqueId();
 		Object code;
 		try {
@@ -84,6 +87,13 @@ public class DiscordLinkCommand extends SblockCommand {
 			// Just re-throw the exception to use our automatic report creation feature
 			throw new RuntimeException(e);
 		}
+
+		if (args.length > 1 && code.toString().equals(args[0])) {
+			// Ensure user can read. Most can't.
+			sender.sendMessage(getLang().getValue("command.link.basicReadingComprehension"));
+			return true;
+		}
+
 		sender.sendMessage(getLang().getValue("command.link.success").replace("{CODE}", code.toString()));
 		return true;
 	}
