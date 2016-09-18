@@ -2,16 +2,17 @@ package co.sblock.events.listeners.player;
 
 import java.util.regex.Pattern;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.events.listeners.SblockListener;
+
+import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.events.listeners.SblockListener;
 
 /**
  * Listener for PlayerLoginEvents.
@@ -59,18 +60,15 @@ public class LoginListener extends SblockListener {
 			return;
 		case KICK_BANNED:
 		case KICK_OTHER:
-			String reason = null;
-			if (event.getPlayer().getName() != null
-					&& Bukkit.getBanList(Type.NAME).isBanned(event.getPlayer().getName())) {
-				reason = Bukkit.getBanList(Type.NAME).getBanEntry(event.getPlayer().getName()).getReason()
-						.replaceAll("<ip=.*?>", "");
-			} else {
-				reason = Bukkit.getBanList(Type.IP).getBanEntry(event.getAddress().getHostAddress()).getReason()
-						.replaceAll("<(uuid|name)=[\\w-]+?>", "");
+			String reason = event.getKickMessage();
+			BanList banlist = Bukkit.getBanList(Type.NAME);
+			String id;
+			if (banlist.isBanned(id = event.getPlayer().getUniqueId().toString())
+					|| event.getPlayer().getName() != null && banlist.isBanned(id = event.getPlayer().getName())
+					|| (banlist = Bukkit.getBanList(Type.IP)).isBanned(id = event.getAddress().getHostAddress())) {
+				reason = banlist.getBanEntry(id).getReason();
 			}
-			if (reason != null) {
-				event.setKickMessage(reason);
-			}
+			event.setKickMessage(reason.replaceAll("<(ip|uuid|name)=.*?>", ""));
 			return;
 		default:
 			return;
