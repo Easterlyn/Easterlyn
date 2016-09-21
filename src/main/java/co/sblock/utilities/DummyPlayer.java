@@ -1216,4 +1216,9 @@ public class DummyPlayer implements Player {
 	@Override
 	public void stopSound(String paramString) {}
 
+	@Override
+	public boolean isHandRaised() {
+		return false;
+	}
+
 }

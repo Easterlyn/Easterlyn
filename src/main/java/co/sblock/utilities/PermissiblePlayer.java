@@ -147,6 +147,11 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public boolean isHandRaised() {
+		return player.isHandRaised();
+	}
+
+	@Override
 	public boolean isSleeping() {
 		return player.isSleeping();
 	}
