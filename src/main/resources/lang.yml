@@ -157,6 +157,13 @@ command:
   silentkick:
     description: 'Kicks a player without an announcement.'
     usage: '/silentkick <player> [reason]'
+  spamhauslist:
+    description: 'Edit the list of IPs which are not checked against Spamhaus'
+    usage: |
+      /spamhauslist add <ip>
+      /spamhauslist remove <ip>
+    add: '{COLOR:neutral}Added {COLOR:emphasis.neutral}{IP}{COLOR:neutral} to the Spamhaus exempt list.'
+    remove: '{COLOR:neutral}Removed {COLOR:emphasis.neutral}{IP}{COLOR:neutral} from the Spamhaus exempt list.'
   ultraban:
     description: 'YOU REALLY CAN''T ESCAPE THE RED MILES.'
     usage: '/ultraban <target>'
