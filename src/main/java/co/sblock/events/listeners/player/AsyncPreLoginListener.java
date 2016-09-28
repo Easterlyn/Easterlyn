@@ -6,6 +6,15 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import co.sblock.Sblock;
+import co.sblock.discord.Discord;
+import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
+import co.sblock.utilities.PermissionBridge;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.Bukkit;
@@ -15,15 +24,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
-import co.sblock.Sblock;
-import co.sblock.discord.Discord;
-import co.sblock.events.Events;
-import co.sblock.events.listeners.SblockListener;
-import co.sblock.utilities.PermissionBridge;
 
 /**
  * Proxy detection, because apparently this is an issue.
@@ -90,6 +90,9 @@ public class AsyncPreLoginListener extends SblockListener {
 
 	private boolean isAllowed(String ip, UUID uuid) {
 		if (ip.contains("127.0.0.1")) {
+			return true;
+		}
+		if (this.events.getSpamhausWhitelist().contains(ip)) {
 			return true;
 		}
 		final String[] split = ip.split("\\.");

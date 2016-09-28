@@ -13,6 +13,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class TextUtils {
 
+	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
 	public static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-z]{2,4}))((#|/)\\S*)?$", Pattern.CASE_INSENSITIVE);
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 

@@ -2,16 +2,17 @@ package co.sblock.commands.admin;
 
 import java.util.List;
 
+import co.sblock.Sblock;
+import co.sblock.commands.SblockCommand;
+import co.sblock.users.User;
+import co.sblock.users.Users;
+import co.sblock.utilities.TextUtils;
+
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import co.sblock.Sblock;
-import co.sblock.commands.SblockCommand;
-import co.sblock.users.User;
-import co.sblock.users.Users;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -47,7 +48,7 @@ public class BanCommand extends SblockCommand {
 			// Remove trailing space
 			reason.deleteCharAt(reason.length() - 1);
 		}
-		if (target.matches("([0-9]{1,3}\\.){3}[0-9]{1,3}")) { // IPs probably shouldn't be announced.
+		if (TextUtils.IP_PATTERN.matcher(target).find()) { // IPs probably shouldn't be announced.
 			Bukkit.getBanList(org.bukkit.BanList.Type.IP).addBan(target, reason.toString(), null, sender.getName());
 		} else {
 			Bukkit.broadcastMessage(getLang().getValue("command.ban.announce")

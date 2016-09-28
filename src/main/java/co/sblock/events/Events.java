@@ -78,10 +78,12 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
@@ -116,6 +118,7 @@ public class Events extends Module {
 	private final HashMap<UUID, BukkitTask> pvp;
 	private final InvisibilityManager invisibilityManager;
 	private final BlockUpdateManager blockUpdateManager;
+	private final List<String> spamhausWhitelist;
 	private final EnumSet<Material> creativeBlacklist;
 
 	private Chat chat;
@@ -128,6 +131,7 @@ public class Events extends Module {
 		this.ipcache = new LinkedHashMap<>();
 		this.invisibilityManager = new InvisibilityManager(plugin);
 		this.blockUpdateManager = new BlockUpdateManager(plugin);
+		this.spamhausWhitelist = new CopyOnWriteArrayList<>(this.getConfig().getStringList("spamWhitelist"));
 
 		creativeBlacklist = EnumSet.of(ACTIVATOR_RAIL, BARRIER, BEACON, BED_BLOCK, BEDROCK,
 				BEETROOT_BLOCK, BURNING_FURNACE, CAKE_BLOCK, CARROT, COCOA, COMMAND, COMMAND_CHAIN,
@@ -178,11 +182,10 @@ public class Events extends Module {
 		ProtocolLibrary.getProtocolManager().addPacketListener(new SyncPacketAdapter(getPlugin()));
 	}
 
-	/**
-	 * @see Module#onDisable()
-	 */
 	@Override
 	protected void onDisable() {
+		this.getConfig().set("spamWhitelist", spamhausWhitelist);
+
 		try {
 			File file = new File(getPlugin().getDataFolder(), "ipcache.yml");
 			if (!file.exists()) {
@@ -331,6 +334,10 @@ public class Events extends Module {
 
 	public BlockUpdateManager getBlockUpdateManager() {
 		return blockUpdateManager;
+	}
+
+	public List<String> getSpamhausWhitelist() {
+		return spamhausWhitelist;
 	}
 
 	@Override
