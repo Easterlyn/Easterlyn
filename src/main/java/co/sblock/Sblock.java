@@ -360,6 +360,10 @@ public class Sblock extends JavaPlugin {
 		getServer().addRecipe(furnace);
 		furnace.setInput(Material.SHEARS, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+
+		// General: Rotten flesh cooks to rabbit leather (1/4 leather)
+		furnace = new FurnaceRecipe(new ItemStack(Material.RABBIT_HIDE), Material.ROTTEN_FLESH);
+		getServer().addRecipe(furnace);
 	}
 
 	@Override

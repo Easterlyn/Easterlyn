@@ -57,7 +57,7 @@
     <dependency>
       <groupId>com.github.austinv11</groupId>
       <artifactId>Discord4J</artifactId>
-      <version>2.5.4</version>
+      <version>2.6.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -91,6 +91,11 @@
       <version>3.6.6-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.TechFortress</groupId>
+      <artifactId>GriefPrevention</artifactId>
+      <version>master-SNAPSHOT</version>
+    </dependency>
     <!-- Local repo plugin dependencies -->
     <dependency>
       <groupId>com.nitnelave</groupId>
@@ -102,12 +107,6 @@
       <groupId>org.dynmap</groupId>
       <artifactId>dynmap</artifactId>
       <version>2.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>me.ryanhampshire</groupId>
-      <artifactId>griefprevention</artifactId>
-      <version>12.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
