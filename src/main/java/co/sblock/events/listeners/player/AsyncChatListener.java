@@ -6,20 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.RegisteredListener;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Language;
@@ -37,6 +23,20 @@ import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.TextUtils;
 import co.sblock.utilities.WrappedSenderPlayer;
+
+import com.google.common.collect.ImmutableList;
+
+import org.apache.commons.lang3.StringUtils;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.RegisteredListener;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
@@ -394,7 +394,7 @@ public class AsyncChatListener extends SblockListener {
 		String lastMsg = sender.getLastChat();
 		sender.setLastChat(msg);
 		long lastChat = cooldowns.getRemainder(player, "chat");
-		cooldowns.addCooldown(player, "chat", 3000);
+		cooldowns.addCooldown(player, "chat", 30000);
 
 		for (Pattern pattern : doNotSayThat) {
 			if (pattern.matcher(msg).find()) {
@@ -404,8 +404,8 @@ public class AsyncChatListener extends SblockListener {
 			}
 		}
 
-		// Mute repeat messages
-		if (msg.equals(lastMsg)) {
+		// Mute repeat messages within 30 seconds
+		if (lastChat > 0 && msg.equals(lastMsg)) {
 			// In event of exact duplicates, reach penalization levels at a much faster rate
 			int spamCount = sender.getChatViolationLevel();
 			if (spamCount == 0) {
@@ -419,7 +419,7 @@ public class AsyncChatListener extends SblockListener {
 		}
 
 		// Cooldown of 1.5 seconds between messages, 3 seconds between short messages.
-		if (lastChat > 1500 || msg.length() < 12 && lastChat > 0) {
+		if (lastChat > 28500 || msg.length() < 12 && lastChat > 27000) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[FastChat] " + event.getFormat());
 			return true;
@@ -430,6 +430,7 @@ public class AsyncChatListener extends SblockListener {
 		int spaces = words.length - 1;
 		int length = msg.length();
 		int symbols = 0;
+		boolean question = false;
 		for (String word : words) {
 			if (TextUtils.URL_PATTERN.matcher(word).find()) {
 				length -= word.length();
@@ -438,6 +439,12 @@ public class AsyncChatListener extends SblockListener {
 			}
 			for (char character : word.toCharArray()) {
 				if (!Character.isLetterOrDigit(character)) {
+					if (!question && character == '?') {
+						// Discount one question mark from spam filtering in case of "?" or "<link> ?"
+						question = true;
+						length--;
+						continue;
+					}
 					symbols++;
 				}
 			}
@@ -451,7 +458,7 @@ public class AsyncChatListener extends SblockListener {
 
 		// Must be more than 25% different from last message
 		double lenPercent = msg.length() * .25;
-		if (StringUtils.getLevenshteinDistance(msg, lastMsg) < lenPercent) {
+		if (lastChat > 0 && StringUtils.getLevenshteinDistance(msg, lastMsg) < lenPercent) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[SimilarChat] " + event.getFormat());
 			return true;
