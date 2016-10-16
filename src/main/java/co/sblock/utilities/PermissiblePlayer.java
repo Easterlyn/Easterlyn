@@ -1511,4 +1511,14 @@ public class PermissiblePlayer implements Player {
 		player.stopSound(paramString);
 	}
 
+	@Override
+	public int getPortalCooldown() {
+		return player.getPortalCooldown();
+	}
+
+	@Override
+	public void setPortalCooldown(int arg0) {
+		player.setPortalCooldown(arg0);
+	}
+
 }

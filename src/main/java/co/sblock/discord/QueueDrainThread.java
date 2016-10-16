@@ -72,6 +72,16 @@ public class QueueDrainThread extends Thread {
 			DiscordCallable callable = queue.remove();
 			try {
 				callable.call();
+			} catch (RateLimitException e) {
+				try {
+					// Pause, we're rate limited.
+					Thread.sleep(e.getRetryDelay() + 100L);
+				} catch (InterruptedException ie) {
+					break;
+				}
+				// Re-queue rate limited call
+				queue.add(callable);
+				continue;
 			} catch (DiscordException e) {
 				try {
 					// If we encounter an exception, pause for extra security.
@@ -92,14 +102,6 @@ public class QueueDrainThread extends Thread {
 					continue;
 				}
 				e.printStackTrace();
-			} catch (RateLimitException e) {
-				try {
-					// Pause, we're rate limited.
-					Thread.sleep(e.getRetryDelay() + 100L);
-				} catch (InterruptedException ie) {
-					break;
-				}
-				continue;
 			} catch (Exception e) {
 				// Likely permissions, but can be malformed JSON when odd responses are received
 				e.printStackTrace();

@@ -1221,4 +1221,12 @@ public class DummyPlayer implements Player {
 		return false;
 	}
 
+	@Override
+	public int getPortalCooldown() {
+		return 0;
+	}
+
+	@Override
+	public void setPortalCooldown(int arg0) {}
+
 }

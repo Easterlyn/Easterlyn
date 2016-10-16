@@ -116,7 +116,7 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		private void queueDeletion(long retentionDuration) {
-			if (this.lockDeletion.get()) {
+			if (this.lockDeletion.get() || this.channel.getMessages().isEmpty()) {
 				return;
 			}
 
@@ -156,16 +156,30 @@ public class RetentionModule extends DiscordModule {
 
 					// Bulk delete requires at least 2 messages.
 					if (messages.size() == 1) {
-						messages.get(0).delete();
+						try {
+							messages.get(0).delete();
+						} catch (Exception e) {
+							if (!(e instanceof RateLimitException)) {
+								lockDeletion.set(false);
+							}
+							throw e;
+						}
 						lockDeletion.set(false);
 						return;
 					}
 
-					list.bulkDelete(messages);
+					try {
+						list.bulkDelete(messages);
+					} catch (Exception e) {
+						if (!(e instanceof RateLimitException)) {
+							lockDeletion.set(false);
+						}
+						throw e;
+					}
 
 					// Additional sleep time to prevent rate limiting.
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(1500);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
