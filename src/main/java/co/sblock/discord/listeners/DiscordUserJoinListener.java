@@ -1,7 +1,5 @@
 package co.sblock.discord.listeners;
 
-import java.util.UUID;
-
 import co.sblock.discord.Discord;
 
 import sx.blah.discord.api.events.IListener;
@@ -22,14 +20,9 @@ public class DiscordUserJoinListener implements IListener<UserJoinEvent> {
 
 	@Override
 	public void handle(UserJoinEvent event) {
-
-		UUID uuid = discord.getUUIDOf(event.getUser());
-
-		if (uuid == null) {
-			return;
-		}
-
-		discord.updateDiscordState(event.getUser(), uuid);
+		// Reset unlinked time for new joins
+		discord.getDatastore().set("unlinked." + event.getGuild().getID() + '.'  + event.getUser().getID(), null);
+		discord.updateUser(event.getUser());
 	}
 
 }

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import co.sblock.Sblock;
+import co.sblock.chat.Language;
 import co.sblock.chat.message.Message;
 import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
@@ -79,7 +80,8 @@ public class Discord extends Module {
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData;
 
-	private String botName, token, channelMain, channelLog, channelReports;
+	private Language lang;
+	private String botName, token, channelGeneral, channelMain, channelLog, channelReports;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
 	private QueueDrainThread drainQueueThread;
@@ -116,8 +118,10 @@ public class Discord extends Module {
 
 	@Override
 	protected void onEnable() {
+		this.lang = getPlugin().getModule(Language.class);
 		botName = getConfig().getString("discord.username", "Sbot");
 		token = getConfig().getString("discord.token");
+		channelGeneral = getConfig().getString("discord.chat.general");
 		channelMain = getConfig().getString("discord.chat.main");
 		channelLog = getConfig().getString("discord.chat.log");
 		channelReports = getConfig().getString("discord.chat.reports");
@@ -234,6 +238,7 @@ public class Discord extends Module {
 
 		botName = getConfig().getString("discord.username", "Sbot");
 		token = getConfig().getString("discord.token");
+		channelGeneral = getConfig().getString("discord.chat.general");
 		channelMain = getConfig().getString("discord.chat.main");
 		channelLog = getConfig().getString("discord.chat.log");
 		channelReports = getConfig().getString("discord.chat.reports");
@@ -375,6 +380,10 @@ public class Discord extends Module {
 		return this.client;
 	}
 
+	public String getGeneralChannel() {
+		return this.channelGeneral;
+	}
+
 	public String getMainChannel() {
 		return this.channelMain;
 	}
@@ -427,7 +436,7 @@ public class Discord extends Module {
 			return;
 		}
 		// Discord is case-sensitive. This prevents an @everyone alert without altering content.
-		message = message.replace("@everyone", "@Everyone");
+		message = message.replace("@everyone", "@Everyone").replace("@here", "@Here");
 		StringBuilder builder = new StringBuilder(message.length());
 		Matcher matcher = spaceword.matcher(message);
 		while (matcher.find()) {
@@ -494,26 +503,58 @@ public class Discord extends Module {
 		postMessage(this.getBotName(), message, getReportChannel());
 	}
 
-	public LoadingCache<Object, Object> getAuthCodes() {
-		return authentications;
-	}
+	/**
+	 * Update a Discord user's status. Handles new users (alerts them they must link, then kicks after a day if they have not)
+	 * 
+	 * @param user the IUser
+	 */
+	public void updateUser(IUser user) {
+		UUID uuid = this.getUUIDOf(user);
 
-	public boolean isLinked(IUser user) {
-		return discordData.isString("users." + user.getID());
-	}
-
-	public UUID getUUIDOf(IUser user) {
-		String uuidString = discordData.getString("users." + user.getID());
-		if (uuidString == null) {
-			return null;
+		if (uuid == null) {
+			this.updateUnlinkedUser(user);
 		}
-		return UUID.fromString(uuidString);
+
+		this.updateLinkedUser(user, uuid);
 	}
 
-	public void addLink(UUID uuid, IUser user) {
-		discordData.set("users." + user.getID(), uuid.toString());
+	private void updateUnlinkedUser(IUser user) {
+		if (this.isLinked(user)) {
+			return;
+		}
 
-		updateDiscordState(user, uuid);
+		long now = System.currentTimeMillis();
+
+		this.getClient().getGuilds().forEach(guild -> {
+
+			// Check if a user has roles - if they have roles, they're recognized.
+			if (!guild.getRolesForUser(user).isEmpty()) {
+				return;
+			}
+
+			String path = "unlinked." + guild.getID() + '.'  + user.getID();
+
+			if (!discordData.isLong(path)) {
+				// 1 day grace period
+				discordData.set(path, now + 86400000);
+				this.postMessage(this.getBotName(),
+						lang.getValue("discord.link.mandate").replace("{USER}", user.mention()),
+						this.getGeneralChannel());
+				return;
+			}
+	
+			long kickTime = discordData.getLong(path);
+	
+			if (kickTime <= now) {
+				discordData.set(path, null);
+				queue(new DiscordCallable(CallPriority.LOW) {
+					@Override
+					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+						guild.kickUser(user);
+					}
+				});
+			}
+		});
 	}
 
 	/**
@@ -523,7 +564,7 @@ public class Discord extends Module {
 	 * @param user the user, or null if it is to be searched for
 	 * @param uuid the UUID of the player
 	 */
-	public void updateDiscordState(@Nullable IUser user, UUID uuid) {
+	public void updateLinkedUser(@Nullable IUser user, UUID uuid) {
 
 		if (user == null) {
 			// Given player object, find user ID from UUID
@@ -607,6 +648,28 @@ public class Discord extends Module {
 				}
 			}
 		}
+	}
+
+	public LoadingCache<Object, Object> getAuthCodes() {
+		return authentications;
+	}
+
+	public boolean isLinked(IUser user) {
+		return discordData.isString("users." + user.getID());
+	}
+
+	public UUID getUUIDOf(IUser user) {
+		String uuidString = discordData.getString("users." + user.getID());
+		if (uuidString == null) {
+			return null;
+		}
+		return UUID.fromString(uuidString);
+	}
+
+	public void addLink(UUID uuid, IUser user) {
+		discordData.set("users." + user.getID(), uuid.toString());
+
+		updateLinkedUser(user, uuid);
 	}
 
 	public DiscordPlayer getDiscordPlayerFor(IUser user) {

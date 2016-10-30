@@ -145,9 +145,7 @@ command:
     announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been temporarily banned. {COLOR:emphasis.bad}{REASON}'
   aether:
     hover: |
-      {COLOR:emphasis.neutral}IRC Chat
-      {COLOR:neutral}Server: irc.freenode.net
-      {COLOR:neutral}Channel: #sblockserver
+      {COLOR:emphasis.neutral}External Chat
   me:
     description: '/me does an action'
     usage: 'YOU FOOKIN WOT M8? /me (@channel) <message> Channel optional, defaults current.'
@@ -360,6 +358,13 @@ afk:
 
 captcha:
   uncaptchable: '{COLOR:bad}That item cannot be put in a captcha!'
+
+discord:
+  link:
+    mandate: |
+      Welcome, {USER}!
+      At your earliest convenience, please log into Minecraft on `sblock.co` and run `/link`. Then, in this chat, run `/link YourCodeHere` to complete the process.
+      If you don't play Minecraft and are here for other reasons, please contact the staff - users with no groups are automatically kicked after a grace period.
 
 events:
   craft:
