@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.module.Module;
+import co.sblock.users.Users;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.module.Module;
-import co.sblock.users.Users;
 
 /**
  * Module for managing players in spectator mode. Designed to allow players
@@ -58,6 +58,7 @@ public class Spectators extends Module {
 					if (cooldowns.getRemainder(player, getName()) == 0) {
 						removeSpectator(player, false);
 						player.sendMessage(lang.getValue("spectators.return.time"));
+						continue;
 					}
 					// 100 blocks from starting location
 					Location start = spectators.get(player.getUniqueId());
