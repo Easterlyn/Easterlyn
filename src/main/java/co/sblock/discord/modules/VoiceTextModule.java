@@ -1,14 +1,23 @@
 package co.sblock.discord.modules;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import co.sblock.discord.Discord;
+import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordModule;
+import co.sblock.utilities.TextUtils;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -20,7 +29,7 @@ import sx.blah.discord.util.RateLimitException;
  */
 public class VoiceTextModule extends DiscordModule {
 
-	private final BiMap<IChannel, IChannel> channels;
+	private final BiMap<IVoiceChannel, IChannel> channels;
 
 	public VoiceTextModule(Discord discord) {
 		super(discord);
@@ -29,7 +38,9 @@ public class VoiceTextModule extends DiscordModule {
 
 	@Override
 	public void doSetup() {
-		// TODO Auto-generated method stub
+		this.getDiscord().getClient().getVoiceChannels().forEach(channel -> {
+			handleChannelCreation(channel);
+		});
 
 	}
 
@@ -54,10 +65,94 @@ public class VoiceTextModule extends DiscordModule {
 		}
 	}
 
-	public void handleChannelCreation(IChannel channel) {
-		if (!(channel instanceof IVoiceChannel)) {
+	public void handleChannelCreation(IVoiceChannel voice) {
+		if (channels.containsValue(voice) || voice.equals(voice.getGuild().getAFKChannel())) {
 			return;
 		}
+
+		String textChannelName = getTextChannelName(voice.getName());
+		List<IChannel> channels = voice.getGuild().getChannelsByName(textChannelName);
+		IChannel text = null;
+
+		for (IChannel channelMatch : channels) {
+			if (!(channelMatch instanceof IVoiceChannel)) {
+				text = channelMatch;
+				break;
+			}
+		}
+
+		if (text == null) {
+			createTextChannel(voice);
+		} else {
+			addAllMembers(voice, text);
+		}
+	}
+
+	private void createTextChannel(IVoiceChannel voice) {
+		this.getDiscord().queue(new DiscordCallable() {
+			@Override
+			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+				IChannel text = voice.getGuild().createChannel(getTextChannelName(voice.getName()));
+				getDiscord().queue(new DiscordCallable() {
+					@Override
+					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+						text.overrideRolePermissions(text.getGuild().getEveryoneRole(), EnumSet.noneOf(Permissions.class), EnumSet.of(Permissions.READ_MESSAGES));
+					}
+				});
+				getDiscord().queue(new DiscordCallable() {
+					@Override
+					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+						text.changeTopic("Text channel for voice channel " + voice.getName());
+					}
+				});
+				addAllMembers(voice, text);
+			}
+		});
+	}
+
+	private void addAllMembers(IVoiceChannel voice, IChannel text) {
+		List<IUser> connected = voice.getConnectedUsers();
+		List<IUser> permitted = text.getUsersHere();
+		List<IUser> toPermit = connected.stream().filter(user -> !permitted.contains(user)).collect(Collectors.toCollection(ArrayList::new));
+		List<IUser> toRemove = permitted.stream().filter(user -> !connected.contains(user)).collect(Collectors.toCollection(ArrayList::new));
+
+		toPermit.forEach(user -> addPermissions(text, user));
+
+		toRemove.forEach(user -> removePermissions(text, user));
+	}
+
+	public void handleUserJoin(IVoiceChannel voice, IUser user) {
+		if (channels.containsKey(voice)) {
+			addPermissions(channels.get(voice), user);
+		}
+	}
+
+	private void addPermissions(IChannel text, IUser user) {
+		getDiscord().queue(new DiscordCallable(CallPriority.LOW) {
+			@Override
+			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+				text.overrideUserPermissions(user, EnumSet.of(Permissions.READ_MESSAGES), EnumSet.noneOf(Permissions.class));
+			}
+		});
+	}
+
+	public void handleUserLeave(IVoiceChannel voice, IUser user) {
+		if (channels.containsKey(voice)) {
+			removePermissions(channels.get(voice), user);
+		}
+	}
+
+	private void removePermissions(IChannel text, IUser user) {
+		getDiscord().queue(new DiscordCallable(CallPriority.LOW) {
+			@Override
+			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+				text.removePermissionsOverride(user);
+			}
+		});
+	}
+
+	private String getTextChannelName(String voiceChannelName) {
+		return "vc-" + TextUtils.stripNonAlphanumerics(voiceChannelName.replace(' ', '_')).toLowerCase();
 	}
 
 }

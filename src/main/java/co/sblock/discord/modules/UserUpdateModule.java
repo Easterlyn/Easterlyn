@@ -4,7 +4,7 @@ import co.sblock.discord.Discord;
 import co.sblock.discord.abstraction.DiscordModule;
 
 /**
- * Module for
+ * Module for periodic user state update ticking.
  * 
  * @author Jikoo
  */

@@ -30,8 +30,6 @@ import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
 import co.sblock.discord.abstraction.DiscordCommand;
 import co.sblock.discord.abstraction.DiscordModule;
-import co.sblock.discord.listeners.DiscordMessageReceivedListener;
-import co.sblock.discord.listeners.DiscordReadyListener;
 import co.sblock.module.Module;
 import co.sblock.utilities.PermissiblePlayer;
 import co.sblock.utilities.PlayerLoader;
@@ -56,6 +54,7 @@ import net.md_5.bungee.api.ChatColor;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
+import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -116,6 +115,7 @@ public class Discord extends Module {
 		}
 	}
 
+	@SuppressWarnings("rawtypes") // I don't like doing this, but type erasure forces my hand.
 	@Override
 	protected void onEnable() {
 		this.lang = getPlugin().getModule(Language.class);
@@ -140,9 +140,26 @@ public class Discord extends Module {
 			return;
 		}
 
+		Reflections reflections = new Reflections("co.sblock.discord.listeners");
+		Set<Class<? extends IListener>> listenerClazzes = reflections.getSubTypesOf(IListener.class);
 		EventDispatcher dispatcher = this.client.getDispatcher();
-		dispatcher.registerListener(new DiscordReadyListener(this));
-		dispatcher.registerListener(new DiscordMessageReceivedListener(this));
+		for (Class<? extends IListener> clazz : listenerClazzes) {
+			if (Modifier.isAbstract(clazz.getModifiers())) {
+				continue;
+			}
+			if (!Sblock.areDependenciesPresent(clazz)) {
+				getLogger().warning(clazz.getSimpleName() + " is missing dependencies, skipping.");
+				continue;
+			}
+			try {
+				Constructor<? extends IListener> constructor = clazz.getConstructor(getClass());
+				IListener listener = constructor.newInstance(this);
+				dispatcher.registerListener(listener);
+			} catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
 
 		new Thread(new Runnable() {
 			@Override
@@ -162,7 +179,7 @@ public class Discord extends Module {
 
 		lock = true;
 
-		Reflections reflections = new Reflections("co.sblock.discord.modules");
+		reflections = new Reflections("co.sblock.discord.modules");
 		Set<Class<? extends DiscordModule>> moduleClazzes = reflections.getSubTypesOf(DiscordModule.class);
 		for (Class<? extends DiscordModule> clazz : moduleClazzes) {
 			if (Modifier.isAbstract(clazz.getModifiers())) {
