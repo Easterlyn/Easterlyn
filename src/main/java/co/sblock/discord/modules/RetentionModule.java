@@ -208,11 +208,15 @@ public class RetentionModule extends DiscordModule {
 	}
 
 	public void setRetention(IGuild guild, Long duration) {
-		getDiscord().getDatastore().set("retention." + guild.getID() + ".default", duration);
+		synchronized (getDiscord().getDatastore()) {
+			getDiscord().getDatastore().set("retention." + guild.getID() + ".default", duration);
+		}
 	}
 
 	public void setRetention(IChannel channel, Long duration) {
-		getDiscord().getDatastore().set("retention." + channel.getGuild().getID() + '.' + channel.getID(), duration);
+		synchronized (getDiscord().getDatastore()) {
+			getDiscord().getDatastore().set("retention." + channel.getGuild().getID() + '.' + channel.getID(), duration);
+		}
 	}
 
 	@Override

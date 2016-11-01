@@ -77,7 +77,7 @@ public class Discord extends Module {
 	private final Map<Class<? extends DiscordModule>, DiscordModule> modules;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
-	private final YamlConfiguration discordData;
+	private final YamlConfiguration discordData; // TODO access is not synchronized, dangerous
 
 	private Language lang;
 	private String botName, token, channelGeneral, channelMain, channelLog, channelReports;
@@ -530,13 +530,14 @@ public class Discord extends Module {
 
 		if (uuid == null) {
 			this.updateUnlinkedUser(user);
+			return;
 		}
 
 		this.updateLinkedUser(user, uuid);
 	}
 
 	private void updateUnlinkedUser(IUser user) {
-		if (this.isLinked(user)) {
+		if (this.isLinked(user) || this.getClient().getOurUser().equals(user)) {
 			return;
 		}
 
@@ -545,13 +546,16 @@ public class Discord extends Module {
 		this.getClient().getGuilds().forEach(guild -> {
 
 			// Check if a user has roles - if they have roles, they're recognized.
-			if (!guild.getRolesForUser(user).isEmpty()) {
-				return;
+			// N.B.: Discord4J explicitly declares users to have the @everyone role
+			for (IRole role : guild.getRolesForUser(user)) {
+				if (!role.equals(guild.getEveryoneRole())) {
+					return;
+				}
 			}
 
 			String path = "unlinked." + guild.getID() + '.'  + user.getID();
 
-			if (!discordData.isLong(path)) {
+			if (!discordData.isSet(path)) {
 				// 1 day grace period
 				discordData.set(path, now + 86400000);
 				this.postMessage(this.getBotName(),
@@ -559,9 +563,9 @@ public class Discord extends Module {
 						this.getGeneralChannel());
 				return;
 			}
-	
+
 			long kickTime = discordData.getLong(path);
-	
+
 			if (kickTime <= now) {
 				discordData.set(path, null);
 				queue(new DiscordCallable(CallPriority.LOW) {

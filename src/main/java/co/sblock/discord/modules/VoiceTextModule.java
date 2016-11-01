@@ -13,8 +13,10 @@ import co.sblock.utilities.TextUtils;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
@@ -33,7 +35,7 @@ public class VoiceTextModule extends DiscordModule {
 
 	public VoiceTextModule(Discord discord) {
 		super(discord);
-		channels = HashBiMap.create();
+		channels = Maps.synchronizedBiMap(HashBiMap.create());
 	}
 
 	@Override
@@ -66,7 +68,7 @@ public class VoiceTextModule extends DiscordModule {
 	}
 
 	public void handleChannelCreation(IVoiceChannel voice) {
-		if (channels.containsValue(voice) || voice.equals(voice.getGuild().getAFKChannel())) {
+		if (this.channels.containsValue(voice) || voice.equals(voice.getGuild().getAFKChannel())) {
 			return;
 		}
 
@@ -84,6 +86,8 @@ public class VoiceTextModule extends DiscordModule {
 		if (text == null) {
 			createTextChannel(voice);
 		} else {
+			this.channels.put(voice, text);
+			getDiscord().getModule(RetentionModule.class).setRetention(text, 600000L);
 			addAllMembers(voice, text);
 		}
 	}
@@ -93,6 +97,16 @@ public class VoiceTextModule extends DiscordModule {
 			@Override
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 				IChannel text = voice.getGuild().createChannel(getTextChannelName(voice.getName()));
+				channels.put(voice, text);
+				// TODO maybe not requred. Test: explicitly set perms for bot's role(s)
+				for (IRole role : voice.getGuild().getRolesForUser(voice.getClient().getOurUser())) {
+					getDiscord().queue(new DiscordCallable() {
+						@Override
+						public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+							text.overrideRolePermissions(role, EnumSet.of(Permissions.READ_MESSAGES), EnumSet.noneOf(Permissions.class));
+						}
+					});
+				}
 				getDiscord().queue(new DiscordCallable() {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
@@ -105,6 +119,7 @@ public class VoiceTextModule extends DiscordModule {
 						text.changeTopic("Text channel for voice channel " + voice.getName());
 					}
 				});
+				getDiscord().getModule(RetentionModule.class).setRetention(text, 600000L);
 				addAllMembers(voice, text);
 			}
 		});
@@ -117,7 +132,6 @@ public class VoiceTextModule extends DiscordModule {
 		List<IUser> toRemove = permitted.stream().filter(user -> !connected.contains(user)).collect(Collectors.toCollection(ArrayList::new));
 
 		toPermit.forEach(user -> addPermissions(text, user));
-
 		toRemove.forEach(user -> removePermissions(text, user));
 	}
 
@@ -143,6 +157,10 @@ public class VoiceTextModule extends DiscordModule {
 	}
 
 	private void removePermissions(IChannel text, IUser user) {
+		if (text.getGuild().getOwner().equals(user) || text.getClient().getOurUser().equals(user)) {
+			// TODO: Better handling for higher level roles
+			return;
+		}
 		getDiscord().queue(new DiscordCallable(CallPriority.LOW) {
 			@Override
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
