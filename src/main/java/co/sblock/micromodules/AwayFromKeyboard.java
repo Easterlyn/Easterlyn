@@ -122,7 +122,7 @@ public class AwayFromKeyboard extends Module {
 		if (this.afkUUIDs.contains(player.getUniqueId())) {
 			Users.team(player, null);
 			this.afkUUIDs.remove(player.getUniqueId());
-			player.sendMessage(this.lang.getValue("afk.back"));
+			player.getPlayer().sendMessage(this.lang.getValue("afk.back"));
 		}
 		player.setSleepingIgnored(false);
 		cooldowns.addCooldown(player, getName(), 300000L);
