@@ -22,9 +22,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.md_5.bungee.api.ChatColor;
 
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
 
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftAnimals;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftAnimals;
 
 /**
  * Heart godtier active effect. Set animals breeding if nearby and adult, speed up the growth of

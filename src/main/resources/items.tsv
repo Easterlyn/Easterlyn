@@ -375,6 +375,23 @@
 215	RED_NETHER_BRICK	0	Red Nether Brick	red_nether_brick
 216	BONE_BLOCK	0	Bone Block	bone_block
 217	STRUCTURE_VOID	0	Structure Void	structure_void
+218	OBSERVER	0	Observer	observer
+219	WHITE_SHULKER_BOX	0	White Shulker Box	white_shulker_box
+220	ORANGE_SHULKER_BOX	0	Orange Shulker Box	orange_shulker_box
+221	MAGENTA_SHULKER_BOX	0	Magenta Shulker Box	magenta_shulker_box
+222	LIGHT_BLUE_SHULKER_BOX	0	Light Blue Shulker Box	light_blue_shulker_box
+223	YELLOW_SHULKER_BOX	0	Yellow Shulker Box	yellow_shulker_box
+224	LIME_SHULKER_BOX	0	Lime Shulker Box	lime_shulker_box
+225	PINK_SHULKER_BOX	0	Pink Shulker Box	pink_shulker_box
+226	GRAY_SHULKER_BOX	0	Gray Shulker Box	gray_shulker_box
+227	SILVER_SHULKER_BOX	0	Silver Shulker Box	silver_shulker_box
+228	CYAN_SHULKER_BOX	0	Cyan Shulker Box	cyan_shulker_box
+229	PURPLE_SHULKER_BOX	0	Purple Shulker Box	purple_shulker_box
+230	BLUE_SHULKER_BOX	0	Blue Shulker Box	blue_shulker_box
+231	BROWN_SHULKER_BOX	0	Brown Shulker Box	brown_shulker_box
+232	GREEN_SHULKER_BOX	0	Green Shulker Box	green_shulker_box
+233	RED_SHULKER_BOX	0	Red Shulker Box	red_shulker_box
+234	BLACK_SHULKER_BOX	0	Black Shulker Box	black_shulker_box
 255	STRUCTURE_BLOCK	0	Structure Block	structure_block
 256	IRON_SPADE	0	Iron Shovel	iron_shovel
 257	IRON_PICKAXE	0	Iron Pickaxe	iron_pickaxe
@@ -595,6 +612,8 @@
 446	BOAT_JUNGLE	0	Jungle Boat	jungle_boat
 447	BOAT_ACACIA	0	Acacia Boat	acacia_boat
 448	BOAT_DARK_OAK	0	Dark Oak Boat	dark_oak_boat
+449	TOTEM	0	Totem of Undying	totem
+450	SHULKER_SHELL	0	Shulker Shell	shulker_shell
 2256	GOLD_RECORD	0	13 Disc	record_13
 2257	GREEN_RECORD	0	Cat Disc	record_cat
 2258	RECORD_3	0	Blocks Disc	record_blocks

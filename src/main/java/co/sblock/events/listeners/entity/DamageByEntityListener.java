@@ -2,6 +2,12 @@ package co.sblock.events.listeners.entity;
 
 import java.util.UUID;
 
+import co.sblock.Sblock;
+import co.sblock.effects.Effects;
+import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
+import co.sblock.micromodules.MeteoriteComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -11,13 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import co.sblock.Sblock;
-import co.sblock.effects.Effects;
-import co.sblock.events.Events;
-import co.sblock.events.listeners.SblockListener;
-import co.sblock.micromodules.MeteoriteComponent;
-
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftEntity;
 
 /**
  * Listener for EntityDamageByEntityEvents.

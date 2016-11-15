@@ -3,6 +3,15 @@ package co.sblock.machines.type;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.Machines;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
+import co.sblock.utilities.InventoryUtils;
+
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -18,15 +27,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
-
-import co.sblock.Sblock;
-import co.sblock.captcha.Captcha;
-import co.sblock.machines.MachineInventoryTracker;
-import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.Shape;
-import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -88,11 +88,11 @@ public class PunchDesignix extends Machine {
 	@SuppressWarnings("deprecation")
 	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
 		if (event.getSlot() != 2 || event.getRawSlot() != event.getView().convertSlot(event.getRawSlot())) {
-			updateInventory(event.getWhoClicked().getUniqueId());
+			updateInventory(event.getWhoClicked().getUniqueId(), false);
 			return false;
 		}
 		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
-			updateInventory(event.getWhoClicked().getUniqueId());
+			updateInventory(event.getWhoClicked().getUniqueId(), false);
 			return true;
 		}
 		// Clicking an item in result slot
@@ -103,26 +103,22 @@ public class PunchDesignix extends Machine {
 		// 1) slot 0 is Captcha, slot 1 is null. Result: slot 2 = punch 0. 0, 1 consumed.
 		// 2) slot 0 is Punch, slot 1 is Captcha. Result: slot 2 = copy 0. 1 consumed.
 		// 3) slot 0 is Punch, slot 1 is Punch. Result: slot 2 = combine 0, 1. 0, 1 consumed.
-		ItemStack result;
-		if (Captcha.isCaptcha(merchant.getItem(1))) {
-			// Copies and punches first, ignores lore of second.
-			result = captcha.createCombinedPunch(merchant.getItem(0), null);
-		} else {
-			// Combine cards (or, if second is null, punch first)
-			result = captcha.createCombinedPunch(merchant.getItem(0), merchant.getItem(1));
-		}
+		ItemStack result = captcha.createCombinedPunch(merchant.getItem(0), merchant.getItem(1));
 
 		if (result == null) {
-			updateInventory(event.getWhoClicked().getUniqueId());
+			updateInventory(event.getWhoClicked().getUniqueId(), false);
 			return true;
 		}
 
 		int crafts = 1;
 
+		boolean copyPunch = Captcha.isCaptcha(merchant.getItem(1));
+		boolean updateInputSlot0 = false;
+
 		// Clicking a villager result slot with vanilla client treats right clicks as left clicks.
 		if (event.getClick().name().contains("SHIFT")) {
 			// Shift-clicks are craft-max attempts.
-			if (Captcha.isPunch(merchant.getItem(0)) && Captcha.isCaptcha(merchant.getItem(1))) {
+			if (Captcha.isPunch(merchant.getItem(0)) && copyPunch) {
 				crafts = merchant.getItem(1).getAmount();
 			} else {
 				crafts = getMaximumCrafts(merchant.getItem(0), merchant.getItem(1));
@@ -136,11 +132,12 @@ public class PunchDesignix extends Machine {
 				|| event.getCursor().isSimilar(result)
 				&& event.getCursor().getAmount() < event.getCursor().getType().getMaxStackSize()) {
 			// Set cursor to single stack
-			result.setAmount(event.getCursor() == null ? 1 : event.getCursor().getAmount() + 1);
+			result.setAmount(event.getCursor() == null || event.getCursor().getType() == Material.AIR ? 1 : event.getCursor().getAmount() + 1);
 			event.setCursor(result);
+			updateInputSlot0 = copyPunch;
 		} else {
 			// Invalid craft, cancel and update result
-			updateInventory(event.getWhoClicked().getUniqueId());
+			updateInventory(event.getWhoClicked().getUniqueId(), false);
 			return true;
 		}
 
@@ -148,20 +145,20 @@ public class PunchDesignix extends Machine {
 		event.setCurrentItem(InventoryUtils.decrement(result, crafts));
 
 		// If second item is a captcha, first item is a punchcard being copied. Do not decrement.
-		if (!Captcha.isCaptcha(merchant.getItem(1))) {
+		if (!copyPunch) {
 			merchant.setItem(0, InventoryUtils.decrement(merchant.getItem(0), crafts));
 		}
 
 		// In all cases (combine, punch single, copy punch) if second is not null it decrements.
 		merchant.setItem(1, InventoryUtils.decrement(merchant.getItem(1), crafts));
 
-		updateInventory(event.getWhoClicked().getUniqueId());
+		updateInventory(event.getWhoClicked().getUniqueId(), updateInputSlot0);
 		return true;
 	}
 
 	@Override
 	public boolean handleClick(InventoryDragEvent event, ConfigurationSection storage) {
-		updateInventory(event.getWhoClicked().getUniqueId());
+		updateInventory(event.getWhoClicked().getUniqueId(), false);
 		return false;
 	}
 
@@ -174,7 +171,7 @@ public class PunchDesignix extends Machine {
 	 * @return the least of the two, or, if slot2 is null, the amount in slot1
 	 */
 	private int getMaximumCrafts(ItemStack slot1, ItemStack slot2) {
-		return slot2 == null ? slot1.getAmount() : Math.min(slot1.getAmount(), slot2.getAmount());
+		return slot2 == null || slot2.getType() == Material.AIR ? slot1.getAmount() : Math.min(slot1.getAmount(), slot2.getAmount());
 	}
 
 	/**
@@ -182,7 +179,7 @@ public class PunchDesignix extends Machine {
 	 * 
 	 * @param name the name of the player who is using the Punch Designix
 	 */
-	public void updateInventory(final UUID id) {
+	public void updateInventory(final UUID id, final boolean updateInputSlot0) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
 			@Override
 			public void run() {
@@ -191,6 +188,9 @@ public class PunchDesignix extends Machine {
 				if (player == null || !tracker.hasMachineOpen(player)) {
 					// Player has logged out or closed inventory. Inventories are per-player, ignore.
 					return;
+				}
+				if (updateInputSlot0) {
+					InventoryUtils.updateWindowSlot(player, 0);
 				}
 				Inventory open = player.getOpenInventory().getTopInventory();
 				// TODO this seems to fail to update properly when punch in slot 0 is re-punched

@@ -5,6 +5,13 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
+import co.sblock.Sblock;
+import co.sblock.machines.Machines;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
+import co.sblock.utilities.InventoryUtils;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -22,16 +29,9 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import co.sblock.Sblock;
-import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.Shape;
-import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.utilities.InventoryUtils;
+import net.minecraft.server.v1_11_R1.ShapelessRecipes;
 
-import net.minecraft.server.v1_10_R1.ShapelessRecipes;
-
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftShapelessRecipe;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftShapelessRecipe;
 
 /**
  * Combine and create.
@@ -113,7 +113,7 @@ public class CompoundingUnionizor extends Machine {
 
 	private void ejectAllInvalidItems(Function<ItemStack, Boolean> func, Inventory inventory, ConfigurationSection storage) {
 		for (ItemStack item : inventory.getContents()) {
-			if (item == null || func.apply(item)) {
+			if (item == null || item.getType() == Material.AIR || func.apply(item)) {
 				continue;
 			}
 			// This is safe, no CME because we're iterating over a copied array

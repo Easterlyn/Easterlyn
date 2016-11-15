@@ -61,15 +61,15 @@ import org.bukkit.util.io.BukkitObjectInputStream;
 
 import net.md_5.bungee.api.ChatColor;
 
-import net.minecraft.server.v1_10_R1.EntityPlayer;
-import net.minecraft.server.v1_10_R1.MerchantRecipe;
-import net.minecraft.server.v1_10_R1.MerchantRecipeList;
-import net.minecraft.server.v1_10_R1.PacketDataSerializer;
-import net.minecraft.server.v1_10_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_10_R1.PacketPlayOutSetSlot;
+import net.minecraft.server.v1_11_R1.EntityPlayer;
+import net.minecraft.server.v1_11_R1.MerchantRecipe;
+import net.minecraft.server.v1_11_R1.MerchantRecipeList;
+import net.minecraft.server.v1_11_R1.PacketDataSerializer;
+import net.minecraft.server.v1_11_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_11_R1.PacketPlayOutSetSlot;
 
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 
 import io.netty.buffer.Unpooled;
 
@@ -671,13 +671,13 @@ public class InventoryUtils {
 
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (Triple<ItemStack, ItemStack, ItemStack> recipe : recipes) {
-			// The client can handle having null results for recipes, but will crash upon removing the result.
-			// To combat that, add a full null recipe instead of a recipe with a null result.
+			// The client can handle having empty results for recipes, but will crash upon removing the result.
+			// To combat that, add a full empty recipe instead of a recipe with an empty result.
 			// We can't just remove the recipe in case the client has changed to a higher number
 			// recipe - it cannot handle a reduction below its current recipe number.
-			boolean nope = recipe.getRight() == null;
-			list.add(new MerchantRecipe(nope ? null : CraftItemStack.asNMSCopy(recipe.getLeft()),
-					nope ? null : CraftItemStack.asNMSCopy(recipe.getMiddle()),
+			boolean hasNoResult = recipe.getRight() == null || recipe.getRight().getType() == Material.AIR;
+			list.add(new MerchantRecipe(hasNoResult ? net.minecraft.server.v1_11_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getLeft()),
+					hasNoResult ? net.minecraft.server.v1_11_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getMiddle()),
 							CraftItemStack.asNMSCopy(recipe.getRight())));
 		}
 

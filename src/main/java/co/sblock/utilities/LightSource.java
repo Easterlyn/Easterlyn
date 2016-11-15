@@ -8,12 +8,12 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
-import net.minecraft.server.v1_10_R1.BlockPosition;
-import net.minecraft.server.v1_10_R1.Chunk;
-import net.minecraft.server.v1_10_R1.EnumSkyBlock;
+import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.Chunk;
+import net.minecraft.server.v1_11_R1.EnumSkyBlock;
 
-import org.bukkit.craftbukkit.v1_10_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 
 /**
  * http://forums.bukkit.org/threads/resource-server-side-lighting-no-it-isnt-just-client-side.154503/
@@ -62,7 +62,7 @@ public class LightSource {
 			}
 		}
 
-		// TODO 1.10
+		// TODO 1.11
 //		PacketPlayOutMapChunkBulk packet = new PacketPlayOutMapChunkBulk(chunks);
 //
 //		for (Player player : l.getWorld().getPlayers()) {

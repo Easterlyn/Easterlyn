@@ -1,18 +1,18 @@
 package co.sblock.micromodules;
 
+import co.sblock.Sblock;
+import co.sblock.module.Module;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-import co.sblock.Sblock;
-import co.sblock.module.Module;
+import net.minecraft.server.v1_11_R1.Explosion;
 
-import net.minecraft.server.v1_10_R1.Explosion;
-
-import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftEntity;
 
 /**
  * A Module for creating falling explosive spheres.
@@ -43,7 +43,7 @@ public class Meteors extends Module {
 	 * @param event the EntityChangeBlockEvent
 	 */
 	public void handlePotentialMeteorite(EntityChangeBlockEvent event) {
-		net.minecraft.server.v1_10_R1.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
+		net.minecraft.server.v1_11_R1.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
 		if (nmsEntity instanceof MeteoriteComponent) {
 			event.setCancelled(true);
 			explode(event.getBlock().getLocation(), event.getEntity(),

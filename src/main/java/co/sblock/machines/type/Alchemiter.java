@@ -3,6 +3,19 @@ package co.sblock.machines.type;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.captcha.CruxiteDowel;
+import co.sblock.chat.Language;
+import co.sblock.effects.Effects;
+import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.Machines;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
+import co.sblock.utilities.Experience;
+import co.sblock.utilities.InventoryUtils;
+
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -18,19 +31,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
-
-import co.sblock.Sblock;
-import co.sblock.captcha.Captcha;
-import co.sblock.captcha.CruxiteDowel;
-import co.sblock.chat.Language;
-import co.sblock.effects.Effects;
-import co.sblock.machines.MachineInventoryTracker;
-import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.Shape;
-import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.utilities.Experience;
-import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -183,6 +183,8 @@ public class Alchemiter extends Machine {
 				ItemStack expCost;
 				ItemStack result;
 				if (CruxiteDowel.isDowel(input)) {
+					input = input.clone();
+					input.setAmount(1);
 					result = captcha.captchaToItem(input);
 					expCost = new ItemStack(Material.EXP_BOTTLE);
 					int exp = CruxiteDowel.expCost(effects, result);

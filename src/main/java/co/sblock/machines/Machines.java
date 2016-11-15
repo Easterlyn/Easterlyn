@@ -11,12 +11,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import co.sblock.Sblock;
+import co.sblock.machines.type.Machine;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.module.Module;
+import co.sblock.users.Region;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,15 +35,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.reflections.Reflections;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
-import co.sblock.Sblock;
-import co.sblock.machines.type.Machine;
-import co.sblock.machines.utilities.Direction;
-import co.sblock.module.Module;
-import co.sblock.users.Region;
 
 /**
  * A Module for handling Block structures with special functions.
@@ -75,7 +76,7 @@ public class Machines extends Module {
 				byName.put(type.getSimpleName(), machine);
 				byName.put(machine.getName(), machine);
 				ItemStack item = machine.getUniqueDrop();
-				if (item == null || !item.hasItemMeta()) {
+				if (item == null || item.getType() == Material.AIR || !item.hasItemMeta()) {
 					continue;
 				}
 				ItemMeta meta = item.getItemMeta();

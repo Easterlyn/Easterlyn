@@ -6,21 +6,21 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.server.v1_10_R1.EntityPlayer;
-import net.minecraft.server.v1_10_R1.MinecraftServer;
-import net.minecraft.server.v1_10_R1.PlayerInteractManager;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
-import org.bukkit.craftbukkit.v1_10_R1.CraftServer;
+import net.minecraft.server.v1_11_R1.EntityPlayer;
+import net.minecraft.server.v1_11_R1.MinecraftServer;
+import net.minecraft.server.v1_11_R1.PlayerInteractManager;
+
+import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
 
 /**
  * Utility for accessing offline Players as if they were online.

@@ -75,7 +75,7 @@ public class Computer extends Machine implements InventoryHolder {
 
 	@Override
 	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
-		if (event.getCurrentItem() == null) {
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
 			event.setResult(Result.DENY);
 			return true;
 		}

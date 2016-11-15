@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import co.sblock.effects.Effects;
+import co.sblock.effects.effect.Effect;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -16,9 +19,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import co.sblock.effects.Effects;
-import co.sblock.effects.effect.Effect;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -60,6 +60,9 @@ public class CruxiteDowel {
 
 	public static ItemStack carve(ItemStack is) {
 		ItemStack dowel = getDowel();
+		if (is == null || !is.hasItemMeta()) {
+			return dowel;
+		}
 		ItemMeta im = dowel.getItemMeta();
 		im.setLore(is.getItemMeta().getLore());
 		dowel.setItemMeta(im);

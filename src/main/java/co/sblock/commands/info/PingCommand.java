@@ -2,15 +2,15 @@ package co.sblock.commands.info;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.chat.Language;
 import co.sblock.commands.SblockCommand;
+
+import com.google.common.collect.ImmutableList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * SblockCommand for getting a player's ping.
@@ -44,7 +44,7 @@ public class PingCommand extends SblockCommand {
 		}
 		sender.sendMessage(Language.getColor("player.good") + target.getName()
 				+ Language.getColor("good") + "'s ping is "
-				+ ((org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer) target).getHandle().ping + "ms!");
+				+ ((org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer) target).getHandle().ping + "ms!");
 		return true;
 	}
 

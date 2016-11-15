@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import co.sblock.Sblock;
+import co.sblock.effects.Effects;
+import co.sblock.effects.effect.Effect;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,31 +19,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-import co.sblock.Sblock;
-import co.sblock.effects.Effects;
-import co.sblock.effects.effect.Effect;
+import net.minecraft.server.v1_11_R1.BlockBanner;
+import net.minecraft.server.v1_11_R1.BlockCocoa;
+import net.minecraft.server.v1_11_R1.BlockCrops;
+import net.minecraft.server.v1_11_R1.BlockLeaves;
+import net.minecraft.server.v1_11_R1.BlockLeaves1;
+import net.minecraft.server.v1_11_R1.BlockLeaves2;
+import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.BlockWood.EnumLogVariant;
+import net.minecraft.server.v1_11_R1.Blocks;
+import net.minecraft.server.v1_11_R1.GameProfileSerializer;
+import net.minecraft.server.v1_11_R1.IBlockData;
+import net.minecraft.server.v1_11_R1.Item;
+import net.minecraft.server.v1_11_R1.ItemBanner;
+import net.minecraft.server.v1_11_R1.Items;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.minecraft.server.v1_11_R1.TileEntity;
+import net.minecraft.server.v1_11_R1.TileEntityBanner;
+import net.minecraft.server.v1_11_R1.TileEntitySkull;
 
-import net.minecraft.server.v1_10_R1.BlockBanner;
-import net.minecraft.server.v1_10_R1.BlockCocoa;
-import net.minecraft.server.v1_10_R1.BlockCrops;
-import net.minecraft.server.v1_10_R1.BlockLeaves;
-import net.minecraft.server.v1_10_R1.BlockLeaves1;
-import net.minecraft.server.v1_10_R1.BlockLeaves2;
-import net.minecraft.server.v1_10_R1.BlockPosition;
-import net.minecraft.server.v1_10_R1.BlockWood.EnumLogVariant;
-import net.minecraft.server.v1_10_R1.Blocks;
-import net.minecraft.server.v1_10_R1.GameProfileSerializer;
-import net.minecraft.server.v1_10_R1.IBlockData;
-import net.minecraft.server.v1_10_R1.Item;
-import net.minecraft.server.v1_10_R1.Items;
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
-import net.minecraft.server.v1_10_R1.TileEntity;
-import net.minecraft.server.v1_10_R1.TileEntityBanner;
-import net.minecraft.server.v1_10_R1.TileEntitySkull;
-
-import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_10_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
 
 /**
  * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
@@ -159,7 +160,7 @@ public class BlockDrops {
 
 	@SuppressWarnings("deprecation")
 	private static boolean isUsableTool(Material tool, Material block) {
-		net.minecraft.server.v1_10_R1.Block nmsBlock = net.minecraft.server.v1_10_R1.Block.getById(block.getId());
+		net.minecraft.server.v1_11_R1.Block nmsBlock = net.minecraft.server.v1_11_R1.Block.getById(block.getId());
 		if (nmsBlock == null) {
 			return false;
 		}
@@ -167,16 +168,17 @@ public class BlockDrops {
 		if (data.getMaterial().isAlwaysDestroyable()) {
 			return true;
 		}
-		return tool != null && Item.getById(tool.getId()).canDestroySpecialBlock(data);
+		return tool != null && tool != Material.AIR && Item.getById(tool.getId()).canDestroySpecialBlock(data);
 	}
 
 	@SuppressWarnings("deprecation")
 	private static Collection<ItemStack> getDrops(Material tool, Block block, int fortune) {
+		// TODO 1.11 shulker box
 		Random random = ThreadLocalRandom.current();
 		List<ItemStack> drops = new ArrayList<>();
 
-		net.minecraft.server.v1_10_R1.Block nmsBlock = net.minecraft.server.v1_10_R1.Block.getById(block.getTypeId());
-		net.minecraft.server.v1_10_R1.WorldServer nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
+		net.minecraft.server.v1_11_R1.Block nmsBlock = net.minecraft.server.v1_11_R1.Block.getById(block.getTypeId());
+		net.minecraft.server.v1_11_R1.WorldServer nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
 		if (nmsBlock == Blocks.AIR || !isUsableTool(tool, block.getType())) {
 			return drops;
 		}
@@ -201,16 +203,9 @@ public class BlockDrops {
 			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
 			TileEntity localTileEntity = nmsWorld.getTileEntity(position);
 			if (localTileEntity instanceof TileEntityBanner) {
-				net.minecraft.server.v1_10_R1.ItemStack nmsStack = new net.minecraft.server.v1_10_R1.ItemStack(
-						Items.BANNER, 1, ((TileEntityBanner) localTileEntity).color);
-
-				NBTTagCompound localNBTTagCompound = new NBTTagCompound();
-				localTileEntity.save(localNBTTagCompound);
-				localNBTTagCompound.remove("x");
-				localNBTTagCompound.remove("y");
-				localNBTTagCompound.remove("z");
-				localNBTTagCompound.remove("id");
-				nmsStack.a("BlockEntityTag", localNBTTagCompound);
+				net.minecraft.server.v1_11_R1.ItemStack nmsStack = ItemBanner.a(
+						((TileEntityBanner) localTileEntity).color,
+						((TileEntityBanner) localTileEntity).patterns);
 
 				drops.add(CraftItemStack.asBukkitCopy(nmsStack));
 				return drops;
@@ -221,12 +216,12 @@ public class BlockDrops {
 			// Skull: Set data based on tile entity. See BlockSkull#dropNaturally
 			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
 			TileEntity tileentity = nmsWorld.getTileEntity(position);
-			net.minecraft.server.v1_10_R1.ItemStack nmsStack;
+			net.minecraft.server.v1_11_R1.ItemStack nmsStack;
 			if (tileentity instanceof TileEntitySkull) {
 				TileEntitySkull tileEntitySkull = (TileEntitySkull) tileentity;
 				int skullData = ((TileEntitySkull) tileentity).getSkullType();
 
-				nmsStack = new net.minecraft.server.v1_10_R1.ItemStack(
+				nmsStack = new net.minecraft.server.v1_11_R1.ItemStack(
 						Items.SKULL, 1, skullData);
 
 				if (skullData == 3 && tileEntitySkull.getGameProfile() != null) {
@@ -237,7 +232,7 @@ public class BlockDrops {
 					nmsStack.getTag().set("SkullOwner", nbttagcompound);
 				}
 			} else {
-				nmsStack = new net.minecraft.server.v1_10_R1.ItemStack(
+				nmsStack = new net.minecraft.server.v1_11_R1.ItemStack(
 						Items.SKULL, 1, 0);
 			}
 
@@ -256,7 +251,7 @@ public class BlockDrops {
 		}
 
 		Item item = nmsBlock.getDropType(nmsBlock.fromLegacyData(data), random, fortune);
-		if (item == null) {
+		if (item == null || item == Items.a) {
 			return drops;
 		}
 

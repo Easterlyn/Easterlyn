@@ -13,22 +13,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import org.reflections.Reflections;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.effects.effect.BehaviorActive;
@@ -42,6 +26,23 @@ import co.sblock.module.Module;
 import co.sblock.users.UserAspect;
 import co.sblock.utilities.InventoryUtils;
 import co.sblock.utilities.NumberUtils;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import org.reflections.Reflections;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -252,7 +253,8 @@ public class Effects extends Module {
 	public Map<Effect, Integer> getEffects(boolean bypassMax, ItemStack... items) {
 		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
 		for (ItemStack item : items) {
-			if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore() || Captcha.isCard(item)) {
+			if (item == null || item.getType() == Material.AIR || !item.hasItemMeta()
+					|| !item.getItemMeta().hasLore() || Captcha.isCard(item)) {
 				continue;
 			}
 			for (String lore : item.getItemMeta().getLore()) {

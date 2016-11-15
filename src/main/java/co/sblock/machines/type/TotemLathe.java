@@ -2,6 +2,16 @@ package co.sblock.machines.type;
 
 import java.util.UUID;
 
+import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.captcha.CruxiteDowel;
+import co.sblock.machines.MachineInventoryTracker;
+import co.sblock.machines.Machines;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
+import co.sblock.utilities.InventoryUtils;
+
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -18,16 +28,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import co.sblock.Sblock;
-import co.sblock.captcha.Captcha;
-import co.sblock.captcha.CruxiteDowel;
-import co.sblock.machines.MachineInventoryTracker;
-import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.Shape;
-import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.utilities.InventoryUtils;
-
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -39,11 +39,13 @@ public class TotemLathe extends Machine	{
 
 	private static Triple<ItemStack, ItemStack, ItemStack> exampleRecipes;
 
+	private final Captcha captcha;
 	private final MachineInventoryTracker tracker;
 	private final ItemStack drop;
 
 	public TotemLathe(Sblock plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Totem Lathe");
+		this.captcha = plugin.getModule(Captcha.class);
 		tracker = machines.getInventoryTracker();
 		Shape shape = getShape();
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 2);
@@ -181,13 +183,13 @@ public class TotemLathe extends Machine	{
 					card = slot0;
 				}
 				if (Captcha.isPunch(card)) {
-					result = CruxiteDowel.carve(card);
+					result = CruxiteDowel.carve(captcha.captchaToPunch(card));
 				}
-				if (slot0 != null) {
+				if (slot0 != null && slot0.getType() != Material.AIR) {
 					slot0 = slot0.clone();
 					slot0.setAmount(1);
 				}
-				if (slot1 != null) {
+				if (slot1 != null && slot1.getType() != Material.AIR) {
 					slot1 = slot1.clone();
 					slot1.setAmount(1);
 				}

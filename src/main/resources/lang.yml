@@ -432,7 +432,7 @@ events:
   portal:
     protected: '{COLOR:bad}Your destination is inside a protected area! You''ll have to build your portal elsewhere.'
   packet:
-    serverList: '{COLOR:dark_aqua}Sblock Beta{COLOR:dark_gray}: {COLOR:gray}1.9{COLOR:dark_gray} - {PERCENT}{ONLINE}{COLOR:dark_gray}/{COLOR:green}{MAX}'
+    serverList: '{COLOR:dark_aqua}Sblock Beta{COLOR:dark_gray}: {COLOR:gray}1.11{COLOR:dark_gray} - {PERCENT}{ONLINE}{COLOR:dark_gray}/{COLOR:green}{MAX}'
 
 machines:
   noTouch: '{COLOR:bad}You decide against fussing with the internals of this machine.'

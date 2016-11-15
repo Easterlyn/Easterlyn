@@ -14,6 +14,21 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.effects.Effects;
+import co.sblock.machines.Machines;
+import co.sblock.module.Module;
+import co.sblock.utilities.InventoryUtils;
+import co.sblock.utilities.JSONUtil;
+import co.sblock.utilities.NumberUtils;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -25,21 +40,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.effects.Effects;
-import co.sblock.machines.Machines;
-import co.sblock.module.Module;
-import co.sblock.utilities.InventoryUtils;
-import co.sblock.utilities.JSONUtil;
-import co.sblock.utilities.NumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -158,7 +158,7 @@ public class Captcha extends Module {
 
 	public ItemStack getCaptchaFor(String hash) {
 		ItemStack item = getItemByHash(hash);
-		if (item == null) {
+		if (item == null || item.getType() == Material.AIR) {
 			return null;
 		}
 		ItemStack card = blankCaptchaCard();
@@ -349,10 +349,6 @@ public class Captcha extends Module {
 		}
 		captcha = captcha.clone();
 		if (Captcha.isBlankCaptcha(captcha)) {
-			ItemMeta im = captcha.getItemMeta();
-			im.setDisplayName("Punchcard");
-			im.setLore(Arrays.asList(HASH_PREFIX + "00000000"));
-			captcha.setItemMeta(im);
 			return captcha;
 		}
 		ItemStack item = captchaToItem(captcha);
@@ -433,7 +429,9 @@ public class Captcha extends Module {
 		if (item == null || item.getType() == Material.AIR
 				/* Book meta is very volatile, no reason to allow creation of codes that will never be reused. */
 				|| item.getType() == Material.BOOK_AND_QUILL
-				|| item.getType() == Material.WRITTEN_BOOK) {
+				|| item.getType() == Material.WRITTEN_BOOK
+				/* Shulker boxes are their own type of portable storage. Nope. */
+				|| item.getType().name().endsWith("_SHULKER_BOX")) {
 			return false;
 		}
 		// TODO lorecards and the active Computer effect
@@ -480,7 +478,10 @@ public class Captcha extends Module {
 	 */
 	public ItemStack createCombinedPunch(ItemStack card1, ItemStack card2) {
 		if (isCaptcha(card1)) {
-			if (card2 != null) {
+			if (card2 != null && card2.getType() != Material.AIR) {
+				return null;
+			}
+			if (isBlankCaptcha(card1)) {
 				return null;
 			}
 			ItemStack is = captchaToPunch(card1);
@@ -492,18 +493,16 @@ public class Captcha extends Module {
 		if (!isPunch(card1)) {
 			return null;
 		}
-		if (isCaptcha(card2)) {
-			card1 = card1.clone();
-			card1.setAmount(1);
-			return card1;
+		if (card2 == null || card2.getType() == Material.AIR || isCaptcha(card2)) {
+			return captchaToPunch(card1);
 		}
-		if (card2 != null && !isPunch(card2)) {
+		if (!isPunch(card2)) {
 			return null;
 		}
 		ItemStack item = captchaToItem(card1);
 		ItemStack item2 = captchaToItem(card2);
 		List<String> lore;
-		if (item2 != null && item2.hasItemMeta() && item2.getItemMeta().hasLore()) {
+		if (item2 != null && item2.getType() != Material.AIR && item2.hasItemMeta() && item2.getItemMeta().hasLore()) {
 			lore = effects.organizeEffectLore(item.getItemMeta().getLore(), false,
 					false, true, item2.getItemMeta().getLore().toArray(new String[0]));
 		} else {

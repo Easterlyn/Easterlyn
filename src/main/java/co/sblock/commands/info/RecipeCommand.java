@@ -2,6 +2,12 @@ package co.sblock.commands.info;
 
 import java.util.List;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.commands.SblockCommand;
+import co.sblock.discord.DiscordPlayer;
+import co.sblock.utilities.InventoryUtils;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -15,12 +21,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.commands.SblockCommand;
-import co.sblock.discord.DiscordPlayer;
-import co.sblock.utilities.InventoryUtils;
 
 /**
  * Better recipe lookup.
@@ -95,7 +95,7 @@ public class RecipeCommand extends SblockCommand {
 					}
 					// TODO check this
 					ItemStack item = shaped.getIngredientMap().get(shaped.getShape()[i].charAt(j));
-					if (item != null && item.getDurability() == Short.MAX_VALUE) {
+					if (item != null && item.getType() != Material.AIR && item.getDurability() == Short.MAX_VALUE) {
 						// Prevent checkerboard missing textures
 						item.setDurability((short) 0);
 					}

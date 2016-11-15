@@ -4,6 +4,14 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
+import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.machines.Machines;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
+import co.sblock.utilities.InventoryUtils;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -22,14 +30,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import co.sblock.Sblock;
-import co.sblock.captcha.Captcha;
-import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.Shape;
-import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.utilities.InventoryUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -151,7 +151,7 @@ public class CompilationAmalgamator extends Machine {
 	private void update(Inventory inventory, Inventory captchaInv, ConfigurationSection storage) {
 		ItemStack captchaTarget = null;
 		for (ItemStack item : inventory.getContents()) {
-			if (item == null) {
+			if (item == null || item.getType() == Material.AIR) {
 				continue;
 			}
 			if (item.getAmount() != item.getMaxStackSize()) {
@@ -227,7 +227,7 @@ public class CompilationAmalgamator extends Machine {
 
 	private void ejectAllInvalidItems(Function<ItemStack, Boolean> func, Inventory inventory, ConfigurationSection storage) {
 		for (ItemStack item : inventory.getContents()) {
-			if (item == null || func.apply(item)) {
+			if (item == null || item.getType() == Material.AIR || func.apply(item)) {
 				continue;
 			}
 			// This is safe, no CME because we're iterating over a copied array

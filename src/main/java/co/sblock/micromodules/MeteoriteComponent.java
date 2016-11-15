@@ -4,11 +4,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import net.minecraft.server.v1_10_R1.Block;
-import net.minecraft.server.v1_10_R1.DamageSource;
-import net.minecraft.server.v1_10_R1.EntityFallingBlock;
+import net.minecraft.server.v1_11_R1.Block;
+import net.minecraft.server.v1_11_R1.DamageSource;
+import net.minecraft.server.v1_11_R1.EntityFallingBlock;
 
-import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 
 /**
  * Wrapper for EntityFallingBlock to allow easier detection of Meteorite components.
