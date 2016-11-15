@@ -1,16 +1,14 @@
 package co.sblock.events.listeners.player;
 
-import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.events.listeners.SblockListener;
+import co.sblock.utilities.PermissionUtils;
 import co.sblock.utilities.TextUtils;
+
+import org.bukkit.block.Block;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.SignChangeEvent;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -25,17 +23,10 @@ public class SignChangeListener extends SblockListener {
 
 	public SignChangeListener(Sblock plugin) {
 		super(plugin);
-		Permission permission;
-		try {
-			permission = new Permission("sblock.spam.sign", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.spam.sign");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.felt", true).recalculatePermissibles();
 		this.chat = plugin.getModule(Chat.class);
+
+		PermissionUtils.addParent("sblock.sign.unlogged", "sblock.spam");
+		PermissionUtils.addParent("sblock.sign.unlogged", "sblock.felt");
 	}
 
 	/**
@@ -49,7 +40,7 @@ public class SignChangeListener extends SblockListener {
 	public void onSignChange(SignChangeEvent event) {
 
 		// Automatically flag players with bypass as posting non-empty signs to skip empty checks
-		boolean empty = !event.getPlayer().hasPermission("sblock.spam.sign");
+		boolean empty = !event.getPlayer().hasPermission("sblock.sign.unlogged");
 
 		for (int i = 0; i < event.getLines().length; i++) {
 			event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));
@@ -58,7 +49,7 @@ public class SignChangeListener extends SblockListener {
 			}
 		}
 
-		if (empty || event.getPlayer().hasPermission("sblock.spam.sign")) {
+		if (empty || event.getPlayer().hasPermission("sblock.sign.unlogged")) {
 			return;
 		}
 

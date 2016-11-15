@@ -2,14 +2,6 @@ package co.sblock.commands.chat;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.channel.Channel;
@@ -19,7 +11,16 @@ import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
+import co.sblock.utilities.PermissionUtils;
 import co.sblock.utilities.TextUtils;
+
+import com.google.common.collect.ImmutableList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -36,6 +37,8 @@ public class ShowItemCommand extends SblockCommand {
 		super(plugin, "show");
 		this.users = plugin.getModule(Users.class);
 		this.setAliases("showitem");
+
+		PermissionUtils.addParent("sblock.chat.unfiltered", "sblock.felt");
 	}
 
 	@Override
@@ -66,7 +69,7 @@ public class ShowItemCommand extends SblockCommand {
 			channel = user.getCurrentChannel();
 		}
 
-		if (!player.hasPermission("sblock.felt") && "#".equals(user.getCurrentChannel())
+		if (!player.hasPermission("sblock.chat.unfiltered") && "#".equals(user.getCurrentChannel())
 				&& !TextUtils.isOnlyAscii(handMeta.getDisplayName())) {
 			sender.sendMessage(getLang().getValue("command.show.invalidCharacters"));
 		}

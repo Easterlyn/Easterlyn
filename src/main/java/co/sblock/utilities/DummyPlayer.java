@@ -1229,4 +1229,19 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setPortalCooldown(int arg0) {}
 
+	@Override
+	public boolean addScoreboardTag(String arg0) {
+		return false;
+	}
+
+	@Override
+	public Set<String> getScoreboardTags() {
+		return null;
+	}
+
+	@Override
+	public boolean removeScoreboardTag(String arg0) {
+		return false;
+	}
+
 }

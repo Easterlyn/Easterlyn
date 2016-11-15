@@ -624,7 +624,7 @@ public class Discord extends Module {
 			}
 			final List<IRole> roles = new ArrayList<>();
 			for (String roleName : guildRoles.getKeys(false)) {
-				if (!player.hasPermission("sblock." + roleName)) {
+				if (!player.hasPermission("sblock.group." + roleName)) {
 					continue;
 				}
 

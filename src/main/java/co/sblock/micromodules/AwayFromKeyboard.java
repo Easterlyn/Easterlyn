@@ -7,16 +7,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import co.sblock.Sblock;
 import co.sblock.chat.Language;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
+import co.sblock.utilities.PermissionUtils;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Module for managing players who are inactive.
@@ -36,12 +36,7 @@ public class AwayFromKeyboard extends Module {
 		this.lastLocations = new HashMap<>();
 		this.afkUUIDs = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 
-		Permission permission = Bukkit.getPluginManager().getPermission("sblock.afk.auto");
-		if (permission == null) {
-			permission = new Permission("sblock.afk.auto");
-			Bukkit.getPluginManager().addPermission(permission);
-		}
-		permission.addParent("sblock.default", true).recalculatePermissibles();
+		PermissionUtils.addParent("sblock.afk.auto", "sblock.default");
 	}
 
 	@Override

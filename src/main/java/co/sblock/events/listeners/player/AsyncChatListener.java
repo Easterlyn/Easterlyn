@@ -33,16 +33,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import net.md_5.bungee.api.ChatColor;
 
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for PlayerAsyncChatEvents.
@@ -80,16 +78,6 @@ public class AsyncChatListener extends SblockListener {
 		this.discord = plugin.getModule(Discord.class);
 		this.lang = plugin.getModule(Language.class);
 		this.users = plugin.getModule(Users.class);
-		Permission permission;
-		try {
-			permission = new Permission("sblock.spam.chat", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.spam.chat");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.felt", true).recalculatePermissibles();
 
 		halFunctions = new ArrayList<>();
 		Chat chat = plugin.getModule(Chat.class);
@@ -354,7 +342,7 @@ public class AsyncChatListener extends SblockListener {
 	private boolean detectSpam(AsyncPlayerChatEvent event, Message message) {
 		final Player player = event.getPlayer();
 		final User sender = message.getSender();
-		if (sender == null || player.hasPermission("sblock.spam.chat")) {
+		if (sender == null || player.hasPermission("sblock.chat.unfiltered")) {
 			return false;
 		}
 

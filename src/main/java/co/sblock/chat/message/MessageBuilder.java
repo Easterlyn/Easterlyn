@@ -6,10 +6,6 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
-
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
@@ -23,6 +19,10 @@ import co.sblock.users.User;
 import co.sblock.users.Users;
 import co.sblock.utilities.JSONUtil;
 import co.sblock.utilities.TextUtils;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -149,7 +149,7 @@ public class MessageBuilder {
 		Player player = sender != null ? sender.getPlayer() : null;
 		// Strip characters that are not allowed in default channels and partial caps
 		if (channel != null && channel.getOwner() == null && !(channel instanceof NickChannel)
-				&& player != null && !player.hasPermission("sblock.felt")) {
+				&& player != null && !player.hasPermission("sblock.chat.unfiltered")) {
 			ArrayList<String> names = new ArrayList<String>();
 			Users users = plugin.getModule(Users.class);
 			channel.getListening().forEach(uuid -> {
@@ -338,14 +338,14 @@ public class MessageBuilder {
 		// E.G. >mfw people do it wrong
 		// instead of > lol le edgy meme
 		if (message.length() > 3 && message.charAt(0) == '>' && Character.isLetter(message.charAt(1))
-				&& (player == null || player.hasPermission("sblockchat.greentext"))) {
+				&& (player == null || player.hasPermission("sblock.chat.greentext"))) {
 			message = ChatColor.GREEN + message;
 		}
 
 		// Prepend chat colors to every message if sender has permission
-		if (!(channel instanceof RPChannel) && player != null && player.hasPermission("sblockchat.color")) {
+		if (!(channel instanceof RPChannel) && player != null && player.hasPermission("sblock.chat.color")) {
 			for (ChatColor c : ChatColor.values()) {
-				if (player.hasPermission("sblockchat." + c.name().toLowerCase())) {
+				if (player.hasPermission("sblock.chat.color." + c.name().toLowerCase())) {
 					message = c + message;
 					break;
 				}
@@ -411,22 +411,22 @@ public class MessageBuilder {
 		String rankName;
 		if (player != null) {
 			// Permission-based rank colors
-			if (player.hasPermission("sblock.horrorterror")) {
+			if (player.hasPermission("sblock.chat.color.horrorterror")) {
 				globalRank = Language.getColor("rank.horrorterror");
 				rankName = "Horrorterror";
-			} else if (player.hasPermission("sblock.denizen")) {
+			} else if (player.hasPermission("sblock.chat.color.denizen")) {
 				globalRank = Language.getColor("rank.denizen");
 				rankName = "Denizen";
-			} else if (player.hasPermission("sblock.felt")) {
+			} else if (player.hasPermission("sblock.chat.color.felt")) {
 				globalRank = Language.getColor("rank.felt");
 				rankName = "Felt";
-			} else if (player.hasPermission("sblock.helper")) {
+			} else if (player.hasPermission("sblock.chat.color.helper")) {
 				globalRank = Language.getColor("rank.helper");
 				rankName = "Helper";
-			} else if (player.hasPermission("sblock.donator")) {
+			} else if (player.hasPermission("sblock.chat.color.donator")) {
 				globalRank = Language.getColor("rank.donator");
 				rankName = "Donator";
-			} else if (player.hasPermission("sblock.godtier")) {
+			} else if (player.hasPermission("sblock.chat.color.godtier")) {
 				globalRank = Language.getColor("rank.godtier");
 				rankName = "Godtier";
 			} else {

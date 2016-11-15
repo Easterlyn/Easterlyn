@@ -2,15 +2,6 @@ package co.sblock.events.listeners.block;
 
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import org.bukkit.GameMode;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockPlaceEvent;
-
 import co.sblock.Sblock;
 import co.sblock.chat.Language;
 import co.sblock.discord.Discord;
@@ -21,6 +12,16 @@ import co.sblock.machines.type.Machine;
 import co.sblock.machines.utilities.Direction;
 import co.sblock.users.BukkitSerializer;
 import co.sblock.utilities.InventoryUtils;
+import co.sblock.utilities.PermissionUtils;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.bukkit.GameMode;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
  * Listener for BlockPlaceEvents.
@@ -40,6 +41,8 @@ public class PlaceListener extends SblockListener {
 		this.events = plugin.getModule(Events.class);
 		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
+
+		PermissionUtils.addParent("sblock.events.creative.unfiltered", "sblock.felt");
 	}
 
 	/**
@@ -52,7 +55,7 @@ public class PlaceListener extends SblockListener {
 
 		Player player = event.getPlayer();
 
-		if (player.getGameMode() == GameMode.CREATIVE && !player.hasPermission("sblock.felt")
+		if (player.getGameMode() == GameMode.CREATIVE && !player.hasPermission("sblock.events.creative.unfiltered")
 				&& events.getCreativeBlacklist().contains(event.getItemInHand().getType())) {
 			event.setCancelled(true);
 			return;

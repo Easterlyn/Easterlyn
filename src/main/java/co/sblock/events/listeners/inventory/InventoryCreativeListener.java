@@ -1,14 +1,15 @@
 package co.sblock.events.listeners.inventory;
 
-import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.InventoryCreativeEvent;
-import org.bukkit.inventory.ItemStack;
-
 import co.sblock.Sblock;
 import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.utilities.InventoryUtils;
+import co.sblock.utilities.PermissionUtils;
+
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Listener for InventoryCreativeEvents. Used to clean input items from creative clients, preventing
@@ -23,6 +24,8 @@ public class InventoryCreativeListener extends SblockListener {
 	public InventoryCreativeListener(Sblock plugin) {
 		super(plugin);
 		this.events = plugin.getModule(Events.class);
+
+		PermissionUtils.addParent("sblock.events.creative.unfiltered", "sblock.felt");
 	}
 
 	/**
@@ -35,7 +38,7 @@ public class InventoryCreativeListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryCreative(InventoryCreativeEvent event) {
-		if (event.getWhoClicked().hasPermission("sblock.felt")) {
+		if (event.getWhoClicked().hasPermission("sblock.events.creative.unfiltered")) {
 			return;
 		}
 

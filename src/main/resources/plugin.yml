@@ -15,12 +15,6 @@ permissions:
  sblock.guildleader:
   description: 'Default false - not all horrorterrors are guild leaders.'
   default: false
- sblockchat.greentext:
-  description: '>mfw tfw'
-  default: true
- sblockchat.color:
-  description: 'Automatically colors message with name color.'
-  default: false
  sblock.god:
   description: 'Stuff for Sblock "gods"'
   default: false

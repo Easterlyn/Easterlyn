@@ -1521,4 +1521,19 @@ public class PermissiblePlayer implements Player {
 		player.setPortalCooldown(arg0);
 	}
 
+	@Override
+	public boolean addScoreboardTag(String arg0) {
+		return player.addScoreboardTag(arg0);
+	}
+
+	@Override
+	public Set<String> getScoreboardTags() {
+		return player.getScoreboardTags();
+	}
+
+	@Override
+	public boolean removeScoreboardTag(String arg0) {
+		return player.removeScoreboardTag(arg0);
+	}
+
 }

@@ -4,6 +4,18 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Color;
+import co.sblock.chat.Language;
+import co.sblock.module.Module;
+import co.sblock.utilities.CollectionConversions;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Statistic;
@@ -13,18 +25,6 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Color;
-import co.sblock.chat.Language;
-import co.sblock.module.Module;
-import co.sblock.utilities.CollectionConversions;
 
 /**
  * Class that keeps track of players currently logged on to the game.
@@ -111,30 +111,30 @@ public class Users extends Module {
 			prefixBuilder.append(prefix);
 		}
 		for (net.md_5.bungee.api.ChatColor color : Color.COLORS) {
-			if (player.hasPermission("sblockchat." + color.name().toLowerCase())) {
+			if (player.hasPermission("sblock.chat.color." + color.name().toLowerCase())) {
 				prefixBuilder.append(color);
 				break;
 			}
 		}
 		if (prefixBuilder.length() > (prefix == null ? 0 : prefix.length())) {
 			// Do nothing, we've got a fancy override going on
-		} else if (player.hasPermission("sblock.horrorterror")) {
+		} else if (player.hasPermission("sblock.chat.color.horrorterror")) {
 			prefixBuilder.append(Language.getColor("rank.horrorterror"));
-		} else if (player.hasPermission("sblock.denizen")) {
+		} else if (player.hasPermission("sblock.chat.color.denizen")) {
 			prefixBuilder.append(Language.getColor("rank.denizen"));
-		} else if (player.hasPermission("sblock.felt")) {
+		} else if (player.hasPermission("sblock.chat.color.felt")) {
 			prefixBuilder.append(Language.getColor("rank.felt"));
-		} else if (player.hasPermission("sblock.helper")) {
+		} else if (player.hasPermission("sblock.chat.color.helper")) {
 			prefixBuilder.append(Language.getColor("rank.helper"));
-		} else if (player.hasPermission("sblock.donator")) {
+		} else if (player.hasPermission("sblock.chat.color.donator")) {
 			prefixBuilder.append(Language.getColor("rank.donator"));
-		} else if (player.hasPermission("sblock.godtier")) {
+		} else if (player.hasPermission("sblock.chat.color.godtier")) {
 			prefixBuilder.append(Language.getColor("rank.godtier"));
 		} else {
 			prefixBuilder.append(Language.getColor("rank.hero"));
 		}
 		for (net.md_5.bungee.api.ChatColor color : Color.FORMATS) {
-			if (player.hasPermission("sblockchat." + color.name().toLowerCase())) {
+			if (player.hasPermission("sblock.chat.color." + color.name().toLowerCase())) {
 				prefixBuilder.append(color);
 			}
 		}

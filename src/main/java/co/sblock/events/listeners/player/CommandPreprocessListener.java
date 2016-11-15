@@ -1,10 +1,5 @@
 package co.sblock.events.listeners.player;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-
 import co.sblock.Sblock;
 import co.sblock.chat.Chat;
 import co.sblock.chat.Language;
@@ -14,6 +9,12 @@ import co.sblock.discord.DiscordPlayer;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.micromodules.AwayFromKeyboard;
 import co.sblock.micromodules.Spectators;
+import co.sblock.utilities.PermissionUtils;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 /**
  * Listener for PlayerCommandPreprocessEvents.
@@ -37,6 +38,11 @@ public class CommandPreprocessListener extends SblockListener {
 		this.lang = plugin.getModule(Language.class);
 		this.spectators = plugin.getModule(Spectators.class);
 		this.map = plugin.getCommandMap();
+
+		PermissionUtils.addParent("sblock.commands.unfiltered", "sblock.denizen");
+		PermissionUtils.addParent("sblock.commands.unfiltered", "sblock.spam");
+		PermissionUtils.addParent("sblock.commands.unlogged", "sblock.felt");
+		PermissionUtils.addParent("sblock.commands.unlogged", "sblock.spam");
 	}
 
 	/**
@@ -50,14 +56,14 @@ public class CommandPreprocessListener extends SblockListener {
 
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
-		if (!event.getPlayer().hasPermission("sblock.denizen") && 0 < colon && (colon < space || space < 0)) {
+		if (!event.getPlayer().hasPermission("sblock.commands.unfiltered") && 0 < colon && (colon < space || space < 0)) {
 			event.setMessage("/" + event.getMessage().substring(colon + 1));
 		}
 
 		String command = event.getMessage().substring(1, space > 0 ? space : event.getMessage().length()).toLowerCase();
 		Command cmd = map.getCommand(command);
 
-		if (!event.getPlayer().hasPermission("sblock.felt") && cmd != null
+		if (!event.getPlayer().hasPermission("sblock.commands.unlogged") && cmd != null
 				&& !discord.getConfig().getStringList("discord.command-log-blacklist").contains(cmd.getName())) {
 			discord.log(event.getPlayer().getName() + " issued command: " + event.getMessage());
 		}

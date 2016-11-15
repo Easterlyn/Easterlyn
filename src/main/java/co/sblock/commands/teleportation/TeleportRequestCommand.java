@@ -80,6 +80,7 @@ public class TeleportRequestCommand extends SblockCommand {
 			return true;
 		}
 		if (label.equals("tpreset")) {
+			// TODO: separate command to prevent tab completion for lower perm levels
 			if (player.hasPermission("sblock.command.tpa.reset")) {
 				cooldowns.clearCooldown(player, "teleportRequest");
 			}

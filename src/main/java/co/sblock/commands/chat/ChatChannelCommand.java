@@ -4,12 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.chat.ChannelManager;
 import co.sblock.chat.Chat;
@@ -22,6 +16,12 @@ import co.sblock.chat.channel.RegionChannel;
 import co.sblock.commands.SblockAsynchronousCommand;
 import co.sblock.users.User;
 import co.sblock.users.Users;
+
+import com.google.common.collect.ImmutableList;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -71,6 +71,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				+ Language.getColor("neutral") + ": Create a new channel.");
 
 		this.addExtraPermission("list.private", "helper");
+		this.addExtraPermission("new.anyname", "denizen");
 	}
 
 	@Override
@@ -168,13 +169,15 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				user.sendMessage(Language.getColor("bad") + "A channel by that name already exists!");
 				return true;
 			}
-			for (char c : args[1].substring(1).toCharArray()) {
-				if (c < '0' || c > '9' && c < 'A' || c > 'Z' && c < 'a' || c > 'z') {
-					user.sendMessage(Language.getColor("bad") + "Channel names must start with # and can only contain A-Z, a-z, or 0-9!");
-					return true;
+			if (!user.getPlayer().hasPermission("sblock.command.channel.new.anyname")) {
+				for (char c : args[1].substring(1).toCharArray()) {
+					if (c < '0' || c > '9' && c < 'A' || c > 'Z' && c < 'a' || c > 'z') {
+						user.sendMessage(Language.getColor("bad") + "Channel names must start with # and can only contain A-Z, a-z, or 0-9!");
+						return true;
+					}
 				}
 			}
-			if (args[1].length() > 16 || args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("sblock.denizen")) {
+			if (args[1].length() > 16 || args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("sblock.command.channel.new.anyname")) {
 				user.sendMessage(Language.getColor("bad") + "Channel names must start with '#' and cannot exceed 16 characters!");
 			} else if (ChannelType.getType(args[3]) == null) {
 				user.sendMessage(Language.getColor("emphasis.bad") + args[3] + Language.getColor("bad")

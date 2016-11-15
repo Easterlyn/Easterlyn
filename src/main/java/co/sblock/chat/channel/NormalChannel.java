@@ -63,7 +63,7 @@ public class NormalChannel extends Channel {
 	 */
 	@Override
 	public boolean isOwner(User user) {
-		return user != null && (user.getUUID().equals(owner) || user.getPlayer().hasPermission("sblock.denizen"));
+		return user != null && (user.getUUID().equals(owner) || user.getPlayer().hasPermission("sblock.chat.channel.owner"));
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class NormalChannel extends Channel {
 	@Override
 	public boolean isModerator(User user) {
 		return user != null && (isOwner(user) || modList.contains(user.getUUID())
-				|| user.getPlayer().hasPermission("sblock.felt"));
+				|| user.getPlayer().hasPermission("sblock.chat.channel.moderator"));
 	}
 
 	/**

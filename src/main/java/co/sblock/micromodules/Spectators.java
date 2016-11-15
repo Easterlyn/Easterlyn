@@ -8,6 +8,7 @@ import co.sblock.Sblock;
 import co.sblock.chat.Language;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
+import co.sblock.utilities.PermissionUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -36,6 +37,8 @@ public class Spectators extends Module {
 	public Spectators(Sblock plugin) {
 		super(plugin);
 		this.spectators = new HashMap<>();
+
+		PermissionUtils.addParent("sblock.spectators.unrestricted", "sblock.helper");
 	}
 
 	@Override
@@ -52,7 +55,7 @@ public class Spectators extends Module {
 					if (!isSpectator(player.getUniqueId())) {
 						continue;
 					}
-					if (player.hasPermission("sblock.command.spectate.unrestricted")) {
+					if (player.hasPermission("sblock.spectators.unrestricted")) {
 						continue;
 					}
 					if (cooldowns.getRemainder(player, getName()) == 0) {
@@ -114,7 +117,7 @@ public class Spectators extends Module {
 			player.sendMessage(lang.getValue("sleep.interrupt"));
 		}
 		spectators.put(player.getUniqueId(), player.getLocation().add(0, .1, 0));
-		if (!player.hasPermission("sblock.command.spectate.unrestricted")) {
+		if (!player.hasPermission("sblock.spectators.unrestricted")) {
 			// Allow spectating for 30 minutes at a time
 			cooldowns.addCooldown(player, getName(), 1800000);
 		}
@@ -153,7 +156,7 @@ public class Spectators extends Module {
 			return;
 		}
 		cooldowns.clearCooldown(player, getName());
-		if (!player.hasPermission("sblock.command.spectate.unrestricted")) {
+		if (!player.hasPermission("sblock.spectators.unrestricted")) {
 			// 8 minutes, 8 * 60 * 1000 ms
 			cooldowns.addCooldown(player, "spectatore", 480000L);
 		}

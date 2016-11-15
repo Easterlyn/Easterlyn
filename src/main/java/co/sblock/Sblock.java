@@ -42,6 +42,7 @@ import co.sblock.module.Dependencies;
 import co.sblock.module.Dependency;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
+import co.sblock.utilities.PermissionUtils;
 import co.sblock.utilities.TextUtils;
 
 import com.google.common.collect.ImmutableList;
@@ -69,8 +70,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.reflections.Reflections;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Sblock is the base of Sblock.co's custom plugin. All features are handled by
@@ -190,29 +189,16 @@ public class Sblock extends JavaPlugin {
 	}
 
 	private void createBasePermissions() {
-		Permission permission;
-		try {
-			permission = new Permission("sblock.default", PermissionDefault.TRUE);
-			getServer().getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			getServer().getPluginManager().getPermission("sblock.default").setDefault(PermissionDefault.TRUE);
-		}
+		Permission parentPermission = PermissionUtils.getOrCreate("sblock.default", PermissionDefault.TRUE);
+		Permission childPermission = PermissionUtils.getOrCreate("sblock.group.default", PermissionDefault.TRUE);
+		childPermission.addParent(parentPermission, true);
+
 		for (String perm : new String[] { "hero", "godtier", "donator", "helper", "felt", "denizen", "horrorterror" }) {
-			try {
-				permission = new Permission("sblock." + perm, PermissionDefault.OP);
-				getServer().getPluginManager().addPermission(permission);
-			} catch (IllegalArgumentException e) {
-				getServer().getPluginManager().getPermission("sblock." + perm).setDefault(PermissionDefault.OP);
-			}
-		}
-		for (ChatColor color : ChatColor.values()) {
-			try {
-				permission = new Permission("sblockchat." + color.name().toLowerCase(), PermissionDefault.FALSE);
-				getServer().getPluginManager().addPermission(permission);
-			} catch (IllegalArgumentException e) {
-				getServer().getPluginManager().getPermission("sblockchat." + color.name().toLowerCase())
-						.setDefault(PermissionDefault.FALSE);
-			}
+			parentPermission = PermissionUtils.getOrCreate("sblock." + perm, PermissionDefault.OP);
+			childPermission = PermissionUtils.getOrCreate("sblock.group." + perm, PermissionDefault.OP);
+			childPermission.addParent(parentPermission, true);
+			childPermission = PermissionUtils.getOrCreate("sblock.chat.color." + perm, PermissionDefault.OP);
+			childPermission.addParent(parentPermission, true);
 		}
 	}
 

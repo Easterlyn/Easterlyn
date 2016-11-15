@@ -5,16 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.commands.SblockCommand;
+
 import org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.commands.SblockCommand;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -65,7 +65,7 @@ public class ListCommand extends SblockCommand {
 				nameBuilder.append(player.getName());
 			}
 			for (String groupName : groupNames) {
-				if (groupName.equals("Hero") || player.hasPermission("sblock." + groupName.toLowerCase())) {
+				if (groupName.equals("Hero") || player.hasPermission("sblock.group." + groupName.toLowerCase())) {
 					groups.get(groupName).add(nameBuilder.toString());
 					break;
 				}

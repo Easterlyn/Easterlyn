@@ -2,20 +2,20 @@ package co.sblock.commands;
 
 import java.util.Arrays;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.discord.Discord;
+import co.sblock.utilities.PermissionUtils;
+import co.sblock.utilities.TextUtils;
+
 import org.apache.commons.lang3.StringUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.discord.Discord;
-import co.sblock.utilities.TextUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -62,14 +62,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 
 	public void addExtraPermission(String permissionSegment, String group) {
 		permissionSegment = this.getPermission() + '.' + permissionSegment;
-		Permission permission;
-		try {
-			permission = new Permission(permissionSegment, PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission(permissionSegment);
-			permission.setDefault(PermissionDefault.OP);
-		}
+		Permission permission = PermissionUtils.getOrCreate(permissionSegment, PermissionDefault.OP);
 		permission.addParent("sblock.command.*", true).recalculatePermissibles();
 		permission.addParent("sblock." + group, true).recalculatePermissibles();
 	}

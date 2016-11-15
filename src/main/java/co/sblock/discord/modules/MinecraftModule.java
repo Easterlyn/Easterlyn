@@ -13,9 +13,11 @@ import co.sblock.chat.Language;
 import co.sblock.chat.message.MessageBuilder;
 import co.sblock.discord.Discord;
 import co.sblock.discord.DiscordPlayer;
+import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordModule;
 import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.users.Users;
+import co.sblock.utilities.PermissionUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -27,9 +29,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
 
 /**
  * DiscordModule for interacting with the Minecraft server from Discord.
@@ -48,6 +47,9 @@ public class MinecraftModule extends DiscordModule {
 
 		this.users = discord.getPlugin().getModule(Users.class);
 		this.manager = discord.getPlugin().getModule(Chat.class).getChannelManager();
+
+		// Permission to bypass Discord message filtering (can truly be horrific)
+		PermissionUtils.addParent("sblock.discord.unfiltered", "sblock.horrorterror");
 
 		// future modify MessageBuilder to allow custom name clicks (OPEN_URL www.sblock.co/discord)
 		this.builder = new MessageBuilder(discord.getPlugin()).setNameClick("@# ")
@@ -111,7 +113,7 @@ public class MinecraftModule extends DiscordModule {
 
 	public void handleChat(IMessage message, Player player) {
 		String content = message.getContent();
-		if (!player.hasPermission("sblock.discord.filterexempt")) {
+		if (!player.hasPermission("sblock.discord.unfiltered")) {
 			int newline = content.indexOf('\n');
 			boolean delete = false;
 			if (newline > 0) {
@@ -124,10 +126,8 @@ public class MinecraftModule extends DiscordModule {
 				delete = true;
 			}
 			if (delete) {
-				try {
-					message.delete();
-				} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-					// Trivial
+				if (!message.getChannel().isPrivate()) {
+					getDiscord().queueMessageDeletion(CallPriority.LOW, message);
 				}
 				return;
 			}
@@ -135,10 +135,8 @@ public class MinecraftModule extends DiscordModule {
 		builder.setSender(users.getUser(player.getUniqueId()))
 				.setMessage(sanitizeForMinecraft(content)).setChannel(manager.getChannel("#discord"));
 		if (!builder.canBuild(false)) {
-			try {
-				message.delete();
-			} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-				// Trivial
+			if (!message.getChannel().isPrivate()) {
+				getDiscord().queueMessageDeletion(CallPriority.LOW, message);
 			}
 			return;
 		}

@@ -446,6 +446,7 @@ sleep:
 spectators:
   initiate: '{COLOR:neutral}You feel a tingling sensation about your extremities as you hover up slightly.'
   disallowed: '{COLOR:player.bad}{PLAYER}{COLOR:bad} has disallowed spectating! You''ll need to send a tpa.'
+  ignoreDisallowed: '{COLOR:player.bad}{PLAYER}{COLOR:bad} has disallowed spectating! Ignoring their wishes.'
   return:
     standard: '{COLOR:neutral}Suddenly, you snap back to reality. It was all a dream... wasn''t it?'
     time: '{COLOR:neutral}With each passing moment, maintaining your link becomes harder. You awaken with a jolt.'

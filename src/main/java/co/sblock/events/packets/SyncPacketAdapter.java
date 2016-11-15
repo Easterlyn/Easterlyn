@@ -3,15 +3,16 @@ package co.sblock.events.packets;
 
 import java.util.Arrays;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.micromodules.DreamTeleport;
+import co.sblock.utilities.PermissionUtils;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerAction;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.micromodules.DreamTeleport;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -29,6 +30,8 @@ public class SyncPacketAdapter extends PacketAdapter {
 		this.dream = plugin.getModule(DreamTeleport.class);
 
 		version = plugin.getModule(Language.class).getValue("events.packet.serverList");
+
+		PermissionUtils.addParent("sblock.commands.unfiltered", "sblock.denizen");
 	}
 
 	/**
@@ -58,7 +61,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 			serverping.setVersionName(version.replace("{PERCENT}", percentColor.toString())
 					.replace("{ONLINE}", String.valueOf(online)).replace("{MAX}", String.valueOf(max)));
 		} else if (event.getPacketType() == PacketType.Play.Server.TAB_COMPLETE) {
-			if (event.getPlayer().hasPermission("sblock.denizen")) {
+			if (event.getPlayer().hasPermission("sblock.commands.unfiltered")) {
 				return;
 			}
 			event.getPacket().getStringArrays().write(0,

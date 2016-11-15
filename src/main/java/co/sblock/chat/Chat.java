@@ -1,8 +1,5 @@
 package co.sblock.chat;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import co.sblock.Sblock;
 import co.sblock.chat.ai.CleverHal;
 import co.sblock.chat.ai.Halculator;
@@ -13,6 +10,14 @@ import co.sblock.events.event.SblockAsyncChatEvent;
 import co.sblock.module.Module;
 import co.sblock.users.Users;
 import co.sblock.utilities.DummyPlayer;
+import co.sblock.utilities.PermissionUtils;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class Chat extends Module {
 
@@ -28,6 +33,35 @@ public class Chat extends Module {
 		super(plugin);
 		this.channelManager = new ChannelManager(this);
 		this.buffer = new DummyPlayer();
+
+		// Permission to use >greentext
+		PermissionUtils.getOrCreate("sblock.chat.greentext", PermissionDefault.TRUE);
+		// Legacy support: old node as parent
+		PermissionUtils.addParent("sblock.chat.greentext", "sblockchat.greentext");
+
+		// Permission for messages to automatically color using name color
+		PermissionUtils.getOrCreate("sblock.chat.color", PermissionDefault.FALSE);
+		// Legacy support: old node as parent
+		PermissionUtils.getOrCreate("sblockchat.color", PermissionDefault.FALSE);
+		PermissionUtils.addParent("sblock.chat.color", "sblockchat.color");
+
+		// Permission to bypass chat filtering
+		PermissionUtils.addParent("sblock.chat.unfiltered", "sblock.felt");
+		PermissionUtils.addParent("sblock.chat.unfiltered", "sblock.spam");
+		// Permission to be recognized as a moderator in every channel
+		PermissionUtils.addParent("sblock.chat.channel.moderator", "sblock.felt");
+		// Permission to be recognized as an owner in every channel
+		PermissionUtils.addParent("sblock.chat.channel.owner", "sblock.denizen");
+
+		// Permission to have name a certain color
+		Permission parentPermission;
+		Permission childPermission;
+		for (ChatColor color : ChatColor.values()) {
+			// Legacy support: old node as parent
+			parentPermission = PermissionUtils.getOrCreate("sblockchat." + color, PermissionDefault.FALSE);
+			childPermission = PermissionUtils.getOrCreate("sblock.chat.color." + color, PermissionDefault.FALSE);
+			childPermission.addParent(parentPermission, true);
+		}
 	}
 
 	@Override

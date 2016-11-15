@@ -1,13 +1,5 @@
 package co.sblock.events.listeners.inventory;
 
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import co.sblock.Sblock;
 import co.sblock.captcha.Captcha;
 import co.sblock.captcha.CruxiteDowel;
@@ -16,6 +8,15 @@ import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.machines.Machines;
 import co.sblock.utilities.InventoryUtils;
+import co.sblock.utilities.PermissionUtils;
+
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Listener for CraftItemEvents.
@@ -33,6 +34,8 @@ public class CraftItemListener extends SblockListener {
 		this.events = plugin.getModule(Events.class);
 		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
+
+		PermissionUtils.addParent("sblock.events.creative.unfiltered", "sblock.felt");
 	}
 
 
@@ -64,7 +67,7 @@ public class CraftItemListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onCraftItem(final CraftItemEvent event) {
 		if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE
-				&& !event.getWhoClicked().hasPermission("sblock.felt")
+				&& !event.getWhoClicked().hasPermission("sblock.events.creative.unfiltered")
 				&& events.getCreativeBlacklist().contains(event.getCurrentItem().getType())) {
 			event.setCancelled(true);
 			return;

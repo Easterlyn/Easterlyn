@@ -16,7 +16,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
@@ -98,15 +97,18 @@ public class VoiceTextModule extends DiscordModule {
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 				IChannel text = voice.getGuild().createChannel(getTextChannelName(voice.getName()));
 				channels.put(voice, text);
-				// TODO maybe not requred. Test: explicitly set perms for bot's role(s)
-				for (IRole role : voice.getGuild().getRolesForUser(voice.getClient().getOurUser())) {
-					getDiscord().queue(new DiscordCallable() {
-						@Override
-						public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-							text.overrideRolePermissions(role, EnumSet.of(Permissions.READ_MESSAGES), EnumSet.noneOf(Permissions.class));
-						}
-					});
-				}
+//				// TODO maybe not requred. Test: explicitly set perms for bot's role(s)
+//				for (IRole role : voice.getGuild().getRolesForUser(voice.getClient().getOurUser())) {
+//					if (role.equals(voice.getGuild().getEveryoneRole())) {
+//						continue;
+//					}
+//					getDiscord().queue(new DiscordCallable() {
+//						@Override
+//						public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+//							text.overrideRolePermissions(role, EnumSet.of(Permissions.READ_MESSAGES), EnumSet.noneOf(Permissions.class));
+//						}
+//					});
+//				}
 				getDiscord().queue(new DiscordCallable() {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {

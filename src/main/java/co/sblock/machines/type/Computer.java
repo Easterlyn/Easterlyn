@@ -9,6 +9,7 @@ import co.sblock.machines.type.computer.Programs;
 import co.sblock.machines.utilities.Shape;
 import co.sblock.users.User;
 import co.sblock.utilities.InventoryUtils;
+import co.sblock.utilities.PermissionUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -47,6 +48,8 @@ public class Computer extends Machine implements InventoryHolder {
 		drop.setItemMeta(meta);
 
 		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
+
+		PermissionUtils.addParent("sblock.machines.administrate", "sblock.denizen");
 	}
 
 	/**
@@ -59,7 +62,7 @@ public class Computer extends Machine implements InventoryHolder {
 	@Override
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
 		if (!getOwner(storage).equals(event.getPlayer().getUniqueId())
-				&& !event.getPlayer().hasPermission("sblock.denizen")) {
+				&& !event.getPlayer().hasPermission("sblock.machines.administrate")) {
 			return true;
 		}
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {

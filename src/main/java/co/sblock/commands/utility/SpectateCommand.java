@@ -2,20 +2,17 @@ package co.sblock.commands.utility;
 
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-
-import com.google.common.collect.ImmutableList;
-
 import co.sblock.Sblock;
 import co.sblock.commands.SblockCommand;
 import co.sblock.micromodules.Spectators;
 import co.sblock.users.User;
 import co.sblock.users.Users;
+
+import com.google.common.collect.ImmutableList;
+
+import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * SblockCommand for toggling spectate mode.
@@ -32,16 +29,6 @@ public class SpectateCommand extends SblockCommand {
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
 		this.setAliases("spec", "spectator");
-		Permission permission;
-		try {
-			permission = new Permission("sblock.command.spectate.unrestricted", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.command.spectate.unrestricted");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.helper", true).recalculatePermissibles();
 	}
 
 	@Override

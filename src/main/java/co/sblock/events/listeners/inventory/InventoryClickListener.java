@@ -1,5 +1,13 @@
 package co.sblock.events.listeners.inventory;
 
+import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.events.listeners.SblockListener;
+import co.sblock.machines.Machines;
+import co.sblock.machines.type.Machine;
+import co.sblock.micromodules.AwayFromKeyboard;
+import co.sblock.utilities.InventoryUtils;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Material;
@@ -20,14 +28,6 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import co.sblock.Sblock;
-import co.sblock.captcha.Captcha;
-import co.sblock.events.listeners.SblockListener;
-import co.sblock.machines.Machines;
-import co.sblock.machines.type.Machine;
-import co.sblock.micromodules.AwayFromKeyboard;
-import co.sblock.utilities.InventoryUtils;
 
 /**
  * Listener for InventoryClickEvents.
@@ -230,25 +230,6 @@ public class InventoryClickListener extends SblockListener {
 		captcha.handleCaptcha(event);
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onInventoryClickLowestPriority(InventoryClickEvent event) {
-
-		// Extend non-afk status
-		if (event.getWhoClicked() instanceof Player) {
-			afk.extendActivity((Player) event.getWhoClicked());
-		}
-
-		// Remove negative stacks clicked by non-felt
-		ItemStack clicked = event.getCurrentItem();
-		if (event.getWhoClicked().hasPermission("sblock.felt")) {
-			return;
-		}
-		if (clicked != null && clicked.getAmount() < 1) {
-			event.setCurrentItem(null);
-		}
-
-	}
-
 	/**
 	 * EventHandler for inventory clicks that are guaranteed to have occurred.
 	 * 
@@ -256,6 +237,12 @@ public class InventoryClickListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onInventoryClickHasOccurred(InventoryClickEvent event) {
+
+		// Extend non-afk status
+		if (event.getWhoClicked() instanceof Player) {
+			afk.extendActivity((Player) event.getWhoClicked());
+		}
+
 		final InventoryView view = event.getView();
 
 		if (view.getTopInventory().getType() != InventoryType.ANVIL

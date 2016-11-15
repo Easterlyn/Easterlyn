@@ -11,6 +11,7 @@ import co.sblock.discord.Discord;
 import co.sblock.events.Events;
 import co.sblock.events.listeners.SblockListener;
 import co.sblock.utilities.PermissionBridge;
+import co.sblock.utilities.PermissionUtils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -22,8 +23,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 /**
  * Proxy detection, because apparently this is an issue.
@@ -38,16 +37,9 @@ public class AsyncPreLoginListener extends SblockListener {
 
 	public AsyncPreLoginListener(Sblock plugin) {
 		super(plugin);
-		Permission permission;
-		try {
-			permission = new Permission("sblock.login.proxy", PermissionDefault.OP);
-			Bukkit.getPluginManager().addPermission(permission);
-		} catch (IllegalArgumentException e) {
-			permission = Bukkit.getPluginManager().getPermission("sblock.login.proxy");
-			permission.setDefault(PermissionDefault.OP);
-		}
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
-		permission.addParent("sblock.helper", true).recalculatePermissibles();
+		PermissionUtils.addParent("sblock.events.login.proxy", "sblock.helper");
+		// Legacy support: add old node as parent
+		PermissionUtils.addParent("sblock.events.login.proxy", "sblock.login.proxy");
 
 		this.discord = plugin.getModule(Discord.class);
 		this.events = plugin.getModule(Events.class);
@@ -65,7 +57,7 @@ public class AsyncPreLoginListener extends SblockListener {
 			ipCache.put(ip, allowed);
 		}
 		if (!allowed) {
-			allowed =  PermissionBridge.getInstance().hasPermission(event.getUniqueId(), "sblock.login.proxy");
+			allowed =  PermissionBridge.getInstance().hasPermission(event.getUniqueId(), "sblock.events.login.proxy");
 			if (allowed) {
 				// Players with permission can allow a blocked IP for 30 minutes by logging in from it
 				ipCache.put(ip, allowed);

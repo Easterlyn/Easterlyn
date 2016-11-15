@@ -1,7 +1,5 @@
 package co.sblock.utilities;
 
-import io.netty.buffer.Unpooled;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -72,6 +70,8 @@ import net.minecraft.server.v1_10_R1.PacketPlayOutSetSlot;
 
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
+
+import io.netty.buffer.Unpooled;
 
 /**
  * A set of useful methods for inventory functions.
@@ -403,7 +403,7 @@ public class InventoryUtils {
 			meta.setBasePotionData(oldMeta.getBasePotionData());
 			for (PotionEffect effect : oldMeta.getCustomEffects()) {
 				// Custom effects are fine, but amplifiers that are way too high are not
-				if (effect.getAmplifier() < 5) {
+				if (effect.getAmplifier() < 5 && effect.getAmplifier() >= 0) {
 					meta.addCustomEffect(effect, true);
 				}
 			}
