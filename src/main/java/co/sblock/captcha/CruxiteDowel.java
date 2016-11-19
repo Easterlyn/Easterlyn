@@ -332,6 +332,7 @@ public class CruxiteDowel {
 				materialValues.put(material, 663);
 				break;
 			case CHAINMAIL_HELMET:
+			case SHULKER_SHELL:
 				materialValues.put(material, 750);
 				break;
 			case DIAMOND_BARDING:
@@ -345,6 +346,9 @@ public class CruxiteDowel {
 				break;
 			case SKULL_ITEM:
 				materialValues.put(material, 3000);
+				break;
+			case TOTEM:
+				materialValues.put(material, 5000);
 				break;
 			case NETHER_STAR:
 				materialValues.put(material, 10000);

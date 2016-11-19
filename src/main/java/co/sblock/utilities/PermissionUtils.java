@@ -14,19 +14,24 @@ public class PermissionUtils {
 	private PermissionUtils() {}
 
 	public static Permission getOrCreate(String permissionName, PermissionDefault permissionDefault) {
-		Permission permission = Bukkit.getPluginManager().getPermission(permissionName);
-		if (permission == null) {
+		Permission permission;
+		try {
 			permission = new Permission(permissionName, permissionDefault);
 			Bukkit.getPluginManager().addPermission(permission);
-		} else {
+		} catch (Exception e) {
+			permission = Bukkit.getPluginManager().getPermission(permissionName);
 			permission.setDefault(permissionDefault);
 		}
 		return permission;
 	}
 
 	public static void addParent(String permissionName, String parentName) {
-		Permission permission = getOrCreate(permissionName, PermissionDefault.OP);
-		permission.addParent(parentName, true).recalculatePermissibles();;
+		addParent(permissionName, parentName, PermissionDefault.OP);
+	}
+
+	public static void addParent(String permissionName, String parentName, PermissionDefault permissionDefault) {
+		Permission permission = getOrCreate(permissionName, permissionDefault);
+		permission.addParent(parentName, true).recalculatePermissibles();
 	}
 
 }

@@ -43,7 +43,7 @@ public class Chat extends Module {
 		PermissionUtils.getOrCreate("sblock.chat.color", PermissionDefault.FALSE);
 		// Legacy support: old node as parent
 		PermissionUtils.getOrCreate("sblockchat.color", PermissionDefault.FALSE);
-		PermissionUtils.addParent("sblock.chat.color", "sblockchat.color");
+		PermissionUtils.addParent("sblock.chat.color", "sblockchat.color", PermissionDefault.FALSE);
 
 		// Permission to bypass chat filtering
 		PermissionUtils.addParent("sblock.chat.unfiltered", "sblock.felt");
@@ -56,8 +56,9 @@ public class Chat extends Module {
 		// Permission to have name a certain color
 		Permission parentPermission;
 		Permission childPermission;
-		for (ChatColor color : ChatColor.values()) {
+		for (ChatColor chatColor : ChatColor.values()) {
 			// Legacy support: old node as parent
+			String color = chatColor.name().toLowerCase();
 			parentPermission = PermissionUtils.getOrCreate("sblockchat." + color, PermissionDefault.FALSE);
 			childPermission = PermissionUtils.getOrCreate("sblock.chat.color." + color, PermissionDefault.FALSE);
 			childPermission.addParent(parentPermission, true);

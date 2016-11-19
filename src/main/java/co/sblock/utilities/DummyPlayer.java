@@ -20,6 +20,7 @@ import org.bukkit.Note;
 import org.bukkit.Particle;
 import org.bukkit.Server;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.Statistic;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
@@ -1243,5 +1244,17 @@ public class DummyPlayer implements Player {
 	public boolean removeScoreboardTag(String arg0) {
 		return false;
 	}
+
+	@Override
+	public void playSound(Location arg0, Sound arg1, SoundCategory arg2, float arg3, float arg4) {}
+
+	@Override
+	public void playSound(Location arg0, String arg1, SoundCategory arg2, float arg3, float arg4) {}
+
+	@Override
+	public void stopSound(Sound arg0, SoundCategory arg1) {}
+
+	@Override
+	public void stopSound(String arg0, SoundCategory arg1) {}
 
 }

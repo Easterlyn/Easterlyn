@@ -26,6 +26,7 @@ import net.minecraft.server.v1_11_R1.BlockLeaves;
 import net.minecraft.server.v1_11_R1.BlockLeaves1;
 import net.minecraft.server.v1_11_R1.BlockLeaves2;
 import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.BlockShulkerBox;
 import net.minecraft.server.v1_11_R1.BlockWood.EnumLogVariant;
 import net.minecraft.server.v1_11_R1.Blocks;
 import net.minecraft.server.v1_11_R1.GameProfileSerializer;
@@ -36,6 +37,7 @@ import net.minecraft.server.v1_11_R1.Items;
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
 import net.minecraft.server.v1_11_R1.TileEntity;
 import net.minecraft.server.v1_11_R1.TileEntityBanner;
+import net.minecraft.server.v1_11_R1.TileEntityShulkerBox;
 import net.minecraft.server.v1_11_R1.TileEntitySkull;
 
 import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
@@ -173,7 +175,6 @@ public class BlockDrops {
 
 	@SuppressWarnings("deprecation")
 	private static Collection<ItemStack> getDrops(Material tool, Block block, int fortune) {
-		// TODO 1.11 shulker box
 		Random random = ThreadLocalRandom.current();
 		List<ItemStack> drops = new ArrayList<>();
 
@@ -209,6 +210,28 @@ public class BlockDrops {
 
 				drops.add(CraftItemStack.asBukkitCopy(nmsStack));
 				return drops;
+			}
+		}
+
+		if (nmsBlock instanceof BlockShulkerBox) {
+			TileEntity localTileEntity = nmsWorld.getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
+
+			if (localTileEntity instanceof TileEntityShulkerBox) {
+				TileEntityShulkerBox localTileEntityShulkerBox = (TileEntityShulkerBox) localTileEntity;
+
+				if ((!(localTileEntityShulkerBox.r())) && (localTileEntityShulkerBox.F())) {
+					net.minecraft.server.v1_11_R1.ItemStack nmsStack = new net.minecraft.server.v1_11_R1.ItemStack(Item.getItemOf(nmsBlock));
+					NBTTagCompound localNBTTagCompound = new NBTTagCompound();
+
+					localNBTTagCompound.set("BlockEntityTag", ((TileEntityShulkerBox) localTileEntity).f(new NBTTagCompound()));
+					nmsStack.setTag(localNBTTagCompound);
+					if (localTileEntityShulkerBox.hasCustomName()) {
+						nmsStack.g(localTileEntityShulkerBox.getName());
+					}
+
+					drops.add(CraftItemStack.asBukkitCopy(nmsStack));
+					return drops;
+				}
 			}
 		}
 
