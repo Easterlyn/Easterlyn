@@ -42,6 +42,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.InventoryView.Property;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MainHand;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
@@ -1256,5 +1257,10 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public void stopSound(String arg0, SoundCategory arg1) {}
+
+	@Override
+	public InventoryView openMerchant(Merchant arg0, boolean arg1) {
+		return null;
+	}
 
 }

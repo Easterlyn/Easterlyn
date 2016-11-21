@@ -15,6 +15,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
+import net.minecraft.server.v1_11_R1.BlockPosition;
 import net.minecraft.server.v1_11_R1.ChatComponentText;
 import net.minecraft.server.v1_11_R1.Container;
 import net.minecraft.server.v1_11_R1.ContainerMerchant;
@@ -72,7 +73,7 @@ public class MachineInventoryTracker {
 		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
 		int containerCounter = nmsPlayer.nextContainerCounter();
-		Container container = new MerchantContainer(nmsPlayer);
+		Container container = new MerchantContainer(nmsPlayer, key);
 		nmsPlayer.activeContainer = container;
 		container.windowId = containerCounter;
 		container.addSlotListener(nmsPlayer);
@@ -83,16 +84,18 @@ public class MachineInventoryTracker {
 	}
 
 	public class MerchantContainer extends ContainerMerchant {
-		public MerchantContainer(EntityPlayer player) {
-			super(player.inventory, new FakeNMSVillager(player, player.world), player.world);
+		public MerchantContainer(EntityPlayer player, Location location) {
+			super(player.inventory, new FakeNMSVillager(player, player.world, location), player.world);
 			this.checkReachable = false;
 		}
 	}
 
 	public class FakeNMSVillager extends EntityVillager {
-		public FakeNMSVillager(EntityPlayer player, World world) {
+		public FakeNMSVillager(EntityPlayer player, World world, Location location) {
 			super(world);
 			setTradingPlayer(player);
+			// Set location so that logging plugins know where the transaction is taking place
+			a(new BlockPosition(location.getX(), location.getY(), location.getZ()), -1);
 		}
 
 		@Override
