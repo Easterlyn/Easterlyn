@@ -1,8 +1,6 @@
 package co.sblock.events.packets;
 
-import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
-
-import org.bukkit.Material;
+import org.bukkit.Particle;
 
 /**
  * Wrapper for all parameters required to send a Player a decent looking particle effect.
@@ -13,33 +11,31 @@ public class ParticleEffectWrapper {
 
 	private final Particle particle;
 	private final float offsetX, offsetY, offsetZ, speed;
-	private final int material, quantity, radius;
-	private final int[] data;
+	private final int quantity, radius;
+	private final Object data;
 
-	@SuppressWarnings("deprecation")
-	public ParticleEffectWrapper(Particle particle, Material material, float offsetX, float offsetY,
-			float offsetZ, float speed, int quantity, int displayRadius, int... data) {
+	public  ParticleEffectWrapper(Particle particle, Object data, float offsetX,
+			float offsetY, float offsetZ, float speed, int quantity, int displayRadius) {
 		this.particle = particle;
-		this.material = material != null ? material.getId() : 0;
+		this.data = data;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		this.offsetZ = offsetZ;
 		this.speed = speed;
 		this.quantity = quantity;
 		this.radius = displayRadius;
-		this.data = data;
 	}
 
 	public ParticleEffectWrapper(Particle particle, int particles) {
 		this(particle, null, .5F, .5F, .5F, 1F, particles, 32);
 	}
 
-	public Particle getEffect() {
+	public Particle getParticle() {
 		return this.particle;
 	}
 
-	public int getMaterial() {
-		return this.material;
+	public Object getData() {
+		return this.data;
 	}
 
 	public float getOffsetX() {
@@ -64,10 +60,6 @@ public class ParticleEffectWrapper {
 
 	public int getDisplayRadius() {
 		return this.radius;
-	}
-
-	public int[] getData() {
-		return this.data;
 	}
 
 }

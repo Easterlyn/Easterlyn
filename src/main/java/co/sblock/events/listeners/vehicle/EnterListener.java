@@ -5,8 +5,7 @@ import co.sblock.events.listeners.SblockListener;
 import co.sblock.events.packets.ParticleEffectWrapper;
 import co.sblock.micromodules.ParticleUtils;
 
-import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
-
+import org.bukkit.Particle;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;

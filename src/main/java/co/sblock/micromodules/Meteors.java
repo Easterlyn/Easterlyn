@@ -3,9 +3,9 @@ package co.sblock.micromodules;
 import co.sblock.Sblock;
 import co.sblock.module.Module;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
@@ -64,7 +64,7 @@ public class Meteors extends Module {
 				((CraftEntity) explodeAs).getHandle(), loc.getX(), loc.getY(), loc.getZ(), 4F, setFires, terrainDamage);
 		explosion.a();
 		explosion.a(true);
-		loc.getWorld().playEffect(loc, Effect.EXPLOSION_HUGE, 4);
+		loc.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, loc, 1);
 	}
 
 	@Override

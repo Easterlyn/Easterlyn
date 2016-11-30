@@ -10,11 +10,10 @@ import co.sblock.machines.utilities.Shape.MaterialDataValue;
 import co.sblock.micromodules.Holograms;
 import co.sblock.micromodules.ParticleUtils;
 
-import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;

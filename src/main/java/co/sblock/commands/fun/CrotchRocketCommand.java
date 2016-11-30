@@ -7,11 +7,9 @@ import co.sblock.commands.SblockCommand;
 import co.sblock.events.packets.ParticleEffectWrapper;
 import co.sblock.micromodules.ParticleUtils;
 
-import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
-
 import com.google.common.collect.ImmutableList;
 
-import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -47,7 +45,7 @@ public class CrotchRocketCommand extends SblockCommand {
 
 	public boolean launch(LivingEntity entity) {
 		entity.setFallDistance(0);
-		entity.getWorld().playEffect(entity.getLocation(), Effect.EXPLOSION_HUGE, 0);
+		entity.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, entity.getLocation(), 1);
 
 		final Firework firework = (Firework) entity.getWorld().spawnEntity(entity.getLocation(), EntityType.FIREWORK);
 		FireworkMeta fm = firework.getFireworkMeta();

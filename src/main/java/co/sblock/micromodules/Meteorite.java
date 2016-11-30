@@ -5,10 +5,9 @@ import java.util.HashSet;
 import co.sblock.Sblock;
 import co.sblock.events.packets.ParticleEffectWrapper;
 
-import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
