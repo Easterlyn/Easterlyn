@@ -15,7 +15,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 
+import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
@@ -97,18 +99,6 @@ public class VoiceTextModule extends DiscordModule {
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 				IChannel text = voice.getGuild().createChannel(getTextChannelName(voice.getName()));
 				channels.put(voice, text);
-//				// TODO maybe not requred. Test: explicitly set perms for bot's role(s)
-//				for (IRole role : voice.getGuild().getRolesForUser(voice.getClient().getOurUser())) {
-//					if (role.equals(voice.getGuild().getEveryoneRole())) {
-//						continue;
-//					}
-//					getDiscord().queue(new DiscordCallable() {
-//						@Override
-//						public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-//							text.overrideRolePermissions(role, EnumSet.of(Permissions.READ_MESSAGES), EnumSet.noneOf(Permissions.class));
-//						}
-//					});
-//				}
 				getDiscord().queue(new DiscordCallable() {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
@@ -127,11 +117,17 @@ public class VoiceTextModule extends DiscordModule {
 		});
 	}
 
+	private String getTextChannelName(String voiceChannelName) {
+		return "vc-" + TextUtils.stripNonAlphanumerics(voiceChannelName.replace(' ', '_')).toLowerCase();
+	}
+
 	private void addAllMembers(IVoiceChannel voice, IChannel text) {
 		List<IUser> connected = voice.getConnectedUsers();
 		List<IUser> permitted = text.getUsersHere();
-		List<IUser> toPermit = connected.stream().filter(user -> !permitted.contains(user)).collect(Collectors.toCollection(ArrayList::new));
-		List<IUser> toRemove = permitted.stream().filter(user -> !connected.contains(user)).collect(Collectors.toCollection(ArrayList::new));
+		List<IUser> toPermit = connected.stream().filter(user -> !permitted.contains(user))
+				.collect(Collectors.toCollection(ArrayList::new));
+		List<IUser> toRemove = permitted.stream().filter(user -> !connected.contains(user))
+				.collect(Collectors.toCollection(ArrayList::new));
 
 		toPermit.forEach(user -> addPermissions(text, user));
 		toRemove.forEach(user -> removePermissions(text, user));
@@ -144,6 +140,9 @@ public class VoiceTextModule extends DiscordModule {
 	}
 
 	private void addPermissions(IChannel text, IUser user) {
+		if (!isUserEditable(user, text.getGuild())) {
+			return;
+		}
 		getDiscord().queue(new DiscordCallable(CallPriority.LOW) {
 			@Override
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
@@ -159,8 +158,7 @@ public class VoiceTextModule extends DiscordModule {
 	}
 
 	private void removePermissions(IChannel text, IUser user) {
-		if (text.getGuild().getOwner().equals(user) || text.getClient().getOurUser().equals(user)) {
-			// TODO: Better handling for higher level roles
+		if (!isUserEditable(user, text.getGuild())) {
 			return;
 		}
 		getDiscord().queue(new DiscordCallable(CallPriority.LOW) {
@@ -171,8 +169,12 @@ public class VoiceTextModule extends DiscordModule {
 		});
 	}
 
-	private String getTextChannelName(String voiceChannelName) {
-		return "vc-" + TextUtils.stripNonAlphanumerics(voiceChannelName.replace(' ', '_')).toLowerCase();
+	private boolean isUserEditable(IUser user, IGuild guild) {
+		if (guild.getOwner().equals(user)) {
+			return false;
+		}
+		IUser us = this.getDiscord().getClient().getOurUser();
+		return !user.equals(us) && !DiscordUtils.isUserHigher(guild, us, user.getRolesForGuild(guild));
 	}
 
 }
