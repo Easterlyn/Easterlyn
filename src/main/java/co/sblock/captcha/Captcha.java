@@ -599,9 +599,15 @@ public class Captcha extends Module {
 				// Properly convert contents of double captchas
 				int amount = storedItem.getAmount();
 				String internalHash = this.findHashIfPresent(storedItem.getItemMeta().getLore());
-				String newInternalHash = this.getHashByItem(internalHash == null
-						? LegacyCaptcha.captchaToItem(storedItem)
-								: this.getItemByHash(internalHash));
+				ItemStack convertedItem;
+				if (internalHash == null) {
+					convertedItem = LegacyCaptcha.captchaToItem(storedItem);
+				}
+				convertedItem = this.getItemByHash(internalHash);
+				if (convertedItem == null) {
+					continue;
+				}
+				String newInternalHash = this.getHashByItem(convertedItem);
 				storedItem = this.getCaptchaFor(newInternalHash);
 				storedItem.setAmount(amount);
 			}
