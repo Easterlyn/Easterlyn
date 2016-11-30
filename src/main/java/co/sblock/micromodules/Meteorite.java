@@ -2,14 +2,15 @@ package co.sblock.micromodules;
 
 import java.util.HashSet;
 
-import org.bukkit.Effect;
+import co.sblock.Sblock;
+import co.sblock.events.packets.ParticleEffectWrapper;
+
+import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
-import co.sblock.Sblock;
-import co.sblock.events.packets.ParticleEffectWrapper;
 
 /**
  * Small class for creating and managing an explosive hollow sphere.
@@ -111,7 +112,7 @@ public class Meteorite {
 								location.getBlock().setType(Material.AIR);
 							}
 							particles.addEntity(new MeteoriteComponent(location, material, explodeBlocks, bore).getBukkitEntity(),
-									new ParticleEffectWrapper(Effect.LAVA_POP, 1));
+									new ParticleEffectWrapper(Particle.LAVA, 1));
 						}
 					}
 				}.runTask(plugin);

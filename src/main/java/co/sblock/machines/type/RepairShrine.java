@@ -1,7 +1,18 @@
 package co.sblock.machines.type;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.events.packets.ParticleEffectWrapper;
+import co.sblock.machines.Machines;
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
+import co.sblock.micromodules.Holograms;
+import co.sblock.micromodules.ParticleUtils;
+
+import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
+
 import org.bukkit.DyeColor;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -15,16 +26,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.events.packets.ParticleEffectWrapper;
-import co.sblock.machines.Machines;
-import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.Shape;
-import co.sblock.machines.utilities.Shape.MaterialDataValue;
-import co.sblock.micromodules.Holograms;
-import co.sblock.micromodules.ParticleUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -313,7 +314,7 @@ public class RepairShrine extends Machine {
 
 		event.getItem().setItemStack(inserted);
 
-		particles.addEntity(event.getItem(), new ParticleEffectWrapper(Effect.LAVA_POP, null, null, 1F, 0F, 0F, 0F, 1, 32));
+		particles.addEntity(event.getItem(), new ParticleEffectWrapper(Particle.LAVA, null, 1F, 0F, 0F, 0F, 1, 32));
 
 		new BukkitRunnable() {
 			@Override

@@ -2,6 +2,15 @@ package co.sblock.commands.fun;
 
 import java.util.List;
 
+import co.sblock.Sblock;
+import co.sblock.commands.SblockCommand;
+import co.sblock.events.packets.ParticleEffectWrapper;
+import co.sblock.micromodules.ParticleUtils;
+
+import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
+
+import com.google.common.collect.ImmutableList;
+
 import org.bukkit.Effect;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -11,13 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import com.google.common.collect.ImmutableList;
-
-import co.sblock.Sblock;
-import co.sblock.commands.SblockCommand;
-import co.sblock.events.packets.ParticleEffectWrapper;
-import co.sblock.micromodules.ParticleUtils;
 
 /**
  * SblockCommand for riding a firework in style.
@@ -53,7 +55,7 @@ public class CrotchRocketCommand extends SblockCommand {
 		firework.setFireworkMeta(fm);
 		firework.setPassenger(entity);
 
-		particles.addEntity(firework, new ParticleEffectWrapper(Effect.FIREWORKS_SPARK, 5));
+		particles.addEntity(firework, new ParticleEffectWrapper(Particle.FIREWORKS_SPARK, 5));
 
 		new BukkitRunnable() {
 

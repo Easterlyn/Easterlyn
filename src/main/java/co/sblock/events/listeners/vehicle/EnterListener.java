@@ -1,6 +1,12 @@
 package co.sblock.events.listeners.vehicle;
 
-import org.bukkit.Effect;
+import co.sblock.Sblock;
+import co.sblock.events.listeners.SblockListener;
+import co.sblock.events.packets.ParticleEffectWrapper;
+import co.sblock.micromodules.ParticleUtils;
+
+import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
+
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
@@ -9,11 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
-
-import co.sblock.Sblock;
-import co.sblock.events.listeners.SblockListener;
-import co.sblock.events.packets.ParticleEffectWrapper;
-import co.sblock.micromodules.ParticleUtils;
 
 /**
  * Listener for VehicleEnterEvents.
@@ -44,7 +45,7 @@ public class EnterListener extends SblockListener {
 		Horse horse = (Horse) event.getVehicle();
 		ItemStack saddle = horse.getInventory().getSaddle();
 		if (saddle != null && saddle.containsEnchantment(Enchantment.ARROW_FIRE)) {
-			particles.addEntity(horse, new ParticleEffectWrapper(Effect.MOBSPAWNER_FLAMES, 1));
+			particles.addEntity(horse, new ParticleEffectWrapper(Particle.FLAME, 16));
 		}
 	}
 }

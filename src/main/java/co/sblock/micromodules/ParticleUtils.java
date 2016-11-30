@@ -1,25 +1,30 @@
 package co.sblock.micromodules;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import co.sblock.Sblock;
+import co.sblock.events.packets.ParticleEffectWrapper;
+import co.sblock.module.Module;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.wrappers.EnumWrappers.Particle;
+
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
-import com.comphenix.protocol.ProtocolLibrary;
-
-import co.sblock.Sblock;
-import co.sblock.events.packets.ParticleEffectWrapper;
-import co.sblock.module.Module;
 
 /**
  * Utility for spawning particles at an entity every tick.
@@ -61,7 +66,7 @@ public class ParticleUtils extends Module {
 		public void addParticle(ParticleEffectWrapper particle) {
 			effects.add(particle);
 		}
-		public HashSet<ParticleEffectWrapper> removeEffect(Effect particleType) {
+		public HashSet<ParticleEffectWrapper> removeEffect(Particle particleType) {
 			for (Iterator<ParticleEffectWrapper> iterator = effects.iterator(); iterator.hasNext();) {
 				if (iterator.next().getEffect() == particleType) {
 					iterator.remove();
@@ -105,7 +110,7 @@ public class ParticleUtils extends Module {
 		entities.remove(entity.getUniqueId());
 	}
 
-	public void removeEffect(Entity entity, Effect particle) {
+	public void removeEffect(Entity entity, Particle particle) {
 		if (!entities.containsKey(entity.getUniqueId())) {
 			return;
 		}
@@ -127,11 +132,28 @@ public class ParticleUtils extends Module {
 					continue;
 				}
 				Location location = entity.getLocation().add(0, .5, 0);
+				ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 				entry.getValue().getEffects().forEach(effect -> {
-					ProtocolLibrary.getProtocolManager().getEntityTrackers(entity).forEach(player -> {
-						player.spigot().playEffect(location, effect.getEffect(), effect.getMaterial(),
-								effect.getData(), effect.getOffsetX(), effect.getOffsetY(), effect.getOffsetZ(),
-								effect.getSpeed(), effect.getParticleQuantity(), effect.getDisplayRadius());
+
+					PacketContainer packet = new PacketContainer(PacketType.Play.Server.WORLD_PARTICLES);
+					packet.getModifier().writeDefaults();
+					packet.getParticles().write(0, effect.getEffect());
+					StructureModifier<Float> floats = packet.getFloat();
+					floats.write(0, (float) location.getX());
+					floats.write(1, (float) location.getY());
+					floats.write(2, (float) location.getZ());
+					floats.write(3, effect.getOffsetX());
+					floats.write(4, effect.getOffsetY());
+					floats.write(5, effect.getOffsetZ());
+					floats.write(6, (float) effect.getMaterial());
+					packet.getBooleans().write(0, effect.getDisplayRadius() > 256);
+
+					protocolManager.getEntityTrackers(entity).forEach(player -> {
+						try {
+							protocolManager.sendServerPacket(player, packet);
+						} catch (InvocationTargetException e) {
+							iterator.remove();
+						}
 					});
 				});
 			}
