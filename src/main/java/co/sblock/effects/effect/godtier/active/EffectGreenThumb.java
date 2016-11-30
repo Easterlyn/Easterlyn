@@ -17,6 +17,7 @@ import org.bukkit.CropState;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NetherWartsState;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -138,7 +139,7 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 		}
 
 		clicked.getWorld().playSound(clicked.getLocation(), Sound.BLOCK_GRASS_BREAK, 1, 1);
-		clicked.getWorld().playEffect(clicked.getLocation(), org.bukkit.Effect.TILE_BREAK, new MaterialData(data.getItemType(), data.getData()));
+		clicked.getWorld().spawnParticle(Particle.BLOCK_CRACK, clicked.getLocation(), 1, new MaterialData(data.getItemType(), data.getData()));
 
 		if (reseed) {
 			state.setData(data);
