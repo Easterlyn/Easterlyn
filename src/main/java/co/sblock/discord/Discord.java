@@ -51,6 +51,7 @@ import org.reflections.Reflections;
 
 import net.md_5.bungee.api.ChatColor;
 
+import sx.blah.discord.Discord4J;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
@@ -113,6 +114,8 @@ public class Discord extends Module {
 		} else {
 			discordData = new YamlConfiguration();
 		}
+
+		Discord4J.disableAudio();
 	}
 
 	@SuppressWarnings("rawtypes") // I don't like doing this, but type erasure forces my hand.
@@ -168,6 +171,13 @@ public class Discord extends Module {
 					client.login();
 				} catch (DiscordException e) {
 					client = null;
+				} catch (RateLimitException e) {
+					try {
+						Thread.sleep(e.getRetryDelay() + 1000L);
+						client.login();
+					} catch (InterruptedException | DiscordException | RateLimitException e1) {
+						// Retry failed, ignore
+					}
 				}
 			}
 		}, "Sblock-DiscordLogin").start();
@@ -241,7 +251,7 @@ public class Discord extends Module {
 				public void run() {
 					try {
 						oldClient.logout();
-					} catch (RateLimitException | DiscordException e) {
+					} catch (DiscordException e) {
 						e.printStackTrace();
 					}
 				}
