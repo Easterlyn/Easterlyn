@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import lombok.Getter;
-
 import co.sblock.discord.Discord;
 import co.sblock.discord.abstraction.CallPriority;
 import co.sblock.discord.abstraction.DiscordCallable;
@@ -42,7 +40,7 @@ public class RetentionModule extends DiscordModule {
 		private static final long REPOPULATE_AFTER = 21600000;
 
 		private final AtomicBoolean lockDeletion, lockPopulation;
-		@Getter private final Channel channel;
+		private final Channel channel;
 
 		private long nextPopulate;
 
