@@ -2,6 +2,15 @@ package co.sblock.events.listeners.player;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import co.sblock.Sblock;
+import co.sblock.chat.Language;
+import co.sblock.events.Events;
+import co.sblock.events.listeners.SblockListener;
+import co.sblock.micromodules.FreeCart;
+import co.sblock.micromodules.Godule;
+import co.sblock.users.UserAspect;
+import co.sblock.utilities.Experience;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,15 +25,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import co.sblock.Sblock;
-import co.sblock.chat.Language;
-import co.sblock.events.Events;
-import co.sblock.events.listeners.SblockListener;
-import co.sblock.micromodules.FreeCart;
-import co.sblock.micromodules.Godule;
-import co.sblock.users.UserAspect;
-import co.sblock.utilities.Experience;
 
 /**
  * Listener for PlayerDeathEvents.
@@ -77,9 +77,9 @@ public class DeathListener extends SblockListener {
 		locString = locString.replace("{WORLD}", location.getWorld().getName()).replaceAll("\\{OPTION\\}\\s?", "");
 
 		EntityDamageEvent lastDamage = player.getLastDamageCause();
-		if (lastDamage.getCause() == DamageCause.WITHER
-				|| (lastDamage instanceof EntityDamageByEntityEvent 
-						&& ((EntityDamageByEntityEvent) lastDamage).getDamager().getType() == EntityType.WITHER)) {
+		if (lastDamage != null && (lastDamage.getCause() == DamageCause.WITHER
+				|| (lastDamage instanceof EntityDamageByEntityEvent
+						&& ((EntityDamageByEntityEvent) lastDamage).getDamager().getType() == EntityType.WITHER))) {
 			new BukkitRunnable() {
 				@Override
 				public void run() {
@@ -106,8 +106,8 @@ public class DeathListener extends SblockListener {
 			if (killer == null) {
 				return;
 			}
-			Bukkit.getConsoleSender().sendMessage(
-					player.getName() + " died to " + killer.getName() + "." + locString);
+			Bukkit.getConsoleSender().sendMessage(String.format("%s died to %s. %s",
+					player.getName(), killer.getName(), locString));
 			if (godule.isEnabled(UserAspect.BREATH)) {
 				ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) skull.getItemMeta();
@@ -116,8 +116,8 @@ public class DeathListener extends SblockListener {
 				player.getWorld().dropItem(player.getLocation(), skull);
 			}
 		} else {
-			Bukkit.getConsoleSender().sendMessage(player.getName() + " died to "
-					+ player.getLastDamageCause().getCause().name() + "." + locString);
+			Bukkit.getConsoleSender().sendMessage(String.format("%s died to %s. %s",
+					player.getName(), lastDamage != null ? lastDamage.getCause().name() : "null", locString));
 		}
 	}
 }

@@ -3,6 +3,9 @@ package co.sblock.events;
 import java.util.HashMap;
 import java.util.UUID;
 
+import co.sblock.Sblock;
+import co.sblock.users.Users;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -12,9 +15,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.scoreboard.Team.Option;
 import org.bukkit.scoreboard.Team.OptionStatus;
-
-import co.sblock.Sblock;
-import co.sblock.users.Users;
 
 /**
  * Utility for managing nametag visibility for invisible players
@@ -72,7 +72,9 @@ public class InvisibilityManager {
 			Users.team(player, null);
 			team = player.getScoreboard().getEntryTeam(player.getName());
 		}
-		team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		if (team != null) {
+			team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.NEVER);
+		}
 		final UUID uuid = player.getUniqueId();
 		tasks.put(uuid, new BukkitRunnable() {
 			@Override
@@ -92,6 +94,8 @@ public class InvisibilityManager {
 			Users.team(player, null);
 			team = player.getScoreboard().getEntryTeam(player.getName());
 		}
-		team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.ALWAYS);
+		if (team != null) {
+			team.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.ALWAYS);
+		}
 	}
 }
