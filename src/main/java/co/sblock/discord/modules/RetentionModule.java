@@ -132,6 +132,8 @@ public class RetentionModule extends DiscordModule {
 
 					final ArrayList<IMessage> messages = new ArrayList<>();
 
+					LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(23);
+
 					for (int i = list.size() - 1; messages.size() < 100 && i >= 0; --i) {
 						IMessage message = list.get(i);
 
@@ -140,10 +142,18 @@ public class RetentionModule extends DiscordModule {
 							break;
 						}
 
-						if (!message.isPinned()) {
+						if (message.isPinned()) {
 							// Don't delete pinned messages.
-							messages.add(message);
+							continue;
 						}
+
+						if (message.getTimestamp().isAfter(bulkDeleteableBefore)) {
+							// Message is too old to be bulk deleted. Queue at LOWEST so bulk deletes run sooner.
+							getDiscord().queueMessageDeletion(CallPriority.LOWEST, message);
+							continue;
+						}
+
+						messages.add(message);
 					}
 
 					// No eligible messages.
