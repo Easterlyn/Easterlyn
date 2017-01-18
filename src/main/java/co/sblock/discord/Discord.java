@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,6 +41,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -367,15 +370,27 @@ public class Discord extends Module {
 	}
 
 	public void queueMessageDeletion(CallPriority priority, Collection<IMessage> messages) {
-		// Collect messages by channel to ensure bulk delete will work
-		Map<IChannel, List<IMessage>> messagesByChannel = messages.stream()
-				.collect(Collectors.groupingBy(message -> message.getChannel()));
+		// Bulk delete requires messages to be within the last 14 days. To be safe, we pad our check by an hour.
+		LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(23);
+		// Collect messages by channel to ensure bulk delete will work.
+		Map<Pair<IChannel, Boolean>, List<IMessage>> messagesByChannel = messages.stream()
+				.collect(Collectors.groupingBy(
+						message -> new ImmutablePair<IChannel, Boolean>(message.getChannel(),
+								message.getTimestamp().isBefore(bulkDeleteableBefore))));
 
-		for (Map.Entry<IChannel, List<IMessage>> entry : messagesByChannel.entrySet()) {
+		for (Map.Entry<Pair<IChannel, Boolean>, List<IMessage>> entry : messagesByChannel.entrySet()) {
 
 			if (entry.getValue().size() == 1) {
 				// Single message, single delete.
 				queueSingleDelete(priority, entry.getValue().get(0));
+				continue;
+			}
+
+			if (!entry.getKey().getRight()) {
+				// Messages older than 14 days, single delete all
+				for (IMessage message : entry.getValue()) {
+					queueSingleDelete(priority, message);
+				}
 				continue;
 			}
 
@@ -387,7 +402,7 @@ public class Discord extends Module {
 				this.queue(new DiscordCallable(priority) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-						entry.getKey().getMessages().bulkDelete(messageList);
+						entry.getKey().getLeft().getMessages().bulkDelete(messageList);
 					}
 				});
 			}
