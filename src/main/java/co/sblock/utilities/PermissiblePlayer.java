@@ -667,11 +667,13 @@ public class PermissiblePlayer implements Player {
 		return player.getHealth();
 	}
 
+	@Deprecated
 	@Override
 	public double getMaxHealth() {
 		return player.getMaxHealth();
 	}
 
+	@Deprecated
 	@Override
 	public void resetMaxHealth() {
 		player.resetMaxHealth();
@@ -682,6 +684,7 @@ public class PermissiblePlayer implements Player {
 		player.setHealth(arg0);
 	}
 
+	@Deprecated
 	@Override
 	public void setMaxHealth(double arg0) {
 		player.setMaxHealth(arg0);
@@ -1561,6 +1564,11 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public InventoryView openMerchant(Merchant arg0, boolean arg1) {
 		return player.openMerchant(arg0, arg1);
+	}
+
+	@Override
+	public void sendTitle(String arg0, String arg1, int arg2, int arg3, int arg4) {
+		player.sendTitle(arg0, arg1, arg2, arg3, arg4);
 	}
 
 }

@@ -1263,4 +1263,7 @@ public class DummyPlayer implements Player {
 		return null;
 	}
 
+	@Override
+	public void sendTitle(String arg0, String arg1, int arg2, int arg3, int arg4) {}
+
 }

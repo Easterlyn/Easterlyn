@@ -45,7 +45,7 @@
     <dependency>
       <groupId>com.github.austinv11</groupId>
       <artifactId>Discord4J</artifactId>
-      <version>websocket-rewrite-SNAPSHOT</version>
+      <version>master-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
