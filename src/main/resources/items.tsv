@@ -335,8 +335,8 @@
 177	WALL_BANNER	0	Wall-mounted Banner	wall_banner
 178	DAYLIGHT_DETECTOR_INVERTED	0	Inverted Daylight Sensor	daylight_detector_inverted
 179	RED_SANDSTONE	0	Red Sandstone	red_sandstone
-179	RED_SANDSTONE	1	Smooth Red Sandstone	red_sandstone
-179	RED_SANDSTONE	2	Chiseled Red Sandstone	red_sandstone
+179	RED_SANDSTONE	1	Chiseled Red Sandstone	red_sandstone
+179	RED_SANDSTONE	2	Smooth Red Sandstone	red_sandstone
 180	RED_SANDSTONE_STAIRS	0	Red Sandstone Stairs	red_sandstone_stairs
 181	DOUBLE_STONE_SLAB2	0	Double Red Sandstone Slab	stone_slab2
 182	STONE_SLAB2	0	Red Sandstone Slab	double_stone_slab2
