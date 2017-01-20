@@ -110,8 +110,8 @@ public class DiscordLinkCommand extends SblockCommand {
 		if (sender instanceof ConsoleCommandSender) {
 			return false;
 		}
-		return !(!sender.hasPermission("sblock.horrorterror") && player.hasPermission("sblock.horrorterror")
-				|| !sender.hasPermission("sblock.denizen") && player.hasPermission("sblock.denizen"));
+		return !sender.hasPermission("sblock.group.horrorterror") && player.hasPermission("sblock.group.horrorterror")
+				|| !sender.hasPermission("sblock.group.denizen") && player.hasPermission("sblock.group.denizen");
 	}
 
 	@Override
