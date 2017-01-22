@@ -3,6 +3,20 @@ package co.sblock.events.listeners.player;
 import java.util.HashSet;
 import java.util.Set;
 
+import co.sblock.Sblock;
+import co.sblock.captcha.Captcha;
+import co.sblock.chat.Language;
+import co.sblock.effects.Effects;
+import co.sblock.events.listeners.SblockListener;
+import co.sblock.machines.Machines;
+import co.sblock.machines.type.Machine;
+import co.sblock.micromodules.AwayFromKeyboard;
+import co.sblock.micromodules.Cooldowns;
+import co.sblock.micromodules.DreamTeleport;
+import co.sblock.micromodules.SleepVote;
+import co.sblock.utilities.Experience;
+import co.sblock.utilities.InventoryUtils;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
@@ -17,20 +31,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.Bed;
-
-import co.sblock.Sblock;
-import co.sblock.captcha.Captcha;
-import co.sblock.chat.Language;
-import co.sblock.effects.Effects;
-import co.sblock.events.listeners.SblockListener;
-import co.sblock.machines.Machines;
-import co.sblock.machines.type.Machine;
-import co.sblock.micromodules.AwayFromKeyboard;
-import co.sblock.micromodules.Cooldowns;
-import co.sblock.micromodules.DreamTeleport;
-import co.sblock.micromodules.SleepVote;
-import co.sblock.utilities.Experience;
-import co.sblock.utilities.InventoryUtils;
 
 /**
  * Listener for PlayerInteractEvents.
@@ -251,6 +251,22 @@ public class InteractListener extends SblockListener {
 		case WOOD_BUTTON:
 		case WOOD_DOOR:
 		case WORKBENCH:
+		case WHITE_SHULKER_BOX:
+		case ORANGE_SHULKER_BOX:
+		case MAGENTA_SHULKER_BOX:
+		case LIGHT_BLUE_SHULKER_BOX:
+		case YELLOW_SHULKER_BOX:
+		case LIME_SHULKER_BOX:
+		case PINK_SHULKER_BOX:
+		case GRAY_SHULKER_BOX:
+		case SILVER_SHULKER_BOX:
+		case CYAN_SHULKER_BOX:
+		case PURPLE_SHULKER_BOX:
+		case BLUE_SHULKER_BOX:
+		case BROWN_SHULKER_BOX:
+		case GREEN_SHULKER_BOX:
+		case RED_SHULKER_BOX:
+		case BLACK_SHULKER_BOX:
 			return true;
 		default:
 			return false;
