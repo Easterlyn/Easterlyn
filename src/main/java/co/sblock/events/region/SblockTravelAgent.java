@@ -2,6 +2,10 @@ package co.sblock.events.region;
 
 import java.util.Map.Entry;
 
+import co.sblock.machines.utilities.Direction;
+import co.sblock.machines.utilities.Shape;
+import co.sblock.machines.utilities.Shape.MaterialDataValue;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,10 +15,6 @@ import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
-
-import co.sblock.machines.utilities.Direction;
-import co.sblock.machines.utilities.Shape;
-import co.sblock.machines.utilities.Shape.MaterialDataValue;
 
 public class SblockTravelAgent implements TravelAgent {
 
@@ -324,8 +324,9 @@ public class SblockTravelAgent implements TravelAgent {
 				x = from.getX() * 8;
 				y = from.getY() * 2.05;
 				z = from.getZ() * 8;
+			} else {
+				x = y = z = 0;
 			}
-			x = y = z = 0;
 		}
 		if (world == null) {
 			return null;
