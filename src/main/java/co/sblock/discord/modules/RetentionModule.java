@@ -132,7 +132,7 @@ public class RetentionModule extends DiscordModule {
 
 					final ArrayList<IMessage> messages = new ArrayList<>();
 
-					LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(23);
+					LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(12);
 
 					for (int i = list.size() - 1; messages.size() < 100 && i >= 0; --i) {
 						IMessage message = list.get(i);
@@ -147,7 +147,8 @@ public class RetentionModule extends DiscordModule {
 							continue;
 						}
 
-						if (message.getTimestamp().isAfter(bulkDeleteableBefore)) {
+						// FIXME Discord is throwing its 14 days or less on most bulk deletes
+						if (true || message.getTimestamp().isAfter(bulkDeleteableBefore)) {
 							// Message is too old to be bulk deleted. Queue at LOWEST so bulk deletes run sooner.
 							getDiscord().queueMessageDeletion(CallPriority.LOWEST, message);
 							continue;

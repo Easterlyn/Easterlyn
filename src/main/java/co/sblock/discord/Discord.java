@@ -368,12 +368,13 @@ public class Discord extends Module {
 
 	public void queueMessageDeletion(CallPriority priority, Collection<IMessage> messages) {
 		// Bulk delete requires messages to be within the last 14 days. To be safe, we pad our check by an hour.
-		LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(23);
+		LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(12);
 		// Collect messages by channel to ensure bulk delete will work.
 		Map<Pair<IChannel, Boolean>, List<IMessage>> messagesByChannel = messages.stream()
 				.collect(Collectors.groupingBy(
 						message -> new ImmutablePair<IChannel, Boolean>(message.getChannel(),
-								message.getTimestamp().isBefore(bulkDeleteableBefore))));
+								// FIXME Discord is throwing its 14 days or less on most bulk deletes
+								false && message.getTimestamp().isBefore(bulkDeleteableBefore))));
 
 		for (Map.Entry<Pair<IChannel, Boolean>, List<IMessage>> entry : messagesByChannel.entrySet()) {
 
