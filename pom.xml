@@ -98,12 +98,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.jikoo</groupId>
-      <artifactId>regionerator</artifactId>
-      <version>1.3.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.tyrannyofheaven</groupId>
       <artifactId>zpermissions</artifactId>
       <version>1.3-SNAPSHOT</version>
