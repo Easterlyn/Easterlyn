@@ -1,7 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>Sblock</groupId>
-  <artifactId>Sblock</artifactId>
+  <groupId>com.easterlyn</groupId>
+  <artifactId>easterlyn</artifactId>
+  <name>Easterlyn</name>
   <version>0.0.1-SNAPSHOT</version>
 
   <properties>
@@ -143,7 +144,7 @@
   </repositories>
 
   <build>
-    <finalName>${project.artifactId}</finalName>
+    <finalName>${project.name}</finalName>
 
     <resources>
       <resource>
@@ -177,7 +178,7 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <configuration>
           <tasks>
-            <copy file="target/${project.artifactId}.jar" tofile="${jar.dir}/${project.artifactId}.jar" />
+            <copy file="target/${project.name}.jar" tofile="${jar.dir}/${project.name}.jar" />
           </tasks>
         </configuration>
         <executions>

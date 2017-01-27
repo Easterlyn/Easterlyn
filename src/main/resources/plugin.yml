@@ -1,9 +1,9 @@
-name: Sblock
+name: Easterlyn
 
-main: co.sblock.Sblock
+main: com.easterlyn.Easterlyn
 version: ${timestamp}
-author: Sblock Co.
-authors: [Jikoo, Dublek, FireNG, tmathmeyer]
+author: Jikoo
+authors: [Dublek, FireNG, tmathmeyer]
 description: Sblock's sexy mainframe
 depend: [GriefPrevention, ProtocolLib, WorldEdit, WorldGuard]
 softdepend: [CreeperHeal, dynmap, Regionerator, zPermissions]
