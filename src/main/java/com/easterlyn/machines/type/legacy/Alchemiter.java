@@ -1,4 +1,4 @@
-package com.easterlyn.machines.type;
+package com.easterlyn.machines.type.legacy;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -10,6 +10,7 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.machines.MachineInventoryTracker;
 import com.easterlyn.machines.Machines;
+import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;

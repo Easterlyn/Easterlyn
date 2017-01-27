@@ -9,7 +9,6 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.SblockListener;
 import com.easterlyn.events.packets.WrapperPlayServerPlayerListHeaderFooter;
-import com.easterlyn.micromodules.Godule;
 import com.easterlyn.users.Region;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
@@ -31,7 +30,6 @@ public class JoinListener extends SblockListener {
 
 	private final Discord discord;
 	private final Events events;
-	private final Godule godule;
 	private final Users users;
 	private final WrapperPlayServerPlayerListHeaderFooter list;
 
@@ -39,7 +37,6 @@ public class JoinListener extends SblockListener {
 		super(plugin);
 		this.discord = plugin.getModule(Discord.class);
 		this.events = plugin.getModule(Events.class);
-		this.godule = plugin.getModule(Godule.class);
 		this.users = plugin.getModule(Users.class);
 		Language lang = plugin.getModule(Language.class);
 		this.list = new WrapperPlayServerPlayerListHeaderFooter();
@@ -94,10 +91,6 @@ public class JoinListener extends SblockListener {
 				}
 
 				list.sendPacket(player);
-
-				if (player.hasPermission("sblock.god")) {
-					godule.enable(user.getUserAspect());
-				}
 			}
 		}.runTaskLater(getPlugin(), 2L);
 	}

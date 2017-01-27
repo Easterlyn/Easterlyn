@@ -2,6 +2,7 @@ package com.easterlyn.machines.type;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
@@ -9,8 +10,6 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.users.Users;
-
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -61,7 +60,7 @@ public abstract class Machine {
 	 * @param machines the Machines instance loading the Machine
 	 * @param shape the in-world representation of the machine
 	 */
-	Machine(Easterlyn plugin, Machines machines, Shape shape, String name) {
+	protected Machine(Easterlyn plugin, Machines machines, Shape shape, String name) {
 		this.plugin = plugin;
 		this.lang = plugin.getModule(Language.class);
 		this.machines = machines;

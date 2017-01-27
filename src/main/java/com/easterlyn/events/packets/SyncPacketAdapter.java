@@ -6,9 +6,7 @@ import java.util.Arrays;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers.PlayerAction;
 import com.easterlyn.Easterlyn;
-import com.easterlyn.micromodules.DreamTeleport;
 import com.easterlyn.utilities.PermissionUtils;
 
 /**
@@ -16,12 +14,8 @@ import com.easterlyn.utilities.PermissionUtils;
  */
 public class SyncPacketAdapter extends PacketAdapter {
 
-	private final DreamTeleport dream;
-
 	public SyncPacketAdapter(Easterlyn plugin) {
-		super(plugin, PacketType.Play.Client.ENTITY_ACTION, PacketType.Play.Server.TAB_COMPLETE,
-				PacketType.Play.Client.TAB_COMPLETE);
-		this.dream = plugin.getModule(DreamTeleport.class);
+		super(plugin, PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Client.TAB_COMPLETE);
 
 		PermissionUtils.addParent("sblock.commands.unfiltered", "sblock.denizen");
 	}
@@ -57,15 +51,8 @@ public class SyncPacketAdapter extends PacketAdapter {
 	 */
 	@Override
 	public void onPacketReceiving(PacketEvent event) {
-		if (event.getPacket().getType() == PacketType.Play.Client.ENTITY_ACTION) {
-			if (dream.isEnabled() && event.getPacket().getPlayerActions().read(0) == PlayerAction.STOP_SLEEPING
-					&& dream.getSleepTasks().containsKey(event.getPlayer().getUniqueId())) {
-				event.setCancelled(true);
-				dream.fakeWakeUp(event.getPlayer());
-			}
-			return;
-		} else if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
-			if (event.getPlayer().hasPermission("sblock.denizen")) {
+		if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
+			if (event.getPlayer().hasPermission("sblock.commands.unfiltered")) {
 				return;
 			}
 			String completing = event.getPacket().getStrings().read(0);

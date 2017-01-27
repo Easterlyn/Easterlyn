@@ -1,12 +1,14 @@
-package com.easterlyn.machines.type;
+package com.easterlyn.machines.type.legacy;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
+import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Shape;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -54,6 +56,12 @@ public class PGO extends Machine {
 			return;
 		}
 		this.assembleKeyLater(event.getBlock().getLocation(), data, storage);
+	}
+
+	@Override
+	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
+		this.remove(storage);
+		return true;
 	}
 
 	@Override
@@ -169,6 +177,11 @@ public class PGO extends Machine {
 	@Override
 	public ItemStack getUniqueDrop() {
 		return drop;
+	}
+
+	@Override
+	public void enable(ConfigurationSection storage) {
+		this.remove(storage);
 	}
 
 }

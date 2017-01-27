@@ -7,8 +7,6 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.SblockListener;
 import com.easterlyn.micromodules.FreeCart;
-import com.easterlyn.micromodules.Godule;
-import com.easterlyn.users.UserAspect;
 import com.easterlyn.utilities.Experience;
 
 import org.bukkit.Bukkit;
@@ -23,7 +21,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -35,7 +32,6 @@ public class DeathListener extends SblockListener {
 
 	private final Events events;
 	private final FreeCart carts;
-	private final Godule godule;
 	private final Language lang;
 	private final ItemStack facts;
 	private final String[] messages;
@@ -44,7 +40,6 @@ public class DeathListener extends SblockListener {
 		super(plugin);
 		this.events = plugin.getModule(Events.class);
 		this.carts = plugin.getModule(FreeCart.class);
-		this.godule = plugin.getModule(Godule.class);
 		this.lang = plugin.getModule(Language.class);
 		this.messages = lang.getValue("events.death.random").split("\n");
 		this.facts = new ItemStack(Material.WRITTEN_BOOK);
@@ -108,13 +103,6 @@ public class DeathListener extends SblockListener {
 			}
 			Bukkit.getConsoleSender().sendMessage(String.format("%s died to %s. %s",
 					player.getName(), killer.getName(), locString));
-			if (godule.isEnabled(UserAspect.BREATH)) {
-				ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-				SkullMeta meta = (SkullMeta) skull.getItemMeta();
-				meta.setOwner(player.getName());
-				skull.setItemMeta(meta);
-				player.getWorld().dropItem(player.getLocation(), skull);
-			}
 		} else {
 			Bukkit.getConsoleSender().sendMessage(String.format("%s died to %s. %s",
 					player.getName(), lastDamage != null ? lastDamage.getCause().name() : "null", locString));

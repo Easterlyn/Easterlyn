@@ -1,4 +1,4 @@
-package com.easterlyn.machines.type;
+package com.easterlyn.machines.type.legacy;
 
 import java.util.UUID;
 
@@ -7,6 +7,7 @@ import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.machines.MachineInventoryTracker;
 import com.easterlyn.machines.Machines;
+import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;

@@ -594,16 +594,21 @@ public class Captcha extends Module {
 				continue;
 			}
 			String hash = findHashIfPresent(is.getItemMeta().getLore());
-			ItemStack storedItem = hash == null ? LegacyCaptcha.captchaToItem(is) : this.getItemByHash(hash);
+			if (hash == null) {
+				continue;
+			}
+			ItemStack storedItem = this.getItemByHash(hash);
+			if (storedItem == null) {
+				continue;
+			}
 			if (Captcha.isUsedCaptcha(storedItem)) {
 				// Properly convert contents of double captchas
 				int amount = storedItem.getAmount();
 				String internalHash = this.findHashIfPresent(storedItem.getItemMeta().getLore());
-				ItemStack convertedItem;
 				if (internalHash == null) {
-					convertedItem = LegacyCaptcha.captchaToItem(storedItem);
+					continue;
 				}
-				convertedItem = this.getItemByHash(internalHash);
+				ItemStack convertedItem = this.getItemByHash(internalHash);
 				if (convertedItem == null) {
 					continue;
 				}

@@ -28,9 +28,7 @@ import com.easterlyn.events.Events;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.Cooldowns;
-import com.easterlyn.micromodules.DreamTeleport;
 import com.easterlyn.micromodules.FreeCart;
-import com.easterlyn.micromodules.Godule;
 import com.easterlyn.micromodules.Holograms;
 import com.easterlyn.micromodules.Meteors;
 import com.easterlyn.micromodules.ParticleUtils;
@@ -126,12 +124,10 @@ public class Easterlyn extends JavaPlugin {
 		addModule(new Machines(this));
 
 		// Misc. event-driven modules
-		addModule(new DreamTeleport(this));
 		addModule(new FreeCart(this));
 		addModule(new Meteors(this));
 		addModule(new SleepVote(this));
 		addModule(new Spectators(this));
-		addModule(new Godule(this));
 
 		addModule(new Events(this));
 

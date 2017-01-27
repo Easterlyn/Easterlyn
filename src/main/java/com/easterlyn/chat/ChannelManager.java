@@ -131,10 +131,8 @@ public class ChannelManager {
 		channelList.put("#Aether", new RegionChannel(chat.getPlugin(), "#Aether"));
 		channelList.put("#discord", new RegionChannel(chat.getPlugin(), "#discord"));
 		channelList.put("#rp", new RPChannel(chat.getPlugin(), "#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#fanrp", new NickChannel(chat.getPlugin(), "#fanrp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		String spam = chat.getPlugin().getModule(Language.class).getValue("chat.spamChannel");
 		channelList.put(spam, new NormalChannel(chat.getPlugin(), spam, AccessLevel.PUBLIC, null, Long.MAX_VALUE));
-		channelList.put("#gods", new NormalChannel(chat.getPlugin(), "#gods", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		// People may use unicode characters in private messages
 		channelList.put("#pm", new NickChannel(chat.getPlugin(), "#pm", AccessLevel.PRIVATE, UUID.fromString("40028b1a-b4d7-4feb-8f66-3b82511ecdd6"), Long.MAX_VALUE));
 		// Show true sign contents

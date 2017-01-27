@@ -12,7 +12,6 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.Cooldowns;
-import com.easterlyn.micromodules.DreamTeleport;
 import com.easterlyn.micromodules.SleepVote;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
@@ -30,7 +29,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.material.Bed;
 
 /**
  * Listener for PlayerInteractEvents.
@@ -42,7 +40,6 @@ public class InteractListener extends SblockListener {
 	private final AwayFromKeyboard afk;
 	private final Captcha captcha;
 	private final Cooldowns cooldowns;
-	private final DreamTeleport dream;
 	private final Effects effects;
 	private final Language lang;
 	private final Machines machines;
@@ -54,7 +51,6 @@ public class InteractListener extends SblockListener {
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.captcha = plugin.getModule(Captcha.class);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
-		this.dream = plugin.getModule(DreamTeleport.class);
 		this.effects = plugin.getModule(Effects.class);
 		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
@@ -127,12 +123,6 @@ public class InteractListener extends SblockListener {
 						event.getPlayer().sendMessage(this.lang.getValue("events.interact.daySleep"));
 						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
 					}
-					event.setCancelled(true);
-					return;
-				}
-
-				// Sleep teleport
-				if (dream.handleBedInteract(event.getPlayer(), block, (Bed) block.getState().getData())) {
 					event.setCancelled(true);
 					return;
 				}

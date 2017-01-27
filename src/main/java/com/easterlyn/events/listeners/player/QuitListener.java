@@ -9,9 +9,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.events.listeners.SblockListener;
 import com.easterlyn.micromodules.AwayFromKeyboard;
-import com.easterlyn.micromodules.DreamTeleport;
 import com.easterlyn.micromodules.FreeCart;
-import com.easterlyn.micromodules.Godule;
 import com.easterlyn.micromodules.SleepVote;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.User;
@@ -29,10 +27,8 @@ public class QuitListener extends SblockListener {
 
 	private final AwayFromKeyboard afk;
 	private final Discord discord;
-	private final DreamTeleport dream;
 	private final Effects effects;
 	private final FreeCart carts;
-	private final Godule godule;
 	private final Language lang;
 	private final SleepVote sleep;
 	private final Spectators spectators;
@@ -42,10 +38,8 @@ public class QuitListener extends SblockListener {
 		super(plugin);
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.discord = plugin.getModule(Discord.class);
-		this.dream = plugin.getModule(DreamTeleport.class);
 		this.effects = plugin.getModule(Effects.class);
 		this.carts = plugin.getModule(FreeCart.class);
-		this.godule = plugin.getModule(Godule.class);
 		this.lang = plugin.getModule(Language.class);
 		this.sleep = plugin.getModule(SleepVote.class);
 		this.spectators = plugin.getModule(Spectators.class);
@@ -84,22 +78,12 @@ public class QuitListener extends SblockListener {
 			spectators.removeSpectator(event.getPlayer(), true);
 		}
 
-		// Stop scheduled sleep teleport
-		if (dream.getSleepTasks().containsKey(event.getPlayer().getName())) {
-			dream.getSleepTasks().remove(event.getPlayer().getName()).cancel();
-		}
-
 		// Delete team for exiting player to avoid clutter
 		Users.unteam(event.getPlayer());
 
 		final UUID uuid = event.getPlayer().getUniqueId();
 		User user = users.getUser(uuid);
 		user.save();
-
-		// Disable "god" effect, if any
-		if (event.getPlayer().hasPermission("sblock.god")) {
-			godule.disable(user.getUserAspect());
-		}
 
 		// Inform channels that the player is no longer listening to them
 		for (Iterator<String> iterator = user.getListening().iterator(); iterator.hasNext();) {

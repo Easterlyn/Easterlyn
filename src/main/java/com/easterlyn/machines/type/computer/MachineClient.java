@@ -38,24 +38,21 @@ public class MachineClient extends Program {
 			return;
 		}
 		Inventory top = view.getTopInventory();
-		if (top.getSize() != 27) {
-			// Open a fresh default 9-slot inventory.
-			top = ((Computer) top.getHolder()).getInventory(27);
+		if (top.getSize() != 18) {
+			// Open a fresh inventory.
+			top = ((Computer) top.getHolder()).getInventory(18);
 			player.openInventory(top);
 		} else {
 			top.clear();
 		}
 
 		MachinePurchase purchase = (MachinePurchase) Programs.getProgramByName("MachinePurchase");
-		top.setItem(1, purchase.getIconForMachine(getMachines().getMachineByName("Cruxtruder")));
-		top.setItem(3, purchase.getIconForMachine(getMachines().getMachineByName("PunchDesignix")));
-		top.setItem(5, purchase.getIconForMachine(getMachines().getMachineByName("TotemLathe")));
-		top.setItem(7, purchase.getIconForMachine(getMachines().getMachineByName("Alchemiter")));
-		top.setItem(21, purchase.getIconForMachine(getMachines().getMachineByName("Transportalizer")));
-		top.setItem(22, purchase.getIconForMachine(getMachines().getMachineByName("Elevator")));
-		top.setItem(23, purchase.getIconForMachine(getMachines().getMachineByName("CompilationAmalgamator")));
+//		top.setItem(1, purchase.getIconForMachine(getMachines().getMachineByName("Dublexor")));
+		top.setItem(3, purchase.getIconForMachine(getMachines().getMachineByName("Transportalizer")));
+		top.setItem(5, purchase.getIconForMachine(getMachines().getMachineByName("Elevator")));
+		top.setItem(7, purchase.getIconForMachine(getMachines().getMachineByName("CompilationAmalgamator")));
 
-		top.setItem(26, Programs.getProgramByName("Back").getIcon());
+		top.setItem(17, Programs.getProgramByName("Back").getIcon());
 		InventoryUtils.changeWindowName(player, "Machine Client");
 	}
 

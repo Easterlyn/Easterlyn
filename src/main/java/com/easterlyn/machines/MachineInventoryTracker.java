@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.easterlyn.machines.type.Alchemiter;
 import com.easterlyn.machines.type.Machine;
+import com.easterlyn.machines.type.legacy.Alchemiter;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
