@@ -3,10 +3,12 @@ package co.sblock.machines;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -232,6 +234,65 @@ public class Machines extends Module {
 	public void deleteChunkMachines(World world, int chunkX, int chunkZ) {
 		getConfig().set(new StringBuilder(world.getName()).append('.').append(chunkX).append('_')
 				.append(chunkZ).toString(), null);
+	}
+
+	public Map<Location, List<Location>> getMachinesOfType(Machine... machineTypes) {
+		if (!this.isEnabled() || machineTypes.length == 0) {
+			return new HashMap<>();
+		}
+
+		List<Machine> machines = Arrays.asList(machineTypes);
+		HashMap<Location, List<Location>> locations = new HashMap<>();
+
+		for (String worldName : getConfig().getKeys(false)) {
+			ConfigurationSection worldSection = getConfig().getConfigurationSection(worldName);
+			if (worldSection == null) {
+				continue;
+			}
+			World world = Bukkit.getWorld(worldName);
+			if (world == null) {
+				continue;
+			}
+			for (String chunkString : worldSection.getKeys(false)) {
+				ConfigurationSection chunkSection = worldSection.getConfigurationSection(chunkString);
+				if (chunkSection == null) {
+					continue;
+				}
+				String[] xz = chunkString.split("_");
+
+				Location chunkLocation;
+				try {
+					chunkLocation = new Location(world, Integer.valueOf(xz[0]), 0, Integer.valueOf(xz[1]));
+				} catch (NumberFormatException e) {
+					getLogger().warning("Chunk coordinates cannot be parsed from " + chunkString);
+					continue;
+				}
+				for (String coordinates : chunkSection.getKeys(false)) {
+					String[] xyz = coordinates.split("_");
+					try {
+						Location key = new Location(world, Integer.valueOf(xyz[0]),
+							Integer.valueOf(xyz[1]), Integer.valueOf(xyz[2]));
+						Pair<Machine, ConfigurationSection> machine = getMachineByLocation(key);
+						if (machine == null) {
+							continue;
+						}
+						if (machines.contains(machine.getLeft())) {
+							locations.compute(chunkLocation, (chunkLoc, chunkMachines) -> {
+								if (chunkMachines == null) {
+									chunkMachines = new ArrayList<>();
+								}
+								chunkMachines.add(key);
+								return chunkMachines;
+							});
+						}
+					} catch (NumberFormatException e) {
+						getLogger().warning("Coordinates cannot be parsed from " + coordinates);
+					}
+				}
+			}
+		}
+
+		return locations;
 	}
 
 	/**
