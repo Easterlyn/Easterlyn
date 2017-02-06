@@ -4,10 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.Effect;
+import com.easterlyn.utilities.InventoryUtils;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -29,7 +36,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class CruxiteDowel {
 
-	private static HashMap<Material, Integer> grist;
+	private static Map<Pair<Material, Short>, Double> manaMappings;
 	private static final ItemStack DOWEL_ITEM;
 
 	static {
@@ -69,21 +76,24 @@ public class CruxiteDowel {
 		return dowel;
 	}
 
-	public static int expCost(Effects effects, ItemStack toCreate) {
-		int cost = getGrist().get(toCreate.getType());
-		if (cost == Integer.MAX_VALUE) {
-			// Item cannot be made with grist
-			return cost;
+	public static double expCost(Effects effects, ItemStack toCreate) {
+		if (toCreate.getAmount() < 1) {
+			return Double.MAX_VALUE;
 		}
-		if (toCreate.getType() == Material.SKULL_ITEM && toCreate.getDurability() == 5) {
-			cost += 29000;
+		double cost = getMana().get(toCreate.getType());
+		if (cost == Double.MAX_VALUE) {
+			// Item cannot be made with grist
+			return Double.MAX_VALUE;
 		}
 		if (!toCreate.hasItemMeta()) {
 			// No additional costs from meta, finish fast.
+			if (Double.MAX_VALUE / toCreate.getAmount() <= cost) {
+				return Double.MAX_VALUE;
+			}
 			return cost * toCreate.getAmount();
 		}
-		if (Captcha.isCaptcha(toCreate) || isDowel(toCreate)) {
-			return Integer.MAX_VALUE;
+		if (InventoryUtils.isUniqueItem(effects.getPlugin(), toCreate)) {
+			return Double.MAX_VALUE;
 		}
 
 		ItemMeta meta = toCreate.getItemMeta();
@@ -97,49 +107,87 @@ public class CruxiteDowel {
 				// fortune 3: 14 * 3 * 20 = 840 exp, 0-30
 				// Rebalanced to *40, removed 2x multiplier from final cost
 				// Rebalanced weights to account for mending/frostwalker being rarer
-				cost += (40 - getWeight(entry.getKey())) * Math.abs(entry.getValue()) * 45;
+				/*
+				 * TODO recalc and explain reasoning, double check balance
+				 * Enchantment levels are a short, no risk of overflow until added to cost.
+				 */
+				int enchantCost = (20 - getWeight(entry.getKey())) * Math.abs(entry.getValue()) * 90;
+				if (Double.MAX_VALUE - enchantCost <= cost) {
+					return Double.MAX_VALUE;
+				}
+				cost += enchantCost;
 			}
 			if (toCreate.getType().getMaxDurability() == 0) {
+				if (Double.MAX_VALUE / 4 <= cost) {
+					return Double.MAX_VALUE;
+				}
 				cost *= 4;
 			}
 		}
 
 		if (meta instanceof EnchantmentStorageMeta) {
 			for (Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta) meta).getStoredEnchants().entrySet()) {
-				cost += (36 - getWeight(entry.getKey())) * entry.getValue() * 40;
+				int enchantCost = (18 - getWeight(entry.getKey())) * entry.getValue() * 80;
+				if (Double.MAX_VALUE - enchantCost <= cost) {
+					return Double.MAX_VALUE;
+				}
+				cost += enchantCost;
 			}
 		}
 
 		if (toCreate.getItemMeta().hasDisplayName()) {
-			// Naming an unenchanted item in an anvil costs 1 additional level in 1.8
+			// Naming an unenchanted item in an anvil costs 1 additional level in 1.8. Since we're nice, a fixed cost.
+			if (Double.MAX_VALUE - 15 <= cost) {
+				return Double.MAX_VALUE;
+			}
 			cost += 15;
 		}
 
 		int effectCost = 0;
-		for (Entry<Effect, Integer> effect : effects.getEffects(false, toCreate).entrySet()) {
-			effectCost += effect.getKey().getCost() * effect.getValue();
+		for (Entry<Effect, Integer> effect : effects.getEffects(true, toCreate).entrySet()) {
+			int entryCost = effect.getKey().getCost();
+			if (entryCost == Integer.MAX_VALUE || Integer.MAX_VALUE / effect.getValue() <= entryCost) {
+				return Double.MAX_VALUE;
+			}
+			entryCost *= effect.getValue();
+			if (Integer.MAX_VALUE - entryCost <= effectCost) {
+				return Double.MAX_VALUE;
+			}
+			effectCost += entryCost;
 		}
 		// if item contains special lore and doesn't need repair, raise price
 		if (toCreate.getType().getMaxDurability() == 0) {
+			if (Integer.MAX_VALUE / 4 <= effectCost) {
+				return Double.MAX_VALUE;
+			}
 			effectCost *= 4;
+		}
+		if (effectCost < 0 || Double.MAX_VALUE - effectCost <= cost) {
+			return Double.MAX_VALUE;
 		}
 		cost += effectCost;
 
+		if (Double.MAX_VALUE / toCreate.getAmount() <= effectCost) {
+			return Double.MAX_VALUE;
+		}
 		cost *= toCreate.getAmount();
 
 		return cost > 0 ? cost : Integer.MAX_VALUE;
 	}
 
-	public static HashMap<Material, Integer> getGrist() {
-		if (grist == null) {
-			grist = createBaseGrist();
-			fillFromRecipes();
+	public static Map<Pair<Material, Short>, Double> getMana() {
+		if (manaMappings == null) {
+			manaMappings = createBaseMana();
+			// Fill from recipes
+			for (Material material : Material.values()) {
+				addRecipeCosts(material);
+			}
 		}
-		return grist;
+		return manaMappings;
 	}
 
-	private static HashMap<Material, Integer> createBaseGrist() {
-		HashMap<Material, Integer> materialValues = new HashMap<>();
+	private static Map<Pair<Material, Short>, Double> createBaseMana() {
+		Map<Pair<Material, Short>, Double> values = new HashMap<>();
 
 		for (Material material : Material.values()) {
 			switch(material) {
@@ -155,7 +203,7 @@ public class CruxiteDowel {
 			case SAND:
 			case SEEDS:
 			case SNOW_BALL:
-				materialValues.put(material, 1);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 1D);
 				break;
 			case CACTUS:
 			case CARROT_ITEM:
@@ -172,7 +220,7 @@ public class CruxiteDowel {
 			case WATER_LILY:
 			case YELLOW_FLOWER:
 			case CHORUS_FRUIT:
-				materialValues.put(material, 2);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 2D);
 				break;
 			case BROWN_MUSHROOM:
 			case NETHERRACK:
@@ -181,26 +229,26 @@ public class CruxiteDowel {
 			case POTATO_ITEM:
 			case ROTTEN_FLESH:
 			case STONE:
-				materialValues.put(material, 3);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 3D);
 				break;
 			case ARROW:
 			case DOUBLE_PLANT:
 			case FEATHER:
 			case RAW_CHICKEN:
-				materialValues.put(material, 4);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 4D);
 				break;
 			case CLAY_BRICK:
 			case FLINT:
 			case RABBIT:
 			case RAW_FISH:
 			case WOOL:
-				materialValues.put(material, 5);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 5D);
 				break;
 			case BAKED_POTATO:
 			case EGG:
 			case NETHER_BRICK:
 			case PUMPKIN:
-				materialValues.put(material, 6);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 6D);
 				break;
 			case COOKED_CHICKEN:
 			case LOG:
@@ -209,13 +257,13 @@ public class CruxiteDowel {
 			case RAW_BEEF:
 			case REDSTONE:
 			case STRING:
-				materialValues.put(material, 8);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 8D);
 				break;
 			case COOKED_FISH:
 			case NETHER_WARTS:
 			case NETHER_STALK: // Same thing as warts in 1.8 inventories
 			case PRISMARINE_SHARD:
-				materialValues.put(material, 9);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 9D);
 				break;
 			case ENDER_STONE:
 			case GLOWSTONE_DUST:
@@ -226,7 +274,7 @@ public class CruxiteDowel {
 			case PORK:
 			case SLIME_BALL:
 			case STAINED_GLASS:
-				materialValues.put(material, 10);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 10D);
 				break;
 			case APPLE:
 			case BONE:
@@ -235,52 +283,52 @@ public class CruxiteDowel {
 			case GOLD_NUGGET:
 			case RABBIT_FOOT:
 			case SPIDER_EYE:
-				materialValues.put(material, 12);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 12D);
 				break;
 			case STAINED_CLAY:
-				materialValues.put(material, 13);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 13D);
 				break;
 			case GRILLED_PORK:
-				materialValues.put(material, 14);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 14D);
 				break;
 			case SAPLING:
 			case SADDLE:
-				materialValues.put(material, 16);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 16D);
 				break;
 			case SULPHUR:
 			case MAP: // Not crafted, right click
 			case MYCEL:
-				materialValues.put(material, 20);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 20D);
 				break;
 			case ENCHANTED_BOOK:
-				materialValues.put(material, 25);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 25D);
 				break;
 			case PACKED_ICE:
-				materialValues.put(material, 28);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 28D);
 				break;
 			case BLAZE_ROD:
 			case GRASS:
-				materialValues.put(material, 30);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 30D);
 				break;
 			case BANNER:
 			case GHAST_TEAR:
 			case PRISMARINE_CRYSTALS:
-				materialValues.put(material, 35);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 35D);
 				break;
 			case QUARTZ:
-				materialValues.put(material, 37);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 37D);
 				break;
 			case IRON_INGOT:
-				materialValues.put(material, 41);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 41D);
 				break;
 			case COAL_ORE:
 			case QUARTZ_ORE:
-				materialValues.put(material, 44);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 44D);
 				break;
 			case GOLD_RECORD:
 			case GREEN_RECORD:
 			case IRON_ORE:
-				materialValues.put(material, 50);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 50D);
 				break;
 			case RECORD_10:
 			case RECORD_11:
@@ -292,72 +340,74 @@ public class CruxiteDowel {
 			case RECORD_7:
 			case RECORD_8:
 			case RECORD_9:
-				materialValues.put(material, 70);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 70D);
 				break;
 			case PISTON_BASE:
 			case OBSIDIAN:
 			case REDSTONE_ORE:
-				materialValues.put(material, 81);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 81D);
 				break;
 			case ENDER_PEARL:
 			case PISTON_STICKY_BASE:
-				materialValues.put(material, 90);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 90D);
 				break;
 			case GOLD_INGOT:
-				materialValues.put(material, 108);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 108D);
 				break;
 			case GOLD_ORE:
 			case LAVA_BUCKET:
 			case MILK_BUCKET:
 			case WATER_BUCKET:
 			case WEB:
-				materialValues.put(material, 138);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 138D);
 				break;
 			case DIAMOND:
-				materialValues.put(material, 167);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 167D);
 				break;
 			case DIAMOND_ORE:
-				materialValues.put(material, 187);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 187D);
 				break;
 			case IRON_BARDING:
-				materialValues.put(material, 261);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 261D);
 				break;
 			case NAME_TAG:
-				materialValues.put(material, 405);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 405D);
 				break;
 			case CHAINMAIL_BOOTS:
-				materialValues.put(material, 600);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 600D);
 				break;
 			case GOLD_BARDING:
-				materialValues.put(material, 663);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 663D);
 				break;
 			case CHAINMAIL_HELMET:
 			case SHULKER_SHELL:
-				materialValues.put(material, 750);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 750D);
 				break;
 			case DIAMOND_BARDING:
-				materialValues.put(material, 1000);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 1000D);
 				break;
 			case CHAINMAIL_LEGGINGS:
-				materialValues.put(material, 1050);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 1050D);
 				break;
 			case CHAINMAIL_CHESTPLATE:
-				materialValues.put(material, 1200);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 1200D);
 				break;
 			case SKULL_ITEM:
-				materialValues.put(material, 3000);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 3000D);
+				// Dragon head
+				values.put(new ImmutablePair<Material, Short>(material, (short) 5), 32000D);
 				break;
 			case TOTEM:
-				materialValues.put(material, 5000);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 5000D);
 				break;
 			case NETHER_STAR:
-				materialValues.put(material, 10000);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 10000D);
 				break;
 			case ELYTRA:
-				materialValues.put(material, 3142);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 3142D);
 				break;
 			case DRAGON_EGG:
-				materialValues.put(material, 32000);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 32000D);
 				break;
 			// Unobtainable, don't bother searching recipes
 			case AIR:
@@ -403,115 +453,203 @@ public class CruxiteDowel {
 			case STATIONARY_WATER:
 			case WATER:
 			case WRITTEN_BOOK: // Duplicate via other means, not alchemy
-				materialValues.put(material, Integer.MAX_VALUE);
+				values.put(new ImmutablePair<Material, Short>(material, (short) -1), Double.MAX_VALUE);
 			default:
 				break;
 			}
 		}
-		return materialValues;
+		return values;
 	}
 
-	private static void fillFromRecipes() {
-		List<Material> pastMaterials = new ArrayList<>();
-		for (Material material : Material.values()) {
-			grist.put(material, getRecipeCost(material, pastMaterials));
-			pastMaterials.clear();
-		}
+	private static void addRecipeCosts(Material material) {
+		addRecipeCosts(material, (short) -1, new ArrayList<>());
 	}
 
-	private static int getRecipeCost(Material material, List<Material> pastMaterials) {
-		if (grist.containsKey(material)) {
-			return grist.get(material);
+	private static double addRecipeCosts(Material material, short durability, List<Pair<Material, Short>> pastMaterials) {
+		Pair<Material, Short> key = new ImmutablePair<>(material, durability);
+		// Check if calculated already
+		if (manaMappings.containsKey(key)) {
+			return manaMappings.get(key);
 		}
-		if (pastMaterials.contains(material)) {
-			return Integer.MAX_VALUE;
-		}
-		pastMaterials.add(material);
-		int minimum = Integer.MAX_VALUE;
-		for (Recipe r : Bukkit.getRecipesFor(new ItemStack(material, 1, (short) -1))) {
-			int amount = r.getResult().getAmount();
-			if (amount < 1) {
-				continue;
+		// If a specific data value is provided but not found and a nonspecific value is present, fall through
+		// TODO test, may not be desirable
+		if (durability != -1) {
+			Pair<Material, Short> anyKey = new ImmutablePair<>(material, durability);
+			if (manaMappings.containsKey(anyKey)) {
+				return manaMappings.get(anyKey);
 			}
-			int newMin;
-			if (r instanceof FurnaceRecipe) {
-				newMin = 2 + getRecipeCost(((FurnaceRecipe) r).getInput().getType(), pastMaterials);
-			} else if (r instanceof ShapedRecipe) {
-				newMin = 0;
+		}
+
+		// Check if mid-calculation
+		if (pastMaterials.contains(key)) {
+			return Double.MAX_VALUE;
+		}
+
+		// Create a new list for sub-elements
+		pastMaterials = new ArrayList<>(pastMaterials);
+		// Add to mid-calc list
+		pastMaterials.add(key);
+
+		if (durability == -1) {
+			double maximum = 0;
+			Set<Short> durabilities = Bukkit.getRecipesFor(new ItemStack(material, 1, durability)).stream()
+					.map(recipe -> recipe.getResult().getDurability()).collect(Collectors.toSet());
+			for (short dura : durabilities) {
+				if (dura != -1) {
+					maximum = Math.max(maximum, addRecipeCosts(material, dura, pastMaterials));
+				}
+			}
+			if (maximum <= 0) {
+				// No recipes
+				maximum = Double.MAX_VALUE;
+			}
+			manaMappings.put(key, maximum);
+			return maximum;
+		}
+
+		double minimum = Double.MAX_VALUE;
+
+		nextRecipe: for (Recipe recipe : Bukkit.getRecipesFor(new ItemStack(material, 1, durability))) {
+			ItemStack result = recipe.getResult();
+			int amount = result.getAmount();
+			if (amount < 1) {
+				continue nextRecipe;
+			}
+
+			double newMinimum;
+
+			if (recipe instanceof FurnaceRecipe) {
+				ItemStack input = ((FurnaceRecipe) recipe).getInput();
+				if (pastMaterials.contains(new ImmutablePair<>(input.getType(), input.getDurability()))) {
+					continue nextRecipe;
+				}
+				newMinimum = addRecipeCosts(input.getType(), input.getDurability(), pastMaterials);
+				if (newMinimum >= Double.MAX_VALUE - 1.5) {
+					continue nextRecipe;
+				}
+				// Coal is 12, 8 smelts per coal = 1.5 cost per smelt. Hardcoded to prevent a bit of extra code and checks.
+				newMinimum += 1.5;
+			} else if (recipe instanceof ShapedRecipe) {
+				newMinimum = 0;
+				ShapedRecipe shaped = (ShapedRecipe) recipe;
 				HashMap<Character, Integer> materialQuantity = new HashMap<>();
-				for (String s : ((ShapedRecipe) r).getShape()) {
-					for (char c : s.toCharArray()) {
-						if (materialQuantity.containsKey(c)) {
-							materialQuantity.put(c, materialQuantity.get(c) + 1);
+				for (String line : shaped.getShape()) {
+					for (char ingredient : line.toCharArray()) {
+						if (materialQuantity.containsKey(ingredient)) {
+							materialQuantity.put(ingredient, materialQuantity.get(ingredient) + 1);
 						} else {
-							materialQuantity.put(c, 1);
+							materialQuantity.put(ingredient, 1);
 						}
 					}
 				}
-				for (Entry<Character, Integer> e : materialQuantity.entrySet()) {
-					ItemStack is = ((ShapedRecipe) r).getIngredientMap().get(e.getKey());
-					if (is == null) {
+				for (Entry<Character, Integer> entry : materialQuantity.entrySet()) {
+					ItemStack input = shaped.getIngredientMap().get(entry.getKey());
+					if (input == null || input.getType() == Material.AIR || entry.getValue() < 1) {
 						continue;
 					}
-					if (pastMaterials.contains(is.getType())) {
-						continue;
+					if (pastMaterials.contains(new ImmutablePair<>(input.getType(), input.getDurability()))) {
+						// No loops.
+						continue nextRecipe;
 					}
-					newMin += getRecipeCost(is.getType(), pastMaterials) * e.getValue();
+					double inputValue = addRecipeCosts(input.getType(), input.getDurability(), pastMaterials);
+					if (Double.MAX_VALUE / entry.getValue() >= inputValue) {
+						// Input item cannot be duplicated.
+						continue nextRecipe;
+					}
+					inputValue *= entry.getValue();
+					if (Double.MAX_VALUE - newMinimum <= inputValue) {
+						// Noverflow.
+						continue nextRecipe;
+					}
+					newMinimum += inputValue;
 					// Special case: Buckets are not consumed when crafting
-					if (is.getType().name().endsWith("_BUCKET")) {
-						newMin -= getRecipeCost(Material.BUCKET, pastMaterials) * e.getValue();
+					if (input.getType().name().endsWith("_BUCKET")) {
+						// Iron ingots are 41, hardcoded bucket value here to avoid a lot of extra code to prevent issues
+						newMinimum -= 123 * entry.getValue();
 					}
 				}
-			} else if (r instanceof ShapelessRecipe) {
-				newMin = 0;
-				for (ItemStack is : ((ShapelessRecipe) r).getIngredientList()) {
-					if (pastMaterials.contains(is.getType())) {
+				if (newMinimum <= 0) {
+					continue nextRecipe;
+				}
+			} else if (recipe instanceof ShapelessRecipe) {
+				newMinimum = 0;
+				for (ItemStack input : ((ShapelessRecipe) recipe).getIngredientList()) {
+					if (input == null || input.getType() == Material.AIR) {
 						continue;
 					}
-					newMin += getRecipeCost(is.getType(), pastMaterials);
-					// Special case: Buckets are not consumed when crafting
-					if (is.getType().name().endsWith("_BUCKET")) {
-						newMin -= getRecipeCost(Material.BUCKET, pastMaterials);
+					if (input.getAmount() < 1 || pastMaterials.contains(new ImmutablePair<>(input.getType(), input.getDurability()))) {
+						// No loops, no weird stuff.
+						continue nextRecipe;
 					}
+					double inputValue = addRecipeCosts(input.getType(), input.getDurability(), pastMaterials);
+					if (Double.MAX_VALUE / input.getAmount() >= inputValue) {
+						// Input item cannot be duplicated.
+						continue nextRecipe;
+					}
+					inputValue *= input.getAmount();
+					if (Double.MAX_VALUE - newMinimum <= inputValue) {
+						// Noverflow.
+						continue nextRecipe;
+					}
+					newMinimum += inputValue;
+					// Special case: Buckets are not consumed when crafting
+					if (input.getType().name().endsWith("_BUCKET")) {
+						// Iron ingots are 41, hardcoded bucket value here to avoid a lot of extra code to prevent issues
+						newMinimum -= 123 * input.getAmount();
+					}
+				}
+				if (newMinimum <= 0) {
+					continue nextRecipe;
 				}
 			} else {
 				// Recipe is injected custom recipe
-				continue;
+				continue nextRecipe;
 			}
-			if (newMin == Integer.MAX_VALUE) {
-				continue;
+
+			
+			if (newMinimum == Double.MAX_VALUE) {
+				continue nextRecipe;
 			}
-			newMin /= amount;
-			if (newMin < minimum) {
-				minimum = newMin;
+
+			newMinimum /= amount;
+			if (newMinimum < minimum) {
+				minimum = newMinimum;
 			}
 		}
-		return minimum < 1 ? 1 : minimum;
+
+		// No value = no make.
+		if (minimum < 1) {
+			minimum = Double.MAX_VALUE;
+		}
+
+		// Map and return.
+		manaMappings.put(key, minimum);
+		return minimum;
 	}
 
-	public static int getWeight(Enchantment enchantment) {
-		if (enchantment.equals(Enchantment.MENDING)) {
-			return 0;
-		}
-		if (enchantment.equals(Enchantment.FROST_WALKER)) {
-			return 5;
-		}
+	private static int getWeight(Enchantment enchantment) {
 		if (enchantment.equals(Enchantment.PROTECTION_ENVIRONMENTAL) || enchantment.equals(Enchantment.DAMAGE_ALL)
 				|| enchantment.equals(Enchantment.DIG_SPEED) || enchantment.equals(Enchantment.ARROW_DAMAGE)) {
-			return 30;
+			return 10;
+		}
+		if (enchantment.equals(Enchantment.MENDING)) {
+			return 2;
+		}
+		if (enchantment.equals(Enchantment.FROST_WALKER)) {
+			return 2;
 		}
 		if (enchantment.equals(Enchantment.WATER_WORKER) || enchantment.equals(Enchantment.PROTECTION_EXPLOSIONS)
 				|| enchantment.equals(Enchantment.OXYGEN) || enchantment.equals(Enchantment.FIRE_ASPECT)
 				|| enchantment.equals(Enchantment.LOOT_BONUS_MOBS) || enchantment.equals(Enchantment.LOOT_BONUS_BLOCKS)
 				|| enchantment.equals(Enchantment.ARROW_FIRE) || enchantment.equals(Enchantment.ARROW_KNOCKBACK)
 				|| enchantment.equals(Enchantment.DEPTH_STRIDER)) {
-			return 22;
+			return 2;
 		}
 		if (enchantment.equals(Enchantment.THORNS) || enchantment.equals(Enchantment.SILK_TOUCH)
 				|| enchantment.equals(Enchantment.ARROW_INFINITE)) {
-			return 21;
+			return 1;
 		}
-		return 25;
+		return 5;
 	}
 
 }

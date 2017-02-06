@@ -70,7 +70,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 
 /**
- * Easterlyn is the base of Easterlyn.co's custom plugin. All features are handled by
+ * Easterlyn is the base of easterlyn.com's custom plugin. All features are handled by
  * smaller modules.
  * 
  * @author Jikoo, FireNG, Dublek
@@ -235,7 +235,7 @@ public class Easterlyn extends JavaPlugin {
 	}
 
 	/**
-	 * Creates generic crafting recipies allowed by Easterlyn.
+	 * Creates generic crafting recipes allowed by Easterlyn.
 	 * <p>
 	 * Module-dependent recipes such as CaptchaCards should be registered in
 	 * {@link Module#onEnable()}.
@@ -299,42 +299,6 @@ public class Easterlyn extends JavaPlugin {
 		furnace.setInput(Material.DIAMOND_SPADE, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
 		furnace.setInput(Material.DIAMOND_SWORD, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_AXE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_BOOTS, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_CHESTPLATE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_HELMET, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_HOE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_LEGGINGS, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_PICKAXE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_SPADE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.GOLD_SWORD, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_AXE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_BOOTS, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_CHESTPLATE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_HELMET, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_HOE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_LEGGINGS, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_PICKAXE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_SPADE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace.setInput(Material.IRON_SWORD, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
 		furnace.setInput(Material.SHEARS, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);

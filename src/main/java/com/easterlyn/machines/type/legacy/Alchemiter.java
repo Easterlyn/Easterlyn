@@ -188,7 +188,7 @@ public class Alchemiter extends Machine {
 					input.setAmount(1);
 					result = captcha.captchaToItem(input);
 					expCost = new ItemStack(Material.EXP_BOTTLE);
-					int exp = CruxiteDowel.expCost(effects, result);
+					int exp = (int) Math.ceil(CruxiteDowel.expCost(effects, result));
 					ItemMeta im = expCost.getItemMeta();
 					int playerExp = Experience.getExp(player);
 					int remainder = playerExp - exp;

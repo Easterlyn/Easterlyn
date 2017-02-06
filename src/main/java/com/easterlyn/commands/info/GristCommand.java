@@ -83,7 +83,7 @@ public class GristCommand extends SblockCommand {
 			sender.sendMessage(this.getLang().getValue("command.grist.nothing"));
 			return true;
 		}
-		int exp = CruxiteDowel.expCost(effects, hand);
+		int exp = (int) Math.ceil(CruxiteDowel.expCost(effects, hand));
 		if (exp == Integer.MAX_VALUE) {
 			sender.sendMessage(this.getLang().getValue("command.grist.expensive")
 					.replace("{ITEM}", InventoryUtils.getItemName(hand)));

@@ -109,7 +109,7 @@ public class Captcha extends Module {
 
 	@Override
 	protected void onEnable() {
-		CruxiteDowel.getGrist();
+		CruxiteDowel.getMana();
 		insertCaptchaRecipe();
 
 		this.effects = this.getPlugin().getModule(Effects.class);
