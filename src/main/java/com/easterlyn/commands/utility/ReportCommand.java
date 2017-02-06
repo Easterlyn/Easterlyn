@@ -1,7 +1,7 @@
 package com.easterlyn.commands.utility;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.Discord;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
  * 
  * @author Jikoo
  */
-public class ReportCommand extends SblockCommand {
+public class ReportCommand extends EasterlynCommand {
 
 	private final Discord discord;
 

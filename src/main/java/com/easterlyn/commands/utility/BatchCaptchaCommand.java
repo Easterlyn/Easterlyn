@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -17,11 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 /**
- * SblockCommand for creating lots of captchas of items at a time.
+ * EasterlynCommand for creating lots of captchas of items at a time.
  * 
  * @author Jikoo
  */
-public class BatchCaptchaCommand extends SblockCommand {
+public class BatchCaptchaCommand extends EasterlynCommand {
 
 	private final Captcha captcha;
 
@@ -58,7 +58,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 		ItemStack blankCaptcha = Captcha.blankCaptchaCard();
 
 		int max;
-		if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("sblock.command.baptcha.free")
+		if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("easterlyn.command.baptcha.free")
 				&& args.length > 0 && args[0].equals("free")) {
 			max = Integer.MAX_VALUE;
 		} else {
@@ -109,7 +109,7 @@ public class BatchCaptchaCommand extends SblockCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-		if (args.length < 2 && sender instanceof Player && sender.hasPermission("sblock.command.baptcha.free")) {
+		if (args.length < 2 && sender instanceof Player && sender.hasPermission("easterlyn.command.baptcha.free")) {
 			return ImmutableList.of("free");
 		}
 		return ImmutableList.of();

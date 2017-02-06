@@ -3,7 +3,7 @@ package com.easterlyn.commands.admin;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,11 +13,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for silently kicking a player.
+ * EasterlynCommand for silently kicking a player.
  * 
  * @author Jikoo
  */
-public class SilentKickCommand extends SblockCommand {
+public class SilentKickCommand extends EasterlynCommand {
 
 	public SilentKickCommand(Easterlyn plugin) {
 		super(plugin, "silentkick");

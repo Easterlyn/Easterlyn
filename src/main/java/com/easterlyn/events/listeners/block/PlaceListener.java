@@ -6,11 +6,12 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.users.BukkitSerializer;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.PermissionUtils;
 
@@ -28,7 +29,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * 
  * @author Jikoo
  */
-public class PlaceListener extends SblockListener {
+public class PlaceListener extends EasterlynListener {
 
 	private final Discord discord;
 	private final Events events;
@@ -42,7 +43,7 @@ public class PlaceListener extends SblockListener {
 		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
 
-		PermissionUtils.addParent("sblock.events.creative.unfiltered", "sblock.felt");
+		PermissionUtils.addParent("easterlyn.events.creative.unfiltered", UserRank.FELT.getPermission());
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class PlaceListener extends SblockListener {
 
 		Player player = event.getPlayer();
 
-		if (player.getGameMode() == GameMode.CREATIVE && !player.hasPermission("sblock.events.creative.unfiltered")
+		if (player.getGameMode() == GameMode.CREATIVE && !player.hasPermission("easterlyn.events.creative.unfiltered")
 				&& events.getCreativeBlacklist().contains(event.getItemInHand().getType())) {
 			event.setCancelled(true);
 			return;

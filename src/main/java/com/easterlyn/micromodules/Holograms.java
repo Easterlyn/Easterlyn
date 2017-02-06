@@ -42,7 +42,7 @@ public class Holograms extends Module {
 		stand.setMarker(true);
 		stand.setVisible(false);
 		stand.setCustomNameVisible(true);
-		stand.setMetadata("SblockHolo", new FixedMetadataValue(getPlugin(), true));
+		stand.setMetadata("EasterlynHolo", new FixedMetadataValue(getPlugin(), true));
 		return stand;
 	}
 
@@ -72,7 +72,7 @@ public class Holograms extends Module {
 	}
 
 	public boolean isHologram(Entity entity) {
-		return entity instanceof ArmorStand && entity.hasMetadata("SblockHolo");
+		return entity instanceof ArmorStand && entity.hasMetadata("EasterlynHolo");
 	}
 
 	@Override

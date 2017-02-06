@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerEditBookEvent;
  * 
  * @author Jikoo
  */
-public class BookEditListener extends SblockListener {
+public class BookEditListener extends EasterlynListener {
 
 	private final Chat chat;
 

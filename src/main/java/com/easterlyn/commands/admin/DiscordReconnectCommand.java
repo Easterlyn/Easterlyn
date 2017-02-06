@@ -1,7 +1,7 @@
 package com.easterlyn.commands.admin;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
 
@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
  * 
  * @author Jikoo
  */
-public class DiscordReconnectCommand extends SblockAsynchronousCommand {
+public class DiscordReconnectCommand extends EasterlynAsynchronousCommand {
 
 	private final Discord discord;
 

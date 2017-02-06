@@ -1,7 +1,7 @@
 package com.easterlyn.commands.admin;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.events.Events;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.TextUtils;
@@ -9,11 +9,11 @@ import com.easterlyn.utilities.TextUtils;
 import org.bukkit.command.CommandSender;
 
 /**
- * SblockAsynchronousCommand for manipulating the whitelist of IPs that are not checked with Spamhaus.
+ * EasterlynAsynchronousCommand for manipulating the whitelist of IPs that are not checked with Spamhaus.
  * 
  * @author Jikoo
  */
-public class SpamhausListCommand extends SblockAsynchronousCommand {
+public class SpamhausListCommand extends EasterlynAsynchronousCommand {
 
 	private final Events events;
 

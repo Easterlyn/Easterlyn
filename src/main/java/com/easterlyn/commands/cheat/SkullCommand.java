@@ -3,7 +3,7 @@ package com.easterlyn.commands.cheat;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommandAlias;
+import com.easterlyn.commands.EasterlynCommandAlias;
 import com.easterlyn.users.UserRank;
 
 import org.bukkit.Material;
@@ -12,11 +12,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * SblockCommandAlias for spawning or changing a skull to a particular owner.
+ * EasterlynCommandAlias for spawning or changing a skull to a particular owner.
  * 
  * @author Jikoo
  */
-public class SkullCommand extends SblockCommandAlias {
+public class SkullCommand extends EasterlynCommandAlias {
 
 	public SkullCommand(Easterlyn plugin) {
 		super(plugin, "skull", "lore");
@@ -53,7 +53,7 @@ public class SkullCommand extends SblockCommandAlias {
 			}
 		}
 		getCommand().execute(sender, label, newArgs);
-		// This being a SblockCommand, it will handle its own usage when execute fails.
+		// This being a EasterlynCommand, it will handle its own usage when execute fails.
 		return true;
 	}
 

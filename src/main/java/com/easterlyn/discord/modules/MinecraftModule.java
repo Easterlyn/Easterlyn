@@ -15,7 +15,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.discord.abstraction.CallPriority;
 import com.easterlyn.discord.abstraction.DiscordModule;
-import com.easterlyn.events.event.SblockAsyncChatEvent;
+import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PermissionUtils;
@@ -50,9 +50,9 @@ public class MinecraftModule extends DiscordModule {
 		this.manager = discord.getPlugin().getModule(Chat.class).getChannelManager();
 
 		// Permission to bypass Discord message filtering (can truly be horrific)
-		PermissionUtils.addParent("sblock.discord.unfiltered", UserRank.HORRORTERROR.getPermission());
+		PermissionUtils.addParent("easterlyn.discord.unfiltered", UserRank.HORRORTERROR.getPermission());
 
-		// future modify MessageBuilder to allow custom name clicks (OPEN_URL www.sblock.co/discord)
+		// future modify MessageBuilder to allow custom name clicks (OPEN_URL discord invite)
 		this.builder = new MessageBuilder(discord.getPlugin()).setNameClick("@# ")
 				.setChannelClick("@# ").setChannel(this.manager.getChannel("#discord"))
 				.setNameHover(TextComponent.fromLegacyText(discord.getPlugin()
@@ -114,7 +114,7 @@ public class MinecraftModule extends DiscordModule {
 
 	public void handleChat(IMessage message, Player player) {
 		String content = message.getContent();
-		if (!player.hasPermission("sblock.discord.unfiltered")) {
+		if (!player.hasPermission("easterlyn.discord.unfiltered")) {
 			int newline = content.indexOf('\n');
 			boolean delete = false;
 			if (newline > 0) {
@@ -143,7 +143,7 @@ public class MinecraftModule extends DiscordModule {
 		}
 		Set<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
 		players.removeIf(p -> users.getUser(p.getUniqueId()).getSuppression());
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, players, builder.toMessage()));
+		Bukkit.getPluginManager().callEvent(new EasterlynAsyncChatEvent(true, player, players, builder.toMessage()));
 	}
 
 	private String sanitizeForMinecraft(String message) {

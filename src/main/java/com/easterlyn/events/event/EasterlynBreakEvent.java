@@ -9,9 +9,9 @@ import org.bukkit.event.block.BlockBreakEvent;
  * 
  * @author Jikoo
  */
-public class SblockBreakEvent extends BlockBreakEvent {
+public class EasterlynBreakEvent extends BlockBreakEvent {
 
-	public SblockBreakEvent(Block theBlock, Player player) {
+	public EasterlynBreakEvent(Block theBlock, Player player) {
 		super(theBlock, player);
 	}
 }

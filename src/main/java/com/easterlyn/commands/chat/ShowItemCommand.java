@@ -6,13 +6,11 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.message.MessageBuilder;
-import com.easterlyn.commands.SblockCommand;
-import com.easterlyn.events.event.SblockAsyncChatEvent;
+import com.easterlyn.commands.EasterlynCommand;
+import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.User;
-import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.JSONUtil;
-import com.easterlyn.utilities.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
 
 import com.google.common.collect.ImmutableList;
@@ -26,11 +24,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
- * SblockCommand for displaying item in hand to the server.
+ * EasterlynCommand for displaying item in hand to the server.
  * 
  * @author Jikoo
  */
-public class ShowItemCommand extends SblockCommand {
+public class ShowItemCommand extends EasterlynCommand {
 
 	private final Users users;
 
@@ -38,8 +36,6 @@ public class ShowItemCommand extends SblockCommand {
 		super(plugin, "show");
 		this.setAliases("showitem");
 		this.users = plugin.getModule(Users.class);
-
-		PermissionUtils.addParent("sblock.chat.unfiltered", UserRank.FELT.getPermission());
 	}
 
 	@Override
@@ -70,7 +66,7 @@ public class ShowItemCommand extends SblockCommand {
 			channel = user.getCurrentChannel();
 		}
 
-		if (!player.hasPermission("sblock.chat.unfiltered") && "#".equals(user.getCurrentChannel())
+		if (!player.hasPermission("easterlyn.chat.unfiltered") && "#".equals(user.getCurrentChannel())
 				&& !TextUtils.isOnlyAscii(handMeta.getDisplayName())) {
 			sender.sendMessage(getLang().getValue("command.show.invalidCharacters"));
 		}
@@ -83,7 +79,7 @@ public class ShowItemCommand extends SblockCommand {
 			return true;
 		}
 
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(false, player, builder.toMessage()));
+		Bukkit.getPluginManager().callEvent(new EasterlynAsyncChatEvent(false, player, builder.toMessage()));
 		return true;
 	}
 

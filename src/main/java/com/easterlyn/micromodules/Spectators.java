@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.module.Module;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PermissionUtils;
 
@@ -38,7 +39,7 @@ public class Spectators extends Module {
 		super(plugin);
 		this.spectators = new HashMap<>();
 
-		PermissionUtils.addParent("sblock.spectators.unrestricted", "sblock.helper");
+		PermissionUtils.addParent("easterlyn.spectators.unrestricted", UserRank.HELPER.getPermission());
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class Spectators extends Module {
 					if (!isSpectator(player.getUniqueId())) {
 						continue;
 					}
-					if (player.hasPermission("sblock.spectators.unrestricted")) {
+					if (player.hasPermission("easterlyn.spectators.unrestricted")) {
 						continue;
 					}
 					if (cooldowns.getRemainder(player, getName()) == 0) {
@@ -117,7 +118,7 @@ public class Spectators extends Module {
 			player.sendMessage(lang.getValue("sleep.interrupt"));
 		}
 		spectators.put(player.getUniqueId(), player.getLocation().add(0, .1, 0));
-		if (!player.hasPermission("sblock.spectators.unrestricted")) {
+		if (!player.hasPermission("easterlyn.spectators.unrestricted")) {
 			// Allow spectating for 30 minutes at a time
 			cooldowns.addCooldown(player, getName(), 1800000);
 		}
@@ -156,7 +157,7 @@ public class Spectators extends Module {
 			return;
 		}
 		cooldowns.clearCooldown(player, getName());
-		if (!player.hasPermission("sblock.spectators.unrestricted")) {
+		if (!player.hasPermission("easterlyn.spectators.unrestricted")) {
 			// 8 minutes, 8 * 60 * 1000 ms
 			cooldowns.addCooldown(player, "spectatore", 480000L);
 		}

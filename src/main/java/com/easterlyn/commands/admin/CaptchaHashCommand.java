@@ -2,7 +2,7 @@ package com.easterlyn.commands.admin;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import org.bukkit.Material;
@@ -13,11 +13,11 @@ import org.bukkit.inventory.ItemStack;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * SblockCommand for creating a new unique hash for an item or getting a captcha for a hash.
+ * EasterlynCommand for creating a new unique hash for an item or getting a captcha for a hash.
  * 
  * @author Jikoo
  */
-public class CaptchaHashCommand extends SblockCommand {
+public class CaptchaHashCommand extends EasterlynCommand {
 
 	private final Captcha captcha;
 

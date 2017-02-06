@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 
 import com.google.common.collect.ImmutableList;
 
@@ -12,11 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for converting all captchacards in an older format to the latest.
+ * EasterlynCommand for converting all captchacards in an older format to the latest.
  * 
  * @author Jikoo
  */
-public class ConvertOldCaptchaCommand extends SblockCommand {
+public class ConvertOldCaptchaCommand extends EasterlynCommand {
 
 	public ConvertOldCaptchaCommand(Easterlyn plugin) {
 		super(plugin, "convert");

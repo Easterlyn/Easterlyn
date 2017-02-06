@@ -3,7 +3,7 @@ package com.easterlyn.commands.admin;
 import java.util.Date;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.NumberUtils;
 
@@ -17,11 +17,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
- * SblockCommand for adding a temporary ban.
+ * EasterlynCommand for adding a temporary ban.
  * 
  * @author Jikoo
  */
-public class TemporaryBanCommand extends SblockCommand {
+public class TemporaryBanCommand extends EasterlynCommand {
 
 	public TemporaryBanCommand(Easterlyn plugin) {
 		super(plugin, "tempban");

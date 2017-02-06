@@ -19,9 +19,9 @@ import org.bukkit.scheduler.BukkitRunnable;
  * 
  * @author Jikoo
  */
-public abstract class SblockAsynchronousCommand extends SblockCommand {
+public abstract class EasterlynAsynchronousCommand extends EasterlynCommand {
 
-	public SblockAsynchronousCommand(Easterlyn plugin, String name) {
+	public EasterlynAsynchronousCommand(Easterlyn plugin, String name) {
 		super(plugin, name);
 	}
 
@@ -30,7 +30,7 @@ public abstract class SblockAsynchronousCommand extends SblockCommand {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				SblockAsynchronousCommand.super.execute(sender, label, args);
+				EasterlynAsynchronousCommand.super.execute(sender, label, args);
 			}
 		}.runTaskAsynchronously(getPlugin());
 		return true;

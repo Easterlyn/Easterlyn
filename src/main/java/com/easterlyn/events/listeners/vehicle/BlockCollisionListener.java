@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.vehicle;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.FreeCart;
 
 import org.bukkit.Material;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Jikoo
  */
-public class BlockCollisionListener extends SblockListener {
+public class BlockCollisionListener extends EasterlynListener {
 
 	private final FreeCart carts;
 

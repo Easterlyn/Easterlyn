@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Color;
-import com.easterlyn.chat.Language;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.CollectionConversions;
 
@@ -111,33 +110,23 @@ public class Users extends Module {
 			prefixBuilder.append(prefix);
 		}
 		for (net.md_5.bungee.api.ChatColor color : Color.COLORS) {
-			if (player.hasPermission("sblock.chat.color." + color.name().toLowerCase())) {
+			if (player.hasPermission("easterlyn.chat.color." + color.name().toLowerCase())) {
 				prefixBuilder.append(color);
 				break;
 			}
 		}
-		if (prefixBuilder.length() > (prefix == null ? 0 : prefix.length())) {
-			// Do nothing, we've got a fancy override going on
-		} else if (player.hasPermission("sblock.chat.color.horrorterror")) {
-			prefixBuilder.append(Language.getColor("rank.horrorterror"));
-		} else if (player.hasPermission("sblock.chat.color.denizen")) {
-			prefixBuilder.append(Language.getColor("rank.denizen"));
-		} else if (player.hasPermission("sblock.chat.color.felt")) {
-			prefixBuilder.append(Language.getColor("rank.felt"));
-		} else if (player.hasPermission("sblock.chat.color.helper")) {
-			prefixBuilder.append(Language.getColor("rank.helper"));
-		} else if (player.hasPermission("sblock.chat.color.donator")) {
-			prefixBuilder.append(Language.getColor("rank.donator"));
-		} else if (player.hasPermission("sblock.chat.color.godtier")) {
-			prefixBuilder.append(Language.getColor("rank.godtier"));
-		} else {
-			prefixBuilder.append(Language.getColor("rank.hero"));
-		}
-		for (net.md_5.bungee.api.ChatColor color : Color.FORMATS) {
-			if (player.hasPermission("sblock.chat.color." + color.name().toLowerCase())) {
-				prefixBuilder.append(color);
+
+		if (prefix == null && prefixBuilder.length() == 0 || prefixBuilder.length() - prefix.length() == 0) {
+			UserRank[] ranks = UserRank.values();
+			for (int i = ranks.length - 1; i >= 0; --i) {
+				UserRank rank = ranks[i];
+				if (player.hasPermission(rank.getPermission())) {
+					prefixBuilder.append(rank.getColor());
+					break;
+				}
 			}
 		}
+
 		Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 		String teamName = player.getName();
 		Team team = board.getTeam(teamName);

@@ -11,7 +11,7 @@ import com.easterlyn.chat.channel.CanonNick;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NickChannel;
 import com.easterlyn.chat.channel.RPChannel;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 
@@ -29,7 +29,7 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class ChatNickCommand extends SblockCommand {
+public class ChatNickCommand extends EasterlynCommand {
 
 	// TODO convert to lang, allow setting of nick for softmuted, just don't announce
 	private final Chat chat;

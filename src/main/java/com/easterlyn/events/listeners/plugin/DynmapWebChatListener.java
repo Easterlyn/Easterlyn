@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.plugin;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.chat.AetherCommand;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.module.Dependency;
 
 import org.bukkit.event.EventHandler;
@@ -16,7 +16,7 @@ import org.dynmap.DynmapWebChatEvent;
  * @author Jikoo
  */
 @Dependency("dynmap")
-public class DynmapWebChatListener extends SblockListener {
+public class DynmapWebChatListener extends EasterlynListener {
 
 	private AetherCommand aether;
 
@@ -28,7 +28,7 @@ public class DynmapWebChatListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onDynmapWebChat(DynmapWebChatEvent event) {
 		if (aether == null) {
-			aether = (AetherCommand) getPlugin().getCommandMap().getCommand("sblock:aether");
+			aether = (AetherCommand) getPlugin().getCommandMap().getCommand("easterlyn:aether");
 		}
 		aether.sendAether(null, event.getName(), event.getMessage(), false);
 		event.setProcessed();

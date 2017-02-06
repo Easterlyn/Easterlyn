@@ -8,6 +8,7 @@ import com.easterlyn.machines.type.computer.Program;
 import com.easterlyn.machines.type.computer.Programs;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.users.User;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.PermissionUtils;
 
@@ -49,7 +50,7 @@ public class Computer extends Machine implements InventoryHolder {
 
 		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
 
-		PermissionUtils.addParent("sblock.machines.administrate", "sblock.denizen");
+		PermissionUtils.addParent("easterlyn.machines.administrate", UserRank.DENIZEN.getPermission());
 	}
 
 	/**
@@ -62,7 +63,7 @@ public class Computer extends Machine implements InventoryHolder {
 	@Override
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
 		if (!getOwner(storage).equals(event.getPlayer().getUniqueId())
-				&& !event.getPlayer().hasPermission("sblock.machines.administrate")) {
+				&& !event.getPlayer().hasPermission("easterlyn.machines.administrate")) {
 			return true;
 		}
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
@@ -128,7 +129,7 @@ public class Computer extends Machine implements InventoryHolder {
 		Inventory inventory = getInventory();
 		User user = getUsers().getUser(player.getUniqueId());
 		for (Program program : Programs.getPrograms()) {
-			if (program.isDefault() || program instanceof PowerManager && player.hasPermission("sblock.godtier")) {
+			if (program.isDefault() || program instanceof PowerManager && player.hasPermission(UserRank.GODTIER.getPermission())) {
 				inventory.addItem(program.getIcon());
 			}
 		}
@@ -136,7 +137,7 @@ public class Computer extends Machine implements InventoryHolder {
 			inventory.addItem(Programs.getProgramByName(id).getIcon());
 		}
 		player.openInventory(inventory);
-		InventoryUtils.changeWindowName(player, player.getName() + "@sblock.co:~/");
+		InventoryUtils.changeWindowName(player, player.getName() + "@easterlyn.com:~/");
 	}
 
 	@Override

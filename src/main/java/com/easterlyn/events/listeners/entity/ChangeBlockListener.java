@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.entity;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.Meteors;
 
 import org.bukkit.entity.EntityType;
@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
  * 
  * @author Jikoo
  */
-public class ChangeBlockListener extends SblockListener {
+public class ChangeBlockListener extends EasterlynListener {
 
 	private final Meteors meteors;
 

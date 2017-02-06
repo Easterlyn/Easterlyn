@@ -2,8 +2,8 @@ package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.events.listeners.SblockListener;
-import com.easterlyn.events.region.SblockTravelAgent;
+import com.easterlyn.events.listeners.EasterlynListener;
+import com.easterlyn.events.region.EasterlynTravelAgent;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
 
@@ -19,17 +19,17 @@ import org.bukkit.event.player.PlayerPortalEvent;
  * 
  * @author Jikoo
  */
-public class PortalListener extends SblockListener {
+public class PortalListener extends EasterlynListener {
 
 	private final Language lang;
 	private final Protections protections;
-	private final SblockTravelAgent agent;
+	private final EasterlynTravelAgent agent;
 
 	public PortalListener(Easterlyn plugin) {
 		super(plugin);
 		this.lang = plugin.getModule(Language.class);
 		this.protections = plugin.getModule(Protections.class);
-		this.agent = new SblockTravelAgent();
+		this.agent = new EasterlynTravelAgent();
 	}
 
 	/**

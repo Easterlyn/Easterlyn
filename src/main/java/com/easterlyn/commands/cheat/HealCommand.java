@@ -3,7 +3,7 @@ package com.easterlyn.commands.cheat;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -14,11 +14,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for restoring health and saturation.
+ * EasterlynCommand for restoring health and saturation.
  * 
  * @author Jikoo
  */
-public class HealCommand extends SblockCommand {
+public class HealCommand extends EasterlynCommand {
 
 	public HealCommand(Easterlyn plugin) {
 		super(plugin, "heal");
@@ -29,11 +29,11 @@ public class HealCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (!(sender instanceof Player) && (!sender.hasPermission("sblock.command.heal.other")
+		if (!(sender instanceof Player) && (!sender.hasPermission("easterlyn.command.heal.other")
 				|| args.length < 1)) {
 			return false;
 		}
-		if (args.length == 0 || !sender.hasPermission("sblock.command.heal.other")) {
+		if (args.length == 0 || !sender.hasPermission("easterlyn.command.heal.other")) {
 			heal((Player) sender, label);
 			sender.sendMessage(getLang().getValue("command.heal.success"));
 			return true;
@@ -59,7 +59,7 @@ public class HealCommand extends SblockCommand {
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
 		if (!sender.hasPermission(this.getPermission()) || args.length > 1
-				|| !sender.hasPermission("sblock.command.heal.other")) {
+				|| !sender.hasPermission("easterlyn.command.heal.other")) {
 			return ImmutableList.of();
 		}
 		return super.tabComplete(sender, alias, args);

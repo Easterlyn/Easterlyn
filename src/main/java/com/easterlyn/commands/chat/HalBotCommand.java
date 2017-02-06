@@ -6,7 +6,7 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.channel.Channel;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 
@@ -19,11 +19,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for triggering a Hal AI response.
+ * EasterlynCommand for triggering a Hal AI response.
  * 
  * @author Jikoo
  */
-public class HalBotCommand extends SblockCommand {
+public class HalBotCommand extends EasterlynCommand {
 
 	private final Chat chat;
 	private final Users users;

@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PlayerLoader;
@@ -26,7 +26,7 @@ import sx.blah.discord.handle.obj.IUser;
  * 
  * @author Jikoo
  */
-public class DiscordLinkCommand extends SblockCommand {
+public class DiscordLinkCommand extends EasterlynCommand {
 
 	private final Discord discord;
 
@@ -43,7 +43,7 @@ public class DiscordLinkCommand extends SblockCommand {
 			return true;
 		}
 
-		if (args.length > 1 && sender.hasPermission("sblock.command.link.force")) {
+		if (args.length > 1 && sender.hasPermission("easterlyn.command.link.force")) {
 			UUID uuid;
 			try {
 				uuid = UUID.fromString(args[0]);
@@ -111,8 +111,13 @@ public class DiscordLinkCommand extends SblockCommand {
 		if (sender instanceof ConsoleCommandSender) {
 			return false;
 		}
-		return !sender.hasPermission("sblock.group.horrorterror") && player.hasPermission("sblock.group.horrorterror")
-				|| !sender.hasPermission("sblock.group.denizen") && player.hasPermission("sblock.group.denizen");
+		UserRank[] ranks = UserRank.values();
+		for (int i = UserRank.FELT.ordinal() + 1; i < ranks.length; ++i) {
+			if (!sender.hasPermission(ranks[i].getPermission()) && player.hasPermission(ranks[i].getPermission())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

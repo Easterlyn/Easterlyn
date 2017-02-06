@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -17,11 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 /**
- * A (mostly for laughs) SblockCommand for setting unbreakable flags on an item.
+ * A (mostly for laughs) EasterlynCommand for setting unbreakable flags on an item.
  * 
  * @author Jikoo
  */
-public class UnbreakableCommand extends SblockCommand {
+public class UnbreakableCommand extends EasterlynCommand {
 
 	public UnbreakableCommand(Easterlyn plugin) {
 		super(plugin, "traindon'tstop");

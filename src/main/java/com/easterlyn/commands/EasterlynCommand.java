@@ -25,19 +25,19 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public abstract class SblockCommand extends Command implements PluginIdentifiableCommand {
+public abstract class EasterlynCommand extends Command implements PluginIdentifiableCommand {
 
 	private UserRank permissionLevel;
 	private final Easterlyn plugin;
 	private final Language lang;
 
-	public SblockCommand(Easterlyn plugin, String name) {
+	public EasterlynCommand(Easterlyn plugin, String name) {
 		super(name);
 		this.plugin = plugin;
 		this.lang = plugin.getModule(Language.class);
 		this.setDescription(lang.getValue("command." + name + ".description", "A Easterlyn command."));
 		this.setUsage(lang.getValue("command." + name + ".usage", "/" + name));
-		this.setPermission("sblock.command." + name);
+		this.setPermission("easterlyn.command." + name);
 		this.setPermissionLevel(UserRank.DEFAULT);
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");
 	}
@@ -64,7 +64,7 @@ public abstract class SblockCommand extends Command implements PluginIdentifiabl
 	public void addExtraPermission(String permissionSegment, UserRank rank) {
 		permissionSegment = this.getPermission() + '.' + permissionSegment;
 		Permission permission = PermissionUtils.getOrCreate(permissionSegment, PermissionDefault.OP);
-		permission.addParent("sblock.command.*", true).recalculatePermissibles();
+		permission.addParent("easterlyn.command.*", true).recalculatePermissibles();
 		permission.addParent(rank.getPermission(), true).recalculatePermissibles();
 	}
 

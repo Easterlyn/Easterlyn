@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.inventory;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
@@ -12,7 +12,7 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
  * 
  * @author Jikoo
  */
-public class PrepareItemEnchantListener extends SblockListener {
+public class PrepareItemEnchantListener extends EasterlynListener {
 
 	public PrepareItemEnchantListener(Easterlyn plugin) {
 		super(plugin);

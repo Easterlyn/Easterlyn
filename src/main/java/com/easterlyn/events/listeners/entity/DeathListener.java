@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.entity;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
@@ -17,7 +17,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
  * 
  * @author Jikoo
  */
-public class DeathListener extends SblockListener {
+public class DeathListener extends EasterlynListener {
 
 	private final Effects effects;
 

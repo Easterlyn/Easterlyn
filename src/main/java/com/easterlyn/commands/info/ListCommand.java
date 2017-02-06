@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +24,7 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class ListCommand extends SblockCommand {
+public class ListCommand extends EasterlynCommand {
 
 	public ListCommand(Easterlyn plugin) {
 		super(plugin, "list");

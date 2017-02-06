@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
@@ -18,11 +18,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for manipulating commands sent on login.
+ * EasterlynCommand for manipulating commands sent on login.
  * 
  * @author Jikoo
  */
-public class LoginCommandsCommand extends SblockCommand {
+public class LoginCommandsCommand extends EasterlynCommand {
 
 	private final Users users;
 
@@ -123,7 +123,7 @@ public class LoginCommandsCommand extends SblockCommand {
 
 	private void add(Player player, User user, String[] args) {
 		ArrayList<String> commands = new ArrayList<String>(user.getLoginCommands());
-		if (!player.hasPermission("sblock.command.onlogin.more") && commands.size() >= 2 || commands.size() > 9) {
+		if (!player.hasPermission("easterlyn.command.onlogin.more") && commands.size() >= 2 || commands.size() > 9) {
 			player.sendMessage(getLang().getValue("command.onlogin.error.add.maximum"));
 			return;
 		}

@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.vehicle;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.FreeCart;
 import com.easterlyn.micromodules.ParticleUtils;
 
@@ -16,7 +16,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
  * 
  * @author Jikoo
  */
-public class ExitListener extends SblockListener {
+public class ExitListener extends EasterlynListener {
 
 	private final ParticleUtils particles;
 	private final FreeCart carts;

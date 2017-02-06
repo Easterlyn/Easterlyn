@@ -89,7 +89,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.events.packets.SyncPacketAdapter;
 import com.easterlyn.events.session.Status;
 import com.easterlyn.events.session.StatusCheck;
@@ -162,14 +162,14 @@ public class Events extends Module {
 		new StatusCheck().runTaskTimerAsynchronously(getPlugin(), 100L, 1200L);
 
 		Reflections reflections = new Reflections("com.easterlyn.events.listeners");
-		Set<Class<? extends SblockListener>> listeners = reflections.getSubTypesOf(SblockListener.class);
-		for (Class<? extends SblockListener> listener : listeners) {
+		Set<Class<? extends EasterlynListener>> listeners = reflections.getSubTypesOf(EasterlynListener.class);
+		for (Class<? extends EasterlynListener> listener : listeners) {
 			if (!Easterlyn.areDependenciesPresent(listener)) {
 				getLogger().info(listener.getSimpleName() + " dependencies not found.");
 				continue;
 			}
 			try {
-				Constructor<? extends SblockListener> constructor = listener.getConstructor(getPlugin().getClass());
+				Constructor<? extends EasterlynListener> constructor = listener.getConstructor(getPlugin().getClass());
 				Bukkit.getPluginManager().registerEvents(constructor.newInstance(getPlugin()), getPlugin());
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
 					| SecurityException | IllegalArgumentException | InvocationTargetException e) {

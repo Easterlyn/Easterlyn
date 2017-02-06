@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.NumberUtils;
@@ -25,11 +25,11 @@ import org.bukkit.util.StringUtil;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * SblockCommand for applying an Effect to an item.
+ * EasterlynCommand for applying an Effect to an item.
  * 
  * @author Jikoo
  */
-public class EffectsCommand extends SblockCommand {
+public class EffectsCommand extends EasterlynCommand {
 
 	private final Effects effects;
 

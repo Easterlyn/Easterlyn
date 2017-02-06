@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Meteorite;
 import com.easterlyn.users.UserRank;
 
@@ -20,11 +20,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for summoning a meteor.
+ * EasterlynCommand for summoning a meteor.
  * 
  * @author Jikoo
  */
-public class MeteorCommand extends SblockCommand {
+public class MeteorCommand extends EasterlynCommand {
 
 	private final String[] primaryArgs;
 

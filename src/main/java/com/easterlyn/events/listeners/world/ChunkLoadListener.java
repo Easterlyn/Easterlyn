@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.world;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 
 import org.bukkit.event.EventHandler;
@@ -12,7 +12,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
  * 
  * @author Jikoo
  */
-public class ChunkLoadListener extends SblockListener {
+public class ChunkLoadListener extends EasterlynListener {
 
 	private final Machines machines;
 

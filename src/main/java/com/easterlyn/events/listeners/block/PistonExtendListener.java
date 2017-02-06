@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.block;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 
@@ -17,7 +17,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
  * 
  * @author Jikoo
  */
-public class PistonExtendListener extends SblockListener {
+public class PistonExtendListener extends EasterlynListener {
 
 	private final Machines machines;
 

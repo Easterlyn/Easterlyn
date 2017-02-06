@@ -1,7 +1,7 @@
 package com.easterlyn.commands.info;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import org.bukkit.GameMode;
@@ -11,11 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 /**
- * SblockCommand for locating nearby players.
+ * EasterlynCommand for locating nearby players.
  * 
  * @author Jikoo
  */
-public class NearCommand extends SblockCommand {
+public class NearCommand extends EasterlynCommand {
 
 	private final int maxRadius = 200;
 
@@ -36,7 +36,7 @@ public class NearCommand extends SblockCommand {
 		if (args.length > 0) {
 			try {
 				radius = Math.abs(Integer.parseInt(args[0]));
-				if (radius > maxRadius && !sender.hasPermission("sblock.command.near.far")) {
+				if (radius > maxRadius && !sender.hasPermission("easterlyn.command.near.far")) {
 					radius = maxRadius;
 				}
 			} catch (NumberFormatException e) {
@@ -46,8 +46,8 @@ public class NearCommand extends SblockCommand {
 
 		Player player = (Player) sender;
 		Location location = player.getLocation();
-		boolean showSpectate = player.hasPermission("sblock.command.near.spectate");
-		boolean showInvisible = player.hasPermission("sblock.command.near.invisible");
+		boolean showSpectate = player.hasPermission("easterlyn.command.near.spectate");
+		boolean showInvisible = player.hasPermission("easterlyn.command.near.invisible");
 		double squared = Math.pow(radius, 2);
 
 		StringBuilder builder = new StringBuilder(getLang().getValue("command.near.base"));

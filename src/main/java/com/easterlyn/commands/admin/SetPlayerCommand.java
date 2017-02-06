@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserAspect;
 import com.easterlyn.users.UserClass;
@@ -18,11 +18,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for setting User data.
+ * EasterlynCommand for setting User data.
  * 
  * @author Jikoo
  */
-public class SetPlayerCommand extends SblockAsynchronousCommand {
+public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 
 	private final Users users;
 	private final String[] primaryArgs;

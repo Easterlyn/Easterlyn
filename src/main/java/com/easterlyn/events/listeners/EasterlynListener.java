@@ -9,11 +9,11 @@ import org.bukkit.event.Listener;
  * 
  * @author Jikoo
  */
-public abstract class SblockListener implements Listener {
+public abstract class EasterlynListener implements Listener {
 
 	private final Easterlyn plugin;
 
-	public SblockListener(Easterlyn plugin) {
+	public EasterlynListener(Easterlyn plugin) {
 		this.plugin = plugin;
 	}
 

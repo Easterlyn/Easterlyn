@@ -1,8 +1,8 @@
 package com.easterlyn.events.listeners.entity;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
-import com.easterlyn.events.region.SblockTravelAgent;
+import com.easterlyn.events.listeners.EasterlynListener;
+import com.easterlyn.events.region.EasterlynTravelAgent;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
 
@@ -17,15 +17,15 @@ import org.bukkit.event.entity.EntityPortalEvent;
  * 
  * @author Jikoo
  */
-public class PortalListener extends SblockListener {
+public class PortalListener extends EasterlynListener {
 
 	private final Protections protections;
-	private final SblockTravelAgent agent;
+	private final EasterlynTravelAgent agent;
 
 	public PortalListener(Easterlyn plugin) {
 		super(plugin);
 		this.protections = plugin.getModule(Protections.class);
-		agent = new SblockTravelAgent();
+		agent = new EasterlynTravelAgent();
 	}
 
 	/**

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
@@ -14,11 +14,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand featuring a SuperBan along with several protection removal commands.
+ * EasterlynCommand featuring a SuperBan along with several protection removal commands.
  * 
  * @author Jikoo
  */
-public class UltraBanCommand extends SblockCommand {
+public class UltraBanCommand extends EasterlynCommand {
 
 	private final Users users;
 

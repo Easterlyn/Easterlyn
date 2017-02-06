@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Transportalizer;
 import com.easterlyn.micromodules.Cooldowns;
@@ -29,7 +29,7 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class TeleportRequestCommand extends SblockCommand {
+public class TeleportRequestCommand extends EasterlynCommand {
 
 	private final Cooldowns cooldowns;
 	private final Spectators spectators;
@@ -82,7 +82,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		}
 		if (label.equals("tpreset")) {
 			// TODO: separate command to prevent tab completion for lower perm levels
-			if (player.hasPermission("sblock.command.tpa.reset")) {
+			if (player.hasPermission("easterlyn.command.tpa.reset")) {
 				cooldowns.clearCooldown(player, "teleportRequest");
 			}
 		}
@@ -94,7 +94,7 @@ public class TeleportRequestCommand extends SblockCommand {
 		if (remainder > 0) {
 			sender.sendMessage(getLang().getValue("command.tpa.error.cooldown")
 					.replace("{TIME}", time.format(new Date(remainder))));
-			if (sender.hasPermission("sblock.command.tpa.reset")) {
+			if (sender.hasPermission("easterlyn.command.tpa.reset")) {
 				sender.sendMessage(getLang().getValue("command.tpa.reset"));
 			}
 			return;

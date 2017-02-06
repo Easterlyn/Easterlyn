@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -18,11 +18,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for undoing a dual IP and UUID ban.
+ * EasterlynCommand for undoing a dual IP and UUID ban.
  * 
  * @author Jikoo
  */
-public class UnBanCommand extends SblockCommand {
+public class UnBanCommand extends EasterlynCommand {
 
 	private final Chat chat;
 

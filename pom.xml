@@ -27,7 +27,7 @@
     <dependency>
       <groupId>ca.pjer</groupId>
       <artifactId>chatter-bot-api</artifactId>
-      <version>1.4.3</version>
+      <version>1.4.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -84,6 +84,7 @@
       <groupId>com.github.TechFortress</groupId>
       <artifactId>GriefPrevention</artifactId>
       <version>master-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Local repo plugin dependencies -->
     <dependency>

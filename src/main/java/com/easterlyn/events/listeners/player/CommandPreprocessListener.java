@@ -6,9 +6,10 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.commands.utility.OopsCommand;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.DiscordPlayer;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.Spectators;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PermissionUtils;
 
 import org.bukkit.command.Command;
@@ -21,7 +22,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
  * 
  * @author Jikoo
  */
-public class CommandPreprocessListener extends SblockListener {
+public class CommandPreprocessListener extends EasterlynListener {
 
 	private final AwayFromKeyboard afk;
 	private final Chat chat;
@@ -39,10 +40,10 @@ public class CommandPreprocessListener extends SblockListener {
 		this.spectators = plugin.getModule(Spectators.class);
 		this.map = plugin.getCommandMap();
 
-		PermissionUtils.addParent("sblock.commands.unfiltered", "sblock.denizen");
-		PermissionUtils.addParent("sblock.commands.unfiltered", "sblock.spam");
-		PermissionUtils.addParent("sblock.commands.unlogged", "sblock.felt");
-		PermissionUtils.addParent("sblock.commands.unlogged", "sblock.spam");
+		PermissionUtils.addParent("easterlyn.commands.unfiltered", UserRank.DENIZEN.getPermission());
+		PermissionUtils.addParent("easterlyn.commands.unfiltered", "easterlyn.spam");
+		PermissionUtils.addParent("easterlyn.commands.unlogged", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.commands.unlogged", "easterlyn.spam");
 	}
 
 	/**
@@ -56,14 +57,14 @@ public class CommandPreprocessListener extends SblockListener {
 
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
-		if (!event.getPlayer().hasPermission("sblock.commands.unfiltered") && 0 < colon && (colon < space || space < 0)) {
+		if (!event.getPlayer().hasPermission("easterlyn.commands.unfiltered") && 0 < colon && (colon < space || space < 0)) {
 			event.setMessage("/" + event.getMessage().substring(colon + 1));
 		}
 
 		String command = event.getMessage().substring(1, space > 0 ? space : event.getMessage().length()).toLowerCase();
 		Command cmd = map.getCommand(command);
 
-		if (!event.getPlayer().hasPermission("sblock.commands.unlogged") && cmd != null
+		if (!event.getPlayer().hasPermission("easterlyn.commands.unlogged") && cmd != null
 				&& !discord.getConfig().getStringList("discord.command-log-blacklist").contains(cmd.getName())) {
 			discord.log(event.getPlayer().getName() + " issued command: " + event.getMessage());
 		}

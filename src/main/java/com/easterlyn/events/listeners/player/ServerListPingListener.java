@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.server.ServerListPingEvent;
@@ -12,7 +12,7 @@ import org.bukkit.event.server.ServerListPingEvent;
  * 
  * @author Jikoo
  */
-public class ServerListPingListener extends SblockListener {
+public class ServerListPingListener extends EasterlynListener {
 
 	private final Events events;
 

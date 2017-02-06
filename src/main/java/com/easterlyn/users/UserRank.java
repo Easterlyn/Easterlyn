@@ -53,7 +53,7 @@ public enum UserRank {
 	}
 
 	public String getPermission() {
-		return String.format("sblock.group.%s", internalName);
+		return String.format("easterlyn.group.%s", internalName);
 	}
 
 	public ChatColor getColor() {

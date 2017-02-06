@@ -5,16 +5,16 @@ import com.easterlyn.Easterlyn;
 import org.bukkit.command.Command;
 
 /**
- * Abstract class for SblockCommands that are essentially slightly manipulated aliases of existing
+ * Abstract class for EasterlynCommands that are essentially slightly manipulated aliases of existing
  * commands.
  * 
  * @author Jikoo
  */
-public abstract class SblockCommandAlias extends SblockCommand {
+public abstract class EasterlynCommandAlias extends EasterlynCommand {
 
 	private final Command command;
 
-	public SblockCommandAlias(Easterlyn plugin, String name, String originalCommand) {
+	public EasterlynCommandAlias(Easterlyn plugin, String name, String originalCommand) {
 		super(plugin, name);
 		this.command = plugin.getCommandMap().getCommand(originalCommand);
 		if (command == null) {

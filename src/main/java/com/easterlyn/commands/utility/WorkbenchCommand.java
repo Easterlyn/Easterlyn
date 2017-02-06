@@ -3,18 +3,18 @@ package com.easterlyn.commands.utility;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for opening a workbench.
+ * EasterlynCommand for opening a workbench.
  * 
  * @author Jikoo
  */
-public class WorkbenchCommand extends SblockCommand {
+public class WorkbenchCommand extends EasterlynCommand {
 
 	public WorkbenchCommand(Easterlyn plugin) {
 		super(plugin, "workbench");

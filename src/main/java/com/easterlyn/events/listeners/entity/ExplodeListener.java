@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.nitnelave.CreeperHeal.config.CreeperConfig;
 
@@ -19,7 +19,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
  * 
  * @author Jikoo
  */
-public class ExplodeListener extends SblockListener {
+public class ExplodeListener extends EasterlynListener {
 
 	private final Machines machines;
 

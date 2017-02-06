@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.inventory;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.utilities.InventoryUtils;
 
 import org.bukkit.Material;
@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Jikoo
  */
-public class FurnaceSmeltListener extends SblockListener {
+public class FurnaceSmeltListener extends EasterlynListener {
 
 	public FurnaceSmeltListener(Easterlyn plugin) {
 		super(plugin);

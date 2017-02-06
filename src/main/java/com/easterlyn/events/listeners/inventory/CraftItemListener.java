@@ -5,8 +5,9 @@ import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.PermissionUtils;
 
@@ -23,7 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * 
  * @author Jikoo
  */
-public class CraftItemListener extends SblockListener {
+public class CraftItemListener extends EasterlynListener {
 
 	private final Events events;
 	private final Language lang;
@@ -35,7 +36,7 @@ public class CraftItemListener extends SblockListener {
 		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
 
-		PermissionUtils.addParent("sblock.events.creative.unfiltered", "sblock.felt");
+		PermissionUtils.addParent("easterlyn.events.creative.unfiltered", UserRank.FELT.getPermission());
 	}
 
 
@@ -67,7 +68,7 @@ public class CraftItemListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onCraftItem(final CraftItemEvent event) {
 		if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE
-				&& !event.getWhoClicked().hasPermission("sblock.events.creative.unfiltered")
+				&& !event.getWhoClicked().hasPermission("easterlyn.events.creative.unfiltered")
 				&& events.getCreativeBlacklist().contains(event.getCurrentItem().getType())) {
 			event.setCancelled(true);
 			return;

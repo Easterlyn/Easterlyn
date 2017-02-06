@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.Cooldowns;
 
 import org.bukkit.Material;
@@ -18,7 +18,7 @@ import org.bukkit.potion.PotionEffectType;
  * 
  * @author Jikoo
  */
-public class ItemConsumeListener extends SblockListener {
+public class ItemConsumeListener extends EasterlynListener {
 
 	private final Cooldowns cooldowns;
 	private final Events events;

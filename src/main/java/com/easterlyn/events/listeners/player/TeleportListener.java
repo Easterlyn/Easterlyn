@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.Region;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
@@ -23,7 +23,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * 
  * @author Jikoo
  */
-public class TeleportListener extends SblockListener {
+public class TeleportListener extends EasterlynListener {
 
 	private final Language lang;
 	private final Users users;
@@ -59,7 +59,7 @@ public class TeleportListener extends SblockListener {
 			if (users.getUser(player.getUniqueId()).getSpectatable()) {
 				return;
 			}
-			if (event.getPlayer().hasPermission("sblock.spectators.unrestricted")) {
+			if (event.getPlayer().hasPermission("easterlyn.spectators.unrestricted")) {
 				event.getPlayer().sendMessage(lang.getValue("spectators.ignoreDisallowed")
 						.replace("{PLAYER}", player.getDisplayName()));
 				return;

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -18,11 +18,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for setting travel speeds.
+ * EasterlynCommand for setting travel speeds.
  * 
  * @author Jikoo
  */
-public class SpeedCommand extends SblockCommand {
+public class SpeedCommand extends EasterlynCommand {
 
 	// TODO lang, possibly change to -10 to 10 system
 	public SpeedCommand(Easterlyn plugin) {

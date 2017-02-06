@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -21,11 +21,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 
 /**
- * SblockCommand for obtaining more detailed server information. Writes to plugins/Easterlyn/report.txt
+ * EasterlynCommand for obtaining more detailed server information. Writes to plugins/Easterlyn/report.txt
  * 
  * @author Jikoo
  */
-public class ServerInformationCommand extends SblockAsynchronousCommand {
+public class ServerInformationCommand extends EasterlynAsynchronousCommand {
 
 	public ServerInformationCommand(Easterlyn plugin) {
 		super(plugin, "serverinfo");

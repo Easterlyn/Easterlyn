@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.plugin;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.module.Dependency;
 import com.nitnelave.CreeperHeal.events.CHBlockHealEvent;
@@ -14,7 +14,7 @@ import org.bukkit.event.EventHandler;
  * @author Jikoo
  */
 @Dependency("CreeperHeal")
-public class CHBlockHealListener extends SblockListener {
+public class CHBlockHealListener extends EasterlynListener {
 
 	private final Machines machines;
 

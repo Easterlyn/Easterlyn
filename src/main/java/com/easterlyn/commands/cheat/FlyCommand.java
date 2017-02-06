@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -16,11 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for toggling or setting flight status.
+ * EasterlynCommand for toggling or setting flight status.
  * 
  * @author Jikoo
  */
-public class FlyCommand extends SblockCommand {
+public class FlyCommand extends EasterlynCommand {
 
 	// TODO convert to lang
 	public FlyCommand(Easterlyn plugin) {
@@ -33,7 +33,7 @@ public class FlyCommand extends SblockCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (!(sender instanceof Player) && (!sender.hasPermission("sblock.command.fly.other")
+		if (!(sender instanceof Player) && (!sender.hasPermission("easterlyn.command.fly.other")
 				|| args.length < 1)) {
 			return false;
 		}
@@ -60,7 +60,7 @@ public class FlyCommand extends SblockCommand {
 			// Not a player, must have at least 1 argument, which will be interpreted as a player name
 			// This will still be hit by /fly true and such, but that's hardly a problem.
 			player = matchPlayer(args[0]);
-		} else if (!sender.hasPermission("sblock.command.fly.other")) {
+		} else if (!sender.hasPermission("easterlyn.command.fly.other")) {
 			// No permission to specify others and must be a Player
 			player = (Player) sender;
 		} else if (args.length == 1 && fly == null) {
@@ -97,7 +97,7 @@ public class FlyCommand extends SblockCommand {
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
 		if (!sender.hasPermission(this.getPermission()) || args.length > 2
-				|| (!sender.hasPermission("sblock.command.fly.other") && args.length > 1)) {
+				|| (!sender.hasPermission("easterlyn.command.fly.other") && args.length > 1)) {
 			return ImmutableList.of();
 		}
 		List<String> matches = new ArrayList<>();
@@ -107,7 +107,7 @@ public class FlyCommand extends SblockCommand {
 		if (StringUtil.startsWithIgnoreCase("false", args[0])) {
 			matches.add("false");
 		}
-		if (args.length == 1 && sender.hasPermission("sblock.command.fly.other")) {
+		if (args.length == 1 && sender.hasPermission("easterlyn.command.fly.other")) {
 			matches.addAll(super.tabComplete(sender, alias, args));
 		}
 		return matches;

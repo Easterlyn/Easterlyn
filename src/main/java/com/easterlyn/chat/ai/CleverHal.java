@@ -13,7 +13,7 @@ import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NickChannel;
 import com.easterlyn.chat.message.Message;
 import com.easterlyn.chat.message.MessageBuilder;
-import com.easterlyn.events.event.SblockAsyncChatEvent;
+import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.utilities.DummyPlayer;
 import com.easterlyn.utilities.JSONUtil;
@@ -162,7 +162,7 @@ public class CleverHal extends HalMessageHandler {
 						players.add(player);
 					}
 				});
-				Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, dummy, players, message, false));
+				Bukkit.getPluginManager().callEvent(new EasterlynAsyncChatEvent(true, dummy, players, message, false));
 				cooldowns.clearGlobalCooldown("pendinghal" + channel.getName());
 			}
 		}.runTaskAsynchronously(getPlugin());

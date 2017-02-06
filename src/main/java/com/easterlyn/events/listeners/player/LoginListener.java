@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
  * 
  * @author Jikoo
  */
-public class LoginListener extends SblockListener {
+public class LoginListener extends EasterlynListener {
 
 	private final Language lang;
 	private final Pattern pattern;

@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.entity;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffectType;
  * 
  * @author Jikoo
  */
-public class PotionSplashListener extends SblockListener {
+public class PotionSplashListener extends EasterlynListener {
 
 	private final Events events;
 

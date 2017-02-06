@@ -7,8 +7,8 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.message.MessageBuilder;
-import com.easterlyn.commands.SblockCommand;
-import com.easterlyn.events.event.SblockAsyncChatEvent;
+import com.easterlyn.commands.EasterlynCommand;
+import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.WrappedSenderPlayer;
@@ -29,7 +29,7 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class MessageCommand extends SblockCommand {
+public class MessageCommand extends EasterlynCommand {
 
 	private final Users users;
 	private final ChannelManager manager;
@@ -116,7 +116,7 @@ public class MessageCommand extends SblockCommand {
 			senderPlayer = new WrappedSenderPlayer((Easterlyn) getPlugin(), sender);
 		}
 
-		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, senderPlayer, builder.toMessage());
+		EasterlynAsyncChatEvent event = new EasterlynAsyncChatEvent(false, senderPlayer, builder.toMessage());
 
 		if (!(senderPlayer instanceof WrappedSenderPlayer)) {
 			event.getRecipients().add(senderPlayer);

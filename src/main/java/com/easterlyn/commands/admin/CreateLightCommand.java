@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.LightSource;
 
@@ -14,11 +14,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * Basic SblockCommand for creating a light source.
+ * Basic EasterlynCommand for creating a light source.
  * 
  * @author Jikoo
  */
-public class CreateLightCommand extends SblockCommand {
+public class CreateLightCommand extends EasterlynCommand {
 
 	public CreateLightCommand(Easterlyn plugin) {
 		super(plugin, "createlight");

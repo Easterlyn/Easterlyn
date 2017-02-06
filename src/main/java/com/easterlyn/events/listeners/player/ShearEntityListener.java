@@ -3,7 +3,7 @@ package com.easterlyn.events.listeners.player;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -20,7 +20,7 @@ import org.bukkit.material.Wool;
  * 
  * @author Jikoo
  */
-public class ShearEntityListener extends SblockListener {
+public class ShearEntityListener extends EasterlynListener {
 
 	public ShearEntityListener(Easterlyn plugin) {
 		super(plugin);

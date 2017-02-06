@@ -7,7 +7,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.chat.Language;
 import com.easterlyn.effects.Effects;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.micromodules.AwayFromKeyboard;
@@ -35,7 +35,7 @@ import org.bukkit.inventory.PlayerInventory;
  * 
  * @author Jikoo
  */
-public class InteractListener extends SblockListener {
+public class InteractListener extends EasterlynListener {
 
 	private final AwayFromKeyboard afk;
 	private final Captcha captcha;

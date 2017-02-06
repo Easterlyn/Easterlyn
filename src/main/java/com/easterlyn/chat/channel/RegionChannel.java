@@ -67,7 +67,7 @@ public class RegionChannel extends Channel {
 	 */
 	@Override
 	public boolean isOwner(User user) {
-		return user != null && user.getPlayer().hasPermission("sblock.chat.channel.owner");
+		return user != null && user.getPlayer().hasPermission("easterlyn.chat.channel.owner");
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class RegionChannel extends Channel {
 	 */
 	@Override
 	public boolean isModerator(User user) {
-		return user != null && user.getPlayer().hasPermission("sblock.chat.channel.moderator");
+		return user != null && user.getPlayer().hasPermission("easterlyn.chat.channel.moderator");
 	}
 
 	/**

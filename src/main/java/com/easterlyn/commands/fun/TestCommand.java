@@ -2,7 +2,7 @@ package com.easterlyn.commands.fun;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.events.listeners.player.AsyncChatListener;
 
 import org.bukkit.command.CommandSender;
@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
  * 
  * @author Jikoo
  */
-public class TestCommand extends SblockCommand {
+public class TestCommand extends EasterlynCommand {
 
 	public TestCommand(Easterlyn plugin) {
 		super(plugin, "test");

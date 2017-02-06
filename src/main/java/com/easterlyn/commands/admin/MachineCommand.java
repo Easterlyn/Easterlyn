@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.computer.Program;
 import com.easterlyn.machines.type.computer.Programs;
@@ -19,11 +19,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for getting machine key objects and icons.
+ * EasterlynCommand for getting machine key objects and icons.
  * 
  * @author Jikoo
  */
-public class MachineCommand extends SblockCommand {
+public class MachineCommand extends EasterlynCommand {
 
 	private final Machines machines;
 

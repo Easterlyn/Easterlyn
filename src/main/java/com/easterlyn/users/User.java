@@ -267,7 +267,7 @@ public class User {
 				boolean allowFlight = player.getWorld().getName().equals("Derspit")
 								|| player.getGameMode() == GameMode.CREATIVE
 								|| player.getGameMode() == GameMode.SPECTATOR;
-				if (!allowFlight && player.hasPermission("sblock.command.fly.safe")) {
+				if (!allowFlight && player.hasPermission("easterlyn.command.fly.safe")) {
 					Block block = player.getLocation().getBlock();
 					allowFlight = block.getType() == Material.AIR
 							&& block.getRelative(BlockFace.DOWN).getType() == Material.AIR;
@@ -581,7 +581,7 @@ public class User {
 		}
 		listening.add("#");
 		getChannelManager().getChannel("#").getListening().add(getUUID());
-		if (this.getPlayer().hasPermission("sblock.felt") && !this.getListening().contains("@")) {
+		if (this.getPlayer().hasPermission(UserRank.FELT.getPermission()) && !this.getListening().contains("@")) {
 			this.getListening().add("@");
 			getChannelManager().getChannel("@").getListening().add(this.getUUID());
 		}

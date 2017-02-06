@@ -7,7 +7,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
 import com.easterlyn.chat.message.Message;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.RawAnnouncer;
 import com.easterlyn.users.UserRank;
 
@@ -19,11 +19,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 /**
- * SblockCommand for manipulating the raw message announcer.
+ * EasterlynCommand for manipulating the raw message announcer.
  * 
  * @author Jikoo
  */
-public class HalCommand extends SblockCommand {
+public class HalCommand extends EasterlynCommand {
 
 	private final Chat chat;
 	private final RawAnnouncer announcer;

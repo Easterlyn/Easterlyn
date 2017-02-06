@@ -5,7 +5,7 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.users.UserRank;
 
@@ -19,11 +19,11 @@ import org.bukkit.inventory.ItemStack;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * SblockCommand for printing information about an item.
+ * EasterlynCommand for printing information about an item.
  * 
  * @author Jikoo
  */
-public class ItemInformationCommand extends SblockCommand {
+public class ItemInformationCommand extends EasterlynCommand {
 
 	public ItemInformationCommand(Easterlyn plugin) {
 		super(plugin, "iteminfo");

@@ -66,28 +66,9 @@ public class RawAnnouncer extends Module {
 		TextComponent hover = new TextComponent("Click here to go!");
 		hover.setColor(ChatColor.GOLD);
 
-		// Announcement: Join us on our subreddit
-		TextComponent component = new TextComponent("Join us on our subreddit,");
-		component.setColor(ChatColor.RED);
-		components.add(component);
-
-		component = new TextComponent(" /r/Easterlyn");
-		component.setColor(ChatColor.BLUE);
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://www.reddit.com/r/sblock"));
-		components.add(component);
-
-		component = new TextComponent("!");
-		component.setColor(ChatColor.RED);
-		components.add(component);
-
-		builder.setMessage("Join us on our subreddit, http://www.reddit.com/r/sblock",
-				components.toArray(new TextComponent[components.size()]));
-		msgs.add(builder.toMessage());
-
 		// Announcement: Pls gib monie
 		components.clear();
-		component = new TextComponent("It is your generosity that keeps Easterlyn alive. Please consider");
+		TextComponent component = new TextComponent("It is your generosity that keeps Easterlyn alive. Please consider");
 		component.setColor(ChatColor.RED);
 		components.add(component);
 

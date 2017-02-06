@@ -8,7 +8,7 @@ import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.RegionChannel;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 
@@ -23,7 +23,7 @@ import org.bukkit.util.StringUtil;
  * 
  * @author Jikoo
  */
-public class ChatFocusCommand extends SblockCommand {
+public class ChatFocusCommand extends EasterlynCommand {
 
 	private final Users users;
 	private final ChannelManager manager;

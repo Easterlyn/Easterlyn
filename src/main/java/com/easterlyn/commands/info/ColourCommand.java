@@ -3,7 +3,7 @@ package com.easterlyn.commands.info;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 
 import com.google.common.collect.ImmutableList;
 
@@ -12,11 +12,11 @@ import org.bukkit.command.CommandSender;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * SblockCommand for /color
+ * EasterlynCommand for /color
  * 
  * @author Jikoo
  */
-public class ColourCommand extends SblockCommand {
+public class ColourCommand extends EasterlynCommand {
 
 	public ColourCommand(Easterlyn plugin) {
 		super(plugin, "colour");

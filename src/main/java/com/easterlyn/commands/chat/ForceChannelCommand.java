@@ -8,7 +8,7 @@ import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
 import com.easterlyn.chat.channel.Channel;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
@@ -21,11 +21,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for forcing a User to change current channel.
+ * EasterlynCommand for forcing a User to change current channel.
  * 
  * @author Jikoo
  */
-public class ForceChannelCommand extends SblockCommand {
+public class ForceChannelCommand extends EasterlynCommand {
 
 	private final Users users;
 	private final ChannelManager manager;

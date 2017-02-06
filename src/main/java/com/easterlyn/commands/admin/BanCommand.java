@@ -3,7 +3,7 @@ package com.easterlyn.commands.admin;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
@@ -18,11 +18,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * SblockCommand for a dual ip and UUID ban.
+ * EasterlynCommand for a dual ip and UUID ban.
  * 
  * @author Jikoo
  */
-public class BanCommand extends SblockCommand {
+public class BanCommand extends EasterlynCommand {
 
 	private final Users users;
 

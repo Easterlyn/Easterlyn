@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.Region;
 import com.easterlyn.users.UserAspect;
 import com.easterlyn.users.UserClass;
@@ -19,7 +19,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * 
  * @author Jikoo
  */
-public class NumberCrunchCommand extends SblockAsynchronousCommand {
+public class NumberCrunchCommand extends EasterlynAsynchronousCommand {
 
 	public NumberCrunchCommand(Easterlyn plugin) {
 		super(plugin, "numbercrunch");

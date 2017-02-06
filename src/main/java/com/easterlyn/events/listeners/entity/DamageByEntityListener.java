@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.MeteoriteComponent;
 
 import org.bukkit.Bukkit;
@@ -24,7 +24,7 @@ import org.bukkit.craftbukkit.v1_11_R1.entity.CraftEntity;
  * 
  * @author Jikoo
  */
-public class DamageByEntityListener extends SblockListener {
+public class DamageByEntityListener extends EasterlynListener {
 
 	private final Effects effects;
 	private final Events events;

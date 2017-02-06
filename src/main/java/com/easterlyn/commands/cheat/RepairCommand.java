@@ -3,7 +3,7 @@ package com.easterlyn.commands.cheat;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -16,11 +16,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
 /**
- * SblockCommand for repairing an item.
+ * EasterlynCommand for repairing an item.
  * 
  * @author Jikoo
  */
-public class RepairCommand extends SblockCommand {
+public class RepairCommand extends EasterlynCommand {
 
 	public RepairCommand(Easterlyn plugin) {
 		super(plugin, "repair");

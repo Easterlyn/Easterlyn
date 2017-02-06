@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.world;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.micromodules.Holograms;
 
@@ -13,7 +13,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
  * 
  * @author Jikoo
  */
-public class ChunkUnloadListener extends SblockListener {
+public class ChunkUnloadListener extends EasterlynListener {
 
 	private final Holograms holograms;
 	private final Machines machines;

@@ -6,7 +6,7 @@ import com.easterlyn.chat.ai.Halculator;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.message.Message;
 import com.easterlyn.chat.message.MessageBuilder;
-import com.easterlyn.events.event.SblockAsyncChatEvent;
+import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.module.Module;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
@@ -15,7 +15,6 @@ import com.easterlyn.utilities.PermissionUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import net.md_5.bungee.api.ChatColor;
@@ -36,33 +35,20 @@ public class Chat extends Module {
 		this.buffer = new DummyPlayer();
 
 		// Permission to use >greentext
-		PermissionUtils.getOrCreate("sblock.chat.greentext", PermissionDefault.TRUE);
-		// Legacy support: old node as parent
-		PermissionUtils.addParent("sblock.chat.greentext", "sblockchat.greentext");
-
+		PermissionUtils.getOrCreate("easterlyn.chat.greentext", PermissionDefault.TRUE);
 		// Permission for messages to automatically color using name color
-		PermissionUtils.getOrCreate("sblock.chat.color", PermissionDefault.FALSE);
-		// Legacy support: old node as parent
-		PermissionUtils.getOrCreate("sblockchat.color", PermissionDefault.FALSE);
-		PermissionUtils.addParent("sblock.chat.color", "sblockchat.color", PermissionDefault.FALSE);
-
+		PermissionUtils.getOrCreate("easterlyn.chat.color", PermissionDefault.FALSE);
 		// Permission to bypass chat filtering
-		PermissionUtils.addParent("sblock.chat.unfiltered", UserRank.FELT.getPermission());
-		PermissionUtils.addParent("sblock.chat.unfiltered", "sblock.spam");
+		PermissionUtils.addParent("easterlyn.chat.unfiltered", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.chat.unfiltered", "easterlyn.spam");
 		// Permission to be recognized as a moderator in every channel
-		PermissionUtils.addParent("sblock.chat.channel.moderator", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.chat.channel.moderator", UserRank.FELT.getPermission());
 		// Permission to be recognized as an owner in every channel
-		PermissionUtils.addParent("sblock.chat.channel.owner", UserRank.DENIZEN.getPermission());
+		PermissionUtils.addParent("easterlyn.chat.channel.owner", UserRank.DENIZEN.getPermission());
 
 		// Permission to have name a certain color
-		Permission parentPermission;
-		Permission childPermission;
 		for (ChatColor chatColor : ChatColor.values()) {
-			// Legacy support: old node as parent
-			String color = chatColor.name().toLowerCase();
-			parentPermission = PermissionUtils.getOrCreate("sblockchat." + color, PermissionDefault.FALSE);
-			childPermission = PermissionUtils.getOrCreate("sblock.chat.color." + color, PermissionDefault.FALSE);
-			childPermission.addParent(parentPermission, true);
+			PermissionUtils.getOrCreate("easterlyn.chat.color." + chatColor.name().toLowerCase(), PermissionDefault.FALSE);
 		}
 	}
 
@@ -135,7 +121,7 @@ public class Chat extends Module {
 				.setMessage(msg).setChannel(channel);
 		Message message = builder.toMessage();
 
-		SblockAsyncChatEvent event = new SblockAsyncChatEvent(false, sender, message, false);
+		EasterlynAsyncChatEvent event = new EasterlynAsyncChatEvent(false, sender, message, false);
 		// Add a dummy player so WG doesn't cancel the event if there are no recipients
 		event.getRecipients().add(this.buffer);
 

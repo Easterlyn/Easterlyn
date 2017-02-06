@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.Users;
 
 import org.bukkit.event.EventHandler;
@@ -13,7 +13,7 @@ import org.bukkit.util.StringUtil;
  * 
  * @author Jikoo
  */
-public class ChatTabCompleteListener extends SblockListener {
+public class ChatTabCompleteListener extends EasterlynListener {
 
 	private final Users users;
 

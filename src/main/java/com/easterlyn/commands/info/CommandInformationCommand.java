@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -15,11 +15,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 
 /**
- * SblockCommand for printing out information about another command.
+ * EasterlynCommand for printing out information about another command.
  * 
  * @author Jikoo
  */
-public class CommandInformationCommand extends SblockCommand {
+public class CommandInformationCommand extends EasterlynCommand {
 
 	public CommandInformationCommand(Easterlyn plugin) {
 		super(plugin, "cmdinfo");

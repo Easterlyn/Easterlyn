@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.inventory;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.PermissionUtils;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Jikoo
  */
-public class InventoryCreativeListener extends SblockListener {
+public class InventoryCreativeListener extends EasterlynListener {
 
 	private final Events events;
 
@@ -26,7 +26,7 @@ public class InventoryCreativeListener extends SblockListener {
 		super(plugin);
 		this.events = plugin.getModule(Events.class);
 
-		PermissionUtils.addParent("sblock.events.creative.unfiltered", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.events.creative.unfiltered", UserRank.FELT.getPermission());
 	}
 
 	/**
@@ -39,7 +39,7 @@ public class InventoryCreativeListener extends SblockListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryCreative(InventoryCreativeEvent event) {
-		if (event.getWhoClicked().hasPermission("sblock.events.creative.unfiltered")) {
+		if (event.getWhoClicked().hasPermission("easterlyn.events.creative.unfiltered")) {
 			return;
 		}
 

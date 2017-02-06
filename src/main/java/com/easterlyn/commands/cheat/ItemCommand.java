@@ -3,7 +3,7 @@ package com.easterlyn.commands.cheat;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommandAlias;
+import com.easterlyn.commands.EasterlynCommandAlias;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -12,11 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommandAlias for using a /give command targeting oneself.
+ * EasterlynCommandAlias for using a /give command targeting oneself.
  * 
  * @author Jikoo
  */
-public class ItemCommand extends SblockCommandAlias {
+public class ItemCommand extends EasterlynCommandAlias {
 
 	public ItemCommand(Easterlyn plugin) {
 		super(plugin, "item", "minecraft:give");

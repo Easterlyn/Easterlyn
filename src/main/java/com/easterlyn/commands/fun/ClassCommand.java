@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserClass;
 import com.easterlyn.users.UserRank;
@@ -21,7 +21,7 @@ import org.bukkit.util.StringUtil;
  * 
  * @author Jikoo
  */
-public class ClassCommand extends SblockCommand {
+public class ClassCommand extends EasterlynCommand {
 
 	private final Users users;
 

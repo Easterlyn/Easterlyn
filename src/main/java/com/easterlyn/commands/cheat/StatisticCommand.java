@@ -3,7 +3,7 @@ package com.easterlyn.commands.cheat;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -16,11 +16,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for editing a Player's Statistics.
+ * EasterlynCommand for editing a Player's Statistics.
  * 
  * @author Jikoo
  */
-public class StatisticCommand extends SblockCommand {
+public class StatisticCommand extends EasterlynCommand {
 
 	public StatisticCommand(Easterlyn plugin) {
 		super(plugin, "stat");

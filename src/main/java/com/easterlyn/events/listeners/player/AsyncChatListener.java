@@ -16,8 +16,8 @@ import com.easterlyn.chat.channel.RegionChannel;
 import com.easterlyn.chat.message.Message;
 import com.easterlyn.chat.message.MessageBuilder;
 import com.easterlyn.discord.Discord;
-import com.easterlyn.events.event.SblockAsyncChatEvent;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.event.EasterlynAsyncChatEvent;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.users.User;
@@ -48,7 +48,7 @@ import me.ryanhamshire.GriefPrevention.PlayerData;
  * 
  * @author Jikoo
  */
-public class AsyncChatListener extends SblockListener {
+public class AsyncChatListener extends EasterlynListener {
 
 	// TODO -> lang, events.chat.test
 	private static final String[] TEST = new String[] {"It is certain.", "It is decidedly so.",
@@ -120,7 +120,7 @@ public class AsyncChatListener extends SblockListener {
 	 * To prevent IRC and other chat loggers from picking up chat sent to non-regional channels,
 	 * non-regional chat must be cancelled.
 	 * 
-	 * @param event the SblockAsyncChatEvent
+	 * @param event the EasterlynAsyncChatEvent
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
@@ -128,10 +128,10 @@ public class AsyncChatListener extends SblockListener {
 
 		Message message;
 		boolean checkSpam = true;
-		if (event instanceof SblockAsyncChatEvent) {
-			SblockAsyncChatEvent sblockEvent = (SblockAsyncChatEvent) event;
-			message = sblockEvent.getSblockMessage();
-			checkSpam = sblockEvent.checkSpam();
+		if (event instanceof EasterlynAsyncChatEvent) {
+			EasterlynAsyncChatEvent easterlynEvent = (EasterlynAsyncChatEvent) event;
+			message = easterlynEvent.getEasterlynMessage();
+			checkSpam = easterlynEvent.checkSpam();
 		} else {
 			try {
 				MessageBuilder mb = new MessageBuilder(getPlugin())
@@ -220,8 +220,8 @@ public class AsyncChatListener extends SblockListener {
 
 		// Region channels are the only ones that should be appearing in certain plugins
 		if (!(message.getChannel() instanceof RegionChannel)) {
-			if (!event.isCancelled() && event instanceof SblockAsyncChatEvent) {
-				((SblockAsyncChatEvent) event).setGlobalCancelled(true);
+			if (!event.isCancelled() && event instanceof EasterlynAsyncChatEvent) {
+				((EasterlynAsyncChatEvent) event).setGlobalCancelled(true);
 			} else {
 				event.setCancelled(true);
 			}
@@ -237,7 +237,7 @@ public class AsyncChatListener extends SblockListener {
 		}
 
 		// Manually send messages to each player so we can wrap links, etc.
-		message.send(event.getRecipients(), event instanceof SblockAsyncChatEvent, true);
+		message.send(event.getRecipients(), event instanceof EasterlynAsyncChatEvent, true);
 
 		// Post messages to Discord
 		discord.postMessage(message, publishGlobally);
@@ -343,7 +343,7 @@ public class AsyncChatListener extends SblockListener {
 	private boolean detectSpam(AsyncPlayerChatEvent event, Message message) {
 		final Player player = event.getPlayer();
 		final User sender = message.getSender();
-		if (sender == null || player.hasPermission("sblock.chat.unfiltered")) {
+		if (sender == null || player.hasPermission("easterlyn.chat.unfiltered")) {
 			return false;
 		}
 

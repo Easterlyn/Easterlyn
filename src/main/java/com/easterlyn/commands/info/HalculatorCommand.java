@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 
 import com.google.common.collect.ImmutableList;
 
@@ -15,11 +15,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for using the halculate function just for yourself.
+ * EasterlynCommand for using the halculate function just for yourself.
  * 
  * @author Jikoo
  */
-public class HalculatorCommand extends SblockCommand {
+public class HalculatorCommand extends EasterlynCommand {
 
 	private final Chat chat;
 

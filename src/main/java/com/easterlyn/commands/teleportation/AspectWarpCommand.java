@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserAspect;
 import com.easterlyn.users.UserRank;
@@ -18,11 +18,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for warping a User only if their aspect matches the target warp.
+ * EasterlynCommand for warping a User only if their aspect matches the target warp.
  * 
  * @author Jikoo
  */
-public class AspectWarpCommand extends SblockCommand {
+public class AspectWarpCommand extends EasterlynCommand {
 
 	private final Users users;
 

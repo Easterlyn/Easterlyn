@@ -3,7 +3,7 @@ package com.easterlyn.commands.teleportation;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -15,11 +15,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for silently teleporting a player.
+ * EasterlynCommand for silently teleporting a player.
  * 
  * @author Jikoo
  */
-public class SilentTeleportCommand extends SblockCommand {
+public class SilentTeleportCommand extends EasterlynCommand {
 
 	public SilentTeleportCommand(Easterlyn plugin) {
 		super(plugin, "silenttp");

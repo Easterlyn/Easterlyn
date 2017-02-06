@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.entity;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.ExpBottleEvent;
@@ -14,7 +14,7 @@ import org.bukkit.event.entity.ExpBottleEvent;
  * 
  * @author Jikoo
  */
-public class ExpBottleListener extends SblockListener {
+public class ExpBottleListener extends EasterlynListener {
 
 	public ExpBottleListener(Easterlyn plugin) {
 		super(plugin);

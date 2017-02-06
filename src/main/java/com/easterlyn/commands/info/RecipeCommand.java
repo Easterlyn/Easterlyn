@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.utilities.InventoryUtils;
 
@@ -27,7 +27,7 @@ import org.bukkit.inventory.ShapelessRecipe;
  * 
  * @author Jikoo
  */
-public class RecipeCommand extends SblockCommand {
+public class RecipeCommand extends EasterlynCommand {
 
 	public RecipeCommand(Easterlyn plugin) {
 		super(plugin, "recipe");

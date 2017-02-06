@@ -8,7 +8,7 @@ import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.events.BlockUpdateManager;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.event.SblockBreakEvent;
+import com.easterlyn.events.event.EasterlynBreakEvent;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -40,7 +40,7 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Beha
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(BlockBreakEvent.class, SblockBreakEvent.class);
+		return Arrays.asList(BlockBreakEvent.class, EasterlynBreakEvent.class);
 	}
 
 	@Override

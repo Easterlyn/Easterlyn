@@ -3,7 +3,7 @@ package com.easterlyn.commands.teleportation;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommandAlias;
+import com.easterlyn.commands.EasterlynCommandAlias;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -12,11 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommandAlias for teleporting a player to oneself.
+ * EasterlynCommandAlias for teleporting a player to oneself.
  * 
  * @author Jikoo
  */
-public class TeleportHereCommand extends SblockCommandAlias {
+public class TeleportHereCommand extends EasterlynCommandAlias {
 
 	public TeleportHereCommand(Easterlyn plugin) {
 		super(plugin, "tphere", "minecraft:tp");

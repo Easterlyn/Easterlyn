@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -14,11 +14,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for getting a player's ping.
+ * EasterlynCommand for getting a player's ping.
  * 
  * @author Jikoo
  */
-public class PingCommand extends SblockCommand {
+public class PingCommand extends EasterlynCommand {
 
 	public PingCommand(Easterlyn plugin) {
 		super(plugin, "ping");
@@ -34,7 +34,7 @@ public class PingCommand extends SblockCommand {
 		}
 		// future: couple samples over a short period
 		Player target;
-		if (args.length == 0 || !sender.hasPermission("sblock.command.ping.other")) {
+		if (args.length == 0 || !sender.hasPermission("easterlyn.command.ping.other")) {
 			target = (Player) sender;
 		} else {
 			target = Bukkit.getPlayer(args[0]);
@@ -51,7 +51,7 @@ public class PingCommand extends SblockCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-		if (args.length != 1 || !sender.hasPermission("sblock.command.ping.other")) {
+		if (args.length != 1 || !sender.hasPermission("easterlyn.command.ping.other")) {
 			return ImmutableList.of();
 		} else {
 			return super.tabComplete(sender, alias, args);

@@ -2,18 +2,18 @@ package com.easterlyn.commands.admin;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Color;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 /**
- * SblockCommand for being Lord English.
+ * EasterlynCommand for being Lord English.
  * 
  * @author Jikoo
  */
-public class LordEnglishCommand extends SblockCommand {
+public class LordEnglishCommand extends EasterlynCommand {
 
 	public LordEnglishCommand(Easterlyn plugin) {
 		super(plugin, "le");

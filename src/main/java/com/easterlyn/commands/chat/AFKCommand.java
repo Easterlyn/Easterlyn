@@ -1,7 +1,7 @@
 package com.easterlyn.commands.chat;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 
 import org.bukkit.command.CommandSender;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
  * 
  * @author Jikoo
  */
-public class AFKCommand extends SblockCommand {
+public class AFKCommand extends EasterlynCommand {
 
 	private final AwayFromKeyboard afk;
 

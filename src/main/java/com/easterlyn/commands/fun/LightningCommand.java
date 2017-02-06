@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -22,11 +22,11 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for causing a lightning strike.
+ * EasterlynCommand for causing a lightning strike.
  * 
  * @author Jikoo
  */
-public class LightningCommand extends SblockCommand {
+public class LightningCommand extends EasterlynCommand {
 
 	public LightningCommand(Easterlyn plugin) {
 		super(plugin, "lightning");

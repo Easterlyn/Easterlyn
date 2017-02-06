@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.inventory;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.micromodules.AwayFromKeyboard;
@@ -34,7 +34,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * 
  * @author Jikoo
  */
-public class InventoryClickListener extends SblockListener {
+public class InventoryClickListener extends EasterlynListener {
 
 	private final AwayFromKeyboard afk;
 	private final Captcha captcha;
@@ -246,7 +246,7 @@ public class InventoryClickListener extends SblockListener {
 		final InventoryView view = event.getView();
 
 		if (view.getTopInventory().getType() != InventoryType.ANVIL
-				|| !((Player) event.getWhoClicked()).hasPermission("sblock.blaze")) {
+				|| !((Player) event.getWhoClicked()).hasPermission("easterlyn.blaze")) {
 			return;
 		}
 

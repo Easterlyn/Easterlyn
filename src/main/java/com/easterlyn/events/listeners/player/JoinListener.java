@@ -7,7 +7,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.events.packets.WrapperPlayServerPlayerListHeaderFooter;
 import com.easterlyn.users.Region;
 import com.easterlyn.users.User;
@@ -26,7 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * 
  * @author Jikoo
  */
-public class JoinListener extends SblockListener {
+public class JoinListener extends EasterlynListener {
 
 	private final Discord discord;
 	private final Events events;

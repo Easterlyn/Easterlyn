@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.vehicle;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.events.packets.ParticleEffectWrapper;
 import com.easterlyn.micromodules.ParticleUtils;
 import com.easterlyn.users.UserRank;
@@ -21,13 +21,13 @@ import org.bukkit.permissions.Permission;
  * 
  * @author Jikoo
  */
-public class EnterListener extends SblockListener {
+public class EnterListener extends EasterlynListener {
 
 	private final ParticleUtils particles;
 
 	public EnterListener(Easterlyn plugin) {
 		super(plugin);
-		new Permission("sblock.blaze").addParent(UserRank.DONATOR.getPermission(), true).recalculatePermissibles();
+		new Permission("easterlyn.blaze").addParent(UserRank.DONATOR.getPermission(), true).recalculatePermissibles();
 		this.particles = plugin.getModule(ParticleUtils.class);
 	}
 
@@ -39,7 +39,7 @@ public class EnterListener extends SblockListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onVehicleEnter(VehicleEnterEvent event) {
 		if (event.getVehicle().getType() != EntityType.HORSE || event.getEntered().getType() != EntityType.PLAYER
-				|| !((Player) event.getEntered()).hasPermission("sblock.blaze")) {
+				|| !((Player) event.getEntered()).hasPermission("easterlyn.blaze")) {
 			return;
 		}
 		Horse horse = (Horse) event.getVehicle();

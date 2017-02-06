@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -23,7 +23,7 @@ import org.bukkit.map.MapView.Scale;
  * 
  * @author Jikoo
  */
-public class CenterMapCommand extends SblockCommand {
+public class CenterMapCommand extends EasterlynCommand {
 
 	public CenterMapCommand(Easterlyn plugin) {
 		super(plugin, "centermap");

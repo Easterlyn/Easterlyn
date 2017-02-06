@@ -1,5 +1,5 @@
 #############
-## Sblock Additions
+## Additions
 #############
 
 # We don't want passwords to end up public, so keep config.yml out
@@ -61,7 +61,7 @@ local.properties
 #################
 
 .idea/
-Sblock.iml
+Easterlyn.iml
 
 #################
 ## Visual Studio

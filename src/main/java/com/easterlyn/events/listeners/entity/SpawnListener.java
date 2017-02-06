@@ -3,7 +3,7 @@ package com.easterlyn.events.listeners.entity;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Rabbit;
@@ -16,7 +16,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
  * 
  * @author Jikoo
  */
-public class SpawnListener extends SblockListener {
+public class SpawnListener extends EasterlynListener {
 
 	public SpawnListener(Easterlyn plugin) {
 		super(plugin);

@@ -3,7 +3,7 @@ package com.easterlyn.commands.cheat;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Jikoo
  */
-public class MoreCommand extends SblockCommand {
+public class MoreCommand extends EasterlynCommand {
 
 	public MoreCommand(Easterlyn plugin) {
 		super(plugin, "more");

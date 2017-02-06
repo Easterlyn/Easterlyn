@@ -8,9 +8,9 @@ import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.message.Message;
 import com.easterlyn.chat.message.MessageBuilder;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.discord.Discord;
-import com.easterlyn.events.event.SblockAsyncChatEvent;
+import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.WrappedSenderPlayer;
@@ -27,11 +27,11 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
- * SblockCommand for /aether, the command executed to make IRC chat mimic normal channels.
+ * EasterlynCommand for /aether, the command executed to make IRC chat mimic normal channels.
  * 
  * @author Jikoo
  */
-public class AetherCommand extends SblockAsynchronousCommand {
+public class AetherCommand extends EasterlynAsynchronousCommand {
 
 	private final Discord discord;
 	private final Users users;
@@ -83,7 +83,7 @@ public class AetherCommand extends SblockAsynchronousCommand {
 		WrappedSenderPlayer senderPlayer = new WrappedSenderPlayer((Easterlyn) getPlugin(),
 				sender == null ? Bukkit.getConsoleSender() : sender, name);
 
-		SblockAsyncChatEvent event = new SblockAsyncChatEvent(true, senderPlayer, players, message);
+		EasterlynAsyncChatEvent event = new EasterlynAsyncChatEvent(true, senderPlayer, players, message);
 
 		if (Bukkit.isPrimaryThread()) {
 			new BukkitRunnable() {

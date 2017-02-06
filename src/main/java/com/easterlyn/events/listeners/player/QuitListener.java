@@ -7,7 +7,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.FreeCart;
 import com.easterlyn.micromodules.SleepVote;
@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * 
  * @author Jikoo
  */
-public class QuitListener extends SblockListener {
+public class QuitListener extends EasterlynListener {
 
 	private final AwayFromKeyboard afk;
 	private final Discord discord;

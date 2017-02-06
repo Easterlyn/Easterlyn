@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.message.MessageBuilder;
-import com.easterlyn.commands.SblockAsynchronousCommand;
-import com.easterlyn.events.event.SblockAsyncChatEvent;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
+import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 
@@ -20,11 +20,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 /**
- * SblockCommand for performing an emote.
+ * EasterlynCommand for performing an emote.
  * 
  * @author Jikoo
  */
-public class MeCommand extends SblockAsynchronousCommand {
+public class MeCommand extends EasterlynAsynchronousCommand {
 
 	private final Users users;
 
@@ -51,7 +51,7 @@ public class MeCommand extends SblockAsynchronousCommand {
 			return true;
 		}
 
-		Bukkit.getPluginManager().callEvent(new SblockAsyncChatEvent(true, player, builder.toMessage()));
+		Bukkit.getPluginManager().callEvent(new EasterlynAsyncChatEvent(true, player, builder.toMessage()));
 		return true;
 	}
 

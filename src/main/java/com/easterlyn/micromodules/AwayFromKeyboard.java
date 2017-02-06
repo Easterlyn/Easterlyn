@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.module.Module;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PermissionUtils;
 
@@ -36,7 +37,7 @@ public class AwayFromKeyboard extends Module {
 		this.lastLocations = new HashMap<>();
 		this.afkUUIDs = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 
-		PermissionUtils.addParent("sblock.afk.auto", "sblock.default");
+		PermissionUtils.addParent("easterlyn.afk.auto", UserRank.DEFAULT.getPermission());
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class AwayFromKeyboard extends Module {
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					checkInactive(player);
 					lastLocations.put(player.getUniqueId(), player.getLocation());
-					if (player.hasPermission("sblock.afk.auto")
+					if (player.hasPermission("easterlyn.afk.auto")
 							&& cooldowns.getRemainder(player, getName()) == 0) {
 						setInactive(player);
 					}

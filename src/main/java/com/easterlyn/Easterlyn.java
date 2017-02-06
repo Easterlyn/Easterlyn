@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
-import com.easterlyn.commands.SblockCommandAlias;
+import com.easterlyn.commands.EasterlynCommand;
+import com.easterlyn.commands.EasterlynCommandAlias;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.events.Events;
@@ -155,11 +155,11 @@ public class Easterlyn extends JavaPlugin {
 		}
 
 		Reflections reflections = new Reflections("com.easterlyn.commands");
-		Map<Object, List<Class<? extends SblockCommand>>> commands = reflections.getSubTypesOf(SblockCommand.class).stream().collect(Collectors.groupingBy(clazz -> {
+		Map<Object, List<Class<? extends EasterlynCommand>>> commands = reflections.getSubTypesOf(EasterlynCommand.class).stream().collect(Collectors.groupingBy(clazz -> {
 			if (Modifier.isAbstract(clazz.getModifiers())) {
 				return "abstract";
 			}
-			if (SblockCommandAlias.class.isAssignableFrom(clazz)) {
+			if (EasterlynCommandAlias.class.isAssignableFrom(clazz)) {
 				return "alias";
 			}
 			return "command";
@@ -186,26 +186,24 @@ public class Easterlyn extends JavaPlugin {
 
 	private void createBasePermissions() {
 		for (UserRank rank : UserRank.values()) {
-			Permission parentPermission = PermissionUtils.getOrCreate("sblock." + rank.getLowercaseName(), rank.getPermissionDefault());
-			Permission childPermission = PermissionUtils.getOrCreate("sblock.group." + rank.getLowercaseName(), rank.getPermissionDefault());
-			childPermission.addParent(parentPermission, true);
-			childPermission = PermissionUtils.getOrCreate("sblock.chat.color." + rank.getLowercaseName(), rank.getPermissionDefault());
-			childPermission.addParent(parentPermission, true);
+			Permission permission = PermissionUtils.getOrCreate(rank.getPermission(), rank.getPermissionDefault());
+			PermissionUtils.getOrCreate("easterlyn.chat.color." + rank.getLowercaseName(), rank.getPermissionDefault()).addParent(permission, true);
+			permission.recalculatePermissibles();
 		}
 	}
 
-	private void registerAllCommands(HashMap<String, Command> knownCommands, List<Class<? extends SblockCommand>> commands) {
+	private void registerAllCommands(HashMap<String, Command> knownCommands, List<Class<? extends EasterlynCommand>> commands) {
 		if (commands == null) {
 			return;
 		}
-		for (Class<? extends SblockCommand> command : commands) {
+		for (Class<? extends EasterlynCommand> command : commands) {
 			if (!areDependenciesPresent(command)) {
 				getLogger().warning(command.getSimpleName() + " is missing dependencies, skipping.");
 				continue;
 			}
 			try {
-				Constructor<? extends SblockCommand> constructor = command.getConstructor(this.getClass());
-				SblockCommand cmd = constructor.newInstance(this);
+				Constructor<? extends EasterlynCommand> constructor = command.getConstructor(this.getClass());
+				EasterlynCommand cmd = constructor.newInstance(this);
 				if (knownCommands.containsKey(cmd.getName())) {
 					Command overwritten = knownCommands.remove(cmd.getName());
 					getLogger().info("Overriding " + cmd.getName() + " by "
@@ -223,7 +221,7 @@ public class Easterlyn extends JavaPlugin {
 				cmdMap.register(this.getDescription().getName(), cmd);
 				Permission permission = new Permission(cmd.getPermission());
 				if (cmd.getPermissionLevel() != UserRank.DANGER_DANGER_HIGH_VOLTAGE) {
-					permission.addParent("sblock.command.*", true).recalculatePermissibles();
+					permission.addParent("easterlyn.command.*", true).recalculatePermissibles();
 				}
 				permission.addParent(cmd.getPermissionLevel().getPermission(), true).recalculatePermissibles();
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
@@ -327,7 +325,7 @@ public class Easterlyn extends JavaPlugin {
 			@SuppressWarnings("unchecked")
 			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
 			for (Iterator<Map.Entry<String, Command>> iterator = cmdMapKnownCommands.entrySet().iterator(); iterator.hasNext();) {
-				if (iterator.next().getValue() instanceof SblockCommand) {
+				if (iterator.next().getValue() instanceof EasterlynCommand) {
 					iterator.remove();
 				}
 			}

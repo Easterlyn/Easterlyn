@@ -2,7 +2,8 @@ package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
 
@@ -17,7 +18,7 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class SignChangeListener extends SblockListener {
+public class SignChangeListener extends EasterlynListener {
 
 	private final Chat chat;
 
@@ -25,8 +26,8 @@ public class SignChangeListener extends SblockListener {
 		super(plugin);
 		this.chat = plugin.getModule(Chat.class);
 
-		PermissionUtils.addParent("sblock.sign.unlogged", "sblock.spam");
-		PermissionUtils.addParent("sblock.sign.unlogged", "sblock.felt");
+		PermissionUtils.addParent("easterlyn.sign.unlogged", "easterlyn.spam");
+		PermissionUtils.addParent("easterlyn.sign.unlogged", UserRank.FELT.getPermission());
 	}
 
 	/**
@@ -40,7 +41,7 @@ public class SignChangeListener extends SblockListener {
 	public void onSignChange(SignChangeEvent event) {
 
 		// Automatically flag players with bypass as posting non-empty signs to skip empty checks
-		boolean empty = !event.getPlayer().hasPermission("sblock.sign.unlogged");
+		boolean empty = !event.getPlayer().hasPermission("easterlyn.sign.unlogged");
 
 		for (int i = 0; i < event.getLines().length; i++) {
 			event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));
@@ -49,7 +50,7 @@ public class SignChangeListener extends SblockListener {
 			}
 		}
 
-		if (empty || event.getPlayer().hasPermission("sblock.sign.unlogged")) {
+		if (empty || event.getPlayer().hasPermission("easterlyn.sign.unlogged")) {
 			return;
 		}
 

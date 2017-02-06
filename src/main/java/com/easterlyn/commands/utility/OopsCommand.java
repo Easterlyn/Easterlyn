@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.DiscordPlayer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +20,7 @@ import org.bukkit.command.SimpleCommandMap;
  * 
  * @author Jikoo
  */
-public class OopsCommand extends SblockCommand {
+public class OopsCommand extends EasterlynCommand {
 
 	// The reason for not using UUIDs is that this storage is trivial and should work for console.
 	private final HashMap<String, String> oopsCommands;

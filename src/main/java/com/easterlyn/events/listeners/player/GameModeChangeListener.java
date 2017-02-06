@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.Spectators;
 
 import org.bukkit.event.EventHandler;
@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
  * 
  * @author Jikoo
  */
-public class GameModeChangeListener extends SblockListener {
+public class GameModeChangeListener extends EasterlynListener {
 
 	private final Events events;
 	private final Spectators spectators;

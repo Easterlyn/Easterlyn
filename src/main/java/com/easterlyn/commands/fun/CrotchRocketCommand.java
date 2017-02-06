@@ -3,7 +3,7 @@ package com.easterlyn.commands.fun;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.events.packets.ParticleEffectWrapper;
 import com.easterlyn.micromodules.ParticleUtils;
 import com.easterlyn.users.UserRank;
@@ -21,11 +21,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
- * SblockCommand for riding a firework in style.
+ * EasterlynCommand for riding a firework in style.
  * 
  * @author Jikoo
  */
-public class CrotchRocketCommand extends SblockCommand {
+public class CrotchRocketCommand extends EasterlynCommand {
 
 	private final ParticleUtils particles;
 

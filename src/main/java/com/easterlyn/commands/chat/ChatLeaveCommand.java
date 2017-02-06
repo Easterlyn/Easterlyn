@@ -7,7 +7,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.channel.RegionChannel;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.Users;
 
 import com.google.common.collect.ImmutableList;
@@ -21,7 +21,7 @@ import org.bukkit.util.StringUtil;
  * 
  * @author Jikoo
  */
-public class ChatLeaveCommand extends SblockCommand {
+public class ChatLeaveCommand extends EasterlynCommand {
 
 	private final Users users;
 	private final ChannelManager manager;

@@ -8,7 +8,7 @@ import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.events.BlockUpdateManager;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.event.SblockBreakEvent;
+import com.easterlyn.events.event.EasterlynBreakEvent;
 import com.easterlyn.utilities.BlockDrops;
 import com.easterlyn.utilities.Experience;
 
@@ -52,7 +52,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
-		if (!(event instanceof BlockBreakEvent) || event instanceof SblockBreakEvent) {
+		if (!(event instanceof BlockBreakEvent) || event instanceof EasterlynBreakEvent) {
 			return;
 		}
 
@@ -74,12 +74,12 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 			}
 			Block relativeCenter = block.getRelative(yLevel);
 			if (yLevel != BlockFace.SELF) {
-				if (sblockBreak(relativeCenter, player)) {
+				if (easterlynBreak(relativeCenter, player)) {
 					return;
 				}
 			}
 			for (BlockFace face : faces) {
-				if (sblockBreak(relativeCenter.getRelative(face), player)) {
+				if (easterlynBreak(relativeCenter.getRelative(face), player)) {
 					return;
 				}
 			}
@@ -88,7 +88,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 		player.removeAttachment(attachment);
 	}
 
-	private boolean sblockBreak(Block block, Player player) {
+	private boolean easterlynBreak(Block block, Player player) {
 		if (block.getType() == Material.BARRIER || block.getType() == Material.BEDROCK
 				|| block.getType() == Material.COMMAND || block.getType() == Material.ENDER_PORTAL
 				|| block.getType() == Material.ENDER_PORTAL_FRAME
@@ -96,7 +96,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 			return false;
 		}
 
-		SblockBreakEvent event = new SblockBreakEvent(block, player);
+		EasterlynBreakEvent event = new EasterlynBreakEvent(block, player);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled() || block.isLiquid()) {
 			return false;

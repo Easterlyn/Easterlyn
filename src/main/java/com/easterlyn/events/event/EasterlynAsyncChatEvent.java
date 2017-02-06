@@ -14,26 +14,26 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  * 
  * @author Jikoo
  */
-public class SblockAsyncChatEvent extends AsyncPlayerChatEvent {
+public class EasterlynAsyncChatEvent extends AsyncPlayerChatEvent {
 
 	private final Message message;
 	private boolean globalCancelled;
 	private final boolean checkSpam;
 
-	public SblockAsyncChatEvent(boolean async, Player who, Message message) {
+	public EasterlynAsyncChatEvent(boolean async, Player who, Message message) {
 		this(async, who, message, true);
 	}
 
-	public SblockAsyncChatEvent(boolean async, Player who, Message message, boolean checkSpam) {
+	public EasterlynAsyncChatEvent(boolean async, Player who, Message message, boolean checkSpam) {
 		this(async, who, CollectionConversions.toSet(message.getChannel().getListening(),
 				uuid -> Bukkit.getPlayer(uuid)), message, checkSpam);
 	}
 
-	public SblockAsyncChatEvent(boolean async, Player who, Set<Player> players, Message message) {
+	public EasterlynAsyncChatEvent(boolean async, Player who, Set<Player> players, Message message) {
 		this(async, who, players, message, true);
 	}
 
-	public SblockAsyncChatEvent(boolean async, Player who, Set<Player> players, Message message, boolean checkSpam) {
+	public EasterlynAsyncChatEvent(boolean async, Player who, Set<Player> players, Message message, boolean checkSpam) {
 		super(async, who, message.getMessage(), players);
 		setFormat(message.getConsoleFormat());
 		this.message = message;
@@ -45,7 +45,7 @@ public class SblockAsyncChatEvent extends AsyncPlayerChatEvent {
 		return checkSpam;
 	}
 
-	public Message getSblockMessage() {
+	public Message getEasterlynMessage() {
 		return message;
 	}
 

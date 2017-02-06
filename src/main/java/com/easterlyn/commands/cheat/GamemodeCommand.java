@@ -3,18 +3,18 @@ package com.easterlyn.commands.cheat;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommandAlias;
+import com.easterlyn.commands.EasterlynCommandAlias;
 import com.easterlyn.users.UserRank;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommandAlias for easy gamemode changing.
+ * EasterlynCommandAlias for easy gamemode changing.
  * 
  * @author Jikoo
  */
-public class GamemodeCommand extends SblockCommandAlias {
+public class GamemodeCommand extends EasterlynCommandAlias {
 
 	public GamemodeCommand(Easterlyn plugin) {
 		super(plugin, "gm", "minecraft:gamemode");

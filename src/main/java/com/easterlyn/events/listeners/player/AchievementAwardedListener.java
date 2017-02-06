@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.FreeCart;
 
 import org.bukkit.Achievement;
@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerAchievementAwardedEvent;
  * 
  * @author Jikoo
  */
-public class AchievementAwardedListener extends SblockListener {
+public class AchievementAwardedListener extends EasterlynListener {
 
 	private final FreeCart carts;
 

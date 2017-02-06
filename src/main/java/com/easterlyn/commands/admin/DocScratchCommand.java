@@ -1,7 +1,7 @@
 package com.easterlyn.commands.admin;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,11 +10,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 /**
- * SblockCommand for being Doc Scratch.
+ * EasterlynCommand for being Doc Scratch.
  * 
  * @author Jikoo
  */
-public class DocScratchCommand extends SblockCommand {
+public class DocScratchCommand extends EasterlynCommand {
 
 	public DocScratchCommand(Easterlyn plugin) {
 		super(plugin, "o");

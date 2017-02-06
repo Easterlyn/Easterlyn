@@ -8,7 +8,7 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
@@ -21,11 +21,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * SblockCommand for getting information about mana costs and totals.
+ * EasterlynCommand for getting information about mana costs and totals.
  * 
  * @author Jikoo
  */
-public class ManaCommand extends SblockCommand {
+public class ManaCommand extends EasterlynCommand {
 
 	private final Captcha captcha;
 	private final Effects effects;

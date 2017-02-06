@@ -2,7 +2,7 @@ package com.easterlyn.commands.admin;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Color;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import org.bukkit.Bukkit;
@@ -11,11 +11,11 @@ import org.bukkit.command.CommandSender;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * SblockCommand for making people want to gouge their eyes out.
+ * EasterlynCommand for making people want to gouge their eyes out.
  * 
  * @author Jikoo
  */
-public class LordEnglishEyefuckCommand extends SblockCommand {
+public class LordEnglishEyefuckCommand extends EasterlynCommand {
 
 	public LordEnglishEyefuckCommand(Easterlyn plugin) {
 		super(plugin, "lel");

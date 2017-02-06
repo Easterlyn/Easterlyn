@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.inventory;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.MachineInventoryTracker;
 import com.easterlyn.machines.Machines;
 
@@ -13,7 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
  * 
  * @author Jikoo
  */
-public class InventoryCloseListener extends SblockListener {
+public class InventoryCloseListener extends EasterlynListener {
 
 	private final MachineInventoryTracker tracker;
 

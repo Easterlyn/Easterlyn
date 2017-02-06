@@ -150,7 +150,7 @@ public class MessageBuilder {
 		Player player = sender != null ? sender.getPlayer() : null;
 		// Strip characters that are not allowed in default channels and partial caps
 		if (channel != null && channel.getOwner() == null && !(channel instanceof NickChannel)
-				&& player != null && !player.hasPermission("sblock.chat.unfiltered")) {
+				&& player != null && !player.hasPermission("easterlyn.chat.unfiltered")) {
 			ArrayList<String> names = new ArrayList<String>();
 			Users users = plugin.getModule(Users.class);
 			channel.getListening().forEach(uuid -> {
@@ -339,14 +339,14 @@ public class MessageBuilder {
 		// E.G. >mfw people do it wrong
 		// instead of > lol le edgy meme
 		if (message.length() > 3 && message.charAt(0) == '>' && Character.isLetter(message.charAt(1))
-				&& (player == null || player.hasPermission("sblock.chat.greentext"))) {
+				&& (player == null || player.hasPermission("easterlyn.chat.greentext"))) {
 			message = ChatColor.GREEN + message;
 		}
 
 		// Prepend chat colors to every message if sender has permission
-		if (!(channel instanceof RPChannel) && player != null && player.hasPermission("sblock.chat.color")) {
+		if (!(channel instanceof RPChannel) && player != null && player.hasPermission("easterlyn.chat.color")) {
 			for (ChatColor c : ChatColor.values()) {
-				if (player.hasPermission("sblock.chat.color." + c.name().toLowerCase())) {
+				if (player.hasPermission("easterlyn.chat.color." + c.name().toLowerCase())) {
 					message = c + message;
 					break;
 				}
@@ -361,7 +361,7 @@ public class MessageBuilder {
 
 		// CHANNEL ELEMENT: [#channel]
 		ChatColor channelBracket;
-		if (player != null && player.hasPermission("sblock.guildleader")) {
+		if (player != null && player.hasPermission("easterlyn.guildleader")) {
 			channelBracket = sender.getUserAspect().getColor();
 		} else {
 			channelBracket = ChatColor.WHITE;

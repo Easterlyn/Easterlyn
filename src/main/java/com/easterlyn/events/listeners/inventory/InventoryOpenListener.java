@@ -1,7 +1,7 @@
 package com.easterlyn.events.listeners.inventory;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 
@@ -19,7 +19,7 @@ import org.bukkit.inventory.Inventory;
  * 
  * @author Jikoo
  */
-public class InventoryOpenListener extends SblockListener {
+public class InventoryOpenListener extends EasterlynListener {
 
 	private final Machines machines;
 

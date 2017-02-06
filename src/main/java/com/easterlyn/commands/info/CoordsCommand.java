@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.users.UserRank;
 
@@ -20,11 +20,11 @@ import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
- * SblockCommand for getting your current coordinates.
+ * EasterlynCommand for getting your current coordinates.
  * 
  * @author Jikoo
  */
-public class CoordsCommand extends SblockAsynchronousCommand {
+public class CoordsCommand extends EasterlynAsynchronousCommand {
 
 	// TODO lang
 	public CoordsCommand(Easterlyn plugin) {
@@ -38,10 +38,10 @@ public class CoordsCommand extends SblockAsynchronousCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		if (!(sender instanceof Player)
-				&& (args.length == 0 || !sender.hasPermission("sblock.command.coords.other"))) {
+				&& (args.length == 0 || !sender.hasPermission("easterlyn.command.coords.other"))) {
 			return false;
 		}
-		final boolean other = args.length >= 1 && sender.hasPermission("sblock.command.coords.other");
+		final boolean other = args.length >= 1 && sender.hasPermission("easterlyn.command.coords.other");
 		final Player target;
 		if (other) {
 			final UUID uuid = getUniqueId(args[0]);
@@ -73,7 +73,7 @@ public class CoordsCommand extends SblockAsynchronousCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (!sender.hasPermission("sblock.command.coords.other") || args.length != 1) {
+		if (!sender.hasPermission("easterlyn.command.coords.other") || args.length != 1) {
 			return com.google.common.collect.ImmutableList.of();
 		}
 		return super.tabComplete(sender, alias, args);

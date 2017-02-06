@@ -7,6 +7,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.easterlyn.Easterlyn;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PermissionUtils;
 
 /**
@@ -17,7 +18,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 	public SyncPacketAdapter(Easterlyn plugin) {
 		super(plugin, PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Client.TAB_COMPLETE);
 
-		PermissionUtils.addParent("sblock.commands.unfiltered", "sblock.denizen");
+		PermissionUtils.addParent("easterlyn.commands.unfiltered", UserRank.DENIZEN.getPermission());
 	}
 
 	/**
@@ -30,7 +31,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 	@Override
 	public void onPacketSending(PacketEvent event) {
 		if (event.getPacketType() == PacketType.Play.Server.TAB_COMPLETE) {
-			if (event.getPlayer().hasPermission("sblock.commands.unfiltered")) {
+			if (event.getPlayer().hasPermission("easterlyn.commands.unfiltered")) {
 				return;
 			}
 			event.getPacket().getStringArrays().write(0,
@@ -52,7 +53,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 	@Override
 	public void onPacketReceiving(PacketEvent event) {
 		if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
-			if (event.getPlayer().hasPermission("sblock.commands.unfiltered")) {
+			if (event.getPlayer().hasPermission("easterlyn.commands.unfiltered")) {
 				return;
 			}
 			String completing = event.getPacket().getStrings().read(0);

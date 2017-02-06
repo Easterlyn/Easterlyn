@@ -65,7 +65,7 @@ public class Effects extends Module {
 
 	public Effects(Easterlyn plugin) {
 		super(plugin);
-		PermissionUtils.addParent("sblock.effects.bypassmax", UserRank.DANGER_DANGER_HIGH_VOLTAGE.getPermission());
+		PermissionUtils.addParent("easterlyn.effects.bypassmax", UserRank.DANGER_DANGER_HIGH_VOLTAGE.getPermission());
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class Effects extends Module {
 	 * @param entity the LivingEntity
 	 */
 	public Map<Effect, Integer> getAllEffects(LivingEntity entity) {
-		boolean bypassMax = entity.hasPermission("sblock.effects.bypassmax");
+		boolean bypassMax = entity.hasPermission("easterlyn.effects.bypassmax");
 		Map<Effect, Integer> applicableEffects = getEffects(bypassMax, entity.getEquipment().getArmorContents());
 
 		getEffects(false, entity.getEquipment().getItemInMainHand(), entity.getEquipment().getItemInOffHand()).forEach(
@@ -202,7 +202,7 @@ public class Effects extends Module {
 		if (!this.isEnabled()) {
 			return;
 		}
-		boolean bypassMax = entity.hasPermission("sblock.effects.bypassmax");
+		boolean bypassMax = entity.hasPermission("easterlyn.effects.bypassmax");
 		Map<Effect, Integer> effects;
 		if (reactive) {
 			effects = getEffects(bypassMax, entity.getEquipment().getArmorContents());

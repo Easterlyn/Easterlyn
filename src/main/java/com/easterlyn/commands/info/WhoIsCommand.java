@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 
@@ -14,11 +14,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for checking a User's stored data.
+ * EasterlynCommand for checking a User's stored data.
  * 
  * @author Jikoo
  */
-public class WhoIsCommand extends SblockAsynchronousCommand {
+public class WhoIsCommand extends EasterlynAsynchronousCommand {
 
 	private final Users users;
 
@@ -41,7 +41,7 @@ public class WhoIsCommand extends SblockAsynchronousCommand {
 			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return true;
 		}
-		if (sender.hasPermission("sblock.command.whois.detail")) {
+		if (sender.hasPermission("easterlyn.command.whois.detail")) {
 			sender.sendMessage(users.getUser(uuid).getWhois());
 		} else {
 			sender.sendMessage(users.getUser(uuid).getProfile());

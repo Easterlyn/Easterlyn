@@ -13,7 +13,7 @@ import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.ChannelType;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.RegionChannel;
-import com.easterlyn.commands.SblockAsynchronousCommand;
+import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
@@ -31,7 +31,7 @@ import net.md_5.bungee.api.ChatColor;
  * 
  * @author Jikoo
  */
-public class ChatChannelCommand extends SblockAsynchronousCommand {
+public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 
 	private final Users users;
 	private final ChannelManager manager;
@@ -150,7 +150,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 					color = Language.getColor("neutral");
 				} else if (channel.isApproved(user)) {
 					color = Language.getColor("emphasis.neutral");
-				} else if (sender.hasPermission("sblock.command.channel.list.private")) {
+				} else if (sender.hasPermission("easterlyn.command.channel.list.private")) {
 					color = Language.getColor("bad");
 				} else {
 					continue;
@@ -170,7 +170,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 				user.sendMessage(Language.getColor("bad") + "A channel by that name already exists!");
 				return true;
 			}
-			if (!user.getPlayer().hasPermission("sblock.command.channel.new.anyname")) {
+			if (!user.getPlayer().hasPermission("easterlyn.command.channel.new.anyname")) {
 				for (char c : args[1].substring(1).toCharArray()) {
 					if (c < '0' || c > '9' && c < 'A' || c > 'Z' && c < 'a' || c > 'z') {
 						user.sendMessage(Language.getColor("bad") + "Channel names must start with # and can only contain A-Z, a-z, or 0-9!");
@@ -178,7 +178,7 @@ public class ChatChannelCommand extends SblockAsynchronousCommand {
 					}
 				}
 			}
-			if (args[1].length() > 16 || args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("sblock.command.channel.new.anyname")) {
+			if (args[1].length() > 16 || args[1].charAt(0) != '#' && !user.getPlayer().hasPermission("easterlyn.command.channel.new.anyname")) {
 				user.sendMessage(Language.getColor("bad") + "Channel names must start with '#' and cannot exceed 16 characters!");
 			} else if (ChannelType.getType(args[3]) == null) {
 				user.sendMessage(Language.getColor("emphasis.bad") + args[3] + Language.getColor("bad")

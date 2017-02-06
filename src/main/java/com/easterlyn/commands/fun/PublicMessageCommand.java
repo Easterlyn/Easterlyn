@@ -1,7 +1,7 @@
 package com.easterlyn.commands.fun;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
  * 
  * @author Jikoo
  */
-public class PublicMessageCommand extends SblockCommand {
+public class PublicMessageCommand extends EasterlynCommand {
 
 	public PublicMessageCommand(Easterlyn plugin) {
 		super(plugin, "publicmessage");

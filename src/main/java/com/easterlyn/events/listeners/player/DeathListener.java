@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.FreeCart;
 import com.easterlyn.utilities.Experience;
 
@@ -28,7 +28,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * 
  * @author Jikoo
  */
-public class DeathListener extends SblockListener {
+public class DeathListener extends EasterlynListener {
 
 	private final Events events;
 	private final FreeCart carts;

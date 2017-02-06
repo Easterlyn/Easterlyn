@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.SleepVote;
 
 import org.bukkit.event.EventHandler;
@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
  * 
  * @author Jikoo
  */
-public class ChangedWorldListener extends SblockListener {
+public class ChangedWorldListener extends EasterlynListener {
 
 	private final Effects effects;
 	private final SleepVote sleep;

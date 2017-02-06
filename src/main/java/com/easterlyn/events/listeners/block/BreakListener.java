@@ -3,7 +3,7 @@ package com.easterlyn.events.listeners.block;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.BehaviorActive;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.micromodules.Spectators;
@@ -20,7 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
  * 
  * @author Jikoo
  */
-public class BreakListener extends SblockListener {
+public class BreakListener extends EasterlynListener {
 
 	private final Effects effects;
 	private final Machines machines;

@@ -3,7 +3,7 @@ package com.easterlyn.commands.utility;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
@@ -15,11 +15,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * SblockCommand for toggling spectate mode.
+ * EasterlynCommand for toggling spectate mode.
  * 
  * @author Jikoo
  */
-public class SpectateCommand extends SblockCommand {
+public class SpectateCommand extends EasterlynCommand {
 
 	private final Spectators spectators;
 	private final Users users;

@@ -2,7 +2,7 @@ package com.easterlyn.events.listeners.entity;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
  * 
  * @author Jikoo
  */
-public class DamageListener extends SblockListener {
+public class DamageListener extends EasterlynListener {
 
 	private final Effects effects;
 

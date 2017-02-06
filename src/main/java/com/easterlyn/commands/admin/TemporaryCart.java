@@ -3,7 +3,7 @@ package com.easterlyn.commands.admin;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.FreeCart;
 import com.easterlyn.users.UserRank;
 
@@ -16,11 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 /**
- * SblockCommand for spawning a temporary minecart.
+ * EasterlynCommand for spawning a temporary minecart.
  * 
  * @author Jikoo
  */
-public class TemporaryCart extends SblockCommand {
+public class TemporaryCart extends EasterlynCommand {
 
 	private final FreeCart carts;
 

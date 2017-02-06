@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -24,11 +24,11 @@ import org.bukkit.inventory.meta.SkullMeta;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * SblockCommand for manipulating item lore and some other meta-related cases.
+ * EasterlynCommand for manipulating item lore and some other meta-related cases.
  * 
  * @author Jikoo
  */
-public class LoreCommand extends SblockCommand {
+public class LoreCommand extends EasterlynCommand {
 
 	private final String[] primaryArgs;
 

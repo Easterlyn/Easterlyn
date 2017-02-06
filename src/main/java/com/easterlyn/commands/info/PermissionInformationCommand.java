@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -16,11 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
 /**
- * SblockCommand for printing out information about a permission.
+ * EasterlynCommand for printing out information about a permission.
  * 
  * @author Jikoo
  */
-public class PermissionInformationCommand extends SblockCommand {
+public class PermissionInformationCommand extends EasterlynCommand {
 
 	public PermissionInformationCommand(Easterlyn plugin) {
 		super(plugin, "perminfo");

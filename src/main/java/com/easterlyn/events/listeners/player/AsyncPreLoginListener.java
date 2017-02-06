@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.events.Events;
-import com.easterlyn.events.listeners.SblockListener;
+import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PermissionBridge;
 import com.easterlyn.utilities.PermissionUtils;
@@ -30,7 +30,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
  * 
  * @author Jikoo
  */
-public class AsyncPreLoginListener extends SblockListener {
+public class AsyncPreLoginListener extends EasterlynListener {
 
 	private final Discord discord;
 	private final Events events;
@@ -38,7 +38,7 @@ public class AsyncPreLoginListener extends SblockListener {
 
 	public AsyncPreLoginListener(Easterlyn plugin) {
 		super(plugin);
-		PermissionUtils.addParent("sblock.events.login.proxy", UserRank.HELPER.getPermission());
+		PermissionUtils.addParent("easterlyn.events.login.proxy", UserRank.HELPER.getPermission());
 
 		this.discord = plugin.getModule(Discord.class);
 		this.events = plugin.getModule(Events.class);
@@ -56,7 +56,7 @@ public class AsyncPreLoginListener extends SblockListener {
 			ipCache.put(ip, allowed);
 		}
 		if (!allowed) {
-			allowed =  PermissionBridge.getInstance().hasPermission(event.getUniqueId(), "sblock.events.login.proxy");
+			allowed =  PermissionBridge.getInstance().hasPermission(event.getUniqueId(), "easterlyn.events.login.proxy");
 			if (allowed) {
 				// Players with permission can allow a blocked IP for 30 minutes by logging in from it
 				ipCache.put(ip, allowed);

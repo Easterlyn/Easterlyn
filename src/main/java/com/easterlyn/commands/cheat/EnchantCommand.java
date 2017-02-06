@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 
 import com.google.common.collect.ImmutableList;
@@ -18,11 +18,11 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 /**
- * SblockCommand for enchanting a held item.
+ * EasterlynCommand for enchanting a held item.
  * 
  * @author Jikoo
  */
-public class EnchantCommand extends SblockCommand {
+public class EnchantCommand extends EasterlynCommand {
 
 	public EnchantCommand(Easterlyn plugin) {
 		super(plugin, "enchant");

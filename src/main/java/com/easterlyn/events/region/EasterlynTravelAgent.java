@@ -16,7 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-public class SblockTravelAgent implements TravelAgent {
+public class EasterlynTravelAgent implements TravelAgent {
 
 	private int searchRadius = 0, creationRadius = 0;
 	private final int mediumNetherOffset = 329;
@@ -24,7 +24,7 @@ public class SblockTravelAgent implements TravelAgent {
 	private final Shape shape;
 	private Block from;
 
-	public SblockTravelAgent() {
+	public EasterlynTravelAgent() {
 		shape = new Shape();
 
 		MaterialDataValue value = shape.new MaterialDataValue(Material.OBSIDIAN);

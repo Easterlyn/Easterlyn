@@ -8,7 +8,7 @@ import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
 import com.easterlyn.chat.channel.Channel;
-import com.easterlyn.commands.SblockCommand;
+import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
@@ -25,7 +25,7 @@ import org.bukkit.util.StringUtil;
  * 
  * @author Jikoo
  */
-public class ChannelBypassFocusCommand extends SblockCommand {
+public class ChannelBypassFocusCommand extends EasterlynCommand {
 
 	private final Users users;
 	private final ChannelManager manager;
