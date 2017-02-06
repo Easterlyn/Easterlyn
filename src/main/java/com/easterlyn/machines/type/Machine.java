@@ -134,7 +134,7 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Gets the grist cost for creating this Machine.
+	 * Gets the mana cost for creating this Machine.
 	 * 
 	 * @return the cost
 	 */

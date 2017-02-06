@@ -4,7 +4,7 @@ main: com.easterlyn.Easterlyn
 version: ${timestamp}
 author: Jikoo
 authors: [Dublek, FireNG, tmathmeyer]
-description: Sblock's sexy mainframe
+description: https://www.youtube.com/watch?v=QHnJ9NmK3Pc
 depend: [GriefPrevention, ProtocolLib, WorldEdit, WorldGuard]
 softdepend: [CreeperHeal, dynmap, Regionerator, zPermissions]
 
@@ -14,7 +14,4 @@ permissions:
   default: false
  sblock.guildleader:
   description: 'Default false - not all horrorterrors are guild leaders.'
-  default: false
- sblock.god:
-  description: 'Stuff for Sblock "gods"'
   default: false

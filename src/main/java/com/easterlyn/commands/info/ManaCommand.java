@@ -21,18 +21,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * SblockCommand for getting information about grist costs and totals.
+ * SblockCommand for getting information about mana costs and totals.
  * 
  * @author Jikoo
  */
-public class GristCommand extends SblockCommand {
+public class ManaCommand extends SblockCommand {
 
 	private final Captcha captcha;
 	private final Effects effects;
 	private final DecimalFormat format;
 
-	public GristCommand(Easterlyn plugin) {
-		super(plugin, "grist");
+	public ManaCommand(Easterlyn plugin) {
+		super(plugin, "mana");
+		this.setAliases("grist");
 		this.captcha = plugin.getModule(Captcha.class);
 		this.effects = plugin.getModule(Effects.class);
 		this.format = new DecimalFormat("#,###,###,###.###");
@@ -49,16 +50,16 @@ public class GristCommand extends SblockCommand {
 				char lastChar = args[0].charAt(args[0].length() - 1);
 				if (lastChar == 'L' || lastChar == 'l') {
 					int level = Integer.parseInt(args[0].substring(0, args[0].length() - 1));
-					sender.sendMessage(this.getLang().getValue("command.grist.level")
+					sender.sendMessage(this.getLang().getValue("command.mana.level")
 							.replace("{LEVEL}", this.format.format(level))
 							.replace("{EXP}", this.format.format(Experience.getExpFromLevel(level))));
 					return true;
 				}
 			}
-			int grist = Integer.parseInt(args[0]);
-			sender.sendMessage(this.getLang().getValue("command.grist.exp")
-					.replace("{LEVEL}", this.format.format(Experience.getLevelFromExp(grist)))
-					.replace("{EXP}", this.format.format(grist)));
+			int mana = Integer.parseInt(args[0]);
+			sender.sendMessage(this.getLang().getValue("command.mana.exp")
+					.replace("{LEVEL}", this.format.format(Experience.getLevelFromExp(mana)))
+					.replace("{EXP}", this.format.format(mana)));
 			return true;
 		} catch (NumberFormatException e) {
 			if (!args[0].equalsIgnoreCase("cost") && !args[0].equalsIgnoreCase("current")) {
@@ -66,12 +67,12 @@ public class GristCommand extends SblockCommand {
 			}
 		}
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("/grist <(exp)|(level)L>");
+			sender.sendMessage("/mana <(exp)|(level)L>");
 			return true;
 		}
 		Player player = (Player) sender;
 		if (args[0].equalsIgnoreCase("current")) {
-			sender.sendMessage(this.getLang().getValue("command.grist.current")
+			sender.sendMessage(this.getLang().getValue("command.mana.current")
 					.replace("{EXP}", this.format.format(Experience.getExp(player))));
 			return true;
 		}
@@ -80,15 +81,15 @@ public class GristCommand extends SblockCommand {
 			hand = captcha.captchaToItem(hand);
 		}
 		if (hand == null || hand.getType() == Material.AIR) {
-			sender.sendMessage(this.getLang().getValue("command.grist.nothing"));
+			sender.sendMessage(this.getLang().getValue("command.mana.nothing"));
 			return true;
 		}
-		int exp = (int) Math.ceil(CruxiteDowel.expCost(effects, hand));
-		if (exp == Integer.MAX_VALUE) {
-			sender.sendMessage(this.getLang().getValue("command.grist.expensive")
+		double exp = CruxiteDowel.expCost(effects, hand);
+		if (exp == Double.MAX_VALUE) {
+			sender.sendMessage(this.getLang().getValue("command.mana.expensive")
 					.replace("{ITEM}", InventoryUtils.getItemName(hand)));
 		} else {
-			sender.sendMessage(this.getLang().getValue("command.grist.cost")
+			sender.sendMessage(this.getLang().getValue("command.mana.cost")
 					.replace("{ITEM}", InventoryUtils.getItemName(hand))
 					.replace("{EXP}", this.format.format(exp)));
 		}

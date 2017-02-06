@@ -44,7 +44,7 @@ public class MachinePurchase extends Program {
 			return;
 		}
 		if (Experience.getExp(player) < machine.getCost()) {
-			player.sendMessage(Language.getColor("bad") + "You don't have enough grist!");
+			player.sendMessage(Language.getColor("bad") + "You don't have enough mana!");
 			return;
 		}
 		Experience.changeExp(player, - machine.getCost());
@@ -63,7 +63,7 @@ public class MachinePurchase extends Program {
 		ItemStack item = machine.getUniqueDrop().clone();
 		ItemMeta meta = item.getItemMeta();
 		meta.setLore(Arrays.asList(meta.getDisplayName(),
-				Language.getColor("emphasis.neutral").toString() + machine.getCost() + Language.getColor("neutral") + " grist"));
+				Language.getColor("emphasis.neutral").toString() + machine.getCost() + Language.getColor("neutral") + " mana"));
 		meta.setDisplayName(Language.getColor("good") + "Purchase");
 		item.setItemMeta(meta);
 		return item;

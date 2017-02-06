@@ -82,7 +82,7 @@ public class CruxiteDowel {
 		}
 		double cost = getMana().get(toCreate.getType());
 		if (cost == Double.MAX_VALUE) {
-			// Item cannot be made with grist
+			// Item cannot be made with mana
 			return Double.MAX_VALUE;
 		}
 		if (!toCreate.hasItemMeta()) {

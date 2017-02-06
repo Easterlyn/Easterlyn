@@ -229,19 +229,19 @@ command:
   crotchrocket:
     description: 'Uncomfortably fun!'
     usage: '/crotchrocket'
-  grist:
-    description: 'Grist-related operations.'
+  mana:
+    description: 'Mana-related operations.'
     usage: |
-      {COLOR:command}/grist cost{COLOR:neutral}: Grist cost of item in hand.
-      {COLOR:command}/grist current{COLOR:neutral}: Current grist.
-      {COLOR:command}/grist (level)L{COLOR:neutral}: Grist from level. Ex: /grist 40L
-      {COLOR:command}/grist (exp points){COLOR:neutral}: Level from grist. Ex: /grist 100
-    level: '{COLOR:neutral}Level {COLOR:emphasis.neutral}{LEVEL}{COLOR:neutral} is {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist.'
-    exp: '{COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist is {COLOR:emphasis.neutral}{LEVEL}{COLOR:neutral} levels.'
-    current: '{COLOR:neutral}You have {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist.'
+      {COLOR:command}/mana cost{COLOR:neutral}: Mana cost of item in hand.
+      {COLOR:command}/mana current{COLOR:neutral}: Current mana.
+      {COLOR:command}/mana (level)L{COLOR:neutral}: Mana from level. Ex: /mana 40L
+      {COLOR:command}/mana (exp points){COLOR:neutral}: Level from mana. Ex: /mana 100
+    level: '{COLOR:neutral}Level {COLOR:emphasis.neutral}{LEVEL}{COLOR:neutral} is {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} mana.'
+    exp: '{COLOR:emphasis.neutral}{EXP}{COLOR:neutral} mana is {COLOR:emphasis.neutral}{LEVEL}{COLOR:neutral} levels.'
+    current: '{COLOR:neutral}You have {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} mana.'
     nothing: '{COLOR:bad}Nothing in life is free.'
-    cost: '{COLOR:neutral}Your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral} would cost {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} grist to recreate.'
-    expensive: '{COLOR:neutral}Your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral} cannot be punched.'
+    cost: '{COLOR:neutral}Your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral} would cost {COLOR:emphasis.neutral}{EXP}{COLOR:neutral} mana to recreate.'
+    expensive: '{COLOR:neutral}Your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral} is too expensive to recreate.'
   halculate:
     description: 'Halculate an equation privately.'
     usage: 'Enter an equation! Ex. /halc (1+1)^(2/3) + 10'

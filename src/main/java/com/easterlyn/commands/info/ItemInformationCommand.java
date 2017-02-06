@@ -46,7 +46,7 @@ public class ItemInformationCommand extends SblockCommand {
 		sender.sendMessage(ChatColor.stripColor(hand.toString()));
 		Easterlyn plugin = (Easterlyn) getPlugin();
 		sender.sendMessage("Hash: " + plugin.getModule(Captcha.class).calculateHashFor(hand));
-		sender.sendMessage("Grist: " + CruxiteDowel.expCost(plugin.getModule(Effects.class), hand));
+		sender.sendMessage("Mana: " + CruxiteDowel.expCost(plugin.getModule(Effects.class), hand));
 		return true;
 	}
 
