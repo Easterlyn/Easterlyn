@@ -29,7 +29,7 @@ public class BatchCaptchaCommand extends EasterlynCommand {
 		super(plugin, "baptcha");
 		this.setAliases("batchcap", "capbatch", "batchcaptcha", "captchabatch");
 		this.captcha = plugin.getModule(Captcha.class);
-		this.addExtraPermission("free", UserRank.DENIZEN);
+		this.addExtraPermission("free", UserRank.HEAD_MOD);
 	}
 
 	@Override

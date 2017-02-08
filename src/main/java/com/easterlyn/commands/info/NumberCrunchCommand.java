@@ -23,7 +23,7 @@ public class NumberCrunchCommand extends EasterlynAsynchronousCommand {
 
 	public NumberCrunchCommand(Easterlyn plugin) {
 		super(plugin, "numbercrunch");
-		setPermissionLevel(UserRank.HORRORTERROR);
+		setPermissionLevel(UserRank.HEAD_ADMIN);
 		setPermissionMessage("Number crunching is very server-intensive. Ask an admin!");
 	}
 

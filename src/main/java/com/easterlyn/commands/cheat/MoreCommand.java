@@ -22,7 +22,7 @@ public class MoreCommand extends EasterlynCommand {
 
 	public MoreCommand(Easterlyn plugin) {
 		super(plugin, "more");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 	}
 
 	@Override

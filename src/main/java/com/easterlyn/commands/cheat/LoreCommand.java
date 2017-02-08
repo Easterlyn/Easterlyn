@@ -36,7 +36,7 @@ public class LoreCommand extends EasterlynCommand {
 	public LoreCommand(Easterlyn plugin) {
 		super(plugin, "lore");
 		this.setDescription("Easterlyn's lore manipulation command.");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/lore owner: Set a skull's owner.\n"
 				+ "/lore author|title: Set a book's data.\n"
 				+ "/lore name: Set an item's name.\n"

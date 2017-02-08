@@ -36,7 +36,7 @@ public class CraftItemListener extends EasterlynListener {
 		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
 
-		PermissionUtils.addParent("easterlyn.events.creative.unfiltered", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.events.creative.unfiltered", UserRank.MOD.getPermission());
 	}
 
 

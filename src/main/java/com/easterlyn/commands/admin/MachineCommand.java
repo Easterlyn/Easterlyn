@@ -30,7 +30,7 @@ public class MachineCommand extends EasterlynCommand {
 	public MachineCommand(Easterlyn plugin) {
 		super(plugin, "sm");
 		this.setDescription("Machinations.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setUsage("/sm get|icon <type>");
 		this.machines = plugin.getModule(Machines.class);
 	}

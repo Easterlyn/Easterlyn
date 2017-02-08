@@ -25,7 +25,7 @@ public class PermissionInformationCommand extends EasterlynCommand {
 	public PermissionInformationCommand(Easterlyn plugin) {
 		super(plugin, "perminfo");
 		this.setDescription("Prints out information about the specified permission.");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/perminfo <permission> [player]");
 	}
 

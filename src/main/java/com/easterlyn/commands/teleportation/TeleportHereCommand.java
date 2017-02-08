@@ -20,7 +20,7 @@ public class TeleportHereCommand extends EasterlynCommandAlias {
 
 	public TeleportHereCommand(Easterlyn plugin) {
 		super(plugin, "tphere", "minecraft:tp");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setAliases("s");
 	}
 

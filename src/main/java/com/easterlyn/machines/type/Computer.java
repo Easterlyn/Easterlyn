@@ -50,7 +50,7 @@ public class Computer extends Machine implements InventoryHolder {
 
 		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
 
-		PermissionUtils.addParent("easterlyn.machines.administrate", UserRank.DENIZEN.getPermission());
+		PermissionUtils.addParent("easterlyn.machines.administrate", UserRank.HEAD_MOD.getPermission());
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class Computer extends Machine implements InventoryHolder {
 		Inventory inventory = getInventory();
 		User user = getUsers().getUser(player.getUniqueId());
 		for (Program program : Programs.getPrograms()) {
-			if (program.isDefault() || program instanceof PowerManager && player.hasPermission(UserRank.GODTIER.getPermission())) {
+			if (program.isDefault() || program instanceof PowerManager && player.hasPermission(UserRank.DANGER_DANGER_HIGH_VOLTAGE.getPermission())) {
 				inventory.addItem(program.getIcon());
 			}
 		}

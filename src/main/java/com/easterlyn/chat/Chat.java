@@ -39,12 +39,12 @@ public class Chat extends Module {
 		// Permission for messages to automatically color using name color
 		PermissionUtils.getOrCreate("easterlyn.chat.color", PermissionDefault.FALSE);
 		// Permission to bypass chat filtering
-		PermissionUtils.addParent("easterlyn.chat.unfiltered", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.chat.unfiltered", UserRank.MOD.getPermission());
 		PermissionUtils.addParent("easterlyn.chat.unfiltered", "easterlyn.spam");
 		// Permission to be recognized as a moderator in every channel
-		PermissionUtils.addParent("easterlyn.chat.channel.moderator", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.chat.channel.moderator", UserRank.HELPER.getPermission());
 		// Permission to be recognized as an owner in every channel
-		PermissionUtils.addParent("easterlyn.chat.channel.owner", UserRank.DENIZEN.getPermission());
+		PermissionUtils.addParent("easterlyn.chat.channel.owner", UserRank.HEAD_MOD.getPermission());
 
 		// Permission to have name a certain color
 		for (ChatColor chatColor : ChatColor.values()) {

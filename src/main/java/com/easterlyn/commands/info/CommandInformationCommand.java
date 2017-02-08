@@ -24,7 +24,7 @@ public class CommandInformationCommand extends EasterlynCommand {
 	public CommandInformationCommand(Easterlyn plugin) {
 		super(plugin, "cmdinfo");
 		this.setDescription("Prints out information about the specified command.");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/cmdinfo <command>");
 	}
 

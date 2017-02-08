@@ -23,8 +23,8 @@ public class HealCommand extends EasterlynCommand {
 	public HealCommand(Easterlyn plugin) {
 		super(plugin, "heal");
 		this.setAliases("eat", "feed");
-		this.setPermissionLevel(UserRank.FELT);
-		this.addExtraPermission("other", UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.MOD);
+		this.addExtraPermission("other", UserRank.ADMIN);
 	}
 
 	@Override

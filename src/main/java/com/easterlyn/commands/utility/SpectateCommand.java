@@ -6,6 +6,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.User;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 
 import com.google.common.collect.ImmutableList;
@@ -27,6 +28,7 @@ public class SpectateCommand extends EasterlynCommand {
 	public SpectateCommand(Easterlyn plugin) {
 		super(plugin, "spectate");
 		this.setAliases("spec", "spectator");
+		this.setPermissionLevel(UserRank.MEMBER);
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
 	}

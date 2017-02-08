@@ -26,7 +26,7 @@ public class InventoryCreativeListener extends EasterlynListener {
 		super(plugin);
 		this.events = plugin.getModule(Events.class);
 
-		PermissionUtils.addParent("easterlyn.events.creative.unfiltered", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.events.creative.unfiltered", UserRank.MOD.getPermission());
 	}
 
 	/**

@@ -28,7 +28,7 @@ public class ItemInformationCommand extends EasterlynCommand {
 	public ItemInformationCommand(Easterlyn plugin) {
 		super(plugin, "iteminfo");
 		this.setDescription("Serializes item in main hand and prints the result.");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/iteminfo");
 	}
 

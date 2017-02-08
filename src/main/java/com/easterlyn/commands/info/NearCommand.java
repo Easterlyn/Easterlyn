@@ -21,9 +21,9 @@ public class NearCommand extends EasterlynCommand {
 
 	public NearCommand(Easterlyn plugin) {
 		super(plugin, "near");
-		this.addExtraPermission("far", UserRank.FELT);
-		this.addExtraPermission("invisible", UserRank.FELT);
-		this.addExtraPermission("spectate", UserRank.FELT);
+		this.addExtraPermission("far", UserRank.MOD);
+		this.addExtraPermission("invisible", UserRank.MOD);
+		this.addExtraPermission("spectate", UserRank.MOD);
 	}
 
 	@Override

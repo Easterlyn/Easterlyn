@@ -17,7 +17,7 @@ public class ConfigReloadCommand extends EasterlynCommand {
 	public ConfigReloadCommand(Easterlyn plugin) {
 		super(plugin, "sreload");
 		this.setDescription("Reload a configuration.");
-		this.setPermissionLevel(UserRank.HORRORTERROR);
+		this.setPermissionLevel(UserRank.DANGER_DANGER_HIGH_VOLTAGE);
 		this.setUsage("/sreload [module class]");
 	}
 

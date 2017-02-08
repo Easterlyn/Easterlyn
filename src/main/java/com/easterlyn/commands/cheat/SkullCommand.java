@@ -21,7 +21,7 @@ public class SkullCommand extends EasterlynCommandAlias {
 	public SkullCommand(Easterlyn plugin) {
 		super(plugin, "skull", "lore");
 		this.setAliases("head");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/skull <player>");
 	}
 

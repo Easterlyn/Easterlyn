@@ -26,7 +26,7 @@ public class TemporaryBanCommand extends EasterlynCommand {
 	public TemporaryBanCommand(Easterlyn plugin) {
 		super(plugin, "tempban");
 		this.setAliases("tempbanip");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 	}
 
 	@Override

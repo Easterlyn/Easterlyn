@@ -31,7 +31,7 @@ public class HalCommand extends EasterlynCommand {
 	public HalCommand(Easterlyn plugin) {
 		super(plugin, "hal");
 		this.setDescription("Force a raw message announcement.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setUsage("/hal 1-10");
 		this.chat = plugin.getModule(Chat.class);
 		this.announcer = plugin.getModule(RawAnnouncer.class);

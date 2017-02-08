@@ -28,8 +28,9 @@ public class LoginCommandsCommand extends EasterlynCommand {
 
 	public LoginCommandsCommand(Easterlyn plugin) {
 		super(plugin, "onlogin");
+		this.setPermissionLevel(UserRank.MEMBER);
 		this.users = plugin.getModule(Users.class);
-		this.addExtraPermission("more", UserRank.HELPER);
+		this.addExtraPermission("more", UserRank.DANGER_DANGER_HIGH_VOLTAGE);
 	}
 
 	@Override

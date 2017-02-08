@@ -31,8 +31,8 @@ public class HalBotCommand extends EasterlynCommand {
 	public HalBotCommand(Easterlyn plugin) {
 		super(plugin, "halbot");
 		this.setDescription("Trigger a Lil Hal response.");
-		this.setPermissionLevel(UserRank.FELT);
-		this.setUsage("/halbot [channel] <seed mesage>");
+		this.setPermissionLevel(UserRank.MOD);
+		this.setUsage("/halbot [channel] <seed message>");
 		this.chat = plugin.getModule(Chat.class);
 		this.users = plugin.getModule(Users.class);
 	}

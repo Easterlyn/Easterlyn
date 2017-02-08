@@ -33,7 +33,7 @@ public class DiscordLinkCommand extends EasterlynCommand {
 	public DiscordLinkCommand(Easterlyn plugin) {
 		super(plugin, "link");
 		this.discord = plugin.getModule(Discord.class);
-		this.addExtraPermission("force", UserRank.FELT);
+		this.addExtraPermission("force", UserRank.MOD);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class DiscordLinkCommand extends EasterlynCommand {
 			return false;
 		}
 		UserRank[] ranks = UserRank.values();
-		for (int i = UserRank.FELT.ordinal() + 1; i < ranks.length; ++i) {
+		for (int i = UserRank.MOD.ordinal() + 1; i < ranks.length; ++i) {
 			if (!sender.hasPermission(ranks[i].getPermission()) && player.hasPermission(ranks[i].getPermission())) {
 				return true;
 			}

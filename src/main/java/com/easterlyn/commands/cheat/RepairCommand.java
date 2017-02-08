@@ -24,7 +24,7 @@ public class RepairCommand extends EasterlynCommand {
 
 	public RepairCommand(Easterlyn plugin) {
 		super(plugin, "repair");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 	}
 
 	@Override

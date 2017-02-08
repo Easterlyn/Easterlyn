@@ -20,7 +20,7 @@ public class DiscordReconnectCommand extends EasterlynAsynchronousCommand {
 		super(plugin, "dc-reconnect");
 		this.discord = plugin.getModule(Discord.class);
 		this.setDescription("Reconnect the Discord bot.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.DANGER_DANGER_HIGH_VOLTAGE);
 		this.setPermissionMessage("But why do you need to disconnect and reconnect?");
 		this.setUsage("/dc-reconnect");
 	}

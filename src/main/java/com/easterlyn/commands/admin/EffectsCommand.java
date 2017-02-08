@@ -37,7 +37,7 @@ public class EffectsCommand extends EasterlynCommand {
 		super(plugin, "effects");
 		this.effects = plugin.getModule(Effects.class);
 		this.setAliases("fx");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.HEAD_MOD);
 	}
 
 	@Override

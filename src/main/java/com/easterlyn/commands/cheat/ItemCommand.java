@@ -21,7 +21,7 @@ public class ItemCommand extends EasterlynCommandAlias {
 	public ItemCommand(Easterlyn plugin) {
 		super(plugin, "item", "minecraft:give");
 		this.setAliases("i");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 	}
 
 	@Override

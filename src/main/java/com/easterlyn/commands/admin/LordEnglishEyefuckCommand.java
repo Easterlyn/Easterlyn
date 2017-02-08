@@ -20,7 +20,7 @@ public class LordEnglishEyefuckCommand extends EasterlynCommand {
 	public LordEnglishEyefuckCommand(Easterlyn plugin) {
 		super(plugin, "lel");
 		this.setDescription("&e/le, now with 250% more &kbrain pain&e.");
-		this.setPermissionLevel(UserRank.HORRORTERROR);
+		this.setPermissionLevel(UserRank.HEAD_ADMIN);
 		this.setPermissionMessage("&0Lul.");
 		this.setUsage("/lel <text>");
 	}

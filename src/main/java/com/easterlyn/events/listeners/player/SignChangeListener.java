@@ -27,7 +27,7 @@ public class SignChangeListener extends EasterlynListener {
 		this.chat = plugin.getModule(Chat.class);
 
 		PermissionUtils.addParent("easterlyn.sign.unlogged", "easterlyn.spam");
-		PermissionUtils.addParent("easterlyn.sign.unlogged", UserRank.FELT.getPermission());
+		PermissionUtils.addParent("easterlyn.sign.unlogged", UserRank.MOD.getPermission());
 	}
 
 	/**

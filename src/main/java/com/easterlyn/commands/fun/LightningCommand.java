@@ -32,7 +32,7 @@ public class LightningCommand extends EasterlynCommand {
 		super(plugin, "lightning");
 		this.setAliases("shock", "smite", "thor");
 		this.setDescription("Strike lightning at coordinates, cursor, or a player.");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setUsage("/lightning [<player>|[world] <x> <y> <z>]");
 	}
 

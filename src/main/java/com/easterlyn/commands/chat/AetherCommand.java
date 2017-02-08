@@ -42,7 +42,7 @@ public class AetherCommand extends EasterlynAsynchronousCommand {
 		super(plugin, "aether");
 		this.setAliases("aetherme");
 		this.setDescription("For usage in console largely. Talks in #Aether.");
-		this.setPermissionLevel(UserRank.HORRORTERROR);
+		this.setPermissionLevel(UserRank.HEAD_ADMIN);
 		this.setPermissionMessage("The aetherial realm eludes your grasp once more.");
 		this.setUsage("/aether <text>");
 		this.discord = plugin.getModule(Discord.class);

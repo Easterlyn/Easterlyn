@@ -28,7 +28,7 @@ public class WhoIsCommand extends EasterlynAsynchronousCommand {
 		this.setAliases("profile");
 		this.setDescription("Check data stored for a player.");
 		this.setUsage("/whois <player>");
-		this.addExtraPermission("detail", UserRank.FELT);
+		this.addExtraPermission("detail", UserRank.MOD);
 	}
 
 	@Override

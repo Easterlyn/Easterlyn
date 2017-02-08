@@ -29,7 +29,7 @@ public class AspectCommand extends EasterlynCommand {
 
 	public AspectCommand(Easterlyn plugin) {
 		super(plugin, "aspect");
-		this.setPermissionLevel(UserRank.DONATOR);
+		this.setPermissionLevel(UserRank.DANGER_DANGER_HIGH_VOLTAGE);
 		this.users = plugin.getModule(Users.class);
 	}
 

@@ -29,7 +29,7 @@ public class BanCommand extends EasterlynCommand {
 	public BanCommand(Easterlyn plugin) {
 		super(plugin, "ban");
 		this.setAliases("sban", "banip");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.HEAD_MOD);
 		this.users = plugin.getModule(Users.class);
 	}
 

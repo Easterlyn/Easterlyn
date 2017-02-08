@@ -25,7 +25,7 @@ public class StatisticCommand extends EasterlynCommand {
 	public StatisticCommand(Easterlyn plugin) {
 		super(plugin, "stat");
 		this.setDescription("Statistically, you can use this command.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setUsage("/stat <target> <stat> [integer]");
 	}
 

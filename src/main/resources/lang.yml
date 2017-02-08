@@ -24,41 +24,43 @@ color:
     neutral: 'DARK_AQUA'
     bad: 'DARK_RED'
   rank:
-    horrorterror: 'DARK_RED'
-    denizen: 'BLUE'
-    felt: 'GREEN'
-    helper: 'DARK_GRAY'
-    donator: 'DARK_GREEN'
-    godtier: 'GOLD'
-    hero: 'WHITE'
+    default: 'WHITE'
+    member: 'LIGHT_GRAY'
+    trusted: 'GREEN'
+    helper: 'YELLOW'
+    mod: 'GOLD'
+    head_mod: 'DARK_PURPLE'
+    admin: 'RED'
+    head_admin: 'DARK_RED'
+    ask.adam.before.touching: 'DARK_RED'
   channel:
     owner: 'RED'
-    mod: 'AQUA'
-    member: 'GOLD'
+    mod: 'GOLD'
+    member: 'WHITE'
 
 core:
-  bot_name: '{COLOR:bot_name}Lil Hal'
-  bot_hover: '{COLOR:bot_text}Artifical Intelligence'
+  bot_name: '{COLOR:bot_name}The Scribe'
+  bot_hover: '{COLOR:bot_text}Easterlyn Records Keeper'
   error:
     invalidUser: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has not played on this server before.'
     moduleDisabled: '{COLOR:bad}{MODULE} is currently not enabled!'
 
 chat:
-  spamChannel: '#halchat'
+  spamChannel: '#spam'
   server:
-    quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}ollies outie'
+    quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}logged out'
   ai:
     cleverbot:
-      name: '{COLOR:bot_name}Lil Hal'
+      name: '{COLOR:bot_name}The Scribe'
       hover: |
-        {COLOR:bot_text}Artificial Intelligence
-        {COLOR:emphasis.bad}Staff is not responsible
-        {COLOR:emphasis.bad}for anything Hal says.
+        {COLOR:bot_text}Easterlyn Records Keeper
+        {COLOR:emphasis.bad}The Scribe tells it like is
+        {COLOR:emphasis.bad}whether you like it or not.
         
-        {COLOR:emphasis.bad}Unless it's awesome.
+        {COLOR:emphasis.bad}The Scribe knows all.
         
-        {COLOR:command}/join #halchat {COLOR:emphasis.bad}to spam usage.
-      trigger: '(hal|dirk)'
+        {COLOR:command}/join #spam {COLOR:emphasis.bad}to spam usage.
+      trigger: '(some|any|no)\s?body'
       ignore: |
         (love|date|baby|bang|due|fuck|pregnant|r(@|4|a)pe|sex)\s?
         (g|b)\s?f\s?
@@ -66,11 +68,11 @@ chat:
         mo(ther|m+y?)\s?
         dad+y?\s?
     calculator:
-      name: '{COLOR:bot_name}Lil Hal'
+      name: '{COLOR:bot_name}The Scribe'
       hover: |
         {COLOR:bot_text}Calculator
         {COLOR:emphasis.bad}For long or multiple
-        {COLOR:emphasis.bad}equations, use /halc
+        {COLOR:emphasis.bad}equations, use {COLOR:command}/halc
       replies: |
         ((di|co)c?k|pe(en|nis)|(we[ie]n|(schl|d)ong)(er)?|willy|(trouser ?)?snake|lizard){RESPONSE}Sorry, your equation is too tiny for me to read.
         life.*universe.*everything{RESPONSE}{INPUT} = 42
@@ -78,17 +80,15 @@ chat:
     away: '{COLOR:player.bad}{PLAYER} {COLOR:bad}is away and may not respond!'
     discordHover: |
       {COLOR:emphasis.neutral}Discord Chat
-      {COLOR:link_color}{COLOR:link_format}www.sblock.co/discord
+      {COLOR:link_color}{COLOR:link_format}discord.easterlyn.com
       {COLOR:neutral}Channel: #main
     hover: |
       {COLOR:neutral}{COLOR:strikethrough}+--{COLOR:rank.hero} {PLAYER} {COLOR:neutral}{COLOR:strikethrough}--+
       {COLOR:rank.hero}{RANK}
       {COLOR:rank.hero}{CLASS} of {ASPECT}
-      {COLOR:neutral}Dream: {COLOR:rank.hero}{DREAM}
-      {COLOR:neutral}Medium: {COLOR:rank.hero}{MEDIUM}
   channel:
-    join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}began pestering {COLOR:link_channel}{CHANNEL} {COLOR:neutral}at {TIME}'
-    quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}ceased pestering {COLOR:link_channel}{CHANNEL} {COLOR:neutral}at {TIME}'
+    join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}joined {COLOR:link_channel}{CHANNEL} {COLOR:neutral}at {TIME}'
+    quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}quit {COLOR:link_channel}{CHANNEL} {COLOR:neutral}at {TIME}'
     setcurrent: '{COLOR:neutral}Current channel set to {COLOR:link_channel}{CHANNEL}'
     disband: '{COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}has been disbanded. These are dark times indeed.'
     kick: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been kicked from {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
@@ -99,7 +99,7 @@ chat:
     mod: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}has been modded in {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
     demod: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been demodded in {COLOR:emphasis.bad}{CHANNEL}{COLOR:bad}!'
     nick: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}is now known as {NICK} in {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
-    denick: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}no longer known as {NICK} in {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
+    denick: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}is no longer known as {NICK} in {COLOR:emphasis.neutral}{CHANNEL}{COLOR:neutral}!'
   error:
     emptyMessage: '{COLOR:bad}You cannot send empty messages!'
     alreadyListening: '{COLOR:bad}You are already listening to {COLOR:emphasis.bad}{CHANNEL}'
@@ -128,9 +128,9 @@ command:
     noMetaSupport: '{COLOR:bad}This item does not support meta!'
     invalidParameters: '{COLOR:bad}Invalid parameter: {PARAMETER}; try tab completion.'
   ban:
-    description: 'YOU CAN''T ESCAPE THE RED MILES.'
+    description: 'WELL DONE? YOU DISGUST ME. GO RARE OR GO HOME.'
     usage: '/ban <target> [optional reason]'
-    announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been wiped from the face of the multiverse. {COLOR:emphasis.bad}{REASON}'
+    announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been burned at the steak. {COLOR:emphasis.bad}{REASON}'
   hash:
     description: 'Create a new hash for your item in hand or get a captcha for a specific hash.'
     usage: '/hash get <hash> | With item in main hand, /hash add <hash>'
@@ -140,15 +140,16 @@ command:
     success_save: '{COLOR:good}Saved to {TARGET}'
     success_load: '{COLOR:good}Loaded captcha item for {TARGET}'
   tempban:
-    description: 'You can escape the orange miles. It just takes time.'
+    description: 'A steak un-burner? All right, you can come back eventually.'
     usage: '/tempban <target> <duration> [optional reason]'
-    announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been temporarily banned. {COLOR:emphasis.bad}{REASON}'
+    announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been temporarily exiled. {COLOR:emphasis.bad}{REASON}'
   aether:
     hover: |
-      {COLOR:emphasis.neutral}External Chat
+      {COLOR:emphasis.neutral}Dynmap Chat
+      {COLOR:link_color}{COLOR:link_format}map.edwardia.com
   me:
     description: '/me does an action'
-    usage: 'YOU FOOKIN WOT M8? /me (@channel) <message> Channel optional, defaults current.'
+    usage: 'YOU WOT M8? /me (@channel) <message> Channel optional, defaults current.'
   effects:
     description: 'Effects! Similar to /enchant.'
     usage: '/effects <type> [level]'
@@ -163,14 +164,14 @@ command:
     add: '{COLOR:neutral}Added {COLOR:emphasis.neutral}{IP}{COLOR:neutral} to the Spamhaus exempt list.'
     remove: '{COLOR:neutral}Removed {COLOR:emphasis.neutral}{IP}{COLOR:neutral} from the Spamhaus exempt list.'
   ultraban:
-    description: 'YOU REALLY CAN''T ESCAPE THE RED MILES.'
+    description: 'BIG BROTHER IS ALWAYS WATCHING.'
     usage: '/ultraban <target>'
   unban:
-    description: 'DO THE WINDY THING.'
+    description: 'Make up your mind.'
     usage: '/unsban <UUID|name|IP>'
     unfound: '{COLOR:bad}No bans were found for {TARGET}'
     possibleIP: '{COLOR:neutral}Not globally announcing unban, {TARGET} may be an IP.'
-    unban: '{COLOR:bot_text}{TARGET} has been unbanned.'
+    unban: '{COLOR:bot_text}{TARGET} has returned from exile.'
   afk:
     description: 'Toggle AFK status.'
     usage: '/afk'
@@ -192,7 +193,7 @@ command:
     success: |
       {COLOR:neutral}Message the Discord bot "{COLOR:command}/link {CODE}{COLOR:neutral}" to complete linking your Discord account!
       {COLOR:bad}This code will expire in a minute.
-      {COLOR:neutral}Discord invite link: {COLOR:link_color}{COLOR:link_format}sblock.co/discord
+      {COLOR:neutral}Discord invite link: {COLOR:link_color}{COLOR:link_format}discord.easterlyn.com
     basicReadingComprehension: '{COLOR:bad}This is not Discord. Complete the link via command {COLOR:emphasis.bad}in Discord{COLOR:bad}.'
   m:
     description: 'Send a private message.'
@@ -352,9 +353,9 @@ command:
     success: '{COLOR:good}Class set to {COLOR:emphasis.good}{CLASS}'
 
 afk:
-  away: '{COLOR:neutral}You have been marked as away!'
+  away: '{COLOR:neutral}Hello? Is this thing on? Are you still there?'
   prefix: '{COLOR:emphasis.neutral}[AFK] '
-  back: '{COLOR:neutral}You are no longer marked as away!'
+  back: '{COLOR:neutral}Welcome back!'
 
 captcha:
   uncaptchable: '{COLOR:bad}That item cannot be put in a captcha!'
@@ -416,6 +417,10 @@ events:
       Git rekt.
       I say, my dear chap, you appear to have died a little there.
       That was a fatal miscalculation.
+      Tis but a flesh wound.
+      Don't go towards the light!
+      At least you don't have to pay taxes any more.
+      Rest in Pieces.
     message: '{OPTION} Death point: {WORLD} {X}x {Y}y {Z}z'
   interact:
     daySleep: '{COLOR:bad}It''s not dark or raining!'

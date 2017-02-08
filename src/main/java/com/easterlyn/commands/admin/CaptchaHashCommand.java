@@ -23,7 +23,7 @@ public class CaptchaHashCommand extends EasterlynCommand {
 
 	public CaptchaHashCommand(Easterlyn plugin) {
 		super(plugin, "hash");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setPermissionMessage(ChatColor.GOLD + "BROWNS!");
 		this.captcha = plugin.getModule(Captcha.class);
 	}

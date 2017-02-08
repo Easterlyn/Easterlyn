@@ -26,9 +26,9 @@ public class FlyCommand extends EasterlynCommand {
 	public FlyCommand(Easterlyn plugin) {
 		super(plugin, "fly");
 		this.setDescription("Toggle flight for yourself or another player.");
-		this.setPermissionLevel(UserRank.HELPER);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/fly [player] [true|false]");
-		this.addExtraPermission("other", UserRank.FELT);
+		this.addExtraPermission("other", UserRank.HEAD_ADMIN);
 	}
 
 	@Override

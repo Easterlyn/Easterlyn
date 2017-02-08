@@ -20,7 +20,7 @@ public class WorkbenchCommand extends EasterlynCommand {
 		super(plugin, "workbench");
 		this.setAliases("craft", "wb");
 		this.setDescription("Open a workbench.");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/craft");
 	}
 

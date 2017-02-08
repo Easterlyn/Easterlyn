@@ -31,7 +31,7 @@ public class MeteorCommand extends EasterlynCommand {
 	public MeteorCommand(Easterlyn plugin) {
 		super(plugin, "meteor");
 		this.setDescription("Summon a meteor with parameters.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.HEAD_MOD);
 		this.setUsage("/meteor [p:player] [r:radius] [e:explode] [m:material] [b:bore]");
 		primaryArgs = new String[] {"p:", "r:", "e:", "b:", "m:"};
 	}

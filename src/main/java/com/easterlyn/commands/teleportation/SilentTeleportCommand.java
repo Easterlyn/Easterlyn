@@ -25,7 +25,7 @@ public class SilentTeleportCommand extends EasterlynCommand {
 		super(plugin, "silenttp");
 		this.setDescription("Teleports a player with no confirmation to either party involved. Intended for commandsigns.");
 		this.setUsage("/silenttp <player> <x> <y> <z> [pitch] [yaw] [world]");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 	}
 
 	@Override

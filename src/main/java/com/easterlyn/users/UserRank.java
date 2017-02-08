@@ -14,20 +14,24 @@ import net.md_5.bungee.api.ChatColor;
 public enum UserRank {
 
 	DEFAULT("default", "Hero", PermissionDefault.TRUE),
-	HERO("hero"),
-	GODTIER("godtier"),
-	DONATOR("donator"),
+	MEMBER("member"),
+	TRUSTED("trusted"),
 	HELPER("helper"),
-	FELT("felt"),
-	DENIZEN("denizen"),
-	HORRORTERROR("horrorterror"),
-	DANGER_DANGER_HIGH_VOLTAGE("ask.adam.before.touching", "Horrorterror", PermissionDefault.FALSE);
+	MOD("mod"),
+	HEAD_MOD("head_mod", "Head Mod"),
+	ADMIN("admin"),
+	HEAD_ADMIN("head_admin","Head Admin"),
+	DANGER_DANGER_HIGH_VOLTAGE("ask.adam.before.touching", "Head Admin", PermissionDefault.FALSE);
 
 	private final String internalName, friendlyName;
 	private final PermissionDefault permissionDefault;
 
 	private UserRank(String internalName) {
 		this(internalName, PermissionDefault.OP);
+	}
+
+	private UserRank(String internalName, String friendlyName) {
+		this(internalName, friendlyName, PermissionDefault.OP);
 	}
 
 	private UserRank(String internalName, PermissionDefault permissionDefault) {

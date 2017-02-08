@@ -20,7 +20,7 @@ public class SpamhausListCommand extends EasterlynAsynchronousCommand {
 	public SpamhausListCommand(Easterlyn plugin) {
 		super(plugin, "spamhauslist");
 		this.setAliases("spamlist", "sl");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.HEAD_ADMIN);
 		this.events = plugin.getModule(Events.class);
 	}
 

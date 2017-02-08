@@ -29,7 +29,7 @@ public class SpeedCommand extends EasterlynCommand {
 		super(plugin, "speed");
 		this.setAliases("flyspeed", "walkspeed");
 		this.setDescription("Set flight or walking speed.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setUsage("/speed [player] [fly|walk] <-1 to 1>");
 	}
 

@@ -35,7 +35,7 @@ public class ChannelBypassFocusCommand extends EasterlynCommand {
 		this.users = plugin.getModule(Users.class);
 		manager = plugin.getModule(Chat.class).getChannelManager();
 		this.setPermissionMessage("Try /join <channel>");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class CrotchRocketCommand extends EasterlynCommand {
 
 	public CrotchRocketCommand(Easterlyn plugin) {
 		super(plugin, "crotchrocket");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.particles = plugin.getModule(ParticleUtils.class);
 	}
 

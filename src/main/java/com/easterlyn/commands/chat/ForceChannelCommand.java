@@ -34,7 +34,7 @@ public class ForceChannelCommand extends EasterlynCommand {
 		super(plugin, "forcechannel");
 		this.setDescription("Help people find their way.");
 		this.setPermissionMessage("Try /join <channel>");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/forcechannel <channel> <player>");
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();

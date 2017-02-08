@@ -21,7 +21,7 @@ public class GamemodeCommand extends EasterlynCommandAlias {
 		// We don't have additional obvious spectator aliases because of our /spectate.
 		this.setAliases("0", "surv", "survival", "gms", "1", "creative", "gmc", "2", "adventure",
 				"gma", "3", "gmt");
-		this.setPermissionLevel(UserRank.FELT);
+		this.setPermissionLevel(UserRank.HEAD_MOD);
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 	public SyncPacketAdapter(Easterlyn plugin) {
 		super(plugin, PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Client.TAB_COMPLETE);
 
-		PermissionUtils.addParent("easterlyn.commands.unfiltered", UserRank.DENIZEN.getPermission());
+		PermissionUtils.addParent("easterlyn.commands.unfiltered", UserRank.HEAD_MOD.getPermission());
 	}
 
 	/**

@@ -27,7 +27,7 @@ public class EnterListener extends EasterlynListener {
 
 	public EnterListener(Easterlyn plugin) {
 		super(plugin);
-		new Permission("easterlyn.blaze").addParent(UserRank.DONATOR.getPermission(), true).recalculatePermissibles();
+		new Permission("easterlyn.blaze").addParent(UserRank.TRUSTED.getPermission(), true).recalculatePermissibles();
 		this.particles = plugin.getModule(ParticleUtils.class);
 	}
 

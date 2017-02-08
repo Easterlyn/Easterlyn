@@ -24,7 +24,7 @@ public class CreateLightCommand extends EasterlynCommand {
 		super(plugin, "createlight");
 		this.setAliases("lettherebelight", "fakelight");
 		this.setDescription("Create a fake light source at the block on your cursor.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setUsage("Run /createlight while pointing at a block under 10 blocks away");
 	}
 

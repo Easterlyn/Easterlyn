@@ -27,7 +27,7 @@ public class ClassCommand extends EasterlynCommand {
 
 	public ClassCommand(Easterlyn plugin) {
 		super(plugin, "class");
-		this.setPermissionLevel(UserRank.DONATOR);
+		this.setPermissionLevel(UserRank.DANGER_DANGER_HIGH_VOLTAGE);
 		this.users = plugin.getModule(Users.class);
 	}
 

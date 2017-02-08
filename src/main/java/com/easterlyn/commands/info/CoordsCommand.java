@@ -32,7 +32,7 @@ public class CoordsCommand extends EasterlynAsynchronousCommand {
 		this.setAliases("getpos", "loc", "pos", "whereami");
 		this.setDescription("Get your current coordinates.");
 		this.setUsage("/coords [player]");
-		this.addExtraPermission("other", UserRank.FELT);
+		this.addExtraPermission("other", UserRank.MOD);
 	}
 
 	@Override

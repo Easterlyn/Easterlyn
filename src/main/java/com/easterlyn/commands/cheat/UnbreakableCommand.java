@@ -26,7 +26,7 @@ public class UnbreakableCommand extends EasterlynCommand {
 	public UnbreakableCommand(Easterlyn plugin) {
 		super(plugin, "traindon'tstop");
 		this.setDescription("No brakes on this abuse caboose.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setPermissionMessage("SEND HELP, THE BRAKES DON'T WORK! PLEASE!");
 		this.setUsage("/traindon'tstop [choochoo|oshitthecops]");
 	}

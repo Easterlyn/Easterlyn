@@ -21,7 +21,7 @@ public class SilentKickCommand extends EasterlynCommand {
 
 	public SilentKickCommand(Easterlyn plugin) {
 		super(plugin, "silentkick");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 	}
 
 	@Override

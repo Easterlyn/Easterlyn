@@ -30,7 +30,7 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 	public SetPlayerCommand(Easterlyn plugin) {
 		super(plugin, "setplayer");
 		this.setDescription("Set player data manually.");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.setUsage("/setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>");
 		this.users = plugin.getModule(Users.class);
 		primaryArgs = new String[] {"class", "aspect", "land", "dream", "prevloc", "progression"};

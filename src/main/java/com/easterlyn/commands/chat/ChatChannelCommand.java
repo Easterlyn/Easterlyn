@@ -72,7 +72,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 
 		this.addExtraPermission("list.private", UserRank.HELPER);
-		this.addExtraPermission("new.anyname", UserRank.DENIZEN);
+		this.addExtraPermission("new.anyname", UserRank.HEAD_MOD);
 	}
 
 	@Override

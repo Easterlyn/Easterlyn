@@ -581,7 +581,7 @@ public class User {
 		}
 		listening.add("#");
 		getChannelManager().getChannel("#").getListening().add(getUUID());
-		if (this.getPlayer().hasPermission(UserRank.FELT.getPermission()) && !this.getListening().contains("@")) {
+		if (this.getPlayer().hasPermission(UserRank.MOD.getPermission()) && !this.getListening().contains("@")) {
 			this.getListening().add("@");
 			getChannelManager().getChannel("@").getListening().add(this.getUUID());
 		}

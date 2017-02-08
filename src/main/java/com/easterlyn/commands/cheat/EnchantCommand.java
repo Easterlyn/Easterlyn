@@ -26,7 +26,7 @@ public class EnchantCommand extends EasterlynCommand {
 
 	public EnchantCommand(Easterlyn plugin) {
 		super(plugin, "enchant");
-		this.setPermissionLevel(UserRank.DENIZEN);
+		this.setPermissionLevel(UserRank.ADMIN);
 	}
 
 	@Override

@@ -24,7 +24,7 @@ public class UltraBanCommand extends EasterlynCommand {
 
 	public UltraBanCommand(Easterlyn plugin) {
 		super(plugin, "ultraban");
-		this.setPermissionLevel(UserRank.HORRORTERROR);
+		this.setPermissionLevel(UserRank.HEAD_ADMIN);
 		this.users = plugin.getModule(Users.class);
 	}
 
