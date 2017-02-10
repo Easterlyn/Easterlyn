@@ -13,10 +13,10 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Transportalizer;
 import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.micromodules.Spectators;
-import com.easterlyn.users.Region;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.RegionUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -81,7 +81,6 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			return true;
 		}
 		if (label.equals("tpreset")) {
-			// TODO: separate command to prevent tab completion for lower perm levels
 			if (player.hasPermission("easterlyn.command.tpa.reset")) {
 				cooldowns.clearCooldown(player, "teleportRequest");
 			}
@@ -121,9 +120,8 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.tpa.error.toSpectator"));
 			return;
 		}
-		Region rTarget = targetUser.getCurrentRegion();
-		Region rSource = sourceUser.getCurrentRegion();
-		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
+		if (!RegionUtils.regionsMatch(targetUser.getCurrentLocation().getWorld().getName(),
+				sourceUser.getCurrentLocation().getWorld().getName())) {
 			sender.sendMessage(getLang().getValue("command.tpa.error.crossRegion"));
 			return;
 		}
@@ -156,21 +154,21 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.tpa.error.senderMissing"));
 			return;
 		}
+		Player issuer = request.isHere() ? toArriveAt : toTeleport;
 		if (spectators.isSpectator(toArriveAt.getUniqueId())
 				&& !spectators.isSpectator(toTeleport.getUniqueId())) {
-			getLang();
 			String message = getLang().getValue("command.tpa.error.toSpectator");
 			toTeleport.sendMessage(message);
 			toArriveAt.sendMessage(message);
+			cooldowns.clearCooldown(issuer, "teleportRequest");
 			return;
 		}
-		Region rTarget = users.getUser(toArriveAt.getUniqueId()).getCurrentRegion();
-		Region rSource = users.getUser(toTeleport.getUniqueId()).getCurrentRegion();
-		if (rTarget != rSource && !(rSource.isDream() && rTarget.isDream())) {
-			getLang();
+		if (!RegionUtils.regionsMatch(toTeleport.getWorld().getName(),
+				toArriveAt.getWorld().getName())) {
 			String message = getLang().getValue("command.tpa.error.crossRegion");
 			toTeleport.sendMessage(message);
 			toArriveAt.sendMessage(message);
+			cooldowns.clearCooldown(issuer, "teleportRequest");
 			return;
 		}
 		toTeleport.teleport(toArriveAt);
@@ -180,7 +178,6 @@ public class TeleportRequestCommand extends EasterlynCommand {
 				.replace("{PLAYER}", toTeleport.getDisplayName()));
 
 		// Teleporting as a spectator is a legitimate mechanic, no cooldown.
-		Player issuer = request.isHere() ? toArriveAt : toTeleport;
 		if (spectators.isSpectator(toTeleport.getUniqueId())) {
 			cooldowns.clearCooldown(issuer, "teleportRequest");
 		} else {
@@ -262,6 +259,10 @@ public class TeleportRequestCommand extends EasterlynCommand {
 		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
 			return com.google.common.collect.ImmutableList.of();
 		}
-		return super.tabComplete(sender, alias, args);
+		List<String> completions = super.tabComplete(sender, alias, args);
+		if (completions.contains("tpreset") && !sender.hasPermission("easterlyn.command.tpa.reset")) {
+			completions.remove("tpreset");
+		}
+		return completions;
 	}
 }

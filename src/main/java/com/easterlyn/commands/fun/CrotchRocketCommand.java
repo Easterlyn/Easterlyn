@@ -27,12 +27,9 @@ import org.bukkit.util.Vector;
  */
 public class CrotchRocketCommand extends EasterlynCommand {
 
-	private final ParticleUtils particles;
-
 	public CrotchRocketCommand(Easterlyn plugin) {
 		super(plugin, "crotchrocket");
 		this.setPermissionLevel(UserRank.ADMIN);
-		this.particles = plugin.getModule(ParticleUtils.class);
 	}
 
 	@Override
@@ -41,10 +38,10 @@ public class CrotchRocketCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
-		return launch((LivingEntity) sender);
+		return launch((Easterlyn) this.getPlugin(), (LivingEntity) sender);
 	}
 
-	public boolean launch(LivingEntity entity) {
+	public static boolean launch(Easterlyn plugin, LivingEntity entity) {
 		entity.setFallDistance(0);
 		entity.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, entity.getLocation(), 1);
 
@@ -52,8 +49,9 @@ public class CrotchRocketCommand extends EasterlynCommand {
 		FireworkMeta fm = firework.getFireworkMeta();
 		fm.setPower(4);
 		firework.setFireworkMeta(fm);
-		firework.setPassenger(entity);
+		firework.addPassenger(entity);
 
+		ParticleUtils particles = plugin.getModule(ParticleUtils.class);
 		particles.addEntity(firework, new ParticleEffectWrapper(Particle.FIREWORKS_SPARK, 5));
 
 		new BukkitRunnable() {
@@ -71,7 +69,7 @@ public class CrotchRocketCommand extends EasterlynCommand {
 				++count;
 				firework.setVelocity(new Vector(0, 1, 0));
 			}
-		}.runTaskTimer(getPlugin(), 0L, 1L);
+		}.runTaskTimer(plugin, 0L, 1L);
 		return true;
 	}
 

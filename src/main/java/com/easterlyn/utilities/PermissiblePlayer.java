@@ -437,6 +437,7 @@ public class PermissiblePlayer implements Player {
 		return player.getNearbyEntities(arg0, arg1, arg2);
 	}
 
+	@Deprecated
 	@Override
 	public Entity getPassenger() {
 		return player.getPassenger();
@@ -542,6 +543,7 @@ public class PermissiblePlayer implements Player {
 		player.setLastDamageCause(arg0);
 	}
 
+	@Deprecated
 	@Override
 	public boolean setPassenger(Entity arg0) {
 		return player.setPassenger(arg0);
@@ -1569,6 +1571,21 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void sendTitle(String arg0, String arg1, int arg2, int arg3, int arg4) {
 		player.sendTitle(arg0, arg1, arg2, arg3, arg4);
+	}
+
+	@Override
+	public boolean addPassenger(Entity passenger) {
+		return player.addPassenger(passenger);
+	}
+
+	@Override
+	public List<Entity> getPassengers() {
+		return player.getPassengers();
+	}
+
+	@Override
+	public boolean removePassenger(Entity passenger) {
+		return player.removePassenger(passenger);
 	}
 
 }

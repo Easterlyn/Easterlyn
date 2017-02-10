@@ -13,24 +13,24 @@ public class UserClass {
 	private static final HashMap<String, UserClass> REGISTRY = new HashMap<>();
 
 	static {
-		REGISTRY.put("bard", new UserClass("Bard", 3));
-		REGISTRY.put("douche", new UserClass("Douche", 4));
-		REGISTRY.put("gent", new UserClass("Gent", 3));
-		REGISTRY.put("heir", new UserClass("Heir", 3));
-		REGISTRY.put("knight", new UserClass("Knight", 5));
-		REGISTRY.put("lord", new UserClass("Lord", 7));
-		REGISTRY.put("mage", new UserClass("Mage", 4));
-		REGISTRY.put("maid", new UserClass("Maid", 4));
-		REGISTRY.put("muse", new UserClass("Muse", 0));
-		REGISTRY.put("nerd", new UserClass("Nerd", 0));
-		REGISTRY.put("page", new UserClass("Page", 2));
-		REGISTRY.put("prince", new UserClass("Prince", 6));
-		REGISTRY.put("rogue", new UserClass("Rogue", 2));
-		REGISTRY.put("seer", new UserClass("Seer", 1));
-		REGISTRY.put("sylph", new UserClass("Sylph", 1));
-		REGISTRY.put("thief", new UserClass("Thief", 5));
-		REGISTRY.put("waste", new UserClass("Waste", 3));
-		REGISTRY.put("witch", new UserClass("Witch", 6));
+		registerDefault(new UserClass("Legend", 7));
+		registerDefault(new UserClass("Captain", 7));
+		registerDefault(new UserClass("Architect", 6));
+		registerDefault(new UserClass("Sorcerer", 6));
+		registerDefault(new UserClass("Oracle", 5));
+		registerDefault(new UserClass("Dreamer", 5));
+		registerDefault(new UserClass("Hoarder", 4));
+		registerDefault(new UserClass("Hunter", 4));
+		registerDefault(new UserClass("Protector", 3));
+		registerDefault(new UserClass("Scavenger", 3));
+		registerDefault(new UserClass("Spirit", 2));
+		registerDefault(new UserClass("Scribe", 2));
+		registerDefault(new UserClass("Priest", 1));
+		registerDefault(new UserClass("Keeper", 1));
+		registerDefault(new UserClass("Hobo", 0));
+		registerDefault(new UserClass("Bucket", 0));
+
+		registerDefault(new UserClass("Plebian", 0));
 	}
 
 	private final String name;
@@ -96,6 +96,10 @@ public class UserClass {
 	 */
 	public static Collection<UserClass> values() {
 		return REGISTRY.values();
+	}
+
+	private static void registerDefault(UserClass userClass) {
+		REGISTRY.put(userClass.getDisplayName().toLowerCase(), userClass);
 	}
 
 }

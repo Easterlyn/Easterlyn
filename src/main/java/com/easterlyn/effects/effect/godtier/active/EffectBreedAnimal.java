@@ -50,13 +50,13 @@ public class EffectBreedAnimal extends Effect implements BehaviorActive, Behavio
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.HEART);
+		return Arrays.asList(UserAspect.ENERGY);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.HEART) {
+		if (aspect == UserAspect.ENERGY) {
 			list.add(aspect.getColor() + "Instant Springtime");
 		}
 		list.add(ChatColor.WHITE + "Love is in the air.");

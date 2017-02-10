@@ -30,13 +30,13 @@ public class EffectUnderwaterAirRestoration extends Effect implements BehaviorGo
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.BREATH);
+		return Arrays.asList(UserAspect.WIND);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.BREATH) {
+		if (aspect == UserAspect.WIND) {
 			list.add(aspect.getColor() + "Reed Rebreather");
 		}
 		list.add(ChatColor.WHITE + "Breathe easy, breathe deep.");

@@ -41,7 +41,7 @@ public class EffectRocketJump extends Effect implements BehaviorActive, Behavior
 
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
-		((CrotchRocketCommand) getPlugin().getCommandMap().getCommand("easterlyn:crotchrocket")).launch(entity);
+		CrotchRocketCommand.launch(this.getPlugin(), entity);
 	}
 
 }

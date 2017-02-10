@@ -19,7 +19,6 @@ import org.bukkit.util.Vector;
 public class EasterlynTravelAgent implements TravelAgent {
 
 	private int searchRadius = 0, creationRadius = 0;
-	private final int mediumNetherOffset = 329;
 	private boolean canCreatePortal = true;
 	private final Shape shape;
 	private Block from;
@@ -255,60 +254,6 @@ public class EasterlynTravelAgent implements TravelAgent {
 			x = from.getX() * 8;
 			y = from.getY();
 			z = from.getZ() * 8;
-			break;
-		case "LOFAF":
-			world = Bukkit.getWorld("Medium_nether");
-			x = from.getX() / 8 + mediumNetherOffset;
-			y = from.getY() / 2.05;
-			z = from.getZ() / 8 + mediumNetherOffset;
-			break;
-		case "LOHAC":
-			world = Bukkit.getWorld("Medium_nether");
-			x = from.getX() / 8 + mediumNetherOffset;
-			y = from.getY() / 2.05;
-			z = from.getZ() / 8 - mediumNetherOffset;
-			break;
-		case "LOLAR":
-			world = Bukkit.getWorld("Medium_nether");
-			x = from.getX() / 8 - mediumNetherOffset;
-			y = from.getY() / 2.05;
-			z = from.getZ() / 8 - mediumNetherOffset;
-			break;
-		case "LOWAS":
-			world = Bukkit.getWorld("Medium_nether");
-			x = from.getX() / 8 - mediumNetherOffset;
-			y = from.getY() / 2.05;
-			z = from.getZ() / 8 + mediumNetherOffset;
-			break;
-		case "Medium_nether":
-			String worldName;
-			if (from.getX() < 0) {
-				x = from.getX() + mediumNetherOffset;
-				if (from.getZ() < 0) {
-					// -x -z: LOLAR (Northwest)
-					z = from.getZ() + mediumNetherOffset;
-					worldName = "LOLAR";
-				} else {
-					// -x +z: LOWAS (Southwest)
-					z = from.getZ() - mediumNetherOffset;
-					worldName = "LOWAS";
-				}
-			} else {
-				x = from.getX() - mediumNetherOffset;
-				if (from.getZ() < 0) {
-					// +x -z: LOHAC (Northeast)
-					z = from.getZ() + mediumNetherOffset;
-					worldName = "LOHAC";
-				} else {
-					// +x +z: LOFAF (Southeast)
-					z = from.getZ() - mediumNetherOffset;
-					worldName = "LOFAF";
-				}
-			}
-			world = Bukkit.getWorld(worldName);
-			x *= 8;
-			y = from.getY() * 2.05;
-			z *= 8;
 			break;
 		default:
 			if (from.getWorld().getEnvironment() == Environment.NORMAL) {

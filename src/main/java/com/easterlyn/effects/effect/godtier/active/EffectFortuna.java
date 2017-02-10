@@ -44,13 +44,13 @@ public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGod
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.LIGHT);
+		return Arrays.asList(UserAspect.STARS);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.LIGHT) {
+		if (aspect == UserAspect.STARS) {
 			list.add(aspect.getColor() + "Fortuna");
 		}
 		list.add(ChatColor.WHITE + "Fortune just isn't enough.");

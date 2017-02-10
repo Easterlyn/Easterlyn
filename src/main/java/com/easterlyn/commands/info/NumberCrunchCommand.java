@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
-import com.easterlyn.users.Region;
 import com.easterlyn.users.UserAspect;
 import com.easterlyn.users.UserClass;
 import com.easterlyn.users.UserRank;
@@ -36,11 +35,6 @@ public class NumberCrunchCommand extends EasterlynAsynchronousCommand {
 		for (UserAspect userAspect : UserAspect.values()) {
 			counts.put(userAspect.getDisplayName(), new AtomicInteger(0));
 		}
-		for (Region region : Region.values()) {
-			if (region.isDream() || region.isMedium()) {
-				counts.put(region.getDisplayName(), new AtomicInteger(0));
-			}
-		}
 		File folder = new File(getPlugin().getDataFolder(), "users");
 		if (!folder.exists()) {
 			return true;
@@ -63,13 +57,6 @@ public class NumberCrunchCommand extends EasterlynAsynchronousCommand {
 		for (UserAspect userAspect : UserAspect.values()) {
 			int count = counts.get(userAspect.getDisplayName()).get();
 			sender.sendMessage(userAspect.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
-		}
-		sender.sendMessage("\nDREAM/REGION:");
-		for (Region region : Region.values()) {
-			if (region.isDream() || region.isMedium()) {
-				int count = counts.get(region.getDisplayName()).get();
-				sender.sendMessage(region.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
-			}
 		}
 		return true;
 	}

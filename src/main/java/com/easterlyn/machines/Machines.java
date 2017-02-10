@@ -15,7 +15,6 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.module.Module;
-import com.easterlyn.users.Region;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -120,8 +119,8 @@ public class Machines extends Module {
 	 */
 	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type,
 			UUID owner, Direction direction) {
-		if (!this.isEnabled() || !byName.containsKey(type)
-				|| location.getWorld().getName().equals(Region.DERSE.getWorldName())) {
+		if (!this.isEnabled() || !byName.containsKey(type) || !this.getPlugin().getConfig()
+				.getStringList("machines.worlds").contains(location.getWorld().getName())) {
 			return null;
 		}
 		ConfigurationSection section = getConfig().createSection(pathFromLoc(location));
@@ -155,8 +154,9 @@ public class Machines extends Module {
 			return;
 		}
 		String worldName = chunk.getWorld().getName();
-		if (!getConfig().isSet(worldName) || worldName.equals(Region.DERSE.getWorldName())) {
-			// No machines in Derspit.
+		if (!getConfig().isSet(worldName) || !this.getPlugin().getConfig()
+				.getStringList("machines.worlds").contains(worldName)) {
+			// Disabled world.
 			return;
 		}
 		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
@@ -240,9 +240,9 @@ public class Machines extends Module {
 	private void loadMachines() {
 		for (World world : Bukkit.getWorlds()) {
 			String worldName = world.getName();
-			if (!getConfig().isConfigurationSection(worldName)
-					|| worldName.equals(Region.DERSE.getWorldName())) {
-				// No machines in Derspit.
+			if (!getConfig().isConfigurationSection(worldName) || !this.getPlugin().getConfig()
+					.getStringList("machines.worlds").contains(worldName)) {
+				// Disabled world.
 				continue;
 			}
 			ConfigurationSection worldSection = getConfig().getConfigurationSection(worldName);

@@ -16,7 +16,6 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -162,10 +161,6 @@ public class Users extends Module {
 		if (team != null) {
 			team.unregister();
 		}
-	}
-
-	public static Location getSpawnLocation() {
-		return new Location(Bukkit.getWorld("Earth"), -3.5, 20, 6.5, 179.99F, 1F);
 	}
 
 }

@@ -31,13 +31,13 @@ public class EffectBonusExperience extends Effect implements BehaviorActive, Beh
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.MIND);
+		return Arrays.asList(UserAspect.KNOWLEDGE);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.MIND) {
+		if (aspect == UserAspect.KNOWLEDGE) {
 			list.add(aspect.getColor() + "Deep Thinker");
 		}
 		list.add(ChatColor.WHITE + "Learn faster.");

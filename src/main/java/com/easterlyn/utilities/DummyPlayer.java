@@ -1266,4 +1266,19 @@ public class DummyPlayer implements Player {
 	@Override
 	public void sendTitle(String arg0, String arg1, int arg2, int arg3, int arg4) {}
 
+	@Override
+	public boolean addPassenger(Entity passenger) {
+		return false;
+	}
+
+	@Override
+	public List<Entity> getPassengers() {
+		return null;
+	}
+
+	@Override
+	public boolean removePassenger(Entity passenger) {
+		return false;
+	}
+
 }

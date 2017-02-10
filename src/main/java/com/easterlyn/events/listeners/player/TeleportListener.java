@@ -5,8 +5,6 @@ import java.util.UUID;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.listeners.EasterlynListener;
-import com.easterlyn.users.Region;
-import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 
 import org.bukkit.Bukkit;
@@ -97,16 +95,7 @@ public class TeleportListener extends EasterlynListener {
 					// Player has logged out.
 					return;
 				}
-				User user = users.getUser(uuid);
-				// Update region
-				Region target;
-				if (player.getWorld().getName().equals("Derspit")) {
-					target = user.getDreamPlanet();
-				} else {
-					target = Region.getRegion(event.getTo().getWorld().getName());
-				}
-				user.updateCurrentRegion(target, false);
-				user.updateFlight();
+				users.getUser(uuid).updateFlight();
 			}
 		}.runTask(getPlugin());
 	}

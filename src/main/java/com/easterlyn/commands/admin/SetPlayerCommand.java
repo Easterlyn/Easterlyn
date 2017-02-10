@@ -31,9 +31,9 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 		super(plugin, "setplayer");
 		this.setDescription("Set player data manually.");
 		this.setPermissionLevel(UserRank.ADMIN);
-		this.setUsage("/setplayer <playername> <class|aspect|land|dream|prevloc|progression> <value>");
+		this.setUsage("/setplayer <playername> <class|aspect> <value>");
 		this.users = plugin.getModule(Users.class);
-		primaryArgs = new String[] {"class", "aspect", "land", "dream", "prevloc", "progression"};
+		primaryArgs = new String[] {"class", "aspect"};
 	}
 
 	@Override
@@ -52,12 +52,6 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 			user.setUserClass(UserClass.getClass(args[2]));
 		} else if (args[1].equals("aspect")) {
 			user.setUserAspect(UserAspect.getAspect(args[2]));
-		} else if (args[1].replaceAll("m(edium_?)?planet", "land").equals("land")) {
-			user.setMediumPlanet(args[2]);
-		} else if (args[1].replaceAll("d(ream_?)?planet", "dream").equals("dream")) {
-			user.setDreamPlanet(args[2]);
-		} else if (args[1].equals("prevloc")) {
-			user.setPreviousLocation(user.getPlayer().getLocation());
 		} else {
 			return false;
 		}

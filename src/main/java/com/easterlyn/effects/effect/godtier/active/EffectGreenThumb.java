@@ -48,13 +48,13 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.LIFE);
+		return Arrays.asList(UserAspect.KNOWLEDGE);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.LIFE) {
+		if (aspect == UserAspect.KNOWLEDGE) {
 			list.add(aspect.getColor() + "Harvest Goddess");
 		}
 		list.add(ChatColor.WHITE + "Tending plants made easy.");

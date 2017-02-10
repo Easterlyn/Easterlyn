@@ -30,13 +30,13 @@ public class EffectBonusBlockExperience extends Effect implements BehaviorReacti
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.MIND);
+		return Arrays.asList(UserAspect.KNOWLEDGE);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.MIND) {
+		if (aspect == UserAspect.KNOWLEDGE) {
 			list.add(aspect.getColor() + "Inquiring Mind");
 		}
 		list.add(ChatColor.WHITE + "Discover more.");

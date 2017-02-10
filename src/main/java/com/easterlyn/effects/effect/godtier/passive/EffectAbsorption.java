@@ -46,13 +46,13 @@ public class EffectAbsorption extends Effect implements BehaviorCooldown, Behavi
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.HEART, UserAspect.TIME);
+		return Arrays.asList(UserAspect.ENERGY, UserAspect.TIME);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.HEART) {
+		if (aspect == UserAspect.ENERGY) {
 			list.add(aspect.getColor() + "Hale and Hearty");
 		} else if (aspect == UserAspect.TIME) {
 			list.add(aspect.getColor() + "Futureproof");

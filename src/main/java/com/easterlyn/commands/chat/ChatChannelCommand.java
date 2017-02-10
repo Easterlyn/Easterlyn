@@ -207,7 +207,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 		}
 
 		if (current instanceof RegionChannel) {
-			sender.sendMessage(Language.getColor("bad") + "Region channels do not support kicks, bans, or approval. Moderators are permissions-based.");
+			sender.sendMessage(Language.getColor("bad") + "RegionUtils channels do not support kicks, bans, or approval. Moderators are permissions-based.");
 			return false;
 		}
 

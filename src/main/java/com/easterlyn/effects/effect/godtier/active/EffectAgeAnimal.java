@@ -45,13 +45,13 @@ public class EffectAgeAnimal extends Effect implements BehaviorActive, BehaviorC
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.HEART, UserAspect.TIME);
+		return Arrays.asList(UserAspect.ENERGY, UserAspect.TIME);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.HEART) {
+		if (aspect == UserAspect.ENERGY) {
 			list.add(aspect.getColor() + "Hearty Breakfast");
 		} else if (aspect == UserAspect.TIME) {
 			list.add(aspect.getColor() + "Before You Know It");

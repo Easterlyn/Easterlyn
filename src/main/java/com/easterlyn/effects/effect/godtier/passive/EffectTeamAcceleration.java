@@ -44,13 +44,13 @@ public class EffectTeamAcceleration extends Effect implements BehaviorCooldown, 
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.BREATH);
+		return Arrays.asList(UserAspect.WIND);
 	}
 
 	@Override
 	public List<String> getDescription(UserAspect aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.BREATH) {
+		if (aspect == UserAspect.WIND) {
 			list.add(aspect.getColor() + "Wind Beneath Their Wings");
 		}
 		list.add(ChatColor.WHITE + "Assist your comrades.");

@@ -36,18 +36,12 @@ import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.utilities.PlayerLoader;
 
-import com.google.common.collect.ImmutableList;
-
 import org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -69,10 +63,6 @@ public class User {
 
 	/* General player data */
 	private final UUID uuid;
-	private Location previousLocation;
-
-	/* Various data Easterlyn tracks for progression purposes */
-	private final Set<String> programs;
 
 	/* Chat data*/
 	private String lastChat;
@@ -88,15 +78,6 @@ public class User {
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.uuid = uuid;
 		this.yaml = yaml;
-		if (this.previousLocation == null) {
-			World earth = Bukkit.getWorld("Earth");
-			if (earth != null) {
-				this.previousLocation = Bukkit.getWorld("Earth").getSpawnLocation();
-			} else {
-				this.previousLocation = Bukkit.getWorlds().get(0).getSpawnLocation();
-			}
-		}
-		this.programs = new HashSet<>();
 		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 		this.lastChat = new String();
 		this.violationLevel = new AtomicInteger();
@@ -167,7 +148,7 @@ public class User {
 	 * @return the UserClass, default Heir
 	 */
 	public UserClass getUserClass() {
-		return UserClass.getClass(yaml.getString("classpect.class", "HEIR"));
+		return UserClass.getClass(yaml.getString("classpect.class", "Plebian"));
 	}
 
 	/**
@@ -186,7 +167,7 @@ public class User {
 	 * @return the UserAspect
 	 */
 	public UserAspect getUserAspect() {
-		return UserAspect.getAspect(yaml.getString("classpect.aspect", "BREATH"));
+		return UserAspect.getAspect(yaml.getString("classpect.aspect", "Easterlyn"));
 	}
 
 	/**
@@ -197,50 +178,6 @@ public class User {
 	public void setUserAspect(UserAspect userAspect) {
 		yaml.set("classpect.aspect", userAspect.toString());
 		yaml.set("progression.godtier.powers", null);
-	}
-
-	/**
-	 * Gets the User's chosen medium land.
-	 * 
-	 * @return the medium Region
-	 */
-	public Region getMediumPlanet() {
-		return Region.getRegion(yaml.getString("classpect.medium", "LOWAS"));
-	}
-
-	/**
-	 * Sets the User's medium land.
-	 * 
-	 * @param mediumRegionName the new medium Region
-	 */
-	public void setMediumPlanet(String mediumRegionName) {
-		Region planet = Region.getRegion(mediumRegionName);
-		if (!planet.isMedium()) {
-			throw new RuntimeException("Invalid medium planet: " + planet.name());
-		}
-		yaml.set("classpect.medium", planet.getDisplayName());
-	}
-
-	/**
-	 * Gets the User's chosen dream planet Region.
-	 * 
-	 * @return the dream Region
-	 */
-	public Region getDreamPlanet() {
-		return Region.getRegion(yaml.getString("classpect.dream", "PROSPIT"));
-	}
-
-	/**
-	 * Sets the User's dream planet Region.
-	 * 
-	 * @param dreamRegionName the new dream Region.
-	 */
-	public void setDreamPlanet(String dreamRegionName) {
-		Region planet = Region.getRegion(dreamRegionName);
-		if (!planet.isDream()) {
-			throw new RuntimeException("Invalid dream planet: " + planet.name());
-		}
-		yaml.set("classpect.dream", planet.getDisplayName());
 	}
 
 	/**
@@ -268,9 +205,7 @@ public class User {
 								|| player.getGameMode() == GameMode.CREATIVE
 								|| player.getGameMode() == GameMode.SPECTATOR;
 				if (!allowFlight && player.hasPermission("easterlyn.command.fly.safe")) {
-					Block block = player.getLocation().getBlock();
-					allowFlight = block.getType() == Material.AIR
-							&& block.getRelative(BlockFace.DOWN).getType() == Material.AIR;
+					allowFlight = player.isOnGround();
 				}
 				player.setAllowFlight(allowFlight);
 				player.setFlying(allowFlight);
@@ -329,67 +264,6 @@ public class User {
 	}
 
 	/**
-	 * Gets the User's current Region.
-	 * 
-	 * @return the Region the Player is in.
-	 */
-	public Region getCurrentRegion() {
-		return Region.getRegion(yaml.getString("region", Region.DEFAULT.name()));
-	}
-
-	/**
-	 * Sets the User's current region. Does not update chat channels.
-	 * 
-	 * @param region
-	 */
-	protected void setCurrentRegion(Region region) {
-		yaml.set("region", region.getDisplayName());
-	}
-
-	/**
-	 * Update current Region.
-	 * 
-	 * @param newRegion the Region being transitioned into
-	 * @param force if the resource pack should be set even if it matches the old region's
-	 */
-	public void updateCurrentRegion(Region newRegion, boolean force) {
-		if (isOnline()) {
-			if (newRegion.isDream()) {
-				getPlayer().setPlayerTime(newRegion == Region.DERSE ? 18000L : 6000L, false);
-			} else {
-				getPlayer().resetPlayerTime();
-			}
-			if (force || newRegion.getResourcePackName() != null
-					&& !newRegion.getResourcePackName().equals(getCurrentRegion().getResourcePackName())) {
-				newRegion.setResourcePack(plugin, getPlayer());
-			}
-		}
-		setCurrentRegion(newRegion);
-	}
-
-	/**
-	 * Sets the Player's previous location. Used for returning to and from dream planets.
-	 * 
-	 * @param l The Player's previous Location
-	 */
-	public void setPreviousLocation(Location l) {
-		l = l.clone();
-		l.setX(l.getBlockX() + .5);
-		l.setY(l.getBlockY());
-		l.setZ(l.getBlockZ() + .5);
-		this.previousLocation = l;
-	}
-
-	/**
-	 * Gets Player's previous Location.
-	 * 
-	 * @return the previous Location
-	 */
-	public Location getPreviousLocation() {
-		return previousLocation != null ? previousLocation : Users.getSpawnLocation();
-	}
-
-	/**
 	 * The String representation of the Player's total time ingame.
 	 * 
 	 * @return the Player's time ingame
@@ -403,24 +277,6 @@ public class User {
 		time = time / (60 * 20);
 		DecimalFormat decimalFormat = new DecimalFormat("00");
 		return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
-	}
-
-	/**
-	 * Gets a Set of all Computer programs accessible by the User.
-	 * 
-	 * @return the programs installed
-	 */
-	public Set<String> getPrograms() {
-		return this.programs;
-	}
-
-	/**
-	 * Add an Entry to the Set of programs accessible by the User at their Computer.
-	 * 
-	 * @param id the id of the program to add
-	 */
-	public void addProgram(String id) {
-		this.programs.add(id);
 	}
 
 	/**
@@ -887,11 +743,7 @@ public class User {
 				.append(' ').append(Language.getColor("neutral")).append(ChatColor.STRIKETHROUGH)
 				.append("---+\n").append(Language.getColor("neutral")).append(getUserClass().getDisplayName())
 				.append(Language.getColor("emphasis.neutral")).append(" of ").append(getUserAspect().getColor())
-				.append(getUserAspect().getDisplayName()).append('\n').append(Language.getColor("emphasis.neutral"))
-				.append("Medium: ").append(getMediumPlanet().getColor())
-				.append(getMediumPlanet().getDisplayName()).append('\n')
-				.append(Language.getColor("emphasis.neutral")).append("Dream: ").append(getDreamPlanet().getColor())
-				.append(getDreamPlanet().getDisplayName()).toString();
+				.append(getUserAspect().getDisplayName()).toString();
 	}
 
 	/**
@@ -917,29 +769,14 @@ public class User {
 					.append(yaml.getString("previousname")).append('\n');
 		}
 
-		// Class of Aspect, dream, planet
+		// Class of Aspect
 		sb.append(Language.getColor("emphasis.neutral")).append(getUserClass().getDisplayName())
 				.append(Language.getColor("neutral")).append(" of ").append(Language.getColor("emphasis.neutral"))
-				.append(getUserAspect().getDisplayName()).append(Language.getColor("neutral")).append(", ")
-				.append(Language.getColor("emphasis.neutral")).append(getDreamPlanet().getDisplayName())
-				.append(Language.getColor("neutral")).append(", ").append(Language.getColor("emphasis.neutral"))
-				.append(getMediumPlanet().getDisplayName()).append('\n');
+				.append(getUserAspect().getDisplayName()).append('\n');
 
-		// Loc: current location, Region: region
+		// Loc: current location, RegionUtils: region
 		sb.append(Language.getColor("neutral")).append("Loc: ").append(Language.getColor("emphasis.neutral"))
-				.append(BukkitSerializer.locationToBlockCenterString(getCurrentLocation()))
-				.append(Language.getColor("neutral")).append(", Region: ").append(Language.getColor("emphasis.neutral"))
-				.append(getCurrentRegion().getDisplayName()).append('\n');
-
-		// Prev loc: loc prior to change to/from dreamplanet, Prev region: region of said location
-		sb.append(Language.getColor("neutral")).append("Prev loc: ").append(Language.getColor("emphasis.neutral"))
-				.append(BukkitSerializer.locationToBlockCenterString(previousLocation))
-				.append(Language.getColor("neutral")).append(", Prev region: ").append(Language.getColor("emphasis.neutral"))
-				.append(Region.getRegion(getPreviousLocation().getWorld().getName())).append('\n');
-
-		// Programs: [list]
-		sb.append(Language.getColor("neutral")).append("Programs: ").append(Language.getColor("emphasis.neutral"))
-				.append(getPrograms()).append('\n');
+				.append(BukkitSerializer.locationToBlockCenterString(getCurrentLocation())).append('\n');
 
 		// Pestering: current, Listening: [list]
 		sb.append(Language.getColor("neutral")).append("Pestering: ").append(Language.getColor("emphasis.neutral"))
@@ -1000,9 +837,6 @@ public class User {
 		}
 		yaml.set("name", getPlayerName());
 		yaml.set("ip", getUserIP());
-		yaml.set("previousLocation", BukkitSerializer.locationToBlockCenterString(getPreviousLocation()));
-		yaml.set("previousRegion", null);
-		yaml.set("progression.programs", getPrograms());
 		yaml.set("chat.current", getCurrentChannel() != null ? getCurrentChannel().getName() : "#");
 		yaml.set("chat.listening", getListening());
 		yaml.set("chat.ignoring", null);
@@ -1033,15 +867,9 @@ public class User {
 			if (player == null) {
 				return new User(plugin, uuid, new YamlConfiguration());
 			}
-			Location to = Users.getSpawnLocation();
-			if (to.getWorld() != null) {
-				player.teleport(Users.getSpawnLocation());
-			}
 
 			User user = new User(plugin, uuid, new YamlConfiguration());
 			user.setUserIP(player.getAddress().getHostString());
-
-			user.updateCurrentRegion(Region.EARTH, true);
 
 			Chat chat = plugin.getModule(Chat.class);
 			Channel hash = chat.getChannelManager().getChannel("#");
@@ -1056,11 +884,6 @@ public class User {
 						.send(Bukkit.getOnlinePlayers().stream()
 								.filter(online -> !online.getUniqueId().equals(player.getUniqueId()))
 								.collect(Collectors.toCollection(ArrayList<Object>::new)), false);
-			} else {
-				// Our data file may have just been deleted - reset planned for Entry, etc.
-				base.setMessage(Language.getColor("bot_text")
-						+ "We've reset classpect since you last played. Please re-select now!")
-						.toMessage().send(ImmutableList.of(user), false);
 			}
 
 			// Manually set channel - using setCurrentChannel results in recursive User load
@@ -1074,22 +897,13 @@ public class User {
 		}
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		User user = new User(plugin, uuid, yaml);
-		user.setPreviousLocation(BukkitSerializer.locationFromString(yaml.getString("previousLocation")));
 		if (user.isOnline()) {
 			user.setUserIP(user.getPlayer().getAddress().getHostString());
 			Location currentLoc = user.getCurrentLocation();
 			if (currentLoc == null) {
-				currentLoc = Users.getSpawnLocation();
-			}
-			if (currentLoc != null) {
-				Region currentRegion = Region.getRegion(currentLoc.getWorld().getName());
-				if (currentRegion.isDream()) {
-					currentRegion = user.getDreamPlanet();
-				}
-				user.updateCurrentRegion(currentRegion, true);
+				currentLoc = Bukkit.getWorlds().get(0).getSpawnLocation();
 			}
 		}
-		user.getPrograms().addAll((HashSet<String>) yaml.get("progression.programs"));
 		Channel currentChannel = user.manager.getChannel(yaml.getString("chat.current", "#"));
 		if (currentChannel != null && !currentChannel.isBanned(user) && currentChannel.isApproved(user)) {
 			user.currentChannel = currentChannel.getName();

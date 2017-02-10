@@ -111,7 +111,17 @@ public class CruxiteDowel {
 				 * TODO recalc and explain reasoning, double check balance
 				 * Enchantment levels are a short, no risk of overflow until added to cost.
 				 */
-				int enchantCost = (20 - getWeight(entry.getKey())) * Math.abs(entry.getValue()) * 90;
+				Enchantment enchant = entry.getKey();
+				int enchantCost = (20 - getWeight(enchant));
+				// Balance: Base cost on percentage of max level, not only current level
+				enchantCost *= 225D / enchant.getMaxLevel() * Math.abs(entry.getValue());
+				if (enchant.isCursed()) {
+					// Curses are also treasure, should be handled first.
+					enchantCost /= 1.5;
+				} else if (enchant.isTreasure()) {
+					// Rarer, increase cost.
+					enchantCost *= 1.5;
+				}
 				if (Double.MAX_VALUE - enchantCost <= cost) {
 					return Double.MAX_VALUE;
 				}
@@ -127,7 +137,17 @@ public class CruxiteDowel {
 
 		if (meta instanceof EnchantmentStorageMeta) {
 			for (Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta) meta).getStoredEnchants().entrySet()) {
-				int enchantCost = (18 - getWeight(entry.getKey())) * entry.getValue() * 80;
+				Enchantment enchant = entry.getKey();
+				int enchantCost = (18 - getWeight(enchant));
+				// Balance: Base cost on percentage of max level, not only current level
+				enchantCost *= 200D / enchant.getMaxLevel() * Math.abs(entry.getValue());
+				if (enchant.isCursed()) {
+					// Curses are also treasure, should be handled first.
+					enchantCost /= 1.5;
+				} else if (enchant.isTreasure()) {
+					// Rarer, increase cost.
+					enchantCost *= 1.5;
+				}
 				if (Double.MAX_VALUE - enchantCost <= cost) {
 					return Double.MAX_VALUE;
 				}
@@ -395,7 +415,7 @@ public class CruxiteDowel {
 			case SKULL_ITEM:
 				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 3000D);
 				// Dragon head
-				values.put(new ImmutablePair<Material, Short>(material, (short) 5), 32000D);
+				values.put(new ImmutablePair<Material, Short>(material, (short) 5), 16000D);
 				break;
 			case TOTEM:
 				values.put(new ImmutablePair<Material, Short>(material, (short) -1), 5000D);
@@ -628,25 +648,33 @@ public class CruxiteDowel {
 	}
 
 	private static int getWeight(Enchantment enchantment) {
-		if (enchantment.equals(Enchantment.PROTECTION_ENVIRONMENTAL) || enchantment.equals(Enchantment.DAMAGE_ALL)
-				|| enchantment.equals(Enchantment.DIG_SPEED) || enchantment.equals(Enchantment.ARROW_DAMAGE)) {
+		if (enchantment.equals(Enchantment.PROTECTION_ENVIRONMENTAL)
+				|| enchantment.equals(Enchantment.DAMAGE_ALL)
+				|| enchantment.equals(Enchantment.DIG_SPEED)
+				|| enchantment.equals(Enchantment.ARROW_DAMAGE)) {
 			return 10;
 		}
-		if (enchantment.equals(Enchantment.MENDING)) {
+		if (enchantment.equals(Enchantment.WATER_WORKER)
+				|| enchantment.equals(Enchantment.PROTECTION_EXPLOSIONS)
+				|| enchantment.equals(Enchantment.OXYGEN)
+				|| enchantment.equals(Enchantment.DEPTH_STRIDER)
+				|| enchantment.equals(Enchantment.FROST_WALKER)
+				|| enchantment.equals(Enchantment.FIRE_ASPECT)
+				|| enchantment.equals(Enchantment.LOOT_BONUS_MOBS)
+				|| enchantment.equals(Enchantment.SWEEPING_EDGE)
+				|| enchantment.equals(Enchantment.LOOT_BONUS_BLOCKS)
+				|| enchantment.equals(Enchantment.ARROW_FIRE)
+				|| enchantment.equals(Enchantment.ARROW_KNOCKBACK)
+				|| enchantment.equals(Enchantment.LUCK)
+				|| enchantment.equals(Enchantment.LURE)
+				|| enchantment.equals(Enchantment.MENDING)) {
 			return 2;
 		}
-		if (enchantment.equals(Enchantment.FROST_WALKER)) {
-			return 2;
-		}
-		if (enchantment.equals(Enchantment.WATER_WORKER) || enchantment.equals(Enchantment.PROTECTION_EXPLOSIONS)
-				|| enchantment.equals(Enchantment.OXYGEN) || enchantment.equals(Enchantment.FIRE_ASPECT)
-				|| enchantment.equals(Enchantment.LOOT_BONUS_MOBS) || enchantment.equals(Enchantment.LOOT_BONUS_BLOCKS)
-				|| enchantment.equals(Enchantment.ARROW_FIRE) || enchantment.equals(Enchantment.ARROW_KNOCKBACK)
-				|| enchantment.equals(Enchantment.DEPTH_STRIDER)) {
-			return 2;
-		}
-		if (enchantment.equals(Enchantment.THORNS) || enchantment.equals(Enchantment.SILK_TOUCH)
-				|| enchantment.equals(Enchantment.ARROW_INFINITE)) {
+		if (enchantment.equals(Enchantment.THORNS)
+				|| enchantment.equals(Enchantment.SILK_TOUCH)
+				|| enchantment.equals(Enchantment.ARROW_INFINITE)
+				|| enchantment.equals(Enchantment.BINDING_CURSE)
+				|| enchantment.equals(Enchantment.VANISHING_CURSE)) {
 			return 1;
 		}
 		return 5;

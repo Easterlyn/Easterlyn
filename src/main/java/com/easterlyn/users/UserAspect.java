@@ -16,21 +16,24 @@ public class UserAspect {
 
 	private static final HashMap<String, UserAspect> REGISTRY = new HashMap<>();
 
-	public static final UserAspect BLOOD = addDefault("blood", new UserAspect("Blood", ChatColor.DARK_RED));
-	public static final UserAspect BREATH = addDefault("breath", new UserAspect("Breath", ChatColor.AQUA));
-	public static final UserAspect DOOM = addDefault("doom", new UserAspect("Doom", ChatColor.DARK_GREEN));
-	public static final UserAspect HEART = addDefault("heart", new UserAspect("Heart", ChatColor.LIGHT_PURPLE));
-	public static final UserAspect HOPE = addDefault("hope", new UserAspect("Hope", ChatColor.GOLD));
-	public static final UserAspect LIFE = addDefault("life", new UserAspect("Life", ChatColor.GREEN));
-	public static final UserAspect LIGHT = addDefault("light", new UserAspect("Light", ChatColor.YELLOW));
-	public static final UserAspect LIPS = addDefault("lips", new UserAspect("Lips", ChatColor.LIGHT_PURPLE));
-	public static final UserAspect MIND = addDefault("mind", new UserAspect("Mind", ChatColor.DARK_AQUA));
-	public static final UserAspect PISS = addDefault("piss", new UserAspect("Piss", ChatColor.YELLOW));
-	public static final UserAspect RAGE = addDefault("rage", new UserAspect("Rage", ChatColor.DARK_PURPLE));
-	public static final UserAspect SPACE = addDefault("space", new UserAspect("Space", ChatColor.DARK_GRAY));
-	public static final UserAspect TEARS = addDefault("tears", new UserAspect("Tears", ChatColor.AQUA));
-	public static final UserAspect TIME = addDefault("time", new UserAspect("Time", ChatColor.RED));
-	public static final UserAspect VOID = addDefault("void", new UserAspect("Void", ChatColor.DARK_BLUE));
+	public static final UserAspect ADANSONIA = addDefault(new UserAspect("Adansonia", ChatColor.DARK_AQUA));
+	public static final UserAspect ENERGY = addDefault(new UserAspect("Energy", ChatColor.DARK_GREEN));
+	public static final UserAspect FROST = addDefault(new UserAspect("Frost", ChatColor.AQUA));
+	public static final UserAspect KNOWLEDGE = addDefault(new UserAspect("Knowledge", ChatColor.DARK_RED));
+	public static final UserAspect LIGHTNING = addDefault(new UserAspect("Lightning", ChatColor.YELLOW));
+	public static final UserAspect LLAMAS = addDefault(new UserAspect("Llamas", ChatColor.GREEN));
+	public static final UserAspect MEMES = addDefault(new UserAspect("Memes", ChatColor.LIGHT_PURPLE));
+	public static final UserAspect MOONLIGHT = addDefault(new UserAspect("Moonlight", ChatColor.WHITE));
+	public static final UserAspect RAIN = addDefault(new UserAspect("Rain", ChatColor.BLUE));
+	public static final UserAspect ROYALTY = addDefault(new UserAspect("Royalty", ChatColor.DARK_PURPLE));
+	public static final UserAspect SECRETS = addDefault(new UserAspect("Secrets", ChatColor.BLACK));
+	public static final UserAspect SOULS = addDefault(new UserAspect("Souls", ChatColor.BLUE));
+	public static final UserAspect STARS = addDefault(new UserAspect("Stars", ChatColor.GOLD));
+	public static final UserAspect TIME = addDefault(new UserAspect("Time", ChatColor.DARK_PURPLE));
+	public static final UserAspect WIND = addDefault(new UserAspect("Wind", ChatColor.GRAY));
+	public static final UserAspect VOID = addDefault(new UserAspect("Void", ChatColor.DARK_GRAY));
+
+	public static final UserAspect EASTERLYN = addDefault(new UserAspect("Easterlyn", ChatColor.GREEN));
 
 	private final String name;
 	private final ChatColor chatColor;
@@ -87,11 +90,11 @@ public class UserAspect {
 		if (aspect.length() > 2 && aspect.charAt(0) == ChatColor.COLOR_CHAR) {
 			return new UserAspect(aspect.substring(2), ChatColor.getByChar(aspect.charAt(1)));
 		}
-		return BREATH;
+		return EASTERLYN;
 	}
 
-	private static UserAspect addDefault(String ID, UserAspect aspect) {
-		REGISTRY.put(ID, aspect);
+	private static UserAspect addDefault(UserAspect aspect) {
+		REGISTRY.put(aspect.getDisplayName().toLowerCase(), aspect);
 		return aspect;
 	}
 

@@ -44,7 +44,7 @@ public class AspectCommand extends EasterlynCommand {
 		}
 
 		UserAspect userAspect = UserAspect.getAspect(ChatColor.translateAlternateColorCodes('&', args[0]));
-		if (userAspect == UserAspect.BREATH && !args[0].equalsIgnoreCase("breath")
+		if (userAspect == UserAspect.EASTERLYN && !args[0].equalsIgnoreCase("easterlyn")
 				|| userAspect.getDisplayName().length() < 2
 				|| userAspect.getDisplayName().contains(String.valueOf(ChatColor.COLOR_CHAR))
 				|| userAspect.getColor() == null) {

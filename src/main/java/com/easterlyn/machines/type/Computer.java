@@ -1,13 +1,11 @@
 package com.easterlyn.machines.type;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.computer.PowerManager;
 import com.easterlyn.machines.type.computer.Program;
 import com.easterlyn.machines.type.computer.Programs;
 import com.easterlyn.machines.utilities.Shape;
-import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.PermissionUtils;
@@ -98,17 +96,6 @@ public class Computer extends Machine implements InventoryHolder {
 		}
 		if (event.getMaterial().name().contains("RECORD")) { // prevent non-program Icons from being registered
 			event.setCancelled(true);
-			Program program = Programs.getProgramByInstaller(event.getItem());
-			if (program != null) {
-				event.getPlayer().sendMessage(Language.getColor("good") + "Installed "
-						+ event.getItem().getItemMeta().getDisplayName() + Language.getColor("good") + "!");
-				if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-					InventoryUtils.decrementHeldItem(event, 1);
-				}
-				User u = getUsers().getUser(event.getPlayer().getUniqueId());
-				u.addProgram(program.getName());
-				return true;
-			}
 		}
 		if (event.getPlayer().isSneaking()) {
 			return event.isCancelled();
@@ -127,14 +114,10 @@ public class Computer extends Machine implements InventoryHolder {
 
 	public void openInventory(Player player) {
 		Inventory inventory = getInventory();
-		User user = getUsers().getUser(player.getUniqueId());
 		for (Program program : Programs.getPrograms()) {
 			if (program.isDefault() || program instanceof PowerManager && player.hasPermission(UserRank.DANGER_DANGER_HIGH_VOLTAGE.getPermission())) {
 				inventory.addItem(program.getIcon());
 			}
-		}
-		for (String id : user.getPrograms()) {
-			inventory.addItem(Programs.getProgramByName(id).getIcon());
 		}
 		player.openInventory(inventory);
 		InventoryUtils.changeWindowName(player, player.getName() + "@easterlyn.com:~/");

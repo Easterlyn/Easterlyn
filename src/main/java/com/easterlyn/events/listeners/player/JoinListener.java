@@ -9,7 +9,6 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.events.packets.WrapperPlayServerPlayerListHeaderFooter;
-import com.easterlyn.users.Region;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 
@@ -78,12 +77,6 @@ public class JoinListener extends EasterlynListener {
 				}
 				user.handleLoginChannelJoins(announce);
 				user.handleNameChange();
-				Region region = Region.getRegion(player.getWorld().getName());
-				if (region.isDream()) {
-					Region old = user.getCurrentRegion();
-					region = old.isDream() ? old : user.getDreamPlanet();
-				}
-				user.updateCurrentRegion(region, true);
 				user.updateFlight();
 				events.getInvisibilityManager().updateVisibility(player);
 				for (String command : user.getLoginCommands()) {

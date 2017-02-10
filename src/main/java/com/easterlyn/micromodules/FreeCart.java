@@ -39,14 +39,14 @@ public class FreeCart extends Module {
 		}
 	}
 
-	public void spawnCart(Player p, Location location, Vector startspeed) {
+	public void spawnCart(Player player, Location location, Vector startspeed) {
 		//nocheatplus.checks.moving.vehicle.envelope
-		if (cooldowns.getRemainder(p, "freecart") > 0) {
+		if (cooldowns.getRemainder(player, "freecart") > 0) {
 			return;
 		}
-		cooldowns.addCooldown(p, "freecart", 2000);
+		cooldowns.addCooldown(player, "freecart", 2000);
 		Minecart minecart = (Minecart) location.getWorld().spawnEntity(location, EntityType.MINECART);
-		minecart.setPassenger(p);
+		minecart.addPassenger(player);
 		minecart.setVelocity(startspeed);
 		minecart.setMaxSpeed(10);
 		carts.add(minecart);

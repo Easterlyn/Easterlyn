@@ -42,7 +42,7 @@ public class MessageBuilder {
 
 	private static final TextComponent HIGHLIGHTED_BRACKET;
 	private static final String CONSOLE_FORMAT, CONSOLE_FORMAT_THIRD;
-	private static final Pattern NAME_PATTERN, RANK_PATTERN, CLASS_PATTERN, ASPECT_PATTERN, DREAM_PATTERN, MEDIUM_PATTERN;
+	private static final Pattern NAME_PATTERN, RANK_PATTERN, CLASS_PATTERN, ASPECT_PATTERN;
 	private static BaseComponent[] NAME_HOVER;
 
 	static {
@@ -58,8 +58,6 @@ public class MessageBuilder {
 		RANK_PATTERN = Pattern.compile("\\{RANK\\}");
 		CLASS_PATTERN = Pattern.compile("\\{CLASS\\}");
 		ASPECT_PATTERN = Pattern.compile("\\{ASPECT\\}");
-		DREAM_PATTERN = Pattern.compile("\\{DREAM\\}");
-		MEDIUM_PATTERN = Pattern.compile("\\{MEDIUM\\}");
 	}
 
 	private final Easterlyn plugin;
@@ -401,7 +399,7 @@ public class MessageBuilder {
 		components.clear();
 
 		// NAME ELEMENT: <Name>
-		ChatColor region = sender != null ? sender.getCurrentRegion().getColor() : ChatColor.WHITE;
+		ChatColor region = ChatColor.WHITE;
 
 		// > | <
 		component = new TextComponent(thirdPerson ? "> " : " <");
@@ -498,18 +496,6 @@ public class MessageBuilder {
 				if (matcher.find()) {
 					text = matcher.replaceAll(sender.getUserAspect().getDisplayName());
 					hoverElement.setColor(sender.getUserAspect().getColor());
-				}
-
-				matcher = DREAM_PATTERN.matcher(text);
-				if (matcher.find()) {
-					text = matcher.replaceAll(sender.getDreamPlanet().getDisplayName());
-					hoverElement.setColor(sender.getDreamPlanet().getColor());
-				}
-
-				matcher = MEDIUM_PATTERN.matcher(text);
-				if (matcher.find()) {
-					text = matcher.replaceAll(sender.getMediumPlanet().getDisplayName());
-					hoverElement.setColor(sender.getMediumPlanet().getColor());
 				}
 
 				hoverElement.setText(text);
