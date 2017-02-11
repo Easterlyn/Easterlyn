@@ -80,7 +80,7 @@ public class CruxiteDowel {
 		if (toCreate.getAmount() < 1) {
 			return Double.MAX_VALUE;
 		}
-		double cost = getMana().get(toCreate.getType());
+		double cost = getMana().getOrDefault(new ImmutablePair<>(toCreate.getType(), toCreate.getDurability()), Double.MAX_VALUE);
 		if (cost == Double.MAX_VALUE) {
 			// Item cannot be made with mana
 			return Double.MAX_VALUE;

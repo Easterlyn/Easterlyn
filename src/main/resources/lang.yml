@@ -25,7 +25,7 @@ color:
     bad: 'DARK_RED'
   rank:
     default: 'WHITE'
-    member: 'LIGHT_GRAY'
+    member: 'GRAY'
     trusted: 'GREEN'
     helper: 'YELLOW'
     mod: 'GOLD'
@@ -83,9 +83,9 @@ chat:
       {COLOR:link_color}{COLOR:link_format}discord.easterlyn.com
       {COLOR:neutral}Channel: #main
     hover: |
-      {COLOR:neutral}{COLOR:strikethrough}+--{COLOR:rank.hero} {PLAYER} {COLOR:neutral}{COLOR:strikethrough}--+
-      {COLOR:rank.hero}{RANK}
-      {COLOR:rank.hero}{CLASS} of {ASPECT}
+      {COLOR:neutral}{COLOR:strikethrough}+--{COLOR:rank.default} {PLAYER} {COLOR:neutral}{COLOR:strikethrough}--+
+      {COLOR:rank.default}{RANK}
+      {COLOR:rank.default}{CLASS} of {ASPECT}
   channel:
     join: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}joined {COLOR:link_channel}{CHANNEL} {COLOR:neutral}at {TIME}'
     quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}quit {COLOR:link_channel}{CHANNEL} {COLOR:neutral}at {TIME}'

@@ -89,7 +89,6 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 			}
 		} catch (Exception e) {
 			sender.sendMessage(Language.getColor("bad") + "An error occurred processing this command. Please make sure your parameters are correct.");
-			sender.sendMessage(this.getUsage());
 			plugin.getModule(Discord.class).postReport("Error processing command by " + sender.getName()
 					+ ": /" + getName() + " " + StringUtils.join(args, ' ') + '\n' + TextUtils.getTrace(e, 5));
 			e.printStackTrace();

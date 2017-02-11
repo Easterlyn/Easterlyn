@@ -28,7 +28,7 @@ public class OopsCommand extends EasterlynCommand {
 
 	public OopsCommand(Easterlyn plugin) {
 		super(plugin, "oops");
-		this.setAliases("fuck", "opps");
+		this.setAliases("opps");
 		oopsCommands = new HashMap<>();
 		reusable = new ArrayList<>();
 		aliases = new ArrayList<>(this.getAllAliases(this));

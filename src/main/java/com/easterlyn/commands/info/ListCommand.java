@@ -68,6 +68,7 @@ public class ListCommand extends EasterlynCommand {
 						v.add(nameBuilder.toString());
 						return v;
 					});
+					break;
 				}
 			}
 		}

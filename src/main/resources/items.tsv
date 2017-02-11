@@ -612,8 +612,9 @@
 446	BOAT_JUNGLE	0	Jungle Boat	jungle_boat
 447	BOAT_ACACIA	0	Acacia Boat	acacia_boat
 448	BOAT_DARK_OAK	0	Dark Oak Boat	dark_oak_boat
-449	TOTEM	0	Totem of Undying	totem
+449	TOTEM	0	Totem of Undying	totem_of_undying
 450	SHULKER_SHELL	0	Shulker Shell	shulker_shell
+452	IRON_NUGGET	0	Iron Nugget	iron_nugget
 2256	GOLD_RECORD	0	13 Disc	record_13
 2257	GREEN_RECORD	0	Cat Disc	record_cat
 2258	RECORD_3	0	Blocks Disc	record_blocks

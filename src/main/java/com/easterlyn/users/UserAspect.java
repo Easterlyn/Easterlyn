@@ -16,20 +16,21 @@ public class UserAspect {
 
 	private static final HashMap<String, UserAspect> REGISTRY = new HashMap<>();
 
-	public static final UserAspect ADANSONIA = addDefault(new UserAspect("Adansonia", ChatColor.DARK_AQUA));
-	public static final UserAspect ENERGY = addDefault(new UserAspect("Energy", ChatColor.DARK_GREEN));
+	public static final UserAspect ADANSONIA = addDefault(new UserAspect("Adansonia", ChatColor.RED));
+
+	public static final UserAspect ENERGY = addDefault(new UserAspect("Energy", ChatColor.GREEN));
 	public static final UserAspect FROST = addDefault(new UserAspect("Frost", ChatColor.AQUA));
 	public static final UserAspect KNOWLEDGE = addDefault(new UserAspect("Knowledge", ChatColor.DARK_RED));
 	public static final UserAspect LIGHTNING = addDefault(new UserAspect("Lightning", ChatColor.YELLOW));
-	public static final UserAspect LLAMAS = addDefault(new UserAspect("Llamas", ChatColor.GREEN));
+	public static final UserAspect LLAMAS = addDefault(new UserAspect("Llamas", ChatColor.DARK_GREEN));
 	public static final UserAspect MEMES = addDefault(new UserAspect("Memes", ChatColor.LIGHT_PURPLE));
 	public static final UserAspect MOONLIGHT = addDefault(new UserAspect("Moonlight", ChatColor.WHITE));
-	public static final UserAspect RAIN = addDefault(new UserAspect("Rain", ChatColor.BLUE));
+	public static final UserAspect RAIN = addDefault(new UserAspect("Rain", ChatColor.DARK_BLUE));
 	public static final UserAspect ROYALTY = addDefault(new UserAspect("Royalty", ChatColor.DARK_PURPLE));
 	public static final UserAspect SECRETS = addDefault(new UserAspect("Secrets", ChatColor.BLACK));
 	public static final UserAspect SOULS = addDefault(new UserAspect("Souls", ChatColor.BLUE));
 	public static final UserAspect STARS = addDefault(new UserAspect("Stars", ChatColor.GOLD));
-	public static final UserAspect TIME = addDefault(new UserAspect("Time", ChatColor.DARK_PURPLE));
+	public static final UserAspect TIME = addDefault(new UserAspect("Time", ChatColor.DARK_AQUA));
 	public static final UserAspect WIND = addDefault(new UserAspect("Wind", ChatColor.GRAY));
 	public static final UserAspect VOID = addDefault(new UserAspect("Void", ChatColor.DARK_GRAY));
 
