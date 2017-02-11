@@ -52,7 +52,7 @@ chat:
   ai:
     cleverbot:
       name: '{COLOR:bot_name}The Scribe'
-      hover: |
+      hover: |-
         {COLOR:bot_text}Easterlyn Records Keeper
         {COLOR:emphasis.bad}The Scribe tells it like is
         {COLOR:emphasis.bad}whether you like it or not.
@@ -61,7 +61,7 @@ chat:
         
         {COLOR:command}/join #spam {COLOR:emphasis.bad}to spam usage.
       trigger: '(some|any|no)\s?body'
-      ignore: |
+      ignore: |-
         (love|date|baby|bang|due|fuck|pregnant|r(@|4|a)pe|sex)\s?
         (g|b)\s?f\s?
         (girl|boy)\s?(friend)?\s?
@@ -69,20 +69,20 @@ chat:
         dad+y?\s?
     calculator:
       name: '{COLOR:bot_name}The Scribe'
-      hover: |
+      hover: |-
         {COLOR:bot_text}Calculator
         {COLOR:emphasis.bad}For long or multiple
         {COLOR:emphasis.bad}equations, use {COLOR:command}/halc
-      replies: |
+      replies: |-
         ((di|co)c?k|pe(en|nis)|(we[ie]n|(schl|d)ong)(er)?|willy|(trouser ?)?snake|lizard){RESPONSE}Sorry, your equation is too tiny for me to read.
         life.*universe.*everything{RESPONSE}{INPUT} = 42
   user:
     away: '{COLOR:player.bad}{PLAYER} {COLOR:bad}is away and may not respond!'
-    discordHover: |
+    discordHover: |-
       {COLOR:emphasis.neutral}Discord Chat
       {COLOR:link_color}{COLOR:link_format}discord.easterlyn.com
       {COLOR:neutral}Channel: #main
-    hover: |
+    hover: |-
       {COLOR:neutral}{COLOR:strikethrough}+--{COLOR:rank.default} {PLAYER} {COLOR:neutral}{COLOR:strikethrough}--+
       {COLOR:rank.default}{RANK}
       {COLOR:rank.default}{CLASS} of {ASPECT}
@@ -104,7 +104,7 @@ chat:
     emptyMessage: '{COLOR:bad}You cannot send empty messages!'
     alreadyListening: '{COLOR:bad}You are already listening to {COLOR:emphasis.bad}{CHANNEL}'
     notListening: '{COLOR:bad}You are not listening to {COLOR:emphasis.bad}{CHANNEL}'
-    noCurrentChannel: |
+    noCurrentChannel: |-
       {COLOR:bad}You do not have a current channel set!
       {COLOR:good}Focus on the main channel with {COLOR:command}/join #
     invalidChannel: '{COLOR:emphasis.bad}{CHANNEL} {COLOR:bad}does not exist! Did you forget the #?'
@@ -116,7 +116,7 @@ chat:
     globalJoin: '{COLOR:bad}You cannot join the global channel! If you''re not in it, relog.'
     globalQuit: '{COLOR:bad}You cannot leave the global channel! Use {COLOR:command}/suppress {COLOR:bad}to ignore it.'
     nickTaken: '{COLOR:emphasis.bad}{NICK} {COLOR:bad}is already in use!'
-    nickNotCanon: |
+    nickNotCanon: |-
       {COLOR:emphasis.bad}{NICK} {COLOR:bad}is not a canon nickame!
       {COLOR:neutral}Use {COLOR:command}/nick list {COLOR:neutral}for a list.
 
@@ -144,7 +144,7 @@ command:
     usage: '/tempban <target> <duration> [optional reason]'
     announce: '{COLOR:player.bad}{PLAYER} {COLOR:bad}has been temporarily exiled. {COLOR:emphasis.bad}{REASON}'
   aether:
-    hover: |
+    hover: |-
       {COLOR:emphasis.neutral}Dynmap Chat
       {COLOR:link_color}{COLOR:link_format}map.edwardia.com
   me:
@@ -158,11 +158,15 @@ command:
     usage: '/silentkick <player> [reason]'
   spamhauslist:
     description: 'Edit the list of IPs which are not checked against Spamhaus'
-    usage: |
+    usage: |-
       /spamhauslist add <ip>
       /spamhauslist remove <ip>
     add: '{COLOR:neutral}Added {COLOR:emphasis.neutral}{IP}{COLOR:neutral} to the Spamhaus exempt list.'
     remove: '{COLOR:neutral}Removed {COLOR:emphasis.neutral}{IP}{COLOR:neutral} from the Spamhaus exempt list.'
+  tpreset:
+    description: 'Reset TPA cooldown. Intended for official business only. Do not abuse.'
+    usage: '/tpreset'
+    success: '{COLOR:neutral}TP request cooldown reset.'
   ultraban:
     description: 'BIG BROTHER IS ALWAYS WATCHING.'
     usage: '/ultraban <target>'
@@ -190,7 +194,7 @@ command:
   link:
     description: 'Generate a code to link your Discord account with Minecraft'
     usage: '/link [UUID] [DiscordUser/ID]'
-    success: |
+    success: |-
       {COLOR:neutral}Message the Discord bot "{COLOR:command}/link {CODE}{COLOR:neutral}" to complete linking your Discord account!
       {COLOR:bad}This code will expire in a minute.
       {COLOR:neutral}Discord invite link: {COLOR:link_color}{COLOR:link_format}discord.easterlyn.com
@@ -207,7 +211,7 @@ command:
     invalidCharacters: '{COLOR:bad}You may not show items with names containing characters normalized by the main chat!'
   enchant:
     description: 'Enchant the item in your main hand.'
-    usage: |
+    usage: |-
       /enchant <enchantment> <level> [-flags]
       Flags:
       -b: Don't turn books into enchanted books
@@ -232,7 +236,7 @@ command:
     usage: '/crotchrocket'
   mana:
     description: 'Mana-related operations.'
-    usage: |
+    usage: |-
       {COLOR:command}/mana cost{COLOR:neutral}: Mana cost of item in hand.
       {COLOR:command}/mana current{COLOR:neutral}: Current mana.
       {COLOR:command}/mana (level)L{COLOR:neutral}: Mana from level. Ex: /mana 40L
@@ -272,7 +276,7 @@ command:
       senderMissing: '{COLOR:bad}The issuer of the request seems to have logged off.'
     success:
       sent: '{COLOR:neutral}Request sent!'
-      receive: |
+      receive: |-
         {COLOR:player.neutral}{PLAYER}{COLOR:neutral} is requesting to teleport {OPTION}.
         {COLOR:neutral}To accept, use {COLOR:command}/tpyes{COLOR:neutral}. To decline, use {COLOR:command}/tpno{COLOR:neutral}.
         {COLOR:neutral}This request will expire in a minute.
@@ -297,7 +301,7 @@ command:
     failure: '{COLOR:bad}No old captchacards found!'
   onlogin:
     description: 'Manipulate commands executed on login.'
-    usage: |
+    usage: |-
       /onlogin list
       /onlogin add </command> [command arguments]
       /onlogin delete <number>
@@ -323,12 +327,12 @@ command:
     more: '{COLOR:bad}More descriptive, please! We''d like a better understanding of the problem.'
     discord: '{COLOR:bad}Reporting is disabled at this time, sorry! Please /mail an admin instead.'
     success: '{COLOR:good}Report sent! Thanks for alerting us.'
-    send: |
+    send: |-
       Report by {PLAYER} - /silenttp @p {X} {Y} {Z} 0 0 {WORLD}
       {PARAMETER}
   spectate:
     description: 'Player: Become the ghost (toggle spectator mode)'
-    usage: |
+    usage: |-
       To toggle spectate mode, use no arguments.
       To prevent players from spectating to you, use /spectate deny
       To allow players to spectate to you, use /spectate allow
@@ -339,14 +343,14 @@ command:
   aspect:
     description: 'Specify your aspect!'
     usage: '/aspect <ASPECT>'
-    failure: |
+    failure: |-
       {COLOR:bad}For default aspects, use tab completion.
       Custom aspects must start with a {COLOR:command}/color{COLOR:bad}, be at least 2 characters long, and contain no additional colors.
     success: '{COLOR:good}Aspect set to {ASPECT}'
   class:
     description: 'Specify your class!'
     usage: '/class <CLASS>'
-    failure: |
+    failure: |-
       {COLOR:bad}For default classes, use tab completion.
       Custom classes must start with a {COLOR:command}/color{COLOR:bad},
       be at least 2 characters long, and contain no additional colors.
@@ -362,7 +366,7 @@ captcha:
 
 discord:
   link:
-    mandate: |
+    mandate: |-
       Welcome, {USER}!
       At your earliest convenience, please log into Minecraft on `play.easterlyn.com` and run `/link`. Then, in this chat, run `/link YourCodeHere` to complete the process.
       If you don't play Minecraft and are here for other reasons, please contact the staff - users with no groups are automatically kicked after a grace period.
@@ -372,7 +376,7 @@ events:
     captcha: '{COLOR:bad}Using captchas in crafting tends to lose valuables!'
     unique: '{COLOR:bad}You can''t use a {PARAMETER}{COLOR:bad} for that!'
   chat:
-    test: |
+    test: |-
       It is certain.
       It is decidedly so.
       Without a doubt.
@@ -398,7 +402,7 @@ events:
       Error: Test results contaminated.
       tset
       PONG.
-    filter: |
+    filter: |-
       (^|\s)rap(ed?|ing)(\W|\s|$)
     ping: '{COLOR:bad}Don''t just highlight someone, {PLAYER}. It''s easy and polite to say what you plan to say once you have their attention in the same sentence.'
     rp: '{COLOR:bad}RP is not allowed in the main chat. Join #rp or #fanrp using /focus!'
@@ -411,7 +415,7 @@ events:
     spectatefail: '{COLOR:bad}You hear a fizzling noise as your spell fails. You can''t summon the strength to cast it in this form.'
     prismUndoCrash: '{COLOR:bad}Restore, don''t undo.'
   death:
-    random: |
+    random: |-
       Oh dear, you are dead.
       Crikey, that was a big 'un!
       Git rekt.
@@ -429,7 +433,7 @@ events:
       header: '{COLOR:gold}Welcome to {COLOR:dark_aqua}Easterlyn'
       footer: '{COLOR:neutral}Enjoy your stay!'
   login:
-    illegalName: |
+    illegalName: |-
       Your name contains invalid characters. Valid characters are [a-zA-Z_0-9].
       Try restarting your client.
       
@@ -445,6 +449,10 @@ sleep:
   player: '{COLOR:player.neutral}{PLAYER}{COLOR:neutral} has gone to bed.'
   percent: '{COLOR:neutral}{PERCENT}% of players have slept.'
   success: '{COLOR:neutral}Time to get up, a new day awaits!'
+
+rawannouncer:
+  name: '{COLOR:bot_name}The Scribe'
+  hover: '{COLOR:bot_text}Automated Announcement'
 
 spectators:
   initiate: '{COLOR:neutral}You feel a tingling sensation about your extremities as you hover up slightly.'

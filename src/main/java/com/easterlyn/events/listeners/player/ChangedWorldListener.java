@@ -31,9 +31,7 @@ public class ChangedWorldListener extends EasterlynListener {
 	 */
 	@EventHandler
 	public void onPlayerChangedWorlds(PlayerChangedWorldEvent event) {
-
-		sleep.updateVoteCount(event.getFrom().getName(), event.getPlayer().getName());
-
+		sleep.removeVote(event.getFrom(), event.getPlayer());
 		effects.applyAllEffects(event.getPlayer());
 	}
 

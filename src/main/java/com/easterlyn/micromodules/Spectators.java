@@ -114,7 +114,7 @@ public class Spectators extends Module {
 		}
 		player.closeInventory();
 		player.setGameMode(GameMode.SPECTATOR);
-		if (sleep.updateVoteCount(player.getWorld().getName(), player.getName())) {
+		if (sleep.removeVote(player.getWorld(), player)) {
 			player.sendMessage(lang.getValue("sleep.interrupt"));
 		}
 		spectators.put(player.getUniqueId(), player.getLocation().add(0, .1, 0));

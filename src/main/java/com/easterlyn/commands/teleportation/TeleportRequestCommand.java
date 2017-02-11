@@ -14,7 +14,6 @@ import com.easterlyn.machines.type.Transportalizer;
 import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.User;
-import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.RegionUtils;
 
@@ -40,12 +39,11 @@ public class TeleportRequestCommand extends EasterlynCommand {
 
 	public TeleportRequestCommand(Easterlyn plugin) {
 		super(plugin, "tpa");
-		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno", "tpreset");
+		this.setAliases("tpask", "call", "tpahere", "tpaskhere", "callhere", "tpaccept", "tpyes", "tpdeny", "tpno");
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
 		this.transportalizer = (Transportalizer) plugin.getModule(Machines.class).getMachineByName("Transportalizer");
-		this.addExtraPermission("reset", UserRank.HELPER);
 	}
 
 	@Override
@@ -80,12 +78,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			decline(player);
 			return true;
 		}
-		if (label.equals("tpreset")) {
-			if (player.hasPermission("easterlyn.command.tpa.reset")) {
-				cooldowns.clearCooldown(player, "teleportRequest");
-			}
-		}
-		return true;
+		return false;
 	}
 
 	private void ask(Player sender, String[] args, boolean here) {
@@ -93,7 +86,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 		if (remainder > 0) {
 			sender.sendMessage(getLang().getValue("command.tpa.error.cooldown")
 					.replace("{TIME}", time.format(new Date(remainder))));
-			if (sender.hasPermission("easterlyn.command.tpa.reset")) {
+			if (sender.hasPermission("easterlyn.command.tpreset")) {
 				sender.sendMessage(getLang().getValue("command.tpa.reset"));
 			}
 			return;
@@ -259,10 +252,6 @@ public class TeleportRequestCommand extends EasterlynCommand {
 		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
 			return com.google.common.collect.ImmutableList.of();
 		}
-		List<String> completions = super.tabComplete(sender, alias, args);
-		if (completions.contains("tpreset") && !sender.hasPermission("easterlyn.command.tpa.reset")) {
-			completions.remove("tpreset");
-		}
-		return completions;
+		return super.tabComplete(sender, alias, args);
 	}
 }

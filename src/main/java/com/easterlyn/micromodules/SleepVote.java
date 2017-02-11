@@ -8,7 +8,6 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.module.Module;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -38,7 +37,7 @@ public class SleepVote extends Module {
 		this.votes.clear();
 	}
 
-	public void sleepVote(World world, Player p) {
+	public void addVote(World world, Player p) {
 		if (!isEnabled()) {
 			return;
 		}
@@ -47,7 +46,7 @@ public class SleepVote extends Module {
 			resetVote(world);
 		}
 		if (votes.get(world.getName()).add(p.getName())) {
-			updateVotes(world, p.getDisplayName());
+			updateVotesLater(world, p.getDisplayName());
 		}
 	}
 
@@ -58,42 +57,56 @@ public class SleepVote extends Module {
 	 * @param world the world to update
 	 * @return true if the count has changed
 	 */
-	public boolean updateVoteCount(final String world, String player) {
+	public boolean removeVote(final World world, Player player) {
 		if (!isEnabled()) {
 			return false;
 		}
-		if (!votes.containsKey(world)) {
+
+		if (!votes.containsKey(world.getName())) {
 			return false;
 		}
+
+		boolean voted = false;
 		if (player != null) {
-			votes.get(world).remove(player);
+			voted = votes.get(world.getName()).remove(player.getName());
 		}
 
-		updateVotes(Bukkit.getWorld(world), null);
-		return true;
+		updateVotesLater(world, null);
+		return voted;
 	}
 
-	public void updateVotes(World world, String player) {
+	private void updateVotesLater(final World world, final String player) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				updateVotes(world, player);
+			}
+		}.runTaskLater(this.getPlugin(), 30L);
+	}
+
+	private void updateVotes(World world, String player) {
 		if (!isEnabled()) {
 			return;
 		}
+
 		if (!votes.containsKey(world.getName())) {
 			// No vote running in this world, nothing to update.
 			return;
 		}
+
 		StringBuilder sb = new StringBuilder();
 		AtomicInteger worldSize = new AtomicInteger(0);
 		world.getPlayers().forEach(p -> {
-			// Essentials sets afk players to sleeping ignored
+			// Ignore players who are AFK due to idling
 			if (!p.isSleepingIgnored()) {
 				worldSize.incrementAndGet();
 			}
 		});
+
 		if (player != null) {
 			sb.append(lang.getValue("sleep.player").replace("{PLAYER}", player)).append(' ');
-		} else {
-			worldSize.decrementAndGet();
 		}
+
 		int percent = worldSize.get() == 0 ? 100 : 100 * votes.get(world.getName()).size() / worldSize.get();
 		sb.append(lang.getValue("sleep.percent").replace("{PERCENT}", String.valueOf(percent)));
 		if (percent >= 50) {
@@ -107,6 +120,7 @@ public class SleepVote extends Module {
 			// No spam on log in/out
 			return;
 		}
+
 		String msg = sb.toString();
 		for (Player p : world.getPlayers()) {
 			p.sendMessage(msg);

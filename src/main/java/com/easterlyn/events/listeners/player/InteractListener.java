@@ -5,14 +5,12 @@ import java.util.Set;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.chat.Language;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.Cooldowns;
-import com.easterlyn.micromodules.SleepVote;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
 
@@ -41,9 +39,7 @@ public class InteractListener extends EasterlynListener {
 	private final Captcha captcha;
 	private final Cooldowns cooldowns;
 	private final Effects effects;
-	private final Language lang;
 	private final Machines machines;
-	private final SleepVote sleep;
 	private final Set<Material> bypassable;
 
 	public InteractListener(Easterlyn plugin) {
@@ -52,9 +48,7 @@ public class InteractListener extends EasterlynListener {
 		this.captcha = plugin.getModule(Captcha.class);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.effects = plugin.getModule(Effects.class);
-		this.lang = plugin.getModule(Language.class);
 		this.machines = plugin.getModule(Machines.class);
-		this.sleep = plugin.getModule(SleepVote.class);
 
 		this.bypassable = new HashSet<>();
 		for (Material material : Material.values()) {
@@ -106,33 +100,11 @@ public class InteractListener extends EasterlynListener {
 			return;
 		}
 
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			Block block = event.getClickedBlock();
-
-			if (block.getType().equals(Material.BED_BLOCK)) {
-				if (block.getWorld().getEnvironment() == Environment.NETHER || block.getWorld().getEnvironment() == Environment.THE_END) {
-					// Vanilla bed explosions!
-					return;
-				}
-				// Sleep voting
-				if (sleep.isEnabled() && event.getPlayer().isSneaking()) {
-					if (block.getWorld().getTime() > 12000 || block.getWorld().hasStorm()) {
-						sleep.sleepVote(block.getWorld(), event.getPlayer());
-						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
-					} else {
-						event.getPlayer().sendMessage(this.lang.getValue("events.interact.daySleep"));
-						event.getPlayer().setBedSpawnLocation(event.getPlayer().getLocation());
-					}
-					event.setCancelled(true);
-					return;
-				}
-			}
-
-			if (hasRightClickFunction(event.getClickedBlock(), event.getItem())
-					&& !event.getPlayer().isSneaking()) {
-				// Other inventory/action. Do not proceed to captcha.
-				return;
-			}
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK
+				&& hasRightClickFunction(event.getClickedBlock(), event.getItem())
+				&& !event.getPlayer().isSneaking()) {
+			// Other inventory/action. Do not proceed to captcha.
+			return;
 		}
 
 		PlayerInventory inv = event.getPlayer().getInventory();
@@ -189,8 +161,9 @@ public class InteractListener extends EasterlynListener {
 	 */
 	private boolean hasRightClickFunction(Block block, ItemStack hand) {
 		switch (block.getType()) {
+		case BED:
 		case BOOKSHELF:
-			// Awww yiss BookShelf <3
+			// RIP BookShelf, you will be missed.
 			return Bukkit.getPluginManager().isPluginEnabled("BookShelf");
 		case IRON_DOOR_BLOCK:
 		case IRON_TRAPDOOR:

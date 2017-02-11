@@ -68,7 +68,7 @@ public class QuitListener extends EasterlynListener {
 		discord.postMessage(discord.getBotName(), event.getPlayer().getDisplayName() + " logs out.", true);
 
 		// Update vote
-		sleep.updateVoteCount(event.getPlayer().getWorld().getName(), event.getPlayer().getName());
+		sleep.removeVote(event.getPlayer().getWorld(), event.getPlayer());
 
 		// Remove free minecart if riding one
 		carts.remove(event.getPlayer());
