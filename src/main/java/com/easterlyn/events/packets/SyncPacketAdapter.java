@@ -10,6 +10,8 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PermissionUtils;
 
+import org.bukkit.command.Command;
+
 /**
  * @author Jikoo
  */
@@ -35,11 +37,16 @@ public class SyncPacketAdapter extends PacketAdapter {
 				return;
 			}
 			event.getPacket().getStringArrays().write(0,
-					Arrays.stream(event.getPacket().getStringArrays().read(0))
-							.filter(completion -> completion.length() < 1
-									|| completion.indexOf('/') != 0
-									|| completion.indexOf(':') < 0)
-							.toArray(size -> new String[size]));
+					Arrays.stream(event.getPacket().getStringArrays().read(0)).filter(completion -> {
+						if (completion.length() < 1 || completion.indexOf('/') != 0 || completion.indexOf(':') < 0) {
+							return true;
+						}
+						// Certain commands injected by plugins can still be completed for players lacking permissions.
+						// Looking at you, WG.
+						Command command = ((Easterlyn) this.getPlugin()).getCommandMap().getCommand(completion.substring(1));
+						return command == null || command.getPermission() == null || command.getPermission().isEmpty()
+								|| event.getPlayer().hasPermission(command.getPermission());
+					}).toArray(size -> new String[size]));
 		}
 	}
 

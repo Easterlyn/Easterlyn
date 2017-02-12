@@ -1,14 +1,17 @@
 package com.easterlyn.events.listeners.player;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
-import com.easterlyn.events.packets.WrapperPlayServerPlayerListHeaderFooter;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 
@@ -30,7 +33,7 @@ public class JoinListener extends EasterlynListener {
 	private final Discord discord;
 	private final Events events;
 	private final Users users;
-	private final WrapperPlayServerPlayerListHeaderFooter list;
+	private final PacketContainer list;
 
 	public JoinListener(Easterlyn plugin) {
 		super(plugin);
@@ -38,9 +41,9 @@ public class JoinListener extends EasterlynListener {
 		this.events = plugin.getModule(Events.class);
 		this.users = plugin.getModule(Users.class);
 		Language lang = plugin.getModule(Language.class);
-		this.list = new WrapperPlayServerPlayerListHeaderFooter();
-		this.list.setHeader(WrappedChatComponent.fromText(lang.getValue("events.join.tab.header")));
-		this.list.setFooter(WrappedChatComponent.fromText(lang.getValue("events.join.tab.footer")));
+		this.list = new PacketContainer(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER);
+		this.list.getChatComponents().write(0, WrappedChatComponent.fromText(lang.getValue("events.join.tab.header")));
+		this.list.getChatComponents().write(1, WrappedChatComponent.fromText(lang.getValue("events.join.tab.footer")));
 	}
 
 	/**
@@ -82,8 +85,11 @@ public class JoinListener extends EasterlynListener {
 				for (String command : user.getLoginCommands()) {
 					player.chat(command);
 				}
-
-				list.sendPacket(player);
+				try {
+					ProtocolLibrary.getProtocolManager().sendServerPacket(player, list);
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			}
 		}.runTaskLater(getPlugin(), 2L);
 	}

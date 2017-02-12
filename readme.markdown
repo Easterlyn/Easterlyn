@@ -2,7 +2,7 @@
 Easterlyn is the brainchild of Edtheminecrafter. The core plugin, originally designed for the Sblock server, provides an extensive set of modules and functions enhancing gameplay.
 
 ##### Issues
-If you have a relevant issue, please [open a ticket](https://github.com/SblockCo/Sblock/issues/new).
+If you have a relevant issue, please [open a ticket](https://github.com/Easterlyn/Easterlyn/issues/new).
 
 ##### Contributing
 We accept pull requests that fit in with our vision for the project. Please attempt to match our formatting style.

@@ -57,6 +57,9 @@ public class RawAnnouncer extends Module {
 	 * @return the List created
 	 */
 	private List<Message> constructAnnouncements() {
+		// TODO: Parse from language file
+		// Ex: We use[ Discord ]{CLICK.OPEN_URL:http://discord.easterlyn.com}{HOVER.SHOW_TEXT:Click here to go!}{PLAINTEXT:http://discord.easterlyn.com}for voice chat. Join today!
+
 		List<Message> msgs = new ArrayList<>();
 		ChannelManager manager = getPlugin().getModule(Chat.class).getChannelManager();
 		MessageBuilder builder = new MessageBuilder(getPlugin()).setChannel(manager.getChannel("#"))
