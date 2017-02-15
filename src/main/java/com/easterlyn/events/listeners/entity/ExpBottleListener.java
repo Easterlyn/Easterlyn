@@ -23,6 +23,7 @@ public class ExpBottleListener extends EasterlynListener {
 	@EventHandler
 	public void onExpBottle(ExpBottleEvent event) {
 		event.setExperience(10);
+		event.setShowEffect(false);
 	}
 
 }

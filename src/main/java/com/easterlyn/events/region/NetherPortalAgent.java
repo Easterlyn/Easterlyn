@@ -5,25 +5,29 @@ import java.util.Map.Entry;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
+import com.easterlyn.utilities.RegionUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TravelAgent;
-import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-public class EasterlynTravelAgent implements TravelAgent {
+/**
+ * TravelAgent for nether portals.
+ * 
+ * @author Jikoo
+ */
+public class NetherPortalAgent implements TravelAgent {
 
 	private int searchRadius = 0, creationRadius = 0;
 	private boolean canCreatePortal = true;
 	private final Shape shape;
 	private Block from;
 
-	public EasterlynTravelAgent() {
+	public NetherPortalAgent() {
 		shape = new Shape();
 
 		MaterialDataValue value = shape.new MaterialDataValue(Material.OBSIDIAN);
@@ -152,7 +156,7 @@ public class EasterlynTravelAgent implements TravelAgent {
 				for (int dZ = -searchRadius; dZ <= searchRadius; dZ++) {
 					Block portal = block.getRelative(dX, dY, dZ);
 					if (portal.getType() == Material.PORTAL) {
-						Location center = findCenter(portal);
+						Location center = RegionUtils.findNetherPortalCenter(portal);
 						center.setYaw(location.getYaw());
 						center.setPitch(location.getPitch());
 						return center;
@@ -177,36 +181,6 @@ public class EasterlynTravelAgent implements TravelAgent {
 		return true;
 	}
 
-	public Location findCenter(Block portal) {
-		if (portal == null) {
-			return null;
-		}
-		double minX = 0;
-		while (portal.getRelative((int) minX - 1, 0, 0).getType() == Material.PORTAL) {
-			minX -= 1;
-		}
-		double maxX = 0;
-		while (portal.getRelative((int) maxX + 1, 0, 0).getType() == Material.PORTAL) {
-			maxX += 1;
-		}
-		double minY = 0;
-		while (portal.getRelative(0, (int) minY - 1, 0).getType() == Material.PORTAL) {
-			minY -= 1;
-		}
-		double minZ = 0;
-		while (portal.getRelative(0, 0, (int) minZ - 1).getType() == Material.PORTAL) {
-			minZ -= 1;
-		}
-		double maxZ = 0;
-		while (portal.getRelative(0, 0, (int) maxZ + 1).getType() == Material.PORTAL) {
-			maxZ += 1;
-		}
-		double x = portal.getX() + (maxX + 1 + minX) / 2.0;
-		double y = portal.getY() + minY + 0.1;
-		double z = portal.getZ() + (maxZ + 1 + minZ) / 2.0;
-		return new Location(portal.getWorld(), x, y, z);
-	}
-
 	@Override
 	public void setCanCreatePortal(boolean create) {
 		canCreatePortal = create;
@@ -218,68 +192,6 @@ public class EasterlynTravelAgent implements TravelAgent {
 		canCreatePortal = true;
 		from = null;
 		return this;
-	}
-
-	public Block getAdjacentPortalBlock(Block block) {
-		// Player isn't standing inside the portal block, they're next to it.
-		if (block.getType() == Material.PORTAL) {
-			return block;
-		}
-		for (int dX = -1; dX < 2; dX++) {
-			for (int dZ = -1; dZ < 2; dZ++) {
-				if (dX == 0 && dZ == 0) {
-					continue;
-				}
-				Block maybePortal = block.getRelative(dX, 0, dZ);
-				if (maybePortal.getType() == Material.PORTAL) {
-					return maybePortal;
-				}
-			}
-		}
-		return null;
-	}
-
-	public Location getTo(Location from) {
-		World world = null;
-		double x, y, z;
-		switch (from.getWorld().getName()) {
-		case "Earth":
-			world = Bukkit.getWorld("Earth_nether");
-			x = from.getX() / 8;
-			y = from.getY();
-			z = from.getZ() / 8;
-			break;
-		case "Earth_nether":
-			world = Bukkit.getWorld("Earth");
-			x = from.getX() * 8;
-			y = from.getY();
-			z = from.getZ() * 8;
-			break;
-		default:
-			if (from.getWorld().getEnvironment() == Environment.NORMAL) {
-				world = Bukkit.getWorld(from.getWorld().getName() + "_nether");
-				x = from.getX() / 8;
-				y = from.getY() / 2.05;
-				z = from.getZ() / 8;
-			} else if (from.getWorld().getEnvironment() == Environment.NETHER) {
-				world = Bukkit.getWorld(from.getWorld().getName().replaceAll("_.*", ""));
-				if (world == null || world.equals(from.getWorld())) {
-					return null;
-				}
-				x = from.getX() * 8;
-				y = from.getY() * 2.05;
-				z = from.getZ() * 8;
-			} else {
-				x = y = z = 0;
-			}
-		}
-		if (world == null) {
-			return null;
-		}
-		if (y < 2) {
-			y = 2;
-		}
-		return new Location(world, x, y, z, from.getYaw(), from.getPitch());
 	}
 
 }

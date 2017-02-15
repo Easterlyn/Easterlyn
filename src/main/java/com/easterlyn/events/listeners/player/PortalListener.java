@@ -3,12 +3,12 @@ package com.easterlyn.events.listeners.player;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.listeners.EasterlynListener;
-import com.easterlyn.events.region.EasterlynTravelAgent;
+import com.easterlyn.events.region.NetherPortalAgent;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
+import com.easterlyn.utilities.RegionUtils;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -23,13 +23,13 @@ public class PortalListener extends EasterlynListener {
 
 	private final Language lang;
 	private final Protections protections;
-	private final EasterlynTravelAgent agent;
+	private final NetherPortalAgent agent;
 
 	public PortalListener(Easterlyn plugin) {
 		super(plugin);
 		this.lang = plugin.getModule(Language.class);
 		this.protections = plugin.getModule(Protections.class);
-		this.agent = new EasterlynTravelAgent();
+		this.agent = new NetherPortalAgent();
 	}
 
 	/**
@@ -39,55 +39,70 @@ public class PortalListener extends EasterlynListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerPortal(PlayerPortalEvent event) {
-		if (!event.useTravelAgent()) {
-			// Generally, end portals do not use travel agents, nether portals do.
-			return;
-		}
+
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
-		agent.reset();
-		Block fromPortal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
-		Location fromCenter = agent.findCenter(fromPortal);
+		// Find the portal block used.
+		Block fromPortal = RegionUtils.getAdjacentPortalBlock(event.getFrom().getBlock());
+
 		if (fromPortal == null) {
-			if (fromEnvironment != Environment.THE_END
-					&& event.getTo().getWorld().getEnvironment() != Environment.THE_END) {
-				event.setCancelled(true);
-			}
-			return;
-		}
-		if (fromEnvironment == Environment.THE_END) {
-			if (fromCenter.getBlock().getType() == Material.PORTAL) {
-				// No using nether portals in the End
-				event.setCancelled(true);
-			}
-			// If we do another End implementation (Medium, etc.), it belongs here.
-			return;
-		}
-		if (fromEnvironment == Environment.NETHER) {
-			agent.setSearchRadius(8);
-		} else {
-			agent.setSearchRadius(1);
-		}
-		fromCenter.setPitch(event.getFrom().getPitch());
-		fromCenter.setYaw(event.getFrom().getYaw());
-		event.setPortalTravelAgent(agent);
-		event.setFrom(fromCenter);
-		agent.setFrom(fromCenter.getBlock());
-		Location to = agent.getTo(event.getFrom());
-		if (to == null) {
+			// If the portal block could not be found, cancel portal usage.
 			event.setCancelled(true);
 			return;
 		}
-		Location toPortal = agent.findPortal(to);
-		if (toPortal == null) {
-			for (ProtectionHook hook : protections.getHooks()) {
-				if (!hook.canBuildAt(event.getPlayer(), to)) {
-					event.setCancelled(true);
-					event.getPlayer().sendMessage(lang.getValue("events.portal.protected"));
-					return;
+
+		if (event.useTravelAgent()) {
+			// Reset agent for reuse in case other plugins changed values.
+			agent.reset();
+			event.setPortalTravelAgent(agent);
+
+			if (fromEnvironment == Environment.NETHER) {
+				// Nether is 1/8 of normal so portals can exist in a much wider radius
+				agent.setSearchRadius(8);
+			} else {
+				// Normal or end
+				agent.setSearchRadius(0);
+			}
+
+			// If a travel agent is in use, portal is likely a nether portal.
+			// For simplifying creating portals that link successfully, from location should be the center of the portal.
+			Location fromCenter = RegionUtils.findNetherPortalCenter(fromPortal);
+			if (fromCenter != null) {
+				fromCenter.setPitch(event.getFrom().getPitch());
+				// For some reason facing seems to be inverted in the nether.
+				fromCenter.setYaw(event.getFrom().getYaw() - 180);
+				event.setFrom(fromCenter);
+			}
+		}
+
+		Block fromBlock = event.getFrom().getBlock();
+		// Set the block for our custom travel agent - used in new portal creation.
+		agent.setFrom(fromBlock);
+
+		// Calculate destination based on portal location and type.
+		Location to = RegionUtils.getTo(event.getFrom(), fromBlock.getType());
+
+		if (to == null) {
+			// If the destination location cannot be calculated, cancel portal usage.
+			event.setCancelled(true);
+			return;
+		}
+
+		if (event.useTravelAgent()) {
+			// Attempt to find a portal to link to.
+			Location toPortal = agent.findPortal(to);
+			if (toPortal == null) {
+				// Portal cannot be found, a new one will be created. Check protections.
+				for (ProtectionHook hook : protections.getHooks()) {
+					if (hook.isProtected(to)) {
+						event.setCancelled(true);
+						event.getPlayer().sendMessage(lang.getValue("events.portal.protected"));
+						return;
+					}
 				}
 			}
 		}
-		event.setTo(toPortal != null ? toPortal : to);
+
+		event.setTo(to);
 	}
 
 }

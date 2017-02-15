@@ -9,9 +9,6 @@ depend: [GriefPrevention, ProtocolLib, WorldEdit, WorldGuard]
 softdepend: [CreeperHeal, dynmap, Regionerator, zPermissions]
 
 permissions:
- easterlyn.group.ask.adam.before.touching:
-  description: 'If something requires this permission, you probably shouldn''t be touching it.'
-  default: false
  easterlyn.guildleader:
   description: 'Default false - not all horrorterrors are guild leaders.'
   default: false

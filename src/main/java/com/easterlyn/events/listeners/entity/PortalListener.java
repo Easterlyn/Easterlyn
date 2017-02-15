@@ -2,9 +2,10 @@ package com.easterlyn.events.listeners.entity;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.listeners.EasterlynListener;
-import com.easterlyn.events.region.EasterlynTravelAgent;
+import com.easterlyn.events.region.NetherPortalAgent;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
+import com.easterlyn.utilities.RegionUtils;
 
 import org.bukkit.Location;
 import org.bukkit.World.Environment;
@@ -20,12 +21,12 @@ import org.bukkit.event.entity.EntityPortalEvent;
 public class PortalListener extends EasterlynListener {
 
 	private final Protections protections;
-	private final EasterlynTravelAgent agent;
+	private final NetherPortalAgent agent;
 
 	public PortalListener(Easterlyn plugin) {
 		super(plugin);
 		this.protections = plugin.getModule(Protections.class);
-		agent = new EasterlynTravelAgent();
+		agent = new NetherPortalAgent();
 	}
 
 	/**
@@ -35,45 +36,55 @@ public class PortalListener extends EasterlynListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityPortal(EntityPortalEvent event) {
-		if (!event.useTravelAgent()) {
-			return;
-		}
+
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
-		if (fromEnvironment == Environment.THE_END) {
-			event.setCancelled(true);
-			return;
-		}
-		agent.reset();
-		Block fromPortal = agent.getAdjacentPortalBlock(event.getFrom().getBlock());
+		Block fromPortal = RegionUtils.getAdjacentPortalBlock(event.getFrom().getBlock());
+
 		if (fromPortal == null) {
 			event.setCancelled(true);
 			return;
 		}
-		if (fromEnvironment == Environment.NETHER) {
-			agent.setSearchRadius(9);
-		} else {
-			agent.setSearchRadius(1);
+
+		if (event.useTravelAgent()) {
+			agent.reset();
+			event.setPortalTravelAgent(agent);
+
+			if (fromEnvironment == Environment.NETHER) {
+				agent.setSearchRadius(9);
+			} else {
+				agent.setSearchRadius(1);
+			}
+
+			Location fromCenter = RegionUtils.findNetherPortalCenter(fromPortal);
+			if (fromCenter != null) {
+				fromCenter.setPitch(event.getFrom().getPitch());
+				fromCenter.setYaw(event.getFrom().getYaw() - 180);
+				event.setFrom(fromCenter);
+			}
 		}
-		event.setPortalTravelAgent(agent);
-		Location fromCenter = agent.findCenter(fromPortal);
-		fromCenter.setPitch(event.getFrom().getPitch());
-		fromCenter.setYaw(event.getFrom().getYaw());
-		event.setFrom(fromCenter);
-		agent.setFrom(fromCenter.getBlock());
-		Location to = agent.getTo(event.getFrom());
+
+		Block fromBlock = event.getFrom().getBlock();
+		agent.setFrom(fromBlock);
+
+		Location to = RegionUtils.getTo(event.getFrom(), fromBlock.getType());
+
 		if (to == null) {
 			event.setCancelled(true);
 			return;
 		}
-		Location toPortal = agent.findPortal(to);
-		if (toPortal == null) {
-			for (ProtectionHook hook : protections.getHooks()) {
-				if (hook.isProtected(to)) {
-					event.setCancelled(true);
-					return;
+
+		if (event.useTravelAgent()) {
+			Location toPortal = agent.findPortal(to);
+			if (toPortal == null) {
+				for (ProtectionHook hook : protections.getHooks()) {
+					if (hook.isProtected(to)) {
+						event.setCancelled(true);
+						return;
+					}
 				}
 			}
 		}
+
 		event.setTo(to);
 	}
 
