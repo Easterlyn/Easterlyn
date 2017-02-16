@@ -1281,4 +1281,7 @@ public class DummyPlayer implements Player {
 		return false;
 	}
 
+	@Override
+	public void setResourcePack(String arg0, byte[] arg1) {}
+
 }

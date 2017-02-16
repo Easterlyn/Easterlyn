@@ -37,7 +37,7 @@ public class EffectAutoTorch extends Effect implements BehaviorActive {
 	public void handleEvent(Event event, LivingEntity entity, int level) {
 		Player player = (Player) entity;
 		Block block = player.getLocation().getBlock();
-		if (block.isEmpty() || block.getLightFromBlocks() > 7
+		if (!block.isEmpty() || block.getLightFromBlocks() > 7
 				|| !block.getRelative(BlockFace.DOWN).getType().isSolid()
 				|| player.getGameMode() != GameMode.CREATIVE
 				&& !player.getInventory().removeItem(new ItemStack(Material.TORCH)).isEmpty()) {

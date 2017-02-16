@@ -9,6 +9,7 @@ import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
 import com.easterlyn.utilities.RegionUtils;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -50,7 +51,7 @@ public class PortalListener extends EasterlynListener {
 			return;
 		}
 
-		if (event.useTravelAgent()) {
+		if (event.useTravelAgent() && fromPortal.getType() == Material.PORTAL) {
 			// Reset agent for reuse in case other plugins changed values.
 			agent.reset();
 			event.setPortalTravelAgent(agent);
@@ -79,7 +80,7 @@ public class PortalListener extends EasterlynListener {
 		agent.setFrom(fromBlock);
 
 		// Calculate destination based on portal location and type.
-		Location to = RegionUtils.getTo(event.getFrom(), fromBlock.getType());
+		Location to = RegionUtils.calculatePortalDestination(event.getFrom(), fromBlock.getType());
 
 		if (to == null) {
 			// If the destination location cannot be calculated, cancel portal usage.
@@ -87,7 +88,10 @@ public class PortalListener extends EasterlynListener {
 			return;
 		}
 
-		if (event.useTravelAgent()) {
+		// Set the destination to the exact calculated output location.
+		event.setTo(to);
+
+		if (event.useTravelAgent() && fromBlock.getType() == Material.PORTAL) {
 			// Attempt to find a portal to link to.
 			Location toPortal = agent.findPortal(to);
 			if (toPortal == null) {
@@ -99,10 +103,11 @@ public class PortalListener extends EasterlynListener {
 						return;
 					}
 				}
+			} else {
+				// Set destination to located portal.
+				event.setTo(toPortal);
 			}
 		}
-
-		event.setTo(to);
 	}
 
 }

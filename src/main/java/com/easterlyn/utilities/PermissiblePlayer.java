@@ -1235,6 +1235,11 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public void setResourcePack(String arg0, byte[] arg1) {
+		player.setResourcePack(arg0, arg1);
+	}
+
+	@Override
 	public void setSaturation(float arg0) {
 		player.setSaturation(arg0);
 	}

@@ -19,7 +19,7 @@ public class RegionUtils {
 		return worldName.equals(otherWorldName);
 	}
 
-	public static Location getTo(Location from, Material portalType) {
+	public static Location calculatePortalDestination(Location from, Material portalType) {
 		if (portalType != Material.PORTAL && portalType != Material.ENDER_PORTAL) {
 			return null;
 		}
@@ -93,7 +93,7 @@ public class RegionUtils {
 					if (dX == 0 && dY == 0 && dZ == 0) {
 						continue;
 					}
-					Block maybePortal = block.getRelative(dX, 0, dZ);
+					Block maybePortal = block.getRelative(dX, dY, dZ);
 					if (maybePortal.getType() == Material.PORTAL || block.getType() == Material.ENDER_PORTAL) {
 						return maybePortal;
 					}
