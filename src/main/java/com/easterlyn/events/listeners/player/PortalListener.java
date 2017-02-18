@@ -51,7 +51,9 @@ public class PortalListener extends EasterlynListener {
 			return;
 		}
 
-		if (event.useTravelAgent() && fromPortal.getType() == Material.PORTAL) {
+		event.useTravelAgent(fromPortal.getType() == Material.PORTAL);
+
+		if (event.useTravelAgent()) {
 			// Reset agent for reuse in case other plugins changed values.
 			agent.reset();
 			event.setPortalTravelAgent(agent);
@@ -75,12 +77,8 @@ public class PortalListener extends EasterlynListener {
 			}
 		}
 
-		Block fromBlock = event.getFrom().getBlock();
-		// Set the block for our custom travel agent - used in new portal creation.
-		agent.setFrom(fromBlock);
-
 		// Calculate destination based on portal location and type.
-		Location to = RegionUtils.calculatePortalDestination(event.getFrom(), fromBlock.getType());
+		Location to = RegionUtils.calculatePortalDestination(event.getFrom(), fromPortal.getType());
 
 		if (to == null) {
 			// If the destination location cannot be calculated, cancel portal usage.
@@ -91,22 +89,27 @@ public class PortalListener extends EasterlynListener {
 		// Set the destination to the exact calculated output location.
 		event.setTo(to);
 
-		if (event.useTravelAgent() && fromBlock.getType() == Material.PORTAL) {
-			// Attempt to find a portal to link to.
-			Location toPortal = agent.findPortal(to);
-			if (toPortal == null) {
-				// Portal cannot be found, a new one will be created. Check protections.
-				for (ProtectionHook hook : protections.getHooks()) {
-					if (hook.isProtected(to)) {
-						event.setCancelled(true);
-						event.getPlayer().sendMessage(lang.getValue("events.portal.protected"));
-						return;
-					}
+		if (!event.useTravelAgent()) {
+			// All remaining handling is for nether portals using our travel agent.
+			return;
+		}
+
+		// Set the block for our custom travel agent - used in new portal creation.
+		agent.setFrom(event.getFrom().getBlock());
+		// Attempt to find a portal to link to.
+		Location toPortal = agent.findPortal(to);
+		if (toPortal == null) {
+			// Portal cannot be found, a new one will be created. Check protections.
+			for (ProtectionHook hook : protections.getHooks()) {
+				if (hook.isProtected(to)) {
+					event.setCancelled(true);
+					event.getPlayer().sendMessage(lang.getValue("events.portal.protected"));
+					return;
 				}
-			} else {
-				// Set destination to located portal.
-				event.setTo(toPortal);
 			}
+		} else {
+			// Set destination to located portal.
+			event.setTo(toPortal);
 		}
 	}
 

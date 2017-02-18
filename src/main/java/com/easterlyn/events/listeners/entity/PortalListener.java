@@ -8,6 +8,7 @@ import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
 import com.easterlyn.utilities.RegionUtils;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -36,41 +37,35 @@ public class PortalListener extends EasterlynListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityPortal(EntityPortalEvent event) {
-
-		if (!event.useTravelAgent()) {
-			// No transporting entities through end portals.
-			event.setCancelled(true);
-			return;
-		}
-
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
-		Block fromPortal = RegionUtils.getAdjacentPortalBlock(event.getFrom().getBlock());
+		Block fromPortal = RegionUtils.getAdjacentPortalBlock(event.getEntity().getLocation().getBlock());
 
-		if (fromPortal == null) {
+		if (fromPortal == null || fromPortal.getType() == Material.ENDER_PORTAL) {
 			event.setCancelled(true);
 			return;
 		}
 
-		agent.reset();
-		event.setPortalTravelAgent(agent);
 
-		if (fromEnvironment == Environment.NETHER) {
-			agent.setSearchRadius(9);
-		} else {
-			agent.setSearchRadius(1);
+		if (event.useTravelAgent()) {
+			agent.reset();
+			event.setPortalTravelAgent(agent);
+
+			if (fromEnvironment == Environment.NETHER) {
+				agent.setSearchRadius(9);
+			} else {
+				agent.setSearchRadius(1);
+			}
+
+			Location fromCenter = RegionUtils.findNetherPortalCenter(fromPortal);
+			if (fromCenter != null) {
+				fromCenter.setPitch(event.getFrom().getPitch());
+				fromCenter.setYaw(event.getFrom().getYaw() - 180);
+				event.setFrom(fromCenter);
+			}
+
 		}
 
-		Location fromCenter = RegionUtils.findNetherPortalCenter(fromPortal);
-		if (fromCenter != null) {
-			fromCenter.setPitch(event.getFrom().getPitch());
-			fromCenter.setYaw(event.getFrom().getYaw() - 180);
-			event.setFrom(fromCenter);
-		}
-
-		Block fromBlock = event.getFrom().getBlock();
-		agent.setFrom(fromBlock);
-
-		Location to = RegionUtils.calculatePortalDestination(event.getFrom(), fromBlock.getType());
+		Location to = RegionUtils.calculatePortalDestination(event.getFrom(), fromPortal.getType());
 
 		if (to == null) {
 			event.setCancelled(true);
@@ -79,6 +74,11 @@ public class PortalListener extends EasterlynListener {
 
 		event.setTo(to);
 
+		if (!event.useTravelAgent()) {
+			return;
+		}
+
+		agent.setFrom(event.getFrom().getBlock());
 		Location toPortal = agent.findPortal(to);
 		if (toPortal == null) {
 			for (ProtectionHook hook : protections.getHooks()) {

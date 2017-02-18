@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.util.Vector;
 
 /**
  * Enum managing worlds and resource packs.
@@ -14,9 +15,12 @@ import org.bukkit.block.Block;
 public class RegionUtils {
 
 	public static boolean regionsMatch(String worldName, String otherWorldName) {
-		worldName = worldName.toUpperCase().replace("_NETHER", "").replace("_THE_END", "");
-		otherWorldName = otherWorldName.toUpperCase().replace("_NETHER", "").replace("_THE_END", "");
-		return worldName.equals(otherWorldName);
+		return stripToBaseWorldName(worldName.toLowerCase())
+				.equals(stripToBaseWorldName(otherWorldName.toLowerCase()));
+	}
+
+	private static String stripToBaseWorldName(String worldName) {
+		return worldName.replaceAll("(.*)_(the_end|nether)", "$1");
 	}
 
 	public static Location calculatePortalDestination(Location from, Material portalType) {
@@ -44,35 +48,41 @@ public class RegionUtils {
 				break;
 			}
 		default:
+			String baseWorldName = stripToBaseWorldName(from.getWorld().getName());
 			switch (from.getWorld().getEnvironment()) {
 			case NETHER:
 				if (portalType == Material.ENDER_PORTAL) {
 					return null;
 				}
-				world = Bukkit.getWorld(from.getWorld().getName().replaceAll("_.*", ""));
+				world = Bukkit.getWorld(baseWorldName);
 				if (world == null || world.equals(from.getWorld())) {
 					return null;
 				}
 				x = from.getX() * 8;
-				y = Math.min(2, Math.max(251, Math.floor(from.getY() * 2.05)));
+				y = Math.max(2, Math.min(251, Math.floor(from.getY() * 2.05)));
 				z = from.getZ() * 8;
+				break;
 			case NORMAL:
 				if (portalType == Material.ENDER_PORTAL) {
-					world = Bukkit.getWorld(from.getWorld().getName() + "_the_end");
-					return world != null ? world.getSpawnLocation() : null;
+					world = Bukkit.getWorld(baseWorldName + "_the_end");
+					return world != null ? world.getSpawnLocation().clone().add(new Vector(0.5, 0.1, 0.5)) : null;
 				}
 				world = Bukkit.getWorld(from.getWorld().getName() + "_nether");
+				if (world == null || world.equals(from.getWorld())) {
+					return null;
+				}
 				x = from.getX() / 8;
-				y = Math.min(2, Math.max(123, Math.ceil(y = from.getY() / 2.05)));
+				y = Math.max(2, Math.min(123, Math.ceil(y = from.getY() / 2.05)));
 				z = from.getZ() / 8;
 				break;
 			case THE_END:
-			default:
 				if (portalType == Material.PORTAL) {
 					return null;
 				}
-				world = Bukkit.getWorld(from.getWorld().getName().replace("_the_end", "").replace("_nether", ""));
-				return world != null ? world.getSpawnLocation() : null;
+				world = Bukkit.getWorld(baseWorldName);
+				return world != null ? world.getSpawnLocation().add(new Vector(0.5, 0.1, 0.5)) : null;
+			default:
+				return null;
 			}
 		}
 		if (world == null) {
@@ -82,10 +92,10 @@ public class RegionUtils {
 	}
 
 	public static Block getAdjacentPortalBlock(Block block) {
-		// Player isn't standing inside the portal block, they're next to it.
 		if (block.getType() == Material.PORTAL || block.getType() == Material.ENDER_PORTAL) {
 			return block;
 		}
+		// Player isn't standing inside the portal block, they're next to it or below it.
 		for (int dX = -1; dX < 2; dX++) {
 			for (int dY = -1; dY < 4; dY++) {
 				// Search higher in case of end portals, falling through at speed can lead to portal usage from a position well beyond
@@ -94,7 +104,7 @@ public class RegionUtils {
 						continue;
 					}
 					Block maybePortal = block.getRelative(dX, dY, dZ);
-					if (maybePortal.getType() == Material.PORTAL || block.getType() == Material.ENDER_PORTAL) {
+					if (maybePortal.getType() == Material.PORTAL || maybePortal.getType() == Material.ENDER_PORTAL) {
 						return maybePortal;
 					}
 				}
