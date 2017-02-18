@@ -45,7 +45,7 @@ public class DeathListener extends EasterlynListener {
 		this.facts = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta meta = (BookMeta) facts.getItemMeta();
 		meta.setTitle("Wither Facts");
-		meta.setAuthor(Language.getColor("rank.denizen") + "Pete");
+		meta.setAuthor(Language.getColor("blue") + "Pete");
 		meta.addPage("Withers are awesome.");
 		this.facts.setItemMeta(meta);
 	}

@@ -80,14 +80,33 @@ public class CommandPreprocessListener extends EasterlynListener {
 			return;
 		}
 
-		if (spectators.isSpectator(event.getPlayer().getUniqueId())
-				&& cmd.getName().equals("sethome")) {
-			event.setCancelled(true);
-			event.getPlayer().sendMessage(lang.getValue("events.command.spectatefail"));
-			return;
+		if (cmd.getName().equals("gc") && !event.getPlayer().hasPermission("essentials.gc")
+				&& !event.getPlayer().hasPermission("essentials.*")) {
+			event.setMessage("/tps");
+			command = "tps";
+			cmd = map.getCommand(command);
 		}
 
-		if (cmd.getName().equals("mail")) {
+		if (cmd.getName().equals("sethome")) {
+			if (spectators.isSpectator(event.getPlayer().getUniqueId())) {
+				event.setCancelled(true);
+				event.getPlayer().sendMessage(lang.getValue("events.command.spectatefail"));
+				return;
+			}
+		} else if (cmd.getName().equals("warp")) {
+			if (space > 1) {
+				String[] args = event.getMessage().split(" ");
+				if (args.length >= 2) {
+					if (!event.getPlayer().hasPermission("essentials.warps." + args[1])
+							&& !event.getPlayer().hasPermission("essentials.warps.*")
+							&& !event.getPlayer().hasPermission("essentials.*")) {
+						event.setCancelled(true);
+						event.getPlayer().sendMessage(lang.getValue("events.command.spectatefail"));
+						return;
+					}
+				}
+			}
+		} else if (cmd.getName().equals("mail")) {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("send")
 					&& chat.testForMute(event.getPlayer())) {
 				event.setCancelled(true);
@@ -96,17 +115,6 @@ public class CommandPreprocessListener extends EasterlynListener {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(lang.getValue("events.command.prismUndoCrash"));
-			}
-		} else if (cmd.getName().equals("fly")) {
-			if ((event.getPlayer().hasPermission("essentials.fly")
-					|| event.getPlayer().hasPermission("essentials.*"))) {
-				event.getPlayer().setFallDistance(0);
-			}
-		} else if (cmd.getName().equals("gc")) {
-			if (!event.getPlayer().hasPermission("essentials.gc")
-					&& !event.getPlayer().hasPermission("essentials.*")) {
-				event.setMessage("/tps");
-				command = "tps";
 			}
 		}
 

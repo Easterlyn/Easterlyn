@@ -13,7 +13,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public enum UserRank {
 
-	DEFAULT("default", "Hero", PermissionDefault.TRUE),
+	DEFAULT("default", "Player", PermissionDefault.TRUE),
 	MEMBER("member"),
 	TRUSTED("trusted"),
 	HELPER("helper"),

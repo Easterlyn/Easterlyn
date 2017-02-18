@@ -91,6 +91,7 @@ public class FlyCommand extends EasterlynCommand {
 		}
 		player.setAllowFlight(fly);
 		player.setFlying(fly);
+		player.setFallDistance(0);
 	}
 
 	@Override

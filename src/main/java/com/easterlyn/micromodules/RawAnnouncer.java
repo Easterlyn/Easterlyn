@@ -169,7 +169,7 @@ public class RawAnnouncer extends Module {
 				"https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1"));
 		components.add(component);
 
-		component = new TextComponent("an area, at least ");
+		component = new TextComponent("an area, at least");
 		component.setColor(Language.getColor("bot_text"));
 		components.add(component);
 
@@ -179,7 +179,7 @@ public class RawAnnouncer extends Module {
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lwc"));
 		components.add(component);
 
-		component = new TextComponent(" your chests!");
+		component = new TextComponent("your chests!");
 		component.setColor(Language.getColor("bot_text"));
 		components.add(component);
 
