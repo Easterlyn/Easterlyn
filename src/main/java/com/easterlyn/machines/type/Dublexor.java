@@ -1,6 +1,8 @@
 package com.easterlyn.machines.type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
@@ -20,6 +22,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -82,9 +85,10 @@ public class Dublexor extends Machine {
 		meta.setDisplayName(ChatColor.WHITE + "Dublexor");
 		this.drop.setItemMeta(meta);
 
-		barrier = new ItemStack(Material.BARRIER);
+		this.barrier = new ItemStack(Material.BARRIER);
+		meta = this.barrier.getItemMeta();
 		meta.setDisplayName(Language.getColor("emphasis.bad") + "No Result");
-		barrier.setItemMeta(meta);
+		this.barrier.setItemMeta(meta);
 	}
 
 	@Override
@@ -109,7 +113,7 @@ public class Dublexor extends Machine {
 			return false;
 		}
 		tracker.openVillagerInventory(event.getPlayer(), this, getKey(storage));
-		InventoryUtils.updateVillagerTrades(event.getPlayer(), getExampleRecipes());
+		updateInventory(event.getPlayer().getUniqueId());
 		return true;
 	}
 
@@ -130,10 +134,33 @@ public class Dublexor extends Machine {
 			if (event.getCurrentItem().getType() == Material.BARRIER) {
 				return true;
 			}
+
 			// Item is being crafted
 			Inventory top = event.getView().getTopInventory();
+
+			// Color code + "Mana cost: " = 13 characters, as is color code + "Cannot copy"
+			String costString = top.getItem(1).getItemMeta().getDisplayName().substring(13);
+			if (costString.isEmpty()) {
+				return true;
+			}
+
+			// Remove exp first in case of an unforeseen issue.
+			int expCost;
+			try {
+				expCost = Integer.valueOf(costString);
+			} catch (NumberFormatException e) {
+				System.err.println("Unable to parse ");
+				e.printStackTrace();
+				return true;
+			}
 			Player player = (Player) event.getWhoClicked();
+			if (player.getGameMode() != GameMode.CREATIVE) {
+				Experience.changeExp(player, -expCost);
+			}
+
+
 			if (event.getClick().name().contains("SHIFT")) {
+				// Ensure inventory can contain items
 				if (InventoryUtils.hasSpaceFor(event.getCurrentItem(), player.getInventory())) {
 					player.getInventory().addItem(event.getCurrentItem().clone());
 				} else {
@@ -143,18 +170,17 @@ public class Dublexor extends Machine {
 					|| (event.getCursor().isSimilar(event.getCurrentItem())
 						&& event.getCursor().getAmount() + event.getCurrentItem().getAmount()
 						< event.getCursor().getMaxStackSize())) {
+				// Cursor can contain items
 				ItemStack result = event.getCurrentItem().clone();
 				if (result.isSimilar(event.getCursor())) {
 					result.setAmount(result.getAmount() + event.getCursor().getAmount());
 				}
 				event.setCursor(result);
 			} else {
+				// Cursor cannot contain items
 				return true;
 			}
 			event.setCurrentItem(null);
-			// Color code + "Mana cost: " = 13 chars
-			int expCost = Integer.valueOf(top.getItem(1).getItemMeta().getDisplayName().substring(13));
-			Experience.changeExp(player, -expCost);
 		}
 		return false;
 	}
@@ -169,7 +195,7 @@ public class Dublexor extends Machine {
 	/**
 	 * Calculate result slot and update inventory on a delay (post-event completion)
 	 * 
-	 * @param name the name of the player who is using the Punch Designix
+	 * @param id the UUID of the Player using the Dublexor
 	 */
 	public void updateInventory(final UUID id) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
@@ -184,59 +210,86 @@ public class Dublexor extends Machine {
 
 				Inventory open = player.getOpenInventory().getTopInventory();
 				ItemStack originalInput = open.getItem(0);
+
+				if (originalInput == null || originalInput.getType() == Material.AIR) {
+					setSecondTrade(player, open, null, null, null);
+					return;
+				}
+
+				ItemStack expCost = new ItemStack(Material.EXP_BOTTLE);
+				ItemMeta im = expCost.getItemMeta();
+				im.setDisplayName(Language.getColor("emphasis.bad") + "Cannot copy");
+				expCost.setItemMeta(im);
+
 				ItemStack modifiedInput = originalInput.clone();
 				int multiplier = 1;
-				ItemStack expCost = null;
-				ItemStack result;
-
 				while (Captcha.isUsedCaptcha(modifiedInput)) {
-					multiplier *= Math.min(1, Math.abs(modifiedInput.getAmount()));
-					modifiedInput = captcha.captchaToItem(modifiedInput);
-				}
-
-				if (InventoryUtils.isUniqueItem(getPlugin(), modifiedInput)) {
-					result = null;
-					expCost = null;
-				} else {
-					result = originalInput;
-				}
-
-				double resultCost = result != null ? CruxiteDowel.expCost(effects, result) : Double.MAX_VALUE;
-
-				if (Double.MAX_VALUE / multiplier <= resultCost) {
-					result = null;
-				} else {
-					resultCost *= multiplier;
-				}
-
-				if (result != null) {
-					expCost = new ItemStack(Material.EXP_BOTTLE);
-					int exp = (int) Math.ceil(resultCost);
-					ItemMeta im = expCost.getItemMeta();
-					int playerExp = Experience.getExp(player);
-					int remainder = playerExp - exp;
-					ChatColor color = remainder >= 0 ? ChatColor.GREEN : ChatColor.DARK_RED;
-					im.setDisplayName(color + "Mana cost: " + exp);
-					ArrayList<String> lore = new ArrayList<>();
-					lore.add(ChatColor.GOLD + "Current: " + playerExp);
-					if (remainder >= 0) {
-						lore.add(ChatColor.GOLD + "Remainder: " + remainder);
-					} else {
-						lore.add(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Not enough mana!");
-						result = null;
+					ItemStack newModInput = captcha.captchaToItem(modifiedInput);
+					if (newModInput == null || modifiedInput.isSimilar(newModInput)) {
+						// Broken captcha, don't infinitely loop.
+						setSecondTrade(player, open, originalInput, expCost, barrier);
+						return;
 					}
-					im.setLore(lore);
-					expCost.setItemMeta(im);
+					multiplier *= Math.min(1, Math.abs(modifiedInput.getAmount()));
+					modifiedInput = newModInput;
 				}
+
+				// Ensure non-unique item (excluding captchas)
+				if (InventoryUtils.isUniqueItem(getPlugin(), modifiedInput)) {
+					setSecondTrade(player, open, originalInput, expCost, barrier);
+					return;
+				}
+
+				// Calculate cost based on final item.
+				double resultCost = CruxiteDowel.expCost(effects, modifiedInput);
+
+				// Ensure item can be replicated.
+				if (Double.MAX_VALUE / multiplier <= resultCost) {
+					setSecondTrade(player, open, originalInput, expCost, barrier);
+					return;
+				}
+
+				// Adjust cost based on captcha depth and quantities.
+				resultCost *= multiplier;
+				int exp = (int) Math.ceil(resultCost);
+				int playerExp = Experience.getExp(player);
+				int remainder = playerExp - exp;
+
+				ArrayList<String> lore = new ArrayList<>();
+				lore.add(ChatColor.GOLD + "Current: " + playerExp);
+
+				ItemStack result;
+				ChatColor color;
+				if (remainder >= 0 || player.getGameMode() == GameMode.CREATIVE) {
+					color = Language.getColor("emphasis.good");
+					lore.add(ChatColor.GOLD + "Remainder: " + remainder);
+					result = originalInput.clone();
+				} else {
+					color = Language.getColor("emphasis.bad");
+					lore.add(color.toString() + ChatColor.BOLD + "Not enough mana!");
+					result = barrier;
+				}
+
+				if (player.getGameMode() == GameMode.CREATIVE) {
+					lore.add(Language.getColor("emphasis.good") + "Creative exp bypass engaged.");
+				}
+
+				im.setDisplayName(color + "Mana cost: " + exp);
+				im.setLore(lore);
+				expCost.setItemMeta(im);
 
 				// Set items
-				open.setItem(1, expCost);
-				open.setItem(2, result);
-				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-						new ImmutableTriple<>(modifiedInput, expCost, result == null ? barrier : result));
-				player.updateInventory();
+				setSecondTrade(player, open, originalInput, expCost, result);
 			}
 		});
+	}
+
+	private void setSecondTrade(Player player, Inventory open, ItemStack input, ItemStack expCost, ItemStack result) {
+		open.setItem(1, expCost);
+		open.setItem(2, result);
+		InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
+				new ImmutableTriple<>(input, expCost, result));
+		player.updateInventory();
 	}
 
 	/**
@@ -255,13 +308,14 @@ public class Dublexor extends Machine {
 	 * @return
 	 */
 	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
-		ItemStack is1 = new ItemStack(Material.NETHER_BRICK_ITEM);
+		ItemStack is1 = new ItemStack(Material.DIRT, 64);
 		ItemMeta im = is1.getItemMeta();
-		im.setDisplayName(ChatColor.GOLD + "Input Item Here");
-		ArrayList<String> lore = new ArrayList<>();
+		im.setDisplayName(ChatColor.GOLD + "Input");
+		List<String> lore = Arrays.asList(ChatColor.WHITE + "Insert item here.");
+		im.setLore(lore);
 		is1.setItemMeta(im);
 
-		ItemStack is2 = new ItemStack(Material.BARRIER);
+		ItemStack is2 = new ItemStack(Material.EXP_BOTTLE);
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Mana Cost");
 		lore = new ArrayList<>();
@@ -270,11 +324,11 @@ public class Dublexor extends Machine {
 		im.setLore(lore);
 		is2.setItemMeta(im);
 
-		ItemStack is3 = new ItemStack(Material.DIRT);
+		ItemStack is3 = new ItemStack(Material.DIRT, 64);
 		im = is3.getItemMeta();
-		im.setDisplayName(ChatColor.GOLD + "Perfectly Generic Result");
+		im.setDisplayName(ChatColor.GOLD + "Input");
 		lore = new ArrayList<>();
-		lore.add(ChatColor.WHITE + "Your result here.");
+		lore.add(ChatColor.WHITE + "Dublecate your items.");
 		im.setLore(lore);
 		is3.setItemMeta(im);
 

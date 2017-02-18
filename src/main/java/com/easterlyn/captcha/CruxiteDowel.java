@@ -18,12 +18,15 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -77,7 +80,7 @@ public class CruxiteDowel {
 	}
 
 	public static double expCost(Effects effects, ItemStack toCreate) {
-		if (toCreate.getAmount() < 1) {
+		if (toCreate == null || toCreate.getAmount() < 1) {
 			return Double.MAX_VALUE;
 		}
 		double cost = getMana().getOrDefault(new ImmutablePair<>(toCreate.getType(), toCreate.getDurability()), Double.MAX_VALUE);
@@ -97,6 +100,18 @@ public class CruxiteDowel {
 		}
 
 		ItemMeta meta = toCreate.getItemMeta();
+
+		// In case of shulker boxes, etc. do not (yet) allow duplicating unless empty.
+		if (meta instanceof BlockStateMeta) {
+			BlockState state = ((BlockStateMeta) meta).getBlockState();
+			if (state instanceof InventoryHolder) {
+				for (ItemStack item : ((InventoryHolder) state).getInventory().getContents()) {
+					if (item != null && item.getType() != Material.AIR) {
+						return Double.MAX_VALUE;
+					}
+				}
+			}
+		}
 
 		if (meta.hasEnchants()) {
 			for (Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
@@ -202,6 +217,13 @@ public class CruxiteDowel {
 			for (Material material : Material.values()) {
 				addRecipeCosts(material);
 			}
+			manaMappings.entrySet().forEach(entry -> {
+				if (entry.getValue() == Double.MAX_VALUE) {
+					System.out.println(String.format("Entry %s:%s is Double.MAX_VALUE",
+							entry.getKey().getLeft(), entry.getKey().getRight()));
+				}
+			});
+			manaMappings.entrySet().removeIf(entry -> entry.getValue() == Double.MAX_VALUE);
 		}
 		return manaMappings;
 	}
@@ -494,8 +516,8 @@ public class CruxiteDowel {
 		// If a specific data value is provided but not found and a nonspecific value is present, fall through
 		// TODO test, may not be desirable
 		if (durability != -1) {
-			Pair<Material, Short> anyKey = new ImmutablePair<>(material, durability);
-			if (manaMappings.containsKey(anyKey)) {
+			Pair<Material, Short> anyKey = new ImmutablePair<>(material, (short) -1);
+			if (!pastMaterials.contains(anyKey) && manaMappings.containsKey(anyKey)) {
 				return manaMappings.get(anyKey);
 			}
 		}
@@ -572,7 +594,7 @@ public class CruxiteDowel {
 						continue nextRecipe;
 					}
 					double inputValue = addRecipeCosts(input.getType(), input.getDurability(), pastMaterials);
-					if (Double.MAX_VALUE / entry.getValue() >= inputValue) {
+					if (Double.MAX_VALUE / entry.getValue() <= inputValue) {
 						// Input item cannot be duplicated.
 						continue nextRecipe;
 					}
@@ -602,7 +624,7 @@ public class CruxiteDowel {
 						continue nextRecipe;
 					}
 					double inputValue = addRecipeCosts(input.getType(), input.getDurability(), pastMaterials);
-					if (Double.MAX_VALUE / input.getAmount() >= inputValue) {
+					if (Double.MAX_VALUE / input.getAmount() <= inputValue) {
 						// Input item cannot be duplicated.
 						continue nextRecipe;
 					}
@@ -626,7 +648,6 @@ public class CruxiteDowel {
 				continue nextRecipe;
 			}
 
-			
 			if (newMinimum == Double.MAX_VALUE) {
 				continue nextRecipe;
 			}

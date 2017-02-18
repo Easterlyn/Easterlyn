@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.easterlyn.machines.type.Dublexor;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.type.legacy.Alchemiter;
 
@@ -64,7 +65,7 @@ public class MachineInventoryTracker {
 		}
 
 		// Do not drop exp bottle placed in second slot
-		if (pair.getLeft() instanceof Alchemiter) {
+		if (pair.getLeft() instanceof Alchemiter || pair.getLeft() instanceof Dublexor) {
 			event.getInventory().setItem(1, null);
 		}
 	}
