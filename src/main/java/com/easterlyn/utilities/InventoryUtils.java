@@ -139,7 +139,7 @@ public class InventoryUtils {
 			return items;
 		}
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Bukkit.getPluginManager().getPlugin("Easterlyn").getResource("items.tsv")))) {
+				Bukkit.getPluginManager().getPlugin("Easterlyn").getResource("items.csv")))) {
 			items = new HashMap<>();
 			itemsReverse = HashMultimap.create();
 			String line;
@@ -148,13 +148,13 @@ public class InventoryUtils {
 				if (line.isEmpty()) {
 					continue;
 				}
-				String[] row = line.split("\t");
+				String[] row = line.split(",");
 				String id = row[1] + ":" + row[2];
 				items.put(id, row[3]);
 				itemsReverse.put(row[3], id);
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Could not load items from items.tsv!", e);
+			throw new RuntimeException("Could not load items from items.csv!", e);
 		}
 		return items;
 	}
