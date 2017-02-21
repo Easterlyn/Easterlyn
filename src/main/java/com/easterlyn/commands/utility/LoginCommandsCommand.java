@@ -107,7 +107,7 @@ public class LoginCommandsCommand extends EasterlynCommand {
 			int line = Integer.parseInt(args[1]);
 			ArrayList<String> commands = new ArrayList<>(user.getLoginCommands());
 			if (line < 1 || commands.size() < line) {
-				player.sendMessage(getLang().getValue("command.onlogin.delete.bounds")
+				player.sendMessage(getLang().getValue("command.onlogin.error.delete.bounds")
 						.replace("{COUNT}", String.valueOf(commands.size()))
 						.replace("{PARAMETER}", args[1]));
 				return;
@@ -117,7 +117,7 @@ public class LoginCommandsCommand extends EasterlynCommand {
 			player.sendMessage(getLang().getValue("command.onlogin.delete").replace("{PARAMETER}", removed));
 			return;
 		} catch (NumberFormatException e) {
-			player.sendMessage(getLang().getValue("command.onlogin.delete.usage"));
+			player.sendMessage(getLang().getValue("command.onlogin.error.delete.usage"));
 			return;
 		}
 	}
