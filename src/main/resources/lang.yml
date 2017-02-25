@@ -404,6 +404,12 @@ events:
       PONG.
     filter: |-
       (^|\s)rap(ed?|ing)(\W|\s|$)
+    replacement: |-
+      rap(ed?|ing)%%cuddl$1
+      the\sf+u+[ck]+(ed?|ing)%%in tarnation$1
+      f+u+[ck]+(ed?|ing)%%fiddlestick$1
+      (bitch|cunt|fag+([eio]t+)?y?|asshole|whore)%%pudding pie|fluffernutter|Duke of Earl|rainbow starbeam|ladybug hug|coffee mug|armor plating|cute cucumber|20-sided die|little lilypad|flaxen ferret|huggable hunk|honey bunny|honeybun|babycake|bran muffin|sugarsnack|jelly doughnut|pudding pop|marzipan orangutan|shrubbery|toucan|dear|sweetheart|professional|skilled player|great person|good friend|talented pal
+      nig+[aie]r?%%buddy|pal|friend|chum|bub
     ping: '{COLOR:bad}Don''t just highlight someone, {PLAYER}. It''s easy and polite to say what you plan to say once you have their attention in the same sentence.'
     rp: '{COLOR:bad}RP is not allowed in the main chat. Join #rp or #fanrp using /focus!'
     spam: '{COLOR:bad}You appear to be spamming. Please slow down chat.'

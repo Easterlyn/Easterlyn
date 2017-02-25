@@ -96,7 +96,7 @@ public class RawAnnouncer extends Module {
 
 		// Announcement: Try EnchantedFurnace
 		components.clear();
-		component = new TextComponent("Smelting wasting your time?");
+		component = new TextComponent("Wasting time smelting?");
 		component.setColor(Language.getColor("bot_text"));
 		components.add(component);
 
@@ -110,7 +110,7 @@ public class RawAnnouncer extends Module {
 		component.setColor(Language.getColor("bot_text"));
 		components.add(component);
 
-		builder.setMessage("Smelting wasting your time? https://dev.bukkit.org/projects/enchantedfurnace",
+		builder.setMessage("Wasting time smelting? https://dev.bukkit.org/projects/enchantedfurnace",
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 

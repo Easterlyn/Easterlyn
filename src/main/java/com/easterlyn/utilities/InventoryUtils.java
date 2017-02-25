@@ -40,10 +40,14 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
@@ -691,6 +695,66 @@ public class InventoryUtils {
 		}
 		list.a(out);
 		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", out));
+	}
+
+	public static String recipeToText(Recipe recipe) {
+		if (recipe instanceof FurnaceRecipe) {
+			return String.format("SMELT: %s -> %s", materialToText(((FurnaceRecipe) recipe).getInput()), materialToText(recipe.getResult()));
+		} else if (recipe instanceof ShapelessRecipe) {
+			StringBuilder builder = new StringBuilder("SHAPELESS: ");
+			for (ItemStack ingredient : ((ShapelessRecipe) recipe).getIngredientList()) {
+				builder.append(materialToText(ingredient)).append(" + ");
+			}
+			builder.replace(builder.length() - 2, builder.length(), "-> ").append(recipe.getResult());
+			return builder.toString();
+		} else if (recipe instanceof ShapedRecipe) {
+			StringBuilder builder = new StringBuilder("SHAPED:\n");
+			Map<Character, String> mappings = new HashMap<>();
+			int longestMapping = 3; // "AIR".length() == 3
+			for (Map.Entry<Character, ItemStack> mapping : ((ShapedRecipe) recipe).getIngredientMap().entrySet()) {
+				String newMapping = materialToText(mapping.getValue());
+				longestMapping = Math.max(longestMapping, newMapping.length());
+				mappings.put(mapping.getKey(), newMapping);
+			}
+			for (String line : ((ShapedRecipe) recipe).getShape()) {
+				for (char character : line.toCharArray()) {
+					builder.append('[');
+					String mapping = mappings.getOrDefault(character, "AIR");
+					double padding = (longestMapping - mapping.length()) / 2.0;
+					double roundPadding = Math.floor(padding);
+					for (int i = 0; i < roundPadding; i++) {
+						builder.append(' ');
+					}
+					builder.append(mapping);
+					// Post-pad additional space for odd numbers
+					padding = Math.floor(padding + 0.5);
+					for (int i = 0; i < padding; i++) {
+						builder.append(' ');
+					}
+					builder.append("] ");
+				}
+				builder.delete(builder.length() - 1, builder.length());
+				builder.append('\n');
+			}
+			builder.delete(builder.length() - 1, builder.length()).append(" -> ").append(materialToText(recipe.getResult()));
+			return builder.toString();
+		}
+		return recipe.toString();
+	}
+
+	private static String materialToText(ItemStack item) {
+		if (item == null || item.getType() == Material.AIR) {
+			return "AIR";
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append(item.getType().name());
+		if (item.getDurability() != -1 && item.getDurability() != Short.MAX_VALUE) {
+			builder.append(':').append(item.getDurability());
+		}
+		if (item.getAmount() != 1) {
+			builder.append('x').append(item.getAmount());
+		}
+		return builder.toString();
 	}
 
 }

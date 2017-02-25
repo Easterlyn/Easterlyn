@@ -85,6 +85,10 @@ public class CruxiteDowel {
 		}
 		double cost = getMana().getOrDefault(new ImmutablePair<>(toCreate.getType(), toCreate.getDurability()), Double.MAX_VALUE);
 		if (cost == Double.MAX_VALUE) {
+			// Fall through to any durability.
+			cost = getMana().getOrDefault(new ImmutablePair<>(toCreate.getType(), (short) (toCreate.getType().getMaxDurability() > 0 ? 0 : -1)), Double.MAX_VALUE);
+		}
+		if (cost == Double.MAX_VALUE) {
 			// Item cannot be made with mana
 			return Double.MAX_VALUE;
 		}
@@ -217,12 +221,6 @@ public class CruxiteDowel {
 			for (Material material : Material.values()) {
 				addRecipeCosts(material);
 			}
-			manaMappings.entrySet().forEach(entry -> {
-				if (entry.getValue() == Double.MAX_VALUE) {
-					System.out.println(String.format("Entry %s:%s is Double.MAX_VALUE",
-							entry.getKey().getLeft(), entry.getKey().getRight()));
-				}
-			});
 			manaMappings.entrySet().removeIf(entry -> entry.getValue() == Double.MAX_VALUE);
 		}
 		return manaMappings;
@@ -508,13 +506,17 @@ public class CruxiteDowel {
 	}
 
 	private static double addRecipeCosts(Material material, short durability, List<Pair<Material, Short>> pastMaterials) {
+		if (durability == Short.MAX_VALUE) {
+			// For some reason recipes are a mix of -1 and 32767 for any durability.
+			durability = -1;
+		}
+
 		Pair<Material, Short> key = new ImmutablePair<>(material, durability);
 		// Check if calculated already
 		if (manaMappings.containsKey(key)) {
 			return manaMappings.get(key);
 		}
 		// If a specific data value is provided but not found and a nonspecific value is present, fall through
-		// TODO test, may not be desirable
 		if (durability != -1) {
 			Pair<Material, Short> anyKey = new ImmutablePair<>(material, (short) -1);
 			if (!pastMaterials.contains(anyKey) && manaMappings.containsKey(anyKey)) {
@@ -534,18 +536,18 @@ public class CruxiteDowel {
 
 		if (durability == -1) {
 			double maximum = 0;
-			Set<Short> durabilities = Bukkit.getRecipesFor(new ItemStack(material, 1, durability)).stream()
-					.map(recipe -> recipe.getResult().getDurability()).collect(Collectors.toSet());
+			Set<Short> durabilities = Bukkit.getRecipesFor(new ItemStack(material, 1, (short) -1)).stream()
+					.map(recipe -> recipe.getResult().getDurability())
+					.filter(dura -> dura != -1 && dura != Short.MAX_VALUE)
+					.collect(Collectors.toSet());
 			for (short dura : durabilities) {
-				if (dura != -1) {
-					maximum = Math.max(maximum, addRecipeCosts(material, dura, pastMaterials));
-				}
+				maximum = Math.max(maximum, addRecipeCosts(material, dura, pastMaterials));
 			}
 			if (maximum <= 0) {
 				// No recipes
 				maximum = Double.MAX_VALUE;
 			}
-			manaMappings.put(key, maximum);
+			// Don't actually add maximum - don't want to allow fallthrough for everything
 			return maximum;
 		}
 

@@ -326,7 +326,7 @@ public class Dublexor extends Machine {
 
 		ItemStack is3 = new ItemStack(Material.DIRT, 64);
 		im = is3.getItemMeta();
-		im.setDisplayName(ChatColor.GOLD + "Input");
+		im.setDisplayName(ChatColor.GOLD + "Copy of Input");
 		lore = new ArrayList<>();
 		lore.add(ChatColor.WHITE + "Dublecate your items.");
 		im.setLore(lore);
