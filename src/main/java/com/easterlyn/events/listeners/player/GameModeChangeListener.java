@@ -8,6 +8,8 @@ import com.easterlyn.micromodules.Spectators;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  * Listener for PlayerGameModeChangeEvents.
@@ -34,6 +36,11 @@ public class GameModeChangeListener extends EasterlynListener {
 	public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
 		if (spectators.isSpectator(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
+
+			// In case of new inventory group, refresh potion effect.
+			if (event.getPlayer().hasPermission("easterlyn.spectators.nightvision")) {
+				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
+			}
 		}
 	}
 
