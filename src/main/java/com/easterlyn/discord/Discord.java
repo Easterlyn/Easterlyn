@@ -344,7 +344,7 @@ public class Discord extends Module {
 
 	private void startQueueDrain() {
 		if (drainQueueThread == null || !drainQueueThread.isAlive()) {
-			drainQueueThread = new DiscordQueue(this, 350, "Easterlyn-DiscordQueue");
+			drainQueueThread = new DiscordQueue(this, 50, "Easterlyn-DiscordQueue");
 			drainQueueThread.start();
 		}
 	}

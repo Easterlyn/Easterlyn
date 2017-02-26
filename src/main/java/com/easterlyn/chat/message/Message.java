@@ -42,7 +42,7 @@ public class Message {
 	private String name, consoleFormat, unformattedMessage;
 	private TextComponent messageComponent;
 
-	Message(Language lang, User sender, String name, Channel channel, String message,
+	protected Message(Language lang, User sender, String name, Channel channel, String message,
 			String consoleFormat, boolean thirdPerson, TextComponent channelComponent,
 			TextComponent channelHighlightComponent, TextComponent nameComponent,
 			TextComponent messageComponent) {

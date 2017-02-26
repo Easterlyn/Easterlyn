@@ -2,7 +2,7 @@ package com.easterlyn.chat.channel;
 
 public enum ChannelType {
 
-	NORMAL, REGION, RP, NICK;
+	NORMAL, REGION, NICK;
 
 	public static ChannelType getType(String s) {
 		s = s.replaceAll("\\W", "").toUpperCase();

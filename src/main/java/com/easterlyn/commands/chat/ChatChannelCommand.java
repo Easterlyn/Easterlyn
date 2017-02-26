@@ -369,7 +369,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 			}
 			if (args.length == 4) {
 				args[3] = args[3].toUpperCase();
-				for (String type : new String[] {"NORMAL", "NICK", "RP"}) {
+				for (String type : new String[] {"NORMAL", "NICK"}) {
 					if (type.startsWith(args[3])) {
 						matches.add(type);
 					}

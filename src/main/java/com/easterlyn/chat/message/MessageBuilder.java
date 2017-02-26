@@ -10,10 +10,8 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
-import com.easterlyn.chat.channel.CanonNick;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NickChannel;
-import com.easterlyn.chat.channel.RPChannel;
 import com.easterlyn.chat.channel.RegionChannel;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
@@ -42,7 +40,7 @@ public class MessageBuilder {
 
 	private static final TextComponent HIGHLIGHTED_BRACKET;
 	private static final String CONSOLE_FORMAT, CONSOLE_FORMAT_THIRD;
-	private static final Pattern NAME_PATTERN, RANK_PATTERN, CLASS_PATTERN, ASPECT_PATTERN;
+	private static final Pattern NAME_PATTERN, REAL_NAME_PATTERN, RANK_PATTERN, CLASS_PATTERN, ASPECT_PATTERN;
 	private static BaseComponent[] NAME_HOVER;
 
 	static {
@@ -55,6 +53,7 @@ public class MessageBuilder {
 		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
 
 		NAME_PATTERN = Pattern.compile("\\{PLAYER\\}");
+		REAL_NAME_PATTERN = Pattern.compile("\\{REALNAME\\}");
 		RANK_PATTERN = Pattern.compile("\\{RANK\\}");
 		CLASS_PATTERN = Pattern.compile("\\{CLASS\\}");
 		ASPECT_PATTERN = Pattern.compile("\\{ASPECT\\}");
@@ -139,9 +138,9 @@ public class MessageBuilder {
 			this.channel = manager.getChannel(this.atChannel);
 		}
 
-		// Anyone can use color codes in nick channels. Channel mods can use color codes in non-rp channels
-		if (channel != null && !(channel instanceof RPChannel)
-				&& (channel instanceof NickChannel || sender != null && channel.isModerator(sender))) {
+		// Channel mods can use colors in any channel, anyone can use color codes in nick channels.
+		if (channel != null && (channel instanceof NickChannel
+				|| sender != null && channel.isModerator(sender))) {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
 
@@ -187,9 +186,7 @@ public class MessageBuilder {
 			if (sb.length() > 0) {
 				sb.deleteCharAt(sb.length() - 1);
 			}
-			message = sb.toString().replaceAll("[tT][iI][lL][dD][AEae]?[sS]?", "").replace("GOG", "GOD")
-					.replaceAll("([Gg])og", "$1od").replace("JEGUS", "JESUS")
-					.replaceAll("([Jj])egus", "$1esus");
+			message = sb.toString();
 		}
 
 		// Trim whitespace created by formatting codes, etc.
@@ -302,16 +299,6 @@ public class MessageBuilder {
 			return false;
 		}
 
-		// Nicks required in RP channels.
-		if (this.channel instanceof RPChannel && !((RPChannel) this.channel).hasNick(sender)) {
-			if (informSender) {
-				this.sender.sendMessage(ChatColor.GOLD + channel.getName() + ChatColor.RED
-						+ " is a roleplay channel, a nick is required. Check " + ChatColor.AQUA
-						+ "/nick list");
-			}
-			return false;
-		}
-
 		return true;
 	}
 
@@ -342,19 +329,13 @@ public class MessageBuilder {
 		}
 
 		// Prepend chat colors to every message if sender has permission
-		if (!(channel instanceof RPChannel) && player != null && player.hasPermission("easterlyn.chat.color")) {
+		if (player != null && player.hasPermission("easterlyn.chat.color")) {
 			for (ChatColor c : ChatColor.values()) {
 				if (player.hasPermission("easterlyn.chat.color." + c.name().toLowerCase())) {
 					message = c + message;
 					break;
 				}
 			}
-		}
-
-		// Canon nicks for RP channels
-		CanonNick nick = null;
-		if (sender != null && channel instanceof RPChannel) {
-			nick = CanonNick.getNick(((RPChannel) channel).getNick(sender));
 		}
 
 		// CHANNEL ELEMENT: [#channel]
@@ -408,6 +389,7 @@ public class MessageBuilder {
 
 		ChatColor globalRank = null;
 		String rankName = null;
+		String realName = "";
 		if (player != null) {
 			// Permission-based rank colors, greatest to least rank
 			UserRank[] ranks = UserRank.values();
@@ -441,26 +423,24 @@ public class MessageBuilder {
 				rankName = UserRank.DEFAULT.getFriendlyName();
 			}
 
-			StringBuilder nameBuilder = new StringBuilder();
-			boolean hasNick = channel instanceof NickChannel && ((NickChannel) channel).hasNick(sender);
-			if (hasNick) {
-				nameBuilder.append(((NickChannel) channel).getNick(sender)).append(" (");
+			if (channel instanceof NickChannel && ((NickChannel) channel).hasNick(sender)) {
+				senderName = ((NickChannel) channel).getNick(sender);
+			} else {
+				senderName = sender.getDisplayName();
 			}
-			nameBuilder.append(sender.getDisplayName());
-			if (hasNick) {
-				nameBuilder.append(')');
+			if (!senderName.equals(player.getName())) {
+				realName = lang.getValue("chat.user.realname").replace("{PLAYER}", player.getName());
 			}
-			senderName = nameBuilder.toString();
 		} else {
 			globalRank = ChatColor.WHITE;
 			rankName = "Bot/Service";
 		}
 
 		// > Name | <Name
-		component = new TextComponent(nick != null ? nick.getDisplayName() : sender != null
+		component = new TextComponent(sender != null
 				? channel instanceof NickChannel ? ((NickChannel) channel).getNick(sender)
 						: sender.getDisplayName() : senderName);
-		component.setColor(nick != null ? nick.getNameColor() : globalRank);
+		component.setColor(globalRank);
 		components.add(component);
 
 		// > Name | <Name>
@@ -478,6 +458,12 @@ public class MessageBuilder {
 				Matcher matcher = NAME_PATTERN.matcher(text);
 				if (matcher.find()) {
 					text = matcher.replaceAll(senderName);
+					hoverElement.setColor(globalRank);
+				}
+
+				matcher = REAL_NAME_PATTERN.matcher(text);
+				if (matcher.find()) {
+					text = matcher.replaceAll(realName);
 					hoverElement.setColor(globalRank);
 				}
 
@@ -530,13 +516,9 @@ public class MessageBuilder {
 		if (messageComponents != null) {
 			messageComponent = new TextComponent(messageComponents);
 		} else {
-			messageComponent = new TextComponent(JSONUtil.getJson(message, nick));
+			messageComponent = new TextComponent(JSONUtil.fromLegacyText(message));
 		}
 
-		// Console prettiness
-		if (nick != null) {
-			message = nick.getColor() + message;
-		}
 		String consoleFormat = String.format(thirdPerson ? CONSOLE_FORMAT_THIRD : CONSOLE_FORMAT,
 				channelBracket, channelRank, channel.getName(), region, globalRank, "%s");
 

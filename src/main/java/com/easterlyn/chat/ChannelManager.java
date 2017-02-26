@@ -11,7 +11,6 @@ import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.ChannelType;
 import com.easterlyn.chat.channel.NickChannel;
 import com.easterlyn.chat.channel.NormalChannel;
-import com.easterlyn.chat.channel.RPChannel;
 import com.easterlyn.chat.channel.RegionChannel;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,11 +28,17 @@ public class ChannelManager {
 		final YamlConfiguration yaml = chat.getConfig();
 		final ArrayList<String> drop = new ArrayList<>();
 		for (String channelName : yaml.getKeys(false)) {
-			final Channel channel = chat.getChannelManager().loadChannel(channelName,
-					AccessLevel.valueOf(yaml.getString(channelName + ".access")),
-					UUID.fromString(yaml.getString(channelName + ".owner")),
-					ChannelType.valueOf(yaml.getString(channelName + ".type")),
-					yaml.getLong(channelName + ".lastAccess", System.currentTimeMillis()));
+			Channel channel;
+			try {
+				channel = chat.getChannelManager().loadChannel(channelName,
+						AccessLevel.valueOf(yaml.getString(channelName + ".access")),
+						UUID.fromString(yaml.getString(channelName + ".owner")),
+						ChannelType.valueOf(yaml.getString(channelName + ".type")),
+						yaml.getLong(channelName + ".lastAccess", System.currentTimeMillis()));
+			} catch (Exception e) {
+				// Broken/invalid channel
+				continue;
+			}
 			if (!(channel instanceof NormalChannel) || !((NormalChannel) channel).isRecentlyAccessed()) {
 				drop.add(channelName);
 				continue;
@@ -112,9 +117,6 @@ public class ChannelManager {
 		case NICK:
 			channel = new NickChannel(chat.getPlugin(), name, access, creator, lastAccessed);
 			break;
-		case RP:
-			channel = new RPChannel(chat.getPlugin(), name, access, creator, lastAccessed);
-			break;
 		case NORMAL:
 		default:
 			channel = new NormalChannel(chat.getPlugin(), name, access, creator, lastAccessed);
@@ -130,7 +132,6 @@ public class ChannelManager {
 		channelList.put("#main", main);
 		channelList.put("#Aether", new RegionChannel(chat.getPlugin(), "#Aether"));
 		channelList.put("#discord", new RegionChannel(chat.getPlugin(), "#discord"));
-		channelList.put("#rp", new RPChannel(chat.getPlugin(), "#rp", AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		String spam = chat.getPlugin().getModule(Language.class).getValue("chat.spamChannel");
 		channelList.put(spam, new NormalChannel(chat.getPlugin(), spam, AccessLevel.PUBLIC, null, Long.MAX_VALUE));
 		// People may use unicode characters in private messages

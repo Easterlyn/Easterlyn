@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.easterlyn.chat.Language;
-import com.easterlyn.chat.channel.CanonNick;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -28,21 +27,6 @@ import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 public class JSONUtil {
 
 	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([^A-Za-z0-9])?$");
-
-	public static BaseComponent[] getJson(String message, CanonNick quirk) {
-		if (message == null || message.isEmpty()) {
-			return null;
-		}
-		BaseComponent[] components = fromLegacyText(message);
-		for (int i = 0; i < components.length; i++) {
-			TextComponent component = (TextComponent) components[i];
-			if (component.getClickEvent() == null && quirk != null) {
-				component.setColor(quirk.getColor());
-				component.setText(quirk.applyQuirk(component.getText()));
-			}
-		}
-		return components;
-	}
 
 	public static TextComponent[] fromLegacyText(String message) {
 		ArrayList<BaseComponent> components = new ArrayList<BaseComponent>();

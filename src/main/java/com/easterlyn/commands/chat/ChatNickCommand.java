@@ -1,16 +1,13 @@
 package com.easterlyn.commands.chat;
 
 import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
-import com.easterlyn.chat.channel.CanonNick;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NickChannel;
-import com.easterlyn.chat.channel.RPChannel;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
@@ -67,22 +64,6 @@ public class ChatNickCommand extends EasterlynCommand {
 			user.sendMessage(getLang().getValue("chat.error.unsupportedOperation").replace("{CHANNEL}", args[0]));
 			return true;
 		}
-		if (args[0].equalsIgnoreCase("list")) {
-			if (channel instanceof RPChannel) {
-				getLang();
-				StringBuilder sb = new StringBuilder(Language.getColor("good").toString()).append("Nicks: ");
-				for (CanonNick n : CanonNick.values()) {
-					if (n != CanonNick.SERKITFEATURE) {
-						sb.append(Language.getColor("emphasis.good")).append(n.getId());
-						sb.append(Language.getColor("good")).append(", ");
-					}
-				}
-				user.sendMessage(sb.substring(0, sb.length() - 4).toString());
-				return true;
-			}
-			user.sendMessage(Language.getColor("good") + "You can use any nick you want in a nick channel.");
-			return true;
-		}
 		NickChannel nickChannel = (NickChannel) channel;
 		if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("off")) {
 			String oldName = nickChannel.removeNick(user);
@@ -107,21 +88,12 @@ public class ChatNickCommand extends EasterlynCommand {
 					+ "Nicks must be 1+ characters long when stripped of non-ASCII characters.");
 			return true;
 		}
-		String nickname = sb.toString();
-		String cleanName = null;
-		if (nickChannel instanceof RPChannel) {
-			CanonNick canonNick = CanonNick.getNick(nickname);
-			if (canonNick == null) {
-				sender.sendMessage(getLang().getValue("chat.error.nickNotCanon").replace("{NICK}", nickname));
-				return true;
-			}
-			nickname = canonNick.name();
-			cleanName = canonNick.getDisplayName();
-		} else {
-			nickname = ChatColor.translateAlternateColorCodes('&', nickname);
-			cleanName = ChatColor.stripColor(nickname);
-		}
-		User nickOwner = nickChannel.getNickOwner(nickname);
+
+		String nickname = ChatColor.translateAlternateColorCodes('&', sb.toString());
+		String cleanName = ChatColor.stripColor(nickname);
+
+		User nickOwner = nickChannel.getNickOwner(cleanName);
+
 		if (nickOwner != null) {
 			if (!nickOwner.getUUID().equals(user.getUUID())) {
 				sender.sendMessage(getLang().getValue("chat.error.nickTaken").replace("{NICK}", cleanName));
@@ -143,19 +115,6 @@ public class ChatNickCommand extends EasterlynCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (!(sender instanceof Player) || args.length > 1) {
-			return ImmutableList.of();
-		}
-		if (users.getUser(((Player) sender).getUniqueId()).getCurrentChannel() instanceof RPChannel) {
-			ArrayList<String> matches = new ArrayList<>();
-			args[0] = args[0].toLowerCase();
-			for (CanonNick nick : CanonNick.values()) {
-				if (nick != CanonNick.SERKITFEATURE && nick.getId().toLowerCase().startsWith(args[0])) {
-					matches.add(nick.getId());
-				}
-			}
-			return matches;
-		}
 		return ImmutableList.of();
 	}
 }

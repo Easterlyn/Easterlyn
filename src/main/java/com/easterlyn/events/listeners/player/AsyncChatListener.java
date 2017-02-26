@@ -1,8 +1,11 @@
 package com.easterlyn.events.listeners.player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
@@ -50,15 +53,7 @@ import me.ryanhamshire.GriefPrevention.PlayerData;
  */
 public class AsyncChatListener extends EasterlynListener {
 
-	// TODO -> lang, events.chat.test
-	private static final String[] TEST = new String[] {"It is certain.", "It is decidedly so.",
-			"Without a doubt.", "Yes, definitely.", "You may rely on it.", "As I see, yes.",
-			"Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
-			"Reply hazy, try again.", "Ask again later.", "Better not tell you now.",
-			"Cannot predict now.", "Concentrate and ask again.", "Don't count on it.",
-			"My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful.",
-			"Testing complete. Proceeding with operation.", "A critical fault has been discovered while testing.",
-			"Error: Test results contaminated.", "tset", "PONG."};
+	private static String[] TEST;
 
 	private final AwayFromKeyboard afk;
 	private final Chat chat;
@@ -70,6 +65,7 @@ public class AsyncChatListener extends EasterlynListener {
 	private final boolean handleGriefPrevention;
 	private final Pattern claimPattern, trappedPattern, yoooooooooooooooooooooooooooooooooooooooo;
 	private final List<Pattern> doNotSayThat;
+	private final Map<Pattern, List<String>> replacements;
 
 	public AsyncChatListener(Easterlyn plugin) {
 		super(plugin);
@@ -79,6 +75,8 @@ public class AsyncChatListener extends EasterlynListener {
 		this.discord = plugin.getModule(Discord.class);
 		this.lang = plugin.getModule(Language.class);
 		this.users = plugin.getModule(Users.class);
+
+		TEST = lang.getValue("events.chat.test").split("\n");
 
 		halFunctions = new ArrayList<>();
 		Chat chat = plugin.getModule(Chat.class);
@@ -109,7 +107,13 @@ public class AsyncChatListener extends EasterlynListener {
 
 		doNotSayThat = new ArrayList<>();
 		for (String pattern : lang.getValue("events.chat.filter").split("\n")) {
-			doNotSayThat.add(Pattern.compile(pattern));
+			doNotSayThat.add(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE));
+		}
+
+		replacements = new HashMap<>();
+		for (String data : lang.getValue("events.chat.replacement").split("\n")) {
+			String[] replacement = data.split("%%");
+			replacements.put(Pattern.compile(replacement[0], Pattern.CASE_INSENSITIVE), Arrays.asList(replacement[1].split("|")));
 		}
 	}
 
@@ -487,7 +491,7 @@ public class AsyncChatListener extends EasterlynListener {
 	}
 
 	public static String test() {
-		return TEST[ThreadLocalRandom.current().nextInt(TEST.length)];
+		return TEST != null ? TEST[ThreadLocalRandom.current().nextInt(TEST.length)] : "Test successful.";
 	}
 
 }
