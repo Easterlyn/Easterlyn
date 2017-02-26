@@ -1,4 +1,4 @@
-package com.easterlyn.discord.abstraction;
+package com.easterlyn.discord.queue;
 
 /**
  * Enum defining priorities for DiscordCallables.

@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.DiscordPlayer;
-import com.easterlyn.discord.abstraction.CallPriority;
 import com.easterlyn.discord.modules.MinecraftModule;
+import com.easterlyn.discord.queue.CallPriority;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

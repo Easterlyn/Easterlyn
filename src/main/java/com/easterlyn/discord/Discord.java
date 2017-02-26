@@ -27,10 +27,12 @@ import javax.annotation.Nullable;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.chat.message.Message;
-import com.easterlyn.discord.abstraction.CallPriority;
-import com.easterlyn.discord.abstraction.DiscordCallable;
 import com.easterlyn.discord.abstraction.DiscordCommand;
 import com.easterlyn.discord.abstraction.DiscordModule;
+import com.easterlyn.discord.queue.CallPriority;
+import com.easterlyn.discord.queue.CallType;
+import com.easterlyn.discord.queue.DiscordCallable;
+import com.easterlyn.discord.queue.DiscordQueue;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.PermissiblePlayer;
 import com.easterlyn.utilities.PlayerLoader;
@@ -61,6 +63,7 @@ import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
@@ -86,7 +89,7 @@ public class Discord extends Module {
 	private String botName, token, channelGeneral, channelMain, channelLog, channelReports;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
-	private QueueDrainThread drainQueueThread;
+	private DiscordQueue drainQueueThread;
 	private boolean ready = false;
 
 	private boolean lock = false;
@@ -341,7 +344,7 @@ public class Discord extends Module {
 
 	private void startQueueDrain() {
 		if (drainQueueThread == null || !drainQueueThread.isAlive()) {
-			drainQueueThread = new QueueDrainThread(this, 350, "Easterlyn-DiscordQueue");
+			drainQueueThread = new DiscordQueue(this, 350, "Easterlyn-DiscordQueue");
 			drainQueueThread.start();
 		}
 	}
@@ -397,23 +400,23 @@ public class Discord extends Module {
 				List<IMessage> messageList = new ArrayList<>();
 				messageList.addAll(subList);
 				subList.clear();
-				this.queue(new DiscordCallable(priority) {
+				this.queue(new DiscordCallable(entry.getKey().getLeft().getGuild().getID(), CallType.BULK_DELETE) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						entry.getKey().getLeft().getMessages().bulkDelete(messageList);
 					}
-				});
+				}.withRetries(1));
 			}
 		}
 	}
 
 	private void queueSingleDelete(CallPriority priority, IMessage message) {
-		drainQueueThread.queue(new DiscordCallable(priority, 1) {
+		drainQueueThread.queue(new DiscordCallable(message.getGuild().getID(), CallType.MESSAGE_DELETE) {
 			@Override
 			public void call() throws MissingPermissionsException, RateLimitException, DiscordException {
 				message.delete();
 			}
-		});
+		}.withRetries(1));
 	}
 
 	public IDiscordClient getClient() {
@@ -504,22 +507,26 @@ public class Discord extends Module {
 			// Bot has not finished logging in. Forget it, it's just some chat.
 			return;
 		}
-		drainQueueThread.queue(new DiscordCallable(CallPriority.HIGH) {
+		IChannel iChannel = client.getChannelByID(channel);
+		if (iChannel == null) {
+			IUser user = client.getUserByID(channel);
+			if (user == null) {
+				return;
+			}
+			try {
+				iChannel = client.getOrCreatePMChannel(user);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+		final IChannel group = iChannel;
+		drainQueueThread.queue(new DiscordCallable(
+				group instanceof IPrivateChannel ? group.getID() : group.getGuild().getID(),
+				CallType.MESSAGE_SEND) {
 			@Override
-			public void call() throws MissingPermissionsException, RateLimitException, DiscordException {
-				IChannel group = client.getChannelByID(channel);
-				if (group == null) {
-					IUser user = client.getUserByID(channel);
-					if (user == null) {
-						return;
-					}
-					try {
-						group = client.getOrCreatePMChannel(user);
-					} catch (Exception e) {
-						e.printStackTrace();
-						return;
-					}
-				}
+			public void call()
+					throws MissingPermissionsException, RateLimitException, DiscordException {
 				StringBuilder builder = new StringBuilder();
 				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
 					builder.append("**").append(toEscape.matcher(name).replaceAll("\\\\$1"));
@@ -591,7 +598,7 @@ public class Discord extends Module {
 
 			if (kickTime <= now) {
 				discordData.set(path, null);
-				queue(new DiscordCallable(CallPriority.LOW) {
+				queue(new DiscordCallable(guild.getID(), CallType.GUILD_USER_KICK) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						guild.kickUser(user);
@@ -668,7 +675,7 @@ public class Discord extends Module {
 				}
 	
 				IRole[] roleArray = roles.toArray(new IRole[roles.size()]);
-				this.queue(new DiscordCallable() {
+				this.queue(new DiscordCallable(guild.getID(), CallType.GUILD_USER_ROLE) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						guild.editUserRoles(iuser, roleArray);
@@ -683,7 +690,7 @@ public class Discord extends Module {
 			if (player.getName() != null) {
 				Optional<String> name = iuser.getNicknameForGuild(guild);
 				if (!name.isPresent() || !player.getName().equals(name.get())) {
-					this.queue(new DiscordCallable(CallPriority.LOW) {
+					this.queue(new DiscordCallable(guild.getID(), CallType.GUILD_USER_NICKNAME) {
 						@Override
 						public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 							guild.setUserNickname(iuser, player.getName());

@@ -8,9 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.easterlyn.discord.Discord;
-import com.easterlyn.discord.abstraction.CallPriority;
-import com.easterlyn.discord.abstraction.DiscordCallable;
 import com.easterlyn.discord.abstraction.DiscordModule;
+import com.easterlyn.discord.queue.CallPriority;
+import com.easterlyn.discord.queue.CallType;
+import com.easterlyn.discord.queue.DiscordCallable;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -74,7 +75,7 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		private void queuePopulation(long retentionDuration) {
-			getDiscord().queue(new DiscordCallable(CallPriority.LOWEST) {
+			getDiscord().queue(new DiscordCallable(this.channel.getGuild().getID(), CallType.MESSAGE_POPULATE) {
 				@Override
 				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 					try {
@@ -120,7 +121,7 @@ public class RetentionModule extends DiscordModule {
 
 			this.lockDeletion.set(true);
 
-			getDiscord().queue(new DiscordCallable(CallPriority.LOW, 1) {
+			getDiscord().queue(new DiscordCallable(this.channel.getGuild().getID(), CallType.BULK_DELETE) {
 				@Override
 				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 					LocalDateTime retention = LocalDateTime.now().minusSeconds(retentionDuration);
@@ -199,7 +200,7 @@ public class RetentionModule extends DiscordModule {
 						queueDeletion(retentionDuration);
 					}
 				}
-			});
+			}.withRetries(1));
 		}
 
 	}
