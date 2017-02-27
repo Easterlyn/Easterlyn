@@ -369,8 +369,10 @@ discord:
   link:
     mandate: |-
       Welcome, {USER}!
-      At your earliest convenience, please log into Minecraft on `play.easterlyn.com` and run `/link`. Then, in this chat, run `/link YourCodeHere` to complete the process.
-      If you don't play Minecraft and are here for other reasons, please contact the staff - users with no groups are automatically kicked after a grace period.
+      If you're here for Minecraft, please tell us your **Minecraft username** to be whitelisted.
+      Once whitelisted, please log join us on `play.easterlyn.com` and run `/link`. Then, in this chat, run `/link YourCodeHere` to complete the process.
+      If you don't play Minecraft and are here for other reasons (or just want to look pretty), please use +giveme to obtain a color. A list of options can be found by running +giveme list.
+      Thanks for joining us!
 
 events:
   craft:

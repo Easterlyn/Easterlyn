@@ -63,7 +63,7 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 
 	public void addExtraPermission(String permissionSegment, UserRank rank) {
 		permissionSegment = this.getPermission() + '.' + permissionSegment;
-		Permission permission = PermissionUtils.getOrCreate(permissionSegment, PermissionDefault.OP);
+		Permission permission = PermissionUtils.getOrCreate(permissionSegment, PermissionDefault.FALSE);
 		permission.addParent("easterlyn.command.*", true).recalculatePermissibles();
 		permission.addParent(rank.getPermission(), true).recalculatePermissibles();
 	}

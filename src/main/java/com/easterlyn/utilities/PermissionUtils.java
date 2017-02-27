@@ -26,7 +26,7 @@ public class PermissionUtils {
 	}
 
 	public static void addParent(String permissionName, String parentName) {
-		addParent(permissionName, parentName, PermissionDefault.OP);
+		addParent(permissionName, parentName, PermissionDefault.FALSE);
 	}
 
 	public static void addParent(String permissionName, String parentName, PermissionDefault permissionDefault) {
