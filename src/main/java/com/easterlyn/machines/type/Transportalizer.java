@@ -237,16 +237,17 @@ public class Transportalizer extends Machine {
 		double borderRadius = border.getSize() / 2;
 		String[] locString = line3.split("(\\s|,\\s?)");
 		int x0 = Integer.parseInt(locString[0]);
-		int max = (int) (border.getCenter().getX() + borderRadius);
-		int x = Math.max(-max, Math.min(max, x0));
+		int x = (int) Math.max(border.getCenter().getX() - borderRadius, Math.min(border.getCenter().getX() + borderRadius, x0));
 		int y0 = Integer.parseInt(locString[1]);
 		int y = Math.max(1, Math.min(255, y0));
 		int z0 = Integer.parseInt(locString[2]);
-		max = (int) (border.getCenter().getZ() + borderRadius);
-		int z = Math.max(-max, Math.min(max, z0));
+		int z = (int) Math.max(border.getCenter().getZ() - borderRadius, Math.min(border.getCenter().getZ() + borderRadius, z0));
 		if (x != x0 | y != y0 || z != z0) {
 			sign.setLine(2, x + ", " + y + ", " + z);
 			sign.update(true);
+			event.getPlayer().sendMessage(Language.getColor("bad")
+					+ "Your destination has been corrected for safety. Please review it.");
+			return true;
 		}
 		Location remote = new Location(event.getClickedBlock().getWorld(), x, y, z);
 
