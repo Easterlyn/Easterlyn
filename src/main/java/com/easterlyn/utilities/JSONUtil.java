@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.easterlyn.chat.Language;
+import com.easterlyn.utilities.TextUtils.MatchedURL;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -32,7 +33,6 @@ public class JSONUtil {
 		ArrayList<BaseComponent> components = new ArrayList<BaseComponent>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
-		Matcher urlMatcher = TextUtils.URL_PATTERN.matcher(message);
 		Matcher channelMatcher = CHANNEL_PATTERN.matcher(message);
 
 		for (int i = 0; i < message.length(); i++) {
@@ -83,7 +83,8 @@ public class JSONUtil {
 			if (pos == -1) {
 				pos = message.length();
 			}
-			if (urlMatcher.region(i, pos).find()) { // Web link handling
+			MatchedURL url = TextUtils.matchURL(message.substring(i, pos));
+			if (url != null) { // Web link handling
 
 				if (builder.length() > 0) {
 					TextComponent old = component;
@@ -95,14 +96,12 @@ public class JSONUtil {
 
 				TextComponent old = component;
 				component = new TextComponent(old);
-				String urlString = message.substring(i, pos);
-				urlString = urlString.startsWith("http") ? urlString : "http://" + urlString;
-				component.setText('[' + urlMatcher.group(2).toLowerCase() + ']');
+				component.setText('[' + url.getPath() + ']');
 				component.setColor(Language.getColor("link_color"));
-				TextComponent[] hover = { new TextComponent(urlString) };
+				TextComponent[] hover = { new TextComponent(url.getFullURL()) };
 				hover[0].setColor(Language.getColor("link_color"));
 				component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, hover));
-				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, urlString));
+				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.getFullURL()));
 				components.add(component);
 				i += pos - i - 1;
 				component = old;

@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,6 @@ import com.easterlyn.discord.queue.DiscordQueue;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.PermissiblePlayer;
 import com.easterlyn.utilities.PlayerLoader;
-import com.easterlyn.utilities.TextUtils;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -78,8 +76,7 @@ import sx.blah.discord.util.RateLimitException;
 public class Discord extends Module {
 
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	private final Pattern toEscape = Pattern.compile("([\\_~*])"),
-			spaceword = Pattern.compile("(\\s*)(\\S*)");
+	private final Pattern toEscape = Pattern.compile("([\\_~*])");
 	private final Map<Class<? extends DiscordModule>, DiscordModule> modules;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
@@ -480,24 +477,14 @@ public class Discord extends Module {
 		}
 		// Discord is case-sensitive. This prevents an @everyone alert without altering content.
 		message = message.replace("@everyone", "@Everyone").replace("@here", "@Here");
-		StringBuilder builder = new StringBuilder(message.length());
-		Matcher matcher = spaceword.matcher(message);
-		while (matcher.find()) {
-			builder.append(matcher.group(1));
-			String word = matcher.group(2);
-			if (!TextUtils.URL_PATTERN.matcher(word).find()) {
-				word = toEscape.matcher(word).replaceAll("\\\\$1");
-			}
-			builder.append(word);
-		}
-		for (int index = 0, nextIndex = 2000; index < builder.length(); index = nextIndex, nextIndex += 2000) {
+		for (int index = 0, nextIndex = 2000; index < message.length(); index = nextIndex, nextIndex += 2000) {
 			// TODO: split at logical areas - spaces, dashes, etc. rather than a hard limit
-			if (nextIndex > builder.length()) {
-				nextIndex = builder.length();
+			if (nextIndex > message.length()) {
+				nextIndex = message.length();
 			}
-			message = builder.substring(index, nextIndex);
+			String nextMessage = message.substring(index, nextIndex);
 			for (String channel : channels) {
-				addMessageToQueue(channel, name, message);
+				addMessageToQueue(channel, name, nextMessage);
 			}
 		}
 	}

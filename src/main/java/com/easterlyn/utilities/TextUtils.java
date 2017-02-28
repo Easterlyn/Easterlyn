@@ -1,5 +1,7 @@
 package com.easterlyn.utilities;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,9 +16,49 @@ import net.md_5.bungee.api.ChatColor;
 public class TextUtils {
 
 	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
-	public static final Pattern URL_PATTERN = Pattern.compile("^(https?://)?(([\\w-_]+\\.)+([a-z]{2,4}))((#|/)\\S*)?$", Pattern.CASE_INSENSITIVE);
+	private static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 
+	public static class MatchedURL {
+		private final String urlString, urlPath;
+
+		private MatchedURL(String urlString, String urlPath) {
+			this.urlString = urlString;
+			this.urlPath = urlPath;
+		}
+
+		public String getFullURL() {
+			return this.urlString;
+		}
+
+		public String getPath() {
+			return this.urlPath;
+		}
+	}
+
+	public static MatchedURL matchURL(String urlString) {
+		Matcher matcher = URL_PATTERN.matcher(urlString);
+		// No URL.
+		if (!matcher.find()) {
+			return null;
+		}
+		// Matches, but main group is somehow empty.
+		if (matcher.group(3) == null || matcher.group(3).isEmpty()) {
+			return null;
+		}
+		// Correct missing protocol
+		if (matcher.group(1) == null || matcher.group(1).isEmpty()) {
+			urlString = "http://" + urlString;
+		}
+		// Ensure valid URL (authority, etc.).
+		try {
+			new URL(urlString);
+		} catch (MalformedURLException e) {
+			return null;
+		}
+		// Wrap matcher results and return.
+		return new MatchedURL(urlString, matcher.group(3));
+	}
 	/**
 	 * Trims additional spaces, including ones surrounding chat colors.
 	 * 

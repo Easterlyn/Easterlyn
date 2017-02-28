@@ -34,7 +34,7 @@ public class EasterlynAsyncChatEvent extends AsyncPlayerChatEvent {
 	}
 
 	public EasterlynAsyncChatEvent(boolean async, Player who, Set<Player> players, Message message, boolean checkSpam) {
-		super(async, who, message.getMessage(), players);
+		super(async, who, message.getRawMessage(), players);
 		setFormat(message.getConsoleFormat());
 		this.message = message;
 		this.checkSpam = checkSpam;

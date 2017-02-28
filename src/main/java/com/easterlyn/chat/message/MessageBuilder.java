@@ -144,6 +144,7 @@ public class MessageBuilder {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
 
+		// TODO: Move to AsyncPlayerChatEvent, add specific permission
 		Player player = sender != null ? sender.getPlayer() : null;
 		// Strip characters that are not allowed in default channels and partial caps
 		if (channel != null && channel.getOwner() == null && !(channel instanceof NickChannel)
@@ -158,7 +159,7 @@ public class MessageBuilder {
 				if (word.isEmpty()) {
 					continue;
 				}
-				if (TextUtils.URL_PATTERN.matcher(word).find()) {
+				if (TextUtils.matchURL(word) != null) {
 					sb.append(word).append(' ');
 					continue;
 				}

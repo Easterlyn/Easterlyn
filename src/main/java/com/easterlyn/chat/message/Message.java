@@ -60,27 +60,47 @@ public class Message {
 	}
 
 	public User getSender() {
-		return sender;
+		return this.sender;
 	}
 
 	public String getSenderName() {
-		return name;
+		return this.name;
 	}
 
 	public Channel getChannel() {
-		return channel;
+		return this.channel;
 	}
 
-	public String getMessage() {
-		return unformattedMessage;
+	public String getRawMessage() {
+		return this.unformattedMessage;
 	}
 
-	public void setMessage(String message) {
+	public TextComponent getMessageComponent() {
+		return this.messageComponent;
+	}
+
+	public void setRawMessage(String message) {
 		if (message == null) {
 			throw new IllegalArgumentException("Message cannot be null!");
 		}
 		this.unformattedMessage = message;
 		this.messageComponent = new TextComponent(JSONUtil.fromLegacyText(message));
+	}
+
+	public void setMessageComponent(TextComponent component) {
+		if (component == null) {
+			throw new IllegalArgumentException("Message cannot be null!");
+		}
+		this.unformattedMessage = component.toLegacyText();
+		this.messageComponent = component;
+	}
+
+	public void setMessage(String message, TextComponent component) {
+		if (message == null || component == null) {
+			throw new IllegalArgumentException("Message cannot be null!");
+		}
+		this.unformattedMessage = message;
+		this.messageComponent = component;
 	}
 
 	public String getConsoleMessage() {
@@ -89,7 +109,7 @@ public class Message {
 
 	public String getDiscordMessage() {
 		// In the future we may allow formatting for all users.
-		return unformattedMessage;
+		return this.unformattedMessage;
 	}
 
 	public void setConsoleFormat(String consoleFormat) {
@@ -97,19 +117,19 @@ public class Message {
 	}
 
 	public String getConsoleFormat() {
-		return consoleFormat;
+		return this.consoleFormat;
 	}
 
 	public boolean isThirdPerson() {
-		return thirdPerson;
+		return this.thirdPerson;
 	}
 
 	public Channel parseReplyChannel() {
 		// All Messages have a click event
-		String atChannel = channelComponent.getClickEvent().getValue();
+		String atChannel = this.channelComponent.getClickEvent().getValue();
 
 		if (atChannel.length() < 2 || atChannel.charAt(0) != '@') {
-			return getChannel();
+			return this.getChannel();
 		}
 
 		int end = atChannel.indexOf(' ');
@@ -117,13 +137,13 @@ public class Message {
 			end = atChannel.length();
 		}
 
-		Channel channel = getChannel().getChannelManager().getChannel(atChannel.substring(1, end));
+		Channel channel = this.getChannel().getChannelManager().getChannel(atChannel.substring(1, end));
 
-		return channel == null ? getChannel() : channel;
+		return channel == null ? this.getChannel() : channel;
 	}
 
 	public void send() {
-		this.send(getChannel().getListening());
+		this.send(this.getChannel().getListening());
 	}
 
 	public <T> void send(Collection<T> recipients) {

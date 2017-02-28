@@ -73,7 +73,7 @@ public class Halculator extends HalMessageHandler {
 
 	@Override
 	public boolean handleMessage(Message message, Collection<Player> recipients) {
-		String msg = ChatColor.stripColor(message.getMessage()).toLowerCase();
+		String msg = ChatColor.stripColor(message.getRawMessage()).toLowerCase();
 		if (!msg.startsWith("halc ") && !msg.startsWith("halculate ") && !msg.startsWith("evhal ") && !msg.startsWith("evhaluate ")) {
 			return false;
 		}

@@ -230,7 +230,7 @@ public class Dublexor extends Machine {
 						setSecondTrade(player, open, originalInput, expCost, barrier);
 						return;
 					}
-					multiplier *= Math.min(1, Math.abs(modifiedInput.getAmount()));
+					multiplier *= Math.max(1, Math.abs(modifiedInput.getAmount()));
 					modifiedInput = newModInput;
 				}
 
@@ -319,7 +319,7 @@ public class Dublexor extends Machine {
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Mana Cost");
 		lore = new ArrayList<>();
-		lore.add(ChatColor.WHITE + "Displays duplication cost");
+		lore.add(ChatColor.WHITE + "Displays dublecation cost");
 		lore.add(ChatColor.WHITE + "when an item is inserted.");
 		im.setLore(lore);
 		is2.setItemMeta(im);

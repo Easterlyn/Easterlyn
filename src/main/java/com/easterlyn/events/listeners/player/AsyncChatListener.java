@@ -41,6 +41,8 @@ import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
@@ -157,7 +159,7 @@ public class AsyncChatListener extends EasterlynListener {
 		}
 
 		final Player player = event.getPlayer();
-		String cleaned = ChatColor.stripColor(message.getMessage());
+		String cleaned = ChatColor.stripColor(message.getRawMessage());
 		boolean publishGlobally = message.getChannel().getName().equals("#");
 
 		if (checkSpam) {
@@ -175,12 +177,6 @@ public class AsyncChatListener extends EasterlynListener {
 					event.setCancelled(true);
 					return;
 				}
-			}
-
-			if (message.getChannel() instanceof RegionChannel && rpMatch(cleaned)) {
-				this.messageLater(player, message.getChannel(), lang.getValue("events.chat.rp"));
-				event.setCancelled(true);
-				return;
 			}
 		}
 
@@ -268,13 +264,6 @@ public class AsyncChatListener extends EasterlynListener {
 		event.getRecipients().clear();
 	}
 
-	public boolean rpMatch(String message) {
-		if (message.matches("([hH][oO][nN][kK] ?)+")) {
-			return true;
-		}
-		return false;
-	}
-
 	/**
 	 * Handles chat in a way similar to how GP's listener does, sans the extra checks we do not
 	 * want.
@@ -293,10 +282,10 @@ public class AsyncChatListener extends EasterlynListener {
 		final String world = player.getWorld().getName();
 
 		if (!world.equals("Derspit") && !world.equals("DreamBubble")
-				&& claimPattern.matcher(message.getMessage()).find()) {
+				&& claimPattern.matcher(message.getRawMessage()).find()) {
 			messageLater(player, message.getChannel(), lang.getValue("events.chat.gp.claims"));
 		}
-		if (trappedPattern.matcher(message.getMessage()).find()) {
+		if (trappedPattern.matcher(message.getRawMessage()).find()) {
 			// Improvement over GP: Pattern ignores case and matches in substrings of words
 			messageLater(player, message.getChannel(), lang.getValue("events.chat.gp.trapped"));
 		}
@@ -351,36 +340,33 @@ public class AsyncChatListener extends EasterlynListener {
 			return false;
 		}
 
-		String msg = message.getMessage();
-		String prefix = null;
+		String msg = message.getRawMessage();
+		// Remove prefixed "Username: " in #pm
 		if (message.getChannel().getName().equals("#pm")) {
 			// We want the space in the prefix, add 1 once rather than twice.
 			int space = msg.indexOf(' ') + 1;
 			if (space > 0) {
-				prefix = msg.substring(0, space);
 				msg = msg.substring(space);
 			}
 		}
 
 		// Caps filter only belongs in regional channels.
-		if (message.getChannel() instanceof RegionChannel && msg.length() > 3
-				&& StringUtils.getLevenshteinDistance(msg, msg.toUpperCase()) < msg.length() * .25) {
-			StringBuilder msgBuilder = new StringBuilder();
-			if (prefix != null) {
-				msgBuilder.append(prefix);
-			}
-			for (String word : msg.split(" ")) {
-				if (TextUtils.URL_PATTERN.matcher(word).find()) {
-					msgBuilder.append(word);
-				} else {
-					msgBuilder.append(word.toLowerCase());
+		if (!player.hasPermission("easterlyn.chat.spam.caps")
+				&& message.getChannel() instanceof RegionChannel) {
+
+			StringBuilder urlStripped = new StringBuilder();
+			for (String word : msg.split("\\s")) {
+				if (TextUtils.matchURL(word) == null) {
+					urlStripped.append(word).append(' ');
 				}
-				msgBuilder.append(' ');
 			}
-			if (msgBuilder.length() > 0) {
-				msgBuilder.deleteCharAt(msgBuilder.length() - 1);
+
+			String msgSansURLs = urlStripped.toString().trim();
+
+			if (msgSansURLs.length() > 10 && StringUtils.getLevenshteinDistance(msgSansURLs,
+					msgSansURLs.toUpperCase()) < msgSansURLs.length() * .25) {
+				toLowerCase(message.getMessageComponent());
 			}
-			message.setMessage(msgBuilder.toString());
 		}
 
 		msg = msg.toLowerCase();
@@ -425,7 +411,7 @@ public class AsyncChatListener extends EasterlynListener {
 		int symbols = 0;
 		boolean question = false;
 		for (String word : words) {
-			if (TextUtils.URL_PATTERN.matcher(word).find()) {
+			if (TextUtils.matchURL(word) != null) {
 				length -= word.length();
 				spaces--;
 				continue;
@@ -460,6 +446,16 @@ public class AsyncChatListener extends EasterlynListener {
 		sender.setChatViolationLevel(0);
 		sender.setChatWarnStatus(false);
 		return false;
+	}
+
+	private void toLowerCase(TextComponent component) {
+		for (BaseComponent extra : component.getExtra()) {
+			if (extra instanceof TextComponent) {
+				// Recursively remove all
+				toLowerCase((TextComponent) extra);
+			}
+		}
+		component.setText(component.getText().toLowerCase());
 	}
 
 	private void messageLater(final Player player, final Channel channel, final String message) {

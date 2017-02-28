@@ -97,7 +97,7 @@ public class CleverHal extends HalMessageHandler {
 		if (bot == null || msg.getChannel() instanceof NickChannel) {
 			return true;
 		}
-		String message = net.md_5.bungee.api.ChatColor.stripColor(msg.getMessage());
+		String message = net.md_5.bungee.api.ChatColor.stripColor(msg.getRawMessage());
 		if (!whitespacePattern.matcher(message).find()) {
 			return true;
 		}
