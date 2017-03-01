@@ -1,7 +1,5 @@
 package com.easterlyn.chat.message;
 
-import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +13,6 @@ import com.easterlyn.chat.channel.NickChannel;
 import com.easterlyn.chat.channel.RegionChannel;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.users.Users;
 import com.easterlyn.utilities.JSONUtil;
 import com.easterlyn.utilities.TextUtils;
 
@@ -59,7 +56,6 @@ public class MessageBuilder {
 		ASPECT_PATTERN = Pattern.compile("\\{ASPECT\\}");
 	}
 
-	private final Easterlyn plugin;
 	private final Language lang;
 	private final ChannelManager manager;
 
@@ -74,7 +70,6 @@ public class MessageBuilder {
 	private BaseComponent[] nameHover;
 
 	public MessageBuilder(Easterlyn plugin) {
-		this.plugin = plugin;
 		this.lang = plugin.getModule(Language.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.setup();
@@ -129,6 +124,7 @@ public class MessageBuilder {
 		if (this.messageComponents != null) {
 			this.messageComponents = null;
 		}
+
 		// Set @<channel> destination
 		this.atChannel = null;
 		int space = message.indexOf(' ');
@@ -144,81 +140,11 @@ public class MessageBuilder {
 			message = ChatColor.translateAlternateColorCodes('&', message);
 		}
 
-		// TODO: Move to AsyncPlayerChatEvent, add specific permission
-		Player player = sender != null ? sender.getPlayer() : null;
-		// Strip characters that are not allowed in default channels and partial caps
-		if (channel != null && channel.getOwner() == null && !(channel instanceof NickChannel)
-				&& player != null && !player.hasPermission("easterlyn.chat.unfiltered")) {
-			ArrayList<String> names = new ArrayList<String>();
-			Users users = plugin.getModule(Users.class);
-			channel.getListening().forEach(uuid -> {
-				names.add(users.getUser(uuid).getPlayerName());
-			});
-			StringBuilder sb = new StringBuilder();
-			for (String word : Normalizer.normalize(message, Normalizer.Form.NFD).split(" ")) {
-				if (word.isEmpty()) {
-					continue;
-				}
-				if (TextUtils.matchURL(word) != null) {
-					sb.append(word).append(' ');
-					continue;
-				}
-
-				// Anything goes as long as it's the name of a recipient
-				if (names.contains(TextUtils.stripEndPunctuation(word))) {
-					sb.append(word).append(' ');
-					continue;
-				}
-
-				// I'm aware that this will strip a couple cases that belong capitalized,
-				// but no self-respecting person sings Old MacDonald anyway.
-				boolean stripUpper = stripUpper(word);
-
-				for (char character : word.toCharArray()) {
-					if (isCharacterGloballyLegal(character) || character == ChatColor.COLOR_CHAR) {
-						if (stripUpper) {
-							character = Character.toLowerCase(character);
-						}
-						sb.append(character);
-					}
-				}
-				sb.append(' ');
-			}
-			if (sb.length() > 0) {
-				sb.deleteCharAt(sb.length() - 1);
-			}
-			message = sb.toString();
-		}
-
 		// Trim whitespace created by formatting codes, etc.
 		message = TextUtils.trimExtraWhitespace(message);
 
 		this.message = message;
 		return this;
-	}
-
-	private boolean stripUpper(String word) {
-		for (int i = 0, upper = 0, total = 0; i < word.length(); i++) {
-			char character = word.charAt(i);
-			if (Character.isAlphabetic(character)) {
-				boolean startsUpper = Character.isUpperCase(character);
-				for (i++; i < word.length(); i++) {
-					character = word.charAt(i);
-					if (Character.isAlphabetic(character)) {
-						total++;
-						if (Character.isUpperCase(character)) {
-							upper++;
-						}
-					}
-				}
-				return !startsUpper && upper > 0 || upper != 0 && upper != total;
-			}
-		}
-		return false;
-	}
-
-	private boolean isCharacterGloballyLegal(char character) {
-		return character >= ' ' && character <= '}';
 	}
 
 	public MessageBuilder setThirdPerson(boolean thirdPerson) {

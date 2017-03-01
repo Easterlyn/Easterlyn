@@ -45,7 +45,7 @@
       <!-- Required by Reflections -->
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
-      <version>3.20.0-GA</version>
+      <version>3.21.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -57,13 +57,13 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.5.1</version>
+      <version>4.5.3</version>
     </dependency>
     <!-- Bukkit uses java.util.logging, so slf4j should be bound to that. -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.16</version>
+      <version>1.7.24</version>
       <scope>compile</scope>
     </dependency>
     <!-- Plugin dependencies -->
@@ -206,7 +206,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.0</version>
         <configuration>
           <filters>
             <!-- Filter unwanted clutter from other resources, we don't distribute the compiled plugin. -->
@@ -237,7 +237,7 @@
 
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.6.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>

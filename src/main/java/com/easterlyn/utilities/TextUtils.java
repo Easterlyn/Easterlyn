@@ -57,7 +57,7 @@ public class TextUtils {
 		// Ensure valid URL (authority, etc.).
 		if (UrlValidator.getInstance().isValid(urlString)) {
 			// Wrap matcher results and return.
-			return new MatchedURL(urlString, matcher.group(3));
+			return new MatchedURL(urlString, matcher.group(3).toLowerCase());
 		}
 		return null;
 	}

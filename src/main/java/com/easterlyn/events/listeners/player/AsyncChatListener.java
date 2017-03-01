@@ -1,11 +1,14 @@
 package com.easterlyn.events.listeners.player;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
@@ -15,6 +18,7 @@ import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
 import com.easterlyn.chat.ai.HalMessageHandler;
 import com.easterlyn.chat.channel.Channel;
+import com.easterlyn.chat.channel.NickChannel;
 import com.easterlyn.chat.channel.RegionChannel;
 import com.easterlyn.chat.message.Message;
 import com.easterlyn.chat.message.MessageBuilder;
@@ -161,6 +165,7 @@ public class AsyncChatListener extends EasterlynListener {
 		final Player player = event.getPlayer();
 		String cleaned = ChatColor.stripColor(message.getRawMessage());
 		boolean publishGlobally = message.getChannel().getName().equals("#");
+		Set<String> names = new HashSet<String>();
 
 		if (checkSpam) {
 			if (cleaned.equalsIgnoreCase("test")) {
@@ -169,8 +174,13 @@ public class AsyncChatListener extends EasterlynListener {
 				return;
 			}
 
-			for (Player recipient : event.getRecipients()) {
-				if (cleaned.equalsIgnoreCase(recipient.getName())) {
+			event.getRecipients().forEach(uuid -> {
+				names.add(player.getName());
+				names.add(ChatColor.stripColor(player.getDisplayName()));
+			});
+
+			for (String name : names) {
+				if (cleaned.equalsIgnoreCase(name)) {
 					this.messageLater(player, message.getChannel(),
 							lang.getValue("events.chat.ping").replace("{PLAYER}",
 									player.getDisplayName()));
@@ -196,7 +206,7 @@ public class AsyncChatListener extends EasterlynListener {
 
 		// Spam detection and handling, woo!
 		if (checkSpam && sender != null && !message.getChannel().getName().equals(lang.getValue("chat.spamChannel"))
-				&& detectSpam(event, message)) {
+				&& detectSpam(event, message, names)) {
 			publishGlobally = false;
 			event.getRecipients().clear();
 			event.getRecipients().add(player);
@@ -333,7 +343,7 @@ public class AsyncChatListener extends EasterlynListener {
 		return softMute;
 	}
 
-	private boolean detectSpam(AsyncPlayerChatEvent event, Message message) {
+	private boolean detectSpam(AsyncPlayerChatEvent event, Message message, Set<String> names) {
 		final Player player = event.getPlayer();
 		final User sender = message.getSender();
 		if (sender == null || player.hasPermission("easterlyn.chat.unfiltered")) {
@@ -350,7 +360,7 @@ public class AsyncChatListener extends EasterlynListener {
 			}
 		}
 
-		// Caps filter only belongs in regional channels.
+		// Caps filter in regional channels.
 		if (!player.hasPermission("easterlyn.chat.spam.caps")
 				&& message.getChannel() instanceof RegionChannel) {
 
@@ -365,8 +375,14 @@ public class AsyncChatListener extends EasterlynListener {
 
 			if (msgSansURLs.length() > 10 && StringUtils.getLevenshteinDistance(msgSansURLs,
 					msgSansURLs.toUpperCase()) < msgSansURLs.length() * .25) {
-				toLowerCase(message.getMessageComponent());
+				this.toLowerCase(message.getMessageComponent());
 			}
+		}
+
+		// Strip characters that are not allowed in default channels and partial caps
+		if (!player.hasPermission("easterlyn.chat.spam.normalize") && message.getChannel().getOwner() == null
+				&& !(message.getChannel() instanceof NickChannel)) {
+			this.normalize(message.getMessageComponent(), names);
 		}
 
 		msg = msg.toLowerCase();
@@ -452,10 +468,98 @@ public class AsyncChatListener extends EasterlynListener {
 		for (BaseComponent extra : component.getExtra()) {
 			if (extra instanceof TextComponent) {
 				// Recursively remove all
-				toLowerCase((TextComponent) extra);
+				this.toLowerCase((TextComponent) extra);
 			}
 		}
 		component.setText(component.getText().toLowerCase());
+	}
+
+	private void normalize(TextComponent component, Set<String> names) {
+		for (BaseComponent extra : component.getExtra()) {
+			if (extra instanceof TextComponent) {
+				// Recursively remove all
+				this.normalize((TextComponent) extra, names);
+			}
+		}
+
+		String text = Normalizer.normalize(component.getText(), Normalizer.Form.NFD);
+		StringBuilder textBuilder = new StringBuilder(text.length());
+		int lastSpace = 0;
+
+		for (int index = 0; index < text.length(); ++index) {
+			char character = text.charAt(index);
+
+			// Ensure character is whitespace and we aren't encountering 2 whitespace in a row
+			if (!Character.isWhitespace(character) || index == lastSpace) {
+				continue;
+			}
+
+			// Space found, handle word
+			String word = text.substring(lastSpace, index);
+			// Skip over space character
+			lastSpace = index + 1;
+
+			word = this.normalizeWord(word, names);
+			textBuilder.append(word).append(' ');
+		}
+		component.setText(textBuilder.append(this.normalizeWord(text.substring(lastSpace), names)).toString());
+	}
+
+	private String normalizeWord(String word, Set<String> names) {
+
+		if (word.isEmpty()) {
+			return word;
+		}
+
+		if (TextUtils.matchURL(word) != null) {
+			return word;
+		}
+
+		// Anything goes as long as it's the name of a recipient
+		if (names.contains(TextUtils.stripEndPunctuation(word))) {
+			return word;
+		}
+
+		// I'm aware that this will strip a couple cases that belong capitalized,
+		// but no self-respecting person sings Old MacDonald anyway.
+		boolean stripUpper = shouldStripUpper(word);
+
+		StringBuilder wordBuilder = new StringBuilder(word.length());
+
+		for (char character : word.toCharArray()) {
+			if (isCharacterGloballyLegal(character) || character == ChatColor.COLOR_CHAR) {
+				if (stripUpper) {
+					character = Character.toLowerCase(character);
+				}
+				wordBuilder.append(character);
+			}
+		}
+
+		return wordBuilder.toString();
+	}
+
+	private boolean shouldStripUpper(String word) {
+		for (int i = 0, upper = 0, total = 0; i < word.length(); i++) {
+			char character = word.charAt(i);
+			if (Character.isAlphabetic(character)) {
+				boolean startsUpper = Character.isUpperCase(character);
+				for (i++; i < word.length(); i++) {
+					character = word.charAt(i);
+					if (Character.isAlphabetic(character)) {
+						total++;
+						if (Character.isUpperCase(character)) {
+							upper++;
+						}
+					}
+				}
+				return !startsUpper && upper > 0 || upper != 0 && upper != total;
+			}
+		}
+		return false;
+	}
+
+	private boolean isCharacterGloballyLegal(char character) {
+		return character >= ' ' && character <= '}';
 	}
 
 	private void messageLater(final Player player, final Channel channel, final String message) {

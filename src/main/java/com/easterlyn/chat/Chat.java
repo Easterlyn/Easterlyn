@@ -43,8 +43,8 @@ public class Chat extends Module {
 		PermissionUtils.getOrCreate("easterlyn.chat.spam.caps", PermissionDefault.TRUE);
 		PermissionUtils.addParent("easterlyn.chat.spam.caps", "easterlyn.chat.spam");
 		// Permission to use non-ascii
-		PermissionUtils.getOrCreate("easterlyn.chat.spam.characters", PermissionDefault.TRUE);
-		PermissionUtils.addParent("easterlyn.chat.spam.characters", "easterlyn.chat.spam");
+		PermissionUtils.getOrCreate("easterlyn.chat.spam.normalize", PermissionDefault.TRUE);
+		PermissionUtils.addParent("easterlyn.chat.spam.normalize", "easterlyn.chat.spam");
 		// Permission for messages to automatically color using name color
 		PermissionUtils.getOrCreate("easterlyn.chat.color", PermissionDefault.FALSE);
 		// Permission to be recognized as a moderator in every channel
