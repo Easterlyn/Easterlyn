@@ -1,9 +1,9 @@
 package com.easterlyn.utilities;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.validator.routines.UrlValidator;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -16,7 +16,7 @@ import net.md_5.bungee.api.ChatColor;
 public class TextUtils {
 
 	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
-	private static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
+	private static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 
 	public static class MatchedURL {
@@ -37,6 +37,10 @@ public class TextUtils {
 	}
 
 	public static MatchedURL matchURL(String urlString) {
+		// Overwatch was shut down for a reason.
+		if ("D.Va".equals(urlString)) {
+			return null;
+		}
 		Matcher matcher = URL_PATTERN.matcher(urlString);
 		// No URL.
 		if (!matcher.find()) {
@@ -51,13 +55,11 @@ public class TextUtils {
 			urlString = "http://" + urlString;
 		}
 		// Ensure valid URL (authority, etc.).
-		try {
-			new URL(urlString);
-		} catch (MalformedURLException e) {
-			return null;
+		if (UrlValidator.getInstance().isValid(urlString)) {
+			// Wrap matcher results and return.
+			return new MatchedURL(urlString, matcher.group(3));
 		}
-		// Wrap matcher results and return.
-		return new MatchedURL(urlString, matcher.group(3));
+		return null;
 	}
 	/**
 	 * Trims additional spaces, including ones surrounding chat colors.
