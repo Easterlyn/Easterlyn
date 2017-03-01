@@ -257,6 +257,17 @@ command:
     usage: '/near [radius]'
     base: '{COLOR:neutral}Players nearby: '
     player: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}({COLOR:emphasis.neutral}{DISTANCE}m{COLOR:neutral})'
+  worth:
+    description: 'Get an estimate of an item''s worth based on its mana cost.'
+    usage: '/worth'
+    nothing: '{COLOR:bad}Nothing in life is free.'
+    expensive: '{COLOR:neutral}Your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral} is too expensive to recreate.'
+    cost: |-
+      {COLOR:neutral}Price estimations for your {COLOR:emphasis.neutral}{ITEM}{COLOR:neutral}:
+      {COLOR:neutral}Mana cost: {COLOR:emphasis.neutral}{EXP}
+      {COLOR:bad}Overpriced (admin sellshop): {COLOR:emphasis.neutral}{OVERPRICED} lapis
+      {COLOR:good}Standard rate (player trade): {COLOR:emphasis.neutral}{GOOD_PRICE} lapis
+      {COLOR:bad}Underpriced (admin buyshop): {COLOR:emphasis.neutral}{UNDERPRICED} lapis
   tpa:
     description: 'Handle a teleport request'
     usage: '/tpa name, /tpahere name, /tpaccept, /tpdecline'

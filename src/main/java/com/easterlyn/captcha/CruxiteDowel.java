@@ -341,6 +341,7 @@ public class CruxiteDowel {
 				}
 				break;
 			case STAINED_CLAY:
+			case EXP_BOTTLE: // 11 exp to fill a bottle, bottle worth roughly 1 and some padding
 				values.put(new ImmutablePair<Material, Short>(material, omni), 13D);
 				break;
 			case GRILLED_PORK:
@@ -434,14 +435,12 @@ public class CruxiteDowel {
 			case GOLD_BARDING:
 				values.put(new ImmutablePair<Material, Short>(material, omni), 663D);
 				break;
-			case SPONGE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 729D);
-				break;
 			case CHAINMAIL_HELMET:
 			case SHULKER_SHELL:
 				values.put(new ImmutablePair<Material, Short>(material, omni), 750D);
 				break;
 			case DIAMOND_BARDING:
+			case SPONGE:
 				values.put(new ImmutablePair<Material, Short>(material, omni), 1000D);
 				break;
 			case CHAINMAIL_LEGGINGS:
@@ -479,7 +478,6 @@ public class CruxiteDowel {
 			case EMERALD_ORE: // Money
 			case ENDER_PORTAL:
 			case ENDER_PORTAL_FRAME:
-			case EXP_BOTTLE: // Stupid to make exp with exp
 			case LAPIS_BLOCK: // Money
 			case LAPIS_ORE: // Money
 			case MOB_SPAWNER:

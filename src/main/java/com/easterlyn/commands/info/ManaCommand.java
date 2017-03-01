@@ -89,8 +89,12 @@ public class ManaCommand extends EasterlynCommand {
 			sender.sendMessage(this.getLang().getValue("command.mana.expensive")
 					.replace("{ITEM}", InventoryUtils.getItemName(hand)));
 		} else {
+			StringBuilder itemName = new StringBuilder(InventoryUtils.getItemName(hand));
+			if (hand.getAmount() > 1) {
+				itemName.append('x').append(hand.getAmount());
+			}
 			sender.sendMessage(this.getLang().getValue("command.mana.cost")
-					.replace("{ITEM}", InventoryUtils.getItemName(hand))
+					.replace("{ITEM}", itemName.toString())
 					.replace("{EXP}", this.format.format(exp)));
 		}
 		return true;
