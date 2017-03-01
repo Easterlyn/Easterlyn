@@ -400,7 +400,7 @@ public class AsyncChatListener extends EasterlynListener {
 		}
 
 		// Mute repeat messages within 30 seconds
-		if (lastChat > 0 && msg.equals(lastMsg)) {
+		if (!player.hasPermission("easterlyn.chat.spam.repeat") && lastChat > 0 && msg.equals(lastMsg)) {
 			// In event of exact duplicates, reach penalization levels at a much faster rate
 			int spamCount = sender.getChatViolationLevel();
 			if (spamCount == 0) {
@@ -414,7 +414,8 @@ public class AsyncChatListener extends EasterlynListener {
 		}
 
 		// Cooldown of 1.5 seconds between messages, 3 seconds between short messages.
-		if (lastChat > 28500 || msg.length() < 12 && lastChat > 27000) {
+		if (!player.hasPermission("easterlyn.chat.spam.fast")
+				&& (lastChat > 28500 || msg.length() < 12 && lastChat > 27000)) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[FastChat] " + event.getFormat());
 			return true;
@@ -444,7 +445,9 @@ public class AsyncChatListener extends EasterlynListener {
 				}
 			}
 		}
-		if (!yoooooooooooooooooooooooooooooooooooooooo.matcher(msg).matches()
+
+		if (!player.hasPermission("easterlyn.chat.spam.gibberish")
+				&& !yoooooooooooooooooooooooooooooooooooooooo.matcher(msg).matches()
 				&& (symbols > length / 2 || length > 15 && spaces < length / 10)) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 1);
 			event.setFormat("[Gibberish] " + event.getFormat());
@@ -452,8 +455,8 @@ public class AsyncChatListener extends EasterlynListener {
 		}
 
 		// Must be more than 25% different from last message
-		double lenPercent = msg.length() * .25;
-		if (lastChat > 0 && StringUtils.getLevenshteinDistance(msg, lastMsg) < lenPercent) {
+		if (!player.hasPermission("easterlyn.chat.spam.repeat") && lastChat > 0
+				&& StringUtils.getLevenshteinDistance(msg, lastMsg) < msg.length() * .25) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[SimilarChat] " + event.getFormat());
 			return true;

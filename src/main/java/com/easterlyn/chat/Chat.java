@@ -34,25 +34,33 @@ public class Chat extends Module {
 		this.channelManager = new ChannelManager(this);
 		this.buffer = new DummyPlayer();
 
-		// Permission to use >greentext
+		// Permission to use >greentext.
 		PermissionUtils.getOrCreate("easterlyn.chat.greentext", PermissionDefault.TRUE);
-		// Permission to bypass all chat filtering
+		// Permission to bypass all chat filtering.
 		PermissionUtils.addParent("easterlyn.chat.spam", UserRank.MOD.getPermission());
 		PermissionUtils.addParent("easterlyn.chat.spam", "easterlyn.spam");
-		// Permission to use all caps
+		// Permission to use all caps.
 		PermissionUtils.getOrCreate("easterlyn.chat.spam.caps", PermissionDefault.TRUE);
 		PermissionUtils.addParent("easterlyn.chat.spam.caps", "easterlyn.chat.spam");
-		// Permission to use non-ascii
+		// Permission to use non-ascii characters and mixed case words.
 		PermissionUtils.getOrCreate("easterlyn.chat.spam.normalize", PermissionDefault.TRUE);
 		PermissionUtils.addParent("easterlyn.chat.spam.normalize", "easterlyn.chat.spam");
-		// Permission for messages to automatically color using name color
+		// Permission to not be affected by speed limitations.
+		PermissionUtils.getOrCreate("easterlyn.chat.spam.fast", PermissionDefault.TRUE);
+		PermissionUtils.addParent("easterlyn.chat.spam.fast", "easterlyn.chat.spam");
+		// Permission for gibberish filtering, average characters per word.
+		PermissionUtils.addParent("easterlyn.chat.spam.gibberish", "easterlyn.chat.spam");
+		// Permission to send duplicate messages in a row within 30 seconds.
+		// Default false - quite handy to prevent accidental uparrow enter.
+		PermissionUtils.getOrCreate("easterlyn.chat.spam.repeat", PermissionDefault.FALSE);
+		// Permission for messages to automatically color using name color.
 		PermissionUtils.getOrCreate("easterlyn.chat.color", PermissionDefault.FALSE);
-		// Permission to be recognized as a moderator in every channel
+		// Permission to be recognized as a moderator in every channel.
 		PermissionUtils.addParent("easterlyn.chat.channel.moderator", UserRank.HELPER.getPermission());
-		// Permission to be recognized as an owner in every channel
+		// Permission to be recognized as an owner in every channel.
 		PermissionUtils.addParent("easterlyn.chat.channel.owner", UserRank.HEAD_MOD.getPermission());
 
-		// Permission to have name a certain color
+		// Permission to have name a certain color.
 		for (ChatColor chatColor : ChatColor.values()) {
 			PermissionUtils.getOrCreate("easterlyn.chat.color." + chatColor.name().toLowerCase(), PermissionDefault.FALSE);
 		}
