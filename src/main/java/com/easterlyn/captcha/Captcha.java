@@ -61,26 +61,10 @@ public class Captcha extends Module {
 		super(plugin);
 		this.cache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES)
 				.removalListener(new RemovalListener<String, ItemStack>() {
-
 					@Override
 					public void onRemoval(RemovalNotification<String, ItemStack> notification) {
-
-						try {
-							File folder = new File(getPlugin().getDataFolder(), "captcha");
-							if (!folder.exists()) {
-								folder.mkdirs();
-							}
-							File file = new File(folder, notification.getKey());
-							if (file.exists()) {
-							}
-							try (BukkitObjectOutputStream stream = new BukkitObjectOutputStream(new FileOutputStream(file))) {
-								stream.writeObject(notification.getValue());
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						save(notification.getKey(), notification.getValue());
 					}
-
 				})
 				.build(new CacheLoader<String, ItemStack>() {
 
@@ -141,8 +125,27 @@ public class Captcha extends Module {
 	public String getHashByItem(ItemStack item) {
 		item = item.clone();
 		String itemHash = calculateHashFor(item);
-		cache.put(itemHash, item);
+		this.cache.put(itemHash, item);
+		this.save(itemHash, item);
 		return itemHash;
+	}
+
+	private void save(String hash, ItemStack item) {
+		try {
+			File folder = new File(getPlugin().getDataFolder(), "captcha");
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			File file = new File(folder, hash);
+			if (file.exists()) {
+				return;
+			}
+			try (BukkitObjectOutputStream stream = new BukkitObjectOutputStream(new FileOutputStream(file))) {
+				stream.writeObject(item);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public ItemStack getItemByHash(String hash) {
@@ -434,11 +437,6 @@ public class Captcha extends Module {
 				|| item.getType().name().endsWith("_SHULKER_BOX")) {
 			return false;
 		}
-		// TODO lorecards and the active Computer effect
-//		if (item.isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
-//			// Computers can (and should) be alchemized.
-//			return true;
-//		}
 		for (ItemStack is : InventoryUtils.getUniqueItems(getPlugin())) {
 			if (is.isSimilar(item)) {
 				return false;
