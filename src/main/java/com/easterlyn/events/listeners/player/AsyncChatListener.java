@@ -87,9 +87,6 @@ public class AsyncChatListener extends EasterlynListener {
 		halFunctions = new ArrayList<>();
 		Chat chat = plugin.getModule(Chat.class);
 		halFunctions.add(chat.getHalculator());
-		// Hal AI function should be last as it (by design) handles any message passed to it.
-		// Insert any additional functions above.
-		halFunctions.add(chat.getHal());
 
 		// If, say, the Hal AI fails to load, don't NPE whenever anyone talks.
 		Iterator<HalMessageHandler> iterator = halFunctions.iterator();
@@ -468,20 +465,25 @@ public class AsyncChatListener extends EasterlynListener {
 	}
 
 	private void toLowerCase(TextComponent component) {
-		for (BaseComponent extra : component.getExtra()) {
-			if (extra instanceof TextComponent) {
-				// Recursively remove all
-				this.toLowerCase((TextComponent) extra);
+		if (component.getExtra() != null) {
+			for (BaseComponent extra : component.getExtra()) {
+				if (extra instanceof TextComponent) {
+					// Recursively set lower case
+					this.toLowerCase((TextComponent) extra);
+				}
 			}
 		}
+
 		component.setText(component.getText().toLowerCase());
 	}
 
 	private void normalize(TextComponent component, Set<String> names) {
-		for (BaseComponent extra : component.getExtra()) {
-			if (extra instanceof TextComponent) {
-				// Recursively remove all
-				this.normalize((TextComponent) extra, names);
+		if (component.getExtra() != null) {
+			for (BaseComponent extra : component.getExtra()) {
+				if (extra instanceof TextComponent) {
+					// Recursively normalize
+					this.normalize((TextComponent) extra, names);
+				}
 			}
 		}
 

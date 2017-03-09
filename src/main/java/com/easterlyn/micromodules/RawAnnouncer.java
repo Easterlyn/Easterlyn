@@ -73,27 +73,6 @@ public class RawAnnouncer extends Module {
 		TextComponent hover = new TextComponent("Click here to go!");
 		hover.setColor(Language.getColor("link_color"));
 
-		// Announcement: Discord > all
-		components.clear();
-		component = new TextComponent("We use");
-		component.setColor(Language.getColor("bot_text"));
-		components.add(component);
-
-		component = new TextComponent(" Discord ");
-		component.setColor(Language.getColor("link_color"));
-		hover.setText("Click here to join Easterlyn's server!");
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
-		components.add(component);
-
-		component = new TextComponent("for voice chat. Join today!");
-		component.setColor(Language.getColor("bot_text"));
-		components.add(component);
-
-		builder.setMessage("We use http://discord.easterlyn.com for voice chat. Join today!",
-				components.toArray(new TextComponent[components.size()]));
-		msgs.add(builder.toMessage());
-
 		// Announcement: Try EnchantedFurnace
 		components.clear();
 		component = new TextComponent("Wasting time smelting?");
@@ -114,6 +93,27 @@ public class RawAnnouncer extends Module {
 				components.toArray(new TextComponent[components.size()]));
 		msgs.add(builder.toMessage());
 
+		// Announcement: Discord > all
+		components.clear();
+		component = new TextComponent("We use");
+		component.setColor(Language.getColor("bot_text"));
+		components.add(component);
+
+		component = new TextComponent(" Discord ");
+		component.setColor(Language.getColor("link_color"));
+		hover.setText("Click to join Easterlyn's server!");
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
+		components.add(component);
+
+		component = new TextComponent("for voice chat. Join today!");
+		component.setColor(Language.getColor("bot_text"));
+		components.add(component);
+
+		builder.setMessage("We use http://discord.easterlyn.com for voice chat. Join today!",
+				components.toArray(new TextComponent[components.size()]));
+		msgs.add(builder.toMessage());
+
 		// Announcement: Protect your stuff
 		components.clear();
 		component = new TextComponent("Please");
@@ -122,6 +122,7 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" claim your builds");
 		component.setColor(Language.getColor("link_color"));
+		hover.setText("Click to watch a video!");
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
 				"https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1"));
@@ -164,6 +165,7 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" claim ");
 		component.setColor(Language.getColor("link_color"));
+		hover.setText("Click to watch a video!");
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
 				"https://www.youtube.com/watch?v=VDsjXB-BaE0&list=PL8YpI023Cthye5jUr-KGHGfczlNwgkdHM&index=1"));
@@ -175,6 +177,7 @@ public class RawAnnouncer extends Module {
 
 		component = new TextComponent(" lock ");
 		component.setColor(Language.getColor("command"));
+		hover.setText("Click for info!");
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hover.duplicate()}));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lwc"));
 		components.add(component);

@@ -1,7 +1,6 @@
 package com.easterlyn.chat;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.ai.CleverHal;
 import com.easterlyn.chat.ai.Halculator;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.message.Message;
@@ -26,7 +25,6 @@ public class Chat extends Module {
 
 	private Language lang;
 	private Users users;
-	private CleverHal cleverHal;
 	private Halculator halculator;
 
 	public Chat(Easterlyn plugin) {
@@ -70,7 +68,6 @@ public class Chat extends Module {
 	protected void onEnable() {
 		this.lang = this.getPlugin().getModule(Language.class);
 		this.users = this.getPlugin().getModule(Users.class);
-		this.cleverHal = new CleverHal(this.getPlugin());
 		this.halculator = new Halculator(this.getPlugin());
 		this.channelManager.loadAllChannels();
 		this.channelManager.createDefaultSet();
@@ -89,10 +86,6 @@ public class Chat extends Module {
 		return new MessageBuilder(this.getPlugin()).setSender(lang.getValue("core.bot_name"))
 				.setNameClick("/report ").setNameHover(lang.getValue("core.bot_hover"))
 				.setChannel(this.channelManager.getChannel("#"));
-	}
-
-	public CleverHal getHal() {
-		return this.cleverHal;
 	}
 
 	/**
