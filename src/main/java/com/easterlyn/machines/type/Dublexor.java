@@ -3,6 +3,7 @@ package com.easterlyn.machines.type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
@@ -25,6 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -32,6 +34,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
@@ -230,6 +233,25 @@ public class Dublexor extends Machine {
 						setSecondTrade(player, open, originalInput, expCost, barrier);
 						return;
 					}
+					Map<Enchantment, Integer> enchantments = newModInput.getEnchantments();
+					if (enchantments.containsKey(Enchantment.MENDING)
+							&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
+						// Item inside captchas has mending but not
+						setSecondTrade(player, open, originalInput, expCost, barrier);
+						return;
+					}
+					if (newModInput.hasItemMeta()) {
+						ItemMeta newModMeta = newModInput.getItemMeta();
+						if (newModMeta instanceof EnchantmentStorageMeta) {
+							enchantments = ((EnchantmentStorageMeta) newModMeta).getStoredEnchants();
+							if (enchantments.containsKey(Enchantment.MENDING)
+									&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
+								// Item inside captchas has mending but not
+								setSecondTrade(player, open, originalInput, expCost, barrier);
+								return;
+							}
+						}
+					}
 					multiplier *= Math.max(1, Math.abs(modifiedInput.getAmount()));
 					modifiedInput = newModInput;
 				}
@@ -277,6 +299,25 @@ public class Dublexor extends Machine {
 				im.setDisplayName(color + "Mana cost: " + exp);
 				im.setLore(lore);
 				expCost.setItemMeta(im);
+
+				// Add Curse of Vanishing if Mending is present
+				Map<Enchantment, Integer> enchantments = result.getEnchantments();
+				if (enchantments.containsKey(Enchantment.MENDING) && !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
+					result.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+				}
+
+				if (result.hasItemMeta()) {
+					ItemMeta resultMeta = result.getItemMeta();
+					if (resultMeta instanceof EnchantmentStorageMeta) {
+						enchantments = ((EnchantmentStorageMeta) resultMeta).getStoredEnchants();
+						if (enchantments.containsKey(Enchantment.MENDING)
+								&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
+							// Item inside captchas has mending but not
+							((EnchantmentStorageMeta) resultMeta).addStoredEnchant(Enchantment.VANISHING_CURSE, 1, true);
+							result.setItemMeta(resultMeta);
+						}
+					}
+				}
 
 				// Set items
 				setSecondTrade(player, open, originalInput, expCost, result);
