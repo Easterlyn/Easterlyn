@@ -211,7 +211,7 @@ public class User {
 				player.setFlying(allowFlight);
 				getYamlConfiguration().set("flying", allowFlight);
 			}
-		}.runTaskLater(getPlugin(), 1L);
+		}.runTaskLater(getPlugin(), 10L);
 	}
 
 	/**
