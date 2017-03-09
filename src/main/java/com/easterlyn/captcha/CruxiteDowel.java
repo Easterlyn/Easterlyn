@@ -30,6 +30,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.MapMeta;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -122,30 +123,26 @@ public class CruxiteDowel {
 			}
 		}
 
+		if (meta instanceof MapMeta) {
+			MapMeta mapMeta = (MapMeta) meta;
+			if (mapMeta.hasLocalizedName()) {
+				// Map is an exploration map.
+				if (mapMeta.getLocalizedName().equals("filled_map.monument")) {
+					// Monument map.
+					cost += 1200;
+				} else if (mapMeta.getLocalizedName().equals("filled_map.mansion")) {
+					// Mansions are rarer than monuments, roughly 4/3 worth in vanilla.
+					cost += 1600;
+				} else {
+					// Just in case.
+					cost += 2000;
+				}
+			}
+		}
+
 		if (meta.hasEnchants()) {
 			for (Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
-				// Note: All level values are from 1.7
-				// (16 - weight) * level * 20 seems to be a good rate.
-				// Sharpness 5: 6 * 5 * 20 = 300 exp, 0-26
-				// silk touch 1: 15 * 1 * 20 = 300 exp
-				// fortune 3: 14 * 3 * 20 = 840 exp, 0-30
-				// Rebalanced to *40, removed 2x multiplier from final cost
-				// Rebalanced weights to account for mending/frostwalker being rarer
-				/*
-				 * TODO recalc and explain reasoning, double check balance
-				 * Enchantment levels are a short, no risk of overflow until added to cost.
-				 */
-				Enchantment enchant = entry.getKey();
-				int enchantCost = (20 - getWeight(enchant));
-				// Balance: Base cost on percentage of max level, not only current level
-				enchantCost *= 225D / enchant.getMaxLevel() * Math.abs(entry.getValue());
-				if (enchant.isCursed()) {
-					// Curses are also treasure, should be handled first.
-					enchantCost /= 1.5;
-				} else if (enchant.isTreasure()) {
-					// Rarer, increase cost.
-					enchantCost *= 1.5;
-				}
+				double enchantCost = getEnchantCost(entry.getKey(), entry.getValue(), false);
 				if (Double.MAX_VALUE - enchantCost <= cost) {
 					return Double.MAX_VALUE;
 				}
@@ -161,17 +158,7 @@ public class CruxiteDowel {
 
 		if (meta instanceof EnchantmentStorageMeta) {
 			for (Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta) meta).getStoredEnchants().entrySet()) {
-				Enchantment enchant = entry.getKey();
-				int enchantCost = (18 - getWeight(enchant));
-				// Balance: Base cost on percentage of max level, not only current level
-				enchantCost *= 200D / enchant.getMaxLevel() * Math.abs(entry.getValue());
-				if (enchant.isCursed()) {
-					// Curses are also treasure, should be handled first.
-					enchantCost /= 1.5;
-				} else if (enchant.isTreasure()) {
-					// Rarer, increase cost.
-					enchantCost *= 1.5;
-				}
+				double enchantCost = getEnchantCost(entry.getKey(), entry.getValue(), true);
 				if (Double.MAX_VALUE - enchantCost <= cost) {
 					return Double.MAX_VALUE;
 				}
@@ -217,6 +204,32 @@ public class CruxiteDowel {
 		cost *= toCreate.getAmount();
 
 		return cost > 0 ? cost : Integer.MAX_VALUE;
+	}
+
+	private static double getEnchantCost(Enchantment enchantment, double level, boolean stored) {
+		// Note: All level values are from 1.7
+		// (16 - weight) * level * 20 seems to be a good rate.
+		// Sharpness 5: 6 * 5 * 20 = 300 exp, 0-26
+		// silk touch 1: 15 * 1 * 20 = 300 exp
+		// fortune 3: 14 * 3 * 20 = 840 exp, 0-30
+		// Rebalanced to *40, removed 2x multiplier from final cost
+		// Rebalanced weights to account for mending/frostwalker being rarer
+		/*
+		 * TODO recalc and explain reasoning, double check balance
+		 * Enchantment levels are a short, no risk of overflow until added to cost.
+		 */
+		double enchantCost = (20 - getWeight(enchantment));
+		enchantCost *= (stored ? 220 : 225);
+		// Balance: Base cost on percentage of max level, not only current level
+		enchantCost *= Math.abs(level) / enchantment.getMaxLevel();
+		if (enchantment.isCursed()) {
+			// Curses are also treasure, should be handled first.
+			enchantCost /= 2.5;
+		} else if (enchantment.isTreasure()) {
+			// Rarer, increase cost.
+			enchantCost *= 1.5;
+		}
+		return enchantCost;
 	}
 
 	public static Map<Pair<Material, Short>, Double> getMana() {
