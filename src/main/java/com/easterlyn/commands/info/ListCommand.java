@@ -60,6 +60,9 @@ public class ListCommand extends EasterlynCommand {
 			}
 			for (int i = ranks.length - 1; i >= 0; --i) {
 				UserRank rank = ranks[i];
+				if (rank == UserRank.DANGER_DANGER_HIGH_VOLTAGE) {
+					continue;
+				}
 				if (i == 0 || player.hasPermission(rank.getPermission())) {
 					groups.compute(rank.getFriendlyName(), (k, v) -> {
 						if (v == null) {
