@@ -1284,4 +1284,14 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setResourcePack(String arg0, byte[] arg1) {}
 
+	@Override
+	public double getHeight() {
+		return 0;
+	}
+
+	@Override
+	public double getWidth() {
+		return 0;
+	}
+
 }

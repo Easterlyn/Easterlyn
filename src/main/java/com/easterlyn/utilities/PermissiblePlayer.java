@@ -1593,4 +1593,14 @@ public class PermissiblePlayer implements Player {
 		return player.removePassenger(passenger);
 	}
 
+	@Override
+	public double getHeight() {
+		return player.getHeight();
+	}
+
+	@Override
+	public double getWidth() {
+		return player.getWidth();
+	}
+
 }
