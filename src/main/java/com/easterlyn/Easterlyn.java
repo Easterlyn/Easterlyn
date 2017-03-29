@@ -36,6 +36,7 @@ import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.RawAnnouncer;
 import com.easterlyn.micromodules.SleepVote;
 import com.easterlyn.micromodules.Spectators;
+import com.easterlyn.micromodules.VillagerAdjustment;
 import com.easterlyn.module.Dependencies;
 import com.easterlyn.module.Dependency;
 import com.easterlyn.module.Module;
@@ -128,6 +129,7 @@ public class Easterlyn extends JavaPlugin {
 		addModule(new Meteors(this));
 		addModule(new SleepVote(this));
 		addModule(new Spectators(this));
+		addModule(new VillagerAdjustment(this));
 
 		addModule(new Events(this));
 
