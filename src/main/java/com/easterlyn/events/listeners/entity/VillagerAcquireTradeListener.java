@@ -4,6 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.VillagerAdjustment;
 
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 import org.bukkit.inventory.MerchantRecipe;
 
@@ -21,6 +22,7 @@ public class VillagerAcquireTradeListener extends EasterlynListener {
 		this.villagers = plugin.getModule(VillagerAdjustment.class);
 	}
 
+	@EventHandler
 	public void onVillagerAcquireTrade(VillagerAcquireTradeEvent event) {
 		MerchantRecipe trade = this.villagers.adjustRecipe(event.getRecipe());
 		if (trade == null) {

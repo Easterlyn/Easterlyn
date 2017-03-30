@@ -73,9 +73,9 @@ public class VillagerAdjustment extends Module {
 	public VillagerAdjustment(Easterlyn plugin) {
 		super(plugin);
 		// TODO: Store somewhere or make externally readable - used by WorthCommand
-		this.overpricedRate = 25;
-		this.normalRate = 111.3;
-		this.underpricedRate = 450;
+		this.overpricedRate = 0.3087;
+		this.normalRate = 1.3745;
+		this.underpricedRate = 5.5573;
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class VillagerAdjustment extends Module {
 			recipe.addIngredient(money);
 			return recipe;
 		}
-		if (CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR)
+		if (CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
 				&& !CurrencyType.isCurrency(result)) {
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
 			// Purchase result - deal is not supposed to be good.
@@ -186,9 +186,12 @@ public class VillagerAdjustment extends Module {
 		double amount = worth;
 		int roundAmount = new BigDecimal(amount).setScale(0, mode).intValue();
 
-		for (int i = currency.ordinal() + 1; i < currencies.length; ++i) {
+		for (int i = currency.ordinal() + 1; amount > 1 && i < currencies.length; ++i) {
 			CurrencyType nextCurrency = currencies[i];
 			double currencyMultiplier = ((double) nextCurrency.getValue()) / currency.getValue();
+			if (amount < currencyMultiplier) {
+				break;
+			}
 			double nextAmount = amount / currencyMultiplier;
 			int nextRound = new BigDecimal(nextAmount).setScale(0, mode).intValue();
 			double roundRemainder = nextRound % currencyMultiplier;
@@ -200,7 +203,7 @@ public class VillagerAdjustment extends Module {
 					// Next currency divides in evenly
 					|| roundRemainder == 0
 					// Amount > 18 (hardcoded, currencies are 9 difference) and
-					|| (amount > 18 && 
+					|| (amount > currencyMultiplier * 2 && 
 							(mode == RoundingMode.UP || mode == RoundingMode.CEILING)
 							// Rounding up, remainder is close
 							? roundRemainder > currencyMultiplier - (currencyMultiplier / 4)
@@ -219,8 +222,12 @@ public class VillagerAdjustment extends Module {
 			break;
 		}
 
-		if (roundAmount < 1 || roundAmount > 64) {
+		if (roundAmount > 64) {
 			return CurrencyType.NOPE.getCurrencyItem();
+		}
+
+		if (roundAmount < 1) {
+			roundAmount = 1;
 		}
 
 		ItemStack currencyItem = currency.getCurrencyItem();

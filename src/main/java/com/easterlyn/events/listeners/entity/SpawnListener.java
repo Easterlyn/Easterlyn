@@ -9,6 +9,7 @@ import com.easterlyn.micromodules.VillagerAdjustment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Rabbit;
 import org.bukkit.entity.Rabbit.Type;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Merchant;
@@ -32,6 +33,7 @@ public class SpawnListener extends EasterlynListener {
 	 * 
 	 * @param event the CreatureSpawnEvent
 	 */
+	@EventHandler
 	public void onEntitySpawn(CreatureSpawnEvent event) {
 		if (event.getEntity() instanceof Merchant) {
 			villagers.adjustMerchant((Merchant) event.getEntity());
