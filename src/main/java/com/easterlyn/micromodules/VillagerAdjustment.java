@@ -7,8 +7,10 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.CruxiteDowel;
+import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.module.Module;
+import com.easterlyn.utilities.InventoryUtils;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -102,9 +104,20 @@ public class VillagerAdjustment extends Module {
 			// Ensure recipe has inputs.
 			return null;
 		}
-		return adjustRecipe(recipe.getIngredients().get(0),
-				recipe.getIngredients().size() > 1 ? recipe.getIngredients().get(1) : null,
-				recipe.getResult(), recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward());
+		ItemStack input1 = recipe.getIngredients().get(1);
+		ItemStack input2 = recipe.getIngredients().size() > 1 ? recipe.getIngredients().get(1) : null;
+		MerchantRecipe adjusted = this.adjustRecipe(input1, input2, recipe.getResult(),
+				recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward());
+
+		if (adjusted == null && !(CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(recipe.getResult()))) {
+			// DEBUG: post report on un-adjustable trades (barring lapis buy trade from priests)
+			this.getPlugin().getModule(Discord.class)
+					.postReport(String.format("Unable to adjust trade: %s + %s -> %s",
+							InventoryUtils.itemToText(input1), InventoryUtils.itemToText(input2),
+							InventoryUtils.itemToText(recipe.getResult())));
+		}
+
+		return adjusted;
 	}
 
 	private MerchantRecipe adjustRecipe(ItemStack input1, ItemStack input2, ItemStack result,
@@ -143,14 +156,28 @@ public class VillagerAdjustment extends Module {
 				return null;
 			}
 
-			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp);
-			recipe.addIngredient(input1);
-
 			double remainder = resultCost - CurrencyType.getValue(input1);
+			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp);
 
 			if (remainder > 0) {
-				// TODO: merge stacks if similar due to rounding up
-				recipe.addIngredient(this.getSingleMoneyStack(remainder, RoundingMode.UP));
+				input2 = this.getSingleMoneyStack(remainder, RoundingMode.UP);
+				if (input1.isSimilar(input2)) {
+					int amount = input1.getAmount() + input2.getAmount();
+					if (amount > input1.getMaxStackSize()) {
+						amount -= input1.getMaxStackSize();
+						input1.setAmount(input1.getMaxStackSize());
+						input2.setAmount(amount);
+						recipe.addIngredient(input1);
+						recipe.addIngredient(input2);
+					} else {
+						input1.setAmount(amount);
+						recipe.addIngredient(input1);
+					}
+				} else {
+					recipe.addIngredient(input1);
+				}
+			} else {
+				recipe.addIngredient(input1);
 			}
 
 			return recipe;
@@ -202,8 +229,8 @@ public class VillagerAdjustment extends Module {
 					amount > 64
 					// Next currency divides in evenly
 					|| roundRemainder == 0
-					// Amount > 18 (hardcoded, currencies are 9 difference) and
-					|| (amount > currencyMultiplier * 2 && 
+					// Amount > 2 of the next currency and
+					|| (amount > currencyMultiplier * 2 &&
 							(mode == RoundingMode.UP || mode == RoundingMode.CEILING)
 							// Rounding up, remainder is close
 							? roundRemainder > currencyMultiplier - (currencyMultiplier / 4)
@@ -212,6 +239,7 @@ public class VillagerAdjustment extends Module {
 									? roundRemainder < currencyMultiplier / 4
 											// Other rounding mode, close to either end
 											: Math.abs(roundRemainder - (currencyMultiplier / 2)) < currencyMultiplier / 4)
+					|| amount > currencyMultiplier * 4 && Math.abs(roundRemainder - (currencyMultiplier / 2)) < currencyMultiplier / 6
 					) {
 				// Set new values
 				currency = nextCurrency;

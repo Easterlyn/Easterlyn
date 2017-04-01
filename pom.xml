@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
-      <version>0.9.10</version>
+      <version>0.9.11</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -57,7 +57,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.24</version>
+      <version>1.7.25</version>
       <scope>compile</scope>
     </dependency>
     <!-- Plugin dependencies -->
@@ -82,7 +82,7 @@
     <dependency>
       <groupId>com.github.TechFortress</groupId>
       <artifactId>GriefPrevention</artifactId>
-      <version>master-SNAPSHOT</version>
+      <version>16.6</version>
       <scope>provided</scope>
     </dependency>
     <!-- Local repo plugin dependencies -->

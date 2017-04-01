@@ -699,11 +699,11 @@ public class InventoryUtils {
 
 	public static String recipeToText(Recipe recipe) {
 		if (recipe instanceof FurnaceRecipe) {
-			return String.format("SMELT: %s -> %s", materialToText(((FurnaceRecipe) recipe).getInput()), materialToText(recipe.getResult()));
+			return String.format("SMELT: %s -> %s", itemToText(((FurnaceRecipe) recipe).getInput()), itemToText(recipe.getResult()));
 		} else if (recipe instanceof ShapelessRecipe) {
 			StringBuilder builder = new StringBuilder("SHAPELESS: ");
 			for (ItemStack ingredient : ((ShapelessRecipe) recipe).getIngredientList()) {
-				builder.append(materialToText(ingredient)).append(" + ");
+				builder.append(itemToText(ingredient)).append(" + ");
 			}
 			builder.replace(builder.length() - 2, builder.length(), "-> ").append(recipe.getResult());
 			return builder.toString();
@@ -712,7 +712,7 @@ public class InventoryUtils {
 			Map<Character, String> mappings = new HashMap<>();
 			int longestMapping = 3; // "AIR".length() == 3
 			for (Map.Entry<Character, ItemStack> mapping : ((ShapedRecipe) recipe).getIngredientMap().entrySet()) {
-				String newMapping = materialToText(mapping.getValue());
+				String newMapping = itemToText(mapping.getValue());
 				longestMapping = Math.max(longestMapping, newMapping.length());
 				mappings.put(mapping.getKey(), newMapping);
 			}
@@ -736,13 +736,13 @@ public class InventoryUtils {
 				builder.delete(builder.length() - 1, builder.length());
 				builder.append('\n');
 			}
-			builder.delete(builder.length() - 1, builder.length()).append(" -> ").append(materialToText(recipe.getResult()));
+			builder.delete(builder.length() - 1, builder.length()).append(" -> ").append(itemToText(recipe.getResult()));
 			return builder.toString();
 		}
 		return recipe.toString();
 	}
 
-	private static String materialToText(ItemStack item) {
+	public static String itemToText(ItemStack item) {
 		if (item == null || item.getType() == Material.AIR) {
 			return "AIR";
 		}
