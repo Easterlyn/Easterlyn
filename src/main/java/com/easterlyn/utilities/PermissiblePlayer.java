@@ -789,6 +789,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public void awardAchievement(Achievement arg0) {
 		player.awardAchievement(arg0);
 	}
@@ -960,6 +961,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public boolean hasAchievement(Achievement arg0) {
 		return player.hasAchievement(arg0);
 	}
@@ -1085,6 +1087,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public void removeAchievement(Achievement arg0) {
 		player.removeAchievement(arg0);
 	}

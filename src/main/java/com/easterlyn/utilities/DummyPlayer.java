@@ -678,6 +678,7 @@ public class DummyPlayer implements Player {
 	public void sendPluginMessage(Plugin arg0, String arg1, byte[] arg2) { }
 
 	@Override
+	@Deprecated
 	public void awardAchievement(Achievement arg0) { }
 
 	@Override
@@ -824,6 +825,7 @@ public class DummyPlayer implements Player {
 	public void giveExpLevels(int arg0) { }
 
 	@Override
+	@Deprecated
 	public boolean hasAchievement(Achievement arg0) {
 		return false;
 	}
@@ -916,6 +918,7 @@ public class DummyPlayer implements Player {
 	public void playSound(Location arg0, String arg1, float arg2, float arg3) { }
 
 	@Override
+	@Deprecated
 	public void removeAchievement(Achievement arg0) { }
 
 	@Override

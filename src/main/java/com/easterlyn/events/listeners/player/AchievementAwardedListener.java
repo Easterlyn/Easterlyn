@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerAchievementAwardedEvent;
  * 
  * @author Jikoo
  */
+@SuppressWarnings("deprecation")
 public class AchievementAwardedListener extends EasterlynListener {
 
 	private final FreeCart carts;
