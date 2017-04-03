@@ -81,6 +81,7 @@ public class Discord extends Module {
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
 	private final YamlConfiguration discordData; // TODO access is not synchronized, dangerous
+	private final StringBuffer logBuffer;
 
 	private Language lang;
 	private String botName, token, channelGeneral, channelMain, channelLog, channelReports;
@@ -88,6 +89,7 @@ public class Discord extends Module {
 	private BukkitTask heartbeatTask;
 	private DiscordQueue drainQueueThread;
 	private boolean ready = false;
+	private long lastLog = System.currentTimeMillis();
 
 	private boolean lock = false;
 
@@ -116,6 +118,8 @@ public class Discord extends Module {
 		} else {
 			discordData = new YamlConfiguration();
 		}
+
+		logBuffer = new StringBuffer(1500);
 	}
 
 	@SuppressWarnings("rawtypes") // I don't like doing this, but type erasure forces my hand.
@@ -335,6 +339,14 @@ public class Discord extends Module {
 						e.printStackTrace();
 					}
 				}
+				if (logBuffer.length() > 0) {
+					long now = System.currentTimeMillis();
+					if (now > lastLog + 30000 || logBuffer.length() > 1500) {
+						addMessageToQueue(getLogChannel(), getBotName(), logBuffer.toString());
+						logBuffer.delete(0, logBuffer.length());
+						lastLog = now;
+					}
+				}
 			}
 		}.runTaskTimerAsynchronously(getPlugin(), 100L, 6000L); // 5 minutes between checks
 	}
@@ -484,6 +496,19 @@ public class Discord extends Module {
 			}
 			String nextMessage = message.substring(index, nextIndex);
 			for (String channel : channels) {
+				if (channel.equals(getLogChannel())) {
+					long now = System.currentTimeMillis();
+					if (logBuffer.length() != 0) {
+						logBuffer.append('\n');
+					}
+					logBuffer.append(nextMessage);
+					if (now > lastLog + 30000 || logBuffer.length() > 1500) {
+						addMessageToQueue(channel, this.getBotName(), logBuffer.toString());
+						logBuffer.delete(0, logBuffer.length());
+						lastLog = now;
+					}
+					continue;
+				}
 				addMessageToQueue(channel, name, nextMessage);
 			}
 		}

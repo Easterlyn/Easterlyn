@@ -104,7 +104,7 @@ public class VillagerAdjustment extends Module {
 			// Ensure recipe has inputs.
 			return null;
 		}
-		ItemStack input1 = recipe.getIngredients().get(1);
+		ItemStack input1 = recipe.getIngredients().get(0);
 		ItemStack input2 = recipe.getIngredients().size() > 1 ? recipe.getIngredients().get(1) : null;
 		MerchantRecipe adjusted = this.adjustRecipe(input1, input2, recipe.getResult(),
 				recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward());
