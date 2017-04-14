@@ -122,26 +122,6 @@ public class VillagerAdjustment extends Module {
 
 	private MerchantRecipe adjustRecipe(ItemStack input1, ItemStack input2, ItemStack result,
 			int uses, int maxUses, boolean giveExp) {
-		if (!CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(input2)
-				&& !CurrencyType.isCurrency(result)) {
-			// Modification of input for result - deal is not supposed to be good.
-			// Use overpriced rate for worth of result.
-			double resultCost = CruxiteDowel.expCost(effects, result) / overpricedRate;
-			// Use underpriced rate for input.
-			double inputCost = CruxiteDowel.expCost(effects, input1) / underpricedRate;
-			double cost = Math.abs(resultCost - inputCost);
-			// Round up money.
-			ItemStack money = getSingleMoneyStack(cost, RoundingMode.UP);
-			if (money.getType() == Material.BARRIER) {
-				// Too valuable.
-				return null;
-			}
-
-			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp);
-			recipe.addIngredient(input1);
-			recipe.addIngredient(money);
-			return recipe;
-		}
 		if (CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
 				&& !CurrencyType.isCurrency(result)) {
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
@@ -196,6 +176,33 @@ public class VillagerAdjustment extends Module {
 
 			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp);
 			recipe.addIngredient(input1);
+			return recipe;
+		}
+		if (CurrencyType.isCurrency(input1) && !CurrencyType.isCurrency(input2)) {
+			// Cartographers swap money and item for no apparent reason.
+			// Purchase has already been handled so input2 is not null and not currency.
+			ItemStack swap = input1;
+			input1 = input2;
+			input2 = swap;
+		}
+		if (!CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(input2)
+				&& !CurrencyType.isCurrency(result)) {
+			// Modification of input for result - deal is not supposed to be good.
+			// Use overpriced rate for worth of result.
+			double resultCost = CruxiteDowel.expCost(effects, result) / overpricedRate;
+			// Use underpriced rate for input.
+			double inputCost = CruxiteDowel.expCost(effects, input1) / underpricedRate;
+			double cost = Math.abs(resultCost - inputCost);
+			// Round up money.
+			ItemStack money = getSingleMoneyStack(cost, RoundingMode.UP);
+			if (money.getType() == Material.BARRIER) {
+				// Too valuable.
+				return null;
+			}
+
+			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp);
+			recipe.addIngredient(input1);
+			recipe.addIngredient(money);
 			return recipe;
 		}
 		return null;
