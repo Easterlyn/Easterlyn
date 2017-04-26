@@ -5,10 +5,10 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
@@ -74,7 +74,7 @@ public class StatisticCommand extends EasterlynCommand {
 			return false;
 		}
 
-		Player player = Bukkit.getPlayer(args[0]);
+		Player player = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 		if (player == null) {
 			sender.sendMessage("Invalid user " + args[0]);
 			return true;

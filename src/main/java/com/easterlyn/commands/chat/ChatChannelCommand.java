@@ -17,6 +17,7 @@ import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -318,6 +319,11 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 		sender.sendMessage(this.modHelp);
 		sender.sendMessage(this.ownerHelp);
 		return true;
+	}
+
+	private UUID getUniqueId(String identifier) {
+		Player player = PlayerUtils.matchPlayer(identifier, true, getPlugin());
+		return player != null ? player.getUniqueId() : null;
 	}
 
 	@Override

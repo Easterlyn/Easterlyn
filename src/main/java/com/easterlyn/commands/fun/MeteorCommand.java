@@ -9,10 +9,10 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Meteorite;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -52,7 +52,7 @@ public class MeteorCommand extends EasterlynCommand {
 
 			// Target a player's location
 			if (identifier == 'p') {
-				Player pTarget = Bukkit.getPlayer(argument);
+				Player pTarget = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 				if (pTarget != null) {
 					target = pTarget.getLocation();
 				}

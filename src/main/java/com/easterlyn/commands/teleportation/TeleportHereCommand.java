@@ -34,7 +34,7 @@ public class TeleportHereCommand extends EasterlynCommandAlias {
 			return false;
 		}
 		String[] newArgs = new String[2];
-		newArgs[1] = "@p";
+		newArgs[1] = sender.getName();
 		newArgs[0] = args[0];
 		return getCommand().execute(sender, label, newArgs);
 	}

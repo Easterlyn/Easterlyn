@@ -1,5 +1,7 @@
 package com.easterlyn.commands.admin;
 
+import java.util.List;
+
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Cooldowns;
@@ -13,11 +15,11 @@ import org.bukkit.entity.Player;
  * 
  * @author Jikoo
  */
-public class TeleportRequestResetCommand extends EasterlynCommand {
+public class CooldownResetCommand extends EasterlynCommand {
 
 	private final Cooldowns cooldowns;
 
-	public TeleportRequestResetCommand(Easterlyn plugin) {
+	public CooldownResetCommand(Easterlyn plugin) {
 		super(plugin, "tpreset");
 		this.setPermissionLevel(UserRank.HELPER);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
@@ -29,9 +31,26 @@ public class TeleportRequestResetCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
-		cooldowns.clearCooldown((Player) sender, "teleportRequest");
+		Player player = (Player) sender;
+		if (args.length > 1) {
+			for (String cooldown : args) {
+				cooldowns.clearCooldown(player, cooldown);
+			}
+		} else {
+			cooldowns.clearCooldown(player, "back");
+			cooldowns.clearCooldown(player, "deathpoint");
+			cooldowns.clearCooldown(player, "teleportRequest");
+		}
 		sender.sendMessage(getLang().getValue("command.tpreset.success"));
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+		if (args.length > 0) {
+			return this.completeArgument(args[args.length - 1], "back", "deathpoint", "teleportRequest");
+		}
+		return com.google.common.collect.ImmutableList.of();
 	}
 
 }

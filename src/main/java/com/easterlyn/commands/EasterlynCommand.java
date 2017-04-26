@@ -1,6 +1,8 @@
 package com.easterlyn.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
@@ -17,6 +19,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.StringUtil;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -99,13 +102,25 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 
 	protected abstract boolean onCommand(CommandSender sender, String label, String[] args);
 
+	// TODO revisit tab completion, implement location tab completion
 	@Override
-	public java.util.List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (getPermission() != null && !sender.hasPermission(getPermission())) {
+		if (this.getPermission() != null && this.getPermission().isEmpty()
+				&& !sender.hasPermission(getPermission())) {
 			return com.google.common.collect.ImmutableList.of();
 		}
 		return super.tabComplete(sender, alias, args);
+	}
+
+	protected List<String> completeArgument(String argument, String... completions) {
+		List<String> validCompletions = new ArrayList<>();
+		for (String completion : completions) {
+			if (StringUtil.startsWithIgnoreCase(completion, argument)) {
+				validCompletions.add(completion);
+			}
+		}
+		return validCompletions;
 	}
 
 	@Override

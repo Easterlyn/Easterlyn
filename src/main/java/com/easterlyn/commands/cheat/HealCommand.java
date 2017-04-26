@@ -5,10 +5,10 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,11 +38,11 @@ public class HealCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.heal.success"));
 			return true;
 		}
-		List<Player> players = Bukkit.matchPlayer(args[0]);
-		if (players.size() == 0) {
+		Player player = PlayerUtils.matchOnlinePlayer(sender, args[0]);
+		if (player == null) {
 			return false;
 		}
-		heal(players.get(0), label);
+		heal(player, label);
 		sender.sendMessage(getLang().getValue("command.heal.success"));
 		return true;
 	}

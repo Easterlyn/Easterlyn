@@ -7,10 +7,10 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -59,13 +59,13 @@ public class FlyCommand extends EasterlynCommand {
 		if (!(sender instanceof Player)) {
 			// Not a player, must have at least 1 argument, which will be interpreted as a player name
 			// This will still be hit by /fly true and such, but that's hardly a problem.
-			player = matchPlayer(args[0]);
+			player = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 		} else if (!sender.hasPermission("easterlyn.command.fly.other")) {
 			// No permission to specify others and must be a Player
 			player = (Player) sender;
 		} else if (args.length == 1 && fly == null) {
 			// Only 1 argument and flight toggle is not set, so it must be a player name
-			player = matchPlayer(args[0]);
+			player = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 		}
 		if (player == null) {
 			return false;
@@ -75,14 +75,6 @@ public class FlyCommand extends EasterlynCommand {
 				+ (sender.equals(player) ? "!" : " for " + player.getName() + "!"));
 		fly(player, fly);
 		return true;
-	}
-
-	private Player matchPlayer(String arg) {
-		List<Player> players = Bukkit.matchPlayer(arg);
-		if (players.isEmpty()) {
-			return null;
-		}
-		return players.get(0);
 	}
 
 	private void fly(Player player, Boolean fly) {

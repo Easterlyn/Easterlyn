@@ -81,6 +81,15 @@ public class TeleportListener extends EasterlynListener {
 		// People keep doing stupid stuff like /home while falling from spawn
 		event.getPlayer().setFallDistance(0);
 
+		switch (event.getCause()) {
+		case COMMAND:
+			// The back command is only for commands.
+			users.getUser(event.getPlayer().getUniqueId()).setBackLocation(event.getFrom());
+			break;
+		default:
+			break;
+		}
+
 		if (event.getTo().getWorld().equals(event.getFrom().getWorld())) {
 			return;
 		}

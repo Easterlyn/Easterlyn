@@ -1,7 +1,6 @@
 package com.easterlyn.commands.teleportation;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,13 +14,13 @@ import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.PlayerUtils;
 import com.easterlyn.utilities.RegionUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 /**
  * Essentials' TPA just won't cut it.
@@ -34,7 +33,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 	private final Spectators spectators;
 	private final Users users;
 	private final Transportalizer transportalizer;
-	private final SimpleDateFormat time =  new SimpleDateFormat("m:ss");
+	private final SimpleDateFormat time = new SimpleDateFormat("m:ss");
 	private final HashMap<UUID, TeleportRequest> pending = new HashMap<>();
 
 	public TeleportRequestCommand(Easterlyn plugin) {
@@ -91,7 +90,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			}
 			return;
 		}
-		Player target = looseMatch(sender, args[0]);
+		Player target = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 		if (target == null) {
 			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return;
@@ -113,8 +112,8 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.tpa.error.toSpectator"));
 			return;
 		}
-		if (!RegionUtils.regionsMatch(targetUser.getCurrentLocation().getWorld().getName(),
-				sourceUser.getCurrentLocation().getWorld().getName())) {
+		if (!RegionUtils.regionsMatch(targetUser.getPlayer().getWorld().getName(),
+				sourceUser.getPlayer().getWorld().getName())) {
 			sender.sendMessage(getLang().getValue("command.tpa.error.crossRegion"));
 			return;
 		}
@@ -164,7 +163,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			cooldowns.clearCooldown(issuer, "teleportRequest");
 			return;
 		}
-		toTeleport.teleport(toArriveAt);
+		toTeleport.teleport(toArriveAt, TeleportCause.COMMAND);
 		toTeleport.sendMessage(getLang().getValue("command.tpa.success.arrive.teleported")
 						.replace("{PLAYER}", toArriveAt.getDisplayName()));
 		toArriveAt.sendMessage(getLang().getValue("command.tpa.success.arrive.target")
@@ -218,32 +217,6 @@ public class TeleportRequestCommand extends EasterlynCommand {
 		public long getExpiry() {
 			return expiry;
 		}
-	}
-
-	private Player looseMatch(Player sender, String name) {
-		List<Player> matches = Bukkit.matchPlayer(name);
-		matches.removeIf(target -> !sender.canSee(target));
-		if (!matches.isEmpty()) {
-			return matches.get(0);
-		}
-		name = name.toLowerCase();
-		matches = new ArrayList<>();
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (!sender.canSee(player) || player.getDisplayName() == null) {
-				continue;
-			}
-			String display = ChatColor.stripColor(player.getDisplayName());
-			if (display.equalsIgnoreCase(name)) {
-				return player;
-			}
-			if (display.toLowerCase().startsWith(name)) {
-				matches.add(player);
-			}
-		}
-		if (!matches.isEmpty()) {
-			return matches.get(0);
-		}
-		return null;
 	}
 
 	@Override

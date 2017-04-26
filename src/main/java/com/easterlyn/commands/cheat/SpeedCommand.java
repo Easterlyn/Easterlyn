@@ -7,10 +7,10 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -81,24 +81,24 @@ public class SpeedCommand extends EasterlynCommand {
 			}
 		}
 
-		List<Player> players = Bukkit.matchPlayer(args[0]);
-		if (players.size() == 0) {
+		Player player = PlayerUtils.matchOnlinePlayer(sender, args[0]);
+		if (player == null) {
 			return false;
 		}
-		Player target = players.get(0);
+
 		if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("fly")) {
-				setSpeed(target, true, speed);
+				setSpeed(player, true, speed);
 				sender.sendMessage(Language.getColor("good") + "Speed set!");
 				return true;
 			} else if (args[0].equalsIgnoreCase("walk")) {
-				setSpeed(target, false, speed);
+				setSpeed(player, false, speed);
 				sender.sendMessage(Language.getColor("good") + "Speed set!");
 				return true;
 			}
 			return false;
 		}
-		setSpeed(target, fly, speed);
+		setSpeed(player, fly, speed);
 		sender.sendMessage(Language.getColor("good") + "Speed set!");
 		return true;
 	}

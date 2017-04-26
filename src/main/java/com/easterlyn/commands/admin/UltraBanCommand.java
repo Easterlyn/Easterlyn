@@ -30,12 +30,12 @@ public class UltraBanCommand extends EasterlynCommand {
 
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
-		if (!((Easterlyn) getPlugin()).getCommandMap().getCommand("sban").execute(sender, label, args)) {
-			// sban will return its own usage failure, no need to double message.
+		if (!((Easterlyn) getPlugin()).getCommandMap().getCommand("ban").execute(sender, label, args)) {
+			// ban will return its own usage failure, no need to double message.
 			return true;
 		}
 
-		Player player = Bukkit.getPlayer(args[0]);
+		Player player = Bukkit.getPlayerExact(args[0]);
 		if (player != null) {
 			User victim = users.getUser(player.getUniqueId());
 			File folder = new File(getPlugin().getDataFolder(), "users");

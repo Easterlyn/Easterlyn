@@ -128,6 +128,7 @@ command:
     noMeta: '{COLOR:bad}This item does not have meta!'
     noMetaSupport: '{COLOR:bad}This item does not support meta!'
     invalidParameters: '{COLOR:bad}Invalid parameter: {PARAMETER}; try tab completion.'
+    cooldown: '{COLOR:bad}You cannot use that command for another {COLOR:emphasis.bad}{TIME}{COLOR:bad}.'
   ban:
     description: 'WELL DONE? YOU DISGUST ME. GO RARE OR GO HOME.'
     usage: '/ban <target> [optional reason]'
@@ -165,9 +166,9 @@ command:
     add: '{COLOR:neutral}Added {COLOR:emphasis.neutral}{IP}{COLOR:neutral} to the Spamhaus exempt list.'
     remove: '{COLOR:neutral}Removed {COLOR:emphasis.neutral}{IP}{COLOR:neutral} from the Spamhaus exempt list.'
   tpreset:
-    description: 'Reset TPA cooldown. Intended for official business only. Do not abuse.'
-    usage: '/tpreset'
-    success: '{COLOR:neutral}TP request cooldown reset.'
+    description: 'Reset cooldowns. Intended for official business only. Do not abuse.'
+    usage: '/tpreset [cooldown...]'
+    success: '{COLOR:neutral}Cooldown reset.'
   ultraban:
     description: 'BIG BROTHER IS ALWAYS WATCHING.'
     usage: '/ultraban <target>'
@@ -210,6 +211,14 @@ command:
     usage: '/show'
     requirements: '{COLOR:bad}You do not have anything named and enchanted in your main hand!'
     invalidCharacters: '{COLOR:bad}You may not show items with names containing characters normalized by the main chat!'
+  deathpoint:
+    description: 'Return to death location.'
+    usage: '/back [player]'
+    success: '{COLOR:good}Returning to death location.'
+    reset: '{COLOR:bad}If you''re on cooldown due to official business, use {COLOR:command}/tpreset deathpoint{COLOR:bad}'
+    unset:
+      self: '{COLOR:bad}You do not have a death location to return to!'
+      other: '{COLOR:bad}{PLAYER} does not have a death location to return to!'
   enchant:
     description: 'Enchant the item in your main hand.'
     usage: |-
@@ -268,6 +277,14 @@ command:
       {COLOR:bad}Overpriced (admin sellshop): {COLOR:emphasis.neutral}{OVERPRICED} lapis
       {COLOR:good}Standard rate (player trade): {COLOR:emphasis.neutral}{GOOD_PRICE} lapis
       {COLOR:bad}Underpriced (admin buyshop): {COLOR:emphasis.neutral}{UNDERPRICED} lapis
+  back:
+    description: 'Return to previous location.'
+    usage: '/back [player]'
+    success: '{COLOR:good}Returning to previous location.'
+    reset: '{COLOR:bad}If you''re on cooldown due to official business, use {COLOR:command}/tpreset back{COLOR:bad}'
+    unset:
+      self: '{COLOR:bad}You do not have a previous location to return to!'
+      other: '{COLOR:bad}{PLAYER} does not have a previous location to return to!'
   tpa:
     description: 'Handle a teleport request'
     usage: '/tpa name, /tpahere name, /tpaccept, /tpdecline'
@@ -277,7 +294,7 @@ command:
       yes: '{COLOR:command}/tpa <player>{COLOR:good}: Request to teleport to a player'
       no: '{COLOR:command}/tpa <player>{COLOR:good}: Request to teleport to a player'
     self: '{COLOR:neutral}If I told you I just teleported you to yourself would you believe me?'
-    reset: '{COLOR:bad}If you''re on cooldown due to official business, use {COLOR:command}/tpreset{COLOR:bad}'
+    reset: '{COLOR:bad}If you''re on cooldown due to official business, use {COLOR:command}/tpreset teleportRequest{COLOR:bad}'
     error:
       recipientPermission: '{COLOR:player.bad}{PLAYER}{COLOR:bad} cannot accept teleport requests!'
       cooldown: '{COLOR:bad}You cannot send a teleport request for another {COLOR:emphasis.bad}{TIME}{COLOR:bad}.'
@@ -380,10 +397,16 @@ discord:
   link:
     mandate: |-
       Welcome, {USER}!
-      If you're here for Minecraft, please tell us your **Minecraft username** to be whitelisted.
-      Once whitelisted, please log join us on `play.easterlyn.com` and run `/link`. Then, in this chat, run `/link YourCodeHere` to complete the process.
-      If you don't play Minecraft and are here for other reasons (or just want to look pretty), please use +giveme to obtain a color. A list of options can be found by running +giveme list.
-      Thanks for joining us!
+      If you're here for Minecraft, please fill out the following form to be whitelisted.
+      ```
+      @Admin
+      **Minecraft username:**
+      **Reason for joining:**
+      **Short self-blurb:** (Do you like to build? Play other games? Let us know!)
+      **How did you find us?**
+      ```
+      Once whitelisted, please join us on `play.easterlyn.com` and run `/link`. Then, in this chat, run `/link YourCodeHere` to complete the process.
+      If you're here for reasons other than Minecraft, please contact an `@Admin` immediately - unlinked users are kicked after a period.
 
 events:
   craft:

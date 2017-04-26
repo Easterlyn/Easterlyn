@@ -5,10 +5,10 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,11 +29,11 @@ public class SilentKickCommand extends EasterlynCommand {
 		if (args.length == 0) {
 			return false;
 		}
-		List<Player> players = Bukkit.matchPlayer(args[0]);
-		if (players.isEmpty()) {
+		Player player = PlayerUtils.matchOnlinePlayer(sender, args[0]);
+		if (player == null) {
 			return false;
 		}
-		players.get(0).kickPlayer(StringUtils.join(args, ' ', 1, args.length));
+		player.kickPlayer(StringUtils.join(args, ' ', 1, args.length));
 		return true;
 	}
 

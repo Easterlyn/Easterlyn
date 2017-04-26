@@ -6,10 +6,10 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -37,10 +37,10 @@ public class PingCommand extends EasterlynCommand {
 		if (args.length == 0 || !sender.hasPermission("easterlyn.command.ping.other")) {
 			target = (Player) sender;
 		} else {
-			target = Bukkit.getPlayer(args[0]);
+			target = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 		}
 		if (target == null) {
-			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
+			sender.sendMessage(this.getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return true;
 		}
 		sender.sendMessage(Language.getColor("player.good") + target.getName()

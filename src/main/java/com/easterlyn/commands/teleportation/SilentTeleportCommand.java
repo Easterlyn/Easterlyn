@@ -5,6 +5,7 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -13,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 /**
  * EasterlynCommand for silently teleporting a player.
@@ -33,7 +35,7 @@ public class SilentTeleportCommand extends EasterlynCommand {
 		if (args == null || args.length < 4) {
 			return false;
 		}
-		Player pTarget = Bukkit.getPlayer(args[0]);
+		Player pTarget = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 		if (pTarget == null) {
 			// silently eat player get failure in case CommandSign messes up, have seen it happen.
 			return true;
@@ -51,7 +53,7 @@ public class SilentTeleportCommand extends EasterlynCommand {
 				}
 				tpdest.setWorld(wTarget);
 			}
-			pTarget.teleport(tpdest);
+			pTarget.teleport(tpdest, TeleportCause.COMMAND);
 			return true;
 		} catch (NumberFormatException e) {
 			return false;

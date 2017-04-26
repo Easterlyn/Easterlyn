@@ -6,10 +6,10 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.FreeCart;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ public class TemporaryCartCommand extends EasterlynCommand {
 		if (args == null || args.length < 6) {
 			return false;
 		}
-		Player pTarget = Bukkit.getPlayer(args[0]);
+		Player pTarget = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 		if (pTarget == null) {
 			return true;
 		}

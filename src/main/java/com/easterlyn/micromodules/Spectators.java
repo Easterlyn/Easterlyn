@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -174,7 +175,7 @@ public class Spectators extends Module {
 			users.getUser(player.getUniqueId()).setLoginLocation(teleport);
 			return;
 		}
-		player.teleport(teleport);
+		player.teleport(teleport, TeleportCause.SPECTATE);
 		player.setGameMode(GameMode.SURVIVAL);
 	}
 

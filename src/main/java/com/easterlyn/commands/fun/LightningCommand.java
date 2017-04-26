@@ -6,6 +6,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -61,12 +62,11 @@ public class LightningCommand extends EasterlynCommand {
 			return true;
 		}
 		if (args.length == 1) {
-			List<Player> matches = Bukkit.matchPlayer(args[0]);
-			if (matches.size() == 0) {
+			Player target = PlayerUtils.matchOnlinePlayer(sender, args[0]);
+			if (target == null) {
 				sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 				return false;
 			}
-			Player target = matches.get(0);
 			target.getWorld().strikeLightning(target.getLocation());
 		}
 		if (args.length > 2) {

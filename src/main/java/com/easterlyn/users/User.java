@@ -34,7 +34,7 @@ import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorPassive;
 import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.utilities.PlayerLoader;
+import com.easterlyn.utilities.PlayerUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -63,6 +63,8 @@ public class User {
 
 	/* General player data */
 	private final UUID uuid;
+	private Location backLocation;
+	private Location deathLocation;
 
 	/* Chat data*/
 	private String lastChat;
@@ -99,7 +101,7 @@ public class User {
 	 * @return the Player
 	 */
 	public Player getPlayer() {
-		return PlayerLoader.getPlayer(plugin, getUUID());
+		return PlayerUtils.getPlayer(plugin, getUUID());
 	}
 
 	/**
@@ -233,6 +235,38 @@ public class User {
 	}
 
 	/**
+	 * Gets the Location used by the back command. This is temporary data, and is not preserved.
+	 * 
+	 * @return the back location, or null if not set
+	 */
+	public Location getBackLocation() {
+		return this.backLocation;
+	}
+
+	/**
+	 * Sets the Location used by the back command. This is temporary data, and is not preserved.
+	 */
+	public void setBackLocation(Location location) {
+		this.backLocation = location;
+	}
+
+	/**
+	 * Gets the Location used by the deathpoint command. This is temporary data, and is not preserved.
+	 * 
+	 * @return the death location, or null if not set
+	 */
+	public Location getDeathLocation() {
+		return this.deathLocation;
+	}
+
+	/**
+	 * Sets the Location used by the deathpoint command. This is temporary data, and is not preserved.
+	 */
+	public void setDeathLocation(Location location) {
+		this.deathLocation = location;
+	}
+
+	/**
 	 * Gets a Location to teleport the Player to on login.
 	 * 
 	 * @return the Location, or null if none is set.
@@ -252,15 +286,6 @@ public class User {
 	 */
 	public void setLoginLocation(Location location) {
 		yaml.set("loginLocation", location);
-	}
-
-	/**
-	 * Gets the Player's current location.
-	 * 
-	 * @return the Location the user is at
-	 */
-	public Location getCurrentLocation() {
-		return getPlayer().getLocation();
 	}
 
 	/**
@@ -776,7 +801,7 @@ public class User {
 
 		// Loc: current location, RegionUtils: region
 		sb.append(Language.getColor("neutral")).append("Loc: ").append(Language.getColor("emphasis.neutral"))
-				.append(BukkitSerializer.locationToBlockCenterString(getCurrentLocation())).append('\n');
+				.append(BukkitSerializer.locationToBlockCenterString(getPlayer().getLocation())).append('\n');
 
 		// Pestering: current, Listening: [list]
 		sb.append(Language.getColor("neutral")).append("Pestering: ").append(Language.getColor("emphasis.neutral"))
@@ -899,7 +924,7 @@ public class User {
 		User user = new User(plugin, uuid, yaml);
 		if (user.isOnline()) {
 			user.setUserIP(user.getPlayer().getAddress().getHostString());
-			Location currentLoc = user.getCurrentLocation();
+			Location currentLoc = user.getPlayer().getLocation();
 			if (currentLoc == null) {
 				currentLoc = Bukkit.getWorlds().get(0).getSpawnLocation();
 			}

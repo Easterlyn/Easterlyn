@@ -8,7 +8,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PlayerLoader;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -51,7 +51,7 @@ public class DiscordLinkCommand extends EasterlynCommand {
 				return false;
 			}
 
-			Player player = PlayerLoader.getPlayer(this.getPlugin(), uuid);
+			Player player = PlayerUtils.getPlayer(this.getPlugin(), uuid);
 			if (hasHigherPerms(player, sender)) {
 				return false;
 			}

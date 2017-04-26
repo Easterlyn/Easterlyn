@@ -69,4 +69,6 @@ public class CaptchaHashCommand extends EasterlynCommand {
 		return false;
 	}
 
+	// TODO completion
+
 }

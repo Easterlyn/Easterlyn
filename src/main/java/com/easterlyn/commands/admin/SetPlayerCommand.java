@@ -2,7 +2,6 @@ package com.easterlyn.commands.admin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
@@ -11,11 +10,15 @@ import com.easterlyn.users.UserAspect;
 import com.easterlyn.users.UserClass;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * EasterlynCommand for setting User data.
@@ -41,17 +44,17 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 		if (args == null || args.length < 3) {
 			return false;
 		}
-		UUID uuid = getUniqueId(args[0]);
-		if (uuid == null) {
+		Player player = PlayerUtils.matchPlayer(args[0], true, getPlugin());
+		if (player == null) {
 			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return true;
 		}
-		User user = users.getUser(uuid);
+		User user = users.getUser(player.getUniqueId());
 		args[1] = args[1].toLowerCase();
 		if (args[1].equals("class")) {
-			user.setUserClass(UserClass.getClass(args[2]));
+			user.setUserClass(UserClass.getClass(ChatColor.translateAlternateColorCodes('&', args[2])));
 		} else if (args[1].equals("aspect")) {
-			user.setUserAspect(UserAspect.getAspect(args[2]));
+			user.setUserAspect(UserAspect.getAspect(ChatColor.translateAlternateColorCodes('&', args[2])));
 		} else {
 			return false;
 		}

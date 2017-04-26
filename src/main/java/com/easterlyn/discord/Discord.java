@@ -34,7 +34,7 @@ import com.easterlyn.discord.queue.DiscordCallable;
 import com.easterlyn.discord.queue.DiscordQueue;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.PermissiblePlayer;
-import com.easterlyn.utilities.PlayerLoader;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -648,7 +648,7 @@ public class Discord extends Module {
 		final IUser iuser = user;
 
 		// Load a permissible player
-		Player loadedPlayer = PlayerLoader.getPlayer(getPlugin(), uuid);
+		Player loadedPlayer = PlayerUtils.getPlayer(getPlugin(), uuid);
 		if (loadedPlayer == null) {
 			return;
 		}
@@ -740,13 +740,13 @@ public class Discord extends Module {
 		if (uuid == null) {
 			return null;
 		}
-		Player player = PlayerLoader.getPlayer(this.getPlugin(), uuid);
+		Player player = PlayerUtils.getPlayer(this.getPlugin(), uuid);
 		if (player instanceof DiscordPlayer) {
 			return (DiscordPlayer) player;
 		}
-		// PlayerLoader loads a PermissiblePlayer, wrapping a wrapper would be silly.
+		// PlayerUtils loads a PermissiblePlayer, wrapping a wrapper would be silly.
 		DiscordPlayer dplayer = new DiscordPlayer(this, user, player.getPlayer());
-		PlayerLoader.modifyCachedPlayer(dplayer);
+		PlayerUtils.modifyCachedPlayer(dplayer);
 		return dplayer;
 	}
 

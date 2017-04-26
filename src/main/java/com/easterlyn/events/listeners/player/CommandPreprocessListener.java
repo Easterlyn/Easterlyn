@@ -110,11 +110,21 @@ public class CommandPreprocessListener extends EasterlynListener {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("send")
 					&& chat.testForMute(event.getPlayer())) {
 				event.setCancelled(true);
+				return;
 			}
 		} else if (cmd.getName().equals("prism")) {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(lang.getValue("events.command.prismUndoCrash"));
+				return;
+			}
+		} else if (cmd.getName().equals("party")) {
+			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("chat")) {
+				event.setCancelled(true);
+				event.getPlayer().sendMessage(
+						Language.getColor("command") + "/channel new <name> <access> <type>"
+								+ Language.getColor("neutral") + ": Create a new channel.");
+				return;
 			}
 		}
 
@@ -122,6 +132,7 @@ public class CommandPreprocessListener extends EasterlynListener {
 			if (!discord.getConfig().getStringList("discord.command-whitelist").contains(cmd.getName())) {
 				event.getPlayer().sendMessage('/' + cmd.getName() + " isn't allowed from Discord, sorry!");
 				event.setCancelled(true);
+				return;
 			}
 		}
 

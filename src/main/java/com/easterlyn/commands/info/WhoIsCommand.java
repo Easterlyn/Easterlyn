@@ -1,12 +1,13 @@
 package com.easterlyn.commands.info;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
+import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,15 +37,25 @@ public class WhoIsCommand extends EasterlynAsynchronousCommand {
 		if (!(sender instanceof Player) && args.length == 0) {
 			return false;
 		}
-		final UUID uuid = args.length >= 1 ? getUniqueId(args[0]) : ((Player) sender).getUniqueId();
-		if (uuid == null) {
+
+		Player target;
+		if (args.length > 0) {
+			target = PlayerUtils.matchPlayer(args[0], true, getPlugin());
+		} else {
+			target = (Player) sender;
+		}
+
+		if (target == null) {
 			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return true;
 		}
+
+		User user = users.getUser(target.getUniqueId());
+
 		if (sender.hasPermission("easterlyn.command.whois.detail")) {
-			sender.sendMessage(users.getUser(uuid).getWhois());
+			sender.sendMessage(user.getWhois());
 		} else {
-			sender.sendMessage(users.getUser(uuid).getProfile());
+			sender.sendMessage(user.getProfile());
 		}
 		return true;
 	}

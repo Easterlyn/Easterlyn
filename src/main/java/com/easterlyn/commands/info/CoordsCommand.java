@@ -1,15 +1,14 @@
 package com.easterlyn.commands.info;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.PlayerUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -44,8 +43,8 @@ public class CoordsCommand extends EasterlynAsynchronousCommand {
 		final boolean other = args.length >= 1 && sender.hasPermission("easterlyn.command.coords.other");
 		final Player target;
 		if (other) {
-			final UUID uuid = getUniqueId(args[0]);
-			if (uuid == null || (target = Bukkit.getPlayer(uuid)) == null) {
+			target = PlayerUtils.matchPlayer(args[0], true, getPlugin());
+			if (target == null) {
 				sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 				return true;
 			}
