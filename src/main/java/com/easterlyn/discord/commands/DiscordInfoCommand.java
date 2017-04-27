@@ -1,6 +1,5 @@
 package com.easterlyn.discord.commands;
 
-import java.util.HashSet;
 import java.util.List;
 
 import com.easterlyn.discord.Discord;
@@ -48,40 +47,18 @@ public class DiscordInfoCommand extends DiscordCommand {
 			getDiscord().postMessage(getName(), builder.toString(), channel.getID());
 			return true;
 		}
-		StringBuilder builder = new StringBuilder("Server ").append(guild.getID())
-				.append(" (").append(guild.getName()).append(")\nGroups:\n");
-		List<IChannel> channels = guild.getChannels();
-		if (channels.size() > 0) {
-			for (IChannel chan : channels) {
-				builder.append(chan.getID()).append(" (").append(chan.getName()).append("), ");
-			}
-			builder.delete(builder.length() - 2, builder.length());
-		} else {
-			builder.append("none");
-		}
-		HashSet<IRole> visibleRoles = new HashSet<>();
-		for (IUser user : guild.getUsers()) {
-			visibleRoles.addAll(user.getRolesForGuild(guild));
-		}
-		builder.append("\nRoles:\n");
-		if (visibleRoles.size() > 0) {
-			for (IRole role : visibleRoles) {
+		StringBuilder builder = new StringBuilder("Available roles in guild ").append(guild.getID())
+				.append(" (").append(guild.getName()).append("):\n");
+		List<IRole> roles = guild.getRoles();
+		if (roles.size() > 0) {
+			for (IRole role : roles) {
 				builder.append(role.getID()).append(" (").append(role.getName()).append("), ");
 			}
 			builder.delete(builder.length() - 2, builder.length());
 		} else {
 			builder.append("none");
 		}
-		List<IUser> users = guild.getUsers();
-		builder.append("\nClients:\n");
-		if (users.size() > 0) {
-			for (IUser user : users) {
-				builder.append(user.getID()).append(" (").append(user.getName()).append("), ");
-			}
-			builder.delete(builder.length() - 2, builder.length());
-		} else {
-			builder.append("none");
-		}
+		builder.append("\nFor client and channel IDs, please turn on developer mode and right click.");
 		getDiscord().postMessage(getName(), builder.toString(), channel.getID());
 		return true;
 	}
