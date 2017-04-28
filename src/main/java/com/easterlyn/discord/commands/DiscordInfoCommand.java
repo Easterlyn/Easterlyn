@@ -24,9 +24,13 @@ public class DiscordInfoCommand extends DiscordCommand {
 
 	@Override
 	protected boolean onCommand(IUser sender, IChannel channel, String[] args) {
-		IGuild guild;
+		IGuild guild = null;
 		if (args.length > 0) {
-			guild = getDiscord().getClient().getGuildByID(args[0]);
+			try {
+				guild = getDiscord().getClient().getGuildByID(Long.parseLong(args[0]));
+			} catch (NumberFormatException e) {
+				// Not a guild ID
+			}
 			if (guild == null) {
 				for (IGuild server : getDiscord().getClient().getGuilds()) {
 					if (server.getName().equalsIgnoreCase(args[0])) {
@@ -41,25 +45,25 @@ public class DiscordInfoCommand extends DiscordCommand {
 		if (guild == null) {
 			StringBuilder builder = new StringBuilder("Invalid server! Valid servers: ");
 			for (IGuild server : getDiscord().getClient().getGuilds()) {
-				builder.append(server.getID()).append(" (").append(server.getName()).append("), ");
+				builder.append(server.getLongID()).append(" (").append(server.getName()).append("), ");
 			}
 			builder.delete(builder.length() - 2, builder.length());
-			getDiscord().postMessage(getName(), builder.toString(), channel.getID());
+			getDiscord().postMessage(getName(), builder.toString(), channel.getLongID());
 			return true;
 		}
-		StringBuilder builder = new StringBuilder("Available roles in guild ").append(guild.getID())
+		StringBuilder builder = new StringBuilder("Available roles in guild ").append(guild.getLongID())
 				.append(" (").append(guild.getName()).append("):\n");
 		List<IRole> roles = guild.getRoles();
 		if (roles.size() > 0) {
 			for (IRole role : roles) {
-				builder.append(role.getID()).append(" (").append(role.getName()).append("), ");
+				builder.append(role.getLongID()).append(" (").append(role.getName()).append("), ");
 			}
 			builder.delete(builder.length() - 2, builder.length());
 		} else {
 			builder.append("none");
 		}
 		builder.append("\nFor client and channel IDs, please turn on developer mode and right click.");
-		getDiscord().postMessage(getName(), builder.toString(), channel.getID());
+		getDiscord().postMessage(getName(), builder.toString(), channel.getLongID());
 		return true;
 	}
 

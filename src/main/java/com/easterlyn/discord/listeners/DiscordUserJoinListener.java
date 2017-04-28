@@ -3,7 +3,7 @@ package com.easterlyn.discord.listeners;
 import com.easterlyn.discord.Discord;
 
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 
 /**
  * Listener for when a user rejoins after leaving or being kicked.
@@ -21,7 +21,7 @@ public class DiscordUserJoinListener implements IListener<UserJoinEvent> {
 	@Override
 	public void handle(UserJoinEvent event) {
 		// Reset unlinked time for new joins
-		discord.getDatastore().set("unlinked." + event.getGuild().getID() + '.'  + event.getUser().getID(), null);
+		discord.getDatastore().set("unlinked." + event.getGuild().getLongID() + '.'  + event.getUser().getLongID(), null);
 		discord.updateUser(event.getUser());
 	}
 

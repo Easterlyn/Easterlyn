@@ -4,7 +4,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.modules.VoiceTextModule;
 
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.VoiceChannelCreateEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.VoiceChannelCreateEvent;
 
 /**
  * Listener for VoiceChannelCreateEvents.
@@ -23,7 +23,7 @@ public class DiscordVoiceChannelCreateListener implements IListener<VoiceChannel
 
 	@Override
 	public void handle(VoiceChannelCreateEvent event) {
-		getVoiceTextModule().handleChannelCreation(event.getChannel());
+		getVoiceTextModule().handleChannelCreation(event.getVoiceChannel());
 	}
 
 	private VoiceTextModule getVoiceTextModule() {

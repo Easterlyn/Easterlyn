@@ -54,7 +54,7 @@ public class VoiceTextModule extends DiscordModule {
 		if (channels.containsKey(channel)) {
 			// Voice channel has been deleted, delete corresponding text channel
 			IChannel textForVoice = channels.remove(channel);
-			this.getDiscord().queue(new DiscordCallable(channel.getGuild().getID(), CallType.CHANNEL_DELETE) {
+			this.getDiscord().queue(new DiscordCallable(channel.getGuild().getLongID(), CallType.CHANNEL_DELETE) {
 				@Override
 				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 					textForVoice.delete();
@@ -94,18 +94,18 @@ public class VoiceTextModule extends DiscordModule {
 	}
 
 	private void createTextChannel(IVoiceChannel voice) {
-		this.getDiscord().queue(new DiscordCallable(voice.getGuild().getID(), CallType.CHANNEL_CREATE) {
+		this.getDiscord().queue(new DiscordCallable(voice.getGuild().getLongID(), CallType.CHANNEL_CREATE) {
 			@Override
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 				IChannel text = voice.getGuild().createChannel(getTextChannelName(voice.getName()));
 				channels.put(voice, text);
-				getDiscord().queue(new DiscordCallable(text.getGuild().getID(), CallType.CHANNEL_MODIFY) {
+				getDiscord().queue(new DiscordCallable(text.getGuild().getLongID(), CallType.CHANNEL_MODIFY) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						text.overrideRolePermissions(text.getGuild().getEveryoneRole(), EnumSet.noneOf(Permissions.class), EnumSet.of(Permissions.READ_MESSAGES));
 					}
 				});
-				getDiscord().queue(new DiscordCallable(text.getGuild().getID(), CallType.CHANNEL_MODIFY) {
+				getDiscord().queue(new DiscordCallable(text.getGuild().getLongID(), CallType.CHANNEL_MODIFY) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						text.changeTopic("Text channel for voice channel " + voice.getName());
@@ -143,7 +143,7 @@ public class VoiceTextModule extends DiscordModule {
 		if (!isUserEditable(user, text.getGuild())) {
 			return;
 		}
-		getDiscord().queue(new DiscordCallable(text.getGuild().getID(), CallType.CHANNEL_MODIFY) {
+		getDiscord().queue(new DiscordCallable(text.getGuild().getLongID(), CallType.CHANNEL_MODIFY) {
 			@Override
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 				text.overrideUserPermissions(user, EnumSet.of(Permissions.READ_MESSAGES), EnumSet.noneOf(Permissions.class));
@@ -161,7 +161,7 @@ public class VoiceTextModule extends DiscordModule {
 		if (!isUserEditable(user, text.getGuild())) {
 			return;
 		}
-		getDiscord().queue(new DiscordCallable(text.getGuild().getID(), CallType.CHANNEL_MODIFY) {
+		getDiscord().queue(new DiscordCallable(text.getGuild().getLongID(), CallType.CHANNEL_MODIFY) {
 			@Override
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 				text.removePermissionsOverride(user);

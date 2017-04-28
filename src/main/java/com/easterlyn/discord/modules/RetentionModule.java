@@ -12,10 +12,16 @@ import com.easterlyn.discord.abstraction.DiscordModule;
 import com.easterlyn.discord.queue.CallPriority;
 import com.easterlyn.discord.queue.CallType;
 import com.easterlyn.discord.queue.DiscordCallable;
+import com.koloboke.function.LongObjPredicate;
+
+import org.apache.http.message.BasicNameValuePair;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import sx.blah.discord.api.internal.DiscordClientImpl;
+import sx.blah.discord.api.internal.DiscordEndpoints;
 import sx.blah.discord.api.internal.DiscordUtils;
+import sx.blah.discord.api.internal.json.objects.MessageObject;
 import sx.blah.discord.handle.impl.obj.Channel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -24,7 +30,6 @@ import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MessageList;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
@@ -47,7 +52,6 @@ public class RetentionModule extends DiscordModule {
 
 		public RetentionData(Channel channel) {
 			this.channel = channel;
-			this.channel.getMessages().setCacheCapacity(MessageList.UNLIMITED_CAPACITY);
 			this.lockDeletion = new AtomicBoolean();
 			this.lockPopulation = new AtomicBoolean();
 			this.nextPopulate = System.currentTimeMillis() + REPOPULATE_AFTER;
@@ -63,8 +67,7 @@ public class RetentionModule extends DiscordModule {
 				if (!lockPopulation.get() || nextPopulate < System.currentTimeMillis()) {
 					lockPopulation.set(true);
 					nextPopulate = System.currentTimeMillis() + REPOPULATE_AFTER;
-					channel.getMessages().setCacheCapacity(0);
-					channel.getMessages().setCacheCapacity(MessageList.UNLIMITED_CAPACITY);
+					this.channel.messages.clear();
 					queuePopulation(retentionDuration);
 					return;
 				}
@@ -75,12 +78,18 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		private void queuePopulation(long retentionDuration) {
-			getDiscord().queue(new DiscordCallable(this.channel.getGuild().getID(), CallType.MESSAGE_POPULATE) {
+			getDiscord().queue(new DiscordCallable(this.channel.getGuild().getLongID(), CallType.MESSAGE_POPULATE) {
 				@Override
 				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 					try {
-						final int startSize = channel.getMessages().size();
-						if (channel.getMessages().load(100)) {
+						final int startSize = channel.getInternalCacheCount();
+						Long before = null;
+						synchronized (channel.messages) {
+							if (channel.messages.size() > 0) {
+								before = channel.messages.stream().mapToLong(message -> message.getLongID()).min().getAsLong();
+							}
+						}
+						if (addHistory(before, 100).length > 0) {
 
 							// Delete as soon as some messages are loaded, no need to wait.
 							queueDeletion(retentionDuration);
@@ -89,7 +98,7 @@ public class RetentionModule extends DiscordModule {
 							 * If under 100 messages were added, stop checking. This should not be
 							 * affected by deletion, as it all runs on the same thread.
 							 */
-							if (startSize + 100 > channel.getMessages().size()) {
+							if (startSize + 100 > channel.getInternalCacheCount()) {
 								return;
 							}
 
@@ -114,19 +123,51 @@ public class RetentionModule extends DiscordModule {
 			});
 		}
 
+		/**
+		 * @see {@link sx.blah.discord.handle.impl.obj.Channel#requestHistory(Long before, int limit)}
+		 */
+		private IMessage[] addHistory(Long before, int limit) {
+			DiscordUtils.checkPermissions(this.channel.getClient(), this.channel,
+					EnumSet.of(Permissions.READ_MESSAGES, Permissions.READ_MESSAGE_HISTORY));
+			String queryParams = "?limit=" + limit;
+			if (before != null) {
+				queryParams = queryParams + "&before=" + Long.toUnsignedString(before.longValue());
+			}
+
+			MessageObject[] messages = ((DiscordClientImpl) this.channel.getClient()).REQUESTS.GET
+					.makeRequest(DiscordEndpoints.CHANNELS + this.channel.getLongID() + "/messages" + queryParams,
+							MessageObject[].class, new BasicNameValuePair[0]);
+			if (messages.length == 0) {
+				return new IMessage[0];
+			} else {
+				IMessage[] messageObjs = new IMessage[messages.length];
+
+				synchronized (this.channel.messages) { // Jikoo: Prevent potential CME if message is cached
+					for (int i = 0; i < messages.length; ++i) {
+						IMessage message = DiscordUtils.getMessageFromJSON(this.channel, messages[i]);
+						if (message != null) {
+							messageObjs[i] = message;
+							this.channel.messages.putIfAbsent(message.getLongID(), () -> message);
+						}
+					}
+				}
+
+				return messageObjs;
+			}
+		}
+
 		private void queueDeletion(long retentionDuration) {
-			if (this.lockDeletion.get() || this.channel.getMessages().isEmpty()) {
+			if (this.lockDeletion.get() || this.channel.getInternalCacheCount() == 0) {
 				return;
 			}
 
 			this.lockDeletion.set(true);
 
-			getDiscord().queue(new DiscordCallable(this.channel.getGuild().getID(), CallType.BULK_DELETE) {
+			getDiscord().queue(new DiscordCallable(this.channel.getGuild().getLongID(), CallType.BULK_DELETE) {
 				@Override
 				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 					LocalDateTime retention = LocalDateTime.now().minusSeconds(retentionDuration);
-					MessageList list = channel.getMessages();
-					if (list.isEmpty()) {
+					if (channel.getInternalCacheCount() < 1) {
 						lockDeletion.set(false);
 						return;
 					}
@@ -135,28 +176,24 @@ public class RetentionModule extends DiscordModule {
 
 					LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(12);
 
-					for (int i = list.size() - 1; messages.size() < 100 && i >= 0; --i) {
-						IMessage message = list.get(i);
+					channel.messages.forEachWhile(new LongObjPredicate<IMessage>(){
+						@Override
+						public boolean test(long messageID, IMessage message) {
+							if (message.isPinned() || message.isDeleted()|| message.getTimestamp().isAfter(retention)) {
+								// Message not eligible for retention.
+								return false;
+							}
+							// FIXME Discord is throwing its 14 days or less on most bulk deletes
+							if (true || message.getTimestamp().isAfter(bulkDeleteableBefore)) {
+								// Message is too old to be bulk deleted. Queue at LOWEST so bulk deletes run sooner.
+								getDiscord().queueMessageDeletion(CallPriority.LOWEST, message);
+								return false;
+							}
 
-						if (message.getTimestamp().isAfter(retention)) {
-							// Message not eligible for retention, search complete.
-							break;
+							messages.add(message);
+							return messages.size() > 99;
 						}
-
-						if (message.isPinned()) {
-							// Don't delete pinned messages.
-							continue;
-						}
-
-						// FIXME Discord is throwing its 14 days or less on most bulk deletes
-						if (true || message.getTimestamp().isAfter(bulkDeleteableBefore)) {
-							// Message is too old to be bulk deleted. Queue at LOWEST so bulk deletes run sooner.
-							getDiscord().queueMessageDeletion(CallPriority.LOWEST, message);
-							continue;
-						}
-
-						messages.add(message);
-					}
+					});
 
 					// No eligible messages.
 					if (messages.isEmpty()) {
@@ -179,7 +216,7 @@ public class RetentionModule extends DiscordModule {
 					}
 
 					try {
-						list.bulkDelete(messages);
+						channel.bulkDelete(messages);
 					} catch (Exception e) {
 						if (!(e instanceof RateLimitException)) {
 							lockDeletion.set(false);
@@ -196,7 +233,15 @@ public class RetentionModule extends DiscordModule {
 
 					lockDeletion.set(false);
 
-					if (!list.isEmpty() && list.get(list.size() - 1).getTimestamp().isAfter(retention)) {
+
+					Long before = null;
+					synchronized (channel.messages) {
+						if (channel.messages.size() > 0) {
+							before = channel.messages.stream().mapToLong(message -> message.getLongID()).min().getAsLong();
+						}
+					}
+
+					if (before != null && channel.messages.get(before).getTimestamp().isAfter(retention)) {
 						queueDeletion(retentionDuration);
 					}
 				}
@@ -205,7 +250,7 @@ public class RetentionModule extends DiscordModule {
 
 	}
 
-	private final Map<String, RetentionData> channelData;
+	private final Map<Long, RetentionData> channelData;
 
 	public RetentionModule(Discord discord) {
 		super(discord);
@@ -219,13 +264,13 @@ public class RetentionModule extends DiscordModule {
 
 	public void setRetention(IGuild guild, Long duration) {
 		synchronized (getDiscord().getDatastore()) {
-			getDiscord().getDatastore().set("retention." + guild.getID() + ".default", duration);
+			getDiscord().getDatastore().set("retention." + guild.getLongID() + ".default", duration);
 		}
 	}
 
 	public void setRetention(IChannel channel, Long duration) {
 		synchronized (getDiscord().getDatastore()) {
-			getDiscord().getDatastore().set("retention." + channel.getGuild().getID() + '.' + channel.getID(), duration);
+			getDiscord().getDatastore().set("retention." + channel.getGuild().getLongID() + '.' + channel.getLongID(), duration);
 		}
 	}
 
@@ -235,18 +280,25 @@ public class RetentionModule extends DiscordModule {
 			return;
 		}
 		ConfigurationSection retention = getDiscord().getDatastore().getConfigurationSection("retention");
-		for (String guildID : retention.getKeys(false)) {
-			if (!retention.isConfigurationSection(guildID)) {
+		for (String guildIDString : retention.getKeys(false)) {
+			if (!retention.isConfigurationSection(guildIDString)) {
+				continue;
+			}
+			long guildID;
+			try {
+				guildID = Long.valueOf(guildIDString);
+			} catch (NumberFormatException e) {
+				// Invalid ID
 				continue;
 			}
 			IGuild guild = this.getDiscord().getClient().getGuildByID(guildID);
 			if (guild == null) {
 				continue;
 			}
-			ConfigurationSection retentionGuild = retention.getConfigurationSection(guildID);
+			ConfigurationSection retentionGuild = retention.getConfigurationSection(guildIDString);
 			long defaultRetention = retentionGuild.getLong("default", -1);
 			for (IChannel channel : guild.getChannels()) {
-				doRetention(channel, retentionGuild.getLong(channel.getID(), defaultRetention));
+				doRetention(channel, retentionGuild.getLong(String.valueOf(channel.getLongID()), defaultRetention));
 			}
 		}
 	}
@@ -272,14 +324,14 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		RetentionData data;
-		if (channelData.containsKey(channel.getID())) {
-			data = channelData.get(channel.getID());
+		if (channelData.containsKey(channel.getLongID())) {
+			data = channelData.get(channel.getLongID());
 		} else {
 			if (channel == null || channel instanceof IPrivateChannel || channel instanceof IVoiceChannel) {
 				return;
 			}
 			data = new RetentionData((Channel) channel);
-			this.channelData.put(channel.getID(), data);
+			this.channelData.put(channel.getLongID(), data);
 		}
 
 		data.doRetention(duration);

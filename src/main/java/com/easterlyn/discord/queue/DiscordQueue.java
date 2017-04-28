@@ -18,8 +18,8 @@ import sx.blah.discord.util.RateLimitException;
 public class DiscordQueue extends Thread {
 
 	private final Discord discord;
-	private final Map<String, Map<CallType, Queue<DiscordCallable>>> guildQueues;
-	private final Map<String, Map<CallType, Long>> rateLimiting;
+	private final Map<Long, Map<CallType, Queue<DiscordCallable>>> guildQueues;
+	private final Map<Long, Map<CallType, Long>> rateLimiting;
 	private final long delay;
 
 	private long globalRateLimit = 0;
@@ -89,7 +89,7 @@ public class DiscordQueue extends Thread {
 		}
 	}
 
-	private void poll(String guild, CallType type, Queue<DiscordCallable> queue) {
+	private void poll(long guild, CallType type, Queue<DiscordCallable> queue) {
 
 		if (queue.isEmpty() || !discord.getClient().isReady()) {
 			return;
@@ -133,7 +133,7 @@ public class DiscordQueue extends Thread {
 		this.addRateLimit(guild, type, type.getRateLimit() + 100L);
 	}
 
-	private void addRateLimit(String guild, CallType type, Long duration) {
+	private void addRateLimit(Long guild, CallType type, Long duration) {
 		this.rateLimiting.compute(guild, (entryGuild, entryCallTypeMap) -> {
 			if (entryCallTypeMap == null) {
 				entryCallTypeMap = new ConcurrentHashMap<>();
@@ -143,7 +143,7 @@ public class DiscordQueue extends Thread {
 		});
 	}
 
-	private boolean isRateLimited(String guild, CallType call) {
+	private boolean isRateLimited(Long guild, CallType call) {
 		return this.rateLimiting.containsKey(guild) && this.rateLimiting.get(guild)
 				.getOrDefault(call, 0L) >= System.currentTimeMillis();
 	}

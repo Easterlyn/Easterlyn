@@ -91,14 +91,14 @@ public class AetherCommand extends EasterlynAsynchronousCommand {
 				public void run() {
 					Bukkit.getPluginManager().callEvent(event);
 					if (!event.isCancelled() || event.isGlobalCancelled()) {
-						discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannel());
+						discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannelIDs());
 					}
 				}
 			}.runTaskAsynchronously(getPlugin());
 		} else {
 			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled() || event.isGlobalCancelled()) {
-				discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannel());
+				discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannelIDs());
 			}
 		}
 	}

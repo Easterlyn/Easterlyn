@@ -12,9 +12,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 
 /**
@@ -25,7 +24,7 @@ import sx.blah.discord.handle.obj.IUser;
 public class DiscordMessageReceivedListener implements IListener<MessageReceivedEvent> {
 
 	private final Discord discord;
-	private final Cache<String, Boolean> warnings;
+	private final Cache<Long, Boolean> warnings;
 
 	private MinecraftModule minecraft;
 
@@ -43,8 +42,13 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			// Don't know if it's a problem with Discord4J yet
 			return;
 		}
-		if (author.getID().equals(discord.getClient().getOurUser().getID())) {
+
+		if (discord.getClient().getOurUser().equals(author)) {
 			// More jDiscord handling - no clue if MessageReceived is fired when our messages are acknowledged
+			return;
+		}
+
+		if (author.isBot()) {
 			return;
 		}
 
@@ -53,23 +57,23 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			String register = msg.substring(6);
 			Object uuid = discord.getAuthCodes().getIfPresent(register);
 			if (uuid == null || !(uuid instanceof UUID)) {
-				discord.postMessage(discord.getBotName(), "Invalid registration code!", event.getMessage().getChannel().getID());
+				discord.postMessage(discord.getBotName(), "Invalid registration code!", event.getMessage().getChannel().getLongID());
 				return;
 			}
-			discord.postMessage(discord.getBotName(), "Registration complete!", event.getMessage().getChannel().getID());
+			discord.postMessage(discord.getBotName(), "Registration complete!", event.getMessage().getChannel().getLongID());
 			discord.getAuthCodes().invalidate(uuid);
 			discord.getAuthCodes().invalidate(register);
 			discord.addLink((UUID) uuid, author);
 			return;
 		}
 		IChannel channel = event.getMessage().getChannel();
-		boolean main = discord.getMainChannel().equals(channel.getID());
+		boolean main = !channel.isPrivate() && discord.getMainChannelID(channel.getGuild()) == channel.getLongID();
 		boolean command = msg.length() > 0 && msg.charAt(0) == '/';
 		if (!main && !command) {
 			return;
 		}
 		if (command) {
-			if (!(channel instanceof IPrivateChannel)) {
+			if (!channel.isPrivate()) {
 				discord.queueMessageDeletion(CallPriority.MEDIUM, event.getMessage());
 			}
 			if (discord.handleDiscordCommand(msg, author, channel)) {
@@ -81,13 +85,13 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			if (main && !command) {
 				discord.queueMessageDeletion(CallPriority.MEDIUM, event.getMessage());
 			}
-			String id = author.getID();
+			long id = author.getLongID();
 			if (warnings.getIfPresent(id) != null) {
 				return;
 			}
 			warnings.put(id, true);
-			discord.postMessage(discord.getBotName(), "<@" + id
-					+ ">, you must run /link in Minecraft to use this feature!", channel.getID());
+			discord.postMessage(discord.getBotName(), author.mention()
+					+ ", you must run /link in Minecraft to use this feature!", channel.getLongID());
 			return;
 		}
 		if (command) {

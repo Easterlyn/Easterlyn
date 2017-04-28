@@ -1297,4 +1297,17 @@ public class DummyPlayer implements Player {
 		return 0;
 	}
 
+	@Override
+	public int getCooldown(Material arg0) {
+		return 0;
+	}
+
+	@Override
+	public boolean hasCooldown(Material arg0) {
+		return false;
+	}
+
+	@Override
+	public void setCooldown(Material arg0, int arg1) {}
+
 }

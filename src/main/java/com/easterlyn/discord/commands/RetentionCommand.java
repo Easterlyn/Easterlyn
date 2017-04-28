@@ -35,12 +35,12 @@ public class RetentionCommand extends DiscordCommand {
 		try {
 			module = getDiscord().getModule(RetentionModule.class);
 		} catch (IllegalArgumentException e) {
-			getDiscord().postMessage(getDiscord().getBotName(), "Retention is not enabled.", channel.getID());
+			getDiscord().postMessage(getDiscord().getBotName(), "Retention is not enabled.", channel.getLongID());
 			return true;
 		}
 		if (channel instanceof IPrivateChannel || channel instanceof IVoiceChannel) {
 			getDiscord().postMessage(getDiscord().getBotName(),
-					"You cannot set a retention policy on private messages.", channel.getID());
+					"You cannot set a retention policy on private messages.", channel.getLongID());
 			return true;
 		}
 		if (args.length < 1) {
@@ -64,7 +64,7 @@ public class RetentionCommand extends DiscordCommand {
 			} else {
 				module.setRetention(channel, null);
 			}
-			getDiscord().postMessage(getDiscord().getBotName(), "Channel retention unset.", channel.getID());
+			getDiscord().postMessage(getDiscord().getBotName(), "Channel retention unset.", channel.getLongID());
 			return true;
 		}
 		Pair<String, Long> pair;
@@ -81,7 +81,7 @@ public class RetentionCommand extends DiscordCommand {
 		}
 		this.getDiscord().postMessage(getDiscord().getBotName(),
 				(guild ? "Guild" : "Channel") + " retention set to " + seconds + " seconds.",
-				channel.getID());
+				channel.getLongID());
 		return true;
 	}
 

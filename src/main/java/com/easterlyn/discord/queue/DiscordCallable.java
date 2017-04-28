@@ -11,7 +11,7 @@ import sx.blah.discord.util.RateLimitException;
  */
 public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 
-	private final String guildID;
+	private final Long guildID;
 	private final CallType callType;
 	private final long queueTime;
 
@@ -19,7 +19,7 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 	private DiscordCallable chain;
 	private int retries;
 
-	public DiscordCallable(String guildID, CallType callType) {
+	public DiscordCallable(Long guildID, CallType callType) {
 		this.guildID = guildID;
 		this.callType = callType;
 		this.queueTime = System.currentTimeMillis();
@@ -60,7 +60,7 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 		return call;
 	}
 
-	public String getGuildID() {
+	public Long getGuildID() {
 		return this.guildID;
 	}
 

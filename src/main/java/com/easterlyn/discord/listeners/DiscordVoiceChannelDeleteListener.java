@@ -4,7 +4,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.modules.VoiceTextModule;
 
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.VoiceChannelDeleteEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.VoiceChannelDeleteEvent;
 
 /**
  * Listener for VoiceChannelDeleteEvents.

@@ -4,7 +4,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.modules.VoiceTextModule;
 
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.UserVoiceChannelLeaveEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
 
 /**
  * Listener for UserVoiceChannelLeaveEvents.
@@ -23,7 +23,7 @@ public class DiscordUserVoiceChannelLeaveListener implements IListener<UserVoice
 
 	@Override
 	public void handle(UserVoiceChannelLeaveEvent event) {
-		getVoiceTextModule().handleUserLeave(event.getChannel(), event.getUser());
+		getVoiceTextModule().handleUserLeave(event.getVoiceChannel(), event.getUser());
 	}
 
 	private VoiceTextModule getVoiceTextModule() {

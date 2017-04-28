@@ -4,7 +4,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.modules.VoiceTextModule;
 
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.UserVoiceChannelJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelJoinEvent;
 
 /**
  * Listener for UserVoiceChannelJoinEvents.
@@ -23,7 +23,7 @@ public class DiscordUserVoiceChannelJoinListener implements IListener<UserVoiceC
 
 	@Override
 	public void handle(UserVoiceChannelJoinEvent event) {
-		getVoiceTextModule().handleUserJoin(event.getChannel(), event.getUser());
+		getVoiceTextModule().handleUserJoin(event.getVoiceChannel(), event.getUser());
 	}
 
 	private VoiceTextModule getVoiceTextModule() {

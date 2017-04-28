@@ -35,13 +35,13 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 	private void postReady() {
 		StringBuilder sb = new StringBuilder();
 		this.discord.getClient().getGuilds().forEach(guild -> {
-			discord.getLogger().info("Available channels in " + guild.getName() + " (" + guild.getID() + "):");
+			discord.getLogger().info("Available channels in " + guild.getName() + " (" + guild.getLongID() + "):");
 
 			if (sb.length() > 0) {
 				sb.delete(0, sb.length());
 			}
 
-			guild.getChannels().forEach(channel -> sb.append(channel.getName()).append(':').append(channel.getID()).append(' '));
+			guild.getChannels().forEach(channel -> sb.append(channel.getName()).append(':').append(channel.getLongID()).append(' '));
 
 			if (sb.length() > 0) {
 				sb.deleteCharAt(sb.length() - 1);

@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -61,7 +60,6 @@ import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
@@ -84,7 +82,7 @@ public class Discord extends Module {
 	private final StringBuffer logBuffer;
 
 	private Language lang;
-	private String botName, token, channelGeneral, channelMain, channelLog, channelReports;
+	private String botName, token;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
 	private DiscordQueue drainQueueThread;
@@ -128,10 +126,6 @@ public class Discord extends Module {
 		this.lang = getPlugin().getModule(Language.class);
 		botName = getConfig().getString("discord.username", "Sbot");
 		token = getConfig().getString("discord.token");
-		channelGeneral = getConfig().getString("discord.chat.general");
-		channelMain = getConfig().getString("discord.chat.main");
-		channelLog = getConfig().getString("discord.chat.log");
-		channelReports = getConfig().getString("discord.chat.reports");
 
 		if (token == null) {
 			getLogger().severe("Unable to connect to Discord, no connection details provided!");
@@ -140,7 +134,7 @@ public class Discord extends Module {
 		}
 
 		try {
-			this.client = new ClientBuilder().withToken(token).build();
+			this.client = new ClientBuilder().withToken(token).setMaxMessageCacheCount(-1).build();
 		} catch (DiscordException e) {
 			e.printStackTrace();
 			this.disable();
@@ -269,10 +263,6 @@ public class Discord extends Module {
 
 		botName = getConfig().getString("discord.username", "Sbot");
 		token = getConfig().getString("discord.token");
-		channelGeneral = getConfig().getString("discord.chat.general");
-		channelMain = getConfig().getString("discord.chat.main");
-		channelLog = getConfig().getString("discord.chat.log");
-		channelReports = getConfig().getString("discord.chat.reports");
 
 		return getConfig();
 	}
@@ -342,7 +332,12 @@ public class Discord extends Module {
 				if (logBuffer.length() > 0) {
 					long now = System.currentTimeMillis();
 					if (now > lastLog + 30000 || logBuffer.length() > 1500) {
-						addMessageToQueue(getLogChannel(), getBotName(), logBuffer.toString());
+						for (long channelID : getLogChannelIDs()) {
+							IChannel channel = getClient().getChannelByID(channelID);
+							if (channel != null) {
+								addMessageToQueue(channel, getBotName(), logBuffer.toString());
+							}
+						}
 						logBuffer.delete(0, logBuffer.length());
 						lastLog = now;
 					}
@@ -409,10 +404,10 @@ public class Discord extends Module {
 				List<IMessage> messageList = new ArrayList<>();
 				messageList.addAll(subList);
 				subList.clear();
-				this.queue(new DiscordCallable(entry.getKey().getLeft().getGuild().getID(), CallType.BULK_DELETE) {
+				this.queue(new DiscordCallable(entry.getKey().getLeft().getGuild().getLongID(), CallType.BULK_DELETE) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-						entry.getKey().getLeft().getMessages().bulkDelete(messageList);
+						entry.getKey().getLeft().bulkDelete(messageList);
 					}
 				}.withRetries(1));
 			}
@@ -420,7 +415,7 @@ public class Discord extends Module {
 	}
 
 	private void queueSingleDelete(CallPriority priority, IMessage message) {
-		drainQueueThread.queue(new DiscordCallable(message.getGuild().getID(), CallType.MESSAGE_DELETE) {
+		drainQueueThread.queue(new DiscordCallable(message.getGuild().getLongID(), CallType.MESSAGE_DELETE) {
 			@Override
 			public void call() throws MissingPermissionsException, RateLimitException, DiscordException {
 				message.delete();
@@ -432,20 +427,69 @@ public class Discord extends Module {
 		return this.client;
 	}
 
-	public String getGeneralChannel() {
-		return this.channelGeneral;
+	public Long getGeneralChannelID(IGuild guild) {
+		return this.getChannelID(guild, "general");
 	}
 
-	public String getMainChannel() {
-		return this.channelMain;
+	public Collection<Long> getGeneralChannelIDs() {
+		return this.getChannelIDs("general");
 	}
 
-	public String getLogChannel() {
-		return this.channelLog;
+	public Long getMainChannelID(IGuild guild) {
+		return this.getChannelID(guild, "main");
 	}
 
-	public String getReportChannel() {
-		return this.channelReports;
+	public Collection<Long> getMainChannelIDs() {
+		return this.getChannelIDs("main");
+	}
+
+	public Long getLogChannelID(IGuild guild) {
+		return this.getChannelID(guild, "log");
+	}
+
+	public Collection<Long> getLogChannelIDs() {
+		return this.getChannelIDs("log");
+	}
+
+	public Long getReportChannelID(IGuild guild) {
+		return this.getChannelID(guild, "report");
+	}
+
+	public Collection<Long> getReportChannelIDs() {
+		return this.getChannelIDs("report");
+	}
+
+	private Long getChannelID(IGuild guild, String type) {
+		return this.getConfig().getLong("guilds." + guild.getLongID() + ".channels." + type);
+	}
+
+	private Collection<Long> getChannelIDs(String type) {
+		List<Long> list = new ArrayList<>();
+		for (String guildIDString : this.getConfig().getConfigurationSection("guilds").getKeys(false)) {
+
+			// Parse guild ID
+			long guildID;
+			try {
+				guildID = Long.parseLong(guildIDString);
+			} catch (NumberFormatException e) {
+				continue;
+			}
+
+			IGuild guild = this.getClient().getGuildByID(guildID);
+			// Ensure valid guild
+			if (guild == null) {
+				continue;
+			}
+
+			long channelID = this.getChannelID(guild, type);
+			// Ensure channel set
+			if (channelID == 0) {
+				continue;
+			}
+
+			list.add(channelID);
+		}
+		return list;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -458,29 +502,39 @@ public class Discord extends Module {
 	}
 
 	public void log(String message) {
-		postMessage(this.getBotName(), message, getLogChannel());
+		postMessage(this.getBotName(), message, getLogChannelIDs());
 	}
 
 	public void postMessage(Message message, boolean global) {
 		if (global) {
 			postMessage((message.isThirdPerson() ? "* " : "") + message.getSenderName(),
-					message.getDiscordMessage(), getMainChannel());
+					message.getDiscordMessage(), getMainChannelIDs());
 		}
-		postMessage(this.getBotName(), message.getConsoleMessage(), getLogChannel());
+		postMessage(this.getBotName(), message.getConsoleMessage(), getLogChannelIDs());
 	}
 
 	public void postMessage(String name, String message, boolean global) {
 		if (global) {
-			postMessage(name, message, getMainChannel(), getLogChannel());
+			Collection<Long> channels = getMainChannelIDs();
+			channels.addAll(getLogChannelIDs());
+			postMessage(name, message, channels);
 		} else {
-			postMessage(name, message, getLogChannel());
+			postMessage(name, message, getLogChannelIDs());
 		}
 	}
 
-	public void postMessage(String name, String message, String... channels) {
-		if (!isEnabled()) {
+	public void postMessage(String name, String message, Collection<Long> channelIDs) {
+		if (channelIDs.isEmpty()) {
 			return;
 		}
+		this.postMessage(name, message, channelIDs.toArray(new Long[channelIDs.size()]));
+	}
+
+	public void postMessage(String name, String message, Long... channelIDs) {
+		if (!isEnabled() || channelIDs.length == 0) {
+			return;
+		}
+
 		name = ChatColor.stripColor(name);
 		// TODO allow formatting codes in any chat? Could support markdown rather than &codes.
 		message = ChatColor.stripColor(message);
@@ -496,8 +550,22 @@ public class Discord extends Module {
 				nextIndex = message.length();
 			}
 			String nextMessage = message.substring(index, nextIndex);
-			for (String channel : channels) {
-				if (channel.equals(getLogChannel())) {
+			for (Long channelID : channelIDs) {
+				IChannel channel = this.getClient().getChannelByID(channelID);
+				if (channel == null) {
+					IUser user = client.getUserByID(channelID);
+					if (user == null) {
+						return;
+					}
+					try {
+						channel = client.getOrCreatePMChannel(user);
+					} catch (Exception e) {
+						e.printStackTrace();
+						return;
+					}
+					return;
+				}
+				if (!channel.isPrivate() && channelID == this.getLogChannelID(channel.getGuild())) {
 					long now = System.currentTimeMillis();
 					if (logBuffer.length() != 0) {
 						logBuffer.append('\n');
@@ -515,33 +583,20 @@ public class Discord extends Module {
 		}
 	}
 
-	private void addMessageToQueue(final String channel, final String name, final String message) { // TODO return DiscordCallable for post-message queuing
+	private void addMessageToQueue(final IChannel channel, final String name, final String message) { // TODO return DiscordCallable for post-message queuing
 		if (drainQueueThread == null) {
 			// Bot has not finished logging in. Forget it, it's just some chat.
 			return;
 		}
-		IChannel iChannel = client.getChannelByID(channel);
-		if (iChannel == null) {
-			IUser user = client.getUserByID(channel);
-			if (user == null) {
-				return;
-			}
-			try {
-				iChannel = client.getOrCreatePMChannel(user);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
-			}
-		}
-		final IChannel group = iChannel;
 		drainQueueThread.queue(new DiscordCallable(
-				group instanceof IPrivateChannel ? group.getID() : group.getGuild().getID(),
+				channel.isPrivate() ? channel.getLongID() : channel.getGuild().getLongID(),
 				CallType.MESSAGE_SEND) {
 			@Override
 			public void call()
 					throws MissingPermissionsException, RateLimitException, DiscordException {
 				StringBuilder builder = new StringBuilder();
-				if (channel.equals(getMainChannel()) && !name.equals(getBotName())) {
+				if (!channel.isPrivate() && channel.equals(getMainChannelID(channel.getGuild()))
+						&& !name.equals(getBotName())) {
 					builder.append("**").append(toEscape.matcher(name).replaceAll("\\\\$1"));
 					if (!name.startsWith("* ")) {
 						builder.append(':');
@@ -550,7 +605,7 @@ public class Discord extends Module {
 				}
 				builder.append(message);
 				try {
-					group.sendMessage(builder.toString());
+					channel.sendMessage(builder.toString());
 				} catch (NoSuchElementException e) {
 					// Internal Discord fault, don't log.
 					return;
@@ -560,7 +615,7 @@ public class Discord extends Module {
 	}
 
 	public void postReport(String message) {
-		postMessage(this.getBotName(), message, getReportChannel());
+		postMessage(this.getBotName(), message, getReportChannelIDs());
 	}
 
 	/**
@@ -599,14 +654,14 @@ public class Discord extends Module {
 				}
 			}
 
-			String path = "unlinked." + guild.getID() + '.'  + user.getID();
+			String path = "unlinked." + guild.getLongID() + '.'  + user.getLongID();
 
 			if (!discordData.isSet(path)) {
 				// 1 day grace period
 				discordData.set(path, now + 86400000);
 				this.postMessage(this.getBotName(),
 						lang.getValue("discord.link.mandate").replace("{USER}", user.mention()),
-						this.getGeneralChannel());
+						this.getGeneralChannelID(guild));
 				return;
 			}
 
@@ -614,7 +669,7 @@ public class Discord extends Module {
 
 			if (kickTime <= now) {
 				discordData.set(path, null);
-				queue(new DiscordCallable(guild.getID(), CallType.GUILD_USER_KICK) {
+				queue(new DiscordCallable(guild.getLongID(), CallType.GUILD_USER_KICK) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						guild.kickUser(user);
@@ -637,9 +692,13 @@ public class Discord extends Module {
 			// Given player object, find user ID from UUID
 			String uuidString = uuid.toString();
 			for (String path : discordData.getConfigurationSection("users").getKeys(false)) {
-				if (uuidString.equals(discordData.getString("users." + path))) {
-					user = getClient().getUserByID(path);
-					break;
+				try {
+					if (uuidString.equals(discordData.getString("users." + path))) {
+						user = getClient().getUserByID(Long.parseLong(path));
+						break;
+					}
+				} catch (NumberFormatException e) {
+					continue;
 				}
 			}
 		}
@@ -664,7 +723,7 @@ public class Discord extends Module {
 		final Player player = loadedPlayer;
 
 		for (IGuild guild : this.getClient().getGuilds()) {
-			ConfigurationSection guildRoles = this.getConfig().getConfigurationSection("roles." + guild.getID());
+			ConfigurationSection guildRoles = this.getConfig().getConfigurationSection("roles." + guild.getLongID());
 			if (guildRoles == null) {
 				continue;
 			}
@@ -674,7 +733,7 @@ public class Discord extends Module {
 					continue;
 				}
 
-				String roleID = guildRoles.getString(roleName);
+				long roleID = guildRoles.getLong(roleName);
 				IRole role = guild.getRoleByID(roleID);
 				if (role == null) {
 					continue;
@@ -691,7 +750,7 @@ public class Discord extends Module {
 				}
 	
 				IRole[] roleArray = roles.toArray(new IRole[roles.size()]);
-				this.queue(new DiscordCallable(guild.getID(), CallType.GUILD_USER_ROLE) {
+				this.queue(new DiscordCallable(guild.getLongID(), CallType.GUILD_USER_ROLE) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						guild.editUserRoles(iuser, roleArray);
@@ -704,9 +763,9 @@ public class Discord extends Module {
 			}
 	
 			if (player.getName() != null) {
-				Optional<String> name = iuser.getNicknameForGuild(guild);
-				if (!name.isPresent() || !player.getName().equals(name.get())) {
-					this.queue(new DiscordCallable(guild.getID(), CallType.GUILD_USER_NICKNAME) {
+				String name = iuser.getNicknameForGuild(guild);
+				if (!player.getName().equals(name)) {
+					this.queue(new DiscordCallable(guild.getLongID(), CallType.GUILD_USER_NICKNAME) {
 						@Override
 						public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 							guild.setUserNickname(iuser, player.getName());
@@ -722,11 +781,11 @@ public class Discord extends Module {
 	}
 
 	public boolean isLinked(IUser user) {
-		return discordData.isString("users." + user.getID());
+		return discordData.isString("users." + user.getLongID());
 	}
 
 	public UUID getUUIDOf(IUser user) {
-		String uuidString = discordData.getString("users." + user.getID());
+		String uuidString = discordData.getString("users." + user.getLongID());
 		if (uuidString == null) {
 			return null;
 		}
@@ -734,7 +793,7 @@ public class Discord extends Module {
 	}
 
 	public void addLink(UUID uuid, IUser user) {
-		discordData.set("users." + user.getID(), uuid.toString());
+		discordData.set("users." + user.getLongID(), uuid.toString());
 
 		updateLinkedUser(user, uuid);
 	}

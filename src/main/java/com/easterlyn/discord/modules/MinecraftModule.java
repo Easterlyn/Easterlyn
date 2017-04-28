@@ -41,7 +41,7 @@ public class MinecraftModule extends DiscordModule {
 	private final Users users;
 	private final ChannelManager manager;
 	private final MessageBuilder builder;
-	private final Pattern mention = Pattern.compile("<([@#])(.+?)>");
+	private final Pattern mention = Pattern.compile("<([@#])(\\d+?)>");
 
 	public MinecraftModule(Discord discord) {
 		super(discord);
@@ -67,7 +67,7 @@ public class MinecraftModule extends DiscordModule {
 
 	public void handleCommand(DiscordPlayer player, String command, IChannel channel) {
 		if (player.hasPendingCommand()) {
-			getDiscord().postMessage(getDiscord().getBotName(), "You already have a pending command. Please be patient.", channel.getID());
+			getDiscord().postMessage(getDiscord().getBotName(), "You already have a pending command. Please be patient.", channel.getLongID());
 			return;
 		}
 		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getDiscord().getPlugin(),
@@ -96,7 +96,7 @@ public class MinecraftModule extends DiscordModule {
 					count++;
 				}
 				if (future.isCancelled() || !future.isDone()) {
-					getDiscord().postMessage(getDiscord().getBotName(), "Command " + command + " from " + player.getName() + " timed out.", channel.getID());
+					getDiscord().postMessage(getDiscord().getBotName(), "Command " + command + " from " + player.getName() + " timed out.", channel.getLongID());
 					player.stopMessages();
 					return;
 				}
@@ -107,7 +107,7 @@ public class MinecraftModule extends DiscordModule {
 				if (message.isEmpty()) {
 					return;
 				}
-				getDiscord().postMessage(getDiscord().getBotName(), message, channel.getID());
+				getDiscord().postMessage(getDiscord().getBotName(), message, channel.getLongID());
 			}
 		}.runTaskAsynchronously(getDiscord().getPlugin());
 	}
@@ -119,11 +119,11 @@ public class MinecraftModule extends DiscordModule {
 			boolean delete = false;
 			if (newline > 0) {
 				getDiscord().postMessage(getDiscord().getBotName(), "Newlines are not allowed in messages to Minecraft, "
-						+ message.getAuthor().mention(), message.getChannel().getID());
+						+ message.getAuthor().mention(), message.getChannel().getLongID());
 				delete = true;
 			} else if (content.length() > 255) {
 				getDiscord().postMessage(getDiscord().getBotName(), "Messages from Discord may not be over 255 characters, "
-						+ message.getAuthor().mention(), message.getChannel().getID());
+						+ message.getAuthor().mention(), message.getChannel().getLongID());
 				delete = true;
 			}
 			if (delete) {
@@ -151,18 +151,25 @@ public class MinecraftModule extends DiscordModule {
 		StringBuilder sb = new StringBuilder();
 		int lastMatch = 0;
 		while (matcher.find()) {
-			sb.append(message.substring(lastMatch, matcher.start())).append(matcher.group(1));
-			String id = matcher.group(2);
-			IUser user = getDiscord().getClient().getUserByID(id);
-			if (user == null) {
-				IChannel channel = getDiscord().getClient().getChannelByID(id);
-				if (channel == null) {
-					sb.append(id);
+			String type = matcher.group(1);
+			sb.append(message.substring(lastMatch, matcher.start())).append(type);
+			long id = Long.parseLong(matcher.group(2));
+			if ("@".equals(type)) {
+				IUser user = getDiscord().getClient().getUserByID(id);
+				if (user != null) {
+					sb.append(user.getName());
 				} else {
+					sb.append(id);
+				}
+			} else if ("#".equals(type)) {
+				IChannel channel = getDiscord().getClient().getChannelByID(id);
+				if (channel != null) {
 					sb.append(channel.getName());
+				} else {
+					sb.append(id);
 				}
 			} else {
-				sb.append(user.getName());
+				sb.append(id);
 			}
 			lastMatch = matcher.end();
 		}

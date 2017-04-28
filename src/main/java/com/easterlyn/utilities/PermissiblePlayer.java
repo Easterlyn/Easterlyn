@@ -1606,4 +1606,19 @@ public class PermissiblePlayer implements Player {
 		return player.getWidth();
 	}
 
+	@Override
+	public int getCooldown(Material material) {
+		return player.getCooldown(material);
+	}
+
+	@Override
+	public boolean hasCooldown(Material material) {
+		return player.hasCooldown(material);
+	}
+
+	@Override
+	public void setCooldown(Material material, int duration) {
+		player.setCooldown(material, duration);
+	}
+
 }
