@@ -489,7 +489,8 @@ public class Discord extends Module {
 		}
 		// Discord is case-sensitive. This prevents an @everyone alert without altering content.
 		message = message.replace("@everyone", "@Everyone").replace("@here", "@Here");
-		for (int index = 0, nextIndex = 2000; index < message.length(); index = nextIndex, nextIndex += 2000) {
+		for (int index = 0, nextIndex = logBuffer.length() > 0 ? 1999 - logBuffer.length() : 2000;
+				index < message.length(); index = nextIndex, nextIndex += 2000) {
 			// TODO: split at logical areas - spaces, dashes, etc. rather than a hard limit
 			if (nextIndex > message.length()) {
 				nextIndex = message.length();
@@ -514,7 +515,7 @@ public class Discord extends Module {
 		}
 	}
 
-	private void addMessageToQueue(final String channel, final String name, final String message) {
+	private void addMessageToQueue(final String channel, final String name, final String message) { // TODO return DiscordCallable for post-message queuing
 		if (drainQueueThread == null) {
 			// Bot has not finished logging in. Forget it, it's just some chat.
 			return;
@@ -579,13 +580,16 @@ public class Discord extends Module {
 	}
 
 	private void updateUnlinkedUser(IUser user) {
-		if (this.isLinked(user) || this.getClient().getOurUser().equals(user)) {
+		if (this.isLinked(user) || this.getClient().getOurUser().equals(user) || user.isBot()) {
 			return;
 		}
 
 		long now = System.currentTimeMillis();
 
 		this.getClient().getGuilds().forEach(guild -> {
+			if (!guild.getUsers().contains(user)) {
+				return;
+			}
 
 			// Check if a user has roles - if they have roles, they're recognized.
 			// N.B.: Discord4J explicitly declares users to have the @everyone role
