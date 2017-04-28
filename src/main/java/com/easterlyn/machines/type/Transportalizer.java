@@ -73,11 +73,13 @@ public class Transportalizer extends Machine {
 		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK);
 		shape.setVectorData(new Vector(-1, 0, 0), m);
 		shape.setVectorData(new Vector(1, 0, 0), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 1); // TODO magic value, add to new MaterialDataValue conversions
 		shape.setVectorData(new Vector(-1, 0, 1), m);
 		shape.setVectorData(new Vector(1, 0, 1), m);
 		shape.setVectorData(new Vector(-1, 2, 1), m);
-		shape.setVectorData(new Vector(0, 2, 1), m);
 		shape.setVectorData(new Vector(1, 2, 1), m);
+		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, Direction.WEST, "quartzpillar");
+		shape.setVectorData(new Vector(0, 2, 1), m);
 		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
 		shape.setVectorData(new Vector(0, 0, 1), m);
 		m = shape.new MaterialDataValue(Material.STAINED_GLASS);
@@ -85,15 +87,17 @@ public class Transportalizer extends Machine {
 		m = shape.new MaterialDataValue(Material.WOOD_BUTTON, Direction.NORTH, "button");
 		shape.setVectorData(new Vector(-1, 2, 0), m);
 		shape.setVectorData(new Vector(1, 2, 0), m);
-		m = shape.new MaterialDataValue(Material.STEP, (byte) 7);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "stair");
 		shape.setVectorData(new Vector(-1, 0, -1), m);
 		shape.setVectorData(new Vector(0, 0, -1), m);
 		shape.setVectorData(new Vector(1, 0, -1), m);
-		m = shape.new MaterialDataValue(Material.NETHER_FENCE);
+		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, Direction.DOWN, "quartzpillar");
 		shape.setVectorData(new Vector(-1, 1, 1), m);
 		shape.setVectorData(new Vector(1, 1, 1), m);
 		m = shape.new MaterialDataValue(Material.CARPET, DyeColor.RED.getWoolData());
 		shape.setVectorData(new Vector(-1, 1, 0), m);
+		m = shape.new MaterialDataValue(Material.CARPET, DyeColor.GRAY.getWoolData());
+		shape.setVectorData(new Vector(0, 1, 0), m);
 		m = shape.new MaterialDataValue(Material.CARPET, DyeColor.LIME.getWoolData());
 		shape.setVectorData(new Vector(1, 1, 0), m);
 

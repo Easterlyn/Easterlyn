@@ -11,20 +11,19 @@ import org.bukkit.entity.Player;
  */
 public enum Direction {
 
-	NORTH((byte) 0, (byte) 3, (byte) 3, (byte) 3), EAST((byte) 1, (byte) 2, (byte) 4, (byte) 0),
-	SOUTH((byte) 2, (byte) 4, (byte) 2, (byte) 2), WEST((byte) 3, (byte) 1, (byte) 5, (byte) 1);
+	NORTH((byte) 3, (byte) 3, (byte) 3, (byte) 4), EAST((byte) 2, (byte) 4, (byte) 0, (byte) 3),
+	SOUTH((byte) 4, (byte) 2, (byte) 2, (byte) 4), WEST((byte) 1, (byte) 5, (byte) 1, (byte) 3),
+	UP((byte) 0, (byte) 3, (byte) 3, (byte) 2), DOWN((byte) 0, (byte) 3, (byte) 3, (byte) 2);
 
-	/** The arbitrarily defined byte deciding direction facing. */
-	private byte dirNum;
-
-	/** The byte for rotating a button to face the correct direction. */
+	/* The byte for rotating a button to face the correct direction. */
 	private byte button;
 
-	/** The byte for rotating a chest or furnace to face the correct direction. */
+	/* The byte for rotating a chest or furnace to face the correct direction. */
 	private byte chest;
 
-	/** The byte for rotating stairs to face the correct direction. */
+	/* The byte for rotating stairs to face the correct direction. */
 	private byte stair;
+	private byte quartzPillar;
 
 	/**
 	 * Constructor for Direction.
@@ -34,26 +33,16 @@ public enum Direction {
 	 * @param chest the chest or furnace direction byte
 	 * @param stair the stair direction byte
 	 */
-	Direction(byte b, byte button, byte chest, byte stair) {
-		dirNum = b;
+	Direction(byte button, byte chest, byte stair, byte quartzPillar) {
 		this.button = button;
 		this.chest = chest;
 		this.stair = stair;
 	}
 
 	/**
-	 * Get the numeric representation of a Direction.
-	 * 
-	 * @return the byte that represents this Direction
-	 */
-	public byte getDirByte() {
-		return dirNum;
-	}
-
-	/**
 	 * Used to determine data values for directional blocks in Machines.
 	 * <p>
-	 * Valid types: anvil, button, chest, stair, upperstair, door, upperdoor.
+	 * Valid types: anvil, button, chest, hopper, stair, upperstair, door, upperdoor.
 	 * 
 	 * @param type the name of the directional block type
 	 * @return the byte for a block of the type specified in the correct rotation
@@ -61,29 +50,28 @@ public enum Direction {
 	public byte getTypeByte(String type) {
 		switch (type) {
 		case "anvil":
-			return (byte) (dirNum % 2 == 0 ? 1 : 0);
+			return (byte) (this.ordinal() % 2 == 0 ? 1 : 0);
 		case "button":
 			return button;
 		case "chest":
 		case "hopper":
 			return chest;
 		case "door":
-			if (dirNum == 0) {
-				return 3;
-			}
-			return (byte) (dirNum - 1);
+			return (byte) (this.ordinal() > 3 || this.ordinal() == 0 ? 3 : this.ordinal() - 1);
 		case "portal":
-			return (byte) (dirNum % 2 + 1);
+			return (byte) (this.ordinal() % 2 + 1);
 		case "stair":
 			return stair;
 		case "upperdoor":
 			return 8;
 		case "upperstair":
 			return (byte) (stair + 4);
-		case "bedfood":
-			return (byte) ((dirNum + 2) % 4); 
+		case "bedfoot":
+			return (byte) ((this.ordinal() + 2) % 4); 
 		case "bedhead":
-			return (byte) ((dirNum + 2) % 4 + 8); 
+			return (byte) ((this.ordinal() + 2) % 4 + 8);
+		case "quartzpillar":
+			return this.quartzPillar;
 		default:
 			return 0;
 		}
@@ -104,6 +92,10 @@ public enum Direction {
 			return BlockFace.SOUTH;
 		case WEST:
 			return BlockFace.WEST;
+		case UP:
+			return BlockFace.UP;
+		case DOWN:
+			return BlockFace.DOWN;
 		default:
 			return BlockFace.SELF;
 		}
@@ -124,13 +116,10 @@ public enum Direction {
 	 * @param direction the Direction relative to this as north.
 	 */
 	public Direction getRelativeDirection(Direction direction) {
-		byte dirNum = (byte) ((this.dirNum + direction.getDirByte()) % 4);
-		for (Direction dir : Direction.values()) {
-			if (dir.dirNum == dirNum) {
-				return dir;
-			}
+		if (this.ordinal() > 3) {
+			return this;
 		}
-		return NORTH;
+		return values()[(this.ordinal() + direction.ordinal()) % 4];
 	}
 
 	/**

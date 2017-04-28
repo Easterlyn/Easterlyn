@@ -45,6 +45,10 @@ public class Shape {
 			}
 			return new MaterialData(material, direction.getRelativeDirection(this.direction).getTypeByte(type));
 		}
+
+//		private MaterialData getSpecificData() {
+//			// TODO migrate from Direction
+//		}
 	}
 
 	/** All relative Locations and Materials of the Machine. */
