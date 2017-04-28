@@ -7,6 +7,7 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.FreeCart;
+import com.easterlyn.users.Users;
 import com.easterlyn.utilities.Experience;
 
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ public class DeathListener extends EasterlynListener {
 	private final Events events;
 	private final FreeCart carts;
 	private final Language lang;
+	private final Users users;
 	private final ItemStack facts;
 	private final String[] messages;
 
@@ -41,6 +43,7 @@ public class DeathListener extends EasterlynListener {
 		this.events = plugin.getModule(Events.class);
 		this.carts = plugin.getModule(FreeCart.class);
 		this.lang = plugin.getModule(Language.class);
+		this.users = plugin.getModule(Users.class);
 		this.messages = lang.getValue("events.death.random").split("\n");
 		this.facts = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta meta = (BookMeta) facts.getItemMeta();
@@ -84,6 +87,8 @@ public class DeathListener extends EasterlynListener {
 				}
 			}.runTask(getPlugin());
 		}
+
+		users.getUser(player.getUniqueId()).setDeathLocation(location);
 
 		// TODO post deaths (sans coordinates) to global chat
 		if (this.events.getPVPTasks().containsKey(player.getUniqueId())) {

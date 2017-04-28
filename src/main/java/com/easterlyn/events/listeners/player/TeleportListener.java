@@ -82,6 +82,7 @@ public class TeleportListener extends EasterlynListener {
 		event.getPlayer().setFallDistance(0);
 
 		switch (event.getCause()) {
+		case PLUGIN: // Temporarily allow /back for any plugin-induced TP.
 		case COMMAND:
 			// The back command is only for commands.
 			users.getUser(event.getPlayer().getUniqueId()).setBackLocation(event.getFrom());
