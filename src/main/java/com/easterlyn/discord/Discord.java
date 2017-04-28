@@ -723,7 +723,7 @@ public class Discord extends Module {
 		final Player player = loadedPlayer;
 
 		for (IGuild guild : this.getClient().getGuilds()) {
-			ConfigurationSection guildRoles = this.getConfig().getConfigurationSection("roles." + guild.getLongID());
+			ConfigurationSection guildRoles = this.getConfig().getConfigurationSection("guilds." + guild.getLongID() + ".roles");
 			if (guildRoles == null) {
 				continue;
 			}
