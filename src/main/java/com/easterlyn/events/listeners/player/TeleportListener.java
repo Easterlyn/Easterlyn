@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.listeners.EasterlynListener;
+import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.Users;
 
 import org.bukkit.Bukkit;
@@ -24,11 +25,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class TeleportListener extends EasterlynListener {
 
 	private final Language lang;
+	private final Spectators spectators;
 	private final Users users;
 
 	public TeleportListener(Easterlyn plugin) {
 		super(plugin);
 		this.lang = plugin.getModule(Language.class);
+		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
 	}
 
@@ -81,14 +84,16 @@ public class TeleportListener extends EasterlynListener {
 		// People keep doing stupid stuff like /home while falling from spawn
 		event.getPlayer().setFallDistance(0);
 
-		switch (event.getCause()) {
-		case PLUGIN: // Temporarily allow /back for any plugin-induced TP.
-		case COMMAND:
-			// The back command is only for commands.
-			users.getUser(event.getPlayer().getUniqueId()).setBackLocation(event.getFrom());
-			break;
-		default:
-			break;
+		if (!spectators.isSpectator(event.getPlayer().getUniqueId())) {
+			switch (event.getCause()) {
+			case PLUGIN: // Temporarily allow /back for any plugin-induced TP.
+			case COMMAND:
+				// The back command is only for commands.
+				users.getUser(event.getPlayer().getUniqueId()).setBackLocation(event.getFrom());
+				break;
+			default:
+				break;
+			}
 		}
 
 		if (event.getTo().getWorld().equals(event.getFrom().getWorld())) {
