@@ -214,7 +214,9 @@ command:
   deathpoint:
     description: 'Return to death location.'
     usage: '/back [player]'
-    success: '{COLOR:good}Returning to death location.'
+    success:
+      self: '{COLOR:good}Returning to death location.'
+      other: '{COLOR:good}Returning {PLAYER} to their death location.'
     reset: '{COLOR:bad}If you''re on cooldown due to official business, use {COLOR:command}/tpreset deathpoint{COLOR:bad}'
     unset:
       self: '{COLOR:bad}You do not have a death location to return to!'
@@ -280,7 +282,9 @@ command:
   back:
     description: 'Return to previous location.'
     usage: '/back [player]'
-    success: '{COLOR:good}Returning to previous location.'
+    success:
+      self: '{COLOR:good}Returning to previous location.'
+      other: '{COLOR:good}Returning {PLAYER} to their previous location.'
     reset: '{COLOR:bad}If you''re on cooldown due to official business, use {COLOR:command}/tpreset back{COLOR:bad}'
     unset:
       self: '{COLOR:bad}You do not have a previous location to return to!'

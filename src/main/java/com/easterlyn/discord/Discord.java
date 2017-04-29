@@ -595,7 +595,7 @@ public class Discord extends Module {
 			public void call()
 					throws MissingPermissionsException, RateLimitException, DiscordException {
 				StringBuilder builder = new StringBuilder();
-				if (!channel.isPrivate() && channel.equals(getMainChannelID(channel.getGuild()))
+				if (!channel.isPrivate() && channel.getLongID() == getMainChannelID(channel.getGuild())
 						&& !name.equals(getBotName())) {
 					builder.append("**").append(toEscape.matcher(name).replaceAll("\\\\$1"));
 					if (!name.startsWith("* ")) {
@@ -723,10 +723,15 @@ public class Discord extends Module {
 		final Player player = loadedPlayer;
 
 		for (IGuild guild : this.getClient().getGuilds()) {
+			if (guild.getUserByID(user.getLongID()) == null) {
+				continue;
+			}
+
 			ConfigurationSection guildRoles = this.getConfig().getConfigurationSection("guilds." + guild.getLongID() + ".roles");
 			if (guildRoles == null) {
 				continue;
 			}
+
 			final List<IRole> roles = new ArrayList<>();
 			for (String roleName : guildRoles.getKeys(false)) {
 				if (!player.hasPermission("easterlyn.group." + roleName)) {

@@ -170,7 +170,8 @@ public class VoiceTextModule extends DiscordModule {
 	}
 
 	private boolean isUserEditable(IUser user, IGuild guild) {
-		if (guild.getOwner().equals(user)) {
+		if (guild.getOwner().equals(user)
+				|| user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR)) {
 			return false;
 		}
 		IUser us = this.getDiscord().getClient().getOurUser();
