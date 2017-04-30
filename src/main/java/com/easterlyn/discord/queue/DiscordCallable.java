@@ -1,5 +1,7 @@
 package com.easterlyn.discord.queue;
 
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -16,8 +18,16 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 	private final long queueTime;
 
 	private CallPriority priority;
-	private DiscordCallable chain;
+	private DiscordCallable chain, parent;
 	private int retries;
+
+	public DiscordCallable(IGuild guild, CallType callType) {
+		this(guild.getLongID(), callType);
+	}
+
+	public DiscordCallable(IChannel channel, CallType callType) {
+		this(channel.isPrivate() ? channel.getLongID() : channel.getGuild().getLongID(), callType);
+	}
 
 	public DiscordCallable(Long guildID, CallType callType) {
 		this.guildID = guildID;
@@ -57,7 +67,18 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 	 */
 	public DiscordCallable withChainedCall(DiscordCallable call) {
 		this.chain = call;
-		return call;
+		if (call != null) {
+			call.parent = this;
+			return call;
+		}
+		return this;
+	}
+
+	public DiscordCallable getChainStart() {
+		if (this.parent != null) {
+			return this.parent.getChainStart();
+		}
+		return this;
 	}
 
 	public Long getGuildID() {

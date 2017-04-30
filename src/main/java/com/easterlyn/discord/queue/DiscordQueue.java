@@ -129,6 +129,10 @@ public class DiscordQueue extends Thread {
 			e.printStackTrace();
 		}
 
+		if (callable.getChainedCall() != null) {
+			this.queue(callable.getChainedCall());
+		}
+
 		// Always rate limit so as to prevent global cap from being hit
 		this.addRateLimit(guild, type, type.getRateLimit() + 100L);
 	}

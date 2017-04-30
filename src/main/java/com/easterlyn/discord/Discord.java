@@ -355,7 +355,7 @@ public class Discord extends Module {
 
 	public void queue(DiscordCallable call) {
 		startQueueDrain();
-		drainQueueThread.queue(call);
+		drainQueueThread.queue(call.getChainStart());
 	}
 
 	public void queueMessageDeletion(CallPriority priority, IMessage... messages) {
@@ -427,7 +427,7 @@ public class Discord extends Module {
 		return this.client;
 	}
 
-	public Long getGeneralChannelID(IGuild guild) {
+	public long getGeneralChannelID(IGuild guild) {
 		return this.getChannelID(guild, "general");
 	}
 
@@ -435,7 +435,7 @@ public class Discord extends Module {
 		return this.getChannelIDs("general");
 	}
 
-	public Long getMainChannelID(IGuild guild) {
+	public long getMainChannelID(IGuild guild) {
 		return this.getChannelID(guild, "main");
 	}
 
@@ -443,7 +443,7 @@ public class Discord extends Module {
 		return this.getChannelIDs("main");
 	}
 
-	public Long getLogChannelID(IGuild guild) {
+	public long getLogChannelID(IGuild guild) {
 		return this.getChannelID(guild, "log");
 	}
 
@@ -451,7 +451,7 @@ public class Discord extends Module {
 		return this.getChannelIDs("log");
 	}
 
-	public Long getReportChannelID(IGuild guild) {
+	public long getReportChannelID(IGuild guild) {
 		return this.getChannelID(guild, "report");
 	}
 
@@ -459,7 +459,7 @@ public class Discord extends Module {
 		return this.getChannelIDs("report");
 	}
 
-	private Long getChannelID(IGuild guild, String type) {
+	private long getChannelID(IGuild guild, String type) {
 		return this.getConfig().getLong("guilds." + guild.getLongID() + ".channels." + type);
 	}
 
@@ -550,7 +550,7 @@ public class Discord extends Module {
 				nextIndex = message.length();
 			}
 			String nextMessage = message.substring(index, nextIndex);
-			for (Long channelID : channelIDs) {
+			for (long channelID : channelIDs) {
 				IChannel channel = this.getClient().getChannelByID(channelID);
 				if (channel == null) {
 					IUser user = client.getUserByID(channelID);
