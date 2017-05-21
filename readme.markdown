@@ -1,3 +1,4 @@
+[![Dependency Status](https://www.versioneye.com/user/projects/58b6b03c9fd69a004b1920f1/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58b6b03c9fd69a004b1920f1)
 ##### About
 Easterlyn is the brainchild of Edtheminecrafter. The core plugin, originally designed for the Sblock server, provides an extensive set of modules and functions enhancing gameplay.
 
