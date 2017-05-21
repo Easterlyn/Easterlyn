@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 /**
  * Listener for PlayerCommandPreprocessEvents.
- * 
+ *
  * @author Jikoo
  */
 public class CommandPreprocessListener extends EasterlynListener {
@@ -31,7 +31,7 @@ public class CommandPreprocessListener extends EasterlynListener {
 	private final Spectators spectators;
 	private final SimpleCommandMap map;
 
-	public CommandPreprocessListener(Easterlyn plugin) {
+	public CommandPreprocessListener(final Easterlyn plugin) {
 		super(plugin);
 		this.afk = plugin.getModule(AwayFromKeyboard.class);
 		this.chat = plugin.getModule(Chat.class);
@@ -48,28 +48,31 @@ public class CommandPreprocessListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for PlayerCommandPreprocessEvents.
-	 * 
+	 *
 	 * @param event the PlayerCommandPreprocessEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		afk.extendActivity(event.getPlayer());
+	public void onPlayerCommandPreprocess(final PlayerCommandPreprocessEvent event) {
+		this.afk.extendActivity(event.getPlayer());
 
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');
 		if (!event.getPlayer().hasPermission("easterlyn.commands.unfiltered") && 0 < colon && (colon < space || space < 0)) {
 			event.setMessage("/" + event.getMessage().substring(colon + 1));
+			if (space > 0) {
+				space -= colon;
+			}
 		}
 
 		String command = event.getMessage().substring(1, space > 0 ? space : event.getMessage().length()).toLowerCase();
-		Command cmd = map.getCommand(command);
+		Command cmd = this.map.getCommand(command);
 
 		if (!event.getPlayer().hasPermission("easterlyn.commands.unlogged") && cmd != null
-				&& !discord.getConfig().getStringList("discord.command-log-blacklist").contains(cmd.getName())) {
-			discord.log(event.getPlayer().getName() + " issued command: " + event.getMessage());
+				&& !this.discord.getConfig().getStringList("discord.command-log-blacklist").contains(cmd.getName())) {
+			this.discord.log(event.getPlayer().getName() + " issued command: " + event.getMessage());
 		}
 
-		if (((OopsCommand) map.getCommand("oops"))
+		if (((OopsCommand) this.map.getCommand("oops"))
 				.handleFailedCommand(event.getPlayer(), command, space > 0
 						? event.getMessage().substring(space + 1) : null)) {
 			event.setCancelled(true);
@@ -84,13 +87,14 @@ public class CommandPreprocessListener extends EasterlynListener {
 				&& !event.getPlayer().hasPermission("essentials.*")) {
 			event.setMessage("/tps");
 			command = "tps";
-			cmd = map.getCommand(command);
+			cmd = this.map.getCommand(command);
+			space = -1;
 		}
 
 		if (cmd.getName().equals("sethome")) {
-			if (spectators.isSpectator(event.getPlayer().getUniqueId())) {
+			if (this.spectators.isSpectator(event.getPlayer().getUniqueId())) {
 				event.setCancelled(true);
-				event.getPlayer().sendMessage(lang.getValue("events.command.spectatefail"));
+				event.getPlayer().sendMessage(this.lang.getValue("events.command.spectatefail"));
 				return;
 			}
 		} else if (cmd.getName().equals("warp")) {
@@ -101,21 +105,21 @@ public class CommandPreprocessListener extends EasterlynListener {
 							&& !event.getPlayer().hasPermission("essentials.warps.*")
 							&& !event.getPlayer().hasPermission("essentials.*")) {
 						event.setCancelled(true);
-						event.getPlayer().sendMessage(lang.getValue("events.command.spectatefail"));
+						event.getPlayer().sendMessage(this.lang.getValue("events.command.spectatefail"));
 						return;
 					}
 				}
 			}
 		} else if (cmd.getName().equals("mail")) {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("send")
-					&& chat.testForMute(event.getPlayer())) {
+					&& this.chat.testForMute(event.getPlayer())) {
 				event.setCancelled(true);
 				return;
 			}
 		} else if (cmd.getName().equals("prism")) {
 			if (space > 0 && event.getMessage().substring(space + 1).toLowerCase().startsWith("undo")) {
 				event.setCancelled(true);
-				event.getPlayer().sendMessage(lang.getValue("events.command.prismUndoCrash"));
+				event.getPlayer().sendMessage(this.lang.getValue("events.command.prismUndoCrash"));
 				return;
 			}
 		} else if (cmd.getName().equals("party")) {
@@ -129,7 +133,7 @@ public class CommandPreprocessListener extends EasterlynListener {
 		}
 
 		if (event.getPlayer() instanceof DiscordPlayer) {
-			if (!discord.getConfig().getStringList("discord.command-whitelist").contains(cmd.getName())) {
+			if (!this.discord.getConfig().getStringList("discord.command-whitelist").contains(cmd.getName())) {
 				event.getPlayer().sendMessage('/' + cmd.getName() + " isn't allowed from Discord, sorry!");
 				event.setCancelled(true);
 				return;
