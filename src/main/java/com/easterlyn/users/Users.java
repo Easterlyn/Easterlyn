@@ -12,95 +12,25 @@ import com.easterlyn.utilities.CollectionConversions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 /**
  * Class that keeps track of players currently logged on to the game.
- * 
+ *
  * @author FireNG, Jikoo
  */
 public class Users extends Module {
 
-	/* The Cache of Player UUID and relevant Users. */
-	private final LoadingCache<UUID, User> userCache;
-
-	public Users(Easterlyn plugin) {
-		super(plugin);
-		this.userCache = CacheBuilder.newBuilder()
-				.expireAfterAccess(30L, TimeUnit.MINUTES)
-				.removalListener(new RemovalListener<UUID, User>() {
-					@Override
-					public void onRemoval(RemovalNotification<UUID, User> notification) {
-						User user = notification.getValue();
-						user.save();
-						unteam(user.getPlayerName());
-					}
-				}).build(new CacheLoader<UUID, User>() {
-					@Override
-					public User load(UUID uuid) {
-						User user = User.load(getPlugin(), uuid);
-						team(user.getPlayer(), null);
-						return user;
-					}
-				});
-	}
-
-	@Override
-	protected void onEnable() {
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			getUser(player.getUniqueId());
-			team(player, null);
-		}
-	}
-
-	@Override
-	protected void onDisable() {
-		// Invalidating and cleaning up causes our removal listener to save all cached users.
-		userCache.invalidateAll();
-		userCache.cleanUp();
-	}
-
-	@Override
-	public boolean isRequired() {
-		return true;
-	}
-
-	@Override
-	public String getName() {
-		return "Users";
-	}
-
-	/**
-	 * Fetch a User. A User is always returned, even if the Player by the given UUID is not online.
-	 * 
-	 * @param uuid
-	 * 
-	 * @return the User
-	 */
-	public User getUser(UUID uuid) {
-		return userCache.getUnchecked(uuid);
-	}
-
-	public Set<User> getOnlineUsers() {
-		return CollectionConversions.toSet(Bukkit.getOnlinePlayers(), player -> getUser(player.getUniqueId()));
-	}
-
 	/**
 	 * Add a Player to a Team colored based on permissions.
-	 * 
+	 *
 	 * @param player the Player
 	 */
-	public static void team(Player player, String prefix) {
+	public static void team(final Player player, String prefix) {
 		if (player == null) {
 			return;
 		}
@@ -137,29 +67,80 @@ public class Users extends Module {
 		team.setPrefix(prefix);
 		team.addEntry(player.getName());
 		team.addEntry(player.getPlayerListName());
-
-		Objective objective = board.getObjective("deaths");
-		if (objective == null) {
-			objective = board.registerNewObjective("deaths", "deathCount");
-			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-		}
-
-		// Since Mojang doesn't, we'll force deathcount to persist - it's been a feature for ages
-		Score score = objective.getScore(player.getName());
-		score.setScore(player.getStatistic(Statistic.DEATHS));
 	}
 
-	public static void unteam(Player player) {
-		unteam(player.getName());
+	public static void unteam(final Player player) {
+		Users.unteam(player.getName());
 	}
 
-	private static void unteam(String teamName) {
+	private static void unteam(final String teamName) {
 		if (teamName == null) {
 			return;
 		}
 		Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
 		if (team != null) {
 			team.unregister();
+		}
+	}
+
+	/* The Cache of Player UUID and relevant Users. */
+	private final LoadingCache<UUID, User> userCache;
+
+	public Users(final Easterlyn plugin) {
+		super(plugin);
+		this.userCache = CacheBuilder.newBuilder()
+				.expireAfterAccess(30L, TimeUnit.MINUTES)
+				.removalListener(notification -> {
+					User user = (User) notification.getValue();
+					user.save();
+					Users.unteam(user.getPlayerName());
+				}).build(new CacheLoader<UUID, User>() {
+					@Override
+					public User load(final UUID uuid) {
+						User user = User.load(Users.this.getPlugin(), uuid);
+						Users.team(user.getPlayer(), null);
+						return user;
+					}
+				});
+	}
+
+	@Override
+	public String getName() {
+		return "Users";
+	}
+
+	public Set<User> getOnlineUsers() {
+		return CollectionConversions.toSet(Bukkit.getOnlinePlayers(), player -> this.getUser(player.getUniqueId()));
+	}
+
+	/**
+	 * Fetch a User. A User is always returned, even if the Player by the given UUID is not online.
+	 *
+	 * @param uuid
+	 *
+	 * @return the User
+	 */
+	public User getUser(final UUID uuid) {
+		return this.userCache.getUnchecked(uuid);
+	}
+
+	@Override
+	public boolean isRequired() {
+		return true;
+	}
+
+	@Override
+	protected void onDisable() {
+		// Invalidating and cleaning up causes our removal listener to save all cached users.
+		this.userCache.invalidateAll();
+		this.userCache.cleanUp();
+	}
+
+	@Override
+	protected void onEnable() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			this.getUser(player.getUniqueId());
+			Users.team(player, null);
 		}
 	}
 
