@@ -3,6 +3,7 @@ package com.easterlyn.effects.effect.godtier.active;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
@@ -48,7 +49,7 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.KNOWLEDGE);
+		return Collections.singletonList(UserAspect.KNOWLEDGE);
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(PlayerInteractEvent.class);
+		return Collections.singletonList(PlayerInteractEvent.class);
 	}
 
 	@SuppressWarnings("deprecation")

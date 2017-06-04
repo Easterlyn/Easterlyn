@@ -136,7 +136,6 @@ public class CommandPreprocessListener extends EasterlynListener {
 			if (!this.discord.getConfig().getStringList("discord.command-whitelist").contains(cmd.getName())) {
 				event.getPlayer().sendMessage('/' + cmd.getName() + " isn't allowed from Discord, sorry!");
 				event.setCancelled(true);
-				return;
 			}
 		}
 

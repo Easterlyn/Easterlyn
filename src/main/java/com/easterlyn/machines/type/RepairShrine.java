@@ -235,11 +235,8 @@ public class RepairShrine extends Machine {
 
 	@Override
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
-		if (event.getBlock().getY() > this.getKey(storage).getBlockY()) {
-			// Prevent accidental breakage - must break part of bottom layer
-			return true;
-		}
-		return super.handleBreak(event, storage);
+		// Prevent accidental breakage - must break part of bottom layer
+		return event.getBlock().getY() > this.getKey(storage).getBlockY() &&  super.handleBreak(event, storage);
 	}
 
 	@Override

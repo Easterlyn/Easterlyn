@@ -1,90 +1,5 @@
 package com.easterlyn.events;
 
-import static org.bukkit.Material.ACTIVATOR_RAIL;
-import static org.bukkit.Material.BARRIER;
-import static org.bukkit.Material.BEACON;
-import static org.bukkit.Material.BEDROCK;
-import static org.bukkit.Material.BED_BLOCK;
-import static org.bukkit.Material.BEETROOT_BLOCK;
-import static org.bukkit.Material.BURNING_FURNACE;
-import static org.bukkit.Material.CAKE_BLOCK;
-import static org.bukkit.Material.CARROT;
-import static org.bukkit.Material.COCOA;
-import static org.bukkit.Material.COMMAND;
-import static org.bukkit.Material.COMMAND_CHAIN;
-import static org.bukkit.Material.COMMAND_MINECART;
-import static org.bukkit.Material.COMMAND_REPEATING;
-import static org.bukkit.Material.CROPS;
-import static org.bukkit.Material.DAYLIGHT_DETECTOR_INVERTED;
-import static org.bukkit.Material.DETECTOR_RAIL;
-import static org.bukkit.Material.DIODE_BLOCK_OFF;
-import static org.bukkit.Material.DIODE_BLOCK_ON;
-import static org.bukkit.Material.DOUBLE_STEP;
-import static org.bukkit.Material.DOUBLE_STONE_SLAB2;
-import static org.bukkit.Material.ENDER_PORTAL;
-import static org.bukkit.Material.ENDER_PORTAL_FRAME;
-import static org.bukkit.Material.END_CRYSTAL;
-import static org.bukkit.Material.END_GATEWAY;
-import static org.bukkit.Material.EXPLOSIVE_MINECART;
-import static org.bukkit.Material.FIRE;
-import static org.bukkit.Material.FLOWER_POT;
-import static org.bukkit.Material.HOPPER_MINECART;
-import static org.bukkit.Material.IRON_DOOR_BLOCK;
-import static org.bukkit.Material.JUKEBOX;
-import static org.bukkit.Material.LAVA;
-import static org.bukkit.Material.MELON_STEM;
-import static org.bukkit.Material.MINECART;
-import static org.bukkit.Material.MOB_SPAWNER;
-import static org.bukkit.Material.MONSTER_EGG;
-import static org.bukkit.Material.MONSTER_EGGS;
-import static org.bukkit.Material.NETHER_WARTS;
-import static org.bukkit.Material.PISTON_EXTENSION;
-import static org.bukkit.Material.PISTON_MOVING_PIECE;
-import static org.bukkit.Material.PORTAL;
-import static org.bukkit.Material.POTATO;
-import static org.bukkit.Material.POWERED_MINECART;
-import static org.bukkit.Material.POWERED_RAIL;
-import static org.bukkit.Material.PUMPKIN_STEM;
-import static org.bukkit.Material.PURPUR_DOUBLE_SLAB;
-import static org.bukkit.Material.RAILS;
-import static org.bukkit.Material.REDSTONE_COMPARATOR_OFF;
-import static org.bukkit.Material.REDSTONE_COMPARATOR_ON;
-import static org.bukkit.Material.REDSTONE_LAMP_ON;
-import static org.bukkit.Material.REDSTONE_TORCH_OFF;
-import static org.bukkit.Material.SIGN_POST;
-import static org.bukkit.Material.SKULL;
-import static org.bukkit.Material.SOIL;
-import static org.bukkit.Material.STANDING_BANNER;
-import static org.bukkit.Material.STATIONARY_LAVA;
-import static org.bukkit.Material.STATIONARY_WATER;
-import static org.bukkit.Material.STORAGE_MINECART;
-import static org.bukkit.Material.STRUCTURE_BLOCK;
-import static org.bukkit.Material.STRUCTURE_VOID;
-import static org.bukkit.Material.SUGAR_CANE_BLOCK;
-import static org.bukkit.Material.TNT;
-import static org.bukkit.Material.TRIPWIRE;
-import static org.bukkit.Material.WALL_BANNER;
-import static org.bukkit.Material.WALL_SIGN;
-import static org.bukkit.Material.WATER;
-import static org.bukkit.Material.WOODEN_DOOR;
-import static org.bukkit.Material.WOOD_DOUBLE_STEP;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.comphenix.protocol.ProtocolLibrary;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
@@ -95,16 +10,23 @@ import com.easterlyn.events.session.Status;
 import com.easterlyn.events.session.StatusCheck;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.TextUtils;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitTask;
-
 import org.reflections.Reflections;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static org.bukkit.Material.*;
 
 /**
  * The main Module for all events handled by the plugin.
@@ -237,18 +159,12 @@ public class Events extends Module {
 				ipcache.remove(ip);
 			}
 			ipcache.put(ip, name);
+
 			// Clear oldest cached IPs
 			int surplus = ipcache.size() - 1500;
-			if (surplus < 1) {
-				return;
-			}
-			for (Object entry : ipcache.entrySet().toArray()) {
-				if (surplus <= 0) {
-					break;
-				}
-				--surplus;
-
-				ipcache.remove(((Entry<?, ?>) entry).getKey());
+			for (Iterator<Entry<String, String>> entryIterator = ipcache.entrySet().iterator();
+					entryIterator.hasNext() && surplus > 0; --surplus) {
+				entryIterator.remove();
 			}
 		}
 	}

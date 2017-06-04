@@ -46,7 +46,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 						Command command = ((Easterlyn) this.getPlugin()).getCommandMap().getCommand(completion.substring(1));
 						return command == null || command.getPermission() == null || command.getPermission().isEmpty()
 								|| event.getPlayer().hasPermission(command.getPermission());
-					}).toArray(size -> new String[size]));
+					}).toArray(String[]::new));
 		}
 	}
 

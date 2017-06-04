@@ -1,11 +1,7 @@
 package com.easterlyn.events;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.users.Users;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -16,9 +12,12 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.scoreboard.Team.Option;
 import org.bukkit.scoreboard.Team.OptionStatus;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 /**
  * Utility for managing nametag visibility for invisible players
- * 
+ *
  * @author Jikoo
  */
 public class InvisibilityManager {
@@ -26,14 +25,14 @@ public class InvisibilityManager {
 	private final HashMap<UUID, BukkitTask> tasks;
 	private final Easterlyn plugin;
 
-	public InvisibilityManager(Easterlyn plugin) {
+	InvisibilityManager(Easterlyn plugin) {
 		tasks = new HashMap<>();
 		this.plugin = plugin;
 	}
 
 	/**
 	 * Update the Player specified's nametag on a tick delay. Allows per-gamemode stuff to finish beforehand.
-	 * 
+	 *
 	 * @param player the Player to update
 	 */
 	public void lazyVisibilityUpdate(Player player) {

@@ -1,8 +1,5 @@
 package com.easterlyn.commands.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.User;
@@ -11,14 +8,14 @@ import com.easterlyn.users.UserClass;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PlayerUtils;
-
 import com.google.common.collect.ImmutableList;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * EasterlynCommand for setting User data.
@@ -51,12 +48,15 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 		}
 		User user = users.getUser(player.getUniqueId());
 		args[1] = args[1].toLowerCase();
-		if (args[1].equals("class")) {
-			user.setUserClass(UserClass.getClass(ChatColor.translateAlternateColorCodes('&', args[2])));
-		} else if (args[1].equals("aspect")) {
-			user.setUserAspect(UserAspect.getAspect(ChatColor.translateAlternateColorCodes('&', args[2])));
-		} else {
-			return false;
+		switch (args[1]) {
+			case "class":
+				user.setUserClass(UserClass.getClass(ChatColor.translateAlternateColorCodes('&', args[2])));
+				break;
+			case "aspect":
+				user.setUserAspect(UserAspect.getAspect(ChatColor.translateAlternateColorCodes('&', args[2])));
+				break;
+			default:
+				return false;
 		}
 		return true;
 	}

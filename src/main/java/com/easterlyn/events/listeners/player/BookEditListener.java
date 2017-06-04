@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerEditBookEvent;
 
 /**
  * Listener for PlayerEditBookEvents.
- * 
+ *
  * @author Jikoo
  */
 public class BookEditListener extends EasterlynListener {
@@ -24,7 +24,7 @@ public class BookEditListener extends EasterlynListener {
 
 	/**
 	 * The EventHandler for PlayerEditBookEvents.
-	 * 
+	 *
 	 * @param event the PlayerEditBookEvent.
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -32,7 +32,6 @@ public class BookEditListener extends EasterlynListener {
 		// Muted players can't write books.
 		if (chat.testForMute(event.getPlayer())) {
 			event.setCancelled(true);
-			return;
 		}
 	}
 

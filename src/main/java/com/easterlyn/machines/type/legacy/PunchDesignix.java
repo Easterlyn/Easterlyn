@@ -1,8 +1,5 @@
 package com.easterlyn.machines.type.legacy;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.machines.MachineInventoryTracker;
@@ -12,10 +9,9 @@ import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,7 +25,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Simulate a Sburb Punch Designix in Minecraft.
@@ -178,39 +175,36 @@ public class PunchDesignix extends Machine {
 	/**
 	 * Calculate result slot and update inventory on a delay (post-event completion)
 	 * 
-	 * @param name the name of the player who is using the Punch Designix
+	 * @param id the UUID of the player who is using the Punch Designix
 	 */
 	public void updateInventory(final UUID id, final boolean updateInputSlot0) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
-			@Override
-			public void run() {
-				// Must re-obtain player or update doesn't seem to happen
-				Player player = Bukkit.getPlayer(id);
-				if (player == null || !tracker.hasMachineOpen(player)) {
-					// Player has logged out or closed inventory. Inventories are per-player, ignore.
-					return;
-				}
-				if (updateInputSlot0) {
-					InventoryUtils.updateWindowSlot(player, 0);
-				}
-				Inventory open = player.getOpenInventory().getTopInventory();
-				// TODO this seems to fail to update properly when punch in slot 0 is re-punched
-				ItemStack result = captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
-				open.setItem(2, result);
-				ItemStack inputSlot1 = open.getItem(0);
-				if (inputSlot1 != null) {
-					inputSlot1 = inputSlot1.clone();
-					inputSlot1.setAmount(1);
-				}
-				ItemStack inputSlot2 = open.getItem(1);
-				if (inputSlot2 != null) {
-					inputSlot2 = inputSlot2.clone();
-					inputSlot2.setAmount(1);
-				}
-				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-						new ImmutableTriple<>(inputSlot1, inputSlot2, result));
-				InventoryUtils.updateWindowSlot(player, 2);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+			// Must re-obtain player or update doesn't seem to happen
+			Player player = Bukkit.getPlayer(id);
+			if (player == null || !tracker.hasMachineOpen(player)) {
+				// Player has logged out or closed inventory. Inventories are per-player, ignore.
+				return;
 			}
+			if (updateInputSlot0) {
+				InventoryUtils.updateWindowSlot(player, 0);
+			}
+			Inventory open = player.getOpenInventory().getTopInventory();
+			// TODO this seems to fail to update properly when punch in slot 0 is re-punched
+			ItemStack result = captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
+			open.setItem(2, result);
+			ItemStack inputSlot1 = open.getItem(0);
+			if (inputSlot1 != null) {
+				inputSlot1 = inputSlot1.clone();
+				inputSlot1.setAmount(1);
+			}
+			ItemStack inputSlot2 = open.getItem(1);
+			if (inputSlot2 != null) {
+				inputSlot2 = inputSlot2.clone();
+				inputSlot2.setAmount(1);
+			}
+			InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
+					new ImmutableTriple<>(inputSlot1, inputSlot2, result));
+			InventoryUtils.updateWindowSlot(player, 2);
 		});
 	}
 
@@ -232,7 +226,7 @@ public class PunchDesignix extends Machine {
 	/**
 	 * Singleton for getting usage help ItemStacks.
 	 */
-	public static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
+	private static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
 		if (exampleRecipes == null) {
 			exampleRecipes = createExampleRecipes();
 		}
@@ -242,7 +236,7 @@ public class PunchDesignix extends Machine {
 	/**
 	 * Creates the ItemStacks used in displaying usage help.
 	 * 
-	 * @return
+	 * @return a Triple containing inputs and a result defining behavior
 	 */
 	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
 		ItemStack is1 = new ItemStack(Material.BOOK);

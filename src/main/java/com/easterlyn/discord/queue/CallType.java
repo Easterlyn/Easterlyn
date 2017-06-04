@@ -1,8 +1,8 @@
 package com.easterlyn.discord.queue;
 
 /**
- * 
- * 
+ *
+ *
  * @author Jikoo
  */
 public enum CallType {
@@ -23,7 +23,7 @@ public enum CallType {
 
 	private final long rateLimit;
 
-	private CallType(long rateLimit) {
+	CallType(long rateLimit) {
 		this.rateLimit = rateLimit;
 	}
 

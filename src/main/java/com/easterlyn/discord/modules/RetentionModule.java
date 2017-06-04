@@ -1,23 +1,12 @@
 package com.easterlyn.discord.modules;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.abstraction.DiscordModule;
 import com.easterlyn.discord.queue.CallPriority;
 import com.easterlyn.discord.queue.CallType;
 import com.easterlyn.discord.queue.DiscordCallable;
-import com.koloboke.function.LongObjPredicate;
-
 import org.apache.http.message.BasicNameValuePair;
-
 import org.bukkit.configuration.ConfigurationSection;
-
 import sx.blah.discord.api.internal.DiscordClientImpl;
 import sx.blah.discord.api.internal.DiscordEndpoints;
 import sx.blah.discord.api.internal.DiscordUtils;
@@ -25,6 +14,7 @@ import sx.blah.discord.api.internal.json.objects.MessageObject;
 import sx.blah.discord.handle.impl.obj.Channel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IIDLinkedObject;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IVoiceChannel;
@@ -32,6 +22,13 @@ import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * DiscordModule for message retention policies.
@@ -50,14 +47,14 @@ public class RetentionModule extends DiscordModule {
 
 		private long nextPopulate;
 
-		public RetentionData(Channel channel) {
+		private RetentionData(Channel channel) {
 			this.channel = channel;
 			this.lockDeletion = new AtomicBoolean();
 			this.lockPopulation = new AtomicBoolean();
 			this.nextPopulate = System.currentTimeMillis() + REPOPULATE_AFTER;
 		}
 
-		public void doRetention(long retentionDuration) {
+		private void doRetention(long retentionDuration) {
 			synchronized (lockDeletion) {
 				if (lockDeletion.get() && lockPopulation.get()) {
 					return;
@@ -86,7 +83,7 @@ public class RetentionModule extends DiscordModule {
 						Long before = null;
 						synchronized (channel.messages) {
 							if (channel.messages.size() > 0) {
-								before = channel.messages.stream().mapToLong(message -> message.getLongID()).min().getAsLong();
+								before = channel.messages.stream().mapToLong(IIDLinkedObject::getLongID).min().getAsLong();
 							}
 						}
 						if (addHistory(before, 100).length > 0) {
@@ -124,14 +121,14 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		/**
-		 * @see {@link sx.blah.discord.handle.impl.obj.Channel#requestHistory(Long before, int limit)}
+		 * @see sx.blah.discord.handle.impl.obj.Channel#requestHistory(Long before, int limit)
 		 */
 		private IMessage[] addHistory(Long before, int limit) {
 			DiscordUtils.checkPermissions(this.channel.getClient(), this.channel,
 					EnumSet.of(Permissions.READ_MESSAGES, Permissions.READ_MESSAGE_HISTORY));
 			String queryParams = "?limit=" + limit;
 			if (before != null) {
-				queryParams = queryParams + "&before=" + Long.toUnsignedString(before.longValue());
+				queryParams = queryParams + "&before=" + Long.toUnsignedString(before);
 			}
 
 			MessageObject[] messages = ((DiscordClientImpl) this.channel.getClient()).REQUESTS.GET
@@ -176,23 +173,20 @@ public class RetentionModule extends DiscordModule {
 
 					LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(12);
 
-					channel.messages.forEachWhile(new LongObjPredicate<IMessage>(){
-						@Override
-						public boolean test(long messageID, IMessage message) {
-							if (message.isPinned() || message.isDeleted()|| message.getTimestamp().isAfter(retention)) {
-								// Message not eligible for retention.
-								return false;
-							}
-							// FIXME Discord is throwing its 14 days or less on most bulk deletes
-							if (true || message.getTimestamp().isAfter(bulkDeleteableBefore)) {
-								// Message is too old to be bulk deleted. Queue at LOWEST so bulk deletes run sooner.
-								getDiscord().queueMessageDeletion(CallPriority.LOWEST, message);
-								return false;
-							}
-
-							messages.add(message);
-							return messages.size() > 99;
+					channel.messages.forEachWhile((messageID, message) -> {
+						if (message.isPinned() || message.isDeleted()|| message.getTimestamp().isAfter(retention)) {
+							// Message not eligible for retention.
+							return false;
 						}
+						// FIXME Discord is throwing its 14 days or less on most bulk deletes
+						if (message.getTimestamp().isAfter(bulkDeleteableBefore)) {
+							// Message is too old to be bulk deleted. Queue at LOWEST so bulk deletes run sooner.
+							getDiscord().queueMessageDeletion(CallPriority.LOWEST, message);
+							return false;
+						}
+
+						messages.add(message);
+						return messages.size() > 99;
 					});
 
 					// No eligible messages.
@@ -237,7 +231,7 @@ public class RetentionModule extends DiscordModule {
 					Long before = null;
 					synchronized (channel.messages) {
 						if (channel.messages.size() > 0) {
-							before = channel.messages.stream().mapToLong(message -> message.getLongID()).min().getAsLong();
+							before = channel.messages.stream().mapToLong(IIDLinkedObject::getLongID).min().getAsLong();
 						}
 					}
 
@@ -327,9 +321,6 @@ public class RetentionModule extends DiscordModule {
 		if (channelData.containsKey(channel.getLongID())) {
 			data = channelData.get(channel.getLongID());
 		} else {
-			if (channel == null || channel instanceof IPrivateChannel || channel instanceof IVoiceChannel) {
-				return;
-			}
 			data = new RetentionData((Channel) channel);
 			this.channelData.put(channel.getLongID(), data);
 		}

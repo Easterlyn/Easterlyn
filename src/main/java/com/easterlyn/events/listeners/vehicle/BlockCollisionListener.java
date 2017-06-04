@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Listener for VehicleBlockCollisionEvents.
- * 
+ *
  * @author Jikoo
  */
 public class BlockCollisionListener extends EasterlynListener {
@@ -29,7 +29,7 @@ public class BlockCollisionListener extends EasterlynListener {
 
 	/**
 	 * Minecarts are automatically placed in dispensers upon collision.
-	 * 
+	 *
 	 * @param event the VehicleBlockCollisionEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
@@ -51,7 +51,6 @@ public class BlockCollisionListener extends EasterlynListener {
 			b.update(true);
 			event.getVehicle().eject();
 			event.getVehicle().remove();
-			return;
 		}
 	}
 

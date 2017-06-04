@@ -17,7 +17,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 /**
  * Listener for BlockBreakEvents.
- * 
+ *
  * @author Jikoo
  */
 public class BreakListener extends EasterlynListener {
@@ -37,7 +37,7 @@ public class BreakListener extends EasterlynListener {
 
 	/**
 	 * The event handler for Machine deconstruction.
-	 * 
+	 *
 	 * @param event the BlockBreakEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
@@ -50,7 +50,6 @@ public class BreakListener extends EasterlynListener {
 
 		if (!spectators.canMineOre(event.getPlayer())) {
 			spectatorsDeserveFun.handleEvent(event, event.getPlayer(), 1);
-			return;
 		}
 	}
 

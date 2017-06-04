@@ -1,8 +1,5 @@
 package com.easterlyn.events.listeners.player;
 
-import java.util.Iterator;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
@@ -14,9 +11,10 @@ import com.easterlyn.micromodules.SleepVote;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.UUID;
 
 /**
  * Listener for PlayerQuitEvents.
@@ -86,11 +84,7 @@ public class QuitListener extends EasterlynListener {
 		user.save();
 
 		// Inform channels that the player is no longer listening to them
-		for (Iterator<String> iterator = user.getListening().iterator(); iterator.hasNext();) {
-			if (!user.removeListeningQuit(iterator.next())) {
-				iterator.remove();
-			}
-		}
+		user.getListening().removeIf(channelName -> !user.removeListeningQuit(channelName));
 	}
 
 }

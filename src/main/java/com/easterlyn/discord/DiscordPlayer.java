@@ -9,7 +9,7 @@ import sx.blah.discord.handle.obj.IUser;
 
 /**
  * Wrapper for a Player for replying to Discord.
- * 
+ *
  * @author Jikoo
  */
 public class DiscordPlayer extends PermissiblePlayer {
@@ -19,7 +19,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 	private String displayName;
 	private StringBuilder messages;
 
-	public DiscordPlayer(Discord discord, IUser user, Player player) {
+	DiscordPlayer(Discord discord, IUser user, Player player) {
 		super(player);
 		this.discord = discord;
 		this.user = user;

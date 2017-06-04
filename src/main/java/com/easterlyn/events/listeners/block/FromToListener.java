@@ -30,7 +30,7 @@ public class FromToListener extends EasterlynListener {
 		Pair<Machine, ConfigurationSection> machine = machines.getMachineByBlock(event.getToBlock());
 
 		if (machine != null) {
-			machine.getKey().handleFromTo(event, machine.getRight());
+			event.setCancelled(machine.getKey().handleFromTo(event, machine.getRight()));
 		}
 	}
 

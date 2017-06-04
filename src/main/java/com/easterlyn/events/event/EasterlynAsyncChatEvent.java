@@ -1,13 +1,12 @@
 package com.easterlyn.events.event;
 
-import java.util.Set;
-
 import com.easterlyn.chat.message.Message;
 import com.easterlyn.utilities.CollectionConversions;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import java.util.Set;
 
 /**
  * Event wrapper allowing us to more easily manage our channeled chat system.
@@ -26,7 +25,7 @@ public class EasterlynAsyncChatEvent extends AsyncPlayerChatEvent {
 
 	public EasterlynAsyncChatEvent(boolean async, Player who, Message message, boolean checkSpam) {
 		this(async, who, CollectionConversions.toSet(message.getChannel().getListening(),
-				uuid -> Bukkit.getPlayer(uuid)), message, checkSpam);
+				Bukkit::getPlayer), message, checkSpam);
 	}
 
 	public EasterlynAsyncChatEvent(boolean async, Player who, Set<Player> players, Message message) {

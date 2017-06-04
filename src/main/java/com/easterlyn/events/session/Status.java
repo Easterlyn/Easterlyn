@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * Enum representing the status of Minecraft's servers.
- * 
+ *
  * @author Jikoo
  */
 public enum Status {
@@ -24,12 +24,12 @@ public enum Status {
 
 	/**
 	 * Constructor for Status.
-	 * 
+	 *
 	 * @param announcement the message to broadcast when Status is set
 	 * @param allclear the message to broadcast when Status is changed
 	 * @param MOTD the MOTD to set in the server list
 	 */
-	private Status(String announcement, String allclear, String MOTD) {
+	Status(String announcement, String allclear, String MOTD) {
 		this.announcement = announcement;
 		this.allClear = allclear;
 		this.motd = MOTD;
@@ -37,16 +37,16 @@ public enum Status {
 
 	/**
 	 * Check if the Status has a message to broadcast initially.
-	 * 
+	 *
 	 * @return true if the message is not null
 	 */
 	public boolean hasAnnouncement() {
 		return announcement != null;
 	}
 
-	/** 
+	/**
 	 * Gets the message to broadcast initially.
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getAnnouncement() {
@@ -55,16 +55,16 @@ public enum Status {
 
 	/**
 	 * Check if the Status has a message to broadcast when over.
-	 * 
+	 *
 	 * @return true if the message is not null
 	 */
 	public boolean hasAllClear() {
 		return allClear != null;
 	}
 
-	/** 
+	/**
 	 * Gets the message to broadcast when over.
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getAllClear() {
@@ -73,16 +73,16 @@ public enum Status {
 
 	/**
 	 * Check if the Status has a server list MOTD.
-	 * 
+	 *
 	 * @return true if the message is not null
 	 */
 	public boolean hasMOTDChange() {
 		return motd != null;
 	}
 
-	/** 
+	/**
 	 * Gets the message to set as server list MOTD.
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getMOTDChange() {

@@ -1,17 +1,17 @@
 package com.easterlyn.chat.channel;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
-
 import org.bukkit.Bukkit;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * Defines default channel behavior
@@ -23,9 +23,9 @@ public abstract class Channel {
 	private final Easterlyn plugin;
 	private final Users users;
 	private final ChannelManager manager;
+	private final Set<UUID> listening;
 	/* Immutable Data regarding the channel */
 	protected final String name;
-	protected final Set<UUID> listening;
 	protected final UUID owner;
 
 	/**
@@ -38,7 +38,7 @@ public abstract class Channel {
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.name = name;
 		this.owner = creator;
-		listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 	}
 
 	/**
@@ -113,7 +113,10 @@ public abstract class Channel {
 	 *
 	 * @param message the message to send the channel.
 	 */
-	public abstract void sendMessage(String message);
+	public void sendMessage(String message) {
+		this.getListening().iterator().forEachRemaining(uuid -> this.getUsers().getUser(uuid).sendMessage(message));
+		Logger.getLogger("Minecraft").info(message);
+	}
 
 	/**
 	 * Gets the ChannelManager this Channel is registered in.

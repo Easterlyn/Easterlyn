@@ -1,22 +1,5 @@
 package com.easterlyn;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
@@ -26,17 +9,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.events.Events;
 import com.easterlyn.machines.Machines;
-import com.easterlyn.micromodules.AwayFromKeyboard;
-import com.easterlyn.micromodules.Cooldowns;
-import com.easterlyn.micromodules.FreeCart;
-import com.easterlyn.micromodules.Holograms;
-import com.easterlyn.micromodules.Meteors;
-import com.easterlyn.micromodules.ParticleUtils;
-import com.easterlyn.micromodules.Protections;
-import com.easterlyn.micromodules.RawAnnouncer;
-import com.easterlyn.micromodules.SleepVote;
-import com.easterlyn.micromodules.Spectators;
-import com.easterlyn.micromodules.VillagerAdjustment;
+import com.easterlyn.micromodules.*;
 import com.easterlyn.module.Dependencies;
 import com.easterlyn.module.Dependency;
 import com.easterlyn.module.Module;
@@ -44,20 +17,15 @@ import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
-
 import com.google.common.collect.ImmutableList;
-
 import com.mojang.authlib.GameProfile;
-
 import org.apache.commons.lang3.Validate;
-
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
@@ -67,8 +35,22 @@ import org.bukkit.material.Dye;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import org.reflections.Reflections;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Easterlyn is the base of easterlyn.com's custom plugin. All features are handled by
@@ -84,8 +66,6 @@ public class Easterlyn extends JavaPlugin {
 	/* A reference to Bukkit's internal CommandMap. */
 	private SimpleCommandMap cmdMap;
 
-	private YamlConfiguration resourceHashes;
-
 	@Override
 	public void onEnable() {
 		try {
@@ -96,9 +76,6 @@ public class Easterlyn extends JavaPlugin {
 			getLogger().severe("Could not fetch SimpleCommandMap from CraftServer, Easterlyn commands will fail to register.");
 			getLogger().severe(TextUtils.getTrace(e));
 		}
-
-		saveDefaultConfig();
-		this.reloadResourceHashes();
 
 		createBasePermissions();
 
@@ -326,11 +303,7 @@ public class Easterlyn extends JavaPlugin {
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")
 			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
-			for (Iterator<Map.Entry<String, Command>> iterator = cmdMapKnownCommands.entrySet().iterator(); iterator.hasNext();) {
-				if (iterator.next().getValue() instanceof EasterlynCommand) {
-					iterator.remove();
-				}
-			}
+			cmdMapKnownCommands.entrySet().removeIf(entry -> entry.getValue() instanceof EasterlynCommand);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			getLogger().severe("Unable to modify SimpleCommandMap.knownCommands! Commands cannot be unregistered!");
 			getLogger().severe(TextUtils.getTrace(e));
@@ -375,22 +348,6 @@ public class Easterlyn extends JavaPlugin {
 			saveConfig();
 		}
 		return new GameProfile(uuid, name);
-	}
-
-	/**
-	 * Gets the YamlConfiguration containing resource pack hashes.
-	 * 
-	 * @return the YamlConfiguration
-	 */
-	public YamlConfiguration getResourceHashes() {
-		return this.resourceHashes;
-	}
-
-	/**
-	 * Reloads the resource pack hash file.
-	 */
-	public void reloadResourceHashes() {
-		resourceHashes = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "hashes.yml"));
 	}
 
 	public static <T> boolean areDependenciesPresent(Class<T> clazz) {

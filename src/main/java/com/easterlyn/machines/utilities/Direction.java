@@ -16,27 +16,30 @@ public enum Direction {
 	UP((byte) 0, (byte) 3, (byte) 3, (byte) 2), DOWN((byte) 0, (byte) 3, (byte) 3, (byte) 2);
 
 	/* The byte for rotating a button to face the correct direction. */
-	private byte button;
+	private final byte button;
 
 	/* The byte for rotating a chest or furnace to face the correct direction. */
-	private byte chest;
+	private final byte chest;
 
 	/* The byte for rotating stairs to face the correct direction. */
-	private byte stair;
-	private byte quartzPillar;
+	private final byte stair;
+
+	/* The byte for rotating quartz pillars to face the correct direction. */
+	private final byte quartzPillar;
 
 	/**
 	 * Constructor for Direction.
-	 * 
-	 * @param b the direction number
+	 *
 	 * @param button the button direction byte
 	 * @param chest the chest or furnace direction byte
 	 * @param stair the stair direction byte
+	 * @param quartzPillar the quartz pillar direction byte
 	 */
 	Direction(byte button, byte chest, byte stair, byte quartzPillar) {
 		this.button = button;
 		this.chest = chest;
 		this.stair = stair;
+		this.quartzPillar = quartzPillar;
 	}
 
 	/**

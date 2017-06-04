@@ -1,18 +1,5 @@
 package com.easterlyn.effects;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.effects.effect.BehaviorActive;
@@ -28,13 +15,11 @@ import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.NumberUtils;
 import com.easterlyn.utilities.PermissionUtils;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -43,10 +28,20 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import org.reflections.Reflections;
 
-import net.md_5.bungee.api.ChatColor;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Module for Effects management.
@@ -341,9 +336,7 @@ public class Effects extends Module {
 			if (cap) {
 				entry.setValue(Math.min(entry.getKey().getMaxLevel(), entry.getValue()));
 			}
-			newLore.add(new StringBuilder().append(ChatColor.GRAY)
-					.append(entry.getKey().getName()).append(' ')
-					.append(NumberUtils.romanFromInt(entry.getValue())).toString());
+			newLore.add(ChatColor.GRAY + entry.getKey().getName() + ' ' + NumberUtils.romanFromInt(entry.getValue()));
 		}
 		newLore.addAll(oldLore);
 
@@ -387,23 +380,21 @@ public class Effects extends Module {
 	}
 
 	/**
-	 * Checks if the Effect provided is on cooldown for the given UUID.
+	 * Checks if the Effect provided is on cooldown for the given LivingEntity.
 	 * 
-	 * @param uuid the UUID
+	 * @param entity the LivingEntity
 	 * @param effect the effect
 	 * @return true if the Effect is on cooldown.
 	 */
 	public boolean isOnCooldown(LivingEntity entity, Effect effect) {
-		if (!(effect instanceof BehaviorCooldown)) {
-			return false;
-		}
-		return cooldowns.getRemainder(entity, ((BehaviorCooldown) effect).getCooldownName()) > 0;
+		return effect instanceof BehaviorCooldown
+				&& cooldowns.getRemainder(entity, ((BehaviorCooldown) effect).getCooldownName()) > 0;
 	}
 
 	/**
-	 * Starts the cooldown for the given UUID and Effect.
+	 * Starts the cooldown for the given LivingEntity and Effect.
 	 * 
-	 * @param uuid the UUID
+	 * @param entity the LivingEntity
 	 * @param effect the Effect
 	 */
 	public void startCooldown(LivingEntity entity, Effect effect) {

@@ -1,10 +1,9 @@
 package com.easterlyn.chat.channel;
 
-import java.util.UUID;
-import java.util.logging.Logger;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.users.User;
+
+import java.util.logging.Logger;
 
 public class RegionChannel extends Channel {
 
@@ -19,16 +18,16 @@ public class RegionChannel extends Channel {
 	/**
 	 * Allows chat suppression for global channels.
 	 * 
-	 * @see com.easterlyn.chat.channel.Channel#sendMessage(User, String, boolean)
+	 * @see com.easterlyn.chat.channel.Channel#sendMessage(String)
 	 */
 	@Override
 	public void sendMessage(String message) {
-		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User user = getUsers().getUser(userID);
+		this.getListening().iterator().forEachRemaining(uuid -> {
+			User user = getUsers().getUser(uuid);
 			if (!user.getSuppression()) {
 				user.sendMessage(message);
 			}
-		}
+		});
 		Logger.getLogger("Minecraft").info(message);
 	}
 

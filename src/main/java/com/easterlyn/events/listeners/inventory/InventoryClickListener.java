@@ -75,10 +75,8 @@ public class InventoryClickListener extends EasterlynListener {
 		Machine m;
 		if (ih != null && ih instanceof Machine) {
 			m = (Machine) ih;
-			if (m != null) {
-				event.setCancelled(m.handleClick(event, null));
-				return;
-			}
+			event.setCancelled(m.handleClick(event, null));
+			return;
 		}
 
 		boolean top = event.getRawSlot() == event.getView().convertSlot(event.getRawSlot());
@@ -152,7 +150,7 @@ public class InventoryClickListener extends EasterlynListener {
 		case MIDDLE:
 		case UNKNOWN:
 		default:
-			return;
+			break;
 		}
 	}
 
@@ -203,7 +201,6 @@ public class InventoryClickListener extends EasterlynListener {
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
 				&& InventoryUtils.isUniqueItem(getPlugin(), event.getCurrentItem())) {
 			event.setResult(Result.DENY);
-			return;
 		}
 	}
 
@@ -233,7 +230,7 @@ public class InventoryClickListener extends EasterlynListener {
 	/**
 	 * EventHandler for inventory clicks that are guaranteed to have occurred.
 	 * 
-	 * @param event
+	 * @param event the InventoryClickEvent
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onInventoryClickHasOccurred(InventoryClickEvent event) {
@@ -246,7 +243,7 @@ public class InventoryClickListener extends EasterlynListener {
 		final InventoryView view = event.getView();
 
 		if (view.getTopInventory().getType() != InventoryType.ANVIL
-				|| !((Player) event.getWhoClicked()).hasPermission("easterlyn.blaze")) {
+				|| !event.getWhoClicked().hasPermission("easterlyn.blaze")) {
 			return;
 		}
 

@@ -1,19 +1,5 @@
 package com.easterlyn.captcha;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.effects.Effects;
@@ -22,13 +8,11 @@ import com.easterlyn.module.Module;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.JSONUtil;
 import com.easterlyn.utilities.NumberUtils;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -41,7 +25,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
-import net.md_5.bungee.api.ChatColor;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Module for Captchacards, Punchcards, and Totems.
@@ -50,7 +45,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class Captcha extends Module {
 
-	protected static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
+	static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
 
 	private final LoadingCache<String, ItemStack> cache;
 
@@ -60,12 +55,7 @@ public class Captcha extends Module {
 	public Captcha(Easterlyn plugin) {
 		super(plugin);
 		this.cache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES)
-				.removalListener(new RemovalListener<String, ItemStack>() {
-					@Override
-					public void onRemoval(RemovalNotification<String, ItemStack> notification) {
-						save(notification.getKey(), notification.getValue());
-					}
-				})
+				.removalListener((RemovalListener<String, ItemStack>) notification -> save(notification.getKey(), notification.getValue()))
 				.build(new CacheLoader<String, ItemStack>() {
 
 					@Override
@@ -167,7 +157,7 @@ public class Captcha extends Module {
 		ItemStack card = blankCaptchaCard();
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta meta = item.getItemMeta();
-		ArrayList<String> cardLore = new ArrayList<String>();
+		ArrayList<String> cardLore = new ArrayList<>();
 		StringBuilder builder = new StringBuilder().append(Language.getColor("emphasis.neutral")).append(item.getAmount()).append(' ');
 		if (isCaptcha(item)) {
 			builder.append("Captcha of ").append(meta.getLore().get(0));
@@ -203,7 +193,7 @@ public class Captcha extends Module {
 		ItemStack is = new ItemStack(Material.BOOK);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName("Captchacard");
-		im.setLore(Arrays.asList("Blank"));
+		im.setLore(Collections.singletonList("Blank"));
 		is.setItemMeta(im);
 		return is;
 	}
@@ -217,7 +207,7 @@ public class Captcha extends Module {
 	private void insertCaptchaRecipe() {
 
 		// Remove and store existing recipes for the correct material
-		List<Recipe> recipes = new ArrayList<Recipe>();
+		List<Recipe> recipes = new ArrayList<>();
 		Iterator<Recipe> iterator = Bukkit.recipeIterator();
 		Material toRemove = blankCaptchaCard().getType();
 		while (iterator.hasNext()) {
@@ -266,9 +256,6 @@ public class Captcha extends Module {
 	 * @return the Captchacard representing by this ItemStack
 	 */
 	public ItemStack itemToCaptcha(ItemStack item) {
-		if (item.isSimilar(machines.getMachineByName("Computer").getUniqueDrop())) {
-			return createLorecard(ChatColor.GRAY + "Computer I");
-		}
 		return getCaptchaFor(getHashByItem(item));
 	}
 
@@ -281,25 +268,11 @@ public class Captcha extends Module {
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	public ItemStack captchaToItem(ItemStack card) {
-		return captchaToItem(card, false);
-	}
-
-	/**
-	 * Converts a Captchacard into an ItemStack. Also used for Punchcards and
-	 * Cruxite Dowels.
-	 * 
-	 * @param card the Captchacard ItemStack
-	 * @param loreCard true if Lorecards are to be converted to a combinable object.
-	 * 
-	 * @return the ItemStack represented by this Captchacard
-	 */
-	private ItemStack captchaToItem(ItemStack card, boolean loreCard) {
 		if (card == null) {
 			return null;
 		}
-		if ((!isCard(card) && !CruxiteDowel.isUsedDowel(card))
-				|| !loreCard && card.getItemMeta().getDisplayName().equals("Lorecard")) {
-			// Lore card and not being combined or not a captcha
+		if (!isCard(card) && !CruxiteDowel.isUsedDowel(card)) {
+			// Not a card.
 			card = card.clone();
 			card.setAmount(1);
 			return card;
@@ -411,22 +384,11 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Check if an ItemStack is a valid single Punchcard.
-	 * 
-	 * @param is the ItemStack to check
-	 * 
-	 * @return true if the ItemStack is a single Punchcard
-	 */
-	public static boolean isSinglePunch(ItemStack is) {
-		return isPunch(is) && is.getAmount() == 1;
-	}
-
-	/**
 	 * Check if an ItemStack can be turned into a captchacard. The only items that cannot be put
 	 * into a captcha are other captchas of captchas and unique Machine key items.
 	 * 
 	 * @param item the ItemStack to check
-	 * @return
+	 * @return true if the ItemStack can be saved as a captchacard
 	 */
 	public boolean canCaptcha(ItemStack item) {
 		if (item == null || item.getType() == Material.AIR
@@ -537,7 +499,7 @@ public class Captcha extends Module {
 			return;
 		}
 
-		ItemStack captcha = itemToCaptcha(toCaptcha);;
+		ItemStack captcha = itemToCaptcha(toCaptcha);
 		event.setResult(Result.DENY);
 
 		// Decrement captcha stack
@@ -565,23 +527,6 @@ public class Captcha extends Module {
 			}
 		}
 		((Player) event.getWhoClicked()).updateInventory();
-	}
-
-	/**
-	 * Creates a lorecard with the given lore.
-	 * 
-	 * @param lore the lore to add to the lorecard
-	 * @return the lorecard
-	 */
-	public static ItemStack createLorecard(String lore) {
-		ItemStack card = new ItemStack(Material.BOOK);
-		ItemMeta im = card.getItemMeta();
-		ArrayList<String> loreList = new ArrayList<>();
-		loreList.add('>' + lore);
-		im.setLore(loreList);
-		im.setDisplayName("Lorecard");
-		card.setItemMeta(im);
-		return card;
 	}
 
 	public int convert(Player player) {

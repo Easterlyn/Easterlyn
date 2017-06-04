@@ -1,27 +1,25 @@
 package com.easterlyn.commands.fun;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Meteorite;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PlayerUtils;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 /**
  * EasterlynCommand for summoning a meteor.
- * 
+ *
  * @author Jikoo
  */
 public class MeteorCommand extends EasterlynCommand {
@@ -84,7 +82,6 @@ public class MeteorCommand extends EasterlynCommand {
 			// set meteor to bore mode (default behavior: bore if not highest block)
 			if (identifier == 'b') {
 				bore = argument.equalsIgnoreCase("true") ? 1 : 0;
-				continue;
 			}
 		}
 		if (target == null) {

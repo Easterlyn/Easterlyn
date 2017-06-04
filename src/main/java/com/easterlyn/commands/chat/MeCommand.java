@@ -1,23 +1,20 @@
 package com.easterlyn.commands.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.message.MessageBuilder;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
-
 import com.google.common.collect.ImmutableList;
-
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * EasterlynCommand for performing an emote.
@@ -66,7 +63,7 @@ public class MeCommand extends EasterlynAsynchronousCommand {
 		}
 		User user = users.getUser(((Player) sender).getUniqueId());
 		ArrayList<String> matches = new ArrayList<>();
-		String toMatch = args.length == 0 || args[0].isEmpty() ? new String() : args[0].substring(1);
+		String toMatch = args.length == 0 || args[0].isEmpty() ? "" : args[0].substring(1);
 		for (String s : user.getListening()) {
 			if (StringUtil.startsWithIgnoreCase(s, toMatch)) {
 				matches.add('@' + s);

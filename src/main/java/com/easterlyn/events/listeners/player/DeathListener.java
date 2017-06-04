@@ -1,7 +1,5 @@
 package com.easterlyn.events.listeners.player;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.Events;
@@ -9,7 +7,6 @@ import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.FreeCart;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.Experience;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,6 +20,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Listener for PlayerDeathEvents.
@@ -81,9 +80,7 @@ public class DeathListener extends EasterlynListener {
 			new BukkitRunnable() {
 				@Override
 				public void run() {
-					if (player != null) {
-						player.getInventory().addItem(facts);
-					}
+					player.getInventory().addItem(facts);
 				}
 			}.runTask(getPlugin());
 		}

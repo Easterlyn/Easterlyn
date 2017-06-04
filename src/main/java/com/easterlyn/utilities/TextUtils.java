@@ -1,16 +1,15 @@
 package com.easterlyn.utilities;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.validator.routines.UrlValidator;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A collection of useful String-altering functions. Not named StringUtils for ease due to our use
  * of the Apache class by the same name.
- * 
+ *
  * @author Jikoo
  */
 public class TextUtils {
@@ -19,7 +18,7 @@ public class TextUtils {
 	private static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 
-	public static class MatchedURL {
+	static class MatchedURL {
 		private final String urlString, urlPath;
 
 		private MatchedURL(String urlString, String urlPath) {
@@ -63,9 +62,9 @@ public class TextUtils {
 	}
 	/**
 	 * Trims additional spaces, including ones surrounding chat colors.
-	 * 
+	 *
 	 * @param s the String to trim
-	 * 
+	 *
 	 * @return the trimmed String
 	 */
 	public static String trimExtraWhitespace(String s) {
@@ -82,9 +81,9 @@ public class TextUtils {
 
 	/**
 	 * Checks if a String is nothing but ChatColors and whitespace.
-	 * 
+	 *
 	 * @param s the String to check
-	 * 
+	 *
 	 * @return true if the String will appear empty to the client
 	 */
 	public static boolean appearsEmpty(String s) {
@@ -93,9 +92,9 @@ public class TextUtils {
 
 	/**
 	 * Returns a more user-friendly version of standard Enum names.
-	 * 
+	 *
 	 * @param e the Enum to prettify
-	 * 
+	 *
 	 * @return the user-friendly version of the name
 	 */
 	public static String getFriendlyName(Enum<?> e) {
@@ -104,9 +103,9 @@ public class TextUtils {
 
 	/**
 	 * Returns a more user-friendly version of standard Enum names.
-	 * 
+	 *
 	 * @param name the name to prettify
-	 * 
+	 *
 	 * @return the user-friendly version of the name
 	 */
 	public static String getFriendlyName(String name) {

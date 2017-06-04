@@ -18,12 +18,12 @@ import org.bukkit.permissions.PermissionAttachment;
 /**
  * A base for effects that respect protection plugins by simulating block placements when modifying
  * adjacent blocks.
- * 
+ *
  * @author Jikoo
  */
 public abstract class EffectAdjacentBlockPlacement extends EffectAdjacentBlockModifier {
 
-	protected EffectAdjacentBlockPlacement(Easterlyn plugin, int cost, String name, Material... updateMaterials) {
+	EffectAdjacentBlockPlacement(Easterlyn plugin, int cost, String name, Material... updateMaterials) {
 		super(plugin, cost, name, updateMaterials);
 	}
 
@@ -36,7 +36,7 @@ public abstract class EffectAdjacentBlockPlacement extends EffectAdjacentBlockMo
 		player.removeAttachment(attachment);
 	}
 
-	protected boolean handleBlockSet(Player player, Block block, Material toMaterial) {
+	boolean handleBlockSet(Player player, Block block, Material toMaterial) {
 		// Capture state and change block - prevents certain plugins assuming block being placed is of the replaced material
 		BlockState state = block.getState();
 		block.setType(toMaterial, false);

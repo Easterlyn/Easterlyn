@@ -1,5 +1,31 @@
 package com.easterlyn.users;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.chat.ChannelManager;
+import com.easterlyn.chat.Chat;
+import com.easterlyn.chat.Language;
+import com.easterlyn.chat.channel.AccessLevel;
+import com.easterlyn.chat.channel.Channel;
+import com.easterlyn.chat.channel.NickChannel;
+import com.easterlyn.chat.channel.RegionChannel;
+import com.easterlyn.chat.message.MessageBuilder;
+import com.easterlyn.discord.Discord;
+import com.easterlyn.effects.Effects;
+import com.easterlyn.effects.effect.BehaviorGodtier;
+import com.easterlyn.effects.effect.BehaviorPassive;
+import com.easterlyn.effects.effect.BehaviorReactive;
+import com.easterlyn.effects.effect.Effect;
+import com.easterlyn.utilities.PlayerUtils;
+import net.md_5.bungee.api.ChatColor;
+import org.apache.commons.lang3.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -18,35 +44,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.ChannelManager;
-import com.easterlyn.chat.Chat;
-import com.easterlyn.chat.Language;
-import com.easterlyn.chat.channel.AccessLevel;
-import com.easterlyn.chat.channel.Channel;
-import com.easterlyn.chat.channel.NickChannel;
-import com.easterlyn.chat.channel.RegionChannel;
-import com.easterlyn.chat.message.MessageBuilder;
-import com.easterlyn.discord.Discord;
-import com.easterlyn.effects.Effects;
-import com.easterlyn.effects.effect.BehaviorGodtier;
-import com.easterlyn.effects.effect.BehaviorPassive;
-import com.easterlyn.effects.effect.BehaviorReactive;
-import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.utilities.PlayerUtils;
-
-import org.apache.commons.lang3.StringUtils;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Storage and access of all data saved for a User.
@@ -81,7 +78,7 @@ public class User {
 		this.uuid = uuid;
 		this.yaml = yaml;
 		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-		this.lastChat = new String();
+		this.lastChat = "";
 		this.violationLevel = new AtomicInteger();
 		this.spamWarned = new AtomicBoolean();
 	}
@@ -120,10 +117,6 @@ public class User {
 	 */
 	public String getUserIP() {
 		return yaml.getString("ip", "null");
-	}
-
-	public void setUserIP(String userIP) {
-		yaml.set("ip", userIP);
 	}
 
 	/**
@@ -175,7 +168,7 @@ public class User {
 	/**
 	 * Sets the User's UserAspect.
 	 * 
-	 * @param userAspectName the new UserAspect
+	 * @param userAspect the new UserAspect
 	 */
 	public void setUserAspect(UserAspect userAspect) {
 		yaml.set("classpect.aspect", userAspect.toString());
@@ -200,7 +193,7 @@ public class User {
 			public void run() {
 				Player player = getPlayer();
 				if (player == null) {
-					getYamlConfiguration().set("flying", false);
+					yaml.set("flying", false);
 					return;
 				}
 				boolean allowFlight = player.getWorld().getName().equals("Derspit")
@@ -211,7 +204,7 @@ public class User {
 				}
 				player.setAllowFlight(allowFlight);
 				player.setFlying(allowFlight);
-				getYamlConfiguration().set("flying", allowFlight);
+				yaml.set("flying", allowFlight);
 			}
 		}.runTaskLater(getPlugin(), 10L);
 	}
@@ -282,7 +275,7 @@ public class User {
 	/**
 	 * Sets a Location to teleport the Player to when logging in.
 	 * 
-	 * @param location
+	 * @param location the Location to teleport to on join
 	 */
 	public void setLoginLocation(Location location) {
 		yaml.set("loginLocation", location);
@@ -293,7 +286,7 @@ public class User {
 	 * 
 	 * @return the Player's time ingame
 	 */
-	public String getTimePlayed() {
+	private String getTimePlayed() {
 		long time = getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
 		long days = time / (24 * 60 * 60 * 20);
 		time -= days * 24 * 60 * 60 * 20;
@@ -429,7 +422,7 @@ public class User {
 			this.sendMessage(lang.getValue("chat.error.private").replace("{CHANNEL}", channel.getName()));
 			return false;
 		}
-		if (!this.getListening().contains(channel)) {
+		if (!this.getListening().contains(channel.getName())) {
 			this.getListening().add(channel.getName());
 		}
 		if (!channel.getListening().contains(this.getUUID())) {
@@ -468,7 +461,7 @@ public class User {
 		}
 		String base = lang.getValue("chat.channel.join", true).replace("{PLAYER}", this.getDisplayName());
 
-		String all = base.toString().replace("{CHANNEL}", StringUtils.join(getListening(), ", "));
+		String all = base.replace("{CHANNEL}", StringUtils.join(getListening(), ", "));
 		int lastComma = all.lastIndexOf(',');
 		if (lastComma > -1) {
 			all = all.substring(0, lastComma) + " and" + all.substring(lastComma + 1);
@@ -586,21 +579,10 @@ public class User {
 	 * 
 	 * @param channel the Channel to check for
 	 * 
-	 * @return true if the Player is listening to c
+	 * @return true if the Player is listening to the Channel
 	 */
 	public boolean isListening(Channel channel) {
 		return this.listening.contains(channel.getName());
-	}
-
-	/**
-	 * Check if the Player is listening to a specific Channel.
-	 * 
-	 * @param channelName the Channel name to check for
-	 * 
-	 * @return true if the Player is listening to c
-	 */
-	public boolean isListening(String channelName) {
-		return this.listening.contains(channelName);
 	}
 
 	/**
@@ -742,7 +724,7 @@ public class User {
 	/**
 	 * Gets a List of commands to be sent on login.
 	 * 
-	 * @return
+	 * @return the List of commands to run on login
 	 */
 	public List<String> getLoginCommands() {
 		return yaml.getStringList("misc.logincommands");
@@ -751,7 +733,7 @@ public class User {
 	/**
 	 * Sets a List of commands to be sent on login.
 	 * 
-	 * @param commands
+	 * @param commands the List of commands to run on login
 	 */
 	public void setLoginCommands(List<String> commands) {
 		yaml.set("misc.logincommands", commands);
@@ -843,10 +825,6 @@ public class User {
 		return Bukkit.getOfflinePlayer(getUUID()).isOnline();
 	}
 
-	protected YamlConfiguration getYamlConfiguration() {
-		return yaml;
-	}
-
 	public void save() {
 		File folder = new File(getPlugin().getDataFolder(), "users");
 		if (!folder.exists()) {
@@ -894,7 +872,7 @@ public class User {
 			}
 
 			User user = new User(plugin, uuid, new YamlConfiguration());
-			user.setUserIP(player.getAddress().getHostString());
+			user.yaml.set("ip", player.getAddress().getHostString());
 
 			Chat chat = plugin.getModule(Chat.class);
 			Channel hash = chat.getChannelManager().getChannel("#");
@@ -923,11 +901,7 @@ public class User {
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 		User user = new User(plugin, uuid, yaml);
 		if (user.isOnline()) {
-			user.setUserIP(user.getPlayer().getAddress().getHostString());
-			Location currentLoc = user.getPlayer().getLocation();
-			if (currentLoc == null) {
-				currentLoc = Bukkit.getWorlds().get(0).getSpawnLocation();
-			}
+			yaml.set("ip", user.getPlayer().getAddress().getHostString());
 		}
 		Channel currentChannel = user.manager.getChannel(yaml.getString("chat.current", "#"));
 		if (currentChannel != null && !currentChannel.isBanned(user) && currentChannel.isApproved(user)) {

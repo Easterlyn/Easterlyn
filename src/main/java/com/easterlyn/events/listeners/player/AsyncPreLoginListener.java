@@ -1,11 +1,5 @@
 package com.easterlyn.events.listeners.player;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.events.Events;
@@ -13,17 +7,20 @@ import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PermissionBridge;
 import com.easterlyn.utilities.PermissionUtils;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Proxy detection, because apparently this is an issue.
@@ -56,7 +53,7 @@ public class AsyncPreLoginListener extends EasterlynListener {
 			ipCache.put(ip, allowed);
 		}
 		if (!allowed) {
-			allowed =  PermissionBridge.getInstance().hasPermission(event.getUniqueId(), "easterlyn.events.login.proxy");
+			allowed = PermissionBridge.getInstance().hasPermission(event.getUniqueId(), "easterlyn.events.login.proxy");
 			if (allowed) {
 				// Players with permission can allow a blocked IP for 30 minutes by logging in from it
 				ipCache.put(ip, allowed);

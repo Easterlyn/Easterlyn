@@ -50,7 +50,7 @@ public class DiscordReadyListener implements IListener<ReadyEvent> {
 			discord.getLogger().info(sb.toString());
 		});
 
-		discord.getClient().getUsers().forEach(user -> discord.updateUser(user));
+		discord.getClient().getUsers().forEach(discord::updateUser);
 	}
 
 }

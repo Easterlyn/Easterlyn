@@ -1,9 +1,5 @@
 package com.easterlyn.chat.message;
 
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
@@ -15,16 +11,18 @@ import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.JSONUtil;
 import com.easterlyn.utilities.TextUtils;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
-
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
+
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Builder for Messages. In most cases, set sender, channel, and finally message. In the event that
@@ -44,9 +42,7 @@ public class MessageBuilder {
 		HIGHLIGHTED_BRACKET = new TextComponent("!!");
 		HIGHLIGHTED_BRACKET.setColor(ChatColor.AQUA);
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("%1$s[%2$s%3$s%1$s]%4$s <%5$s%6$s%4$s> ").append(ChatColor.WHITE).append("%6$s");
-		CONSOLE_FORMAT = sb.toString();
+		CONSOLE_FORMAT = "%1$s[%2$s%3$s%1$s]%4$s <%5$s%6$s%4$s> " + ChatColor.WHITE + "%6$s";
 		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
 
 		NAME_PATTERN = Pattern.compile("\\{PLAYER\\}");
@@ -157,7 +153,7 @@ public class MessageBuilder {
 	 * Sets Message display name tooltip text.
 	 * <p>
 	 * If the tooltip will not change between uses, it is preferred that you use
-	 * {@link MessageBuilder#setNameHover(TextComponent)} and store the value.
+	 * {@link MessageBuilder#setNameHover(BaseComponent...)} and store the value.
 	 * 
 	 * @param hover the String to display
 	 * 
@@ -298,7 +294,7 @@ public class MessageBuilder {
 
 		TextComponent channelComponent = new TextComponent(components.toArray(new BaseComponent[components.size()]));
 		if (channelClick == null) {
-			channelClick = new StringBuilder("@").append(channel.getName()).append(' ').toString();
+			channelClick = '@' + channel.getName() + ' ';
 		}
 		channelComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, channelClick));
 		TextComponent channelHighlightComponent = new TextComponent(channelHighlightComponents.toArray(new BaseComponent[channelHighlightComponents.size()]));
@@ -431,7 +427,7 @@ public class MessageBuilder {
 
 		TextComponent nameComponent = new TextComponent(components.toArray(new BaseComponent[components.size()]));
 		if (nameClick == null && player != null) {
-			nameClick = new StringBuilder("/m ").append(player.getName()).append(' ').toString();
+			nameClick = "/m " + player.getName() + ' ';
 		}
 		nameComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, nameClick));
 		if (nameHover != null) {

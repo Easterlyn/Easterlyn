@@ -1,15 +1,14 @@
 package com.easterlyn.chat.channel;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.chat.Language;
+import com.easterlyn.users.User;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
-
-import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.Language;
-import com.easterlyn.users.User;
 
 /**
  * Defines normal channel behavior.
@@ -20,9 +19,9 @@ public class NormalChannel extends Channel {
 
 	private final Language lang;
 	protected final AccessLevel access;
-	protected final Set<UUID> approvedList;
-	protected final Set<UUID> modList;
-	protected final Set<UUID> banList;
+	private final Set<UUID> approvedList;
+	private final Set<UUID> modList;
+	private final Set<UUID> banList;
 	private final AtomicLong lastAccessed;
 
 	public NormalChannel(Easterlyn plugin, String name, AccessLevel access, UUID creator, long lastAccessed) {
@@ -97,7 +96,7 @@ public class NormalChannel extends Channel {
 	/**
 	 * Method used by database to load a ban silently.
 	 *
-	 * @param user the UUID to add as a ban
+	 * @param userID the UUID to add as a ban
 	 */
 	public void addBan(UUID userID) {
 		this.banList.add(userID);
@@ -106,10 +105,10 @@ public class NormalChannel extends Channel {
 	/**
 	 * Method used by database to load a moderator silently.
 	 *
-	 * @param user the name to add as a moderator
+	 * @param userID the UUID to add as a moderator
 	 */
-	public void addModerator(UUID id) {
-		modList.add(id);
+	public void addModerator(UUID userID) {
+		modList.add(userID);
 	}
 
 	/**
@@ -127,7 +126,7 @@ public class NormalChannel extends Channel {
 		if (!this.isModerator(user)) {
 			this.modList.add(userID);
 			this.sendMessage(message);
-			if (!this.listening.contains(userID)) {
+			if (!this.getListening().contains(userID)) {
 				user.sendMessage(message);
 			}
 		} else {
@@ -150,7 +149,7 @@ public class NormalChannel extends Channel {
 		if (this.modList.contains(userID) && !this.isOwner(user)) {
 			this.modList.remove(userID);
 			this.sendMessage(message);
-			if (!this.listening.contains(userID)) {
+			if (!this.getListening().contains(userID)) {
 				user.sendMessage(message);
 			}
 		} else {
@@ -159,6 +158,8 @@ public class NormalChannel extends Channel {
 	}
 
 	/**
+	 * Kick a User from a Channel.
+	 *
 	 * @param sender the user attempting to kick
 	 * @param userID the user who might be kicked
 	 */
@@ -172,9 +173,9 @@ public class NormalChannel extends Channel {
 				.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
 		if (this.isOwner(user)) {
 			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
-		} else if (listening.contains(user.getPlayerName())) {
+		} else if (this.getListening().contains(user.getUUID())) {
 			this.sendMessage(message);
-			this.listening.remove(user.getUUID());
+			this.getListening().remove(user.getUUID());
 			user.removeListening(this.getName());
 		} else {
 			sender.sendMessage(message);
@@ -198,7 +199,7 @@ public class NormalChannel extends Channel {
 			this.approvedList.remove(userID);
 			this.banList.add(userID);
 			this.sendMessage(message);
-			if (listening.contains(userID)) {
+			if (this.getListening().contains(userID)) {
 				user.removeListening(this.getName());
 			}
 		} else {
@@ -227,36 +228,34 @@ public class NormalChannel extends Channel {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(lang.getValue("chat.error.unsupportedOperation").replace("{CHANNEL}", this.getName()));
 			return;
-		} else {
-			User user = getUsers().getUser(target);
-			String message = lang.getValue("chat.channel.approve")
-					.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
-			if (this.isApproved(user)) {
-				sender.sendMessage(message);
-				return;
-			}
-			approvedList.add(target);
-			this.sendMessage(message);
-			user.sendMessage(message);
 		}
+		User user = getUsers().getUser(target);
+		String message = lang.getValue("chat.channel.approve")
+				.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
+		if (this.isApproved(user)) {
+			sender.sendMessage(message);
+			return;
+		}
+		approvedList.add(target);
+		this.sendMessage(message);
+		user.sendMessage(message);
 	}
 
 	public void disapproveUser(User sender, UUID target) {
 		if (this.getAccess().equals(AccessLevel.PUBLIC)) {
 			sender.sendMessage(lang.getValue("chat.error.unsupportedOperation").replace("{CHANNEL}", this.getName()));
 			return;
-		} else {
-			User user = getUsers().getUser(target);
-			String message = lang.getValue("chat.channel.deapprove")
-					.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
-			if (!this.isApproved(user)) {
-				sender.sendMessage(message);
-				return;
-			}
-			approvedList.remove(target);
-			this.sendMessage(message);
-			user.removeListeningSilent(this);
 		}
+		User user = getUsers().getUser(target);
+		String message = lang.getValue("chat.channel.deapprove")
+				.replace("{CHANNEL}", this.getName()).replace("{PLAYER}", user.getDisplayName());
+		if (!this.isApproved(user)) {
+			sender.sendMessage(message);
+			return;
+		}
+		approvedList.remove(target);
+		this.sendMessage(message);
+		user.removeListeningSilent(this);
 	}
 
 	public Set<UUID> getApprovedUsers() {
@@ -298,23 +297,8 @@ public class NormalChannel extends Channel {
 			return;
 		}
 		this.sendMessage(lang.getValue("chat.channel.disband").replace("{CHANNEL}", this.getName()));
-		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			getUsers().getUser(userID).removeListeningSilent(this);
-		}
+		this.getListening().iterator().forEachRemaining(uuid -> this.getUsers().getUser(uuid).removeListeningSilent(this));
 		getChannelManager().dropChannel(this.name);
-	}
-
-	@Override
-	public void sendMessage(String message) {
-		for (UUID userID : this.listening.toArray(new UUID[0])) {
-			User u = getUsers().getUser(userID);
-			if (u == null) {
-				listening.remove(userID);
-				continue;
-			}
-			u.sendMessage(message);
-		}
-		Logger.getLogger("Minecraft").info(message);
 	}
 
 }

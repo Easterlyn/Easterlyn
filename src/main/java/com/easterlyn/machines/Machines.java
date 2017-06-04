@@ -1,27 +1,13 @@
 package com.easterlyn.machines;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.module.Module;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -32,8 +18,18 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import org.reflections.Reflections;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A Module for handling Block structures with special functions.
@@ -113,7 +109,6 @@ public class Machines extends Module {
 	 * @param type the type of the Machine
 	 * @param owner the owner of the Machine
 	 * @param direction the facing direction
-	 * @param data the additional data stored by the Machine
 	 * 
 	 * @return the Machine created
 	 */
@@ -402,10 +397,7 @@ public class Machines extends Module {
 			return false;
 		}
 		Map<Integer, Map<String, Location>> zworld = yzworld.get(y);
-		if (!zworld.containsKey(z)) {
-			return false;
-		}
-		return zworld.get(z).containsKey(worldName);
+		return zworld.containsKey(z) && zworld.get(z).containsKey(worldName);
 	}
 
 	/**
@@ -439,7 +431,7 @@ public class Machines extends Module {
 		if (section == null) {
 			return null;
 		}
-		return new ImmutablePair<Machine, ConfigurationSection>(byName.get(section.getString("type")), section);
+		return new ImmutablePair<>(byName.get(section.getString("type")), section);
 	}
 
 	/**
@@ -517,9 +509,9 @@ public class Machines extends Module {
 	}
 
 	/**
-	 * Flags block(s) as having been exploded.
+	 * Flags Block(s) as having been exploded.
 	 * 
-	 * @param b the Block
+	 * @param blocks the Blocks
 	 */
 	public void addExplodedBlock(Collection<Block> blocks) {
 		for (Block block : blocks) {
@@ -528,7 +520,7 @@ public class Machines extends Module {
 	}
 
 	/**
-	 * Checks to see if a Machine block is exploded.
+	 * Checks to see if a Machine Block is exploded.
 	 * 
 	 * @param block the Block to check
 	 * 
@@ -548,9 +540,9 @@ public class Machines extends Module {
 	}
 
 	/**
-	 * Register stored blocks as not to be regenerated. For use when a Machine is broken.
+	 * Register stored Blocks as not to be regenerated. For use when a Machine is broken.
 	 * 
-	 * @param blocks
+	 * @param blocks the Blocks
 	 */
 	public void setRemoved(Block... blocks) {
 		for (Block b : blocks) {

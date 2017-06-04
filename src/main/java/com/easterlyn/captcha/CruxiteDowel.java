@@ -1,21 +1,11 @@
 package com.easterlyn.captcha;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -32,7 +22,14 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A class for handling all functions of cruxite dowels.
@@ -48,7 +45,7 @@ public class CruxiteDowel {
 		DOWEL_ITEM = new ItemStack(Material.NETHER_BRICK_ITEM);
 		ItemMeta meta = DOWEL_ITEM.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Cruxite Totem");
-		meta.setLore(Arrays.asList(Captcha.HASH_PREFIX + "00000000"));
+		meta.setLore(Collections.singletonList(Captcha.HASH_PREFIX + "00000000"));
 		DOWEL_ITEM.setItemMeta(meta);
 	}
 
@@ -66,7 +63,7 @@ public class CruxiteDowel {
 				&& is.getItemMeta().getDisplayName().equals(ChatColor.WHITE + "Cruxite Totem");
 	}
 
-	public static boolean isUsedDowel(ItemStack is) {
+	static boolean isUsedDowel(ItemStack is) {
 		return isDowel(is) && is.getItemMeta().hasLore();
 	}
 
@@ -232,7 +229,7 @@ public class CruxiteDowel {
 		return enchantCost;
 	}
 
-	public static Map<Pair<Material, Short>, Double> getMana() {
+	static Map<Pair<Material, Short>, Double> getMana() {
 		if (manaMappings == null) {
 			manaMappings = createBaseMana();
 			// Fill from recipes
@@ -266,7 +263,7 @@ public class CruxiteDowel {
 			case SAND:
 			case SEEDS:
 			case SNOW_BALL:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 1D);
+				values.put(new ImmutablePair<>(material, omni), 1D);
 				break;
 			case CACTUS:
 			case CARROT_ITEM:
@@ -283,7 +280,7 @@ public class CruxiteDowel {
 			case WATER_LILY:
 			case YELLOW_FLOWER:
 			case CHORUS_FRUIT:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 2D);
+				values.put(new ImmutablePair<>(material, omni), 2D);
 				break;
 			case BROWN_MUSHROOM:
 			case NETHERRACK:
@@ -292,26 +289,26 @@ public class CruxiteDowel {
 			case POTATO_ITEM:
 			case ROTTEN_FLESH:
 			case STONE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 3D);
+				values.put(new ImmutablePair<>(material, omni), 3D);
 				break;
 			case ARROW:
 			case DOUBLE_PLANT:
 			case FEATHER:
 			case RAW_CHICKEN:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 4D);
+				values.put(new ImmutablePair<>(material, omni), 4D);
 				break;
 			case CLAY_BRICK:
 			case FLINT:
 			case RABBIT:
 			case RAW_FISH:
 			case WOOL:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 5D);
+				values.put(new ImmutablePair<>(material, omni), 5D);
 				break;
 			case BAKED_POTATO:
 			case EGG:
 			case NETHER_BRICK:
 			case PUMPKIN:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 6D);
+				values.put(new ImmutablePair<>(material, omni), 6D);
 				break;
 			case COOKED_CHICKEN:
 			case LOG:
@@ -320,13 +317,13 @@ public class CruxiteDowel {
 			case RAW_BEEF:
 			case REDSTONE:
 			case STRING:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 8D);
+				values.put(new ImmutablePair<>(material, omni), 8D);
 				break;
 			case COOKED_FISH:
 			case NETHER_WARTS:
 			case NETHER_STALK: // Same thing as warts in 1.8 inventories
 			case PRISMARINE_SHARD:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 9D);
+				values.put(new ImmutablePair<>(material, omni), 9D);
 				break;
 			case ENDER_STONE:
 			case GLOWSTONE_DUST:
@@ -337,7 +334,7 @@ public class CruxiteDowel {
 			case PORK:
 			case SLIME_BALL:
 			case STAINED_GLASS:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 10D);
+				values.put(new ImmutablePair<>(material, omni), 10D);
 				break;
 			case APPLE:
 			case BONE:
@@ -347,57 +344,57 @@ public class CruxiteDowel {
 			case RABBIT_FOOT:
 			case SPIDER_EYE:
 			case INK_SACK:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 12D);
+				values.put(new ImmutablePair<>(material, omni), 12D);
 				if (material == Material.INK_SACK) {
 					// Lapis is money.
-					values.put(new ImmutablePair<Material, Short>(material, (short) DyeColor.BLUE.getDyeData()), Double.MAX_VALUE);
+					values.put(new ImmutablePair<>(material, (short) DyeColor.BLUE.getDyeData()), Double.MAX_VALUE);
 				}
 				break;
 			case STAINED_CLAY:
 			case EXP_BOTTLE: // 11 exp to fill a bottle, bottle worth roughly 1 and some padding
-				values.put(new ImmutablePair<Material, Short>(material, omni), 13D);
+				values.put(new ImmutablePair<>(material, omni), 13D);
 				break;
 			case GRILLED_PORK:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 14D);
+				values.put(new ImmutablePair<>(material, omni), 14D);
 				break;
 			case SAPLING:
 			case SADDLE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 16D);
+				values.put(new ImmutablePair<>(material, omni), 16D);
 				break;
 			case SULPHUR:
 			case MAP: // Not crafted, right click
 			case MYCEL:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 20D);
+				values.put(new ImmutablePair<>(material, omni), 20D);
 				break;
 			case ENCHANTED_BOOK:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 25D);
+				values.put(new ImmutablePair<>(material, omni), 25D);
 				break;
 			case PACKED_ICE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 28D);
+				values.put(new ImmutablePair<>(material, omni), 28D);
 				break;
 			case BLAZE_ROD:
 			case GRASS:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 30D);
+				values.put(new ImmutablePair<>(material, omni), 30D);
 				break;
 			case BANNER:
 			case GHAST_TEAR:
 			case PRISMARINE_CRYSTALS:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 35D);
+				values.put(new ImmutablePair<>(material, omni), 35D);
 				break;
 			case QUARTZ:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 37D);
+				values.put(new ImmutablePair<>(material, omni), 37D);
 				break;
 			case IRON_INGOT:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 41D);
+				values.put(new ImmutablePair<>(material, omni), 41D);
 				break;
 			case COAL_ORE:
 			case QUARTZ_ORE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 44D);
+				values.put(new ImmutablePair<>(material, omni), 44D);
 				break;
 			case GOLD_RECORD:
 			case GREEN_RECORD:
 			case IRON_ORE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 50D);
+				values.put(new ImmutablePair<>(material, omni), 50D);
 				break;
 			case RECORD_10:
 			case RECORD_11:
@@ -409,75 +406,75 @@ public class CruxiteDowel {
 			case RECORD_7:
 			case RECORD_8:
 			case RECORD_9:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 70D);
+				values.put(new ImmutablePair<>(material, omni), 70D);
 				break;
 			case PISTON_BASE:
 			case OBSIDIAN:
 			case REDSTONE_ORE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 81D);
+				values.put(new ImmutablePair<>(material, omni), 81D);
 				break;
 			case ENDER_PEARL:
 			case PISTON_STICKY_BASE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 90D);
+				values.put(new ImmutablePair<>(material, omni), 90D);
 				break;
 			case GOLD_INGOT:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 108D);
+				values.put(new ImmutablePair<>(material, omni), 108D);
 				break;
 			case GOLD_ORE:
 			case LAVA_BUCKET:
 			case MILK_BUCKET:
 			case WATER_BUCKET:
 			case WEB:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 138D);
+				values.put(new ImmutablePair<>(material, omni), 138D);
 				break;
 			case DIAMOND:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 167D);
+				values.put(new ImmutablePair<>(material, omni), 167D);
 				break;
 			case DIAMOND_ORE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 187D);
+				values.put(new ImmutablePair<>(material, omni), 187D);
 				break;
 			case IRON_BARDING:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 261D);
+				values.put(new ImmutablePair<>(material, omni), 261D);
 				break;
 			case NAME_TAG:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 405D);
+				values.put(new ImmutablePair<>(material, omni), 405D);
 				break;
 			case CHAINMAIL_BOOTS:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 600D);
+				values.put(new ImmutablePair<>(material, omni), 600D);
 				break;
 			case GOLD_BARDING:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 663D);
+				values.put(new ImmutablePair<>(material, omni), 663D);
 				break;
 			case CHAINMAIL_HELMET:
 			case SHULKER_SHELL:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 750D);
+				values.put(new ImmutablePair<>(material, omni), 750D);
 				break;
 			case DIAMOND_BARDING:
 			case SPONGE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 1000D);
+				values.put(new ImmutablePair<>(material, omni), 1000D);
 				break;
 			case CHAINMAIL_LEGGINGS:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 1050D);
+				values.put(new ImmutablePair<>(material, omni), 1050D);
 				break;
 			case CHAINMAIL_CHESTPLATE:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 1200D);
+				values.put(new ImmutablePair<>(material, omni), 1200D);
 				break;
 			case SKULL_ITEM:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 3000D);
+				values.put(new ImmutablePair<>(material, omni), 3000D);
 				// Dragon head
-				values.put(new ImmutablePair<Material, Short>(material, (short) 5), 16000D);
+				values.put(new ImmutablePair<>(material, (short) 5), 16000D);
 				break;
 			case TOTEM:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 5000D);
+				values.put(new ImmutablePair<>(material, omni), 5000D);
 				break;
 			case NETHER_STAR:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 10000D);
+				values.put(new ImmutablePair<>(material, omni), 10000D);
 				break;
 			case ELYTRA:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 3142D);
+				values.put(new ImmutablePair<>(material, omni), 3142D);
 				break;
 			case DRAGON_EGG:
-				values.put(new ImmutablePair<Material, Short>(material, omni), 32000D);
+				values.put(new ImmutablePair<>(material, omni), 32000D);
 				break;
 			// Unobtainable, don't bother searching recipes
 			case AIR:
@@ -501,7 +498,7 @@ public class CruxiteDowel {
 			case SPLASH_POTION: // ^
 			case LINGERING_POTION: // ^
 			case WRITTEN_BOOK: // Duplicate via other means, not alchemy
-				values.put(new ImmutablePair<Material, Short>(material, omni), Double.MAX_VALUE);
+				values.put(new ImmutablePair<>(material, omni), Double.MAX_VALUE);
 			default:
 				break;
 			}
@@ -565,7 +562,7 @@ public class CruxiteDowel {
 			ItemStack result = recipe.getResult();
 			int amount = result.getAmount();
 			if (amount < 1) {
-				continue nextRecipe;
+				continue;
 			}
 
 			double newMinimum;
@@ -573,11 +570,11 @@ public class CruxiteDowel {
 			if (recipe instanceof FurnaceRecipe) {
 				ItemStack input = ((FurnaceRecipe) recipe).getInput();
 				if (pastMaterials.contains(new ImmutablePair<>(input.getType(), input.getDurability()))) {
-					continue nextRecipe;
+					continue;
 				}
 				newMinimum = addRecipeCosts(input.getType(), input.getDurability(), pastMaterials);
 				if (newMinimum >= Double.MAX_VALUE - 1.5) {
-					continue nextRecipe;
+					continue;
 				}
 				// Coal is 12, 8 smelts per coal = 1.5 cost per smelt. Hardcoded to prevent a bit of extra code and checks.
 				newMinimum += 1.5;
@@ -621,7 +618,7 @@ public class CruxiteDowel {
 					}
 				}
 				if (newMinimum <= 0) {
-					continue nextRecipe;
+					continue;
 				}
 			} else if (recipe instanceof ShapelessRecipe) {
 				newMinimum = 0;
@@ -651,15 +648,15 @@ public class CruxiteDowel {
 					}
 				}
 				if (newMinimum <= 0) {
-					continue nextRecipe;
+					continue;
 				}
 			} else {
 				// Recipe is injected custom recipe
-				continue nextRecipe;
+				continue;
 			}
 
 			if (newMinimum == Double.MAX_VALUE) {
-				continue nextRecipe;
+				continue;
 			}
 
 			newMinimum /= amount;

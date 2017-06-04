@@ -1,10 +1,5 @@
 package com.easterlyn.effects.effect.godtier.active;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorCooldown;
@@ -12,7 +7,7 @@ import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.users.UserAspect;
 import com.easterlyn.utilities.Potions;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,7 +17,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Applies regeneration to all entities in an 8 block radius.
@@ -47,7 +46,7 @@ public class EffectAreaRegeneration extends Effect implements BehaviorActive, Be
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.ENERGY);
+		return Collections.singletonList(UserAspect.ENERGY);
 	}
 
 	@Override

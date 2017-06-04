@@ -1,11 +1,5 @@
 package com.easterlyn.machines.type;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
@@ -18,10 +12,9 @@ import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -38,7 +31,12 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * 
@@ -201,127 +199,124 @@ public class Dublexor extends Machine {
 	 * @param id the UUID of the Player using the Dublexor
 	 */
 	public void updateInventory(final UUID id) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
-			@Override
-			public void run() {
-				// Must re-obtain player or update doesn't seem to happen
-				Player player = Bukkit.getPlayer(id);
-				if (player == null || !tracker.hasMachineOpen(player)) {
-					// Player has logged out or closed inventory. Inventories are per-player, ignore.
-					return;
-				}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+			// Must re-obtain player or update doesn't seem to happen
+			Player player = Bukkit.getPlayer(id);
+			if (player == null || !tracker.hasMachineOpen(player)) {
+				// Player has logged out or closed inventory. Inventories are per-player, ignore.
+				return;
+			}
 
-				Inventory open = player.getOpenInventory().getTopInventory();
-				ItemStack originalInput = open.getItem(0);
+			Inventory open = player.getOpenInventory().getTopInventory();
+			ItemStack originalInput = open.getItem(0);
 
-				if (originalInput == null || originalInput.getType() == Material.AIR) {
-					setSecondTrade(player, open, null, null, null);
-					return;
-				}
+			if (originalInput == null || originalInput.getType() == Material.AIR) {
+				setSecondTrade(player, open, null, null, null);
+				return;
+			}
 
-				ItemStack expCost = new ItemStack(Material.EXP_BOTTLE);
-				ItemMeta im = expCost.getItemMeta();
-				im.setDisplayName(Language.getColor("emphasis.bad") + "Cannot copy");
-				expCost.setItemMeta(im);
+			ItemStack expCost = new ItemStack(Material.EXP_BOTTLE);
+			ItemMeta im = expCost.getItemMeta();
+			im.setDisplayName(Language.getColor("emphasis.bad") + "Cannot copy");
+			expCost.setItemMeta(im);
 
-				ItemStack modifiedInput = originalInput.clone();
-				int multiplier = 1;
-				while (Captcha.isUsedCaptcha(modifiedInput)) {
-					ItemStack newModInput = captcha.captchaToItem(modifiedInput);
-					if (newModInput == null || modifiedInput.isSimilar(newModInput)) {
-						// Broken captcha, don't infinitely loop.
-						setSecondTrade(player, open, originalInput, expCost, barrier);
-						return;
-					}
-					Map<Enchantment, Integer> enchantments = newModInput.getEnchantments();
-					if (enchantments.containsKey(Enchantment.MENDING)
-							&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
-						// Item inside captchas has mending but not
-						setSecondTrade(player, open, originalInput, expCost, barrier);
-						return;
-					}
-					if (newModInput.hasItemMeta()) {
-						ItemMeta newModMeta = newModInput.getItemMeta();
-						if (newModMeta instanceof EnchantmentStorageMeta) {
-							enchantments = ((EnchantmentStorageMeta) newModMeta).getStoredEnchants();
-							if (enchantments.containsKey(Enchantment.MENDING)
-									&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
-								// Item inside captchas has mending but not
-								setSecondTrade(player, open, originalInput, expCost, barrier);
-								return;
-							}
-						}
-					}
-					multiplier *= Math.max(1, Math.abs(modifiedInput.getAmount()));
-					modifiedInput = newModInput;
-				}
-
-				// Ensure non-unique item (excluding captchas)
-				if (InventoryUtils.isUniqueItem(getPlugin(), modifiedInput)) {
+			ItemStack modifiedInput = originalInput.clone();
+			int multiplier = 1;
+			while (Captcha.isUsedCaptcha(modifiedInput)) {
+				ItemStack newModInput = captcha.captchaToItem(modifiedInput);
+				if (newModInput == null || modifiedInput.isSimilar(newModInput)) {
+					// Broken captcha, don't infinitely loop.
 					setSecondTrade(player, open, originalInput, expCost, barrier);
 					return;
 				}
-
-				// Calculate cost based on final item.
-				double resultCost = CruxiteDowel.expCost(effects, modifiedInput);
-
-				// Ensure item can be replicated.
-				if (Double.MAX_VALUE / multiplier <= resultCost) {
+				Map<Enchantment, Integer> enchantments = newModInput.getEnchantments();
+				if (enchantments.containsKey(Enchantment.MENDING)
+						&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
+					// Item inside captchas has mending but not
 					setSecondTrade(player, open, originalInput, expCost, barrier);
 					return;
 				}
-
-				// Adjust cost based on captcha depth and quantities.
-				resultCost *= multiplier;
-				int exp = (int) Math.ceil(resultCost);
-				int playerExp = Experience.getExp(player);
-				int remainder = playerExp - exp;
-
-				ArrayList<String> lore = new ArrayList<>();
-				lore.add(ChatColor.GOLD + "Current: " + playerExp);
-
-				ItemStack result;
-				ChatColor color;
-				if (remainder >= 0 || player.getGameMode() == GameMode.CREATIVE) {
-					color = Language.getColor("emphasis.good");
-					lore.add(ChatColor.GOLD + "Remainder: " + remainder);
-					result = originalInput.clone();
-				} else {
-					color = Language.getColor("emphasis.bad");
-					lore.add(color.toString() + ChatColor.BOLD + "Not enough mana!");
-					result = barrier;
-				}
-
-				if (player.getGameMode() == GameMode.CREATIVE) {
-					lore.add(Language.getColor("emphasis.good") + "Creative exp bypass engaged.");
-				}
-
-				im.setDisplayName(color + "Mana cost: " + exp);
-				im.setLore(lore);
-				expCost.setItemMeta(im);
-
-				// Add Curse of Vanishing if Mending is present
-				Map<Enchantment, Integer> enchantments = result.getEnchantments();
-				if (enchantments.containsKey(Enchantment.MENDING) && !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
-					result.addEnchantment(Enchantment.VANISHING_CURSE, 1);
-				}
-
-				if (result.hasItemMeta()) {
-					ItemMeta resultMeta = result.getItemMeta();
-					if (resultMeta instanceof EnchantmentStorageMeta) {
-						enchantments = ((EnchantmentStorageMeta) resultMeta).getStoredEnchants();
+				if (newModInput.hasItemMeta()) {
+					ItemMeta newModMeta = newModInput.getItemMeta();
+					if (newModMeta instanceof EnchantmentStorageMeta) {
+						enchantments = ((EnchantmentStorageMeta) newModMeta).getStoredEnchants();
 						if (enchantments.containsKey(Enchantment.MENDING)
 								&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
 							// Item inside captchas has mending but not
-							((EnchantmentStorageMeta) resultMeta).addStoredEnchant(Enchantment.VANISHING_CURSE, 1, true);
-							result.setItemMeta(resultMeta);
+							setSecondTrade(player, open, originalInput, expCost, barrier);
+							return;
 						}
 					}
 				}
-
-				// Set items
-				setSecondTrade(player, open, originalInput, expCost, result);
+				multiplier *= Math.max(1, Math.abs(modifiedInput.getAmount()));
+				modifiedInput = newModInput;
 			}
+
+			// Ensure non-unique item (excluding captchas)
+			if (InventoryUtils.isUniqueItem(getPlugin(), modifiedInput)) {
+				setSecondTrade(player, open, originalInput, expCost, barrier);
+				return;
+			}
+
+			// Calculate cost based on final item.
+			double resultCost = CruxiteDowel.expCost(effects, modifiedInput);
+
+			// Ensure item can be replicated.
+			if (Double.MAX_VALUE / multiplier <= resultCost) {
+				setSecondTrade(player, open, originalInput, expCost, barrier);
+				return;
+			}
+
+			// Adjust cost based on captcha depth and quantities.
+			resultCost *= multiplier;
+			int exp = (int) Math.ceil(resultCost);
+			int playerExp = Experience.getExp(player);
+			int remainder = playerExp - exp;
+
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add(ChatColor.GOLD + "Current: " + playerExp);
+
+			ItemStack result;
+			ChatColor color;
+			if (remainder >= 0 || player.getGameMode() == GameMode.CREATIVE) {
+				color = Language.getColor("emphasis.good");
+				lore.add(ChatColor.GOLD + "Remainder: " + remainder);
+				result = originalInput.clone();
+			} else {
+				color = Language.getColor("emphasis.bad");
+				lore.add(color.toString() + ChatColor.BOLD + "Not enough mana!");
+				result = barrier;
+			}
+
+			if (player.getGameMode() == GameMode.CREATIVE) {
+				lore.add(Language.getColor("emphasis.good") + "Creative exp bypass engaged.");
+			}
+
+			im.setDisplayName(color + "Mana cost: " + exp);
+			im.setLore(lore);
+			expCost.setItemMeta(im);
+
+			// Add Curse of Vanishing if Mending is present
+			Map<Enchantment, Integer> enchantments = result.getEnchantments();
+			if (enchantments.containsKey(Enchantment.MENDING) && !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
+				result.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+			}
+
+			if (result.hasItemMeta()) {
+				ItemMeta resultMeta = result.getItemMeta();
+				if (resultMeta instanceof EnchantmentStorageMeta) {
+					enchantments = ((EnchantmentStorageMeta) resultMeta).getStoredEnchants();
+					if (enchantments.containsKey(Enchantment.MENDING)
+							&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
+						// Item inside captchas has mending but not
+						((EnchantmentStorageMeta) resultMeta).addStoredEnchant(Enchantment.VANISHING_CURSE, 1, true);
+						result.setItemMeta(resultMeta);
+					}
+				}
+			}
+
+			// Set items
+			setSecondTrade(player, open, originalInput, expCost, result);
 		});
 	}
 
@@ -336,7 +331,7 @@ public class Dublexor extends Machine {
 	/**
 	 * Singleton for getting usage help ItemStacks.
 	 */
-	public static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
+	private static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
 		if (exampleRecipes == null) {
 			exampleRecipes = createExampleRecipes();
 		}
@@ -346,30 +341,28 @@ public class Dublexor extends Machine {
 	/**
 	 * Creates the ItemStacks used in displaying usage help.
 	 * 
-	 * @return
+	 * @return a Triple containing inputs and a result defining behavior
 	 */
 	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
 		ItemStack is1 = new ItemStack(Material.DIRT, 64);
 		ItemMeta im = is1.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Input");
-		List<String> lore = Arrays.asList(ChatColor.WHITE + "Insert item here.");
+		List<String> lore = Collections.singletonList(ChatColor.WHITE + "Insert item here.");
 		im.setLore(lore);
 		is1.setItemMeta(im);
 
 		ItemStack is2 = new ItemStack(Material.EXP_BOTTLE);
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Mana Cost");
-		lore = new ArrayList<>();
-		lore.add(ChatColor.WHITE + "Displays dublecation cost");
-		lore.add(ChatColor.WHITE + "when an item is inserted.");
+		lore = Arrays.asList(ChatColor.WHITE + "Displays dublecation cost",
+				ChatColor.WHITE + "when an item is inserted.");
 		im.setLore(lore);
 		is2.setItemMeta(im);
 
 		ItemStack is3 = new ItemStack(Material.DIRT, 64);
 		im = is3.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Copy of Input");
-		lore = new ArrayList<>();
-		lore.add(ChatColor.WHITE + "Dublecate your items.");
+		lore = Collections.singletonList(ChatColor.WHITE + "Dublecate your items.");
 		im.setLore(lore);
 		is3.setItemMeta(im);
 

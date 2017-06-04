@@ -13,7 +13,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 
 /**
  * Listener for VehicleExitEvents.
- * 
+ *
  * @author Jikoo
  */
 public class ExitListener extends EasterlynListener {
@@ -29,7 +29,7 @@ public class ExitListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for VehicleExitEvents.
-	 * 
+	 *
 	 * @param event the VehicleExitEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
@@ -41,7 +41,6 @@ public class ExitListener extends EasterlynListener {
 		}
 		if (entity.getType() == EntityType.MINECART) {
 			carts.remove((Minecart) event.getVehicle());
-			return;
 		}
 	}
 

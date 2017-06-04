@@ -57,13 +57,8 @@ public class FreeCart extends Module {
 	}
 
 	public boolean isOnFreeCart(Player player) {
-		if (player.getVehicle() == null) {
-			return false;
-		}
-		if (player.getVehicle().getType() != EntityType.MINECART) {
-			return false;
-		}
-		return isFreeCart((Minecart) player.getVehicle());
+		return player.getVehicle() != null && player.getVehicle().getType() == EntityType.MINECART
+				&& this.isFreeCart((Minecart) player.getVehicle());
 	}
 
 	public void remove(Player player) {

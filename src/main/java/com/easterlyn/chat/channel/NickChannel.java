@@ -1,13 +1,12 @@
 package com.easterlyn.chat.channel;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.users.User;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.ChannelManager;
-import com.easterlyn.users.User;
 
 /**
  * Defines nick channel behavior
@@ -16,10 +15,10 @@ import com.easterlyn.users.User;
  */
 public class NickChannel extends NormalChannel {
 
-	protected transient Map<UUID, String> nickList; 
+	private final Map<UUID, String> nickList;
 
 	/**
-	 * @see com.easterlyn.chat.channel.NormalChannel#Channel(ChannelManager, String, AccessLevel, UUID, Long)
+	 * @see com.easterlyn.chat.channel.NormalChannel#NormalChannel(Easterlyn, String, AccessLevel, UUID, long)
 	 */
 	public NickChannel(Easterlyn plugin, String name, AccessLevel a, UUID creator, long lastAccessed) {
 		super(plugin, name, a, creator, lastAccessed);
@@ -94,15 +93,6 @@ public class NickChannel extends NormalChannel {
 			nickList.remove(remove);
 		}
 		return null;
-	}
-
-	/**
-	 * Get the Map of nicks in use stored by UUID.
-	 * 
-	 * @return the Map
-	 */
-	public Map<UUID, String> getNickList() {
-		return nickList;
 	}
 
 }

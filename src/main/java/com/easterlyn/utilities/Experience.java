@@ -11,7 +11,8 @@ public class Experience {
 
 	/**
 	 * Calculates a player's total exp based on level and progress to next.
-	 * @see http://minecraft.gamepedia.com/Experience#Leveling_up
+	 *
+	 * @see <a href=http://minecraft.gamepedia.com/Experience#Leveling_up>Experience#Levelling up</a>
 	 * 
 	 * @param player the Player
 	 * 
@@ -24,8 +25,8 @@ public class Experience {
 
 	/**
 	 * Calculates total experience based on level.
-	 * 
-	 * @see http://minecraft.gamepedia.com/Experience#Leveling_up
+	 *
+	 * @see <a href=http://minecraft.gamepedia.com/Experience#Leveling_up>Experience#Levelling up</a>
 	 * 
 	 * "One can determine how much experience has been collected to reach a level using the equations:
 	 * 
@@ -68,7 +69,7 @@ public class Experience {
 	}
 
 	/**
-	 * @see http://minecraft.gamepedia.com/Experience#Leveling_up
+	 * @see <a href=http://minecraft.gamepedia.com/Experience#Leveling_up>Experience#Levelling up</a>
 	 * 
 	 * "The formulas for figuring out how many experience orbs you need to get to the next level are as follows:
 	 *  Experience Required = 2[Current Level] + 7 (at levels 0-15)

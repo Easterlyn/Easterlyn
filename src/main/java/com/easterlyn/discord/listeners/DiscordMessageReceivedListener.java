@@ -1,24 +1,22 @@
 package com.easterlyn.discord.listeners;
 
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.discord.modules.MinecraftModule;
 import com.easterlyn.discord.queue.CallPriority;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 /**
  * IListener for MessageRecievedEvents.
- * 
+ *
  * @author Jikoo
  */
 public class DiscordMessageReceivedListener implements IListener<MessageReceivedEvent> {
@@ -104,7 +102,6 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 				return;
 			}
 			getMCModule().handleChat(event.getMessage(), sender);
-			return;
 		}
 	}
 

@@ -1,15 +1,14 @@
 package com.easterlyn.effects.effect.active;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.Effect;
-
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Try not to die!
@@ -24,7 +23,7 @@ public class EffectPshoooot extends Effect implements BehaviorActive {
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(PlayerInteractEvent.class);
+		return Collections.singletonList(PlayerInteractEvent.class);
 	}
 
 	@Override

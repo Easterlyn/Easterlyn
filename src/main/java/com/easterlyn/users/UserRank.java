@@ -8,7 +8,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * Enum representing ranks.
- * 
+ *
  * @author Jikoo
  */
 public enum UserRank {
@@ -26,19 +26,19 @@ public enum UserRank {
 	private final String internalName, friendlyName;
 	private final PermissionDefault permissionDefault;
 
-	private UserRank(String internalName) {
+	UserRank(String internalName) {
 		this(internalName, PermissionDefault.OP);
 	}
 
-	private UserRank(String internalName, String friendlyName) {
+	UserRank(String internalName, String friendlyName) {
 		this(internalName, friendlyName, PermissionDefault.OP);
 	}
 
-	private UserRank(String internalName, PermissionDefault permissionDefault) {
+	UserRank(String internalName, PermissionDefault permissionDefault) {
 		this(internalName, Character.toUpperCase(internalName.charAt(0)) + internalName.substring(1), permissionDefault);
 	}
 
-	private UserRank(String internalName, String friendlyName, PermissionDefault permissionDefault) {
+	UserRank(String internalName, String friendlyName, PermissionDefault permissionDefault) {
 		this.internalName = internalName;
 		this.friendlyName = friendlyName;
 		this.permissionDefault = permissionDefault;

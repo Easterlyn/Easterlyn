@@ -1,20 +1,13 @@
 package com.easterlyn.discord.modules;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.abstraction.DiscordModule;
 import com.easterlyn.discord.queue.CallType;
 import com.easterlyn.discord.queue.DiscordCallable;
 import com.easterlyn.utilities.TextUtils;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
-
 import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -24,6 +17,11 @@ import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DiscordModule for managing a text channel per voice channel.
@@ -41,10 +39,7 @@ public class VoiceTextModule extends DiscordModule {
 
 	@Override
 	public void doSetup() {
-		this.getDiscord().getClient().getVoiceChannels().forEach(channel -> {
-			handleChannelCreation(channel);
-		});
-
+		this.getDiscord().getClient().getVoiceChannels().forEach(this::handleChannelCreation);
 	}
 
 	@Override

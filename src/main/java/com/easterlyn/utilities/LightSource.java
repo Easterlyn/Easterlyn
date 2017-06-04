@@ -1,19 +1,17 @@
 package com.easterlyn.utilities;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.Chunk;
+import net.minecraft.server.v1_11_R1.EnumSkyBlock;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-
-import net.minecraft.server.v1_11_R1.BlockPosition;
-import net.minecraft.server.v1_11_R1.Chunk;
-import net.minecraft.server.v1_11_R1.EnumSkyBlock;
-
 import org.bukkit.craftbukkit.v1_11_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * http://forums.bukkit.org/threads/resource-server-side-lighting-no-it-isnt-just-client-side.154503/
@@ -39,7 +37,7 @@ public class LightSource {
 	/**
 	 * Updates the block making the light source return to what it actually is
 	 * 
-	 * @param l
+	 * @param l the location of the light source
 	 */
 	public static void deleteLightSource(Location l) {
 		Block block = l.getBlock();
@@ -55,7 +53,7 @@ public class LightSource {
 	 * @param l the location
 	 */
 	private static void updateChunk(Location l) {
-		List<Chunk> chunks = new ArrayList<Chunk>();
+		List<Chunk> chunks = new ArrayList<>();
 
 		for (int x = -1; x <= 1; x++) {
 			for (int z = -1; z <= 1; z++) {

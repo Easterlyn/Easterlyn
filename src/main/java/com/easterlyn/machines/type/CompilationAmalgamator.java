@@ -210,12 +210,7 @@ public class CompilationAmalgamator extends Machine {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				ejectAllInvalidItems(new Function<ItemStack, Boolean>() {
-					@Override
-					public Boolean apply(ItemStack item) {
-						return Captcha.isBlankCaptcha(item);
-					}
-				}, inventory, storage);
+				ejectAllInvalidItems(Captcha::isBlankCaptcha, inventory, storage);
 				BlockState state = getKey(storage).getBlock().getState();
 				if (!(state instanceof InventoryHolder)) {
 					return;

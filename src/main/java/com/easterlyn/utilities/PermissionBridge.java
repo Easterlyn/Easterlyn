@@ -1,15 +1,14 @@
 package com.easterlyn.utilities;
 
-import java.util.Map;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
-
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
+
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Bridge for permissions via zPermissions. Used for cases where a player is not online.
@@ -40,10 +39,7 @@ public class PermissionBridge {
 		PermState state = getGroupPermState(group, permission);
 		if (state == PermState.UNSET) {
 			Permission node = Bukkit.getPluginManager().getPermission(permission);
-			if (node != null) {
-				return node.getDefault() == PermissionDefault.TRUE;
-			}
-			return false;
+			return node != null && node.getDefault() == PermissionDefault.TRUE;
 		}
 		return state == PermState.TRUE;
 	}
@@ -85,7 +81,7 @@ public class PermissionBridge {
 				return true;
 			case UNSET:
 			default:
-				continue;
+				break;
 			}
 		}
 		Map<String, Boolean> permissions = service.getPlayerPermissions(null, null, uuid);

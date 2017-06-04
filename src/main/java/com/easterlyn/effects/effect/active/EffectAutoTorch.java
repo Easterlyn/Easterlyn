@@ -1,12 +1,8 @@
 package com.easterlyn.effects.effect.active;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.Effect;
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,6 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Automatically consumes and places torches if light level is below 8 and the block below is solid.
@@ -30,7 +29,7 @@ public class EffectAutoTorch extends Effect implements BehaviorActive {
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(BlockBreakEvent.class);
+		return Collections.singletonList(BlockBreakEvent.class);
 	}
 
 	@Override

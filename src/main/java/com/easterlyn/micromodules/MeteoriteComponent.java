@@ -12,7 +12,7 @@ import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 
 /**
  * Wrapper for EntityFallingBlock to allow easier detection of Meteorite components.
- * 
+ *
  * @author Jikoo
  */
 public class MeteoriteComponent extends EntityFallingBlock {
@@ -21,7 +21,7 @@ public class MeteoriteComponent extends EntityFallingBlock {
 	private final boolean bore;
 
 	@SuppressWarnings("deprecation")
-	public MeteoriteComponent(Location l, Material material, boolean explode, boolean bore) {
+	MeteoriteComponent(Location l, Material material, boolean explode, boolean bore) {
 		super(((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), Block.getById(material.getId()).fromLegacyData(0));
 		this.explode = explode;
 		this.bore = bore;

@@ -1,5 +1,44 @@
 package com.easterlyn.discord;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.chat.Language;
+import com.easterlyn.chat.message.Message;
+import com.easterlyn.discord.abstraction.DiscordCommand;
+import com.easterlyn.discord.abstraction.DiscordModule;
+import com.easterlyn.discord.queue.CallPriority;
+import com.easterlyn.discord.queue.CallType;
+import com.easterlyn.discord.queue.DiscordCallable;
+import com.easterlyn.discord.queue.DiscordQueue;
+import com.easterlyn.module.Module;
+import com.easterlyn.utilities.PermissiblePlayer;
+import com.easterlyn.utilities.PlayerUtils;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import net.md_5.bungee.api.ChatColor;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.reflections.Reflections;
+import sx.blah.discord.api.ClientBuilder;
+import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.events.EventDispatcher;
+import sx.blah.discord.api.events.IListener;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
+
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -19,52 +58,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-
-import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.Language;
-import com.easterlyn.chat.message.Message;
-import com.easterlyn.discord.abstraction.DiscordCommand;
-import com.easterlyn.discord.abstraction.DiscordModule;
-import com.easterlyn.discord.queue.CallPriority;
-import com.easterlyn.discord.queue.CallType;
-import com.easterlyn.discord.queue.DiscordCallable;
-import com.easterlyn.discord.queue.DiscordQueue;
-import com.easterlyn.module.Module;
-import com.easterlyn.utilities.PermissiblePlayer;
-import com.easterlyn.utilities.PlayerUtils;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
-import org.reflections.Reflections;
-
-import net.md_5.bungee.api.ChatColor;
-
-import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.EventDispatcher;
-import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
 
 /**
  * A Module for managing messaging to and from Discord.
@@ -107,7 +100,7 @@ public class Discord extends Module {
 						String code = generateUniqueCode();
 						authentications.put(code, key);
 						return code;
-					};
+					}
 				});
 
 		File file = new File(plugin.getDataFolder(), "DiscordData.yml");
@@ -162,20 +155,17 @@ public class Discord extends Module {
 			}
 		}
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
+		new Thread(() -> {
+			try {
+				client.login();
+			} catch (DiscordException e) {
+				client = null;
+			} catch (RateLimitException e) {
 				try {
+					Thread.sleep(e.getRetryDelay() + 1000L);
 					client.login();
-				} catch (DiscordException e) {
-					client = null;
-				} catch (RateLimitException e) {
-					try {
-						Thread.sleep(e.getRetryDelay() + 1000L);
-						client.login();
-					} catch (InterruptedException | DiscordException | RateLimitException e1) {
-						// Retry failed, ignore
-					}
+				} catch (InterruptedException | DiscordException | RateLimitException e1) {
+					// Retry failed, ignore
 				}
 			}
 		}, "Easterlyn-DiscordLogin").start();
@@ -244,14 +234,11 @@ public class Discord extends Module {
 			 * reference to the current client to be able to log it out.
 			 */
 			final IDiscordClient oldClient = client;
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						oldClient.logout();
-					} catch (DiscordException e) {
-						e.printStackTrace();
-					}
+			new Thread(() -> {
+				try {
+					oldClient.logout();
+				} catch (DiscordException e) {
+					e.printStackTrace();
 				}
 			}, "Easterlyn-DiscordLogout").start();
 		}
@@ -374,14 +361,13 @@ public class Discord extends Module {
 	}
 
 	public void queueMessageDeletion(CallPriority priority, Collection<IMessage> messages) {
-		// Bulk delete requires messages to be within the last 14 days. To be safe, we pad our check by an hour.
+		// Bulk delete requires messages to be within the last 14 days. To be safe, we pad our check.
 		LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(12);
 		// Collect messages by channel to ensure bulk delete will work.
-		Map<Pair<IChannel, Boolean>, List<IMessage>> messagesByChannel = messages.stream()
+		Map<Pair<IChannel, Boolean>, List<IMessage>> messagesByChannel = messages.stream().distinct()
 				.collect(Collectors.groupingBy(
-						message -> new ImmutablePair<IChannel, Boolean>(message.getChannel(),
-								// FIXME Discord is throwing its 14 days or less on most bulk deletes
-								false && message.getTimestamp().isBefore(bulkDeleteableBefore))));
+						message -> new ImmutablePair<>(message.getChannel(),
+								message.getTimestamp().isBefore(bulkDeleteableBefore))));
 
 		for (Map.Entry<Pair<IChannel, Boolean>, List<IMessage>> entry : messagesByChannel.entrySet()) {
 
@@ -608,7 +594,6 @@ public class Discord extends Module {
 					channel.sendMessage(builder.toString());
 				} catch (NoSuchElementException e) {
 					// Internal Discord fault, don't log.
-					return;
 				}
 			}
 		});
@@ -697,9 +682,7 @@ public class Discord extends Module {
 						user = getClient().getUserByID(Long.parseLong(path));
 						break;
 					}
-				} catch (NumberFormatException e) {
-					continue;
-				}
+				} catch (NumberFormatException e) {}
 			}
 		}
 

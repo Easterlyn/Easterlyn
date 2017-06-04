@@ -1,18 +1,17 @@
 package com.easterlyn.module;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.utilities.TextUtils;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import com.easterlyn.Easterlyn;
-import com.easterlyn.utilities.TextUtils;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 /**
  * The base class for all plugin modules, allowing separate components of the
  * plugin to be managed separately.
- * 
+ *
  * @author FireNG, Jikoo
  */
 public abstract class Module {
@@ -28,7 +27,7 @@ public abstract class Module {
 
 	/**
 	 * Enables the Module.
-	 * 
+	 *
 	 * @return the Module enabled
 	 */
 	public final Module enable() {
@@ -55,7 +54,7 @@ public abstract class Module {
 
 	/**
 	 * Disables the Module.
-	 * 
+	 *
 	 * @return the Module disabled
 	 */
 	public final Module disable() {
@@ -78,7 +77,7 @@ public abstract class Module {
 
 	/**
 	 * Gets whether or not the Module is enabled.
-	 * 
+	 *
 	 * @return true if the Module is enabled
 	 */
 	public boolean isEnabled() {
@@ -87,14 +86,14 @@ public abstract class Module {
 
 	/**
 	 * Gets whether or not the Module needs to be enabled for the plugin to function.
-	 * 
+	 *
 	 * @return true if the Module is essential and cannot be disabled.
 	 */
 	public abstract boolean isRequired();
 
 	/**
 	 * Get the simple name of the Module.
-	 * 
+	 *
 	 * @return the name of this Module
 	 */
 	public abstract String getName();
@@ -102,7 +101,7 @@ public abstract class Module {
 	/**
 	 * Gets a Logger that the plugin may use whose name is the same as this
 	 * Module's class name.
-	 * 
+	 *
 	 * @return the Logger
 	 */
 	public final Logger getLogger() {
@@ -111,7 +110,7 @@ public abstract class Module {
 
 	/**
 	 * Gets the Easterlyn instance that loaded this Module.
-	 * 
+	 *
 	 * @return the Easterlyn
 	 */
 	public final Easterlyn getPlugin() {
@@ -120,7 +119,7 @@ public abstract class Module {
 
 	/**
 	 * Gets the YamlConfiguration for data specific to this Module.
-	 * 
+	 *
 	 * @return the YamlConfiguration
 	 */
 	public final YamlConfiguration getConfig() {
@@ -132,7 +131,7 @@ public abstract class Module {
 
 	/**
 	 * Loads the YamlConfiguration for data specific to this Module.
-	 * 
+	 *
 	 * @return the YamlConfiguration
 	 */
 	public YamlConfiguration loadConfig() {

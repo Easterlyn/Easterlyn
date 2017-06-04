@@ -50,20 +50,15 @@ public class InventoryDragListener extends EasterlynListener {
 		}
 
 		// Lowest priority Machine check, one with no identifying block
-		Machine m;
 		if (ih != null && ih instanceof Machine) {
-			m = (Machine) ih;
-			if (m != null) {
-				event.setCancelled(m.handleClick(event, null));
-				return;
-			}
+			event.setCancelled(((Machine) ih).handleClick(event, null));
+			return;
 		}
 
 		// No putting special Easterlyn items into anvils, it'll ruin them.
 		if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
 				&& InventoryUtils.isUniqueItem(getPlugin(), event.getOldCursor())) {
 			event.setCancelled(true);
-			return;
 		}
 	}
 

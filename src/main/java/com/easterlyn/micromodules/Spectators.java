@@ -1,16 +1,11 @@
 package com.easterlyn.micromodules;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.module.Module;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PermissionUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -19,6 +14,10 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Module for managing players in spectator mode. Designed to allow players
@@ -134,7 +133,7 @@ public class Spectators extends Module {
 	/**
 	 * Check to see if a player is a spectator.
 	 * 
-	 * @param name the name of the player
+	 * @param userID the UUID of the player
 	 * 
 	 * @return true if the player is a spectator
 	 */

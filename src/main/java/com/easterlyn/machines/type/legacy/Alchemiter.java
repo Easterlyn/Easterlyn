@@ -1,8 +1,5 @@
 package com.easterlyn.machines.type.legacy;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
@@ -16,10 +13,9 @@ import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -33,7 +29,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Simulate a Sburb Alchemiter in Minecraft.
@@ -166,55 +163,52 @@ public class Alchemiter extends Machine {
 	/**
 	 * Calculate result slot and update inventory on a delay (post-event completion)
 	 * 
-	 * @param name the name of the player who is using the Punch Designix
+	 * @param id the UUID of the player who is using the Alchemiter
 	 */
 	public void updateInventory(final UUID id) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
-			@Override
-			public void run() {
-				// Must re-obtain player or update doesn't seem to happen
-				Player player = Bukkit.getPlayer(id);
-				if (player == null || !tracker.hasMachineOpen(player)) {
-					// Player has logged out or closed inventory. Inventories are per-player, ignore.
-					return;
-				}
-
-				Inventory open = player.getOpenInventory().getTopInventory();
-				ItemStack input = open.getItem(0);
-				ItemStack expCost;
-				ItemStack result;
-				if (CruxiteDowel.isDowel(input)) {
-					input = input.clone();
-					input.setAmount(1);
-					result = captcha.captchaToItem(input);
-					expCost = new ItemStack(Material.EXP_BOTTLE);
-					int exp = (int) Math.ceil(CruxiteDowel.expCost(effects, result));
-					ItemMeta im = expCost.getItemMeta();
-					int playerExp = Experience.getExp(player);
-					int remainder = playerExp - exp;
-					ChatColor color = remainder >= 0 ? ChatColor.GREEN : ChatColor.DARK_RED;
-					im.setDisplayName(color + "Grist cost: " + exp);
-					ArrayList<String> lore = new ArrayList<>();
-					lore.add(ChatColor.GOLD + "Current: " + playerExp);
-					if (remainder >= 0) {
-						lore.add(ChatColor.GOLD + "Remainder: " + remainder);
-					} else {
-						lore.add(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Not enough grist!");
-						result = null;
-					}
-					im.setLore(lore);
-					expCost.setItemMeta(im);
-				} else {
-					result = null;
-					expCost = null;
-				}
-				// Set items
-				open.setItem(1, expCost);
-				open.setItem(2, result);
-				InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-						new ImmutableTriple<>(input, expCost, result == null ? barrier : result));
-				player.updateInventory();
+		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+			// Must re-obtain player or update doesn't seem to happen
+			Player player = Bukkit.getPlayer(id);
+			if (player == null || !tracker.hasMachineOpen(player)) {
+				// Player has logged out or closed inventory. Inventories are per-player, ignore.
+				return;
 			}
+
+			Inventory open = player.getOpenInventory().getTopInventory();
+			ItemStack input = open.getItem(0);
+			ItemStack expCost;
+			ItemStack result;
+			if (CruxiteDowel.isDowel(input)) {
+				input = input.clone();
+				input.setAmount(1);
+				result = captcha.captchaToItem(input);
+				expCost = new ItemStack(Material.EXP_BOTTLE);
+				int exp = (int) Math.ceil(CruxiteDowel.expCost(effects, result));
+				ItemMeta im = expCost.getItemMeta();
+				int playerExp = Experience.getExp(player);
+				int remainder = playerExp - exp;
+				ChatColor color = remainder >= 0 ? ChatColor.GREEN : ChatColor.DARK_RED;
+				im.setDisplayName(color + "Grist cost: " + exp);
+				ArrayList<String> lore = new ArrayList<>();
+				lore.add(ChatColor.GOLD + "Current: " + playerExp);
+				if (remainder >= 0) {
+					lore.add(ChatColor.GOLD + "Remainder: " + remainder);
+				} else {
+					lore.add(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Not enough grist!");
+					result = null;
+				}
+				im.setLore(lore);
+				expCost.setItemMeta(im);
+			} else {
+				result = null;
+				expCost = null;
+			}
+			// Set items
+			open.setItem(1, expCost);
+			open.setItem(2, result);
+			InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
+					new ImmutableTriple<>(input, expCost, result == null ? barrier : result));
+			player.updateInventory();
 		});
 	}
 
@@ -226,7 +220,7 @@ public class Alchemiter extends Machine {
 	/**
 	 * Singleton for getting usage help ItemStacks.
 	 */
-	public static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
+	private static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
 		if (exampleRecipes == null) {
 			exampleRecipes = createExampleRecipes();
 		}
@@ -236,19 +230,18 @@ public class Alchemiter extends Machine {
 	/**
 	 * Creates the ItemStacks used in displaying usage help.
 	 * 
-	 * @return
+	 * @return a Triple containing inputs and a result defining behavior
 	 */
 	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
 		ItemStack is1 = new ItemStack(Material.NETHER_BRICK_ITEM);
 		ItemMeta im = is1.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Cruxite Totem");
-		ArrayList<String> lore = new ArrayList<>();
 		is1.setItemMeta(im);
 
 		ItemStack is2 = new ItemStack(Material.BARRIER);
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Grist Cost");
-		lore = new ArrayList<>();
+		ArrayList<String> lore = new ArrayList<>();
 		lore.add(ChatColor.WHITE + "This will display when a");
 		lore.add(ChatColor.WHITE + "valid totem is inserted.");
 		im.setLore(lore);

@@ -1,15 +1,11 @@
 package com.easterlyn.effects.effect.active;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.events.BlockUpdateManager;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.event.EasterlynBreakEvent;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -18,9 +14,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * Base for multiple block break behaviors that affect adjacent blocks.
- * 
+ *
  * @author Jikoo
  */
 public abstract class EffectAdjacentBlockModifier extends Effect implements BehaviorActive {
@@ -28,9 +27,9 @@ public abstract class EffectAdjacentBlockModifier extends Effect implements Beha
 	private final BlockUpdateManager budManager;
 	private final BlockFace[] faces;
 	private final Material[] updateMaterials;
-	protected int currentCount;
+	int currentCount;
 
-	protected EffectAdjacentBlockModifier(Easterlyn plugin, int cost, String name, Material... updateMaterials) {
+	EffectAdjacentBlockModifier(Easterlyn plugin, int cost, String name, Material... updateMaterials) {
 		super(plugin, cost, 1, 1, name);
 		this.budManager = plugin.getModule(Events.class).getBlockUpdateManager();
 		this.faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,

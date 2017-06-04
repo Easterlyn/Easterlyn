@@ -1,7 +1,5 @@
 package com.easterlyn.commands.chat;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.channel.Channel;
@@ -12,16 +10,15 @@ import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.JSONUtil;
 import com.easterlyn.utilities.TextUtils;
-
 import com.google.common.collect.ImmutableList;
-
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.md_5.bungee.api.chat.TextComponent;
+import java.util.List;
 
 /**
  * EasterlynCommand for displaying item in hand to the server.
@@ -66,7 +63,7 @@ public class ShowItemCommand extends EasterlynCommand {
 			channel = user.getCurrentChannel();
 		}
 
-		if (!player.hasPermission("easterlyn.chat.unfiltered") && "#".equals(user.getCurrentChannel())
+		if (!player.hasPermission("easterlyn.chat.unfiltered") && "#".equals(user.getCurrentChannel().getName())
 				&& !TextUtils.isOnlyAscii(handMeta.getDisplayName())) {
 			sender.sendMessage(getLang().getValue("command.show.invalidCharacters"));
 		}

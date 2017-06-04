@@ -1,23 +1,22 @@
 package com.easterlyn.micromodules;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.InventoryUtils;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.material.Dye;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -54,7 +53,7 @@ public class VillagerAdjustment extends Module {
 
 		private final int value;
 
-		private CurrencyType(final ItemStack currencyItem, final int value) {
+		CurrencyType(final ItemStack currencyItem, final int value) {
 			this.currencyItem = currencyItem;
 			this.value = value;
 		}
@@ -192,7 +191,7 @@ public class VillagerAdjustment extends Module {
 		if (adjusted == null && !(CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(recipe.getResult()))) {
 			if (input1 != null && input1.getType() == Material.WRITTEN_BOOK) {
 				// Skip reporting written book trades.
-				return adjusted;
+				return null;
 			}
 			// DEBUG: post report on un-adjustable trades (barring lapis buy trade from priests)
 			this.getPlugin().getModule(Discord.class)

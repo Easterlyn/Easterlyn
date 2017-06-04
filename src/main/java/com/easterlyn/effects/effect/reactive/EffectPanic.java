@@ -2,6 +2,7 @@ package com.easterlyn.effects.effect.reactive;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorCooldown;
@@ -29,7 +30,7 @@ public class EffectPanic extends Effect implements BehaviorReactive, BehaviorCoo
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(EntityDamageEvent.class);
+		return Collections.singletonList(EntityDamageEvent.class);
 	}
 
 	@Override

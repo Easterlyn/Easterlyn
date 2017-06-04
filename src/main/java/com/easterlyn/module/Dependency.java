@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for tagging things as requiring optional libraries.
- * 
+ *
  * @author Jikoo
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -16,6 +16,6 @@ import java.lang.annotation.Target;
 @Repeatable(Dependencies.class)
 public @interface Dependency {
 
-	public String value();
+	String value();
 
 }

@@ -1,18 +1,16 @@
 package com.easterlyn.events.listeners.entity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.nitnelave.CreeperHeal.config.CreeperConfig;
-
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityExplodeEvent;
+
+import java.util.ArrayList;
 
 /**
  * Listener for EntityExplodeEvents.
@@ -51,13 +49,7 @@ public class ExplodeListener extends EasterlynListener {
 		}
 
 		// CreeperHeal is not set to heal whatever destroyed this machine. Prevent damage.
-		Iterator<Block> iterator = event.blockList().iterator();
-		while (iterator.hasNext()) {
-			Block block = iterator.next();
-			if (machines.getMachineByBlock(block) != null) {
-				iterator.remove();
-			}
-		}
+		event.blockList().removeIf(block -> machines.getMachineByBlock(block) != null);
 	}
 
 }

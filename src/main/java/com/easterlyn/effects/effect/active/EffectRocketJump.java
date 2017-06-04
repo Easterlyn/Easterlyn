@@ -2,6 +2,7 @@ package com.easterlyn.effects.effect.active;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.fun.CrotchRocketCommand;
@@ -36,7 +37,7 @@ public class EffectRocketJump extends Effect implements BehaviorActive, Behavior
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(PlayerInteractEvent.class);
+		return Collections.singletonList(PlayerInteractEvent.class);
 	}
 
 	@Override

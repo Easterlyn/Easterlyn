@@ -70,7 +70,6 @@ public class Chat extends Module {
 		this.users = this.getPlugin().getModule(Users.class);
 		this.halculator = new Halculator(this.getPlugin());
 		this.channelManager.loadAllChannels();
-		this.channelManager.createDefaultSet();
 	}
 
 	@Override

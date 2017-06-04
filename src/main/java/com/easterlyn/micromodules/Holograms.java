@@ -13,7 +13,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Module for Holograms while Machines undergo a rework.
- * 
+ *
  * @author Jikoo
  */
 public class Holograms extends Module {
@@ -36,24 +36,6 @@ public class Holograms extends Module {
 		}
 	}
 
-	public ArmorStand makeHologram(Location location) {
-		ArmorStand stand = location.getWorld().spawn(location, ArmorStand.class);
-		stand.setGravity(false);
-		stand.setMarker(true);
-		stand.setVisible(false);
-		stand.setCustomNameVisible(true);
-		stand.setMetadata("EasterlynHolo", new FixedMetadataValue(getPlugin(), true));
-		return stand;
-	}
-
-	public void removeHolograms(Chunk chunk) {
-		for (Entity entity : chunk.getEntities()) {
-			if (isHologram(entity)) {
-				entity.remove();
-			}
-		}
-	}
-
 	public ArmorStand getHologram(Location location) {
 		return getHologram(location, false);
 	}
@@ -71,7 +53,25 @@ public class Holograms extends Module {
 		return create ? makeHologram(location) : null;
 	}
 
-	public boolean isHologram(Entity entity) {
+	private ArmorStand makeHologram(Location location) {
+		ArmorStand stand = location.getWorld().spawn(location, ArmorStand.class);
+		stand.setGravity(false);
+		stand.setMarker(true);
+		stand.setVisible(false);
+		stand.setCustomNameVisible(true);
+		stand.setMetadata("EasterlynHolo", new FixedMetadataValue(getPlugin(), true));
+		return stand;
+	}
+
+	public void removeHolograms(Chunk chunk) {
+		for (Entity entity : chunk.getEntities()) {
+			if (isHologram(entity)) {
+				entity.remove();
+			}
+		}
+	}
+
+	private boolean isHologram(Entity entity) {
 		return entity instanceof ArmorStand && entity.hasMetadata("EasterlynHolo");
 	}
 

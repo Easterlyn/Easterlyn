@@ -28,8 +28,8 @@ public class LordEnglishEyefuckCommand extends EasterlynCommand {
 	@Override
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		StringBuilder msg = new StringBuilder();
-		for (int i = 0; i < args.length; i++) {
-			msg.append(args[i].toUpperCase()).append(' ');
+		for (String arg : args) {
+			msg.append(arg.toUpperCase()).append(' ');
 		}
 		StringBuilder lelOut = new StringBuilder();
 		for (int i = 0; i < msg.length();) {

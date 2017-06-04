@@ -1,20 +1,18 @@
 package com.easterlyn.machines.type.computer;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.machines.Machines;
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.reflections.Reflections;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.easterlyn.Easterlyn;
-import com.easterlyn.machines.Machines;
-
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import org.reflections.Reflections;
 
 /**
  * A container for all Programs.
@@ -108,7 +106,7 @@ public class Programs {
 	/**
 	 * Gets a Program by its Computer installer.
 	 * 
-	 * @param intaller the installer ItemStack
+	 * @param installer the installer ItemStack
 	 * @return the Program, or null if no matches are found
 	 */
 	public static Program getProgramByInstaller(ItemStack installer) {

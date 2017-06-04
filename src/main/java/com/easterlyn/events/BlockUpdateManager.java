@@ -1,25 +1,22 @@
 package com.easterlyn.events;
 
-import java.util.Queue;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.utilities.HashQueue;
-
+import net.minecraft.server.v1_11_R1.BlockPosition;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import net.minecraft.server.v1_11_R1.BlockPosition;
-
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
+import java.util.Queue;
 
 /**
  * Manager for queuing block updates to prevent redundant block updates by Effects such as Tunnel
  * Bore and Liquid Cooled.
- * 
+ *
  * @author Jikoo
  */
 public class BlockUpdateManager {
@@ -29,7 +26,7 @@ public class BlockUpdateManager {
 	private BukkitTask queueDrain;
 	private final BlockFace[] adjacent;
 
-	public BlockUpdateManager(Easterlyn plugin) {
+	BlockUpdateManager(Easterlyn plugin) {
 		this.plugin = plugin;
 		this.pending = new HashQueue<>();
 		this.adjacent = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH,

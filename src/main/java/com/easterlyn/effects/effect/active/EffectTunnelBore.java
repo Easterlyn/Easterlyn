@@ -2,6 +2,7 @@ package com.easterlyn.effects.effect.active;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
@@ -47,7 +48,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(BlockBreakEvent.class);
+		return Collections.singletonList(BlockBreakEvent.class);
 	}
 
 	@Override

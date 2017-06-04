@@ -51,7 +51,7 @@ public class Language extends Module {
 		YamlConfiguration defaultStrings = YamlConfiguration.loadConfiguration(reader);
 		YamlConfiguration config = this.getConfig();
 		boolean changed = false;
-		Set<String> paths = new HashSet<String>(defaultStrings.getKeys(true));
+		Set<String> paths = new HashSet<>(defaultStrings.getKeys(true));
 		for (Iterator<String> iterator = paths.iterator(); iterator.hasNext();) {
 			String path = iterator.next();
 			if (!defaultStrings.isString(path)) {
@@ -152,7 +152,7 @@ public class Language extends Module {
 		String value = this.translatedValues.get(path);
 		if (value == null) {
 			value = defaultValue;
-			if (defaultValue == path) {
+			if (defaultValue.equals(path)) {
 				discord.postReport("Invalid lang path: " + path);
 			}
 		}

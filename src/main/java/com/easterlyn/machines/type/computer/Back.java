@@ -1,16 +1,15 @@
 package com.easterlyn.machines.type.computer;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Computer;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Representation for a back button.
@@ -26,7 +25,7 @@ public class Back extends Program {
 		icon = new ItemStack(Material.REDSTONE_BLOCK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.DARK_RED + "Back");
-		meta.setLore(Arrays.asList(ChatColor.WHITE + "cd ~/"));
+		meta.setLore(Collections.singletonList(ChatColor.WHITE + "cd ~/"));
 		icon.setItemMeta(meta);
 	}
 
@@ -51,7 +50,7 @@ public class Back extends Program {
 	public ItemStack getBackTo(String program) {
 		ItemStack icon = this.icon.clone();
 		ItemMeta meta = icon.getItemMeta();
-		meta.setLore(Arrays.asList(ChatColor.WHITE + "cd ~/" + program));
+		meta.setLore(Collections.singletonList(ChatColor.WHITE + "cd ~/" + program));
 		icon.setItemMeta(meta);
 		return icon;
 	}

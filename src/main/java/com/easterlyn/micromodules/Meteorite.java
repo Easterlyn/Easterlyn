@@ -1,19 +1,17 @@
 package com.easterlyn.micromodules;
 
-import java.util.HashSet;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.packets.ParticleEffectWrapper;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
+
+import java.util.HashSet;
 
 /**
  * Small class for creating and managing an explosive hollow sphere.
- * 
+ *
  * @author Dublek, Jikoo
  */
 public class Meteorite {
@@ -32,12 +30,10 @@ public class Meteorite {
 	private Material material;
 	/* The Locations of a Voxel sphere around the Meteorite's spawn Location. */
 	private HashSet<Location> sphereCoords;
-	/* The BukkitTask for dropping the Meteorite on a delay. */
-	private BukkitTask dropTask;
 
 	/**
 	 * Create a new Meteorite targeting a Location.
-	 * 
+	 *
 	 * @param target the Location to drop the Meteorite
 	 * @param materialName the name of the Material to make the Meteorite out of
 	 * @param radius the radius to drop the Meteorite within
@@ -55,7 +51,7 @@ public class Meteorite {
 
 	/**
 	 * Create a new Meteorite targeting a Location.
-	 * 
+	 *
 	 * @param target the Location to drop the Meteorite
 	 * @param material the Material to make the Meteorite out of
 	 * @param radius the radius to drop the Meteorite within
@@ -78,7 +74,7 @@ public class Meteorite {
 		int visible = highestBlock + 40 + radius;
 		skyTarget.setY(visible > highestPossible ? highestPossible : visible);
 
-		this.bore = bore == 1 ? true : bore == 0 ? false : target.getBlockY() < highestBlock;
+		this.bore = bore == 1 || bore != 0 && target.getBlockY() < highestBlock;
 		this.explodeBlocks = explode;
 	}
 
@@ -88,7 +84,6 @@ public class Meteorite {
 	public void dropMeteorite() {
 		// Meteorite cannot be dropped, tasks cannot be scheduled.
 		if (!plugin.isEnabled()) {
-			this.removeMeteorite();
 			return;
 		}
 
@@ -107,9 +102,6 @@ public class Meteorite {
 					public void run() {
 						ParticleUtils particles = plugin.getModule(ParticleUtils.class);
 						for (Location location : sphereCoords) {
-							if (location.getBlock().getType() == material) {
-								location.getBlock().setType(Material.AIR);
-							}
 							particles.addEntity(new MeteoriteComponent(location, material, explodeBlocks, bore).getBukkitEntity(),
 									new ParticleEffectWrapper(Particle.LAVA, 1));
 						}
@@ -122,52 +114,17 @@ public class Meteorite {
 	/**
 	 * Generates the Location sphere that represents a Meteorite.
 	 */
-	public void genMeteorite() {
-		if (sphereCoords == null) {
-			sphereCoords = this.genSphereCoords(radius);
+	private void genMeteorite() {
+		if (sphereCoords != null) {
+			return;
 		}
+		sphereCoords = this.genSphereCoords(radius);
 		sphereCoords.removeAll(this.genSphereCoords(radius - 1));
 	}
 
 	/**
-	 * Sets all blocks in the Meteorite to the Meteorite's Material.
-	 */
-	public void hoverMeteorite(final long hoverTicks) {
-		// Generation is a heavy operation - do it off the main thread.
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				genMeteorite();
-				if (sphereCoords.size() == 0) {
-					return;
-				}
-
-				// Construct the meteor in the world - must be on the main thread
-				new BukkitRunnable() {
-					@Override
-					public void run() {
-						for (Location a : sphereCoords) {
-							if (a.getBlock().isEmpty()) {
-								a.getBlock().setType(material);
-							}
-						}
-					}
-				}.runTask(plugin);
-
-				// Schedule the meteorite to drop later
-				dropTask = new BukkitRunnable() {
-					@Override
-					public void run() {
-						dropMeteorite();
-					}
-				}.runTaskLater(plugin, hoverTicks);
-			}
-		}.runTaskAsynchronously(plugin);
-	}
-
-	/**
 	 * Generates a Set of the Locations in a hollow Voxel sphere around a Location.
-	 * 
+	 *
 	 * @param radius the radius of the sphere
 	 * @return the HashSet generated
 	 */
@@ -200,30 +157,6 @@ public class Meteorite {
 			}
 		}
 		return coords;
-	}
-
-	/**
-	 * Check if the Meteorite has been dropped. Applicable only when hoverMeteorite has been called.
-	 * 
-	 * @return true if a task is pending to drop the Meteorite.
-	 */
-	public boolean hasDropped() {
-		return dropTask != null && dropTask.getTaskId() > 0;
-	}
-
-	/**
-	 * Removes the hovered meteorite, if any.
-	 */
-	public void removeMeteorite() {
-		if (hasDropped()) {
-			return;
-		}
-		dropTask.cancel();
-		for (Location location : sphereCoords) {
-			if (location.getBlock().getType() == material) {
-				location.getBlock().setType(Material.AIR);
-			}
-		}
 	}
 
 }

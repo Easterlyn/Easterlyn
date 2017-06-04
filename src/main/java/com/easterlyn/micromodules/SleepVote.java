@@ -19,7 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class SleepVote extends Module {
 
-	private final HashMap<String, HashSet<String>> votes = new HashMap<String, HashSet<String>>();
+	private final HashMap<String, HashSet<String>> votes = new HashMap<>();
 
 	private Language lang;
 
@@ -42,7 +42,7 @@ public class SleepVote extends Module {
 			return;
 		}
 		if (!votes.containsKey(world.getName())) {
-			votes.put(world.getName(), new HashSet<String>());
+			votes.put(world.getName(), new HashSet<>());
 			resetVote(world);
 		}
 		if (votes.get(world.getName()).add(p.getName())) {
@@ -127,7 +127,7 @@ public class SleepVote extends Module {
 		}
 	}
 
-	public void resetVote(final World world) {
+	private void resetVote(final World world) {
 		if (!isEnabled()) {
 			return;
 		}

@@ -1,18 +1,5 @@
 package com.easterlyn.events.listeners.player;
 
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Pattern;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
@@ -31,11 +18,14 @@ import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.WrappedSenderPlayer;
-
 import com.google.common.collect.ImmutableList;
-
+import me.ryanhamshire.GriefPrevention.DataStore;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import me.ryanhamshire.GriefPrevention.PlayerData;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,13 +34,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-
-import me.ryanhamshire.GriefPrevention.DataStore;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import me.ryanhamshire.GriefPrevention.PlayerData;
+import java.text.Normalizer;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 
 /**
  * Listener for PlayerAsyncChatEvents.
@@ -89,12 +76,7 @@ public class AsyncChatListener extends EasterlynListener {
 		halFunctions.add(chat.getHalculator());
 
 		// If, say, the Hal AI fails to load, don't NPE whenever anyone talks.
-		Iterator<HalMessageHandler> iterator = halFunctions.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next() == null) {
-				iterator.remove();
-			}
-		}
+		halFunctions.removeIf(Objects::isNull);
 
 		handleGriefPrevention = Bukkit.getPluginManager().isPluginEnabled("GriefPrevention");
 		if (handleGriefPrevention) {
@@ -162,7 +144,7 @@ public class AsyncChatListener extends EasterlynListener {
 		final Player player = event.getPlayer();
 		String cleaned = ChatColor.stripColor(message.getRawMessage());
 		boolean publishGlobally = message.getChannel().getName().equals("#");
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 
 		if (checkSpam) {
 			if (cleaned.equalsIgnoreCase("test")) {
@@ -301,8 +283,7 @@ public class AsyncChatListener extends EasterlynListener {
 		boolean softMute = dataStore.isSoftMuted(player.getUniqueId());
 		if (softMute) {
 			event.setFormat("[SoftMute] " + event.getFormat());
-			String soft = new StringBuilder().append(ChatColor.GRAY).append("[SoftMute] ")
-					.append(ChatColor.stripColor(message.getConsoleMessage())).toString();
+			String soft = ChatColor.GRAY + "[SoftMute] " + ChatColor.stripColor(message.getConsoleMessage());
 			Iterator<Player> iterator = event.getRecipients().iterator();
 			while (iterator.hasNext()) {
 				Player recipient = iterator.next();
@@ -334,7 +315,6 @@ public class AsyncChatListener extends EasterlynListener {
 			}
 			if (senderData.ignoredPlayers.containsKey(uuid)) {
 				iterator.remove();
-				continue;
 			}
 		}
 		return softMute;

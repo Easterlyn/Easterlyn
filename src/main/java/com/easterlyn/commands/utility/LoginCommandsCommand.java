@@ -1,21 +1,18 @@
 package com.easterlyn.commands.utility;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-
 import com.google.common.collect.ImmutableList;
-
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * EasterlynCommand for manipulating commands sent on login.
@@ -80,7 +77,7 @@ public class LoginCommandsCommand extends EasterlynCommand {
 			return ImmutableList.of();
 		}
 		args[0] = args[0].toLowerCase();
-		ArrayList<String> matches = new ArrayList<String>();
+		ArrayList<String> matches = new ArrayList<>();
 		if (args.length == 1) {
 			if ("add".startsWith(args[0])) {
 				matches.add("add");
@@ -115,15 +112,13 @@ public class LoginCommandsCommand extends EasterlynCommand {
 			String removed = commands.remove(line - 1);
 			user.setLoginCommands(commands);
 			player.sendMessage(getLang().getValue("command.onlogin.delete").replace("{PARAMETER}", removed));
-			return;
 		} catch (NumberFormatException e) {
 			player.sendMessage(getLang().getValue("command.onlogin.error.delete.usage"));
-			return;
 		}
 	}
 
 	private void add(Player player, User user, String[] args) {
-		ArrayList<String> commands = new ArrayList<String>(user.getLoginCommands());
+		ArrayList<String> commands = new ArrayList<>(user.getLoginCommands());
 		if (!player.hasPermission("easterlyn.command.onlogin.more") && commands.size() >= 2 || commands.size() > 9) {
 			player.sendMessage(getLang().getValue("command.onlogin.error.add.maximum"));
 			return;
@@ -140,6 +135,5 @@ public class LoginCommandsCommand extends EasterlynCommand {
 		commands.add(command);
 		user.setLoginCommands(commands);
 		player.sendMessage(getLang().getValue("command.onlogin.add").replace("{PARAMETER}", command));
-		return;
 	}
 }

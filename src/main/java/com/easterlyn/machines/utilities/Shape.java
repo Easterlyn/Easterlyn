@@ -1,13 +1,12 @@
 package com.easterlyn.machines.utilities;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * A blank structure for building multi-block Machines.
@@ -39,7 +38,7 @@ public class Shape {
 		}
 
 		@SuppressWarnings("deprecation")
-		public MaterialData getRotatedData(Direction direction) {
+		private MaterialData getRotatedData(Direction direction) {
 			if (this.direction == null) {
 				return new MaterialData(material, data);
 			}
@@ -56,8 +55,6 @@ public class Shape {
 
 	/**
 	 * Constructor of Shape. Creates a blank Shape.
-	 * 
-	 * @param l the location the Machine is placed in
 	 */
 	public Shape() {
 		this.vectors = new HashMap<>();
@@ -95,8 +92,7 @@ public class Shape {
 	 */
 	public HashMap<Location, MaterialData> getBuildLocations(Location location, Direction direction) {
 		HashMap<Location, MaterialData> newLocs = new HashMap<>();
-		for (Iterator<Entry<Vector, MaterialDataValue>> iterator = vectors.entrySet().iterator(); iterator.hasNext();) {
-			Entry<Vector, MaterialDataValue> entry = iterator.next();
+		for (Entry<Vector, MaterialDataValue> entry : vectors.entrySet()) {
 			newLocs.put(location.clone().add(getRelativeVector(direction, entry.getKey().clone())), entry.getValue().getRotatedData(direction));
 		}
 		return newLocs;
@@ -108,7 +104,7 @@ public class Shape {
 	 * Internally, we consider north to be positive Z, east to be positive X. In Minecraft, north is negative Z.
 	 * @param direction the Direction
 	 * @param vector the Vector to translate
-	 * @return
+	 * @return the new Vector
 	 */
 	public static Vector getRelativeVector(Direction direction, Vector vector) {
 		switch (direction) {

@@ -20,10 +20,7 @@ public class GriefPreventionHook extends ProtectionHook {
 
 	@Override
 	public boolean isProtected(Location location) {
-		if (!isHookUsable()) {
-			return false;
-		}
-		return GriefPrevention.instance.dataStore.getClaimAt(location, true, null) != null;
+		return isHookUsable() && GriefPrevention.instance.dataStore.getClaimAt(location, true, null) != null;
 	}
 
 	@Override
@@ -43,10 +40,7 @@ public class GriefPreventionHook extends ProtectionHook {
 			return true;
 		}
 		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, true, null);
-		if (claim == null) {
-			return true;
-		}
-		return claim.allowAccess(player) == null;
+		return claim != null && claim.allowAccess(player) == null;
 	}
 
 	@Override
@@ -55,10 +49,7 @@ public class GriefPreventionHook extends ProtectionHook {
 			return true;
 		}
 		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, true, null);
-		if (claim == null) {
-			return true;
-		}
-		return claim.allowContainers(player) == null;
+		return claim != null && claim.allowContainers(player) == null;
 	}
 
 	@Override
@@ -67,10 +58,7 @@ public class GriefPreventionHook extends ProtectionHook {
 			return true;
 		}
 		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, true, null);
-		if (claim == null) {
-			return true;
-		}
-		return claim.allowBuild(player, Material.DIAMOND_BLOCK) == null;
+		return claim != null && claim.allowBuild(player, Material.DIAMOND_BLOCK) == null;
 	}
 
 }

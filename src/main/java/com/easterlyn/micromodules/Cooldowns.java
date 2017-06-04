@@ -1,16 +1,15 @@
 package com.easterlyn.micromodules;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.module.Module;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A utility for tracking time remaining until a Player can use an ability/ActiveEffect again.
@@ -113,9 +112,9 @@ public class Cooldowns extends Module {
 	}
 
 	/**
-	 * Fetches the time in milliseconds remaining for a Player on a certain cooldown.
+	 * Fetches the time in milliseconds remaining for an Entity on a certain cooldown.
 	 * 
-	 * @param uuid the UUID of the Player
+	 * @param entity the Entity
 	 * @param cooldownName the name of the cooldown
 	 * @return the remaining milliseconds until specified ability can be re-used
 	 */
@@ -154,8 +153,7 @@ public class Cooldowns extends Module {
 
 	/**
 	 * Fetches the time in milliseconds remaining for a global cooldown.
-	 * 
-	 * @param uuid the UUID of the Player
+	 *
 	 * @param cooldownName the name of the cooldown
 	 * @return the remaining milliseconds until specified ability can be re-used
 	 */
@@ -187,7 +185,7 @@ public class Cooldowns extends Module {
 				if (map.get(cooldown) <= now) {
 					map.remove(cooldown);
 					if (map.isEmpty()) {
-						cooldowns.remove(map);
+						cooldowns.remove(uuid);
 					}
 				}
 			}

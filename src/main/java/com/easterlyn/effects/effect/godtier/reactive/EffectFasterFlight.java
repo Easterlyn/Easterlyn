@@ -1,23 +1,22 @@
 package com.easterlyn.effects.effect.godtier.reactive;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.users.UserAspect;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Faster flight.
@@ -32,7 +31,7 @@ public class EffectFasterFlight extends Effect implements BehaviorGodtier, Behav
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.WIND);
+		return Collections.singletonList(UserAspect.WIND);
 	}
 
 	@Override

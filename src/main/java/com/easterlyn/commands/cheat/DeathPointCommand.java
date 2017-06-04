@@ -1,8 +1,5 @@
 package com.easterlyn.commands.cheat;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Cooldowns;
@@ -10,11 +7,13 @@ import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PlayerUtils;
-
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Cheat harder you disgusting survival-hating cheating cheater.
@@ -44,7 +43,7 @@ public class DeathPointCommand extends EasterlynCommand {
 
 		User targetUser;
 		boolean targetOther = false;
-		if (args.length > 0 && sender.hasPermission("easterlyn.command.back.other")) {
+		if (args.length > 0 && sender.hasPermission("easterlyn.command.deathpoint.other")) {
 			Player targetPlayer = PlayerUtils.matchPlayer(args[0], false, this.getPlugin());
 			if (targetPlayer == null) {
 				sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
@@ -69,9 +68,9 @@ public class DeathPointCommand extends EasterlynCommand {
 			cooldowns.addCooldown((Player) sender, this.getName(), 36000000L);
 		}
 
-		Location back = targetUser.getBackLocation();
+		Location death = targetUser.getDeathLocation();
 
-		if (back == null) {
+		if (death == null) {
 			if (targetOther) {
 				sender.sendMessage(getLang().getValue("command.deathpoint.unset.other").replace("{PLAYER}", targetUser.getDisplayName()));
 			} else {
@@ -80,11 +79,11 @@ public class DeathPointCommand extends EasterlynCommand {
 			return true;
 		}
 
-		targetUser.getPlayer().teleport(back, TeleportCause.COMMAND);
+		targetUser.getPlayer().teleport(death, TeleportCause.COMMAND);
 		if (targetOther) {
-			sender.sendMessage(getLang().getValue("command.back.success.other").replace("{PLAYER}", targetUser.getDisplayName()));
+			sender.sendMessage(getLang().getValue("command.deathpoint.success.other").replace("{PLAYER}", targetUser.getDisplayName()));
 		} else {
-			sender.sendMessage(getLang().getValue("command.back.success.self"));
+			sender.sendMessage(getLang().getValue("command.deathpoint.success.self"));
 		}
 		return true;
 	}

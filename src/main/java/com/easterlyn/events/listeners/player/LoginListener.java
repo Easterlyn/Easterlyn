@@ -1,11 +1,8 @@
 package com.easterlyn.events.listeners.player;
 
-import java.util.regex.Pattern;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.listeners.EasterlynListener;
-
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
@@ -14,9 +11,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
+import java.util.regex.Pattern;
+
 /**
  * Listener for PlayerLoginEvents.
- * 
+ *
  * @author Jikoo
  */
 public class LoginListener extends EasterlynListener {
@@ -32,7 +31,7 @@ public class LoginListener extends EasterlynListener {
 
 	/**
 	 * The event handler for PlayerLoginEvents.
-	 * 
+	 *
 	 * @param event the PlayerLoginEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -46,7 +45,7 @@ public class LoginListener extends EasterlynListener {
 			 * One day we had a guy log in who had a space after his name. Played hell with plugins
 			 * and couldn't be targeted by commands. Good times. Luckily, he wasn't malicious and
 			 * probably didn't even realize how badly he could have screwed us over.
-			 * 
+			 *
 			 * If Mojang screws up again, I am not dealing with it.
 			 */
 			event.setResult(Result.KICK_BANNED);
@@ -57,7 +56,7 @@ public class LoginListener extends EasterlynListener {
 		case ALLOWED:
 		case KICK_FULL:
 		case KICK_WHITELIST:
-			return;
+			break;
 		case KICK_BANNED:
 		case KICK_OTHER:
 			String reason = event.getKickMessage();
@@ -69,9 +68,9 @@ public class LoginListener extends EasterlynListener {
 				reason = banlist.getBanEntry(id).getReason();
 			}
 			event.setKickMessage(reason.replaceAll("<(ip|uuid|name)=.*?>", ""));
-			return;
+			break;
 		default:
-			return;
+			break;
 		}
 	}
 

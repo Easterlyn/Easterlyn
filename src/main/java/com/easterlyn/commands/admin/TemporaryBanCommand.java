@@ -1,20 +1,18 @@
 package com.easterlyn.commands.admin;
 
-import java.util.Date;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.NumberUtils;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Date;
 
 /**
  * EasterlynCommand for adding a temporary ban.
@@ -69,7 +67,7 @@ public class TemporaryBanCommand extends EasterlynCommand {
 							player.getPlayer().kickPlayer(reason);
 						}
 						Bukkit.broadcastMessage(getLang().getValue("command.tempban.announce")
-								.replace("{PLAYER}", player.getName()).replace("{REASON}", reason.toString()));
+								.replace("{PLAYER}", player.getName()).replace("{REASON}", reason));
 					}
 				}.runTask(getPlugin());
 			}

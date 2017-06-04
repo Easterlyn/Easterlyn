@@ -3,6 +3,7 @@ package com.easterlyn.effects.effect.godtier.active;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
@@ -44,7 +45,7 @@ public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGod
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.STARS);
+		return Collections.singletonList(UserAspect.STARS);
 	}
 
 	@Override

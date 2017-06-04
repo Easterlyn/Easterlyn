@@ -1,22 +1,20 @@
 package com.easterlyn.effects.effect.godtier.active;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.users.UserAspect;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Gives bonus experience for entity kills.
@@ -31,7 +29,7 @@ public class EffectBonusExperience extends Effect implements BehaviorActive, Beh
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.KNOWLEDGE);
+		return Collections.singletonList(UserAspect.KNOWLEDGE);
 	}
 
 	@Override
@@ -47,7 +45,7 @@ public class EffectBonusExperience extends Effect implements BehaviorActive, Beh
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(EntityDeathEvent.class);
+		return Collections.singletonList(EntityDeathEvent.class);
 	}
 
 	@Override

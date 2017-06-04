@@ -1,14 +1,5 @@
 package com.easterlyn.chat.message;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.chat.channel.Channel;
@@ -18,14 +9,21 @@ import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.JSONUtil;
-
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Used to better clarify a message's destination prior to formatting.
@@ -179,20 +177,17 @@ public class Message {
 		Users users = plugin.getModule(Users.class);
 
 		for (T object : recipients) {
-			UUID uuid;
 			Player player;
 			User recipient;
 			if (object instanceof UUID) {
-				uuid = (UUID) object;
+				UUID uuid = (UUID) object;
 				player = Bukkit.getPlayer(uuid);
 				recipient = users.getUser(uuid);
 			} else if (object instanceof Player) {
 				player = (Player) object;
-				uuid = player.getUniqueId();
-				recipient = users.getUser(uuid);
+				recipient = users.getUser(player.getUniqueId());
 			} else if (object instanceof User) {
 				recipient = (User) object;
-				uuid = recipient.getUUID();
 				player = recipient.getPlayer();
 			} else {
 				throw new RuntimeException("Invalid recipient type: " + object.getClass());

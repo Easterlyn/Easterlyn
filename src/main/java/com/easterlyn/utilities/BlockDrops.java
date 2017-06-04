@@ -1,48 +1,28 @@
 package com.easterlyn.utilities;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.effects.Effects;
+import com.easterlyn.effects.effect.Effect;
+import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_11_R1.BlockWood.EnumLogVariant;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-
-import com.easterlyn.Easterlyn;
-import com.easterlyn.effects.Effects;
-import com.easterlyn.effects.effect.Effect;
-
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
-
-import net.minecraft.server.v1_11_R1.BlockBanner;
-import net.minecraft.server.v1_11_R1.BlockCocoa;
-import net.minecraft.server.v1_11_R1.BlockCrops;
-import net.minecraft.server.v1_11_R1.BlockLeaves;
-import net.minecraft.server.v1_11_R1.BlockLeaves1;
-import net.minecraft.server.v1_11_R1.BlockLeaves2;
-import net.minecraft.server.v1_11_R1.BlockPosition;
-import net.minecraft.server.v1_11_R1.BlockShulkerBox;
-import net.minecraft.server.v1_11_R1.BlockWood.EnumLogVariant;
-import net.minecraft.server.v1_11_R1.Blocks;
-import net.minecraft.server.v1_11_R1.GameProfileSerializer;
-import net.minecraft.server.v1_11_R1.IBlockData;
-import net.minecraft.server.v1_11_R1.Item;
-import net.minecraft.server.v1_11_R1.ItemBanner;
-import net.minecraft.server.v1_11_R1.Items;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import net.minecraft.server.v1_11_R1.TileEntity;
-import net.minecraft.server.v1_11_R1.TileEntityBanner;
-import net.minecraft.server.v1_11_R1.TileEntityShulkerBox;
-import net.minecraft.server.v1_11_R1.TileEntitySkull;
-
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
 
 /**
  * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
@@ -58,16 +38,12 @@ public class BlockDrops {
 		Effects effects = plugin.getModule(Effects.class);
 		Map<Effect, Integer> effectMap = effects.getAllEffects(player);
 		Effect light = effects.getEffect("Fortuna");
-		if (effectMap.containsKey(light)) {
-			bonus = effectMap.get(light);
-		} else {
-			bonus = 0;
-		}
+		bonus = effectMap.getOrDefault(light, 0);
 
 		return getDrops(tool, block, bonus);
 	}
 
-	private static Collection<ItemStack> getDrops(ItemStack tool, Block block, int fortuneBonus) {
+	private static Collection<ItemStack> getDrops(@Nullable ItemStack tool, Block block, int fortuneBonus) {
 
 		if (tool != null && tool.containsEnchantment(Enchantment.SILK_TOUCH) && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
 			Collection<ItemStack> drops = getSilkDrops(tool, block.getState().getData());
@@ -76,7 +52,7 @@ public class BlockDrops {
 			}
 		}
 
-		if (tool.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
+		if (tool != null && tool.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
 			fortuneBonus += tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
 		}
 
@@ -84,7 +60,7 @@ public class BlockDrops {
 	}
 
 	public static int getExp(ItemStack tool, Block block) {
-		if (tool.containsEnchantment(Enchantment.SILK_TOUCH)
+		if (tool != null && tool.containsEnchantment(Enchantment.SILK_TOUCH)
 				&& block.getType() != Material.MOB_SPAWNER) {
 			return 0;
 		}
@@ -167,10 +143,8 @@ public class BlockDrops {
 			return false;
 		}
 		IBlockData data = nmsBlock.getBlockData();
-		if (data.getMaterial().isAlwaysDestroyable()) {
-			return true;
-		}
-		return tool != null && tool != Material.AIR && Item.getById(tool.getId()).canDestroySpecialBlock(data);
+		return data.getMaterial().isAlwaysDestroyable() || tool != null && tool != Material.AIR
+				&& Item.getById(tool.getId()).canDestroySpecialBlock(data);
 	}
 
 	@SuppressWarnings("deprecation")

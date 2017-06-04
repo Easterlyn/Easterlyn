@@ -16,7 +16,7 @@ import org.bukkit.craftbukkit.v1_11_R1.entity.CraftEntity;
 
 /**
  * A Module for creating falling explosive spheres.
- * 
+ *
  * @author Dublek, Jikoo
  */
 public class Meteors extends Module {
@@ -39,7 +39,7 @@ public class Meteors extends Module {
 
 	/**
 	 * Deals with EntityChangeBlockEvents to keep all related NMS/OBC access in one area.
-	 * 
+	 *
 	 * @param event the EntityChangeBlockEvent
 	 */
 	public void handlePotentialMeteorite(EntityChangeBlockEvent event) {
@@ -50,16 +50,15 @@ public class Meteors extends Module {
 					false, ((MeteoriteComponent) nmsEntity).shouldExplode());
 			event.getEntity().remove();
 			event.getBlock().setType(Material.AIR);
-			return;
 		}
 	}
 
 	/**
 	 * Cause an explosion at a Location.
-	 * 
+	 *
 	 * @param loc the Location to explode at
 	 */
-	public void explode(Location loc, Entity explodeAs, boolean setFires, boolean terrainDamage) {
+	private void explode(Location loc, Entity explodeAs, boolean setFires, boolean terrainDamage) {
 		Explosion explosion = new Explosion(((CraftWorld) loc.getWorld()).getHandle(),
 				((CraftEntity) explodeAs).getHandle(), loc.getX(), loc.getY(), loc.getZ(), 4F, setFires, terrainDamage);
 		explosion.a();

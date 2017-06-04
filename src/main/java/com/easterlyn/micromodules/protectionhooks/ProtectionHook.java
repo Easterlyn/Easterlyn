@@ -6,14 +6,14 @@ import org.bukkit.entity.Player;
 
 /**
  * Abstraction for a hook to protection plugins.
- * 
+ *
  * @author Jikoo
  */
 public abstract class ProtectionHook {
 
 	private final String pluginName;
 
-	public ProtectionHook(String pluginName) {
+	ProtectionHook(String pluginName) {
 		this.pluginName = pluginName;
 	}
 

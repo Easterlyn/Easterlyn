@@ -1,11 +1,5 @@
 package com.easterlyn.commands.teleportation;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.machines.Machines;
@@ -16,15 +10,20 @@ import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PlayerUtils;
 import com.easterlyn.utilities.RegionUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
 /**
  * Essentials' TPA just won't cut it.
- * 
+ *
  * @author Jikoo
  */
 public class TeleportRequestCommand extends EasterlynCommand {
@@ -199,7 +198,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 		private final UUID target;
 		private final boolean here;
 		private final long expiry;
-		public TeleportRequest(UUID source, UUID target, boolean here) {
+		TeleportRequest(UUID source, UUID target, boolean here) {
 			this.source = source;
 			this.target = target;
 			this.here = here;
@@ -214,7 +213,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 		public boolean isHere() {
 			return here;
 		}
-		public long getExpiry() {
+		long getExpiry() {
 			return expiry;
 		}
 	}

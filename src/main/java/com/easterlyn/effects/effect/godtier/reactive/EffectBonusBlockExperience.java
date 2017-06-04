@@ -1,21 +1,19 @@
 package com.easterlyn.effects.effect.godtier.reactive;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.users.UserAspect;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockExpEvent;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Gives bonus experience for block actions.
@@ -30,7 +28,7 @@ public class EffectBonusBlockExperience extends Effect implements BehaviorReacti
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.KNOWLEDGE);
+		return Collections.singletonList(UserAspect.KNOWLEDGE);
 	}
 
 	@Override
@@ -46,7 +44,7 @@ public class EffectBonusBlockExperience extends Effect implements BehaviorReacti
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(BlockExpEvent.class);
+		return Collections.singletonList(BlockExpEvent.class);
 	}
 
 	@Override

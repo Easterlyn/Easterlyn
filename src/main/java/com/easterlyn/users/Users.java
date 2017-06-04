@@ -1,22 +1,20 @@
 package com.easterlyn.users;
 
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Color;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.CollectionConversions;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class that keeps track of players currently logged on to the game.
@@ -116,7 +114,7 @@ public class Users extends Module {
 	/**
 	 * Fetch a User. A User is always returned, even if the Player by the given UUID is not online.
 	 *
-	 * @param uuid
+	 * @param uuid the UUID of the User
 	 *
 	 * @return the User
 	 */

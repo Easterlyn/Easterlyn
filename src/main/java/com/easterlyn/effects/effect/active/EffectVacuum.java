@@ -2,6 +2,7 @@ package com.easterlyn.effects.effect.active;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
@@ -32,7 +33,7 @@ public class EffectVacuum extends Effect implements BehaviorActive {
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(BlockBreakEvent.class);
+		return Collections.singletonList(BlockBreakEvent.class);
 	}
 
 	@Override

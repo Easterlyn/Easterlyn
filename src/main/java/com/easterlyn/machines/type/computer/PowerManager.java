@@ -1,8 +1,5 @@
 package com.easterlyn.machines.type.computer;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.BehaviorPassive;
 import com.easterlyn.effects.effect.BehaviorReactive;
@@ -12,7 +9,7 @@ import com.easterlyn.machines.type.Computer;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,7 +18,8 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Program for opening the Godtier power selection window.
@@ -42,7 +40,7 @@ public class PowerManager extends Program {
 		icon = new ItemStack(Material.FIREWORK);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "PowerManager");
-		meta.setLore(Arrays.asList(ChatColor.WHITE + "Manage Godtier powers!"));
+		meta.setLore(Collections.singletonList(ChatColor.WHITE + "Manage Godtier powers!"));
 		icon.setItemMeta(meta);
 
 		installer = new ItemStack(Material.RECORD_12);

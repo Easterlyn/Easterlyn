@@ -2,7 +2,6 @@ package com.easterlyn.discord.modules;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,15 +70,12 @@ public class MinecraftModule extends DiscordModule {
 			return;
 		}
 		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getDiscord().getPlugin(),
-				new Callable<Boolean>() {
-					@Override
-					public Boolean call() throws Exception {
-						player.startMessages();
-						PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, command);
-						Bukkit.getPluginManager().callEvent(event);
-						getDiscord().getLogger().info(event.getPlayer().getName() + " issued server command: " + event.getMessage());
-						return !event.isCancelled() && Bukkit.dispatchCommand(player, event.getMessage().substring(1));
-					}
+				() -> {
+					player.startMessages();
+					PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, command);
+					Bukkit.getPluginManager().callEvent(event);
+					getDiscord().getLogger().info(event.getPlayer().getName() + " issued server command: " + event.getMessage());
+					return !event.isCancelled() && Bukkit.dispatchCommand(player, event.getMessage().substring(1));
 				});
 
 		new BukkitRunnable() {
@@ -102,7 +98,7 @@ public class MinecraftModule extends DiscordModule {
 				}
 				try {
 					Thread.sleep(200);
-				} catch (InterruptedException e) { }
+				} catch (InterruptedException e) {}
 				String message = player.stopMessages();
 				if (message.isEmpty()) {
 					return;

@@ -1,16 +1,11 @@
 package com.easterlyn.machines.type;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.users.Users;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -38,6 +33,10 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 /**
  * Framework for all Machine block assemblies.
@@ -180,8 +179,6 @@ public abstract class Machine {
 	 * 
 	 * @param event the BlockPlaceEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
-	 * @return true if the event should be cancelled
 	 */
 	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
 		Location key = getKey(storage);
@@ -267,7 +264,7 @@ public abstract class Machine {
 	 */
 	public void reassemble(ConfigurationSection storage) {
 		final Location key = getKey(storage);
-		final HashMap<Location, ItemStack[]> invents = new HashMap<Location, ItemStack[]>();
+		final HashMap<Location, ItemStack[]> invents = new HashMap<>();
 		for (Location l : getMachines().getMachineBlocks(key)) {
 			Block b = l.getBlock();
 			if (b.getState() instanceof InventoryHolder) {
@@ -278,18 +275,15 @@ public abstract class Machine {
 			b.setType(Material.AIR, false);
 		}
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			@Override
-			public void run() {
-				assemble(key, getDirection(storage), storage);
-				for (Entry<Location, ItemStack[]> e : invents.entrySet()) {
-					try {
-						((InventoryHolder) e.getKey().getBlock().getState()).getInventory().setContents(e.getValue());
-					} catch (ClassCastException e1) {
-						for (ItemStack is : e.getValue()) {
-							if (is != null) {
-								key.getWorld().dropItem(key, is);
-							}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+			assemble(key, getDirection(storage), storage);
+			for (Entry<Location, ItemStack[]> e : invents.entrySet()) {
+				try {
+					((InventoryHolder) e.getKey().getBlock().getState()).getInventory().setContents(e.getValue());
+				} catch (ClassCastException e1) {
+					for (ItemStack is : e.getValue()) {
+						if (is != null) {
+							key.getWorld().dropItem(key, is);
 						}
 					}
 				}
@@ -506,12 +500,9 @@ public abstract class Machine {
 	 * Removes this Machine's listing on a synchronous 0 tick delay.
 	 */
 	protected void assemblyFailed(ConfigurationSection storage) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			@Override
-			public void run() {
-				disable(storage);
-				getMachines().deleteMachine(getKey(storage));
-			}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+			disable(storage);
+			getMachines().deleteMachine(getKey(storage));
 		});
 	}
 

@@ -1,17 +1,5 @@
 package com.easterlyn.utilities;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -22,32 +10,30 @@ import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.io.BaseEncoding;
-
+import io.netty.buffer.Unpooled;
+import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_11_R1.EntityPlayer;
+import net.minecraft.server.v1_11_R1.MerchantRecipe;
+import net.minecraft.server.v1_11_R1.MerchantRecipeList;
+import net.minecraft.server.v1_11_R1.PacketDataSerializer;
+import net.minecraft.server.v1_11_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_11_R1.PacketPlayOutSetSlot;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.FurnaceRecipe;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
@@ -62,19 +48,17 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.util.io.BukkitObjectInputStream;
 
-import net.md_5.bungee.api.ChatColor;
-
-import net.minecraft.server.v1_11_R1.EntityPlayer;
-import net.minecraft.server.v1_11_R1.MerchantRecipe;
-import net.minecraft.server.v1_11_R1.MerchantRecipeList;
-import net.minecraft.server.v1_11_R1.PacketDataSerializer;
-import net.minecraft.server.v1_11_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_11_R1.PacketPlayOutSetSlot;
-
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
-
-import io.netty.buffer.Unpooled;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A set of useful methods for inventory functions.
@@ -324,8 +308,7 @@ public class InventoryUtils {
 	public static ItemStack deserializeItemStack(byte[] bytes) {
 		try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 				BukkitObjectInputStream bukkitInputStream = new BukkitObjectInputStream(inputStream)) {
-			ItemStack decoded = (ItemStack) bukkitInputStream.readObject();
-			return decoded;
+			return (ItemStack) bukkitInputStream.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException("Unable to deserialize ItemStack!", e);
 		}

@@ -1,11 +1,9 @@
 package com.easterlyn.machines.type.computer;
 
-import java.util.Arrays;
-
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Computer;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -13,7 +11,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.Collections;
 
 /**
  * Program for opening a verification menu.
@@ -48,7 +46,7 @@ public class Verification extends Program {
 		top.clear();
 		ItemStack icon = this.icon.clone();
 		ItemMeta meta = icon.getItemMeta();
-		meta.setLore(Arrays.asList(String.format(lore, verification)));
+		meta.setLore(Collections.singletonList(String.format(lore, verification)));
 		icon.setItemMeta(meta);
 		top.setItem(0, icon);
 		top.setItem(8, Programs.getProgramByName("Back").getIcon());

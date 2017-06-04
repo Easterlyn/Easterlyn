@@ -5,12 +5,10 @@ import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.events.packets.ParticleEffectWrapper;
 import com.easterlyn.micromodules.ParticleUtils;
 import com.easterlyn.users.UserRank;
-
 import org.bukkit.Particle;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
@@ -39,7 +37,7 @@ public class EnterListener extends EasterlynListener {
 	@EventHandler(ignoreCancelled = true)
 	public void onVehicleEnter(VehicleEnterEvent event) {
 		if (event.getVehicle().getType() != EntityType.HORSE || event.getEntered().getType() != EntityType.PLAYER
-				|| !((Player) event.getEntered()).hasPermission("easterlyn.blaze")) {
+				|| !event.getEntered().hasPermission("easterlyn.blaze")) {
 			return;
 		}
 		Horse horse = (Horse) event.getVehicle();

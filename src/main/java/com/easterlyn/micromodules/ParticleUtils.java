@@ -1,17 +1,10 @@
 package com.easterlyn.micromodules;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.UUID;
-
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.packets.ParticleEffectWrapper;
 import com.easterlyn.module.Module;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -20,6 +13,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 /**
  * Utility for spawning particles at an entity every tick.
@@ -41,12 +40,14 @@ public class ParticleUtils extends Module {
 		private final UUID uuid;
 		private final boolean player;
 		private final HashSet<ParticleEffectWrapper> effects;
-		public EntityParticleWrapper(Entity wrapped) {
+
+		private EntityParticleWrapper(Entity wrapped) {
 			uuid = wrapped.getUniqueId();
 			player = wrapped instanceof Player;
 			effects = new HashSet<>();
 		}
-		public Entity getWrappedEntity() {
+
+		private Entity getWrappedEntity() {
 			if (player) {
 				return Bukkit.getPlayer(uuid);
 			}
@@ -59,15 +60,13 @@ public class ParticleUtils extends Module {
 			}
 			return null;
 		}
-		public void addParticle(ParticleEffectWrapper particle) {
+
+		private void addParticle(ParticleEffectWrapper particle) {
 			effects.add(particle);
 		}
-		public HashSet<ParticleEffectWrapper> removeEffect(Particle particleType) {
-			for (Iterator<ParticleEffectWrapper> iterator = effects.iterator(); iterator.hasNext();) {
-				if (iterator.next().getParticle() == particleType) {
-					iterator.remove();
-				}
-			}
+
+		private HashSet<ParticleEffectWrapper> removeEffect(Particle particleType) {
+			effects.removeIf(particleEffectWrapper -> particleEffectWrapper.getParticle() == particleType);
 			return effects;
 		}
 		public HashSet<ParticleEffectWrapper> getEffects() {
@@ -129,20 +128,17 @@ public class ParticleUtils extends Module {
 				}
 				Location location = entity.getLocation().add(0, .5, 0);
 				ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-				entry.getValue().getEffects().forEach(effect -> {
-					protocolManager.getEntityTrackers(entity).forEach(player -> {
-						player.spawnParticle(effect.getParticle(), location.getX(), location.getY(),
-								location.getZ(), effect.getParticleQuantity(), effect.getOffsetX(),
-								effect.getOffsetY(), effect.getOffsetZ(), effect.getSpeed(),
-								effect.getData());
-					});
-				});
+				entry.getValue().getEffects().forEach(effect ->
+						protocolManager.getEntityTrackers(entity).forEach(player ->
+								player.spawnParticle(effect.getParticle(), location.getX(), location.getY(),
+										location.getZ(), effect.getParticleQuantity(), effect.getOffsetX(),
+										effect.getOffsetY(), effect.getOffsetZ(), effect.getSpeed(),
+										effect.getData())));
 			}
 
 			if (entities.size() == 0) {
 				cancel();
 				task = null;
-				return;
 			}
 		}
 	}

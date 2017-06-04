@@ -1,17 +1,14 @@
 package com.easterlyn.effects.effect.godtier.active;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorCooldown;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.users.UserAspect;
-
+import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftAnimals;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,11 +17,11 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import net.md_5.bungee.api.ChatColor;
-
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftAnimals;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Heart godtier active effect. Set animals breeding if nearby and adult, speed up the growth of
@@ -50,7 +47,7 @@ public class EffectBreedAnimal extends Effect implements BehaviorActive, Behavio
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.ENERGY);
+		return Collections.singletonList(UserAspect.ENERGY);
 	}
 
 	@Override

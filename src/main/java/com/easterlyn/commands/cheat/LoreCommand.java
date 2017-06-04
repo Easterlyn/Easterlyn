@@ -1,17 +1,12 @@
 package com.easterlyn.commands.cheat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
-
 import com.google.common.collect.ImmutableList;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -21,7 +16,8 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * EasterlynCommand for manipulating item lore and some other meta-related cases.
@@ -125,13 +121,13 @@ public class LoreCommand extends EasterlynCommand {
 		ArrayList<String> matches = new ArrayList<>();
 		if (args.length == 2) {
 			if (args[0].equals("delete")) {
-				for (int i = 0; i < primaryArgs.length; i++) {
-					if (primaryArgs[i].startsWith(args[1].toLowerCase())) {
-						matches.add(primaryArgs[i]);
+				for (String primaryArg : primaryArgs) {
+					if (primaryArg.startsWith(args[1].toLowerCase())) {
+						matches.add(primaryArg);
 					}
 				}
 			}
-			if (args[0].equals("delete") || args[0].equals("set") || args.equals("insert") && args[1].isEmpty()) {
+			if (args[0].equals("delete") || args[0].equals("set") || args[0].equals("insert") && args[1].isEmpty()) {
 				matches.add("#");
 				return matches;
 			}
@@ -257,7 +253,7 @@ public class LoreCommand extends EasterlynCommand {
 
 	private boolean add(Player player, ItemStack hand, String[] args) {
 		ItemMeta meta = hand.getItemMeta();
-		ArrayList<String> lore = new ArrayList<String>();
+		ArrayList<String> lore = new ArrayList<>();
 		if (meta.hasLore()) {
 			lore.addAll(meta.getLore());
 		}

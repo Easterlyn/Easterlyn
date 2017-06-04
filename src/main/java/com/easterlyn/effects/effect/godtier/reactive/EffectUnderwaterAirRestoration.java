@@ -3,6 +3,7 @@ package com.easterlyn.effects.effect.godtier.reactive;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.easterlyn.Easterlyn;
@@ -30,7 +31,7 @@ public class EffectUnderwaterAirRestoration extends Effect implements BehaviorGo
 
 	@Override
 	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.WIND);
+		return Collections.singletonList(UserAspect.WIND);
 	}
 
 	@Override
@@ -46,7 +47,7 @@ public class EffectUnderwaterAirRestoration extends Effect implements BehaviorGo
 
 	@Override
 	public Collection<Class<? extends Event>> getApplicableEvents() {
-		return Arrays.asList(EntityAirChangeEvent.class);
+		return Collections.singletonList(EntityAirChangeEvent.class);
 	}
 
 	@Override

@@ -1,8 +1,5 @@
 package com.easterlyn.commands.teleportation;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Cooldowns;
@@ -10,15 +7,17 @@ import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PlayerUtils;
-
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Return to previous location.
- * 
+ *
  * @author Jikoo
  */
 public class BackCommand extends EasterlynCommand {

@@ -1,7 +1,6 @@
 package com.easterlyn.utilities;
 
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -84,13 +83,7 @@ public class PlayerUtils {
 		} else if (plugin == null) {
 			throw new IllegalStateException("Asynchronous player load must use PlayerUtils#getPlayer(Plugin, UUID)");
 		}
-		Future<Player> future = Bukkit.getScheduler().callSyncMethod(plugin,
-				new Callable<Player>() {
-					@Override
-					public Player call() throws Exception {
-						return getPlayerFor(uuid);
-					}
-				});
+		Future<Player> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> getPlayerFor(uuid));
 
 		int ticks = 0;
 		while (!future.isDone() && !future.isCancelled() && ticks < 10) {
@@ -124,7 +117,7 @@ public class PlayerUtils {
 				new GameProfile(uuid, offlinePlayer.getName()),
 				new PlayerInteractManager(server.getWorldServer(0)));
 
-		Player player = (nmsPlayer == null) ? null : nmsPlayer.getBukkitEntity();
+		Player player = nmsPlayer.getBukkitEntity();
 		if (player == null) {
 			return null;
 		}

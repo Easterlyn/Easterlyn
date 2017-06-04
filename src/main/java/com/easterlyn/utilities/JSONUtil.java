@@ -1,24 +1,20 @@
 package com.easterlyn.utilities;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.easterlyn.chat.Language;
 import com.easterlyn.utilities.TextUtils.MatchedURL;
-
-import org.bukkit.inventory.ItemStack;
-
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
-
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A modified version of vanilla's raw message creation.
@@ -30,7 +26,7 @@ public class JSONUtil {
 	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([^A-Za-z0-9])?$");
 
 	public static TextComponent[] fromLegacyText(String message) {
-		ArrayList<BaseComponent> components = new ArrayList<BaseComponent>();
+		ArrayList<BaseComponent> components = new ArrayList<>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
 		Matcher channelMatcher = CHANNEL_PATTERN.matcher(message);
@@ -155,17 +151,7 @@ public class JSONUtil {
 
 	public static TextComponent getItemComponent(ItemStack item) {
 		net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-		String name = null;
-		if (nmsStack.getTag() != null && nmsStack.getTag().hasKeyOfType("display", 10)) {
-			NBTTagCompound nbttagcompound = nmsStack.getTag().getCompound("display");
-			if (nbttagcompound.hasKeyOfType("Name", 8)) {
-				name = nbttagcompound.getString("Name");
-			}
-		}
-		boolean named = name != null;
-		if (!named) {
-			name = nmsStack.getItem().a(nmsStack);
-		}
+		boolean named = nmsStack.hasName();
 		TextComponent component = new TextComponent(JSONUtil.fromLegacyText(nmsStack.getName()));
 		for (int i = 0; i < component.getExtra().size(); i++) {
 			BaseComponent baseExtra = component.getExtra().get(i);
