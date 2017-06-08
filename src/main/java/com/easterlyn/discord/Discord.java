@@ -12,6 +12,7 @@ import com.easterlyn.discord.queue.DiscordQueue;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.PermissiblePlayer;
 import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.concurrent.ConcurrentConfiguration;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -19,6 +20,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -61,17 +63,17 @@ import java.util.stream.Collectors;
 
 /**
  * A Module for managing messaging to and from Discord.
- * 
+ *
  * @author Jikoo
  */
 public class Discord extends Module {
 
 	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	private final Pattern toEscape = Pattern.compile("([\\_~*])");
+	private final Pattern toEscape = Pattern.compile("([_~*])");
 	private final Map<Class<? extends DiscordModule>, DiscordModule> modules;
 	private final Map<String, DiscordCommand> commands;
 	private final LoadingCache<Object, Object> authentications;
-	private final YamlConfiguration discordData; // TODO access is not synchronized, dangerous
+	private final ConcurrentConfiguration discordData;
 	private final StringBuffer logBuffer;
 
 	private Language lang;
@@ -105,9 +107,9 @@ public class Discord extends Module {
 
 		File file = new File(plugin.getDataFolder(), "DiscordData.yml");
 		if (file.exists()) {
-			discordData = YamlConfiguration.loadConfiguration(file);
+			discordData = ConcurrentConfiguration.load(file);
 		} else {
-			discordData = new YamlConfiguration();
+			discordData = new ConcurrentConfiguration();
 		}
 
 		logBuffer = new StringBuffer(1500);
@@ -290,7 +292,7 @@ public class Discord extends Module {
 		return this.ready;
 	}
 
-	public YamlConfiguration getDatastore() {
+	public Configuration getDatastore() {
 		return discordData;
 	}
 
@@ -569,12 +571,8 @@ public class Discord extends Module {
 		}
 	}
 
-	private void addMessageToQueue(final IChannel channel, final String name, final String message) { // TODO return DiscordCallable for post-message queuing
-		if (drainQueueThread == null) {
-			// Bot has not finished logging in. Forget it, it's just some chat.
-			return;
-		}
-		drainQueueThread.queue(new DiscordCallable(
+	private DiscordCallable addMessageToQueue(final IChannel channel, final String name, final String message) {
+		DiscordCallable callable = new DiscordCallable(
 				channel.isPrivate() ? channel.getLongID() : channel.getGuild().getLongID(),
 				CallType.MESSAGE_SEND) {
 			@Override
@@ -596,7 +594,12 @@ public class Discord extends Module {
 					// Internal Discord fault, don't log.
 				}
 			}
-		});
+		};
+		if (drainQueueThread != null) {
+			// Ensure bot has finished logging in.
+			drainQueueThread.queue(callable);
+		}
+		return callable;
 	}
 
 	public void postReport(String message) {
@@ -605,7 +608,7 @@ public class Discord extends Module {
 
 	/**
 	 * Update a Discord user's status. Handles new users (alerts them they must link, then kicks after a day if they have not)
-	 * 
+	 *
 	 * @param user the IUser
 	 */
 	public void updateUser(IUser user) {
@@ -667,7 +670,7 @@ public class Discord extends Module {
 	/**
 	 * Update a linked Minecraft player's Discord account. Includes nicknaming and automatic role
 	 * management.
-	 * 
+	 *
 	 * @param user the user, or null if it is to be searched for
 	 * @param uuid the UUID of the player
 	 */
@@ -736,7 +739,7 @@ public class Discord extends Module {
 						roles.add(role);
 					}
 				}
-	
+
 				IRole[] roleArray = roles.toArray(new IRole[roles.size()]);
 				this.queue(new DiscordCallable(guild.getLongID(), CallType.GUILD_USER_ROLE) {
 					@Override
@@ -749,7 +752,7 @@ public class Discord extends Module {
 			if (!this.getConfig().getBoolean("linkName")) {
 				continue;
 			}
-	
+
 			if (player.getName() != null) {
 				String name = iuser.getNicknameForGuild(guild);
 				if (!player.getName().equals(name)) {
