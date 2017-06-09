@@ -2,12 +2,12 @@ package com.easterlyn.events;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.utilities.HashQueue;
-import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_12_R1.BlockPosition;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -66,7 +66,7 @@ public class BlockUpdateManager {
 				// Blocks that are currently air cannot be updated at all to fix adjacent blocks,
 				// and certain other edge cases also will not trigger updates.
 				// Instead, we manually force an update using NMS.
-				// TODO 1.11: This now updates surrounding blocks, much heavier. Re-evaluate and figure out individual updates again.
+				// TODO 1.12: This now updates surrounding blocks, much heavier. Re-evaluate and figure out individual updates again.
 				Block block = pending.poll();
 				((CraftWorld) block.getWorld()).getHandle().applyPhysics(
 						new BlockPosition(block.getX(), block.getY(), block.getZ()),

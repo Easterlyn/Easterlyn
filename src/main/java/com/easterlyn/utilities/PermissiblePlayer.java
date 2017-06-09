@@ -1,29 +1,8 @@
 package com.easterlyn.utilities;
 
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import org.bukkit.Achievement;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
-import org.bukkit.GameMode;
-import org.bukkit.Instrument;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.Particle;
-import org.bukkit.Server;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.Statistic;
-import org.bukkit.WeatherType;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
@@ -55,13 +34,21 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 /**
  * A wrapper for a Player that directly uses our bridge for handling permissions.
  * A note for later:
  * Find (\tpublic \S+ )(\S*\()(\S+ (\S+ ?))*?(\) .*\{\R\t\t)(return )?.*(\R\t\})
  * Replace $1$2$3$5$6player.$2$4);$7
  * Works pretty well, doesn't support multiple arguments in methods.
- * 
+ *
  * @author Jikoo
  */
 public class PermissiblePlayer implements Player {
@@ -105,6 +92,30 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public int getExpToLevel() {
 		return player.getExpToLevel();
+	}
+
+	@Deprecated
+	@Override
+	public Entity getShoulderEntityLeft() {
+		return player.getShoulderEntityLeft();
+	}
+
+	@Deprecated
+	@Override
+	public void setShoulderEntityLeft(Entity entity) {
+		player.setShoulderEntityLeft(entity);
+	}
+
+	@Deprecated
+	@Override
+	public Entity getShoulderEntityRight() {
+		return player.getShoulderEntityRight();
+	}
+
+	@Deprecated
+	@Override
+	public void setShoulderEntityRight(Entity entity) {
+		player.setShoulderEntityRight(entity);
 	}
 
 	@Override
@@ -273,12 +284,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public Entity getLeashHolder() throws IllegalStateException {
 		return player.getLeashHolder();
-	}
-
-	@Override
-	@Deprecated
-	public List<Block> getLineOfSight(HashSet<Byte> transparent, int maxDistance) {
-		return player.getLineOfSight(transparent, maxDistance);
 	}
 
 	@Override
@@ -760,12 +765,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public boolean isWhitelisted() {
 		return player.isWhitelisted();
-	}
-
-	@Override
-	@Deprecated
-	public void setBanned(boolean arg0) {
-		player.setBanned(arg0);
 	}
 
 	@Override
@@ -1321,54 +1320,6 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public int _INVALID_getLastDamage() {
-		return player._INVALID_getLastDamage();
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setLastDamage(int damage) {
-		player._INVALID_setLastDamage(damage);
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_damage(int amount) {
-		player._INVALID_damage(amount);
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_damage(int amount, Entity source) {
-		player._INVALID_damage(amount, source);
-	}
-
-	@Override
-	@Deprecated
-	public int _INVALID_getHealth() {
-		return player._INVALID_getHealth();
-	}
-
-	@Override
-	@Deprecated
-	public int _INVALID_getMaxHealth() {
-		return player._INVALID_getMaxHealth();
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setHealth(int health) {
-		player._INVALID_setHealth(health);
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setMaxHealth(int health) {
-		player._INVALID_setMaxHealth(health);
-	}
-
-	@Override
 	public AttributeInstance getAttribute(Attribute attribute) {
 		return player.getAttribute(attribute);
 	}
@@ -1449,6 +1400,16 @@ public class PermissiblePlayer implements Player {
 	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
 			double offsetX, double offsetY, double offsetZ, double extra, T data) {
 		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, extra, data);
+	}
+
+	@Override
+	public AdvancementProgress getAdvancementProgress(Advancement advancement) {
+		return player.getAdvancementProgress(advancement);
+	}
+
+	@Override
+	public String getLocale() {
+		return player.getLocale();
 	}
 
 	@Override

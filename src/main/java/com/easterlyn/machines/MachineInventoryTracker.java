@@ -3,12 +3,12 @@ package com.easterlyn.machines;
 import com.easterlyn.machines.type.Dublexor;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.type.legacy.Alchemiter;
-import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_12_R1.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 /**
  * brb going insane because of NMS
- * 
+ *
  * @author Jikoo
  */
 public class MachineInventoryTracker {

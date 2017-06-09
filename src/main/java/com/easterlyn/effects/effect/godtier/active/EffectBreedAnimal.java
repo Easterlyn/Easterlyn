@@ -7,8 +7,8 @@ import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.users.UserAspect;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftAnimals;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftAnimals;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Heart godtier active effect. Set animals breeding if nearby and adult, speed up the growth of
  * babies, and apply a regeneration PotionEffect to all nearby entities.
- * 
+ *
  * @author Dublekfx, Jikoo
  */
 public class EffectBreedAnimal extends Effect implements BehaviorActive, BehaviorCooldown, BehaviorGodtier {

@@ -392,6 +392,54 @@
 232,GREEN_SHULKER_BOX,0,Green Shulker Box,green_shulker_box
 233,RED_SHULKER_BOX,0,Red Shulker Box,red_shulker_box
 234,BLACK_SHULKER_BOX,0,Black Shulker Box,black_shulker_box
+235,WHITE_GLAZED_TERRACOTTA,0,White Glazed Terracotta,white_glazed_terracotta
+236,ORANGE_GLAZED_TERRACOTTA,0,Orange Glazed Terracotta,orange_glazed_terracotta
+237,MAGENTA_GLAZED_TERRACOTTA,0,Magenta Glazed Terracotta,magenta_glazed_terracotta
+238,LIGHT_BLUE_GLAZED_TERRACOTTA,0,Light Blue Glazed Terracotta,light_blue_glazed_terracotta
+239,YELLOW_GLAZED_TERRACOTTA,0,Yellow Glazed Terracotta,yellow_glazed_terracotta
+240,LIME_GLAZED_TERRACOTTA,0,Lime Glazed Terracotta,lime_glazed_terracotta
+241,PINK_GLAZED_TERRACOTTA,0,Pink Glazed Terracotta,pink_glazed_terracotta
+242,GRAY_GLAZED_TERRACOTTA,0,Gray Glazed Terracotta,gray_glazed_terracotta
+243,SILVER_GLAZED_TERRACOTTA,0,Light Gray Glazed Terracotta,silver_glazed_terracotta
+244,CYAN_GLAZED_TERRACOTTA,0,Cyan Glazed Terracotta,cyan_glazed_terracotta
+245,PURPLE_GLAZED_TERRACOTTA,0,Purple Glazed Terracotta,purple_glazed_terracotta
+246,BLUE_GLAZED_TERRACOTTA,0,Blue Glazed Terracotta,blue_glazed_terracotta
+247,BROWN_GLAZED_TERRACOTTA,0,Brown Glazed Terracotta,brown_glazed_terracotta
+248,GREEN_GLAZED_TERRACOTTA,0,Green Glazed Terracotta,green_glazed_terracotta
+249,RED_GLAZED_TERRACOTTA,0,Red Glazed Terracotta,red_glazed_terracotta
+250,BLACK_GLAZED_TERRACOTTA,0,Black Glazed Terracotta,black_glazed_terracotta
+251,CONCRETE,0,White Concrete,concrete
+251,CONCRETE,1,Orange Concrete,concrete
+251,CONCRETE,2,Magenta Concrete,concrete
+251,CONCRETE,3,Light Blue Concrete,concrete
+251,CONCRETE,4,Yellow Concrete,concrete
+251,CONCRETE,5,Lime Concrete,concrete
+251,CONCRETE,6,Pink Concrete,concrete
+251,CONCRETE,7,LightGray Concrete,concrete
+251,CONCRETE,8,Gray Concrete,concrete
+251,CONCRETE,9,Cyan Concrete,concrete
+251,CONCRETE,10,Purple Concrete,concrete
+251,CONCRETE,11,Blue Concrete,concrete
+251,CONCRETE,12,Brown Concrete,concrete
+251,CONCRETE,13,Green Concrete,concrete
+251,CONCRETE,14,Red Concrete,concrete
+251,CONCRETE,15,Black Concrete,concrete
+252,CONCRETE_POWDER,0,White Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,1,Orange Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,2,Magenta Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,3,Light Blue Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,4,Yellow Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,5,Lime Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,6,Pink Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,7,Light Gray Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,8,Gray Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,9,Cyan Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,10,Purple Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,11,Blue Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,12,Brown Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,13,Green Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,14,Red Concrete Powder,concrete_powder
+252,CONCRETE_POWDER,15,Black Concrete Powder,concrete_powder
 255,STRUCTURE_BLOCK,0,Structure Block,structure_block
 256,IRON_SPADE,0,Iron Shovel,iron_shovel
 257,IRON_PICKAXE,0,Iron Pickaxe,iron_pickaxe
@@ -513,7 +561,22 @@
 352,BONE,0,Bone,bone
 353,SUGAR,0,Sugar,sugar
 354,CAKE,0,Cake,cake
-355,BED,0,Bed,bed
+355,BED,0,White Bed,bed
+355,BED,1,Orange Bed,bed
+355,BED,2,Magenta Bed,bed
+355,BED,3,Light Blue Bed,bed
+355,BED,4,Yellow Bed,bed
+355,BED,5,Lime Bed,bed
+355,BED,6,Pink Bed,bed
+355,BED,7,Gray Bed,bed
+355,BED,8,Light Gray Bed,bed
+355,BED,9,Cyan Bed,bed
+355,BED,10,Purple Bed,bed
+355,BED,11,Blue Bed,bed
+355,BED,12,Brown Bed,bed
+355,BED,13,Green Bed,bed
+355,BED,14,Red Bed,bed
+355,BED,15,Black Bed,bed
 356,DIODE,0,Redstone Repeater,repeater
 357,COOKIE,0,Cookie,cookie
 358,MAP,0,Map,filled_map
@@ -615,6 +678,7 @@
 449,TOTEM,0,Totem of Undying,totem_of_undying
 450,SHULKER_SHELL,0,Shulker Shell,shulker_shell
 452,IRON_NUGGET,0,Iron Nugget,iron_nugget
+453,KNOWLEDGE_BOOK,0,Knowledge Book,knowledge_book
 2256,GOLD_RECORD,0,13 Disc,record_13
 2257,GREEN_RECORD,0,Cat Disc,record_cat
 2258,RECORD_3,0,Blocks Disc,record_blocks

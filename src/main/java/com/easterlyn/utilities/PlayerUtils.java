@@ -1,36 +1,30 @@
 package com.easterlyn.utilities;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.discord.Discord;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
+import net.minecraft.server.v1_12_R1.MinecraftServer;
+import net.minecraft.server.v1_12_R1.PlayerInteractManager;
+import org.apache.commons.lang3.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.util.StringUtil;
+
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.easterlyn.Easterlyn;
-import com.easterlyn.discord.Discord;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
-import com.mojang.authlib.GameProfile;
-
-import org.apache.commons.lang3.StringUtils;
-
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.util.StringUtil;
-
-import net.minecraft.server.v1_11_R1.EntityPlayer;
-import net.minecraft.server.v1_11_R1.MinecraftServer;
-import net.minecraft.server.v1_11_R1.PlayerInteractManager;
-
-import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
-
 /**
  * Utility for accessing Players.
- * 
+ *
  * @author Jikoo
  */
 public class PlayerUtils {
@@ -40,10 +34,10 @@ public class PlayerUtils {
 
 	/**
 	 * Get a Player for the specified UUID if they have logged in in the past, even if offline.
-	 * 
+	 *
 	 * @param plugin the Plugin instance used to schedule a task. Can be null if called on the main thread
 	 * @param uuid the UUID
-	 * 
+	 *
 	 * @return the Player, or null if they have not logged in
 	 * @throws IllegalStateException if passed a null Plugin and called off the main thread
 	 */
@@ -53,11 +47,11 @@ public class PlayerUtils {
 
 	/**
 	 * Get a Player for the specified UUID if they have logged in in the past, even if offline.
-	 * 
+	 *
 	 * @param plugin the Plugin instance used to schedule a task. Can be null if called on the main thread
 	 * @param uuid the UUID
 	 * @param useCached true if the Player cache is preferred over loading a new Player
-	 * 
+	 *
 	 * @return the Player, or null if they have not logged in
 	 * @throws IllegalStateException if passed a null Plugin and called off the main thread
 	 */
@@ -136,7 +130,7 @@ public class PlayerUtils {
 
 	/**
 	 * Matches an online Player for a given sender Player.
-	 * 
+	 *
 	 * @param sender the sender, or null to ignore visibility
 	 * @param id the identifier used to match a Player
 	 * @return the Player, or null if no matches were found
@@ -177,7 +171,7 @@ public class PlayerUtils {
 
 	/**
 	 * Match a Player, online or off. If matching offline players, do not call on the main thread!
-	 * 
+	 *
 	 * @param id the UUID or name of the Player
 	 * @param offline true if offline Players should be matched
 	 * @param plugin the Plugin instance

@@ -11,15 +11,13 @@ import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.google.common.collect.HashMultimap;
-import com.google.common.io.BaseEncoding;
 import io.netty.buffer.Unpooled;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_11_R1.EntityPlayer;
-import net.minecraft.server.v1_11_R1.MerchantRecipe;
-import net.minecraft.server.v1_11_R1.MerchantRecipeList;
-import net.minecraft.server.v1_11_R1.PacketDataSerializer;
-import net.minecraft.server.v1_11_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_11_R1.PacketPlayOutSetSlot;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
+import net.minecraft.server.v1_12_R1.MerchantRecipe;
+import net.minecraft.server.v1_12_R1.MerchantRecipeList;
+import net.minecraft.server.v1_12_R1.PacketDataSerializer;
+import net.minecraft.server.v1_12_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_12_R1.PacketPlayOutSetSlot;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,8 +25,8 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -46,10 +44,8 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
-import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -62,7 +58,7 @@ import java.util.Map.Entry;
 
 /**
  * A set of useful methods for inventory functions.
- * 
+ *
  * @author Jikoo
  */
 public class InventoryUtils {
@@ -301,24 +297,6 @@ public class InventoryUtils {
 		return null;
 	}
 
-	public static ItemStack deserializeItemStack(String s) {
-		return deserializeItemStack(s.getBytes());
-	}
-
-	public static ItemStack deserializeItemStack(byte[] bytes) {
-		try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-				BukkitObjectInputStream bukkitInputStream = new BukkitObjectInputStream(inputStream)) {
-			return (ItemStack) bukkitInputStream.readObject();
-		} catch (IOException | ClassNotFoundException e) {
-			throw new RuntimeException("Unable to deserialize ItemStack!", e);
-		}
-	}
-
-	public static ItemStack deserializeFromFormattingCodes(String s) {
-		s = s.replace(String.valueOf(ChatColor.COLOR_CHAR), "").toUpperCase();
-		return deserializeItemStack(BaseEncoding.base16().decode(s));
-	}
-
 	public static ItemStack cleanNBT(ItemStack is) {
 		if (is == null || !is.hasItemMeta()) {
 			return is;
@@ -334,7 +312,6 @@ public class InventoryUtils {
 		// Banners
 		if (im instanceof BannerMeta) {
 			BannerMeta meta = (BannerMeta) Bukkit.getItemFactory().getItemMeta(Material.BANNER);
-			meta.setBaseColor(((BannerMeta) im).getBaseColor());
 			for (Pattern pattern : ((BannerMeta) im).getPatterns()) {
 				meta.addPattern(pattern);
 			}
@@ -461,10 +438,10 @@ public class InventoryUtils {
 	/**
 	 * Reduces an ItemStack by the given quantity. If the ItemStack would have a
 	 * quantity of 0, returns null.
-	 * 
+	 *
 	 * @param is the ItemStack to reduce
 	 * @param amount the amount to reduce the ItemStack by
-	 * 
+	 *
 	 * @return the reduced ItemStack
 	 */
 	public static ItemStack decrement(ItemStack is, int amount) {
@@ -507,10 +484,10 @@ public class InventoryUtils {
 
 	/**
 	 * Checks if there is space in the given Inventory to add the given ItemStack.
-	 * 
+	 *
 	 * @param is the ItemStack
 	 * @param inv the Inventory to check
-	 * 
+	 *
 	 * @return true if the ItemStack can be fully added
 	 */
 	public static boolean hasSpaceFor(ItemStack is, Inventory inv) {
@@ -662,8 +639,8 @@ public class InventoryUtils {
 			// We can't just remove the recipe in case the client has changed to a higher number
 			// recipe - it cannot handle a reduction below its current recipe number.
 			boolean hasNoResult = recipe.getRight() == null || recipe.getRight().getType() == Material.AIR;
-			list.add(new MerchantRecipe(hasNoResult ? net.minecraft.server.v1_11_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getLeft()),
-					hasNoResult ? net.minecraft.server.v1_11_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getMiddle()),
+			list.add(new MerchantRecipe(hasNoResult ? net.minecraft.server.v1_12_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getLeft()),
+					hasNoResult ? net.minecraft.server.v1_12_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getMiddle()),
 							CraftItemStack.asNMSCopy(recipe.getRight())));
 		}
 

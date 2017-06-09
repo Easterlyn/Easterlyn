@@ -1,14 +1,14 @@
 package com.easterlyn.utilities;
 
-import net.minecraft.server.v1_11_R1.BlockPosition;
-import net.minecraft.server.v1_11_R1.Chunk;
-import net.minecraft.server.v1_11_R1.EnumSkyBlock;
+import net.minecraft.server.v1_12_R1.BlockPosition;
+import net.minecraft.server.v1_12_R1.Chunk;
+import net.minecraft.server.v1_12_R1.EnumSkyBlock;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.v1_11_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class LightSource {
 
 	/**
 	 * Create light with level at a location.
-	 * 
+	 *
 	 * @param l the location to light
 	 * @param level the level of light
 	 */
@@ -36,7 +36,7 @@ public class LightSource {
 
 	/**
 	 * Updates the block making the light source return to what it actually is
-	 * 
+	 *
 	 * @param l the location of the light source
 	 */
 	public static void deleteLightSource(Location l) {
@@ -49,7 +49,7 @@ public class LightSource {
 	/**
 	 * Gets all the chunks touching/diagonal to the chunk the location is in and updates players
 	 * with them.
-	 * 
+	 *
 	 * @param l the location
 	 */
 	private static void updateChunk(Location l) {
@@ -61,7 +61,7 @@ public class LightSource {
 			}
 		}
 
-		// TODO 1.11
+		// TODO 1.12
 //		PacketPlayOutMapChunkBulk packet = new PacketPlayOutMapChunkBulk(chunks);
 //
 //		for (Player player : l.getWorld().getPlayers()) {

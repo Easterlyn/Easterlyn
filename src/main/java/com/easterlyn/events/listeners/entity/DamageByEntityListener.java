@@ -1,14 +1,12 @@
 package com.easterlyn.events.listeners.entity;
 
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.MeteoriteComponent;
-
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -17,11 +15,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftEntity;
+import java.util.UUID;
 
 /**
  * Listener for EntityDamageByEntityEvents.
- * 
+ *
  * @author Jikoo
  */
 public class DamageByEntityListener extends EasterlynListener {
@@ -37,7 +35,7 @@ public class DamageByEntityListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for EntityDamageByEntityEvents.
-	 * 
+	 *
 	 * @param event the EntityDamageByEntityEvent
 	 */
 	@EventHandler(ignoreCancelled = true)

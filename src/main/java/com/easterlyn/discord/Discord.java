@@ -137,9 +137,9 @@ public class Discord extends Module {
 		}
 
 		Reflections reflections = new Reflections("com.easterlyn.discord.listeners");
-		Set<Class<? extends IListener>> listenerClazzes = reflections.getSubTypesOf(IListener.class);
+		Set<Class<? extends IListener>> listenerClasses = reflections.getSubTypesOf(IListener.class);
 		EventDispatcher dispatcher = this.client.getDispatcher();
-		for (Class<? extends IListener> clazz : listenerClazzes) {
+		for (Class<? extends IListener> clazz : listenerClasses) {
 			if (Modifier.isAbstract(clazz.getModifiers())) {
 				continue;
 			}

@@ -1,21 +1,19 @@
 package com.easterlyn.commands.info;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PlayerUtils;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * EasterlynCommand for getting a player's ping.
- * 
+ *
  * @author Jikoo
  */
 public class PingCommand extends EasterlynCommand {
@@ -45,7 +43,7 @@ public class PingCommand extends EasterlynCommand {
 		}
 		sender.sendMessage(Language.getColor("player.good") + target.getName()
 				+ Language.getColor("good") + "'s ping is "
-				+ ((org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer) target).getHandle().ping + "ms!");
+				+ ((org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer) target).getHandle().ping + "ms!");
 		return true;
 	}
 

@@ -1,29 +1,8 @@
 package com.easterlyn.utilities;
 
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import org.bukkit.Achievement;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
-import org.bukkit.GameMode;
-import org.bukkit.Instrument;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.Particle;
-import org.bukkit.Server;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.Statistic;
-import org.bukkit.WeatherType;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
@@ -55,9 +34,17 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 /**
  * A barebones Player implementation, mostly for use in chat.
- * 
+ *
  * @author Jikoo
  */
 public class DummyPlayer implements Player {
@@ -74,6 +61,22 @@ public class DummyPlayer implements Player {
 	public int getExpToLevel() {
 		return 0;
 	}
+
+	@Override
+	public Entity getShoulderEntityLeft() {
+		return null;
+	}
+
+	@Override
+	public void setShoulderEntityLeft(Entity entity) { }
+
+	@Override
+	public Entity getShoulderEntityRight() {
+		return null;
+	}
+
+	@Override
+	public void setShoulderEntityRight(Entity entity) { }
 
 	@Override
 	public GameMode getGameMode() {
@@ -219,11 +222,6 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public Entity getLeashHolder() throws IllegalStateException {
-		return null;
-	}
-
-	@Override
-	public List<Block> getLineOfSight(HashSet<Byte> arg0, int arg1) {
 		return null;
 	}
 
@@ -659,9 +657,6 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void setBanned(boolean arg0) { }
-
-	@Override
 	public void setWhitelisted(boolean arg0) { }
 
 	@Override
@@ -1068,16 +1063,6 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public int _INVALID_getLastDamage() {
-		return 0;
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setLastDamage(int damage) {}
-
-	@Override
 	public AttributeInstance getAttribute(Attribute attribute) {
 		return null;
 	}
@@ -1089,34 +1074,6 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public void setGlowing(boolean flag) {}
-
-	@Override
-	@Deprecated
-	public void _INVALID_damage(int amount) {}
-
-	@Override
-	@Deprecated
-	public void _INVALID_damage(int amount, Entity source) {}
-
-	@Override
-	@Deprecated
-	public int _INVALID_getHealth() {
-		return 0;
-	}
-
-	@Override
-	@Deprecated
-	public int _INVALID_getMaxHealth() {
-		return 0;
-	}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setHealth(int health) {}
-
-	@Override
-	@Deprecated
-	public void _INVALID_setMaxHealth(int health) {}
 
 	@Override
 	public void spawnParticle(Particle particle, Location location, int count) {}
@@ -1161,6 +1118,16 @@ public class DummyPlayer implements Player {
 	@Override
 	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
 			double offsetX, double offsetY, double offsetZ, double extra, T data) {}
+
+	@Override
+	public AdvancementProgress getAdvancementProgress(Advancement advancement) {
+		return null;
+	}
+
+	@Override
+	public String getLocale() {
+		return "en_us";
+	}
 
 	@Override
 	public MainHand getMainHand() {

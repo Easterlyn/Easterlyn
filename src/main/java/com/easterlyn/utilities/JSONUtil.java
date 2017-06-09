@@ -8,8 +8,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 /**
  * A modified version of vanilla's raw message creation.
- * 
+ *
  * @author Jikoo
  **/
 public class JSONUtil {
@@ -150,7 +150,7 @@ public class JSONUtil {
 	}
 
 	public static TextComponent getItemComponent(ItemStack item) {
-		net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 		boolean named = nmsStack.hasName();
 		TextComponent component = new TextComponent(JSONUtil.fromLegacyText(nmsStack.getName()));
 		for (int i = 0; i < component.getExtra().size(); i++) {
@@ -171,11 +171,11 @@ public class JSONUtil {
 		return getItemText(CraftItemStack.asNMSCopy(item));
 	}
 
-	private static TextComponent getItemText(net.minecraft.server.v1_11_R1.ItemStack item) {
+	private static TextComponent getItemText(net.minecraft.server.v1_12_R1.ItemStack item) {
 		return new TextComponent(item.save(new NBTTagCompound()).toString());
 	}
 
-	private static HoverEvent getItemHover(net.minecraft.server.v1_11_R1.ItemStack item) {
+	private static HoverEvent getItemHover(net.minecraft.server.v1_12_R1.ItemStack item) {
 		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { getItemText(item) });
 	}
 
