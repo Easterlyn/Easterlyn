@@ -56,9 +56,9 @@ chat:
         {COLOR:bot_text}Easterlyn Records Keeper
         {COLOR:emphasis.bad}The Scribe tells it like is
         {COLOR:emphasis.bad}whether you like it or not.
-        
+
         {COLOR:emphasis.bad}The Scribe knows all.
-        
+
         {COLOR:command}/join #spam {COLOR:emphasis.bad}to spam usage.
       trigger: '(some|any|no)\s?body'
       ignore: |-
@@ -200,6 +200,7 @@ command:
       {COLOR:neutral}Message the Discord bot "{COLOR:command}/link {CODE}{COLOR:neutral}" to complete linking your Discord account!
       {COLOR:bad}This code will expire in a minute.
       {COLOR:neutral}Discord invite link: {COLOR:link_color}{COLOR:link_format}discord.easterlyn.com
+    successHover: '{COLOR:neutral}Click to insert into chat for easy copying!'
     basicReadingComprehension: '{COLOR:bad}This is not Discord. Complete the link via command {COLOR:emphasis.bad}in Discord{COLOR:bad}.'
   m:
     description: 'Send a private message.'
@@ -482,7 +483,7 @@ events:
     illegalName: |-
       Your name contains invalid characters. Valid characters are [a-zA-Z_0-9].
       Try restarting your client.
-      
+
       If the issue persists, please contact Mojang.
   portal:
     protected: '{COLOR:bad}Your destination is inside a protected area! You''ll have to build your portal elsewhere.'
