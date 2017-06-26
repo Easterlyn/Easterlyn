@@ -1,8 +1,5 @@
 package com.easterlyn.events.listeners.player;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.UUID;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
@@ -14,7 +11,7 @@ import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
-
+import com.easterlyn.utilities.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,9 +20,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
+
 /**
  * Listener for PlayerJoinEvents.
- * 
+ *
  * @author Jikoo
  */
 public class JoinListener extends EasterlynListener {
@@ -48,11 +48,14 @@ public class JoinListener extends EasterlynListener {
 
 	/**
 	 * The event handler for PlayerJoinEvents.
-	 * 
+	 *
 	 * @param event the PlayerJoinEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(final PlayerJoinEvent event) {
+
+		PlayerUtils.removeFromCache(event.getPlayer().getUniqueId());
+
 		final boolean announce = event.getJoinMessage() != null;
 		event.setJoinMessage(null);
 		users.getUser(event.getPlayer().getUniqueId());
@@ -69,7 +72,7 @@ public class JoinListener extends EasterlynListener {
 					return;
 				}
 
-				discord.postMessage(discord.getBotName(), player.getDisplayName() + " logs in.", true);
+				discord.postMessage(null, player.getDisplayName() + " logs in.", true);
 
 				User user = users.getUser(player.getUniqueId());
 

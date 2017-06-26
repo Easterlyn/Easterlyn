@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -33,14 +32,13 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Module for Captchacards, Punchcards, and Totems.
- * 
+ *
  * @author Jikoo, Dublek
  */
 public class Captcha extends Module {
@@ -84,7 +82,14 @@ public class Captcha extends Module {
 	@Override
 	protected void onEnable() {
 		CruxiteDowel.getMana();
-		insertCaptchaRecipe();
+
+		// Add the Captcha recipe
+		ItemStack captchaItem = blankCaptchaCard();
+		captchaItem.setAmount(3);
+		ShapedRecipe captchaRecipe = new ShapedRecipe(captchaItem);
+		captchaRecipe.shape("AA", "AA", "AA");
+		captchaRecipe.setIngredient('A', Material.PAPER);
+		Bukkit.addRecipe(captchaRecipe);
 
 		this.effects = this.getPlugin().getModule(Effects.class);
 		this.machines = this.getPlugin().getModule(Machines.class);
@@ -186,7 +191,7 @@ public class Captcha extends Module {
 
 	/**
 	 * Creates a blank Captchacard
-	 * 
+	 *
 	 * @return ItemStack
 	 */
 	public static ItemStack blankCaptchaCard() {
@@ -196,41 +201,6 @@ public class Captcha extends Module {
 		im.setLore(Collections.singletonList("Blank"));
 		is.setItemMeta(im);
 		return is;
-	}
-
-	/**
-	 * Adds the Captchacard recipe.
-	 * <p>
-	 * To reduce player confusion when using commands like /recipe, all other recipes for the
-	 * material are removed and then re-added so they take precedence.
-	 */
-	private void insertCaptchaRecipe() {
-
-		// Remove and store existing recipes for the correct material
-		List<Recipe> recipes = new ArrayList<>();
-		Iterator<Recipe> iterator = Bukkit.recipeIterator();
-		Material toRemove = blankCaptchaCard().getType();
-		while (iterator.hasNext()) {
-			Recipe next = iterator.next();
-			if (next.getResult().getType() == toRemove) {
-				recipes.add(next);
-				iterator.remove();
-			}
-		}
-
-		// Captcha recipe. Most excellent.
-		ItemStack captchaItem = blankCaptchaCard();
-		captchaItem.setAmount(3);
-		ShapedRecipe captchaRecipe = new ShapedRecipe(captchaItem);
-		captchaRecipe.shape("AA", "AA", "AA");
-		captchaRecipe.setIngredient('A', Material.PAPER);
-		Bukkit.addRecipe(captchaRecipe);
-
-		// Re-add the pre-existing recipes so they have higher priority.
-		Collections.reverse(recipes);
-		for (Recipe recipe : recipes) {
-			Bukkit.addRecipe(recipe);
-		}
 	}
 
 	@Override
@@ -250,9 +220,9 @@ public class Captcha extends Module {
 
 	/**
 	 * Converts an ItemStack into a Captchacard.
-	 * 
+	 *
 	 * @param item the ItemStack to convert
-	 * 
+	 *
 	 * @return the Captchacard representing by this ItemStack
 	 */
 	public ItemStack itemToCaptcha(ItemStack item) {
@@ -262,9 +232,9 @@ public class Captcha extends Module {
 	/**
 	 * Converts a Captchacard into an ItemStack. Also used for Punchcards and
 	 * Cruxite Dowels.
-	 * 
+	 *
 	 * @param card the Captchacard ItemStack
-	 * 
+	 *
 	 * @return the ItemStack represented by this Captchacard
 	 */
 	public ItemStack captchaToItem(ItemStack card) {
@@ -314,9 +284,9 @@ public class Captcha extends Module {
 	 * Create a punchcard from a captchacard.
 	 * <p>
 	 * Good luck patching punched holes.
-	 * 
+	 *
 	 * @param captcha the punchcard ItemStack
-	 * 
+	 *
 	 * @return the unpunched captchacard
 	 */
 	public ItemStack captchaToPunch(ItemStack captcha) {
@@ -340,9 +310,9 @@ public class Captcha extends Module {
 
 	/**
 	 * Check if an ItemStack is a valid blank Captchacard.
-	 * 
+	 *
 	 * @param is the ItemStack to check
-	 * 
+	 *
 	 * @return true if the ItemStack is a blank Captchacard
 	 */
 	public static boolean isBlankCaptcha(ItemStack is) {
@@ -351,9 +321,9 @@ public class Captcha extends Module {
 
 	/**
 	 * Check if an ItemStack is a valid Captchacard that has been used.
-	 * 
+	 *
 	 * @param is the ItemStack to check
-	 * 
+	 *
 	 * @return true if the ItemStack is a Captchacard
 	 */
 	public static boolean isUsedCaptcha(ItemStack is) {
@@ -362,9 +332,9 @@ public class Captcha extends Module {
 
 	/**
 	 * Check if an ItemStack is a valid Captchacard.
-	 * 
+	 *
 	 * @param is the ItemStack to check
-	 * 
+	 *
 	 * @return true if the ItemStack is a Captchacard
 	 */
 	public static boolean isCaptcha(ItemStack is) {
@@ -374,9 +344,9 @@ public class Captcha extends Module {
 
 	/**
 	 * Check if an ItemStack is a valid Punchcard.
-	 * 
+	 *
 	 * @param is the ItemStack to check
-	 * 
+	 *
 	 * @return true if the ItemStack is a Punchcard
 	 */
 	public static boolean isPunch(ItemStack is) {
@@ -386,7 +356,7 @@ public class Captcha extends Module {
 	/**
 	 * Check if an ItemStack can be turned into a captchacard. The only items that cannot be put
 	 * into a captcha are other captchas of captchas and unique Machine key items.
-	 * 
+	 *
 	 * @param item the ItemStack to check
 	 * @return true if the ItemStack can be saved as a captchacard
 	 */
@@ -410,9 +380,9 @@ public class Captcha extends Module {
 
 	/**
 	 * Checks if an ItemStack is any Punchcard or Captchacard.
-	 * 
+	 *
 	 * @param is the ItemStack to check
-	 * 
+	 *
 	 * @return true if the ItemStack is a card
 	 */
 	public static boolean isCard(ItemStack is) {
@@ -430,10 +400,10 @@ public class Captcha extends Module {
 	 * Creates a Punchcard from one or two cards.
 	 * If card2 is null, creates a clone of card1.
 	 * card2 must be a Punchcard or null.
-	 * 
+	 *
 	 * @param card1 the first card
 	 * @param card2 the second card, or null to clone card1
-	 * 
+	 *
 	 * @return the ItemStack created or null if invalid cards are provided
 	 */
 	public ItemStack createCombinedPunch(ItemStack card1, ItemStack card2) {

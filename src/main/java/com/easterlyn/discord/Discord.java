@@ -53,7 +53,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -77,7 +76,7 @@ public class Discord extends Module {
 	private final StringBuffer logBuffer;
 
 	private Language lang;
-	private String botName, token;
+	private String  token;
 	private IDiscordClient client;
 	private BukkitTask heartbeatTask;
 	private DiscordQueue drainQueueThread;
@@ -119,7 +118,6 @@ public class Discord extends Module {
 	@Override
 	protected void onEnable() {
 		this.lang = getPlugin().getModule(Language.class);
-		botName = getConfig().getString("discord.username", "Sbot");
 		token = getConfig().getString("discord.token");
 
 		if (token == null) {
@@ -250,14 +248,9 @@ public class Discord extends Module {
 	public YamlConfiguration loadConfig() {
 		super.loadConfig();
 
-		botName = getConfig().getString("discord.username", "Sbot");
 		token = getConfig().getString("discord.token");
 
 		return getConfig();
-	}
-
-	public String getBotName() {
-		return botName;
 	}
 
 	private String generateUniqueCode() {
@@ -324,7 +317,7 @@ public class Discord extends Module {
 						for (long channelID : getLogChannelIDs()) {
 							IChannel channel = getClient().getChannelByID(channelID);
 							if (channel != null) {
-								addMessageToQueue(channel, getBotName(), logBuffer.toString());
+								addMessageToQueue(channel, null, logBuffer.toString());
 							}
 						}
 						logBuffer.delete(0, logBuffer.length());
@@ -490,7 +483,7 @@ public class Discord extends Module {
 	}
 
 	public void log(String message) {
-		postMessage(this.getBotName(), message, getLogChannelIDs());
+		postMessage(null, message, getLogChannelIDs());
 	}
 
 	public void postMessage(Message message, boolean global) {
@@ -498,7 +491,7 @@ public class Discord extends Module {
 			postMessage((message.isThirdPerson() ? "* " : "") + message.getSenderName(),
 					message.getDiscordMessage(), getMainChannelIDs());
 		}
-		postMessage(this.getBotName(), message.getConsoleMessage(), getLogChannelIDs());
+		postMessage(null, message.getConsoleMessage(), getLogChannelIDs());
 	}
 
 	public void postMessage(String name, String message, boolean global) {
@@ -523,7 +516,9 @@ public class Discord extends Module {
 			return;
 		}
 
-		name = ChatColor.stripColor(name);
+		if (name != null) {
+			name = ChatColor.stripColor(name);
+		}
 		// TODO allow formatting codes in any chat? Could support markdown rather than &codes.
 		message = ChatColor.stripColor(message);
 		if (message.trim().isEmpty()) {
@@ -560,7 +555,7 @@ public class Discord extends Module {
 					}
 					logBuffer.append(nextMessage);
 					if (now > lastLog + 30000 || logBuffer.length() > 1500) {
-						addMessageToQueue(channel, this.getBotName(), logBuffer.toString());
+						addMessageToQueue(channel, null, logBuffer.toString());
 						logBuffer.delete(0, logBuffer.length());
 						lastLog = now;
 					}
@@ -571,39 +566,17 @@ public class Discord extends Module {
 		}
 	}
 
+	@Nullable
 	private DiscordCallable addMessageToQueue(final IChannel channel, final String name, final String message) {
-		DiscordCallable callable = new DiscordCallable(
-				channel.isPrivate() ? channel.getLongID() : channel.getGuild().getLongID(),
-				CallType.MESSAGE_SEND) {
-			@Override
-			public void call()
-					throws MissingPermissionsException, RateLimitException, DiscordException {
-				StringBuilder builder = new StringBuilder();
-				if (!channel.isPrivate() && channel.getLongID() == getMainChannelID(channel.getGuild())
-						&& !name.equals(getBotName())) {
-					builder.append("**").append(toEscape.matcher(name).replaceAll("\\\\$1"));
-					if (!name.startsWith("* ")) {
-						builder.append(':');
-					}
-					builder.append("** ");
-				}
-				builder.append(message);
-				try {
-					channel.sendMessage(builder.toString());
-				} catch (NoSuchElementException e) {
-					// Internal Discord fault, don't log.
-				}
-			}
-		};
 		if (drainQueueThread != null) {
 			// Ensure bot has finished logging in.
-			drainQueueThread.queue(callable);
+			return drainQueueThread.queueMessage(channel, name, message);
 		}
-		return callable;
+		return null;
 	}
 
 	public void postReport(String message) {
-		postMessage(this.getBotName(), message, getReportChannelIDs());
+		postMessage(null, message, getReportChannelIDs());
 	}
 
 	/**
@@ -647,7 +620,7 @@ public class Discord extends Module {
 			if (!discordData.isSet(path)) {
 				// 1 day grace period
 				discordData.set(path, now + 86400000);
-				this.postMessage(this.getBotName(),
+				this.postMessage(null,
 						lang.getValue("discord.link.mandate").replace("{USER}", user.mention()),
 						this.getGeneralChannelID(guild));
 				return;

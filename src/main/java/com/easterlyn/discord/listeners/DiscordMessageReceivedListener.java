@@ -55,10 +55,10 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 			String register = msg.substring(6);
 			Object uuid = discord.getAuthCodes().getIfPresent(register);
 			if (uuid == null || !(uuid instanceof UUID)) {
-				discord.postMessage(discord.getBotName(), "Invalid registration code!", event.getMessage().getChannel().getLongID());
+				discord.postMessage(null, "Invalid registration code!", event.getMessage().getChannel().getLongID());
 				return;
 			}
-			discord.postMessage(discord.getBotName(), "Registration complete!", event.getMessage().getChannel().getLongID());
+			discord.postMessage(null, "Registration complete!", event.getMessage().getChannel().getLongID());
 			discord.getAuthCodes().invalidate(uuid);
 			discord.getAuthCodes().invalidate(register);
 			discord.addLink((UUID) uuid, author);
@@ -88,7 +88,7 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 				return;
 			}
 			warnings.put(id, true);
-			discord.postMessage(discord.getBotName(), author.mention()
+			discord.postMessage(null, author.mention()
 					+ ", you must run /link in Minecraft to use this feature!", channel.getLongID());
 			return;
 		}

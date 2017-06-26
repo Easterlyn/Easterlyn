@@ -1,21 +1,30 @@
 package com.easterlyn.discord.queue;
 
+import com.easterlyn.discord.Discord;
+import com.easterlyn.utilities.Wrapper;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
+
+import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
-
-import com.easterlyn.discord.Discord;
-
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.RateLimitException;
+import java.util.regex.Pattern;
 
 /**
  * A Thread for periodically executing DiscordCallables from the given Queue.
- * 
+ *
  * @author Jikoo
  */
 public class DiscordQueue extends Thread {
+
+	// TODO: Move all special queuing handling inside DiscordQueue
+
+	private static final Pattern POTENTIAL_MARKDOWN = Pattern.compile("([_~*])");
 
 	private final Discord discord;
 	private final Map<Long, Map<CallType, Queue<DiscordCallable>>> guildQueues;
@@ -152,10 +161,13 @@ public class DiscordQueue extends Thread {
 				.getOrDefault(call, 0L) >= System.currentTimeMillis();
 	}
 
-	public void queue(DiscordCallable callable) {
+	public DiscordCallable queue(DiscordCallable callable) {
 		if (!this.isAlive()) {
-			return;
+			return callable;
 		}
+
+		Wrapper<DiscordCallable> callableWrapper = new Wrapper<>();
+		callableWrapper.set(callable);
 
 		this.guildQueues.compute(callable.getGuildID(), (guild, guildMap) -> {
 			if (guildMap == null) {
@@ -165,11 +177,83 @@ public class DiscordQueue extends Thread {
 				if (callTypeQueue == null) {
 					callTypeQueue = new PriorityBlockingQueue<>();
 				}
-				callTypeQueue.add(callable);
+				if (callType == CallType.MESSAGE_SEND && callable instanceof DiscordMessageCallable) {
+					DiscordCallable next = callTypeQueue.peek();
+					if (next instanceof DiscordMessageCallable) {
+						if (((DiscordMessageCallable) next).addMessage(((DiscordMessageCallable) callable))) {
+							callableWrapper.set(next);
+							return callTypeQueue;
+						}
+					}
+				}
+				if (!callTypeQueue.contains(callable)) {
+					callTypeQueue.add(callable);
+				}
 				return callTypeQueue;
 			});
 			return guildMap;
 		});
+
+		return callableWrapper.get();
+	}
+
+	public DiscordCallable queueMessage(IChannel channel, @Nullable String name, String message) {
+		return this.queue(new DiscordMessageCallable(channel, name, message));
+	}
+
+	private class DiscordMessageCallable extends DiscordCallable {
+		private final StringBuffer content = new StringBuffer();
+		private final IChannel channel;
+
+		public DiscordMessageCallable(IChannel channel, @Nullable String name, String message) {
+			super(channel, CallType.MESSAGE_SEND);
+			this.channel = channel;
+			this.addMessage(name, message);
+		}
+
+		@Override
+		public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+			try {
+				this.channel.sendMessage(this.content.toString());
+			} catch (NoSuchElementException e) {
+				// Internal Discord fault, don't log.
+			}
+		}
+
+		public void addMessage(@Nullable String name, String message) {
+			StringBuilder assembledMessage = new StringBuilder();
+			if (this.content.length() > 0) {
+				assembledMessage.append('\n');
+			}
+			if (name != null) {
+				assembledMessage.append("**").append(POTENTIAL_MARKDOWN.matcher(name).replaceAll("\\\\$1"));
+				if (!name.startsWith("* ")) {
+					assembledMessage.append(':');
+				}
+				assembledMessage.append("** ");
+			}
+			assembledMessage.append(message);
+			this.content.append(assembledMessage.toString());
+		}
+
+		public boolean addMessage(DiscordMessageCallable callable) {
+			for (DiscordCallable chained = this;; chained = chained.getChainedCall()) {
+				if (chained == null) {
+					return false;
+				}
+				if (!(chained instanceof DiscordMessageCallable)) {
+					continue;
+				}
+				if (((DiscordMessageCallable) chained).channel.getLongID() == callable.channel.getLongID()) {
+					StringBuffer buffer = ((DiscordMessageCallable) chained).content;
+					if (buffer.length() > 0) {
+						buffer.append('\n');
+					}
+					buffer.append(callable.content.toString());
+					return true;
+				}
+			}
+		}
 	}
 
 }

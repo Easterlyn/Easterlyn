@@ -1,11 +1,5 @@
 package com.easterlyn.discord.modules;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
@@ -18,21 +12,24 @@ import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.PermissionUtils;
-
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import net.md_5.bungee.api.chat.TextComponent;
-
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * DiscordModule for interacting with the Minecraft server from Discord.
- * 
+ *
  * @author Jikoo
  */
 public class MinecraftModule extends DiscordModule {
@@ -66,7 +63,7 @@ public class MinecraftModule extends DiscordModule {
 
 	public void handleCommand(DiscordPlayer player, String command, IChannel channel) {
 		if (player.hasPendingCommand()) {
-			getDiscord().postMessage(getDiscord().getBotName(), "You already have a pending command. Please be patient.", channel.getLongID());
+			getDiscord().postMessage(null, "You already have a pending command. Please be patient.", channel.getLongID());
 			return;
 		}
 		Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(getDiscord().getPlugin(),
@@ -92,7 +89,7 @@ public class MinecraftModule extends DiscordModule {
 					count++;
 				}
 				if (future.isCancelled() || !future.isDone()) {
-					getDiscord().postMessage(getDiscord().getBotName(), "Command " + command + " from " + player.getName() + " timed out.", channel.getLongID());
+					getDiscord().postMessage(null, "Command " + command + " from " + player.getName() + " timed out.", channel.getLongID());
 					player.stopMessages();
 					return;
 				}
@@ -103,7 +100,7 @@ public class MinecraftModule extends DiscordModule {
 				if (message.isEmpty()) {
 					return;
 				}
-				getDiscord().postMessage(getDiscord().getBotName(), message, channel.getLongID());
+				getDiscord().postMessage(null, message, channel.getLongID());
 			}
 		}.runTaskAsynchronously(getDiscord().getPlugin());
 	}
@@ -114,11 +111,11 @@ public class MinecraftModule extends DiscordModule {
 			int newline = content.indexOf('\n');
 			boolean delete = false;
 			if (newline > 0) {
-				getDiscord().postMessage(getDiscord().getBotName(), "Newlines are not allowed in messages to Minecraft, "
+				getDiscord().postMessage(null, "Newlines are not allowed in messages to Minecraft, "
 						+ message.getAuthor().mention(), message.getChannel().getLongID());
 				delete = true;
 			} else if (content.length() > 255) {
-				getDiscord().postMessage(getDiscord().getBotName(), "Messages from Discord may not be over 255 characters, "
+				getDiscord().postMessage(null, "Messages from Discord may not be over 255 characters, "
 						+ message.getAuthor().mention(), message.getChannel().getLongID());
 				delete = true;
 			}

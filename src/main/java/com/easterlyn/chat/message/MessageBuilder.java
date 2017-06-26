@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * Builder for Messages. In most cases, set sender, channel, and finally message. In the event that
  * channel must be fixed, set it last to prevent @#channel changing. However, in the case of nick
  * channels, this can result in chat colors not being allowed when they should be.
- * 
+ *
  * @author Jikoo
  */
 public class MessageBuilder {
@@ -154,9 +154,9 @@ public class MessageBuilder {
 	 * <p>
 	 * If the tooltip will not change between uses, it is preferred that you use
 	 * {@link MessageBuilder#setNameHover(BaseComponent...)} and store the value.
-	 * 
+	 *
 	 * @param hover the String to display
-	 * 
+	 *
 	 * @return the MessageBuilder
 	 */
 	public MessageBuilder setNameHover(String hover) {
@@ -166,9 +166,9 @@ public class MessageBuilder {
 
 	/**
 	 * Sets Message display name tooltip text.
-	 * 
+	 *
 	 * @param hover the TextComponent to display
-	 * 
+	 *
 	 * @return the MessageBuilder
 	 */
 	public MessageBuilder setNameHover(BaseComponent... hover) {
@@ -328,7 +328,7 @@ public class MessageBuilder {
 			// Override rank color with scoreboard color if possible
 			try {
 				Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName());
-				if (team != null && team.getPrefix() != null) {
+				if (team != null && team.getPrefix() != null && team.getPrefix().length() > 0) {
 					ChatColor color = ChatColor.getByChar(team.getPrefix().charAt(team.getPrefix().length() - 1));
 					if (color != null) {
 						globalRank = color;
@@ -413,10 +413,10 @@ public class MessageBuilder {
 
 			/*
 			 * Yes, this is stupid.
-			 * 
+			 *
 			 * The client assumes that the first JSON element of an unwrapped array is the
 			 * containing element.
-			 * 
+			 *
 			 * This means that since our first element has formatting, all following elements not
 			 * explicitly declared to not have formatting inherit its formatting. It's a client
 			 * limitation that can only be bypassed by wrapping all the elements of the array into

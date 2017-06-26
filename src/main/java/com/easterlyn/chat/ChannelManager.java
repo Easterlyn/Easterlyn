@@ -59,7 +59,7 @@ public class ChannelManager {
 
 	void saveAllChannels() {
 		for (Channel channel : this.channelList.values()) {
-			if (channel instanceof NormalChannel) {
+			if (channel instanceof NormalChannel && channel.getOwner() != null) {
 				saveChannel((NormalChannel) channel);
 			}
 		}

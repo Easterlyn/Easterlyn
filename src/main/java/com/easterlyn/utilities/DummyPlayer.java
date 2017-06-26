@@ -6,6 +6,7 @@ import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Entity;
@@ -1214,6 +1215,11 @@ public class DummyPlayer implements Player {
 	@Override
 	public boolean removeScoreboardTag(String arg0) {
 		return false;
+	}
+
+	@Override
+	public PistonMoveReaction getPistonMoveReaction() {
+		return PistonMoveReaction.IGNORE;
 	}
 
 	@Override

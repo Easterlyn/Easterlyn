@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 
 /**
  * Storage and access of all data saved for a User.
- * 
+ *
  * @author Jikoo
  */
 public class User {
@@ -85,7 +85,7 @@ public class User {
 
 	/**
 	 * Gets the UUID of the User.
-	 * 
+	 *
 	 * @return the UUID
 	 */
 	public UUID getUUID() {
@@ -94,7 +94,7 @@ public class User {
 
 	/**
 	 * Gets the Player represented by this User.
-	 * 
+	 *
 	 * @return the Player
 	 */
 	public Player getPlayer() {
@@ -103,7 +103,7 @@ public class User {
 
 	/**
 	 * Gets the OfflinePlayer.
-	 * 
+	 *
 	 * @return the OfflinePlayer
 	 */
 	public OfflinePlayer getOfflinePlayer() {
@@ -112,7 +112,7 @@ public class User {
 
 	/**
 	 * Gets the User's IP.
-	 * 
+	 *
 	 * @return the Player's IP
 	 */
 	public String getUserIP() {
@@ -121,7 +121,7 @@ public class User {
 
 	/**
 	 * Gets the name of the Player.
-	 * 
+	 *
 	 * @return a String containing the Player's name
 	 */
 	public String getPlayerName() {
@@ -130,7 +130,7 @@ public class User {
 
 	/**
 	 * Gets the display name of the Player.
-	 * 
+	 *
 	 * @return a String of the Player's nickname
 	 */
 	public String getDisplayName() {
@@ -139,7 +139,7 @@ public class User {
 
 	/**
 	 * Gets the User's chosen UserClass.
-	 * 
+	 *
 	 * @return the UserClass, default Heir
 	 */
 	public UserClass getUserClass() {
@@ -148,7 +148,7 @@ public class User {
 
 	/**
 	 * Sets the User's UserClass.
-	 * 
+	 *
 	 * @param userClass the new UserClass
 	 */
 	public void setUserClass(UserClass userClass) {
@@ -158,7 +158,7 @@ public class User {
 
 	/**
 	 * Gets the User's chosen UserAspect.
-	 * 
+	 *
 	 * @return the UserAspect
 	 */
 	public UserAspect getUserAspect() {
@@ -167,7 +167,7 @@ public class User {
 
 	/**
 	 * Sets the User's UserAspect.
-	 * 
+	 *
 	 * @param userAspect the new UserAspect
 	 */
 	public void setUserAspect(UserAspect userAspect) {
@@ -177,7 +177,7 @@ public class User {
 
 	/**
 	 * Check if the User can fly.
-	 * 
+	 *
 	 * @return true if flight should be enabled
 	 */
 	public boolean getFlight() {
@@ -211,7 +211,7 @@ public class User {
 
 	/**
 	 * Set whether or not a user can be spectated to.
-	 * 
+	 *
 	 * @param spectatable true if the user can be spectated
 	 */
 	public void setSpectatable(boolean spectatable) {
@@ -220,7 +220,7 @@ public class User {
 
 	/**
 	 * Get whether or not a user can be spectated to.
-	 * 
+	 *
 	 * @return true if the user can be spectated to
 	 */
 	public boolean getSpectatable() {
@@ -229,7 +229,7 @@ public class User {
 
 	/**
 	 * Gets the Location used by the back command. This is temporary data, and is not preserved.
-	 * 
+	 *
 	 * @return the back location, or null if not set
 	 */
 	public Location getBackLocation() {
@@ -245,7 +245,7 @@ public class User {
 
 	/**
 	 * Gets the Location used by the deathpoint command. This is temporary data, and is not preserved.
-	 * 
+	 *
 	 * @return the death location, or null if not set
 	 */
 	public Location getDeathLocation() {
@@ -261,7 +261,7 @@ public class User {
 
 	/**
 	 * Gets a Location to teleport the Player to on login.
-	 * 
+	 *
 	 * @return the Location, or null if none is set.
 	 */
 	public Location getLoginLocation() {
@@ -274,7 +274,7 @@ public class User {
 
 	/**
 	 * Sets a Location to teleport the Player to when logging in.
-	 * 
+	 *
 	 * @param location the Location to teleport to on join
 	 */
 	public void setLoginLocation(Location location) {
@@ -283,7 +283,7 @@ public class User {
 
 	/**
 	 * The String representation of the Player's total time ingame.
-	 * 
+	 *
 	 * @return the Player's time ingame
 	 */
 	private String getTimePlayed() {
@@ -299,7 +299,7 @@ public class User {
 
 	/**
 	 * Sends the Player a message.
-	 * 
+	 *
 	 * @param message the message to send
 	 */
 	public void sendMessage(String message) {
@@ -312,7 +312,7 @@ public class User {
 
 	/**
 	 * Sets the User's current chat suppression status.
-	 * 
+	 *
 	 * @param suppress true if the User is to suppress global channels
 	 */
 	public synchronized void setSuppression(boolean suppress) {
@@ -321,7 +321,7 @@ public class User {
 
 	/**
 	 * Gets the User's suppression status.
-	 * 
+	 *
 	 * @return true if the Player is suppressing global channels.
 	 */
 	public synchronized boolean getSuppression() {
@@ -330,7 +330,7 @@ public class User {
 
 	/**
 	 * Sets the User's current chat highlight status.
-	 * 
+	 *
 	 * @param highlight true if the User is to be highlighted
 	 */
 	public synchronized void setHighlight(boolean highlight) {
@@ -339,7 +339,7 @@ public class User {
 
 	/**
 	 * Gets the User's highlight status.
-	 * 
+	 *
 	 * @return true if the Player is to be highlighted.
 	 */
 	public synchronized boolean getHighlight() {
@@ -360,7 +360,7 @@ public class User {
 
 	/**
 	 * Sets the Player's current Channel.
-	 * 
+	 *
 	 * @param channel the Channel to set as current
 	 */
 	public synchronized void setCurrentChannel(Channel channel) {
@@ -386,7 +386,7 @@ public class User {
 
 	/**
 	 * Sets the Player's current Channel.
-	 * 
+	 *
 	 * @param channelName the name of the Channel to set as current
 	 */
 	public synchronized void setCurrentChannel(String channelName) {
@@ -396,7 +396,7 @@ public class User {
 
 	/**
 	 * Gets the Channel the Player is currently sending messages to.
-	 * 
+	 *
 	 * @return Channel
 	 */
 	public synchronized Channel getCurrentChannel() {
@@ -405,9 +405,9 @@ public class User {
 
 	/**
 	 * Adds a Channel to the Player's current List of Channels listened to.
-	 * 
+	 *
 	 * @param channel the Channel to add
-	 * 
+	 *
 	 * @return true if the Channel was added
 	 */
 	public synchronized boolean addListening(Channel channel) {
@@ -440,7 +440,7 @@ public class User {
 
 	/**
 	 * Begin listening to a Set of channels. Used on login.
-	 * 
+	 *
 	 * @param announce true if joins are to be announced.
 	 */
 	public void handleLoginChannelJoins(boolean announce) {
@@ -507,7 +507,7 @@ public class User {
 
 	/**
 	 * Remove a Channel from the Player's listening List.
-	 * 
+	 *
 	 * @param channelName the name of the Channel to remove
 	 */
 	public synchronized void removeListening(String channelName) {
@@ -534,7 +534,7 @@ public class User {
 
 	/**
 	 * Silently removes a Channel from the Player's listening list.
-	 * 
+	 *
 	 * @param channel the Channel to remove
 	 */
 	public synchronized void removeListeningSilent(Channel channel) {
@@ -551,9 +551,9 @@ public class User {
 	/**
 	 * Removes the User from the specified Channel's list of online Users without an announcement.
 	 * Does not modify the User's listening list.
-	 * 
+	 *
 	 * @param channelName the name of the Channel
-	 * 
+	 *
 	 * @return true if the Channel is valid and had the User registered
 	 */
 	public boolean removeListeningQuit(String channelName) {
@@ -567,7 +567,7 @@ public class User {
 
 	/**
 	 * Gets the Set of names of Channels that the Player is listening to.
-	 * 
+	 *
 	 * @return a Set<String> of Channel names.
 	 */
 	public Set<String> getListening() {
@@ -576,9 +576,9 @@ public class User {
 
 	/**
 	 * Check if the Player is listening to a specific Channel.
-	 * 
+	 *
 	 * @param channel the Channel to check for
-	 * 
+	 *
 	 * @return true if the Player is listening to the Channel
 	 */
 	public boolean isListening(Channel channel) {
@@ -587,7 +587,7 @@ public class User {
 
 	/**
 	 * Gets the last chat message sent by the Player.
-	 * 
+	 *
 	 * @return the last chat message sent
 	 */
 	public synchronized String getLastChat() {
@@ -596,7 +596,7 @@ public class User {
 
 	/**
 	 * Sets the last chat message sent by the Player.
-	 * 
+	 *
 	 * @param message the last chat message sent
 	 */
 	public synchronized void setLastChat(String message) {
@@ -605,7 +605,7 @@ public class User {
 
 	/**
 	 * Gets the Player's chat violation level.
-	 * 
+	 *
 	 * @return the violation level
 	 */
 	public int getChatViolationLevel() {
@@ -614,7 +614,7 @@ public class User {
 
 	/**
 	 * Sets the Player's chat violation level.
-	 * 
+	 *
 	 * @param violationLevel the violation level
 	 */
 	public void setChatViolationLevel(int violationLevel) {
@@ -623,7 +623,7 @@ public class User {
 
 	/**
 	 * Gets whether or not the Player has been warned to not spam.
-	 * 
+	 *
 	 * @return true if the Player has been warned
 	 */
 	public boolean getChatWarnStatus() {
@@ -632,7 +632,7 @@ public class User {
 
 	/**
 	 * Sets whether or not the Player has been warned not to spam.
-	 * 
+	 *
 	 * @param warned whether or not the Player has been warned
 	 */
 	public void setChatWarnStatus(boolean warned) {
@@ -642,7 +642,7 @@ public class User {
 	/**
 	 * Gets a List of Effect names set as active powers. If the List has not been set, creates a
 	 * random assortment from available Effects for the OfflineUser's UserAspect.
-	 * 
+	 *
 	 * @return the List of enabled godtier Effects
 	 */
 	public List<String> getGodtierEffects() {
@@ -675,7 +675,7 @@ public class User {
 
 	/**
 	 * Attempts to add an Effect to the OfflineUser's selected godtier Effects.
-	 * 
+	 *
 	 * @param effect the Effect
 	 * @return true if the Effect can be added
 	 */
@@ -709,7 +709,7 @@ public class User {
 
 	/**
 	 * Removes an Effect from an OfflineUser's selected godtier Effects.
-	 * 
+	 *
 	 * @param effect the Effect
 	 */
 	public void removeGodtierEffect(Effect effect) {
@@ -723,7 +723,7 @@ public class User {
 
 	/**
 	 * Gets a List of commands to be sent on login.
-	 * 
+	 *
 	 * @return the List of commands to run on login
 	 */
 	public List<String> getLoginCommands() {
@@ -732,7 +732,7 @@ public class User {
 
 	/**
 	 * Sets a List of commands to be sent on login.
-	 * 
+	 *
 	 * @param commands the List of commands to run on login
 	 */
 	public void setLoginCommands(List<String> commands) {
@@ -741,7 +741,7 @@ public class User {
 
 	/**
 	 * Gets a user-friendly representation of this User's profile.
-	 * 
+	 *
 	 * @return the profile information
 	 */
 	public String getProfile() {
@@ -755,7 +755,7 @@ public class User {
 
 	/**
 	 * Gets a user-friendly representation of all of this User's information.
-	 * 
+	 *
 	 * @return all stored data for this User
 	 */
 	public String getWhois() {
@@ -880,7 +880,7 @@ public class User {
 
 			if (!player.hasPlayedBefore()) {
 				Discord discord = plugin.getModule(Discord.class);
-				discord.postMessage(discord.getBotName(), player.getName()
+				discord.postMessage(null, player.getName()
 						+ " is new! Please welcome them.", true);
 				base.setMessage(Language.getColor("bot_text") + "It would seem that " + player.getName()
 						+ " is joining us for the first time! Please welcome them.").toMessage()
@@ -925,7 +925,7 @@ public class User {
 					.setMessage(Language.getColor("bot_text") + previous).toMessage()
 					.send(Bukkit.getOnlinePlayers(), false);
 			Discord discord = getPlugin().getModule(Discord.class);
-			discord.postMessage(discord.getBotName(), previous, true);
+			discord.postMessage(null, previous, true);
 			discord.updateLinkedUser(null, getUUID());
 		}
 	}

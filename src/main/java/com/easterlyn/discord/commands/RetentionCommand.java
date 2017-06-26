@@ -1,15 +1,11 @@
 package com.easterlyn.discord.commands;
 
-import java.util.EnumSet;
-
 import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.abstraction.DiscordCommand;
 import com.easterlyn.discord.modules.RetentionModule;
 import com.easterlyn.utilities.NumberUtils;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
 import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IPrivateChannel;
@@ -18,9 +14,11 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.MissingPermissionsException;
 
+import java.util.EnumSet;
+
 /**
  * DiscordCommand for setting retention duration on a channel.
- * 
+ *
  * @author Jikoo
  */
 public class RetentionCommand extends DiscordCommand {
@@ -35,11 +33,11 @@ public class RetentionCommand extends DiscordCommand {
 		try {
 			module = getDiscord().getModule(RetentionModule.class);
 		} catch (IllegalArgumentException e) {
-			getDiscord().postMessage(getDiscord().getBotName(), "Retention is not enabled.", channel.getLongID());
+			getDiscord().postMessage(null, "Retention is not enabled.", channel.getLongID());
 			return true;
 		}
 		if (channel instanceof IPrivateChannel || channel instanceof IVoiceChannel) {
-			getDiscord().postMessage(getDiscord().getBotName(),
+			getDiscord().postMessage(null,
 					"You cannot set a retention policy on private messages.", channel.getLongID());
 			return true;
 		}
@@ -64,7 +62,7 @@ public class RetentionCommand extends DiscordCommand {
 			} else {
 				module.setRetention(channel, null);
 			}
-			getDiscord().postMessage(getDiscord().getBotName(), "Channel retention unset.", channel.getLongID());
+			getDiscord().postMessage(null, "Channel retention unset.", channel.getLongID());
 			return true;
 		}
 		Pair<String, Long> pair;
@@ -79,7 +77,7 @@ public class RetentionCommand extends DiscordCommand {
 		} else {
 			module.setRetention(channel, seconds);
 		}
-		this.getDiscord().postMessage(getDiscord().getBotName(),
+		this.getDiscord().postMessage(null,
 				(guild ? "Guild" : "Channel") + " retention set to " + seconds + " seconds.",
 				channel.getLongID());
 		return true;

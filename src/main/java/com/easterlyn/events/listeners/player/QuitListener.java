@@ -18,7 +18,7 @@ import java.util.UUID;
 
 /**
  * Listener for PlayerQuitEvents.
- * 
+ *
  * @author Jikoo
  */
 public class QuitListener extends EasterlynListener {
@@ -46,7 +46,7 @@ public class QuitListener extends EasterlynListener {
 
 	/**
 	 * The event handler for PlayerQuitEvents.
-	 * 
+	 *
 	 * @param event the PlayerQuitEvent
 	 */
 	@EventHandler
@@ -63,7 +63,7 @@ public class QuitListener extends EasterlynListener {
 		effects.handleEvent(event, event.getPlayer(), true);
 
 		// Discord integration
-		discord.postMessage(discord.getBotName(), event.getPlayer().getDisplayName() + " logs out.", true);
+		discord.postMessage(null, event.getPlayer().getDisplayName() + " logs out.", true);
 
 		// Update vote
 		sleep.removeVote(event.getPlayer().getWorld(), event.getPlayer());

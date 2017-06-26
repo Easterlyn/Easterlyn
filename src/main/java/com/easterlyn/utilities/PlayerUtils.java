@@ -2,6 +2,7 @@ package com.easterlyn.utilities;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.discord.Discord;
+import com.easterlyn.users.Users;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.authlib.GameProfile;
@@ -29,8 +30,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class PlayerUtils {
 
-	private static final Cache<UUID, Player> PLAYER_CACHE = CacheBuilder.newBuilder().weakValues()
-			.expireAfterAccess(5, TimeUnit.MINUTES).maximumSize(50).build();
+	private static final Cache<UUID, Player> PLAYER_CACHE = CacheBuilder.newBuilder()
+			.expireAfterAccess(5, TimeUnit.MINUTES).maximumSize(50)
+			.removalListener(notification -> {
+				if (notification.getValue() != null) {
+					Users.unteam((Player) notification.getValue());
+				}
+			}).build();
+
+	/**
+	 * Removes a cached Player if present.
+	 *
+	 * @param uuid the UUID of the Player.
+	 */
+	public static void removeFromCache(UUID uuid) {
+		PLAYER_CACHE.invalidate(uuid);
+	}
 
 	/**
 	 * Get a Player for the specified UUID if they have logged in in the past, even if offline.
@@ -121,11 +136,13 @@ public class PlayerUtils {
 		// Wrap player so permissions checks will work
 		player = new PermissiblePlayer(player);
 		PLAYER_CACHE.put(uuid, player);
+		Users.team(player, null);
 		return player;
 	}
 
 	public static void modifyCachedPlayer(Player player) {
 		PLAYER_CACHE.put(player.getUniqueId(), player);
+		Users.team(player, null);
 	}
 
 	/**

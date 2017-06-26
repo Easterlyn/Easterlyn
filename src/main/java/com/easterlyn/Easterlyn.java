@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 /**
  * Easterlyn is the base of easterlyn.com's custom plugin. All features are handled by
  * smaller modules.
- * 
+ *
  * @author Jikoo, FireNG, Dublek
  */
 public class Easterlyn extends JavaPlugin {
@@ -248,8 +248,6 @@ public class Easterlyn extends JavaPlugin {
 		shaped = new ShapedRecipe(new ItemStack(Material.PACKED_ICE));
 		shaped.shape("XY", "YX");
 		shaped.setIngredient('X', Material.SNOW_BLOCK).setIngredient('Y', Material.ICE);
-		getServer().addRecipe(shaped);
-		shaped.shape("YX", "XY");
 		getServer().addRecipe(shaped);
 
 		// General: 8 gravel, 1 bucket water -> 4 clay
