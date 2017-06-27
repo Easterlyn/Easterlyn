@@ -87,6 +87,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.lucko.LuckPerms</groupId>
+      <artifactId>luckperms-bukkit</artifactId>
+      <version>v3.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>me.lucko.luckperms</groupId>
       <artifactId>luckperms-api</artifactId>
       <version>3.2</version>

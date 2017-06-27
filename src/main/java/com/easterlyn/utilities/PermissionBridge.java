@@ -1,6 +1,9 @@
 package com.easterlyn.utilities;
 
 import me.lucko.luckperms.api.LuckPermsApi;
+import me.lucko.luckperms.common.core.model.User;
+import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
+import me.lucko.luckperms.common.utils.LoginHelper;
 import org.bukkit.Bukkit;
 
 import java.util.UUID;
@@ -25,12 +28,21 @@ public class PermissionBridge {
 		}
 	}
 
-	public boolean hasPermission(UUID uuid, String permission) {
+	public boolean hasPermission(UUID uuid, String name, String permission) {
 		if (service == null) {
 			return false;
 		}
-		return service.getUserSafe(uuid).map(user ->
-				user.getPermissions().stream().anyMatch(node -> node.getPermission().equals(permission))
+
+		LuckPermsPlugin luckPermsPlugin = (LuckPermsPlugin) Bukkit.getPluginManager().getPlugin("LuckPerms");
+		User user = luckPermsPlugin.getUserManager().getIfLoaded(uuid);
+		if (user != null) {
+			return user.hasPermission(permission, true);
+		}
+
+		LoginHelper.loadUser(luckPermsPlugin, uuid, name, false);
+
+		return service.getUserSafe(uuid).map(safeUser ->
+				safeUser.getPermissions().stream().anyMatch(node -> node.getPermission().equals(permission))
 		).orElse(false);
 	}
 

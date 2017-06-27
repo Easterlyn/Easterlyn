@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Proxy detection, because apparently this is an issue.
- * 
+ *
  * @author Jikoo
  */
 public class AsyncPreLoginListener extends EasterlynListener {
@@ -53,7 +53,7 @@ public class AsyncPreLoginListener extends EasterlynListener {
 			ipCache.put(ip, allowed);
 		}
 		if (!allowed) {
-			allowed = PermissionBridge.getInstance().hasPermission(event.getUniqueId(), "easterlyn.events.login.proxy");
+			allowed = PermissionBridge.getInstance().hasPermission(event.getUniqueId(), event.getName(), "easterlyn.events.login.proxy");
 			if (allowed) {
 				// Players with permission can allow a blocked IP for 30 minutes by logging in from it
 				ipCache.put(ip, allowed);
