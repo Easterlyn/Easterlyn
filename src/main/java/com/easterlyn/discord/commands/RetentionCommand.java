@@ -6,13 +6,12 @@ import com.easterlyn.discord.modules.RetentionModule;
 import com.easterlyn.utilities.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.PermissionUtils;
 
 import java.util.EnumSet;
 
@@ -45,16 +44,13 @@ public class RetentionCommand extends DiscordCommand {
 			return false;
 		}
 		boolean guild = false;
-		try {
-			DiscordUtils.checkPermissions(channel.getModifiedPermissions(sender), EnumSet.of(Permissions.MANAGE_SERVER));
+		if (PermissionUtils.hasPermissions(channel.getGuild(), sender, Permissions.MANAGE_SERVER)) {
 			for (String arg : args) {
 				if (arg.equalsIgnoreCase("server") || arg.equalsIgnoreCase("guild")) {
 					guild = true;
 					break;
 				}
 			}
-		} catch (MissingPermissionsException e) {
-			guild = false;
 		}
 		if (args[0].equalsIgnoreCase("null") || args[0].equalsIgnoreCase("off")) {
 			if (guild) {

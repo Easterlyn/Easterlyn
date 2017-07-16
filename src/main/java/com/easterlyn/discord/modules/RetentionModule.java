@@ -21,6 +21,7 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.PermissionUtils;
 import sx.blah.discord.util.RateLimitException;
 
 import java.time.LocalDateTime;
@@ -32,10 +33,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * DiscordModule for message retention policies.
- * 
+ *
  * @author Jikoo
  */
 public class RetentionModule extends DiscordModule {
+
+	private final EnumSet<Permissions> permissions = EnumSet.of(Permissions.READ_MESSAGES,
+			Permissions.READ_MESSAGE_HISTORY, Permissions.MANAGE_MESSAGES);
 
 	private class RetentionData {
 
@@ -124,8 +128,12 @@ public class RetentionModule extends DiscordModule {
 		 * @see sx.blah.discord.handle.impl.obj.Channel#requestHistory(Long before, int limit)
 		 */
 		private IMessage[] addHistory(Long before, int limit) {
-			DiscordUtils.checkPermissions(this.channel.getClient(), this.channel,
-					EnumSet.of(Permissions.READ_MESSAGES, Permissions.READ_MESSAGE_HISTORY));
+
+			if (!PermissionUtils.hasPermissions(this.channel, this.channel.getClient().getOurUser(), permissions)) {
+				throw new MissingPermissionsException(
+						"Need permissions READ_MESSAGES, READ_MESSAGE_HISTORY, MANAGE_MESSAGES to run retention",
+						permissions);
+			}
 			String queryParams = "?limit=" + limit;
 			if (before != null) {
 				queryParams = queryParams + "&before=" + Long.toUnsignedString(before);
@@ -299,7 +307,7 @@ public class RetentionModule extends DiscordModule {
 
 	/**
 	 * Queue population and deletion for a channel.
-	 * 
+	 *
 	 * @param channel the IChannel to do retention for
 	 * @param duration the duration in seconds
 	 */
@@ -310,11 +318,8 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		// Ensure we can read history and delete messages
-		try {
-			DiscordUtils.checkPermissions(getDiscord().getClient(), channel, EnumSet.of(Permissions.READ_MESSAGE_HISTORY, Permissions.MANAGE_MESSAGES));
-		} catch (MissingPermissionsException e) {
-			getDiscord().getLogger().warning("Unable to do retention for channel " + channel.mention() + " - cannot read history and delete messages!");
-			return;
+		if (!PermissionUtils.hasPermissions(channel, channel.getClient().getOurUser(), permissions)) {
+			getDiscord().getLogger().warning("Need permissions READ_MESSAGES, READ_MESSAGE_HISTORY, MANAGE_MESSAGES to run retention");
 		}
 
 		RetentionData data;

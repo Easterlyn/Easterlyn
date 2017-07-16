@@ -8,7 +8,6 @@ import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
-import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -16,6 +15,7 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.PermissionUtils;
 import sx.blah.discord.util.RateLimitException;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * DiscordModule for managing a text channel per voice channel.
- * 
+ *
  * @author Jikoo
  */
 public class VoiceTextModule extends DiscordModule {
@@ -170,7 +170,7 @@ public class VoiceTextModule extends DiscordModule {
 			return false;
 		}
 		IUser us = this.getDiscord().getClient().getOurUser();
-		return !user.equals(us) && !DiscordUtils.isUserHigher(guild, us, user.getRolesForGuild(guild));
+		return !user.equals(us) && PermissionUtils.isUserHigher(guild, us, user);
 	}
 
 }

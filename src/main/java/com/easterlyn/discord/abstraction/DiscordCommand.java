@@ -1,11 +1,10 @@
 package com.easterlyn.discord.abstraction;
 
 import com.easterlyn.discord.Discord;
-import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.PermissionUtils;
 
 import java.util.EnumSet;
 
@@ -37,7 +36,7 @@ public abstract class DiscordCommand {
 	}
 
 	public void execute(IUser sender, IChannel channel, String original, String[] args) {
-		if (!hasRequiredPermissions(sender, channel)) {
+		if (permissions != null && !PermissionUtils.hasPermissions(channel, sender, permissions)) {
 			discord.postMessage(null, sender.mention()
 					+ ", you do not have access to this command.", channel.getLongID());
 			String log = String.format("%s[%s] was denied access to command in #%s[%s]: %s",
@@ -54,18 +53,6 @@ public abstract class DiscordCommand {
 				channel.getName(), channel.getLongID(), sender.getName(), sender.getLongID(), original);
 		discord.log(log);
 		discord.getLogger().info(log);
-	}
-
-	private boolean hasRequiredPermissions(IUser sender, IChannel channel) {
-		if (permissions == null) {
-			return true;
-		}
-		try {
-			DiscordUtils.checkPermissions(channel.getModifiedPermissions(sender), permissions);
-		} catch (MissingPermissionsException e) {
-			return false;
-		}
-		return true;
 	}
 
 	protected abstract boolean onCommand(IUser sender, IChannel channel, String[] args);
