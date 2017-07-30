@@ -9,7 +9,7 @@ import me.ryanhamshire.GriefPrevention.GriefPrevention;
 
 /**
  * Hook for the protection plugin <a href=http://dev.bukkit.org/bukkit-plugins/grief-prevention/>GriefPrevention</a>.
- * 
+ *
  * @author Jikoo
  */
 public class GriefPreventionHook extends ProtectionHook {
@@ -40,7 +40,7 @@ public class GriefPreventionHook extends ProtectionHook {
 			return true;
 		}
 		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, true, null);
-		return claim != null && claim.allowAccess(player) == null;
+		return claim == null || claim.allowAccess(player) == null;
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class GriefPreventionHook extends ProtectionHook {
 			return true;
 		}
 		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, true, null);
-		return claim != null && claim.allowContainers(player) == null;
+		return claim == null || claim.allowContainers(player) == null;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class GriefPreventionHook extends ProtectionHook {
 			return true;
 		}
 		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, true, null);
-		return claim != null && claim.allowBuild(player, Material.DIAMOND_BLOCK) == null;
+		return claim == null || claim.allowBuild(player, Material.DIAMOND_BLOCK) == null;
 	}
 
 }
