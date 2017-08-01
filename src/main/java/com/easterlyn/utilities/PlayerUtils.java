@@ -33,8 +33,14 @@ public class PlayerUtils {
 	private static final Cache<UUID, Player> PLAYER_CACHE = CacheBuilder.newBuilder()
 			.expireAfterAccess(5, TimeUnit.MINUTES).maximumSize(50)
 			.removalListener(notification -> {
-				if (notification.getValue() != null) {
-					Users.unteam((Player) notification.getValue());
+				if (notification.getValue() == null) {
+					return;
+				}
+				Player player = (Player) notification.getValue();
+				Users.unteam(player);
+				// Save if over 45 days since last login, removes achievements that should not be present.
+				if (!player.isOnline() && player.getLastPlayed() < System.currentTimeMillis() - 3888000000L) {
+					player.saveData();
 				}
 			}).build();
 
