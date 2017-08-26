@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * EasterlynCommand for manipulating commands sent on login.
- * 
+ *
  * @author Jikoo
  */
 public class LoginCommandsCommand extends EasterlynCommand {
@@ -100,6 +100,11 @@ public class LoginCommandsCommand extends EasterlynCommand {
 	}
 
 	private void delete(Player player, User user, String[] args) {
+		if (args.length < 2) {
+			player.sendMessage(getLang().getValue("command.onlogin.error.delete.usage"));
+			return;
+		}
+
 		try {
 			int line = Integer.parseInt(args[1]);
 			ArrayList<String> commands = new ArrayList<>(user.getLoginCommands());
