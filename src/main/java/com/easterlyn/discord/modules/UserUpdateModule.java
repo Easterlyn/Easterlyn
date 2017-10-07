@@ -5,7 +5,7 @@ import com.easterlyn.discord.abstraction.DiscordModule;
 
 /**
  * Module for periodic user state update ticking.
- * 
+ *
  * @author Jikoo
  */
 public class UserUpdateModule extends DiscordModule {
@@ -19,7 +19,7 @@ public class UserUpdateModule extends DiscordModule {
 
 	@Override
 	public void doHeartbeat() {
-		this.getDiscord().getClient().getUsers().forEach(user -> this.getDiscord().updateUser(user));
+		//this.getDiscord().getClient().getUsers().forEach(user -> this.getDiscord().updateUser(user));
 	}
 
 }

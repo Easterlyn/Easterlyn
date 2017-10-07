@@ -58,7 +58,12 @@ public class DiscordLinkCommand extends EasterlynCommand {
 			}
 
 			String discordID = StringUtils.join(args, ' ', 1, args.length);
-			IUser user = discord.getClient().getUserByID(discordID);
+			IUser user = null;
+			try {
+				long longID = Long.parseLong(discordID);
+				user = discord.getClient().getUserByID(longID);
+			} catch (NumberFormatException e) {}
+
 			if (user == null) {
 				for (IGuild guild : discord.getClient().getGuilds()) {
 					for (IUser iUser : guild.getUsers()) {
