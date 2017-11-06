@@ -4,6 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.InventoryUtils;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,7 @@ import java.util.List;
 
 /**
  * EasterlynCommand for manipulating item lore and some other meta-related cases.
- * 
+ *
  * @author Jikoo
  */
 public class LoreCommand extends EasterlynCommand {
@@ -42,7 +43,7 @@ public class LoreCommand extends EasterlynCommand {
 				+ "/lore set|insert <number>: Set or insert a line at the specified index.\n"
 				+ "All /lore number parameters are 1-indexed.");
 		// Don't forget to update delete tab completion if more pre-delete args are added.
-		primaryArgs = new String[] {"owner", "author", "title", "name", "delete", "clearmeta", "add", "set", "insert"};
+		primaryArgs = new String[] {"owner", "author", "title", "name", "delete", "clearmeta", "add", "set", "insert", "unique"};
 	}
 
 	@Override
@@ -102,6 +103,9 @@ public class LoreCommand extends EasterlynCommand {
 		}
 		if (args[0].equals("insert")) {
 			return insert(player, hand, args);
+		}
+		if (args[0].equals("unique")) {
+			return add(player, hand, new String[] {"add", InventoryUtils.ITEM_UNIQUE});
 		}
 		sender.sendMessage(getUsage());
 		return true;

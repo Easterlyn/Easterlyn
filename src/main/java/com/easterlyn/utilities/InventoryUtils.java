@@ -12,6 +12,7 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.google.common.collect.HashMultimap;
 import io.netty.buffer.Unpooled;
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_12_R1.EntityPlayer;
 import net.minecraft.server.v1_12_R1.MerchantRecipe;
 import net.minecraft.server.v1_12_R1.MerchantRecipeList;
@@ -62,6 +63,9 @@ import java.util.Map.Entry;
  * @author Jikoo
  */
 public class InventoryUtils {
+
+	public static final String ITEM_UNIQUE = ChatColor.DARK_PURPLE + "Unique";
+	public static final String ITEM_EXCESSIVELY_ENCHANTABLE = ChatColor.DARK_BLUE.toString() + ChatColor.DARK_BLUE + ChatColor.DARK_BLUE;
 
 	private static HashMap<String, String> items;
 	private static HashMultimap<String, String> itemsReverse;
@@ -297,6 +301,46 @@ public class InventoryUtils {
 		return null;
 	}
 
+	public static void nerfEnchants(InventoryView view) {
+		for (int index = view.countSlots() - 1; index <= 0; --index) {
+			view.setItem(index, nerfEnchants(view.getItem(index)));
+		}
+	}
+
+	/**
+	 * Nerf enchantments over vanilla max on anything other than a furnace.
+	 *
+	 * @param itemStack the ItemStack to be nerfed
+	 * @return the nerfed ItemStack
+	 */
+	public static ItemStack nerfEnchants(ItemStack itemStack) {
+		if (itemStack == null || itemStack.getType() == Material.FURNACE || !itemStack.hasItemMeta()) {
+			return itemStack;
+		}
+
+		ItemMeta itemMeta = itemStack.getItemMeta();
+
+		if (itemMeta.hasLore()) {
+			for (String lore : itemMeta.getLore()) {
+				if (lore.startsWith(ITEM_EXCESSIVELY_ENCHANTABLE)) {
+					return itemStack;
+				}
+			}
+		}
+
+		if (itemMeta instanceof EnchantmentStorageMeta) {
+			EnchantmentStorageMeta storageMeta = (EnchantmentStorageMeta) itemMeta;
+			storageMeta.getStoredEnchants().forEach((enchantment, level) ->
+					storageMeta.addStoredEnchant(enchantment, Math.min(level, 5), true));
+		}
+
+		itemMeta.getEnchants().forEach((enchantment, level) ->
+				itemMeta.addEnchant(enchantment, Math.min(level, 5), true));
+
+		itemStack.setItemMeta(itemMeta);
+		return itemStack;
+	}
+
 	public static ItemStack cleanNBT(ItemStack is) {
 		if (is == null || !is.hasItemMeta()) {
 			return is;
@@ -323,7 +367,7 @@ public class InventoryUtils {
 			BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
 			BookMeta bm = (BookMeta) im;
 			if (bm.hasPages()) {
-				meta.addPage(bm.getPages().toArray(new String[0]));
+				meta.setPages(bm.getPages());
 			}
 			if (bm.hasAuthor()) {
 				meta.setAuthor(bm.getAuthor());
@@ -416,6 +460,13 @@ public class InventoryUtils {
 	public static boolean isUniqueItem(Easterlyn plugin, ItemStack toCheck) {
 		if (Captcha.isCard(toCheck) || CruxiteDowel.isDowel(toCheck)) {
 			return true;
+		}
+
+		if (toCheck.hasItemMeta()) {
+			ItemMeta meta = toCheck.getItemMeta();
+			if (meta.hasLore() && meta.getLore().contains(ITEM_UNIQUE)) {
+				return true;
+			}
 		}
 
 		for (ItemStack is : getUniqueItems(plugin)) {

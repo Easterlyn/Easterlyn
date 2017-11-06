@@ -1,23 +1,22 @@
 package com.easterlyn.commands.info;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.utilities.InventoryUtils;
-
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 /**
- * 
- * 
+ * A command for evaluating the worth of an item based on its mana cost.
+ *
  * @author Jikoo
  */
 public class WorthCommand extends EasterlynCommand {
@@ -65,7 +64,7 @@ public class WorthCommand extends EasterlynCommand {
 			return true;
 		}
 		double exp = CruxiteDowel.expCost(effects, hand);
-		if (Double.MAX_VALUE / multiplier >= exp) {
+		if (Double.MAX_VALUE / multiplier <= exp) {
 			sender.sendMessage(this.getLang().getValue("command.worth.expensive")
 					.replace("{ITEM}", InventoryUtils.getItemName(hand)));
 		} else {

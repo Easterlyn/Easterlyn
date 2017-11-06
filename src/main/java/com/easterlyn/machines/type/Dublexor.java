@@ -39,8 +39,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 
- * 
+ * Machine for item duplication.
+ *
  * @author Jikoo
  */
 public class Dublexor extends Machine {
@@ -195,7 +195,7 @@ public class Dublexor extends Machine {
 
 	/**
 	 * Calculate result slot and update inventory on a delay (post-event completion)
-	 * 
+	 *
 	 * @param id the UUID of the Player using the Dublexor
 	 */
 	public void updateInventory(final UUID id) {
@@ -232,7 +232,7 @@ public class Dublexor extends Machine {
 				Map<Enchantment, Integer> enchantments = newModInput.getEnchantments();
 				if (enchantments.containsKey(Enchantment.MENDING)
 						&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
-					// Item inside captchas has mending but not
+					// Item inside captchas has mending but not curse of vanishing
 					setSecondTrade(player, open, originalInput, expCost, barrier);
 					return;
 				}
@@ -242,7 +242,7 @@ public class Dublexor extends Machine {
 						enchantments = ((EnchantmentStorageMeta) newModMeta).getStoredEnchants();
 						if (enchantments.containsKey(Enchantment.MENDING)
 								&& !enchantments.containsKey(Enchantment.VANISHING_CURSE)) {
-							// Item inside captchas has mending but not
+							// Item inside captchas has mending but not curse of vanishing
 							setSecondTrade(player, open, originalInput, expCost, barrier);
 							return;
 						}
@@ -340,7 +340,7 @@ public class Dublexor extends Machine {
 
 	/**
 	 * Creates the ItemStacks used in displaying usage help.
-	 * 
+	 *
 	 * @return a Triple containing inputs and a result defining behavior
 	 */
 	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {

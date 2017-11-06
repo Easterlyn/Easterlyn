@@ -5,6 +5,7 @@ import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 
+import com.easterlyn.utilities.InventoryUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.bukkit.Location;
@@ -16,7 +17,7 @@ import org.bukkit.inventory.Inventory;
 
 /**
  * Listener for InventoryOpenEvents.
- * 
+ *
  * @author Jikoo
  */
 public class InventoryOpenListener extends EasterlynListener {
@@ -30,6 +31,9 @@ public class InventoryOpenListener extends EasterlynListener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
+
+		InventoryUtils.nerfEnchants(event.getView());
+
 		Inventory inv = event.getInventory();
 		if (!(inv.getHolder() instanceof BlockState)) {
 			return;

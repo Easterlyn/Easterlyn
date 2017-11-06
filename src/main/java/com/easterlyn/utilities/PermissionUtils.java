@@ -6,7 +6,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 /**
  * Permission-related utility.
- * 
+ *
  * @author Jikoo
  */
 public class PermissionUtils {
@@ -21,6 +21,7 @@ public class PermissionUtils {
 		} catch (Exception e) {
 			permission = Bukkit.getPluginManager().getPermission(permissionName);
 			permission.setDefault(permissionDefault);
+			permission.recalculatePermissibles();
 		}
 		return permission;
 	}
