@@ -1,9 +1,5 @@
 package com.easterlyn.machines.type;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
@@ -13,7 +9,7 @@ import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.micromodules.Holograms;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
@@ -44,7 +40,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Machine for Entity teleportation.
@@ -52,7 +50,7 @@ import net.md_5.bungee.api.ChatColor;
  * Costs fuel based on distance: 1 unit of fuel per 50 blocks of direct line
  * travel rounded up. Gunpowder = 1 fuel, redstone = 2, blaze powder = 3,
  * glowstone = 4, blaze rod = 6, glowstone block = 16, redstone block = 18.
- * 
+ *
  * @author Jikoo
  */
 public class Transportalizer extends Machine {
@@ -158,9 +156,9 @@ public class Transportalizer extends Machine {
 
 	/**
 	 * Checks if a Material is a fuel
-	 * 
+	 *
 	 * @param m the Material to check
-	 * 
+	 *
 	 * @return true if the Material is a fuel
 	 */
 	private boolean hasValue(Material m) {
@@ -171,9 +169,9 @@ public class Transportalizer extends Machine {
 
 	/**
 	 * Gets the fuel value for the Material provided.
-	 * 
+	 *
 	 * @param m the Material to check
-	 * 
+	 *
 	 * @return the fuel value of the Material
 	 */
 	private int getValue(Material m) {
@@ -221,7 +219,7 @@ public class Transportalizer extends Machine {
 		if (signBlock.getType() != Material.WALL_SIGN) {
 			event.getPlayer().sendMessage(Language.getColor("bad")
 					+ "Please place a sign on your transportalizer between the buttons to use it."
-					+ "\nThe third row should contain your desired coordinates in x, y, x format."
+					+ "\nThe third row should contain your desired coordinates in x, y, z format."
 					+ "\nAll the other rows can contain whatever you like.");
 			return false;
 		}
@@ -454,7 +452,7 @@ public class Transportalizer extends Machine {
 		private final Location from, to;
 		private final long cost;
 
-		public TransportalizationRequest(ConfigurationSection storage,
+		TransportalizationRequest(ConfigurationSection storage,
 				Location from, Location to, long cost) {
 			this.storage = storage;
 			this.from = from;
@@ -462,7 +460,7 @@ public class Transportalizer extends Machine {
 			this.cost = cost;
 		}
 
-		public void doTeleport(Player player) {
+		void doTeleport(Player player) {
 			long fuel = getFuel(storage);
 			if (fuel < cost) {
 				player.sendMessage("The transportalizer is too low on fuel to pull you to it!");
