@@ -6,6 +6,7 @@ import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.caching.PermissionData;
 import me.lucko.luckperms.api.caching.UserData;
+import me.lucko.luckperms.api.context.ContextSet;
 import org.bukkit.Bukkit;
 
 import java.util.Optional;
@@ -67,7 +68,7 @@ public class PermissionBridge {
 		}
 
 		UserData userData = user.getCachedData();
-		PermissionData permissionData = userData.getPermissionData(Contexts.allowAll());
+		PermissionData permissionData = userData.getPermissionData(Contexts.of(ContextSet.empty(), true, true, true, true, true, false));
 		boolean hasPermission = permissionData.getPermissionValue(permission).asBoolean();
 
 		if (loadedUser) {
