@@ -1,11 +1,13 @@
 package com.easterlyn.utilities;
 
+import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.Contexts;
 import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.common.core.model.User;
-import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
-import me.lucko.luckperms.common.utils.LoginHelper;
-import org.bukkit.Bukkit;
+import me.lucko.luckperms.api.User;
+import me.lucko.luckperms.api.caching.PermissionData;
+import me.lucko.luckperms.api.caching.UserData;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -17,33 +19,41 @@ public class PermissionBridge {
 
 	private static PermissionBridge instance;
 
-	private LuckPermsApi service;
-
-	private PermissionBridge() {
-		try {
-			Class.forName("me.lucko.luckperms.api.LuckPermsApi.class");
-			service = Bukkit.getServicesManager().load(LuckPermsApi.class);
-		} catch (ClassNotFoundException e) {
-			service = null;
-		}
-	}
+	private PermissionBridge() {}
 
 	public boolean hasPermission(UUID uuid, String name, String permission) {
-		if (service == null) {
+
+		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
+		if (!apiOptional.isPresent()) {
 			return false;
 		}
 
-		LuckPermsPlugin luckPermsPlugin = (LuckPermsPlugin) Bukkit.getPluginManager().getPlugin("LuckPerms");
-		User user = luckPermsPlugin.getUserManager().getIfLoaded(uuid);
-		if (user != null) {
-			return user.hasPermission(permission, true);
+		LuckPermsApi luckPermsApi = apiOptional.get();
+		boolean loadedUser = false;
+		User user = luckPermsApi.getUser(uuid);
+
+		if (user == null) {
+			// Load offline user if necessary.
+			loadedUser = true;
+			luckPermsApi.getStorage().loadUser(uuid).join();
+			user = luckPermsApi.getUser(uuid);
 		}
 
-		LoginHelper.loadUser(luckPermsPlugin, uuid, name, false);
+		if (user == null) {
+			// User could not be loaded.
+			return false;
+		}
 
-		return service.getUserSafe(uuid).map(safeUser ->
-				safeUser.getPermissions().stream().anyMatch(node -> node.getPermission().equals(permission))
-		).orElse(false);
+		UserData userData = user.getCachedData();
+		PermissionData permissionData = userData.getPermissionData(Contexts.allowAll());
+		boolean hasPermission = permissionData.getPermissionValue(permission).asBoolean();
+
+		if (loadedUser) {
+			// Clean up loaded user.
+			luckPermsApi.cleanupUser(user);
+		}
+
+		return hasPermission;
 	}
 
 	public static PermissionBridge getInstance() {
