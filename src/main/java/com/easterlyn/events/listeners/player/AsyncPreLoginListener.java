@@ -53,10 +53,9 @@ public class AsyncPreLoginListener extends EasterlynListener {
 			ipCache.put(ip, allowed);
 		}
 		if (!allowed) {
-			allowed = PermissionBridge.getInstance().hasPermission(event.getUniqueId(), event.getName(), "easterlyn.events.login.proxy");
-			if (allowed) {
+			if (allowed = PermissionBridge.hasPermission(event.getUniqueId(), "easterlyn.events.login.proxy")) {
 				// Players with permission can allow a blocked IP for 30 minutes by logging in from it
-				ipCache.put(ip, allowed);
+				ipCache.put(ip, true);
 			}
 		}
 		if (!allowed) {

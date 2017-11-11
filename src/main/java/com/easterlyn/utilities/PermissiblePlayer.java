@@ -58,11 +58,12 @@ public class PermissiblePlayer implements Player {
 
 	public PermissiblePlayer(Player player) {
 		this.player = player;
+		PermissionBridge.loadPermissionData(player.getUniqueId());
 	}
 
 	@Override
 	public boolean hasPermission(String arg0) {
-		return PermissionBridge.getInstance().hasPermission(getUniqueId(), getName(), arg0);
+		return PermissionBridge.hasPermission(getUniqueId(), arg0);
 	}
 
 	@Override

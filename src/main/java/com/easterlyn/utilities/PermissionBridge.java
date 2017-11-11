@@ -6,22 +6,44 @@ import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.caching.PermissionData;
 import me.lucko.luckperms.api.caching.UserData;
+import org.bukkit.Bukkit;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * Bridge for permissions via zPermissions. Used for cases where a player is not online.
+ * Bridge for permissions via LuckPerms. Used for cases where a player is not online.
  *
  * @author Jikoo
  */
 public class PermissionBridge {
 
-	private static PermissionBridge instance;
-
 	private PermissionBridge() {}
 
-	public boolean hasPermission(UUID uuid, String name, String permission) {
+	public static void loadPermissionData(UUID uuid) {
+		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
+		if (!apiOptional.isPresent()) {
+			return;
+		}
+
+		LuckPermsApi luckPermsApi = apiOptional.get();
+		User user = luckPermsApi.getUser(uuid);
+
+		if (user != null) {
+			return;
+		}
+
+		CompletableFuture<Boolean> completableFuture = luckPermsApi.getStorage().loadUser(uuid);
+
+		if (!Bukkit.isPrimaryThread()) {
+			completableFuture.join();
+		} else {
+			TextUtils.getTrace(new Throwable("Loading permission data on main thread"), 5);
+		}
+	}
+
+	public static boolean hasPermission(UUID uuid, String permission) {
 
 		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
 		if (!apiOptional.isPresent()) {
@@ -32,7 +54,7 @@ public class PermissionBridge {
 		boolean loadedUser = false;
 		User user = luckPermsApi.getUser(uuid);
 
-		if (user == null) {
+		if (user == null && !Bukkit.isPrimaryThread()) {
 			// Load offline user if necessary.
 			loadedUser = true;
 			luckPermsApi.getStorage().loadUser(uuid).join();
@@ -56,11 +78,18 @@ public class PermissionBridge {
 		return hasPermission;
 	}
 
-	public static PermissionBridge getInstance() {
-		if (instance == null) {
-			instance = new PermissionBridge();
+	public static void releasePermissionData(UUID uuid) {
+		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
+		if (!apiOptional.isPresent()) {
+			return;
 		}
-		return instance;
+
+		LuckPermsApi luckPermsApi = apiOptional.get();
+		User user = luckPermsApi.getUser(uuid);
+
+		if (user != null) {
+			luckPermsApi.cleanupUser(user);
+		}
 	}
 
 }

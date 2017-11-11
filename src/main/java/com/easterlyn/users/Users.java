@@ -4,6 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Color;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.CollectionConversions;
+import com.easterlyn.utilities.PermissionBridge;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -92,6 +93,7 @@ public class Users extends Module {
 					User user = (User) notification.getValue();
 					user.save();
 					Users.unteam(user.getPlayerName());
+					PermissionBridge.releasePermissionData(user.getUUID());
 				}).build(new CacheLoader<UUID, User>() {
 					@Override
 					public User load(final UUID uuid) {
