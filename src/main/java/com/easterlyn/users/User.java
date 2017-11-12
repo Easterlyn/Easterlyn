@@ -240,7 +240,7 @@ public class User {
 	 * Sets the Location used by the back command. This is temporary data, and is not preserved.
 	 */
 	public void setBackLocation(Location location) {
-		this.backLocation = location;
+		this.backLocation = location.add(0, 0.1, 0);
 	}
 
 	/**
