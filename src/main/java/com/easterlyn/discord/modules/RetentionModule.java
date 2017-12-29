@@ -125,7 +125,7 @@ public class RetentionModule extends DiscordModule {
 		}
 
 		/**
-		 * @see sx.blah.discord.handle.impl.obj.Channel#requestHistory(Long before, int limit)
+		 * @see sx.blah.discord.handle.impl.obj.Channel#getHistory(long before, int limit)
 		 */
 		private IMessage[] addHistory(Long before, int limit) {
 
@@ -140,7 +140,7 @@ public class RetentionModule extends DiscordModule {
 			}
 
 			MessageObject[] messages = ((DiscordClientImpl) this.channel.getClient()).REQUESTS.GET
-					.makeRequest(DiscordEndpoints.CHANNELS + this.channel.getLongID() + "/messages" + queryParams,
+					.makeRequest(DiscordEndpoints.CHANNELS + this.channel.getStringID() + "/messages" + queryParams,
 							MessageObject[].class, new BasicNameValuePair[0]);
 			if (messages.length == 0) {
 				return new IMessage[0];

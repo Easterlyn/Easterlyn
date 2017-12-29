@@ -405,13 +405,17 @@ discord:
       If you're here for Minecraft, please fill out the following form to be whitelisted.
       ```
       @Admin
-      **Minecraft username:**
-      **Reason for joining:**
+      **Minecraft username:** `YourNameHere`
+      **Reason for joining:** Build, admire Ed's face, set fires, etc.
       **Short self-blurb:** (Do you like to build? Play other games? Let us know!)
-      **How did you find us?**
+      **How did you find us?** Referral, a posting, accident?
       ```
       Once whitelisted, please join us on `play.easterlyn.com` and run `/link`. Then, in this chat, run `/link YourCodeHere` to complete the process.
       If you're here for reasons other than Minecraft, please contact an `@Admin` immediately - unlinked users are kicked after a period.
+    graceless: |-
+      You've taken too long to link your Discord account with Minecraft on Easterlyn!
+      Feel free to rejoin our discord: <http://discord.easterlyn.com>
+      You'll need to either complete the linking procedure or contact an `@Admin` to prevent being automatically kicked again.
 
 events:
   craft:

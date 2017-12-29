@@ -630,12 +630,17 @@ public class Discord extends Module {
 
 			if (kickTime <= now) {
 				discordData.set(path, null);
-				queue(new DiscordCallable(guild.getLongID(), CallType.GUILD_USER_KICK) {
+				queue(new DiscordCallable(user.getOrCreatePMChannel().getLongID(), CallType.MESSAGE_SEND) {
+					@Override
+					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
+						user.getOrCreatePMChannel().sendMessage(lang.getValue("discord.link.graceless"));
+					}
+				}.withChainedCall(new DiscordCallable(guild.getLongID(), CallType.GUILD_USER_KICK) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 						guild.kickUser(user);
 					}
-				});
+				}));
 			}
 		});
 	}
