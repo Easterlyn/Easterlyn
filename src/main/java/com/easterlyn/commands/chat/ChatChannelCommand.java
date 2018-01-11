@@ -29,7 +29,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * Command for checking or manipulating channel data.
- * 
+ *
  * @author Jikoo
  */
 public class ChatChannelCommand extends EasterlynAsynchronousCommand {
@@ -72,8 +72,8 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 
-		this.addExtraPermission("list.private", UserRank.HELPER);
-		this.addExtraPermission("new.anyname", UserRank.HEAD_MOD);
+		this.addExtraPermission("list.private", UserRank.STAFF);
+		this.addExtraPermission("new.anyname", UserRank.MOD);
 	}
 
 	@Override

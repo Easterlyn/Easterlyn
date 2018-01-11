@@ -15,10 +15,10 @@ public enum UserRank {
 
 	DEFAULT("default", "Player", PermissionDefault.TRUE),
 	MEMBER("member"),
-	TRUSTED("trusted"),
-	HELPER("helper"),
+	CITIZEN("citizen"),
+	VETERAN("veteran"),
+	STAFF("staff"),
 	MOD("mod"),
-	HEAD_MOD("head_mod", "Head Mod"),
 	ADMIN("admin"),
 	HEAD_ADMIN("head_admin","Head Admin"),
 	DANGER_DANGER_HIGH_VOLTAGE("ask.adam.before.touching", HEAD_ADMIN.getFriendlyName(), PermissionDefault.FALSE);

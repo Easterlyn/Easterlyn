@@ -31,7 +31,7 @@ public class WhiteLinkCommand extends EasterlynAsynchronousCommand {
 	public WhiteLinkCommand(Easterlyn plugin) {
 		super(plugin, "whitelink");
 		this.discord = plugin.getModule(Discord.class);
-		this.setPermissionLevel(UserRank.HEAD_MOD);
+		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/whitelink <name/UUID> <Discord ID>");
 	}
 

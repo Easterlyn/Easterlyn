@@ -20,14 +20,14 @@ public class SyncPacketAdapter extends PacketAdapter {
 	public SyncPacketAdapter(Easterlyn plugin) {
 		super(plugin, PacketType.Play.Server.TAB_COMPLETE, PacketType.Play.Client.TAB_COMPLETE);
 
-		PermissionUtils.addParent("easterlyn.commands.unfiltered", UserRank.HEAD_MOD.getPermission());
+		PermissionUtils.addParent("easterlyn.commands.unfiltered", UserRank.MOD.getPermission());
 	}
 
 	/**
 	 * Edit packets outgoing to the client.
-	 * 
+	 *
 	 * @see com.comphenix.protocol.events.PacketAdapter#onPacketSending(com.comphenix.protocol.events.PacketEvent)
-	 * 
+	 *
 	 * @param event the PacketEvent
 	 */
 	@Override
@@ -52,9 +52,9 @@ public class SyncPacketAdapter extends PacketAdapter {
 
 	/**
 	 * Check a packet from the client.
-	 * 
+	 *
 	 * @see com.comphenix.protocol.events.PacketAdapter#onPacketReceiving(PacketEvent)
-	 * 
+	 *
 	 * @param event the PacketEvent
 	 */
 	@Override

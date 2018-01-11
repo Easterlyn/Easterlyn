@@ -31,7 +31,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * Computers for players! Inventory-based selection system.
- * 
+ *
  * @author Jikoo
  */
 public class Computer extends Machine implements InventoryHolder {
@@ -48,14 +48,14 @@ public class Computer extends Machine implements InventoryHolder {
 
 		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
 
-		PermissionUtils.addParent("easterlyn.machines.administrate", UserRank.HEAD_MOD.getPermission());
+		PermissionUtils.addParent("easterlyn.machines.administrate", UserRank.MOD.getPermission());
 	}
 
 	/**
 	 * Handles Machine deconstruction.
-	 * 
+	 *
 	 * @param event the BlockBreakEvent
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	@Override

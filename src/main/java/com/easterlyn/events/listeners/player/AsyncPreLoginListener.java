@@ -35,7 +35,7 @@ public class AsyncPreLoginListener extends EasterlynListener {
 
 	public AsyncPreLoginListener(Easterlyn plugin) {
 		super(plugin);
-		PermissionUtils.addParent("easterlyn.events.login.proxy", UserRank.TRUSTED.getPermission());
+		PermissionUtils.addParent("easterlyn.events.login.proxy", UserRank.MEMBER.getPermission());
 
 		this.discord = plugin.getModule(Discord.class);
 		this.events = plugin.getModule(Events.class);

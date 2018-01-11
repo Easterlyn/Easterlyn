@@ -164,10 +164,17 @@ public class Easterlyn extends JavaPlugin {
 	}
 
 	private void createBasePermissions() {
+		UserRank previousRank = null;
 		for (UserRank rank : UserRank.values()) {
 			Permission permission = PermissionUtils.getOrCreate(rank.getPermission(), rank.getPermissionDefault());
 			PermissionUtils.getOrCreate("easterlyn.chat.color." + rank.getLowercaseName(), rank.getPermissionDefault()).addParent(permission, true);
-			permission.recalculatePermissibles();
+			if (previousRank != null) {
+				Permission child = PermissionUtils.getOrCreate(previousRank.getPermission(), previousRank.getPermissionDefault());
+				child.addParent(permission, true);
+			} else {
+				// Permission#addParent calls recalculatePermissibles
+				permission.recalculatePermissibles();
+			}
 		}
 	}
 

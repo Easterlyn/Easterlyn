@@ -22,7 +22,7 @@ import java.util.UUID;
 /**
  * Module for managing players in spectator mode. Designed to allow players
  * to explore without giving any gamebreaking advantages.
- * 
+ *
  * @author Jikoo
  */
 public class Spectators extends Module {
@@ -41,7 +41,7 @@ public class Spectators extends Module {
 		super(plugin);
 		this.spectators = new HashMap<>();
 
-		PermissionUtils.addParent("easterlyn.spectators.unrestricted", UserRank.HELPER.getPermission());
+		PermissionUtils.addParent("easterlyn.spectators.unrestricted", UserRank.STAFF.getPermission());
 		PermissionUtils.addParent("easterlyn.spectators.nightvision", UserRank.MOD.getPermission());
 	}
 
@@ -108,7 +108,7 @@ public class Spectators extends Module {
 
 	/**
 	 * Puts a player into spectator mode.
-	 * 
+	 *
 	 * @param player the player to add
 	 */
 	public void addSpectator(Player player) {
@@ -132,9 +132,9 @@ public class Spectators extends Module {
 
 	/**
 	 * Check to see if a player is a spectator.
-	 * 
+	 *
 	 * @param userID the UUID of the player
-	 * 
+	 *
 	 * @return true if the player is a spectator
 	 */
 	public boolean isSpectator(UUID userID) {
@@ -143,9 +143,9 @@ public class Spectators extends Module {
 
 	/**
 	 * Check to see if a Player is not on spectate ore mining cooldown.
-	 * 
+	 *
 	 * @param player the Player
-	 * 
+	 *
 	 * @return true if the Player is allowed to mine ore
 	 */
 	public boolean canMineOre(Player player) {
@@ -154,7 +154,7 @@ public class Spectators extends Module {
 
 	/**
 	 * Removes a Player's spectator status.
-	 * 
+	 *
 	 * @param player the Player
 	 * @param logout whether or not the player is logging out
 	 */

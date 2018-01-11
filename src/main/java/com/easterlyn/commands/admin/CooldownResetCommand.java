@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 /**
  * EasterlynCommand for resetting TPA timer. Intended for official business use only.
- * 
+ *
  * @author Jikoo
  */
 public class CooldownResetCommand extends EasterlynCommand {
@@ -21,7 +21,7 @@ public class CooldownResetCommand extends EasterlynCommand {
 
 	public CooldownResetCommand(Easterlyn plugin) {
 		super(plugin, "tpreset");
-		this.setPermissionLevel(UserRank.HELPER);
+		this.setPermissionLevel(UserRank.STAFF);
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 	}
 

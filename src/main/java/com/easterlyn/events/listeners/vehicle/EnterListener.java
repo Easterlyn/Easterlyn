@@ -16,7 +16,7 @@ import org.bukkit.permissions.Permission;
 
 /**
  * Listener for VehicleEnterEvents.
- * 
+ *
  * @author Jikoo
  */
 public class EnterListener extends EasterlynListener {
@@ -25,13 +25,13 @@ public class EnterListener extends EasterlynListener {
 
 	public EnterListener(Easterlyn plugin) {
 		super(plugin);
-		new Permission("easterlyn.blaze").addParent(UserRank.TRUSTED.getPermission(), true).recalculatePermissibles();
+		new Permission("easterlyn.blaze").addParent(UserRank.MEMBER.getPermission(), true).recalculatePermissibles();
 		this.particles = plugin.getModule(ParticleUtils.class);
 	}
 
 	/**
 	 * EventHandler for VehicleEnterEvents.
-	 * 
+	 *
 	 * @param event the VehicleEnterEvent
 	 */
 	@EventHandler(ignoreCancelled = true)

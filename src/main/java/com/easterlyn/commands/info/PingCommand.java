@@ -22,7 +22,7 @@ public class PingCommand extends EasterlynCommand {
 		super(plugin, "ping");
 		this.setDescription("Get your ping.");
 		this.setUsage("/ping <player>");
-		this.addExtraPermission("other", UserRank.HELPER);
+		this.addExtraPermission("other", UserRank.STAFF);
 	}
 
 	@Override

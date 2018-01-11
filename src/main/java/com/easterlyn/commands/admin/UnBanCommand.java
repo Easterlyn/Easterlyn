@@ -19,7 +19,7 @@ import org.bukkit.util.StringUtil;
 
 /**
  * EasterlynCommand for undoing a dual IP and UUID ban.
- * 
+ *
  * @author Jikoo
  */
 public class UnBanCommand extends EasterlynCommand {
@@ -29,7 +29,7 @@ public class UnBanCommand extends EasterlynCommand {
 	public UnBanCommand(Easterlyn plugin) {
 		super(plugin, "unban");
 		this.setAliases("unsban", "pardon", "unbanip", "pardonip");
-		this.setPermissionLevel(UserRank.HEAD_MOD);
+		this.setPermissionLevel(UserRank.MOD);
 		this.chat = plugin.getModule(Chat.class);
 	}
 

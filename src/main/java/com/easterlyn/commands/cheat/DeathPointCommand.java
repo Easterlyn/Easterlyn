@@ -17,7 +17,7 @@ import java.util.Date;
 
 /**
  * Cheat harder you disgusting survival-hating cheating cheater.
- * 
+ *
  * @author Jikoo
  */
 public class DeathPointCommand extends EasterlynCommand {
@@ -31,8 +31,8 @@ public class DeathPointCommand extends EasterlynCommand {
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.users = plugin.getModule(Users.class);
 
-		this.setPermissionLevel(UserRank.HELPER);
-		this.addExtraPermission("other", UserRank.HEAD_MOD);
+		this.setPermissionLevel(UserRank.STAFF);
+		this.addExtraPermission("other", UserRank.MOD);
 	}
 
 	@Override

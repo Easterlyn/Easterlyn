@@ -17,7 +17,7 @@ import org.bukkit.util.Vector;
 
 /**
  * EasterlynCommand for spawning a temporary minecart.
- * 
+ *
  * @author Jikoo
  */
 public class TemporaryCartCommand extends EasterlynCommand {
@@ -28,7 +28,7 @@ public class TemporaryCartCommand extends EasterlynCommand {
 		super(plugin, "tempcart");
 		this.setDescription("Spawns a temporary minecart with specified velocity vector at location, then mounts player.");
 		this.setUsage("/tempcart <player> <locX> <locY> <locZ> <vecX> <vecZ>");
-		this.setPermissionLevel(UserRank.HEAD_MOD);
+		this.setPermissionLevel(UserRank.MOD);
 		this.carts = plugin.getModule(FreeCart.class);
 	}
 

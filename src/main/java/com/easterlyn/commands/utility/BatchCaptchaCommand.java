@@ -18,7 +18,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 /**
  * EasterlynCommand for creating lots of captchas of items at a time.
- * 
+ *
  * @author Jikoo
  */
 public class BatchCaptchaCommand extends EasterlynCommand {
@@ -29,7 +29,7 @@ public class BatchCaptchaCommand extends EasterlynCommand {
 		super(plugin, "baptcha");
 		this.setAliases("batchcap", "capbatch", "batchcaptcha", "captchabatch");
 		this.captcha = plugin.getModule(Captcha.class);
-		this.addExtraPermission("free", UserRank.HEAD_MOD);
+		this.addExtraPermission("free", UserRank.MOD);
 	}
 
 	@Override

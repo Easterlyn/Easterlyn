@@ -40,7 +40,7 @@ public class CommandPreprocessListener extends EasterlynListener {
 		this.spectators = plugin.getModule(Spectators.class);
 		this.map = plugin.getCommandMap();
 
-		PermissionUtils.addParent("easterlyn.commands.unfiltered", UserRank.HEAD_MOD.getPermission());
+		PermissionUtils.addParent("easterlyn.commands.unfiltered", UserRank.MOD.getPermission());
 		PermissionUtils.addParent("easterlyn.commands.unfiltered", "easterlyn.spam");
 		PermissionUtils.addParent("easterlyn.commands.unlogged", UserRank.MOD.getPermission());
 		PermissionUtils.addParent("easterlyn.commands.unlogged", "easterlyn.spam");

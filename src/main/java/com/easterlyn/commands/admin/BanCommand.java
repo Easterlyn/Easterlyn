@@ -19,7 +19,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * EasterlynCommand for a dual ip and UUID ban.
- * 
+ *
  * @author Jikoo
  */
 public class BanCommand extends EasterlynCommand {
@@ -29,7 +29,7 @@ public class BanCommand extends EasterlynCommand {
 	public BanCommand(Easterlyn plugin) {
 		super(plugin, "ban");
 		this.setAliases("sban", "banip");
-		this.setPermissionLevel(UserRank.HEAD_MOD);
+		this.setPermissionLevel(UserRank.MOD);
 		this.users = plugin.getModule(Users.class);
 	}
 

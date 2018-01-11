@@ -31,7 +31,7 @@ public class BackCommand extends EasterlynCommand {
 		this.cooldowns = plugin.getModule(Cooldowns.class);
 		this.users = plugin.getModule(Users.class);
 
-		this.addExtraPermission("other", UserRank.HEAD_MOD);
+		this.addExtraPermission("other", UserRank.MOD);
 	}
 
 	@Override
