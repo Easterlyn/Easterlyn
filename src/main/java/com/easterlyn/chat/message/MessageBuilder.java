@@ -49,7 +49,7 @@ public class MessageBuilder {
 		REAL_NAME_PATTERN = Pattern.compile("\\{REALNAME\\}");
 		RANK_PATTERN = Pattern.compile("\\{RANK\\}");
 		CLASS_PATTERN = Pattern.compile("\\{CLASS\\}");
-		ASPECT_PATTERN = Pattern.compile("\\{ASPECT\\}");
+		ASPECT_PATTERN = Pattern.compile("\\{ASPECT\\}"); // TODO -> Affinity
 	}
 
 	private final Language lang;
@@ -264,7 +264,7 @@ public class MessageBuilder {
 		// CHANNEL ELEMENT: [#channel]
 		ChatColor channelBracket;
 		if (player != null && player.hasPermission("easterlyn.guildleader")) {
-			channelBracket = sender.getUserAspect().getColor();
+			channelBracket = sender.getUserAffinity().getColor();
 		} else {
 			channelBracket = ChatColor.WHITE;
 		}
@@ -403,8 +403,8 @@ public class MessageBuilder {
 
 				matcher = ASPECT_PATTERN.matcher(text);
 				if (matcher.find()) {
-					text = matcher.replaceAll(sender.getUserAspect().getDisplayName());
-					hoverElement.setColor(sender.getUserAspect().getColor());
+					text = matcher.replaceAll(sender.getUserAffinity().getDisplayName());
+					hoverElement.setColor(sender.getUserAffinity().getColor());
 				}
 
 				hoverElement.setText(text);

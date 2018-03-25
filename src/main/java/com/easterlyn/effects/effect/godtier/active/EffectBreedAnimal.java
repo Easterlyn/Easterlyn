@@ -5,7 +5,7 @@ import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorCooldown;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftAnimals;
@@ -46,14 +46,14 @@ public class EffectBreedAnimal extends Effect implements BehaviorActive, Behavio
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Collections.singletonList(UserAspect.ENERGY);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.LIFE);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.ENERGY) {
+		if (aspect == UserAffinity.LIFE) {
 			list.add(aspect.getColor() + "Instant Springtime");
 		}
 		list.add(ChatColor.WHITE + "Love is in the air.");

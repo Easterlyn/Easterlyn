@@ -4,7 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Gives bonus experience for block actions.
- * 
+ *
  * @author Jikoo
  */
 public class EffectBonusBlockExperience extends Effect implements BehaviorReactive, BehaviorGodtier {
@@ -27,14 +27,14 @@ public class EffectBonusBlockExperience extends Effect implements BehaviorReacti
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Collections.singletonList(UserAspect.KNOWLEDGE);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.EARTH);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.KNOWLEDGE) {
+		if (aspect == UserAffinity.EARTH) {
 			list.add(aspect.getColor() + "Inquiring Mind");
 		}
 		list.add(ChatColor.WHITE + "Discover more.");

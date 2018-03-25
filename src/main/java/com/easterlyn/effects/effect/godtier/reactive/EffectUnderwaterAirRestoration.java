@@ -1,26 +1,24 @@
 package com.easterlyn.effects.effect.godtier.reactive;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
-
+import com.easterlyn.users.UserAffinity;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityAirChangeEvent;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 50% chance not to consume air when underwater.
- * 
+ *
  * @author Jikoo
  */
 public class EffectUnderwaterAirRestoration extends Effect implements BehaviorGodtier, BehaviorReactive {
@@ -30,14 +28,14 @@ public class EffectUnderwaterAirRestoration extends Effect implements BehaviorGo
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Collections.singletonList(UserAspect.WIND);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.WATER);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.WIND) {
+		if (aspect == UserAffinity.WATER) {
 			list.add(aspect.getColor() + "Reed Rebreather");
 		}
 		list.add(ChatColor.WHITE + "Breathe easy, breathe deep.");
@@ -52,7 +50,7 @@ public class EffectUnderwaterAirRestoration extends Effect implements BehaviorGo
 
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
-		if (Math.random() < .5) {
+		if (ThreadLocalRandom.current().nextDouble() < .5) {
 			((EntityAirChangeEvent) event).setCancelled(true);
 		}
 	}

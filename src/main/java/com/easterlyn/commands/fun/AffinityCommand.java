@@ -1,34 +1,33 @@
 package com.easterlyn.commands.fun;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Donator perk command, classpect reselection on the fly.
- * 
+ *
  * @author Jikoo
  */
-public class AspectCommand extends EasterlynCommand {
+public class AffinityCommand extends EasterlynCommand {
 
 
 	private final Users users;
 
-	public AspectCommand(Easterlyn plugin) {
-		super(plugin, "aspect");
+	public AffinityCommand(Easterlyn plugin) {
+		super(plugin, "affinity");
+		this.setAliases("aspect");
 		this.setPermissionLevel(UserRank.DANGER_DANGER_HIGH_VOLTAGE);
 		this.users = plugin.getModule(Users.class);
 	}
@@ -43,19 +42,19 @@ public class AspectCommand extends EasterlynCommand {
 			return false;
 		}
 
-		UserAspect userAspect = UserAspect.getAspect(ChatColor.translateAlternateColorCodes('&', args[0]));
-		if (userAspect == UserAspect.EASTERLYN && !args[0].equalsIgnoreCase("easterlyn")
-				|| userAspect.getDisplayName().length() < 2
-				|| userAspect.getDisplayName().contains(String.valueOf(ChatColor.COLOR_CHAR))
-				|| userAspect.getColor() == null) {
+		UserAffinity userAffinity = UserAffinity.getAffinity(ChatColor.translateAlternateColorCodes('&', args[0]));
+		if (userAffinity == UserAffinity.EASTERLYN && !args[0].equalsIgnoreCase("easterlyn")
+				|| userAffinity.getDisplayName().length() < 2
+				|| userAffinity.getDisplayName().contains(String.valueOf(ChatColor.COLOR_CHAR))
+				|| userAffinity.getColor() == null) {
 			sender.sendMessage(getLang().getValue("command.aspect.failure"));
 			return true;
 		}
 
 		User user = users.getUser(((Player) sender).getUniqueId());
-		user.setUserAspect(userAspect);
+		user.setUserAffinity(userAffinity);
 		sender.sendMessage(getLang().getValue("command.aspect.success")
-				.replace("{ASPECT}", userAspect.getColor() + userAspect.getDisplayName()));
+				.replace("{ASPECT}", userAffinity.getColor() + userAffinity.getDisplayName()));
 		return true;
 	}
 
@@ -68,9 +67,9 @@ public class AspectCommand extends EasterlynCommand {
 		}
 		args[0] = args[0].toUpperCase();
 		ArrayList<String> matches = new ArrayList<>();
-		for (UserAspect userAspect : UserAspect.values()) {
-			if (StringUtil.startsWithIgnoreCase(userAspect.getDisplayName(), args[0])) {
-				matches.add(userAspect.getDisplayName());
+		for (UserAffinity userAffinity : UserAffinity.values()) {
+			if (StringUtil.startsWithIgnoreCase(userAffinity.getDisplayName(), args[0])) {
+				matches.add(userAffinity.getDisplayName());
 			}
 		}
 		return matches;

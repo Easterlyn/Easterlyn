@@ -5,7 +5,7 @@ import com.easterlyn.effects.effect.BehaviorCooldown;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorPassive;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.utilities.Potions;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Entity;
@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * Applies Speed and Haste to nearby entities, not the entity with the actual Effect.
- * 
+ *
  * @author Jikoo
  */
 public class EffectTeamAcceleration extends Effect implements BehaviorCooldown, BehaviorGodtier,
@@ -41,14 +41,14 @@ public class EffectTeamAcceleration extends Effect implements BehaviorCooldown, 
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Collections.singletonList(UserAspect.WIND);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.AIR);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.WIND) {
+		if (aspect == UserAffinity.AIR) {
 			list.add(aspect.getColor() + "Wind Beneath Their Wings");
 		}
 		list.add(ChatColor.WHITE + "Assist your comrades.");

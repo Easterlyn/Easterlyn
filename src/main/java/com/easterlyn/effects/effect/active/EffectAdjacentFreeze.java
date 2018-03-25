@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 
 /**
  * Freeze all adjacent water source blocks. Not useful against the ground without silk touch, but otherwise nice.
- * 
+ *
  * @author Jikoo
  */
-public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement {
+public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement { // TODO godtier: water
 
 	public EffectAdjacentFreeze(Easterlyn plugin) {
 		super(plugin, 400, "Eternally Frozen", Material.STATIONARY_WATER);

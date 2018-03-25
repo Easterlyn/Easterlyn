@@ -1,30 +1,28 @@
 package com.easterlyn.effects.effect.godtier.passive;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorCooldown;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorPassive;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.utilities.Potions;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Effect granting the user the absorption PotionEffect every minute. Due to the nature of
  * absorption granting free health, this has a longer duration and cooldown than most other passive
  * effects.
- * 
+ *
  * @author Jikoo
  */
 public class EffectAbsorption extends Effect implements BehaviorCooldown, BehaviorGodtier,
@@ -45,17 +43,15 @@ public class EffectAbsorption extends Effect implements BehaviorCooldown, Behavi
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.ENERGY, UserAspect.TIME);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.LIGHT);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.ENERGY) {
-			list.add(aspect.getColor() + "Hale and Hearty");
-		} else if (aspect == UserAspect.TIME) {
-			list.add(aspect.getColor() + "Futureproof");
+		if (aspect == UserAffinity.LIGHT) {
+			list.add(aspect.getColor() + "Cloak of Stars");
 		}
 		list.add(ChatColor.WHITE + "An apple a day keeps the doctor away.");
 		list.add(ChatColor.GRAY + "Gain extra life.");

@@ -1,19 +1,13 @@
 package com.easterlyn.effects.effect.godtier.active;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.utilities.BlockDrops;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.CropState;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -34,11 +28,14 @@ import org.bukkit.material.Crops;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.NetherWarts;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Effect for automatically harvesting and planting crops when right clicked.
- * 
+ *
  * @author Jikoo
  */
 public class EffectGreenThumb extends Effect implements BehaviorActive, BehaviorGodtier {
@@ -48,14 +45,14 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Collections.singletonList(UserAspect.KNOWLEDGE);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.EARTH);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.KNOWLEDGE) {
+		if (aspect == UserAffinity.EARTH) {
 			list.add(aspect.getColor() + "Harvest Goddess");
 		}
 		list.add(ChatColor.WHITE + "Tending plants made easy.");

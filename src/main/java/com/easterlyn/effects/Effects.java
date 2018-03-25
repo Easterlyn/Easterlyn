@@ -10,7 +10,7 @@ import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.module.Module;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.NumberUtils;
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 
 /**
  * Module for Effects management.
- * 
+ *
  * @author Jikoo
  */
 public class Effects extends Module {
@@ -111,7 +111,7 @@ public class Effects extends Module {
 
 	/**
 	 * Gets a collection of all Effect names.
-	 * 
+	 *
 	 * @return the Effect names
 	 */
 	public Collection<String> getAllEffectNames() {
@@ -120,7 +120,7 @@ public class Effects extends Module {
 
 	/**
 	 * Gets an effect by name.
-	 * 
+	 *
 	 * @param effect the name of the Effect
 	 * @return the Effect
 	 */
@@ -133,7 +133,7 @@ public class Effects extends Module {
 
 	/**
 	 * Applies all effects to the given LivingEntity.
-	 * 
+	 *
 	 * @param entity the LivingEntity
 	 */
 	public void applyAllEffects(LivingEntity entity) {
@@ -160,7 +160,7 @@ public class Effects extends Module {
 
 	/**
 	 * Scans the LivingEntity for effects and gets them.
-	 * 
+	 *
 	 * @param entity the LivingEntity
 	 */
 	public Map<Effect, Integer> getAllEffects(LivingEntity entity) {
@@ -176,7 +176,7 @@ public class Effects extends Module {
 
 		// TODO Godtier effects
 //		for (String effectType : user.getGodtierEffects()) {
-//			Effect effect = getEffect(user.getUserAspect().name() + effectType);
+//			Effect effect = getEffect(user.getUserAffinity().name() + effectType);
 //			if (effect == null) {
 //				continue;
 //			}
@@ -188,7 +188,7 @@ public class Effects extends Module {
 
 	/**
 	 * Handles an event for an active or reactive Effect.
-	 * 
+	 *
 	 * @param event the Event
 	 * @param entity the LivingEntity
 	 * @param reactive true if the Effect is reactive
@@ -243,7 +243,7 @@ public class Effects extends Module {
 
 	/**
 	 * Gets all Effects and corresponding levels on the provided ItemStack.
-	 * 
+	 *
 	 * @param bypassMax whether or not the maximum level for an effect can be bypassed
 	 * @param items the item(s) to get effects from
 	 * @return the Effects and corresponding levels
@@ -285,13 +285,13 @@ public class Effects extends Module {
 
 	/**
 	 * Organize and correct Effects in ItemStack lore.
-	 * 
+	 *
 	 * @param lore the List of lore containing Effects
 	 * @param ignoreCase whether lore matching should ignore case
 	 * @param overwrite whether any duplicate Effects in toAdd should be ignored
 	 * @param cap whether Effect levels should be capped to the maximum
 	 * @param toAdd additional Strings to be merged with the lore
-	 * 
+	 *
 	 * @return the organized lore
 	 */
 	public List<String> organizeEffectLore(List<String> lore, boolean ignoreCase,
@@ -345,7 +345,7 @@ public class Effects extends Module {
 
 	/**
 	 * Gets the Effect and level represented by a String in an ItemStack's lore.
-	 * 
+	 *
 	 * @param lore the String
 	 * @param ignoreCase if case should be ignored when matching Effect
 	 */
@@ -381,7 +381,7 @@ public class Effects extends Module {
 
 	/**
 	 * Checks if the Effect provided is on cooldown for the given LivingEntity.
-	 * 
+	 *
 	 * @param entity the LivingEntity
 	 * @param effect the effect
 	 * @return true if the Effect is on cooldown.
@@ -393,7 +393,7 @@ public class Effects extends Module {
 
 	/**
 	 * Starts the cooldown for the given LivingEntity and Effect.
-	 * 
+	 *
 	 * @param entity the LivingEntity
 	 * @param effect the Effect
 	 */
@@ -405,13 +405,13 @@ public class Effects extends Module {
 		cooldowns.addCooldown(entity, cool.getCooldownName(), cool.getCooldownDuration());
 	}
 
-	public List<Effect> getGodtierEffects(UserAspect aspect) {
+	public List<Effect> getGodtierEffects(UserAffinity aspect) {
 		ArrayList<Effect> applicableEffects = new ArrayList<>();
 		for (Effect effect : effects.values()) {
 			if (!(effect instanceof BehaviorGodtier)) {
 				continue;
 			}
-			if (((BehaviorGodtier) effect).getAspects().contains(aspect)) {
+			if (((BehaviorGodtier) effect).getAffinity().contains(aspect)) {
 				applicableEffects.add(effect);
 			}
 		}

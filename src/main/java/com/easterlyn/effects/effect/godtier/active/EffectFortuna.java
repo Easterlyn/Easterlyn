@@ -1,28 +1,26 @@
 package com.easterlyn.effects.effect.godtier.active;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
-
+import com.easterlyn.users.UserAffinity;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * 
- * 
+ *
+ *
  * @author Jikoo
  */
 public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGodtier {
@@ -40,18 +38,18 @@ public class EffectFortuna extends Effect implements BehaviorActive, BehaviorGod
 	@Override
 	public void handleEvent(Event event, LivingEntity entity, int level) {
 		// GODTIER
-		
+
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Collections.singletonList(UserAspect.STARS);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.EARTH);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.STARS) {
+		if (aspect == UserAffinity.EARTH) {
 			list.add(aspect.getColor() + "Fortuna");
 		}
 		list.add(ChatColor.WHITE + "Fortune just isn't enough.");

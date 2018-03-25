@@ -1,19 +1,19 @@
 package com.easterlyn.effects.effect;
 
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Interface defining this Effect as belonging to a particular aspect.
+ * Interface defining this Effect as belonging to a particular affinity.
  *
  * @author Jikoo
  */
 public interface BehaviorGodtier {
 
-	Collection<UserAspect> getAspects();
+	Collection<UserAffinity> getAffinity();
 
-	List<String> getDescription(UserAspect aspect);
+	List<String> getDescription(UserAffinity aspect);
 
 }

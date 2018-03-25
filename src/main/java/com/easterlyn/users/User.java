@@ -157,21 +157,21 @@ public class User {
 	}
 
 	/**
-	 * Gets the User's chosen UserAspect.
+	 * Gets the User's chosen UserAffinity.
 	 *
-	 * @return the UserAspect
+	 * @return the UserAffinity
 	 */
-	public UserAspect getUserAspect() {
-		return UserAspect.getAspect(yaml.getString("classpect.aspect", "Easterlyn"));
+	public UserAffinity getUserAffinity() {
+		return UserAffinity.getAffinity(yaml.getString("classpect.aspect", "Easterlyn"));
 	}
 
 	/**
-	 * Sets the User's UserAspect.
+	 * Sets the User's UserAffinity.
 	 *
-	 * @param userAspect the new UserAspect
+	 * @param userAffinity the new UserAffinity
 	 */
-	public void setUserAspect(UserAspect userAspect) {
-		yaml.set("classpect.aspect", userAspect.toString());
+	public void setUserAffinity(UserAffinity userAffinity) {
+		yaml.set("classpect.aspect", userAffinity.toString());
 		yaml.set("progression.godtier.powers", null);
 	}
 
@@ -641,7 +641,7 @@ public class User {
 
 	/**
 	 * Gets a List of Effect names set as active powers. If the List has not been set, creates a
-	 * random assortment from available Effects for the OfflineUser's UserAspect.
+	 * random assortment from available Effects for the OfflineUser's UserAffinity.
 	 *
 	 * @return the List of enabled godtier Effects
 	 */
@@ -649,7 +649,7 @@ public class User {
 		if (yaml.isSet("progression.godtier.powers")) {
 			return yaml.getStringList("progression.godtier.powers");
 		}
-		List<Effect> active = getPlugin().getModule(Effects.class).getGodtierEffects(getUserAspect());
+		List<Effect> active = getPlugin().getModule(Effects.class).getGodtierEffects(getUserAffinity());
 		ArrayList<Effect> passive = new ArrayList<>();
 		active.removeIf(effect -> {
 			if (effect instanceof BehaviorPassive || effect instanceof BehaviorReactive) {
@@ -681,7 +681,7 @@ public class User {
 	 */
 	public boolean addGodtierEffect(Effect effect) {
 		if (!(effect instanceof BehaviorGodtier)
-				|| !((BehaviorGodtier) effect).getAspects().contains(getUserAspect())) {
+				|| !((BehaviorGodtier) effect).getAffinity().contains(getUserAffinity())) {
 			return false;
 		}
 		ArrayList<String> list = new ArrayList<>(yaml.getStringList("progression.godtier.powers"));
@@ -749,8 +749,8 @@ public class User {
 				.append("+---").append(Language.getColor("emphasis.neutral")).append(' ').append(getPlayerName())
 				.append(' ').append(Language.getColor("neutral")).append(ChatColor.STRIKETHROUGH)
 				.append("---+\n").append(Language.getColor("neutral")).append(getUserClass().getDisplayName())
-				.append(Language.getColor("emphasis.neutral")).append(" of ").append(getUserAspect().getColor())
-				.append(getUserAspect().getDisplayName()).toString();
+				.append(Language.getColor("emphasis.neutral")).append(" of ").append(getUserAffinity().getColor())
+				.append(getUserAffinity().getDisplayName()).toString();
 	}
 
 	/**
@@ -779,7 +779,7 @@ public class User {
 		// Class of Aspect
 		sb.append(Language.getColor("emphasis.neutral")).append(getUserClass().getDisplayName())
 				.append(Language.getColor("neutral")).append(" of ").append(Language.getColor("emphasis.neutral"))
-				.append(getUserAspect().getDisplayName()).append('\n');
+				.append(getUserAffinity().getDisplayName()).append('\n');
 
 		// Loc: current location, RegionUtils: region
 		sb.append(Language.getColor("neutral")).append("Loc: ").append(Language.getColor("emphasis.neutral"))

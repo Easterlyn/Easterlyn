@@ -3,7 +3,7 @@ package com.easterlyn.commands.admin;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.User;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.UserClass;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * EasterlynCommand for setting User data.
- * 
+ *
  * @author Jikoo
  */
 public class SetPlayerCommand extends EasterlynAsynchronousCommand {
@@ -31,7 +31,7 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 		super(plugin, "setplayer");
 		this.setDescription("Set player data manually.");
 		this.setPermissionLevel(UserRank.ADMIN);
-		this.setUsage("/setplayer <playername> <class|aspect> <value>");
+		this.setUsage("/setplayer <playername> <class|affinity> <value>");
 		this.users = plugin.getModule(Users.class);
 		primaryArgs = new String[] {"class", "aspect"};
 	}
@@ -53,7 +53,8 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 				user.setUserClass(UserClass.getClass(ChatColor.translateAlternateColorCodes('&', args[2])));
 				break;
 			case "aspect":
-				user.setUserAspect(UserAspect.getAspect(ChatColor.translateAlternateColorCodes('&', args[2])));
+			case "affinity":
+				user.setUserAffinity(UserAffinity.getAffinity(ChatColor.translateAlternateColorCodes('&', args[2])));
 				break;
 			default:
 				return false;
@@ -89,29 +90,11 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 			}
 			return matches;
 		}
-		if (args[1].equals("aspect") && args.length == 3) {
+		if ((args[1].equals("affinity") || args[1].equals("aspect")) && args.length == 3) {
 			args[2] = args[2].toUpperCase();
-			for (UserAspect aspect : UserAspect.values()) {
+			for (UserAffinity aspect : UserAffinity.values()) {
 				if (StringUtil.startsWithIgnoreCase(aspect.getDisplayName(), args[2])) {
 					matches.add(aspect.getDisplayName());
-				}
-			}
-			return matches;
-		}
-		if (args[1].equals("land") && args.length == 3) {
-			args[2] = args[2].toUpperCase();
-			for (String land : new String[]{"LOFAF", "LOHAC", "LOLAR", "LOWAS"}) {
-				if (land.startsWith(args[2])) {
-					matches.add(land);
-				}
-			}
-			return matches;
-		}
-		if (args[1].equals("dream") && args.length == 3) {
-			args[2] = args[2].toUpperCase();
-			for (String dream : new String[]{"PROSPIT", "DERSE"}) {
-				if (dream.startsWith(args[2])) {
-					matches.add(dream);
 				}
 			}
 			return matches;

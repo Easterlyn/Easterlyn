@@ -1,17 +1,12 @@
 package com.easterlyn.effects.effect.godtier.active;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorCooldown;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
-
+import com.easterlyn.users.UserAffinity;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,11 +15,15 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Speed up the growth of nearby animals.
- * 
+ *
  * @author Dublek, Jikoo
  */
 public class EffectAgeAnimal extends Effect implements BehaviorActive, BehaviorCooldown, BehaviorGodtier {
@@ -44,16 +43,14 @@ public class EffectAgeAnimal extends Effect implements BehaviorActive, BehaviorC
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Arrays.asList(UserAspect.ENERGY, UserAspect.TIME);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.TIME);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.ENERGY) {
-			list.add(aspect.getColor() + "Hearty Breakfast");
-		} else if (aspect == UserAspect.TIME) {
+		if (aspect == UserAffinity.TIME) {
 			list.add(aspect.getColor() + "Before You Know It");
 		}
 		list.add(ChatColor.WHITE + "Speed up young animals' growth.");

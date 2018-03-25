@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.UserClass;
 import com.easterlyn.users.UserRank;
 
@@ -15,7 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * Get data about player classpect percentages!
- * 
+ *
  * @author Jikoo
  */
 public class NumberCrunchCommand extends EasterlynAsynchronousCommand {
@@ -32,8 +32,8 @@ public class NumberCrunchCommand extends EasterlynAsynchronousCommand {
 		for (UserClass userClass : UserClass.values()) {
 			counts.put(userClass.getDisplayName(), new AtomicInteger(0));
 		}
-		for (UserAspect userAspect : UserAspect.values()) {
-			counts.put(userAspect.getDisplayName(), new AtomicInteger(0));
+		for (UserAffinity userAffinity : UserAffinity.values()) {
+			counts.put(userAffinity.getDisplayName(), new AtomicInteger(0));
 		}
 		File folder = new File(getPlugin().getDataFolder(), "users");
 		if (!folder.exists()) {
@@ -54,9 +54,9 @@ public class NumberCrunchCommand extends EasterlynAsynchronousCommand {
 			sender.sendMessage(userClass.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
 		}
 		sender.sendMessage("\nASPECT:");
-		for (UserAspect userAspect : UserAspect.values()) {
-			int count = counts.get(userAspect.getDisplayName()).get();
-			sender.sendMessage(userAspect.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
+		for (UserAffinity userAffinity : UserAffinity.values()) {
+			int count = counts.get(userAffinity.getDisplayName()).get();
+			sender.sendMessage(userAffinity.getDisplayName() + ": " + count + " (" + (count * 100.0 / files.length) + "%)");
 		}
 		return true;
 	}

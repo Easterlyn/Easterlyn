@@ -18,10 +18,10 @@ import java.util.Collections;
 
 /**
  * Automatically consumes and places torches if light level is below 8 and the block below is solid.
- * 
+ *
  * @author Jikoo
  */
-public class EffectAutoTorch extends Effect implements BehaviorActive {
+public class EffectAutoTorch extends Effect implements BehaviorActive { // TODO godtier: light
 
 	public EffectAutoTorch(Easterlyn plugin) {
 		super(plugin, 200, 1, 1, "Darkness Despising");

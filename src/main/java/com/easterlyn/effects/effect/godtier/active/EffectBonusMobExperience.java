@@ -4,7 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -18,24 +18,24 @@ import java.util.List;
 
 /**
  * Gives bonus experience for entity kills.
- * 
+ *
  * @author Jikoo
  */
-public class EffectBonusExperience extends Effect implements BehaviorActive, BehaviorGodtier {
+public class EffectBonusMobExperience extends Effect implements BehaviorActive, BehaviorGodtier {
 
-	public EffectBonusExperience(Easterlyn plugin) {
+	public EffectBonusMobExperience(Easterlyn plugin) {
 		super(plugin, 250, 5, 5, "Veteran");
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Collections.singletonList(UserAspect.KNOWLEDGE);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.DEATH);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.KNOWLEDGE) {
+		if (aspect == UserAffinity.DEATH) {
 			list.add(aspect.getColor() + "Deep Thinker");
 		}
 		list.add(ChatColor.WHITE + "Learn faster.");

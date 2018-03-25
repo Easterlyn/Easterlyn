@@ -5,7 +5,7 @@ import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.BehaviorCooldown;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.utilities.Potions;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Entity;
@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * Applies regeneration to all entities in an 8 block radius.
- * 
+ *
  * @author Dublek, Jikoo
  */
 public class EffectAreaRegeneration extends Effect implements BehaviorActive, BehaviorCooldown, BehaviorGodtier {
@@ -45,14 +45,14 @@ public class EffectAreaRegeneration extends Effect implements BehaviorActive, Be
 	}
 
 	@Override
-	public Collection<UserAspect> getAspects() {
-		return Collections.singletonList(UserAspect.ENERGY);
+	public Collection<UserAffinity> getAffinity() {
+		return Collections.singletonList(UserAffinity.LIFE);
 	}
 
 	@Override
-	public List<String> getDescription(UserAspect aspect) {
+	public List<String> getDescription(UserAffinity aspect) {
 		ArrayList<String> list = new ArrayList<>();
-		if (aspect == UserAspect.ENERGY) {
+		if (aspect == UserAffinity.LIFE) {
 			list.add(aspect.getColor() + "Take Heart");
 		}
 		list.add(ChatColor.WHITE + "Fortify your allies.");

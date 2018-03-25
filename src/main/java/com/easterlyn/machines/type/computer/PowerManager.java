@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * Program for opening the Godtier power selection window.
- * 
+ *
  * @author Jikoo
  */
 public class PowerManager extends Program {
@@ -65,12 +65,12 @@ public class PowerManager extends Program {
 		int active = 0, passive = 0;
 		List<String> enabledEffects = user.getGodtierEffects();
 		GodtierToggle toggle = (GodtierToggle) Programs.getProgramByName("GodtierToggle");
-		for (Effect effect : effects.getGodtierEffects(user.getUserAspect())) {
+		for (Effect effect : effects.getGodtierEffects(user.getUserAffinity())) {
 			int slot;
 			if (effect instanceof BehaviorPassive || effect instanceof BehaviorReactive) {
 				if (passive > 8) {
 					getMachines().getLogger().warning("Over 9 passives detected for "
-							+ user.getUserAspect().getDisplayName() + ". GUI expansion is required.");
+							+ user.getUserAffinity().getDisplayName() + ". GUI expansion is required.");
 					continue;
 				}
 				slot = 9 + passive;
@@ -78,13 +78,13 @@ public class PowerManager extends Program {
 			} else {
 				if (active > 8) {
 					getMachines().getLogger().warning("Over 9 actives detected for "
-							+ user.getUserAspect().getDisplayName() + ". GUI expansion is required.");
+							+ user.getUserAffinity().getDisplayName() + ". GUI expansion is required.");
 					continue;
 				}
 				slot = active;
 				active++;
 			}
-			top.setItem(slot, toggle.getIcon(effect, user.getUserAspect(), enabledEffects.contains(effect.getName())));
+			top.setItem(slot, toggle.getIcon(effect, user.getUserAffinity(), enabledEffects.contains(effect.getName())));
 		}
 		top.setItem(22, Programs.getProgramByName("Back").getIcon());
 

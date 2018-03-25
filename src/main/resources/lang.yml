@@ -24,6 +24,7 @@ color:
     neutral: 'DARK_AQUA'
     bad: 'DARK_RED'
   rank:
+    # TODO new ranks
     default: 'WHITE'
     member: 'GRAY'
     trusted: 'GREEN'

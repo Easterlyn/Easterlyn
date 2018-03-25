@@ -1,28 +1,26 @@
 package com.easterlyn.effects.effect.reactive;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorCooldown;
 import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.utilities.Potions;
-
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Panic effect. When damaged, player may receive a speed boost and brief regeneration or slightly
  * reduced damage taken.
- * 
+ *
  * @author Jikoo
  */
-public class EffectPanic extends Effect implements BehaviorReactive, BehaviorCooldown {
+public class EffectPanic extends Effect implements BehaviorReactive, BehaviorCooldown { // TODO godtier: life
 
 	public EffectPanic(Easterlyn plugin) {
 		super(plugin, 200, 5, 20, "Panic");

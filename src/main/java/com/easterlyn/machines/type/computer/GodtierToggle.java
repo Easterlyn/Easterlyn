@@ -8,7 +8,7 @@ import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.users.User;
-import com.easterlyn.users.UserAspect;
+import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.Users;
 
 import org.bukkit.Bukkit;
@@ -23,8 +23,8 @@ import org.bukkit.material.Wool;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * 
- * 
+ *
+ *
  * @author Jikoo
  */
 public class GodtierToggle extends Program {
@@ -76,9 +76,9 @@ public class GodtierToggle extends Program {
 		ItemStack newClicked;
 		if (clicked.getData().equals(icon.getData())) {
 			user.removeGodtierEffect(effect);
-			newClicked = getIcon(effect, user.getUserAspect(), false);
+			newClicked = getIcon(effect, user.getUserAffinity(), false);
 		} else if (clicked.getData().equals(icoff.getData())) {
-			newClicked = getIcon(effect, user.getUserAspect(), user.addGodtierEffect(effect));
+			newClicked = getIcon(effect, user.getUserAffinity(), user.addGodtierEffect(effect));
 		} else {
 			return;
 		}
@@ -97,7 +97,7 @@ public class GodtierToggle extends Program {
 		return icon;
 	}
 
-	public ItemStack getIcon(Effect effect, UserAspect aspect, boolean enabled) {
+	public ItemStack getIcon(Effect effect, UserAffinity aspect, boolean enabled) {
 		ItemStack stack = enabled ? icon.clone() : icoff.clone();
 		ItemMeta meta = stack.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();

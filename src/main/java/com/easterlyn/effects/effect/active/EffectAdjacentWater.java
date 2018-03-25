@@ -10,10 +10,10 @@ import org.bukkit.entity.Player;
 
 /**
  * Automatically change adjacent lava to obsidian or cobblestone and extinguish fires when mining.
- * 
+ *
  * @author Jikoo
  */
-public class EffectAdjacentWater extends EffectAdjacentBlockPlacement {
+public class EffectAdjacentWater extends EffectAdjacentBlockPlacement { // TODO godtier: fire
 
 	public EffectAdjacentWater(Easterlyn plugin) {
 		super(plugin, 400, "Liquid Cooled", Material.STATIONARY_LAVA);
