@@ -406,6 +406,7 @@ public class Effects extends Module {
 	}
 
 	public List<Effect> getGodtierEffects(UserAffinity aspect) {
+		aspect = aspect.getAffinityGroup();
 		ArrayList<Effect> applicableEffects = new ArrayList<>();
 		for (Effect effect : effects.values()) {
 			if (!(effect instanceof BehaviorGodtier)) {

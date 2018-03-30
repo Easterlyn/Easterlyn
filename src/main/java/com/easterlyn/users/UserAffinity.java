@@ -6,15 +6,14 @@ import java.util.Collection;
 import java.util.HashMap;
 
 /**
- * Represents canon Aspects, including those of mythological roles.
- * <p>
- * Mythological roles cannot be obtained by players without usage of admin commands.
+ * Represents affinities for unlockable abilities.
  *
- * @author FireNG, Jikoo, tmathmeyer
+ * @author Jikoo, FireNG, tmathmeyer
  */
 public class UserAffinity {
 
-	private static final HashMap<String, UserAffinity> REGISTRY = new HashMap<>();
+	private static final HashMap<String, UserAffinity> NAME_REGISTRY = new HashMap<>();
+	private static final HashMap<ChatColor, UserAffinity> COLOR_REGISTRY = new HashMap<>();
 
 	public static final UserAffinity EASTERLYN = addDefault(new UserAffinity("Easterlyn", ChatColor.WHITE));
 
@@ -27,14 +26,13 @@ public class UserAffinity {
 	public static final UserAffinity FIRE = addDefault(new UserAffinity("Fire", ChatColor.RED));
 	public static final UserAffinity AIR = addDefault(new UserAffinity("Air", ChatColor.YELLOW));
 	public static final UserAffinity TIME = addDefault(new UserAffinity("Time", ChatColor.DARK_PURPLE));
-	public static final UserAffinity SECRETS = addDefault(new UserAffinity("Secrets", ChatColor.DARK_AQUA));
 
 	private final String name;
 	private final ChatColor chatColor;
 
 	/**
-	 * @param name the name of the Aspect
-	 * @param color the color of the Aspect
+	 * @param name the name of the UserAffinity
+	 * @param color the color of the UserAffinity
 	 */
 	private UserAffinity(String name, ChatColor color) {
 		this.name = name;
@@ -65,17 +63,21 @@ public class UserAffinity {
 		return this.chatColor + this.name;
 	}
 
+	public UserAffinity getAffinityGroup() {
+		return COLOR_REGISTRY.getOrDefault(this.getColor(), EASTERLYN);
+	}
+
 	/**
 	 * Gets the UserAffinity.
 	 *
-	 * @param name the name of an aspect
+	 * @param name the name of an affinity
 	 *
 	 * @return the UserAffinity
 	 */
 	public static UserAffinity getAffinity(String name) {
 		String lowname = ChatColor.stripColor(name.toLowerCase());
-		if (REGISTRY.containsKey(lowname)) {
-			return REGISTRY.get(lowname);
+		if (NAME_REGISTRY.containsKey(lowname)) {
+			return NAME_REGISTRY.get(lowname);
 		}
 		return UserAffinity.fromString(name);
 	}
@@ -88,12 +90,13 @@ public class UserAffinity {
 	}
 
 	private static UserAffinity addDefault(UserAffinity aspect) {
-		REGISTRY.put(aspect.getDisplayName().toLowerCase(), aspect);
+		NAME_REGISTRY.put(aspect.getDisplayName().toLowerCase(), aspect);
+		COLOR_REGISTRY.put(aspect.getColor(), aspect);
 		return aspect;
 	}
 
 	public static Collection<UserAffinity> values() {
-		return REGISTRY.values();
+		return NAME_REGISTRY.values();
 	}
 
 }
