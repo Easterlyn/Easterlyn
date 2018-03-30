@@ -1,7 +1,7 @@
 # Color definitions. Any value in this section must be a ChatColor name.
 # Custom values can be defined, however, the defaults are used internally for various purposes.
 # Any custom values can then be used in other language sections via {COLOR:subpath}
-# For example, {COLOR:rank.horrorterror} refers to ChatColor.DARK_RED by default.
+# For example, {COLOR:rank.head_admin} refers to ChatColor.DARK_RED by default.
 # All ChatColor names are also supported, e.g. {COLOR:aqua} is ChatColor.AQUA.
 # Using specific colors should be avoided where possible to keep things consistent.
 color:
@@ -27,11 +27,11 @@ color:
     # TODO new ranks
     default: 'WHITE'
     member: 'GRAY'
-    trusted: 'GREEN'
-    helper: 'YELLOW'
-    mod: 'GOLD'
-    head_mod: 'DARK_PURPLE'
-    admin: 'RED'
+    citizen: 'GREEN'
+    veteran: 'DARK_GREEN'
+    staff: 'DARK_AQUA'
+    mod: 'BLUE'
+    admin: 'DARK_PURPLE'
     head_admin: 'DARK_RED'
     ask.adam.before.touching: 'DARK_RED'
   channel:
@@ -51,23 +51,6 @@ chat:
   server:
     quit: '{COLOR:player.neutral}{PLAYER} {COLOR:neutral}logged out'
   ai:
-    cleverbot:
-      name: '{COLOR:bot_name}The Scribe'
-      hover: |-
-        {COLOR:bot_text}Easterlyn Records Keeper
-        {COLOR:emphasis.bad}The Scribe tells it like is
-        {COLOR:emphasis.bad}whether you like it or not.
-
-        {COLOR:emphasis.bad}The Scribe knows all.
-
-        {COLOR:command}/join #spam {COLOR:emphasis.bad}to spam usage.
-      trigger: '(some|any|no)\s?body'
-      ignore: |-
-        (love|date|baby|bang|due|fuck|pregnant|r(@|4|a)pe|sex)\s?
-        (g|b)\s?f\s?
-        (girl|boy)\s?(friend)?\s?
-        mo(ther|m+y?)\s?
-        dad+y?\s?
     calculator:
       name: '{COLOR:bot_name}The Scribe'
       hover: |-
@@ -175,7 +158,7 @@ command:
     usage: '/ultraban <target>'
   unban:
     description: 'Make up your mind.'
-    usage: '/unsban <UUID|name|IP>'
+    usage: '/unban <UUID|name|IP>'
     unfound: '{COLOR:bad}No bans were found for {TARGET}'
     possibleIP: '{COLOR:neutral}Not globally announcing unban, {TARGET} may be an IP.'
     unban: '{COLOR:bot_text}{TARGET} has returned from exile.'
@@ -403,20 +386,20 @@ discord:
   link:
     mandate: |-
       Welcome, {USER}!
-      If you're here for Minecraft, please fill out the following form to be whitelisted.
+      If you're here for Minecraft, please copy and fill out this form to be whitelisted:
       ```
-      @Admin
+      @Staff
       **Minecraft username:** `YourNameHere`
       **Reason for joining:** Build, admire Ed's face, set fires, etc.
-      **Short self-blurb:** (Do you like to build? Play other games? Let us know!)
+      **Short self-blurb:** Do you like to build? Play other games? Let us know!
       **How did you find us?** Referral, a posting, accident?
       ```
       Once whitelisted, please join us on `play.easterlyn.com` and run `/link`. Then, in this chat, run `/link YourCodeHere` to complete the process.
-      If you're here for reasons other than Minecraft, please contact an `@Admin` immediately - unlinked users are kicked after a period.
+      If you're here for reasons other than Minecraft, please contact the `@Staff` immediately - unlinked users are kicked after a period.
     graceless: |-
       You've taken too long to link your Discord account with Minecraft on Easterlyn!
       Feel free to rejoin our discord: <http://discord.easterlyn.com>
-      You'll need to either complete the linking procedure or contact an `@Admin` to prevent being automatically kicked again.
+      You'll need to either complete the linking procedure or contact the `@Staff` to prevent being automatically kicked again.
 
 events:
   craft:
