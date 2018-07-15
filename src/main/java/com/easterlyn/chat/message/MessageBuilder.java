@@ -292,12 +292,12 @@ public class MessageBuilder {
 		component.setColor(channelBracket);
 		components.add(component);
 
-		TextComponent channelComponent = new TextComponent(components.toArray(new BaseComponent[components.size()]));
+		TextComponent channelComponent = new TextComponent(components.toArray(new BaseComponent[0]));
 		if (channelClick == null) {
 			channelClick = '@' + channel.getName() + ' ';
 		}
 		channelComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, channelClick));
-		TextComponent channelHighlightComponent = new TextComponent(channelHighlightComponents.toArray(new BaseComponent[channelHighlightComponents.size()]));
+		TextComponent channelHighlightComponent = new TextComponent(channelHighlightComponents.toArray(new BaseComponent[0]));
 		channelHighlightComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, channelClick));
 
 		components.clear();

@@ -7,8 +7,8 @@ import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.users.UserAffinity;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftAnimals;
+import org.bukkit.craftbukkit.v1_13_R1.entity.CraftAnimals;
+import org.bukkit.craftbukkit.v1_13_R1.entity.CraftPlayer;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -78,12 +78,7 @@ public class EffectBreedAnimal extends Effect implements BehaviorActive, Behavio
 			}
 			Animals animal = (Animals) near;
 			if (animal.isAdult()) {
-				animal.setBreed(true);
-
-				NBTTagCompound tag = new NBTTagCompound();
-				((CraftAnimals) animal).getHandle().b(tag);
-				tag.setInt("InLove", 600);
-				((CraftAnimals) animal).getHandle().a(tag);
+				((CraftAnimals) animal).getHandle().f(((CraftPlayer) player).getHandle());
 			}
 		}
 	}

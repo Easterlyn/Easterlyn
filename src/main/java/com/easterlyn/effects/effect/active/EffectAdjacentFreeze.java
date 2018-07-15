@@ -15,12 +15,12 @@ import org.bukkit.entity.Player;
 public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement { // TODO godtier: water
 
 	public EffectAdjacentFreeze(Easterlyn plugin) {
-		super(plugin, 400, "Eternally Frozen", Material.STATIONARY_WATER);
+		super(plugin, 400, "Eternally Frozen", Material.WATER);
 	}
 
 	@Override
 	protected boolean handleAdjacentBlock(Player player, Block block) {
-		if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
+		if (block.getType() == Material.WATER) {
 			if (handleBlockSet(player, block, Material.ICE)) {
 				if (this.currentCount == 0) {
 					block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.ENTITY_GENERIC_SWIM, 16, 1);

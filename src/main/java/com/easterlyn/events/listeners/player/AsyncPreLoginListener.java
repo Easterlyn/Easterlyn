@@ -71,7 +71,7 @@ public class AsyncPreLoginListener extends EasterlynListener {
 			OfflinePlayer offline = Bukkit.getOfflinePlayer(event.getUniqueId());
 			String name = offline.getName() != null ? offline.getName() : event.getUniqueId().toString();
 			Bukkit.getConsoleSender().sendMessage( ips.size() + " IPs on record for " + name
-					+ ": " + StringUtils.join(ips.toArray(new String[ips.size()]), ", "));
+					+ ": " + StringUtils.join(ips.toArray(new String[0]), ", "));
 		}
 	}
 

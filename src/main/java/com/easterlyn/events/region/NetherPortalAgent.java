@@ -17,7 +17,7 @@ import org.bukkit.util.Vector;
 
 /**
  * TravelAgent for nether portals.
- * 
+ *
  * @author Jikoo
  */
 public class NetherPortalAgent implements TravelAgent {
@@ -94,7 +94,7 @@ public class NetherPortalAgent implements TravelAgent {
 		shape.setVectorData(new Vector(0, 3, -1), value);
 		shape.setVectorData(new Vector(1, 3, -1), value);
 
-		value = shape.new MaterialDataValue(Material.PORTAL, Direction.NORTH, "portal");
+		value = shape.new MaterialDataValue(Material.NETHER_PORTAL, Direction.NORTH, "portal");
 
 		// Portal
 		shape.setVectorData(new Vector(-1, 0, 0), value);
@@ -155,7 +155,7 @@ public class NetherPortalAgent implements TravelAgent {
 			for (int dY = 0; dY < searchY; ++dY) {
 				for (int dZ = -searchRadius; dZ <= searchRadius; dZ++) {
 					Block portal = block.getRelative(dX, dY, dZ);
-					if (portal.getType() == Material.PORTAL) {
+					if (portal.getType() == Material.NETHER_PORTAL) {
 						Location center = RegionUtils.findNetherPortalCenter(portal);
 						center.setYaw(location.getYaw());
 						center.setPitch(location.getPitch());

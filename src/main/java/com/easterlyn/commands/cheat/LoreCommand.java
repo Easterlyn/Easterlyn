@@ -148,19 +148,19 @@ public class LoreCommand extends EasterlynCommand {
 	}
 
 	private boolean owner(Player player, ItemStack hand, String[] args) {
-		if (hand.getType() != Material.SKULL_ITEM && hand.getDurability() != 3) {
+		if (hand.getType() != Material.PLAYER_HEAD) {
 			player.sendMessage(Language.getColor("bad") + "You must be holding a player skull to set its owner!");
 			return true;
 		}
 		SkullMeta meta = (SkullMeta) hand.getItemMeta();
-		meta.setOwner(args[1]);
+		meta.setOwningPlayer(Bukkit.getOfflinePlayer(args[1]));
 		hand.setItemMeta(meta);
 		player.sendMessage(Language.getColor("good") + "Owner set to " + args[1]);
 		return true;
 	}
 
 	private boolean author(Player player, ItemStack hand, String[] args) {
-		if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.BOOK_AND_QUILL) {
+		if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.WRITABLE_BOOK) {
 			player.sendMessage(Language.getColor("bad") + "You must be holding a writable book to set its author.");
 			return true;
 		}
@@ -173,7 +173,7 @@ public class LoreCommand extends EasterlynCommand {
 	}
 
 	private boolean title(Player player, ItemStack hand, String[] args) {
-		if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.BOOK_AND_QUILL) {
+		if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.WRITABLE_BOOK) {
 			player.sendMessage(Language.getColor("bad") + "You must be holding a writable book to set its title.");
 			return true;
 		}
@@ -196,18 +196,18 @@ public class LoreCommand extends EasterlynCommand {
 
 	private boolean delete(Player player, ItemStack hand, String[] args) {
 		if (args[1].equals("owner")) {
-			if (hand.getType() != Material.SKULL_ITEM && hand.getDurability() != 3) {
+			if (hand.getType() != Material.PLAYER_HEAD) {
 				player.sendMessage(Language.getColor("bad") + "You must be holding a player skull to delete its owner!");
 				return true;
 			}
 			SkullMeta meta = (SkullMeta) hand.getItemMeta();
-			meta.setOwner(null);
+			meta.setOwningPlayer(null);
 			hand.setItemMeta(meta);
 			player.sendMessage(Language.getColor("good") + "Deleted owner!");
 			return true;
 		}
 		if (args[1].equals("author") || args[1].equals("title")) {
-			if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.BOOK_AND_QUILL) {
+			if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.WRITABLE_BOOK) {
 				player.sendMessage(Language.getColor("bad") + "You must be holding a writable book to clear its " + args[1] + ".");
 				return true;
 			}

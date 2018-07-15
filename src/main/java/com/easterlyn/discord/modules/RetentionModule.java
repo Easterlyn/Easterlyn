@@ -24,7 +24,8 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.PermissionUtils;
 import sx.blah.discord.util.RateLimitException;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Map;
@@ -171,7 +172,7 @@ public class RetentionModule extends DiscordModule {
 			getDiscord().queue(new DiscordCallable(this.channel.getGuild().getLongID(), CallType.BULK_DELETE) {
 				@Override
 				public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-					LocalDateTime retention = LocalDateTime.now().minusSeconds(retentionDuration);
+					Instant retention = Instant.now().minus(retentionDuration, ChronoUnit.SECONDS);
 					if (channel.getInternalCacheCount() < 1) {
 						lockDeletion.set(false);
 						return;
@@ -179,7 +180,7 @@ public class RetentionModule extends DiscordModule {
 
 					final ArrayList<IMessage> messages = new ArrayList<>();
 
-					LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(12);
+					Instant bulkDeleteableBefore = Instant.now().plus(13, ChronoUnit.DAYS).plus(12, ChronoUnit.HOURS);
 
 					channel.messages.forEachWhile((messageID, message) -> {
 						if (message.isPinned() || message.isDeleted()|| message.getTimestamp().isAfter(retention)) {

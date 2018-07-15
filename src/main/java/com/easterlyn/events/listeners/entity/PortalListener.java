@@ -16,7 +16,7 @@ import org.bukkit.event.entity.EntityPortalEvent;
 
 /**
  * Listener for EntityPortalEvents.
- * 
+ *
  * @author Jikoo
  */
 public class PortalListener extends EasterlynListener {
@@ -32,7 +32,7 @@ public class PortalListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for EntityPortalEvents.
-	 * 
+	 *
 	 * @param event the EntityPortalEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
@@ -40,7 +40,7 @@ public class PortalListener extends EasterlynListener {
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
 		Block fromPortal = RegionUtils.getAdjacentPortalBlock(event.getEntity().getLocation().getBlock());
 
-		if (fromPortal == null || fromPortal.getType() == Material.ENDER_PORTAL) {
+		if (fromPortal == null || fromPortal.getType() == Material.END_PORTAL) {
 			event.setCancelled(true);
 			return;
 		}

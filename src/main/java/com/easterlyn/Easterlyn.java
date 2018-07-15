@@ -23,6 +23,7 @@ import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
@@ -226,13 +227,15 @@ public class Easterlyn extends JavaPlugin {
 	 */
 	@SuppressWarnings("deprecation")
 	private void createRecipes() {
+		NamespacedKey key = new NamespacedKey(this, "Easterlyn");
+
 		// BoonConomy: 1 emerald -> 9 lapis block
-		ShapelessRecipe toLapis = new ShapelessRecipe(new ItemStack(Material.LAPIS_BLOCK, 9));
+		ShapelessRecipe toLapis = new ShapelessRecipe(key, new ItemStack(Material.LAPIS_BLOCK, 9));
 		toLapis.addIngredient(Material.EMERALD);
 		getServer().addRecipe(toLapis);
 
 		// BoonConomy: 9 lapis block -> 1 emerald
-		ShapedRecipe shaped = new ShapedRecipe(new ItemStack(Material.EMERALD));
+		ShapedRecipe shaped = new ShapedRecipe(key, new ItemStack(Material.EMERALD));
 		shaped.shape("XXX", "XXX", "XXX");
 		shaped.setIngredient('X', Material.LAPIS_BLOCK);
 		getServer().addRecipe(shaped);
@@ -244,7 +247,7 @@ public class Easterlyn extends JavaPlugin {
 			for (Material material : new Material[] { Material.CARPET, Material.STAINED_CLAY,
 					Material.STAINED_GLASS, Material.STAINED_GLASS_PANE, Material.WOOL }) {
 				// Dye 8 of an item at a time just like stained glass, allows for re-dyeing
-				shaped = new ShapedRecipe(new ItemStack(material, 8, dye.getWoolData()));
+				shaped = new ShapedRecipe(key, new ItemStack(material, 8, dye.getWoolData()));
 				shaped.shape("XXX", "XYX", "XXX");
 				shaped.setIngredient('X', material, Short.MAX_VALUE).setIngredient('Y', dyeMaterial);
 				getServer().addRecipe(shaped);
@@ -252,13 +255,13 @@ public class Easterlyn extends JavaPlugin {
 		}
 
 		// General: Packed ice = 2 snow 2 ice
-		shaped = new ShapedRecipe(new ItemStack(Material.PACKED_ICE));
+		shaped = new ShapedRecipe(key, new ItemStack(Material.PACKED_ICE));
 		shaped.shape("XY", "YX");
 		shaped.setIngredient('X', Material.SNOW_BLOCK).setIngredient('Y', Material.ICE);
 		getServer().addRecipe(shaped);
 
 		// General: 8 gravel, 1 bucket water -> 4 clay
-		shaped = new ShapedRecipe(new ItemStack(Material.CLAY, 4));
+		shaped = new ShapedRecipe(key, new ItemStack(Material.CLAY, 4));
 		shaped.shape("XXX", "XYX", "XXX").setIngredient('X', Material.GRAVEL).setIngredient('Y', Material.WATER_BUCKET);
 		getServer().addRecipe(shaped);
 
@@ -278,7 +281,7 @@ public class Easterlyn extends JavaPlugin {
 		getServer().addRecipe(furnace);
 		furnace.setInput(Material.DIAMOND_PICKAXE, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
-		furnace.setInput(Material.DIAMOND_SPADE, Short.MAX_VALUE);
+		furnace.setInput(Material.DIAMOND_SHOVEL, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
 		furnace.setInput(Material.DIAMOND_SWORD, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
@@ -286,7 +289,7 @@ public class Easterlyn extends JavaPlugin {
 		getServer().addRecipe(furnace);
 
 		// General: Rotten flesh cooks to rabbit leather (1/4 leather)
-		furnace = new FurnaceRecipe(new ItemStack(Material.RABBIT_HIDE), Material.ROTTEN_FLESH);
+		furnace = new FurnaceRecipe(key, new ItemStack(Material.RABBIT_HIDE), Material.ROTTEN_FLESH, 0, 200);
 		getServer().addRecipe(furnace);
 	}
 

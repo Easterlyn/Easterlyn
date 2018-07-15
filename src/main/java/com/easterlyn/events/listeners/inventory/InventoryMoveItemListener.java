@@ -15,7 +15,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 /**
  * Listener for InventoryMoveItemEvents.
- * 
+ *
  * @author Jikoo
  */
 public class InventoryMoveItemListener extends EasterlynListener {
@@ -29,14 +29,14 @@ public class InventoryMoveItemListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for when hoppers move items.
-	 * 
+	 *
 	 * @param event the InventoryMoveItemEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryMoveItem(InventoryMoveItemEvent event) {
 		InventoryHolder ih = event.getDestination().getHolder();
 		// For now, sending inv is not checked, as no machines require it.
-		if (ih != null && ih instanceof BlockState) {
+		if (ih instanceof BlockState) {
 			Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(((BlockState) ih).getBlock());
 			if (pair != null) {
 				event.setCancelled(pair.getLeft().handleHopperMoveItem(event, pair.getRight()));

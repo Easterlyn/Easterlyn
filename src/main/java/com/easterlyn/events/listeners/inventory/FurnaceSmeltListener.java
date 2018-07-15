@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Listener for FurnaceSmeltEvents.
- * 
+ *
  * @author Jikoo
  */
 public class FurnaceSmeltListener extends EasterlynListener {
@@ -24,7 +24,7 @@ public class FurnaceSmeltListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for FurnaceSmeltEvents.
-	 * 
+	 *
 	 * @param event the FurnaceSmeltEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -72,45 +72,45 @@ public class FurnaceSmeltListener extends EasterlynListener {
 
 	private ItemStack getMainItem(Material material) {
 		switch (material) {
-		case DIAMOND_SPADE:
-			return new ItemStack(Material.DIAMOND, 1);
-		case DIAMOND_HOE:
-		case DIAMOND_SWORD:
-			return new ItemStack(Material.DIAMOND, 2);
-		case DIAMOND_AXE:
-		case DIAMOND_PICKAXE:
-			return new ItemStack(Material.DIAMOND, 3);
-		case DIAMOND_BOOTS:
-			return new ItemStack(Material.DIAMOND, 4);
-		case DIAMOND_HELMET:
-			return new ItemStack(Material.DIAMOND, 5);
-		case DIAMOND_LEGGINGS:
-			return new ItemStack(Material.DIAMOND, 7);
-		case DIAMOND_CHESTPLATE:
-			return new ItemStack(Material.DIAMOND, 8);
-		case SHEARS:
-			return new ItemStack(Material.IRON_INGOT, 2);
-		default:
-			return new ItemStack(Material.COAL);
+			case DIAMOND_SHOVEL:
+				return new ItemStack(Material.DIAMOND, 1);
+			case DIAMOND_HOE:
+			case DIAMOND_SWORD:
+				return new ItemStack(Material.DIAMOND, 2);
+			case DIAMOND_AXE:
+			case DIAMOND_PICKAXE:
+				return new ItemStack(Material.DIAMOND, 3);
+			case DIAMOND_BOOTS:
+				return new ItemStack(Material.DIAMOND, 4);
+			case DIAMOND_HELMET:
+				return new ItemStack(Material.DIAMOND, 5);
+			case DIAMOND_LEGGINGS:
+				return new ItemStack(Material.DIAMOND, 7);
+			case DIAMOND_CHESTPLATE:
+				return new ItemStack(Material.DIAMOND, 8);
+			case SHEARS:
+				return new ItemStack(Material.IRON_INGOT, 2);
+			default:
+				return new ItemStack(Material.COAL);
 		}
 	}
 
 	private boolean canSalvage(Material material) {
 		switch (material) {
-		case DIAMOND_AXE:
-		case DIAMOND_HOE:
-		case DIAMOND_PICKAXE:
-		case DIAMOND_SPADE:
-		case DIAMOND_SWORD:
-		case DIAMOND_BOOTS:
-		case DIAMOND_CHESTPLATE:
-		case DIAMOND_HELMET:
-		case DIAMOND_LEGGINGS:
-		case SHEARS:
-			return true;
-		default:
-			return false;
-		}
+			case DIAMOND_AXE:
+			case DIAMOND_HOE:
+			case DIAMOND_PICKAXE:
+			case DIAMOND_SHOVEL:
+			case DIAMOND_SWORD:
+			case DIAMOND_BOOTS:
+			case DIAMOND_CHESTPLATE:
+			case DIAMOND_HELMET:
+			case DIAMOND_LEGGINGS:
+			case SHEARS:
+				return true;
+			default:
+				return false;
+			}
 	}
 
 }

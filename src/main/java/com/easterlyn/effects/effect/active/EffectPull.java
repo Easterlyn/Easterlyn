@@ -1,21 +1,19 @@
 package com.easterlyn.effects.effect.active;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.Effect;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * In essence, the opposite of knockback.
- * 
+ *
  * @author Jikoo
  */
 public class EffectPull extends Effect implements BehaviorActive {

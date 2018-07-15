@@ -10,7 +10,6 @@ import com.easterlyn.micromodules.Holograms;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -80,9 +79,9 @@ public class Transportalizer extends Machine {
 		shape.setVectorData(new Vector(0, 2, 1), m);
 		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
 		shape.setVectorData(new Vector(0, 0, 1), m);
-		m = shape.new MaterialDataValue(Material.STAINED_GLASS);
+		m = shape.new MaterialDataValue(Material.WHITE_STAINED_GLASS);
 		shape.setVectorData(new Vector(0, 1, 1), m);
-		m = shape.new MaterialDataValue(Material.WOOD_BUTTON, Direction.NORTH, "button");
+		m = shape.new MaterialDataValue(Material.STONE_BUTTON, Direction.NORTH, "button");
 		shape.setVectorData(new Vector(-1, 2, 0), m);
 		shape.setVectorData(new Vector(1, 2, 0), m);
 		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "stair");
@@ -92,11 +91,11 @@ public class Transportalizer extends Machine {
 		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, Direction.DOWN, "quartzpillar");
 		shape.setVectorData(new Vector(-1, 1, 1), m);
 		shape.setVectorData(new Vector(1, 1, 1), m);
-		m = shape.new MaterialDataValue(Material.CARPET, DyeColor.RED.getWoolData());
+		m = shape.new MaterialDataValue(Material.RED_CARPET);
 		shape.setVectorData(new Vector(-1, 1, 0), m);
-		m = shape.new MaterialDataValue(Material.CARPET, DyeColor.GRAY.getWoolData());
+		m = shape.new MaterialDataValue(Material.GRAY_CARPET);
 		shape.setVectorData(new Vector(0, 1, 0), m);
-		m = shape.new MaterialDataValue(Material.CARPET, DyeColor.LIME.getWoolData());
+		m = shape.new MaterialDataValue(Material.LIME_CARPET);
 		shape.setVectorData(new Vector(1, 1, 0), m);
 
 		drop = new ItemStack(Material.CHEST);
@@ -162,7 +161,7 @@ public class Transportalizer extends Machine {
 	 * @return true if the Material is a fuel
 	 */
 	private boolean hasValue(Material m) {
-		return m == Material.SULPHUR || m == Material.REDSTONE || m == Material.BLAZE_POWDER
+		return m == Material.GUNPOWDER || m == Material.REDSTONE || m == Material.BLAZE_POWDER
 				|| m == Material.GLOWSTONE_DUST || m == Material.BLAZE_ROD
 				|| m == Material.GLOWSTONE || m == Material.REDSTONE_BLOCK;
 	}
@@ -176,22 +175,22 @@ public class Transportalizer extends Machine {
 	 */
 	private int getValue(Material m) {
 		switch (m) {
-		case SULPHUR:
-			return 1;
-		case REDSTONE:
-			return 2;
-		case BLAZE_POWDER:
-			return 3;
-		case GLOWSTONE_DUST:
-			return 4;
-		case BLAZE_ROD:
-			return 6;
-		case GLOWSTONE:
-			return 16;
-		case REDSTONE_BLOCK:
-			return 18;
-		default:
-			return 0;
+			case GUNPOWDER:
+				return 1;
+			case REDSTONE:
+				return 2;
+			case BLAZE_POWDER:
+				return 3;
+			case GLOWSTONE_DUST:
+				return 4;
+			case BLAZE_ROD:
+				return 6;
+			case GLOWSTONE:
+				return 16;
+			case REDSTONE_BLOCK:
+				return 18;
+			default:
+				return 0;
 		}
 	}
 
@@ -208,7 +207,7 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 
-		if (event.getClickedBlock().getType() != Material.WOOD_BUTTON) {
+		if (event.getClickedBlock().getType() != Material.STONE_BUTTON) {
 			return false;
 		}
 
@@ -416,8 +415,8 @@ public class Transportalizer extends Machine {
 	}
 
 	private void teleport(Entity entity, Location source, Location target) {
-		source.getWorld().playSound(source, Sound.BLOCK_NOTE_PLING, 1F, 2F);
-		target.getWorld().playSound(target, Sound.BLOCK_NOTE_PLING, 1F, 2F);
+		source.getWorld().playSound(source, Sound.BLOCK_NOTE_BLOCK_PLING, 1F, 2F);
+		target.getWorld().playSound(target, Sound.BLOCK_NOTE_BLOCK_PLING, 1F, 2F);
 		Location current = entity.getLocation();
 		target.setPitch(current.getPitch());
 		target.setYaw(current.getYaw());

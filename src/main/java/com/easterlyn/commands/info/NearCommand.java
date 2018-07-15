@@ -12,18 +12,19 @@ import org.bukkit.potion.PotionEffectType;
 
 /**
  * EasterlynCommand for locating nearby players.
- * 
+ *
  * @author Jikoo
  */
 public class NearCommand extends EasterlynCommand {
 
-	private final int maxRadius = 200;
+	private final int maxRadius;
 
 	public NearCommand(Easterlyn plugin) {
 		super(plugin, "near");
 		this.addExtraPermission("far", UserRank.MOD);
 		this.addExtraPermission("invisible", UserRank.MOD);
 		this.addExtraPermission("spectate", UserRank.MOD);
+		this.maxRadius = 200;
 	}
 
 	@Override

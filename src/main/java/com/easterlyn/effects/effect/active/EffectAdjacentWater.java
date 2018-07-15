@@ -16,13 +16,13 @@ import org.bukkit.entity.Player;
 public class EffectAdjacentWater extends EffectAdjacentBlockPlacement { // TODO godtier: fire
 
 	public EffectAdjacentWater(Easterlyn plugin) {
-		super(plugin, 400, "Liquid Cooled", Material.STATIONARY_LAVA);
+		super(plugin, 400, "Liquid Cooled", Material.LAVA);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	protected boolean handleAdjacentBlock(Player player, Block block) {
-		if (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA) {
+		if (block.getType() == Material.LAVA) {
 			if (this.currentCount > 0 && block.getWorld().getEnvironment() == Environment.NETHER) {
 				return true;
 			}

@@ -1,10 +1,7 @@
 package com.easterlyn.events.listeners.player;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.listeners.EasterlynListener;
-
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -15,9 +12,11 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Wool;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Listener for PlayerShearEntityEvents.
- * 
+ *
  * @author Jikoo
  */
 public class ShearEntityListener extends EasterlynListener {
@@ -28,7 +27,7 @@ public class ShearEntityListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for PlayerShearEntityEvents.
-	 * 
+	 *
 	 * @param event the PlayerShearEntityEvent
 	 */
 	@EventHandler(ignoreCancelled = true)

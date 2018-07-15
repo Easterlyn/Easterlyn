@@ -3,14 +3,27 @@ package com.easterlyn.utilities;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.Effect;
-import net.minecraft.server.v1_12_R1.*;
-import net.minecraft.server.v1_12_R1.BlockWood.EnumLogVariant;
+import net.minecraft.server.v1_13_R1.BlockBanner;
+import net.minecraft.server.v1_13_R1.BlockCocoa;
+import net.minecraft.server.v1_13_R1.BlockCrops;
+import net.minecraft.server.v1_13_R1.BlockLeaves;
+import net.minecraft.server.v1_13_R1.BlockPosition;
+import net.minecraft.server.v1_13_R1.BlockShulkerBox;
+import net.minecraft.server.v1_13_R1.Blocks;
+import net.minecraft.server.v1_13_R1.IBlockData;
+import net.minecraft.server.v1_13_R1.Item;
+import net.minecraft.server.v1_13_R1.ItemBanner;
+import net.minecraft.server.v1_13_R1.Items;
+import net.minecraft.server.v1_13_R1.NBTTagCompound;
+import net.minecraft.server.v1_13_R1.TileEntity;
+import net.minecraft.server.v1_13_R1.TileEntityBanner;
+import net.minecraft.server.v1_13_R1.TileEntityShulkerBox;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_13_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -56,7 +69,7 @@ public class BlockDrops {
 			fortuneBonus += tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
 		}
 
-		return getDrops(tool != null ? tool.getType() : null, block, fortuneBonus);
+		return getFortuneDrops(tool, block, fortuneBonus);
 	}
 
 	public static int getExp(ItemStack tool, Block block) {
@@ -64,7 +77,7 @@ public class BlockDrops {
 				&& block.getType() != Material.MOB_SPAWNER) {
 			return 0;
 		}
-		if (!isUsableTool(tool.getType(), block.getType())) {
+		if (!isUsableTool(tool, block.getType())) {
 			return 0;
 		}
 		switch (block.getType()) {
@@ -98,12 +111,12 @@ public class BlockDrops {
 		case REDSTONE_ORE:
 		case SNOW_BLOCK:
 		case STONE:
-			if (isUsableTool(tool.getType(), material.getItemType())) {
+			if (isUsableTool(tool, material.getItemType())) {
 				drops.add(material.toItemStack(1));
 			}
 			return drops;
 		case GLOWING_REDSTONE_ORE:
-			if (isUsableTool(tool.getType(), Material.GLOWING_REDSTONE_ORE)) {
+			if (isUsableTool(tool, Material.GLOWING_REDSTONE_ORE)) {
 				drops.add(new ItemStack(Material.REDSTONE_ORE));
 			}
 			return drops;
@@ -137,23 +150,23 @@ public class BlockDrops {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static boolean isUsableTool(Material tool, Material block) {
-		net.minecraft.server.v1_12_R1.Block nmsBlock = net.minecraft.server.v1_12_R1.Block.getById(block.getId());
+	private static boolean isUsableTool(ItemStack tool, Material block) {
+		net.minecraft.server.v1_13_R1.Block nmsBlock = net.minecraft.server.v1_13_R1.Block.getById(block.getId());
 		if (nmsBlock == null) {
 			return false;
 		}
 		IBlockData data = nmsBlock.getBlockData();
-		return data.getMaterial().isAlwaysDestroyable() || tool != null && tool != Material.AIR
-				&& Item.getById(tool.getId()).canDestroySpecialBlock(data);
+		return data.getMaterial().isAlwaysDestroyable() || tool != null && tool.getType() != Material.AIR
+				&& Item.getById(tool.getType().getId()).canDestroySpecialBlock(data);
 	}
 
 	@SuppressWarnings("deprecation")
-	private static Collection<ItemStack> getDrops(Material tool, Block block, int fortune) {
+	private static Collection<ItemStack> getFortuneDrops(ItemStack tool, Block block, int fortune) {
 		Random random = ThreadLocalRandom.current();
 		List<ItemStack> drops = new ArrayList<>();
 
-		net.minecraft.server.v1_12_R1.Block nmsBlock = net.minecraft.server.v1_12_R1.Block.getById(block.getTypeId());
-		net.minecraft.server.v1_12_R1.WorldServer nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
+		net.minecraft.server.v1_13_R1.Block nmsBlock = net.minecraft.server.v1_13_R1.Block.getById(block.getTypeId());
+		net.minecraft.server.v1_13_R1.WorldServer nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
 		if (nmsBlock == Blocks.AIR || !isUsableTool(tool, block.getType())) {
 			return drops;
 		}
@@ -169,7 +182,7 @@ public class BlockDrops {
 			// Cocoa: drop Item is null rather than a dye
 			int age = nmsBlock.fromLegacyData(data).get(BlockCocoa.AGE).intValue();
 			int dropAmount = (age >= 2) ? 3 : 1;
-			drops.add(new ItemStack(Material.INK_SACK, dropAmount, DyeColor.BROWN.getDyeData()));
+			drops.add(new ItemStack(Material.COCOA, dropAmount, DyeColor.BROWN.getDyeData()));
 			return drops;
 		}
 
@@ -178,7 +191,7 @@ public class BlockDrops {
 			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
 			TileEntity localTileEntity = nmsWorld.getTileEntity(position);
 			if (localTileEntity instanceof TileEntityBanner) {
-				net.minecraft.server.v1_12_R1.ItemStack nmsStack = ItemBanner.a(
+				net.minecraft.server.v1_13_R1.ItemStack nmsStack = ItemBanner.a(
 						((TileEntityBanner) localTileEntity).color,
 						((TileEntityBanner) localTileEntity).patterns);
 
@@ -194,7 +207,7 @@ public class BlockDrops {
 				TileEntityShulkerBox localTileEntityShulkerBox = (TileEntityShulkerBox) localTileEntity;
 
 				if ((!(localTileEntityShulkerBox.r())) && (localTileEntityShulkerBox.F())) {
-					net.minecraft.server.v1_12_R1.ItemStack nmsStack = new net.minecraft.server.v1_12_R1.ItemStack(Item.getItemOf(nmsBlock));
+					net.minecraft.server.v1_13_R1.ItemStack nmsStack = new net.minecraft.server.v1_13_R1.ItemStack(Item.getItemOf(nmsBlock));
 					NBTTagCompound localNBTTagCompound = new NBTTagCompound();
 
 					localNBTTagCompound.set("BlockEntityTag", ((TileEntityShulkerBox) localTileEntity).f(new NBTTagCompound()));
@@ -209,36 +222,10 @@ public class BlockDrops {
 			}
 		}
 
-		if (Blocks.SKULL == nmsBlock) {
-			// Skull: Set data based on tile entity. See BlockSkull#dropNaturally
-			BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
-			TileEntity tileentity = nmsWorld.getTileEntity(position);
-			net.minecraft.server.v1_12_R1.ItemStack nmsStack;
-			if (tileentity instanceof TileEntitySkull) {
-				TileEntitySkull tileEntitySkull = (TileEntitySkull) tileentity;
-				int skullData = ((TileEntitySkull) tileentity).getSkullType();
+		// TODO: Verify skull functionality
 
-				nmsStack = new net.minecraft.server.v1_12_R1.ItemStack(
-						Items.SKULL, 1, skullData);
-
-				if (skullData == 3 && tileEntitySkull.getGameProfile() != null) {
-					nmsStack.setTag(new NBTTagCompound());
-					NBTTagCompound nbttagcompound = new NBTTagCompound();
-
-					GameProfileSerializer.serialize(nbttagcompound, tileEntitySkull.getGameProfile());
-					nmsStack.getTag().set("SkullOwner", nbttagcompound);
-				}
-			} else {
-				nmsStack = new net.minecraft.server.v1_12_R1.ItemStack(
-						Items.SKULL, 1, 0);
-			}
-
-			drops.add(CraftItemStack.asBukkitCopy(nmsStack));
-			return drops;
-		}
-
-		if (Blocks.WEB == nmsBlock && tool != null && tool == Material.SHEARS) {
-			drops.add(new ItemStack(Material.WEB));
+		if (Blocks.COBWEB == nmsBlock && tool != null && tool.getType() == Material.SHEARS) {
+			drops.add(new ItemStack(Material.COBWEB));
 			return drops;
 		}
 
@@ -256,12 +243,9 @@ public class BlockDrops {
 				(short) nmsBlock.getDropData(nmsBlock.fromLegacyData(data)));
 
 		if (nmsBlock instanceof BlockLeaves) {
-			IBlockData iblockdata = nmsWorld.getType(new BlockPosition(block.getX(), block.getY(), block.getZ()));
-			EnumLogVariant variant = Blocks.LEAVES == nmsBlock
-					? iblockdata.get(BlockLeaves1.VARIANT) : iblockdata.get(BlockLeaves2.VARIANT);
 
-			// See BlockLeaves#i(IBlockData) and BlockLeaves1#i(IBlockData)
-			int dropChanceBase = variant == EnumLogVariant.JUNGLE ? 40 : 20;
+			// See BlockLeaves#j(IBlockData)
+			int dropChanceBase = nmsBlock == Blocks.JUNGLE_LEAVES ? 40 : 20;
 
 			// See BlockLeaves#dropNaturally
 			if (fortune > 0) {
@@ -276,9 +260,10 @@ public class BlockDrops {
 			}
 
 			// Oak and dark oak: Apple chance (BlockLeaves#a)
-			if (variant != EnumLogVariant.OAK && variant != EnumLogVariant.DARK_OAK) {
+			if (nmsBlock != Blocks.OAK_LEAVES && nmsBlock != Blocks.DARK_OAK_LEAVES) {
 				return drops;
 			}
+
 			dropChanceBase = 200;
 			if (fortune > 0) {
 				dropChanceBase -= (10 << fortune);
@@ -292,7 +277,7 @@ public class BlockDrops {
 			return drops;
 		}
 
-		if (nmsBlock instanceof BlockCrops && data >= ((BlockCrops) nmsBlock).g()) {
+		if (nmsBlock instanceof BlockCrops && data >= ((BlockCrops) nmsBlock).d()) {
 			// Base max of 3 seeds
 			int seeds = random.nextInt(4 + fortune);
 			if (seeds == 0) {
@@ -301,7 +286,7 @@ public class BlockDrops {
 			}
 			if (Blocks.WHEAT == nmsBlock) {
 				drops.add(new ItemStack(Material.SEEDS, seeds));
-			} else if (Blocks.BEETROOT == nmsBlock) {
+			} else if (Blocks.BEETROOTS == nmsBlock) {
 				drops.add(new ItemStack(Material.BEETROOT_SEEDS, seeds));
 			} else {
 				// Carrot/potato drop the same ripe product item as seed item

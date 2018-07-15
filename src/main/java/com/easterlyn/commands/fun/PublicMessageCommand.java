@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 /**
  * [privatemessage;Username:BasementHero]:3[/privatemessage]
- * 
+ *
  * @author Jikoo
  */
 public class PublicMessageCommand extends EasterlynCommand {
@@ -30,9 +30,8 @@ public class PublicMessageCommand extends EasterlynCommand {
 		if (args.length < 2) {
 			return false;
 		}
-		((Player) sender).chat(new StringBuilder("[privatemessage;Username:").append(args[0])
-				.append(']').append(StringUtils.join(args, ' ', 1, args.length))
-				.append("[/privatemessage]").toString());
+		((Player) sender).chat("[privatemessage;Username:" + args[0] + ']'
+				+ StringUtils.join(args, ' ', 1, args.length) + "[/privatemessage]");
 		return true;
 	}
 

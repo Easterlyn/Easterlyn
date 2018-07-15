@@ -145,7 +145,7 @@ public class MinecraftModule extends DiscordModule {
 		int lastMatch = 0;
 		while (matcher.find()) {
 			String type = matcher.group(1);
-			sb.append(message.substring(lastMatch, matcher.start())).append(type);
+			sb.append(message, lastMatch, matcher.start()).append(type);
 			long id = Long.parseLong(matcher.group(2));
 			if ("@".equals(type)) {
 				IUser user = getDiscord().getClient().getUserByID(id);

@@ -46,7 +46,8 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -357,7 +358,7 @@ public class Discord extends Module {
 
 	public void queueMessageDeletion(CallPriority priority, Collection<IMessage> messages) {
 		// Bulk delete requires messages to be within the last 14 days. To be safe, we pad our check.
-		LocalDateTime bulkDeleteableBefore = LocalDateTime.now().plusDays(13).plusHours(12);
+		Instant bulkDeleteableBefore = Instant.now().plus(13, ChronoUnit.DAYS).plus(12, ChronoUnit.HOURS);
 		// Collect messages by channel to ensure bulk delete will work.
 		Map<Pair<IChannel, Boolean>, List<IMessage>> messagesByChannel = messages.stream().distinct()
 				.collect(Collectors.groupingBy(

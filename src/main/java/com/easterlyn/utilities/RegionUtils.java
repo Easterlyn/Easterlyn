@@ -9,7 +9,7 @@ import org.bukkit.util.Vector;
 
 /**
  * Enum managing worlds and resource packs.
- * 
+ *
  * @author Jikoo
  */
 public class RegionUtils {
@@ -24,15 +24,15 @@ public class RegionUtils {
 	}
 
 	public static Location calculatePortalDestination(Location from, Material portalType) {
-		if (portalType != Material.PORTAL && portalType != Material.ENDER_PORTAL) {
+		if (portalType != Material.NETHER_PORTAL && portalType != Material.END_PORTAL) {
 			return null;
 		}
 
-		World world = null;
+		World world;
 		double x, y, z;
 		switch (from.getWorld().getName()) {
 		case "Earth":
-			if (portalType == Material.PORTAL) {
+			if (portalType == Material.NETHER_PORTAL) {
 				world = Bukkit.getWorld("Earth_nether");
 				x = from.getX() / 8;
 				y = from.getY();
@@ -40,7 +40,7 @@ public class RegionUtils {
 				break;
 			}
 		case "Earth_nether":
-			if (portalType == Material.PORTAL) {
+			if (portalType == Material.NETHER_PORTAL) {
 				world = Bukkit.getWorld("Earth");
 				x = from.getX() * 8;
 				y = from.getY();
@@ -51,7 +51,7 @@ public class RegionUtils {
 			String baseWorldName = stripToBaseWorldName(from.getWorld().getName());
 			switch (from.getWorld().getEnvironment()) {
 			case NETHER:
-				if (portalType == Material.ENDER_PORTAL) {
+				if (portalType == Material.END_PORTAL) {
 					return null;
 				}
 				world = Bukkit.getWorld(baseWorldName);
@@ -63,7 +63,7 @@ public class RegionUtils {
 				z = from.getZ() * 8;
 				break;
 			case NORMAL:
-				if (portalType == Material.ENDER_PORTAL) {
+				if (portalType == Material.END_PORTAL) {
 					world = Bukkit.getWorld(baseWorldName + "_the_end");
 					return world != null ? world.getSpawnLocation().clone().add(new Vector(0.5, 0.1, 0.5)) : null;
 				}
@@ -72,11 +72,11 @@ public class RegionUtils {
 					return null;
 				}
 				x = from.getX() / 8;
-				y = Math.max(2, Math.min(123, Math.ceil(y = from.getY() / 2.05)));
+				y = Math.max(2, Math.min(123, Math.ceil(from.getY() / 2.05)));
 				z = from.getZ() / 8;
 				break;
 			case THE_END:
-				if (portalType == Material.PORTAL) {
+				if (portalType == Material.NETHER_PORTAL) {
 					return null;
 				}
 				world = Bukkit.getWorld(baseWorldName);
@@ -92,7 +92,7 @@ public class RegionUtils {
 	}
 
 	public static Block getAdjacentPortalBlock(Block block) {
-		if (block.getType() == Material.PORTAL || block.getType() == Material.ENDER_PORTAL) {
+		if (block.getType() == Material.NETHER_PORTAL || block.getType() == Material.END_PORTAL) {
 			return block;
 		}
 		// Player isn't standing inside the portal block, they're next to it or below it.
@@ -104,7 +104,7 @@ public class RegionUtils {
 						continue;
 					}
 					Block maybePortal = block.getRelative(dX, dY, dZ);
-					if (maybePortal.getType() == Material.PORTAL || maybePortal.getType() == Material.ENDER_PORTAL) {
+					if (maybePortal.getType() == Material.NETHER_PORTAL || maybePortal.getType() == Material.END_PORTAL) {
 						return maybePortal;
 					}
 				}
@@ -118,23 +118,23 @@ public class RegionUtils {
 			return null;
 		}
 		double minX = 0;
-		while (portal.getRelative((int) minX - 1, 0, 0).getType() == Material.PORTAL) {
+		while (portal.getRelative((int) minX - 1, 0, 0).getType() == Material.NETHER_PORTAL) {
 			minX -= 1;
 		}
 		double maxX = 0;
-		while (portal.getRelative((int) maxX + 1, 0, 0).getType() == Material.PORTAL) {
+		while (portal.getRelative((int) maxX + 1, 0, 0).getType() == Material.NETHER_PORTAL) {
 			maxX += 1;
 		}
 		double minY = 0;
-		while (portal.getRelative(0, (int) minY - 1, 0).getType() == Material.PORTAL) {
+		while (portal.getRelative(0, (int) minY - 1, 0).getType() == Material.NETHER_PORTAL) {
 			minY -= 1;
 		}
 		double minZ = 0;
-		while (portal.getRelative(0, 0, (int) minZ - 1).getType() == Material.PORTAL) {
+		while (portal.getRelative(0, 0, (int) minZ - 1).getType() == Material.NETHER_PORTAL) {
 			minZ -= 1;
 		}
 		double maxZ = 0;
-		while (portal.getRelative(0, 0, (int) maxZ + 1).getType() == Material.PORTAL) {
+		while (portal.getRelative(0, 0, (int) maxZ + 1).getType() == Material.NETHER_PORTAL) {
 			maxZ += 1;
 		}
 		double x = portal.getX() + (maxX + 1 + minX) / 2.0;

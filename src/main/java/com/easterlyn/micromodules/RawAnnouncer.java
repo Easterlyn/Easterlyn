@@ -1,8 +1,5 @@
 package com.easterlyn.micromodules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
@@ -10,18 +7,19 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.chat.message.Message;
 import com.easterlyn.chat.message.MessageBuilder;
 import com.easterlyn.module.Module;
-
-import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Module for periodic announcements with hover text and click functionality.
- * 
+ *
  * @author Jikoo
  */
 public class RawAnnouncer extends Module {
@@ -53,7 +51,7 @@ public class RawAnnouncer extends Module {
 
 	/**
 	 * Creates a List of all announcements.
-	 * 
+	 *
 	 * @return the List created
 	 */
 	private List<Message> constructAnnouncements() {
@@ -90,7 +88,7 @@ public class RawAnnouncer extends Module {
 		components.add(component);
 
 		builder.setMessage("Wasting time smelting? https://dev.bukkit.org/projects/enchantedfurnace",
-				components.toArray(new TextComponent[components.size()]));
+				components.toArray(new TextComponent[0]));
 		msgs.add(builder.toMessage());
 
 		// Announcement: Discord > all
@@ -111,7 +109,7 @@ public class RawAnnouncer extends Module {
 		components.add(component);
 
 		builder.setMessage("We use http://discord.easterlyn.com for voice chat. Join today!",
-				components.toArray(new TextComponent[components.size()]));
+				components.toArray(new TextComponent[0]));
 		msgs.add(builder.toMessage());
 
 		// Announcement: Protect your stuff
@@ -133,7 +131,7 @@ public class RawAnnouncer extends Module {
 		components.add(component);
 
 		builder.setMessage("Please claim your builds! Proper protections greatly reduce staff strain.",
-				components.toArray(new TextComponent[components.size()]));
+				components.toArray(new TextComponent[0]));
 		msgs.add(builder.toMessage());
 
 		// Announcement: Use /report ffs
@@ -154,7 +152,7 @@ public class RawAnnouncer extends Module {
 		components.add(component);
 
 		builder.setMessage("Found grief or a bug? Please /report issues so we can help!",
-				components.toArray(new TextComponent[components.size()]));
+				components.toArray(new TextComponent[0]));
 		msgs.add(builder.toMessage());
 
 		// Announcement: Protect your stuff redux
@@ -187,7 +185,7 @@ public class RawAnnouncer extends Module {
 		components.add(component);
 
 		builder.setMessage("Always use protection! If you can't claim an area, at lease use /lwc!",
-				components.toArray(new TextComponent[components.size()]));
+				components.toArray(new TextComponent[0]));
 		msgs.add(builder.toMessage());
 
 		return msgs;

@@ -1,5 +1,12 @@
 package com.easterlyn.chat;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.discord.Discord;
+import com.easterlyn.module.Module;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
@@ -12,18 +19,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.easterlyn.Easterlyn;
-import com.easterlyn.discord.Discord;
-import com.easterlyn.module.Module;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import net.md_5.bungee.api.ChatColor;
-
 /**
  * A module for language adjustments.
- * 
+ *
  * @author Jikoo
  */
 public class Language extends Module {
@@ -89,9 +87,9 @@ public class Language extends Module {
 
 	/**
 	 * Gets a ChatColor by its definition.
-	 * 
+	 *
 	 * @param path the definition of the color.
-	 * 
+	 *
 	 * @return the ChatColor, or white if invalid
 	 */
 	public static ChatColor getColor(String path) {
@@ -104,9 +102,9 @@ public class Language extends Module {
 
 	/**
 	 * Gets a customizable String for the given path.
-	 * 
+	 *
 	 * @param path the identifying path
-	 * 
+	 *
 	 * @return the String represented or the given path if nonexistent
 	 */
 	public String getValue(String path) {
@@ -115,10 +113,10 @@ public class Language extends Module {
 
 	/**
 	 * Gets a customizable String for the given path.
-	 * 
+	 *
 	 * @param path the identifying path
 	 * @param defaultValue the default value to use if the path is not present
-	 * 
+	 *
 	 * @return the String represented or the given path if nonexistent
 	 */
 	public String getValue(String path, String defaultValue) {
@@ -128,10 +126,10 @@ public class Language extends Module {
 	/**
 	 * Gets a customizable String for the given path with the option to do additional replacements
 	 * for various variables.
-	 * 
+	 *
 	 * @param path the identifying path
 	 * @param addExtraValues true if additional replacement is to be done
-	 * 
+	 *
 	 * @return the String represented or the given path if nonexistent
 	 */
 	public String getValue(String path, boolean addExtraValues) {
@@ -141,11 +139,11 @@ public class Language extends Module {
 	/**
 	 * Gets a customizable String for the given path with the option to do additional replacements
 	 * for various variables.
-	 * 
+	 *
 	 * @param path the identifying path
 	 * @param defaultValue the default value to use if the path is not present
 	 * @param addExtraValues true if additional replacement is to be done
-	 * 
+	 *
 	 * @return the String represented or the given path if nonexistent
 	 */
 	public String getValue(String path, String defaultValue, boolean addExtraValues) {
@@ -171,7 +169,7 @@ public class Language extends Module {
 		int lastIndex = 0;
 		StringBuilder builder = new StringBuilder();
 		while (matcher.find()) {
-			builder.append(content.substring(lastIndex, matcher.start()));
+			builder.append(content, lastIndex, matcher.start());
 			builder.append(this.getSpecialContent(matcher.group(1), matcher.group(2)));
 			lastIndex = matcher.end();
 		}

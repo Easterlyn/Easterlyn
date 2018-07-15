@@ -30,7 +30,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 /**
  * Listener for PlayerInteractEvents.
- * 
+ *
  * @author Jikoo
  */
 public class InteractListener extends EasterlynListener {
@@ -52,7 +52,7 @@ public class InteractListener extends EasterlynListener {
 
 		this.bypassable = new HashSet<>();
 		for (Material material : Material.values()) {
-			if (!material.isOccluding() && material != Material.WATER && material != Material.STATIONARY_WATER) {
+			if (!material.isOccluding() && material != Material.WATER) {
 				this.bypassable.add(material);
 			}
 		}
@@ -84,7 +84,7 @@ public class InteractListener extends EasterlynListener {
 
 	/**
 	 * The event handler for PlayerInteractEvents.
-	 * 
+	 *
 	 * @param event the PlayerInteractEvent
 	 */
 	@EventHandler
@@ -119,7 +119,7 @@ public class InteractListener extends EasterlynListener {
 		if (held.getType() == Material.GLASS_BOTTLE
 				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottle") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight(bypassable, 4)) {
-				if (block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
+				if (block.getType() == Material.WATER) {
 					return;
 				}
 			}
@@ -129,7 +129,7 @@ public class InteractListener extends EasterlynListener {
 				Experience.changeExp(event.getPlayer(), -11);
 				InventoryUtils.setHeldItem(inv, mainHand, InventoryUtils.decrement(held, 1));
 				event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(),
-						new ItemStack(Material.EXP_BOTTLE, 1)).setPickupDelay(0);
+						new ItemStack(Material.EXPERIENCE_BOTTLE, 1)).setPickupDelay(0);
 				return;
 			}
 		}
@@ -154,10 +154,10 @@ public class InteractListener extends EasterlynListener {
 
 	/**
 	 * Check if a Block has a right click action.
-	 * 
+	 *
 	 * @param block the Block to check
-	 * 
-	 * @return true if right clicking the block without sneaking will cause 
+	 *
+	 * @return true if right clicking the block without sneaking will cause
 	 */
 	private boolean hasRightClickFunction(Block block, ItemStack hand) {
 		switch (block.getType()) {
@@ -222,7 +222,7 @@ public class InteractListener extends EasterlynListener {
 		case LIME_SHULKER_BOX:
 		case PINK_SHULKER_BOX:
 		case GRAY_SHULKER_BOX:
-		case SILVER_SHULKER_BOX:
+		case LIGHT_GRAY_SHULKER_BOX:
 		case CYAN_SHULKER_BOX:
 		case PURPLE_SHULKER_BOX:
 		case BLUE_SHULKER_BOX:

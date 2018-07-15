@@ -6,11 +6,9 @@ import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
-import com.easterlyn.machines.Machines;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.PermissionUtils;
-
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,20 +19,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Listener for CraftItemEvents.
- * 
+ *
  * @author Jikoo
  */
 public class CraftItemListener extends EasterlynListener {
 
 	private final Events events;
 	private final Language lang;
-	private final Machines machines;
 
 	public CraftItemListener(Easterlyn plugin) {
 		super(plugin);
 		this.events = plugin.getModule(Events.class);
 		this.lang = plugin.getModule(Language.class);
-		this.machines = plugin.getModule(Machines.class);
 
 		PermissionUtils.addParent("easterlyn.events.creative.unfiltered", UserRank.MOD.getPermission());
 	}
@@ -42,7 +38,7 @@ public class CraftItemListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for CraftItemEvents on monitor priority.
-	 * 
+	 *
 	 * @param event the CraftItemEvent
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -62,7 +58,7 @@ public class CraftItemListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for CraftItemEvents.
-	 * 
+	 *
 	 * @param event the CraftItemEvent
 	 */
 	@EventHandler(ignoreCancelled = true)

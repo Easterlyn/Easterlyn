@@ -22,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Statistic;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -77,7 +78,7 @@ public class User {
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.uuid = uuid;
 		this.yaml = yaml;
-		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<>());
 		this.lastChat = "";
 		this.violationLevel = new AtomicInteger();
 		this.spamWarned = new AtomicBoolean();
@@ -287,12 +288,11 @@ public class User {
 	 * @return the Player's time ingame
 	 */
 	private String getTimePlayed() {
-		long time = getPlayer().getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
-		long days = time / (24 * 60 * 60 * 20);
-		time -= days * 24 * 60 * 60 * 20;
-		long hours = time / (60 * 60 * 20);
-		time -= hours * 60 * 60 * 20;
-		time = time / (60 * 20);
+		int time = getPlayer().getStatistic(Statistic.PLAY_ONE_MINUTE);
+		int days = time / (24 * 60);
+		time -= days * 24 * 60;
+		int hours = time / (60);
+		time -= hours * 60;
 		DecimalFormat decimalFormat = new DecimalFormat("00");
 		return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
 	}
@@ -422,9 +422,7 @@ public class User {
 			this.sendMessage(lang.getValue("chat.error.private").replace("{CHANNEL}", channel.getName()));
 			return false;
 		}
-		if (!this.getListening().contains(channel.getName())) {
-			this.getListening().add(channel.getName());
-		}
+		this.getListening().add(channel.getName());
 		if (!channel.getListening().contains(this.getUUID())) {
 			channel.getListening().add(this.getUUID());
 			this.getListening().add(channel.getName());
@@ -906,9 +904,7 @@ public class User {
 		Channel currentChannel = user.manager.getChannel(yaml.getString("chat.current", "#"));
 		if (currentChannel != null && !currentChannel.isBanned(user) && currentChannel.isApproved(user)) {
 			user.currentChannel = currentChannel.getName();
-			if (!user.getListening().contains(currentChannel.getName())) {
-				user.getListening().add(currentChannel.getName());
-			}
+			user.getListening().add(currentChannel.getName());
 		}
 		user.getListening().addAll((HashSet<String>) yaml.get("chat.listening"));
 		return user;

@@ -1,19 +1,18 @@
 package com.easterlyn.commands.cheat;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommandAlias;
 import com.easterlyn.users.UserRank;
-
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 /**
  * EasterlynCommandAlias for spawning or changing a skull to a particular owner.
- * 
+ *
  * @author Jikoo
  */
 public class SkullCommand extends EasterlynCommandAlias {
@@ -46,8 +45,8 @@ public class SkullCommand extends EasterlynCommandAlias {
 		newArgs[1] = args[0];
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand == null || hand.getType() != Material.SKULL_ITEM) {
-			player.getInventory().setItemInMainHand(new ItemStack(Material.SKULL_ITEM, 1, (short) 3));
+		if (hand == null || hand.getType() != Material.PLAYER_HEAD) {
+			player.getInventory().setItemInMainHand(new ItemStack(Material.PLAYER_HEAD, 1, (short) 3));
 			if (hand != null && hand.getType() != Material.AIR) {
 				player.getLocation().getWorld().dropItem(player.getLocation(), hand).setPickupDelay(0);
 			}

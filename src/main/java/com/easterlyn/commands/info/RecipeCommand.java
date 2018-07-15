@@ -1,16 +1,12 @@
 package com.easterlyn.commands.info;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.utilities.InventoryUtils;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -22,15 +18,17 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
+import java.util.List;
+
 /**
  * Better recipe lookup.
- * 
+ *
  * @author Jikoo
  */
 public class RecipeCommand extends EasterlynCommand {
 
 	public RecipeCommand(Easterlyn plugin) {
-		super(plugin, "recipe");
+		super(plugin, "unknowncommand");
 		this.setDescription("Check a recipe");
 		this.setUsage("/recipe <material>[:data] [page] - check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
 	}

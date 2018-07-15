@@ -6,12 +6,10 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.InventoryUtils;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.material.Dye;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,7 +24,7 @@ import java.util.List;
 public class VillagerAdjustment extends Module {
 
 	private enum CurrencyType {
-		LAPIS(new Dye(DyeColor.BLUE).toItemStack(), 1),
+		LAPIS(new ItemStack(Material.LAPIS_LAZULI), 1),
 		LAPIS_BLOCK(new ItemStack(Material.LAPIS_BLOCK), 9),
 		EMERALD(new ItemStack(Material.EMERALD), 81),
 		EMERALD_BLOCK(new ItemStack(Material.EMERALD), 729),

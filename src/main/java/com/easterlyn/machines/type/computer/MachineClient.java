@@ -16,7 +16,7 @@ import net.md_5.bungee.api.ChatColor;
 /**
  * A Program allowing a Player to obtain Machines provided they have passed a certain
  * ProgressionState.
- * 
+ *
  * @author Jikoo
  */
 public class MachineClient extends Program {
@@ -25,7 +25,7 @@ public class MachineClient extends Program {
 
 	public MachineClient(Machines machines) {
 		super(machines);
-		icon = new ItemStack(Material.WORKBENCH);
+		icon = new ItemStack(Material.CRAFTING_TABLE);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "MachineClient");
 		icon.setItemMeta(meta);
@@ -48,9 +48,6 @@ public class MachineClient extends Program {
 
 		MachinePurchase purchase = (MachinePurchase) Programs.getProgramByName("MachinePurchase");
 //		top.setItem(1, purchase.getIconForMachine(getMachines().getMachineByName("Dublexor")));
-		top.setItem(3, purchase.getIconForMachine(getMachines().getMachineByName("Transportalizer")));
-		top.setItem(5, purchase.getIconForMachine(getMachines().getMachineByName("Elevator")));
-		top.setItem(7, purchase.getIconForMachine(getMachines().getMachineByName("CompilationAmalgamator")));
 
 		top.setItem(17, Programs.getProgramByName("Back").getIcon());
 		InventoryUtils.changeWindowName(player, "Machine Client");

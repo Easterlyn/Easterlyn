@@ -14,7 +14,7 @@ import java.util.ListIterator;
 
 /**
  * Wrapper for overriding the new getLocation method for an Inventory.
- * 
+ *
  * @author Jikoo
  */
 public class BlockInventoryWrapper implements Inventory {
@@ -30,12 +30,6 @@ public class BlockInventoryWrapper implements Inventory {
 	@Override
 	public HashMap<Integer, ItemStack> addItem(ItemStack... items) throws IllegalArgumentException {
 		return inventory.addItem(items);
-	}
-
-	@Override
-	@Deprecated
-	public HashMap<Integer, ? extends ItemStack> all(int materialId) {
-		return inventory.all(materialId);
 	}
 
 	@Override
@@ -60,12 +54,6 @@ public class BlockInventoryWrapper implements Inventory {
 	}
 
 	@Override
-	@Deprecated
-	public boolean contains(int materialId) {
-		return inventory.contains(materialId);
-	}
-
-	@Override
 	public boolean contains(Material material) throws IllegalArgumentException {
 		return inventory.contains(material);
 	}
@@ -73,12 +61,6 @@ public class BlockInventoryWrapper implements Inventory {
 	@Override
 	public boolean contains(ItemStack item) {
 		return inventory.contains(item);
-	}
-
-	@Override
-	@Deprecated
-	public boolean contains(int materialId, int amount) {
-		return inventory.contains(materialId, amount);
 	}
 
 	@Override
@@ -94,12 +76,6 @@ public class BlockInventoryWrapper implements Inventory {
 	@Override
 	public boolean containsAtLeast(ItemStack item, int amount) {
 		return inventory.containsAtLeast(item, amount);
-	}
-
-	@Override
-	@Deprecated
-	public int first(int materialId) {
-		return inventory.first(materialId);
 	}
 
 	@Override
@@ -175,12 +151,6 @@ public class BlockInventoryWrapper implements Inventory {
 	@Override
 	public ListIterator<ItemStack> iterator(int index) {
 		return inventory.iterator(index);
-	}
-
-	@Override
-	@Deprecated
-	public void remove(int materialId) {
-		inventory.remove(materialId);
 	}
 
 	@Override

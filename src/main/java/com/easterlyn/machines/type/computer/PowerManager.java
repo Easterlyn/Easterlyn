@@ -37,13 +37,13 @@ public class PowerManager extends Program {
 		super(machines);
 		this.effects = machines.getPlugin().getModule(Effects.class);
 		this.users = machines.getPlugin().getModule(Users.class);
-		icon = new ItemStack(Material.FIREWORK);
+		icon = new ItemStack(Material.FIREWORK_ROCKET);
 		ItemMeta meta = icon.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + "PowerManager");
 		meta.setLore(Collections.singletonList(ChatColor.WHITE + "Manage Godtier powers!"));
 		icon.setItemMeta(meta);
 
-		installer = new ItemStack(Material.RECORD_12);
+		installer = new ItemStack(Material.MUSIC_DISC_11);
 		meta = installer.getItemMeta();
 		meta.setDisplayName(ChatColor.DARK_RED + "Temporary PowerManager Installer");
 		installer.setItemMeta(meta);

@@ -9,8 +9,7 @@ import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.micromodules.Holograms;
 import com.easterlyn.micromodules.ParticleUtils;
-
-import org.bukkit.DyeColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -26,11 +25,9 @@ import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
-
 /**
  * Automatic Saros fun times.
- * 
+ *
  * @author Jikoo
  */
 public class RepairShrine extends Machine {
@@ -159,7 +156,7 @@ public class RepairShrine extends Machine {
 		shape.setVectorData(new Vector(0, 0, 0), matData);
 
 		// Central carpet
-		matData = shape.new MaterialDataValue(Material.CARPET, DyeColor.RED.getWoolData());
+		matData = shape.new MaterialDataValue(Material.RED_CARPET);
 		shape.setVectorData(new Vector(0, 1, 0), matData);
 
 		// Central glass
@@ -192,13 +189,13 @@ public class RepairShrine extends Machine {
 		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.EAST, "stair");
 		shape.setVectorData(new Vector(-2, 5, 0), matData);
 
-		matData = shape.new MaterialDataValue(Material.STONE_SLAB2);
+		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_SLAB);
 		shape.setVectorData(new Vector(0, 6, 1), matData);
 		shape.setVectorData(new Vector(1, 6, 0), matData);
 		shape.setVectorData(new Vector(0, 6, -1), matData);
 		shape.setVectorData(new Vector(-1, 6, 0), matData);
 
-		drop = new ItemStack(Material.STAINED_GLASS, 1, DyeColor.RED.getWoolData());
+		drop = new ItemStack(Material.RED_STAINED_GLASS);
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "RepairShrine");
 		drop.setItemMeta(meta);

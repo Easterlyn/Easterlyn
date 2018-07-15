@@ -11,7 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 /**
  * Effect for removing all ores adjacent to a mined block.
- * 
+ *
  * @author Jikoo
  */
 public class EffectNoSpectateOres extends EffectAdjacentBlockPlacement {
@@ -29,7 +29,7 @@ public class EffectNoSpectateOres extends EffectAdjacentBlockPlacement {
 
 	@Override
 	protected boolean handleAdjacentBlock(Player player, Block block) {
-		if (block.getType() == Material.QUARTZ_ORE) {
+		if (block.getType() == Material.NETHER_QUARTZ_ORE) {
 			block.setType(Material.NETHERRACK);
 			return true;
 		}

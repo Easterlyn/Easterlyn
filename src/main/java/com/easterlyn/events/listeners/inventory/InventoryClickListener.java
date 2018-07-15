@@ -31,7 +31,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Listener for InventoryClickEvents.
- * 
+ *
  * @author Jikoo
  */
 public class InventoryClickListener extends EasterlynListener {
@@ -49,7 +49,7 @@ public class InventoryClickListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for all InventoryClickEvents.
-	 * 
+	 *
 	 * @param event the InventoryClickEvent
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -57,7 +57,7 @@ public class InventoryClickListener extends EasterlynListener {
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
 
 		// Finds inventories of physical blocks opened by Machines
-		if (ih != null && ih instanceof BlockState) {
+		if (ih instanceof BlockState) {
 			Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(((BlockState) ih).getBlock());
 			if (pair != null) {
 				event.setCancelled(pair.getLeft().handleClick(event, pair.getRight()));
@@ -73,7 +73,7 @@ public class InventoryClickListener extends EasterlynListener {
 
 		// Lowest priority Machine check, one with no identifying block
 		Machine m;
-		if (ih != null && ih instanceof Machine) {
+		if (ih instanceof Machine) {
 			m = (Machine) ih;
 			event.setCancelled(m.handleClick(event, null));
 			return;
@@ -229,7 +229,7 @@ public class InventoryClickListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for inventory clicks that are guaranteed to have occurred.
-	 * 
+	 *
 	 * @param event the InventoryClickEvent
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

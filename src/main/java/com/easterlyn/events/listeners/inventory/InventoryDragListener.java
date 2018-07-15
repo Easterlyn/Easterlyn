@@ -18,7 +18,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 /**
  * Listener for InventoryDragEvents.
- * 
+ *
  * @author Jikoo
  */
 public class InventoryDragListener extends EasterlynListener {
@@ -35,7 +35,7 @@ public class InventoryDragListener extends EasterlynListener {
 		InventoryHolder ih = event.getView().getTopInventory().getHolder();
 
 		// Finds inventories of physical blocks opened by Machines
-		if (ih != null && ih instanceof BlockState) {
+		if (ih instanceof BlockState) {
 			Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(((BlockState) ih).getBlock());
 			if (pair != null) {
 				event.setCancelled(pair.getLeft().handleClick(event, pair.getRight()));
@@ -50,7 +50,7 @@ public class InventoryDragListener extends EasterlynListener {
 		}
 
 		// Lowest priority Machine check, one with no identifying block
-		if (ih != null && ih instanceof Machine) {
+		if (ih instanceof Machine) {
 			event.setCancelled(((Machine) ih).handleClick(event, null));
 			return;
 		}

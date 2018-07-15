@@ -13,12 +13,13 @@ import com.easterlyn.machines.type.Machine;
 import com.google.common.collect.HashMultimap;
 import io.netty.buffer.Unpooled;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_12_R1.EntityPlayer;
-import net.minecraft.server.v1_12_R1.MerchantRecipe;
-import net.minecraft.server.v1_12_R1.MerchantRecipeList;
-import net.minecraft.server.v1_12_R1.PacketDataSerializer;
-import net.minecraft.server.v1_12_R1.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_12_R1.PacketPlayOutSetSlot;
+import net.minecraft.server.v1_13_R1.EntityPlayer;
+import net.minecraft.server.v1_13_R1.MerchantRecipe;
+import net.minecraft.server.v1_13_R1.MerchantRecipeList;
+import net.minecraft.server.v1_13_R1.MinecraftKey;
+import net.minecraft.server.v1_13_R1.PacketDataSerializer;
+import net.minecraft.server.v1_13_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_13_R1.PacketPlayOutSetSlot;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,13 +27,22 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
@@ -690,8 +700,8 @@ public class InventoryUtils {
 			// We can't just remove the recipe in case the client has changed to a higher number
 			// recipe - it cannot handle a reduction below its current recipe number.
 			boolean hasNoResult = recipe.getRight() == null || recipe.getRight().getType() == Material.AIR;
-			list.add(new MerchantRecipe(hasNoResult ? net.minecraft.server.v1_12_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getLeft()),
-					hasNoResult ? net.minecraft.server.v1_12_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getMiddle()),
+			list.add(new MerchantRecipe(hasNoResult ? net.minecraft.server.v1_13_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getLeft()),
+					hasNoResult ? net.minecraft.server.v1_13_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getMiddle()),
 							CraftItemStack.asNMSCopy(recipe.getRight())));
 		}
 
@@ -705,7 +715,7 @@ public class InventoryUtils {
 			return;
 		}
 		list.a(out);
-		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", out));
+		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload(new MinecraftKey("MC|TrList"), out));
 	}
 
 	public static String recipeToText(Recipe recipe) {

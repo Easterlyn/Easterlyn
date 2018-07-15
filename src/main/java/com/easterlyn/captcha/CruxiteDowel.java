@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 /**
  * A class for handling all functions of cruxite dowels.
- * 
+ *
  * @author Jikoo
  */
 public class CruxiteDowel {
@@ -42,7 +42,7 @@ public class CruxiteDowel {
 	private static final ItemStack DOWEL_ITEM;
 
 	static {
-		DOWEL_ITEM = new ItemStack(Material.NETHER_BRICK_ITEM);
+		DOWEL_ITEM = new ItemStack(Material.NETHER_BRICK);
 		ItemMeta meta = DOWEL_ITEM.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Cruxite Totem");
 		meta.setLore(Collections.singletonList(Captcha.HASH_PREFIX + "00000000"));
@@ -58,7 +58,7 @@ public class CruxiteDowel {
 	}
 
 	public static boolean isDowel(ItemStack is) {
-		return is != null && is.getType() == Material.NETHER_BRICK_ITEM && is.hasItemMeta()
+		return is != null && is.getType() == Material.NETHER_BRICK && is.hasItemMeta()
 				&& is.getItemMeta().hasLore() && is.getItemMeta().hasDisplayName()
 				&& is.getItemMeta().getDisplayName().equals(ChatColor.WHITE + "Cruxite Totem");
 	}

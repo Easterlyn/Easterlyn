@@ -9,7 +9,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 
 /**
  * Listener for ServerListPingEvents.
- * 
+ *
  * @author Jikoo
  */
 public class ServerListPingListener extends EasterlynListener {
@@ -25,15 +25,11 @@ public class ServerListPingListener extends EasterlynListener {
 	 * The event handler for ServerListPingEvents.
 	 * <p>
 	 * If the IP pinging has played before, customize MOTD with their name.
-	 * 
+	 *
 	 * @param event the ServerListPingEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onServerListPing(ServerListPingEvent event) {
-		if (events.getStatus().hasMOTDChange()) {
-			String MOTD = events.getStatus().getMOTDChange();
-			event.setMotd(MOTD);
-		}
 		String addr = event.getAddress().getHostAddress();
 		String playerName = events.getIPName(addr);
 		if (playerName.equals("Player")) {

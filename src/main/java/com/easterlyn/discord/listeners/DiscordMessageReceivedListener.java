@@ -54,7 +54,7 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 		if (msg.startsWith("/link ")) {
 			String register = msg.substring(6);
 			Object uuid = discord.getAuthCodes().getIfPresent(register);
-			if (uuid == null || !(uuid instanceof UUID)) {
+			if (!(uuid instanceof UUID)) {
 				discord.postMessage(null, "Invalid registration code!", event.getMessage().getChannel().getLongID());
 				return;
 			}
@@ -98,7 +98,7 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 		}
 		if (main) {
 			if (msg.equalsIgnoreCase("cough")) {
-				// Fuck you, Rob. Just use /list or say hi like a normal person.
+				// Just use /list or say hi like a normal person.
 				return;
 			}
 			getMCModule().handleChat(event.getMessage(), sender);

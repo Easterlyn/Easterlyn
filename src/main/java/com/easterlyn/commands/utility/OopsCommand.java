@@ -1,23 +1,21 @@
 package com.easterlyn.commands.utility;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.DiscordPlayer;
-
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Command to fix mistakes in the name of the last issued command.
- * 
+ *
  * @author Jikoo
  */
 public class OopsCommand extends EasterlynCommand {
@@ -47,7 +45,7 @@ public class OopsCommand extends EasterlynCommand {
 		String command = getMatchingCommand(sender, commandName);
 		if (command == null) {
 			// Valid or severely invalid command
-			if (!aliases.contains(commandName) && oopsCommands.containsKey(sender.getName())) {
+			if (!aliases.contains(commandName)) {
 				oopsCommands.remove(sender.getName());
 			}
 			return false;

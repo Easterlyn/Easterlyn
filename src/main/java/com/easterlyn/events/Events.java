@@ -2,12 +2,8 @@ package com.easterlyn.events;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.Chat;
-import com.easterlyn.chat.Language;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.events.packets.SyncPacketAdapter;
-import com.easterlyn.events.session.Status;
-import com.easterlyn.events.session.StatusCheck;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.ImmutableList;
@@ -22,15 +18,24 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.bukkit.Material.*;
 
 /**
  * The main Module for all events handled by the plugin.
- * 
+ *
  * @author Jikoo
  */
 public class Events extends Module {
@@ -42,10 +47,6 @@ public class Events extends Module {
 	private final List<String> spamhausWhitelist;
 	private final EnumSet<Material> creativeBlacklist;
 
-	private Chat chat;
-	private Status status;
-	private int statusResample = 0;
-
 	public Events(Easterlyn plugin) {
 		super(plugin);
 		this.pvp = new HashMap<>();
@@ -54,24 +55,21 @@ public class Events extends Module {
 		this.blockUpdateManager = new BlockUpdateManager(plugin);
 		this.spamhausWhitelist = new CopyOnWriteArrayList<>(this.getConfig().getStringList("spamWhitelist"));
 
-		creativeBlacklist = EnumSet.of(ACTIVATOR_RAIL, BARRIER, BEACON, BED_BLOCK, BEDROCK,
-				BEETROOT_BLOCK, BURNING_FURNACE, CAKE_BLOCK, CARROT, COCOA, COMMAND, COMMAND_CHAIN,
-				COMMAND_MINECART, COMMAND_REPEATING, CROPS, DAYLIGHT_DETECTOR_INVERTED,
-				DETECTOR_RAIL, DIODE_BLOCK_OFF, DIODE_BLOCK_ON, DOUBLE_STEP, DOUBLE_STONE_SLAB2,
-				PURPUR_DOUBLE_SLAB, END_CRYSTAL, END_GATEWAY, ENDER_PORTAL, ENDER_PORTAL_FRAME,
-				EXPLOSIVE_MINECART, FIRE, FLOWER_POT, HOPPER_MINECART, IRON_DOOR_BLOCK, JUKEBOX,
-				LAVA, MELON_STEM, MINECART, MOB_SPAWNER, MONSTER_EGG, MONSTER_EGGS, NETHER_WARTS,
-				PISTON_EXTENSION, PISTON_MOVING_PIECE, PORTAL, POTATO, POWERED_MINECART,
-				POWERED_RAIL, PUMPKIN_STEM, RAILS, REDSTONE_COMPARATOR_OFF, REDSTONE_COMPARATOR_ON,
-				REDSTONE_LAMP_ON, REDSTONE_TORCH_OFF, SIGN_POST, SKULL, SOIL, STANDING_BANNER,
-				STATIONARY_LAVA, STATIONARY_WATER, STORAGE_MINECART, STRUCTURE_BLOCK,
-				STRUCTURE_VOID, SUGAR_CANE_BLOCK, TNT, TRIPWIRE, WALL_BANNER, WALL_SIGN, WATER,
-				WOOD_DOUBLE_STEP, WOODEN_DOOR);
+		creativeBlacklist = EnumSet.of(ACTIVATOR_RAIL, BARRIER, BEACON, BEDROCK,
+				BEETROOTS, CARROTS, COCOA, COMMAND_BLOCK, CHAIN_COMMAND_BLOCK,
+				COMMAND_BLOCK_MINECART, REPEATING_COMMAND_BLOCK,
+				DETECTOR_RAIL, END_CRYSTAL, END_GATEWAY, END_PORTAL, END_PORTAL_FRAME,
+				TNT_MINECART, FIRE, FLOWER_POT, HOPPER_MINECART, JUKEBOX,
+				LAVA, MELON_STEM, MINECART, SPAWNER,
+				PISTON_HEAD, MOVING_PISTON, NETHER_PORTAL, POTATOES, FURNACE_MINECART,
+				POWERED_RAIL, PUMPKIN_STEM, RAIL, WALL_SIGN, PLAYER_WALL_HEAD, FARMLAND, CHEST_MINECART, STRUCTURE_BLOCK,
+				STRUCTURE_VOID, TNT, TRIPWIRE, WALL_SIGN, WATER);
+		// TODO: _WALL_BANNER, _BED, _SPAWN_EGG
 	}
 
 	@Override
 	protected void onEnable() {
-		this.chat = this.getPlugin().getModule(Chat.class);
+
 		File file = new File(getPlugin().getDataFolder(), "ipcache.yml");
 		if (file.exists()) {
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
@@ -79,9 +77,6 @@ public class Events extends Module {
 				ipcache.put(ip.replace("_", "."), yaml.getString(ip));
 			}
 		}
-
-		status = Status.NEITHER;
-		new StatusCheck().runTaskTimerAsynchronously(getPlugin(), 100L, 1200L);
 
 		Reflections reflections = new Reflections("com.easterlyn.events.listeners");
 		Set<Class<? extends EasterlynListener>> listeners = reflections.getSubTypesOf(EasterlynListener.class);
@@ -154,10 +149,8 @@ public class Events extends Module {
 	 */
 	public void addCachedIP(String ip, String name) {
 		synchronized (ipcache) {
-			if (ipcache.containsKey(ip)) {
-				// LinkedHashMaps replace the existing element, preserving order. We want latest logins last.
-				ipcache.remove(ip);
-			}
+			// LinkedHashMaps replace the existing element, preserving order. We want latest logins last.
+			ipcache.remove(ip);
 			ipcache.put(ip, name);
 
 			// Clear oldest cached IPs
@@ -171,9 +164,9 @@ public class Events extends Module {
 
 	/**
 	 * Get all cached IPs for a UUID.
-	 * 
+	 *
 	 * @param uuid the UUID
-	 * 
+	 *
 	 * @return a Collection of all matching IPs.
 	 */
 	public Collection<String> getIPsFor(UUID uuid) {
@@ -186,9 +179,9 @@ public class Events extends Module {
 
 	/**
 	 * Get all cached IPs for a name.
-	 * 
+	 *
 	 * @param name the name
-	 * 
+	 *
 	 * @return a Collection of all matching IPs.
 	 */
 	public Collection<String> getIPsFor(String name) {
@@ -201,46 +194,6 @@ public class Events extends Module {
 			}
 			return list;
 		}
-	}
-
-	/**
-	 * Change the Status of Minecraft's servers.
-	 * <p>
-	 * If a service is down, this will announce the issue to all players and set
-	 * a relevant MOTD.
-	 * 
-	 * @param status the Status
-	 */
-	public void changeStatus(Status status) {
-		if (status == this.status) {
-			statusResample = 0;
-			return;
-		}
-		if (statusResample < 5) {
-			// less spam - must have status change 5 times in a row to announce.
-			statusResample++;
-			new StatusCheck().runTaskLaterAsynchronously(getPlugin(), 50L);
-			return;
-		}
-		String announcement = null;
-		if (status.hasAnnouncement()) {
-			announcement = status.getAnnouncement();
-		} else {
-			announcement = this.status.getAllClear();
-		}
-		if (announcement != null) {
-			this.chat.getHalBase().setMessage(Language.getColor("bot_text") + announcement)
-					.toMessage().send(Bukkit.getOnlinePlayers(), true, false);
-			this.statusResample = 0;
-		}
-		this.status = status;
-	}
-
-	/**
-	 * Gets the current Status.
-	 */
-	public Status getStatus() {
-		return status;
 	}
 
 	public InvisibilityManager getInvisibilityManager() {

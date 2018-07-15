@@ -1,8 +1,5 @@
 package com.easterlyn.machines.type.computer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
@@ -10,17 +7,16 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.Users;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Wool;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -37,18 +33,14 @@ public class GodtierToggle extends Program {
 		super(machines);
 		this.effects = machines.getPlugin().getModule(Effects.class);
 		this.users = machines.getPlugin().getModule(Users.class);
-		Wool wool = new Wool();
-		wool.setColor(DyeColor.LIME);
-		icon = wool.toItemStack();
-		icon.setAmount(1);
 
-		wool.setColor(DyeColor.RED);
-		icoff = wool.toItemStack();
-		icoff.setAmount(1);
+		icon = new ItemStack(Material.LIME_WOOL);
+		icoff = new ItemStack(Material.RED_WOOL);
 
-		ItemMeta meta = Bukkit.getItemFactory().getItemMeta(Material.WOOL);
+		ItemMeta meta = Bukkit.getItemFactory().getItemMeta(Material.WHITE_WOOL);
 		meta.setDisplayName(ChatColor.YELLOW + "Toggle " + ChatColor.GREEN + "ON"
 				+ ChatColor.YELLOW + " or " + ChatColor.RED + "OFF");
+
 		icon.setItemMeta(meta);
 		icoff.setItemMeta(meta);
 	}

@@ -15,7 +15,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 /**
  * Listener for InventoryPickupItemEvents.
- * 
+ *
  * @author Jikoo
  */
 public class InventoryPickupItemListener extends EasterlynListener {
@@ -29,13 +29,13 @@ public class InventoryPickupItemListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for when hoppers pick up items.
-	 * 
+	 *
 	 * @param event the InventoryPickupItemEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryMoveItem(InventoryPickupItemEvent event) {
 		InventoryHolder ih = event.getInventory().getHolder();
-		if (ih != null && ih instanceof BlockState) {
+		if (ih instanceof BlockState) {
 			Pair<Machine, ConfigurationSection> pair = machines.getMachineByBlock(((BlockState) ih).getBlock());
 			if (pair != null) {
 				event.setCancelled(pair.getLeft().handleHopperPickupItem(event, pair.getRight()));

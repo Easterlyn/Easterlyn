@@ -1,16 +1,10 @@
 package com.easterlyn.machines.type.computer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Elevator;
 import com.easterlyn.machines.type.Machine;
-
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -18,11 +12,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Wool;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Counterpart to GoodButton.
- * 
+ *
  * @author Jikoo
  */
 public class BadButton extends Program {
@@ -32,10 +28,7 @@ public class BadButton extends Program {
 	public BadButton(Machines machines) {
 		super(machines);
 
-		Wool wool = new Wool(Material.STAINED_GLASS_PANE);
-		wool.setColor(DyeColor.RED);
-		icon = wool.toItemStack();
-		icon.setAmount(1);
+		icon = new ItemStack(Material.RED_STAINED_GLASS);
 	}
 
 	@Override

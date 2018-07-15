@@ -53,7 +53,7 @@ public class EffectVacuum extends Effect implements BehaviorActive { // TODO god
 					}
 					near.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, near.getLocation(), 1);
 					near.teleport(player);
-					player.playSound(near.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.2F, 1.5F);
+					player.playSound(near.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.2F, 1.5F);
 					Item item = (Item) near;
 					if (item.getPickupDelay() < 1000) {
 						item.setPickupDelay(0);

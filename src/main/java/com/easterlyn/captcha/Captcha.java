@@ -48,7 +48,6 @@ public class Captcha extends Module {
 	private final LoadingCache<String, ItemStack> cache;
 
 	private Effects effects;
-	private Machines machines;
 
 	public Captcha(Easterlyn plugin) {
 		super(plugin);
@@ -92,9 +91,8 @@ public class Captcha extends Module {
 		Bukkit.addRecipe(captchaRecipe);
 
 		this.effects = this.getPlugin().getModule(Effects.class);
-		this.machines = this.getPlugin().getModule(Machines.class);
 
-		addCustomHash("00000000", this.machines.getMachineByName("PGO").getUniqueDrop());
+		addCustomHash("00000000", this.getPlugin().getModule(Machines.class).getMachineByName("PGO").getUniqueDrop());
 	}
 
 	public boolean addCustomHash(String hash, ItemStack item) {

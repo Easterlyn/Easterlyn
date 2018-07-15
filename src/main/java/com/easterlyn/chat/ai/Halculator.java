@@ -1,5 +1,15 @@
 package com.easterlyn.chat.ai;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.chat.Language;
+import com.easterlyn.chat.message.Message;
+import com.easterlyn.chat.message.MessageBuilder;
+import com.easterlyn.utilities.JSONUtil;
+import com.sk89q.worldedit.internal.expression.Expression;
+import com.sk89q.worldedit.internal.expression.ExpressionException;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.entity.Player;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,22 +17,9 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.Language;
-import com.easterlyn.chat.message.Message;
-import com.easterlyn.chat.message.MessageBuilder;
-import com.easterlyn.utilities.JSONUtil;
-
-import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.ExpressionException;
-
-import org.bukkit.entity.Player;
-
-import net.md_5.bungee.api.ChatColor;
-
 /**
  * HalMessageHandler for math functions.
- * 
+ *
  * @author Jikoo
  */
 public class Halculator extends HalMessageHandler {

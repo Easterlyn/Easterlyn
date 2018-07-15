@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 
 /**
  * Listener for PlayerPortalEvents.
- * 
+ *
  * @author Jikoo
  */
 public class PortalListener extends EasterlynListener {
@@ -35,7 +35,7 @@ public class PortalListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for PlayerPortalEvents.
-	 * 
+	 *
 	 * @param event the PlayerPortalEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
@@ -51,7 +51,7 @@ public class PortalListener extends EasterlynListener {
 			return;
 		}
 
-		event.useTravelAgent(fromPortal.getType() == Material.PORTAL);
+		event.useTravelAgent(fromPortal.getType() == Material.NETHER_PORTAL);
 
 		if (event.useTravelAgent()) {
 			// Reset agent for reuse in case other plugins changed values.

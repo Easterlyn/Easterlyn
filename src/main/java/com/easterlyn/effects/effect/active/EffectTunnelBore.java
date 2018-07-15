@@ -1,9 +1,5 @@
 package com.easterlyn.effects.effect.active;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.effect.BehaviorActive;
 import com.easterlyn.effects.effect.Effect;
@@ -12,7 +8,6 @@ import com.easterlyn.events.Events;
 import com.easterlyn.events.event.EasterlynBreakEvent;
 import com.easterlyn.utilities.BlockDrops;
 import com.easterlyn.utilities.Experience;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -26,9 +21,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Mine or dig a 3x3 area at once.
- * 
+ *
  * @author Jikoo
  */
 public class EffectTunnelBore extends Effect implements BehaviorActive {

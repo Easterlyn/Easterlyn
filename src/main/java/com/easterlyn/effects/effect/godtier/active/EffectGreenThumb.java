@@ -9,7 +9,6 @@ import com.easterlyn.utilities.BlockDrops;
 import com.easterlyn.utilities.InventoryUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.CropState;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NetherWartsState;
 import org.bukkit.Particle;
@@ -77,7 +76,6 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 		BlockState state = clicked.getState();
 		MaterialData data = state.getData();
 		Material seed = null;
-		Short seedData = 0;
 
 		if (data instanceof Crops) {
 			Crops crops = (Crops) data;
@@ -86,17 +84,17 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 			}
 			crops.setState(CropState.SEEDED);
 			switch (crops.getItemType()) {
-			case BEETROOT_BLOCK:
+				case BEETROOTS:
 				seed = Material.BEETROOT_SEEDS;
 				break;
 			case CARROT:
-				seed = Material.CARROT_ITEM;
+				seed = Material.CARROT;
 				break;
-			case CROPS:
-				seed = Material.SEEDS;
+				case WHEAT:
+				seed = Material.WHEAT_SEEDS;
 				break;
-			case POTATO:
-				seed = Material.POTATO_ITEM;
+				case POTATOES:
+				seed = Material.POTATO;
 				break;
 			default:
 				break;
@@ -107,15 +105,14 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 				return;
 			}
 			cocoa.setSize(CocoaPlantSize.SMALL);
-			seed = Material.INK_SACK;
-			seedData = (short) DyeColor.BROWN.getDyeData();
+			seed = Material.COCOA_BEANS;
 		} else if (data instanceof NetherWarts) {
 			NetherWarts warts = (NetherWarts) data;
 			if (warts.getState() != NetherWartsState.RIPE) {
 				return;
 			}
 			warts.setState(NetherWartsState.SEEDED);
-			seed = Material.NETHER_STALK;
+			seed = Material.NETHER_WART;
 		} else {
 			return;
 		}
@@ -133,7 +130,7 @@ public class EffectGreenThumb extends Effect implements BehaviorActive, Behavior
 			}
 		}
 		if (!reseed && seed != null) {
-			reseed = player.getInventory().removeItem(new ItemStack(seed, 1, seedData)).size() < 1;
+			reseed = player.getInventory().removeItem(new ItemStack(seed, 1)).size() < 1;
 		}
 
 		clicked.getWorld().playSound(clicked.getLocation(), Sound.BLOCK_GRASS_BREAK, 1, 1);

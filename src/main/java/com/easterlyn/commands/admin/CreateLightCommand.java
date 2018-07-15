@@ -1,21 +1,18 @@
 package com.easterlyn.commands.admin;
 
-import java.util.List;
-import java.util.Set;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.LightSource;
-
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Basic EasterlynCommand for creating a light source.
- * 
+ *
  * @author Jikoo
  */
 public class CreateLightCommand extends EasterlynCommand {
@@ -36,7 +33,7 @@ public class CreateLightCommand extends EasterlynCommand {
 		}
 
 		Player player = (Player) sender;
-		List<Block> blocks = player.getLineOfSight((Set<Material>) null, 10);
+		List<Block> blocks = player.getLineOfSight(null, 10);
 		if (blocks.isEmpty()) {
 			return false;
 		}

@@ -1,15 +1,12 @@
 package com.easterlyn.discord.commands;
 
-import java.util.EnumSet;
-
 import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.abstraction.DiscordCommand;
 import com.easterlyn.discord.queue.CallType;
 import com.easterlyn.discord.queue.DiscordCallable;
 import com.easterlyn.utilities.Wrapper;
-
 import org.apache.commons.lang3.StringUtils;
-
+import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -18,9 +15,11 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
+import java.util.EnumSet;
+
 /**
  * Create a simple poll quickly.
- * 
+ *
  * @author Jikoo
  */
 public class PollCommand extends DiscordCommand {
@@ -44,7 +43,7 @@ public class PollCommand extends DiscordCommand {
 				// Refresh message just in case
 				IMessage posted = channel.getMessageByID(message.get().getLongID());
 				if (posted != null && !posted.isDeleted()) {
-					posted.addReaction(":thumbsup:");
+					posted.addReaction(ReactionEmoji.of(":thumbsup:"));
 				}
 			}
 		}).withChainedCall(new DiscordCallable(channel, CallType.EMOJI_EDIT) {
@@ -53,7 +52,7 @@ public class PollCommand extends DiscordCommand {
 				// Refresh message just in case
 				IMessage posted = channel.getMessageByID(message.get().getLongID());
 				if (posted != null && !posted.isDeleted()) {
-					posted.addReaction(":thumbsdown:");
+					posted.addReaction(ReactionEmoji.of(":thumbsdown:"));
 				}
 			}
 		}).withChainedCall(new DiscordCallable(channel, CallType.EMOJI_EDIT) {
@@ -62,7 +61,7 @@ public class PollCommand extends DiscordCommand {
 				// Refresh message just in case
 				IMessage posted = channel.getMessageByID(message.get().getLongID());
 				if (posted != null && !posted.isDeleted()) {
-					posted.addReaction(":shrug:");
+					posted.addReaction(ReactionEmoji.of(":shrug:"));
 				}
 			}
 		}));

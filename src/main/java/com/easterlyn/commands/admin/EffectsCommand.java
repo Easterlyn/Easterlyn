@@ -1,19 +1,14 @@
 package com.easterlyn.commands.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.NumberUtils;
-
 import com.google.common.collect.ImmutableList;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -22,7 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.StringUtil;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * EasterlynCommand for applying an Effect to an item.
@@ -85,8 +81,7 @@ public class EffectsCommand extends EasterlynCommand {
 			meta = hand.getItemMeta();
 		}
 
-		String loreString = new StringBuilder().append(ChatColor.GRAY).append(effectName).append(' ')
-				.append(NumberUtils.romanFromInt(level)).toString();
+		String loreString = ChatColor.GRAY + effectName + ' ' + NumberUtils.romanFromInt(level);
 
 		if (effects.getEffectFromLore(loreString, true) == null) {
 			sender.sendMessage(getLang().getValue("command.general.invalidParameters")
