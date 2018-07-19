@@ -194,16 +194,6 @@ public class InventoryUtils {
 				return TextUtils.getFriendlyName(material) + " of " + getPotionName((PotionMeta) meta);
 			}
 			return name;
-		} else if (material == Material.MONSTER_EGG) {
-			return name;
-			// TODO Spigot's API does not yet support this.
-//			if (!item.hasItemMeta()) {
-//				return name;
-//			}
-//			ItemMeta meta = item.getItemMeta();
-//			if (meta instanceof SpawnEggMeta) {
-//				return TextUtils.getFriendlyName(((SpawnEggMeta) meta).getEntityType().name()) + name;
-//			}
 		}
 		return name;
 	}
@@ -261,7 +251,6 @@ public class InventoryUtils {
 		return match;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static Pair<Material, Short> matchMaterial(String search) {
 		String[] matData = search.split(":");
 		if (matData[0].length() < 2) {
@@ -277,11 +266,6 @@ public class InventoryUtils {
 				durability = Short.parseShort(matData[1]);
 			} catch (NumberFormatException e) {}
 		}
-
-		try {
-			material = Material.getMaterial(Integer.parseInt(matData[0]));
-			return new ImmutablePair<>(material, durability != null ? durability : 0);
-		} catch (NumberFormatException e) {}
 
 		boolean durabilitySet = durability != null;
 		if (!durabilitySet) {
@@ -311,46 +295,6 @@ public class InventoryUtils {
 		return null;
 	}
 
-	public static void nerfEnchants(InventoryView view) {
-		for (int index = view.countSlots() - 1; index <= 0; --index) {
-			view.setItem(index, nerfEnchants(view.getItem(index)));
-		}
-	}
-
-	/**
-	 * Nerf enchantments over vanilla max on anything other than a furnace.
-	 *
-	 * @param itemStack the ItemStack to be nerfed
-	 * @return the nerfed ItemStack
-	 */
-	public static ItemStack nerfEnchants(ItemStack itemStack) {
-		if (itemStack == null || itemStack.getType() == Material.FURNACE || !itemStack.hasItemMeta()) {
-			return itemStack;
-		}
-
-		ItemMeta itemMeta = itemStack.getItemMeta();
-
-		if (itemMeta.hasLore()) {
-			for (String lore : itemMeta.getLore()) {
-				if (lore.startsWith(ITEM_EXCESSIVELY_ENCHANTABLE)) {
-					return itemStack;
-				}
-			}
-		}
-
-		if (itemMeta instanceof EnchantmentStorageMeta) {
-			EnchantmentStorageMeta storageMeta = (EnchantmentStorageMeta) itemMeta;
-			storageMeta.getStoredEnchants().forEach((enchantment, level) ->
-					storageMeta.addStoredEnchant(enchantment, Math.min(level, 5), true));
-		}
-
-		itemMeta.getEnchants().forEach((enchantment, level) ->
-				itemMeta.addEnchant(enchantment, Math.min(level, 5), true));
-
-		itemStack.setItemMeta(itemMeta);
-		return itemStack;
-	}
-
 	public static ItemStack cleanNBT(ItemStack is) {
 		if (is == null || !is.hasItemMeta()) {
 			return is;
@@ -365,7 +309,7 @@ public class InventoryUtils {
 
 		// Banners
 		if (im instanceof BannerMeta) {
-			BannerMeta meta = (BannerMeta) Bukkit.getItemFactory().getItemMeta(Material.BANNER);
+			BannerMeta meta = (BannerMeta) Bukkit.getItemFactory().getItemMeta(Material.BLACK_BANNER);
 			for (Pattern pattern : ((BannerMeta) im).getPatterns()) {
 				meta.addPattern(pattern);
 			}
@@ -399,7 +343,7 @@ public class InventoryUtils {
 
 		// Fireworks/Firework stars
 		if (im instanceof FireworkMeta && ((FireworkMeta) im).getEffectsSize() > 0) {
-			FireworkMeta meta = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(Material.FIREWORK);
+			FireworkMeta meta = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(Material.FIREWORK_ROCKET);
 			meta.addEffects(((FireworkMeta) im).getEffects());
 			cleanedItem.setItemMeta(meta);
 		}
@@ -431,8 +375,8 @@ public class InventoryUtils {
 
 		// Skulls
 		if (im instanceof SkullMeta && ((SkullMeta) im).hasOwner()) {
-			SkullMeta meta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-			meta.setOwner(((SkullMeta) im).getOwner());
+			SkullMeta meta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.PLAYER_HEAD);
+			meta.setOwningPlayer(((SkullMeta) im).getOwningPlayer());
 			cleanedItem.setItemMeta(meta);
 		}
 
