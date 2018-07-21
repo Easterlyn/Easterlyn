@@ -1,17 +1,12 @@
 package com.easterlyn.machines.type;
 
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
-import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -31,11 +26,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
 /**
  * Automation at its finest!
- * 
+ *
  * @author Jikoo
  */
 public class CompilationAmalgamator extends Machine {
@@ -47,10 +44,8 @@ public class CompilationAmalgamator extends Machine {
 		super(plugin, machines, new Shape(), "Compilation Amalgamator");
 		this.captcha = plugin.getModule(Captcha.class);
 		Shape shape = getShape();
-		MaterialDataValue m = shape.new MaterialDataValue(Material.DROPPER, Direction.NORTH, "chest");
-		shape.setVectorData(new Vector(0, 0, 0), m);
-		m = shape.new MaterialDataValue(Material.HOPPER, Direction.NORTH, "chest");
-		shape.setVectorData(new Vector(0, 0, 1), m);
+		shape.setVectorData(new Vector(0, 0, 0), Material.DROPPER, Direction.NORTH);
+		shape.setVectorData(new Vector(0, 0, 1), Material.HOPPER, Direction.NORTH);
 
 		drop = new ItemStack(Material.DROPPER);
 		ItemMeta meta = drop.getItemMeta();
@@ -179,11 +174,11 @@ public class CompilationAmalgamator extends Machine {
 					this.getDirection(storage).getRelativeDirection(Direction.NORTH),
 					new Vector(0, 0, 1)));
 			BlockState blockState = captchaStorage.getBlock().getState();
-	
+
 			if (!(blockState instanceof InventoryHolder)) {
 				return;
 			}
-	
+
 			captchaInv = ((InventoryHolder) blockState).getInventory();
 		}
 		boolean usedCaptcha = false;

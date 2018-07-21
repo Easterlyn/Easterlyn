@@ -9,7 +9,17 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.events.Events;
 import com.easterlyn.machines.Machines;
-import com.easterlyn.micromodules.*;
+import com.easterlyn.micromodules.AwayFromKeyboard;
+import com.easterlyn.micromodules.Cooldowns;
+import com.easterlyn.micromodules.FreeCart;
+import com.easterlyn.micromodules.Holograms;
+import com.easterlyn.micromodules.Meteors;
+import com.easterlyn.micromodules.ParticleUtils;
+import com.easterlyn.micromodules.Protections;
+import com.easterlyn.micromodules.RawAnnouncer;
+import com.easterlyn.micromodules.SleepVote;
+import com.easterlyn.micromodules.Spectators;
+import com.easterlyn.micromodules.VillagerAdjustment;
 import com.easterlyn.module.Dependencies;
 import com.easterlyn.module.Dependency;
 import com.easterlyn.module.Module;
@@ -21,7 +31,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
@@ -32,7 +41,6 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.Dye;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -176,6 +184,7 @@ public class Easterlyn extends JavaPlugin {
 				// Permission#addParent calls recalculatePermissibles
 				permission.recalculatePermissibles();
 			}
+			previousRank = rank;
 		}
 	}
 
@@ -238,26 +247,6 @@ public class Easterlyn extends JavaPlugin {
 		ShapedRecipe shaped = new ShapedRecipe(key, new ItemStack(Material.EMERALD));
 		shaped.shape("XXX", "XXX", "XXX");
 		shaped.setIngredient('X', Material.LAPIS_BLOCK);
-		getServer().addRecipe(shaped);
-
-		for (DyeColor dye : DyeColor.values()) {
-			Dye dyeMaterial = new Dye(Material.INK_SACK);
-			dyeMaterial.setColor(dye);
-
-			for (Material material : new Material[] { Material.CARPET, Material.STAINED_CLAY,
-					Material.STAINED_GLASS, Material.STAINED_GLASS_PANE, Material.WOOL }) {
-				// Dye 8 of an item at a time just like stained glass, allows for re-dyeing
-				shaped = new ShapedRecipe(key, new ItemStack(material, 8, dye.getWoolData()));
-				shaped.shape("XXX", "XYX", "XXX");
-				shaped.setIngredient('X', material, Short.MAX_VALUE).setIngredient('Y', dyeMaterial);
-				getServer().addRecipe(shaped);
-			}
-		}
-
-		// General: Packed ice = 2 snow 2 ice
-		shaped = new ShapedRecipe(key, new ItemStack(Material.PACKED_ICE));
-		shaped.shape("XY", "YX");
-		shaped.setIngredient('X', Material.SNOW_BLOCK).setIngredient('Y', Material.ICE);
 		getServer().addRecipe(shaped);
 
 		// General: 8 gravel, 1 bucket water -> 4 clay

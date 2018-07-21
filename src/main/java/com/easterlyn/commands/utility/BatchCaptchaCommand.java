@@ -44,7 +44,7 @@ public class BatchCaptchaCommand extends EasterlynCommand {
 			return false;
 		}
 
-		if (!captcha.canCaptcha(item)) {
+		if (captcha.canNotCaptcha(item)) {
 			player.sendMessage(getLang().getValue("captcha.uncaptchable"));
 			return true;
 		}

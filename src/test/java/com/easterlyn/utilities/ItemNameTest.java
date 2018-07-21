@@ -1,15 +1,15 @@
 package com.easterlyn.utilities;
 
-import static org.junit.Assert.fail;
+import org.bukkit.Material;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashMap;
 
-import org.bukkit.Material;
-
-import org.junit.Test;
+import static org.junit.Assert.fail;
 
 public class ItemNameTest {
 
@@ -24,20 +24,27 @@ public class ItemNameTest {
 					continue;
 				}
 				String[] row = line.split(",");
-				if (row.length != 5) {
+				if (row.length != 3) {
 					fail("Row does not match format: " + line);
 				}
-				String id = row[1] + ":" + row[2];
-				items.put(id, row[3]);
+				items.put(row[0], row[1]);
 			}
 		} catch (IOException e) {
 			fail("Could not load items from items.csv!");
 		}
+		EnumSet<Material> missing = EnumSet.noneOf(Material.class);
 		for (Material material : Material.values()) {
-			String name = items.get(material.name() + ":0");
-			if (name == null) {
-				fail("Missing material data for " + material.name() + " in items.csv");
+			if (material.name().startsWith("LEGACY_")) {
+				continue;
 			}
+			String name = items.get(material.name());
+			if (name == null) {
+				missing.add(material);
+				System.out.println(material.name() + ',' + TextUtils.getFriendlyName(material) + ',' + material.name().toLowerCase());
+			}
+		}
+		if (!missing.isEmpty()) {
+			fail("Missing material data for " + missing.toString() + " in items.csv");
 		}
 	}
 

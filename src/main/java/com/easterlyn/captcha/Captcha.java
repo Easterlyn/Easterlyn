@@ -2,8 +2,6 @@ package com.easterlyn.captcha;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
-import com.easterlyn.effects.Effects;
-import com.easterlyn.machines.Machines;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.JSONUtil;
@@ -15,6 +13,7 @@ import com.google.common.cache.RemovalListener;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -43,11 +42,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class Captcha extends Module {
 
-	static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
+	private static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
 
 	private final LoadingCache<String, ItemStack> cache;
-
-	private Effects effects;
 
 	public Captcha(Easterlyn plugin) {
 		super(plugin);
@@ -67,11 +64,7 @@ public class Captcha extends Module {
 						}
 						try (BukkitObjectInputStream stream = new BukkitObjectInputStream(
 								new FileInputStream(file))) {
-							ItemStack item = (ItemStack) stream.readObject();
-							if (item.getType() == Material.POTION) {
-								item = InventoryUtils.convertLegacyPotion(item);
-							}
-							return item.clone();
+							return ((ItemStack) stream.readObject()).clone();
 						}
 					}
 
@@ -85,14 +78,11 @@ public class Captcha extends Module {
 		// Add the Captcha recipe
 		ItemStack captchaItem = blankCaptchaCard();
 		captchaItem.setAmount(3);
-		ShapedRecipe captchaRecipe = new ShapedRecipe(captchaItem);
+		ShapedRecipe captchaRecipe = new ShapedRecipe(new NamespacedKey(this.getPlugin(), "Easterlyn"), captchaItem);
 		captchaRecipe.shape("AA", "AA", "AA");
 		captchaRecipe.setIngredient('A', Material.PAPER);
 		Bukkit.addRecipe(captchaRecipe);
 
-		this.effects = this.getPlugin().getModule(Effects.class);
-
-		addCustomHash("00000000", this.getPlugin().getModule(Machines.class).getMachineByName("PGO").getUniqueDrop());
 	}
 
 	public boolean addCustomHash(String hash, ItemStack item) {
@@ -115,7 +105,7 @@ public class Captcha extends Module {
 		return itemHash;
 	}
 
-	public String getHashByItem(ItemStack item) {
+	private String getHashByItem(ItemStack item) {
 		item = item.clone();
 		String itemHash = calculateHashFor(item);
 		this.cache.put(itemHash, item);
@@ -141,7 +131,7 @@ public class Captcha extends Module {
 		}
 	}
 
-	public ItemStack getItemByHash(String hash) {
+	private ItemStack getItemByHash(String hash) {
 		try {
 			return cache.get(hash).clone();
 		} catch (ExecutionException e) {
@@ -239,7 +229,7 @@ public class Captcha extends Module {
 		if (card == null) {
 			return null;
 		}
-		if (!isCard(card) && !CruxiteDowel.isUsedDowel(card)) {
+		if (!isCaptcha(card)) {
 			// Not a card.
 			card = card.clone();
 			card.setAmount(1);
@@ -250,7 +240,7 @@ public class Captcha extends Module {
 			ItemMeta im = is.getItemMeta();
 			ArrayList<String> storedLore = new ArrayList<>(im.getLore());
 			for (String lore : card.getItemMeta().getLore()) {
-				// isCard checks if lore exists, this is fine.
+				// isCaptcha checks if lore exists, this is fine.
 				if (lore.length() < 1 || lore.charAt(0) != '>') {
 					continue;
 				}
@@ -279,34 +269,6 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Create a punchcard from a captchacard.
-	 * <p>
-	 * Good luck patching punched holes.
-	 *
-	 * @param captcha the punchcard ItemStack
-	 *
-	 * @return the unpunched captchacard
-	 */
-	public ItemStack captchaToPunch(ItemStack captcha) {
-		if (!isCard(captcha)) {
-			return captcha;
-		}
-		captcha = captcha.clone();
-		if (Captcha.isBlankCaptcha(captcha)) {
-			return captcha;
-		}
-		ItemStack item = captchaToItem(captcha);
-		if (isCaptcha(item) || CruxiteDowel.expCost(effects, item) == Integer.MAX_VALUE) {
-			return captcha;
-		}
-		captcha = itemToCaptcha(item);
-		ItemMeta im = captcha.getItemMeta();
-		im.setDisplayName("Punchcard");
-		captcha.setItemMeta(im);
-		return captcha;
-	}
-
-	/**
 	 * Check if an ItemStack is a valid blank Captchacard.
 	 *
 	 * @param is the ItemStack to check
@@ -329,51 +291,27 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Check if an ItemStack is a valid Captchacard.
-	 *
-	 * @param is the ItemStack to check
-	 *
-	 * @return true if the ItemStack is a Captchacard
-	 */
-	public static boolean isCaptcha(ItemStack is) {
-		return isCard(is) && is.getItemMeta().getDisplayName().equals("Captchacard");
-	}
-
-
-	/**
-	 * Check if an ItemStack is a valid Punchcard.
-	 *
-	 * @param is the ItemStack to check
-	 *
-	 * @return true if the ItemStack is a Punchcard
-	 */
-	public static boolean isPunch(ItemStack is) {
-		return isCard(is) && is.getItemMeta().getDisplayName().equals("Punchcard");
-	}
-
-	/**
 	 * Check if an ItemStack can be turned into a captchacard. The only items that cannot be put
 	 * into a captcha are other captchas of captchas and unique Machine key items.
 	 *
 	 * @param item the ItemStack to check
 	 * @return true if the ItemStack can be saved as a captchacard
 	 */
-	public boolean canCaptcha(ItemStack item) {
+	public boolean canNotCaptcha(ItemStack item) {
 		if (item == null || item.getType() == Material.AIR
 				/* Book meta is very volatile, no reason to allow creation of codes that will never be reused. */
-				|| item.getType() == Material.BOOK_AND_QUILL
+				|| item.getType() == Material.WRITABLE_BOOK
 				|| item.getType() == Material.WRITTEN_BOOK
 				/* Shulker boxes are their own type of portable storage. Nope. */
 				|| item.getType().name().endsWith("_SHULKER_BOX")) {
-			return false;
+			return true;
 		}
 		for (ItemStack is : InventoryUtils.getUniqueItems(getPlugin())) {
 			if (is.isSimilar(item)) {
-				return false;
+				return true;
 			}
 		}
-		return !CruxiteDowel.isDowel(item) && !isUsedCaptcha(item)
-				|| !item.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$");
+		return isUsedCaptcha(item) && item.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$");
 	}
 
 	/**
@@ -383,68 +321,12 @@ public class Captcha extends Module {
 	 *
 	 * @return true if the ItemStack is a card
 	 */
-	public static boolean isCard(ItemStack is) {
+	public static boolean isCaptcha(ItemStack is) {
 		if (is == null || is.getType() != Material.BOOK || !is.hasItemMeta()) {
 			return false;
 		}
 		ItemMeta meta = is.getItemMeta();
-		return meta.hasLore() && meta.hasDisplayName()
-				&& (meta.getDisplayName().equals("Captchacard")
-						|| meta.getDisplayName().equals("Punchcard")
-						|| meta.getDisplayName().equals("Lorecard"));
-	}
-
-	/**
-	 * Creates a Punchcard from one or two cards.
-	 * If card2 is null, creates a clone of card1.
-	 * card2 must be a Punchcard or null.
-	 *
-	 * @param card1 the first card
-	 * @param card2 the second card, or null to clone card1
-	 *
-	 * @return the ItemStack created or null if invalid cards are provided
-	 */
-	public ItemStack createCombinedPunch(ItemStack card1, ItemStack card2) {
-		if (isCaptcha(card1)) {
-			if (card2 != null && card2.getType() != Material.AIR) {
-				return null;
-			}
-			if (isBlankCaptcha(card1)) {
-				return null;
-			}
-			ItemStack is = captchaToPunch(card1);
-			if (card1.isSimilar(is)) {
-				return null;
-			}
-			return is;
-		}
-		if (!isPunch(card1)) {
-			return null;
-		}
-		if (card2 == null || card2.getType() == Material.AIR || isCaptcha(card2)) {
-			return captchaToPunch(card1);
-		}
-		if (!isPunch(card2)) {
-			return null;
-		}
-		ItemStack item = captchaToItem(card1);
-		ItemStack item2 = captchaToItem(card2);
-		List<String> lore;
-		if (item2 != null && item2.getType() != Material.AIR && item2.hasItemMeta() && item2.getItemMeta().hasLore()) {
-			lore = effects.organizeEffectLore(item.getItemMeta().getLore(), false,
-					false, true, item2.getItemMeta().getLore().toArray(new String[0]));
-		} else {
-			lore = effects.organizeEffectLore(item.getItemMeta().getLore(), false,
-					false, true);
-		}
-		ItemMeta im = item.getItemMeta();
-		im.setLore(lore);
-		item.setItemMeta(im);
-		ItemStack result = captchaToPunch(itemToCaptcha(item));
-		if (result.getItemMeta().getDisplayName().equals("Captchacard")) {
-			return null;
-		}
-		return result;
+		return meta.hasLore() && meta.hasDisplayName() && meta.getDisplayName().equals("Captchacard");
 	}
 
 	@SuppressWarnings("deprecation")
@@ -463,7 +345,7 @@ public class Captcha extends Module {
 			toCaptcha = event.getCursor();
 		}
 
-		if (!isBlankCaptcha(blankCaptcha) || !canCaptcha(toCaptcha) || isBlankCaptcha(toCaptcha)) {
+		if (!isBlankCaptcha(blankCaptcha) || canNotCaptcha(toCaptcha) || isBlankCaptcha(toCaptcha)) {
 			return;
 		}
 

@@ -252,7 +252,7 @@ public class Effects extends Module {
 		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
 		for (ItemStack item : items) {
 			if (item == null || item.getType() == Material.AIR || !item.hasItemMeta()
-					|| !item.getItemMeta().hasLore() || Captcha.isCard(item)) {
+					|| !item.getItemMeta().hasLore() || Captcha.isCaptcha(item)) {
 				continue;
 			}
 			for (String lore : item.getItemMeta().getLore()) {

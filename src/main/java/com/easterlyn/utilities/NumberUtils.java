@@ -1,5 +1,8 @@
 package com.easterlyn.utilities;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -9,12 +12,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
 /**
  * Conversions for different bases.
- * 
+ *
  * @author Jikoo
  */
 public class NumberUtils {
@@ -49,11 +49,11 @@ public class NumberUtils {
 	 * <p>
 	 * Throws an IllegalArgumentException if the BigInteger provided is negative or if the base is
 	 * not between 2 and 62 inclusive.
-	 * 
+	 *
 	 * @param bigInt the BigInteger to convert
 	 * @param base the base to convert to
 	 * @param minimumDigits the minimum number of characters in the String returned
-	 * 
+	 *
 	 * @return the BigInteger converted to a String in the correct base
 	 */
 	public static String getBase(BigInteger bigInt, int base, int minimumDigits) {
@@ -81,7 +81,7 @@ public class NumberUtils {
 
 	/**
 	 * Creates a MD5 hash of a String.
-	 * 
+	 *
 	 * @param string the String to hash
 	 * @return the BigInteger of the hash
 	 */
@@ -90,18 +90,17 @@ public class NumberUtils {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			return new BigInteger(1, digest.digest(string.getBytes("UTF-8")));
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException(e);
 		}
 	}
 
 	/**
 	 * Converts a Roman numeral String into an integer.
-	 * 
+	 *
 	 * @param roman the Roman numeral String to convert to an integer
-	 * 
+	 *
 	 * @return the integer represented by the String
-	 * 
+	 *
 	 * @throws NumberFormatException if the String given contains characters which are not Roman numerals
 	 */
 	public static int intFromRoman(String roman) throws NumberFormatException {
@@ -133,9 +132,9 @@ public class NumberUtils {
 
 	/**
 	 * Converts an integer into a Roman numeral String.
-	 * 
+	 *
 	 * @param number the integer to convert into Roman numerals
-	 * 
+	 *
 	 * @return the converted String
 	 */
 	public static String romanFromInt(int number) {
@@ -155,11 +154,11 @@ public class NumberUtils {
 
 	/**
 	 * Interprets and strips the first area of a String which can be interpreted as a time.
-	 * 
+	 *
 	 * @param input the input String
-	 * 
+	 *
 	 * @return a Pair containing the remains of the String and the time interpreted
-	 * 
+	 *
 	 * @throws NumberFormatException if no part of the String can be interpreted as a time
 	 */
 	public static Pair<String, Long> parseAndRemoveFirstTime(String input) throws NumberFormatException {

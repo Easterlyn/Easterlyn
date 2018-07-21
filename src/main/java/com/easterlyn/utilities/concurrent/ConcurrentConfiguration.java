@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationOptions;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -343,6 +344,20 @@ public class ConcurrentConfiguration implements Configuration {
 	public List<Map<?, ?>> getMapList(String path) {
 		synchronized (internal) {
 			return internal.getMapList(path);
+		}
+	}
+
+	@Override
+	public <T extends ConfigurationSerializable> T getSerializable(String s, Class<T> aClass) {
+		synchronized (internal) {
+			return internal.getSerializable(s, aClass);
+		}
+	}
+
+	@Override
+	public <T extends ConfigurationSerializable> T getSerializable(String s, Class<T> aClass, T t) {
+		synchronized (internal) {
+			return internal.getSerializable(s, aClass, t);
 		}
 	}
 

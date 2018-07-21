@@ -1,7 +1,5 @@
 package com.easterlyn.machines.type;
 
-import java.util.Arrays;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
@@ -13,7 +11,7 @@ import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,17 +22,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.Arrays;
 
 /**
  * power 20 * 1 second = 19 blocks up
- * 
+ *
  * @author Jikoo
  */
 public class Elevator extends Machine {
@@ -45,13 +42,13 @@ public class Elevator extends Machine {
 	public Elevator(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Elevator");
 		this.protections = plugin.getModule(Protections.class);
-		drop = new ItemStack(Material.IRON_PLATE);
+		drop = new ItemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Elevator");
 		drop.setItemMeta(meta);
 
-		getShape().setVectorData(new Vector(0, 0, 0), new MaterialData(Material.PURPUR_PILLAR));
-		getShape().setVectorData(new Vector(0, 1, 0), new MaterialData(Material.IRON_PLATE));
+		getShape().setVectorData(new Vector(0, 0, 0),Material.PURPUR_PILLAR);
+		getShape().setVectorData(new Vector(0, 1, 0), Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
 	}
 
 	public int getCurrentBoost(ConfigurationSection storage) {
@@ -79,7 +76,7 @@ public class Elevator extends Machine {
 		}
 		if (event.getAction() == Action.PHYSICAL) {
 			event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(),
-					Sound.ENTITY_ENDERDRAGON_FLAP, 0.2F, 0F);
+					Sound.ENTITY_ENDER_DRAGON_FLAP, 0.2F, 0F);
 			int duration = storage.getInt("duration");
 			// Effect power is 0-indexed.
 			player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, duration, 19, true), true);

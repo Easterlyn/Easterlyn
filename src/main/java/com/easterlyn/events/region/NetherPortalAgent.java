@@ -1,18 +1,14 @@
 package com.easterlyn.events.region;
 
-import java.util.Map.Entry;
-
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.RegionUtils;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TravelAgent;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
-import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 /**
@@ -94,7 +90,7 @@ public class NetherPortalAgent implements TravelAgent {
 		shape.setVectorData(new Vector(0, 3, -1), value);
 		shape.setVectorData(new Vector(1, 3, -1), value);
 
-		value = shape.new MaterialDataValue(Material.NETHER_PORTAL, Direction.NORTH, "portal");
+		value = shape.new MaterialDataValue(Material.NETHER_PORTAL, Direction.NORTH);
 
 		// Portal
 		shape.setVectorData(new Vector(-1, 0, 0), value);
@@ -174,10 +170,7 @@ public class NetherPortalAgent implements TravelAgent {
 			return false;
 		}
 		Direction direction = from.getData() % 2 == 0 ? Direction.EAST : Direction.NORTH;
-		for (Entry<Location, MaterialData> entry : shape.getBuildLocations(location, direction).entrySet()) {
-			Block block = entry.getKey().getBlock();
-			block.setTypeIdAndData(entry.getValue().getItemTypeId(), entry.getValue().getData(), false);
-		}
+		shape.build(location, direction);
 		return true;
 	}
 

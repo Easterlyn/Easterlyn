@@ -65,38 +65,32 @@ public class Transportalizer extends Machine {
 		this.holograms = plugin.getModule(Holograms.class);
 		this.protections = plugin.getModule(Protections.class);
 		Shape shape = getShape();
-		MaterialDataValue m = shape.new MaterialDataValue(Material.HOPPER, Direction.SOUTH, "chest");
-		shape.setVectorData(new Vector(0, 0, 0), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK);
+		shape.setVectorData(new Vector(0, 0, 0), Material.HOPPER, Direction.SOUTH);
+		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK);
 		shape.setVectorData(new Vector(-1, 0, 0), m);
 		shape.setVectorData(new Vector(1, 0, 0), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, (byte) 1); // TODO magic value, add to new MaterialDataValue conversions
+		m = shape.new MaterialDataValue(Material.CHISELED_QUARTZ_BLOCK); // TODO magic value, add to new MaterialDataValue conversions
 		shape.setVectorData(new Vector(-1, 0, 1), m);
 		shape.setVectorData(new Vector(1, 0, 1), m);
 		shape.setVectorData(new Vector(-1, 2, 1), m);
 		shape.setVectorData(new Vector(1, 2, 1), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, Direction.WEST, "quartzpillar");
-		shape.setVectorData(new Vector(0, 2, 1), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
-		shape.setVectorData(new Vector(0, 0, 1), m);
-		m = shape.new MaterialDataValue(Material.WHITE_STAINED_GLASS);
-		shape.setVectorData(new Vector(0, 1, 1), m);
-		m = shape.new MaterialDataValue(Material.STONE_BUTTON, Direction.NORTH, "button");
+		shape.setVectorData(new Vector(0, 2, 1), Material.QUARTZ_PILLAR, Direction.WEST);
+// TODO temp fix		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
+		shape.setVectorData(new Vector(0, 0, 1), Material.QUARTZ_SLAB, Direction.UP);
+		shape.setVectorData(new Vector(0, 1, 1), Material.WHITE_STAINED_GLASS);
+		m = shape.new MaterialDataValue(Material.STONE_BUTTON, Direction.NORTH);
 		shape.setVectorData(new Vector(-1, 2, 0), m);
 		shape.setVectorData(new Vector(1, 2, 0), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "stair");
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH);
 		shape.setVectorData(new Vector(-1, 0, -1), m);
 		shape.setVectorData(new Vector(0, 0, -1), m);
 		shape.setVectorData(new Vector(1, 0, -1), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK, Direction.DOWN, "quartzpillar");
+		m = shape.new MaterialDataValue(Material.QUARTZ_PILLAR, Direction.DOWN);
 		shape.setVectorData(new Vector(-1, 1, 1), m);
 		shape.setVectorData(new Vector(1, 1, 1), m);
-		m = shape.new MaterialDataValue(Material.RED_CARPET);
-		shape.setVectorData(new Vector(-1, 1, 0), m);
-		m = shape.new MaterialDataValue(Material.GRAY_CARPET);
-		shape.setVectorData(new Vector(0, 1, 0), m);
-		m = shape.new MaterialDataValue(Material.LIME_CARPET);
-		shape.setVectorData(new Vector(1, 1, 0), m);
+		shape.setVectorData(new Vector(-1, 1, 0), Material.RED_CARPET);
+		shape.setVectorData(new Vector(0, 1, 0), Material.GRAY_CARPET);
+		shape.setVectorData(new Vector(1, 1, 0), Material.LIME_CARPET);
 
 		drop = new ItemStack(Material.CHEST);
 		ItemMeta meta = drop.getItemMeta();
@@ -114,13 +108,13 @@ public class Transportalizer extends Machine {
 		return getKey(storage).add(Shape.getRelativeVector(getDirection(storage), new Vector(0.5, 1.1, 1.5)));
 	}
 
-	public void setFuel(ConfigurationSection storage, long fuel) {
+	private void setFuel(ConfigurationSection storage, long fuel) {
 		ArmorStand hologram = holograms.getOrCreateHologram(getHoloLocation(storage));
 		hologram.setCustomName(String.valueOf(fuel));
 		storage.set("fuel", fuel);
 	}
 
-	public long getFuel(ConfigurationSection storage) {
+	private long getFuel(ConfigurationSection storage) {
 		return storage.getLong("fuel", 0);
 	}
 
@@ -226,7 +220,7 @@ public class Transportalizer extends Machine {
 		Sign sign = (Sign) signBlock.getState();
 		// Check sign for proper format - sign lines are 0-3, third line is line 2
 		String line3 = sign.getLine(2);
-		if (!line3.matches("\\-?[0-9]+(\\s|,\\s?)[0-9]+(\\s|,\\s?)\\-?[0-9]+")) {
+		if (!line3.matches("-?[0-9]+(\\s|,\\s?)[0-9]+(\\s|,\\s?)-?[0-9]+")) {
 			event.getPlayer().sendMessage(Language.getColor("bad")
 					+ "The third line of your transportalizer sign must contain "
 					+ "your desired destination in x, y, z format. Ex: 0, 64, 0");
@@ -433,16 +427,16 @@ public class Transportalizer extends Machine {
 		source.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 4);
 	}
 
-	public boolean doPendingTransportalization(Player player, boolean accept) {
+	public boolean pendingTransportalizationFailed(Player player, boolean accept) {
 		if (requests.containsKey(player.getUniqueId())) {
 			if (accept) {
 				requests.remove(player.getUniqueId()).doTeleport(player);
 			} else {
 				requests.remove(player.getUniqueId());
 			}
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	private class TransportalizationRequest {

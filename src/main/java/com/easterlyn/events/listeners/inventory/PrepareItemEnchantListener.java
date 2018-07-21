@@ -9,7 +9,7 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 
 /**
  * Listener for PrepareItemEnchantEvents.
- * 
+ *
  * @author Jikoo
  */
 public class PrepareItemEnchantListener extends EasterlynListener {
@@ -20,12 +20,12 @@ public class PrepareItemEnchantListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for PrepareItemEnchantEvents.
-	 * 
+	 *
 	 * @param event the PrepareItemEnchantEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
-		if (Captcha.isCard(event.getItem())) {
+		if (Captcha.isCaptcha(event.getItem())) {
 			event.setCancelled(true);
 		}
 	}

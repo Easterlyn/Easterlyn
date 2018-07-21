@@ -3,22 +3,19 @@ package com.easterlyn.machines.type;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Shape;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
-
 /**
  * For Zack, with love.
- * 
+ *
  * @author Jikoo
  */
 public class PBO extends Machine {
@@ -27,7 +24,7 @@ public class PBO extends Machine {
 
 	public PBO(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Perfect Building Object");
-		getShape().setVectorData(new Vector(0, 0, 0), new MaterialData(Material.DIAMOND_BLOCK));
+		getShape().setVectorData(new Vector(0, 0, 0), Material.DIAMOND_BLOCK);
 		drop = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta meta = drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Perfect Building Object");

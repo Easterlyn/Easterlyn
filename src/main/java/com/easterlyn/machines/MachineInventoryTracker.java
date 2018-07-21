@@ -2,7 +2,6 @@ package com.easterlyn.machines;
 
 import com.easterlyn.machines.type.Dublexor;
 import com.easterlyn.machines.type.Machine;
-import com.easterlyn.machines.type.legacy.Alchemiter;
 import net.minecraft.server.v1_13_R1.BlockPosition;
 import net.minecraft.server.v1_13_R1.ChatComponentText;
 import net.minecraft.server.v1_13_R1.Container;
@@ -61,7 +60,7 @@ public class MachineInventoryTracker {
 		}
 
 		// Do not drop exp bottle placed in second slot
-		if (pair.getLeft() instanceof Alchemiter || pair.getLeft() instanceof Dublexor) {
+		if (pair.getLeft() instanceof Dublexor) {
 			event.getInventory().setItem(1, null);
 		}
 	}

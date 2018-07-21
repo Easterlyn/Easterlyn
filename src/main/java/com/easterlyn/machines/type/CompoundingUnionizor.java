@@ -4,7 +4,6 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
-import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.InventoryUtils;
 import net.minecraft.server.v1_13_R1.ShapelessRecipes;
 import org.bukkit.Location;
@@ -43,10 +42,8 @@ public class CompoundingUnionizor extends Machine {
 	public CompoundingUnionizor(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Compounding Unionizer");
 		Shape shape = getShape();
-		MaterialDataValue m = shape.new MaterialDataValue(Material.DROPPER, Direction.NORTH, "chest");
-		shape.setVectorData(new Vector(0, 0, 0), m);
-		m = shape.new MaterialDataValue(Material.WORKBENCH);
-		shape.setVectorData(new Vector(0, 1, 0), m);
+		shape.setVectorData(new Vector(0, 0, 0), Material.DROPPER, Direction.NORTH);
+		shape.setVectorData(new Vector(0, 1, 0), Material.CRAFTING_TABLE);
 
 		drop = null; // future
 	}

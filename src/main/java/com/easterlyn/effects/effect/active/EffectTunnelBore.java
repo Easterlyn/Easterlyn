@@ -89,9 +89,10 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 
 	private boolean easterlynBreak(Block block, Player player) {
 		if (block.getType() == Material.BARRIER || block.getType() == Material.BEDROCK
-				|| block.getType() == Material.COMMAND || block.getType() == Material.ENDER_PORTAL
-				|| block.getType() == Material.ENDER_PORTAL_FRAME
-				|| block.getType() == Material.PORTAL || block.isEmpty()) {
+				|| block.getType() == Material.CHAIN_COMMAND_BLOCK || block.getType() == Material.REPEATING_COMMAND_BLOCK
+				|| block.getType() == Material.COMMAND_BLOCK || block.getType() == Material.END_PORTAL
+				|| block.getType() == Material.END_PORTAL_FRAME
+				|| block.getType() == Material.NETHER_PORTAL || block.isEmpty()) {
 			return false;
 		}
 

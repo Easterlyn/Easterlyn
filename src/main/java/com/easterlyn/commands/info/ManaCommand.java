@@ -1,10 +1,5 @@
 package com.easterlyn.commands.info;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
@@ -12,17 +7,20 @@ import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * EasterlynCommand for getting information about mana costs and totals.
- * 
+ *
  * @author Jikoo
  */
 public class ManaCommand extends EasterlynCommand {
@@ -77,7 +75,7 @@ public class ManaCommand extends EasterlynCommand {
 			return true;
 		}
 		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (Captcha.isUsedCaptcha(hand) || Captcha.isPunch(hand) || CruxiteDowel.isDowel(hand)) {
+		if (Captcha.isUsedCaptcha(hand)) {
 			hand = captcha.captchaToItem(hand);
 		}
 		if (hand == null || hand.getType() == Material.AIR) {

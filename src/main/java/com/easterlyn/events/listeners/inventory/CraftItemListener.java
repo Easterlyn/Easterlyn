@@ -2,7 +2,6 @@ package com.easterlyn.events.listeners.inventory;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
@@ -75,7 +74,7 @@ public class CraftItemListener extends EasterlynListener {
 				continue;
 			}
 			Player clicked = (Player) event.getWhoClicked();
-			if (Captcha.isCard(is) || CruxiteDowel.isDowel(is)) {
+			if (Captcha.isCaptcha(is)) {
 				event.setCancelled(true);
 				clicked.sendMessage(lang.getValue("events.craft.captcha"));
 				return;

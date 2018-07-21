@@ -1,12 +1,28 @@
 package com.easterlyn.utilities;
 
-import org.bukkit.*;
+import org.bukkit.Achievement;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
+import org.bukkit.GameMode;
+import org.bukkit.Instrument;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.Particle;
+import org.bukkit.Server;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.Statistic;
+import org.bukkit.WeatherType;
+import org.bukkit.World;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Entity;
@@ -37,7 +53,6 @@ import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +84,7 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void setShoulderEntityLeft(Entity entity) { }
+	public void setShoulderEntityLeft(Entity entity) {}
 
 	@Override
 	public Entity getShoulderEntityRight() {
@@ -77,7 +92,7 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void setShoulderEntityRight(Entity entity) { }
+	public void setShoulderEntityRight(Entity entity) {}
 
 	@Override
 	public GameMode getGameMode() {
@@ -212,11 +227,6 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public List<Block> getLastTwoTargetBlocks(HashSet<Byte> arg0, int arg1) {
-		return null;
-	}
-
-	@Override
 	public List<Block> getLastTwoTargetBlocks(Set<Material> arg0, int arg1) {
 		return null;
 	}
@@ -257,11 +267,6 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public Block getTargetBlock(HashSet<Byte> arg0, int arg1) {
-		return null;
-	}
-
-	@Override
 	public Block getTargetBlock(Set<Material> arg0, int arg1) {
 		return null;
 	}
@@ -287,13 +292,13 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void removePotionEffect(PotionEffectType arg0) { }
+	public void removePotionEffect(PotionEffectType arg0) {}
 
 	@Override
-	public void setCanPickupItems(boolean arg0) { }
+	public void setCanPickupItems(boolean arg0) {}
 
 	@Override
-	public void setLastDamage(double arg0) { }
+	public void setLastDamage(double arg0) {}
 
 	@Override
 	public boolean setLeashHolder(Entity arg0) {
@@ -301,19 +306,19 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void setMaximumAir(int arg0) { }
+	public void setMaximumAir(int arg0) {}
 
 	@Override
-	public void setMaximumNoDamageTicks(int arg0) { }
+	public void setMaximumNoDamageTicks(int arg0) {}
 
 	@Override
-	public void setNoDamageTicks(int arg0) { }
+	public void setNoDamageTicks(int arg0) {}
 
 	@Override
-	public void setRemainingAir(int arg0) { }
+	public void setRemainingAir(int arg0) {}
 
 	@Override
-	public void setRemoveWhenFarAway(boolean arg0) { }
+	public void setRemoveWhenFarAway(boolean arg0) {}
 
 	@Override
 	public boolean eject() {
@@ -436,25 +441,25 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void playEffect(EntityEffect arg0) { }
+	public void playEffect(EntityEffect arg0) {}
 
 	@Override
-	public void remove() { }
+	public void remove() {}
 
 	@Override
-	public void setCustomName(String arg0) { }
+	public void setCustomName(String arg0) {}
 
 	@Override
-	public void setCustomNameVisible(boolean arg0) { }
+	public void setCustomNameVisible(boolean arg0) {}
 
 	@Override
-	public void setFallDistance(float arg0) { }
+	public void setFallDistance(float arg0) {}
 
 	@Override
-	public void setFireTicks(int arg0) { }
+	public void setFireTicks(int arg0) {}
 
 	@Override
-	public void setLastDamageCause(EntityDamageEvent arg0) { }
+	public void setLastDamageCause(EntityDamageEvent arg0) {}
 
 	@Override
 	public boolean setPassenger(Entity arg0) {
@@ -462,10 +467,10 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void setTicksLived(int arg0) { }
+	public void setTicksLived(int arg0) {}
 
 	@Override
-	public void setVelocity(Vector arg0) { }
+	public void setVelocity(Vector arg0) {}
 
 	@Override
 	public boolean teleport(Location arg0) {
@@ -498,16 +503,16 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void removeMetadata(String arg0, Plugin arg1) { }
+	public void removeMetadata(String arg0, Plugin arg1) {}
 
 	@Override
-	public void setMetadata(String arg0, MetadataValue arg1) { }
+	public void setMetadata(String arg0, MetadataValue arg1) {}
 
 	@Override
-	public void sendMessage(String message) { }
+	public void sendMessage(String message) {}
 
 	@Override
-	public void sendMessage(String[] messages) { }
+	public void sendMessage(String[] messages) {}
 
 	@Override
 	public PermissionAttachment addAttachment(Plugin plugin) {
@@ -555,10 +560,10 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void recalculatePermissions() { }
+	public void recalculatePermissions() {}
 
 	@Override
-	public void removeAttachment(PermissionAttachment attachment) { }
+	public void removeAttachment(PermissionAttachment attachment) {}
 
 	@Override
 	public boolean isOp() {
@@ -566,13 +571,13 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void setOp(boolean arg0) { }
+	public void setOp(boolean arg0) {}
 
 	@Override
-	public void damage(double arg0) { }
+	public void damage(double arg0) {}
 
 	@Override
-	public void damage(double arg0, Entity arg1) { }
+	public void damage(double arg0, Entity arg1) {}
 
 	@Override
 	public double getHealth() {
@@ -585,13 +590,13 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void resetMaxHealth() { }
+	public void resetMaxHealth() {}
 
 	@Override
-	public void setHealth(double arg0) { }
+	public void setHealth(double arg0) {}
 
 	@Override
-	public void setMaxHealth(double arg0) { }
+	public void setMaxHealth(double arg0) {}
 
 	@Override
 	public <T extends Projectile> T launchProjectile(Class<? extends T> arg0) {
@@ -604,13 +609,13 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void abandonConversation(Conversation arg0) { }
+	public void abandonConversation(Conversation arg0) {}
 
 	@Override
-	public void abandonConversation(Conversation arg0, ConversationAbandonedEvent arg1) { }
+	public void abandonConversation(Conversation arg0, ConversationAbandonedEvent arg1) {}
 
 	@Override
-	public void acceptConversationInput(String arg0) { }
+	public void acceptConversationInput(String arg0) {}
 
 	@Override
 	public boolean beginConversation(Conversation arg0) {
@@ -658,7 +663,7 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void setWhitelisted(boolean arg0) { }
+	public void setWhitelisted(boolean arg0) {}
 
 	@Override
 	public Map<String, Object> serialize() {
@@ -671,11 +676,11 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void sendPluginMessage(Plugin arg0, String arg1, byte[] arg2) { }
+	public void sendPluginMessage(Plugin arg0, String arg1, byte[] arg2) {}
 
 	@Override
 	@Deprecated
-	public void awardAchievement(Achievement arg0) { }
+	public void awardAchievement(Achievement arg0) {}
 
 	@Override
 	public boolean canSee(Player arg0) {
@@ -683,26 +688,26 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void chat(String arg0) { }
+	public void chat(String arg0) {}
 
 	@Override
-	public void decrementStatistic(Statistic arg0) throws IllegalArgumentException { }
+	public void decrementStatistic(Statistic arg0) throws IllegalArgumentException {}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, int arg1) throws IllegalArgumentException { }
+	public void decrementStatistic(Statistic arg0, int arg1) throws IllegalArgumentException {}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, Material arg1) throws IllegalArgumentException { }
+	public void decrementStatistic(Statistic arg0, Material arg1) throws IllegalArgumentException {}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, EntityType arg1) throws IllegalArgumentException { }
+	public void decrementStatistic(Statistic arg0, EntityType arg1) throws IllegalArgumentException {}
 
 	@Override
 	public void decrementStatistic(Statistic arg0, Material arg1, int arg2)
-			throws IllegalArgumentException { }
+			throws IllegalArgumentException {}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, EntityType arg1, int arg2) { }
+	public void decrementStatistic(Statistic arg0, EntityType arg1, int arg2) {}
 
 	@Override
 	public InetSocketAddress getAddress() {
@@ -815,10 +820,10 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void giveExp(int arg0) { }
+	public void giveExp(int arg0) {}
 
 	@Override
-	public void giveExpLevels(int arg0) { }
+	public void giveExpLevels(int arg0) {}
 
 	@Override
 	@Deprecated
@@ -827,27 +832,30 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void hidePlayer(Player arg0) { }
+	public void hidePlayer(Player arg0) {}
 
 	@Override
-	public void incrementStatistic(Statistic arg0) throws IllegalArgumentException { }
+	public void hidePlayer(Plugin plugin, Player player) {}
 
 	@Override
-	public void incrementStatistic(Statistic arg0, int arg1) throws IllegalArgumentException { }
+	public void incrementStatistic(Statistic arg0) throws IllegalArgumentException {}
 
 	@Override
-	public void incrementStatistic(Statistic arg0, Material arg1) throws IllegalArgumentException { }
+	public void incrementStatistic(Statistic arg0, int arg1) throws IllegalArgumentException {}
 
 	@Override
-	public void incrementStatistic(Statistic arg0, EntityType arg1) throws IllegalArgumentException { }
+	public void incrementStatistic(Statistic arg0, Material arg1) throws IllegalArgumentException {}
+
+	@Override
+	public void incrementStatistic(Statistic arg0, EntityType arg1) throws IllegalArgumentException {}
 
 	@Override
 	public void incrementStatistic(Statistic arg0, Material arg1, int arg2)
-			throws IllegalArgumentException { }
+			throws IllegalArgumentException {}
 
 	@Override
 	public void incrementStatistic(Statistic arg0, EntityType arg1, int arg2)
-			throws IllegalArgumentException { }
+			throws IllegalArgumentException {}
 
 	@Override
 	public boolean isFlying() {
@@ -885,10 +893,10 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void kickPlayer(String arg0) { }
+	public void kickPlayer(String arg0) {}
 
 	@Override
-	public void loadData() { }
+	public void loadData() {}
 
 	@Override
 	public boolean performCommand(String command) {
@@ -896,41 +904,41 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void playEffect(Location arg0, Effect arg1, int arg2) { }
+	public void playEffect(Location arg0, Effect arg1, int arg2) {}
 
 	@Override
-	public <T> void playEffect(Location arg0, Effect arg1, T arg2) { }
+	public <T> void playEffect(Location arg0, Effect arg1, T arg2) {}
 
 	@Override
-	public void playNote(Location arg0, byte arg1, byte arg2) { }
+	public void playNote(Location arg0, byte arg1, byte arg2) {}
 
 	@Override
-	public void playNote(Location arg0, Instrument arg1, Note arg2) { }
+	public void playNote(Location arg0, Instrument arg1, Note arg2) {}
 
 	@Override
-	public void playSound(Location arg0, Sound arg1, float arg2, float arg3) { }
+	public void playSound(Location arg0, Sound arg1, float arg2, float arg3) {}
 
 	@Override
-	public void playSound(Location arg0, String arg1, float arg2, float arg3) { }
+	public void playSound(Location arg0, String arg1, float arg2, float arg3) {}
 
 	@Override
 	@Deprecated
-	public void removeAchievement(Achievement arg0) { }
+	public void removeAchievement(Achievement arg0) {}
 
 	@Override
-	public void resetPlayerTime() { }
+	public void resetPlayerTime() {}
 
 	@Override
-	public void resetPlayerWeather() { }
+	public void resetPlayerWeather() {}
 
 	@Override
-	public void saveData() { }
+	public void saveData() {}
 
 	@Override
-	public void sendBlockChange(Location arg0, Material arg1, byte arg2) { }
+	public void sendBlockChange(Location arg0, Material arg1, byte arg2) {}
 
 	@Override
-	public void sendBlockChange(Location arg0, int arg1, byte arg2) { }
+	public void sendBlockChange(Location location, BlockData blockData) {}
 
 	@Override
 	public boolean sendChunkChange(Location arg0, int arg1, int arg2, int arg3, byte[] arg4) {
@@ -938,103 +946,106 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
-	public void sendMap(MapView arg0) { }
+	public void sendMap(MapView arg0) {}
 
 	@Override
-	public void sendRawMessage(String arg0) { }
+	public void sendRawMessage(String arg0) {}
 
 	@Override
-	public void sendSignChange(Location arg0, String[] arg1) throws IllegalArgumentException { }
+	public void sendSignChange(Location arg0, String[] arg1) throws IllegalArgumentException {}
 
 	@Override
-	public void setAllowFlight(boolean arg0) { }
+	public void setAllowFlight(boolean arg0) {}
 
 	@Override
-	public void setBedSpawnLocation(Location arg0) { }
+	public void setBedSpawnLocation(Location arg0) {}
 
 	@Override
-	public void setBedSpawnLocation(Location arg0, boolean arg1) { }
+	public void setBedSpawnLocation(Location arg0, boolean arg1) {}
 
 	@Override
-	public void setCompassTarget(Location arg0) { }
+	public void setCompassTarget(Location arg0) {}
 
 	@Override
 	public void setDisplayName(String displayName) {
 	}
 
 	@Override
-	public void setExhaustion(float arg0) { }
+	public void setExhaustion(float arg0) {}
 
 	@Override
-	public void setExp(float arg0) { }
+	public void setExp(float arg0) {}
 
 	@Override
-	public void setFlySpeed(float arg0) throws IllegalArgumentException { }
+	public void setFlySpeed(float arg0) throws IllegalArgumentException {}
 
 	@Override
-	public void setFlying(boolean arg0) { }
+	public void setFlying(boolean arg0) {}
 
 	@Override
-	public void setFoodLevel(int arg0) { }
+	public void setFoodLevel(int arg0) {}
 
 	@Override
-	public void setHealthScale(double arg0) throws IllegalArgumentException { }
+	public void setHealthScale(double arg0) throws IllegalArgumentException {}
 
 	@Override
-	public void setHealthScaled(boolean arg0) { }
+	public void setHealthScaled(boolean arg0) {}
 
 	@Override
-	public void setLevel(int arg0) { }
+	public void setLevel(int arg0) {}
 
 	@Override
-	public void setPlayerListName(String arg0) { }
+	public void setPlayerListName(String arg0) {}
 
 	@Override
-	public void setPlayerTime(long arg0, boolean arg1) { }
+	public void setPlayerTime(long arg0, boolean arg1) {}
 
 	@Override
-	public void setPlayerWeather(WeatherType arg0) { }
+	public void setPlayerWeather(WeatherType arg0) {}
 
 	@Override
-	public void setResourcePack(String arg0) { }
+	public void setResourcePack(String arg0) {}
 
 	@Override
-	public void setSaturation(float arg0) { }
+	public void setSaturation(float arg0) {}
 
 	@Override
 	public void setScoreboard(Scoreboard arg0) throws IllegalArgumentException,
-			IllegalStateException { }
+			IllegalStateException {}
 
 	@Override
-	public void setSleepingIgnored(boolean arg0) { }
+	public void setSleepingIgnored(boolean arg0) {}
 
 	@Override
-	public void setSneaking(boolean arg0) { }
+	public void setSneaking(boolean arg0) {}
 
 	@Override
-	public void setSprinting(boolean arg0) { }
+	public void setSprinting(boolean arg0) {}
 
 	@Override
-	public void setStatistic(Statistic arg0, int arg1) throws IllegalArgumentException { }
+	public void setStatistic(Statistic arg0, int arg1) throws IllegalArgumentException {}
 
 	@Override
 	public void setStatistic(Statistic arg0, Material arg1, int arg2)
-			throws IllegalArgumentException { }
+			throws IllegalArgumentException {}
 
 	@Override
-	public void setStatistic(Statistic arg0, EntityType arg1, int arg2) { }
+	public void setStatistic(Statistic arg0, EntityType arg1, int arg2) {}
 
 	@Override
-	public void setTexturePack(String arg0) { }
+	public void setTexturePack(String arg0) {}
 
 	@Override
-	public void setTotalExperience(int arg0) { }
+	public void setTotalExperience(int arg0) {}
 
 	@Override
-	public void setWalkSpeed(float arg0) throws IllegalArgumentException { }
+	public void setWalkSpeed(float arg0) throws IllegalArgumentException {}
 
 	@Override
-	public void showPlayer(Player arg0) { }
+	public void showPlayer(Player arg0) {}
+
+	@Override
+	public void showPlayer(Plugin plugin, Player player) {}
 
 	@Override
 	public Spigot spigot() {
@@ -1142,6 +1153,14 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public void setGliding(boolean arg0) {}
+
+	@Override
+	public boolean isSwimming() {
+		return false;
+	}
+
+	@Override
+	public void setSwimming(boolean b) {}
 
 	@Override
 	public boolean hasAI() {

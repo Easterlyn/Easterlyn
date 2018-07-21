@@ -7,7 +7,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.google.common.collect.HashMultimap;
@@ -80,57 +79,6 @@ public class InventoryUtils {
 	private static HashMap<String, String> items;
 	private static HashMultimap<String, String> itemsReverse;
 	private static HashSet<ItemStack> uniques;
-	private static final HashMap<Integer, PotionType> legacyPotionIDs;
-
-	static {
-		legacyPotionIDs = new HashMap<>();
-		legacyPotionIDs.put(1, PotionType.REGEN);
-		legacyPotionIDs.put(2, PotionType.SPEED);
-		legacyPotionIDs.put(3, PotionType.FIRE_RESISTANCE);
-		legacyPotionIDs.put(4, PotionType.POISON);
-		legacyPotionIDs.put(5, PotionType.INSTANT_HEAL);
-		legacyPotionIDs.put(6, PotionType.NIGHT_VISION);
-		legacyPotionIDs.put(8, PotionType.WEAKNESS);
-		legacyPotionIDs.put(9, PotionType.STRENGTH);
-		legacyPotionIDs.put(10, PotionType.SLOWNESS);
-		legacyPotionIDs.put(11, PotionType.JUMP);
-		legacyPotionIDs.put(12, PotionType.INSTANT_DAMAGE);
-		legacyPotionIDs.put(13, PotionType.WATER_BREATHING);
-		legacyPotionIDs.put(14, PotionType.INVISIBILITY);
-	}
-
-	public static ItemStack convertLegacyPotion(ItemStack item) {
-		short durability = item.getDurability();
-
-		if (durability < 1) {
-			// May be a current potion, no API-safe way to check
-			return item;
-		}
-
-		ItemStack potion = new ItemStack(((durability >> 14) & 1) == 1 ? Material.SPLASH_POTION : Material.POTION);
-
-		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
-
-		PotionType type = legacyPotionIDs.get(durability % 16);
-
-		if (type == null) {
-			potionMeta.setBasePotionData(new PotionData(PotionType.AWKWARD));
-			potion.setItemMeta(potionMeta);
-			return potion;
-		}
-
-		// This is a rare case I don't mind breaking
-		potionMeta.removeCustomEffect(type.getEffectType());
-
-		PotionData data = new PotionData(type,
-				type.isExtendable() && ((durability >> 6) & 1) == 1,
-				type.isUpgradeable() && ((durability >> 5) & 1) == 1);
-
-		potionMeta.setBasePotionData(data);
-		potion.setItemMeta(potionMeta);
-
-		return potion;
-	}
 
 	private static HashMap<String, String> getItems() {
 		if (items != null) {
@@ -147,9 +95,8 @@ public class InventoryUtils {
 					continue;
 				}
 				String[] row = line.split(",");
-				String id = row[1] + ":" + row[2];
-				items.put(id, row[3]);
-				itemsReverse.put(row[3], id);
+				items.put(row[0], row[1]);
+				itemsReverse.put(row[1], row[0]);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load items from items.csv!", e);
@@ -159,30 +106,10 @@ public class InventoryUtils {
 
 	public static String getItemName(ItemStack item) {
 		Material material = item.getType();
-		short durability = item.getDurability();
-		if (material.getMaxDurability() > 0) {
-			// Degradable item
-			durability = 0;
-		}
-		String key = material.name() + ":" + durability;
-		String name = null;
-		if (getItems().containsKey(key)) {
-			name = items.get(key);
-		}
-		/*
-		 * This special case is mostly for banners. While their color is affected by their data
-		 * value, it can actually be completely overwritten by the base color in the tile entity NBT
-		 * tag. Because of that, we can't specify banner color based on data value.
-		 */
-		if (name == null) {
-			key = material.name() + ":0";
-			if (getItems().containsKey(key)) {
-				name = items.get(key);
-			}
-		}
+		String name = getItems().get(material.name());
 		if (name == null) {
 			// Even special-cased materials should have an entry.
-			return TextUtils.getFriendlyName(material);
+			name = TextUtils.getFriendlyName(material);
 		}
 		if (material == Material.POTION || material == Material.SPLASH_POTION || material == Material.LINGERING_POTION
 				|| material == Material.TIPPED_ARROW) {
@@ -412,7 +339,7 @@ public class InventoryUtils {
 	}
 
 	public static boolean isUniqueItem(Easterlyn plugin, ItemStack toCheck) {
-		if (Captcha.isCard(toCheck) || CruxiteDowel.isDowel(toCheck)) {
+		if (Captcha.isCaptcha(toCheck)) {
 			return true;
 		}
 

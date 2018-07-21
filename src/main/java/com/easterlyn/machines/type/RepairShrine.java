@@ -4,7 +4,6 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.packets.ParticleEffectWrapper;
 import com.easterlyn.machines.Machines;
-import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.micromodules.Holograms;
@@ -164,7 +163,8 @@ public class RepairShrine extends Machine {
 		shape.setVectorData(new Vector(0, 3, 0), matData);
 
 		// Decorative arch
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.NORTH, "upperstair");
+		// TODO requires handling multiple BlockData types in Shape.MaterialDataValue
+/*		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.NORTH, "upperstair");
 		shape.setVectorData(new Vector(0, 4, 2), matData);
 		shape.setVectorData(new Vector(0, 5, 1), matData);
 
@@ -187,7 +187,7 @@ public class RepairShrine extends Machine {
 		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.NORTH, "stair");
 		shape.setVectorData(new Vector(0, 5, -2), matData);
 		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.EAST, "stair");
-		shape.setVectorData(new Vector(-2, 5, 0), matData);
+		shape.setVectorData(new Vector(-2, 5, 0), matData);*/
 
 		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_SLAB);
 		shape.setVectorData(new Vector(0, 6, 1), matData);
@@ -214,13 +214,13 @@ public class RepairShrine extends Machine {
 		return this.getKey(storage).add(new Vector(0.5, 4.1, 0.5));
 	}
 
-	public void setFuel(ConfigurationSection storage, long fuel) {
+	private void setFuel(ConfigurationSection storage, long fuel) {
 		ArmorStand hologram = holograms.getOrCreateHologram(this.getHoloLocation(storage));
 		hologram.setCustomName(String.valueOf(fuel));
 		storage.set("fuel", fuel);
 	}
 
-	public long getFuel(ConfigurationSection storage) {
+	private long getFuel(ConfigurationSection storage) {
 		return storage.getLong("fuel", 0);
 	}
 

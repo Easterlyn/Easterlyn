@@ -134,7 +134,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 	private void accept(Player sender) {
 		TeleportRequest request = pending.remove(sender.getUniqueId());
 		if (request == null || request.getExpiry() < System.currentTimeMillis()) {
-			if (!transportalizer.doPendingTransportalization(sender, true)) {
+			if (transportalizer.pendingTransportalizationFailed(sender, true)) {
 				sender.sendMessage(getLang().getValue("command.tpa.error.noPending"));
 			}
 			return;
@@ -179,7 +179,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 	private void decline(Player sender) {
 		TeleportRequest request = pending.remove(sender.getUniqueId());
 		if (request == null || request.getExpiry() < System.currentTimeMillis()) {
-			if (!transportalizer.doPendingTransportalization(sender, false)) {
+			if (transportalizer.pendingTransportalizationFailed(sender, false)) {
 				sender.sendMessage(getLang().getValue("command.tpa.error.noPending"));
 			}
 			return;

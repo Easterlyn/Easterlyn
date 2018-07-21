@@ -1,693 +1,850 @@
-0,AIR,0,Air,air
-1,STONE,0,Stone,stone
-1,STONE,1,Granite,stone
-1,STONE,2,Polished Granite,stone
-1,STONE,3,Diorite,stone
-1,STONE,4,Polished Diorite,stone
-1,STONE,5,Andesite,stone
-1,STONE,6,Polished Andesite,stone
-2,GRASS,0,Grass,grass
-3,DIRT,0,Dirt,dirt
-3,DIRT,1,Coarse Dirt,dirt
-3,DIRT,2,Podzol,dirt
-4,COBBLESTONE,0,Cobblestone,cobblestone
-5,WOOD,0,Oak Wood Plank,planks
-5,WOOD,1,Spruce Wood Plank,planks
-5,WOOD,2,Birch Wood Plank,planks
-5,WOOD,3,Jungle Wood Plank,planks
-5,WOOD,4,Acacia Wood Plank,planks
-5,WOOD,5,Dark Oak Wood Plank,planks
-6,SAPLING,0,Oak Sapling,sapling
-6,SAPLING,1,Spruce Sapling,sapling
-6,SAPLING,2,Birch Sapling,sapling
-6,SAPLING,3,Jungle Sapling,sapling
-6,SAPLING,4,Acacia Sapling,sapling
-6,SAPLING,5,Dark Oak Sapling,sapling
-7,BEDROCK,0,Bedrock,bedrock
-8,WATER,0,Flowing Water,flowing_water
-9,STATIONARY_WATER,0,Still Water,water
-10,LAVA,0,Flowing Lava,flowing_lava
-11,STATIONARY_LAVA,0,Still Lava,lava
-12,SAND,0,Sand,sand
-12,SAND,1,Red Sand,sand
-13,GRAVEL,0,Gravel,gravel
-14,GOLD_ORE,0,Gold Ore,gold_ore
-15,IRON_ORE,0,Iron Ore,iron_ore
-16,COAL_ORE,0,Coal Ore,coal_ore
-17,LOG,0,Oak Wood,log
-17,LOG,1,Spruce Wood,log
-17,LOG,2,Birch Wood,log
-17,LOG,3,Jungle Wood,log
-18,LEAVES,0,Oak Leaves,leaves
-18,LEAVES,1,Spruce Leaves,leaves
-18,LEAVES,2,Birch Leaves,leaves
-18,LEAVES,3,Jungle Leaves,leaves
-19,SPONGE,0,Sponge,sponge
-19,SPONGE,1,Wet Sponge,sponge
-20,GLASS,0,Glass,glass
-21,LAPIS_ORE,0,Lapis Lazuli Ore,lapis_ore
-22,LAPIS_BLOCK,0,Lapis Lazuli Block,lapis_block
-23,DISPENSER,0,Dispenser,dispenser
-24,SANDSTONE,0,Sandstone,sandstone
-24,SANDSTONE,1,Chiseled Sandstone,sandstone
-24,SANDSTONE,2,Smooth Sandstone,sandstone
-25,NOTE_BLOCK,0,Note Block,noteblock
-26,BED_BLOCK,0,Bed,bed
-27,POWERED_RAIL,0,Powered Rail,golden_rail
-28,DETECTOR_RAIL,0,Detector Rail,detector_rail
-29,PISTON_STICKY_BASE,0,Sticky Piston,sticky_piston
-30,WEB,0,Cobweb,web
-31,LONG_GRASS,0,Dead Shrub,tallgrass
-31,LONG_GRASS,1,Grass,tallgrass
-31,LONG_GRASS,2,Fern,tallgrass
-32,DEAD_BUSH,0,Dead Shrub,deadbush
-33,PISTON_BASE,0,Piston,piston
-34,PISTON_EXTENSION,0,Piston Head,piston_head
-35,WOOL,0,White Wool,wool
-35,WOOL,1,Orange Wool,wool
-35,WOOL,2,Magenta Wool,wool
-35,WOOL,3,Light Blue Wool,wool
-35,WOOL,4,Yellow Wool,wool
-35,WOOL,5,Lime Wool,wool
-35,WOOL,6,Pink Wool,wool
-35,WOOL,7,Gray Wool,wool
-35,WOOL,8,Light Gray Wool,wool
-35,WOOL,9,Cyan Wool,wool
-35,WOOL,10,Purple Wool,wool
-35,WOOL,11,Blue Wool,wool
-35,WOOL,12,Brown Wool,wool
-35,WOOL,13,Green Wool,wool
-35,WOOL,14,Red Wool,wool
-35,WOOL,15,Black Wool,wool
-36,PISTON_MOVING_PIECE,0,Piston Moving Piece,piston_moving_piece
-37,YELLOW_FLOWER,0,Dandelion,yellow_flower
-38,RED_ROSE,0,Poppy,red_flower
-38,RED_ROSE,1,Blue Orchid,red_flower
-38,RED_ROSE,2,Allium,red_flower
-38,RED_ROSE,3,Azure Bluet,red_flower
-38,RED_ROSE,4,Red Tulip,red_flower
-38,RED_ROSE,5,Orange Tulip,red_flower
-38,RED_ROSE,6,White Tulip,red_flower
-38,RED_ROSE,7,Pink Tulip,red_flower
-38,RED_ROSE,8,Oxeye Daisy,red_flower
-39,BROWN_MUSHROOM,0,Brown Mushroom,brown_mushroom
-40,RED_MUSHROOM,0,Red Mushroom,red_mushroom
-41,GOLD_BLOCK,0,Gold Block,gold_block
-42,IRON_BLOCK,0,Iron Block,iron_block
-43,DOUBLE_STEP,0,Double Stone Slab,double_stone_slab
-43,DOUBLE_STEP,1,Double Sandstone Slab,double_stone_slab
-43,DOUBLE_STEP,2,Double Wooden Slab,double_stone_slab
-43,DOUBLE_STEP,3,Double Cobblestone Slab,double_stone_slab
-43,DOUBLE_STEP,4,Double Brick Slab,double_stone_slab
-43,DOUBLE_STEP,5,Double Stone Brick Slab,double_stone_slab
-43,DOUBLE_STEP,6,Double Nether Brick Slab,double_stone_slab
-43,DOUBLE_STEP,7,Double Quartz Slab,double_stone_slab
-44,STEP,0,Stone Slab,stone_slab
-44,STEP,1,Sandstone Slab,stone_slab
-44,STEP,2,Wooden Slab,stone_slab
-44,STEP,3,Cobblestone Slab,stone_slab
-44,STEP,4,Brick Slab,stone_slab
-44,STEP,5,Stone Brick Slab,stone_slab
-44,STEP,6,Nether Brick Slab,stone_slab
-44,STEP,7,Quartz Slab,stone_slab
-45,BRICK,0,Bricks,brick_block
-46,TNT,0,TNT,tnt
-47,BOOKSHELF,0,Bookshelf,bookshelf
-48,MOSSY_COBBLESTONE,0,Moss Stone,mossy_cobblestone
-49,OBSIDIAN,0,Obsidian,obsidian
-50,TORCH,0,Torch,torch
-51,FIRE,0,Fire,fire
-52,MOB_SPAWNER,0,Monster Spawner,mob_spawner
-53,WOOD_STAIRS,0,Oak Wood Stairs,oak_stairs
-54,CHEST,0,Chest,chest
-55,REDSTONE_WIRE,0,Redstone Wire,redstone_wire
-56,DIAMOND_ORE,0,Diamond Ore,diamond_ore
-57,DIAMOND_BLOCK,0,Diamond Block,diamond_block
-58,WORKBENCH,0,Crafting Table,crafting_table
-59,CROPS,0,Wheat Crops,wheat
-60,SOIL,0,Farmland,farmland
-61,FURNACE,0,Furnace,furnace
-62,BURNING_FURNACE,0,Burning Furnace,lit_furnace
-63,SIGN_POST,0,Standing Sign Block,standing_sign
-64,WOODEN_DOOR,0,Oak Door Block,wooden_door
-65,LADDER,0,Ladder,ladder
-66,RAILS,0,Rail,rail
-67,COBBLESTONE_STAIRS,0,Cobblestone Stairs,stone_stairs
-68,WALL_SIGN,0,Wall-mounted Sign Block,wall_sign
-69,LEVER,0,Lever,lever
-70,STONE_PLATE,0,Stone Pressure Plate,stone_pressure_plate
-71,IRON_DOOR_BLOCK,0,Iron Door Block,iron_door
-72,WOOD_PLATE,0,Wooden Pressure Plate,wooden_pressure_plate
-73,REDSTONE_ORE,0,Redstone Ore,redstone_ore
-74,GLOWING_REDSTONE_ORE,0,Glowing Redstone Ore,lit_redstone_ore
-75,REDSTONE_TORCH_OFF,0,Redstone Torch,unlit_redstone_torch
-76,REDSTONE_TORCH_ON,0,Redstone Torch,redstone_torch
-77,STONE_BUTTON,0,Stone Button,stone_button
-78,SNOW,0,Snow,snow_layer
-79,ICE,0,Ice,ice
-80,SNOW_BLOCK,0,Snow Block,snow
-81,CACTUS,0,Cactus,cactus
-82,CLAY,0,Clay,clay
-83,SUGAR_CANE_BLOCK,0,Sugar Canes,reeds
-84,JUKEBOX,0,Jukebox,jukebox
-85,FENCE,0,Oak Fence,fence
-86,PUMPKIN,0,Pumpkin,pumpkin
-87,NETHERRACK,0,Netherrack,netherrack
-88,SOUL_SAND,0,Soul Sand,soul_sand
-89,GLOWSTONE,0,Glowstone,glowstone
-90,PORTAL,0,Nether Portal,portal
-91,JACK_O_LANTERN,0,Jack o'Lantern,lit_pumpkin
-92,CAKE_BLOCK,0,Cake Block,cake
-93,DIODE_BLOCK_OFF,0,Redstone Repeater Block,unpowered_repeater
-94,DIODE_BLOCK_ON,0,Redstone Repeater Block,powered_repeater
-95,STAINED_GLASS,0,White Stained Glass,stained_glass
-95,STAINED_GLASS,1,Orange Stained Glass,stained_glass
-95,STAINED_GLASS,2,Magenta Stained Glass,stained_glass
-95,STAINED_GLASS,3,Light Blue Stained Glass,stained_glass
-95,STAINED_GLASS,4,Yellow Stained Glass,stained_glass
-95,STAINED_GLASS,5,Lime Stained Glass,stained_glass
-95,STAINED_GLASS,6,Pink Stained Glass,stained_glass
-95,STAINED_GLASS,7,Gray Stained Glass,stained_glass
-95,STAINED_GLASS,8,Light Gray Stained Glass,stained_glass
-95,STAINED_GLASS,9,Cyan Stained Glass,stained_glass
-95,STAINED_GLASS,10,Purple Stained Glass,stained_glass
-95,STAINED_GLASS,11,Blue Stained Glass,stained_glass
-95,STAINED_GLASS,12,Brown Stained Glass,stained_glass
-95,STAINED_GLASS,13,Green Stained Glass,stained_glass
-95,STAINED_GLASS,14,Red Stained Glass,stained_glass
-95,STAINED_GLASS,15,Black Stained Glass,stained_glass
-96,TRAP_DOOR,0,Wooden Trapdoor,trapdoor
-97,MONSTER_EGGS,0,Stone Monster Egg,monster_egg
-97,MONSTER_EGGS,1,Cobblestone Monster Egg,monster_egg
-97,MONSTER_EGGS,2,Stone Brick Monster Egg,monster_egg
-97,MONSTER_EGGS,3,Mossy Stone Brick Monster Egg,monster_egg
-97,MONSTER_EGGS,4,Cracked Stone Brick Monster Egg,monster_egg
-97,MONSTER_EGGS,5,Chiseled Stone Brick Monster Egg,monster_egg
-98,SMOOTH_BRICK,0,Stone Bricks,stonebrick
-98,SMOOTH_BRICK,1,Mossy Stone Bricks,stonebrick
-98,SMOOTH_BRICK,2,Cracked Stone Bricks,stonebrick
-98,SMOOTH_BRICK,3,Chiseled Stone Bricks,stonebrick
-99,HUGE_MUSHROOM_1,0,Brown Mushroom Cap,brown_mushroom_block
-100,HUGE_MUSHROOM_2,0,Red Mushroom Cap,red_mushroom_block
-101,IRON_FENCE,0,Iron Bars,iron_bars
-102,THIN_GLASS,0,Glass Pane,glass_pane
-103,MELON_BLOCK,0,Melon Block,melon_block
-104,PUMPKIN_STEM,0,Pumpkin Stem,pumpkin_stem
-105,MELON_STEM,0,Melon Stem,melon_stem
-106,VINE,0,Vines,vine
-107,FENCE_GATE,0,Oak Fence Gate,fence_gate
-108,BRICK_STAIRS,0,Brick Stairs,brick_stairs
-109,SMOOTH_STAIRS,0,Stone Brick Stairs,stone_brick_stairs
-110,MYCEL,0,Mycelium,mycelium
-111,WATER_LILY,0,Lily Pad,waterlily
-112,NETHER_BRICK,0,Nether Brick,nether_brick
-113,NETHER_FENCE,0,Nether Brick Fence,nether_brick_fence
-114,NETHER_BRICK_STAIRS,0,Nether Brick Stairs,nether_brick_stairs
-115,NETHER_WARTS,0,Nether Wart,nether_wart
-116,ENCHANTMENT_TABLE,0,Enchantment Table,enchanting_table
-117,BREWING_STAND,0,Brewing Stand,brewing_stand
-118,CAULDRON,0,Cauldron,cauldron
-119,ENDER_PORTAL,0,End Portal,end_portal
-120,ENDER_PORTAL_FRAME,0,End Portal Frame,end_portal_frame
-121,ENDER_STONE,0,End Stone,end_stone
-122,DRAGON_EGG,0,Dragon Egg,dragon_egg
-123,REDSTONE_LAMP_OFF,0,Redstone Lamp,redstone_lamp
-124,REDSTONE_LAMP_ON,0,Redstone Lamp ,lit_redstone_lamp
-125,WOOD_DOUBLE_STEP,0,Double Oak Wood Slab,double_wooden_slab
-125,WOOD_DOUBLE_STEP,1,Double Spruce Wood Slab,double_wooden_slab
-125,WOOD_DOUBLE_STEP,2,Double Birch Wood Slab,double_wooden_slab
-125,WOOD_DOUBLE_STEP,3,Double Jungle Wood Slab,double_wooden_slab
-125,WOOD_DOUBLE_STEP,4,Double Acacia Wood Slab,double_wooden_slab
-125,WOOD_DOUBLE_STEP,5,Double Dark Oak Wood Slab,double_wooden_slab
-126,WOOD_STEP,0,Oak Wood Slab,wooden_slab
-126,WOOD_STEP,1,Spruce Wood Slab,wooden_slab
-126,WOOD_STEP,2,Birch Wood Slab,wooden_slab
-126,WOOD_STEP,3,Jungle Wood Slab,wooden_slab
-126,WOOD_STEP,4,Acacia Wood Slab,wooden_slab
-126,WOOD_STEP,5,Dark Oak Wood Slab,wooden_slab
-127,COCOA,0,Cocoa,cocoa
-128,SANDSTONE_STAIRS,0,Sandstone Stairs,sandstone_stairs
-129,EMERALD_ORE,0,Emerald Ore,emerald_ore
-130,ENDER_CHEST,0,Ender Chest,ender_chest
-131,TRIPWIRE_HOOK,0,Tripwire Hook,tripwire_hook
-132,TRIPWIRE,0,Tripwire,tripwire_hook
-133,EMERALD_BLOCK,0,Emerald Block,emerald_block
-134,SPRUCE_WOOD_STAIRS,0,Spruce Wood Stairs,spruce_stairs
-135,BIRCH_WOOD_STAIRS,0,Birch Wood Stairs,birch_stairs
-136,JUNGLE_WOOD_STAIRS,0,Jungle Wood Stairs,jungle_stairs
-137,COMMAND,0,Command Block,command_block
-138,BEACON,0,Beacon,beacon
-139,COBBLE_WALL,0,Cobblestone Wall,cobblestone_wall
-139,COBBLE_WALL,1,Mossy Cobblestone Wall,cobblestone_wall
-140,FLOWER_POT,0,Flower Pot,flower_pot
-141,CARROT,0,Carrots,carrots
-142,POTATO,0,Potatoes,potatoes
-143,WOOD_BUTTON,0,Wooden Button,wooden_button
-144,SKULL,0,Mob Head,skull
-145,ANVIL,0,Anvil,anvil
-146,TRAPPED_CHEST,0,Trapped Chest,trapped_chest
-147,GOLD_PLATE,0,Light Weighted Pressure Plate,light_weighted_pressure_plate
-148,IRON_PLATE,0,Heavy Weighted Pressure Plate,heavy_weighted_pressure_plate
-149,REDSTONE_COMPARATOR_OFF,0,Redstone Comparator,unpowered_comparator
-150,REDSTONE_COMPARATOR_ON,0,Redstone Comparator,powered_comparator
-151,DAYLIGHT_DETECTOR,0,Daylight Detector,daylight_detector
-152,REDSTONE_BLOCK,0,Redstone Block,redstone_block
-153,QUARTZ_ORE,0,Nether Quartz Ore,quartz_ore
-154,HOPPER,0,Hopper,hopper
-155,QUARTZ_BLOCK,0,Quartz Block,quartz_block
-155,QUARTZ_BLOCK,1,Chiseled Quartz Block,quartz_block
-155,QUARTZ_BLOCK,2,Pillar Quartz Block,quartz_block
-156,QUARTZ_STAIRS,0,Quartz Stairs,quartz_stairs
-157,ACTIVATOR_RAIL,0,Activator Rail,activator_rail
-158,DROPPER,0,Dropper,dropper
-159,STAINED_CLAY,0,White Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,1,Orange Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,2,Magenta Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,3,Light Blue Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,4,Yellow Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,5,Lime Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,6,Pink Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,7,Gray Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,8,Light Gray Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,9,Cyan Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,10,Purple Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,11,Blue Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,12,Brown Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,13,Green Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,14,Red Stained Clay,stained_hardened_clay
-159,STAINED_CLAY,15,Black Stained Clay,stained_hardened_clay
-160,STAINED_GLASS_PANE,0,White Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,1,Orange Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,2,Magenta Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,3,Light Blue Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,4,Yellow Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,5,Lime Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,6,Pink Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,7,Gray Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,8,Light Gray Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,9,Cyan Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,10,Purple Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,11,Blue Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,12,Brown Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,13,Green Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,14,Red Stained Glass Pane,stained_glass_pane
-160,STAINED_GLASS_PANE,15,Black Stained Glass Pane,stained_glass_pane
-161,LEAVES_2,0,Acacia Leaves,leaves2
-161,LEAVES_2,1,Dark Oak Leaves,leaves2
-162,LOG_2,0,Acacia Wood,logs2
-162,LOG_2,1,Dark Oak Wood,logs2
-163,ACACIA_STAIRS,0,Acacia Wood Stairs,acacia_stairs
-164,DARK_OAK_STAIRS,0,Dark Oak Wood Stairs,dark_oak_stairs
-165,SLIME_BLOCK,0,Slime Block,slime
-166,BARRIER,0,Barrier,barrier
-167,IRON_TRAPDOOR,0,Iron Trapdoor,iron_trapdoor
-168,PRISMARINE,0,Prismarine,prismarine
-168,PRISMARINE,1,Prismarine Bricks,prismarine
-168,PRISMARINE,2,Dark Prismarine,prismarine
-169,SEA_LANTERN,0,Sea Lantern,sea_lantern
-170,HAY_BLOCK,0,Hay Bale,hay_block
-171,CARPET,0,White Carpet,carpet
-171,CARPET,1,Orange Carpet,carpet
-171,CARPET,2,Magenta Carpet,carpet
-171,CARPET,3,Light Blue Carpet,carpet
-171,CARPET,4,Yellow Carpet,carpet
-171,CARPET,5,Lime Carpet,carpet
-171,CARPET,6,Pink Carpet,carpet
-171,CARPET,7,Gray Carpet,carpet
-171,CARPET,8,Light Gray Carpet,carpet
-171,CARPET,9,Cyan Carpet,carpet
-171,CARPET,10,Purple Carpet,carpet
-171,CARPET,11,Blue Carpet,carpet
-171,CARPET,12,Brown Carpet,carpet
-171,CARPET,13,Green Carpet,carpet
-171,CARPET,14,Red Carpet,carpet
-171,CARPET,15,Black Carpet,carpet
-172,HARD_CLAY,0,Hardened Clay,hardened_clay
-173,COAL_BLOCK,0,Block of Coal,coal_block
-174,PACKED_ICE,0,Packed Ice,packed_ice
-175,DOUBLE_PLANT,0,Sunflower,double_plant
-175,DOUBLE_PLANT,1,Lilac,double_plant
-175,DOUBLE_PLANT,2,Double Tallgrass,double_plant
-175,DOUBLE_PLANT,3,Large Fern,double_plant
-175,DOUBLE_PLANT,4,Rose Bush,double_plant
-175,DOUBLE_PLANT,5,Peony,double_plant
-176,STANDING_BANNER,0,Free-standing Banner,standing_banner
-177,WALL_BANNER,0,Wall-mounted Banner,wall_banner
-178,DAYLIGHT_DETECTOR_INVERTED,0,Inverted Daylight Sensor,daylight_detector_inverted
-179,RED_SANDSTONE,0,Red Sandstone,red_sandstone
-179,RED_SANDSTONE,1,Chiseled Red Sandstone,red_sandstone
-179,RED_SANDSTONE,2,Smooth Red Sandstone,red_sandstone
-180,RED_SANDSTONE_STAIRS,0,Red Sandstone Stairs,red_sandstone_stairs
-181,DOUBLE_STONE_SLAB2,0,Double Red Sandstone Slab,stone_slab2
-182,STONE_SLAB2,0,Red Sandstone Slab,double_stone_slab2
-183,SPRUCE_FENCE_GATE,0,Spruce Fence Gate,spruce_fence_gate
-184,BIRCH_FENCE_GATE,0,Birch Fence Gate,birch_fence_gate
-185,JUNGLE_FENCE_GATE,0,Jungle Fence Gate,jungle_fence_gate
-186,DARK_OAK_FENCE_GATE,0,Dark Oak Fence Gate,dark_oak_fence_gate
-187,ACACIA_FENCE_GATE,0,Acacia Fence Gate,acacia_fence_gate
-188,SPRUCE_FENCE,0,Spruce Fence,spruce_fence
-189,BIRCH_FENCE,0,Birch Fence,birch_fence
-190,JUNGLE_FENCE,0,Jungle Fence,jungle_fence
-191,DARK_OAK_FENCE,0,Dark Oak Fence,dark_oak_fence
-192,ACACIA_FENCE,0,Acacia Fence,acacia_fence
-193,SPRUCE_DOOR,0,Spruce Door Block,spruce_door
-194,BIRCH_DOOR,0,Birch Door Block,birch_door
-195,JUNGLE_DOOR,0,Jungle Door Block,jungle_door
-196,ACACIA_DOOR,0,Acacia Door Block,acacia_door
-197,DARK_OAK_DOOR,0,Dark Oak Door Block,dark_oak_door
-198,END_ROD,0,End Rod,end_rod
-199,CHORUS_PLANT,0,Chorus Plant,chorus_plant
-200,CHORUS_FLOWER,0,Chorus Flower,chorus_flower
-201,PURPUR_BLOCK,0,Purpur Block,purpur_block
-202,PURPUR_PILLAR,0,Purpur Pillar,purpur_pillar
-203,PURPUR_STAIRS,0,Purpur Stairs,purpur_stairs
-204,PURPUR_DOUBLE_SLAB,0,Purpur Double Slab,purpur_double_slab
-205,PURPUR_SLAB,0,Purpur Slab,purpur_slab
-206,END_BRICKS,0,End Bricks,end_bricks
-207,BEETROOT_BLOCK,0,Beetroot Block,beetroot_block
-208,GRASS_PATH,0,Grass Path,grass_path
-209,END_GATEWAY,0,End Gateway,end_gateway
-210,COMMAND_REPEATING,0,Command Block (Repeating),repeating_command_block
-211,COMMAND_CHAIN,0,Command Block (Chain),chain_command_block
-212,FROSTED_ICE,0,Frosted Ice,frosted_ice
-213,MAGMA,0,Magma Block,magma
-214,NETHER_WART_BLOCK,0,Nether Wart Block,nether_wart_block
-215,RED_NETHER_BRICK,0,Red Nether Brick,red_nether_brick
-216,BONE_BLOCK,0,Bone Block,bone_block
-217,STRUCTURE_VOID,0,Structure Void,structure_void
-218,OBSERVER,0,Observer,observer
-219,WHITE_SHULKER_BOX,0,White Shulker Box,white_shulker_box
-220,ORANGE_SHULKER_BOX,0,Orange Shulker Box,orange_shulker_box
-221,MAGENTA_SHULKER_BOX,0,Magenta Shulker Box,magenta_shulker_box
-222,LIGHT_BLUE_SHULKER_BOX,0,Light Blue Shulker Box,light_blue_shulker_box
-223,YELLOW_SHULKER_BOX,0,Yellow Shulker Box,yellow_shulker_box
-224,LIME_SHULKER_BOX,0,Lime Shulker Box,lime_shulker_box
-225,PINK_SHULKER_BOX,0,Pink Shulker Box,pink_shulker_box
-226,GRAY_SHULKER_BOX,0,Gray Shulker Box,gray_shulker_box
-227,SILVER_SHULKER_BOX,0,Silver Shulker Box,silver_shulker_box
-228,CYAN_SHULKER_BOX,0,Cyan Shulker Box,cyan_shulker_box
-229,PURPLE_SHULKER_BOX,0,Purple Shulker Box,purple_shulker_box
-230,BLUE_SHULKER_BOX,0,Blue Shulker Box,blue_shulker_box
-231,BROWN_SHULKER_BOX,0,Brown Shulker Box,brown_shulker_box
-232,GREEN_SHULKER_BOX,0,Green Shulker Box,green_shulker_box
-233,RED_SHULKER_BOX,0,Red Shulker Box,red_shulker_box
-234,BLACK_SHULKER_BOX,0,Black Shulker Box,black_shulker_box
-235,WHITE_GLAZED_TERRACOTTA,0,White Glazed Terracotta,white_glazed_terracotta
-236,ORANGE_GLAZED_TERRACOTTA,0,Orange Glazed Terracotta,orange_glazed_terracotta
-237,MAGENTA_GLAZED_TERRACOTTA,0,Magenta Glazed Terracotta,magenta_glazed_terracotta
-238,LIGHT_BLUE_GLAZED_TERRACOTTA,0,Light Blue Glazed Terracotta,light_blue_glazed_terracotta
-239,YELLOW_GLAZED_TERRACOTTA,0,Yellow Glazed Terracotta,yellow_glazed_terracotta
-240,LIME_GLAZED_TERRACOTTA,0,Lime Glazed Terracotta,lime_glazed_terracotta
-241,PINK_GLAZED_TERRACOTTA,0,Pink Glazed Terracotta,pink_glazed_terracotta
-242,GRAY_GLAZED_TERRACOTTA,0,Gray Glazed Terracotta,gray_glazed_terracotta
-243,SILVER_GLAZED_TERRACOTTA,0,Light Gray Glazed Terracotta,silver_glazed_terracotta
-244,CYAN_GLAZED_TERRACOTTA,0,Cyan Glazed Terracotta,cyan_glazed_terracotta
-245,PURPLE_GLAZED_TERRACOTTA,0,Purple Glazed Terracotta,purple_glazed_terracotta
-246,BLUE_GLAZED_TERRACOTTA,0,Blue Glazed Terracotta,blue_glazed_terracotta
-247,BROWN_GLAZED_TERRACOTTA,0,Brown Glazed Terracotta,brown_glazed_terracotta
-248,GREEN_GLAZED_TERRACOTTA,0,Green Glazed Terracotta,green_glazed_terracotta
-249,RED_GLAZED_TERRACOTTA,0,Red Glazed Terracotta,red_glazed_terracotta
-250,BLACK_GLAZED_TERRACOTTA,0,Black Glazed Terracotta,black_glazed_terracotta
-251,CONCRETE,0,White Concrete,concrete
-251,CONCRETE,1,Orange Concrete,concrete
-251,CONCRETE,2,Magenta Concrete,concrete
-251,CONCRETE,3,Light Blue Concrete,concrete
-251,CONCRETE,4,Yellow Concrete,concrete
-251,CONCRETE,5,Lime Concrete,concrete
-251,CONCRETE,6,Pink Concrete,concrete
-251,CONCRETE,7,Gray Concrete,concrete
-251,CONCRETE,8,Light Gray Concrete,concrete
-251,CONCRETE,9,Cyan Concrete,concrete
-251,CONCRETE,10,Purple Concrete,concrete
-251,CONCRETE,11,Blue Concrete,concrete
-251,CONCRETE,12,Brown Concrete,concrete
-251,CONCRETE,13,Green Concrete,concrete
-251,CONCRETE,14,Red Concrete,concrete
-251,CONCRETE,15,Black Concrete,concrete
-252,CONCRETE_POWDER,0,White Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,1,Orange Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,2,Magenta Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,3,Light Blue Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,4,Yellow Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,5,Lime Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,6,Pink Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,7,Gray Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,8,Light Gray Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,9,Cyan Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,10,Purple Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,11,Blue Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,12,Brown Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,13,Green Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,14,Red Concrete Powder,concrete_powder
-252,CONCRETE_POWDER,15,Black Concrete Powder,concrete_powder
-255,STRUCTURE_BLOCK,0,Structure Block,structure_block
-256,IRON_SPADE,0,Iron Shovel,iron_shovel
-257,IRON_PICKAXE,0,Iron Pickaxe,iron_pickaxe
-258,IRON_AXE,0,Iron Axe,iron_axe
-259,FLINT_AND_STEEL,0,Flint and Steel,flint_and_steel
-260,APPLE,0,Apple,apple
-261,BOW,0,Bow,bow
-262,ARROW,0,Arrow,arrow
-263,COAL,0,Coal,coal
-263,COAL,1,Charcoal,coal
-264,DIAMOND,0,Diamond,diamond
-265,IRON_INGOT,0,Iron Ingot,iron_ingot
-266,GOLD_INGOT,0,Gold Ingot,gold_ingot
-267,IRON_SWORD,0,Iron Sword,iron_sword
-268,WOOD_SWORD,0,Wooden Sword,wooden_sword
-269,WOOD_SPADE,0,Wooden Shovel,wooden_shovel
-270,WOOD_PICKAXE,0,Wooden Pickaxe,wooden_pickaxe
-271,WOOD_AXE,0,Wooden Axe,wooden_axe
-272,STONE_SWORD,0,Stone Sword,stone_sword
-273,STONE_SPADE,0,Stone Shovel,stone_shovel
-274,STONE_PICKAXE,0,Stone Pickaxe,stone_pickaxe
-275,STONE_AXE,0,Stone Axe,stone_axe
-276,DIAMOND_SWORD,0,Diamond Sword,diamond_sword
-277,DIAMOND_SPADE,0,Diamond Shovel,diamond_shovel
-278,DIAMOND_PICKAXE,0,Diamond Pickaxe,diamond_pickaxe
-279,DIAMOND_AXE,0,Diamond Axe,diamond_axe
-280,STICK,0,Stick,stick
-281,BOWL,0,Bowl,bowl
-282,MUSHROOM_SOUP,0,Mushroom Stew,mushroom_stew
-283,GOLD_SWORD,0,Golden Sword,golden_sword
-284,GOLD_SPADE,0,Golden Shovel,golden_shovel
-285,GOLD_PICKAXE,0,Golden Pickaxe,golden_pickaxe
-286,GOLD_AXE,0,Golden Axe,golden_axe
-287,STRING,0,String,string
-288,FEATHER,0,Feather,feather
-289,SULPHUR,0,Gunpowder,gunpowder
-290,WOOD_HOE,0,Wooden Hoe,wooden_hoe
-291,STONE_HOE,0,Stone Hoe,stone_hoe
-292,IRON_HOE,0,Iron Hoe,iron_hoe
-293,DIAMOND_HOE,0,Diamond Hoe,diamond_hoe
-294,GOLD_HOE,0,Golden Hoe,golden_hoe
-295,SEEDS,0,Wheat Seeds,wheat_seeds
-296,WHEAT,0,Wheat,wheat
-297,BREAD,0,Bread,bread
-298,LEATHER_HELMET,0,Leather Helmet,leather_helmet
-299,LEATHER_CHESTPLATE,0,Leather Tunic,leather_chestplate
-300,LEATHER_LEGGINGS,0,Leather Pants,leather_leggings
-301,LEATHER_BOOTS,0,Leather Boots,leather_boots
-302,CHAINMAIL_HELMET,0,Chainmail Helmet,chainmail_helmet
-303,CHAINMAIL_CHESTPLATE,0,Chainmail Chestplate,chainmail_chestplate
-304,CHAINMAIL_LEGGINGS,0,Chainmail Leggings,chainmail_leggings
-305,CHAINMAIL_BOOTS,0,Chainmail Boots,chainmail_boots
-306,IRON_HELMET,0,Iron Helmet,iron_helmet
-307,IRON_CHESTPLATE,0,Iron Chestplate,iron_chestplate
-308,IRON_LEGGINGS,0,Iron Leggings,iron_leggings
-309,IRON_BOOTS,0,Iron Boots,iron_boots
-310,DIAMOND_HELMET,0,Diamond Helmet,diamond_helmet
-311,DIAMOND_CHESTPLATE,0,Diamond Chestplate,diamond_chestplate
-312,DIAMOND_LEGGINGS,0,Diamond Leggings,diamond_leggings
-313,DIAMOND_BOOTS,0,Diamond Boots,diamond_boots
-314,GOLD_HELMET,0,Golden Helmet,golden_helmet
-315,GOLD_CHESTPLATE,0,Golden Chestplate,golden_chestplate
-316,GOLD_LEGGINGS,0,Golden Leggings,golden_leggings
-317,GOLD_BOOTS,0,Golden Boots,golden_boots
-318,FLINT,0,Flint,flint_and_steel
-319,PORK,0,Raw Porkchop,porkchop
-320,GRILLED_PORK,0,Cooked Porkchop,cooked_porkchop
-321,PAINTING,0,Painting,painting
-322,GOLDEN_APPLE,0,Golden Apple,golden_apple
-322,GOLDEN_APPLE,1,Enchanted Golden Apple,golden_apple
-323,SIGN,0,Sign,sign
-324,WOOD_DOOR,0,Oak Door,wooden_door
-325,BUCKET,0,Bucket,bucket
-326,WATER_BUCKET,0,Water Bucket,water_bucket
-327,LAVA_BUCKET,0,Lava Bucket,lava_bucket
-328,MINECART,0,Minecart,minecart
-329,SADDLE,0,Saddle,saddle
-330,IRON_DOOR,0,Iron Door,iron_door
-331,REDSTONE,0,Redstone,redstone
-332,SNOW_BALL,0,Snowball,snowball
-333,BOAT,0,Oak Boat,boat
-334,LEATHER,0,Leather,leather
-335,MILK_BUCKET,0,Milk Bucket,milk_bucket
-336,CLAY_BRICK,0,Brick,brick
-337,CLAY_BALL,0,Clay,clay_ball
-338,SUGAR_CANE,0,Sugar Canes,reeds
-339,PAPER,0,Paper,paper
-340,BOOK,0,Book,book
-341,SLIME_BALL,0,Slimeball,slime_ball
-342,STORAGE_MINECART,0,Minecart with Chest,chest_minecart
-343,POWERED_MINECART,0,Minecart with Furnace,furnace_minecart
-344,EGG,0,Egg,egg
-345,COMPASS,0,Compass,compass
-346,FISHING_ROD,0,Fishing Rod,fishing_rod
-347,WATCH,0,Clock,clock
-348,GLOWSTONE_DUST,0,Glowstone Dust,glowstone_dust
-349,RAW_FISH,0,Raw Fish,fish
-349,RAW_FISH,1,Raw Salmon,fish
-349,RAW_FISH,2,Clownfish,fish
-349,RAW_FISH,3,Pufferfish,fish
-350,COOKED_FISH,0,Cooked Fish,cooked_fish
-350,COOKED_FISH,1,Cooked Salmon,cooked_fish
-351,INK_SACK,0,Ink Sack,dye
-351,INK_SACK,1,Rose Red,dye
-351,INK_SACK,2,Cactus Green,dye
-351,INK_SACK,3,Coco Beans,dye
-351,INK_SACK,4,Lapis Lazuli,dye
-351,INK_SACK,5,Purple Dye,dye
-351,INK_SACK,6,Cyan Dye,dye
-351,INK_SACK,7,Light Gray Dye,dye
-351,INK_SACK,8,Gray Dye,dye
-351,INK_SACK,9,Pink Dye,dye
-351,INK_SACK,10,Lime Dye,dye
-351,INK_SACK,11,Dandelion Yellow,dye
-351,INK_SACK,12,Light Blue Dye,dye
-351,INK_SACK,13,Magenta Dye,dye
-351,INK_SACK,14,Orange Dye,dye
-351,INK_SACK,15,Bone Meal,dye
-352,BONE,0,Bone,bone
-353,SUGAR,0,Sugar,sugar
-354,CAKE,0,Cake,cake
-355,BED,0,White Bed,bed
-355,BED,1,Orange Bed,bed
-355,BED,2,Magenta Bed,bed
-355,BED,3,Light Blue Bed,bed
-355,BED,4,Yellow Bed,bed
-355,BED,5,Lime Bed,bed
-355,BED,6,Pink Bed,bed
-355,BED,7,Gray Bed,bed
-355,BED,8,Light Gray Bed,bed
-355,BED,9,Cyan Bed,bed
-355,BED,10,Purple Bed,bed
-355,BED,11,Blue Bed,bed
-355,BED,12,Brown Bed,bed
-355,BED,13,Green Bed,bed
-355,BED,14,Red Bed,bed
-355,BED,15,Black Bed,bed
-356,DIODE,0,Redstone Repeater,repeater
-357,COOKIE,0,Cookie,cookie
-358,MAP,0,Map,filled_map
-359,SHEARS,0,Shears,shears
-360,MELON,0,Melon,melon
-361,PUMPKIN_SEEDS,0,Pumpkin Seeds,pumpkin_seeds
-362,MELON_SEEDS,0,Melon Seeds,melon_seeds
-363,RAW_BEEF,0,Raw Beef,beef
-364,COOKED_BEEF,0,Steak,cooked_beef
-365,RAW_CHICKEN,0,Raw Chicken,chicken
-366,COOKED_CHICKEN,0,Cooked Chicken,cooked_chicken
-367,ROTTEN_FLESH,0,Rotten Flesh,rotten_flesh
-368,ENDER_PEARL,0,Ender Pearl,ender_pearl
-369,BLAZE_ROD,0,Blaze Rod,blaze_rod
-370,GHAST_TEAR,0,Ghast Tear,ghast_tear
-371,GOLD_NUGGET,0,Gold Nugget,gold_nugget
-372,NETHER_STALK,0,Nether Wart,nether_wart
-373,POTION,0,Water Bottle,potion
-374,GLASS_BOTTLE,0,Glass Bottle,glass_bottle
-375,SPIDER_EYE,0,Spider Eye,spider_eye
-376,FERMENTED_SPIDER_EYE,0,Fermented Spider Eye,fermented_spider_eye
-377,BLAZE_POWDER,0,Blaze Powder,blaze_powder
-378,MAGMA_CREAM,0,Magma Cream,magma_cream
-379,BREWING_STAND_ITEM,0,Brewing Stand,brewing_stand
-380,CAULDRON_ITEM,0,Cauldron,cauldron
-381,EYE_OF_ENDER,0,Eye of Ender,ender_eye
-382,SPECKLED_MELON,0,Glistering Melon,speckled_melon
-383,MONSTER_EGG,0,Spawn Egg,spawn_egg
-384,EXP_BOTTLE,0,Bottle o' Enchanting,experience_bottle
-385,FIREBALL,0,Fire Charge,fire_charge
-386,BOOK_AND_QUILL,0,Book and Quill,writable_book
-387,WRITTEN_BOOK,0,Written Book,written_book
-388,EMERALD,0,Emerald,emerald
-389,ITEM_FRAME,0,Item Frame,item_frame
-390,FLOWER_POT_ITEM,0,Flower Pot,flower_pot
-391,CARROT_ITEM,0,Carrot,carrot
-392,POTATO_ITEM,0,Potato,potato
-393,BAKED_POTATO,0,Baked Potato,baked_potato
-394,POISONOUS_POTATO,0,Poisonous Potato,poisonous_potato
-395,EMPTY_MAP,0,Empty Map,map
-396,GOLDEN_CARROT,0,Golden Carrot,golden_carrot
-397,SKULL_ITEM,0,Skeleton Skull,skull
-397,SKULL_ITEM,1,Wither Skeleton Skull,skull
-397,SKULL_ITEM,2,Zombie Head,skull
-397,SKULL_ITEM,3,Player Head,skull
-397,SKULL_ITEM,4,Creeper Head,skull
-397,SKULL_ITEM,5,Dragon Head,skull
-398,CARROT_STICK,0,Carrot on a Stick,carrot_on_a_stick
-399,NETHER_STAR,0,Nether Star,nether_star
-400,PUMPKIN_PIE,0,Pumpkin Pie,pumpkin_pie
-401,FIREWORK,0,Firework Rocket,fireworks
-402,FIREWORK_CHARGE,0,Firework Star,firework_charge
-403,ENCHANTED_BOOK,0,Enchanted Book,enchanted_book
-404,REDSTONE_COMPARATOR,0,Redstone Comparator,comparator
-405,NETHER_BRICK_ITEM,0,Nether Brick,netherbrick
-406,QUARTZ,0,Nether Quartz,quartz
-407,EXPLOSIVE_MINECART,0,Minecart with TNT,tnt_minecart
-408,HOPPER_MINECART,0,Minecart with Hopper,hopper_minecart
-409,PRISMARINE_SHARD,0,Prismarine Shard,prismarine_shard
-410,PRISMARINE_CRYSTALS,0,Prismarine Crystals,prismarine_crystals
-411,RABBIT,0,Raw Rabbit,rabbit
-412,COOKED_RABBIT,0,Cooked Rabbit,cooked_rabbit
-413,RABBIT_STEW,0,Rabbit Stew,rabbit_stew
-414,RABBIT_FOOT,0,Rabbit's Foot,rabbit_foot
-415,RABBIT_HIDE,0,Rabbit Hide,rabbit_hide
-416,ARMOR_STAND,0,Armor Stand,armor_stand
-417,IRON_BARDING,0,Iron Horse Armor,iron_horse_armor
-418,GOLD_BARDING,0,Golden Horse Armor,golden_horse_armor
-419,DIAMOND_BARDING,0,Diamond Horse Armor,diamond_horse_armor
-420,LEASH,0,Lead,lead
-421,NAME_TAG,0,Name Tag,name_tag
-422,COMMAND_MINECART,0,Minecart with Command Block,command_block_minecart
-423,MUTTON,0,Raw Mutton,mutton
-424,COOKED_MUTTON,0,Cooked Mutton,cooked_mutton
-425,BANNER,0,Banner,banner
-426,END_CRYSTAL,0,End Crystal,end_crystal
-427,SPRUCE_DOOR_ITEM,0,Spruce Door,spruce_door
-428,BIRCH_DOOR_ITEM,0,Birch Door,birch_door
-429,JUNGLE_DOOR_ITEM,0,Jungle Door,jungle_door
-430,ACACIA_DOOR_ITEM,0,Acacia Door,acacia_door
-431,DARK_OAK_DOOR_ITEM,0,Dark Oak Door,dark_oak_door
-432,CHORUS_FRUIT,0,Chorus Fruit,chorus_fruit
-433,CHORUS_FRUIT_POPPED,0,Popped Chorus Fruit,chorus_fruit_popped
-434,BEETROOT,0,Beetroot,beetroot
-435,BEETROOT_SEEDS,0,Beetroot Seeds,beetroot_seeds
-436,BEETROOT_SOUP,0,Beetroot Soup,beetroot_soup
-437,DRAGONS_BREATH,0,Dragon's Breath,dragon_breath
-438,SPLASH_POTION,0,Splash Potion,splash_potion
-439,SPECTRAL_ARROW,0,Spectral Arrow,spectral_arrow
-440,TIPPED_ARROW,0,Tipped Arrow,tipped_arrow
-441,LINGERING_POTION,0,Lingering Potion,lingering_potion
-442,SHIELD,0,Shield,shield
-443,ELYTRA,0,Elytra,elytra
-444,BOAT_SPRUCE,0,Spruce Boat,spruce_boat
-445,BOAT_BIRCH,0,Birch Boat,birch_boat
-446,BOAT_JUNGLE,0,Jungle Boat,jungle_boat
-447,BOAT_ACACIA,0,Acacia Boat,acacia_boat
-448,BOAT_DARK_OAK,0,Dark Oak Boat,dark_oak_boat
-449,TOTEM,0,Totem of Undying,totem_of_undying
-450,SHULKER_SHELL,0,Shulker Shell,shulker_shell
-452,IRON_NUGGET,0,Iron Nugget,iron_nugget
-453,KNOWLEDGE_BOOK,0,Knowledge Book,knowledge_book
-2256,GOLD_RECORD,0,13 Disc,record_13
-2257,GREEN_RECORD,0,Cat Disc,record_cat
-2258,RECORD_3,0,Blocks Disc,record_blocks
-2259,RECORD_4,0,Chirp Disc,record_chirp
-2260,RECORD_5,0,Far Disc,record_far
-2261,RECORD_6,0,Mall Disc,record_mall
-2262,RECORD_7,0,Mellohi Disc,record_mellohi
-2263,RECORD_8,0,Stal Disc,record_stal
-2264,RECORD_9,0,Strad Disc,record_strad
-2265,RECORD_10,0,Ward Disc,record_ward
-2266,RECORD_11,0,11 Disc,record_11
-2267,RECORD_12,0,Wait Disc,record_wait
+ACACIA_BOAT,Acacia Boat,acacia_boat
+ACACIA_BUTTON,Acacia Button,acacia_button
+ACACIA_DOOR,Acacia Door,acacia_door
+ACACIA_FENCE,Acacia Fence,acacia_fence
+ACACIA_FENCE_GATE,Acacia Fence Gate,acacia_fence_gate
+ACACIA_LEAVES,Acacia Leaves,acacia_leaves
+ACACIA_LOG,Acacia Log,acacia_log
+ACACIA_PLANKS,Acacia Planks,acacia_planks
+ACACIA_PRESSURE_PLATE,Acacia Pressure Plate,acacia_pressure_plate
+ACACIA_SAPLING,Acacia Sapling,acacia_sapling
+ACACIA_SLAB,Acacia Slab,acacia_slab
+ACACIA_STAIRS,Acacia Stairs,acacia_stairs
+ACACIA_TRAPDOOR,Acacia Trapdoor,acacia_trapdoor
+ACACIA_WOOD,Acacia Wood,acacia_wood
+ACTIVATOR_RAIL,Activator Rail,activator_rail
+AIR,Air,air
+ALLIUM,Allium,allium
+ANDESITE,Andesite,andesite
+ANVIL,Anvil,anvil
+APPLE,Apple,apple
+ARMOR_STAND,Armor Stand,armor_stand
+ARROW,Arrow,arrow
+ATTACHED_MELON_STEM,Attached Melon Stem,attached_melon_stem
+ATTACHED_PUMPKIN_STEM,Attached Pumpkin Stem,attached_pumpkin_stem
+AZURE_BLUET,Azure Bluet,azure_bluet
+BAKED_POTATO,Baked Potato,baked_potato
+BARRIER,Barrier,barrier
+BAT_SPAWN_EGG,Bat Spawn Egg,bat_spawn_egg
+BEACON,Beacon,beacon
+BEDROCK,Bedrock,bedrock
+BEEF,Beef,beef
+BEETROOT,Beetroot,beetroot
+BEETROOTS,Beetroots,beetroots
+BEETROOT_SEEDS,Beetroot Seeds,beetroot_seeds
+BEETROOT_SOUP,Beetroot Soup,beetroot_soup
+BIRCH_BOAT,Birch Boat,birch_boat
+BIRCH_BUTTON,Birch Button,birch_button
+BIRCH_DOOR,Birch Door,birch_door
+BIRCH_FENCE,Birch Fence,birch_fence
+BIRCH_FENCE_GATE,Birch Fence Gate,birch_fence_gate
+BIRCH_LEAVES,Birch Leaves,birch_leaves
+BIRCH_LOG,Birch Log,birch_log
+BIRCH_PLANKS,Birch Planks,birch_planks
+BIRCH_PRESSURE_PLATE,Birch Pressure Plate,birch_pressure_plate
+BIRCH_SAPLING,Birch Sapling,birch_sapling
+BIRCH_SLAB,Birch Slab,birch_slab
+BIRCH_STAIRS,Birch Stairs,birch_stairs
+BIRCH_TRAPDOOR,Birch Trapdoor,birch_trapdoor
+BIRCH_WOOD,Birch Wood,birch_wood
+BLACK_BANNER,Black Banner,black_banner
+BLACK_BED,Black Bed,black_bed
+BLACK_CARPET,Black Carpet,black_carpet
+BLACK_CONCRETE,Black Concrete,black_concrete
+BLACK_CONCRETE_POWDER,Black Concrete Powder,black_concrete_powder
+BLACK_GLAZED_TERRACOTTA,Black Glazed Terracotta,black_glazed_terracotta
+BLACK_SHULKER_BOX,Black Shulker Box,black_shulker_box
+BLACK_STAINED_GLASS,Black Stained Glass,black_stained_glass
+BLACK_STAINED_GLASS_PANE,Black Stained Glass Pane,black_stained_glass_pane
+BLACK_TERRACOTTA,Black Terracotta,black_terracotta
+BLACK_WALL_BANNER,Black Wall Banner,black_wall_banner
+BLACK_WOOL,Black Wool,black_wool
+BLAZE_POWDER,Blaze Powder,blaze_powder
+BLAZE_ROD,Blaze Rod,blaze_rod
+BLAZE_SPAWN_EGG,Blaze Spawn Egg,blaze_spawn_egg
+BLUE_BANNER,Blue Banner,blue_banner
+BLUE_BED,Blue Bed,blue_bed
+BLUE_CARPET,Blue Carpet,blue_carpet
+BLUE_CONCRETE,Blue Concrete,blue_concrete
+BLUE_CONCRETE_POWDER,Blue Concrete Powder,blue_concrete_powder
+BLUE_GLAZED_TERRACOTTA,Blue Glazed Terracotta,blue_glazed_terracotta
+BLUE_ICE,Blue Ice,blue_ice
+BLUE_ORCHID,Blue Orchid,blue_orchid
+BLUE_SHULKER_BOX,Blue Shulker Box,blue_shulker_box
+BLUE_STAINED_GLASS,Blue Stained Glass,blue_stained_glass
+BLUE_STAINED_GLASS_PANE,Blue Stained Glass Pane,blue_stained_glass_pane
+BLUE_TERRACOTTA,Blue Terracotta,blue_terracotta
+BLUE_WALL_BANNER,Blue Wall Banner,blue_wall_banner
+BLUE_WOOL,Blue Wool,blue_wool
+BONE,Bone,bone
+BONE_BLOCK,Bone Block,bone_block
+BONE_MEAL,Bone Meal,bone_meal
+BOOK,Book,book
+BOOKSHELF,Bookshelf,bookshelf
+BOW,Bow,bow
+BOWL,Bowl,bowl
+BRAIN_CORAL,Brain Coral,brain_coral
+BRAIN_CORAL_BLOCK,Brain Coral Block,brain_coral_block
+BRAIN_CORAL_FAN,Brain Coral Fan,brain_coral_fan
+BREAD,Bread,bread
+BREWING_STAND,Brewing Stand,brewing_stand
+BRICK,Brick,brick
+BRICKS,Bricks,bricks
+BRICK_SLAB,Brick Slab,brick_slab
+BRICK_STAIRS,Brick Stairs,brick_stairs
+BROWN_BANNER,Brown Banner,brown_banner
+BROWN_BED,Brown Bed,brown_bed
+BROWN_CARPET,Brown Carpet,brown_carpet
+BROWN_CONCRETE,Brown Concrete,brown_concrete
+BROWN_CONCRETE_POWDER,Brown Concrete Powder,brown_concrete_powder
+BROWN_GLAZED_TERRACOTTA,Brown Glazed Terracotta,brown_glazed_terracotta
+BROWN_MUSHROOM,Brown Mushroom,brown_mushroom
+BROWN_MUSHROOM_BLOCK,Brown Mushroom Block,brown_mushroom_block
+BROWN_SHULKER_BOX,Brown Shulker Box,brown_shulker_box
+BROWN_STAINED_GLASS,Brown Stained Glass,brown_stained_glass
+BROWN_STAINED_GLASS_PANE,Brown Stained Glass Pane,brown_stained_glass_pane
+BROWN_TERRACOTTA,Brown Terracotta,brown_terracotta
+BROWN_WALL_BANNER,Brown Wall Banner,brown_wall_banner
+BROWN_WOOL,Brown Wool,brown_wool
+BUBBLE_COLUMN,Bubble Column,bubble_column
+BUBBLE_CORAL,Bubble Coral,bubble_coral
+BUBBLE_CORAL_BLOCK,Bubble Coral Block,bubble_coral_block
+BUBBLE_CORAL_FAN,Bubble Coral Fan,bubble_coral_fan
+BUCKET,Bucket,bucket
+CACTUS,Cactus,cactus
+CACTUS_GREEN,Cactus Green,cactus_green
+CAKE,Cake,cake
+CARROT,Carrot,carrot
+CARROTS,Carrots,carrots
+CARROT_ON_A_STICK,Carrot On Stick,carrot_on_a_stick
+CARVED_PUMPKIN,Carved Pumpkin,carved_pumpkin
+CAULDRON,Cauldron,cauldron
+CAVE_AIR,Cave Air,cave_air
+CAVE_SPIDER_SPAWN_EGG,Cave Spider Spawn Egg,cave_spider_spawn_egg
+CHAINMAIL_BOOTS,Chainmail Boots,chainmail_boots
+CHAINMAIL_CHESTPLATE,Chainmail Chestplate,chainmail_chestplate
+CHAINMAIL_HELMET,Chainmail Helmet,chainmail_helmet
+CHAINMAIL_LEGGINGS,Chainmail Leggings,chainmail_leggings
+CHAIN_COMMAND_BLOCK,Chain Command Block,chain_command_block
+CHARCOAL,Charcoal,charcoal
+CHEST,Chest,chest
+CHEST_MINECART,Chest Minecart,chest_minecart
+CHICKEN,Chicken,chicken
+CHICKEN_SPAWN_EGG,Chicken Spawn Egg,chicken_spawn_egg
+CHIPPED_ANVIL,Chipped Anvil,chipped_anvil
+CHISELED_QUARTZ_BLOCK,Chiseled Quartz Block,chiseled_quartz_block
+CHISELED_RED_SANDSTONE,Chiseled Red Sandstone,chiseled_red_sandstone
+CHISELED_SANDSTONE,Chiseled Sandstone,chiseled_sandstone
+CHISELED_STONE_BRICKS,Chiseled Stone Bricks,chiseled_stone_bricks
+CHORUS_FLOWER,Chorus Flower,chorus_flower
+CHORUS_FRUIT,Chorus Fruit,chorus_fruit
+CHORUS_PLANT,Chorus Plant,chorus_plant
+CLAY,Clay,clay
+CLAY_BALL,Clay Ball,clay_ball
+CLOCK,Clock,clock
+COAL,Coal,coal
+COAL_BLOCK,Coal Block,coal_block
+COAL_ORE,Coal Ore,coal_ore
+COARSE_DIRT,Coarse Dirt,coarse_dirt
+COBBLESTONE,Cobblestone,cobblestone
+COBBLESTONE_SLAB,Cobblestone Slab,cobblestone_slab
+COBBLESTONE_STAIRS,Cobblestone Stairs,cobblestone_stairs
+COBBLESTONE_WALL,Cobblestone Wall,cobblestone_wall
+COBWEB,Cobweb,cobweb
+COCOA,Cocoa,cocoa
+COCOA_BEANS,Cocoa Beans,cocoa_beans
+COD,Cod,cod
+COD_BUCKET,Cod Bucket,cod_bucket
+COD_SPAWN_EGG,Cod Spawn Egg,cod_spawn_egg
+COMMAND_BLOCK,Command Block,command_block
+COMMAND_BLOCK_MINECART,Command Block Minecart,command_block_minecart
+COMPARATOR,Comparator,comparator
+COMPASS,Compass,compass
+CONDUIT,Conduit,conduit
+COOKED_BEEF,Cooked Beef,cooked_beef
+COOKED_CHICKEN,Cooked Chicken,cooked_chicken
+COOKED_COD,Cooked Cod,cooked_cod
+COOKED_MUTTON,Cooked Mutton,cooked_mutton
+COOKED_PORKCHOP,Cooked Porkchop,cooked_porkchop
+COOKED_RABBIT,Cooked Rabbit,cooked_rabbit
+COOKED_SALMON,Cooked Salmon,cooked_salmon
+COOKIE,Cookie,cookie
+COW_SPAWN_EGG,Cow Spawn Egg,cow_spawn_egg
+CRACKED_STONE_BRICKS,Cracked Stone Bricks,cracked_stone_bricks
+CRAFTING_TABLE,Crafting Table,crafting_table
+CREEPER_HEAD,Creeper Head,creeper_head
+CREEPER_SPAWN_EGG,Creeper Spawn Egg,creeper_spawn_egg
+CREEPER_WALL_HEAD,Creeper Wall Head,creeper_wall_head
+CUT_RED_SANDSTONE,Cut Red Sandstone,cut_red_sandstone
+CUT_SANDSTONE,Cut Sandstone,cut_sandstone
+CYAN_BANNER,Cyan Banner,cyan_banner
+CYAN_BED,Cyan Bed,cyan_bed
+CYAN_CARPET,Cyan Carpet,cyan_carpet
+CYAN_CONCRETE,Cyan Concrete,cyan_concrete
+CYAN_CONCRETE_POWDER,Cyan Concrete Powder,cyan_concrete_powder
+CYAN_DYE,Cyan Dye,cyan_dye
+CYAN_GLAZED_TERRACOTTA,Cyan Glazed Terracotta,cyan_glazed_terracotta
+CYAN_SHULKER_BOX,Cyan Shulker Box,cyan_shulker_box
+CYAN_STAINED_GLASS,Cyan Stained Glass,cyan_stained_glass
+CYAN_STAINED_GLASS_PANE,Cyan Stained Glass Pane,cyan_stained_glass_pane
+CYAN_TERRACOTTA,Cyan Terracotta,cyan_terracotta
+CYAN_WALL_BANNER,Cyan Wall Banner,cyan_wall_banner
+CYAN_WOOL,Cyan Wool,cyan_wool
+DAMAGED_ANVIL,Damaged Anvil,damaged_anvil
+DANDELION,Dandelion,dandelion
+DANDELION_YELLOW,Dandelion Yellow,dandelion_yellow
+DARK_OAK_BOAT,Dark Oak Boat,dark_oak_boat
+DARK_OAK_BUTTON,Dark Oak Button,dark_oak_button
+DARK_OAK_DOOR,Dark Oak Door,dark_oak_door
+DARK_OAK_FENCE,Dark Oak Fence,dark_oak_fence
+DARK_OAK_FENCE_GATE,Dark Oak Fence Gate,dark_oak_fence_gate
+DARK_OAK_LEAVES,Dark Oak Leaves,dark_oak_leaves
+DARK_OAK_LOG,Dark Oak Log,dark_oak_log
+DARK_OAK_PLANKS,Dark Oak Planks,dark_oak_planks
+DARK_OAK_PRESSURE_PLATE,Dark Oak Pressure Plate,dark_oak_pressure_plate
+DARK_OAK_SAPLING,Dark Oak Sapling,dark_oak_sapling
+DARK_OAK_SLAB,Dark Oak Slab,dark_oak_slab
+DARK_OAK_STAIRS,Dark Oak Stairs,dark_oak_stairs
+DARK_OAK_TRAPDOOR,Dark Oak Trapdoor,dark_oak_trapdoor
+DARK_OAK_WOOD,Dark Oak Wood,dark_oak_wood
+DARK_PRISMARINE,Dark Prismarine,dark_prismarine
+DARK_PRISMARINE_SLAB,Dark Prismarine Slab,dark_prismarine_slab
+DARK_PRISMARINE_STAIRS,Dark Prismarine Stairs,dark_prismarine_stairs
+DAYLIGHT_DETECTOR,Daylight Detector,daylight_detector
+DEAD_BRAIN_CORAL_BLOCK,Dead Brain Coral Block,dead_brain_coral_block
+DEAD_BUBBLE_CORAL_BLOCK,Dead Bubble Coral Block,dead_bubble_coral_block
+DEAD_BUSH,Dead Bush,dead_bush
+DEAD_FIRE_CORAL_BLOCK,Dead Fire Coral Block,dead_fire_coral_block
+DEAD_HORN_CORAL_BLOCK,Dead Horn Coral Block,dead_horn_coral_block
+DEAD_TUBE_CORAL_BLOCK,Dead Tube Coral Block,dead_tube_coral_block
+DEBUG_STICK,Debug Stick,debug_stick
+DETECTOR_RAIL,Detector Rail,detector_rail
+DIAMOND,Diamond,diamond
+DIAMOND_AXE,Diamond Axe,diamond_axe
+DIAMOND_BLOCK,Diamond Block,diamond_block
+DIAMOND_BOOTS,Diamond Boots,diamond_boots
+DIAMOND_CHESTPLATE,Diamond Chestplate,diamond_chestplate
+DIAMOND_HELMET,Diamond Helmet,diamond_helmet
+DIAMOND_HOE,Diamond Hoe,diamond_hoe
+DIAMOND_HORSE_ARMOR,Diamond Horse Armor,diamond_horse_armor
+DIAMOND_LEGGINGS,Diamond Leggings,diamond_leggings
+DIAMOND_ORE,Diamond Ore,diamond_ore
+DIAMOND_PICKAXE,Diamond Pickaxe,diamond_pickaxe
+DIAMOND_SHOVEL,Diamond Shovel,diamond_shovel
+DIAMOND_SWORD,Diamond Sword,diamond_sword
+DIORITE,Diorite,diorite
+DIRT,Dirt,dirt
+DISPENSER,Dispenser,dispenser
+DOLPHIN_SPAWN_EGG,Dolphin Spawn Egg,dolphin_spawn_egg
+DONKEY_SPAWN_EGG,Donkey Spawn Egg,donkey_spawn_egg
+DRAGON_BREATH,Dragon Breath,dragon_breath
+DRAGON_EGG,Dragon Egg,dragon_egg
+DRAGON_HEAD,Dragon Head,dragon_head
+DRAGON_WALL_HEAD,Dragon Wall Head,dragon_wall_head
+DRIED_KELP,Dried Kelp,dried_kelp
+DRIED_KELP_BLOCK,Dried Kelp Block,dried_kelp_block
+DROPPER,Dropper,dropper
+DROWNED_SPAWN_EGG,Drowned Spawn Egg,drowned_spawn_egg
+EGG,Egg,egg
+ELDER_GUARDIAN_SPAWN_EGG,Elder Guardian Spawn Egg,elder_guardian_spawn_egg
+ELYTRA,Elytra,elytra
+EMERALD,Emerald,emerald
+EMERALD_BLOCK,Emerald Block,emerald_block
+EMERALD_ORE,Emerald Ore,emerald_ore
+ENCHANTED_BOOK,Enchanted Book,enchanted_book
+ENCHANTED_GOLDEN_APPLE,Enchanted Golden Apple,enchanted_golden_apple
+ENCHANTING_TABLE,Enchanting Table,enchanting_table
+ENDERMAN_SPAWN_EGG,Enderman Spawn Egg,enderman_spawn_egg
+ENDERMITE_SPAWN_EGG,Endermite Spawn Egg,endermite_spawn_egg
+ENDER_CHEST,Ender Chest,ender_chest
+ENDER_EYE,Ender Eye,ender_eye
+ENDER_PEARL,Ender Pearl,ender_pearl
+END_CRYSTAL,End Crystal,end_crystal
+END_GATEWAY,End Gateway,end_gateway
+END_PORTAL,End Portal,end_portal
+END_PORTAL_FRAME,End Portal Frame,end_portal_frame
+END_ROD,End Rod,end_rod
+END_STONE,End Stone,end_stone
+END_STONE_BRICKS,End Stone Bricks,end_stone_bricks
+EVOKER_SPAWN_EGG,Evoker Spawn Egg,evoker_spawn_egg
+EXPERIENCE_BOTTLE,Experience Bottle,experience_bottle
+FARMLAND,Farmland,farmland
+FEATHER,Feather,feather
+FERMENTED_SPIDER_EYE,Fermented Spider Eye,fermented_spider_eye
+FERN,Fern,fern
+FILLED_MAP,Filled Map,filled_map
+FIRE,Fire,fire
+FIREWORK_ROCKET,Firework Rocket,firework_rocket
+FIREWORK_STAR,Firework Star,firework_star
+FIRE_CHARGE,Fire Charge,fire_charge
+FIRE_CORAL,Fire Coral,fire_coral
+FIRE_CORAL_BLOCK,Fire Coral Block,fire_coral_block
+FIRE_CORAL_FAN,Fire Coral Fan,fire_coral_fan
+FISHING_ROD,Fishing Rod,fishing_rod
+FLINT,Flint,flint
+FLINT_AND_STEEL,Flint And Steel,flint_and_steel
+FLOWER_POT,Flower Pot,flower_pot
+FROSTED_ICE,Frosted Ice,frosted_ice
+FURNACE,Furnace,furnace
+FURNACE_MINECART,Furnace Minecart,furnace_minecart
+GHAST_SPAWN_EGG,Ghast Spawn Egg,ghast_spawn_egg
+GHAST_TEAR,Ghast Tear,ghast_tear
+GLASS,Glass,glass
+GLASS_BOTTLE,Glass Bottle,glass_bottle
+GLASS_PANE,Glass Pane,glass_pane
+GLISTERING_MELON_SLICE,Glistering Melon Slice,glistering_melon_slice
+GLOWSTONE,Glowstone,glowstone
+GLOWSTONE_DUST,Glowstone Dust,glowstone_dust
+GOLDEN_APPLE,Golden Apple,golden_apple
+GOLDEN_AXE,Golden Axe,golden_axe
+GOLDEN_BOOTS,Golden Boots,golden_boots
+GOLDEN_CARROT,Golden Carrot,golden_carrot
+GOLDEN_CHESTPLATE,Golden Chestplate,golden_chestplate
+GOLDEN_HELMET,Golden Helmet,golden_helmet
+GOLDEN_HOE,Golden Hoe,golden_hoe
+GOLDEN_HORSE_ARMOR,Golden Horse Armor,golden_horse_armor
+GOLDEN_LEGGINGS,Golden Leggings,golden_leggings
+GOLDEN_PICKAXE,Golden Pickaxe,golden_pickaxe
+GOLDEN_SHOVEL,Golden Shovel,golden_shovel
+GOLDEN_SWORD,Golden Sword,golden_sword
+GOLD_BLOCK,Gold Block,gold_block
+GOLD_INGOT,Gold Ingot,gold_ingot
+GOLD_NUGGET,Gold Nugget,gold_nugget
+GOLD_ORE,Gold Ore,gold_ore
+GRANITE,Granite,granite
+GRASS,Grass,grass
+GRASS_BLOCK,Grass Block,grass_block
+GRASS_PATH,Grass Path,grass_path
+GRAVEL,Gravel,gravel
+GRAY_BANNER,Gray Banner,gray_banner
+GRAY_BED,Gray Bed,gray_bed
+GRAY_CARPET,Gray Carpet,gray_carpet
+GRAY_CONCRETE,Gray Concrete,gray_concrete
+GRAY_CONCRETE_POWDER,Gray Concrete Powder,gray_concrete_powder
+GRAY_DYE,Gray Dye,gray_dye
+GRAY_GLAZED_TERRACOTTA,Gray Glazed Terracotta,gray_glazed_terracotta
+GRAY_SHULKER_BOX,Gray Shulker Box,gray_shulker_box
+GRAY_STAINED_GLASS,Gray Stained Glass,gray_stained_glass
+GRAY_STAINED_GLASS_PANE,Gray Stained Glass Pane,gray_stained_glass_pane
+GRAY_TERRACOTTA,Gray Terracotta,gray_terracotta
+GRAY_WALL_BANNER,Gray Wall Banner,gray_wall_banner
+GRAY_WOOL,Gray Wool,gray_wool
+GREEN_BANNER,Green Banner,green_banner
+GREEN_BED,Green Bed,green_bed
+GREEN_CARPET,Green Carpet,green_carpet
+GREEN_CONCRETE,Green Concrete,green_concrete
+GREEN_CONCRETE_POWDER,Green Concrete Powder,green_concrete_powder
+GREEN_GLAZED_TERRACOTTA,Green Glazed Terracotta,green_glazed_terracotta
+GREEN_SHULKER_BOX,Green Shulker Box,green_shulker_box
+GREEN_STAINED_GLASS,Green Stained Glass,green_stained_glass
+GREEN_STAINED_GLASS_PANE,Green Stained Glass Pane,green_stained_glass_pane
+GREEN_TERRACOTTA,Green Terracotta,green_terracotta
+GREEN_WALL_BANNER,Green Wall Banner,green_wall_banner
+GREEN_WOOL,Green Wool,green_wool
+GUARDIAN_SPAWN_EGG,Guardian Spawn Egg,guardian_spawn_egg
+GUNPOWDER,Gunpowder,gunpowder
+HAY_BLOCK,Hay Block,hay_block
+HEART_OF_THE_SEA,Heart Of The Sea,heart_of_the_sea
+HEAVY_WEIGHTED_PRESSURE_PLATE,Heavy Weighted Pressure Plate,heavy_weighted_pressure_plate
+HOPPER,Hopper,hopper
+HOPPER_MINECART,Hopper Minecart,hopper_minecart
+HORN_CORAL,Horn Coral,horn_coral
+HORN_CORAL_BLOCK,Horn Coral Block,horn_coral_block
+HORN_CORAL_FAN,Horn Coral Fan,horn_coral_fan
+HORSE_SPAWN_EGG,Horse Spawn Egg,horse_spawn_egg
+HUSK_SPAWN_EGG,Husk Spawn Egg,husk_spawn_egg
+ICE,Ice,ice
+INFESTED_CHISELED_STONE_BRICKS,Infested Chiseled Stone Bricks,infested_chiseled_stone_bricks
+INFESTED_COBBLESTONE,Infested Cobblestone,infested_cobblestone
+INFESTED_CRACKED_STONE_BRICKS,Infested Cracked Stone Bricks,infested_cracked_stone_bricks
+INFESTED_MOSSY_STONE_BRICKS,Infested Mossy Stone Bricks,infested_mossy_stone_bricks
+INFESTED_STONE,Infested Stone,infested_stone
+INFESTED_STONE_BRICKS,Infested Stone Bricks,infested_stone_bricks
+INK_SAC,Ink Sac,ink_sac
+IRON_AXE,Iron Axe,iron_axe
+IRON_BARS,Iron Bars,iron_bars
+IRON_BLOCK,Iron Block,iron_block
+IRON_BOOTS,Iron Boots,iron_boots
+IRON_CHESTPLATE,Iron Chestplate,iron_chestplate
+IRON_DOOR,Iron Door,iron_door
+IRON_HELMET,Iron Helmet,iron_helmet
+IRON_HOE,Iron Hoe,iron_hoe
+IRON_HORSE_ARMOR,Iron Horse Armor,iron_horse_armor
+IRON_INGOT,Iron Ingot,iron_ingot
+IRON_LEGGINGS,Iron Leggings,iron_leggings
+IRON_NUGGET,Iron Nugget,iron_nugget
+IRON_ORE,Iron Ore,iron_ore
+IRON_PICKAXE,Iron Pickaxe,iron_pickaxe
+IRON_SHOVEL,Iron Shovel,iron_shovel
+IRON_SWORD,Iron Sword,iron_sword
+IRON_TRAPDOOR,Iron Trapdoor,iron_trapdoor
+ITEM_FRAME,Item Frame,item_frame
+JACK_O_LANTERN,Jack Lantern,jack_o_lantern
+JUKEBOX,Jukebox,jukebox
+JUNGLE_BOAT,Jungle Boat,jungle_boat
+JUNGLE_BUTTON,Jungle Button,jungle_button
+JUNGLE_DOOR,Jungle Door,jungle_door
+JUNGLE_FENCE,Jungle Fence,jungle_fence
+JUNGLE_FENCE_GATE,Jungle Fence Gate,jungle_fence_gate
+JUNGLE_LEAVES,Jungle Leaves,jungle_leaves
+JUNGLE_LOG,Jungle Log,jungle_log
+JUNGLE_PLANKS,Jungle Planks,jungle_planks
+JUNGLE_PRESSURE_PLATE,Jungle Pressure Plate,jungle_pressure_plate
+JUNGLE_SAPLING,Jungle Sapling,jungle_sapling
+JUNGLE_SLAB,Jungle Slab,jungle_slab
+JUNGLE_STAIRS,Jungle Stairs,jungle_stairs
+JUNGLE_TRAPDOOR,Jungle Trapdoor,jungle_trapdoor
+JUNGLE_WOOD,Jungle Wood,jungle_wood
+KELP,Kelp,kelp
+KELP_PLANT,Kelp Plant,kelp_plant
+KNOWLEDGE_BOOK,Knowledge Book,knowledge_book
+LADDER,Ladder,ladder
+LAPIS_BLOCK,Lapis Block,lapis_block
+LAPIS_LAZULI,Lapis Lazuli,lapis_lazuli
+LAPIS_ORE,Lapis Ore,lapis_ore
+LARGE_FERN,Large Fern,large_fern
+LAVA,Lava,lava
+LAVA_BUCKET,Lava Bucket,lava_bucket
+LEAD,Lead,lead
+LEATHER,Leather,leather
+LEATHER_BOOTS,Leather Boots,leather_boots
+LEATHER_CHESTPLATE,Leather Chestplate,leather_chestplate
+LEATHER_HELMET,Leather Helmet,leather_helmet
+LEATHER_LEGGINGS,Leather Leggings,leather_leggings
+LEVER,Lever,lever
+LIGHT_BLUE_BANNER,Light Blue Banner,light_blue_banner
+LIGHT_BLUE_BED,Light Blue Bed,light_blue_bed
+LIGHT_BLUE_CARPET,Light Blue Carpet,light_blue_carpet
+LIGHT_BLUE_CONCRETE,Light Blue Concrete,light_blue_concrete
+LIGHT_BLUE_CONCRETE_POWDER,Light Blue Concrete Powder,light_blue_concrete_powder
+LIGHT_BLUE_DYE,Light Blue Dye,light_blue_dye
+LIGHT_BLUE_GLAZED_TERRACOTTA,Light Blue Glazed Terracotta,light_blue_glazed_terracotta
+LIGHT_BLUE_SHULKER_BOX,Light Blue Shulker Box,light_blue_shulker_box
+LIGHT_BLUE_STAINED_GLASS,Light Blue Stained Glass,light_blue_stained_glass
+LIGHT_BLUE_STAINED_GLASS_PANE,Light Blue Stained Glass Pane,light_blue_stained_glass_pane
+LIGHT_BLUE_TERRACOTTA,Light Blue Terracotta,light_blue_terracotta
+LIGHT_BLUE_WALL_BANNER,Light Blue Wall Banner,light_blue_wall_banner
+LIGHT_BLUE_WOOL,Light Blue Wool,light_blue_wool
+LIGHT_GRAY_BANNER,Light Gray Banner,light_gray_banner
+LIGHT_GRAY_BED,Light Gray Bed,light_gray_bed
+LIGHT_GRAY_CARPET,Light Gray Carpet,light_gray_carpet
+LIGHT_GRAY_CONCRETE,Light Gray Concrete,light_gray_concrete
+LIGHT_GRAY_CONCRETE_POWDER,Light Gray Concrete Powder,light_gray_concrete_powder
+LIGHT_GRAY_DYE,Light Gray Dye,light_gray_dye
+LIGHT_GRAY_GLAZED_TERRACOTTA,Light Gray Glazed Terracotta,light_gray_glazed_terracotta
+LIGHT_GRAY_SHULKER_BOX,Light Gray Shulker Box,light_gray_shulker_box
+LIGHT_GRAY_STAINED_GLASS,Light Gray Stained Glass,light_gray_stained_glass
+LIGHT_GRAY_STAINED_GLASS_PANE,Light Gray Stained Glass Pane,light_gray_stained_glass_pane
+LIGHT_GRAY_TERRACOTTA,Light Gray Terracotta,light_gray_terracotta
+LIGHT_GRAY_WALL_BANNER,Light Gray Wall Banner,light_gray_wall_banner
+LIGHT_GRAY_WOOL,Light Gray Wool,light_gray_wool
+LIGHT_WEIGHTED_PRESSURE_PLATE,Light Weighted Pressure Plate,light_weighted_pressure_plate
+LILAC,Lilac,lilac
+LILY_PAD,Lily Pad,lily_pad
+LIME_BANNER,Lime Banner,lime_banner
+LIME_BED,Lime Bed,lime_bed
+LIME_CARPET,Lime Carpet,lime_carpet
+LIME_CONCRETE,Lime Concrete,lime_concrete
+LIME_CONCRETE_POWDER,Lime Concrete Powder,lime_concrete_powder
+LIME_DYE,Lime Dye,lime_dye
+LIME_GLAZED_TERRACOTTA,Lime Glazed Terracotta,lime_glazed_terracotta
+LIME_SHULKER_BOX,Lime Shulker Box,lime_shulker_box
+LIME_STAINED_GLASS,Lime Stained Glass,lime_stained_glass
+LIME_STAINED_GLASS_PANE,Lime Stained Glass Pane,lime_stained_glass_pane
+LIME_TERRACOTTA,Lime Terracotta,lime_terracotta
+LIME_WALL_BANNER,Lime Wall Banner,lime_wall_banner
+LIME_WOOL,Lime Wool,lime_wool
+LINGERING_POTION,Lingering Potion,lingering_potion
+LLAMA_SPAWN_EGG,Llama Spawn Egg,llama_spawn_egg
+MAGENTA_BANNER,Magenta Banner,magenta_banner
+MAGENTA_BED,Magenta Bed,magenta_bed
+MAGENTA_CARPET,Magenta Carpet,magenta_carpet
+MAGENTA_CONCRETE,Magenta Concrete,magenta_concrete
+MAGENTA_CONCRETE_POWDER,Magenta Concrete Powder,magenta_concrete_powder
+MAGENTA_DYE,Magenta Dye,magenta_dye
+MAGENTA_GLAZED_TERRACOTTA,Magenta Glazed Terracotta,magenta_glazed_terracotta
+MAGENTA_SHULKER_BOX,Magenta Shulker Box,magenta_shulker_box
+MAGENTA_STAINED_GLASS,Magenta Stained Glass,magenta_stained_glass
+MAGENTA_STAINED_GLASS_PANE,Magenta Stained Glass Pane,magenta_stained_glass_pane
+MAGENTA_TERRACOTTA,Magenta Terracotta,magenta_terracotta
+MAGENTA_WALL_BANNER,Magenta Wall Banner,magenta_wall_banner
+MAGENTA_WOOL,Magenta Wool,magenta_wool
+MAGMA_BLOCK,Magma Block,magma_block
+MAGMA_CREAM,Magma Cream,magma_cream
+MAGMA_CUBE_SPAWN_EGG,Magma Cube Spawn Egg,magma_cube_spawn_egg
+MAP,Map,map
+MELON,Melon,melon
+MELON_SEEDS,Melon Seeds,melon_seeds
+MELON_SLICE,Melon Slice,melon_slice
+MELON_STEM,Melon Stem,melon_stem
+MILK_BUCKET,Milk Bucket,milk_bucket
+MINECART,Minecart,minecart
+MOOSHROOM_SPAWN_EGG,Mooshroom Spawn Egg,mooshroom_spawn_egg
+MOSSY_COBBLESTONE,Mossy Cobblestone,mossy_cobblestone
+MOSSY_COBBLESTONE_WALL,Mossy Cobblestone Wall,mossy_cobblestone_wall
+MOSSY_STONE_BRICKS,Mossy Stone Bricks,mossy_stone_bricks
+MOVING_PISTON,Moving Piston,moving_piston
+MULE_SPAWN_EGG,Mule Spawn Egg,mule_spawn_egg
+MUSHROOM_STEM,Mushroom Stem,mushroom_stem
+MUSHROOM_STEW,Mushroom Stew,mushroom_stew
+MUSIC_DISC_11,Music Disc,music_disc_11
+MUSIC_DISC_13,Music Disc,music_disc_13
+MUSIC_DISC_BLOCKS,Music Disc Blocks,music_disc_blocks
+MUSIC_DISC_CAT,Music Disc Cat,music_disc_cat
+MUSIC_DISC_CHIRP,Music Disc Chirp,music_disc_chirp
+MUSIC_DISC_FAR,Music Disc Far,music_disc_far
+MUSIC_DISC_MALL,Music Disc Mall,music_disc_mall
+MUSIC_DISC_MELLOHI,Music Disc Mellohi,music_disc_mellohi
+MUSIC_DISC_STAL,Music Disc Stal,music_disc_stal
+MUSIC_DISC_STRAD,Music Disc Strad,music_disc_strad
+MUSIC_DISC_WAIT,Music Disc Wait,music_disc_wait
+MUSIC_DISC_WARD,Music Disc Ward,music_disc_ward
+MUTTON,Mutton,mutton
+MYCELIUM,Mycelium,mycelium
+NAME_TAG,Name Tag,name_tag
+NAUTILUS_SHELL,Nautilus Shell,nautilus_shell
+NETHERRACK,Netherrack,netherrack
+NETHER_BRICK,Nether Brick,nether_brick
+NETHER_BRICKS,Nether Bricks,nether_bricks
+NETHER_BRICK_FENCE,Nether Brick Fence,nether_brick_fence
+NETHER_BRICK_SLAB,Nether Brick Slab,nether_brick_slab
+NETHER_BRICK_STAIRS,Nether Brick Stairs,nether_brick_stairs
+NETHER_PORTAL,Nether Portal,nether_portal
+NETHER_QUARTZ_ORE,Nether Quartz Ore,nether_quartz_ore
+NETHER_STAR,Nether Star,nether_star
+NETHER_WART,Nether Wart,nether_wart
+NETHER_WART_BLOCK,Nether Wart Block,nether_wart_block
+NOTE_BLOCK,Note Block,note_block
+OAK_BOAT,Oak Boat,oak_boat
+OAK_BUTTON,Oak Button,oak_button
+OAK_DOOR,Oak Door,oak_door
+OAK_FENCE,Oak Fence,oak_fence
+OAK_FENCE_GATE,Oak Fence Gate,oak_fence_gate
+OAK_LEAVES,Oak Leaves,oak_leaves
+OAK_LOG,Oak Log,oak_log
+OAK_PLANKS,Oak Planks,oak_planks
+OAK_PRESSURE_PLATE,Oak Pressure Plate,oak_pressure_plate
+OAK_SAPLING,Oak Sapling,oak_sapling
+OAK_SLAB,Oak Slab,oak_slab
+OAK_STAIRS,Oak Stairs,oak_stairs
+OAK_TRAPDOOR,Oak Trapdoor,oak_trapdoor
+OAK_WOOD,Oak Wood,oak_wood
+OBSERVER,Observer,observer
+OBSIDIAN,Obsidian,obsidian
+OCELOT_SPAWN_EGG,Ocelot Spawn Egg,ocelot_spawn_egg
+ORANGE_BANNER,Orange Banner,orange_banner
+ORANGE_BED,Orange Bed,orange_bed
+ORANGE_CARPET,Orange Carpet,orange_carpet
+ORANGE_CONCRETE,Orange Concrete,orange_concrete
+ORANGE_CONCRETE_POWDER,Orange Concrete Powder,orange_concrete_powder
+ORANGE_DYE,Orange Dye,orange_dye
+ORANGE_GLAZED_TERRACOTTA,Orange Glazed Terracotta,orange_glazed_terracotta
+ORANGE_SHULKER_BOX,Orange Shulker Box,orange_shulker_box
+ORANGE_STAINED_GLASS,Orange Stained Glass,orange_stained_glass
+ORANGE_STAINED_GLASS_PANE,Orange Stained Glass Pane,orange_stained_glass_pane
+ORANGE_TERRACOTTA,Orange Terracotta,orange_terracotta
+ORANGE_TULIP,Orange Tulip,orange_tulip
+ORANGE_WALL_BANNER,Orange Wall Banner,orange_wall_banner
+ORANGE_WOOL,Orange Wool,orange_wool
+OXEYE_DAISY,Oxeye Daisy,oxeye_daisy
+PACKED_ICE,Packed Ice,packed_ice
+PAINTING,Painting,painting
+PAPER,Paper,paper
+PARROT_SPAWN_EGG,Parrot Spawn Egg,parrot_spawn_egg
+PEONY,Peony,peony
+PETRIFIED_OAK_SLAB,Petrified Oak Slab,petrified_oak_slab
+PHANTOM_MEMBRANE,Phantom Membrane,phantom_membrane
+PHANTOM_SPAWN_EGG,Phantom Spawn Egg,phantom_spawn_egg
+PIG_SPAWN_EGG,Pig Spawn Egg,pig_spawn_egg
+PINK_BANNER,Pink Banner,pink_banner
+PINK_BED,Pink Bed,pink_bed
+PINK_CARPET,Pink Carpet,pink_carpet
+PINK_CONCRETE,Pink Concrete,pink_concrete
+PINK_CONCRETE_POWDER,Pink Concrete Powder,pink_concrete_powder
+PINK_DYE,Pink Dye,pink_dye
+PINK_GLAZED_TERRACOTTA,Pink Glazed Terracotta,pink_glazed_terracotta
+PINK_SHULKER_BOX,Pink Shulker Box,pink_shulker_box
+PINK_STAINED_GLASS,Pink Stained Glass,pink_stained_glass
+PINK_STAINED_GLASS_PANE,Pink Stained Glass Pane,pink_stained_glass_pane
+PINK_TERRACOTTA,Pink Terracotta,pink_terracotta
+PINK_TULIP,Pink Tulip,pink_tulip
+PINK_WALL_BANNER,Pink Wall Banner,pink_wall_banner
+PINK_WOOL,Pink Wool,pink_wool
+PISTON,Piston,piston
+PISTON_HEAD,Piston Head,piston_head
+PLAYER_HEAD,Player Head,player_head
+PLAYER_WALL_HEAD,Player Wall Head,player_wall_head
+PODZOL,Podzol,podzol
+POISONOUS_POTATO,Poisonous Potato,poisonous_potato
+POLAR_BEAR_SPAWN_EGG,Polar Bear Spawn Egg,polar_bear_spawn_egg
+POLISHED_ANDESITE,Polished Andesite,polished_andesite
+POLISHED_DIORITE,Polished Diorite,polished_diorite
+POLISHED_GRANITE,Polished Granite,polished_granite
+POPPED_CHORUS_FRUIT,Popped Chorus Fruit,popped_chorus_fruit
+POPPY,Poppy,poppy
+PORKCHOP,Porkchop,porkchop
+POTATO,Potato,potato
+POTATOES,Potatoes,potatoes
+POTION,Potion,potion
+POTTED_ACACIA_SAPLING,Potted Acacia Sapling,potted_acacia_sapling
+POTTED_ALLIUM,Potted Allium,potted_allium
+POTTED_AZURE_BLUET,Potted Azure Bluet,potted_azure_bluet
+POTTED_BIRCH_SAPLING,Potted Birch Sapling,potted_birch_sapling
+POTTED_BLUE_ORCHID,Potted Blue Orchid,potted_blue_orchid
+POTTED_BROWN_MUSHROOM,Potted Brown Mushroom,potted_brown_mushroom
+POTTED_CACTUS,Potted Cactus,potted_cactus
+POTTED_DANDELION,Potted Dandelion,potted_dandelion
+POTTED_DARK_OAK_SAPLING,Potted Dark Oak Sapling,potted_dark_oak_sapling
+POTTED_DEAD_BUSH,Potted Dead Bush,potted_dead_bush
+POTTED_FERN,Potted Fern,potted_fern
+POTTED_JUNGLE_SAPLING,Potted Jungle Sapling,potted_jungle_sapling
+POTTED_OAK_SAPLING,Potted Oak Sapling,potted_oak_sapling
+POTTED_ORANGE_TULIP,Potted Orange Tulip,potted_orange_tulip
+POTTED_OXEYE_DAISY,Potted Oxeye Daisy,potted_oxeye_daisy
+POTTED_PINK_TULIP,Potted Pink Tulip,potted_pink_tulip
+POTTED_POPPY,Potted Poppy,potted_poppy
+POTTED_RED_MUSHROOM,Potted Red Mushroom,potted_red_mushroom
+POTTED_RED_TULIP,Potted Red Tulip,potted_red_tulip
+POTTED_SPRUCE_SAPLING,Potted Spruce Sapling,potted_spruce_sapling
+POTTED_WHITE_TULIP,Potted White Tulip,potted_white_tulip
+POWERED_RAIL,Powered Rail,powered_rail
+PRISMARINE,Prismarine,prismarine
+PRISMARINE_BRICKS,Prismarine Bricks,prismarine_bricks
+PRISMARINE_BRICK_SLAB,Prismarine Brick Slab,prismarine_brick_slab
+PRISMARINE_BRICK_STAIRS,Prismarine Brick Stairs,prismarine_brick_stairs
+PRISMARINE_CRYSTALS,Prismarine Crystals,prismarine_crystals
+PRISMARINE_SHARD,Prismarine Shard,prismarine_shard
+PRISMARINE_SLAB,Prismarine Slab,prismarine_slab
+PRISMARINE_STAIRS,Prismarine Stairs,prismarine_stairs
+PUFFERFISH,Pufferfish,pufferfish
+PUFFERFISH_BUCKET,Pufferfish Bucket,pufferfish_bucket
+PUFFERFISH_SPAWN_EGG,Pufferfish Spawn Egg,pufferfish_spawn_egg
+PUMPKIN,Pumpkin,pumpkin
+PUMPKIN_PIE,Pumpkin Pie,pumpkin_pie
+PUMPKIN_SEEDS,Pumpkin Seeds,pumpkin_seeds
+PUMPKIN_STEM,Pumpkin Stem,pumpkin_stem
+PURPLE_BANNER,Purple Banner,purple_banner
+PURPLE_BED,Purple Bed,purple_bed
+PURPLE_CARPET,Purple Carpet,purple_carpet
+PURPLE_CONCRETE,Purple Concrete,purple_concrete
+PURPLE_CONCRETE_POWDER,Purple Concrete Powder,purple_concrete_powder
+PURPLE_DYE,Purple Dye,purple_dye
+PURPLE_GLAZED_TERRACOTTA,Purple Glazed Terracotta,purple_glazed_terracotta
+PURPLE_SHULKER_BOX,Purple Shulker Box,purple_shulker_box
+PURPLE_STAINED_GLASS,Purple Stained Glass,purple_stained_glass
+PURPLE_STAINED_GLASS_PANE,Purple Stained Glass Pane,purple_stained_glass_pane
+PURPLE_TERRACOTTA,Purple Terracotta,purple_terracotta
+PURPLE_WALL_BANNER,Purple Wall Banner,purple_wall_banner
+PURPLE_WOOL,Purple Wool,purple_wool
+PURPUR_BLOCK,Purpur Block,purpur_block
+PURPUR_PILLAR,Purpur Pillar,purpur_pillar
+PURPUR_SLAB,Purpur Slab,purpur_slab
+PURPUR_STAIRS,Purpur Stairs,purpur_stairs
+QUARTZ,Quartz,quartz
+QUARTZ_BLOCK,Quartz Block,quartz_block
+QUARTZ_PILLAR,Quartz Pillar,quartz_pillar
+QUARTZ_SLAB,Quartz Slab,quartz_slab
+QUARTZ_STAIRS,Quartz Stairs,quartz_stairs
+RABBIT,Rabbit,rabbit
+RABBIT_FOOT,Rabbit Foot,rabbit_foot
+RABBIT_HIDE,Rabbit Hide,rabbit_hide
+RABBIT_SPAWN_EGG,Rabbit Spawn Egg,rabbit_spawn_egg
+RABBIT_STEW,Rabbit Stew,rabbit_stew
+RAIL,Rail,rail
+REDSTONE,Redstone,redstone
+REDSTONE_BLOCK,Redstone Block,redstone_block
+REDSTONE_LAMP,Redstone Lamp,redstone_lamp
+REDSTONE_ORE,Redstone Ore,redstone_ore
+REDSTONE_TORCH,Redstone Torch,redstone_torch
+REDSTONE_WALL_TORCH,Redstone Wall Torch,redstone_wall_torch
+REDSTONE_WIRE,Redstone Wire,redstone_wire
+RED_BANNER,Red Banner,red_banner
+RED_BED,Red Bed,red_bed
+RED_CARPET,Red Carpet,red_carpet
+RED_CONCRETE,Red Concrete,red_concrete
+RED_CONCRETE_POWDER,Red Concrete Powder,red_concrete_powder
+RED_GLAZED_TERRACOTTA,Red Glazed Terracotta,red_glazed_terracotta
+RED_MUSHROOM,Red Mushroom,red_mushroom
+RED_MUSHROOM_BLOCK,Red Mushroom Block,red_mushroom_block
+RED_NETHER_BRICKS,Red Nether Bricks,red_nether_bricks
+RED_SAND,Red Sand,red_sand
+RED_SANDSTONE,Red Sandstone,red_sandstone
+RED_SANDSTONE_SLAB,Red Sandstone Slab,red_sandstone_slab
+RED_SANDSTONE_STAIRS,Red Sandstone Stairs,red_sandstone_stairs
+RED_SHULKER_BOX,Red Shulker Box,red_shulker_box
+RED_STAINED_GLASS,Red Stained Glass,red_stained_glass
+RED_STAINED_GLASS_PANE,Red Stained Glass Pane,red_stained_glass_pane
+RED_TERRACOTTA,Red Terracotta,red_terracotta
+RED_TULIP,Red Tulip,red_tulip
+RED_WALL_BANNER,Red Wall Banner,red_wall_banner
+RED_WOOL,Red Wool,red_wool
+REPEATER,Repeater,repeater
+REPEATING_COMMAND_BLOCK,Repeating Command Block,repeating_command_block
+ROSE_BUSH,Rose Bush,rose_bush
+ROSE_RED,Rose Red,rose_red
+ROTTEN_FLESH,Rotten Flesh,rotten_flesh
+SADDLE,Saddle,saddle
+SALMON,Salmon,salmon
+SALMON_BUCKET,Salmon Bucket,salmon_bucket
+SALMON_SPAWN_EGG,Salmon Spawn Egg,salmon_spawn_egg
+SAND,Sand,sand
+SANDSTONE,Sandstone,sandstone
+SANDSTONE_SLAB,Sandstone Slab,sandstone_slab
+SANDSTONE_STAIRS,Sandstone Stairs,sandstone_stairs
+SCUTE,Scute,scute
+SEAGRASS,Seagrass,seagrass
+SEA_LANTERN,Sea Lantern,sea_lantern
+SEA_PICKLE,Sea Pickle,sea_pickle
+SHEARS,Shears,shears
+SHEEP_SPAWN_EGG,Sheep Spawn Egg,sheep_spawn_egg
+SHIELD,Shield,shield
+SHULKER_BOX,Shulker Box,shulker_box
+SHULKER_SHELL,Shulker Shell,shulker_shell
+SHULKER_SPAWN_EGG,Shulker Spawn Egg,shulker_spawn_egg
+SIGN,Sign,sign
+SILVERFISH_SPAWN_EGG,Silverfish Spawn Egg,silverfish_spawn_egg
+SKELETON_HORSE_SPAWN_EGG,Skeleton Horse Spawn Egg,skeleton_horse_spawn_egg
+SKELETON_SKULL,Skeleton Skull,skeleton_skull
+SKELETON_SPAWN_EGG,Skeleton Spawn Egg,skeleton_spawn_egg
+SKELETON_WALL_SKULL,Skeleton Wall Skull,skeleton_wall_skull
+SLIME_BALL,Slime Ball,slime_ball
+SLIME_BLOCK,Slime Block,slime_block
+SLIME_SPAWN_EGG,Slime Spawn Egg,slime_spawn_egg
+SMOOTH_QUARTZ,Smooth Quartz,smooth_quartz
+SMOOTH_RED_SANDSTONE,Smooth Red Sandstone,smooth_red_sandstone
+SMOOTH_SANDSTONE,Smooth Sandstone,smooth_sandstone
+SMOOTH_STONE,Smooth Stone,smooth_stone
+SNOW,Snow,snow
+SNOWBALL,Snowball,snowball
+SNOW_BLOCK,Snow Block,snow_block
+SOUL_SAND,Soul Sand,soul_sand
+SPAWNER,Spawner,spawner
+SPECTRAL_ARROW,Spectral Arrow,spectral_arrow
+SPIDER_EYE,Spider Eye,spider_eye
+SPIDER_SPAWN_EGG,Spider Spawn Egg,spider_spawn_egg
+SPLASH_POTION,Splash Potion,splash_potion
+SPONGE,Sponge,sponge
+SPRUCE_BOAT,Spruce Boat,spruce_boat
+SPRUCE_BUTTON,Spruce Button,spruce_button
+SPRUCE_DOOR,Spruce Door,spruce_door
+SPRUCE_FENCE,Spruce Fence,spruce_fence
+SPRUCE_FENCE_GATE,Spruce Fence Gate,spruce_fence_gate
+SPRUCE_LEAVES,Spruce Leaves,spruce_leaves
+SPRUCE_LOG,Spruce Log,spruce_log
+SPRUCE_PLANKS,Spruce Planks,spruce_planks
+SPRUCE_PRESSURE_PLATE,Spruce Pressure Plate,spruce_pressure_plate
+SPRUCE_SAPLING,Spruce Sapling,spruce_sapling
+SPRUCE_SLAB,Spruce Slab,spruce_slab
+SPRUCE_STAIRS,Spruce Stairs,spruce_stairs
+SPRUCE_TRAPDOOR,Spruce Trapdoor,spruce_trapdoor
+SPRUCE_WOOD,Spruce Wood,spruce_wood
+SQUID_SPAWN_EGG,Squid Spawn Egg,squid_spawn_egg
+STICK,Stick,stick
+STICKY_PISTON,Sticky Piston,sticky_piston
+STONE,Stone,stone
+STONE_AXE,Stone Axe,stone_axe
+STONE_BRICKS,Stone Bricks,stone_bricks
+STONE_BRICK_SLAB,Stone Brick Slab,stone_brick_slab
+STONE_BRICK_STAIRS,Stone Brick Stairs,stone_brick_stairs
+STONE_BUTTON,Stone Button,stone_button
+STONE_HOE,Stone Hoe,stone_hoe
+STONE_PICKAXE,Stone Pickaxe,stone_pickaxe
+STONE_PRESSURE_PLATE,Stone Pressure Plate,stone_pressure_plate
+STONE_SHOVEL,Stone Shovel,stone_shovel
+STONE_SLAB,Stone Slab,stone_slab
+STONE_SWORD,Stone Sword,stone_sword
+STRAY_SPAWN_EGG,Stray Spawn Egg,stray_spawn_egg
+STRING,String,string
+STRIPPED_ACACIA_LOG,Stripped Acacia Log,stripped_acacia_log
+STRIPPED_ACACIA_WOOD,Stripped Acacia Wood,stripped_acacia_wood
+STRIPPED_BIRCH_LOG,Stripped Birch Log,stripped_birch_log
+STRIPPED_BIRCH_WOOD,Stripped Birch Wood,stripped_birch_wood
+STRIPPED_DARK_OAK_LOG,Stripped Dark Oak Log,stripped_dark_oak_log
+STRIPPED_DARK_OAK_WOOD,Stripped Dark Oak Wood,stripped_dark_oak_wood
+STRIPPED_JUNGLE_LOG,Stripped Jungle Log,stripped_jungle_log
+STRIPPED_JUNGLE_WOOD,Stripped Jungle Wood,stripped_jungle_wood
+STRIPPED_OAK_LOG,Stripped Oak Log,stripped_oak_log
+STRIPPED_OAK_WOOD,Stripped Oak Wood,stripped_oak_wood
+STRIPPED_SPRUCE_LOG,Stripped Spruce Log,stripped_spruce_log
+STRIPPED_SPRUCE_WOOD,Stripped Spruce Wood,stripped_spruce_wood
+STRUCTURE_BLOCK,Structure Block,structure_block
+STRUCTURE_VOID,Structure Void,structure_void
+SUGAR,Sugar,sugar
+SUGAR_CANE,Sugar Cane,sugar_cane
+SUNFLOWER,Sunflower,sunflower
+TALL_GRASS,Tall Grass,tall_grass
+TALL_SEAGRASS,Tall Seagrass,tall_seagrass
+TERRACOTTA,Terracotta,terracotta
+TIPPED_ARROW,Tipped Arrow,tipped_arrow
+TNT,Tnt,tnt
+TNT_MINECART,Tnt Minecart,tnt_minecart
+TORCH,Torch,torch
+TOTEM_OF_UNDYING,Totem Of Undying,totem_of_undying
+TRAPPED_CHEST,Trapped Chest,trapped_chest
+TRIDENT,Trident,trident
+TRIPWIRE,Tripwire,tripwire
+TRIPWIRE_HOOK,Tripwire Hook,tripwire_hook
+TROPICAL_FISH,Tropical Fish,tropical_fish
+TROPICAL_FISH_BUCKET,Tropical Fish Bucket,tropical_fish_bucket
+TROPICAL_FISH_SPAWN_EGG,Tropical Fish Spawn Egg,tropical_fish_spawn_egg
+TUBE_CORAL,Tube Coral,tube_coral
+TUBE_CORAL_BLOCK,Tube Coral Block,tube_coral_block
+TUBE_CORAL_FAN,Tube Coral Fan,tube_coral_fan
+TURTLE_EGG,Turtle Egg,turtle_egg
+TURTLE_HELMET,Turtle Helmet,turtle_helmet
+TURTLE_SPAWN_EGG,Turtle Spawn Egg,turtle_spawn_egg
+VEX_SPAWN_EGG,Vex Spawn Egg,vex_spawn_egg
+VILLAGER_SPAWN_EGG,Villager Spawn Egg,villager_spawn_egg
+VINDICATOR_SPAWN_EGG,Vindicator Spawn Egg,vindicator_spawn_egg
+VINE,Vine,vine
+VOID_AIR,Void Air,void_air
+WALL_SIGN,Wall Sign,wall_sign
+WALL_TORCH,Wall Torch,wall_torch
+WATER,Water,water
+WATER_BUCKET,Water Bucket,water_bucket
+WET_SPONGE,Wet Sponge,wet_sponge
+WHEAT,Wheat,wheat
+WHEAT_SEEDS,Wheat Seeds,wheat_seeds
+WHITE_BANNER,White Banner,white_banner
+WHITE_BED,White Bed,white_bed
+WHITE_CARPET,White Carpet,white_carpet
+WHITE_CONCRETE,White Concrete,white_concrete
+WHITE_CONCRETE_POWDER,White Concrete Powder,white_concrete_powder
+WHITE_GLAZED_TERRACOTTA,White Glazed Terracotta,white_glazed_terracotta
+WHITE_SHULKER_BOX,White Shulker Box,white_shulker_box
+WHITE_STAINED_GLASS,White Stained Glass,white_stained_glass
+WHITE_STAINED_GLASS_PANE,White Stained Glass Pane,white_stained_glass_pane
+WHITE_TERRACOTTA,White Terracotta,white_terracotta
+WHITE_TULIP,White Tulip,white_tulip
+WHITE_WALL_BANNER,White Wall Banner,white_wall_banner
+WHITE_WOOL,White Wool,white_wool
+WITCH_SPAWN_EGG,Witch Spawn Egg,witch_spawn_egg
+WITHER_SKELETON_SKULL,Wither Skeleton Skull,wither_skeleton_skull
+WITHER_SKELETON_SPAWN_EGG,Wither Skeleton Spawn Egg,wither_skeleton_spawn_egg
+WITHER_SKELETON_WALL_SKULL,Wither Skeleton Wall Skull,wither_skeleton_wall_skull
+WOLF_SPAWN_EGG,Wolf Spawn Egg,wolf_spawn_egg
+WOODEN_AXE,Wooden Axe,wooden_axe
+WOODEN_HOE,Wooden Hoe,wooden_hoe
+WOODEN_PICKAXE,Wooden Pickaxe,wooden_pickaxe
+WOODEN_SHOVEL,Wooden Shovel,wooden_shovel
+WOODEN_SWORD,Wooden Sword,wooden_sword
+WRITABLE_BOOK,Writable Book,writable_book
+WRITTEN_BOOK,Written Book,written_book
+YELLOW_BANNER,Yellow Banner,yellow_banner
+YELLOW_BED,Yellow Bed,yellow_bed
+YELLOW_CARPET,Yellow Carpet,yellow_carpet
+YELLOW_CONCRETE,Yellow Concrete,yellow_concrete
+YELLOW_CONCRETE_POWDER,Yellow Concrete Powder,yellow_concrete_powder
+YELLOW_GLAZED_TERRACOTTA,Yellow Glazed Terracotta,yellow_glazed_terracotta
+YELLOW_SHULKER_BOX,Yellow Shulker Box,yellow_shulker_box
+YELLOW_STAINED_GLASS,Yellow Stained Glass,yellow_stained_glass
+YELLOW_STAINED_GLASS_PANE,Yellow Stained Glass Pane,yellow_stained_glass_pane
+YELLOW_TERRACOTTA,Yellow Terracotta,yellow_terracotta
+YELLOW_WALL_BANNER,Yellow Wall Banner,yellow_wall_banner
+YELLOW_WOOL,Yellow Wool,yellow_wool
+ZOMBIE_HEAD,Zombie Head,zombie_head
+ZOMBIE_HORSE_SPAWN_EGG,Zombie Horse Spawn Egg,zombie_horse_spawn_egg
+ZOMBIE_PIGMAN_SPAWN_EGG,Zombie Pigman Spawn Egg,zombie_pigman_spawn_egg
+ZOMBIE_SPAWN_EGG,Zombie Spawn Egg,zombie_spawn_egg
+ZOMBIE_VILLAGER_SPAWN_EGG,Zombie Villager Spawn Egg,zombie_villager_spawn_egg
+ZOMBIE_WALL_HEAD,Zombie Wall Head,zombie_wall_head

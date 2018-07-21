@@ -1,12 +1,28 @@
 package com.easterlyn.utilities;
 
-import org.bukkit.*;
+import org.bukkit.Achievement;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
+import org.bukkit.GameMode;
+import org.bukkit.Instrument;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.Particle;
+import org.bukkit.Server;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.Statistic;
+import org.bukkit.WeatherType;
+import org.bukkit.World;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Entity;
@@ -37,7 +53,6 @@ import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -273,12 +288,6 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public List<Block> getLastTwoTargetBlocks(HashSet<Byte> transparent, int maxDistance) {
-		return player.getLastTwoTargetBlocks(transparent, maxDistance);
-	}
-
-	@Override
 	public List<Block> getLastTwoTargetBlocks(Set<Material> transparent, int maxDistance) {
 		return player.getLastTwoTargetBlocks(transparent, maxDistance);
 	}
@@ -316,12 +325,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public boolean getRemoveWhenFarAway() {
 		return player.getRemoveWhenFarAway();
-	}
-
-	@Override
-	@Deprecated
-	public Block getTargetBlock(HashSet<Byte> transparent, int maxDistance) {
-		return player.getTargetBlock(transparent, maxDistance);
 	}
 
 	@Override
@@ -967,9 +970,15 @@ public class PermissiblePlayer implements Player {
 		return player.hasAchievement(arg0);
 	}
 
+	@Deprecated
 	@Override
 	public void hidePlayer(Player arg0) {
 		player.hidePlayer(arg0);
+	}
+
+	@Override
+	public void hidePlayer(Plugin plugin, Player player) {
+		player.hidePlayer(plugin, player);
 	}
 
 	@Override
@@ -1116,14 +1125,13 @@ public class PermissiblePlayer implements Player {
 
 	@Override
 	@Deprecated
-	public void sendBlockChange(Location arg0, int arg1, byte arg2) {
+	public void sendBlockChange(Location arg0, Material arg1, byte arg2) {
 		player.sendBlockChange(arg0, arg1, arg2);
 	}
 
 	@Override
-	@Deprecated
-	public void sendBlockChange(Location arg0, Material arg1, byte arg2) {
-		player.sendBlockChange(arg0, arg1, arg2);
+	public void sendBlockChange(Location location, BlockData blockData) {
+		player.sendBlockChange(location, blockData);
 	}
 
 	@Override
@@ -1306,9 +1314,15 @@ public class PermissiblePlayer implements Player {
 		player.setWalkSpeed(arg0);
 	}
 
+	@Deprecated
 	@Override
 	public void showPlayer(Player arg0) {
 		player.showPlayer(arg0);
+	}
+
+	@Override
+	public void showPlayer(Plugin plugin, Player player) {
+		player.showPlayer(plugin, player);
 	}
 
 	@Override
@@ -1427,6 +1441,16 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void setGliding(boolean arg0) {
 		player.setGliding(arg0);
+	}
+
+	@Override
+	public boolean isSwimming() {
+		return player.isSwimming();
+	}
+
+	@Override
+	public void setSwimming(boolean swimming) {
+		player.setSwimming(swimming);
 	}
 
 	@Override

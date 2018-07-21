@@ -27,7 +27,7 @@ import java.util.regex.PatternSyntaxException;
 
 /**
  * Used to better clarify a message's destination prior to formatting.
- * 
+ *
  * @author Jikoo
  */
 public class Message {
@@ -262,7 +262,7 @@ public class Message {
 				// Fun sound effects! Sadly, ender dragon kill is a little long even at 2x
 				switch ((int) (Math.random() * 20)) {
 				case 0:
-					player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_STARE, 1, 2);
+					player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_STARE, 1, 2);
 					break;
 				case 1:
 					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 2);

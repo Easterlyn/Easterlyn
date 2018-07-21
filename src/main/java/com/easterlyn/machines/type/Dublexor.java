@@ -9,7 +9,6 @@ import com.easterlyn.machines.MachineInventoryTracker;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
-import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -60,28 +59,21 @@ public class Dublexor extends Machine {
 
 		Shape shape = getShape();
 
-		MaterialDataValue m = shape.new MaterialDataValue(Material.GLASS);
-		shape.setVectorData(new Vector(0, 0, 0), m);
+		shape.setVectorData(new Vector(0, 0, 0), Material.GLASS);
 
-		m = shape.new MaterialDataValue(Material.ENCHANTMENT_TABLE);
-		shape.setVectorData(new Vector(0, 1, 0), m);
+		shape.setVectorData(new Vector(0, 1, 0), Material.ENCHANTING_TABLE);
+		shape.setVectorData(new Vector(0, 0, -1), Material.QUARTZ_STAIRS, Direction.NORTH);
+		shape.setVectorData(new Vector(1, 0, 0), Material.QUARTZ_STAIRS, Direction.WEST);
+		shape.setVectorData(new Vector(-1, 0, 0), Material.QUARTZ_STAIRS, Direction.EAST);
+		shape.setVectorData(new Vector(0, 0, 1), Material.QUARTZ_STAIRS, Direction.SOUTH);
 
-		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "stair");
-		shape.setVectorData(new Vector(0, 0, -1), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "stair");
-		shape.setVectorData(new Vector(1, 0, 0), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST, "stair");
-		shape.setVectorData(new Vector(-1, 0, 0), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.SOUTH, "stair");
-		shape.setVectorData(new Vector(0, 0, 1), m);
-
-		m = shape.new MaterialDataValue(Material.STEP, (byte) 7);
+		Shape.MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_SLAB);
 		shape.setVectorData(new Vector(1, 0, -1), m);
 		shape.setVectorData(new Vector(-1, 0, -1), m);
 		shape.setVectorData(new Vector(1, 0, 1), m);
 		shape.setVectorData(new Vector(-1, 0, 1), m);
 
-		this.drop = new ItemStack(Material.ENCHANTMENT_TABLE);
+		this.drop = new ItemStack(Material.ENCHANTING_TABLE);
 		ItemMeta meta = this.drop.getItemMeta();
 		meta.setDisplayName(ChatColor.WHITE + "Dublexor");
 		this.drop.setItemMeta(meta);
@@ -215,7 +207,7 @@ public class Dublexor extends Machine {
 				return;
 			}
 
-			ItemStack expCost = new ItemStack(Material.EXP_BOTTLE);
+			ItemStack expCost = new ItemStack(Material.EXPERIENCE_BOTTLE);
 			ItemMeta im = expCost.getItemMeta();
 			im.setDisplayName(Language.getColor("emphasis.bad") + "Cannot copy");
 			expCost.setItemMeta(im);
@@ -351,7 +343,7 @@ public class Dublexor extends Machine {
 		im.setLore(lore);
 		is1.setItemMeta(im);
 
-		ItemStack is2 = new ItemStack(Material.EXP_BOTTLE);
+		ItemStack is2 = new ItemStack(Material.EXPERIENCE_BOTTLE);
 		im = is2.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD + "Mana Cost");
 		lore = Arrays.asList(ChatColor.WHITE + "Displays dublecation cost",

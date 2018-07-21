@@ -46,7 +46,7 @@ public class Computer extends Machine implements InventoryHolder {
 		meta.setDisplayName(ChatColor.WHITE + "Computer");
 		drop.setItemMeta(meta);
 
-		getShape().setVectorData(new Vector(0, 0, 0), drop.getData());
+		getShape().setVectorData(new Vector(0, 0, 0), drop.getType());
 
 		PermissionUtils.addParent("easterlyn.machines.administrate", UserRank.MOD.getPermission());
 	}

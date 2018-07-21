@@ -11,7 +11,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -31,7 +30,6 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -40,7 +38,7 @@ import java.util.UUID;
 
 /**
  * Framework for all Machine block assemblies.
- * 
+ *
  * @author Jikoo
  */
 public abstract class Machine {
@@ -54,7 +52,7 @@ public abstract class Machine {
 
 	/**
 	 * Constructor for a Machine.
-	 * 
+	 *
 	 * @param plugin the Plugin loading the Machine
 	 * @param machines the Machines instance loading the Machine
 	 * @param shape the in-world representation of the machine
@@ -70,7 +68,7 @@ public abstract class Machine {
 
 	/**
 	 * Gets the name of this Machine.
-	 * 
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -79,7 +77,7 @@ public abstract class Machine {
 
 	/**
 	 * Gets the Easterlyn instance loading this Machine.
-	 * 
+	 *
 	 * @return the Easterlyn
 	 */
 	protected Easterlyn getPlugin() {
@@ -88,7 +86,7 @@ public abstract class Machine {
 
 	/**
 	 * Gets the Language instance.
-	 * 
+	 *
 	 * @return the Language
 	 */
 	protected Language getLang() {
@@ -97,7 +95,7 @@ public abstract class Machine {
 
 	/**
 	 * Gets the Machines instance loading this Machine.
-	 * 
+	 *
 	 * @return the Machines
 	 */
 	protected Machines getMachines() {
@@ -106,7 +104,7 @@ public abstract class Machine {
 
 	/**
 	 * Gets the Users instance used to check User data.
-	 * 
+	 *
 	 * @return the Users
 	 */
 	protected Users getUsers() {
@@ -115,7 +113,7 @@ public abstract class Machine {
 
 	/**
 	 * Gets the Machine's shape.
-	 * 
+	 *
 	 * @return the Shape of the Machine
 	 */
 	public Shape getShape() {
@@ -123,18 +121,8 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Checks if the Machine is free. Free machines can be broken by anyone, and do not yield any
-	 * drops.
-	 * 
-	 * @return true if the Machine's cost is 0
-	 */
-	public boolean isFree() {
-		return getCost() < 1;
-	}
-
-	/**
 	 * Gets the mana cost for creating this Machine.
-	 * 
+	 *
 	 * @return the cost
 	 */
 	public int getCost() {
@@ -143,9 +131,9 @@ public abstract class Machine {
 
 	/**
 	 * Gets the key Location of a Machine from a ConfigurationSection.
-	 * 
+	 *
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return the Location
 	 */
 	public Location getKey(ConfigurationSection storage) {
@@ -154,9 +142,9 @@ public abstract class Machine {
 
 	/**
 	 * Gets the Direction of a Machine from a ConfigurationSection.
-	 * 
+	 *
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return the Direction
 	 */
 	public Direction getDirection(ConfigurationSection storage) {
@@ -165,9 +153,9 @@ public abstract class Machine {
 
 	/**
 	 * Gets UUID of the owner of a Machine from a ConfigurationSection.
-	 * 
+	 *
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return the UUID
 	 */
 	public UUID getOwner(ConfigurationSection storage) {
@@ -176,7 +164,7 @@ public abstract class Machine {
 
 	/**
 	 * Sets up the Machine Block configuration using a BlockPlaceEvent.
-	 * 
+	 *
 	 * @param event the BlockPlaceEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
@@ -198,14 +186,14 @@ public abstract class Machine {
 
 	/**
 	 * Helper method for assembling the Machine.
-	 * 
+	 *
 	 * @param key the key Location of the Machine
 	 * @param direction the facing of the Machine
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
 	protected void assemble(Location key, Direction direction, ConfigurationSection storage) {
-		HashMap<Location, MaterialData> buildData = shape.getBuildLocations(key, direction);
-		for (Entry<Location, MaterialData> entry : buildData.entrySet()) {
+		HashMap<Location, Shape.MaterialDataValue> buildData = shape.getBuildLocations(key, direction);
+		for (Entry<Location, Shape.MaterialDataValue> entry : buildData.entrySet()) {
 			if (key.equals(entry.getKey())) {
 				// Key cannot be set instantly, it must be set on a delay
 				// A cancelled BlockPlaceEvent results in the block being restored to its previous state.
@@ -214,13 +202,7 @@ public abstract class Machine {
 				assembleKeyLater(key, entry.getValue(), storage);
 				continue;
 			}
-			Block block = entry.getKey().getBlock();
-			block.setType(entry.getValue().getItemType(), false);
-			BlockState state = block.getState();
-			if (!state.getData().equals(entry.getValue())) {
-				state.setData(entry.getValue());
-				state.update(true);
-			}
+			entry.getValue().build(entry.getKey().getBlock());
 		}
 	}
 
@@ -230,12 +212,12 @@ public abstract class Machine {
 	 * delay. A cancelled BlockPlaceEvent results in the block being restored to its previous state.
 	 * Additionally, keys with tile entities can cause damage which is not fixed until the tile
 	 * entity is accessed (generally manually).
-	 * 
+	 *
 	 * @param key the key Location of the Machine
 	 * @param data the MaterialData the key is supposed to be set to
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
-	protected void assembleKeyLater(Location key, MaterialData data, ConfigurationSection storage) {
+	private void assembleKeyLater(Location key, Shape.MaterialDataValue data, ConfigurationSection storage) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -243,12 +225,7 @@ public abstract class Machine {
 				if (!getMachines().isMachine(block)) {
 					return;
 				}
-				block.setType(data.getItemType(), false);
-				BlockState state = block.getState();
-				if (!state.getData().equals(data)) {
-					state.setData(data);
-					state.update(true);
-				}
+				data.build(block);
 			}
 		}.runTask(getPlugin());
 	}
@@ -259,7 +236,7 @@ public abstract class Machine {
 	 * Machines are very abusable in combination with CreeperHeal, so instead of flat out cancelling
 	 * the event, making it rather difficult to do anything fun like drop a meteor on someone's
 	 * computer, we'll hook it and play nice.
-	 * 
+	 *
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
 	public void reassemble(ConfigurationSection storage) {
@@ -293,7 +270,7 @@ public abstract class Machine {
 
 	/**
 	 * Removes this machine's blocks and listing.
-	 * 
+	 *
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
 	public void remove(ConfigurationSection storage) {
@@ -308,10 +285,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles Machine deconstruction.
-	 * 
+	 *
 	 * @param event the BlockBreakEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
@@ -325,10 +302,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles Block growth caused by the Machine's Block(s).
-	 * 
+	 *
 	 * @param event the BlockGrowEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleGrow(BlockGrowEvent event, ConfigurationSection storage) {
@@ -337,10 +314,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles fading of Blocks in the Machine.
-	 * 
+	 *
 	 * @param event the BlockFadeEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleFade(BlockFadeEvent event, ConfigurationSection storage) {
@@ -349,10 +326,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles ignition of Blocks in the Machine.
-	 * 
+	 *
 	 * @param event the BlockIgniteEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleIgnite(BlockIgniteEvent event, ConfigurationSection storage) {
@@ -361,10 +338,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles piston pushes on Blocks in the Machine.
-	 * 
+	 *
 	 * @param event the BlockPistonExtendEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handlePush(BlockPistonExtendEvent event, ConfigurationSection storage) {
@@ -373,10 +350,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles piston pulls on Blocks in the Machine.
-	 * 
+	 *
 	 * @param event the BlockPistonRetractEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handlePull(BlockPistonRetractEvent event, ConfigurationSection storage) {
@@ -385,10 +362,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles Block spread caused by the Machine's Block(s).
-	 * 
+	 *
 	 * @param event the BlockSpreadEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleSpread(BlockSpreadEvent event, ConfigurationSection storage) {
@@ -399,10 +376,10 @@ public abstract class Machine {
 	 * Handles Player interaction with Blocks in the Machine.
 	 * <p>
 	 * This should be handled based on type of Machine.
-	 * 
+	 *
 	 * @param event the PlayerInteractEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
@@ -417,10 +394,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles hopper interaction with Blocks in the Machine.
-	 * 
+	 *
 	 * @param event the InventoryMoveItemEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleHopperMoveItem(InventoryMoveItemEvent event, ConfigurationSection storage) {
@@ -429,10 +406,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles hoppers in the Machine picking up items.
-	 * 
+	 *
 	 * @param event the InventoryPickupItemEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if the event should be cancelled
 	 */
 	public boolean handleHopperPickupItem(InventoryPickupItemEvent event, ConfigurationSection storage) {
@@ -445,10 +422,10 @@ public abstract class Machine {
 	 * N.B.: Due to the way Machines that are detected via InventoryHolder status are detected,
 	 * Machines that directly extend InventoryHolder may be passed a null storage
 	 * ConfigurationSection.
-	 * 
+	 *
 	 * @param event the InventoryClickEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
@@ -462,10 +439,10 @@ public abstract class Machine {
 	 * N.B.: Due to the way Machines that are detected via InventoryHolder status are detected,
 	 * Machines that directly extend InventoryHolder may be passed a null storage
 	 * ConfigurationSection.
-	 * 
+	 *
 	 * @param event the InventoryClickEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if event should be cancelled
 	 */
 	public boolean handleClick(InventoryDragEvent event, ConfigurationSection storage) {
@@ -476,7 +453,7 @@ public abstract class Machine {
 	/**
 	 * Handles Inventory opening for blocks inside the Machine. This is not fired by interaction
 	 * opening custom inventories handled by the MachineInventoryTracker.
-	 * 
+	 *
 	 * @param event the InventoryOpenEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
@@ -486,10 +463,10 @@ public abstract class Machine {
 
 	/**
 	 * Handles Blocks in the Machine being changed by liquids.
-	 * 
+	 *
 	 * @param event the BlockFromToEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
-	 * 
+	 *
 	 * @return true if the event should be cancelled
 	 */
 	public boolean handleFromTo(BlockFromToEvent event, ConfigurationSection storage) {
@@ -499,7 +476,7 @@ public abstract class Machine {
 	/**
 	 * Removes this Machine's listing on a synchronous 0 tick delay.
 	 */
-	protected void assemblyFailed(ConfigurationSection storage) {
+	private void assemblyFailed(ConfigurationSection storage) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 			disable(storage);
 			getMachines().deleteMachine(getKey(storage));
@@ -522,7 +499,7 @@ public abstract class Machine {
 
 	/**
 	 * Gets the unique drop for this Machine.
-	 * 
+	 *
 	 * @return the unique drop.
 	 */
 	public abstract ItemStack getUniqueDrop();
