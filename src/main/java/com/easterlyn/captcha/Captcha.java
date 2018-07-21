@@ -78,7 +78,7 @@ public class Captcha extends Module {
 		// Add the Captcha recipe
 		ItemStack captchaItem = blankCaptchaCard();
 		captchaItem.setAmount(3);
-		ShapedRecipe captchaRecipe = new ShapedRecipe(new NamespacedKey(this.getPlugin(), "Easterlyn"), captchaItem);
+		ShapedRecipe captchaRecipe = new ShapedRecipe(new NamespacedKey(this.getPlugin(), "captcha"), captchaItem);
 		captchaRecipe.shape("AA", "AA", "AA");
 		captchaRecipe.setIngredient('A', Material.PAPER);
 		Bukkit.addRecipe(captchaRecipe);

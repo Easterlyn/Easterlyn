@@ -15,8 +15,8 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -225,9 +225,9 @@ public class RepairShrine extends Machine {
 	}
 
 	@Override
-	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
-		super.assemble(event, storage);
+	public boolean assemble(Player player, ConfigurationSection storage) {
 		this.setFuel(storage, this.getFuel(storage));
+		return super.assemble(player, storage);
 	}
 
 	@Override

@@ -5,8 +5,8 @@ version: ${timestamp}
 author: Jikoo
 authors: [Dublek, FireNG, tmathmeyer]
 description: https://www.youtube.com/watch?v=QHnJ9NmK3Pc
-depend: [GriefPrevention, ProtocolLib, WorldEdit, WorldGuard]
-softdepend: [CreeperHeal, dynmap, Regionerator, LuckPerms]
+depend: [GriefPrevention, ProtocolLib]
+softdepend: [CreeperHeal, dynmap, Regionerator, LuckPerms, WorldEdit, WorldGuard]
 api-version: 1.13
 
 permissions:

@@ -330,6 +330,9 @@ public class Discord extends Module {
 	}
 
 	private void startQueueDrain() {
+		if (!this.isEnabled()) {
+			return;
+		}
 		if (drainQueueThread == null || !drainQueueThread.isAlive()) {
 			drainQueueThread = new DiscordQueue(this, 50, "Easterlyn-DiscordQueue");
 			drainQueueThread.start();
@@ -337,11 +340,19 @@ public class Discord extends Module {
 	}
 
 	public void queue(DiscordCallable call) {
+		if (!this.isEnabled()) {
+			return;
+		}
+
 		startQueueDrain();
 		drainQueueThread.queue(call.getChainStart());
 	}
 
 	public void queueMessageDeletion(CallPriority priority, IMessage... messages) {
+		if (!this.isEnabled()) {
+			return;
+		}
+
 		if (messages.length == 0) {
 			return;
 		}
@@ -357,6 +368,10 @@ public class Discord extends Module {
 	}
 
 	public void queueMessageDeletion(CallPriority priority, Collection<IMessage> messages) {
+		if (!this.isEnabled()) {
+			return;
+		}
+
 		// Bulk delete requires messages to be within the last 14 days. To be safe, we pad our check.
 		Instant bulkDeleteableBefore = Instant.now().plus(13, ChronoUnit.DAYS).plus(12, ChronoUnit.HOURS);
 		// Collect messages by channel to ensure bulk delete will work.
@@ -397,6 +412,11 @@ public class Discord extends Module {
 	}
 
 	private void queueSingleDelete(CallPriority priority, IMessage message) {
+		if (!this.isEnabled()) {
+			return;
+		}
+
+		startQueueDrain();
 		drainQueueThread.queue(new DiscordCallable(message.getGuild().getLongID(), CallType.MESSAGE_DELETE) {
 			@Override
 			public void call() throws MissingPermissionsException, RateLimitException, DiscordException {
@@ -447,6 +467,9 @@ public class Discord extends Module {
 
 	private Collection<Long> getChannelIDs(String type) {
 		List<Long> list = new ArrayList<>();
+		if (!this.isEnabled()) {
+			return list;
+		}
 		for (String guildIDString : this.getConfig().getConfigurationSection("guilds").getKeys(false)) {
 
 			// Parse guild ID

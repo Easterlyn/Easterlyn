@@ -44,8 +44,8 @@ public class CompilationAmalgamator extends Machine {
 		super(plugin, machines, new Shape(), "Compilation Amalgamator");
 		this.captcha = plugin.getModule(Captcha.class);
 		Shape shape = getShape();
-		shape.setVectorData(new Vector(0, 0, 0), Material.DROPPER, Direction.NORTH);
-		shape.setVectorData(new Vector(0, 0, 1), Material.HOPPER, Direction.NORTH);
+		shape.setVectorData(new Vector(0, 0, 0), Material.DROPPER, Direction.SOUTH);
+		shape.setVectorData(new Vector(0, 0, 1), Material.HOPPER, Direction.SOUTH);
 
 		drop = new ItemStack(Material.DROPPER);
 		ItemMeta meta = drop.getItemMeta();

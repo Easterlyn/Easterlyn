@@ -4,19 +4,15 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.module.Module;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.LinkedHashMultimap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 
@@ -33,7 +29,7 @@ import java.util.UUID;
 
 /**
  * A Module for handling Block structures with special functions.
- * 
+ *
  * @author Jikoo
  */
 public class Machines extends Module {
@@ -43,7 +39,7 @@ public class Machines extends Module {
 	/* A Map of Machine Block Locations to keys */
 	private final Map<Integer, Map<Integer, Map<Integer, Map<String, Location>>>> blocksToKeys;
 	/* A Map of Machine key Locations to the corresponding Block Locations. */
-	private final Multimap<Location, Location> keysToBlocks;
+	private final LinkedHashMultimap<Location, Location> keysToBlocks;
 	/* A Map of all exploded blocks. */
 	private final Map<Block, Boolean> exploded;
 	/* The MachineInventoryTracker. */
@@ -53,7 +49,7 @@ public class Machines extends Module {
 		super(plugin);
 		byName = new HashMap<>();
 		this.blocksToKeys = new HashMap<>();
-		this.keysToBlocks = HashMultimap.create();
+		this.keysToBlocks = LinkedHashMultimap.create();
 		this.exploded = new HashMap<>();
 		this.tracker = new MachineInventoryTracker(this);
 		Reflections reflections = new Reflections("com.easterlyn.machines.type");
@@ -70,14 +66,6 @@ public class Machines extends Module {
 				}
 				byName.put(type.getSimpleName(), machine);
 				byName.put(machine.getName(), machine);
-				ItemStack item = machine.getUniqueDrop();
-				if (item == null || item.getType() == Material.AIR || !item.hasItemMeta()) {
-					continue;
-				}
-				ItemMeta meta = item.getItemMeta();
-				if (meta.hasDisplayName()) {
-					byName.put(meta.getDisplayName(), machine);
-				}
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
 					| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				// Improperly set up Machine
@@ -104,18 +92,17 @@ public class Machines extends Module {
 
 	/**
 	 * Adds a Machine with the given parameters.
-	 * 
+	 *
 	 * @param location the Location of the key
 	 * @param type the type of the Machine
 	 * @param owner the owner of the Machine
 	 * @param direction the facing direction
-	 * 
+	 *
 	 * @return the Machine created
 	 */
 	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type,
 			UUID owner, Direction direction) {
-		if (!this.isEnabled() || !byName.containsKey(type) || !this.getPlugin().getConfig()
-				.getStringList("machines.worlds").contains(location.getWorld().getName())) {
+		if (!this.isEnabled() || !byName.containsKey(type)) {
 			return null;
 		}
 		ConfigurationSection section = getConfig().createSection(pathFromLoc(location));
@@ -127,7 +114,7 @@ public class Machines extends Module {
 
 	/**
 	 * Loads a Machine from a ConfigurationSection.
-	 * 
+	 *
 	 * @param key the key Location of the Machine
 	 * @param section the ConfigurationSection
 	 * @return the Machine type loaded
@@ -154,8 +141,7 @@ public class Machines extends Module {
 			// Disabled world.
 			return;
 		}
-		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
-				.append(chunk.getX()).append('_').append(chunk.getZ()).toString();
+		String path = chunk.getWorld().getName() + '.' + chunk.getX() + '_' + chunk.getZ();
 		if (!getConfig().isConfigurationSection(path)) {
 			return;
 		}
@@ -186,8 +172,7 @@ public class Machines extends Module {
 		if (!this.isEnabled()) {
 			return;
 		}
-		String path = new StringBuilder(chunk.getWorld().getName()).append('.')
-				.append(chunk.getX()).append('_').append(chunk.getZ()).toString();
+		String path = chunk.getWorld().getName() + '.' + chunk.getX() + '_' + chunk.getZ();
 		ConfigurationSection chunkSection = getConfig().getConfigurationSection(path);
 		if (chunkSection == null) {
 			return;
@@ -219,14 +204,13 @@ public class Machines extends Module {
 	 * <p>
 	 * This method is purely for use in the RegioneratorChunkDeleteListener, chunks (and, therefore,
 	 * the machines in them) should not be loaded.
-	 * 
+	 *
 	 * @param world the World
 	 * @param chunkX the Chunk X
 	 * @param chunkZ the Chunk Z
 	 */
 	public void deleteChunkMachines(World world, int chunkX, int chunkZ) {
-		getConfig().set(new StringBuilder(world.getName()).append('.').append(chunkX).append('_')
-				.append(chunkZ).toString(), null);
+		getConfig().set(world.getName() + '.' + chunkX + '_' + chunkZ, null);
 	}
 
 	/**
@@ -357,9 +341,9 @@ public class Machines extends Module {
 
 	/**
 	 * Checks a Block to see if it is part of a Machine.
-	 * 
+	 *
 	 * @param block the Block to check
-	 * 
+	 *
 	 * @return true if the Block is a Machine
 	 */
 	public boolean isMachine(Block block) {
@@ -367,25 +351,13 @@ public class Machines extends Module {
 	}
 
 	/**
-	 * Checks a Location to see if there is a Machine there.
-	 * 
-	 * @param location the Location to check
-	 * 
-	 * @return true if the Location is a Machine
-	 */
-	public boolean isMachine(Location location) {
-		return isMachine((int) location.getX(), (int) location.getY(), (int) location.getZ(),
-				location.getWorld().getName());
-	}
-
-	/**
 	 * Checks coordinates to see if a Machine is present.
-	 * 
+	 *
 	 * @param x the Block X coordinate
 	 * @param y the Block Y coordinate
 	 * @param z the Block Z coordinate
 	 * @param worldName the name of the World
-	 * 
+	 *
 	 * @return true if the coordinates are part of a Machine
 	 */
 	private boolean isMachine(int x, int y, int z, String worldName) {
@@ -402,9 +374,9 @@ public class Machines extends Module {
 
 	/**
 	 * Gets a Machine from a Block.
-	 * 
+	 *
 	 * @param block the Block
-	 * 
+	 *
 	 * @return the Machine
 	 */
 	public Pair<Machine, ConfigurationSection> getMachineByBlock(Block block) {
@@ -413,9 +385,9 @@ public class Machines extends Module {
 
 	/**
 	 * Gets a Machine from a Location.
-	 * 
+	 *
 	 * @param location the Location
-	 * 
+	 *
 	 * @return the Machine
 	 */
 	public Pair<Machine, ConfigurationSection> getMachineByLocation(Location location) {
@@ -436,7 +408,7 @@ public class Machines extends Module {
 
 	/**
 	 * Gets all locations defined as part of the Machine with the given key Location.
-	 * 
+	 *
 	 * @param location the Location of the Machine
 	 * @return a Collection of all Locations in the Machine, or null if the Location is not a Machine
 	 */
@@ -450,7 +422,7 @@ public class Machines extends Module {
 
 	/**
 	 * Gets the key location of a Machine from any location within it.
-	 * 
+	 *
 	 * @param location the location.
 	 * @return the key location, or null if the location is not a Machine.
 	 */
@@ -491,7 +463,7 @@ public class Machines extends Module {
 	 * Remove the specified Machine listing.
 	 * <p>
 	 * Be aware - this does not modify the World. All Blocks will remain.
-	 * 
+	 *
 	 * @param location the key Location
 	 */
 	public void deleteMachine(Location location) {
@@ -510,7 +482,7 @@ public class Machines extends Module {
 
 	/**
 	 * Flags Block(s) as having been exploded.
-	 * 
+	 *
 	 * @param blocks the Blocks
 	 */
 	public void addExplodedBlock(Collection<Block> blocks) {
@@ -521,9 +493,9 @@ public class Machines extends Module {
 
 	/**
 	 * Checks to see if a Machine Block is exploded.
-	 * 
+	 *
 	 * @param block the Block to check
-	 * 
+	 *
 	 * @return true if the block is recorded as being exploded.
 	 */
 	public boolean isExploded(Block block) {
@@ -532,7 +504,7 @@ public class Machines extends Module {
 
 	/**
 	 * Marks a Block as having been restored post-explosion.
-	 * 
+	 *
 	 * @param block the Block
 	 */
 	public void setRestored(Block block) {
@@ -541,7 +513,7 @@ public class Machines extends Module {
 
 	/**
 	 * Register stored Blocks as not to be regenerated. For use when a Machine is broken.
-	 * 
+	 *
 	 * @param blocks the Blocks
 	 */
 	public void setRemoved(Block... blocks) {
@@ -555,9 +527,9 @@ public class Machines extends Module {
 	/**
 	 * Checks if a Block should be replaced post-explosion. This allows Machines to be unregistered
 	 * while partially exploded.
-	 * 
+	 *
 	 * @param block the Block
-	 * 
+	 *
 	 * @return true if the block is to be restored
 	 */
 	public boolean shouldRestore(Block block) {
@@ -569,7 +541,7 @@ public class Machines extends Module {
 
 	/**
 	 * Gets a Map of instances of Machines stored by name.
-	 * 
+	 *
 	 * @return the Map of all Machine instances stored by name
 	 */
 	public Map<String, Machine> getMachinesByName() {
@@ -578,7 +550,7 @@ public class Machines extends Module {
 
 	/**
 	 * Gets an instance of a Machine by name.
-	 * 
+	 *
 	 * @param name the name of the Machine
 	 * @return the Machine instance
 	 */
@@ -588,7 +560,7 @@ public class Machines extends Module {
 
 	/**
 	 * Gets the MachineInventoryTracker used to open and link special inventories for Machines.
-	 * 
+	 *
 	 * @return the MachineInventoryTracker
 	 */
 	public MachineInventoryTracker getInventoryTracker() {
@@ -606,10 +578,8 @@ public class Machines extends Module {
 	}
 
 	public static String pathFromLoc(Location location) {
-		return new StringBuilder(location.getWorld().getName()).append('.')
-				.append(location.getBlockX() >> 4).append('_').append(location.getBlockZ() >> 4)
-				.append('.').append(location.getBlockX()).append('_').append(location.getBlockY())
-				.append('_').append(location.getBlockZ()).toString();
+		return location.getWorld().getName() + '.' + (location.getBlockX() >> 4) + '_' + (location.getBlockZ() >> 4)
+				+ '.' + location.getBlockX() + '_' + location.getBlockY() + '_' + location.getBlockZ();
 	}
 
 	public static Location locFromPath(String string) {

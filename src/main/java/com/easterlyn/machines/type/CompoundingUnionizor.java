@@ -42,7 +42,7 @@ public class CompoundingUnionizor extends Machine {
 	public CompoundingUnionizor(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Compounding Unionizer");
 		Shape shape = getShape();
-		shape.setVectorData(new Vector(0, 0, 0), Material.DROPPER, Direction.NORTH);
+		shape.setVectorData(new Vector(0, 0, 0), Material.DROPPER, Direction.SOUTH);
 		shape.setVectorData(new Vector(0, 1, 0), Material.CRAFTING_TABLE);
 
 		drop = null; // future

@@ -1,7 +1,5 @@
 package com.easterlyn.events.listeners.block;
 
-import java.util.Map.Entry;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
@@ -14,9 +12,7 @@ import com.easterlyn.users.BukkitSerializer;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.PermissionUtils;
-
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -24,9 +20,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import java.util.Map.Entry;
+
 /**
  * Listener for BlockPlaceEvents.
- * 
+ *
  * @author Jikoo
  */
 public class PlaceListener extends EasterlynListener {
@@ -48,7 +46,7 @@ public class PlaceListener extends EasterlynListener {
 
 	/**
 	 * Event handler for Machine construction.
-	 * 
+	 *
 	 * @param event the BlockPlaceEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -90,7 +88,9 @@ public class PlaceListener extends EasterlynListener {
 					event.setCancelled(true);
 					return;
 				}
-				pair.getLeft().assemble(event, pair.getRight());
+				if (pair.getLeft().assemble(event.getPlayer(), pair.getRight())) {
+					event.setCancelled(true);
+				}
 				if (!event.isCancelled() && player.getGameMode() != GameMode.CREATIVE) {
 					if (player.getInventory().getItemInMainHand().equals(event.getItemInHand())) {
 						player.getInventory().setItemInMainHand(InventoryUtils.decrement(event.getItemInHand(), 1));

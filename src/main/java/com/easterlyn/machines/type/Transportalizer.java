@@ -30,7 +30,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
@@ -59,13 +58,12 @@ public class Transportalizer extends Machine {
 	private final ItemStack drop;
 	private final Map<UUID, TransportalizationRequest> requests;
 
-	@SuppressWarnings("deprecation")
 	public Transportalizer(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Transportalizer");
 		this.holograms = plugin.getModule(Holograms.class);
 		this.protections = plugin.getModule(Protections.class);
 		Shape shape = getShape();
-		shape.setVectorData(new Vector(0, 0, 0), Material.HOPPER, Direction.SOUTH);
+		shape.setVectorData(new Vector(0, 0, 0), Material.HOPPER, Direction.NORTH);
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK);
 		shape.setVectorData(new Vector(-1, 0, 0), m);
 		shape.setVectorData(new Vector(1, 0, 0), m);
@@ -78,14 +76,14 @@ public class Transportalizer extends Machine {
 // TODO temp fix		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
 		shape.setVectorData(new Vector(0, 0, 1), Material.QUARTZ_SLAB, Direction.UP);
 		shape.setVectorData(new Vector(0, 1, 1), Material.WHITE_STAINED_GLASS);
-		m = shape.new MaterialDataValue(Material.STONE_BUTTON, Direction.NORTH);
+		m = shape.new MaterialDataValue(Material.STONE_BUTTON, Direction.SOUTH);
 		shape.setVectorData(new Vector(-1, 2, 0), m);
 		shape.setVectorData(new Vector(1, 2, 0), m);
 		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH);
 		shape.setVectorData(new Vector(-1, 0, -1), m);
 		shape.setVectorData(new Vector(0, 0, -1), m);
 		shape.setVectorData(new Vector(1, 0, -1), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_PILLAR, Direction.DOWN);
+		m = shape.new MaterialDataValue(Material.QUARTZ_PILLAR, Direction.UP);
 		shape.setVectorData(new Vector(-1, 1, 1), m);
 		shape.setVectorData(new Vector(1, 1, 1), m);
 		shape.setVectorData(new Vector(-1, 1, 0), Material.RED_CARPET);
@@ -119,9 +117,9 @@ public class Transportalizer extends Machine {
 	}
 
 	@Override
-	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
-		super.assemble(event, storage);
+	public boolean assemble(Player player, ConfigurationSection storage) {
 		setFuel(storage, getFuel(storage));
+		return super.assemble(player, storage);
 	}
 
 	@Override

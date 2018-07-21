@@ -2,6 +2,7 @@ package com.easterlyn.machines.type;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
+import com.easterlyn.events.Events;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
@@ -12,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -20,7 +22,6 @@ import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -165,23 +166,25 @@ public abstract class Machine {
 	/**
 	 * Sets up the Machine Block configuration using a BlockPlaceEvent.
 	 *
-	 * @param event the BlockPlaceEvent
+	 * @param player the Player assembling the Machine
 	 * @param storage the ConfigurationSection of data specific to the given Machine
+	 *
+	 * @return false if assembly failed due to space requirements
 	 */
-	public void assemble(BlockPlaceEvent event, ConfigurationSection storage) {
+	public boolean assemble(Player player, ConfigurationSection storage) {
 		Location key = getKey(storage);
 		Direction direction = getDirection(storage);
 		for (Location location : shape.getBuildLocations(key, direction).keySet()) {
 			if (!location.equals(key) && (!location.getBlock().isEmpty()
 					|| getMachines().isExploded(location.getBlock()))
 					|| location.getBlockY() > 255) {
-				event.setCancelled(true);
-				event.getPlayer().sendMessage(Language.getColor("bad") + "There isn't enough space to build this Machine here.");
+				player.sendMessage(Language.getColor("bad") + "There isn't enough space to build this Machine here.");
 				this.assemblyFailed(storage);
-				return;
+				return false;
 			}
 		}
 		this.assemble(key, direction, storage);
+		return true;
 	}
 
 	/**
@@ -276,8 +279,9 @@ public abstract class Machine {
 	public void remove(ConfigurationSection storage) {
 		disable(storage);
 		Location key = getKey(storage);
-		for (Location l : getMachines().getMachineBlocks(key)) {
-			l.getBlock().setType(Material.AIR);
+		for (Location l : this.getMachines().getMachineBlocks(key)) {
+			l.getBlock().setType(Material.AIR, false);
+			plugin.getModule(Events.class).getBlockUpdateManager().queueBlock(l.getBlock());
 		}
 		key.getBlock().setType(Material.AIR);
 		getMachines().deleteMachine(key);

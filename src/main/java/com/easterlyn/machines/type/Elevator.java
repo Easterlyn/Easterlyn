@@ -51,14 +51,14 @@ public class Elevator extends Machine {
 		getShape().setVectorData(new Vector(0, 1, 0), Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
 	}
 
-	public int getCurrentBoost(ConfigurationSection storage) {
-		return storage.getInt("duration");
+	private int getCurrentBoost(ConfigurationSection storage) {
+		return storage.getInt("duration", 1);
 	}
 
 	public int adjustBlockBoost(ConfigurationSection storage, int difference) {
 		int boost = getCurrentBoost(storage) + difference;
-		if (boost < 0) {
-			return 0;
+		if (boost < 1) {
+			return 1;
 		}
 		if (boost > 50) {
 			boost = 50;

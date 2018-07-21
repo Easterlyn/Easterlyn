@@ -130,7 +130,7 @@ public class Easterlyn extends JavaPlugin {
 
 		final HashMap<String, Command> cmdMapKnownCommands;
 		try {
-			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
+			Field field = SimpleCommandMap.class.getDeclaredField("knownCommands");
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")
 			HashMap<String, Command> map = (HashMap<String, Command>) field.get(cmdMap);
@@ -236,21 +236,22 @@ public class Easterlyn extends JavaPlugin {
 	 */
 	@SuppressWarnings("deprecation")
 	private void createRecipes() {
-		NamespacedKey key = new NamespacedKey(this, "Easterlyn");
 
 		// BoonConomy: 1 emerald -> 9 lapis block
-		ShapelessRecipe toLapis = new ShapelessRecipe(key, new ItemStack(Material.LAPIS_BLOCK, 9));
+		ShapelessRecipe toLapis = new ShapelessRecipe(new NamespacedKey(this, "currencyHighToLow"),
+				new ItemStack(Material.LAPIS_BLOCK, 9));
 		toLapis.addIngredient(Material.EMERALD);
 		getServer().addRecipe(toLapis);
 
 		// BoonConomy: 9 lapis block -> 1 emerald
-		ShapedRecipe shaped = new ShapedRecipe(key, new ItemStack(Material.EMERALD));
+		ShapedRecipe shaped = new ShapedRecipe(new NamespacedKey(this, "currencyLowToHigh"),
+				new ItemStack(Material.EMERALD));
 		shaped.shape("XXX", "XXX", "XXX");
 		shaped.setIngredient('X', Material.LAPIS_BLOCK);
 		getServer().addRecipe(shaped);
 
 		// General: 8 gravel, 1 bucket water -> 4 clay
-		shaped = new ShapedRecipe(key, new ItemStack(Material.CLAY, 4));
+		shaped = new ShapedRecipe(new NamespacedKey(this, "wetGravel"), new ItemStack(Material.CLAY, 4));
 		shaped.shape("XXX", "XYX", "XXX").setIngredient('X', Material.GRAVEL).setIngredient('Y', Material.WATER_BUCKET);
 		getServer().addRecipe(shaped);
 
@@ -258,27 +259,36 @@ public class Easterlyn extends JavaPlugin {
 		// Deprecated constructor required to ignore item durability
 		FurnaceRecipe furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.DIAMOND_BOOTS, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.DIAMOND_CHESTPLATE, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.DIAMOND_HELMET, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.DIAMOND_HOE, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.DIAMOND_LEGGINGS, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.DIAMOND_PICKAXE, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.DIAMOND_SHOVEL, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.DIAMOND_SWORD, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
+		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
 		furnace.setInput(Material.SHEARS, Short.MAX_VALUE);
 		getServer().addRecipe(furnace);
 
 		// General: Rotten flesh cooks to rabbit leather (1/4 leather)
-		furnace = new FurnaceRecipe(key, new ItemStack(Material.RABBIT_HIDE), Material.ROTTEN_FLESH, 0, 200);
+		furnace = new FurnaceRecipe(new NamespacedKey(this, "smeltRottenFlesh"), new ItemStack(Material.RABBIT_HIDE), Material.ROTTEN_FLESH, 0, 200);
 		getServer().addRecipe(furnace);
 	}
 
@@ -296,7 +306,7 @@ public class Easterlyn extends JavaPlugin {
 
 	private void unregisterAllCommands() {
 		try {
-			Field field = cmdMap.getClass().getDeclaredField("knownCommands");
+			Field field = SimpleCommandMap.class.getDeclaredField("knownCommands");
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")
 			HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);
@@ -327,7 +337,7 @@ public class Easterlyn extends JavaPlugin {
 	 * Gets a Set of the names of all registered commands.
 	 */
 	public List<String> getAllCommandAliases() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		Field field = cmdMap.getClass().getDeclaredField("knownCommands");
+		Field field = SimpleCommandMap.class.getDeclaredField("knownCommands");
 		field.setAccessible(true);
 		@SuppressWarnings("unchecked")
 		HashMap<String, Command> cmdMapKnownCommands = (HashMap<String, Command>) field.get(cmdMap);

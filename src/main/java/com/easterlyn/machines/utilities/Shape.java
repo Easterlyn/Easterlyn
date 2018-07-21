@@ -13,6 +13,7 @@ import org.bukkit.block.data.Rotatable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 /**
@@ -44,17 +45,17 @@ public class Shape {
 		}
 
 		public void build(Block block) {
-			block.setType(this.material);
+			block.setType(this.material, false);
 			if (this.direction == null) {
 				return;
 			}
 
 			BlockData data = block.getBlockData();
+			boolean dirty = false;
 
 			if (data instanceof Bisected) {
 				((Bisected) data).setHalf(this.direction == Direction.UP ? Bisected.Half.TOP : Bisected.Half.BOTTOM);
-				block.setBlockData(data, false);
-				return;
+				dirty = true;
 			}
 
 			if (data instanceof Directional) {
@@ -66,8 +67,7 @@ public class Shape {
 					faceDirection = directional.getFaces().iterator().next();
 				}
 				directional.setFacing(faceDirection);
-				block.setBlockData(data, false);
-				return;
+				dirty = true;
 			}
 
 			if (data instanceof Orientable) {
@@ -79,30 +79,32 @@ public class Shape {
 					axis = orientable.getAxes().iterator().next();
 				}
 				orientable.setAxis(axis);
-				block.setBlockData(data, false);
-				return;
+				dirty = true;
 			}
 
 			if (data instanceof Rotatable) {
 				((Rotatable) data).setRotation(this.direction.toBlockFace());
-				block.setBlockData(data, false);
-				return;
+				dirty = true;
 			}
 
 			// TODO: rework to support multiple settings (? extends BlockData type, T... value)
+			// I.E. Stairs: Directional and Bisected
+			if (dirty) {
+				block.setBlockData(data, false);
+			}
 
 		}
 
 	}
 
 	/** All relative Locations and Materials of the Machine. */
-	private final HashMap<Vector, MaterialDataValue> vectors;
+	private final LinkedHashMap<Vector, MaterialDataValue> vectors;
 
 	/**
 	 * Constructor of Shape. Creates a blank Shape.
 	 */
 	public Shape() {
-		this.vectors = new HashMap<>();
+		this.vectors = new LinkedHashMap<>();
 	}
 
 	/**
