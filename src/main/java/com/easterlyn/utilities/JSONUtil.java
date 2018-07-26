@@ -146,7 +146,7 @@ public class JSONUtil {
 			components.add(new TextComponent(""));
 		}
 
-		return components.toArray(new TextComponent[components.size()]);
+		return components.toArray(new TextComponent[0]);
 	}
 
 	public static TextComponent getItemComponent(ItemStack item) {
