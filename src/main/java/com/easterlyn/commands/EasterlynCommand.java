@@ -1,18 +1,13 @@
 package com.easterlyn.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
@@ -21,11 +16,13 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Base to be extended by all commands registered by Easterlyn.
- * 
+ *
  * @author Jikoo
  */
 public abstract class EasterlynCommand extends Command implements PluginIdentifiableCommand {
@@ -41,7 +38,7 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 		this.setDescription(lang.getValue("command." + name + ".description", "A Easterlyn command."));
 		this.setUsage(lang.getValue("command." + name + ".usage", "/" + name));
 		this.setPermission("easterlyn.command." + name);
-		this.setPermissionLevel(UserRank.DEFAULT);
+		this.setPermissionLevel(UserRank.MEMBER);
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");
 	}
 

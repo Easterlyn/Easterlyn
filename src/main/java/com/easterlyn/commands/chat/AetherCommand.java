@@ -1,8 +1,5 @@
 package com.easterlyn.commands.chat;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.channel.Channel;
@@ -14,21 +11,21 @@ import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.WrappedSenderPlayer;
-
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * EasterlynCommand for /aether, the command executed to make IRC chat mimic normal channels.
- * 
+ *
  * @author Jikoo
  */
 public class AetherCommand extends EasterlynAsynchronousCommand {

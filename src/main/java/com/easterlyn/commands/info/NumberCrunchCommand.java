@@ -1,17 +1,16 @@
 package com.easterlyn.commands.info;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.UserClass;
 import com.easterlyn.users.UserRank;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Get data about player classpect percentages!
@@ -22,7 +21,7 @@ public class NumberCrunchCommand extends EasterlynAsynchronousCommand {
 
 	public NumberCrunchCommand(Easterlyn plugin) {
 		super(plugin, "numbercrunch");
-		setPermissionLevel(UserRank.HEAD_ADMIN);
+		setPermissionLevel(UserRank.DANGER_DANGER_HIGH_VOLTAGE);
 		setPermissionMessage("Number crunching is very server-intensive. Ask an admin!");
 	}
 

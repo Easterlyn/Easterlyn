@@ -67,7 +67,7 @@ public class Transportalizer extends Machine {
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK);
 		shape.setVectorData(new Vector(-1, 0, 0), m);
 		shape.setVectorData(new Vector(1, 0, 0), m);
-		m = shape.new MaterialDataValue(Material.CHISELED_QUARTZ_BLOCK); // TODO magic value, add to new MaterialDataValue conversions
+		m = shape.new MaterialDataValue(Material.CHISELED_QUARTZ_BLOCK);
 		shape.setVectorData(new Vector(-1, 0, 1), m);
 		shape.setVectorData(new Vector(1, 0, 1), m);
 		shape.setVectorData(new Vector(-1, 2, 1), m);

@@ -13,14 +13,11 @@ import net.md_5.bungee.api.ChatColor;
  */
 public enum UserRank {
 
-	DEFAULT("default", "Player", PermissionDefault.TRUE),
-	MEMBER("member"),
-	CITIZEN("citizen"),
-	VETERAN("veteran"),
+	MEMBER("member", PermissionDefault.TRUE),
 	STAFF("staff"),
 	MOD("mod"),
 	ADMIN("admin"),
-	HEAD_ADMIN("head_admin","Head Admin"),
+	HEAD_ADMIN("head_admin",ADMIN.getFriendlyName()),
 	DANGER_DANGER_HIGH_VOLTAGE("ask.adam.before.touching", HEAD_ADMIN.getFriendlyName(), PermissionDefault.FALSE);
 
 	private final String internalName, friendlyName;

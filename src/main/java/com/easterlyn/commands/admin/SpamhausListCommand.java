@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 
 /**
  * EasterlynAsynchronousCommand for manipulating the whitelist of IPs that are not checked with Spamhaus.
- * 
+ *
  * @author Jikoo
  */
 public class SpamhausListCommand extends EasterlynAsynchronousCommand {
@@ -20,7 +20,7 @@ public class SpamhausListCommand extends EasterlynAsynchronousCommand {
 	public SpamhausListCommand(Easterlyn plugin) {
 		super(plugin, "spamhauslist");
 		this.setAliases("spamlist", "sl");
-		this.setPermissionLevel(UserRank.HEAD_ADMIN);
+		this.setPermissionLevel(UserRank.ADMIN);
 		this.events = plugin.getModule(Events.class);
 	}
 

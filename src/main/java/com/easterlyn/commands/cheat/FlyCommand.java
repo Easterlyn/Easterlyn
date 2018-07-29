@@ -1,23 +1,21 @@
 package com.easterlyn.commands.cheat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PlayerUtils;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * EasterlynCommand for toggling or setting flight status.
- * 
+ *
  * @author Jikoo
  */
 public class FlyCommand extends EasterlynCommand {
@@ -28,7 +26,7 @@ public class FlyCommand extends EasterlynCommand {
 		this.setDescription("Toggle flight for yourself or another player.");
 		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/fly [player] [true|false]");
-		this.addExtraPermission("other", UserRank.HEAD_ADMIN);
+		this.addExtraPermission("other", UserRank.ADMIN);
 	}
 
 	@Override

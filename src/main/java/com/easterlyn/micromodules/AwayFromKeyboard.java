@@ -1,5 +1,16 @@
 package com.easterlyn.micromodules;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.chat.Language;
+import com.easterlyn.module.Module;
+import com.easterlyn.users.UserRank;
+import com.easterlyn.users.Users;
+import com.easterlyn.utilities.PermissionUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,21 +18,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.Language;
-import com.easterlyn.module.Module;
-import com.easterlyn.users.UserRank;
-import com.easterlyn.users.Users;
-import com.easterlyn.utilities.PermissionUtils;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 /**
  * Module for managing players who are inactive.
- * 
+ *
  * @author Jikoo
  */
 public class AwayFromKeyboard extends Module {
@@ -37,7 +36,7 @@ public class AwayFromKeyboard extends Module {
 		this.lastLocations = new HashMap<>();
 		this.afkUUIDs = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 
-		PermissionUtils.addParent("easterlyn.afk.auto", UserRank.DEFAULT.getPermission());
+		PermissionUtils.addParent("easterlyn.afk.auto", UserRank.MEMBER.getPermission());
 	}
 
 	@Override
@@ -101,9 +100,9 @@ public class AwayFromKeyboard extends Module {
 
 	/**
 	 * If a Player is not AFK, extend their time before becoming AFK.
-	 * 
+	 *
 	 * @param player the Player
-	 * 
+	 *
 	 * @return true if time has been extended
 	 */
 	public boolean extendActivity(Player player) {
@@ -116,7 +115,7 @@ public class AwayFromKeyboard extends Module {
 
 	/**
 	 * Mark a Player as not AFK or extend their time before becoming AFK.
-	 * 
+	 *
 	 * @param player the Player
 	 */
 	public void setActive(Player player) {
@@ -131,9 +130,9 @@ public class AwayFromKeyboard extends Module {
 
 	/**
 	 * Gets whether or not a Player is AFK.
-	 * 
+	 *
 	 * @param player the Player
-	 * 
+	 *
 	 * @return true if the player is not AFK.
 	 */
 	public boolean isActive(Player player) {
@@ -142,7 +141,7 @@ public class AwayFromKeyboard extends Module {
 
 	/**
 	 * Mark a Player as AFK.
-	 * 
+	 *
 	 * @param player the Player
 	 */
 	public void setInactive(Player player) {
@@ -159,7 +158,7 @@ public class AwayFromKeyboard extends Module {
 
 	/**
 	 * Clear a Player's AFK status and tracking.
-	 * 
+	 *
 	 * @param player the Player
 	 */
 	public void clearActivity(Player player) {

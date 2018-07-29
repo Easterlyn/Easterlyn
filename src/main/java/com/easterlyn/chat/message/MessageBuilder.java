@@ -340,10 +340,10 @@ public class MessageBuilder {
 
 			// Default to... default
 			if (globalRank == null) {
-				globalRank = UserRank.DEFAULT.getColor();
+				globalRank = UserRank.MEMBER.getColor();
 			}
 			if (rankName == null) {
-				rankName = UserRank.DEFAULT.getFriendlyName();
+				rankName = UserRank.MEMBER.getFriendlyName();
 			}
 
 			if (channel instanceof NickChannel && ((NickChannel) channel).hasNick(sender)) {
@@ -425,7 +425,7 @@ public class MessageBuilder {
 			nameHover = new TextComponent[] { new TextComponent(nameHover) };
 		}
 
-		TextComponent nameComponent = new TextComponent(components.toArray(new BaseComponent[components.size()]));
+		TextComponent nameComponent = new TextComponent(components.toArray(new BaseComponent[0]));
 		if (nameClick == null && player != null) {
 			nameClick = "/m " + player.getName() + ' ';
 		}

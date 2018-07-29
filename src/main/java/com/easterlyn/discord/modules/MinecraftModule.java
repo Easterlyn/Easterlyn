@@ -46,7 +46,7 @@ public class MinecraftModule extends DiscordModule {
 		this.manager = discord.getPlugin().getModule(Chat.class).getChannelManager();
 
 		// Permission to bypass Discord message filtering (can truly be horrific)
-		PermissionUtils.addParent("easterlyn.discord.unfiltered", UserRank.HEAD_ADMIN.getPermission());
+		PermissionUtils.addParent("easterlyn.discord.unfiltered", UserRank.ADMIN.getPermission());
 
 		// future modify MessageBuilder to allow custom name clicks (OPEN_URL discord invite)
 		this.builder = new MessageBuilder(discord.getPlugin()).setNameClick("@# ")

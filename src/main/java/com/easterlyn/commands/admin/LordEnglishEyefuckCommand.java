@@ -12,7 +12,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * EasterlynCommand for making people want to gouge their eyes out.
- * 
+ *
  * @author Jikoo
  */
 public class LordEnglishEyefuckCommand extends EasterlynCommand {
