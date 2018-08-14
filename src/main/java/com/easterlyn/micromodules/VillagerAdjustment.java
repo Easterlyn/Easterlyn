@@ -28,7 +28,7 @@ public class VillagerAdjustment extends Module {
 		LAPIS(new ItemStack(Material.LAPIS_LAZULI), 1),
 		LAPIS_BLOCK(new ItemStack(Material.LAPIS_BLOCK), 9),
 		EMERALD(new ItemStack(Material.EMERALD), 81),
-		EMERALD_BLOCK(new ItemStack(Material.EMERALD), 729),
+		EMERALD_BLOCK(new ItemStack(Material.EMERALD_BLOCK), 729),
 		NOPE(new ItemStack(Material.BARRIER, 65), Integer.MAX_VALUE);
 
 		public static int getValue(final ItemStack currencyItem) {
@@ -103,19 +103,10 @@ public class VillagerAdjustment extends Module {
 			final int uses, final int maxUses, final boolean giveExp) {
 		if (CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
 				&& !CurrencyType.isCurrency(result)) {
-
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
-
-			double resultCost = CruxiteDowel.expCost(this.effects, result);
-
-			// Ensure price will not exceed max value
-			if (this.overpricedRate * Double.MAX_VALUE <= resultCost) {
-				return null;
-			}
-
 			// Purchase result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			resultCost = resultCost / this.overpricedRate;
+			double resultCost = CruxiteDowel.expCost(this.effects, result) / this.overpricedRate;
 			// Round down - second stack will cover remainder.
 			input1 = this.getSingleMoneyStack(resultCost, RoundingMode.DOWN);
 
@@ -152,17 +143,9 @@ public class VillagerAdjustment extends Module {
 		}
 		if (!CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR)
 				&& CurrencyType.isCurrency(result)) {
-
-			double inputCost = CruxiteDowel.expCost(this.effects, result);
-
-			// Ensure price will not exceed max value
-			if (Double.MAX_VALUE == inputCost) {
-				return null;
-			}
-
 			// Sell input - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			inputCost = inputCost / this.underpricedRate;
+			double inputCost = CruxiteDowel.expCost(this.effects, input1) / this.underpricedRate;
 			// Round down - reduce value of trade further.
 			result = this.getSingleMoneyStack(inputCost, RoundingMode.DOWN);
 
@@ -183,28 +166,11 @@ public class VillagerAdjustment extends Module {
 		}
 		if (!CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(input2)
 				&& !CurrencyType.isCurrency(result)) {
-
-			double resultCost = CruxiteDowel.expCost(this.effects, result);
-
-			// Ensure price will not exceed max value
-			if (this.overpricedRate * Double.MAX_VALUE <= resultCost) {
-				return null;
-			}
-
 			// Modification of input for result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			resultCost = resultCost / this.overpricedRate;
-
+			double resultCost = CruxiteDowel.expCost(this.effects, result) / this.overpricedRate;
 			// Use underpriced rate for input.
-			double inputCost = CruxiteDowel.expCost(this.effects, result);
-
-			// Ensure price will not exceed max value
-			if (Double.MAX_VALUE == inputCost) {
-				return null;
-			}
-
-			inputCost = inputCost / this.underpricedRate;
-
+			double inputCost = CruxiteDowel.expCost(this.effects, input1) / this.underpricedRate;
 			double cost = Math.abs(resultCost - inputCost);
 			// Round up money.
 			ItemStack money = this.getSingleMoneyStack(cost, RoundingMode.UP);
