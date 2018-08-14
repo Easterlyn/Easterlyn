@@ -6,6 +6,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.InventoryUtils;
+import com.easterlyn.utilities.TextUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
@@ -89,6 +90,9 @@ public class VillagerAdjustment extends Module {
 							recipe.getIngredients(), recipe.getResult()));
 				}
 			} catch (Exception e) {
+				this.getPlugin().getModule(Discord.class).postReport(String.format("Error adjusting villager trade:\n%s -> %s",
+						recipe.getIngredients(), recipe.getResult()));
+				this.getPlugin().getModule(Discord.class).postReport(TextUtils.getTrace(e, 5));
 				e.printStackTrace();
 			}
 		}
@@ -105,7 +109,7 @@ public class VillagerAdjustment extends Module {
 			double resultCost = CruxiteDowel.expCost(this.effects, result);
 
 			// Ensure price will not exceed max value
-			if (this.overpricedRate * Double.MAX_VALUE >= resultCost) {
+			if (this.overpricedRate * Double.MAX_VALUE <= resultCost) {
 				return null;
 			}
 
@@ -152,7 +156,7 @@ public class VillagerAdjustment extends Module {
 			double inputCost = CruxiteDowel.expCost(this.effects, result);
 
 			// Ensure price will not exceed max value
-			if (this.overpricedRate * Double.MAX_VALUE >= inputCost) {
+			if (Double.MAX_VALUE == inputCost) {
 				return null;
 			}
 
@@ -183,7 +187,7 @@ public class VillagerAdjustment extends Module {
 			double resultCost = CruxiteDowel.expCost(this.effects, result);
 
 			// Ensure price will not exceed max value
-			if (this.overpricedRate * Double.MAX_VALUE >= resultCost) {
+			if (this.overpricedRate * Double.MAX_VALUE <= resultCost) {
 				return null;
 			}
 
@@ -195,7 +199,7 @@ public class VillagerAdjustment extends Module {
 			double inputCost = CruxiteDowel.expCost(this.effects, result);
 
 			// Ensure price will not exceed max value
-			if (this.underpricedRate * Double.MAX_VALUE >= inputCost) {
+			if (Double.MAX_VALUE == inputCost) {
 				return null;
 			}
 
