@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Module for adjusting villager trades using the item to EXP system.
  *
  * @author Jikoo
  */
@@ -80,9 +80,16 @@ public class VillagerAdjustment extends Module {
 	public void adjustMerchant(final Merchant merchant) {
 		List<MerchantRecipe> newRecipes = new ArrayList<>();
 		for (MerchantRecipe recipe : merchant.getRecipes()) {
-			MerchantRecipe newRecipe = this.adjustRecipe(recipe);
-			if (newRecipe != null) {
-				newRecipes.add(this.adjustRecipe(recipe));
+			try {
+				MerchantRecipe newRecipe = this.adjustRecipe(recipe);
+				if (newRecipe != null) {
+					newRecipes.add(this.adjustRecipe(recipe));
+				} else {
+					this.getPlugin().getModule(Discord.class).postReport(String.format("Unable to adjust villager trade:\n%s -> %s",
+							recipe.getIngredients(), recipe.getResult()));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		merchant.setRecipes(newRecipes);
@@ -92,10 +99,19 @@ public class VillagerAdjustment extends Module {
 			final int uses, final int maxUses, final boolean giveExp) {
 		if (CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
 				&& !CurrencyType.isCurrency(result)) {
+
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
+
+			double resultCost = CruxiteDowel.expCost(this.effects, result);
+
+			// Ensure price will not exceed max value
+			if (this.overpricedRate * Double.MAX_VALUE >= resultCost) {
+				return null;
+			}
+
 			// Purchase result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double resultCost = CruxiteDowel.expCost(this.effects, result) / this.overpricedRate;
+			resultCost = resultCost / this.overpricedRate;
 			// Round down - second stack will cover remainder.
 			input1 = this.getSingleMoneyStack(resultCost, RoundingMode.DOWN);
 
@@ -132,9 +148,17 @@ public class VillagerAdjustment extends Module {
 		}
 		if (!CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR)
 				&& CurrencyType.isCurrency(result)) {
+
+			double inputCost = CruxiteDowel.expCost(this.effects, result);
+
+			// Ensure price will not exceed max value
+			if (this.overpricedRate * Double.MAX_VALUE >= inputCost) {
+				return null;
+			}
+
 			// Sell input - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double inputCost = CruxiteDowel.expCost(this.effects, input1) / this.underpricedRate;
+			inputCost = inputCost / this.underpricedRate;
 			// Round down - reduce value of trade further.
 			result = this.getSingleMoneyStack(inputCost, RoundingMode.DOWN);
 
@@ -155,11 +179,28 @@ public class VillagerAdjustment extends Module {
 		}
 		if (!CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(input2)
 				&& !CurrencyType.isCurrency(result)) {
+
+			double resultCost = CruxiteDowel.expCost(this.effects, result);
+
+			// Ensure price will not exceed max value
+			if (this.overpricedRate * Double.MAX_VALUE >= resultCost) {
+				return null;
+			}
+
 			// Modification of input for result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double resultCost = CruxiteDowel.expCost(this.effects, result) / this.overpricedRate;
+			resultCost = resultCost / this.overpricedRate;
+
 			// Use underpriced rate for input.
-			double inputCost = CruxiteDowel.expCost(this.effects, input1) / this.underpricedRate;
+			double inputCost = CruxiteDowel.expCost(this.effects, result);
+
+			// Ensure price will not exceed max value
+			if (this.underpricedRate * Double.MAX_VALUE >= inputCost) {
+				return null;
+			}
+
+			inputCost = inputCost / this.underpricedRate;
+
 			double cost = Math.abs(resultCost - inputCost);
 			// Round up money.
 			ItemStack money = this.getSingleMoneyStack(cost, RoundingMode.UP);
@@ -207,6 +248,11 @@ public class VillagerAdjustment extends Module {
 	}
 
 	private ItemStack getSingleMoneyStack(final double worth, final RoundingMode mode) {
+
+		if (worth == Double.MAX_VALUE) {
+			return CurrencyType.NOPE.getCurrencyItem().clone();
+		}
+
 		CurrencyType[] currencies = CurrencyType.values();
 		CurrencyType currency = currencies[0];
 
