@@ -1,16 +1,15 @@
 package com.easterlyn.events.packets;
 
-
-import java.util.Arrays;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.PermissionUtils;
-
+import com.mojang.brigadier.suggestion.Suggestions;
 import org.bukkit.command.Command;
+
+import java.util.stream.Collectors;
 
 /**
  * @author Jikoo
@@ -36,8 +35,10 @@ public class SyncPacketAdapter extends PacketAdapter {
 			if (event.getPlayer().hasPermission("easterlyn.commands.unfiltered")) {
 				return;
 			}
-			event.getPacket().getStringArrays().write(0,
-					Arrays.stream(event.getPacket().getStringArrays().read(0)).filter(completion -> {
+			Suggestions suggestions = event.getPacket().getSpecificModifier(Suggestions.class).read(0);
+			event.getPacket().getSpecificModifier(Suggestions.class).write(0,
+					new Suggestions(suggestions.getRange(), suggestions.getList().stream().filter(suggestion -> {
+						String completion = suggestion.getText();
 						if (completion.length() < 1 || completion.indexOf('/') != 0 || completion.indexOf(':') < 0) {
 							return true;
 						}
@@ -46,7 +47,7 @@ public class SyncPacketAdapter extends PacketAdapter {
 						Command command = ((Easterlyn) this.getPlugin()).getCommandMap().getCommand(completion.substring(1));
 						return command == null || command.getPermission() == null || command.getPermission().isEmpty()
 								|| event.getPlayer().hasPermission(command.getPermission());
-					}).toArray(String[]::new));
+					}).collect(Collectors.toList())));
 		}
 	}
 
