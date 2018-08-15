@@ -39,10 +39,6 @@ public class CruxiteDowel {
 		}
 		double cost = getMana().getOrDefault(toCreate.getType(), Double.MAX_VALUE);
 		if (cost == Double.MAX_VALUE) {
-			// Fall through to any durability.
-			cost = getMana().getOrDefault(toCreate.getType(), Double.MAX_VALUE);
-		}
-		if (cost == Double.MAX_VALUE) {
 			// Item cannot be made with mana
 			return Double.MAX_VALUE;
 		}

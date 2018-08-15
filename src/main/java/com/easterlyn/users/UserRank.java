@@ -17,7 +17,7 @@ public enum UserRank {
 	STAFF("staff"),
 	MOD("mod"),
 	ADMIN("admin"),
-	HEAD_ADMIN("head_admin",ADMIN.getFriendlyName()),
+	HEAD_ADMIN("head_admin", ADMIN.getFriendlyName()),
 	DANGER_DANGER_HIGH_VOLTAGE("ask.adam.before.touching", HEAD_ADMIN.getFriendlyName(), PermissionDefault.FALSE);
 
 	private final String internalName, friendlyName;

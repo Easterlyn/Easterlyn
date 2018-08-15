@@ -4,11 +4,13 @@ import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.RegionUtils;
+import org.bukkit.Axis;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TravelAgent;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.util.Vector;
 
 /**
@@ -163,13 +165,17 @@ public class NetherPortalAgent implements TravelAgent {
 		return null;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean createPortal(Location location) {
 		if (from == null) {
 			return false;
 		}
-		Direction direction = from.getData() % 2 == 0 ? Direction.EAST : Direction.NORTH;
+		Direction direction;
+		if (from instanceof Orientable) {
+			direction = ((Orientable) from).getAxis() == Axis.X ? Direction.NORTH : Direction.EAST;
+		} else {
+			direction = Direction.NORTH;
+		}
 		shape.build(location, direction);
 		return true;
 	}

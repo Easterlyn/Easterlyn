@@ -155,7 +155,7 @@ public class Shape {
 
 	public void build(Location location, Direction direction) {
 		for (Entry<Location, MaterialDataValue> entry : this.getBuildLocations(location, direction).entrySet()) {
-			entry.getValue().build(location.getBlock());
+			entry.getValue().build(entry.getKey().getBlock());
 		}
 	}
 
