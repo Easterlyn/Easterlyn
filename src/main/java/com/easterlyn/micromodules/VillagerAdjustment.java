@@ -81,19 +81,9 @@ public class VillagerAdjustment extends Module {
 	public void adjustMerchant(final Merchant merchant) {
 		List<MerchantRecipe> newRecipes = new ArrayList<>();
 		for (MerchantRecipe recipe : merchant.getRecipes()) {
-			try {
-				MerchantRecipe newRecipe = this.adjustRecipe(recipe);
-				if (newRecipe != null) {
-					newRecipes.add(this.adjustRecipe(recipe));
-				} else {
-					this.getPlugin().getModule(Discord.class).postReport(String.format("Unable to adjust villager trade:\n%s -> %s",
-							recipe.getIngredients(), recipe.getResult()));
-				}
-			} catch (Exception e) {
-				this.getPlugin().getModule(Discord.class).postReport(String.format("Error adjusting villager trade:\n%s -> %s",
-						recipe.getIngredients(), recipe.getResult()));
-				this.getPlugin().getModule(Discord.class).postReport(TextUtils.getTrace(e, 5));
-				e.printStackTrace();
+			MerchantRecipe newRecipe = this.adjustRecipe(recipe);
+			if (newRecipe != null) {
+				newRecipes.add(this.adjustRecipe(recipe));
 			}
 		}
 		merchant.setRecipes(newRecipes);
@@ -194,8 +184,19 @@ public class VillagerAdjustment extends Module {
 		}
 		ItemStack input1 = recipe.getIngredients().get(0);
 		ItemStack input2 = recipe.getIngredients().size() > 1 ? recipe.getIngredients().get(1) : null;
-		MerchantRecipe adjusted = this.adjustRecipe(input1, input2, recipe.getResult(),
+
+		MerchantRecipe adjusted;
+
+		try {
+			adjusted = this.adjustRecipe(input1, input2, recipe.getResult(),
 				recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward());
+		} catch (Exception e) {
+			this.getPlugin().getModule(Discord.class).postReport(String.format("Error adjusting villager trade:\n%s -> %s",
+					recipe.getIngredients(), recipe.getResult()));
+			this.getPlugin().getModule(Discord.class).postReport(TextUtils.getTrace(e, 5));
+			e.printStackTrace();
+			return null;
+		}
 
 		if (adjusted == null && !(CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(recipe.getResult()))) {
 			if (input1 != null && input1.getType() == Material.WRITTEN_BOOK) {
