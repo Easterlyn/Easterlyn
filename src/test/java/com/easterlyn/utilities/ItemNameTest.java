@@ -41,7 +41,7 @@ public class ItemNameTest {
 
 		JsonObject element;
 		try {
-			element = new JsonParser().parse(new BufferedReader(new FileReader(new File("path/to/en_us.json")))).getAsJsonObject();
+			element = new JsonParser().parse(new BufferedReader(new FileReader(new File("src/test/resources/en_us.json")))).getAsJsonObject();
 		} catch (FileNotFoundException e) {
 			element = null;
 			e.printStackTrace();
