@@ -1,27 +1,24 @@
 package com.easterlyn.commands.info;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Command for listing all players online in their respective groups.
- * 
+ *
  * @author Jikoo
  */
 public class ListCommand extends EasterlynCommand {
@@ -82,6 +79,11 @@ public class ListCommand extends EasterlynCommand {
 
 		for (int i = ranks.length - 1; i >= 0; --i) {
 			String groupName = ranks[i].getFriendlyName();
+
+			if (i > 0 && groupName.equals(ranks[i-1].getFriendlyName())) {
+				continue;
+			}
+
 			List<String> group = groups.get(groupName);
 			if (group == null || group.isEmpty()) {
 				continue;
