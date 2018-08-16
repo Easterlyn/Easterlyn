@@ -5,7 +5,13 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.JSONUtil;
 import net.md_5.bungee.api.ChatMessageType;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -20,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SleepVote extends Module {
 
-	private final HashMap<String, HashSet<String>> votes = new HashMap<>();
+	private final HashMap<String, Pair<BossBar, HashSet<String>>> votes = new HashMap<>();
 
 	private Language lang;
 
@@ -43,10 +49,12 @@ public class SleepVote extends Module {
 			return;
 		}
 		if (!votes.containsKey(world.getName())) {
-			votes.put(world.getName(), new HashSet<>());
+			votes.put(world.getName(), new ImmutablePair<>(
+					Bukkit.createBossBar("test", BarColor.BLUE, BarStyle.SEGMENTED_20),
+					new HashSet<>()));
 			resetVote(world);
 		}
-		if (votes.get(world.getName()).add(p.getName())) {
+		if (votes.get(world.getName()).getRight().add(p.getName())) {
 			updateVotesLater(world, p.getDisplayName());
 		}
 	}
@@ -69,7 +77,7 @@ public class SleepVote extends Module {
 
 		boolean voted = false;
 		if (player != null) {
-			voted = votes.get(world.getName()).remove(player.getName());
+			voted = votes.get(world.getName()).getRight().remove(player.getName());
 		}
 
 		updateVotesLater(world, null);
@@ -104,24 +112,40 @@ public class SleepVote extends Module {
 			}
 		});
 
+		BossBar bar = votes.get(world.getName()).getLeft();
+
+		Bukkit.getOnlinePlayers().forEach(p ->  {
+			if (p.getWorld().equals(world)) {
+				bar.addPlayer(p);
+			} else {
+				bar.removePlayer(p);
+			}
+		});
+
 		if (player != null) {
 			sb.append(lang.getValue("sleep.player").replace("{PLAYER}", player)).append(' ');
 		}
 
-		int percent = worldSize.get() == 0 ? 100 : 100 * votes.get(world.getName()).size() / worldSize.get();
-		sb.append(lang.getValue("sleep.percent").replace("{PERCENT}", String.valueOf(percent)));
+		double percent = worldSize.get() == 0 ? 1 : votes.get(world.getName()).getRight().size() / (double) worldSize.get();
+		bar.setProgress(percent * 2);
+
+		sb.append(lang.getValue("sleep.percent").replace("{PERCENT}", String.valueOf(percent * 100)));
 		String title = null;
-		if (percent >= 50) {
+
+		if (percent >= 0.5) {
 			title = lang.getValue("sleep.success");
 			world.setTime(0);
 			world.setStorm(false);
 			world.setWeatherDuration(world.getWeatherDuration() > 12000 ? world.getWeatherDuration() : 12000);
 			getLogger().info(world.getName() + " set to morning!");
-			votes.remove(world.getName());
+			votes.remove(world.getName()).getLeft().removeAll();
+		} else if (percent <= 0) {
+			votes.remove(world.getName()).getLeft().removeAll();
 		} else if (player == null) {
 			// No spam on log in/out
 			return;
 		}
+
 
 		String msg = sb.toString();
 		for (Player p : world.getPlayers()) {

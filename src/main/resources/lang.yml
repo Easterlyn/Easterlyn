@@ -480,6 +480,7 @@ machines:
   noTouch: '{COLOR:bad}You decide against fussing with the internals of this machine.'
 
 sleep:
+  title: '{COLOR:neutral}Sleep Progress'
   interrupt: '{COLOR:bad}You''re no longer sleeping. You''ll have to use a bed again to count towards the total.'
   player: '{COLOR:player.neutral}{PLAYER}{COLOR:neutral} has gone to bed.'
   percent: '{COLOR:neutral}{PERCENT}% of players have slept.'
