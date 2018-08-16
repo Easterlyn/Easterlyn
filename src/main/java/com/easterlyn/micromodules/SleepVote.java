@@ -1,20 +1,21 @@
 package com.easterlyn.micromodules;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.module.Module;
-
+import com.easterlyn.utilities.JSONUtil;
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Utility to allow players to stop storms and end night.
- * 
+ *
  * @author Jikoo
  */
 public class SleepVote extends Module {
@@ -53,7 +54,7 @@ public class SleepVote extends Module {
 	/**
 	 * Updates the percentage of players who have slept when a player is logging out or changing
 	 * worlds.
-	 * 
+	 *
 	 * @param world the world to update
 	 * @return true if the count has changed
 	 */
@@ -109,8 +110,9 @@ public class SleepVote extends Module {
 
 		int percent = worldSize.get() == 0 ? 100 : 100 * votes.get(world.getName()).size() / worldSize.get();
 		sb.append(lang.getValue("sleep.percent").replace("{PERCENT}", String.valueOf(percent)));
+		String title = null;
 		if (percent >= 50) {
-			sb.append('\n').append(lang.getValue("sleep.success"));
+			title = lang.getValue("sleep.success");
 			world.setTime(0);
 			world.setStorm(false);
 			world.setWeatherDuration(world.getWeatherDuration() > 12000 ? world.getWeatherDuration() : 12000);
@@ -123,7 +125,10 @@ public class SleepVote extends Module {
 
 		String msg = sb.toString();
 		for (Player p : world.getPlayers()) {
-			p.sendMessage(msg);
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, JSONUtil.fromLegacyText(msg));
+			if (title != null) {
+				p.sendTitle("", title, 10, 40, 10);
+			}
 		}
 	}
 
