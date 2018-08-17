@@ -590,7 +590,7 @@ public class InventoryUtils {
 			return;
 		}
 		list.a(out);
-		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload(new MinecraftKey("MC|TrList"), out));
+		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload(new MinecraftKey("trader_list"), out));
 	}
 
 	public static String recipeToText(Recipe recipe) {
