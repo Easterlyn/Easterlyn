@@ -162,7 +162,10 @@ public class SleepVote extends Module {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				votes.remove(world.getName());
+				Pair<BossBar, HashSet<String>> pair = votes.remove(world.getName());
+				if (pair != null) {
+					pair.getLeft().removeAll();
+				}
 			}
 		}.runTaskLater(getPlugin(), 24001 - world.getTime());
 	}
