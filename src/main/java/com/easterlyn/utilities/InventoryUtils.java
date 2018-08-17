@@ -339,6 +339,10 @@ public class InventoryUtils {
 	}
 
 	public static boolean isUniqueItem(Easterlyn plugin, ItemStack toCheck) {
+		if (toCheck == null) {
+			return false;
+		}
+
 		if (Captcha.isCaptcha(toCheck)) {
 			return true;
 		}

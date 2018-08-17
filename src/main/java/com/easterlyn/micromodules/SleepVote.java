@@ -146,7 +146,6 @@ public class SleepVote extends Module {
 			return;
 		}
 
-
 		String msg = sb.toString();
 		for (Player p : world.getPlayers()) {
 			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, JSONUtil.fromLegacyText(msg));
