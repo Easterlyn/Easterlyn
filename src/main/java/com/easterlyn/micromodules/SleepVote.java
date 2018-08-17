@@ -50,7 +50,7 @@ public class SleepVote extends Module {
 		}
 		if (!votes.containsKey(world.getName())) {
 			votes.put(world.getName(), new ImmutablePair<>(
-					Bukkit.createBossBar("test", BarColor.BLUE, BarStyle.SEGMENTED_20),
+					Bukkit.createBossBar(lang.getValue("sleep.title"), BarColor.BLUE, BarStyle.SEGMENTED_20),
 					new HashSet<>()));
 			resetVote(world);
 		}
@@ -127,7 +127,7 @@ public class SleepVote extends Module {
 		}
 
 		double percent = worldSize.get() == 0 ? 1 : votes.get(world.getName()).getRight().size() / (double) worldSize.get();
-		bar.setProgress(percent * 2);
+		bar.setProgress(percent > .5 ? 1.0 : percent * 2);
 
 		sb.append(lang.getValue("sleep.percent").replace("{PERCENT}", String.valueOf(percent * 100)));
 		String title = null;
