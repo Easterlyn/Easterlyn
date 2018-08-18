@@ -184,7 +184,7 @@ public class CruxiteDowel {
 		return enchantCost;
 	}
 
-	static Map<Material, Double> getMana() {
+	public static Map<Material, Double> getMana() {
 		if (manaMappings == null) {
 			manaMappings = createBaseMana();
 			// Fill from recipes
@@ -299,12 +299,24 @@ public class CruxiteDowel {
 				case JUNGLE_LOG:
 				case OAK_LOG:
 				case SPRUCE_LOG:
+				case ACACIA_WOOD:
+				case BIRCH_WOOD:
+				case DARK_OAK_WOOD:
+				case JUNGLE_WOOD:
+				case OAK_WOOD:
+				case SPRUCE_WOOD:
 				case STRIPPED_ACACIA_LOG:
 				case STRIPPED_BIRCH_LOG:
 				case STRIPPED_DARK_OAK_LOG:
 				case STRIPPED_JUNGLE_LOG:
 				case STRIPPED_OAK_LOG:
 				case STRIPPED_SPRUCE_LOG:
+				case STRIPPED_ACACIA_WOOD:
+				case STRIPPED_BIRCH_WOOD:
+				case STRIPPED_DARK_OAK_WOOD:
+				case STRIPPED_JUNGLE_WOOD:
+				case STRIPPED_OAK_WOOD:
+				case STRIPPED_SPRUCE_WOOD:
 				case MUTTON:
 				case BEEF:
 				case REDSTONE:
