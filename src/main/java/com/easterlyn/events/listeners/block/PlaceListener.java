@@ -88,7 +88,7 @@ public class PlaceListener extends EasterlynListener {
 					event.setCancelled(true);
 					return;
 				}
-				if (pair.getLeft().assemble(event.getPlayer(), pair.getRight())) {
+				if (!pair.getLeft().assemble(event.getPlayer(), pair.getRight())) {
 					event.setCancelled(true);
 				}
 				if (!event.isCancelled() && player.getGameMode() != GameMode.CREATIVE) {
