@@ -31,16 +31,10 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.FurnaceRecipe;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -126,8 +120,6 @@ public class Easterlyn extends JavaPlugin {
 			}
 		}
 
-		createRecipes();
-
 		final HashMap<String, Command> cmdMapKnownCommands;
 		try {
 			Field field = SimpleCommandMap.class.getDeclaredField("knownCommands");
@@ -193,7 +185,7 @@ public class Easterlyn extends JavaPlugin {
 			return;
 		}
 		for (Class<? extends EasterlynCommand> command : commands) {
-			if (!areDependenciesPresent(command)) {
+			if (areDependenciesMissing(command)) {
 				getLogger().warning(command.getSimpleName() + " is missing dependencies, skipping.");
 				continue;
 			}
@@ -226,70 +218,6 @@ public class Easterlyn extends JavaPlugin {
 				getLogger().severe(TextUtils.getTrace(e));
 			}
 		}
-	}
-
-	/**
-	 * Creates generic crafting recipes allowed by Easterlyn.
-	 * <p>
-	 * Module-dependent recipes such as CaptchaCards should be registered in
-	 * {@link Module#onEnable()}.
-	 */
-	@SuppressWarnings("deprecation")
-	private void createRecipes() {
-
-		// BoonConomy: 1 emerald -> 9 lapis block
-		ShapelessRecipe toLapis = new ShapelessRecipe(new NamespacedKey(this, "currencyHighToLow"),
-				new ItemStack(Material.LAPIS_BLOCK, 9));
-		toLapis.addIngredient(Material.EMERALD);
-		getServer().addRecipe(toLapis);
-
-		// BoonConomy: 9 lapis block -> 1 emerald
-		ShapedRecipe shaped = new ShapedRecipe(new NamespacedKey(this, "currencyLowToHigh"),
-				new ItemStack(Material.EMERALD));
-		shaped.shape("XXX", "XXX", "XXX");
-		shaped.setIngredient('X', Material.LAPIS_BLOCK);
-		getServer().addRecipe(shaped);
-
-		// General: 8 gravel, 1 bucket water -> 4 clay
-		shaped = new ShapedRecipe(new NamespacedKey(this, "wetGravel"), new ItemStack(Material.CLAY, 4));
-		shaped.shape("XXX", "XYX", "XXX").setIngredient('X', Material.GRAVEL).setIngredient('Y', Material.WATER_BUCKET);
-		getServer().addRecipe(shaped);
-
-		// Smelting: Revert armor to crafting material, 1 coal if durability% too low
-		// Deprecated constructor required to ignore item durability
-		FurnaceRecipe furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_BOOTS, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_CHESTPLATE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_HELMET, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_HOE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_LEGGINGS, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_PICKAXE, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_SHOVEL, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_SWORD, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.SHEARS, Short.MAX_VALUE);
-		getServer().addRecipe(furnace);
-
-		// General: Rotten flesh cooks to rabbit leather (1/4 leather)
-		furnace = new FurnaceRecipe(new NamespacedKey(this, "smeltRottenFlesh"), new ItemStack(Material.RABBIT_HIDE), Material.ROTTEN_FLESH, 0, 200);
-		getServer().addRecipe(furnace);
 	}
 
 	@Override
@@ -357,23 +285,23 @@ public class Easterlyn extends JavaPlugin {
 		return new GameProfile(uuid, name);
 	}
 
-	public static <T> boolean areDependenciesPresent(Class<T> clazz) {
+	public static <T> boolean areDependenciesMissing(Class<T> clazz) {
 		if (clazz.isAnnotationPresent(Dependencies.class)) {
 			for (Dependency dependency : clazz.getAnnotation(Dependencies.class).value()) {
 				String pluginName = dependency.value();
 				if (!Bukkit.getPluginManager().isPluginEnabled(pluginName)) {
 					Logger.getLogger("Easterlyn").severe("Dependency " + pluginName + " is not enabled!");
-					return false;
+					return true;
 				}
 			}
 		} else if (clazz.isAnnotationPresent(Dependency.class)) {
 			String pluginName = clazz.getAnnotation(Dependency.class).value();
 			if (!Bukkit.getPluginManager().isPluginEnabled(pluginName)) {
 				Logger.getLogger("Easterlyn").severe("Dependency " + pluginName + " is not enabled!");
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 }

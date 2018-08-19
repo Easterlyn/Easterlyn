@@ -142,7 +142,7 @@ public class Discord extends Module {
 			if (Modifier.isAbstract(clazz.getModifiers())) {
 				continue;
 			}
-			if (!Easterlyn.areDependenciesPresent(clazz)) {
+			if (Easterlyn.areDependenciesMissing(clazz)) {
 				getLogger().warning(clazz.getSimpleName() + " is missing dependencies, skipping.");
 				continue;
 			}
@@ -184,7 +184,7 @@ public class Discord extends Module {
 			if (Modifier.isAbstract(clazz.getModifiers())) {
 				continue;
 			}
-			if (!Easterlyn.areDependenciesPresent(clazz)) {
+			if (Easterlyn.areDependenciesMissing(clazz)) {
 				getLogger().warning(clazz.getSimpleName() + " is missing dependencies, skipping.");
 				continue;
 			}
@@ -204,7 +204,7 @@ public class Discord extends Module {
 			if (Modifier.isAbstract(clazz.getModifiers())) {
 				continue;
 			}
-			if (!Easterlyn.areDependenciesPresent(clazz)) {
+			if (Easterlyn.areDependenciesMissing(clazz)) {
 				getLogger().warning(clazz.getSimpleName() + " is missing dependencies, skipping.");
 				continue;
 			}

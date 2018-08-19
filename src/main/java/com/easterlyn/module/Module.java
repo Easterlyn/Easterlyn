@@ -33,7 +33,7 @@ public abstract class Module {
 	public final Module enable() {
 		this.getLogger().info("Enabling module " + this.getName());
 
-		if (!Easterlyn.areDependenciesPresent(this.getClass())) {
+		if (Easterlyn.areDependenciesMissing(this.getClass())) {
 			return this;
 		}
 

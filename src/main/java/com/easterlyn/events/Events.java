@@ -81,7 +81,7 @@ public class Events extends Module {
 		Reflections reflections = new Reflections("com.easterlyn.events.listeners");
 		Set<Class<? extends EasterlynListener>> listeners = reflections.getSubTypesOf(EasterlynListener.class);
 		for (Class<? extends EasterlynListener> listener : listeners) {
-			if (!Easterlyn.areDependenciesPresent(listener)) {
+			if (Easterlyn.areDependenciesMissing(listener)) {
 				getLogger().info(listener.getSimpleName() + " dependencies not found.");
 				continue;
 			}
