@@ -5,6 +5,7 @@ import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
+import com.easterlyn.micromodules.VillagerAdjustment;
 import com.easterlyn.utilities.InventoryUtils;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -24,7 +25,6 @@ public class WorthCommand extends EasterlynCommand {
 	private final Captcha captcha;
 	private final Effects effects;
 	private final DecimalFormat format;
-	private final double overpricedRate, normalRate, underpricedRate;
 
 	public WorthCommand(Easterlyn plugin) {
 		super(plugin, "worth");
@@ -33,9 +33,6 @@ public class WorthCommand extends EasterlynCommand {
 		this.effects = plugin.getModule(Effects.class);
 		this.format = new DecimalFormat("#,###,###,###.###");
 		this.format.setRoundingMode(RoundingMode.CEILING);
-		this.overpricedRate = 25;
-		this.normalRate = 111.3;
-		this.underpricedRate = 450;
 	}
 
 	@Override
@@ -76,9 +73,9 @@ public class WorthCommand extends EasterlynCommand {
 			sender.sendMessage(this.getLang().getValue("command.worth.cost")
 					.replace("{ITEM}", itemName.toString())
 					.replace("{EXP}", this.format.format(exp))
-					.replace("{OVERPRICED}", this.format.format(exp / overpricedRate))
-					.replace("{GOOD_PRICE}", this.format.format(exp / normalRate))
-					.replace("{UNDERPRICED}", this.format.format(exp / underpricedRate)));
+					.replace("{OVERPRICED}", this.format.format(exp / VillagerAdjustment.OVERPRICED_RATE))
+					.replace("{GOOD_PRICE}", this.format.format(exp / VillagerAdjustment.NORMAL_RATE))
+					.replace("{UNDERPRICED}", this.format.format(exp / VillagerAdjustment.UNDERPRICED_RATE)));
 		}
 		return true;
 	}
