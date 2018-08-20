@@ -73,9 +73,9 @@ public class WorthCommand extends EasterlynCommand {
 			sender.sendMessage(this.getLang().getValue("command.worth.cost")
 					.replace("{ITEM}", itemName.toString())
 					.replace("{EXP}", this.format.format(exp))
-					.replace("{OVERPRICED}", this.format.format(exp / VillagerAdjustment.OVERPRICED_RATE))
-					.replace("{GOOD_PRICE}", this.format.format(exp / VillagerAdjustment.NORMAL_RATE))
-					.replace("{UNDERPRICED}", this.format.format(exp / VillagerAdjustment.UNDERPRICED_RATE)));
+					.replace("{OVERPRICED}", this.format.format(exp * VillagerAdjustment.OVERPRICED_RATE))
+					.replace("{GOOD_PRICE}", this.format.format(exp * VillagerAdjustment.NORMAL_RATE))
+					.replace("{UNDERPRICED}", this.format.format(exp * VillagerAdjustment.UNDERPRICED_RATE)));
 		}
 		return true;
 	}

@@ -66,9 +66,9 @@ public class VillagerAdjustment extends Module {
 		}
 	}
 
-	public static final double OVERPRICED_RATE = 0.3087;
-	public static final double NORMAL_RATE = 1.4551;
-	public static final double UNDERPRICED_RATE = 5.5573;
+	public static final double OVERPRICED_RATE = 2.18265;
+	public static final double NORMAL_RATE = 0.72755;
+	public static final double UNDERPRICED_RATE = 0.24252;
 
 	private Effects effects;
 
@@ -94,7 +94,7 @@ public class VillagerAdjustment extends Module {
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
 			// Purchase result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double resultCost = CruxiteDowel.expCost(this.effects, result) / OVERPRICED_RATE;
+			double resultCost = CruxiteDowel.expCost(this.effects, result) * OVERPRICED_RATE;
 			// Round down - second stack will cover remainder.
 			input1 = this.getSingleMoneyStack(resultCost, RoundingMode.DOWN);
 
@@ -133,7 +133,7 @@ public class VillagerAdjustment extends Module {
 				&& CurrencyType.isCurrency(result)) {
 			// Sell input - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double inputCost = CruxiteDowel.expCost(this.effects, input1) / UNDERPRICED_RATE;
+			double inputCost = CruxiteDowel.expCost(this.effects, input1) * UNDERPRICED_RATE;
 			// Round down - reduce value of trade further.
 			result = this.getSingleMoneyStack(inputCost, RoundingMode.DOWN);
 
@@ -156,9 +156,9 @@ public class VillagerAdjustment extends Module {
 				&& !CurrencyType.isCurrency(result)) {
 			// Modification of input for result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double resultCost = CruxiteDowel.expCost(this.effects, result) / OVERPRICED_RATE;
+			double resultCost = CruxiteDowel.expCost(this.effects, result) * OVERPRICED_RATE;
 			// Use underpriced rate for input.
-			double inputCost = CruxiteDowel.expCost(this.effects, input1) / UNDERPRICED_RATE;
+			double inputCost = CruxiteDowel.expCost(this.effects, input1) * UNDERPRICED_RATE;
 			double cost = Math.abs(resultCost - inputCost);
 			// Round up money.
 			ItemStack money = this.getSingleMoneyStack(cost, RoundingMode.UP);
