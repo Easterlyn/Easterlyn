@@ -201,6 +201,8 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <configuration>
           <tasks>
+            <zip basedir="datapack/" destfile="target/${project.name}-datapack.zip"/>
+            <copy file="target/${project.name}-datapack.zip" tofile="${jar.dir}/${project.name}-datapack.zip" />
             <copy file="target/${project.name}.jar" tofile="${jar.dir}/${project.name}.jar" />
           </tasks>
         </configuration>
