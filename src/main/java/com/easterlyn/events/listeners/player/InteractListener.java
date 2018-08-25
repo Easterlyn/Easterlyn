@@ -15,6 +15,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -118,6 +120,10 @@ public class InteractListener extends EasterlynListener {
 				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottle") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight(bypassable, 4)) {
 				if (block.getType() == Material.WATER) {
+					return;
+				}
+				BlockData data = block.getBlockData();
+				if (data instanceof Waterlogged && ((Waterlogged) data).isWaterlogged()) {
 					return;
 				}
 			}
