@@ -4,7 +4,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Location;
@@ -51,7 +51,7 @@ public class WorldGuardHook extends ProtectionHook {
 			return true;
 		}
 		ApplicableRegionSet regions = regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ()));
-		return regions.queryState(null, DefaultFlag.MOB_SPAWNING) == State.ALLOW;
+		return regions.queryState(null, Flags.MOB_SPAWNING) == State.ALLOW;
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class WorldGuardHook extends ProtectionHook {
 			return true;
 		}
 		ApplicableRegionSet regions = regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ()));
-		return regions.queryState(null, DefaultFlag.ENTRY, DefaultFlag.USE) == State.ALLOW;
+		return regions.queryState(null, Flags.ENTRY, Flags.USE) == State.ALLOW;
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class WorldGuardHook extends ProtectionHook {
 			return true;
 		}
 		ApplicableRegionSet regions = regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ()));
-		return regions.queryState(null, DefaultFlag.ENTRY, DefaultFlag.CHEST_ACCESS) == State.ALLOW;
+		return regions.queryState(null, Flags.ENTRY, Flags.CHEST_ACCESS) == State.ALLOW;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class WorldGuardHook extends ProtectionHook {
 			return true;
 		}
 		ApplicableRegionSet regions = regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ()));
-		return regions.queryState(null, DefaultFlag.ENTRY, DefaultFlag.BUILD) == State.ALLOW;
+		return regions.queryState(null, Flags.ENTRY, Flags.BUILD) == State.ALLOW;
 	}
 
 }
