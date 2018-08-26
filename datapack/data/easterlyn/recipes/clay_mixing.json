@@ -1,5 +1,6 @@
 {
   "type": "crafting_shapeless",
+  "group": "clay",
   "ingredients": [
     {
       "item": "minecraft:gravel"
@@ -32,6 +33,5 @@
   "result": {
     "item": "minecraft:clay",
     "count": 4
-  },
-  "group": "clay"
+  }
 }

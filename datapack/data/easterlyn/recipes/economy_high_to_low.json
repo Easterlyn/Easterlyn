@@ -1,5 +1,6 @@
 {
     "type": "crafting_shapeless",
+    "group": "lapis_block",
     "ingredients": [
         {
             "item": "minecraft:emerald"

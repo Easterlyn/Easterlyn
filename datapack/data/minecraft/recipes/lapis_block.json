@@ -1,0 +1,17 @@
+{
+  "type": "crafting_shaped",
+  "group": "lapis_block",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:lapis_lazuli"
+    }
+  },
+  "result": {
+    "item": "minecraft:lapis_block"
+  }
+}
