@@ -7,13 +7,11 @@ import com.easterlyn.events.region.NetherPortalAgent;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
 import com.easterlyn.utilities.RegionUtils;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerPortalEvent;
 
 /**
@@ -39,7 +37,7 @@ public class PortalListener extends EasterlynListener {
 	 *
 	 * @param event the PlayerPortalEvent
 	 */
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerPortal(PlayerPortalEvent event) {
 
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
