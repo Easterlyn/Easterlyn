@@ -1,7 +1,8 @@
 package com.easterlyn.micromodules.protectionhooks;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldguard.bukkit.WGBukkit;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
@@ -25,7 +26,11 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return false;
 		}
-		RegionManager regionManager = WGBukkit.getRegionManager(location.getWorld());
+		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
+		if (world == null) {
+			return true;
+		}
+		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
 		if (regionManager == null) {
 			return true;
 		}
@@ -37,7 +42,11 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return true;
 		}
-		RegionManager regionManager = WGBukkit.getRegionManager(location.getWorld());
+		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
+		if (world == null) {
+			return true;
+		}
+		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
 		if (regionManager == null) {
 			return true;
 		}
@@ -50,7 +59,11 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return true;
 		}
-		RegionManager regionManager = WGBukkit.getRegionManager(location.getWorld());
+		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
+		if (world == null) {
+			return true;
+		}
+		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
 		if (regionManager == null) {
 			return true;
 		}
@@ -63,7 +76,11 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return true;
 		}
-		RegionManager regionManager = WGBukkit.getRegionManager(location.getWorld());
+		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
+		if (world == null) {
+			return true;
+		}
+		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
 		if (regionManager == null) {
 			return true;
 		}
@@ -76,7 +93,11 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return true;
 		}
-		RegionManager regionManager = WGBukkit.getRegionManager(location.getWorld());
+		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
+		if (world == null) {
+			return true;
+		}
+		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
 		if (regionManager == null) {
 			return true;
 		}
