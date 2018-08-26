@@ -1,11 +1,11 @@
 package com.easterlyn.events;
 
 import com.easterlyn.Easterlyn;
-import net.minecraft.server.v1_13_R1.BlockPosition;
+import net.minecraft.server.v1_13_R2.BlockPosition;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_13_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.util.CraftMagicNumbers;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 

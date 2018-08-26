@@ -7,14 +7,15 @@ import com.easterlyn.utilities.TextUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.server.v1_13_R1.EntityPlayer;
-import net.minecraft.server.v1_13_R1.MinecraftServer;
-import net.minecraft.server.v1_13_R1.PlayerInteractManager;
+import net.minecraft.server.v1_13_R2.DimensionManager;
+import net.minecraft.server.v1_13_R2.EntityPlayer;
+import net.minecraft.server.v1_13_R2.MinecraftServer;
+import net.minecraft.server.v1_13_R2.PlayerInteractManager;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_13_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
@@ -129,9 +130,9 @@ public class PlayerUtils {
 			return null;
 		}
 		MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-		EntityPlayer nmsPlayer = new EntityPlayer(server, server.getWorldServer(0),
+		EntityPlayer nmsPlayer = new EntityPlayer(server, server.getWorldServer(DimensionManager.OVERWORLD),
 				new GameProfile(uuid, offlinePlayer.getName()),
-				new PlayerInteractManager(server.getWorldServer(0)));
+				new PlayerInteractManager(server.getWorldServer(DimensionManager.OVERWORLD)));
 
 		Player player = nmsPlayer.getBukkitEntity();
 		if (player == null) {

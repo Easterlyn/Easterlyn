@@ -3,10 +3,10 @@ package com.easterlyn.utilities;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.Effect;
-import net.minecraft.server.v1_13_R1.BlockPosition;
-import net.minecraft.server.v1_13_R1.IBlockData;
-import net.minecraft.server.v1_13_R1.Item;
-import net.minecraft.server.v1_13_R1.Items;
+import net.minecraft.server.v1_13_R2.BlockPosition;
+import net.minecraft.server.v1_13_R2.IBlockData;
+import net.minecraft.server.v1_13_R2.Item;
+import net.minecraft.server.v1_13_R2.Items;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -16,8 +16,9 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_13_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -176,7 +177,8 @@ public class BlockDrops {
 
 	@SuppressWarnings("deprecation")
 	private static boolean isUsableTool(ItemStack tool, Material block) {
-		net.minecraft.server.v1_13_R1.Block nmsBlock = net.minecraft.server.v1_13_R1.Block.getById(block.getId());
+		// TODO messy
+		net.minecraft.server.v1_13_R2.Block nmsBlock = net.minecraft.server.v1_13_R2.Block.asBlock(CraftItemStack.asNMSCopy(new ItemStack(block)).getItem());
 		if (nmsBlock == null) {
 			return false;
 		}
@@ -302,8 +304,8 @@ public class BlockDrops {
 			return drops;
 		}
 
-		net.minecraft.server.v1_13_R1.Block nmsBlock = CraftMagicNumbers.getBlock(block.getType());
-		net.minecraft.server.v1_13_R1.WorldServer nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
+		net.minecraft.server.v1_13_R2.Block nmsBlock = CraftMagicNumbers.getBlock(block.getType());
+		net.minecraft.server.v1_13_R2.WorldServer nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
 		BlockPosition blockPosition = new BlockPosition(block.getX(), block.getY(), block.getZ());
 
 		int count = nmsBlock.getDropCount(nmsBlock.getBlockData(), fortune, nmsWorld, blockPosition, random);
