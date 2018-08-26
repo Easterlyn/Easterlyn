@@ -68,8 +68,22 @@
     <dependency>
       <groupId>com.sk89q.worldguard</groupId>
       <artifactId>worldguard-legacy</artifactId>
-      <version>6.2</version>
+      <version>7.0.0-SNAPSHOT</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.bukkit</groupId>
+          <artifactId>bukkit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sk89q.worldedit</groupId>
+          <artifactId>worldedit-bukkit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sk89q</groupId>
+          <artifactId>commandbook</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
@@ -94,18 +108,6 @@
       <groupId>com.nitnelave</groupId>
       <artifactId>creeperheal</artifactId>
       <version>6.7.9</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.dynmap</groupId>
-      <artifactId>dynmap</artifactId>
-      <version>2.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.ess3</groupId>
-      <artifactId>EssentialsX</artifactId>
-      <version>2.0.1</version>
       <scope>provided</scope>
     </dependency>
 
@@ -144,6 +146,9 @@
     <repository>
       <id>local-repo</id>
       <url>file://${project.basedir}/repo</url>
+    </repository>        <repository>
+      <id>codemc-repo</id>
+      <url>https://repo.codemc.org/repository/maven-public/</url>
     </repository>
   </repositories>
 
