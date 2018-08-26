@@ -8,7 +8,7 @@ import com.easterlyn.machines.type.computer.Programs;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;

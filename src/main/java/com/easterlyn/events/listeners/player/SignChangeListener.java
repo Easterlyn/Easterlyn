@@ -4,7 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
 
 import org.bukkit.block.Block;
@@ -15,7 +15,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * Listener for SignChangeEvents.
- * 
+ *
  * @author Jikoo
  */
 public class SignChangeListener extends EasterlynListener {
@@ -34,7 +34,7 @@ public class SignChangeListener extends EasterlynListener {
 	 * The event handler for SignChangeEvents.
 	 * <p>
 	 * Allows signs to be colored using &codes.
-	 * 
+	 *
 	 * @param event the SignChangeEvent
 	 */
 	@EventHandler(ignoreCancelled = true)

@@ -1,4 +1,4 @@
-package com.easterlyn.utilities;
+package com.easterlyn.utilities.player;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -379,6 +379,16 @@ public class DummyPlayer implements Player {
 	public Server getServer() {
 		return Bukkit.getServer();
 	}
+
+	@Deprecated
+	@Override
+	public boolean isPersistent() {
+		return false;
+	}
+
+	@Deprecated
+	@Override
+	public void setPersistent(boolean b) {}
 
 	@Override
 	public int getTicksLived() {
@@ -997,6 +1007,30 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setPlayerListName(String arg0) {}
 
+	@Deprecated
+	@Override
+	public String getPlayerListHeader() {
+		return null;
+	}
+
+	@Deprecated
+	@Override
+	public String getPlayerListFooter() {
+		return null;
+	}
+
+	@Deprecated
+	@Override
+	public void setPlayerListHeader(String s) {}
+
+	@Deprecated
+	@Override
+	public void setPlayerListFooter(String s) {}
+
+	@Deprecated
+	@Override
+	public void setPlayerListHeaderFooter(String s, String s1) {}
+
 	@Override
 	public void setPlayerTime(long arg0, boolean arg1) {}
 
@@ -1142,6 +1176,9 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
+	public void updateCommands() {}
+
+	@Override
 	public MainHand getMainHand() {
 		return null;
 	}
@@ -1161,6 +1198,12 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public void setSwimming(boolean b) {}
+
+	@Deprecated
+	@Override
+	public boolean isRiptiding() {
+		return false;
+	}
 
 	@Override
 	public boolean hasAI() {

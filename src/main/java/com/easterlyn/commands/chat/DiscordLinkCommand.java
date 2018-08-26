@@ -5,7 +5,7 @@ import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.JSONUtil;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;

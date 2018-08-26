@@ -10,7 +10,7 @@ import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;

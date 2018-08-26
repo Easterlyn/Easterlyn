@@ -1,8 +1,7 @@
-package com.easterlyn.utilities;
+package com.easterlyn.utilities.player;
 
-import java.util.Set;
-import java.util.UUID;
-
+import com.easterlyn.Easterlyn;
+import com.mojang.authlib.GameProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
@@ -10,13 +9,12 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import com.easterlyn.Easterlyn;
-
-import com.mojang.authlib.GameProfile;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Dummy player for usage in commands.
- * 
+ *
  * @author Jikoo
  */
 public class WrappedSenderPlayer extends DummyPlayer {

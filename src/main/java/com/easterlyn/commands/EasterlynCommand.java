@@ -4,7 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;

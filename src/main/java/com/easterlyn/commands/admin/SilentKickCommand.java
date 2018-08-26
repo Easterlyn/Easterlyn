@@ -5,7 +5,7 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 /**
  * EasterlynCommand for silently kicking a player.
- * 
+ *
  * @author Jikoo
  */
 public class SilentKickCommand extends EasterlynCommand {

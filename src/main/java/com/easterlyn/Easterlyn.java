@@ -25,7 +25,7 @@ import com.easterlyn.module.Dependency;
 import com.easterlyn.module.Module;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;

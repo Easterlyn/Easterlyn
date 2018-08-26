@@ -11,7 +11,7 @@ import com.easterlyn.discord.queue.CallPriority;
 import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

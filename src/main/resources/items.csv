@@ -86,6 +86,7 @@ BOWL,Bowl
 BRAIN_CORAL,Brain Coral
 BRAIN_CORAL_BLOCK,Brain Coral Block
 BRAIN_CORAL_FAN,Brain Coral Fan
+BRAIN_CORAL_WALL_FAN,Brain Coral Wall Fan
 BREAD,Bread
 BREWING_STAND,Brewing Stand
 BRICK,Brick
@@ -110,6 +111,7 @@ BUBBLE_COLUMN,Bubble Column
 BUBBLE_CORAL,Bubble Coral
 BUBBLE_CORAL_BLOCK,Bubble Coral Block
 BUBBLE_CORAL_FAN,Bubble Coral Fan
+BUBBLE_CORAL_WALL_FAN,Bubble Coral Wall Fan
 BUCKET,Bucket
 CACTUS,Cactus
 CACTUS_GREEN,Cactus Green
@@ -212,11 +214,21 @@ DARK_PRISMARINE_SLAB,Dark Prismarine Slab
 DARK_PRISMARINE_STAIRS,Dark Prismarine Stairs
 DAYLIGHT_DETECTOR,Daylight Detector
 DEAD_BRAIN_CORAL_BLOCK,Dead Brain Coral Block
+DEAD_BRAIN_CORAL_FAN,Dead Brain Coral Fan
+DEAD_BRAIN_CORAL_WALL_FAN,Dead Brain Coral Wall Fan
 DEAD_BUBBLE_CORAL_BLOCK,Dead Bubble Coral Block
+DEAD_BUBBLE_CORAL_FAN,Dead Bubble Coral Fan
+DEAD_BUBBLE_CORAL_WALL_FAN,Dead Bubble Coral Wall Fan
 DEAD_BUSH,Dead Bush
 DEAD_FIRE_CORAL_BLOCK,Dead Fire Coral Block
+DEAD_FIRE_CORAL_FAN,Dead Fire Coral Fan
+DEAD_FIRE_CORAL_WALL_FAN,Dead Fire Coral Wall Fan
 DEAD_HORN_CORAL_BLOCK,Dead Horn Coral Block
+DEAD_HORN_CORAL_FAN,Dead Horn Coral Fan
+DEAD_HORN_CORAL_WALL_FAN,Dead Horn Coral Wall Fan
 DEAD_TUBE_CORAL_BLOCK,Dead Tube Coral Block
+DEAD_TUBE_CORAL_FAN,Dead Tube Coral Fan
+DEAD_TUBE_CORAL_WALL_FAN,Dead Tube Coral Wall Fan
 DEBUG_STICK,Debug Stick
 DETECTOR_RAIL,Detector Rail
 DIAMOND,Diamond
@@ -280,6 +292,7 @@ FIRE_CHARGE,Fire Charge
 FIRE_CORAL,Fire Coral
 FIRE_CORAL_BLOCK,Fire Coral Block
 FIRE_CORAL_FAN,Fire Coral Fan
+FIRE_CORAL_WALL_FAN,Fire Coral Wall Fan
 FISHING_ROD,Fishing Rod
 FLINT,Flint
 FLINT_AND_STEEL,Flint and Steel
@@ -351,6 +364,7 @@ HOPPER_MINECART,Minecart with Hopper
 HORN_CORAL,Horn Coral
 HORN_CORAL_BLOCK,Horn Coral Block
 HORN_CORAL_FAN,Horn Coral Fan
+HORN_CORAL_WALL_FAN,Horn Coral Wall Fan
 HORSE_SPAWN_EGG,Horse Spawn Egg
 HUSK_SPAWN_EGG,Husk Spawn Egg
 ICE,Ice
@@ -790,6 +804,7 @@ TROPICAL_FISH_SPAWN_EGG,Tropical Fish Spawn Egg
 TUBE_CORAL,Tube Coral
 TUBE_CORAL_BLOCK,Tube Coral Block
 TUBE_CORAL_FAN,Tube Coral Fan
+TUBE_CORAL_WALL_FAN,Tube Coral Wall Fan
 TURTLE_EGG,Turtle Egg
 TURTLE_HELMET,Turtle Shell
 TURTLE_SPAWN_EGG,Turtle Spawn Egg

@@ -5,7 +5,7 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 /**
  * EasterlynCommand for silently teleporting a player.
- * 
+ *
  * @author Jikoo
  */
 public class SilentTeleportCommand extends EasterlynCommand {

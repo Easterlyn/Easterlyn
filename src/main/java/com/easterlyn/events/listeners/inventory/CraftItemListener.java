@@ -7,7 +7,7 @@ import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

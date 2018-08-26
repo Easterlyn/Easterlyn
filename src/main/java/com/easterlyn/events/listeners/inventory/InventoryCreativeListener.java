@@ -5,7 +5,7 @@ import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Listener for InventoryCreativeEvents. Used to clean input items from creative clients, preventing
  * server/client crashes.
- * 
+ *
  * @author Jikoo
  */
 public class InventoryCreativeListener extends EasterlynListener {
@@ -34,7 +34,7 @@ public class InventoryCreativeListener extends EasterlynListener {
 	 * <p>
 	 * The click fired is always left, cursor is always the item being created/placed, current is
 	 * always the item being replaced. This holds true even for item drops, pick block, etc.
-	 * 
+	 *
 	 * @param event the InventoryCreativeEvent
 	 */
 	@EventHandler(ignoreCancelled = true)

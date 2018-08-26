@@ -6,7 +6,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -24,7 +24,7 @@ import org.bukkit.util.StringUtil;
 
 /**
  * EasterlynCommand for causing a lightning strike.
- * 
+ *
  * @author Jikoo
  */
 public class LightningCommand extends EasterlynCommand {

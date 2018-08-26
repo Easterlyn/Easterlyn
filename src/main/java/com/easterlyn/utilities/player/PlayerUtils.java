@@ -1,8 +1,9 @@
-package com.easterlyn.utilities;
+package com.easterlyn.utilities.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.TextUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.authlib.GameProfile;

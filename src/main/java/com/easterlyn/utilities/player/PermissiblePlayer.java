@@ -1,4 +1,4 @@
-package com.easterlyn.utilities;
+package com.easterlyn.utilities.player;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -456,6 +456,18 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public Server getServer() {
 		return player.getServer();
+	}
+
+	@Deprecated
+	@Override
+	public boolean isPersistent() {
+		return player.isPersistent();
+	}
+
+	@Deprecated
+	@Override
+	public void setPersistent(boolean b) {
+		player.setPersistent(b);
 	}
 
 	@Override
@@ -1231,6 +1243,36 @@ public class PermissiblePlayer implements Player {
 		player.setPlayerListName(arg0);
 	}
 
+	@Deprecated
+	@Override
+	public String getPlayerListHeader() {
+		return player.getPlayerListHeader();
+	}
+
+	@Deprecated
+	@Override
+	public String getPlayerListFooter() {
+		return player.getPlayerListFooter();
+	}
+
+	@Deprecated
+	@Override
+	public void setPlayerListHeader(String s) {
+		player.setPlayerListHeader(s);
+	}
+
+	@Deprecated
+	@Override
+	public void setPlayerListFooter(String s) {
+		player.setPlayerListFooter(s);
+	}
+
+	@Deprecated
+	@Override
+	public void setPlayerListHeaderFooter(String s, String s1) {
+		player.setPlayerListHeaderFooter(s, s1);
+	}
+
 	@Override
 	public void setPlayerTime(long arg0, boolean arg1) {
 		player.setPlayerTime(arg0, arg1);
@@ -1427,6 +1469,10 @@ public class PermissiblePlayer implements Player {
 	public String getLocale() {
 		return player.getLocale();
 	}
+	@Override
+	public void updateCommands() {
+		player.updateCommands();
+	}
 
 	@Override
 	public MainHand getMainHand() {
@@ -1451,6 +1497,12 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void setSwimming(boolean swimming) {
 		player.setSwimming(swimming);
+	}
+
+	@Deprecated
+	@Override
+	public boolean isRiptiding() {
+		return player.isRiptiding();
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.NumberUtils;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.md_5.bungee.api.ChatColor;

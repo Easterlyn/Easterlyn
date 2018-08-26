@@ -7,7 +7,7 @@ import com.easterlyn.users.UserAffinity;
 import com.easterlyn.users.UserClass;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;

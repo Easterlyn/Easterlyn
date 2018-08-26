@@ -1,5 +1,6 @@
-package com.easterlyn.utilities;
+package com.easterlyn.utilities.player;
 
+import com.easterlyn.utilities.TextUtils;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.Contexts;
 import me.lucko.luckperms.api.LuckPermsApi;

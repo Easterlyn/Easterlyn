@@ -8,7 +8,7 @@ import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 import com.easterlyn.utilities.RegionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

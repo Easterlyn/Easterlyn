@@ -6,7 +6,7 @@ import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

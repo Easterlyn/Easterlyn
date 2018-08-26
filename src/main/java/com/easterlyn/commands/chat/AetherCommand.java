@@ -10,7 +10,7 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.WrappedSenderPlayer;
+import com.easterlyn.utilities.player.WrappedSenderPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;

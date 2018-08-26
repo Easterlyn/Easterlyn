@@ -5,7 +5,7 @@ import java.util.List;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 
 /**
  * EasterlynCommand for editing a Player's Statistics.
- * 
+ *
  * @author Jikoo
  */
 public class StatisticCommand extends EasterlynCommand {

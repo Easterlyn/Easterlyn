@@ -1,6 +1,6 @@
 package com.easterlyn.discord;
 
-import com.easterlyn.utilities.PermissiblePlayer;
+import com.easterlyn.utilities.player.PermissiblePlayer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

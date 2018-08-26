@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import com.mojang.brigadier.suggestion.Suggestions;
 import org.bukkit.command.Command;
 

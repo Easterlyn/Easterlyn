@@ -9,8 +9,8 @@ import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.module.Module;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.DummyPlayer;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.DummyPlayer;
+import com.easterlyn.utilities.player.PermissionUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

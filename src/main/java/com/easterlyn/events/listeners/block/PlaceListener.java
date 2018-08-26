@@ -11,7 +11,7 @@ import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.users.BukkitSerializer;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
-import com.easterlyn.utilities.PermissionUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;

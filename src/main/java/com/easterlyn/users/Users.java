@@ -4,7 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Color;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.CollectionConversions;
-import com.easterlyn.utilities.PermissionBridge;
+import com.easterlyn.utilities.player.PermissionBridge;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;

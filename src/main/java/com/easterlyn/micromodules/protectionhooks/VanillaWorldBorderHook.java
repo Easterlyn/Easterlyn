@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
  */
 public class VanillaWorldBorderHook extends ProtectionHook {
 
-	VanillaWorldBorderHook() {
+	public VanillaWorldBorderHook() {
 		super("minecraft");
 	}
 

@@ -15,7 +15,7 @@ import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorPassive;
 import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -283,12 +283,12 @@ public class User {
 	}
 
 	/**
-	 * The String representation of the Player's total time ingame.
+	 * The String representation of the Player's total time in game.
 	 *
-	 * @return the Player's time ingame
+	 * @return the Player's time in game
 	 */
 	private String getTimePlayed() {
-		int time = getPlayer().getStatistic(Statistic.PLAY_ONE_MINUTE);
+		int time = getPlayer().getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60;
 		int days = time / (24 * 60);
 		time -= days * 24 * 60;
 		int hours = time / (60);

@@ -17,7 +17,7 @@ import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.TextUtils;
-import com.easterlyn.utilities.WrappedSenderPlayer;
+import com.easterlyn.utilities.player.WrappedSenderPlayer;
 import com.google.common.collect.ImmutableList;
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 
 /**
  * Listener for PlayerAsyncChatEvents.
- * 
+ *
  * @author Jikoo
  */
 public class AsyncChatListener extends EasterlynListener {
@@ -105,10 +105,10 @@ public class AsyncChatListener extends EasterlynListener {
 	/**
 	 * Because we send JSON messages, we actually have to remove all recipients from the event and
 	 * manually send each one the message.
-	 * 
+	 *
 	 * To prevent IRC and other chat loggers from picking up chat sent to non-regional channels,
 	 * non-regional chat must be cancelled.
-	 * 
+	 *
 	 * @param event the EasterlynAsyncChatEvent
 	 */
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -256,7 +256,7 @@ public class AsyncChatListener extends EasterlynListener {
 	/**
 	 * Handles chat in a way similar to how GP's listener does, sans the extra checks we do not
 	 * want.
-	 * 
+	 *
 	 * @param event the AsyncPlayerChatEvent
 	 * @param message the Message
 	 * @return true if the sender is soft muted

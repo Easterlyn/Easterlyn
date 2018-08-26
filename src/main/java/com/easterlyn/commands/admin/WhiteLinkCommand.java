@@ -4,7 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.v1_13_R1.UserCache;
 import org.apache.commons.lang3.StringUtils;

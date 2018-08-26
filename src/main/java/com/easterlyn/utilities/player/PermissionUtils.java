@@ -1,4 +1,4 @@
-package com.easterlyn.utilities;
+package com.easterlyn.utilities.player;
 
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;

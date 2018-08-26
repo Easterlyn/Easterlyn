@@ -11,7 +11,7 @@ import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.WrappedSenderPlayer;
+import com.easterlyn.utilities.player.WrappedSenderPlayer;
 
 import com.mojang.authlib.GameProfile;
 
@@ -26,7 +26,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * Reimplementation of messaging.
- * 
+ *
  * @author Jikoo
  */
 public class MessageCommand extends EasterlynCommand {

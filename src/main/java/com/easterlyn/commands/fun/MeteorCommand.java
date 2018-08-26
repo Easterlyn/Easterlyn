@@ -5,7 +5,7 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.Meteorite;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 import com.google.common.collect.ImmutableList;
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -7,7 +7,7 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.PlayerUtils;
+import com.easterlyn.utilities.player.PlayerUtils;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -20,7 +20,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * EasterlynCommand for getting your current coordinates.
- * 
+ *
  * @author Jikoo
  */
 public class CoordsCommand extends EasterlynAsynchronousCommand {
