@@ -201,7 +201,7 @@ public class User {
 								|| player.getGameMode() == GameMode.CREATIVE
 								|| player.getGameMode() == GameMode.SPECTATOR;
 				if (!allowFlight && player.hasPermission("easterlyn.command.fly.safe")) {
-					allowFlight = player.isOnGround();
+					allowFlight = player.getLocation().add(0, -1, 0).getBlock().getType().isSolid();
 				}
 				player.setAllowFlight(allowFlight);
 				player.setFlying(allowFlight);

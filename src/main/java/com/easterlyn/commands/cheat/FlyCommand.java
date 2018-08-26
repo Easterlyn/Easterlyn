@@ -27,6 +27,7 @@ public class FlyCommand extends EasterlynCommand {
 		this.setPermissionLevel(UserRank.MOD);
 		this.setUsage("/fly [player] [true|false]");
 		this.addExtraPermission("other", UserRank.ADMIN);
+		this.addExtraPermission("safe", UserRank.MOD);
 	}
 
 	@Override
@@ -53,18 +54,15 @@ public class FlyCommand extends EasterlynCommand {
 		}
 
 		// Fetch target player
-		Player player = null;
-		if (!(sender instanceof Player)) {
-			// Not a player, must have at least 1 argument, which will be interpreted as a player name
-			// This will still be hit by /fly true and such, but that's hardly a problem.
+		Player player;
+		if (sender.hasPermission("easterlyn.command.fly.other") && (fly == null || args.length > 1)
+				|| !(sender instanceof Player)) {
+			// Sender is console or can target others
 			player = PlayerUtils.matchOnlinePlayer(sender, args[0]);
-		} else if (!sender.hasPermission("easterlyn.command.fly.other")) {
-			// No permission to specify others and must be a Player
+		} else {
 			player = (Player) sender;
-		} else if (args.length == 1 && fly == null) {
-			// Only 1 argument and flight toggle is not set, so it must be a player name
-			player = PlayerUtils.matchOnlinePlayer(sender, args[0]);
 		}
+
 		if (player == null) {
 			return false;
 		}
