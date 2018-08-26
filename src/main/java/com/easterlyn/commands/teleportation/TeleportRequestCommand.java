@@ -162,7 +162,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			cooldowns.clearCooldown(issuer, "teleportRequest");
 			return;
 		}
-		toTeleport.teleport(toArriveAt, TeleportCause.COMMAND);
+		toTeleport.teleport(toArriveAt.getLocation().add(0, 0.1, 0), TeleportCause.COMMAND);
 		toTeleport.sendMessage(getLang().getValue("command.tpa.success.arrive.teleported")
 						.replace("{PLAYER}", toArriveAt.getDisplayName()));
 		toArriveAt.sendMessage(getLang().getValue("command.tpa.success.arrive.target")
