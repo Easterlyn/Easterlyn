@@ -14,7 +14,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 /**
  * Listener for EntityDeathEvents.
- * 
+ *
  * @author Jikoo
  */
 public class DeathListener extends EasterlynListener {
@@ -28,7 +28,7 @@ public class DeathListener extends EasterlynListener {
 
 	/**
 	 * EventHandler for EntityDeathEvents.
-	 * 
+	 *
 	 * @param event the EntityDeathEvent
 	 */
 	@EventHandler(ignoreCancelled = true)
@@ -36,12 +36,15 @@ public class DeathListener extends EasterlynListener {
 		if (event.getEntity() instanceof Player) {
 			return;
 		}
-		if (event.getEntity().getKiller() != null
+
+		if (event.getEntity().getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.CRAMMING
+				|| event.getEntity().getKiller() != null
 				&& event.getEntity().getKiller().getGameMode() == GameMode.CREATIVE) {
 			event.setDroppedExp(0);
 			event.getDrops().clear();
 			return;
 		}
+
 		EntityDamageEvent damageEvent = event.getEntity().getLastDamageCause();
 		if (damageEvent instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent entityDamageEvent = (EntityDamageByEntityEvent) damageEvent;
