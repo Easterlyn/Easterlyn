@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * EasterlynCommand for displaying item in hand to the server.
- * 
+ *
  * @author Jikoo
  */
 public class ShowItemCommand extends EasterlynCommand {
@@ -47,7 +47,7 @@ public class ShowItemCommand extends EasterlynCommand {
 
 		ItemMeta handMeta;
 		if (hand == null || !hand.hasItemMeta()
-				|| !(handMeta = hand.getItemMeta()).hasDisplayName() || !handMeta.hasEnchants()) {
+				|| !(handMeta = hand.getItemMeta()).hasDisplayName() && !handMeta.hasEnchants()) {
 			sender.sendMessage(getLang().getValue("command.show.requirements"));
 			return true;
 		}

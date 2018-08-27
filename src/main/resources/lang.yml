@@ -194,7 +194,7 @@ command:
   show:
     description: 'Displays an item in chat.'
     usage: '/show'
-    requirements: '{COLOR:bad}You do not have anything named and enchanted in your main hand!'
+    requirements: '{COLOR:bad}You do not have anything named or enchanted in your main hand!'
     invalidCharacters: '{COLOR:bad}You may not show items with names containing characters normalized by the main chat!'
   deathpoint:
     description: 'Return to death location.'
