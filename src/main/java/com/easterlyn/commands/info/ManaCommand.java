@@ -2,7 +2,7 @@ package com.easterlyn.commands.info;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.captcha.CruxiteDowel;
+import com.easterlyn.captcha.ManaMappings;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.utilities.Experience;
@@ -82,7 +82,7 @@ public class ManaCommand extends EasterlynCommand {
 			sender.sendMessage(this.getLang().getValue("command.mana.nothing"));
 			return true;
 		}
-		double exp = CruxiteDowel.expCost(effects, hand);
+		double exp = ManaMappings.expCost(effects, hand);
 		if (exp == Double.MAX_VALUE) {
 			sender.sendMessage(this.getLang().getValue("command.mana.expensive")
 					.replace("{ITEM}", InventoryUtils.getItemName(hand)));

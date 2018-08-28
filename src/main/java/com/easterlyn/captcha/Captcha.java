@@ -73,7 +73,7 @@ public class Captcha extends Module {
 
 	@Override
 	protected void onEnable() {
-		CruxiteDowel.getMana();
+		ManaMappings.getMana();
 
 		// Add the Captcha recipe
 		ItemStack captchaItem = blankCaptchaCard();

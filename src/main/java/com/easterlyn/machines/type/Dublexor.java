@@ -2,7 +2,7 @@ package com.easterlyn.machines.type;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.captcha.CruxiteDowel;
+import com.easterlyn.captcha.ManaMappings;
 import com.easterlyn.chat.Language;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.machines.MachineInventoryTracker;
@@ -251,7 +251,7 @@ public class Dublexor extends Machine {
 			}
 
 			// Calculate cost based on final item.
-			double resultCost = CruxiteDowel.expCost(effects, modifiedInput);
+			double resultCost = ManaMappings.expCost(effects, modifiedInput);
 
 			// Ensure item can be replicated.
 			if (Double.MAX_VALUE / multiplier <= resultCost) {

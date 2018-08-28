@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.captcha.CruxiteDowel;
+import com.easterlyn.captcha.ManaMappings;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.users.UserRank;
@@ -20,7 +20,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * EasterlynCommand for printing information about an item.
- * 
+ *
  * @author Jikoo
  */
 public class ItemInformationCommand extends EasterlynCommand {
@@ -46,7 +46,7 @@ public class ItemInformationCommand extends EasterlynCommand {
 		sender.sendMessage(ChatColor.stripColor(hand.toString()));
 		Easterlyn plugin = (Easterlyn) getPlugin();
 		sender.sendMessage("Hash: " + plugin.getModule(Captcha.class).calculateHashFor(hand));
-		sender.sendMessage("Mana: " + CruxiteDowel.expCost(plugin.getModule(Effects.class), hand));
+		sender.sendMessage("Mana: " + ManaMappings.expCost(plugin.getModule(Effects.class), hand));
 		return true;
 	}
 

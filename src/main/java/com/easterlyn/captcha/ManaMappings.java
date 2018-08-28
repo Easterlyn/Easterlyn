@@ -3,6 +3,7 @@ package com.easterlyn.captcha;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.utilities.InventoryUtils;
+import com.easterlyn.utilities.recipe.RecipeWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -11,14 +12,13 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map.Entry;
  *
  * @author Jikoo
  */
-public class CruxiteDowel {
+public class ManaMappings {
 
 	private static Map<Material, Double> manaMappings;
 
@@ -588,101 +588,60 @@ public class CruxiteDowel {
 
 		double minimum = Double.MAX_VALUE;
 
-		nextRecipe: for (Recipe recipe : Bukkit.getRecipesFor(new ItemStack(material))) {
-			ItemStack result = recipe.getResult();
+		nextRecipe: for (Recipe bukkitRecipe : Bukkit.getRecipesFor(new ItemStack(material))) {
+			ItemStack result = bukkitRecipe.getResult();
 			int amount = result.getAmount();
 			if (amount < 1) {
 				continue;
 			}
 
-			double newMinimum;
+			RecipeWrapper recipe = new RecipeWrapper(bukkitRecipe);
 
-			if (recipe instanceof FurnaceRecipe) {
-				ItemStack input = ((FurnaceRecipe) recipe).getInput();
-				if (pastMaterials.contains(input.getType())) {
-					continue;
+			double newMinimum = 0;
+
+			for (Map.Entry<EnumSet<Material>, Integer> ingredient : recipe.getRecipeIngredients().entrySet()) {
+				if (ingredient.getValue() == null || ingredient.getValue() < 1) {
+					continue nextRecipe;
 				}
-				newMinimum = addRecipeCosts(input.getType(), pastMaterials);
+
+				double bestMaterialPrice = Double.MAX_VALUE;
+				for (Material potential : ingredient.getKey()) {
+					if (pastMaterials.contains(potential)) {
+						continue;
+					}
+
+					bestMaterialPrice = Math.min(bestMaterialPrice, addRecipeCosts(potential, pastMaterials));
+
+					if (potential.name().endsWith("_BUCKET")) {
+						// Buckets are not consumed in crafting.
+						// Iron ingots are 41, hardcoded bucket value here to avoid a lot of extra code to prevent issues
+						newMinimum -= 123 * ingredient.getValue();
+					}
+				}
+
+				if (bestMaterialPrice < 0 || bestMaterialPrice > Double.MAX_VALUE / ingredient.getValue()) {
+					continue nextRecipe;
+				}
+
+				bestMaterialPrice *= ingredient.getValue();
+
+				if (Double.MAX_VALUE - bestMaterialPrice < newMinimum) {
+					continue nextRecipe;
+				}
+
+				newMinimum += bestMaterialPrice;
+			}
+
+			if (newMinimum <= 0 || newMinimum == Double.MAX_VALUE) {
+				continue;
+			}
+
+			// Coal is 12, 8 smelts per coal = 1.5 cost per smelt. Hardcoded to prevent a bit of extra code and checks.
+			if (bukkitRecipe instanceof FurnaceRecipe) {
 				if (newMinimum >= Double.MAX_VALUE - 1.5) {
 					continue;
 				}
-				// Coal is 12, 8 smelts per coal = 1.5 cost per smelt. Hardcoded to prevent a bit of extra code and checks.
 				newMinimum += 1.5;
-			} else if (recipe instanceof ShapedRecipe) {
-				newMinimum = 0;
-				ShapedRecipe shaped = (ShapedRecipe) recipe;
-				HashMap<Character, Integer> materialQuantity = new HashMap<>();
-				for (String line : shaped.getShape()) {
-					for (char ingredient : line.toCharArray()) {
-						if (materialQuantity.containsKey(ingredient)) {
-							materialQuantity.put(ingredient, materialQuantity.get(ingredient) + 1);
-						} else {
-							materialQuantity.put(ingredient, 1);
-						}
-					}
-				}
-				for (Entry<Character, Integer> entry : materialQuantity.entrySet()) {
-					ItemStack input = shaped.getIngredientMap().get(entry.getKey());
-					if (input == null || input.getType() == Material.AIR || entry.getValue() < 1) {
-						continue;
-					}
-					if (pastMaterials.contains(input.getType())) {
-						// No loops.
-						continue nextRecipe;
-					}
-					double inputValue = addRecipeCosts(input.getType(), pastMaterials);
-					if (Double.MAX_VALUE / entry.getValue() <= inputValue) {
-						// Input item cannot be duplicated.
-						continue nextRecipe;
-					}
-					inputValue *= entry.getValue();
-					if (Double.MAX_VALUE - newMinimum <= inputValue) {
-						// Noverflow.
-						continue nextRecipe;
-					}
-					newMinimum += inputValue;
-					// Special case: Buckets are not consumed when crafting
-					if (input.getType().name().endsWith("_BUCKET")) {
-						// Iron ingots are 41, hardcoded bucket value here to avoid a lot of extra code to prevent issues
-						newMinimum -= 123 * entry.getValue();
-					}
-				}
-				if (newMinimum <= 0) {
-					continue;
-				}
-			} else if (recipe instanceof ShapelessRecipe) {
-				newMinimum = 0;
-				for (ItemStack input : ((ShapelessRecipe) recipe).getIngredientList()) {
-					if (input == null || input.getType() == Material.AIR) {
-						continue;
-					}
-					if (input.getAmount() < 1 || pastMaterials.contains(input.getType())) {
-						// No loops, no weird stuff.
-						continue nextRecipe;
-					}
-					double inputValue = addRecipeCosts(input.getType(), pastMaterials);
-					if (Double.MAX_VALUE / input.getAmount() <= inputValue) {
-						// Input item cannot be duplicated.
-						continue nextRecipe;
-					}
-					inputValue *= input.getAmount();
-					if (Double.MAX_VALUE - newMinimum <= inputValue) {
-						// Noverflow.
-						continue nextRecipe;
-					}
-					newMinimum += inputValue;
-					// Special case: Buckets are not consumed when crafting
-					if (input.getType().name().endsWith("_BUCKET")) {
-						// Iron ingots are 41, hardcoded bucket value here to avoid a lot of extra code to prevent issues
-						newMinimum -= 123 * input.getAmount();
-					}
-				}
-				if (newMinimum <= 0) {
-					continue;
-				}
-			} else {
-				// Recipe is injected custom recipe
-				continue;
 			}
 
 			if (newMinimum == Double.MAX_VALUE) {
@@ -696,7 +655,7 @@ public class CruxiteDowel {
 		}
 
 		// No value = no make.
-		if (minimum < 1) {
+		if (minimum <= 0) {
 			minimum = Double.MAX_VALUE;
 		}
 

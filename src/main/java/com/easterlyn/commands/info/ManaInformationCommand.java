@@ -1,7 +1,7 @@
 package com.easterlyn.commands.info;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.captcha.CruxiteDowel;
+import com.easterlyn.captcha.ManaMappings;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.UserRank;
@@ -37,7 +37,7 @@ public class ManaInformationCommand extends EasterlynAsynchronousCommand {
 			if (material.isLegacy()) {
 				continue;
 			}
-			sb.append(material.name()).append(": ").append(CruxiteDowel.getMana().get(material)).append('\n');
+			sb.append(material.name()).append(": ").append(ManaMappings.getMana().get(material)).append('\n');
 		}
 		final File file = new File(getPlugin().getDataFolder(), "mana.txt");
 		// Again, minimal risk calling async

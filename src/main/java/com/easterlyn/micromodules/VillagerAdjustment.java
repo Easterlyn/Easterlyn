@@ -1,7 +1,7 @@
 package com.easterlyn.micromodules;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.captcha.CruxiteDowel;
+import com.easterlyn.captcha.ManaMappings;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.module.Module;
@@ -94,7 +94,7 @@ public class VillagerAdjustment extends Module {
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
 			// Purchase result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double resultCost = CruxiteDowel.expCost(this.effects, result) * OVERPRICED_RATE;
+			double resultCost = ManaMappings.expCost(this.effects, result) * OVERPRICED_RATE;
 			// Round down - second stack will cover remainder.
 			input1 = this.getSingleMoneyStack(resultCost, RoundingMode.DOWN);
 
@@ -133,7 +133,7 @@ public class VillagerAdjustment extends Module {
 				&& CurrencyType.isCurrency(result)) {
 			// Sell input - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double inputCost = CruxiteDowel.expCost(this.effects, input1) * UNDERPRICED_RATE;
+			double inputCost = ManaMappings.expCost(this.effects, input1) * UNDERPRICED_RATE;
 			// Round down - reduce value of trade further.
 			result = this.getSingleMoneyStack(inputCost, RoundingMode.DOWN);
 
@@ -156,9 +156,9 @@ public class VillagerAdjustment extends Module {
 				&& !CurrencyType.isCurrency(result)) {
 			// Modification of input for result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
-			double resultCost = CruxiteDowel.expCost(this.effects, result) * OVERPRICED_RATE;
+			double resultCost = ManaMappings.expCost(this.effects, result) * OVERPRICED_RATE;
 			// Use underpriced rate for input.
-			double inputCost = CruxiteDowel.expCost(this.effects, input1) * UNDERPRICED_RATE;
+			double inputCost = ManaMappings.expCost(this.effects, input1) * UNDERPRICED_RATE;
 			double cost = Math.abs(resultCost - inputCost);
 			// Round up money.
 			ItemStack money = this.getSingleMoneyStack(cost, RoundingMode.UP);
