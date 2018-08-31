@@ -191,6 +191,18 @@ public class ManaMappings {
 			for (Material material : Material.values()) {
 				addRecipeCosts(material);
 			}
+
+			// Special cases
+			manaMappings.put(Material.CHIPPED_ANVIL, manaMappings.getOrDefault(Material.ANVIL, Double.MAX_VALUE) / 3 * 2);
+			manaMappings.put(Material.DAMAGED_ANVIL, manaMappings.getOrDefault(Material.ANVIL, Double.MAX_VALUE) / 3);
+
+			manaMappings.put(Material.FILLED_MAP, manaMappings.get(Material.MAP));
+
+			manaMappings.put(Material.SMOOTH_QUARTZ, manaMappings.get(Material.QUARTZ_BLOCK));
+			manaMappings.put(Material.SMOOTH_RED_SANDSTONE, manaMappings.get(Material.RED_SANDSTONE));
+			manaMappings.put(Material.SMOOTH_SANDSTONE, manaMappings.get(Material.SANDSTONE));
+			manaMappings.put(Material.SMOOTH_STONE, manaMappings.get(Material.STONE));
+
 			manaMappings.entrySet().removeIf(entry -> entry.getValue() == Double.MAX_VALUE);
 		}
 		return manaMappings;
@@ -202,18 +214,21 @@ public class ManaMappings {
 
 		for (Material material : Material.values()) {
 			switch (material) {
+				case BEETROOT_SEEDS:
 				case CLAY_BALL:
 				case COOKIE:
 				case DEAD_BUSH:
 				case DIRT:
+				case FERN:
 				case GRAVEL:
+				case GRASS:
 				case ACACIA_LEAVES:
 				case BIRCH_LEAVES:
 				case DARK_OAK_LEAVES:
 				case JUNGLE_LEAVES:
 				case OAK_LEAVES:
 				case SPRUCE_LEAVES:
-				case GRASS:
+				case MELON_SLICE:
 				case POISONOUS_POTATO:
 				case SAND:
 				case WHEAT_SEEDS:
@@ -222,12 +237,15 @@ public class ManaMappings {
 					break;
 				case ALLIUM:
 				case AZURE_BLUET:
+				case BEETROOT:
 				case CACTUS:
 				case CARROT:
 				case CHORUS_FRUIT:
 				case COBBLESTONE:
 				case DANDELION:
+				case KELP:
 				case LILY_PAD:
+				case MUSHROOM_STEM:
 				case NETHER_BRICK:
 				case ORANGE_TULIP:
 				case PAPER:
@@ -236,6 +254,7 @@ public class ManaMappings {
 				case RABBIT_HIDE:
 				case RED_MUSHROOM:
 				case RED_MUSHROOM_BLOCK:
+				case RED_SAND:
 				case RED_TULIP:
 				case SOUL_SAND:
 				case SUGAR_CANE:
@@ -248,17 +267,25 @@ public class ManaMappings {
 				case BROWN_MUSHROOM:
 				case BROWN_MUSHROOM_BLOCK:
 				case BLUE_ORCHID:
+				case COCOA_BEANS:
+				case CYAN_DYE:
 				case DIORITE:
 				case GRANITE:
+				case LILAC:
 				case NETHERRACK:
 				case OXEYE_DAISY:
+				case PEONY:
 				case POTATO:
+				case PURPLE_DYE:
+				case ROSE_BUSH:
 				case ROTTEN_FLESH:
 				case STONE:
+				case SUNFLOWER:
 					values.put(material, 3D);
 					break;
 				case ARROW:
 				case TALL_GRASS:
+				case LARGE_FERN:
 				case FEATHER:
 				case CHICKEN:
 					values.put(material, 4D);
@@ -287,9 +314,11 @@ public class ManaMappings {
 					values.put(material, 5D);
 					break;
 				case BAKED_POTATO:
+				case CARVED_PUMPKIN:
 				case EGG:
 				case NETHER_BRICKS:
 				case PUMPKIN:
+				case SEAGRASS:
 					values.put(material, 6D);
 					break;
 				case COOKED_CHICKEN:
@@ -320,6 +349,7 @@ public class ManaMappings {
 				case MUTTON:
 				case BEEF:
 				case REDSTONE:
+				case SEA_PICKLE:
 				case STRING:
 					values.put(material, 8D);
 					break;
@@ -412,6 +442,7 @@ public class ManaMappings {
 					break;
 				case BLAZE_ROD:
 				case GRASS_BLOCK:
+				case PODZOL:
 					values.put(material, 30D);
 					break;
 				case BLACK_BANNER:
@@ -431,6 +462,7 @@ public class ManaMappings {
 				case WHITE_BANNER:
 				case YELLOW_BANNER:
 				case GHAST_TEAR:
+				case PHANTOM_MEMBRANE:
 				case PRISMARINE_CRYSTALS:
 					values.put(material, 35D);
 					break;
@@ -444,9 +476,10 @@ public class ManaMappings {
 				case NETHER_QUARTZ_ORE:
 					values.put(material, 44D);
 					break;
+				case IRON_ORE:
 				case MUSIC_DISC_13:
 				case MUSIC_DISC_CAT:
-				case IRON_ORE:
+				case NAUTILUS_SHELL:
 					values.put(material, 50D);
 					break;
 				case MUSIC_DISC_11:
@@ -524,6 +557,7 @@ public class ManaMappings {
 					values.put(material, 16000D);
 					break;
 				case TOTEM_OF_UNDYING:
+				case HEART_OF_THE_SEA:
 					values.put(material, 5000D);
 					break;
 				case NETHER_STAR:
@@ -683,15 +717,15 @@ public class ManaMappings {
 				|| enchantment.equals(Enchantment.ARROW_FIRE)
 				|| enchantment.equals(Enchantment.ARROW_KNOCKBACK)
 				|| enchantment.equals(Enchantment.LUCK)
-				|| enchantment.equals(Enchantment.LURE)
-				|| enchantment.equals(Enchantment.MENDING)) {
+				|| enchantment.equals(Enchantment.LURE)) {
 			return 2;
 		}
 		if (enchantment.equals(Enchantment.THORNS)
 				|| enchantment.equals(Enchantment.SILK_TOUCH)
 				|| enchantment.equals(Enchantment.ARROW_INFINITE)
 				|| enchantment.equals(Enchantment.BINDING_CURSE)
-				|| enchantment.equals(Enchantment.VANISHING_CURSE)) {
+				|| enchantment.equals(Enchantment.VANISHING_CURSE)
+				|| enchantment.equals(Enchantment.MENDING)) {
 			return 1;
 		}
 		return 5;
