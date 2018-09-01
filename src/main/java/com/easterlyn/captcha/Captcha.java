@@ -303,7 +303,7 @@ public class Captcha extends Module {
 				|| item.getType() == Material.WRITABLE_BOOK
 				|| item.getType() == Material.WRITTEN_BOOK
 				/* Shulker boxes are their own type of portable storage. Nope. */
-				|| item.getType().name().endsWith("_SHULKER_BOX")) {
+				|| item.getType().name().endsWith("SHULKER_BOX")) {
 			return true;
 		}
 		for (ItemStack is : InventoryUtils.getUniqueItems(getPlugin())) {
