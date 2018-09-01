@@ -5,6 +5,7 @@ import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.recipe.RecipeWrapper;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
@@ -48,7 +49,7 @@ public class ManaMappings {
 				return Double.MAX_VALUE;
 			}
 			return cost * toCreate.getAmount();
-		} else if (toCreate.getType() == Material.PAPER) {
+		} else if (toCreate.getType() == Material.PAPER || toCreate.getType() == Material.DRAGON_BREATH) {
 			// Special case: Paper slips are often used for unique cards and slips ingame.
 			return Double.MAX_VALUE;
 		}
@@ -203,6 +204,19 @@ public class ManaMappings {
 			manaMappings.put(Material.SMOOTH_SANDSTONE, manaMappings.get(Material.SANDSTONE));
 			manaMappings.put(Material.SMOOTH_STONE, manaMappings.get(Material.STONE));
 
+			for (DyeColor color : DyeColor.values()) {
+				manaMappings.put(Material.matchMaterial(color.name() + "_SHULKER_BOX"), manaMappings.get(Material.SHULKER_BOX));
+				manaMappings.put(Material.matchMaterial(color.name() + "_CONCRETE"),
+						manaMappings.get(Material.matchMaterial(color.name() + "_CONCRETE_POWDER")) + 10);
+			}
+
+			manaMappings.remove(Material.EMERALD);
+			manaMappings.remove(Material.EMERALD_BLOCK);
+			manaMappings.remove(Material.EMERALD_ORE);
+			manaMappings.remove(Material.LAPIS_LAZULI);
+			manaMappings.remove(Material.LAPIS_BLOCK);
+			manaMappings.remove(Material.LAPIS_ORE);
+
 			manaMappings.entrySet().removeIf(entry -> entry.getValue() == Double.MAX_VALUE);
 		}
 		return manaMappings;
@@ -271,6 +285,7 @@ public class ManaMappings {
 				case CYAN_DYE:
 				case DIORITE:
 				case GRANITE:
+				case LAPIS_LAZULI:
 				case LILAC:
 				case NETHERRACK:
 				case OXEYE_DAISY:
@@ -467,6 +482,7 @@ public class ManaMappings {
 					values.put(material, 35D);
 					break;
 				case QUARTZ:
+				case DRAGON_BREATH:
 					values.put(material, 37D);
 					break;
 				case IRON_INGOT:
@@ -532,11 +548,12 @@ public class ManaMappings {
 					values.put(material, 663D);
 					break;
 				case CHAINMAIL_HELMET:
+				case SCUTE:
 				case SHULKER_SHELL:
 					values.put(material, 750D);
 					break;
 				case DIAMOND_HORSE_ARMOR:
-				case SPONGE:
+				case WET_SPONGE:
 					values.put(material, 1000D);
 					break;
 				case CHAINMAIL_LEGGINGS:
@@ -545,16 +562,12 @@ public class ManaMappings {
 				case CHAINMAIL_CHESTPLATE:
 					values.put(material, 1200D);
 					break;
-				case PLAYER_HEAD:
-				case CREEPER_HEAD:
-				case ZOMBIE_HEAD:
-				case SKELETON_SKULL:
+				case DRAGON_HEAD:
 				case WITHER_SKELETON_SKULL:
 					values.put(material, 3000D);
 					break;
-				case DRAGON_HEAD:
-					// Dragon head
-					values.put(material, 16000D);
+				case ELYTRA:
+					values.put(material, 3142D);
 					break;
 				case TOTEM_OF_UNDYING:
 				case HEART_OF_THE_SEA:
@@ -563,8 +576,11 @@ public class ManaMappings {
 				case NETHER_STAR:
 					values.put(material, 10000D);
 					break;
-				case ELYTRA:
-					values.put(material, 3142D);
+				case PLAYER_HEAD:
+				case CREEPER_HEAD:
+				case ZOMBIE_HEAD:
+				case SKELETON_SKULL:
+					values.put(material, 16000D);
 					break;
 				case DRAGON_EGG:
 					values.put(material, 32000D);
@@ -583,7 +599,6 @@ public class ManaMappings {
 				case EMERALD_ORE: // Money
 				case END_PORTAL:
 				case END_PORTAL_FRAME:
-				case LAPIS_LAZULI: // Money
 				case LAPIS_BLOCK: // Money
 				case LAPIS_ORE: // Money
 				case SPAWNER:
