@@ -53,7 +53,15 @@ public class ManaMappings {
 				return Double.MAX_VALUE;
 			}
 			return cost * toCreate.getAmount();
-		} else {
+		}
+
+		if (InventoryUtils.isUniqueItem(effects.getPlugin(), toCreate)) {
+			return Double.MAX_VALUE;
+		}
+
+		ItemMeta meta = toCreate.getItemMeta();
+
+		if (toCreate.getEnchantments().size() > 0 || meta.hasDisplayName() || meta.hasLore() || meta.isUnbreakable()) {
 			switch (toCreate.getType()) {
 				case DRAGON_BREATH:
 				case FIREWORK_STAR:
@@ -64,12 +72,6 @@ public class ManaMappings {
 					break;
 			}
 		}
-
-		if (InventoryUtils.isUniqueItem(effects.getPlugin(), toCreate)) {
-			return Double.MAX_VALUE;
-		}
-
-		ItemMeta meta = toCreate.getItemMeta();
 
 		// In case of shulker boxes, etc. do not (yet) allow duplicating unless empty.
 		if (meta instanceof BlockStateMeta) {
