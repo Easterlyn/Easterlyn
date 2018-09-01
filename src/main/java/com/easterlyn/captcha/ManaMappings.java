@@ -6,6 +6,7 @@ import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.recipe.RecipeWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
@@ -15,8 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionData;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -49,9 +53,16 @@ public class ManaMappings {
 				return Double.MAX_VALUE;
 			}
 			return cost * toCreate.getAmount();
-		} else if (toCreate.getType() == Material.PAPER || toCreate.getType() == Material.DRAGON_BREATH) {
-			// Special case: Paper slips are often used for unique cards and slips ingame.
-			return Double.MAX_VALUE;
+		} else {
+			switch (toCreate.getType()) {
+				case DRAGON_BREATH:
+				case FIREWORK_STAR:
+				case PAPER:
+					// Special case: items used for unique cards, slips, or objects.
+					return Double.MAX_VALUE;
+				default:
+					break;
+			}
 		}
 
 		if (InventoryUtils.isUniqueItem(effects.getPlugin(), toCreate)) {
@@ -90,6 +101,129 @@ public class ManaMappings {
 						cost += 2000;
 						break;
 				}
+			}
+		}
+
+		if (meta instanceof FireworkMeta) {
+			FireworkMeta fireworkMeta = (FireworkMeta) meta;
+			cost += Math.abs(fireworkMeta.getPower()) * getMana().get(Material.GUNPOWDER);
+			for (FireworkEffect effect : fireworkMeta.getEffects()) {
+				switch (effect.getType()) {
+					case BALL_LARGE:
+						cost += getMana().get(Material.FIRE_CHARGE);
+						break;
+					case STAR:
+						cost += getMana().get(Material.GOLD_NUGGET);
+						break;
+					case BURST:
+						cost += getMana().get(Material.FEATHER);
+						break;
+					case CREEPER:
+						cost += getMana().get(Material.WITHER_SKELETON_SKULL);
+						break;
+					case BALL:
+						// Default effect, no cost
+					default:
+						break;
+				}
+				if (effect.hasFlicker()) {
+					cost += getMana().get(Material.GLOWSTONE_DUST);
+				}
+				if (effect.hasTrail()) {
+					cost += getMana().get(Material.DIAMOND);
+				}
+				// Flat cost of 1 mana per color
+				cost += effect.getColors().size();
+				cost += effect.getFadeColors().size();
+			}
+
+			if (toCreate.getType() == Material.FIREWORK_ROCKET) {
+				// Firework stars each require 1 gunpowder in addition to other components
+				cost += manaMappings.get(Material.GUNPOWDER) * fireworkMeta.getEffects().size();
+				// 3 fireworks per craft
+				cost /= 3;
+			}
+		}
+
+		if (meta instanceof PotionMeta) {
+			PotionMeta potionMeta = (PotionMeta) meta;
+
+			if (potionMeta.hasCustomEffects()) {
+				// Custom potions are unsupported.
+				return Double.MAX_VALUE;
+			}
+
+			PotionData potionData = potionMeta.getBasePotionData();
+
+			switch (potionData.getType()) {
+				case WATER:
+					break;
+				case MUNDANE:
+					// Sugar is the cheapest ingredient that creates mundane
+					cost += getMana().get(Material.SUGAR);
+					break;
+				case THICK:
+					cost += getMana().get(Material.GLOWSTONE_DUST);
+					break;
+				case AWKWARD:
+					cost += getMana().get(Material.NETHER_WART);
+					break;
+				case INVISIBILITY:
+					// Corrupted night vision
+					cost += getMana().get(Material.FERMENTED_SPIDER_EYE);
+				case NIGHT_VISION:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.GOLDEN_CARROT);
+					break;
+				case JUMP:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.RABBIT_FOOT);
+					break;
+				case FIRE_RESISTANCE:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.MAGMA_CREAM);
+					break;
+				case SLOWNESS:
+					// Corrupted speed/leaping, speed is cheaper
+					cost += getMana().get(Material.FERMENTED_SPIDER_EYE);
+				case SPEED:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.SUGAR);
+					break;
+				case WATER_BREATHING:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.PUFFERFISH);
+					break;
+				case INSTANT_HEAL:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.GLISTERING_MELON_SLICE);
+					break;
+				case INSTANT_DAMAGE:
+					// Corrupted poison/instant health, poison is cheaper
+					cost += getMana().get(Material.FERMENTED_SPIDER_EYE);
+				case POISON:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.SPIDER_EYE);
+					break;
+				case REGEN:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.GHAST_TEAR);
+					break;
+				case STRENGTH:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.BLAZE_POWDER);
+					break;
+				case WEAKNESS:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.FERMENTED_SPIDER_EYE);
+					break;
+				case TURTLE_MASTER:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.TURTLE_HELMET);
+					break;
+				case SLOW_FALLING:
+					cost += getMana().get(Material.NETHER_WART) + getMana().get(Material.PHANTOM_MEMBRANE);
+					break;
+				case LUCK:
+				case UNCRAFTABLE:
+					return Double.MAX_VALUE;
+			}
+
+			if (potionData.isExtended()) {
+				cost += getMana().get(Material.REDSTONE);
+			}
+
+			if (potionData.isUpgraded()) {
+				cost += getMana().get(Material.GLOWSTONE_DUST);
 			}
 		}
 
@@ -188,6 +322,16 @@ public class ManaMappings {
 	public static Map<Material, Double> getMana() {
 		if (manaMappings == null) {
 			manaMappings = createBaseMana();
+
+			for (String variant : new String[] { "BRAIN", "BUBBLE", "FIRE", "HORN", "TUBE" }) {
+				manaMappings.put(Material.matchMaterial(String.format("%s_CORAL_FAN", variant)), 4D);
+				manaMappings.put(Material.matchMaterial(String.format("%s_CORAL", variant)), 16D);
+				manaMappings.put(Material.matchMaterial(String.format("%s_CORAL_BLOCK", variant)), 64D);
+				manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL_FAN", variant)), 2D);
+				manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL", variant)), 8D);
+				manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL_BLOCK", variant)), 32D);
+			}
+
 			// Fill from recipes
 			for (Material material : Material.values()) {
 				addRecipeCosts(material);
@@ -196,6 +340,12 @@ public class ManaMappings {
 			// Special cases
 			manaMappings.put(Material.CHIPPED_ANVIL, manaMappings.getOrDefault(Material.ANVIL, Double.MAX_VALUE) / 3 * 2);
 			manaMappings.put(Material.DAMAGED_ANVIL, manaMappings.getOrDefault(Material.ANVIL, Double.MAX_VALUE) / 3);
+			manaMappings.put(Material.FIREWORK_ROCKET, manaMappings.get(Material.PAPER) + manaMappings.get(Material.GUNPOWDER));
+			manaMappings.put(Material.FIREWORK_STAR, manaMappings.get(Material.GUNPOWDER));
+			manaMappings.put(Material.POTION, manaMappings.get(Material.GLASS_BOTTLE) + 1);
+			manaMappings.put(Material.SPLASH_POTION, manaMappings.get(Material.POTION) + manaMappings.get(Material.GUNPOWDER));
+			manaMappings.put(Material.LINGERING_POTION, manaMappings.get(Material.SPLASH_POTION) + manaMappings.get(Material.DRAGON_BREATH));
+			manaMappings.put(Material.TIPPED_ARROW, manaMappings.get(Material.LINGERING_POTION) / 8 + manaMappings.get(Material.ARROW));
 
 			manaMappings.put(Material.FILLED_MAP, manaMappings.get(Material.MAP));
 
@@ -207,8 +357,11 @@ public class ManaMappings {
 			for (DyeColor color : DyeColor.values()) {
 				manaMappings.put(Material.matchMaterial(color.name() + "_SHULKER_BOX"), manaMappings.get(Material.SHULKER_BOX));
 				manaMappings.put(Material.matchMaterial(color.name() + "_CONCRETE"),
-						manaMappings.get(Material.matchMaterial(color.name() + "_CONCRETE_POWDER")) + 10);
+						manaMappings.get(Material.matchMaterial(color.name() + "_CONCRETE_POWDER")) + 3);
 			}
+
+			manaMappings.put(Material.DEBUG_STICK,
+					manaMappings.get(Material.NETHER_STAR) + 2 * manaMappings.get(Material.END_ROD));
 
 			manaMappings.remove(Material.EMERALD);
 			manaMappings.remove(Material.EMERALD_BLOCK);
@@ -437,11 +590,12 @@ public class ManaMappings {
 					break;
 				case ACACIA_SAPLING:
 				case BIRCH_SAPLING:
+				case CHORUS_FLOWER:
 				case DARK_OAK_SAPLING:
 				case JUNGLE_SAPLING:
 				case OAK_SAPLING:
-				case SPRUCE_SAPLING:
 				case SADDLE:
+				case SPRUCE_SAPLING:
 					values.put(material, 16D);
 					break;
 				case GUNPOWDER:
@@ -567,6 +721,7 @@ public class ManaMappings {
 					values.put(material, 3000D);
 					break;
 				case ELYTRA:
+				case TRIDENT:
 					values.put(material, 3142D);
 					break;
 				case TOTEM_OF_UNDYING:
