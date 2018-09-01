@@ -1,5 +1,7 @@
 package com.easterlyn.machines.utilities;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.bukkit.Axis;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -8,13 +10,16 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.MultipleFacing;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.util.Vector;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A blank structure for building multi-block Machines.
@@ -25,70 +30,89 @@ public class Shape {
 
 	public class MaterialDataValue {
 		Material material;
-		Direction direction;
-
-		public MaterialDataValue(Material material, Direction direction) {
-			this.material = material;
-			this.direction = direction;
-		}
+		Multimap<Class<? extends BlockData>, Direction> transforms;
 
 		public MaterialDataValue(Material material) {
 			this.material = material;
+			this.transforms = null;
+		}
+
+		public MaterialDataValue withBlockData(Class<? extends BlockData> clazz, Direction direction) {
+			if (transforms == null) {
+				transforms = HashMultimap.create();
+			}
+			if (!transforms.containsEntry(clazz, direction)) {
+				transforms.put(clazz, direction);
+			}
+			return this;
 		}
 
 		public  Material getMaterial() {
 			return this.material;
 		}
 
-		public Direction getDirection() {
-			return this.direction;
-		}
-
 		public void build(Block block) {
 			block.setType(this.material, false);
-			if (this.direction == null) {
+			if (this.transforms == null) {
 				return;
 			}
 
 			BlockData data = block.getBlockData();
 			boolean dirty = false;
 
-			if (data instanceof Bisected) {
-				((Bisected) data).setHalf(this.direction == Direction.UP ? Bisected.Half.TOP : Bisected.Half.BOTTOM);
-				dirty = true;
-			}
-
-			if (data instanceof Directional) {
-				Directional directional = (Directional) data;
-				BlockFace faceDirection = this.direction.toBlockFace();
-				if (!directional.getFaces().contains(faceDirection)) {
-					System.err.println(String.format("Invalid facing %s for material %s. Valid faces: %s",
-							faceDirection.name(), this.material.name(), directional.getFaces()));
-					faceDirection = directional.getFaces().iterator().next();
+			for (Class<? extends BlockData> key : this.transforms.keySet()) {
+				Collection<Direction> directions = this.transforms.get(key);
+				if (Bisected.class.isAssignableFrom(key) && data instanceof Bisected) {
+					((Bisected) data).setHalf(directions.iterator().next() == Direction.UP ? Bisected.Half.TOP : Bisected.Half.BOTTOM);
+					dirty = true;
 				}
-				directional.setFacing(faceDirection);
-				dirty = true;
-			}
 
-			if (data instanceof Orientable) {
-				Orientable orientable = (Orientable) data;
-				Axis axis = this.direction.toAxis();
-				if (!orientable.getAxes().contains(axis)) {
-					System.err.println(String.format("Invalid axis %s for material %s. Valid axes: %s",
-							axis.name(), this.material.name(), orientable.getAxes()));
-					axis = orientable.getAxes().iterator().next();
+				if (Directional.class.isAssignableFrom(key) && data instanceof Directional) {
+					Directional directional = (Directional) data;
+					BlockFace faceDirection = directions.iterator().next().toBlockFace();
+					if (!directional.getFaces().contains(faceDirection)) {
+						System.err.println(String.format("Invalid facing %s for material %s. Valid faces: %s",
+								faceDirection.name(), this.material.name(), directional.getFaces()));
+						faceDirection = directional.getFaces().iterator().next();
+					}
+					directional.setFacing(faceDirection);
+					dirty = true;
 				}
-				orientable.setAxis(axis);
-				dirty = true;
+
+				if (Orientable.class.isAssignableFrom(key) && data instanceof Orientable) {
+					Orientable orientable = (Orientable) data;
+					Axis axis = directions.iterator().next().toAxis();
+					if (!orientable.getAxes().contains(axis)) {
+						System.err.println(String.format("Invalid axis %s for material %s. Valid axes: %s",
+								axis.name(), this.material.name(), orientable.getAxes()));
+						axis = orientable.getAxes().iterator().next();
+					}
+					orientable.setAxis(axis);
+					dirty = true;
+				}
+
+				if (Rotatable.class.isAssignableFrom(key) && data instanceof Rotatable) {
+					((Rotatable) data).setRotation(directions.iterator().next().toBlockFace());
+					dirty = true;
+				}
+
+				if (MultipleFacing.class.isAssignableFrom(key) && data instanceof MultipleFacing) {
+					MultipleFacing multipleFacing = (MultipleFacing) data;
+					Set<BlockFace> allowedFaces = multipleFacing.getAllowedFaces();
+					for (Direction direction : directions) {
+						BlockFace blockFace = direction.toBlockFace();
+						if (!allowedFaces.contains(blockFace)) {
+							System.err.println(String.format("Invalid face %s for material %s. Valid faces: %s",
+									blockFace.name(), this.material.name(), allowedFaces));
+							continue;
+						}
+						multipleFacing.setFace(blockFace, true);
+						dirty = true;
+					}
+				}
+
 			}
 
-			if (data instanceof Rotatable) {
-				((Rotatable) data).setRotation(this.direction.toBlockFace());
-				dirty = true;
-			}
-
-			// TODO: rework to support multiple settings (? extends BlockData type, T... value)
-			// I.E. Stairs: Directional and Bisected
 			if (dirty) {
 				block.setBlockData(data, false);
 			}
@@ -121,16 +145,6 @@ public class Shape {
 	 * Sets the MaterialData for a Vector.
 	 *
 	 * @param vector the Vector
-	 * @param data the MaterialData
-	 */
-	public void setVectorData(Vector vector, Material data, Direction rotation) {
-		setVectorData(vector, new MaterialDataValue(data, rotation));
-	}
-
-	/**
-	 * Sets the MaterialData for a Vector.
-	 *
-	 * @param vector the Vector
 	 */
 	public void setVectorData(Vector vector, Material data) {
 		setVectorData(vector, new MaterialDataValue(data));
@@ -148,7 +162,13 @@ public class Shape {
 	public HashMap<Location, MaterialDataValue> getBuildLocations(Location location, Direction direction) {
 		HashMap<Location, MaterialDataValue> newLocs = new HashMap<>();
 		for (Entry<Vector, MaterialDataValue> entry : vectors.entrySet()) {
-			newLocs.put(location.clone().add(getRelativeVector(direction, entry.getKey().clone())), new MaterialDataValue(entry.getValue().material, entry.getValue().direction == null ? null : direction.getRelativeDirection(entry.getValue().direction)));
+			MaterialDataValue translated = new MaterialDataValue(entry.getValue().material);
+			if (entry.getValue().transforms != null) {
+				for (Entry<Class<? extends BlockData>, Direction> pair : translated.transforms.entries()) {
+					translated.withBlockData(pair.getKey(), direction.getRelativeDirection(pair.getValue()));
+				}
+			}
+			newLocs.put(location.clone().add(getRelativeVector(direction, entry.getKey().clone())), translated);
 		}
 		return newLocs;
 	}

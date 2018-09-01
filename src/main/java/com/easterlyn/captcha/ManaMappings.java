@@ -342,7 +342,7 @@ public class ManaMappings {
 			// Special cases
 			manaMappings.put(Material.CHIPPED_ANVIL, manaMappings.getOrDefault(Material.ANVIL, Double.MAX_VALUE) / 3 * 2);
 			manaMappings.put(Material.DAMAGED_ANVIL, manaMappings.getOrDefault(Material.ANVIL, Double.MAX_VALUE) / 3);
-			manaMappings.put(Material.FIREWORK_ROCKET, manaMappings.get(Material.PAPER) + manaMappings.get(Material.GUNPOWDER));
+			manaMappings.put(Material.FIREWORK_ROCKET, manaMappings.get(Material.PAPER));
 			manaMappings.put(Material.FIREWORK_STAR, manaMappings.get(Material.GUNPOWDER));
 			manaMappings.put(Material.POTION, manaMappings.get(Material.GLASS_BOTTLE) + 1);
 			manaMappings.put(Material.SPLASH_POTION, manaMappings.get(Material.POTION) + manaMappings.get(Material.GUNPOWDER));

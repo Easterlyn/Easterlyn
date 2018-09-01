@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -44,8 +45,10 @@ public class CompilationAmalgamator extends Machine {
 		super(plugin, machines, new Shape(), "Compilation Amalgamator");
 		this.captcha = plugin.getModule(Captcha.class);
 		Shape shape = getShape();
-		shape.setVectorData(new Vector(0, 0, 0), Material.DROPPER, Direction.SOUTH);
-		shape.setVectorData(new Vector(0, 0, 1), Material.HOPPER, Direction.SOUTH);
+		shape.setVectorData(new Vector(0, 0, 0),
+				shape.new MaterialDataValue(Material.DROPPER).withBlockData(Directional.class, Direction.SOUTH));
+		shape.setVectorData(new Vector(0, 0, 1),
+				shape.new MaterialDataValue(Material.HOPPER).withBlockData(Directional.class, Direction.SOUTH));
 
 		drop = new ItemStack(Material.DROPPER);
 		ItemMeta meta = drop.getItemMeta();

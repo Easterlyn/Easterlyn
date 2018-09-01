@@ -92,7 +92,7 @@ public class NetherPortalAgent implements TravelAgent {
 		shape.setVectorData(new Vector(0, 3, -1), value);
 		shape.setVectorData(new Vector(1, 3, -1), value);
 
-		value = shape.new MaterialDataValue(Material.NETHER_PORTAL, Direction.NORTH);
+		value = shape.new MaterialDataValue(Material.NETHER_PORTAL).withBlockData(Orientable.class, Direction.NORTH);
 
 		// Portal
 		shape.setVectorData(new Vector(-1, 0, 0), value);

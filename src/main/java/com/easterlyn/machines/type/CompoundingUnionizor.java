@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftShapelessRecipe;
 import org.bukkit.entity.Player;
@@ -42,7 +43,8 @@ public class CompoundingUnionizor extends Machine {
 	public CompoundingUnionizor(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Compounding Unionizer");
 		Shape shape = getShape();
-		shape.setVectorData(new Vector(0, 0, 0), Material.DROPPER, Direction.SOUTH);
+		shape.setVectorData(new Vector(0, 0, 0),
+				shape.new MaterialDataValue(Material.DROPPER).withBlockData(Directional.class, Direction.SOUTH));
 		shape.setVectorData(new Vector(0, 1, 0), Material.CRAFTING_TABLE);
 
 		drop = null; // future

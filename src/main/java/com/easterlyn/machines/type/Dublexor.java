@@ -17,6 +17,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -59,10 +60,14 @@ public class Dublexor extends Machine {
 		shape.setVectorData(new Vector(0, 0, 0), Material.GLASS);
 
 		shape.setVectorData(new Vector(0, 1, 0), Material.ENCHANTING_TABLE);
-		shape.setVectorData(new Vector(0, 0, -1), Material.QUARTZ_STAIRS, Direction.NORTH);
-		shape.setVectorData(new Vector(1, 0, 0), Material.QUARTZ_STAIRS, Direction.WEST);
-		shape.setVectorData(new Vector(-1, 0, 0), Material.QUARTZ_STAIRS, Direction.EAST);
-		shape.setVectorData(new Vector(0, 0, 1), Material.QUARTZ_STAIRS, Direction.SOUTH);
+		shape.setVectorData(new Vector(0, 0, -1),
+				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.NORTH));
+		shape.setVectorData(new Vector(1, 0, 0),
+				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.WEST));
+		shape.setVectorData(new Vector(-1, 0, 0),
+				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.EAST));
+		shape.setVectorData(new Vector(0, 0, 1),
+				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.SOUTH));
 
 		Shape.MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_SLAB);
 		shape.setVectorData(new Vector(1, 0, -1), m);

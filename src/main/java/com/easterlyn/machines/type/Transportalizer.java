@@ -19,6 +19,9 @@ import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Bisected;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.ComplexEntityPart;
@@ -63,7 +66,8 @@ public class Transportalizer extends Machine {
 		this.holograms = plugin.getModule(Holograms.class);
 		this.protections = plugin.getModule(Protections.class);
 		Shape shape = getShape();
-		shape.setVectorData(new Vector(0, 0, 0), Material.HOPPER, Direction.NORTH);
+		shape.setVectorData(new Vector(0, 0, 0),
+				shape.new MaterialDataValue(Material.HOPPER).withBlockData(Directional.class, Direction.NORTH));
 		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK);
 		shape.setVectorData(new Vector(-1, 0, 0), m);
 		shape.setVectorData(new Vector(1, 0, 0), m);
@@ -72,18 +76,20 @@ public class Transportalizer extends Machine {
 		shape.setVectorData(new Vector(1, 0, 1), m);
 		shape.setVectorData(new Vector(-1, 2, 1), m);
 		shape.setVectorData(new Vector(1, 2, 1), m);
-		shape.setVectorData(new Vector(0, 2, 1), Material.QUARTZ_PILLAR, Direction.WEST);
-// TODO temp fix		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
-		shape.setVectorData(new Vector(0, 0, 1), Material.QUARTZ_SLAB, Direction.UP);
+		shape.setVectorData(new Vector(0, 2, 1),
+				shape.new MaterialDataValue(Material.QUARTZ_PILLAR).withBlockData(Orientable.class, Direction.WEST));
+		shape.setVectorData(new Vector(0, 0, 1),
+				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Bisected.class, Direction.UP)
+				.withBlockData(Directional.class, Direction.NORTH));
 		shape.setVectorData(new Vector(0, 1, 1), Material.WHITE_STAINED_GLASS);
-		m = shape.new MaterialDataValue(Material.STONE_BUTTON, Direction.SOUTH);
+		m = shape.new MaterialDataValue(Material.STONE_BUTTON).withBlockData(Directional.class, Direction.SOUTH);
 		shape.setVectorData(new Vector(-1, 2, 0), m);
 		shape.setVectorData(new Vector(1, 2, 0), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH);
+		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.NORTH);
 		shape.setVectorData(new Vector(-1, 0, -1), m);
 		shape.setVectorData(new Vector(0, 0, -1), m);
 		shape.setVectorData(new Vector(1, 0, -1), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_PILLAR, Direction.UP);
+		m = shape.new MaterialDataValue(Material.QUARTZ_PILLAR).withBlockData(Orientable.class, Direction.UP);
 		shape.setVectorData(new Vector(-1, 1, 1), m);
 		shape.setVectorData(new Vector(1, 1, 1), m);
 		shape.setVectorData(new Vector(-1, 1, 0), Material.RED_CARPET);
