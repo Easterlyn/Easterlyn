@@ -37,7 +37,8 @@ public class DeathListener extends EasterlynListener {
 			return;
 		}
 
-		if (event.getEntity().getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.CRAMMING
+		if (event.getEntity().getLastDamageCause() != null
+				&& event.getEntity().getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.CRAMMING
 				|| event.getEntity().getKiller() != null
 				&& event.getEntity().getKiller().getGameMode() == GameMode.CREATIVE) {
 			event.setDroppedExp(0);
