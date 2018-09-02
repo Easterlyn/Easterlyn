@@ -9,6 +9,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.craftbukkit.v1_13_R2.enchantments.CraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.InventoryHolder;
@@ -871,34 +872,8 @@ public class ManaMappings {
 	}
 
 	private static int getWeight(Enchantment enchantment) {
-		if (enchantment.equals(Enchantment.PROTECTION_ENVIRONMENTAL)
-				|| enchantment.equals(Enchantment.DAMAGE_ALL)
-				|| enchantment.equals(Enchantment.DIG_SPEED)
-				|| enchantment.equals(Enchantment.ARROW_DAMAGE)) {
-			return 10;
-		}
-		if (enchantment.equals(Enchantment.WATER_WORKER)
-				|| enchantment.equals(Enchantment.PROTECTION_EXPLOSIONS)
-				|| enchantment.equals(Enchantment.OXYGEN)
-				|| enchantment.equals(Enchantment.DEPTH_STRIDER)
-				|| enchantment.equals(Enchantment.FROST_WALKER)
-				|| enchantment.equals(Enchantment.FIRE_ASPECT)
-				|| enchantment.equals(Enchantment.LOOT_BONUS_MOBS)
-				|| enchantment.equals(Enchantment.SWEEPING_EDGE)
-				|| enchantment.equals(Enchantment.LOOT_BONUS_BLOCKS)
-				|| enchantment.equals(Enchantment.ARROW_FIRE)
-				|| enchantment.equals(Enchantment.ARROW_KNOCKBACK)
-				|| enchantment.equals(Enchantment.LUCK)
-				|| enchantment.equals(Enchantment.LURE)) {
-			return 2;
-		}
-		if (enchantment.equals(Enchantment.THORNS)
-				|| enchantment.equals(Enchantment.SILK_TOUCH)
-				|| enchantment.equals(Enchantment.ARROW_INFINITE)
-				|| enchantment.equals(Enchantment.BINDING_CURSE)
-				|| enchantment.equals(Enchantment.VANISHING_CURSE)
-				|| enchantment.equals(Enchantment.MENDING)) {
-			return 1;
+		if (enchantment instanceof CraftEnchantment) {
+			return ((CraftEnchantment) enchantment).getHandle().d().a();
 		}
 		return 5;
 	}
