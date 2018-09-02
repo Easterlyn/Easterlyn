@@ -62,6 +62,7 @@ public class Shape {
 
 			for (Class<? extends BlockData> key : this.transforms.keySet()) {
 				Collection<Direction> directions = this.transforms.get(key);
+
 				if (Bisected.class.isAssignableFrom(key) && data instanceof Bisected) {
 					((Bisected) data).setHalf(directions.iterator().next() == Direction.UP ? Bisected.Half.TOP : Bisected.Half.BOTTOM);
 					dirty = true;
@@ -164,8 +165,8 @@ public class Shape {
 		for (Entry<Vector, MaterialDataValue> entry : vectors.entrySet()) {
 			MaterialDataValue translated = new MaterialDataValue(entry.getValue().material);
 			if (entry.getValue().transforms != null) {
-				for (Entry<Class<? extends BlockData>, Direction> pair : translated.transforms.entries()) {
-					translated.withBlockData(pair.getKey(), direction.getRelativeDirection(pair.getValue()));
+				for (Entry<Class<? extends BlockData>, Direction> dataEntry : entry.getValue().transforms.entries()) {
+					translated.withBlockData(dataEntry.getKey(), dataEntry.getValue().getRelativeDirection(direction));
 				}
 			}
 			newLocs.put(location.clone().add(getRelativeVector(direction, entry.getKey().clone())), translated);

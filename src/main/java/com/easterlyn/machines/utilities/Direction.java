@@ -47,10 +47,10 @@ public enum Direction {
 		switch (this) {
 			case NORTH:
 			case SOUTH:
-				return Axis.X;
+				return Axis.Z;
 			case EAST:
 			case WEST:
-				return Axis.Z;
+				return Axis.X;
 			case UP:
 			case DOWN:
 			default:

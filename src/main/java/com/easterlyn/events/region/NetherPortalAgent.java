@@ -92,7 +92,7 @@ public class NetherPortalAgent implements TravelAgent {
 		shape.setVectorData(new Vector(0, 3, -1), value);
 		shape.setVectorData(new Vector(1, 3, -1), value);
 
-		value = shape.new MaterialDataValue(Material.NETHER_PORTAL).withBlockData(Orientable.class, Direction.NORTH);
+		value = shape.new MaterialDataValue(Material.NETHER_PORTAL).withBlockData(Orientable.class, Direction.WEST);
 
 		// Portal
 		shape.setVectorData(new Vector(-1, 0, 0), value);
@@ -172,9 +172,9 @@ public class NetherPortalAgent implements TravelAgent {
 		}
 		Direction direction;
 		if (from instanceof Orientable) {
-			direction = ((Orientable) from).getAxis() == Axis.X ? Direction.NORTH : Direction.EAST;
+			direction = ((Orientable) from).getAxis() == Axis.X ? Direction.EAST : Direction.NORTH;
 		} else {
-			direction = Direction.NORTH;
+			direction = Direction.getFacingDirection(location);
 		}
 		shape.build(location, direction);
 		return true;
