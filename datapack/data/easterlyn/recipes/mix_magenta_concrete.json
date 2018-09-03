@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:magenta_concrete"
+      "item": "minecraft:magenta_concrete_powder"
     },
     {
-      "item": "minecraft:magenta_concrete"
+      "item": "minecraft:magenta_concrete_powder"
     },
     {
-      "item": "minecraft:magenta_concrete"
+      "item": "minecraft:magenta_concrete_powder"
     },
     {
-      "item": "minecraft:magenta_concrete"
+      "item": "minecraft:magenta_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:magenta_concrete"
+      "item": "minecraft:magenta_concrete_powder"
     },
     {
-      "item": "minecraft:magenta_concrete"
+      "item": "minecraft:magenta_concrete_powder"
     },
     {
-      "item": "minecraft:magenta_concrete"
+      "item": "minecraft:magenta_concrete_powder"
     },
     {
-      "item": "minecraft:magenta_concrete"
+      "item": "minecraft:magenta_concrete_powder"
     }
   ],
   "result": {

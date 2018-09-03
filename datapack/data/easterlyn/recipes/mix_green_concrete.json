@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:green_concrete"
+      "item": "minecraft:green_concrete_powder"
     },
     {
-      "item": "minecraft:green_concrete"
+      "item": "minecraft:green_concrete_powder"
     },
     {
-      "item": "minecraft:green_concrete"
+      "item": "minecraft:green_concrete_powder"
     },
     {
-      "item": "minecraft:green_concrete"
+      "item": "minecraft:green_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:green_concrete"
+      "item": "minecraft:green_concrete_powder"
     },
     {
-      "item": "minecraft:green_concrete"
+      "item": "minecraft:green_concrete_powder"
     },
     {
-      "item": "minecraft:green_concrete"
+      "item": "minecraft:green_concrete_powder"
     },
     {
-      "item": "minecraft:green_concrete"
+      "item": "minecraft:green_concrete_powder"
     }
   ],
   "result": {

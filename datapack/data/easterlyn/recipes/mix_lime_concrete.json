@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:lime_concrete"
+      "item": "minecraft:lime_concrete_powder"
     },
     {
-      "item": "minecraft:lime_concrete"
+      "item": "minecraft:lime_concrete_powder"
     },
     {
-      "item": "minecraft:lime_concrete"
+      "item": "minecraft:lime_concrete_powder"
     },
     {
-      "item": "minecraft:lime_concrete"
+      "item": "minecraft:lime_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:lime_concrete"
+      "item": "minecraft:lime_concrete_powder"
     },
     {
-      "item": "minecraft:lime_concrete"
+      "item": "minecraft:lime_concrete_powder"
     },
     {
-      "item": "minecraft:lime_concrete"
+      "item": "minecraft:lime_concrete_powder"
     },
     {
-      "item": "minecraft:lime_concrete"
+      "item": "minecraft:lime_concrete_powder"
     }
   ],
   "result": {

@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:pink_concrete"
+      "item": "minecraft:pink_concrete_powder"
     },
     {
-      "item": "minecraft:pink_concrete"
+      "item": "minecraft:pink_concrete_powder"
     },
     {
-      "item": "minecraft:pink_concrete"
+      "item": "minecraft:pink_concrete_powder"
     },
     {
-      "item": "minecraft:pink_concrete"
+      "item": "minecraft:pink_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:pink_concrete"
+      "item": "minecraft:pink_concrete_powder"
     },
     {
-      "item": "minecraft:pink_concrete"
+      "item": "minecraft:pink_concrete_powder"
     },
     {
-      "item": "minecraft:pink_concrete"
+      "item": "minecraft:pink_concrete_powder"
     },
     {
-      "item": "minecraft:pink_concrete"
+      "item": "minecraft:pink_concrete_powder"
     }
   ],
   "result": {

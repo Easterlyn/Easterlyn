@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:white_concrete"
+      "item": "minecraft:white_concrete_powder"
     },
     {
-      "item": "minecraft:white_concrete"
+      "item": "minecraft:white_concrete_powder"
     },
     {
-      "item": "minecraft:white_concrete"
+      "item": "minecraft:white_concrete_powder"
     },
     {
-      "item": "minecraft:white_concrete"
+      "item": "minecraft:white_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:white_concrete"
+      "item": "minecraft:white_concrete_powder"
     },
     {
-      "item": "minecraft:white_concrete"
+      "item": "minecraft:white_concrete_powder"
     },
     {
-      "item": "minecraft:white_concrete"
+      "item": "minecraft:white_concrete_powder"
     },
     {
-      "item": "minecraft:white_concrete"
+      "item": "minecraft:white_concrete_powder"
     }
   ],
   "result": {

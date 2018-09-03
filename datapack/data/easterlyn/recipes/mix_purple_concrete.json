@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:purple_concrete"
+      "item": "minecraft:purple_concrete_powder"
     },
     {
-      "item": "minecraft:purple_concrete"
+      "item": "minecraft:purple_concrete_powder"
     },
     {
-      "item": "minecraft:purple_concrete"
+      "item": "minecraft:purple_concrete_powder"
     },
     {
-      "item": "minecraft:purple_concrete"
+      "item": "minecraft:purple_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:purple_concrete"
+      "item": "minecraft:purple_concrete_powder"
     },
     {
-      "item": "minecraft:purple_concrete"
+      "item": "minecraft:purple_concrete_powder"
     },
     {
-      "item": "minecraft:purple_concrete"
+      "item": "minecraft:purple_concrete_powder"
     },
     {
-      "item": "minecraft:purple_concrete"
+      "item": "minecraft:purple_concrete_powder"
     }
   ],
   "result": {

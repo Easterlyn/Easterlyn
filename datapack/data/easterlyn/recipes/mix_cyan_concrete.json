@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:cyan_concrete"
+      "item": "minecraft:cyan_concrete_powder"
     },
     {
-      "item": "minecraft:cyan_concrete"
+      "item": "minecraft:cyan_concrete_powder"
     },
     {
-      "item": "minecraft:cyan_concrete"
+      "item": "minecraft:cyan_concrete_powder"
     },
     {
-      "item": "minecraft:cyan_concrete"
+      "item": "minecraft:cyan_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:cyan_concrete"
+      "item": "minecraft:cyan_concrete_powder"
     },
     {
-      "item": "minecraft:cyan_concrete"
+      "item": "minecraft:cyan_concrete_powder"
     },
     {
-      "item": "minecraft:cyan_concrete"
+      "item": "minecraft:cyan_concrete_powder"
     },
     {
-      "item": "minecraft:cyan_concrete"
+      "item": "minecraft:cyan_concrete_powder"
     }
   ],
   "result": {

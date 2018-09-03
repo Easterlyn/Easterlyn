@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:orange_concrete"
+      "item": "minecraft:orange_concrete_powder"
     },
     {
-      "item": "minecraft:orange_concrete"
+      "item": "minecraft:orange_concrete_powder"
     },
     {
-      "item": "minecraft:orange_concrete"
+      "item": "minecraft:orange_concrete_powder"
     },
     {
-      "item": "minecraft:orange_concrete"
+      "item": "minecraft:orange_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:orange_concrete"
+      "item": "minecraft:orange_concrete_powder"
     },
     {
-      "item": "minecraft:orange_concrete"
+      "item": "minecraft:orange_concrete_powder"
     },
     {
-      "item": "minecraft:orange_concrete"
+      "item": "minecraft:orange_concrete_powder"
     },
     {
-      "item": "minecraft:orange_concrete"
+      "item": "minecraft:orange_concrete_powder"
     }
   ],
   "result": {

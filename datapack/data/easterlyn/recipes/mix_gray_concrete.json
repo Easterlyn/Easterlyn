@@ -3,31 +3,31 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:gray_concrete"
+      "item": "minecraft:gray_concrete_powder"
     },
     {
-      "item": "minecraft:gray_concrete"
+      "item": "minecraft:gray_concrete_powder"
     },
     {
-      "item": "minecraft:gray_concrete"
+      "item": "minecraft:gray_concrete_powder"
     },
     {
-      "item": "minecraft:gray_concrete"
+      "item": "minecraft:gray_concrete_powder"
     },
     {
       "item": "minecraft:water_bucket"
     },
     {
-      "item": "minecraft:gray_concrete"
+      "item": "minecraft:gray_concrete_powder"
     },
     {
-      "item": "minecraft:gray_concrete"
+      "item": "minecraft:gray_concrete_powder"
     },
     {
-      "item": "minecraft:gray_concrete"
+      "item": "minecraft:gray_concrete_powder"
     },
     {
-      "item": "minecraft:gray_concrete"
+      "item": "minecraft:gray_concrete_powder"
     }
   ],
   "result": {
