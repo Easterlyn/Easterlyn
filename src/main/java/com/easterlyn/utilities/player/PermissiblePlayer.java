@@ -21,6 +21,7 @@ import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
@@ -1593,6 +1594,11 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public PistonMoveReaction getPistonMoveReaction() {
 		return player.getPistonMoveReaction();
+	}
+
+	@Override
+	public BlockFace getFacing() {
+		return player.getFacing();
 	}
 
 	@Override

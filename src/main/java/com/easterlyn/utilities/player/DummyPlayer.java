@@ -21,6 +21,7 @@ import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
@@ -1282,6 +1283,11 @@ public class DummyPlayer implements Player {
 	@Override
 	public PistonMoveReaction getPistonMoveReaction() {
 		return PistonMoveReaction.IGNORE;
+	}
+
+	@Override
+	public BlockFace getFacing() {
+		return BlockFace.NORTH;
 	}
 
 	@Override
