@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "concrete_powder",
+  "ingredients": [
+    {
+      "item": "minecraft:bone_meal"
+    },
+    {
+      "tag": "easterlyn:concrete_powder"
+    },
+    {
+      "tag": "easterlyn:concrete_powder"
+    },
+    {
+      "tag": "easterlyn:concrete_powder"
+    },
+    {
+      "tag": "easterlyn:concrete_powder"
+    },
+    {
+      "tag": "easterlyn:concrete_powder"
+    },
+    {
+      "tag": "easterlyn:concrete_powder"
+    },
+    {
+      "tag": "easterlyn:concrete_powder"
+    },
+    {
+      "tag": "easterlyn:concrete_powder"
+    }
+  ],
+  "result": {
+    "item": "minecraft:white_concrete_powder",
+    "count": 8
+  }
+}

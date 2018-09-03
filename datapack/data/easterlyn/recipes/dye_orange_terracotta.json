@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "stained_terracotta",
+  "ingredients": [
+    {
+      "item": "minecraft:orange_dye"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    }
+  ],
+  "result": {
+    "item": "minecraft:orange_terracotta",
+    "count": 8
+  }
+}

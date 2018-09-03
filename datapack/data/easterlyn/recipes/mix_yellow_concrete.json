@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "concrete",
+  "ingredients": [
+    {
+      "item": "minecraft:yellow_concrete"
+    },
+    {
+      "item": "minecraft:yellow_concrete"
+    },
+    {
+      "item": "minecraft:yellow_concrete"
+    },
+    {
+      "item": "minecraft:yellow_concrete"
+    },
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "minecraft:yellow_concrete"
+    },
+    {
+      "item": "minecraft:yellow_concrete"
+    },
+    {
+      "item": "minecraft:yellow_concrete"
+    },
+    {
+      "item": "minecraft:yellow_concrete"
+    }
+  ],
+  "result": {
+    "item": "minecraft:yellow_concrete",
+    "count": 4
+  }
+}

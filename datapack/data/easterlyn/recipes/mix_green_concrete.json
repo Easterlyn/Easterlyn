@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "concrete",
+  "ingredients": [
+    {
+      "item": "minecraft:green_concrete"
+    },
+    {
+      "item": "minecraft:green_concrete"
+    },
+    {
+      "item": "minecraft:green_concrete"
+    },
+    {
+      "item": "minecraft:green_concrete"
+    },
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "minecraft:green_concrete"
+    },
+    {
+      "item": "minecraft:green_concrete"
+    },
+    {
+      "item": "minecraft:green_concrete"
+    },
+    {
+      "item": "minecraft:green_concrete"
+    }
+  ],
+  "result": {
+    "item": "minecraft:green_concrete",
+    "count": 4
+  }
+}

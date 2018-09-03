@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "concrete",
+  "ingredients": [
+    {
+      "item": "minecraft:pink_dye"
+    },
+    {
+      "tag": "easterlyn:concrete"
+    },
+    {
+      "tag": "easterlyn:concrete"
+    },
+    {
+      "tag": "easterlyn:concrete"
+    },
+    {
+      "tag": "easterlyn:concrete"
+    },
+    {
+      "tag": "easterlyn:concrete"
+    },
+    {
+      "tag": "easterlyn:concrete"
+    },
+    {
+      "tag": "easterlyn:concrete"
+    },
+    {
+      "tag": "easterlyn:concrete"
+    }
+  ],
+  "result": {
+    "item": "minecraft:pink_concrete",
+    "count": 8
+  }
+}

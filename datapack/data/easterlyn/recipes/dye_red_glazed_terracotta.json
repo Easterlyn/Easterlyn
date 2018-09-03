@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "glazed_terracotta",
+  "ingredients": [
+    {
+      "item": "minecraft:rose red"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    }
+  ],
+  "result": {
+    "item": "minecraft:red_glazed_terracotta",
+    "count": 8
+  }
+}

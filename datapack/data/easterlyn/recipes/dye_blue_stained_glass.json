@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "stained_glass",
+  "ingredients": [
+    {
+      "item": "minecraft:lapis_lazuli"
+    },
+    {
+      "tag": "easterlyn:stained_glass"
+    },
+    {
+      "tag": "easterlyn:stained_glass"
+    },
+    {
+      "tag": "easterlyn:stained_glass"
+    },
+    {
+      "tag": "easterlyn:stained_glass"
+    },
+    {
+      "tag": "easterlyn:stained_glass"
+    },
+    {
+      "tag": "easterlyn:stained_glass"
+    },
+    {
+      "tag": "easterlyn:stained_glass"
+    },
+    {
+      "tag": "easterlyn:stained_glass"
+    }
+  ],
+  "result": {
+    "item": "minecraft:blue_stained_glass",
+    "count": 8
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "stained_glass_pane",
+  "ingredients": [
+    {
+      "item": "minecraft:orange_dye"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    }
+  ],
+  "result": {
+    "item": "minecraft:orange_stained_glass_pane",
+    "count": 8
+  }
+}

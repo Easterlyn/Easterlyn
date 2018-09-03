@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "stained_terracotta",
+  "ingredients": [
+    {
+      "item": "minecraft:rose red"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    },
+    {
+      "tag": "easterlyn:terracotta"
+    }
+  ],
+  "result": {
+    "item": "minecraft:red_terracotta",
+    "count": 8
+  }
+}

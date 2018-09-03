@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "stained_glass_pane",
+  "ingredients": [
+    {
+      "item": "minecraft:ink_sac"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    },
+    {
+      "tag": "easterlyn:stained_glass_pane"
+    }
+  ],
+  "result": {
+    "item": "minecraft:black_stained_glass_pane",
+    "count": 8
+  }
+}

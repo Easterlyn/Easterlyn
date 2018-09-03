@@ -1,0 +1,37 @@
+{
+  "type": "crafting_shapeless",
+  "group": "glazed_terracotta",
+  "ingredients": [
+    {
+      "item": "minecraft:dandelion_yellow"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    },
+    {
+      "tag": "easterlyn:glazed_terracotta"
+    }
+  ],
+  "result": {
+    "item": "minecraft:yellow_glazed_terracotta",
+    "count": 8
+  }
+}
