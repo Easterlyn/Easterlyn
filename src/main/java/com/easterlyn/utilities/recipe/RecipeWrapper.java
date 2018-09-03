@@ -24,6 +24,7 @@ import java.util.Map;
 public class RecipeWrapper {
 
 	private final Map<EnumSet<Material>, Integer> ingredients;
+	private final org.bukkit.inventory.ItemStack result;
 
 	public RecipeWrapper(Recipe recipe) {
 		Preconditions.checkArgument(recipe instanceof Keyed, "%s does not implement Keyed!", recipe.getClass());
@@ -60,10 +61,16 @@ public class RecipeWrapper {
 
 			ingredients.compute(materials, (materials1, integer) -> integer == null ? 1 : integer + 1);
 		}
+
+		result = recipe.getResult();
 	}
 
 	public Map<EnumSet<Material>, Integer> getRecipeIngredients() {
 		return this.ingredients;
+	}
+
+	public org.bukkit.inventory.ItemStack getResult() {
+		return this.result;
 	}
 
 }

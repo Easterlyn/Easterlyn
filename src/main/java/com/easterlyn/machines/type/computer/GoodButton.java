@@ -1,6 +1,7 @@
 package com.easterlyn.machines.type.computer;
 
 import com.easterlyn.machines.Machines;
+import com.easterlyn.machines.type.Densificator;
 import com.easterlyn.machines.type.Elevator;
 import com.easterlyn.machines.type.Machine;
 import org.apache.commons.lang3.tuple.Pair;
@@ -46,24 +47,40 @@ public class GoodButton extends Program {
 
 		if (!clickedMeta.hasLore()) {
 			switch (ChatColor.stripColor(clickedMeta.getDisplayName())) {
-			case "Increase Boost":
-				if (top.getLocation() == null) {
+				case "Increase Boost":
+					if (top.getLocation() == null) {
+						break;
+					}
+					Pair<Machine, ConfigurationSection> machine = getMachines().getMachineByLocation(top.getLocation());
+					if (!(machine.getLeft() instanceof Elevator)) {
+						break;
+					}
+					Elevator elevator = (Elevator) machine.getLeft();
+					int amount = elevator.adjustBlockBoost(machine.getRight(), 1);
+					ItemStack gauge = top.getItem(4);
+					if (gauge != null) {
+						gauge.setAmount(amount);
+						top.setItem(4, gauge);
+					}
 					break;
-				}
-				Pair<Machine, ConfigurationSection> machine = getMachines().getMachineByLocation(top.getLocation());
-				if (!(machine.getLeft() instanceof Elevator)) {
+				case "Cycle Densification":
+					if (top.getLocation() == null) {
+						break;
+					}
+					Pair<Machine, ConfigurationSection> machineDensificator = getMachines().getMachineByLocation(top.getLocation());
+					if (!(machineDensificator.getLeft() instanceof Densificator)) {
+						break;
+					}
+					Densificator densificator = (Densificator) machineDensificator.getLeft();
+					int densificationAmount = densificator.adjustDensificationMode(machineDensificator.getRight(), 1);
+					ItemStack densificationGauge = top.getItem(4);
+					if (densificationGauge != null) {
+						densificationGauge.setAmount(densificationAmount);
+						top.setItem(4, densificationGauge);
+					}
 					break;
-				}
-				Elevator elevator = (Elevator) machine.getLeft();
-				int amount = elevator.adjustBlockBoost(machine.getRight(), 1);
-				ItemStack gauge = top.getItem(4);
-				if (gauge != null) {
-					gauge.setAmount(amount);
-					top.setItem(4, gauge);
-				}
-				break;
-			default:
-				break;
+				default:
+					break;
 			}
 			return;
 		}

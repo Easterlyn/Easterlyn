@@ -5,14 +5,19 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.utilities.InventoryUtils;
+import net.minecraft.server.v1_13_R2.IRecipe;
+import net.minecraft.server.v1_13_R2.MinecraftKey;
+import net.minecraft.server.v1_13_R2.ShapedRecipes;
 import net.minecraft.server.v1_13_R2.ShapelessRecipes;
+import org.bukkit.Bukkit;
+import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftShapelessRecipe;
+import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -25,7 +30,6 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -38,7 +42,6 @@ import java.util.function.Function;
 public class CompoundingUnionizor extends Machine {
 
 	private final ItemStack drop;
-	private Field shapelessRecipes;
 
 	public CompoundingUnionizor(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Compounding Unionizer");
@@ -54,31 +57,12 @@ public class CompoundingUnionizor extends Machine {
 		if (!(recipe instanceof ShapelessRecipe || recipe instanceof ShapedRecipe)) {
 			return false;
 		}
-		if (recipe instanceof ShapelessRecipe && getShapelessRecipesField() != null) {
-			try {
-				Object nmsRecipe = shapelessRecipes.get(recipe);
-				if (nmsRecipe != null && !nmsRecipe.getClass().equals(ShapelessRecipes.class)) {
-					// Special shapeless recipe - armor dye, repair, banner patterns, etc.
-					return false;
-				}
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return true;
-	}
+		Keyed keyed = (Keyed) recipe;
 
-	private Field getShapelessRecipesField() {
-		if (shapelessRecipes == null) {
-			try {
-				shapelessRecipes = CraftShapelessRecipe.class.getDeclaredField("recipe");
-				shapelessRecipes.setAccessible(true);
-			} catch (NoSuchFieldException | SecurityException e) {
-				e.printStackTrace();
-			}
-		}
-		return shapelessRecipes;
+		IRecipe iRecipe = ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager()
+				.a(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
+
+		return iRecipe instanceof ShapedRecipes || iRecipe instanceof ShapelessRecipes;
 	}
 
 	@Override

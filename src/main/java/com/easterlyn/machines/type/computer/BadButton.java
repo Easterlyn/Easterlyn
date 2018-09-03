@@ -1,6 +1,7 @@
 package com.easterlyn.machines.type.computer;
 
 import com.easterlyn.machines.Machines;
+import com.easterlyn.machines.type.Densificator;
 import com.easterlyn.machines.type.Elevator;
 import com.easterlyn.machines.type.Machine;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,7 +29,7 @@ public class BadButton extends Program {
 	public BadButton(Machines machines) {
 		super(machines);
 
-		icon = new ItemStack(Material.RED_STAINED_GLASS);
+		icon = new ItemStack(Material.RED_STAINED_GLASS_PANE);
 	}
 
 	@Override
@@ -59,6 +60,22 @@ public class BadButton extends Program {
 					top.setItem(4, gauge);
 				}
 				break;
+				case "Cycle Densification":
+					if (top.getLocation() == null) {
+						break;
+					}
+					Pair<Machine, ConfigurationSection> machineDensificator = getMachines().getMachineByLocation(top.getLocation());
+					if (!(machineDensificator.getLeft() instanceof Densificator)) {
+						break;
+					}
+					Densificator densificator = (Densificator) machineDensificator.getLeft();
+					int densificationAmount = densificator.adjustDensificationMode(machineDensificator.getRight(), -1);
+					ItemStack densificationGauge = top.getItem(4);
+					if (densificationGauge != null) {
+						densificationGauge.setAmount(densificationAmount);
+						top.setItem(4, densificationGauge);
+					}
+					break;
 			default:
 				break;
 			}

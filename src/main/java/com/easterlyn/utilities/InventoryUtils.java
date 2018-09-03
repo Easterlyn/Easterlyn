@@ -74,7 +74,6 @@ import java.util.Map.Entry;
 public class InventoryUtils {
 
 	public static final String ITEM_UNIQUE = ChatColor.DARK_PURPLE + "Unique";
-	public static final String ITEM_EXCESSIVELY_ENCHANTABLE = ChatColor.DARK_BLUE.toString() + ChatColor.DARK_BLUE + ChatColor.DARK_BLUE;
 
 	private static HashMap<String, String> items;
 	private static HashMultimap<String, String> itemsReverse;
