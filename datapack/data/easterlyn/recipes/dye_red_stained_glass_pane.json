@@ -3,7 +3,7 @@
   "group": "stained_glass_pane",
   "ingredients": [
     {
-      "item": "minecraft:rose red"
+      "item": "minecraft:rose_red"
     },
     {
       "tag": "easterlyn:stained_glass_pane"

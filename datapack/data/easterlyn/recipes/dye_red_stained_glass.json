@@ -3,31 +3,31 @@
   "group": "stained_glass",
   "ingredients": [
     {
-      "item": "minecraft:rose red"
+      "item": "minecraft:rose_red"
     },
     {
-      "tag": "easterlyn:stained_glass"
+      "tag": "minecraft:stained_glass"
     },
     {
-      "tag": "easterlyn:stained_glass"
+      "tag": "minecraft:stained_glass"
     },
     {
-      "tag": "easterlyn:stained_glass"
+      "tag": "minecraft:stained_glass"
     },
     {
-      "tag": "easterlyn:stained_glass"
+      "tag": "minecraft:stained_glass"
     },
     {
-      "tag": "easterlyn:stained_glass"
+      "tag": "minecraft:stained_glass"
     },
     {
-      "tag": "easterlyn:stained_glass"
+      "tag": "minecraft:stained_glass"
     },
     {
-      "tag": "easterlyn:stained_glass"
+      "tag": "minecraft:stained_glass"
     },
     {
-      "tag": "easterlyn:stained_glass"
+      "tag": "minecraft:stained_glass"
     }
   ],
   "result": {
