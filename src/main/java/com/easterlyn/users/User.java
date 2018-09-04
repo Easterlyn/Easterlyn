@@ -225,7 +225,7 @@ public class User {
 	 * @return true if the user can be spectated to
 	 */
 	public boolean getSpectatable() {
-		return yaml.getBoolean("spectatable", true);
+		return yaml.getBoolean("spectatable", false);
 	}
 
 	/**
