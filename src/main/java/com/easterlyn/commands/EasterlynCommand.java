@@ -8,6 +8,7 @@ import com.easterlyn.utilities.player.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
@@ -108,6 +109,11 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 			return com.google.common.collect.ImmutableList.of();
 		}
 		return super.tabComplete(sender, alias, args);
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
+		return this.tabComplete(sender, alias, args);
 	}
 
 	protected List<String> completeArgument(String argument, String... completions) {

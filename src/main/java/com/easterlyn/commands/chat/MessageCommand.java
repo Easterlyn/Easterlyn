@@ -1,8 +1,5 @@
 package com.easterlyn.commands.chat;
 
-import java.util.HashMap;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
@@ -12,17 +9,17 @@ import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.player.WrappedSenderPlayer;
-
+import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Reimplementation of messaging.
@@ -135,6 +132,14 @@ public class MessageCommand extends EasterlynCommand {
 		}
 
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+		if (args.length == 1 && !(alias = alias.toLowerCase()).equals("r") && !alias.equals("reply")) {
+			return super.tabComplete(sender, alias, args);
+		}
+		return ImmutableList.of();
 	}
 
 }
