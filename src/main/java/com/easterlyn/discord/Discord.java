@@ -92,7 +92,7 @@ public class Discord extends Module {
 		modules = new HashMap<>();
 		commands = new HashMap<>();
 
-		authentications = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build(
+		authentications = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build(
 				new CacheLoader<Object, Object>() {
 					@Override
 					public Object load(Object key) throws Exception {

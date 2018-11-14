@@ -182,7 +182,7 @@ command:
     usage: '/link [UUID] [DiscordUser/ID]'
     success: |-
       {COLOR:neutral}Message the Discord bot "{COLOR:command}/link {CODE}{COLOR:neutral}" to complete linking your Discord account!
-      {COLOR:bad}This code will expire in a minute.
+      {COLOR:bad}This code will expire in 5 minutes.
       {COLOR:neutral}Discord invite link: {COLOR:link_color}{COLOR:link_format}discord.easterlyn.com
     successHover: '{COLOR:neutral}Click to insert into chat for easy copying!'
     basicReadingComprehension: '{COLOR:bad}This is not Discord. Complete the link via command {COLOR:emphasis.bad}in Discord{COLOR:bad}.'
