@@ -4,6 +4,7 @@ import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
@@ -51,6 +52,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
@@ -312,6 +315,26 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public List<Block> getLastTwoTargetBlocks(Set<Material> transparent, int maxDistance) {
 		return player.getLastTwoTargetBlocks(transparent, maxDistance);
+	}
+
+	@Override
+	public Block getTargetBlockExact(int i) {
+		return player.getTargetBlockExact(i);
+	}
+
+	@Override
+	public Block getTargetBlockExact(int i, FluidCollisionMode fluidCollisionMode) {
+		return player.getTargetBlockExact(i, fluidCollisionMode);
+	}
+
+	@Override
+	public RayTraceResult rayTraceBlocks(double v) {
+		return player.rayTraceBlocks(v);
+	}
+
+	@Override
+	public RayTraceResult rayTraceBlocks(double v, FluidCollisionMode fluidCollisionMode) {
+		return player.rayTraceBlocks(v, fluidCollisionMode);
 	}
 
 	@Override
@@ -1211,6 +1234,21 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public boolean sleep(Location location, boolean b) {
+		return player.sleep(location, b);
+	}
+
+	@Override
+	public void wakeup(boolean b) {
+		player.wakeup(b);
+	}
+
+	@Override
+	public Location getBedLocation() {
+		return player.getBedLocation();
+	}
+
+	@Override
 	public void setCompassTarget(Location arg0) {
 		player.setCompassTarget(arg0);
 	}
@@ -1488,6 +1526,11 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public int getClientViewDistance() {
+		return player.getClientViewDistance();
+	}
+
+	@Override
 	public String getLocale() {
 		return player.getLocale();
 	}
@@ -1675,6 +1718,11 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public double getWidth() {
 		return player.getWidth();
+	}
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		return player.getBoundingBox();
 	}
 
 	@Override

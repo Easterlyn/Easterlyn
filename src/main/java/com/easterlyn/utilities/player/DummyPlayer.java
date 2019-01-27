@@ -4,6 +4,7 @@ import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
@@ -51,6 +52,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
@@ -250,6 +253,26 @@ public class DummyPlayer implements Player {
 
 	@Override
 	public List<Block> getLastTwoTargetBlocks(Set<Material> arg0, int arg1) {
+		return null;
+	}
+
+	@Override
+	public Block getTargetBlockExact(int i) {
+		return null;
+	}
+
+	@Override
+	public Block getTargetBlockExact(int i, FluidCollisionMode fluidCollisionMode) {
+		return null;
+	}
+
+	@Override
+	public RayTraceResult rayTraceBlocks(double v) {
+		return null;
+	}
+
+	@Override
+	public RayTraceResult rayTraceBlocks(double v, FluidCollisionMode fluidCollisionMode) {
 		return null;
 	}
 
@@ -996,6 +1019,21 @@ public class DummyPlayer implements Player {
 	public void setBedSpawnLocation(Location arg0, boolean arg1) {}
 
 	@Override
+	public boolean sleep(Location location, boolean b) {
+		return false;
+	}
+
+	@Override
+	public void wakeup(boolean b) {
+
+	}
+
+	@Override
+	public Location getBedLocation() {
+		return null;
+	}
+
+	@Override
 	public void setCompassTarget(Location arg0) {}
 
 	@Override
@@ -1193,6 +1231,11 @@ public class DummyPlayer implements Player {
 	}
 
 	@Override
+	public int getClientViewDistance() {
+		return 0;
+	}
+
+	@Override
 	public String getLocale() {
 		return "en_us";
 	}
@@ -1357,6 +1400,11 @@ public class DummyPlayer implements Player {
 	@Override
 	public double getWidth() {
 		return 0;
+	}
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		return null;
 	}
 
 	@Override

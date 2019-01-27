@@ -1,12 +1,9 @@
 package com.easterlyn.micromodules.protectionhooks;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -26,15 +23,8 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return false;
 		}
-		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
-		if (world == null) {
-			return true;
-		}
-		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
-		if (regionManager == null) {
-			return true;
-		}
-		return regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ())).size() > 0;
+		return WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.getApplicableRegions(BukkitAdapter.adapt(location)).size() > 0;
 	}
 
 	@Override
@@ -42,16 +32,9 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return true;
 		}
-		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
-		if (world == null) {
-			return true;
-		}
-		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
-		if (regionManager == null) {
-			return true;
-		}
-		ApplicableRegionSet regions = regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ()));
-		return regions.queryState(null, Flags.MOB_SPAWNING) == State.ALLOW;
+		return WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.getApplicableRegions(BukkitAdapter.adapt(location))
+				.queryState(null, Flags.MOB_SPAWNING) == State.ALLOW;
 	}
 
 	@Override
@@ -59,16 +42,9 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return true;
 		}
-		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
-		if (world == null) {
-			return true;
-		}
-		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
-		if (regionManager == null) {
-			return true;
-		}
-		ApplicableRegionSet regions = regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ()));
-		return regions.queryState(null, Flags.ENTRY, Flags.USE) == State.ALLOW;
+		return WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.getApplicableRegions(BukkitAdapter.adapt(location))
+				.queryState(null, Flags.ENTRY, Flags.USE) == State.ALLOW;
 	}
 
 	@Override
@@ -76,16 +52,9 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return true;
 		}
-		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
-		if (world == null) {
-			return true;
-		}
-		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
-		if (regionManager == null) {
-			return true;
-		}
-		ApplicableRegionSet regions = regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ()));
-		return regions.queryState(null, Flags.ENTRY, Flags.CHEST_ACCESS) == State.ALLOW;
+		return WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.getApplicableRegions(BukkitAdapter.adapt(location))
+				.queryState(null, Flags.ENTRY, Flags.CHEST_ACCESS) == State.ALLOW;
 	}
 
 	@Override
@@ -93,16 +62,9 @@ public class WorldGuardHook extends ProtectionHook {
 		if (!isHookUsable()) {
 			return true;
 		}
-		World world = WorldGuard.getInstance().getPlatform().getWorldByName(location.getWorld().getName());
-		if (world == null) {
-			return true;
-		}
-		RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
-		if (regionManager == null) {
-			return true;
-		}
-		ApplicableRegionSet regions = regionManager.getApplicableRegions(new Vector(location.getX(), location.getY(), location.getZ()));
-		return regions.queryState(null, Flags.ENTRY, Flags.BUILD) == State.ALLOW;
+		return WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
+				.getApplicableRegions(BukkitAdapter.adapt(location))
+				.queryState(null, Flags.ENTRY, Flags.BUILD) == State.ALLOW;
 	}
 
 }
