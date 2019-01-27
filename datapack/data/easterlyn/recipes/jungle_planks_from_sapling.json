@@ -1,0 +1,16 @@
+{
+  "type": "crafting_shaped",
+  "group": "planks",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:jungle_sapling"
+    }
+  },
+  "result": {
+    "item": "minecraft:jungle_planks"
+  }
+}
