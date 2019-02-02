@@ -76,7 +76,7 @@ public class ManaCommand extends EasterlynCommand {
 		}
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (Captcha.isUsedCaptcha(hand)) {
-			hand = captcha.captchaToItem(hand);
+			hand = captcha.getItemForCaptcha(hand);
 		}
 		if (hand == null || hand.getType() == Material.AIR) {
 			sender.sendMessage(this.getLang().getValue("command.mana.nothing"));

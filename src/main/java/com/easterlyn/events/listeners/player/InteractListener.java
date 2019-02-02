@@ -140,7 +140,7 @@ public class InteractListener extends EasterlynListener {
 
 		// Uncaptcha
 		if (Captcha.isUsedCaptcha(held)) {
-			ItemStack captchaStack = captcha.captchaToItem(held);
+			ItemStack captchaStack = captcha.getItemForCaptcha(held);
 			if (held.getAmount() > 1) {
 				held.setAmount(held.getAmount() - 1);
 				if (event.getPlayer().getInventory().firstEmpty() != -1) {

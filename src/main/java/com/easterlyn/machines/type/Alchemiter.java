@@ -1,11 +1,8 @@
 package com.easterlyn.machines.type;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.captcha.CruxiteDowel;
+import com.easterlyn.captcha.ManaMappings;
 import com.easterlyn.chat.Language;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.machines.MachineInventoryTracker;
@@ -15,10 +12,9 @@ import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Directional;
@@ -33,7 +29,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Simulate a Sburb Alchemiter in Minecraft.
@@ -181,12 +178,12 @@ public class Alchemiter extends Machine {
             ItemStack input = open.getItem(0);
             ItemStack expCost;
             ItemStack result;
-            if (CruxiteDowel.isDowel(input)) {
+            if (Captcha.isDowel(input)) {
                 input = input.clone();
                 input.setAmount(1);
-                result = captcha.captchaToItem(input);
+                result = captcha.getItemForCaptcha(input);
                 expCost = new ItemStack(Material.EXPERIENCE_BOTTLE);
-                int exp = CruxiteDowel.expCost(effects, result);
+                int exp = (int) Math.ceil(ManaMappings.expCost(effects, result));
                 ItemMeta im = expCost.getItemMeta();
                 int playerExp = Experience.getExp(player);
                 int remainder = playerExp - exp;
@@ -239,13 +236,12 @@ public class Alchemiter extends Machine {
         ItemStack is1 = new ItemStack(Material.NETHER_BRICK);
         ItemMeta im = is1.getItemMeta();
         im.setDisplayName(ChatColor.GOLD + "Cruxite Totem");
-        ArrayList<String> lore = new ArrayList<>();
         is1.setItemMeta(im);
 
         ItemStack is2 = new ItemStack(Material.BARRIER);
         im = is2.getItemMeta();
         im.setDisplayName(ChatColor.GOLD + "Grist Cost");
-        lore = new ArrayList<>();
+        ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.WHITE + "This will display when a");
         lore.add(ChatColor.WHITE + "valid totem is inserted.");
         im.setLore(lore);

@@ -198,7 +198,7 @@ public class CompilationAmalgamator extends Machine {
 			return;
 		}
 
-		ItemStack newCaptcha = this.captcha.itemToCaptcha(captchaTarget);
+		ItemStack newCaptcha = this.captcha.getCaptchaForItem(captchaTarget);
 		inventory.removeItem(captchaTarget);
 
 		this.ejectItem(inventory.getLocation(), newCaptcha, storage);

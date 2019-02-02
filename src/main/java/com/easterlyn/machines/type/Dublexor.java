@@ -217,7 +217,7 @@ public class Dublexor extends Machine {
 			ItemStack modifiedInput = originalInput.clone();
 			int multiplier = 1;
 			while (Captcha.isUsedCaptcha(modifiedInput)) {
-				ItemStack newModInput = captcha.captchaToItem(modifiedInput);
+				ItemStack newModInput = captcha.getItemForCaptcha(modifiedInput);
 				if (newModInput == null || modifiedInput.isSimilar(newModInput)) {
 					// Broken captcha, don't infinitely loop.
 					setSecondTrade(player, open, originalInput, expCost, barrier);

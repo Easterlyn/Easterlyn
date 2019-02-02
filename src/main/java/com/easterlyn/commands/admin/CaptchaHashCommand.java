@@ -57,7 +57,7 @@ public class CaptchaHashCommand extends EasterlynCommand {
 			}
 		}
 		if (args[0].equals("get")) {
-			ItemStack item = captcha.getCaptchaFor(args[1]);
+			ItemStack item = captcha.getCaptchaForHash(args[1]);
 			if (item == null) {
 				sender.sendMessage(getLang().getValue("command.hash.unused"));
 				return true;

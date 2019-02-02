@@ -45,7 +45,7 @@ public class ItemInformationCommand extends EasterlynCommand {
 		}
 		sender.sendMessage(ChatColor.stripColor(hand.toString()));
 		Easterlyn plugin = (Easterlyn) getPlugin();
-		sender.sendMessage("Hash: " + plugin.getModule(Captcha.class).calculateHashFor(hand));
+		sender.sendMessage("Hash: " + plugin.getModule(Captcha.class).calculateHashForItem(hand));
 		sender.sendMessage("Mana: " + ManaMappings.expCost(plugin.getModule(Effects.class), hand));
 		return true;
 	}

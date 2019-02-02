@@ -1,20 +1,16 @@
 package com.easterlyn.machines.type;
 
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.machines.MachineInventoryTracker;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Bisected;
@@ -31,7 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.UUID;
 
 /**
  * Simulates a Totem Lathe from Sburb.
@@ -165,43 +161,40 @@ public class TotemLathe extends Machine	{
      * @param id the UUID of the player who is using the Totem Lathe
      */
     public void updateInventory(final UUID id) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                // Must re-obtain player or update doesn't seem to happen
-                Player player = Bukkit.getPlayer(id);
-                if (player == null || !tracker.hasMachineOpen(player)) {
-                    // Player has logged out or closed inventory. Inventories are per-player, ignore.
-                    return;
-                }
-
-                Inventory open = player.getOpenInventory().getTopInventory();
-                ItemStack card = null;
-                ItemStack result = null;
-                ItemStack slot0 = open.getItem(0);
-                ItemStack slot1 = open.getItem(1);
-                if (CruxiteDowel.isBlankDowel(slot0)) {
-                    card = slot1;
-                } else if (CruxiteDowel.isBlankDowel(slot1)) {
-                    card = slot0;
-                }
-                if (Captcha.isPunch(card)) {
-                    result = CruxiteDowel.carve(captcha.captchaToPunch(card));
-                }
-                if (slot0 != null && slot0.getType() != Material.AIR) {
-                    slot0 = slot0.clone();
-                    slot0.setAmount(1);
-                }
-                if (slot1 != null && slot1.getType() != Material.AIR) {
-                    slot1 = slot1.clone();
-                    slot1.setAmount(1);
-                }
-                // Set items
-                open.setItem(2, result);
-                InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-                        new ImmutableTriple<>(slot0, slot1, result));
-                InventoryUtils.updateWindowSlot(player, 2);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+            // Must re-obtain player or update doesn't seem to happen
+            Player player = Bukkit.getPlayer(id);
+            if (player == null || !tracker.hasMachineOpen(player)) {
+                // Player has logged out or closed inventory. Inventories are per-player, ignore.
+                return;
             }
+
+            Inventory open = player.getOpenInventory().getTopInventory();
+            ItemStack card = null;
+            ItemStack result = null;
+            ItemStack slot0 = open.getItem(0);
+            ItemStack slot1 = open.getItem(1);
+            if (Captcha.isDowel(slot0)) {
+                card = slot1;
+            } else if (Captcha.isDowel(slot1)) {
+                card = slot0;
+            }
+            if (Captcha.isPunch(card)) {
+                result = captcha.getTotemForPunch(card);
+            }
+            if (slot0 != null && slot0.getType() != Material.AIR) {
+                slot0 = slot0.clone();
+                slot0.setAmount(1);
+            }
+            if (slot1 != null && slot1.getType() != Material.AIR) {
+                slot1 = slot1.clone();
+                slot1.setAmount(1);
+            }
+            // Set items
+            open.setItem(2, result);
+            InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
+                    new ImmutableTriple<>(slot0, slot1, result));
+            InventoryUtils.updateWindowSlot(player, 2);
         });
     }
 

@@ -1,20 +1,16 @@
 package com.easterlyn.machines.type;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
-import com.easterlyn.machines.MachineInventoryTracker;
+import com.easterlyn.effects.Effects;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.InventoryUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Bisected;
@@ -30,7 +26,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Simulate a Sburb Punch Designix in Minecraft.
@@ -44,12 +41,12 @@ public class PunchDesignix extends Machine {
 
     private final ItemStack drop;
     private final Captcha captcha;
-    private final MachineInventoryTracker tracker;
+    private final Effects effects;
 
     public PunchDesignix(Easterlyn plugin, Machines machines) {
         super(plugin, machines, new Shape(), "Punch Designix");
         this.captcha = plugin.getModule(Captcha.class);
-        tracker = machines.getInventoryTracker();
+        this.effects = plugin.getModule(Effects.class);
         Shape shape = getShape();
         shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS)
                 .withBlockData(Rotatable.class, Direction.WEST).withBlockData(Bisected.class, Direction.UP));
@@ -105,10 +102,9 @@ public class PunchDesignix extends Machine {
         Inventory merchant = event.getInventory();
 
         // Possible results:
-        // 1) slot 0 is Captcha, slot 1 is null. Result: slot 2 = punch 0. 0, 1 consumed. // TODO do not consume
-        // 2) slot 0 is Punch, slot 1 is Captcha. Result: slot 2 = copy 0. 1 consumed.
-        // 3) slot 0 is Punch, slot 1 is Punch. Result: slot 2 = combine 0, 1. 0, 1 consumed.
-        ItemStack result = captcha.createCombinedPunch(merchant.getItem(0), merchant.getItem(1));
+        // 1) slot 0 is captcha/punch, slot 1 is blank captcha. Result: slot 2 = punch 0. 1 consumed.
+        // 2) slot 0 is punch, slot 1 is punch. Result: slot 2 = combine 0, 1. 0, 1 consumed.
+        ItemStack result = getCombinedPunch(merchant.getItem(0), merchant.getItem(1), effects);
 
         if (result == null) {
             updateInventory(event.getWhoClicked().getUniqueId(), false);
@@ -117,7 +113,7 @@ public class PunchDesignix extends Machine {
 
         int crafts = 1;
 
-        boolean copyPunch = Captcha.isCaptcha(merchant.getItem(1));
+        boolean copyPunch = Captcha.isBlankCaptcha(merchant.getItem(1));
         boolean updateInputSlot0 = false;
 
         // Clicking a villager result slot with vanilla client treats right clicks as left clicks.
@@ -186,37 +182,78 @@ public class PunchDesignix extends Machine {
      * @param updateInputSlot0 whether or not input slot 0 should be forcibly updated
      */
     public void updateInventory(final UUID id, final boolean updateInputSlot0) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                // Must re-obtain player or update doesn't seem to happen
-                Player player = Bukkit.getPlayer(id);
-                if (player == null || !tracker.hasMachineOpen(player)) {
-                    // Player has logged out or closed inventory. Inventories are per-player, ignore.
-                    return;
-                }
-                if (updateInputSlot0) {
-                    InventoryUtils.updateWindowSlot(player, 0);
-                }
-                Inventory open = player.getOpenInventory().getTopInventory();
-                // TODO this seems to fail to update properly when punch in slot 0 is re-punched
-                ItemStack result = captcha.createCombinedPunch(open.getItem(0), open.getItem(1));
-                open.setItem(2, result);
-                ItemStack inputSlot1 = open.getItem(0);
-                if (inputSlot1 != null) {
-                    inputSlot1 = inputSlot1.clone();
-                    inputSlot1.setAmount(1);
-                }
-                ItemStack inputSlot2 = open.getItem(1);
-                if (inputSlot2 != null) {
-                    inputSlot2 = inputSlot2.clone();
-                    inputSlot2.setAmount(1);
-                }
-                InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-                        new ImmutableTriple<>(inputSlot1, inputSlot2, result));
-                InventoryUtils.updateWindowSlot(player, 2);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+            // Must re-obtain player or update doesn't seem to happen
+            Player player = Bukkit.getPlayer(id);
+            if (player == null || !getMachines().getInventoryTracker().hasMachineOpen(player)) {
+                // Player has logged out or closed inventory. Inventories are per-player, ignore.
+                return;
             }
+            if (updateInputSlot0) {
+                InventoryUtils.updateWindowSlot(player, 0);
+            }
+            Inventory open = player.getOpenInventory().getTopInventory();
+            // TODO this seems to fail to update properly when punch in slot 0 is re-punched
+            ItemStack result = getCombinedPunch(open.getItem(0), open.getItem(1), effects);
+            open.setItem(2, result);
+            ItemStack inputSlot1 = open.getItem(0);
+            if (inputSlot1 != null) {
+                inputSlot1 = inputSlot1.clone();
+                inputSlot1.setAmount(1);
+            }
+            ItemStack inputSlot2 = open.getItem(1);
+            if (inputSlot2 != null) {
+                inputSlot2 = inputSlot2.clone();
+                inputSlot2.setAmount(1);
+            }
+            InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
+                    new ImmutableTriple<>(inputSlot1, inputSlot2, result));
+            InventoryUtils.updateWindowSlot(player, 2);
         });
+    }
+
+    /**
+     * Creates a punchcard from two cards.
+     *
+     * @param card1 the first card
+     * @param card2 the second card
+     *
+     * @return the ItemStack created or null if invalid cards are provided
+     */
+    private ItemStack getCombinedPunch(ItemStack card1, ItemStack card2, Effects effects) {
+        boolean punch1 = Captcha.isPunch(card1);
+        boolean captcha1 = Captcha.isCaptcha(card1);
+
+        if (!captcha1 && !punch1) {
+            return null;
+        }
+
+        if (captcha1 || !Captcha.isPunch(card2)) {
+            if (Captcha.isBlankCaptcha(card1)) {
+                return null;
+            }
+            if (!Captcha.isBlankCaptcha(card2)) {
+                return null;
+            }
+            ItemStack is = captcha.getPunchForCaptcha(card1, effects);
+            if (!punch1 && card1.isSimilar(is)) {
+                // Prevent creation of punches will yield useless totems.
+                return null;
+            }
+            return is;
+        }
+
+        ItemStack item = captcha.getItemForCaptcha(card1);
+        ItemStack item2 = captcha.getItemForCaptcha(card2);
+        ItemMeta im = item.getItemMeta();
+        im.setLore(effects.organizeEffectLore(item.getItemMeta().getLore(), false,
+                false, true, item2.getItemMeta().getLore().toArray(new String[0])));
+        item.setItemMeta(im);
+        ItemStack result = captcha.getPunchForCaptcha(captcha.getCaptchaForItem(item), effects);
+        if (result.getItemMeta().getDisplayName().equals("Captchacard")) {
+            return null;
+        }
+        return result;
     }
 
     /**
@@ -225,7 +262,7 @@ public class PunchDesignix extends Machine {
      * @param player the Player
      */
     public void openInventory(Player player, ConfigurationSection storage) {
-        tracker.openVillagerInventory(player, this, getKey(storage));
+        getMachines().getInventoryTracker().openVillagerInventory(player, this, getKey(storage));
         InventoryUtils.updateVillagerTrades(player, getExampleRecipes());
     }
 
@@ -254,9 +291,8 @@ public class PunchDesignix extends Machine {
         ItemMeta im = is1.getItemMeta();
         im.setDisplayName(ChatColor.GOLD + "Slot 1 options:");
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GOLD + "1) Captchacard " + ChatColor.DARK_RED + "(consumed)");
-        lore.add(ChatColor.GOLD + "2) Punchcard");
-        lore.add(ChatColor.GOLD + "3) Punchcard " + ChatColor.DARK_RED + "(consumed)");
+        lore.add(ChatColor.GOLD + "1) Captchacard or Punchcard");
+        lore.add(ChatColor.GOLD + "2) Punchcard " + ChatColor.DARK_RED + "(consumed)");
         im.setLore(lore);
         is1.setItemMeta(im);
 
@@ -264,9 +300,8 @@ public class PunchDesignix extends Machine {
         im = is2.getItemMeta();
         im.setDisplayName(ChatColor.GOLD + "Slot 2 options:");
         lore = new ArrayList<>();
-        lore.add(ChatColor.GOLD + "1) Empty");
-        lore.add(ChatColor.GOLD + "2) Captchacard " + ChatColor.DARK_RED + "(consumed)");
-        lore.add(ChatColor.GOLD + "3) Punchcard " + ChatColor.DARK_RED + "(consumed)");
+        lore.add(ChatColor.GOLD + "1) Blank Captchacard " + ChatColor.DARK_RED + "(consumed)");
+        lore.add(ChatColor.GOLD + "2) Punchcard " + ChatColor.DARK_RED + "(consumed)");
         im.setLore(lore);
         is2.setItemMeta(im);
 
@@ -274,9 +309,10 @@ public class PunchDesignix extends Machine {
         im = is3.getItemMeta();
         im.setDisplayName(ChatColor.GOLD + "Punchcard Result:");
         lore = new ArrayList<>();
-        lore.add(ChatColor.GOLD + "1) Card 1 punched");
-        lore.add(ChatColor.GOLD + "2) Copy of card 1");
-        lore.add(ChatColor.GOLD + "3) Card 1 and lore of 2");
+        lore.add(ChatColor.GOLD + "1) Punchcard for Card 1");
+        lore.add(ChatColor.GOLD + "2) Modified Punchcard:");
+        lore.add(ChatColor.YELLOW + "    Card for item from card 1");
+        lore.add(ChatColor.YELLOW + "    with lore from card 2 added");
         im.setLore(lore);
         is3.setItemMeta(im);
 

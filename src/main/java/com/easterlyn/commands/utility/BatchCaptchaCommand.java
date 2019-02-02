@@ -1,20 +1,18 @@
 package com.easterlyn.commands.utility;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+
+import java.util.List;
 
 /**
  * EasterlynCommand for creating lots of captchas of items at a time.
@@ -55,7 +53,7 @@ public class BatchCaptchaCommand extends EasterlynCommand {
 		}
 
 		PlayerInventory inventory = player.getInventory();
-		ItemStack blankCaptcha = Captcha.blankCaptchaCard();
+		ItemStack blankCaptcha = Captcha.getBlankCaptchacard();
 
 		int max;
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("easterlyn.command.baptcha.free")
@@ -100,7 +98,7 @@ public class BatchCaptchaCommand extends EasterlynCommand {
 			// Not bothering catching failed removals here, there should be none.
 			inventory.removeItem(blankCaptcha);
 		}
-		item = captcha.itemToCaptcha(item);
+		item = captcha.getCaptchaForItem(item);
 		item.setAmount(count);
 		player.getInventory().addItem(item);
 		player.sendMessage(getLang().getValue("command.baptcha.success").replace("{COUNT}", String.valueOf(count)));

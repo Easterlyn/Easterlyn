@@ -2,6 +2,7 @@ package com.easterlyn.captcha;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
+import com.easterlyn.effects.Effects;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.JSONUtil;
@@ -78,13 +79,28 @@ public class Captcha extends Module {
 		ManaMappings.getMana();
 
 		// Add the Captcha recipe
-		ItemStack captchaItem = blankCaptchaCard();
+		ItemStack captchaItem = getBlankCaptchacard();
 		captchaItem.setAmount(3);
 		ShapedRecipe captchaRecipe = new ShapedRecipe(new NamespacedKey(this.getPlugin(), "captcha"), captchaItem);
 		captchaRecipe.shape("AA", "AA", "AA");
 		captchaRecipe.setIngredient('A', Material.PAPER);
 		Bukkit.addRecipe(captchaRecipe);
 
+	}
+
+	@Override
+	protected void onDisable() {
+		cache.invalidateAll();
+	}
+
+	@Override
+	public boolean isRequired() {
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		return "Captcha";
 	}
 
 	public boolean addCustomHash(String hash, ItemStack item) {
@@ -95,7 +111,7 @@ public class Captcha extends Module {
 		return true;
 	}
 
-	public String calculateHashFor(ItemStack item) {
+	public String calculateHashForItem(ItemStack item) {
 		String itemString = JSONUtil.getItemText(item).toString();
 		BigInteger hash = NumberUtils.md5(itemString);
 		String itemHash = NumberUtils.getBase(hash, 62, 8);
@@ -109,7 +125,7 @@ public class Captcha extends Module {
 
 	private String getHashByItem(ItemStack item) {
 		item = item.clone();
-		String itemHash = calculateHashFor(item);
+		String itemHash = calculateHashForItem(item);
 		this.cache.put(itemHash, item);
 		this.save(itemHash, item);
 		return itemHash;
@@ -144,12 +160,40 @@ public class Captcha extends Module {
 		}
 	}
 
-	public ItemStack getCaptchaFor(String hash) {
+	/**
+	 * Creates a blank captchacard
+	 *
+	 * @return the blank captchacard ItemStack
+	 */
+	public static ItemStack getBlankCaptchacard() {
+		ItemStack is = new ItemStack(Material.BOOK);
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName("Captchacard");
+		im.setLore(Collections.singletonList("Blank"));
+		is.setItemMeta(im);
+		return is;
+	}
+
+	/**
+	 * Creates a blank cruxite dowel.
+	 *
+	 * @return the blank dowel ItemStack
+	 */
+	public static ItemStack getBlankDowel() {
+		ItemStack dowel = new ItemStack(Material.NETHER_BRICK);
+		ItemMeta meta = dowel.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Cruxite Totem");
+		meta.setLore(Collections.singletonList(Captcha.HASH_PREFIX + "00000000"));
+		dowel.setItemMeta(meta);
+		return dowel;
+	}
+
+	public ItemStack getCaptchaForHash(String hash) {
 		ItemStack item = getItemByHash(hash);
 		if (item == null || item.getType() == Material.AIR) {
 			return null;
 		}
-		ItemStack card = blankCaptchaCard();
+		ItemStack card = getBlankCaptchacard();
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta meta = item.getItemMeta();
 		ArrayList<String> cardLore = new ArrayList<>();
@@ -180,79 +224,35 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Creates a blank Captchacard
-	 *
-	 * @return ItemStack
-	 */
-	public static ItemStack blankCaptchaCard() {
-		ItemStack is = new ItemStack(Material.BOOK);
-		ItemMeta im = is.getItemMeta();
-		im.setDisplayName("Captchacard");
-		im.setLore(Collections.singletonList("Blank"));
-		is.setItemMeta(im);
-		return is;
-	}
-
-	@Override
-	protected void onDisable() {
-		cache.invalidateAll();
-	}
-
-	@Override
-	public boolean isRequired() {
-		return false;
-	}
-
-	@Override
-	public String getName() {
-		return "Captcha";
-	}
-
-	/**
-	 * Converts an ItemStack into a Captchacard.
+	 * Converts an ItemStack into a captchacard.
 	 *
 	 * @param item the ItemStack to convert
 	 *
-	 * @return the Captchacard representing by this ItemStack
+	 * @return the captchacard representing by this ItemStack
 	 */
-	public ItemStack itemToCaptcha(ItemStack item) {
-		return getCaptchaFor(getHashByItem(item));
+	public ItemStack getCaptchaForItem(ItemStack item) {
+		return getCaptchaForHash(getHashByItem(item));
 	}
 
 	/**
-	 * Converts a Captchacard into an ItemStack. Also used for Punchcards and
-	 * Cruxite Dowels.
+	 * Converts a captchacard into an ItemStack. Also used for punchcards and
+	 * cruxite dowels.
 	 *
-	 * @param card the Captchacard ItemStack
+	 * @param captcha the captchacard ItemStack
 	 *
-	 * @return the ItemStack represented by this Captchacard
+	 * @return the ItemStack represented by this captchacard
 	 */
-	public ItemStack captchaToItem(ItemStack card) {
-		if (card == null) {
+	public ItemStack getItemForCaptcha(ItemStack captcha) {
+		if (captcha == null) {
 			return null;
 		}
-		if (!isCaptcha(card)) {
+		if (!isCaptcha(captcha) && !isPunch(captcha)) {
 			// Not a card.
-			card = card.clone();
-			card.setAmount(1);
-			return card;
+			captcha = captcha.clone();
+			captcha.setAmount(1);
+			return captcha;
 		}
-		if (card.getItemMeta().getDisplayName().equals("Lorecard")) {
-			ItemStack is = new ItemStack(Material.DIRT);
-			ItemMeta im = is.getItemMeta();
-			ArrayList<String> storedLore = new ArrayList<>(im.getLore());
-			for (String lore : card.getItemMeta().getLore()) {
-				// isCaptcha checks if lore exists, this is fine.
-				if (lore.length() < 1 || lore.charAt(0) != '>') {
-					continue;
-				}
-				storedLore.add(lore.substring(1));
-			}
-			im.setLore(storedLore);
-			is.setItemMeta(im);
-			return is;
-		}
-		for (String lore : card.getItemMeta().getLore()) {
+		for (String lore : captcha.getItemMeta().getLore()) {
 			if (!lore.startsWith(HASH_PREFIX)) {
 				continue;
 			}
@@ -265,31 +265,77 @@ public class Captcha extends Module {
 				return item;
 			}
 		}
-		card = card.clone();
-		card.setAmount(1);
-		return card;
+		captcha = captcha.clone();
+		captcha.setAmount(1);
+		return captcha;
 	}
 
 	/**
-	 * Check if an ItemStack is a valid blank Captchacard.
+	 * Converts a captchacard into a punchcard.
+	 * <p>
+	 * Good luck patching punched holes.
 	 *
-	 * @param is the ItemStack to check
+	 * @param captcha the captchacard ItemStack
 	 *
-	 * @return true if the ItemStack is a blank Captchacard
+	 * @return the punched captchacard
 	 */
-	public static boolean isBlankCaptcha(ItemStack is) {
-		return isCaptcha(is) && is.getItemMeta().getLore().contains("Blank");
+	public ItemStack getPunchForCaptcha(ItemStack captcha, Effects effects) {
+		if (!isCaptcha(captcha)) {
+			return captcha;
+		}
+		captcha = captcha.clone();
+		if (Captcha.isBlankCaptcha(captcha)) {
+			return captcha;
+		}
+		ItemStack item = getItemForCaptcha(captcha);
+		if (isCaptcha(item) || ManaMappings.expCost(effects, item) == Integer.MAX_VALUE) {
+			return captcha;
+		}
+		captcha = getCaptchaForItem(item);
+		ItemMeta im = captcha.getItemMeta();
+		im.setDisplayName("Punchcard");
+		captcha.setItemMeta(im);
+		return captcha;
 	}
 
 	/**
-	 * Check if an ItemStack is a valid Captchacard that has been used.
+	 * Converts a punchcard into a totem.
 	 *
-	 * @param is the ItemStack to check
+	 * @param punch the punchcard ItemStack
 	 *
-	 * @return true if the ItemStack is a Captchacard
+	 * @return the totem
 	 */
-	public static boolean isUsedCaptcha(ItemStack is) {
-		return isCaptcha(is) && !is.getItemMeta().getLore().contains("Blank");
+	public ItemStack getTotemForPunch(ItemStack punch) {
+		ItemStack dowel = getBlankDowel();
+		if (!isPunch(punch)) {
+			return dowel;
+		}
+		ItemMeta im = dowel.getItemMeta();
+		im.setLore(punch.getItemMeta().getLore());
+		dowel.setItemMeta(im);
+		return dowel;
+	}
+
+	/**
+	 * Check if an ItemStack is a blank captchacard.
+	 *
+	 * @param item the ItemStack to check
+	 *
+	 * @return true if the ItemStack is a blank captchacard
+	 */
+	public static boolean isBlankCaptcha(ItemStack item) {
+		return isCaptcha(item) && item.getItemMeta().getLore().contains("Blank");
+	}
+
+	/**
+	 * Check if an ItemStack is a valid captchacard that has been used.
+	 *
+	 * @param item the ItemStack to check
+	 *
+	 * @return true if the ItemStack is a captchacard
+	 */
+	public static boolean isUsedCaptcha(ItemStack item) {
+		return isCaptcha(item) && !item.getItemMeta().getLore().contains("Blank");
 	}
 
 	/**
@@ -303,9 +349,7 @@ public class Captcha extends Module {
 		if (item == null || item.getType() == Material.AIR
 				/* Book meta is very volatile, no reason to allow creation of codes that will never be reused. */
 				|| item.getType() == Material.WRITABLE_BOOK
-				|| item.getType() == Material.WRITTEN_BOOK
-				/* Shulker boxes are their own type of portable storage. Nope. */
-				|| item.getType().name().endsWith("SHULKER_BOX")) {
+				|| item.getType() == Material.WRITTEN_BOOK) {
 			return true;
 		}
 		for (ItemStack is : InventoryUtils.getUniqueItems(getPlugin())) {
@@ -323,18 +367,49 @@ public class Captcha extends Module {
 	}
 
 	/**
-	 * Checks if an ItemStack is any Punchcard or Captchacard.
+	 * Checks if an ItemStack is a captchacard.
 	 *
-	 * @param is the ItemStack to check
+	 * @param item the ItemStack to check
 	 *
-	 * @return true if the ItemStack is a card
+	 * @return true if the ItemStack is a captchacard
 	 */
-	public static boolean isCaptcha(ItemStack is) {
-		if (is == null || is.getType() != Material.BOOK || !is.hasItemMeta()) {
+	public static boolean isCaptcha(ItemStack item) {
+		if (item == null || item.getType() != Material.BOOK || !item.hasItemMeta()) {
 			return false;
 		}
-		ItemMeta meta = is.getItemMeta();
+		ItemMeta meta = item.getItemMeta();
 		return meta.hasLore() && meta.hasDisplayName() && meta.getDisplayName().equals("Captchacard");
+	}
+
+	/**
+	 * Checks if an ItemStack is a punchcard.
+	 *
+	 * @param item the ItemStack to check
+	 *
+	 * @return true if the ItemStack is a punchcard
+	 */
+	public static boolean isPunch(ItemStack item) {
+		if (item == null || item.getType() != Material.BOOK || !item.hasItemMeta()) {
+			return false;
+		}
+		ItemMeta meta = item.getItemMeta();
+		return meta.hasLore() && meta.hasDisplayName() && meta.getDisplayName().equals("Punchcard");
+	}
+
+	/**
+	 * Checks if an ItemStack is a dowel.
+	 *
+	 * @param item the ItemStack to check
+	 *
+	 * @return true if the ItemStack is a dowel
+	 */
+	public static boolean isDowel(ItemStack item) {
+		if (item == null || item.getType() != Material.NETHER_BRICK || !item.hasItemMeta()) {
+			return false;
+		}
+		ItemMeta meta = item.getItemMeta();
+		return meta.hasLore() && meta.hasDisplayName()
+				&& meta.getDisplayName().equals(ChatColor.WHITE + "Cruxite Totem");
 	}
 
 	@SuppressWarnings("deprecation")
@@ -357,7 +432,7 @@ public class Captcha extends Module {
 			return;
 		}
 
-		ItemStack captcha = itemToCaptcha(toCaptcha);
+		ItemStack captcha = getCaptchaForItem(toCaptcha);
 		event.setResult(Result.DENY);
 
 		// Decrement captcha stack
@@ -414,13 +489,13 @@ public class Captcha extends Module {
 					continue;
 				}
 				String newInternalHash = this.getHashByItem(convertedItem);
-				storedItem = this.getCaptchaFor(newInternalHash);
+				storedItem = this.getCaptchaForHash(newInternalHash);
 				storedItem.setAmount(amount);
 			}
 			String newHash = this.getHashByItem(storedItem);
 			if (!newHash.equals(hash)) {
 				int amount = is.getAmount();
-				ItemStack captchas = this.itemToCaptcha(storedItem);
+				ItemStack captchas = this.getCaptchaForItem(storedItem);
 				captchas.setAmount(amount);
 				player.getInventory().setItem(i, captchas);
 				conversions += amount;

@@ -47,7 +47,7 @@ public class WorthCommand extends EasterlynCommand {
 
 		int multiplier = 1;
 		while (Captcha.isUsedCaptcha(hand)) {
-			ItemStack newModInput = captcha.captchaToItem(hand);
+			ItemStack newModInput = captcha.getItemForCaptcha(hand);
 			if (newModInput == null || hand.isSimilar(newModInput)) {
 				// Broken captcha, don't infinitely loop.
 				hand = new ItemStack(Material.AIR);

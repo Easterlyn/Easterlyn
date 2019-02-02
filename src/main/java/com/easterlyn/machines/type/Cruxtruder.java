@@ -1,12 +1,12 @@
 package com.easterlyn.machines.type;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.captcha.CruxiteDowel;
+import com.easterlyn.captcha.Captcha;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.Directional;
@@ -16,8 +16,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
-
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Simulate a Sburb Cruxtender in Minecraft.
@@ -62,7 +60,7 @@ public class Cruxtruder extends Machine {
             if (event.getBlock().getType() != Material.GLASS) {
                 event.getBlock().setType(Material.GLASS);
             }
-            broken.getWorld().dropItemNaturally(broken.add(0.5, 1, 0.5), CruxiteDowel.getDowel());
+            broken.getWorld().dropItemNaturally(broken.add(0.5, 1, 0.5), Captcha.getBlankDowel());
             return true;
         }
         return super.handleBreak(event, storage);
