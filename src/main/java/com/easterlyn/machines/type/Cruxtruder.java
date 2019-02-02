@@ -1,15 +1,15 @@
-package com.easterlyn.machines.type.legacy;
+package com.easterlyn.machines.type;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.CruxiteDowel;
 import com.easterlyn.machines.Machines;
-import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -34,17 +34,19 @@ public class Cruxtruder extends Machine {
         MaterialDataValue m = shape.new MaterialDataValue(Material.SEA_LANTERN);
         shape.setVectorData(new Vector(0, 0, 0), m);
         shape.setVectorData(new Vector(0, 1, 0), m);
-        m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "stair");
+        shape.setVectorData(new Vector(0, 0, -1),
+                shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.NORTH));
+        shape.setVectorData(new Vector(1, 0, 0),
+                shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.WEST));
+        shape.setVectorData(new Vector(-1, 0, 0),
+                shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.EAST));
+        shape.setVectorData(new Vector(0, 0, 1),
+                shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.SOUTH));
+
+        m = shape.new MaterialDataValue(Material.QUARTZ_SLAB);
         shape.setVectorData(new Vector(1, 0, -1), m);
-        shape.setVectorData(new Vector(0, 0, -1), m);
         shape.setVectorData(new Vector(-1, 0, -1), m);
-        m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "stair");
-        shape.setVectorData(new Vector(1, 0, 0), m);
-        m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST, "stair");
-        shape.setVectorData(new Vector(-1, 0, 0), m);
-        m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.SOUTH, "stair");
         shape.setVectorData(new Vector(1, 0, 1), m);
-        shape.setVectorData(new Vector(0, 0, 1), m);
         shape.setVectorData(new Vector(-1, 0, 1), m);
 
         drop = new ItemStack(Material.BEACON);

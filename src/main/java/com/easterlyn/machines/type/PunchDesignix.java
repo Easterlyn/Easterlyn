@@ -1,4 +1,4 @@
-package com.easterlyn.machines.type.legacy;
+package com.easterlyn.machines.type;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -7,7 +7,6 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.machines.MachineInventoryTracker;
 import com.easterlyn.machines.Machines;
-import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
@@ -18,6 +17,8 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.data.Bisected;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -50,15 +51,18 @@ public class PunchDesignix extends Machine {
         this.captcha = plugin.getModule(Captcha.class);
         tracker = machines.getInventoryTracker();
         Shape shape = getShape();
-        shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.WEST, "upperstair"));
-        shape.setVectorData(new Vector(1, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.EAST, "upperstair"));
-        MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS, Direction.NORTH, "upperstair");
+        shape.setVectorData(new Vector(0, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS)
+                .withBlockData(Rotatable.class, Direction.WEST).withBlockData(Bisected.class, Direction.UP));
+        shape.setVectorData(new Vector(1, 0, 0), shape.new MaterialDataValue(Material.QUARTZ_STAIRS)
+                .withBlockData(Rotatable.class, Direction.EAST).withBlockData(Bisected.class, Direction.UP));
+        MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS)
+                .withBlockData(Rotatable.class, Direction.NORTH).withBlockData(Bisected.class, Direction.UP);
         shape.setVectorData(new Vector(0, 1, 0), m);
         shape.setVectorData(new Vector(1, 1, 0), m);
-        m = shape.new MaterialDataValue(Material.STEP, (byte) 15);
+        m = shape.new MaterialDataValue(Material.QUARTZ_SLAB).withBlockData(Bisected.class, Direction.UP);
         shape.setVectorData(new Vector(0, 0, -1), m);
         shape.setVectorData(new Vector(1, 0, -1), m);
-        m = shape.new MaterialDataValue(Material.CARPET, (byte) 8);
+        m = shape.new MaterialDataValue(Material.LIGHT_GRAY_CARPET);
         shape.setVectorData(new Vector(0, 1, -1), m);
         shape.setVectorData(new Vector(1, 1, -1), m);
 
@@ -101,7 +105,7 @@ public class PunchDesignix extends Machine {
         Inventory merchant = event.getInventory();
 
         // Possible results:
-        // 1) slot 0 is Captcha, slot 1 is null. Result: slot 2 = punch 0. 0, 1 consumed.
+        // 1) slot 0 is Captcha, slot 1 is null. Result: slot 2 = punch 0. 0, 1 consumed. // TODO do not consume
         // 2) slot 0 is Punch, slot 1 is Captcha. Result: slot 2 = copy 0. 1 consumed.
         // 3) slot 0 is Punch, slot 1 is Punch. Result: slot 2 = combine 0, 1. 0, 1 consumed.
         ItemStack result = captcha.createCombinedPunch(merchant.getItem(0), merchant.getItem(1));
@@ -178,7 +182,8 @@ public class PunchDesignix extends Machine {
     /**
      * Calculate result slot and update inventory on a delay (post-event completion)
      *
-     * @param name the name of the player who is using the Punch Designix
+     * @param id the UUID of the player who is using the Punch Designix
+     * @param updateInputSlot0 whether or not input slot 0 should be forcibly updated
      */
     public void updateInventory(final UUID id, final boolean updateInputSlot0) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
@@ -232,7 +237,7 @@ public class PunchDesignix extends Machine {
     /**
      * Singleton for getting usage help ItemStacks.
      */
-    public static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
+    private static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
         if (exampleRecipes == null) {
             exampleRecipes = createExampleRecipes();
         }
@@ -242,7 +247,7 @@ public class PunchDesignix extends Machine {
     /**
      * Creates the ItemStacks used in displaying usage help.
      *
-     * @return
+     * @return the example recipe
      */
     private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
         ItemStack is1 = new ItemStack(Material.BOOK);
