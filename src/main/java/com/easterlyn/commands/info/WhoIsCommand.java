@@ -1,18 +1,16 @@
 package com.easterlyn.commands.info;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.player.PlayerUtils;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * EasterlynCommand for checking a User's stored data.
@@ -40,7 +38,7 @@ public class WhoIsCommand extends EasterlynAsynchronousCommand {
 
 		Player target;
 		if (args.length > 0) {
-			target = PlayerUtils.matchPlayer(args[0], true, getPlugin());
+			target = PlayerUtils.matchPlayer(sender, args[0], true, getPlugin());
 		} else {
 			target = (Player) sender;
 		}

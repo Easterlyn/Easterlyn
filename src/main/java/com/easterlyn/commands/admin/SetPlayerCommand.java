@@ -41,7 +41,7 @@ public class SetPlayerCommand extends EasterlynAsynchronousCommand {
 		if (args == null || args.length < 3) {
 			return false;
 		}
-		Player player = PlayerUtils.matchPlayer(args[0], true, getPlugin());
+		Player player = PlayerUtils.matchPlayer(sender, args[0], true, getPlugin());
 		if (player == null) {
 			sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 			return true;

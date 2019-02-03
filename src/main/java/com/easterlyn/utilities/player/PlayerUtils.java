@@ -2,6 +2,7 @@ package com.easterlyn.utilities.player;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.discord.Discord;
+import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.TextUtils;
 import com.google.common.cache.Cache;
@@ -16,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
@@ -45,6 +47,10 @@ public class PlayerUtils {
 					player.saveData();
 				}
 			}).build();
+
+	static {
+		PermissionUtils.addParent("easterlyn.commands.selector", UserRank.STAFF.getPermission());
+	}
 
 	/**
 	 * Removes a cached Player if present.
@@ -162,7 +168,7 @@ public class PlayerUtils {
 	 */
 	public static Player matchOnlinePlayer(CommandSender sender, String id) {
 
-		Player senderPlayer = sender != null && sender instanceof Player ? (Player) sender : null;
+		Player senderPlayer = sender instanceof Player ? (Player) sender : null;
 
 		try {
 			UUID uuid = UUID.fromString(id);
@@ -173,6 +179,16 @@ public class PlayerUtils {
 			return null;
 		} catch (IllegalArgumentException e) {
 			// Not a UUID.
+		}
+
+		if (sender == null || sender.hasPermission("easterlyn.command.selector") && id.length() > 1 && id.charAt(0) == '@') {
+			// Theoretically selection accepts a UUID or player name, but why chance it on changes?
+			for (Entity entity : Bukkit.selectEntities(sender, id)) {
+				if (entity instanceof Player && (senderPlayer == null || senderPlayer.canSee((Player) entity))) {
+					return (Player) entity;
+				}
+			}
+			return null;
 		}
 
 		// Ensure valid name.
@@ -203,7 +219,7 @@ public class PlayerUtils {
 	 * @return the Player, or null if no matches were found
 	 */
 	@SuppressWarnings("deprecation")
-	public static Player matchPlayer(String id, boolean offline, Plugin plugin) {
+	public static Player matchPlayer(CommandSender sender, String id, boolean offline, Plugin plugin) {
 		// TODO: nick support
 		// Warn if called on the main thread - if we resort to searching offline players, this may take several seconds.
 		if (Bukkit.isPrimaryThread() && offline) {
@@ -223,6 +239,15 @@ public class PlayerUtils {
 			return getPlayer(plugin, uuid);
 		} catch (IllegalArgumentException e) {
 			// Not a UUID.
+		}
+
+		Player senderPlayer = sender instanceof Player ? (Player) sender : null;
+		if (sender == null || sender.hasPermission("easterlyn.commands.selector") && id.length() > 1 && id.charAt(0) == '@') {
+			for (Entity entity : Bukkit.selectEntities(sender, id)) {
+				if (entity instanceof Player && (senderPlayer == null || senderPlayer.canSee((Player) entity))) {
+					return (Player) entity;
+				}
+			}
 		}
 
 		// Ensure valid name.
@@ -283,5 +308,7 @@ public class PlayerUtils {
 
 		return getPlayer(plugin, player.getUniqueId());
 	}
+
+	private PlayerUtils(){}
 
 }

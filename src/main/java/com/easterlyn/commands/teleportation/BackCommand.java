@@ -43,7 +43,7 @@ public class BackCommand extends EasterlynCommand {
 		User targetUser;
 		boolean targetOther = false;
 		if (args.length > 0 && sender.hasPermission("easterlyn.command.back.other")) {
-			Player targetPlayer = PlayerUtils.matchPlayer(args[0], false, this.getPlugin());
+			Player targetPlayer = PlayerUtils.matchPlayer(sender, args[0], false, this.getPlugin());
 			if (targetPlayer == null) {
 				sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 				return true;

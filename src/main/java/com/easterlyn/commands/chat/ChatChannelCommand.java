@@ -1,9 +1,5 @@
 package com.easterlyn.commands.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.ChannelManager;
 import com.easterlyn.chat.Chat;
@@ -18,14 +14,15 @@ import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
 import com.easterlyn.utilities.player.PlayerUtils;
-
 import com.google.common.collect.ImmutableList;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Command for checking or manipulating channel data.
@@ -222,7 +219,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 				sender.sendMessage(Language.getColor("command") + "/channel approve <user>" + Language.getColor("neutral") + ": Approve a user for this channel.");
 				return true;
 			}
-			target = getUniqueId(args[1]);
+			target = getUniqueId(sender, args[1]);
 			if (target == null) {
 				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
@@ -234,7 +231,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 				sender.sendMessage(Language.getColor("command") + "/channel ban <user>" + Language.getColor("neutral") + ": Ban a user from the channel");
 				return true;
 			}
-			target = getUniqueId(args[1]);
+			target = getUniqueId(sender, args[1]);
 			if (target == null) {
 				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
@@ -246,7 +243,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 				sender.sendMessage(Language.getColor("command") + "/channel deapprove <user>" + Language.getColor("neutral") + ": De-approve a user from this channel.");
 				return true;
 			}
-			target = getUniqueId(args[1]);
+			target = getUniqueId(sender, args[1]);
 			if (target == null) {
 				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
@@ -258,7 +255,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 				sender.sendMessage(Language.getColor("command") + "/channel kick <user>" + Language.getColor("neutral") + ": Kick a user from the channel");
 				return true;
 			}
-			target = getUniqueId(args[1]);
+			target = getUniqueId(sender, args[1]);
 			if (target == null) {
 				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
@@ -281,7 +278,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 				sender.sendMessage(Language.getColor("command") + "/channel mod <add|remove> <user>" + Language.getColor("neutral") + ": Add or remove a channel mod");
 				return true;
 			}
-			target = getUniqueId(args[2]);
+			target = getUniqueId(sender, args[2]);
 			if (target == null) {
 				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
@@ -301,7 +298,7 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 				sender.sendMessage(Language.getColor("command") + "/channel unban <user>" + Language.getColor("neutral") + ": Unban a user from the channel");
 				return true;
 			}
-			target = getUniqueId(args[1]);
+			target = getUniqueId(sender, args[1]);
 			if (target == null) {
 				sender.sendMessage(Language.getColor("bad") + "Unknown player. Check your spelling!");
 				return true;
@@ -321,8 +318,8 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 		return true;
 	}
 
-	private UUID getUniqueId(String identifier) {
-		Player player = PlayerUtils.matchPlayer(identifier, true, getPlugin());
+	private UUID getUniqueId(CommandSender sender, String identifier) {
+		Player player = PlayerUtils.matchPlayer(sender, identifier, true, getPlugin());
 		return player != null ? player.getUniqueId() : null;
 	}
 

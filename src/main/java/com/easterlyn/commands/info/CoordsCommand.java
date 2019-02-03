@@ -1,22 +1,20 @@
 package com.easterlyn.commands.info;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.player.PlayerUtils;
-
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * EasterlynCommand for getting your current coordinates.
@@ -43,7 +41,7 @@ public class CoordsCommand extends EasterlynAsynchronousCommand {
 		final boolean other = args.length >= 1 && sender.hasPermission("easterlyn.command.coords.other");
 		final Player target;
 		if (other) {
-			target = PlayerUtils.matchPlayer(args[0], true, getPlugin());
+			target = PlayerUtils.matchPlayer(sender, args[0], true, getPlugin());
 			if (target == null) {
 				sender.sendMessage(getLang().getValue("core.error.invalidUser").replace("{PLAYER}", args[0]));
 				return true;
