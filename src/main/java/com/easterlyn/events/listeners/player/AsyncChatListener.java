@@ -58,7 +58,6 @@ public class AsyncChatListener extends EasterlynListener {
 	private final boolean handleGriefPrevention;
 	private final Pattern claimPattern, trappedPattern, yoooooooooooooooooooooooooooooooooooooooo;
 	private final List<Pattern> doNotSayThat;
-	private final Map<Pattern, List<String>> replacements;
 
 	public AsyncChatListener(Easterlyn plugin) {
 		super(plugin);
@@ -93,12 +92,6 @@ public class AsyncChatListener extends EasterlynListener {
 		doNotSayThat = new ArrayList<>();
 		for (String pattern : lang.getValue("events.chat.filter").split("\n")) {
 			doNotSayThat.add(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE));
-		}
-
-		replacements = new HashMap<>();
-		for (String data : lang.getValue("events.chat.replacement").split("\n")) {
-			String[] replacement = data.split("%%");
-			replacements.put(Pattern.compile(replacement[0], Pattern.CASE_INSENSITIVE), Arrays.asList(replacement[1].split("|")));
 		}
 	}
 
@@ -505,42 +498,15 @@ public class AsyncChatListener extends EasterlynListener {
 			return word;
 		}
 
-		// I'm aware that this will strip a couple cases that belong capitalized,
-		// but no self-respecting person sings Old MacDonald anyway.
-		boolean stripUpper = shouldStripUpper(word);
-
 		StringBuilder wordBuilder = new StringBuilder(word.length());
 
 		for (char character : word.toCharArray()) {
 			if (isCharacterGloballyLegal(character) || character == ChatColor.COLOR_CHAR) {
-				if (stripUpper) {
-					character = Character.toLowerCase(character);
-				}
 				wordBuilder.append(character);
 			}
 		}
 
 		return wordBuilder.toString();
-	}
-
-	private boolean shouldStripUpper(String word) {
-		for (int i = 0, upper = 0, total = 0; i < word.length(); i++) {
-			char character = word.charAt(i);
-			if (Character.isAlphabetic(character)) {
-				boolean startsUpper = Character.isUpperCase(character);
-				for (i++; i < word.length(); i++) {
-					character = word.charAt(i);
-					if (Character.isAlphabetic(character)) {
-						total++;
-						if (Character.isUpperCase(character)) {
-							upper++;
-						}
-					}
-				}
-				return !startsUpper && upper > 0 || upper != 0 && upper != total;
-			}
-		}
-		return false;
 	}
 
 	private boolean isCharacterGloballyLegal(char character) {
