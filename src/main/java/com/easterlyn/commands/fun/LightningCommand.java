@@ -1,15 +1,11 @@
 package com.easterlyn.commands.fun;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.player.PlayerUtils;
-
 import com.google.common.collect.ImmutableList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,6 +17,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.StringUtil;
+
+import java.util.List;
 
 /**
  * EasterlynCommand for causing a lightning strike.
@@ -68,6 +66,7 @@ public class LightningCommand extends EasterlynCommand {
 				return false;
 			}
 			target.getWorld().strikeLightning(target.getLocation());
+			return true;
 		}
 		if (args.length > 2) {
 			World world = Bukkit.getWorld(args[0]);
