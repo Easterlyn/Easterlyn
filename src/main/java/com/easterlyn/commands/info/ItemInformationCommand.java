@@ -1,22 +1,23 @@
 package com.easterlyn.commands.info;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.captcha.ManaMappings;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.users.UserRank;
-
+import com.easterlyn.utilities.JSONUtil;
 import com.google.common.collect.ImmutableList;
-
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.List;
 
 /**
  * EasterlynCommand for printing information about an item.
@@ -43,7 +44,11 @@ public class ItemInformationCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.general.needItemInHand"));
 			return true;
 		}
-		sender.sendMessage(ChatColor.stripColor(hand.toString()));
+
+		BaseComponent component = JSONUtil.getItemComponent(hand);
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, JSONUtil.getItemText(hand)));
+		component = new TextComponent(component, new TextComponent(": "), new TextComponent(ChatColor.stripColor(hand.toString())));
+		sender.spigot().sendMessage(component);
 		Easterlyn plugin = (Easterlyn) getPlugin();
 		sender.sendMessage("Hash: " + plugin.getModule(Captcha.class).calculateHashForItem(hand));
 		sender.sendMessage("Mana: " + ManaMappings.expCost(plugin.getModule(Effects.class), hand));

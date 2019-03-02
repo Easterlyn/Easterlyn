@@ -168,16 +168,16 @@ public class JSONUtil {
 		return component;
 	}
 
-	public static TextComponent getItemText(ItemStack item) {
+	public static String getItemText(ItemStack item) {
 		return getItemText(CraftItemStack.asNMSCopy(item));
 	}
 
-	private static TextComponent getItemText(net.minecraft.server.v1_13_R2.ItemStack item) {
-		return new TextComponent(item.save(new NBTTagCompound()).toString());
+	private static String getItemText(net.minecraft.server.v1_13_R2.ItemStack item) {
+		return item.save(new NBTTagCompound()).toString();
 	}
 
 	private static HoverEvent getItemHover(net.minecraft.server.v1_13_R2.ItemStack item) {
-		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { getItemText(item) });
+		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(getItemText(item)) });
 	}
 
 }
