@@ -34,7 +34,7 @@ public class ItemConsumeListener extends EasterlynListener {
 		if (event.getItem().getType() != Material.POTION) {
 			return;
 		}
-		cooldowns.addCooldown(event.getPlayer(), "ExpBottle", 1500);
+		cooldowns.addCooldown(event.getPlayer(), "ExpBottleCreate", 1500);
 		if (!event.getItem().hasItemMeta()) {
 			return;
 		}

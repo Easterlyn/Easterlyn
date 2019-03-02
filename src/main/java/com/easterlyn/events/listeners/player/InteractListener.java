@@ -117,7 +117,7 @@ public class InteractListener extends EasterlynListener {
 		}
 
 		if (held.getType() == Material.GLASS_BOTTLE
-				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottle") == 0) {
+				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottleCreate") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight(bypassable, 4)) {
 				if (block.getType() == Material.WATER) {
 					return;
@@ -134,6 +134,7 @@ public class InteractListener extends EasterlynListener {
 				InventoryUtils.setHeldItem(inv, mainHand, InventoryUtils.decrement(held, 1));
 				event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(),
 						new ItemStack(Material.EXPERIENCE_BOTTLE, 1)).setPickupDelay(0);
+				cooldowns.addCooldown(event.getPlayer(), "ExpBottleUse", 1500);
 				return;
 			}
 		}
