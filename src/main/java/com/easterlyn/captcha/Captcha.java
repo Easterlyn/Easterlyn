@@ -12,6 +12,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -112,7 +113,7 @@ public class Captcha extends Module {
 	}
 
 	public String calculateHashForItem(ItemStack item) {
-		String itemString = JSONUtil.getItemText(item).toString();
+		String itemString = new TextComponent(JSONUtil.getItemText(item)).toString();
 		BigInteger hash = NumberUtils.md5(itemString);
 		String itemHash = NumberUtils.getBase(hash, 62, 8);
 		ItemStack captcha;
