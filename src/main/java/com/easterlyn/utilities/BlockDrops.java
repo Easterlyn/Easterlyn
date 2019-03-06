@@ -8,7 +8,6 @@ import net.minecraft.server.v1_13_R2.IBlockData;
 import net.minecraft.server.v1_13_R2.Item;
 import net.minecraft.server.v1_13_R2.Items;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
@@ -24,7 +23,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.material.MaterialData;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -56,7 +54,7 @@ public class BlockDrops {
 	private static Collection<ItemStack> getDrops(@Nullable ItemStack tool, Block block, int fortuneBonus) {
 
 		if (tool != null && tool.containsEnchantment(Enchantment.SILK_TOUCH) && tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0) {
-			Collection<ItemStack> drops = getSilkDrops(tool, block.getState().getData());
+			Collection<ItemStack> drops = getSilkDrops(tool, block.getType());
 			if (drops != null) {
 				return drops;
 			}
@@ -95,10 +93,9 @@ public class BlockDrops {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	private static Collection<ItemStack> getSilkDrops(ItemStack tool, MaterialData material) {
+	private static Collection<ItemStack> getSilkDrops(ItemStack tool, Material material) {
 		ArrayList<ItemStack> drops = new ArrayList<>();
-		switch (material.getItemType()) {
+		switch (material) {
 			case COAL_ORE:
 			case DIAMOND_ORE:
 			case EMERALD_ORE:
@@ -108,14 +105,12 @@ public class BlockDrops {
 			case REDSTONE_ORE:
 			case SNOW_BLOCK:
 			case STONE:
-				if (isUsableTool(tool, material.getItemType())) {
-					drops.add(material.toItemStack(1));
+				if (isUsableTool(tool, material)) {
+					drops.add(new ItemStack(material));
 				}
 				return drops;
 			case BROWN_MUSHROOM_BLOCK:
 			case RED_MUSHROOM_BLOCK:
-				drops.add(new ItemStack(material.getItemType()));
-				return drops;
 			case BOOKSHELF:
 			case CLAY:
 			case GLASS:
@@ -160,22 +155,19 @@ public class BlockDrops {
 			case WHITE_STAINED_GLASS_PANE:
 			case YELLOW_STAINED_GLASS_PANE:
 			case GLASS_PANE:
-				drops.add(material.toItemStack(1));
-				return drops;
 			case ACACIA_LEAVES:
 			case BIRCH_LEAVES:
 			case DARK_OAK_LEAVES:
 			case JUNGLE_LEAVES:
 			case OAK_LEAVES:
 			case SPRUCE_LEAVES:
-				drops.add(new ItemStack(material.getItemType(), 1, (short) (material.getData() % 4)));
+				drops.add(new ItemStack(material));
 				return drops;
 			default:
 				return null;
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private static boolean isUsableTool(ItemStack tool, Material block) {
 		// TODO messy
 		net.minecraft.server.v1_13_R2.Block nmsBlock = net.minecraft.server.v1_13_R2.Block.asBlock(CraftItemStack.asNMSCopy(new ItemStack(block)).getItem());
@@ -187,7 +179,6 @@ public class BlockDrops {
 				&& Item.getById(tool.getType().getId()).canDestroySpecialBlock(data);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static Collection<ItemStack> getFortuneDrops(ItemStack tool, Block block, int fortune) {
 		List<ItemStack> drops = new ArrayList<>();
 
@@ -209,7 +200,7 @@ public class BlockDrops {
 			}
 
 			if (blockData.getMaterial() == Material.COCOA) {
-				drops.add(new ItemStack(Material.COCOA, isFullyGrown ? 3 : 1, DyeColor.BROWN.getDyeData()));
+				drops.add(new ItemStack(Material.COCOA, isFullyGrown ? 3 : 1));
 				return drops;
 			}
 
