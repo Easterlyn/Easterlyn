@@ -176,7 +176,7 @@ public class BlockDrops {
 		}
 		IBlockData data = nmsBlock.getBlockData();
 		return data.getMaterial().isAlwaysDestroyable() || tool != null && tool.getType() != Material.AIR
-				&& Item.getById(tool.getType().getId()).canDestroySpecialBlock(data);
+				&& CraftMagicNumbers.getItem(tool.getType()).canDestroySpecialBlock(data);
 	}
 
 	private static Collection<ItemStack> getFortuneDrops(ItemStack tool, Block block, int fortune) {
