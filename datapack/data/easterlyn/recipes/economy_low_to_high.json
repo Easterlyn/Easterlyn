@@ -1,18 +1,18 @@
 {
-    "type": "crafting_shaped",
-    "group": "emerald",
-    "pattern": [
-        "###",
-        "###",
-        "###"
-    ],
-    "key": {
-        "#": {
-            "item": "minecraft:lapis_block"
-        }
-    },
-    "result": {
-        "item": "minecraft:emerald",
-        "count": 1
+  "type": "crafting_shaped",
+  "group": "emerald",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:lapis_block"
     }
+  },
+  "result": {
+    "item": "minecraft:emerald",
+     "count": 1
+  }
 }

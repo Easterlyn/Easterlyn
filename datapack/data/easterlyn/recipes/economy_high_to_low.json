@@ -1,13 +1,13 @@
 {
-    "type": "crafting_shapeless",
-    "group": "lapis_block",
-    "ingredients": [
-        {
-            "item": "minecraft:emerald"
-        }
-    ],
-    "result": {
-        "item": "minecraft:lapis_block",
-        "count": 9
+  "type": "crafting_shapeless",
+  "group": "lapis_block",
+  "ingredients": [
+    {
+        "item": "minecraft:emerald"
     }
+  ],
+  "result": {
+    "item": "minecraft:lapis_block",
+    "count": 9
+  }
 }
