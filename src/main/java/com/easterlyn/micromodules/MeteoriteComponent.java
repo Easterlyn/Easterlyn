@@ -1,14 +1,12 @@
 package com.easterlyn.micromodules;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-
-import net.minecraft.server.v1_13_R2.Block;
 import net.minecraft.server.v1_13_R2.DamageSource;
 import net.minecraft.server.v1_13_R2.EntityFallingBlock;
-
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.util.CraftMagicNumbers;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 /**
  * Wrapper for EntityFallingBlock to allow easier detection of Meteorite components.
@@ -22,7 +20,7 @@ public class MeteoriteComponent extends EntityFallingBlock {
 
 	@SuppressWarnings("deprecation")
 	MeteoriteComponent(Location l, Material material, boolean explode, boolean bore) {
-		super(((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), Block.getByCombinedId(material.getId()));
+		super(((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), CraftMagicNumbers.getBlock(material).getBlockData());
 		this.explode = explode;
 		this.bore = bore;
 		this.ticksLived = 1;
