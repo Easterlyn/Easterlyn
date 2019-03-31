@@ -17,14 +17,14 @@ public class UserAffinity {
 
 	public static final UserAffinity EASTERLYN = addDefault(new UserAffinity("Easterlyn", ChatColor.WHITE));
 
-	public static final UserAffinity LIGHT = addDefault(new UserAffinity("Light", ChatColor.GOLD));
+	public static final UserAffinity LIGHT = addDefault(new UserAffinity("Light", ChatColor.YELLOW));
 	public static final UserAffinity SHADOW = addDefault(new UserAffinity("Shadow", ChatColor.DARK_GRAY));
-	public static final UserAffinity LIFE = addDefault(new UserAffinity("Life", ChatColor.GREEN));
-	public static final UserAffinity DEATH = addDefault(new UserAffinity("Death", ChatColor.DARK_RED));
-	public static final UserAffinity EARTH = addDefault(new UserAffinity("Earth", ChatColor.DARK_GREEN));
+	public static final UserAffinity LIFE = addDefault(new UserAffinity("Life", ChatColor.DARK_GREEN));
+	public static final UserAffinity DEATH = addDefault(new UserAffinity("Death", ChatColor.DARK_GRAY));
+	public static final UserAffinity EARTH = addDefault(new UserAffinity("Earth", ChatColor.GRAY));
 	public static final UserAffinity WATER = addDefault(new UserAffinity("Water", ChatColor.BLUE));
 	public static final UserAffinity FIRE = addDefault(new UserAffinity("Fire", ChatColor.RED));
-	public static final UserAffinity AIR = addDefault(new UserAffinity("Air", ChatColor.YELLOW));
+	public static final UserAffinity AIR = addDefault(new UserAffinity("Air", ChatColor.AQUA));
 	public static final UserAffinity TIME = addDefault(new UserAffinity("Time", ChatColor.DARK_PURPLE));
 
 	private final String name;
