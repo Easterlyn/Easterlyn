@@ -3,14 +3,13 @@ package com.easterlyn.events.listeners.vehicle;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.FreeCart;
-
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -43,12 +42,16 @@ public class BlockCollisionListener extends EasterlynListener {
 			return;
 		}
 		if (event.getBlock().getType() == Material.DISPENSER || event.getBlock().getType() == Material.DROPPER) {
-			BlockState b = event.getBlock().getState();
-			if (((InventoryHolder) b).getInventory().firstEmpty() == -1) {
+			BlockState blockState = event.getBlock().getState();
+			if (!(blockState instanceof Container)) {
 				return;
 			}
-			((InventoryHolder) b).getInventory().addItem(new ItemStack(Material.MINECART));
-			b.update(true);
+			Container dispenser = (Container) blockState;
+			if (dispenser.getSnapshotInventory().firstEmpty() == -1) {
+				return;
+			}
+			dispenser.getSnapshotInventory().addItem(new ItemStack(Material.MINECART));
+			dispenser.update(true);
 			event.getVehicle().eject();
 			event.getVehicle().remove();
 		}

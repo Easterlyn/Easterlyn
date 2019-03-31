@@ -186,9 +186,13 @@ public class AsyncChatListener extends EasterlynListener {
 				messageLater(player, message.getChannel(), lang.getValue("events.chat.mute"));
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 						String.format("mute %s 5m", player.getName()));
-				discord.postReport("Automatically muted " + player.getName()
-						+ " for spamming, violation level " + sender.getChatViolationLevel());
 				event.setCancelled(true);
+				try {
+					discord.postReport("Automatically muted " + player.getName()
+							+ " for spamming, violation level " + sender.getChatViolationLevel());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				return;
 			}
 			if (sender.getChatViolationLevel() > 3 && !sender.getChatWarnStatus()) {
@@ -222,7 +226,11 @@ public class AsyncChatListener extends EasterlynListener {
 		message.send(event.getRecipients(), event instanceof EasterlynAsyncChatEvent, true);
 
 		// Post messages to Discord
-		discord.postMessage(message, publishGlobally);
+		try {
+			discord.postMessage(message, publishGlobally);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// Dummy player should not trigger Hal; he may become one.
 		if (player instanceof WrappedSenderPlayer) {

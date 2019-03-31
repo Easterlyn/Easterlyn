@@ -34,7 +34,7 @@ import java.util.UUID;
  *
  * @author Dublek, Jikoo
  */
-public class TotemLathe extends Machine	{
+public class TotemLathe extends Machine {
 
     private static Triple<ItemStack, ItemStack, ItemStack> exampleRecipes;
 
@@ -64,7 +64,7 @@ public class TotemLathe extends Machine	{
         shape.setVectorData(new Vector(3, 0, 0), m);
         m = shape.new MaterialDataValue(Material.DAYLIGHT_DETECTOR);
         shape.setVectorData(new Vector(1, 1, 0), m);
-        m = shape.new MaterialDataValue(Material.ANVIL).withBlockData(Rotatable.class, Direction.NORTH);
+        m = shape.new MaterialDataValue(Material.ANVIL).withBlockData(Rotatable.class, Direction.WEST);
         shape.setVectorData(new Vector(3, 1, 0), m);
         m = shape.new MaterialDataValue(Material.HOPPER);
         shape.setVectorData(new Vector(2, 2, 0), m);

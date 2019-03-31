@@ -10,9 +10,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +55,7 @@ public class ConcurrentConfiguration implements Configuration {
 		}
 	}
 
+	@NotNull
 	@Override
 	public Set<String> getKeys(boolean deep) {
 		synchronized (internal) {
@@ -60,6 +63,7 @@ public class ConcurrentConfiguration implements Configuration {
 		}
 	}
 
+	@NotNull
 	@Override
 	public Map<String, Object> getValues(boolean deep) {
 		synchronized (internal) {
@@ -68,21 +72,21 @@ public class ConcurrentConfiguration implements Configuration {
 	}
 
 	@Override
-	public boolean contains(String path) {
+	public boolean contains(@NotNull String path) {
 		synchronized (internal) {
 			return internal.contains(path);
 		}
 	}
 
 	@Override
-	public boolean contains(String path, boolean ignoreDefault) {
+	public boolean contains(@NotNull String path, boolean ignoreDefault) {
 		synchronized (internal) {
 			return internal.contains(path, ignoreDefault);
 		}
 	}
 
 	@Override
-	public boolean isSet(String path) {
+	public boolean isSet(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isSet(path);
 		}
@@ -95,6 +99,7 @@ public class ConcurrentConfiguration implements Configuration {
 		}
 	}
 
+	@NotNull
 	@Override
 	public String getName() {
 		synchronized (internal) {
@@ -117,343 +122,369 @@ public class ConcurrentConfiguration implements Configuration {
 	}
 
 	@Override
-	public Object get(String path) {
+	public Object get(@NotNull String path) {
 		synchronized (internal) {
 			return internal.get(path);
 		}
 	}
 
 	@Override
-	public Object get(String path, Object defaultValue) {
+	public Object get(@NotNull String path, Object defaultValue) {
 		synchronized (internal) {
 			return internal.get(path, defaultValue);
 		}
 	}
 
 	@Override
-	public void set(String path, Object value) {
+	public void set(@NotNull String path, Object value) {
 		synchronized (internal) {
 			internal.set(path, value);
 		}
 	}
 
+	@NotNull
 	@Override
-	public ConfigurationSection createSection(String path) {
+	public ConfigurationSection createSection(@NotNull String path) {
 		synchronized (internal) {
 			return new ConcurrentConfiguration(internal.createSection(path));
 		}
 	}
 
+	@NotNull
 	@Override
-	public ConfigurationSection createSection(String path, Map<?, ?> mappings) {
+	public ConfigurationSection createSection(@NotNull String path, @NotNull Map<?, ?> mappings) {
 		synchronized (internal) {
 			return new ConcurrentConfiguration(internal.createSection(path, mappings));
 		}
 	}
 
 	@Override
-	public String getString(String path) {
+	public String getString(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getString(path);
 		}
 	}
 
 	@Override
-	public String getString(String path, String defaultValue) {
+	public String getString(@NotNull String path, String defaultValue) {
 		synchronized (internal) {
 			return internal.getString(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isString(String path) {
+	public boolean isString(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isString(path);
 		}
 	}
 
 	@Override
-	public int getInt(String path) {
+	public int getInt(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getInt(path);
 		}
 	}
 
 	@Override
-	public int getInt(String path, int defaultValue) {
+	public int getInt(@NotNull String path, int defaultValue) {
 		synchronized (internal) {
 			return internal.getInt(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isInt(String path) {
+	public boolean isInt(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isInt(path);
 		}
 	}
 
 	@Override
-	public boolean getBoolean(String path) {
+	public boolean getBoolean(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getBoolean(path);
 		}
 	}
 
 	@Override
-	public boolean getBoolean(String path, boolean defaultValue) {
+	public boolean getBoolean(@NotNull String path, boolean defaultValue) {
 		synchronized (internal) {
 			return internal.getBoolean(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isBoolean(String path) {
+	public boolean isBoolean(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isBoolean(path);
 		}
 	}
 
 	@Override
-	public double getDouble(String path) {
+	public double getDouble(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getDouble(path);
 		}
 	}
 
 	@Override
-	public double getDouble(String path, double defaultValue) {
+	public double getDouble(@NotNull String path, double defaultValue) {
 		synchronized (internal) {
 			return internal.getDouble(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isDouble(String path) {
+	public boolean isDouble(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isDouble(path);
 		}
 	}
 
 	@Override
-	public long getLong(String path) {
+	public long getLong(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getLong(path);
 		}
 	}
 
 	@Override
-	public long getLong(String path, long defaultValue) {
+	public long getLong(@NotNull String path, long defaultValue) {
 		synchronized (internal) {
 			return internal.getLong(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isLong(String path) {
+	public boolean isLong(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isLong(path);
 		}
 	}
 
 	@Override
-	public List<?> getList(String path) {
+	public List<?> getList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getList(path);
 		}
 	}
 
 	@Override
-	public List<?> getList(String path, List<?> defaultValue) {
+	public List<?> getList(@NotNull String path, List<?> defaultValue) {
 		synchronized (internal) {
 			return internal.getList(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isList(String path) {
+	public boolean isList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<String> getStringList(String path) {
+	public List<String> getStringList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getStringList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Integer> getIntegerList(String path) {
+	public List<Integer> getIntegerList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getIntegerList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Boolean> getBooleanList(String path) {
+	public List<Boolean> getBooleanList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getBooleanList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Double> getDoubleList(String path) {
+	public List<Double> getDoubleList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getDoubleList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Float> getFloatList(String path) {
+	public List<Float> getFloatList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getFloatList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Long> getLongList(String path) {
+	public List<Long> getLongList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getLongList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Byte> getByteList(String path) {
+	public List<Byte> getByteList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getByteList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Character> getCharacterList(String path) {
+	public List<Character> getCharacterList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getCharacterList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Short> getShortList(String path) {
+	public List<Short> getShortList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getShortList(path);
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<Map<?, ?>> getMapList(String path) {
+	public List<Map<?, ?>> getMapList(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getMapList(path);
 		}
 	}
 
 	@Override
-	public <T extends ConfigurationSerializable> T getSerializable(String s, Class<T> aClass) {
+	public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass) {
+		synchronized (internal) {
+			return internal.getObject(s, aClass);
+		}
+	}
+
+	@Override
+	public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass, T t) {
+		synchronized (internal) {
+			return internal.getObject(s, aClass, t);
+		}
+	}
+
+	@Override
+	public <T extends ConfigurationSerializable> T getSerializable(@NotNull String s, @NotNull Class<T> aClass) {
 		synchronized (internal) {
 			return internal.getSerializable(s, aClass);
 		}
 	}
 
 	@Override
-	public <T extends ConfigurationSerializable> T getSerializable(String s, Class<T> aClass, T t) {
+	public <T extends ConfigurationSerializable> T getSerializable(@NotNull String s, @NotNull Class<T> aClass, T t) {
 		synchronized (internal) {
 			return internal.getSerializable(s, aClass, t);
 		}
 	}
 
 	@Override
-	public Vector getVector(String path) {
+	public Vector getVector(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getVector(path);
 		}
 	}
 
 	@Override
-	public Vector getVector(String path, Vector defaultValue) {
+	public Vector getVector(@NotNull String path, Vector defaultValue) {
 		synchronized (internal) {
 			return internal.getVector(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isVector(String path) {
+	public boolean isVector(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isVector(path);
 		}
 	}
 
 	@Override
-	public OfflinePlayer getOfflinePlayer(String path) {
+	public OfflinePlayer getOfflinePlayer(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getOfflinePlayer(path);
 		}
 	}
 
 	@Override
-	public OfflinePlayer getOfflinePlayer(String path, OfflinePlayer defaultValue) {
+	public OfflinePlayer getOfflinePlayer(@NotNull String path, OfflinePlayer defaultValue) {
 		synchronized (internal) {
 			return internal.getOfflinePlayer(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isOfflinePlayer(String path) {
+	public boolean isOfflinePlayer(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isOfflinePlayer(path);
 		}
 	}
 
 	@Override
-	public ItemStack getItemStack(String path) {
+	public ItemStack getItemStack(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getItemStack(path);
 		}
 	}
 
 	@Override
-	public ItemStack getItemStack(String path, ItemStack defaultValue) {
+	public ItemStack getItemStack(@NotNull String path, ItemStack defaultValue) {
 		synchronized (internal) {
 			return internal.getItemStack(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isItemStack(String path) {
+	public boolean isItemStack(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isItemStack(path);
 		}
 	}
 
 	@Override
-	public Color getColor(String path) {
+	public Color getColor(@NotNull String path) {
 		synchronized (internal) {
 			return internal.getColor(path);
 		}
 	}
 
 	@Override
-	public Color getColor(String path, Color defaultValue) {
+	public Color getColor(@NotNull String path, Color defaultValue) {
 		synchronized (internal) {
 			return internal.getColor(path, defaultValue);
 		}
 	}
 
 	@Override
-	public boolean isColor(String path) {
+	public boolean isColor(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isColor(path);
 		}
 	}
 
 	@Override
-	public ConfigurationSection getConfigurationSection(String path) {
+	public ConfigurationSection getConfigurationSection(@NotNull String path) {
 		synchronized (internal) {
 			return new ConcurrentConfiguration(internal.getConfigurationSection(path));
 		}
 	}
 
 	@Override
-	public boolean isConfigurationSection(String path) {
+	public boolean isConfigurationSection(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isConfigurationSection(path);
 		}
@@ -467,30 +498,35 @@ public class ConcurrentConfiguration implements Configuration {
 	}
 
 	@Override
-	public void addDefault(String path, Object value) {
+	public void addDefault(@NotNull String path, Object value) {
 		synchronized (internal) {
 			internal.addDefault(path, value);
 		}
 	}
 
 	@Override
-	public void addDefaults(Map<String, Object> defaults) {
+	public void addDefaults(@NotNull Map<String, Object> defaults) {
 		synchronized (internal) {
-			internal.getRoot().addDefaults(defaults);
+			defaults.forEach(internal::addDefault);
 		}
 	}
 
 	@Override
-	public void addDefaults(Configuration configuration) {
+	public void addDefaults(@NotNull Configuration configuration) {
 		synchronized (internal) {
-			internal.getRoot().addDefaults(configuration);
+			configuration.getKeys(false).forEach(key -> internal.addDefault(key, configuration.get(key)));
 		}
 	}
 
 	@Override
-	public void setDefaults(Configuration configuration) {
+	public void setDefaults(@NotNull Configuration configuration) {
 		synchronized (internal) {
-			internal.getRoot().setDefaults(configuration);
+			ConfigurationSection defaultSection = internal.getDefaultSection();
+			if (defaultSection != null){
+				new HashSet<>(internal.getDefaultSection().getKeys(false)).forEach(key -> internal.addDefault(key, null));
+			}
+
+			configuration.getKeys(false).forEach(key -> internal.addDefault(key, configuration.get(key)));
 		}
 	}
 
@@ -501,6 +537,7 @@ public class ConcurrentConfiguration implements Configuration {
 		}
 	}
 
+	@NotNull
 	@Override
 	public ConfigurationOptions options() {
 		synchronized (internal) {
