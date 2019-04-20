@@ -94,6 +94,8 @@ public class Events extends Module {
 
 	@Override
 	protected void onDisable() {
+		this.blockUpdateManager.forceAllUpdates();
+
 		this.getConfig().set("spamWhitelist", spamhausWhitelist);
 
 		try {
