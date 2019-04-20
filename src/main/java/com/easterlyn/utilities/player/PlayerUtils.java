@@ -131,7 +131,7 @@ public class PlayerUtils {
 
 	private static Player getPlayerFor(UUID uuid) {
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-		if (offlinePlayer == null || offlinePlayer.getName() == null) {
+		if (offlinePlayer.getName() == null) {
 			// Player has not logged in.
 			return null;
 		}
@@ -181,7 +181,7 @@ public class PlayerUtils {
 			// Not a UUID.
 		}
 
-		if (sender == null || sender.hasPermission("easterlyn.command.selector") && id.length() > 1 && id.charAt(0) == '@') {
+		if (sender != null && sender.hasPermission("easterlyn.command.selector") && id.length() > 1 && id.charAt(0) == '@') {
 			// Theoretically selection accepts a UUID or player name, but why chance it on changes?
 			for (Entity entity : Bukkit.selectEntities(sender, id)) {
 				if (entity instanceof Player && (senderPlayer == null || senderPlayer.canSee((Player) entity))) {
@@ -202,7 +202,7 @@ public class PlayerUtils {
 			}
 
 			if (StringUtil.startsWithIgnoreCase(player.getName(), id)
-					|| player.getDisplayName() != null && StringUtil.startsWithIgnoreCase(player.getDisplayName(), id)) {
+					|| StringUtil.startsWithIgnoreCase(player.getDisplayName(), id)) {
 				return player;
 			}
 		}
@@ -242,7 +242,7 @@ public class PlayerUtils {
 		}
 
 		Player senderPlayer = sender instanceof Player ? (Player) sender : null;
-		if (sender == null || sender.hasPermission("easterlyn.commands.selector") && id.length() > 1 && id.charAt(0) == '@') {
+		if (sender != null && sender.hasPermission("easterlyn.commands.selector") && id.length() > 1 && id.charAt(0) == '@') {
 			for (Entity entity : Bukkit.selectEntities(sender, id)) {
 				if (entity instanceof Player && (senderPlayer == null || senderPlayer.canSee((Player) entity))) {
 					return (Player) entity;
@@ -265,7 +265,7 @@ public class PlayerUtils {
 		if (offline) {
 			// Exact offline match from usercache
 			player = Bukkit.getOfflinePlayer(id);
-			if (player != null && player.hasPlayedBefore()) {
+			if (player.hasPlayedBefore()) {
 				return getPlayer(plugin, player.getUniqueId());
 			}
 		}

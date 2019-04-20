@@ -5,6 +5,7 @@ import com.easterlyn.utilities.player.PermissiblePlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IUser;
 
 /**
@@ -30,7 +31,8 @@ public class DiscordPlayer extends PermissiblePlayer {
 		this.displayName = ChatColor.stripColor(arg0);
 	}
 
-	@Override
+	@NotNull
+    @Override
 	public String getDisplayName() {
 		return displayName != null ? displayName : getName();
 	}
@@ -57,7 +59,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 	}
 
 	@Override
-	public void sendMessage(String arg0) {
+	public void sendMessage(@NotNull String arg0) {
 		if (messages == null) {
 			discord.postMessage(null, arg0, user.getLongID());
 			return;
@@ -69,7 +71,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 	}
 
 	@Override
-	public void sendMessage(String[] arg0) {
+	public void sendMessage(@NotNull String[] arg0) {
 		if (messages == null) {
 			return;
 		}

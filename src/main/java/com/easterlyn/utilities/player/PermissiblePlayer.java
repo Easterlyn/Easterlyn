@@ -55,6 +55,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -82,22 +83,22 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public boolean hasPermission(String arg0) {
+	public boolean hasPermission(@NotNull String arg0) {
 		return PermissionBridge.hasPermission(getUniqueId(), arg0);
 	}
 
 	@Override
-	public boolean hasPermission(Permission arg0) {
+	public boolean hasPermission(@NotNull Permission arg0) {
 		return this.hasPermission(arg0.getName());
 	}
 
 	@Override
-	public boolean isPermissionSet(String arg0) {
+	public boolean isPermissionSet(@NotNull String arg0) {
 		return true;
 	}
 
 	@Override
-	public boolean isPermissionSet(Permission arg0) {
+	public boolean isPermissionSet(@NotNull Permission arg0) {
 		return true;
 	}
 
@@ -106,6 +107,7 @@ public class PermissiblePlayer implements Player {
 		player.closeInventory();
 	}
 
+	@NotNull
 	@Override
 	public Inventory getEnderChest() {
 		return player.getEnderChest();
@@ -117,22 +119,22 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public boolean discoverRecipe(NamespacedKey namespacedKey) {
+	public boolean discoverRecipe(@NotNull NamespacedKey namespacedKey) {
 		return player.discoverRecipe(namespacedKey);
 	}
 
 	@Override
-	public int discoverRecipes(Collection<NamespacedKey> collection) {
+	public int discoverRecipes(@NotNull Collection<NamespacedKey> collection) {
 		return player.discoverRecipes(collection);
 	}
 
 	@Override
-	public boolean undiscoverRecipe(NamespacedKey namespacedKey) {
+	public boolean undiscoverRecipe(@NotNull NamespacedKey namespacedKey) {
 		return player.undiscoverRecipe(namespacedKey);
 	}
 
 	@Override
-	public int undiscoverRecipes(Collection<NamespacedKey> collection) {
+	public int undiscoverRecipes(@NotNull Collection<NamespacedKey> collection) {
 		return player.undiscoverRecipes(collection);
 	}
 
@@ -160,32 +162,42 @@ public class PermissiblePlayer implements Player {
 		player.setShoulderEntityRight(entity);
 	}
 
+	@NotNull
 	@Override
 	public GameMode getGameMode() {
 		return player.getGameMode();
 	}
 
+	@NotNull
 	@Override
 	public PlayerInventory getInventory() {
 		return player.getInventory();
 	}
 
+	@NotNull
 	@Override
 	@Deprecated
 	public ItemStack getItemInHand() {
 		return player.getItemInHand();
 	}
 
+	@NotNull
 	@Override
 	public ItemStack getItemOnCursor() {
 		return player.getItemOnCursor();
 	}
 
+	@NotNull
 	@Override
 	public String getName() {
-		return player.isOnline() ? player.getName() : Bukkit.getOfflinePlayer(getUniqueId()).getName();
+		if (player.isOnline()) {
+			return player.getName();
+		}
+		String name = Bukkit.getOfflinePlayer(getUniqueId()).getName();
+		return name != null ? name : getUniqueId().toString();
 	}
 
+	@NotNull
 	@Override
 	public InventoryView getOpenInventory() {
 		return player.getOpenInventory();
@@ -217,17 +229,17 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public InventoryView openMerchant(Villager paramVillager, boolean paramBoolean) {
+	public InventoryView openMerchant(@NotNull Villager paramVillager, boolean paramBoolean) {
 		return player.openMerchant(paramVillager, paramBoolean);
 	}
 
 	@Override
-	public InventoryView openInventory(Inventory inventory) {
+	public InventoryView openInventory(@NotNull Inventory inventory) {
 		return player.openInventory(inventory);
 	}
 
 	@Override
-	public void openInventory(InventoryView inventory) {
+	public void openInventory(@NotNull InventoryView inventory) {
 		player.openInventory(inventory);
 	}
 
@@ -237,7 +249,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void setGameMode(GameMode mode) {
+	public void setGameMode(@NotNull GameMode mode) {
 		player.setGameMode(mode);
 	}
 
@@ -253,25 +265,26 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public boolean setWindowProperty(Property prop, int value) {
+	public boolean setWindowProperty(@NotNull Property prop, int value) {
 		return player.setWindowProperty(prop, value);
 	}
 
 	@Override
-	public boolean addPotionEffect(PotionEffect effect) {
+	public boolean addPotionEffect(@NotNull PotionEffect effect) {
 		return player.addPotionEffect(effect);
 	}
 
 	@Override
-	public boolean addPotionEffect(PotionEffect effect, boolean force) {
+	public boolean addPotionEffect(@NotNull PotionEffect effect, boolean force) {
 		return player.addPotionEffect(effect, force);
 	}
 
 	@Override
-	public boolean addPotionEffects(Collection<PotionEffect> effects) {
+	public boolean addPotionEffects(@NotNull Collection<PotionEffect> effects) {
 		return player.addPotionEffects(effects);
 	}
 
+	@NotNull
 	@Override
 	public Collection<PotionEffect> getActivePotionEffects() {
 		return player.getActivePotionEffects();
@@ -297,6 +310,7 @@ public class PermissiblePlayer implements Player {
 		return player.getEyeHeight(ignoreSneaking);
 	}
 
+	@NotNull
 	@Override
 	public Location getEyeLocation() {
 		return player.getEyeLocation();
@@ -312,6 +326,7 @@ public class PermissiblePlayer implements Player {
 		return player.getLastDamage();
 	}
 
+	@NotNull
 	@Override
 	public List<Block> getLastTwoTargetBlocks(Set<Material> transparent, int maxDistance) {
 		return player.getLastTwoTargetBlocks(transparent, maxDistance);
@@ -323,7 +338,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public Block getTargetBlockExact(int i, FluidCollisionMode fluidCollisionMode) {
+	public Block getTargetBlockExact(int i, @NotNull FluidCollisionMode fluidCollisionMode) {
 		return player.getTargetBlockExact(i, fluidCollisionMode);
 	}
 
@@ -333,15 +348,17 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public RayTraceResult rayTraceBlocks(double v, FluidCollisionMode fluidCollisionMode) {
+	public RayTraceResult rayTraceBlocks(double v, @NotNull FluidCollisionMode fluidCollisionMode) {
 		return player.rayTraceBlocks(v, fluidCollisionMode);
 	}
 
+	@NotNull
 	@Override
 	public Entity getLeashHolder() throws IllegalStateException {
 		return player.getLeashHolder();
 	}
 
+	@NotNull
 	@Override
 	public List<Block> getLineOfSight(Set<Material> transparent, int maxDistance) {
 		return player.getLineOfSight(transparent, maxDistance);
@@ -372,23 +389,24 @@ public class PermissiblePlayer implements Player {
 		return player.getRemoveWhenFarAway();
 	}
 
+	@NotNull
 	@Override
 	public Block getTargetBlock(Set<Material> transparent, int maxDistance) {
 		return player.getTargetBlock(transparent, maxDistance);
 	}
 
 	@Override
-	public boolean hasLineOfSight(Entity other) {
+	public boolean hasLineOfSight(@NotNull Entity other) {
 		return player.hasLineOfSight(other);
 	}
 
 	@Override
-	public boolean hasPotionEffect(PotionEffectType type) {
+	public boolean hasPotionEffect(@NotNull PotionEffectType type) {
 		return player.hasPotionEffect(type);
 	}
 
 	@Override
-	public PotionEffect getPotionEffect(PotionEffectType type) {
+	public PotionEffect getPotionEffect(@NotNull PotionEffectType type) {
 		return player.getPotionEffect(type);
 	}
 
@@ -398,7 +416,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void removePotionEffect(PotionEffectType type) {
+	public void removePotionEffect(@NotNull PotionEffectType type) {
 		player.removePotionEffect(type);
 	}
 
@@ -472,6 +490,7 @@ public class PermissiblePlayer implements Player {
 		return player.getLastDamageCause();
 	}
 
+	@NotNull
 	@Override
 	public Location getLocation() {
 		return player.getLocation();
@@ -487,6 +506,7 @@ public class PermissiblePlayer implements Player {
 		return player.getMaxFireTicks();
 	}
 
+	@NotNull
 	@Override
 	public List<Entity> getNearbyEntities(double arg0, double arg1, double arg2) {
 		return player.getNearbyEntities(arg0, arg1, arg2);
@@ -498,6 +518,7 @@ public class PermissiblePlayer implements Player {
 		return player.getPassenger();
 	}
 
+	@NotNull
 	@Override
 	public Server getServer() {
 		return player.getServer();
@@ -520,11 +541,13 @@ public class PermissiblePlayer implements Player {
 		return player.getTicksLived();
 	}
 
+	@NotNull
 	@Override
 	public EntityType getType() {
 		return player.getType();
 	}
 
+	@NotNull
 	@Override
 	public UUID getUniqueId() {
 		return player.getUniqueId();
@@ -535,14 +558,22 @@ public class PermissiblePlayer implements Player {
 		return player.getVehicle();
 	}
 
+	@NotNull
 	@Override
 	public Vector getVelocity() {
 		return player.getVelocity();
 	}
 
+	@NotNull
 	@Override
 	public World getWorld() {
 		return player.getWorld();
+	}
+
+	@Deprecated
+	@Override
+	public void setRotation(float v, float v1) {
+		player.setRotation(v, v1);
 	}
 
 	@Override
@@ -576,7 +607,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void playEffect(EntityEffect arg0) {
+	public void playEffect(@NotNull EntityEffect arg0) {
 		player.playEffect(arg0);
 	}
 
@@ -612,7 +643,7 @@ public class PermissiblePlayer implements Player {
 
 	@Deprecated
 	@Override
-	public boolean setPassenger(Entity arg0) {
+	public boolean setPassenger(@NotNull Entity arg0) {
 		return player.setPassenger(arg0);
 	}
 
@@ -622,80 +653,84 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void setVelocity(Vector arg0) {
+	public void setVelocity(@NotNull Vector arg0) {
 		player.setVelocity(arg0);
 	}
 
 	@Override
-	public boolean teleport(Location arg0) {
+	public boolean teleport(@NotNull Location arg0) {
 		return player.teleport(arg0);
 	}
 
 	@Override
-	public boolean teleport(Entity arg0) {
+	public boolean teleport(@NotNull Entity arg0) {
 		return player.teleport(arg0);
 	}
 
 	@Override
-	public boolean teleport(Location location, TeleportCause arg1) {
+	public boolean teleport(@NotNull Location location, @NotNull TeleportCause arg1) {
 		return player.teleport(location, arg1);
 	}
 
 	@Override
-	public boolean teleport(Entity entity, TeleportCause arg1) {
+	public boolean teleport(@NotNull Entity entity, @NotNull TeleportCause arg1) {
 		return player.teleport(entity, arg1);
 	}
 
+	@NotNull
 	@Override
-	public List<MetadataValue> getMetadata(String arg0) {
+	public List<MetadataValue> getMetadata(@NotNull String arg0) {
 		return player.getMetadata(arg0);
 	}
 
 	@Override
-	public boolean hasMetadata(String arg0) {
+	public boolean hasMetadata(@NotNull String arg0) {
 		return player.hasMetadata(arg0);
 	}
 
 	@Override
-	public void removeMetadata(String arg0, Plugin arg1) {
+	public void removeMetadata(@NotNull String arg0, @NotNull Plugin arg1) {
 		player.removeMetadata(arg0, arg1);
 	}
 
 	@Override
-	public void setMetadata(String arg0, MetadataValue arg1) {
+	public void setMetadata(@NotNull String arg0, @NotNull MetadataValue arg1) {
 		player.setMetadata(arg0, arg1);
 	}
 
 	@Override
-	public void sendMessage(String arg0) {
+	public void sendMessage(@NotNull String arg0) {
 		player.sendMessage(arg0);
 	}
 
 	@Override
-	public void sendMessage(String[] arg0) {
+	public void sendMessage(@NotNull String[] arg0) {
 		player.sendMessage(arg0);
 	}
 
+	@NotNull
 	@Override
-	public PermissionAttachment addAttachment(Plugin arg0) {
+	public PermissionAttachment addAttachment(@NotNull Plugin arg0) {
 		return player.addAttachment(arg0);
 	}
 
 	@Override
-	public PermissionAttachment addAttachment(Plugin arg0, int arg1) {
+	public PermissionAttachment addAttachment(@NotNull Plugin arg0, int arg1) {
 		return player.addAttachment(arg0, arg1);
 	}
 
+	@NotNull
 	@Override
-	public PermissionAttachment addAttachment(Plugin arg0, String arg1, boolean arg2) {
+	public PermissionAttachment addAttachment(@NotNull Plugin arg0, @NotNull String arg1, boolean arg2) {
 		return player.addAttachment(arg0, arg1, arg2);
 	}
 
 	@Override
-	public PermissionAttachment addAttachment(Plugin arg0, String arg1, boolean arg2, int arg3) {
+	public PermissionAttachment addAttachment(@NotNull Plugin arg0, @NotNull String arg1, boolean arg2, int arg3) {
 		return player.addAttachment(arg0, arg1, arg2, arg3);
 	}
 
+	@NotNull
 	@Override
 	public Set<PermissionAttachmentInfo> getEffectivePermissions() {
 		return player.getEffectivePermissions();
@@ -707,7 +742,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void removeAttachment(PermissionAttachment arg0) {
+	public void removeAttachment(@NotNull PermissionAttachment arg0) {
 		player.removeAttachment(arg0);
 	}
 
@@ -759,33 +794,35 @@ public class PermissiblePlayer implements Player {
 		player.setMaxHealth(arg0);
 	}
 
+	@NotNull
 	@Override
-	public <T extends Projectile> T launchProjectile(Class<? extends T> arg0) {
+	public <T extends Projectile> T launchProjectile(@NotNull Class<? extends T> arg0) {
 		return player.launchProjectile(arg0);
 	}
 
+	@NotNull
 	@Override
-	public <T extends Projectile> T launchProjectile(Class<? extends T> arg0, Vector arg1) {
+	public <T extends Projectile> T launchProjectile(@NotNull Class<? extends T> arg0, Vector arg1) {
 		return player.launchProjectile(arg0, arg1);
 	}
 
 	@Override
-	public void abandonConversation(Conversation arg0) {
+	public void abandonConversation(@NotNull Conversation arg0) {
 		player.abandonConversation(arg0);
 	}
 
 	@Override
-	public void abandonConversation(Conversation arg0, ConversationAbandonedEvent arg1) {
+	public void abandonConversation(@NotNull Conversation arg0, @NotNull ConversationAbandonedEvent arg1) {
 		player.abandonConversation(arg0, arg1);
 	}
 
 	@Override
-	public void acceptConversationInput(String arg0) {
+	public void acceptConversationInput(@NotNull String arg0) {
 		player.acceptConversationInput(arg0);
 	}
 
 	@Override
-	public boolean beginConversation(Conversation arg0) {
+	public boolean beginConversation(@NotNull Conversation arg0) {
 		return player.beginConversation(arg0);
 	}
 
@@ -834,65 +871,67 @@ public class PermissiblePlayer implements Player {
 		player.setWhitelisted(arg0);
 	}
 
+	@NotNull
 	@Override
 	public Map<String, Object> serialize() {
 		return player.serialize();
 	}
 
+	@NotNull
 	@Override
 	public Set<String> getListeningPluginChannels() {
 		return player.getListeningPluginChannels();
 	}
 
 	@Override
-	public void sendPluginMessage(Plugin arg0, String arg1, byte[] arg2) {
+	public void sendPluginMessage(@NotNull Plugin arg0, @NotNull String arg1, @NotNull byte[] arg2) {
 		player.sendPluginMessage(arg0, arg1, arg2);
 	}
 
 	@Override
 	@Deprecated
-	public void awardAchievement(Achievement arg0) {
+	public void awardAchievement(@NotNull Achievement arg0) {
 		player.awardAchievement(arg0);
 	}
 
 	@Override
-	public boolean canSee(Player arg0) {
+	public boolean canSee(@NotNull Player arg0) {
 		return player.canSee(arg0);
 	}
 
 	@Override
-	public void chat(String arg0) {
+	public void chat(@NotNull String arg0) {
 		player.chat(arg0);
 	}
 
 	@Override
-	public void decrementStatistic(Statistic arg0) throws IllegalArgumentException {
+	public void decrementStatistic(@NotNull Statistic arg0) throws IllegalArgumentException {
 		player.decrementStatistic(arg0);
 	}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, int arg1) throws IllegalArgumentException {
+	public void decrementStatistic(@NotNull Statistic arg0, int arg1) throws IllegalArgumentException {
 		player.decrementStatistic(arg0, arg1);
 	}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, Material arg1) throws IllegalArgumentException {
+	public void decrementStatistic(@NotNull Statistic arg0, @NotNull Material arg1) throws IllegalArgumentException {
 		player.decrementStatistic(arg0, arg1);
 	}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, EntityType arg1) throws IllegalArgumentException {
+	public void decrementStatistic(@NotNull Statistic arg0, @NotNull EntityType arg1) throws IllegalArgumentException {
 		player.decrementStatistic(arg0, arg1);
 	}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, Material arg1, int arg2)
+	public void decrementStatistic(@NotNull Statistic arg0, @NotNull Material arg1, int arg2)
 			throws IllegalArgumentException {
 		player.decrementStatistic(arg0, arg1, arg2);
 	}
 
 	@Override
-	public void decrementStatistic(Statistic arg0, EntityType arg1, int arg2) {
+	public void decrementStatistic(@NotNull Statistic arg0, @NotNull EntityType arg1, int arg2) {
 		player.decrementStatistic(arg0, arg1, arg2);
 	}
 
@@ -911,11 +950,13 @@ public class PermissiblePlayer implements Player {
 		return player.getBedSpawnLocation();
 	}
 
+	@NotNull
 	@Override
 	public Location getCompassTarget() {
 		return player.getCompassTarget();
 	}
 
+	@NotNull
 	@Override
 	public String getDisplayName() {
 		return player.getDisplayName();
@@ -951,6 +992,7 @@ public class PermissiblePlayer implements Player {
 		return player.getLevel();
 	}
 
+	@NotNull
 	@Override
 	public String getPlayerListName() {
 		return player.getPlayerListName();
@@ -976,6 +1018,7 @@ public class PermissiblePlayer implements Player {
 		return player.getSaturation();
 	}
 
+	@NotNull
 	@Override
 	public Scoreboard getScoreboard() {
 		return player.getScoreboard();
@@ -987,17 +1030,17 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public int getStatistic(Statistic arg0) throws IllegalArgumentException {
+	public int getStatistic(@NotNull Statistic arg0) throws IllegalArgumentException {
 		return player.getStatistic(arg0);
 	}
 
 	@Override
-	public int getStatistic(Statistic arg0, Material arg1) throws IllegalArgumentException {
+	public int getStatistic(@NotNull Statistic arg0, @NotNull Material arg1) throws IllegalArgumentException {
 		return player.getStatistic(arg0, arg1);
 	}
 
 	@Override
-	public int getStatistic(Statistic arg0, EntityType arg1) throws IllegalArgumentException {
+	public int getStatistic(@NotNull Statistic arg0, @NotNull EntityType arg1) throws IllegalArgumentException {
 		return player.getStatistic(arg0, arg1);
 	}
 
@@ -1023,49 +1066,49 @@ public class PermissiblePlayer implements Player {
 
 	@Override
 	@Deprecated
-	public boolean hasAchievement(Achievement arg0) {
+	public boolean hasAchievement(@NotNull Achievement arg0) {
 		return player.hasAchievement(arg0);
 	}
 
 	@Deprecated
 	@Override
-	public void hidePlayer(Player arg0) {
+	public void hidePlayer(@NotNull Player arg0) {
 		player.hidePlayer(arg0);
 	}
 
 	@Override
-	public void hidePlayer(Plugin plugin, Player player) {
+	public void hidePlayer(@NotNull Plugin plugin, @NotNull Player player) {
 		player.hidePlayer(plugin, player);
 	}
 
 	@Override
-	public void incrementStatistic(Statistic arg0) throws IllegalArgumentException {
+	public void incrementStatistic(@NotNull Statistic arg0) throws IllegalArgumentException {
 		player.incrementStatistic(arg0);
 	}
 
 	@Override
-	public void incrementStatistic(Statistic arg0, int arg1) throws IllegalArgumentException {
+	public void incrementStatistic(@NotNull Statistic arg0, int arg1) throws IllegalArgumentException {
 		player.incrementStatistic(arg0, arg1);
 	}
 
 	@Override
-	public void incrementStatistic(Statistic arg0, Material arg1) throws IllegalArgumentException {
+	public void incrementStatistic(@NotNull Statistic arg0, @NotNull Material arg1) throws IllegalArgumentException {
 		player.incrementStatistic(arg0, arg1);
 	}
 
 	@Override
-	public void incrementStatistic(Statistic arg0, EntityType arg1) throws IllegalArgumentException {
+	public void incrementStatistic(@NotNull Statistic arg0, @NotNull EntityType arg1) throws IllegalArgumentException {
 		player.incrementStatistic(arg0, arg1);
 	}
 
 	@Override
-	public void incrementStatistic(Statistic arg0, Material arg1, int arg2)
+	public void incrementStatistic(@NotNull Statistic arg0, @NotNull Material arg1, int arg2)
 			throws IllegalArgumentException {
 		player.incrementStatistic(arg0, arg1, arg2);
 	}
 
 	@Override
-	public void incrementStatistic(Statistic arg0, EntityType arg1, int arg2)
+	public void incrementStatistic(@NotNull Statistic arg0, @NotNull EntityType arg1, int arg2)
 			throws IllegalArgumentException {
 		player.incrementStatistic(arg0, arg1, arg2);
 	}
@@ -1117,45 +1160,45 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public boolean performCommand(String arg0) {
+	public boolean performCommand(@NotNull String arg0) {
 		return player.performCommand(arg0);
 	}
 
 	@Override
 	@Deprecated
-	public void playEffect(Location arg0, Effect arg1, int arg2) {
+	public void playEffect(@NotNull Location arg0, @NotNull Effect arg1, int arg2) {
 		player.playEffect(arg0, arg1, arg2);
 	}
 
 	@Override
-	public <T> void playEffect(Location arg0, Effect arg1, T arg2) {
+	public <T> void playEffect(@NotNull Location arg0, @NotNull Effect arg1, T arg2) {
 		player.playEffect(arg0, arg1, arg2);
 	}
 
 	@Override
 	@Deprecated
-	public void playNote(Location arg0, byte arg1, byte arg2) {
+	public void playNote(@NotNull Location arg0, byte arg1, byte arg2) {
 		player.playNote(arg0, arg1, arg2);
 	}
 
 	@Override
-	public void playNote(Location arg0, Instrument arg1, Note arg2) {
+	public void playNote(@NotNull Location arg0, @NotNull Instrument arg1, @NotNull Note arg2) {
 		player.playNote(arg0, arg1, arg2);
 	}
 
 	@Override
-	public void playSound(Location arg0, String arg1, float arg2, float arg3) {
+	public void playSound(@NotNull Location arg0, @NotNull String arg1, float arg2, float arg3) {
 		player.playSound(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
-	public void playSound(Location arg0, Sound arg1, float arg2, float arg3) {
+	public void playSound(@NotNull Location arg0, @NotNull Sound arg1, float arg2, float arg3) {
 		player.playSound(arg0, arg1, arg2, arg3);
 	}
 
 	@Override
 	@Deprecated
-	public void removeAchievement(Achievement arg0) {
+	public void removeAchievement(@NotNull Achievement arg0) {
 		player.removeAchievement(arg0);
 	}
 
@@ -1182,33 +1225,33 @@ public class PermissiblePlayer implements Player {
 
 	@Override
 	@Deprecated
-	public void sendBlockChange(Location arg0, Material arg1, byte arg2) {
+	public void sendBlockChange(@NotNull Location arg0, @NotNull Material arg1, byte arg2) {
 		player.sendBlockChange(arg0, arg1, arg2);
 	}
 
 	@Override
-	public void sendBlockChange(Location location, BlockData blockData) {
+	public void sendBlockChange(@NotNull Location location, @NotNull BlockData blockData) {
 		player.sendBlockChange(location, blockData);
 	}
 
 	@Override
 	@Deprecated
-	public boolean sendChunkChange(Location arg0, int arg1, int arg2, int arg3, byte[] arg4) {
+	public boolean sendChunkChange(@NotNull Location arg0, int arg1, int arg2, int arg3, @NotNull byte[] arg4) {
 		return player.sendChunkChange(arg0, arg1, arg2, arg3, arg4);
 	}
 
 	@Override
-	public void sendMap(MapView arg0) {
+	public void sendMap(@NotNull MapView arg0) {
 		player.sendMap(arg0);
 	}
 
 	@Override
-	public void sendRawMessage(String arg0) {
+	public void sendRawMessage(@NotNull String arg0) {
 		player.sendRawMessage(arg0);
 	}
 
 	@Override
-	public void sendSignChange(Location arg0, String[] arg1) throws IllegalArgumentException {
+	public void sendSignChange(@NotNull Location arg0, String[] arg1) throws IllegalArgumentException {
 		player.sendSignChange(arg0, arg1);
 	}
 
@@ -1234,7 +1277,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public boolean sleep(Location location, boolean b) {
+	public boolean sleep(@NotNull Location location, boolean b) {
 		return player.sleep(location, b);
 	}
 
@@ -1243,13 +1286,14 @@ public class PermissiblePlayer implements Player {
 		player.wakeup(b);
 	}
 
+	@NotNull
 	@Override
 	public Location getBedLocation() {
 		return player.getBedLocation();
 	}
 
 	@Override
-	public void setCompassTarget(Location arg0) {
+	public void setCompassTarget(@NotNull Location arg0) {
 		player.setCompassTarget(arg0);
 	}
 
@@ -1339,17 +1383,17 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void setPlayerWeather(WeatherType arg0) {
+	public void setPlayerWeather(@NotNull WeatherType arg0) {
 		player.setPlayerWeather(arg0);
 	}
 
 	@Override
-	public void setResourcePack(String arg0) {
+	public void setResourcePack(@NotNull String arg0) {
 		player.setResourcePack(arg0);
 	}
 
 	@Override
-	public void setResourcePack(String arg0, byte[] arg1) {
+	public void setResourcePack(@NotNull String arg0, @NotNull byte[] arg1) {
 		player.setResourcePack(arg0, arg1);
 	}
 
@@ -1359,7 +1403,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void setScoreboard(Scoreboard arg0) throws IllegalArgumentException,
+	public void setScoreboard(@NotNull Scoreboard arg0) throws IllegalArgumentException,
 			IllegalStateException {
 		player.setScoreboard(arg0);
 	}
@@ -1385,24 +1429,24 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void setStatistic(Statistic arg0, int arg1) throws IllegalArgumentException {
+	public void setStatistic(@NotNull Statistic arg0, int arg1) throws IllegalArgumentException {
 		player.setStatistic(arg0, arg1);
 	}
 
 	@Override
-	public void setStatistic(Statistic arg0, Material arg1, int arg2)
+	public void setStatistic(@NotNull Statistic arg0, @NotNull Material arg1, int arg2)
 			throws IllegalArgumentException {
 		player.setStatistic(arg0, arg1, arg2);
 	}
 
 	@Override
-	public void setStatistic(Statistic arg0, EntityType arg1, int arg2) {
+	public void setStatistic(@NotNull Statistic arg0, @NotNull EntityType arg1, int arg2) {
 		player.setStatistic(arg0, arg1, arg2);
 	}
 
 	@Override
 	@Deprecated
-	public void setTexturePack(String arg0) {
+	public void setTexturePack(@NotNull String arg0) {
 		player.setTexturePack(arg0);
 	}
 
@@ -1418,15 +1462,16 @@ public class PermissiblePlayer implements Player {
 
 	@Deprecated
 	@Override
-	public void showPlayer(Player arg0) {
+	public void showPlayer(@NotNull Player arg0) {
 		player.showPlayer(arg0);
 	}
 
 	@Override
-	public void showPlayer(Plugin plugin, Player player) {
+	public void showPlayer(@NotNull Plugin plugin, @NotNull Player player) {
 		player.showPlayer(plugin, player);
 	}
 
+	@NotNull
 	@Override
 	public Spigot spigot() {
 		return player.spigot();
@@ -1438,7 +1483,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public AttributeInstance getAttribute(Attribute attribute) {
+	public AttributeInstance getAttribute(@NotNull Attribute attribute) {
 		return player.getAttribute(attribute);
 	}
 
@@ -1453,75 +1498,76 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void spawnParticle(Particle particle, Location location, int count) {
+	public void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count) {
 		player.spawnParticle(particle, location, count);
 	}
 
 	@Override
-	public <T> void spawnParticle(Particle particle, Location location, int count, T data) {
+	public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, T data) {
 		player.spawnParticle(particle, location, count, data);
 	}
 
 	@Override
-	public void spawnParticle(Particle particle, double x, double y, double z, int count) {
+	public void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count) {
 		player.spawnParticle(particle, x, y, z, count);
 	}
 
 	@Override
-	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, T data) {
+	public <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count, T data) {
 		player.spawnParticle(particle, x, y, z, count,  data);
 	}
 
 	@Override
-	public void spawnParticle(Particle particle, Location location, int count, double offsetX,
-			double offsetY, double offsetZ) {
+	public void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX,
+							  double offsetY, double offsetZ) {
 		player.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ);
 	}
 
 	@Override
-	public <T> void spawnParticle(Particle particle, Location location, int count, double offsetX,
-			double offsetY, double offsetZ, T data) {
+	public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX,
+								  double offsetY, double offsetZ, T data) {
 		player.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, data);
 	}
 
 	@Override
-	public void spawnParticle(Particle particle, Location location, int count, double offsetX,
-			double offsetY, double offsetZ, double extra) {
+	public void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX,
+							  double offsetY, double offsetZ, double extra) {
 		player.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, extra);
 	}
 
 	@Override
-	public void spawnParticle(Particle particle, double x, double y, double z, int count,
-			double offsetX, double offsetY, double offsetZ) {
+	public void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count,
+							  double offsetX, double offsetY, double offsetZ) {
 		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ);
 	}
 
 	@Override
-	public <T> void spawnParticle(Particle particle, Location location, int count, double offsetX,
-			double offsetY, double offsetZ, double extra, T data) {
+	public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int count, double offsetX,
+								  double offsetY, double offsetZ, double extra, T data) {
 		player.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, extra, data);
 	}
 
 	@Override
-	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
-			double offsetX, double offsetY, double offsetZ, T data) {
+	public <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count,
+								  double offsetX, double offsetY, double offsetZ, T data) {
 		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, data);
 	}
 
 	@Override
-	public void spawnParticle(Particle particle, double x, double y, double z, int count,
-			double offsetX, double offsetY, double offsetZ, double extra) {
+	public void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count,
+							  double offsetX, double offsetY, double offsetZ, double extra) {
 		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, extra);
 	}
 
 	@Override
-	public <T> void spawnParticle(Particle particle, double x, double y, double z, int count,
-			double offsetX, double offsetY, double offsetZ, double extra, T data) {
+	public <T> void spawnParticle(@NotNull Particle particle, double x, double y, double z, int count,
+								  double offsetX, double offsetY, double offsetZ, double extra, T data) {
 		player.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, extra, data);
 	}
 
+	@NotNull
 	@Override
-	public AdvancementProgress getAdvancementProgress(Advancement advancement) {
+	public AdvancementProgress getAdvancementProgress(@NotNull Advancement advancement) {
 		return player.getAdvancementProgress(advancement);
 	}
 
@@ -1530,6 +1576,7 @@ public class PermissiblePlayer implements Player {
 		return player.getClientViewDistance();
 	}
 
+	@NotNull
 	@Override
 	public String getLocale() {
 		return player.getLocale();
@@ -1539,6 +1586,7 @@ public class PermissiblePlayer implements Player {
 		player.updateCommands();
 	}
 
+	@NotNull
 	@Override
 	public MainHand getMainHand() {
 		return player.getMainHand();
@@ -1621,12 +1669,12 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void stopSound(Sound paramSound) {
+	public void stopSound(@NotNull Sound paramSound) {
 		player.stopSound(paramSound);
 	}
 
 	@Override
-	public void stopSound(String paramString) {
+	public void stopSound(@NotNull String paramString) {
 		player.stopSound(paramString);
 	}
 
@@ -1641,52 +1689,55 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public boolean addScoreboardTag(String arg0) {
+	public boolean addScoreboardTag(@NotNull String arg0) {
 		return player.addScoreboardTag(arg0);
 	}
 
+	@NotNull
 	@Override
 	public Set<String> getScoreboardTags() {
 		return player.getScoreboardTags();
 	}
 
 	@Override
-	public boolean removeScoreboardTag(String arg0) {
+	public boolean removeScoreboardTag(@NotNull String arg0) {
 		return player.removeScoreboardTag(arg0);
 	}
 
+	@NotNull
 	@Override
 	public PistonMoveReaction getPistonMoveReaction() {
 		return player.getPistonMoveReaction();
 	}
 
+	@NotNull
 	@Override
 	public BlockFace getFacing() {
 		return player.getFacing();
 	}
 
 	@Override
-	public void playSound(Location arg0, Sound arg1, SoundCategory arg2, float arg3, float arg4) {
+	public void playSound(@NotNull Location arg0, @NotNull Sound arg1, @NotNull SoundCategory arg2, float arg3, float arg4) {
 		player.playSound(arg0, arg1, arg2, arg3, arg4);
 	}
 
 	@Override
-	public void playSound(Location arg0, String arg1, SoundCategory arg2, float arg3, float arg4) {
+	public void playSound(@NotNull Location arg0, @NotNull String arg1, @NotNull SoundCategory arg2, float arg3, float arg4) {
 		player.playSound(arg0, arg1, arg2, arg3, arg4);
 	}
 
 	@Override
-	public void stopSound(Sound arg0, SoundCategory arg1) {
+	public void stopSound(@NotNull Sound arg0, SoundCategory arg1) {
 		player.stopSound(arg0, arg1);
 	}
 
 	@Override
-	public void stopSound(String arg0, SoundCategory arg1) {
+	public void stopSound(@NotNull String arg0, SoundCategory arg1) {
 		player.stopSound(arg0, arg1);
 	}
 
 	@Override
-	public InventoryView openMerchant(Merchant arg0, boolean arg1) {
+	public InventoryView openMerchant(@NotNull Merchant arg0, boolean arg1) {
 		return player.openMerchant(arg0, arg1);
 	}
 
@@ -1696,17 +1747,18 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public boolean addPassenger(Entity passenger) {
+	public boolean addPassenger(@NotNull Entity passenger) {
 		return player.addPassenger(passenger);
 	}
 
+	@NotNull
 	@Override
 	public List<Entity> getPassengers() {
 		return player.getPassengers();
 	}
 
 	@Override
-	public boolean removePassenger(Entity passenger) {
+	public boolean removePassenger(@NotNull Entity passenger) {
 		return player.removePassenger(passenger);
 	}
 
@@ -1720,23 +1772,24 @@ public class PermissiblePlayer implements Player {
 		return player.getWidth();
 	}
 
+	@NotNull
 	@Override
 	public BoundingBox getBoundingBox() {
 		return player.getBoundingBox();
 	}
 
 	@Override
-	public int getCooldown(Material material) {
+	public int getCooldown(@NotNull Material material) {
 		return player.getCooldown(material);
 	}
 
 	@Override
-	public boolean hasCooldown(Material material) {
+	public boolean hasCooldown(@NotNull Material material) {
 		return player.hasCooldown(material);
 	}
 
 	@Override
-	public void setCooldown(Material material, int duration) {
+	public void setCooldown(@NotNull Material material, int duration) {
 		player.setCooldown(material, duration);
 	}
 
