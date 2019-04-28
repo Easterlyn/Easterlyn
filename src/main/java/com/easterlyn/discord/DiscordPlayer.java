@@ -32,7 +32,7 @@ public class DiscordPlayer extends PermissiblePlayer {
 	}
 
 	@NotNull
-    @Override
+	@Override
 	public String getDisplayName() {
 		return displayName != null ? displayName : getName();
 	}

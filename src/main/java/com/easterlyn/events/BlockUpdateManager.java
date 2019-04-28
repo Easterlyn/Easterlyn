@@ -81,10 +81,10 @@ public class BlockUpdateManager {
 	}
 
 	private void forceUpdate(Block updated, Block triggering) {
-        // Sadly, using the API does not work.
-        // Blocks that are currently air cannot be updated at all to fix adjacent blocks,
-        // and certain other edge cases also will not trigger updates.
-        // Instead, we manually force an update using NMS.
+		// Sadly, using the API does not work.
+		// Blocks that are currently air cannot be updated at all to fix adjacent blocks,
+		// and certain other edge cases also will not trigger updates.
+		// Instead, we manually force an update using NMS.
 
 		BlockPosition position1 = new BlockPosition(updated.getX(), updated.getY(), updated.getZ());
 		BlockPosition position2 = new BlockPosition(triggering.getX(), triggering.getY(), triggering.getZ());

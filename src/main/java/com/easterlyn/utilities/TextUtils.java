@@ -37,7 +37,7 @@ public class TextUtils {
 
 	public static MatchedURL matchURL(String urlString) {
 		// Overwatch was shut down for a reason.
-		if ("D.Va".equals(urlString)) {
+		if ("d.va".equalsIgnoreCase(urlString)) {
 			return null;
 		}
 		Matcher matcher = URL_PATTERN.matcher(urlString);
@@ -69,9 +69,9 @@ public class TextUtils {
 	 */
 	public static String trimExtraWhitespace(String s) {
 		// Strips useless codes and any spaces between them. Reset negates all prior colors and formatting.
-		s = s.replaceAll("((([" + ChatColor.COLOR_CHAR + "&][0-9a-fk-orA-FK-OR])+)\\s+?)+([" + ChatColor.COLOR_CHAR + "&][rR])", "$5");
+		s = s.replaceAll("((([" + ChatColor.COLOR_CHAR + "&][0-9a-fk-orA-FK-OR])+)\\s+?)+([" + ChatColor.COLOR_CHAR + "&][rR])", "$4");
 		// Strips useless codes and any spaces between them. Colors reset prior colors and formatting.
-		s = s.replaceAll("((([" + ChatColor.COLOR_CHAR + "&][0-9a-fk-orA-FK-OR])+)\\s+?)([" + ChatColor.COLOR_CHAR + "&][0-9a-fA-F])", "$5");
+		s = s.replaceAll("((([" + ChatColor.COLOR_CHAR + "&][0-9a-fk-orA-FK-OR])+)\\s+?)([" + ChatColor.COLOR_CHAR + "&][0-9a-fA-F])", "$4");
 		// Strip all spaces between chat colors - actually strips about 1/2 per iteration
 		s = s.replaceAll("\\s+(([" + ChatColor.COLOR_CHAR + "&][0-9a-fk-orA-FK-OR])+)\\s+", " $1");
 		// Strip all spaces that appear to be at start
