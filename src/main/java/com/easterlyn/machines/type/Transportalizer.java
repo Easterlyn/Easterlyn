@@ -115,7 +115,9 @@ public class Transportalizer extends Machine {
 
 	private void setFuel(ConfigurationSection storage, long fuel) {
 		ArmorStand hologram = holograms.getOrCreateHologram(getHoloLocation(storage));
-		hologram.setCustomName(String.valueOf(fuel));
+		if (hologram != null) {
+			hologram.setCustomName(String.valueOf(fuel));
+		}
 		storage.set("fuel", fuel);
 	}
 
@@ -397,7 +399,9 @@ public class Transportalizer extends Machine {
 	@Override
 	public void enable(ConfigurationSection storage) {
 		ArmorStand hologram = holograms.getOrCreateHologram(getHoloLocation(storage));
-		hologram.setCustomName(String.valueOf(getFuel(storage)));
+		if (hologram != null) {
+			hologram.setCustomName(String.valueOf(getFuel(storage)));
+		}
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Module for Holograms while Machines undergo a rework.
@@ -36,21 +37,23 @@ public class Holograms extends Module {
 		}
 	}
 
-	public ArmorStand getHologram(Location location) {
+	public @Nullable ArmorStand getHologram(Location location) {
 		return getHologram(location, false);
 	}
 
-	public ArmorStand getOrCreateHologram(Location location) {
+	public @Nullable
+	ArmorStand getOrCreateHologram(Location location) {
 		return getHologram(location, true);
 	}
 
 	private ArmorStand getHologram(Location location, boolean create) {
-		for (Entity entity : location.getWorld().getNearbyEntities(location, 0.1, 0.1, 0.1)) {
-			if (isHologram(entity)) {
-				return (ArmorStand) entity;
-			}
-		}
-		return create ? makeHologram(location) : null;
+		return null;
+//		for (Entity entity : location.getWorld().getNearbyEntities(location, 0.1, 0.1, 0.1)) {
+//			if (isHologram(entity)) {
+//				return (ArmorStand) entity;
+//			}
+//		}
+//		return create ? makeHologram(location) : null;
 	}
 
 	private ArmorStand makeHologram(Location location) {

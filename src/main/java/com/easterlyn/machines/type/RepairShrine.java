@@ -35,7 +35,6 @@ public class RepairShrine extends Machine {
 	private final ParticleUtils particles;
 	private final ItemStack drop;
 
-	@SuppressWarnings("deprecation")
 	public RepairShrine(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "RepairShrine");
 		this.holograms = plugin.getModule(Holograms.class);
@@ -216,7 +215,9 @@ public class RepairShrine extends Machine {
 
 	private void setFuel(ConfigurationSection storage, long fuel) {
 		ArmorStand hologram = holograms.getOrCreateHologram(this.getHoloLocation(storage));
-		hologram.setCustomName(String.valueOf(fuel));
+		if (hologram != null) {
+			hologram.setCustomName(String.valueOf(fuel));
+		}
 		storage.set("fuel", fuel);
 	}
 
@@ -283,7 +284,9 @@ public class RepairShrine extends Machine {
 			Location holo = this.getHoloLocation(storage);
 			holo.getWorld().playSound(holo, Sound.BLOCK_REDSTONE_TORCH_BURNOUT, 1F, 1F);
 			ArmorStand hologram = holograms.getOrCreateHologram(holo);
-			hologram.setCustomName(Language.getColor("emphasis.bad") + String.valueOf(fuel - cost));
+			if (hologram != null) {
+				hologram.setCustomName(Language.getColor("emphasis.bad") + String.valueOf(fuel - cost));
+			}
 
 			new BukkitRunnable() {
 				@Override
@@ -321,7 +324,9 @@ public class RepairShrine extends Machine {
 	@Override
 	public void enable(ConfigurationSection storage) {
 		ArmorStand hologram = holograms.getOrCreateHologram(getHoloLocation(storage));
-		hologram.setCustomName(String.valueOf(getFuel(storage)));
+		if (hologram != null) {
+			hologram.setCustomName(String.valueOf(getFuel(storage)));
+		}
 	}
 
 	@Override
